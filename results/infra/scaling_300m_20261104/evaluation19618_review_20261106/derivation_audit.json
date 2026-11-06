@@ -1,0 +1,242 @@
+{
+  "release": "f6dc8ec0fb33ae1bcf6d34018194c2e9c71f7cb5",
+  "source_commit": "97125bd8bb8b14590958501ba91986c8456037f9",
+  "status": "PASS",
+  "files": [
+    {
+      "source": "scripts/scaling_evaluation.py",
+      "target": "scripts/scaling_evaluation19618.py",
+      "source_sha256": "395849450dc24a804a71133e272a2b76dd502a5466d7ca3a2d79c42bb292323e",
+      "target_sha256": "ab3c175746e448b46ede9258b4eea785dc89ed1b8180fbb844a8e1ab1e7253e2",
+      "replacement_instructions": 12,
+      "replacement_occurrences": 12,
+      "identical_function_ast": [
+        "dimension",
+        "execute",
+        "extraction_commands",
+        "extraction_source_states",
+        "model_recipe",
+        "validate_training_state",
+        "verify_classification_cache",
+        "verify_pose_cache"
+      ],
+      "changed_function_ast": [
+        "load_context",
+        "load_teacher_endpoint",
+        "main",
+        "make_plan",
+        "validate_checkpoint"
+      ],
+      "removed_functions": [],
+      "added_functions": []
+    },
+    {
+      "source": "scripts/scaling_pose_readout.py",
+      "target": "scripts/scaling_pose_readout19618.py",
+      "source_sha256": "238a5cd479e37310235c42dcb0b930d232230ff0d2a8d1d1309b05b7292900cf",
+      "target_sha256": "3b3927c03b8e4b5672bb6d07ce2eeca218cdca5d2862d3ae30b35c49f4228206",
+      "replacement_instructions": 5,
+      "replacement_occurrences": 5,
+      "identical_function_ast": [
+        "benchmark_train",
+        "fit_reader",
+        "grouped_stats",
+        "make_plan",
+        "normalized_inputs",
+        "paired_comparison",
+        "predict",
+        "recipe",
+        "run",
+        "source_hashes",
+        "validate_plan"
+      ],
+      "changed_function_ast": [
+        "main",
+        "validate_artifact"
+      ],
+      "removed_functions": [],
+      "added_functions": []
+    },
+    {
+      "source": "scripts/scaling_probe.py",
+      "target": "scripts/scaling_probe19618.py",
+      "source_sha256": "0b3d40994ea7b6ee189a5831e22a5b298cc0cf2ceaa24908c80242642b5d26b0",
+      "target_sha256": "72a621753a8e792f262ddaa31e95cfb9830c63418aab9be043fc938d088febbb",
+      "replacement_instructions": 5,
+      "replacement_occurrences": 5,
+      "identical_function_ast": [
+        "_summary",
+        "aggregate",
+        "benchmark",
+        "cell_features",
+        "compare_arrays",
+        "completion_identity",
+        "main",
+        "make_plan",
+        "peak_rss_bytes",
+        "read_completed",
+        "recipe",
+        "run_shard",
+        "shard_selection",
+        "source_hashes",
+        "validate_aggregate_report",
+        "validate_fold",
+        "validate_resources",
+        "width"
+      ],
+      "changed_function_ast": [
+        "load_cache",
+        "validate_plan"
+      ],
+      "removed_functions": [],
+      "added_functions": []
+    },
+    {
+      "source": "scripts/scaling_compare.py",
+      "target": "scripts/scaling_compare19618.py",
+      "source_sha256": "a3610519b453a3d37747f5a4ce926b2164a40dd503546b22b6c45829085eb938",
+      "target_sha256": "fb4da3be4f7f23ea1cc58018a009589008497146c700cfdf96229bb51b331f84",
+      "replacement_instructions": 9,
+      "replacement_occurrences": 9,
+      "identical_function_ast": [
+        "_blas_identity",
+        "_classification",
+        "_pin",
+        "_read",
+        "compare",
+        "main",
+        "runtime_coherence",
+        "source_hashes",
+        "validate_pose_selection"
+      ],
+      "changed_function_ast": [
+        "compose_summary",
+        "make_inputs",
+        "validate_inputs",
+        "validate_pose_outputs",
+        "validate_shared_plans"
+      ],
+      "removed_functions": [],
+      "added_functions": []
+    },
+    {
+      "source": "scripts/scaling_reading.py",
+      "target": "scripts/scaling_reading19618.py",
+      "source_sha256": "13231e82664cfa6a815a8e87fb6c85380b70838d8746109d8af627b5a4f056d5",
+      "target_sha256": "0fa6a99556a8b48ece0143d2a8bb16977b6ad9f92c194f4a68a9b203442b865a",
+      "replacement_instructions": 8,
+      "replacement_occurrences": 8,
+      "identical_function_ast": [
+        "contrast",
+        "main",
+        "number",
+        "require"
+      ],
+      "changed_function_ast": [
+        "read_comparison"
+      ],
+      "removed_functions": [
+        "continuation_training_cap"
+      ],
+      "added_functions": []
+    },
+    {
+      "source": "scripts/slurm/scaling_evaluation.sbatch",
+      "target": "scripts/slurm/scaling_evaluation19618.sbatch",
+      "source_sha256": "a3e880e42d9dc82aaedee2eb85265f750402da9c2492e617b0fd579be0382084",
+      "target_sha256": "ca6ea4d4f60b09af77b1ecf9c10e4593eb8142d3e3b6a537c624644f7fd99e06",
+      "replacement_instructions": 8,
+      "replacement_occurrences": 9
+    },
+    {
+      "source": "scripts/slurm/scaling_readers_recovery.sbatch",
+      "target": "scripts/slurm/scaling_readers19618.sbatch",
+      "source_sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5",
+      "target_sha256": "11907add97eef50f422aa35b7abf3c994b0c0b3b337a1a1c121f2ce2dbe6ea11",
+      "replacement_instructions": 20,
+      "replacement_occurrences": 25
+    },
+    {
+      "source": "tests/cpu/test_scaling_evaluation.py",
+      "target": "tests/cpu/test_scaling_evaluation19618.py",
+      "source_sha256": "2006f66ac82f92d59852ebe5f579f7acf14a6be1abe5941061fc189e10464f08",
+      "target_sha256": "b3c40903fe04360460b63fa3c52775431ccf855d80fffdd1a0200807e4a167ed",
+      "replacement_instructions": 24,
+      "replacement_occurrences": 30
+    },
+    {
+      "source": "tests/cpu/test_scaling_pose_readout.py",
+      "target": "tests/cpu/test_scaling_pose_readout19618.py",
+      "source_sha256": "dd107161a248de6e6d89ee41ed27a4549dbd2778fb24b1485a5bf828e3518ea9",
+      "target_sha256": "c499fd4d01c9428cd85096e41aba29b1ab80239f75b98b32c027c4429bc90491",
+      "replacement_instructions": 9,
+      "replacement_occurrences": 9
+    },
+    {
+      "source": "tests/cpu/test_scaling_probe.py",
+      "target": "tests/cpu/test_scaling_probe19618.py",
+      "source_sha256": "a1dbeb22ab5b73998c15df7e185192948e6c31b29d1809c67ad8ca34877d3146",
+      "target_sha256": "6eb0bc7b8beccf9de3e7c98f6f057ac823fdf8f248e6072ffb93ae997cd99c7d",
+      "replacement_instructions": 8,
+      "replacement_occurrences": 8
+    },
+    {
+      "source": "tests/cpu/test_scaling_compare.py",
+      "target": "tests/cpu/test_scaling_compare19618.py",
+      "source_sha256": "331931f3313706fc10747fca6d848bdedc89cdb01cbd820f8534f0e6c6bb0b44",
+      "target_sha256": "38238c9d44972ea0b2f7e12dacde86f1f5ae15db814d355e7e4f526df913cc9f",
+      "replacement_instructions": 10,
+      "replacement_occurrences": 10
+    },
+    {
+      "source": "tests/cpu/test_scaling_reading.py",
+      "target": "tests/cpu/test_scaling_reading19618.py",
+      "source_sha256": "60f7978c81b885fdffcd6280c8ad6df12ede45e57eff2da70f9663bf67ce661f",
+      "target_sha256": "beabecbdbd7e5e94e883cdca7b81e213b7f6ff74229169e802818518f4a78aea",
+      "replacement_instructions": 9,
+      "replacement_occurrences": 9
+    },
+    {
+      "source": "tests/cpu/test_scaling_evaluation_launcher.py",
+      "target": "tests/cpu/test_scaling_evaluation19618_launcher.py",
+      "source_sha256": "c0233415c679d4926e7542f58dced36314acb6e66210e1f8a9f5693db86abbad",
+      "target_sha256": "43480d448ba4d278e21028ca40462608d850672ffaef113979ab6f3e7073aa27",
+      "replacement_instructions": 11,
+      "replacement_occurrences": 11
+    },
+    {
+      "source": "tests/cpu/test_scaling_readers_launcher.py",
+      "target": "tests/cpu/test_scaling_readers19618_launcher.py",
+      "source_sha256": "d32e77f65538678d2dea89ce9e7956738baee06f0c8db0cd07e8250f8a2771b7",
+      "target_sha256": "68e11f4286ca58abdd675cf83480e333d9a89a8b49d69363794fa9cbc0086098",
+      "replacement_instructions": 22,
+      "replacement_occurrences": 27
+    },
+    {
+      "source": "tests/cpu/test_scaling_readers_recovery_launcher.py",
+      "target": "tests/cpu/test_scaling_readers19618_limits.py",
+      "source_sha256": "5fba59bff8d89460faead328925a48cd2473f10039f094da1edab307e07893ab",
+      "target_sha256": "6f20f34684f52b6124e1c844990ad64a21edb06157bc23054341e7f81e2e6f6d",
+      "replacement_instructions": 11,
+      "replacement_occurrences": 13
+    }
+  ],
+  "independent_policy_cases": 24576,
+  "shared_policy_fields": [
+    "candidate",
+    "control",
+    "bootstrap",
+    "epn_margin_pp",
+    "pose_practical_point_reduction",
+    "p1_p2_noninferiority_margin_pp",
+    "historical_pair_is_noise_floor"
+  ],
+  "endpoint_reading_sha256": "58865c1bff332d52221fc18ac55ce7f7af11f1073dff1a87808d221876d34396",
+  "endpoint_unchanged_since": "73524b6",
+  "control_checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+  "src_and_training_wrapper_unchanged": true,
+  "notes": [
+    "S-2/S-4 are outcome acceptance checks, not submission gates; numeric bootstrap defaults remain frozen.",
+    "No live cache/checkpoint at 19,618 exists yet; this proves release code/policy, not future data outcomes."
+  ]
+}

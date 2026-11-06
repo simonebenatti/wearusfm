@@ -1,0 +1,41 @@
+{
+  "reviewed_commit": "f6dc8ec0fb33ae1bcf6d34018194c2e9c71f7cb5",
+  "cases": [
+    {
+      "queue_jobs": 0,
+      "gate_exit": 0,
+      "all_checks_passed": true,
+      "submittable_now": 3,
+      "default_lines_emitted": 3,
+      "gate_stdout": "PASS  checkout code: expected HEAD and clean tree\nPASS  checkout plans: expected HEAD and clean tree\nPASS  document pose_plan: remote bytes equal to the published ones\nPASS  files pinned inside the checkouts are in their commits (2)\nPASS  outputs of the jobs still to submit are absent\nPASS  jobs already in the ledger were submitted by this line\nPASS  jobs already submitted are COMPLETED 0:0 (0)\nPASS  free space on $WORK at least 5 GiB\n{\n \"serial_jobs\": 0,\n \"serial_room\": 10,\n \"work_free_gib\": 23.721336364746094,\n \"to_submit\": [\n  \"SCALING-19618-pose-bench-30m-natural-20261106\",\n  \"SCALING-19618-pose-bench-300m-natural-20261106\",\n  \"SCALING-19618-pose-bench-300m-matched-20261106\"\n ],\n \"submittable_now\": 3\n}\n{\"written\": \"results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/gates/pose-benchmark_20261108T100000Z.json\", \"sha256\": \"d4342817dad1ac8bf4d515f9d90d08f593fa0d07112d4cf531ef931f86b0708f\", \"bytes\": 1623}\n",
+      "first_submission": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py --agente claude --campagna scaling-300m-20261104 --timeout 120 --id SCALING-19618-pose-bench-30m-natural-20261106 --gpu-ore 0 -- --cpus-per-task=8 --mem=30G --time=00:10:00 --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1,EXPECTED_SHA=0ad82f2d85175b50dc1887ac0aa418db8c89e345 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/slurm/scaling_readers19618.sbatch pose-benchmark /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_plans19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/readers/pose_plan.json c0d561d73d7aa1fd6d2487956b3b036dc89b16a543161e7e71051cb1ed08f05c /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/pose_benchmark/T100-G-30M-natural --cell T100-G-30M-natural",
+      "checkout_jobs_requested_from_sacct": []
+    },
+    {
+      "queue_jobs": 9,
+      "gate_exit": 0,
+      "all_checks_passed": true,
+      "submittable_now": 1,
+      "default_lines_emitted": 3,
+      "gate_stdout": "PASS  checkout code: expected HEAD and clean tree\nPASS  checkout plans: expected HEAD and clean tree\nPASS  document pose_plan: remote bytes equal to the published ones\nPASS  files pinned inside the checkouts are in their commits (2)\nPASS  outputs of the jobs still to submit are absent\nPASS  jobs already in the ledger were submitted by this line\nPASS  jobs already submitted are COMPLETED 0:0 (0)\nPASS  free space on $WORK at least 5 GiB\n{\n \"serial_jobs\": 9,\n \"serial_room\": 1,\n \"work_free_gib\": 23.721336364746094,\n \"to_submit\": [\n  \"SCALING-19618-pose-bench-30m-natural-20261106\",\n  \"SCALING-19618-pose-bench-300m-natural-20261106\",\n  \"SCALING-19618-pose-bench-300m-matched-20261106\"\n ],\n \"submittable_now\": 1\n}\n{\"written\": \"results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/gates/pose-benchmark_20261108T100000Z.json\", \"sha256\": \"fd94dfd480d0639f916b1d4f9d6f85174ae3c9c1b99c46b8902474644fb69563\", \"bytes\": 1622}\n",
+      "first_submission": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py --agente claude --campagna scaling-300m-20261104 --timeout 120 --id SCALING-19618-pose-bench-30m-natural-20261106 --gpu-ore 0 -- --cpus-per-task=8 --mem=30G --time=00:10:00 --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1,EXPECTED_SHA=0ad82f2d85175b50dc1887ac0aa418db8c89e345 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/slurm/scaling_readers19618.sbatch pose-benchmark /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_plans19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/readers/pose_plan.json c0d561d73d7aa1fd6d2487956b3b036dc89b16a543161e7e71051cb1ed08f05c /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/pose_benchmark/T100-G-30M-natural --cell T100-G-30M-natural",
+      "checkout_jobs_requested_from_sacct": []
+    },
+    {
+      "queue_jobs": 10,
+      "gate_exit": 0,
+      "all_checks_passed": true,
+      "submittable_now": 0,
+      "default_lines_emitted": 3,
+      "gate_stdout": "PASS  checkout code: expected HEAD and clean tree\nPASS  checkout plans: expected HEAD and clean tree\nPASS  document pose_plan: remote bytes equal to the published ones\nPASS  files pinned inside the checkouts are in their commits (2)\nPASS  outputs of the jobs still to submit are absent\nPASS  jobs already in the ledger were submitted by this line\nPASS  jobs already submitted are COMPLETED 0:0 (0)\nPASS  free space on $WORK at least 5 GiB\n{\n \"serial_jobs\": 10,\n \"serial_room\": 0,\n \"work_free_gib\": 23.721336364746094,\n \"to_submit\": [\n  \"SCALING-19618-pose-bench-30m-natural-20261106\",\n  \"SCALING-19618-pose-bench-300m-natural-20261106\",\n  \"SCALING-19618-pose-bench-300m-matched-20261106\"\n ],\n \"submittable_now\": 0\n}\n{\"written\": \"results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/gates/pose-benchmark_20261108T100000Z.json\", \"sha256\": \"34d5fb3b99e92ce1f80bdd559cdd28dc62d985545f96fe17a72c6a8d8ab9de38\", \"bytes\": 1623}\n",
+      "first_submission": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py --agente claude --campagna scaling-300m-20261104 --timeout 120 --id SCALING-19618-pose-bench-30m-natural-20261106 --gpu-ore 0 -- --cpus-per-task=8 --mem=30G --time=00:10:00 --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1,EXPECTED_SHA=dab7f710909d4f455cf2178bb11f7636d4fbb775 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/slurm/scaling_readers19618.sbatch pose-benchmark /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_plans19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/readers/pose_plan.json c0d561d73d7aa1fd6d2487956b3b036dc89b16a543161e7e71051cb1ed08f05c /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/pose_benchmark/T100-G-30M-natural --cell T100-G-30M-natural",
+      "checkout_jobs_requested_from_sacct": []
+    }
+  ],
+  "aggregate_command": {
+    "queue_jobs": 0,
+    "default_lines_emitted": 6,
+    "published_line1_simultaneous_limit": 4,
+    "explanation": "evaluation_chain_plan section 9 emits all six aggregates; section 6 says at most four submitted line1 jobs."
+  }
+}

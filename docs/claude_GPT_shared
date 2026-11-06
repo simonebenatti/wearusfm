@@ -178,6 +178,28 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 06/11/2026 — GPT: review unica della valutazione a 19.618, DA RIVEDERE per un solo difetto della tranche
+
+Consegna Claude `f6dc8ec0fb33ae1bcf6d34018194c2e9c71f7cb5`, ramo
+`claude/scaling-300m-exec-20261106`. Review in
+`docs/reviews/gpt_review_scaling_evaluation19618_20261106.md`.
+615 test mirati passati (186,42 s); 15 derivazioni esatte dai blob 97125bd,
+24.576 casi indipendenti della lettura scientifica, 47 controlli delle risorse.
+Conformi algoritmi, criteri e costi: massimo 345,166667/350 core-ore CPU,
+estrazioni 7+0,15 GPU-ore; cinque checkout accettabili nello stesso tetto 0,8 core-ore.
+S-1/S-3 coperti; S-2/S-4 restano controlli dell'esito dopo il confronto.
+
+Un solo blocco B-1: il cancello PASS non vincola le righe emesse ai posti
+liberi. Riprodotto con 9 job in coda: un posto dichiarato ma 3 righe emesse;
+con 10 job: zero posti ma ancora 3 righe. Il comando dei 6 aggregati supera anche
+il limite dichiarato di 4 job di linea sottomessi insieme. Claude deve legare
+ammissione/emissione alla stessa tranche e aggiungere regressioni sul percorso.
+La verifica della correzione chiude questo rilascio unico; nessuna review fra
+gli invii successivi ne' nuovo consenso di Simone. Training 73524b6 gia'
+approvato invariato: nessun intervento richiesto su 63696864. GPT ha lavorato
+solo in locale; nessun SSH, deploy, invio o modifica del codice Claude.
+Evidenze: `results/infra/scaling_300m_20261104/evaluation19618_review_20261106/`.
+
 ### 06/11/2026 — GPT: continuazione 300M, stadio training APPROVATO con review unica
 
 Recepita istruzione Simone17:22: «si autorizzo maq non voglio una ennersima review di gpt prima di
@@ -6229,6 +6251,25 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 06/11/2026 — GPT: B-1 bloccante della valutazione a 19.618, coda e comandi disaccoppiati
+
+Sul commit Claude f6dc8ec, `scaling_plans19618.py:1007` calcola
+`submittable_now` senza farlo entrare nell'esito; `lines` (1220–1222) non lo
+consuma. Il percorso pubblicato `gate pose-benchmark && lines pose-benchmark`
+passa ed emette 3 invii anche con 1 o 0 posti. Possibile invio parziale seguito da
+rifiuto QoS e STOP; stessa causa per 6 aggregati contro limite 4 della linea.
+Rilievo unico, operativo: correggere la tranche verificata/emessa, rispettare
+posti QoS e limite di linea, non emettere con zero posti, testare anche `--max`.
+Nessun difetto scientifico o ampliamento di budget richiesto; DA RIVEDERE
+lo stadio B, invariata l'approvazione del training gia' inviato.
+
+Note non bloccanti separate nella review: `collect checkout-*` non va omesso
+(gli stati COMPLETED del checkout non vengono riletti dal gate dei lettori);
+le eccezioni prima dei checks fermano ma non scrivono sempre un verbale;
+343,17 del `budget-table` e' lo scenario a 10 shard, il massimo a 15 e' 345,17 gia' dichiarato.
+Nessun accesso al cluster, nessuna operazione sui job. Dopo la correzione
+resta il rilascio unico autorizzato da Simone, senza review fra gli invii.
 
 ### 06/11/2026 — GPT: precisazioni non bloccanti sul rilascio training19618
 

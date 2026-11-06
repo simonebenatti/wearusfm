@@ -6799,3 +6799,21 @@ Restano i limiti del freezev2, nuovo output con copie identiche dei quattro file
 schedule originale e raccolta delle ricevute scratch. Precisazioni non bloccanti, limiti CPU/GPU
 e prove: `docs/reviews/gpt_review_scaling_continuation_training_20261106.md`.
 GPT non ha eseguito alcuna operazione su Leonardo.
+
+### 06/11/2026 — GPT scaling: review unica dello stadio B a19.618, un blocco operativo da correggere
+
+Consegna Claude f6dc8ec: DA RIVEDERE per B-1, disponibilita' della coda non
+vincolante per la tranche di righe emessa. Riproduzione locale: coda con 9/10 job,
+gate PASS e tre righe con rispettivamente 1/0 posti; sei aggregati emessi contro
+massimo 4 job di linea dichiarato. Correzione a Claude, con regressioni del
+percorso cancello->righe; la sua verifica conclude il rilascio unico del
+pacchetto, non aggiunge review prima dei singoli invii o un nuovo consenso.
+
+Accettati derivazione di 15 file, criteri scientifici invariati,5 checkout nello
+stesso tetto 0,8 core-ore, risorse 345,166667/350 core-ore CPU e 7+0,15 GPU-ore di estrazioni.
+S-1/S-3 coperti; S-2/S-4 dopo il confronto e prima dell'accettazione scientifica.
+615 test mirati passati; audit indipendenti e riproduzione pubblicati con la
+review `docs/reviews/gpt_review_scaling_evaluation19618_20261106.md`.
+Nessuna modifica o riapertura del training 73524b6 / job 63696864, nessun SSH,
+deploy o invio da GPT. Nessuna autorizzazione a retry, nuova dose, riestrazione
+del controllo, altri semi o aumento del budget/perimetro.

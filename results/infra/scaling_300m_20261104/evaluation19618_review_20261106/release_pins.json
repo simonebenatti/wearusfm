@@ -1,0 +1,160 @@
+{
+  "release": "f6dc8ec0fb33ae1bcf6d34018194c2e9c71f7cb5",
+  "source_worktree": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec",
+  "source_clean": true,
+  "baseline_training_deploy": "73524b63be534f81b3db4ade4b7fc7f47129a0f3",
+  "changed_files": {
+    "docs/decisioni.md": {
+      "sha256": "b2422d309e8ae085de1f59fc784026b16fc0a8fdeeea6bce4c321b66913b7154",
+      "bytes": 663177
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/control19618_identity/epn612.npz.provenance.json": {
+      "sha256": "7eadcfcc10ba1b34d8c554c9ac0b768fd5a337371cedbbc1b15cea7e1aa1fff8",
+      "bytes": 2585
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/control19618_identity/ninapro_db2.npz.provenance.json": {
+      "sha256": "9b31c642b31a47e2f47eb2c221c0efd8de507ae075397bbe05d919acdec92691",
+      "bytes": 2558
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/control19618_identity/ninapro_db3.npz.provenance.json": {
+      "sha256": "3259e083fa97f639e1924df1769161eb36f48f7149cedb15f322af530c5840b1",
+      "bytes": 2555
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/control19618_identity/ninapro_db6.npz.provenance.json": {
+      "sha256": "e1a0e23f167a48922259d129b8427b89aaef6913d71dd54d4f4e23e4776a4d83",
+      "bytes": 2557
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/control19618_identity/train_subset.npz.provenance.json": {
+      "sha256": "33b619b567dd35e905db14a89b179b3ee5cde5a8daf9b050fe65be5737869b2a",
+      "bytes": 2445
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/control19618_identity/uci_emg.npz.provenance.json": {
+      "sha256": "de913e25633006e759a38e62c9aae9b379bc7866343eb61b77ca651e5d543f98",
+      "bytes": 2580
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/control19618_identity/val.npz.provenance.json": {
+      "sha256": "c1bb472068d25720182d43a21d3929d25d05b08093b52d44403ed77ae2549435",
+      "bytes": 2435
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/evaluation_chain_plan.md": {
+      "sha256": "c02e6edb75bf37c77c3d8f13d3387073c4b49fdc007e1c9429cc1fa3ed5032fa",
+      "bytes": 18166
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/checkout-training/collection.json": {
+      "sha256": "ed1301fec31b8032a43d3f2457333ce15a4be74ab157b40e5acabc18af0c04ae",
+      "bytes": 972
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/checkout-training/training/accounting.json": {
+      "sha256": "7ee78f4a515fb7c250726b39981b5719669f81a24b19b401f2192a2c5e6d0510",
+      "bytes": 670
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/checkout-training/training/sacct.txt": {
+      "sha256": "08dba20c488d82571d82ad1b1109f1199d4a459f24eee085e7312916db662a18",
+      "bytes": 529
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/checkout-training/training/slurm_log.txt": {
+      "sha256": "4d7151dc1d8084e42076a790b130c0a1678921be5120f124fc9522dcf2b6033b",
+      "bytes": 4263
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/scientific_reading_policy_19618.json": {
+      "sha256": "38f4f65fb8fa30cec0482c9deb23f618273da79758a1ef504552e37174d7513b",
+      "bytes": 638
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/submissions/SCALING-300M-cont19618-checkout-20261106.json": {
+      "sha256": "baa3c0da59c1d61451e04828deab47f4797a447589045aff9a185ccfe3f60b4b",
+      "bytes": 1457
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/submissions/SCALING-300M-train19618-20261106.json": {
+      "sha256": "514beaa9c455e4d18a6672ef294fb383624b23f8b9a4e1233329927c04eeef30",
+      "bytes": 1395
+    },
+    "scripts/scaling_compare19618.py": {
+      "sha256": "fb4da3be4f7f23ea1cc58018a009589008497146c700cfdf96229bb51b331f84",
+      "bytes": 17432
+    },
+    "scripts/scaling_derive19618.py": {
+      "sha256": "08157fd14a647c77590efaeafb01271e089119b5d75bb060be2f1436521aad64",
+      "bytes": 68754
+    },
+    "scripts/scaling_evaluation19618.py": {
+      "sha256": "ab3c175746e448b46ede9258b4eea785dc89ed1b8180fbb844a8e1ab1e7253e2",
+      "bytes": 27970
+    },
+    "scripts/scaling_plans19618.py": {
+      "sha256": "84dccf421da4935f2222018e420ca4d757c7980a7b996b889dea07c20cb39afb",
+      "bytes": 82466
+    },
+    "scripts/scaling_pose_readout19618.py": {
+      "sha256": "3b3927c03b8e4b5672bb6d07ce2eeca218cdca5d2862d3ae30b35c49f4228206",
+      "bytes": 23133
+    },
+    "scripts/scaling_probe19618.py": {
+      "sha256": "72a621753a8e792f262ddaa31e95cfb9830c63418aab9be043fc938d088febbb",
+      "bytes": 38857
+    },
+    "scripts/scaling_reading19618.py": {
+      "sha256": "0fa6a99556a8b48ece0143d2a8bb16977b6ad9f92c194f4a68a9b203442b865a",
+      "bytes": 5147
+    },
+    "scripts/slurm/scaling_evaluation19618.sbatch": {
+      "sha256": "ca6ea4d4f60b09af77b1ecf9c10e4593eb8142d3e3b6a537c624644f7fd99e06",
+      "bytes": 5281
+    },
+    "scripts/slurm/scaling_readers19618.sbatch": {
+      "sha256": "11907add97eef50f422aa35b7abf3c994b0c0b3b337a1a1c121f2ce2dbe6ea11",
+      "bytes": 18020
+    },
+    "tests/cpu/test_scaling_compare19618.py": {
+      "sha256": "38238c9d44972ea0b2f7e12dacde86f1f5ae15db814d355e7e4f526df913cc9f",
+      "bytes": 17626
+    },
+    "tests/cpu/test_scaling_derive19618.py": {
+      "sha256": "90324183afa1de98de4a80eadd3b419eea93ac2d228ed420b70dddff349910b6",
+      "bytes": 7621
+    },
+    "tests/cpu/test_scaling_evaluation19618.py": {
+      "sha256": "b3c40903fe04360460b63fa3c52775431ccf855d80fffdd1a0200807e4a167ed",
+      "bytes": 26488
+    },
+    "tests/cpu/test_scaling_evaluation19618_launcher.py": {
+      "sha256": "43480d448ba4d278e21028ca40462608d850672ffaef113979ab6f3e7073aa27",
+      "bytes": 9877
+    },
+    "tests/cpu/test_scaling_gates19618.py": {
+      "sha256": "e5426d100ab89cf184cbb6a01e5029c14b6cf28fa859748188c30672c16f599d",
+      "bytes": 43803
+    },
+    "tests/cpu/test_scaling_plans19618.py": {
+      "sha256": "17bcf118924786599adb9e837b63a777fff0a80d0e69561421a6021830fddb46",
+      "bytes": 59317
+    },
+    "tests/cpu/test_scaling_pose_readout19618.py": {
+      "sha256": "c499fd4d01c9428cd85096e41aba29b1ab80239f75b98b32c027c4429bc90491",
+      "bytes": 17636
+    },
+    "tests/cpu/test_scaling_probe19618.py": {
+      "sha256": "6eb0bc7b8beccf9de3e7c98f6f057ac823fdf8f248e6072ffb93ae997cd99c7d",
+      "bytes": 19204
+    },
+    "tests/cpu/test_scaling_readers19618_launcher.py": {
+      "sha256": "68e11f4286ca58abdd675cf83480e333d9a89a8b49d69363794fa9cbc0086098",
+      "bytes": 22903
+    },
+    "tests/cpu/test_scaling_readers19618_limits.py": {
+      "sha256": "6f20f34684f52b6124e1c844990ad64a21edb06157bc23054341e7f81e2e6f6d",
+      "bytes": 11627
+    },
+    "tests/cpu/test_scaling_reading19618.py": {
+      "sha256": "beabecbdbd7e5e94e883cdca7b81e213b7f6ff74229169e802818518f4a78aea",
+      "bytes": 7413
+    }
+  },
+  "unchanged": {
+    "src": "byte-identical to training deploy73524b6",
+    "scripts/scaling_continue.py": "byte-identical to training deploy73524b6",
+    "scripts/slurm/scaling_continue.sbatch": "byte-identical to training deploy73524b6",
+    "scripts/submit_job.py": "byte-identical to training deploy73524b6"
+  },
+  "no_cluster_access": true,
+  "no_deploy_or_submissions": true
+}

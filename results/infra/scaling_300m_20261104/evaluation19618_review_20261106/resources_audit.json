@@ -1,0 +1,233 @@
+{
+  "commit": "f6dc8ec0fb33ae1bcf6d34018194c2e9c71f7cb5",
+  "read_only_local": true,
+  "checks": [
+    {
+      "name": "checkout requested exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "checkout margin exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "checkout within stage cap",
+      "pass": true
+    },
+    {
+      "name": "pose-validate requested exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "pose-validate margin exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "pose-validate within stage cap",
+      "pass": true
+    },
+    {
+      "name": "pose-benchmark requested exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "pose-benchmark margin exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "pose-benchmark within stage cap",
+      "pass": true
+    },
+    {
+      "name": "probe-benchmark requested exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "probe-benchmark margin exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "probe-benchmark within stage cap",
+      "pass": true
+    },
+    {
+      "name": "pose-ridge requested exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "pose-ridge margin exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "pose-ridge within stage cap",
+      "pass": true
+    },
+    {
+      "name": "probe-fit requested exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "probe-fit margin exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "probe-fit within stage cap",
+      "pass": true
+    },
+    {
+      "name": "probe-aggregate requested exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "probe-aggregate margin exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "probe-aggregate within stage cap",
+      "pass": true
+    },
+    {
+      "name": "compare requested exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "compare margin exactly reproduced",
+      "pass": true
+    },
+    {
+      "name": "compare within stage cap",
+      "pass": true
+    },
+    {
+      "name": "worst total345+1/6",
+      "pass": true
+    },
+    {
+      "name": "worst matches freeze",
+      "pass": true
+    },
+    {
+      "name": "reserve29/6",
+      "pass": true
+    },
+    {
+      "name": "computed total agrees",
+      "pass": true
+    },
+    {
+      "name": "computed flags true",
+      "pass": true
+    },
+    {
+      "name": "three extractions",
+      "pass": true
+    },
+    {
+      "name": "only300M",
+      "pass": true
+    },
+    {
+      "name": "extract exact resource tuples",
+      "pass": true
+    },
+    {
+      "name": "extract GPU7",
+      "pass": true
+    },
+    {
+      "name": "extract CPU56",
+      "pass": true
+    },
+    {
+      "name": "extract marginGPU0.15",
+      "pass": true
+    },
+    {
+      "name": "extract marginCPU1.2",
+      "pass": true
+    },
+    {
+      "name": "dispatcher benchmark table matchesfreeze",
+      "pass": true
+    },
+    {
+      "name": "dispatcher exact login08",
+      "pass": true
+    },
+    {
+      "name": "dispatcher fit15cap",
+      "pass": true
+    },
+    {
+      "name": "dispatcher walltime3h",
+      "pass": true
+    },
+    {
+      "name": "dispatcher fitCPU240",
+      "pass": true
+    },
+    {
+      "name": "dispatcher30GiB",
+      "pass": true
+    },
+    {
+      "name": "dispatcher exact time",
+      "pass": true
+    },
+    {
+      "name": "rawaccount SHA",
+      "pass": true
+    },
+    {
+      "name": "checkout success",
+      "pass": true
+    },
+    {
+      "name": "checkout allocation",
+      "pass": true
+    },
+    {
+      "name": "checkout measuredCPU0.038333",
+      "pass": true
+    }
+  ],
+  "count": 47,
+  "independent_costs": {
+    "checkout": {
+      "requested": 0.5,
+      "with_scheduler_margin": 0.8
+    },
+    "pose-validate": {
+      "requested": 1.0,
+      "with_scheduler_margin": 1.1
+    },
+    "pose-benchmark": {
+      "requested": 4.0,
+      "with_scheduler_margin": 5.2
+    },
+    "probe-benchmark": {
+      "requested": 70.66666666666667,
+      "with_scheduler_margin": 76.66666666666667
+    },
+    "pose-ridge": {
+      "requested": 8.0,
+      "with_scheduler_margin": 8.4
+    },
+    "probe-fit": {
+      "requested": 240.0,
+      "with_scheduler_margin": 246.0
+    },
+    "probe-aggregate": {
+      "requested": 2.0,
+      "with_scheduler_margin": 2.6
+    },
+    "compare": {
+      "requested": 4.0,
+      "with_scheduler_margin": 4.4
+    }
+  },
+  "worst_cpu_only_core_hours": 345.1666666666667,
+  "reserve_cpu_only_core_hours": 4.833333333333333,
+  "default_budget_table_total": 343.1666666666667,
+  "default_is10shard_scenario_not_max15shard": true
+}
