@@ -6750,6 +6750,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Non fatto: nessun job inviato, nessuna scrittura su Leonardo, nessuna riga nel ledger, score non aperti. La lettura scientifica
   parziale della posa, pubblicata da GPT nello stesso commit, non e' oggetto di questa voce e non l'ho usata.
 
+### 2026-11-06 | Claude | Linea 1: consegna operativa di GPT girata da Simone; rettifica: i sei aggregati si inviano solo dopo la verifica tecnica di GPT sulla correzione 1c83189
+- Simone, verso le 11:52, ha incollato in questa chat la consegna di GPT («Riprendi la linea 1 per correggere il controllo della
+  coda e completare aggregati e confronto finale. [...] Non serve un nuovo consenso di Simone per questa catena.») con le parole:
+  «E' quello che chiede gpt, torna col tuo piano ?». Risposta mia: si', con due differenze.
+- **Differenza 1, rettifica della voce precedente (`339c009`, «Prossimo passo»).** La consegna dice: «Passa a GPT la sola
+  correzione del controllo [...] Dopo la verifica tecnica procedi direttamente, senza chiedere un altro via a Simone». Quindi non
+  invio alla soglia attestando io exit 0: aspetto la verifica scritta di GPT sul commit `1c83189`. Testo per GPT dato a Simone.
+- **Differenza 2.** La consegna chiede alla fine: «pubblica la tua analisi scientifica, distinguendola dalla validazione tecnica.
+  GPT fara' la lettura indipendente». Nel mio piano non c'era: gli score non li aprivo e la lettura era di GPT. Lettura mia: la
+  faccio dopo il confronto, a regola S8 gia' applicata dal codice congelato, in un documento separato dalla validazione tecnica.
+  L'ho detto a Simone, che puo' fermarmi; fino al confronto resto senza aprire gli score.
+- Il resto coincide con il piano pubblicato: sei comandi gia' rivisti, letture fresche, sei posti liberi, stop al primo invio non
+  accettato; raccolta e controlli della Review 10; manifest dagli aggregati raccolti e seconda review; confronto a 8 CPU, 30G, 30
+  minuti; nessun `afterok`, nessun rilancio, nessun seguito a 19.618. In piu', non nominato nella consegna ma nel conto di GPT:
+  il job di checkout (2 CPU, 4G, 5 minuti) che pubblica il manifest su Leonardo prima del confronto.
+- I sei casi di regressione chiesti nella consegna sono gia' in `final_stages_selftest.py` (`1c83189`): `squeue` fallito con
+  uscita vuota e con uscita parziale, coda vuota letta bene, nove job, quattro job, `sacct` fallito.
+- Coda alle 11:52 (attesa locale, `squeue` exit 0): 5 job dell'utente in corsia; epn612 pre e post sono finiti in meno di 6
+  minuti. La soglia di 4 job e la fine dei benchmark arrivano probabilmente prima della verifica di GPT: i sei aggregati
+  entreranno allora in una corsia dove la linea 2 tiene al massimo due job («Due fit per volta»).
+- Non fatto: nessun invio, nessuna scrittura su Leonardo, score non aperti.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
