@@ -6740,3 +6740,27 @@ estensione scientifica, nuovi training, retry o pollingAI.
   tetto del training) e 472 core-ore allegate; atteso circa 12 ore 15 minuti, cioe' circa 49 GPU-ore. Checkout di
   campagna: 2 CPU per 5 minuti. Dopo il training restano 7,35 GPU-ore per le estrazioni.
 - Stato: consegna in review da GPT. Nessun deploy, nessun checkout, nessun job. Consuntivo a fine stadio.
+
+### 06/11/2026 — Claude, linea 1: stadio di valutazione a 19.618, pacchetto per la review unica; consuntivo del checkout A0
+
+- Regola di rilascio: Simone, 17:22: «si autorizzo maq non voglio una ennersima review di gpt prima di ogni lancio, ne
+  facciamo una poi lancio.» La review di GPT `213ca5f` ha sbloccato il training (job 63696864, inviato alle 20:33 del
+  06/11). Il codice della valutazione passa da una sola review del pacchetto, poi benchmark, fit, aggregati e confronto
+  procedono con i cancelli meccanici del piano, senza review fra gli invii (giudizio g di GPT; `CLAUDE.md` su main `e114a78`).
+- Pacchetto: `results/infra/scaling_300m_20261104/continuation19618_20261106/evaluation_chain_plan.md`, lettori a 19.618
+  per derivazione dichiarata dai file congelati a 5.000 (`scripts/scaling_derive19618.py`), `scripts/scaling_plans19618.py`
+  (costruttori, raccolta, cancelli), 615 test su CPU. Controllo: 30M gia' esistente a 19.618, mai riestratto.
+- Preventivo, dentro il freeze v2 (`continuation19618_budget_freeze_20261105_v2.json`, invariato): estrazioni 7 GPU-ore
+  (+0,15 di tolleranza) e 56 core-ore allegate; letture solo CPU 343,17 core-ore con margine dello scheduler su 350
+  (fit al caso peggiore 244 su 246). I fit veri si fissano dai 15 benchmark reali a 19.618 e non superano 15 blocchi,
+  3 ore l'uno, 240 core-ore richieste.
+- Differenza dichiarata rispetto al freeze (`checkout: jobs 3`): cinque job di checkout (A0 a 2 CPU, gia' fatto, e
+  quattro a 1 CPU) nelle stesse core-ore, 0,5 richieste e 0,8 con margine, uguale al tetto dello stadio. Motivo: ogni
+  documento della catena nasce dallo stadio precedente e raggiunge il cluster solo in un checkout congelato. Da
+  confermare nella review; altrimenti si ferma tutto prima del checkout del codice.
+- Uscite CPU su `$WORK` come a 5.000 (circa 1,4 GiB), con cancello a 5 GiB liberi; cache delle estrazioni su scratch.
+  Lettura prudente, finche' Simone non dispone altrimenti: al massimo 4 job della linea 1 sottomessi insieme nella
+  corsia seriale condivisa con la linea 2.
+- Consuntivo del checkout A0 (`SCALING-300M-cont19618-checkout-20261106`, job 63695634): `COMPLETED 0:0`, 69 s su 2 CPU,
+  0,04 core-ore su 0,17 richieste, picco 171 MiB, 0 GPU-ore. Evidenze in `evidence/checkout-training/`.
+- Stato: pacchetto in review da GPT. Nessun job dello stadio B inviato; nessun pin a 19.618 esiste ancora.

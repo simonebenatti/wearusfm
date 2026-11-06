@@ -1,0 +1,21 @@
+{
+  "protocol": "scaling-reading-19618-20261106-v1",
+  "checkpoint_step": 19618,
+  "candidate": "T100-G-300M",
+  "control": "T100-G-30M",
+  "bootstrap": {
+    "unit": "subject",
+    "replicates": 2000,
+    "seed": 20261102
+  },
+  "epn_margin_pp": 0.0,
+  "pose_practical_point_reduction": 0.02,
+  "p1_p2_noninferiority_margin_pp": 1.0,
+  "historical_pair_is_noise_floor": false,
+  "definitions_inherited_from": "scaling-reading-5000-20261104-v1",
+  "s8_operational_table_reapplied": false,
+  "recommendation_emitted": false,
+  "checkpoint_selection_between_doses": false,
+  "further_training_authorized": false,
+  "pretraining_seeds": 1
+}
