@@ -6568,6 +6568,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   di posta; i job rimasti sono delle famiglie FT15, FT, SCALING, LOGSQ, CONSOL, LONG, PILOT e TOKENIZER; copia del ledger identica al
   sorgente; seconda passata dello script senza differenze. Nessun dato da wearable. Nessun job lanciato, nessuna scrittura su Leonardo.
 
+### 2026-11-06 | Claude | Linea 2, valutazione lunga: inviati i primi dieci benchmark alla fine del fit 14 dello scaling (10:00); sei da inviare
+- Condizione: il fit 14 dello scaling (63635524) e' `COMPLETED 0:0` alle 09:56:12 e i quattordici fit sono tutti `COMPLETED 0:0`
+  (`sacct` delle 09:58:44). Coda seriale dell'utente vuota alle 09:57:34, alle 09:57:55 e alle 10:00:25. Decisioni applicate: Simone a
+  me «Aspettano lo scaling» (08:17) e «Sì, fino a 10» (00:50); voce del coordinamento 1e18f79 («Sì, parte subito»).
+- Letture prima dell'invio (09:58:44, `~/wearusfm_local/logs/line2_long_presubmit_bench_20261106_0959.txt`): `$WORK` 1.041.724.620 kB
+  su 1.073.741.824, cioe' 30,53 GiB liberi contro 10,724 richiesti; radice delle uscite su SCRATCH scrivibile, cartella `benchmarks`
+  assente; checkout dei benchmark su HEAD `166fb86`, pulito, con piano, piano di lancio, manifest delle cache e launcher uguali al
+  ramo per sha256; nessun `LONG-BENCH` nel ledger ne' nello scheduler.
+- Invii fra le 10:00:25 e le 10:00:40, uno alla volta dal submitter comune, tutti `sottomesso` al primo tentativo, senza dipendenze:
+  ninapro_db2 pre 63650913, post 63650917, pool 63650922; ninapro_db3 pre 63650925, post 63650928, pool 63650932; ninapro_db6 pre
+  63650934, post 63650937, pool 63650938; epn612 pre 63650942. Ogni job: `lrd_all_serial`, 8 CPU, 30 GiB, limite 30 minuti,
+  `--no-requeue`, 0 GPU-ore, al massimo 4 core-ore.
+- Stato alle 10:03:53: 63650913 in corsa dalle 10:00:27, nel log `allocation_accepted` con 8 CPU, 30 GiB e 1.800 secondi; gli altri
+  nove in attesa col motivo `QOSMaxCpuPerUserLimit` (8 CPU per utente: un benchmark alla volta).
+- Ramo di esecuzione: commit documentale `2df9aff038cced69d425d3c3fd7d606fe28ea2d1`, SHA remoto verificato. Cambiano solo lo SHA di
+  fase e dieci ID in `launch_plan.json` e undici stati del ledger in `execution/submission/`. Stessi dieci file di test: 251 superati
+  e 1 fallito, lo stesso di prima.
+- Da inviare: epn612 post e pool, uci_emg pre, post e pool, posa. Partono man mano che si liberano posti, senza superare 10 job
+  dell'utente in coda seriale, ogni volta dopo aver riletto spazio e coda. Sorveglianza di sola lettura
+  `~/wearusfm_local/line2/watch_phase.py`, una lettura ogni cinque minuti: mi richiama al primo esito diverso da `COMPLETED 0:0`
+  (la fase si ferma, nessun rilancio) e comunque quando i posti liberi sono sei.
+- EPN15 alle 09:58:44: gli otto C1 in corsa da 10 h 05 min - 10 h 21 min, limite 16 h.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9130,3 +9153,11 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 ### 2026-11-06 | Claude | Linea 2: caso non coperto dalla decisione sulla coda seriale
 - Se la catena dello scaling si ferma su un fit non riuscito, i fit successivi restano in coda senza poter partire e la coda non si
   svuota. In quel caso non invio i benchmark e chiedo al coordinamento come procedere.
+
+### 2026-11-06 | Claude | Linea 2: coda seriale piena dalle 10:00; chiuso il caso della catena dello scaling ferma
+- Per GPT scaling e per il coordinamento: dalle 10:00 l'utente ha 10 job su 10 in `lrd_all_serial`, tutti benchmark della linea 2.
+  Un invio adesso viene rifiutato dalla QoS. Si libera un posto a ogni benchmark concluso (limite 30 minuti l'uno, durata reale non
+  ancora misurata) e io lo riuso per i sei benchmark restanti, come deciso da Simone («Sì, fino a 10», «Sì, parte subito»): la coda
+  resta a 9-10 job finche' i sedici non sono tutti dentro, poi scende di uno a ogni benchmark concluso.
+- Chiuso il caso aperto della mia voce precedente: la catena dello scaling non si e' fermata, i quattordici fit sono `COMPLETED 0:0`.
+- Nessuna azione mia sui job delle altre linee.
