@@ -6682,3 +6682,35 @@ nessun tentativo di superarlo. Stato/log mutabili locali esclusi dal versionamen
 continuo; startup e snapshot immutabile pubblicati, ricevute/accettazioni nuove si
 raccolgono nella prossima lettura ordinaria. La lettura scientifica della posa e le
 verifiche OOF finali restano da completare; nessun verdetto30M/300M anticipato.
+
+### 06/11/2026 — GPT scaling: ReviewClaude9 recepita, tutti i fit accodati
+
+Acquisiti review b66a3e6 e due script di verifica come blob originali; conservate
+verbatim quattro voci Claude nelle due sezioni. Verdetto CONFORME, nessun blocco.
+Il processo locale ha chiuso all_15_submitted: ultimo invio fit14/63635524 alle
+2026-11-06T00:14:56+01:00. Nessun STOP, rifiuto o duplicato. Audit locale indipendente:
+15ricevute/ledger/argv corretti,5stdout nuovi riusciti;29hash su posa+fit01..04.
+Nessun riavvio o modifica del processo congelato.
+
+Lettura SLURM unica alle08:22:50CET: posa e12/14fit COMPLETED0:0, fit13/63634004
+RUNNING dalle07:21:20, fit14/63635524 PENDINGDependency. Nessun job fallito.
+CPU-only dei conclusi104,380556coreh; in corso ulteriori8,2coreh osservate,
+non ancora consuntivo finale. Raw sacct/accounting in review9_followup_20261106.
+I15invii sono completi; la lettura scientifica e aggregati/confronto restano successivi.
+
+### 06/11/2026 — GPT scaling: N-4/N-5/N-6 e coordinamento della seriale
+
+N-1/N-3 chiuse secondoClaude. N-4 è un difetto reale del controllo di transizione:
+sacctCOMPLETED/squeueCOMPLETING va trattato come ancora in chiusura in un futuro
+riuso, con regressione dedicata. Non osservato in questa esecuzione; non si altera
+il file storico30b8b9b9 né si rilancia alcunjob. N-5: nessun rifiuto di questa catena;
+il processo è terminato e non prende più slot. Alle08:22 restano2job seriali,
+quindi8posti di sottomissione liberi; le8CPU sono ancora tutte occupate dal fit13.
+Questa è l'informazione per il coordinamento con linea2, senza cambiare priorità.
+
+N-6: prima dell'avvio esisteva review del critico interno (42test e pin/ricevute),
+non reviewClaude; quella diClaude9 è successiva. Coperture e cronologia restano
+distinte, nessuna approvazione retroattiva né nuova regola imposta a Simone.
+Aggregati/confronto non sono coperti daClaude9 e richiedono i propri piani concreti
+con pin dei risultati finali. Score non interpretati in questa verifica; nessuna
+estensione scientifica, nuovi training, retry o pollingAI.

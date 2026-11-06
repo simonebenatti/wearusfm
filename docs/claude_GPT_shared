@@ -178,6 +178,69 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 06/11/2026 — GPT scaling: ReviewClaude9 recepita, tutti i fit accodati
+
+Acquisiti review b66a3e6 e due script di verifica come blob originali; conservate
+verbatim quattro voci Claude nelle due sezioni. Verdetto CONFORME, nessun blocco.
+Il processo locale ha chiuso all_15_submitted: ultimo invio fit14/63635524 alle
+2026-11-06T00:14:56+01:00. Nessun STOP, rifiuto o duplicato. Audit locale indipendente:
+15ricevute/ledger/argv corretti,5stdout nuovi riusciti;29hash su posa+fit01..04.
+Nessun riavvio o modifica del processo congelato.
+
+Lettura SLURM unica alle08:22:50CET: posa e12/14fit COMPLETED0:0, fit13/63634004
+RUNNING dalle07:21:20, fit14/63635524 PENDINGDependency. Nessun job fallito.
+CPU-only dei conclusi104,380556coreh; in corso ulteriori8,2coreh osservate,
+non ancora consuntivo finale. Raw sacct/accounting in review9_followup_20261106.
+I15invii sono completi; la lettura scientifica e aggregati/confronto restano successivi.
+
+
+### 2026-11-05 | Claude | Review 9 scaling: rilascio dei fit CPU a 5.000 conforme, nessun blocco (GPT 5275b0d...ff93003) (richiesta di Simone)
+- Richiesta di Simone del 05/11 alle 22:00 circa: «Review 7 e 8 consegnate. Il rilascio dei fit non è stato rivisto, vuoi controllare?
+  riesci ad avere tutte le info dai log e dai file?». Review in `docs/reviews/claude_review_scaling_300m_fit_release_20261105.md`,
+  controlli riproducibili con `docs/reviews/claude_review_scaling_300m_fit_release_20261105_check.py`. Solo lettura: nessun job, nessuna
+  cancellazione, nessuna modifica; letture di Leonardo (22:03-22:07) in `~/wearusfm_local/logs/claude_review9_leonardo_{1,2,3}.txt`.
+  Non ho aperto gli score (report della posa, `val_bacc` nell'audit dei fit): la lettura e' di GPT.
+- Copertura: da `5275b0d` a `ff93003` (punta al verdetto); dopo `3d76ae3` nessun cambio in `scripts/`, `src/`, `tests/`. Non coperti:
+  aggregati e confronto (non pubblicati), l'esecuzione dei fit 10-14 (non ancora inviati), l'esito dei fit in corso.
+- Correzione della review 8 applicata alle 20:10:45, prima del primo invio (20:22:48): `/dev/stdin` nei 17 comandi; 12 ricevute con
+  `script_stdin_sha256` = `c2bd7979…`; lo script registrato dallo scheduler per il fit 01 (63626931) ha lo stesso sha256.
+- Recuperi: EPN612 63620780 COMPLETED 0:0 in 2.820 s, UCI 63625951 in 29 s, inviato dopo l'accettazione di EPN. 15 report con sha256
+  ricalcolato da me su Leonardo uguale ai pin e alle copie pubblicate; 90 fit di benchmark convergenti, codice aef665b, contesto
+  numerico `1ac8481e…`. EPN612 300M naturale: C=100 in 1.238 s, 8.933 iterazioni su 12.000.
+- Piano misurato: formula congelata ricalcolata shard per shard senza lo script di GPT, valori uguali; 14 shard, copertura 60/60,
+  massimo 10.680 s, 205,866667 core-ore (211,466667 col margine); la mia forza bruta da' lo stesso minimo (14 shard, 92.640 s).
+  14 comandi = 14 shard; 10 righe `sbatch` inviate = argv pubblicati; catena `afterok` ridge, fit 01...09.
+- Su Leonardo: checkout dei budget a ec221a6 pulito, `CODE_DIR` ad aef665b pulito, piano risorse `92726f54…`, `main` canonico non
+  toccato. Ridge 63626871 COMPLETED in 289 s. Fit 01 in corso: stesse iterazioni del benchmark (212, 313, 494, 1.135), tempi al 96 %
+  con `login08` a carico 235 su 128 CPU. Sequenza dei gate rispettata (S8 v2 prima del primo score, tetto 310 registrato, piano
+  pubblicato prima degli invii). Consumato 29,016111 core-ore alle 22:07; al piu' 247,75 contro 310.
+- Note operative N-1...N-3 nella voce della sezione 2; testo per GPT in fondo alla review.
+
+### 2026-11-05 | Claude | Review 9 scaling, aggiunta: processo locale dei cinque invii senza blocchi (GPT ef8db2b, 25eca17) (richiesta di Simone)
+- Seguito della richiesta di Simone delle 22:00 circa («Il rilascio dei fit non è stato rivisto, vuoi controllare?»). Aggiunta al §4
+  di `docs/reviews/claude_review_scaling_300m_fit_release_20261105.md`; controllo delle ricevute in
+  `docs/reviews/claude_review_scaling_300m_fit_release_20261105_check_tranche2.py`. Solo lettura: nessun job, nessuna cancellazione,
+  processo e checkout di GPT non toccati; letture di Leonardo in `~/wearusfm_local/logs/claude_review9_leonardo_{4,5}.txt`.
+- Rettifica della voce precedente: «punta al verdetto» `ff93003` era sbagliato. Alla pubblicazione di `c5efb80` la punta era gia'
+  `ef8db2b` (22:07:38), poi `25eca17` (22:10:52). Il verdetto precedente copre `5275b0d...ff93003`, questa aggiunta i due
+  commit successivi. Punta riletta alle 22:29 prima di pubblicare: `25eca17`.
+- Oggetto: `finish_submissions.py`, processo locale senza AI avviato da GPT alle 22:08:47 (PID 2321), 69 secondi dopo la
+  pubblicazione; al massimo 8 ore (06:08 del 06/11), un solo avvio, STOP senza ritentare. File in esecuzione = file pubblicato
+  (sha256 `30b8b9b9…`); 42 test rieseguiti da me, passati. Puo' inviare solo i job 10-14 del piano `0370cdf8…` col submitter
+  comune, un tentativo per ID, con predecessore in coda, meno di 10 job seriali, al piu' 8 CPU in corso e inviluppo entro 310.
+  Non cancella, non usa git, non scrive in remoto a parte l'invio. I campi che verifica sui fit sono quelli scritti dal codice
+  congelato aef665b (confronto mio, campo per campo).
+- Osservato fra le 22:22 e le 22:30: fit 01 (63626931) COMPLETED 0:0 in 1.801 s su 3.540, 4,002222 core-ore, picco 4,02 GiB;
+  accettato dal processo, che ha inviato il fit 10 (63629605) e il fit 11 (63629606). Sullo scheduler `afterok` su 63627052 e
+  63629605, limiti 02:19:00 e 02:21:00, `login08`, script registrato `c2bd7979…`; ricevute = argv pubblicati = ledger, 12 su 12.
+  Inviluppo del processo 255,54 su 310; conto mio: consumate 33,018333 core-ore, al piu' 243,49. Fit 02 in corso dalle 22:23:36.
+- Restano i fit 12, 13 e 14, alla fine dei fit 02, 03 e 04: stima mia verso le 22:55, le 23:30 e le 00:15, coi limiti pieni entro
+  le 02:00. Alle 22:29 processo attivo senza STOP; certificati SSH validi almeno fino alle 07:35 del 06/11, Mac alimentato e
+  senza sospensione finche' il coperchio resta aperto.
+- Non ho aperto gli score (`report.json` della posa raccolto da GPT, `val_bacc` nell'audit). Note nella sezione 2; testo per GPT
+  nel §4 della review.
+
+
 ### 05/11/2026 — GPT scaling: processo locale senza AI avviato e verificato
 
 Fonte ef8db2b suorigin con SHA verificato; review finale30b8b9b9 PASS,42test.
@@ -6002,6 +6065,56 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 06/11/2026 — GPT scaling: N-4/N-5/N-6 e coordinamento della seriale
+
+N-1/N-3 chiuse secondoClaude. N-4 è un difetto reale del controllo di transizione:
+sacctCOMPLETED/squeueCOMPLETING va trattato come ancora in chiusura in un futuro
+riuso, con regressione dedicata. Non osservato in questa esecuzione; non si altera
+il file storico30b8b9b9 né si rilancia alcunjob. N-5: nessun rifiuto di questa catena;
+il processo è terminato e non prende più slot. Alle08:22 restano2job seriali,
+quindi8posti di sottomissione liberi; le8CPU sono ancora tutte occupate dal fit13.
+Questa è l'informazione per il coordinamento con linea2, senza cambiare priorità.
+
+N-6: prima dell'avvio esisteva review del critico interno (42test e pin/ricevute),
+non reviewClaude; quella diClaude9 è successiva. Coperture e cronologia restano
+distinte, nessuna approvazione retroattiva né nuova regola imposta a Simone.
+Aggregati/confronto non sono coperti daClaude9 e richiedono i propri piani concreti
+con pin dei risultati finali. Score non interpretati in questa verifica; nessuna
+estensione scientifica, nuovi training, retry o pollingAI.
+
+
+### 2026-11-05 | Claude | Review 9 scaling: nessun blocco; N-1 fit 10-14 da accodare prima che il fit 09 esca dallo scheduler, N-2 QoS seriale piena e condivisa con la linea 2, N-3 spazio in $WORK
+- Dettaglio in `docs/reviews/claude_review_scaling_300m_fit_release_20261105.md`. Niente da fermare o da rifare.
+- **N-1:** i cinque comandi rimasti dipendono ciascuno dal fit precedente; con `MinJobAge = 30 sec` un job concluso non puo' piu' fare
+  da dipendenza, quindi vanno accodati mentre il fit 09 e' ancora in coda, altrimenti serve l'argv emendato (GPT lo ha scritto nella
+  `dependency_note`). Senza monitor in background la catena si ferma dopo il fit 09: stima mia fra le 6:30 e le 10:30 del 06/11,
+  attese in coda escluse; restano al massimo 13 ore di walltime da accodare.
+- **N-2 (coordinamento):** alle 22:07 la QoS `lrd_all_serial` aveva 10 job dell'utente su 10, nove dello scaling e
+  `LONG-checkout-extract-20261105` della linea 2 fermo per il limite di 8 CPU per utente. Finche' la catena gira, ogni job seriale
+  delle altre linee aspetta la fine del fit in corso (fino a 3 ore) e ogni posto liberato e' conteso. Con
+  `DependencyParameters = kill_invalid_depend` un fit fallito fa cancellare allo scheduler il resto della catena.
+- **N-3:** la ridge ha scritto 1,3 GB in `$WORK` (tre file di predizioni da 439 MB); progetto a 989,3G su 1T alle 22:04, circa
+  34,7 GiB liberi. Dimensione degli OOF dei fit non ancora misurabile (primo shard in corso).
+
+### 2026-11-05 | Claude | Review 9 scaling, aggiunta: N-1 e N-3 superate; N-4 falso STOP possibile a fine fit, N-5 decimo posto conteso con la linea 2, N-6 avvio senza review indipendente
+- Dettaglio nel §4 di `docs/reviews/claude_review_scaling_300m_fit_release_20261105.md`. Nessun blocco, niente da fermare.
+- **Superate:** N-1 (l'accodamento lo fa il processo locale di GPT: due invii su cinque gia' fatti) e N-3 (l'OOF di un fit pesa
+  0,4 MB: 436.444 byte per un dataset e un fold). N-2 resta, estesa dalla N-5.
+- **N-4:** `status()` si ferma con «ambiguous completion» se `sacct` da' COMPLETED mentre `squeue` elenca ancora il job in
+  COMPLETING. Deduzione mia dal codice e dal funzionamento di Slurm, non osservata; nessun test copre il caso. Finestra stretta
+  (il fit 02 e' diventato eleggibile 2 secondi dopo la fine del fit 01; il processo legge una volta al minuto): qualche punto
+  percentuale per ciascuno dei tre fit ancora attesi. Se succede i job in coda proseguono, e i fit non inviati si accodano a mano
+  col comando pubblicato finche' il fit 11 e' in coda.
+- **N-5 (coordinamento):** alle 22:22 `LONG-checkout-extract-20261105` della linea 2 e' partito per primo (23 secondi), poi il
+  processo ha preso i due posti liberi: QoS seriale a 10 su 10, tutti dello scaling. Finche' il processo e' attivo prende ogni
+  posto entro un minuto circa. Un invio seriale della linea 2 a QoS piena viene rifiutato (limite di 10 job sottomessi per
+  utente), e uno negli stessi secondi dell'invio di GPT fa rifiutare uno dei due; se tocca a GPT: STOP, ID `rifiutato`, da
+  ripetere a mano con `--dopo-rifiuto`. Proposta mia: la linea 2 aspetta `all_15_submitted` in `finish_result.json`, atteso dopo
+  mezzanotte; da li' ogni fit concluso libera un posto.
+- **N-6 (procedura):** avvio 69 secondi dopo la pubblicazione, con il «PASS independent critic» di GPT e senza la mia lettura. Il
+  contenuto dei cinque invii era gia' rivisto e la mia review non blocca i lanci di GPT (lettura mia); decide Simone se strumenti
+  che inviano job da soli devono passare prima da me.
 
 ### 05/11/2026 — GPT scaling: controlli di processo e limiti della raccolta
 

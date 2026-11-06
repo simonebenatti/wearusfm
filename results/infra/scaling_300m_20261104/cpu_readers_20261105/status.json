@@ -15,7 +15,7 @@
   "cpu_total_hard_cap": 310,
   "stop_on_first_failure": true,
   "background_monitor": false,
-  "next": "Non-AI local process completes only five remaining fit submissions after accepting completed evidence/free serial slots. No LLM polling. Later normal review collects final probe outputs, aggregates and compares.",
+  "next": "Collect and validate all14completed shards; publish pinned aggregate/compare plans before their submissions. No new training or continuation19618. No LLM/background polling.",
   "stage_jobs": [
     {
       "id": "SCALING-pose-validate-20261105",
@@ -78,8 +78,8 @@
   "pose_ridge_estimated_seconds": 660,
   "pose_ridge_cap_seconds": 3600,
   "pose_ridge_live_runtime_gate_pending": true,
-  "cpu_actual_core_hours_completed_so_far": 29.016111111111112,
-  "last_checked_at": "2026-11-05T21:09:53.621141Z",
+  "cpu_actual_core_hours_completed_so_far": 104.38055555555555,
+  "last_checked_at": "2026-11-06T08:22:50.089545",
   "classification_benchmark_states": {
     "63593262": "COMPLETED0:0",
     "63593508": "TIMEOUT (parent ExitCode0:0; batch CANCELLED0:15)",
@@ -87,18 +87,18 @@
   },
   "pose_budget_prepared": true,
   "s8_budget_frozen_file": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json",
-  "status": "LOCAL_NON_AI_RUNNER_ACTIVE_FOR_FIVE_REMAINING_SUBMISSIONS",
+  "status": "ALL_FITS_SUBMITTED_12_OF14_CLASSIFICATION_COMPLETE",
   "classification_benchmark_reports_complete": 15,
   "classification_benchmark_reports_expected": 15,
   "completed_benchmark_fits_converged": 95,
   "known_fit_budget_lower_bound_core_hours": 148.1348685548791,
   "fit_cap_core_hours": 240,
-  "active_jobs_in_this_cpu_chain": 9,
+  "active_jobs_in_this_cpu_chain": 2,
   "pose_ridge_blocked_by_chain_stop": false,
   "retry_submitted": false,
   "claude_review_requested_by_user": true,
-  "latest_claude_review_commit": "4e6542fa785599af4be879918a50de8abe76404e",
-  "latest_claude_review_scope": "Review8 approves dispatcher, reuse,310envelope and S8v2; mandatory /dev/stdin argv correction applied; no additional review required.",
+  "latest_claude_review_commit": "b66a3e6f59441e0e2d7d90d7ecedd179bd41a1a1",
+  "latest_claude_review_scope": "Review9 confirms release through25eca17; final readers/aggregates/comparison not covered",
   "simone_310_core_hour_decision_registered": true,
   "claude_recovery_dispatcher_approval_received": true,
   "recovery_prepared_not_submitted": false,
@@ -161,9 +161,9 @@
   "fit_metadata_checkout_job": 63626623,
   "fit_metadata_checkout_accepted": true,
   "pose_ridge_submitted": true,
-  "probe_fit_shards_submitted": 9,
+  "probe_fit_shards_submitted": 14,
   "probe_fit_shards_total": 14,
-  "probe_fit_shards_remaining": 5,
+  "probe_fit_shards_remaining": 0,
   "fit_jobs": [
     {
       "id": "SCALING-pose-ridge-20261105",
@@ -251,5 +251,8 @@
   "local_runner_pid": 2321,
   "local_runner_started_utc": "2026-11-05T21:08:47.402380+00:00",
   "local_runner_deadline_seconds": 28800,
-  "local_bounded_submission_process": true
+  "local_bounded_submission_process": false,
+  "probe_fit_shards_completed_scheduler": 12,
+  "local_runner_result": "all_15_submitted",
+  "local_runner_completed": true
 }
