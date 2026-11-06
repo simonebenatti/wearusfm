@@ -6797,6 +6797,17 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   in coda. I sei aggregati partono dopo la verifica di GPT; la linea 2 nel frattempo tiene al massimo due job.
 - Non fatto: nessun invio, nessuna scrittura su Leonardo, nessuna riga nel ledger, score non aperti.
 
+### 2026-11-06 | Claude | Linea 1: decisione di Simone, anche Claude pubblica un'analisi scientifica finale separata dalla validazione tecnica («Sì, anche la tua»)
+- Simone, verso le 12:04, alla mia domanda «Vuoi anche la mia analisi scientifica finale, come chiede GPT?»: «Sì, anche la tua».
+- Cosa cambia (lettura mia): dopo il confronto, a regola S8 gia' applicata dal comparatore congelato, pubblico sul mio ramo una
+  mia analisi scientifica in un documento separato dalla validazione tecnica; GPT fa la sua lettura indipendente, come scrive
+  nella consegna girata da Simone verso le 11:52. Fino alla fine del confronto non apro gli score: raccolta e validazione degli
+  aggregati restano su identita', hash, conteggi e stato del solutore.
+- Non cambia: ragionamento scientifico, direzioni e review a GPT (`CLAUDE.md` su `main`, linea 1); regola S8 congelata; codice
+  congelato `aef665b`; nessun seguito a 19.618 senza decisione di Simone.
+- Stato alle 12:04:53: la verifica di GPT sulla correzione `1c83189` non e' ancora arrivata (ramo
+  `codex/scaling-300m-20261104` fermo a `1e03fb3`). Nulla inviato, nessuna scrittura su Leonardo.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
