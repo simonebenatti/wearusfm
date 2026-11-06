@@ -7776,3 +7776,14 @@ Report `docs/reviews/integration_main_20261106.md`; pin e prove in
 nessuna scrittura su Leonardo, modifica dei checkout attivi o dei riferimenti deploy,
 nessun job nuovo e nessun costo cluster di questa integrazione. I piani storici mantengono
 hash e ricette congelati; non si ripuntano su main i job già inviati.
+
+### 2026-11-06 — Sintesi descrittiva delle tracce scaling e consolidamento
+
+Su richiesta di Simone, analisi e grafici degli esiti pubblicati: confronto300M/30M5k completo,
+beneficio classificativo ma nessun miglioramento della dinamica; EPN15 completo, vantaggio
+FT−scratch+0,834pp [0,416;1,263] dopo+1,403pp a5epoche. Il lungo30M attende i confronti finali;
+la continuazione300M19.618 è già approvata nella linea1 (2d58e98). Estensione FT/scratch ad altri
+dataset ancora proposta, senza cambi al corpus. Sintesi e dati in
+`docs/reviews/scaling_consolidation_synthesis_20261106.md` e
+`results/infra/scaling_consolidation_synthesis_20261106/`. Questa voce registra la lettura;
+non aggiunge esperimenti, soglie o autorizzazioni e non riassegna gli operatori.

@@ -8427,6 +8427,20 @@ Copertura combinata3344casi, nessuno irrisolto o saltato; non è una seconda sui
 Report `docs/reviews/integration_main_20261106.md` e prove in `results/infra/integration_main_20261106/`.
 Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione sul cluster.
 
+### GPT coordinamento — 06/11/2026 — Sintesi scientifica delle tracce 1 e 2 con grafici
+
+Richiesta di Simone: risultati scaling e schedule lungo/più dataset, parti mancanti e conclusioni.
+Letti i risultati pubblicati fino alle17:31, pin completi in
+`results/infra/scaling_consolidation_synthesis_20261106/data.json`. Scaling5k completo:
+EPN+1,917pp [1,329;2,527], P1+0,601 [0,135;1,026]; E_dyn posa invariato nella misura
+primaria. EPN15 completo: FT93,894 contro scratch93,059, delta+0,834 [0,416;1,263];
+vantaggio ridotto rispetto alle5epoche (+1,403). Lungo30M: training/estrazioni/benchmark
+completi, fit A1 avviati nella consegna Claude f58f5ff, confronti scientifici ancora assenti.
+Seguito300M19.618 approvato da Simone in2d58e98. Nuovo confronto FT su più dataset ancora
+proposto; corpus di pretraining invariato. Report `docs/reviews/scaling_consolidation_synthesis_20261106.md`,
+due figure PNG/SVG, dati e script riproducibile pubblicati con questa consegna.
+Verifica dei7hash e rilettura indipendente favorevole; nessun nuovo calcolo sul cluster.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12385,3 +12399,13 @@ allentata e tutti i161casi inizialmente falliti/in errore passano nella riesecuz
 Main integrato non sostituisce i checkout dei job attivi; nessun intervento su checkpoint, cache,
 ambienti, ledger o riferimenti deploy. D-5 già corretto e verificato; nessun seguito scientifico
 nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main_20261106.md`.
+
+### GPT coordinamento — 06/11/2026 — Limiti della sintesi scaling/consolidamento
+
+Nessun difetto nuovo nei risultati letti. Un seme e popolazioni di sviluppo: IC per soggetto,
+non variabilità fra training. Non confondere epoche downstream5/15 con dose pretraining19k/49k;
+FT−frozen non misura il beneficio del pretraining (serve FT−scratch); il frozen LN+Linear
+rende meno della logistica storica82,58%. Scaling positivo nella classificazione a pari
+esposizione, non a pari costo; compressione matched non isola causalmente la capacità della
+testa. Nessun verdetto sul lungo senza i confronti ancora mancanti. Fonti e grafici verificati;
+nessun lancio, modifica di runtime, soglia, loss, budget o checkout delle campagne.
