@@ -1,0 +1,44 @@
+{
+ "id": "SCALING-300M-train19618-20261106",
+ "creato": "2026-11-06T20:33:42+01:00",
+ "agente": "claude",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 59.0,
+ "codice_sha": "73524b63be534f81b3db4ade4b7fc7f47129a0f3",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-300M-train19618-20261106",
+  "--comment=wearusfm:SCALING-300M-train19618-20261106",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1,EXPECTED_SHA=73524b63be534f81b3db4ade4b7fc7f47129a0f3",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1/scripts/slurm/scaling_continue.sbatch",
+  "results/infra/scaling_300m_20261104/continuation19618_20261106/training_plan.json",
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v1"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-06T20:33:42+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-06T20:33:42+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-06T20:33:43+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63696864,
+   "uscita": 0,
+   "stdout": "63696864\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 63696864,
+ "uscita": 0,
+ "stdout": "63696864\n",
+ "stderr": ""
+}

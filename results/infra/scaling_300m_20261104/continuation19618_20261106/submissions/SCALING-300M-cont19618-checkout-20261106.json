@@ -1,0 +1,45 @@
+{
+ "id": "SCALING-300M-cont19618-checkout-20261106",
+ "creato": "2026-11-06T20:12:52+01:00",
+ "agente": "claude",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "73524b63be534f81b3db4ade4b7fc7f47129a0f3",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-300M-cont19618-checkout-20261106",
+  "--comment=wearusfm:SCALING-300M-cont19618-checkout-20261106",
+  "--cpus-per-task=2",
+  "--mem=4G",
+  "--time=00:05:00",
+  "--export=ALL,CAMPAIGN=scaling_300m_continuation19618_20261106_v1,CAMPAIGN_SHA=73524b63be534f81b3db4ade4b7fc7f47129a0f3,EXPECTED_SHA=73524b63be534f81b3db4ade4b7fc7f47129a0f3",
+  "/dev/stdin"
+ ],
+ "dopo": null,
+ "script_stdin": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/campaign_checkout.sbatch",
+ "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-06T20:12:52+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-06T20:12:52+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-06T20:12:53+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63695634,
+   "uscita": 0,
+   "stdout": "63695634\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63695634,
+ "uscita": 0,
+ "stdout": "63695634\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}
