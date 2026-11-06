@@ -6808,6 +6808,36 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Stato alle 12:04:53: la verifica di GPT sulla correzione `1c83189` non e' ancora arrivata (ramo
   `codex/scaling-300m-20261104` fermo a `1e03fb3`). Nulla inviato, nessuna scrittura su Leonardo.
 
+### 2026-11-06 | Claude | Linea 1: la richiesta di verifica non era arrivata a GPT; cancello reale delle 12:49:51 superato; secondo stadio pubblicato; nulla inviato
+- Simone, verso le 12:47, ha incollato di nuovo la consegna operativa di GPT, senza parole sue: e' lo stesso testo girato verso
+  le 11:52. Lettura mia: nessuna istruzione nuova, la catena resta quella registrata in `cd2601d`.
+- Origin alle 12:47:57 e di nuovo alle 12:57:23: ramo `codex/scaling-300m-20261104` fermo a `1e03fb3` (11:28:21) e nessun commit
+  di GPT sugli altri rami `codex/*` dopo quell'ora. La verifica tecnica della correzione `1c83189` (pubblicata alle 11:40:03)
+  non c'e'.
+- Linea 2, dal registro del ramo comune `4d4e058`: sedici benchmark finiti, cancello delle risorse negativo, fase dei fit ferma;
+  Simone «Sì, aspetta GPT» (verso le 12:44). Lettura mia: la linea 2 non ha job in corsia seriale finche' l'emendamento non arriva.
+- Cancello sul reale, sola lettura, alle 12:49:51 con lo strumento corretto (`final_stages.py` di `1c83189`): `state` e `check`
+  sul piano rivisto `abc48961...`, 19 controlli superati, «CANCELLO SUPERATO». `squeue` exit 0 con uscita vuota (0 job
+  dell'utente in `lrd_all_serial`: e' il caso legittimo della coda vuota, visto sul reale), `sacct` exit 0 con 49 righe; nessuna
+  uscita degli aggregati presente, i sei ID non usati nel ledger. Non e' il cancello dell'invio: prima dell'invio lo rifaccio.
+- Domanda mia a Simone: «[...] Correzione e regressione sono pubblicate; alle 12:49 il cancello passa (corsia seriale vuota,
+  squeue e sacct usciti con 0). Invio i sei aggregati adesso o aspetto la verifica di GPT?», con «Aspetta GPT» raccomandata.
+  Risposta di Simone: «gpt è fermo, dovevo mandargli qualcosa? se si riincollamelo che glielo giro».
+  Lettura mia: la richiesta di verifica non era arrivata a GPT; la risposta non autorizza l'invio. Ho ridato a Simone il testo
+  per GPT, aggiornato con i fatti di questa voce.
+- Pubblicato sul ramo di esecuzione, punta `4b567d52755d59bcb7ffa5923de8436afd82a8b5` (SHA remoto verificato): `a4cded0` la
+  lettura delle 12:49:51 come prova (`live_state_20261106_1250_gate.json`, sha256 `08767e9c...`); `4b567d5` lo strumento del
+  secondo stadio (`comparison_stage.py` sha256 `0e3edb29...`, `comparison_stage_selftest.py` sha256 `f5457d8c...`).
+- **Rettifica della voce in `d72a2e0`.** Li' scrivevo che avrei pubblicato lo strumento dopo l'invio degli aggregati, per non
+  muovere la punta mentre GPT verificava. GPT non aveva cominciato: lo pubblico ora, cosi' lo vede in anticipo. Il commit da
+  verificare resta `1c83189`: fra `1c83189` e `4b567d5` ci sono solo tre file nuovi; cancello, piano e righe d'invio invariati.
+- Prove rieseguite alle 12:58 sui byte pubblicati: regressione del cancello 10 casi su 10; prova locale del secondo stadio 2
+  test superati (`~/wearusfm_local/logs/line1_stage2_selftest_committed_20261106_1258.txt`).
+- Tempo: fra la pubblicazione della correzione (11:40) e le 12:50 la catena e' rimasta ferma, in attesa di una verifica che GPT
+  non sapeva di dover fare. Da ora, quando serve un passaggio a GPT, lo dico a Simone nella prima riga del messaggio.
+- Non fatto: nessun invio, nessuna scrittura su Leonardo, nessuna riga nel ledger, score non aperti. I sei aggregati partono
+  dopo la risposta scritta di GPT.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
