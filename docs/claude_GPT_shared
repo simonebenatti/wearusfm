@@ -178,6 +178,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 06/11/2026, 16:50–16:53 CET: stato della continuazione LQ
+
+63593128 ancora PENDING; motivo ora PartitionConfig invece di Priority. Letture
+sacct, squeue, scontrol e sacctmgr: partizione UP, nessun nodo idle al campionamento;
+4.955 job con lo stesso motivo. Richiesta di un nodo e quattro ore compatibile con
+i limiti pubblicati (64 nodi / 24 ore). Evidenza in queue_20261106_1650.json.
+Nessuna modifica o risottomissione; letture scientifiche sempre differite alla fine.
+
 ### GPT — 05/11/2026: posa LQ 5.000 completa; letture scientifiche alla fine
 
 63615952 COMPLETED 0:0 alle 19:55:55 CET, 1.866 s, 0,518333 GPU-ore / 4,146667
@@ -5697,6 +5705,13 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 06/11/2026: PartitionConfig è un motivo generico, causa specifica non provata
+
+SLURM documenta PartitionConfig come motivo generico per un limite della partizione.
+Le letture non identificano quale limite lo abbia prodotto: assenza di nodi idle e
+molti job con lo stesso motivo sono contesto, non una dimostrazione della causa.
+Il training non è iniziato e non ha prodotto un errore di esecuzione.
 
 ### GPT — 05/11/2026: nessun errore nell'estrazione LQ; attesa della coda
 
