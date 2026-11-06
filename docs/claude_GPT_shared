@@ -6938,6 +6938,41 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - In preparazione e non ancora pubblicato: `outcome_stage.py` (raccolta e validazione dell'esito senza stampare score), da
   provare in locale sulla scena sintetica prima dell'uso.
 
+### 2026-11-06 | Claude | Linea 1: confronto COMPLETED 0:0 (job 63671773), esito raccolto e validato (28 controlli), lettura S8 valida; analisi scientifica separata pubblicata; continuazione non autorizzata
+- Job del confronto 63671773: `COMPLETED 0:0`, 193 secondi (14:36:30-14:39:43), 8 CPU, 30G, memoria massima 3,0 GiB; 0,429
+  core-ore misurate. Consumo cumulativo della linea 125,541 core-ore su 310 (14 fit, sei aggregati, checkout del manifest,
+  confronto). Corsia seriale libera dalle 14:39:43; nessun altro job mio in coda.
+- Strumento del terzo stadio `outcome_stage.py` (commit `6712a6c`, sha256 `aaef8cb8...`): `collect` in sola lettura e
+  `validate` che non stampa score, contrasti, intervalli o raccomandazione. Prova locale `outcome_stage_selftest.py`: 2 su 2
+  sulla scena sintetica, con stati e report alterati rifiutati dal controllo atteso. Scritto prima della fine del confronto;
+  non rivisto da GPT, non invia nulla.
+- Raccolta in sola lettura alle 14:41-14:42: stato `outcome_state_20261106_1441.json` (sha256 `bbdc2aaf...`) e cartella
+  `collected_outcome_20261106_1441/` con `report.json` (sha256
+  `4c10e7bb3007bdb46b5a1ce975b5531700ad9ac0aa0c413442de410c78b0c664`, 821.191 byte), i log dei due job e `sacct.txt`
+  (uscita originale di `sacct -P`). Copie verificate con sha256.
+- Validazione tecnica (`validate`, punti D della Review 10 `d3976c3`, sezione 5): 28 controlli superati, «ESITO ACCETTATO».
+  In breve: ledger, ricevute e contabilita' dei due job; codice congelato `aef665b` pulito e sei sorgenti; checkout del
+  manifest con HEAD `2b7b455` e albero pulito; nove file del manifest invariati dopo il confronto; cartella d'uscita con il
+  solo `report.json`; report completo, legato al manifest `162da7fb...` (hash del contenuto ricalcolato), ai sei sorgenti e
+  alla firma numerica dei fit; tre esiti di qualita' tutti veri; 2.000 repliche e seme 20261102 ovunque; soggetti 314, 32,
+  8, 8, 19 e 15 utenti della posa; nessuna replica con classi mancanti; punti uguali ai sei aggregati entro 1e-12; `epn`,
+  `p1`, `p2` e blocco `pose` uguali ai contrasti primari; lettura S8 uguale al ricalcolo con `scaling_reading.py` congelato.
+- Contenuto del report controllato per chiavi e tipi prima del commit: nessun segnale; ci sono conteggi aggregati per
+  soggetto e le etichette dei soggetti dei dataset (per la posa identificativi gia' anonimi).
+- Pubblicato sul ramo di esecuzione, punta `7fdb2e85945b23930de5347cc8999492b5d12bec` (SHA remoto verificato).
+- Analisi scientifica mia, separata dalla validazione tecnica (Simone: «Sì, anche la tua»):
+  `docs/reviews/claude_analysis_scaling_300m_5000_20261106.md`, con lo script dei numeri accanto. Score aperti solo dopo la
+  fine del confronto e dopo la validazione. Lettura S8 scritta dal comparatore congelato:
+  - EPN-612 «migliore»: 300M naturale meno 30M +1,917 punti, IC95 [1,329; 2,527];
+  - posa «irrisolto»: delta di `E_dyn` +0,00011, IC95 [-0,00339; +0,00378]; nessun segnale pratico;
+  - non inferiorita' sostenuta per P1 (+0,601 [0,135; 1,026]) e per P2 (+1,301 [-0,383; 2,721]);
+  - raccomandazione fissata prima dei risultati: `propose_19618_confirmation`; `continuation_authorized` falso.
+- Da segnalare (lettura mia): il controllo a dimensione pareggiata e' nullo su EPN-612 (300M compresso meno 30M -0,12
+  [-0,68; +0,40]), quindi il guadagno compare solo con la lettura larga; c'e' un seme per taglia e la variabilita' fra
+  corse non e' misurata. Dettagli, limiti e domande aperte nel documento.
+- Non fatto e non autorizzato: nessuna continuazione a 19.618 (decide Simone), nessun nuovo job, nessun rilancio.
+  Aspetto la terza review di GPT sull'esito e la sua lettura indipendente.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
