@@ -1,0 +1,13 @@
+# Linea 1, continuazione 300M 5.000 -> 19.618, stadio di training. Da eseguire SOLO dopo la review favorevole di GPT.
+# Commit di deploy (codice e piano): 73524b63be534f81b3db4ade4b7fc7f47129a0f3
+# Piano: results/infra/scaling_300m_20261104/continuation19618_20261106/training_plan.json, SHA-256 eded0922bd1022c417b8d70523c0c66d1ddb1bd8ad273925ec6d53fda5957d5f
+# Una riga alla volta, cosi' com'e'; stop al primo esito diverso da quello atteso; nessun retry.
+# 1) Riferimento di deploy su leonardo (non tocca il working tree di $WORK/wearusfm; mai main). Atteso: nuovo ramo;
+#    poi `git ls-remote leonardo refs/heads/deploy/scaling_300m_continuation19618_20261106_v1` uguale al commit di deploy.
+git -C /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec push leonardo 73524b63be534f81b3db4ade4b7fc7f47129a0f3:refs/heads/deploy/scaling_300m_continuation19618_20261106_v1
+# 2) Checkout di campagna congelato: corsia seriale, 2 CPU, 4G, 5 minuti, 0 GPU-ore. Atteso: `sottomesso`, poi
+#    COMPLETED 0:0; poi in sola lettura: HEAD del checkout uguale al commit di deploy, albero pulito, SHA-256 del piano.
+/Users/simonebenatti/.venvs/wearusfm-tok/bin/python /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py --agente claude --campagna scaling-300m-20261104 --timeout 120 --id SCALING-300M-cont19618-checkout-20261106 --gpu-ore 0 --script-stdin /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/campaign_checkout.sbatch -- --cpus-per-task=2 --mem=4G --time=00:05:00 --export=ALL,CAMPAIGN=scaling_300m_continuation19618_20261106_v1,CAMPAIGN_SHA=73524b63be534f81b3db4ade4b7fc7f47129a0f3,EXPECTED_SHA=73524b63be534f81b3db4ade4b7fc7f47129a0f3 /dev/stdin
+# 3) Training 5.000 -> 19.618: 1 nodo, 4 GPU, 32 CPU, 480G, 14:45:00, QoS normal; al massimo 59 GPU-ore. Prima dell'invio,
+#    in sola lettura: cartelle nuove ancora assenti, run a 5.000 ancora con 11 file. Atteso: `sottomesso`.
+/Users/simonebenatti/.venvs/wearusfm-tok/bin/python /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py --agente claude --campagna scaling-300m-20261104 --timeout 120 --id SCALING-300M-train19618-20261106 --gpu-ore 59 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1,EXPECTED_SHA=73524b63be534f81b3db4ade4b7fc7f47129a0f3 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1/scripts/slurm/scaling_continue.sbatch results/infra/scaling_300m_20261104/continuation19618_20261106/training_plan.json /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v1
