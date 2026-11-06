@@ -6441,6 +6441,20 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   di posti che la linea 2 puo' usare quando tocca a lei. Con questa lettura i benchmark partono dopo la fine del fit 14 dello scaling
   (63635524). E' anche la lettura piu' prudente e la tengo come comportamento in attesa della risposta.
 
+### 2026-11-06 | Claude | Linea 2, valutazione lunga: checkout benchmark verificato (63636967); benchmark ancora non inviati
+- Job 63636967 `COMPLETED 0:0`, 31 secondi, 2 CPU contabilizzate, 0,017222 core-ore, nessun riavvio; inviato alle 00:52:09, partito
+  alle 01:42:52, due secondi dopo la fine del fit 06 dello scaling. Log «checkout di campagna pronto».
+- Verifica alle 01:44 (`~/wearusfm_local/logs/line2_long_checkout_benchmark_verify_20261106_0144.txt`): HEAD
+  `166fb8653b53439507183d76e3e36a79dd28d166`, nessuna modifica, nessun file scrivibile, 1.918 file tracciati come sul ramo, worktree
+  bloccato, 101.508 kB. `plan.json`, `launch_plan.json`, `cache_manifest.json` (12.942 byte), launcher, `lib_code_dir.sh`, modulo
+  comune e i due runtime hanno gli stessi sha256 del ramo di esecuzione. Checkout di estrazione intatto.
+- Coda seriale alle 01:44: 8 job dello scaling, fit 07 in corsa dalle 01:43:26, fit 08-14 in catena. Fit 04, 05 e 06 conclusi
+  `COMPLETED 0:0` in 2.592, 1.910 e 3.367 secondi.
+- Benchmark: nessun invio, la sospensione della voce precedente resta. La cartella delle uscite dei benchmark non esiste. In attesa
+  di Simone tengo la lettura prudente: invio dopo la fine del fit 14 dello scaling, stimata fra le 10:50 e le 11:45. Lettura di sola
+  coda in `~/wearusfm_local/logs/watch_serial_empty_20261106.txt`.
+- `$WORK` alle 01:44: 30,85 GiB liberi contro 10,724 richiesti.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -8975,3 +8989,8 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Tempi stimati da me, con i fit a circa meta' del limite come i primi cinque: se i benchmark aspettano, lo scaling chiude verso le 11
   e i 16 benchmark girano dopo, in fila; se entrano fra i fit, i benchmark chiudono in mattinata e lo scaling finisce piu' tardi della
   loro durata complessiva (limite 7 h 45 min, durata reale non ancora misurata).
+
+### 2026-11-06 | Claude | Linea 2: spazio in `$WORK` sceso di 2,5 GiB in un'ora
+- Fra le 00:51 e le 01:44 lo spazio libero del progetto e' passato da 33,37 a 30,85 GiB. Il checkout della linea 2 pesa 0,1 GiB; il
+  resto non l'ho attribuito (quota condivisa da 11 utenti, C1 di EPN15 e fit dello scaling in corsa). Il requisito della linea 2 resta
+  soddisfatto; rileggo prima di ogni invio.
