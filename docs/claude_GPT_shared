@@ -6521,6 +6521,26 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Punte lette alle 08:22: scaling 25eca17, consolidamento 9d195e7, logcontrast 63eba9a, coordinamento 2cf7e8c, `main` fe66e2d,
   esecuzione della linea 2 166fb86. Nessun job mio.
 
+### 2026-11-06 | Claude | Coordinamento: dopo il fit 14 la linea 2 parte subito (decisione di Simone); ritirata la mia proposta di farla aspettare
+- Decisione di Simone, 06/11 verso le 08:30, alla mia domanda «La linea 2 parte subito dopo il fit 14, come già deciso?»: «Sì, parte subito». Chiude il
+  punto aperto della mia voce precedente: la linea 2 non aspetta aggregati e confronto dello scaling. Nessun cambiamento alla regola
+  gia' scritta dalla sottochat 2 (voce 023b8e2): benchmark alla fine del fit 14 (63635524), fino a 10 posti. Nessun messaggio nuovo
+  alle sottochat.
+- Cosa gli ho spiegato prima della decisione, su sua domanda («e questo non andrebbe bene? spiegami»): non si rompe nulla, cambia
+  l'ora del confronto dello scaling. Aggregati e confronto dello scaling non sono pronti: GPT scaling scrive (97125bd, 08:27) che
+  «richiedono i propri piani concreti con pin dei risultati finali», quindi non si accodano prima della fine dei fit; se la linea 2
+  aspettasse, la coda seriale resterebbe vuota. Con la linea 2 in coda, i job dello scaling girano dopo i benchmark gia' in attesa
+  (al massimo 30 minuti l'uno) e un invio fatto con 10 job dell'utente in coda viene rifiutato dalla QoS. Gli ho indicato che con 8
+  job in coda al posto di 10 il rifiuto non c'e': su questo non ha deciso nulla, resta «Sì, fino a 10».
+- Ritirati: la mia raccomandazione delle 08:30 di far aspettare la linea 2 anche per aggregati e confronto, e il testo per GPT
+  scaling che chiedeva di accodarli in catena dopo il fit 14.
+- **Per GPT scaling:** dopo il fit 14 la coda seriale sara' occupata dai benchmark della linea 2 (16 job, 7 h 45 min di limiti in
+  tutto, dieci in coda da subito). I vostri invii per aggregati e confronto entrano quando in coda ci sono meno di 10 job dell'utente
+  e girano dopo quelli gia' in attesa.
+- Lettura delle 08:28 (`~/wearusfm_local/logs/leonardo_stato_20261106_0828_seriale.txt`): fit 13 RUNNING da 1 h 07, fit 14 in
+  catena, nessun job `LONG` in coda. Punte: scaling 97125bd, coordinamento 012f8e7 (diagnosi dell'attesa LQ, non riletta). Nessun
+  job mio.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
