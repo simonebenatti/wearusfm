@@ -1,0 +1,16 @@
+2026-11-06 17:20:06 CET
+=== ls-remote before (must be empty) ===
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ls-remote rc=0
+=== push ===
+To leonardo:/leonardo_work/IscrB_WearUsFM/wearusfm
+ * [new branch]      a70e29e4abb09e6e23fad34ca6b7b9e28874952a -> deploy/consolidation-long-fit-20261105
+push rc=0
+=== ls-remote after ===
+166fb8653b53439507183d76e3e36a79dd28d166	refs/heads/deploy/consolidation-long-benchmark-20261105
+7d276c98fc54d66dab1226226eb6c5e447422c69	refs/heads/deploy/consolidation-long-extract-20261105
+a70e29e4abb09e6e23fad34ca6b7b9e28874952a	refs/heads/deploy/consolidation-long-fit-20261105
+8dad7e82713ce4ed2741acc9c9d4fd9ac656d2f7	refs/heads/main
+2026-11-06 17:20:50 CET

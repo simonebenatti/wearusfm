@@ -1,0 +1,8 @@
+start 2026-11-06 17:23:35 CET host=login05.leonardo.local python=/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3 Python 3.11.6
+outputs before: 19618 39237 49046 benchmarks 
+Traceback (most recent call last):
+  File "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-long-fit-20261105/results/infra/consolidation_long_20261105/amendment_a1/preflight.py", line 23, in <module>
+    import consolidation_long_common as C
+  File "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-long-fit-20261105/scripts/consolidation_long_common.py", line 15, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'

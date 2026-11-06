@@ -155,7 +155,10 @@ Sostituisce, per le fasi fit e aggregate, le parti corrispondenti delle sezioni 
    prontuario). Il checkout conta nel limite di corsia.
 5. **Controlli sul checkout.** sacct `COMPLETED 0:0`, log «checkout di campagna pronto», HEAD, `git status` pulito,
    sola lettura. Poi il preflight in sola lettura sul nodo di login, con l'ambiente dei job (`cineca-ai/4.3.0` e il
-   venv di `$WORK`), dentro il checkout: `amendment_a1/preflight.py "$LONG_PHASE_SHA"`. Meno di un minuto di CPU,
+   venv di `$WORK`), dentro il checkout: `amendment_a1/preflight.py "$LONG_PHASE_SHA"`, con `src:scripts`
+   anteposto a `PYTHONPATH` e non al suo posto (sul cluster il modulo `cineca-ai` fornisce numpy da li': il primo
+   tentativo del 06/11 lo sostituiva e si e' fermato a `import numpy`, prima di ogni controllo). Meno di un
+   minuto di CPU,
    circa 3,7 GiB di hash (le quindici cache di classificazione, le tre cache train della posa e gli artefatti del
    benchmark della posa), tutte e 28 le ricevute lette dal ponte, nessuna uscita. Le cache held della posa non
    vengono lette, nemmeno per l'hash: le apre il fit, dopo le due ridge. Un errore qui si corregge prima di

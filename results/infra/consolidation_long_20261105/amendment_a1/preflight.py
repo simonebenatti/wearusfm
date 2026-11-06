@@ -15,7 +15,12 @@ the jobs.
     module purge; module load profile/deeplrn; module load cineca-ai/4.3.0
     source "$WORK/venv_wearusfm/bin/activate"
     cd "$LONG_CODE" && OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 \
-      PYTHONPATH=src:scripts python3 results/infra/consolidation_long_20261105/amendment_a1/preflight.py "$LONG_PHASE_SHA"
+      PYTHONPATH="src:scripts${PYTHONPATH:+:$PYTHONPATH}" \
+      python3 results/infra/consolidation_long_20261105/amendment_a1/preflight.py "$LONG_PHASE_SHA"
+
+On Leonardo the cineca-ai module provides numpy and the scientific stack
+through PYTHONPATH: prepend to it, never replace it (the first attempt of
+2026-11-06 replaced it and stopped at ``import numpy``, before any check).
 """
 import json
 import sys
