@@ -6642,6 +6642,302 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Specchietto aggiornato (tabella dei job e righe 1-4). Nessun job lanciato, nessuna scrittura su Leonardo, nessun messaggio alle
   sottochat.
 
+### 2026-11-06 | Claude | Linea 1 (scaling): passaggio recepito, fit 14 accettato, sei comandi degli aggregati pubblicati per la review di GPT, nulla inviato (disposizione di Simone)
+- Disposizione: alla mia domanda «Da quando passo io a codice e lanci sulla linea 1?» Simone ha risposto «Da questa parte» (06/11).
+  Letti da origin `CLAUDE.md` su `main` `dcd2d9a` (sezione «Linea 1: codice e operazioni a Claude, review e direzione scientifica a
+  GPT — 06/11/2026») e il fermo di GPT `0f4a9cf` con `handoff_to_claude_20261106.json`. La chat della linea 1 e' questa, la
+  sottochat 1. Da qui opero io; GPT rivede prima di ogni invio.
+- Ramo di esecuzione `claude/scaling-300m-exec-20261106`, base `97125bd`, due commit: `21447b5` (prima versione) e
+  `37632d18e0078069c54d131c9ba235891712c1b5` (piano v2, quello da rivedere), SHA remoto verificato. Cambia solo
+  `results/infra/scaling_300m_20261104/final_stages_20261106/` (8 file). Codice congelato `aef665b` non toccato; nessun file in
+  `scripts/`, `src/`, `tests/`.
+- Fit 14 accettato senza aprire gli score: `SCALING-probe-fit-14-20261105`, 63635524, `COMPLETED 0:0`, 01:19:19 su 8 CPU (10,58
+  core-ore), MaxRSS 5,34 GiB, fine 09:56:12; `shard.json` sha256
+  `9887484ff2b1ac051cca6721bc280975284d60f8b4752af70b5f515f6bcdf5b7`, 9.932 byte.
+- I 14 shard insieme (letture delle 10:21, stato reale delle 10:28:22, sola lettura): tutti completi, codice `aef665b`, piano delle
+  sonde `d2cc7da1`, una sola firma numerica (`1ac8481e`), 420 fit, 0 avvisi di convergenza, 0 al limite di iterazioni; ognuna
+  delle 60 terne (cella, dataset, fold) coperta una volta sola; i 13 hash precedenti uguali alla tabella del §3 della Review 10.
+  Identita' degli OOF: le cinque impronte `identity_sha256` uguali alle ancore del §5 e uguali fra le tre celle, 20 fold su 20
+  appaiati. In `sacct` validate, ridge e 14 fit `COMPLETED 0:0`.
+- Sei comandi preparati e **non inviati**: `aggregate_submission_plan.json` (v2, sha256 `abc48961...`, `PREPARED_NOT_SUBMITTED`) e
+  `aggregate_submit_lines.txt`. ID `SCALING-probe-aggregate-01...06-20261106`, nell'ordine 30M-natural p1 (2 shard) e p2 (1),
+  300M-natural p1 (4) e p2 (4), 300M-matched p1 (2) e p2 (1). Ognuno: `--cpus-per-task=2 --mem=30G --time=00:10:00`, `CODE_DIR`
+  del checkout congelato, `EXPECTED_SHA=aef665b...`, piano delle sonde col suo sha256, uscita nuova
+  `$WORK/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_aggregates/<cella>-<compito>/aggregate.json`. Nessuna dipendenza
+  fra i sei job.
+- Prove senza inviare: controlli sugli argomenti del dispatcher reale (righe 37-115, sha256 verificato) eseguiti in sola lettura sul
+  nodo di login alle 10:47, sei PASS e sette rifiuti attesi su comandi alterati; submitter reale con ssh finto e registro
+  temporaneo, sei comandi `sbatch` uguali a quelli attesi, ledger comune non toccato; 185 test passati nel checkout di esecuzione
+  (i sei moduli dello scaling e `test_submit_job.py`).
+- Cancello prima dell'invio: review di GPT; poi `final_stages.py state` e `check` (pin invariati, uscite assenti, ID mai usati, sei
+  posti liberi su 10 in `lrd_all_serial`) e prova della connessione. Invio una riga alla volta dal submitter comune, stop al
+  primo esito diverso da `sottomesso`, nessun rilancio.
+- Coda: invio quando i sedici benchmark della linea 2 sono tutti inviati e l'utente ha al massimo 4 job in coda seriale; gli
+  aggregati girano dopo quelli gia' in attesa (decisioni di Simone «Sì, fino a 10» e «Sì, parte subito»). Stima mia, non una
+  misura: se i benchmark finiscono fra le 16:10 e le 16:30 (stima del coordinamento), i sei aggregati chiudono entro le 17.
+- Budget: 124,99 core-ore consumate su 310 (28,37 prima della ridge, cifra di GPT non ricalcolata; ridge 0,64; 14 fit 95,98).
+  Aggregati: 2,0 richieste, al massimo 2,6 col margine del TIMEOUT. Dopo: checkout del manifest 0,33 e confronto 4,0 (al massimo
+  4,4). Caso peggiore sotto 133.
+- Per GPT, tramite Simone: primo giro di review previsto da `CLAUDE.md` (accettazione del fit 14, pin dei 14 shard, sei comandi e
+  uscite). Non invio prima della sua risposta scritta.
+- Non fatto: nessun job inviato, nessuna scrittura su Leonardo, nessuna riga nel ledger, score non aperti. Manifest e comando del
+  confronto non esistono: arrivano dopo la raccolta e la validazione dei sei aggregati, con la seconda review di GPT.
+
+### 2026-11-06 | Claude | Linea 1: corsia seriale fra confronto dello scaling e fit della linea 2, numeri corretti e tre possibilita' spiegate a Simone (nessuna decisione)
+- Richiesta di Simone, 06/11 verso le 10:56, dopo la mia domanda «Il confronto dello scaling passa davanti ai fit della linea 2?»:
+  «devi spiegarmi bene cosa comportano le 2 ipotesi». Solo letture: nessun job, nessuna scrittura su Leonardo.
+- Lettura delle 10:57 (`~/wearusfm_local/logs/line1_lane_state_20261106_1057.txt`): benchmark della linea 2 conclusi 3 su 16 in
+  23:42, 09:55 e 19:54; il quarto in corsa dalle 10:54, otto in attesa, quattro da inviare. Stima mia: fine dei benchmark fra le
+  14:45 e le 16:15.
+- **Correzione alla mia voce precedente (sezione 2, «fino a 32 ore»).** Due cose: (a) il piano della linea 2
+  (`consolidation_long_20261105/launch_plan.json`, `caps`) stima 114,24 core-ore per i 48 fit di classificazione, cioe' circa 18
+  minuti di corsia a fit in media contro un limite di 4 ore: stima storica, non misurata; (b) il confronto passa due volte dalla
+  corsia (job di checkout del manifest, poi `compare`, che invio solo a checkout verificato: scelta mia), quindi le attese dietro i
+  fit possono essere due. Attesa stimata se la linea 2 tiene in coda ondate da 8: 2,5-5 ore; limite teorico 64 ore.
+- Possibilita' spiegate a Simone, con l'effetto sulle due linee: (1) prima lo scaling: la linea 2 non invia fit finche' il
+  confronto non e' in coda, corsia ferma 1-2,5 ore durante la seconda review di GPT; (2) resta in coda: vale «Sì, parte subito»,
+  confronto stimato in tarda serata; (3) via di mezzo, proposta mia: la linea 2 parte subito ma tiene in coda al massimo due fit
+  finche' il confronto non e' entrato, attesa stimata circa un'ora in piu', corsia mai ferma.
+- Nessuna decisione presa: finche' Simone non decide vale la regola scritta dal coordinamento (voce «dopo il fit 14 la linea 2
+  parte subito»). Nessun messaggio alla sottochat 2. GPT scaling non ha ancora risposto alla prima consegna (ramo a `0f4a9cf`).
+
+### 2026-11-06 | Claude | Linea 1: decisione di Simone sulla corsia seriale, «Due fit per volta» finche' il confronto dello scaling non e' in coda
+- Decisione di Simone, 06/11 alle 11:17 circa, alla mia domanda «Come dividiamo la corsia fra il confronto dello scaling e i fit
+  della linea 2?»: «Due fit per volta». E' la terza possibilita' della voce precedente (`31f0ea6`), che gli avevo descritto cosi':
+  «La linea 2 parte subito, ma tiene in coda al massimo due fit per volta finché il confronto non è entrato».
+- In pratica (lettura mia, da correggere se Simone o la sottochat 2 la intendono diversamente): dalla fine dei benchmark la linea
+  2 tiene in `lrd_all_serial` al massimo due job propri fra in corsa e in attesa. La regola cade quando nel ledger comune compare
+  `sottomesso` il job del confronto dello scaling (ID logico che comincia con `SCALING-compare-`): lo scrivo anche qui. Da quel
+  momento la linea 2 torna alle sue ondate.
+- Non cambia: i benchmark della linea 2 («Sì, fino a 10»), i sei aggregati dello scaling (entrano con sei posti liberi, quando i
+  sedici benchmark sono tutti inviati), le review di GPT prima di ogni invio, il budget.
+- Effetto atteso, stime della voce precedente: corsia mai ferma; il confronto aspetta al massimo quattro fit della linea 2, circa
+  un'ora in piu' se durano 18 minuti l'uno.
+- Non ho scritto alla sottochat 2: ho dato a Simone il testo da incollare e gli ho chiesto se devo girarlo io. Nessun job, nessuna
+  scrittura su Leonardo. Alle 11:17 GPT scaling non ha ancora risposto alla prima consegna (ramo a `0f4a9cf`); Simone sta per
+  mandargli il testo («poi mando questo a gpt ?»).
+
+### 2026-11-06 | Claude | Linea 1: prima review di GPT recepita (1e03fb3, sei comandi conformi), cancello d'invio corretto con regressione (1c83189), invio in attesa della coda
+- Letta da origin la review di GPT `1e03fb3091e96a68c35800d2ff4efc33681c38c9` (ramo `codex/scaling-300m-20261104`, 11:28),
+  `docs/reviews/gpt_review_scaling_aggregates_release_20261106.md`, sul mio commit `37632d1`. Verdetto, alla lettera: «i sei
+  comandi, i pin e il budget sono conformi. Prima dell'invio e' obbligatorio controllare esplicitamente il successo della lettura
+  della coda: il PASS dell'helper attuale non basta in caso di errore di squeue.» E ancora: «E' ammessa una verifica esplicita e
+  documentata dell'operatore su exit=0 prima del conteggio; preferibile la correzione minima dell'helper con regressione, a cura
+  di Claude. Non occorre un nuovo consenso di Simone.» Il confronto non e' coperto da questa approvazione.
+- Correzione, per la via che GPT preferisce: commit `1c831896ec85a20388b906404c88d425315bbe68` sul ramo
+  `claude/scaling-300m-exec-20261106`, SHA remoto verificato. In `final_stages.py` la funzione `checks` rifiuta uno stato in cui
+  `sacct` o `squeue` non sono usciti con 0, prima di leggere o contare (vale per `check` e per `plan`), e riporta l'esito fra i
+  controlli: 4 righe aggiunte, nient'altro. Nuovo sha256 dello strumento `b222474b4fad9fe1...` (prima `9533c82f...`).
+- Regressione `final_stages_selftest.py` (file nuovo, solo libreria standard, solo in locale, sha256 `40c1d16914395527...`): dieci
+  casi sullo stato pubblicato delle 10:28:22 e sul piano v2. Sulla versione corretta 10 su 10; sulla versione rivista da GPT ne
+  falliscono 6, compreso il suo caso (`squeue` exit 1 e uscita vuota). La riproduzione di GPT puntata sul commit nuovo da'
+  `failed_squeue` rifiutato.
+- Invariati byte per byte i file rivisti: piano `abc48961...`, righe d'invio `bf9823e9...`, i due dry-run. Codice congelato
+  `aef665b` non toccato; nessun file in `scripts/`, `src/`, `tests/`.
+- Budget: accolgo il conto cumulativo pubblicato da GPT (124,993888889 core-ore consumate; massimo previsto 132,260555556 su
+  310). Nessun nuovo costo della linea 1: nel ledger comune, dopo il fit 14, nessun ID `SCALING-` (lettura delle 11:40).
+- Coda, lettura delle 11:40:54 (`squeue` exit 0, `sacct` exit 0; `~/wearusfm_local/logs/line1_lane_state_20261106_1142.txt`):
+  7 job dell'utente in `lrd_all_serial`, tutti benchmark della linea 2 (epn612 pre in corsa dalle 11:39:53, sei in attesa); 9
+  benchmark su 16 conclusi `COMPLETED 0:0`. I sedici sono tutti inviati dalle 11:27:28 (ledger; voce della linea 2 `3db6fc6`).
+  La soglia «al massimo 4 job» arriva alla fine di epn612 pre, post e pool.
+- Prossimo passo, senza nuovo consenso (review di GPT e disposizione di Simone del 06/11 sulla linea 1): alla soglia rieseguo
+  `state` e `check` con lo strumento corretto, scrivo qui exit 0 di `squeue` e `sacct` della lettura fresca, provo la connessione
+  e invio le sei righe una alla volta dal submitter comune; stop al primo esito diverso da `sottomesso`, nessun rilancio.
+- Attesa: un processo locale di sola lettura (`~/wearusfm_local/line1/wait_serial_places.sh`, uno `squeue` ogni 2 minuti) mi
+  richiama alla soglia. Non invia nulla.
+- Corsia: alla mia domanda «Giro io la decisione alla sottochat 2?» Simone ha risposto «Lo dico io». Non ho scritto alla
+  sottochat 2. La sua voce `3db6fc6` riporta la regola «Due fit per volta» come in `bf7f7a4`, contando anche il suo checkout.
+- Non fatto: nessun job inviato, nessuna scrittura su Leonardo, nessuna riga nel ledger, score non aperti. La lettura scientifica
+  parziale della posa, pubblicata da GPT nello stesso commit, non e' oggetto di questa voce e non l'ho usata.
+
+### 2026-11-06 | Claude | Linea 1: consegna operativa di GPT girata da Simone; rettifica: i sei aggregati si inviano solo dopo la verifica tecnica di GPT sulla correzione 1c83189
+- Simone, verso le 11:52, ha incollato in questa chat la consegna di GPT («Riprendi la linea 1 per correggere il controllo della
+  coda e completare aggregati e confronto finale. [...] Non serve un nuovo consenso di Simone per questa catena.») con le parole:
+  «E' quello che chiede gpt, torna col tuo piano ?». Risposta mia: si', con due differenze.
+- **Differenza 1, rettifica della voce precedente (`339c009`, «Prossimo passo»).** La consegna dice: «Passa a GPT la sola
+  correzione del controllo [...] Dopo la verifica tecnica procedi direttamente, senza chiedere un altro via a Simone». Quindi non
+  invio alla soglia attestando io exit 0: aspetto la verifica scritta di GPT sul commit `1c83189`. Testo per GPT dato a Simone.
+- **Differenza 2.** La consegna chiede alla fine: «pubblica la tua analisi scientifica, distinguendola dalla validazione tecnica.
+  GPT fara' la lettura indipendente». Nel mio piano non c'era: gli score non li aprivo e la lettura era di GPT. Lettura mia: la
+  faccio dopo il confronto, a regola S8 gia' applicata dal codice congelato, in un documento separato dalla validazione tecnica.
+  L'ho detto a Simone, che puo' fermarmi; fino al confronto resto senza aprire gli score.
+- Il resto coincide con il piano pubblicato: sei comandi gia' rivisti, letture fresche, sei posti liberi, stop al primo invio non
+  accettato; raccolta e controlli della Review 10; manifest dagli aggregati raccolti e seconda review; confronto a 8 CPU, 30G, 30
+  minuti; nessun `afterok`, nessun rilancio, nessun seguito a 19.618. In piu', non nominato nella consegna ma nel conto di GPT:
+  il job di checkout (2 CPU, 4G, 5 minuti) che pubblica il manifest su Leonardo prima del confronto.
+- I sei casi di regressione chiesti nella consegna sono gia' in `final_stages_selftest.py` (`1c83189`): `squeue` fallito con
+  uscita vuota e con uscita parziale, coda vuota letta bene, nove job, quattro job, `sacct` fallito.
+- Coda alle 11:52 (attesa locale, `squeue` exit 0): 5 job dell'utente in corsia; epn612 pre e post sono finiti in meno di 6
+  minuti. La soglia di 4 job e la fine dei benchmark arrivano probabilmente prima della verifica di GPT: i sei aggregati
+  entreranno allora in una corsia dove la linea 2 tiene al massimo due job («Due fit per volta»).
+- Non fatto: nessun invio, nessuna scrittura su Leonardo, score non aperti.
+
+### 2026-11-06 | Claude | Linea 1: strumento del secondo stadio pronto e provato in locale (non ancora pubblicato); lettura di Leonardo delle 11:59, corsia vuota
+- In attesa della verifica di GPT su `1c83189` ho preparato `comparison_stage.py` e `comparison_stage_selftest.py` nella cartella
+  `final_stages_20261106` del worktree di esecuzione. **Non sono ancora committati**: li pubblico dopo l'invio degli aggregati,
+  per non muovere la punta del ramo mentre GPT verifica la correzione. Copia in `~/wearusfm_local/line1/stage2_backup/`.
+- Cosa fa lo strumento, senza inviare nulla: `collect` (lettura remota dei sei aggregati, copia sul Mac di report, audit, log e
+  dell'uscita originale di `sacct -P`, verificata con sha256), `validate` (26 controlli: i punti B della Review 10, sezione 5),
+  `manifest` (manifest del confronto con i pin effettivi e piano dei due job), `frozen` (il manifest passa da `validate_inputs` e
+  `make_inputs` del codice congelato), `lines`, `submitter` (ssh finto), e tre cancelli di sola lettura: `pre-deploy`,
+  `gate-checkout`, `gate-compare`. Gli score non vengono letti ne' stampati.
+- Due job, mai concatenati: `SCALING-inputs-checkout-20261106` (checkout di campagna `scaling_300m_comparison_inputs_20261106_v1`
+  che pubblica il manifest: 2 CPU, 4G, 5 minuti, come l'ultimo checkout di GPT) e `SCALING-compare-20261106` (8 CPU, 30G, 30
+  minuti, uscita nuova `cpu/comparison/report.json`). L'ID del checkout non comincia con `SCALING-compare-`.
+- Prova locale sulla scena sintetica dei test del confronto (fixture di GPT in `tests/cpu/test_scaling_compare.py`): 2 test
+  superati. Catena completa fino al comparatore congelato, che sul manifest prodotto dallo strumento da' la stessa lettura che
+  sul manifest della fixture; oltre venti stati alterati, ognuno rifiutato dal controllo atteso. Limiti: identita' di codice
+  finta nella fixture; i tre cancelli che leggono Leonardo non sono provati in locale.
+- Lettura reale di sola lettura alle 11:59:34 (lo script di raccolta eseguito su Leonardo senza aggregati): piano delle sonde,
+  piano della posa, budget e report della ridge con gli hash attesi e percorsi canonici; codice congelato pulito; sei sorgenti
+  uguali agli hash della Review 10; uscita del confronto e cartella del checkout assenti. Il runtime registrato nel report
+  della ridge e' uguale a quello dei tre benchmark della posa su tutte le chiavi che il dispatcher confronta nello stadio
+  `compare`: lettura mia, il controllo del runtime e' superabile se l'ambiente non cambia.
+- Corsia alle 11:59:34 (`squeue` exit 0): 0 job dell'utente in `lrd_all_serial`. I sedici benchmark della linea 2 non sono piu'
+  in coda. I sei aggregati partono dopo la verifica di GPT; la linea 2 nel frattempo tiene al massimo due job.
+- Non fatto: nessun invio, nessuna scrittura su Leonardo, nessuna riga nel ledger, score non aperti.
+
+### 2026-11-06 | Claude | Linea 1: decisione di Simone, anche Claude pubblica un'analisi scientifica finale separata dalla validazione tecnica («Sì, anche la tua»)
+- Simone, verso le 12:04, alla mia domanda «Vuoi anche la mia analisi scientifica finale, come chiede GPT?»: «Sì, anche la tua».
+- Cosa cambia (lettura mia): dopo il confronto, a regola S8 gia' applicata dal comparatore congelato, pubblico sul mio ramo una
+  mia analisi scientifica in un documento separato dalla validazione tecnica; GPT fa la sua lettura indipendente, come scrive
+  nella consegna girata da Simone verso le 11:52. Fino alla fine del confronto non apro gli score: raccolta e validazione degli
+  aggregati restano su identita', hash, conteggi e stato del solutore.
+- Non cambia: ragionamento scientifico, direzioni e review a GPT (`CLAUDE.md` su `main`, linea 1); regola S8 congelata; codice
+  congelato `aef665b`; nessun seguito a 19.618 senza decisione di Simone.
+- Stato alle 12:04:53: la verifica di GPT sulla correzione `1c83189` non e' ancora arrivata (ramo
+  `codex/scaling-300m-20261104` fermo a `1e03fb3`). Nulla inviato, nessuna scrittura su Leonardo.
+
+### 2026-11-06 | Claude | Linea 1: la richiesta di verifica non era arrivata a GPT; cancello reale delle 12:49:51 superato; secondo stadio pubblicato; nulla inviato
+- Simone, verso le 12:47, ha incollato di nuovo la consegna operativa di GPT, senza parole sue: e' lo stesso testo girato verso
+  le 11:52. Lettura mia: nessuna istruzione nuova, la catena resta quella registrata in `cd2601d`.
+- Origin alle 12:47:57 e di nuovo alle 12:57:23: ramo `codex/scaling-300m-20261104` fermo a `1e03fb3` (11:28:21) e nessun commit
+  di GPT sugli altri rami `codex/*` dopo quell'ora. La verifica tecnica della correzione `1c83189` (pubblicata alle 11:40:03)
+  non c'e'.
+- Linea 2, dal registro del ramo comune `4d4e058`: sedici benchmark finiti, cancello delle risorse negativo, fase dei fit ferma;
+  Simone «Sì, aspetta GPT» (verso le 12:44). Lettura mia: la linea 2 non ha job in corsia seriale finche' l'emendamento non arriva.
+- Cancello sul reale, sola lettura, alle 12:49:51 con lo strumento corretto (`final_stages.py` di `1c83189`): `state` e `check`
+  sul piano rivisto `abc48961...`, 19 controlli superati, «CANCELLO SUPERATO». `squeue` exit 0 con uscita vuota (0 job
+  dell'utente in `lrd_all_serial`: e' il caso legittimo della coda vuota, visto sul reale), `sacct` exit 0 con 49 righe; nessuna
+  uscita degli aggregati presente, i sei ID non usati nel ledger. Non e' il cancello dell'invio: prima dell'invio lo rifaccio.
+- Domanda mia a Simone: «[...] Correzione e regressione sono pubblicate; alle 12:49 il cancello passa (corsia seriale vuota,
+  squeue e sacct usciti con 0). Invio i sei aggregati adesso o aspetto la verifica di GPT?», con «Aspetta GPT» raccomandata.
+  Risposta di Simone: «gpt è fermo, dovevo mandargli qualcosa? se si riincollamelo che glielo giro».
+  Lettura mia: la richiesta di verifica non era arrivata a GPT; la risposta non autorizza l'invio. Ho ridato a Simone il testo
+  per GPT, aggiornato con i fatti di questa voce.
+- Pubblicato sul ramo di esecuzione, punta `4b567d52755d59bcb7ffa5923de8436afd82a8b5` (SHA remoto verificato): `a4cded0` la
+  lettura delle 12:49:51 come prova (`live_state_20261106_1250_gate.json`, sha256 `08767e9c...`); `4b567d5` lo strumento del
+  secondo stadio (`comparison_stage.py` sha256 `0e3edb29...`, `comparison_stage_selftest.py` sha256 `f5457d8c...`).
+- **Rettifica della voce in `d72a2e0`.** Li' scrivevo che avrei pubblicato lo strumento dopo l'invio degli aggregati, per non
+  muovere la punta mentre GPT verificava. GPT non aveva cominciato: lo pubblico ora, cosi' lo vede in anticipo. Il commit da
+  verificare resta `1c83189`: fra `1c83189` e `4b567d5` ci sono solo tre file nuovi; cancello, piano e righe d'invio invariati.
+- Prove rieseguite alle 12:58 sui byte pubblicati: regressione del cancello 10 casi su 10; prova locale del secondo stadio 2
+  test superati (`~/wearusfm_local/logs/line1_stage2_selftest_committed_20261106_1258.txt`).
+- Tempo: fra la pubblicazione della correzione (11:40) e le 12:50 la catena e' rimasta ferma, in attesa di una verifica che GPT
+  non sapeva di dover fare. Da ora, quando serve un passaggio a GPT, lo dico a Simone nella prima riga del messaggio.
+- Non fatto: nessun invio, nessuna scrittura su Leonardo, nessuna riga nel ledger, score non aperti. I sei aggregati partono
+  dopo la risposta scritta di GPT.
+
+### 2026-11-06 | Claude | Linea 1: verifica di GPT ricevuta (098d2b0, APPROVATO); sei aggregati inviati alle 13:13 e accettati; nessun rilancio
+- Risposta scritta di GPT sul suo ramo: `098d2b08fe54af2416797eed2e53f18b3881693b` (13:08:26),
+  `docs/reviews/gpt_review_scaling_queue_gate_fix_20261106.md`: «APPROVATO, nessun blocco residuo nella correzione»; i sei
+  aggregati rilasciabili dopo `state` e `check` freschi, sei posti liberi, una riga alla volta, stop al primo esito diverso da
+  `sottomesso`. GPT dichiara fuori da questa review `comparison_stage.py`, il suo selftest, manifest, checkout e confronto:
+  restano il secondo giro. Punta del ramo di GPT riletta alle 13:10:38 in un passo separato: invariata.
+- Autorizzazione: consegna di GPT girata da Simone verso le 11:52 («Dopo la verifica tecnica procedi direttamente, senza
+  chiedere un altro via a Simone») e `CLAUDE.md` su `main`, linea 1. Nessun messaggio nuovo di Simone fra il testo ridato alle
+  13:00 e l'invio: della risposta di GPT mi sono accorto dall'attesa di sola lettura sul suo ramo.
+- Prima dell'invio: prova del trasporto del submitter (`ssh leonardo` semplice, sola lettura, 13:12:20, login05); ledger comune
+  riletto, i sei ID liberi; cancello fresco letto alle 13:12:40: `squeue` exit 0 con uscita vuota (0 job dell'utente in
+  `lrd_all_serial`), `sacct` exit 0 con 49 righe, 19 controlli superati, «CANCELLO SUPERATO» con sei posti. Stato in
+  `live_state_20261106_1312_presubmit.json` (sha256 `aa5c51c1...`). Linea 2: nessun job in corsia, fase dei fit ferma.
+- Invii con submitter e ledger comuni, le sei righe riviste (`aggregate_submit_lines.txt`, sha256 `bf9823e9...` verificato
+  prima dell'uso), una alla volta, ognuna `sottomesso` con exit 0:
+  - `SCALING-probe-aggregate-01-20261106` job 63666045 (13:13:05), `-02-` 63666072 (13:13:20), `-03-` 63666075 (13:13:21),
+    `-04-` 63666076 (13:13:22), `-05-` 63666078 (13:13:23), `-06-` 63666079 (13:13:24).
+  - Ogni job: 2 CPU, 30G, 10 minuti, codice congelato `aef665b`, dispatcher `c2bd7979...` su `/dev/stdin`, uscite distinte.
+    L'argv inviato e' uguale al campo `argv` del piano rivisto `abc48961...` (controllo fatto sulle ricevute).
+- Lettura delle 13:14:59 (`squeue` e `sacct` exit 0): job 01 `COMPLETED 0:0` in 41 secondi (13:13:40-13:14:21), job 02 in
+  esecuzione, quattro in attesa per `QOSMaxMemoryPerUser`: ognuno chiede tutta la memoria dell'utente in corsia, quindi girano
+  uno alla volta, come previsto.
+- Pubblicato sul ramo di esecuzione, commit `3f0867784e237b1dd6fa3e82427b53846352f05d` (SHA remoto verificato): le sei
+  ricevute in `final_stages_20261106/submissions/` (copie byte per byte dello `state.json` del ledger), lo stato del cancello e
+  `aggregate_submission_reading_20261106.txt` (cancello, invii, prima lettura).
+- Budget: 2,0 core-ore richieste per i sei aggregati (massimo 2,6); cumulato massimo 127,59 su 310 prima di checkout e confronto.
+- Corsia: la regola «Due fit per volta» resta in vigore; cade solo quando nel ledger compare sottomesso `SCALING-compare-`.
+- Non fatto: nessun rilancio dei fit (l'ultimo resta 63635524), nessun retry, nessun job oltre i sei, score non aperti, nessuna
+  azione sui job di altre linee. Prossimo passo: a job finiti raccolgo e valido gli aggregati, preparo manifest e comandi del
+  confronto e li pubblico per il secondo giro di review di GPT; il confronto non parte prima della sua risposta.
+
+### 2026-11-06 | Claude | Linea 1: sei aggregati COMPLETED 0:0, raccolti e validati (26 controlli); manifest, piano e righe del confronto pubblicati per la seconda review di GPT; nulla inviato
+- Esito dei sei job (`sacct -P`, uscita originale in `collected_aggregates_20261106_1319/sacct.txt`): 63666045, 63666072,
+  63666075, 63666076, 63666078, 63666079 tutti `COMPLETED 0:0`, 2 CPU, durate 41, 22, 34, 24, 28, 23 secondi (0,0956 core-ore
+  misurate contro 2,0 richieste), memoria massima fra 1,0 e 1,9 GiB. Finiti fra le 13:14:21 e le 13:18:07.
+- Raccolta in sola lettura alle 13:19:14 (`comparison_stage.py collect`): stato `aggregates_state_20261106_1319.json` (sha256
+  `9ca3bc9d...`) e, per ogni aggregato, copia di report, audit e log del job, verificata con sha256. Nei file raccolti non ci
+  sono dati grezzi: struttura controllata per nomi e tipi, senza leggere valori. Score non letti ne' stampati da me.
+- Validazione (`validate`, punti B della Review 10, sezione 5): 26 controlli superati, «AGGREGATI ACCETTATI». In breve:
+  contabilita' e ledger; pin di piano delle sonde, piano della posa, budget e report della ridge; codice congelato `aef665b`
+  pulito; sei sorgenti del comparatore; 14 shard invariati; report completi con cella, compito e shard del piano; una sola
+  firma numerica; 28 fit per dataset; hash interni di OOF e audit; identita' degli OOF (impronta, finestre, utenti) uguale
+  alle ancore della Review 10 nelle tre celle; solutore convergente per criterio, nessun fit irrisolto, 0 avvisi di punteggio.
+- Manifest `comparison_inputs.json` (sha256 `162da7fb558035679b2d5e7112c81f5039782d50ebae68d5164eb003e55171ea`, 3.062 byte):
+  protocollo, passo 5000, sei sorgenti, pin di piani e report della ridge, pin effettivi dei sei aggregati. Passa da
+  `validate_inputs` e `make_inputs` del comparatore congelato (`frozen`).
+- Piano `comparison_plan.json` (sha256 `1b445cfb...`, `PREPARED_NOT_SUBMITTED`) e righe `comparison_submit_lines.txt` (sha256
+  `b146f42f...`), due job mai concatenati:
+  - `SCALING-inputs-checkout-20261106`: checkout di campagna `scaling_300m_comparison_inputs_20261106_v1` dal commit del
+    manifest `2b7b4551c6059d5456e6e12d171ef687eb0818f4`; 2 CPU, 4G, 5 minuti.
+  - `SCALING-compare-20261106`: dispatcher congelato, stadio `compare`, manifest nel checkout con lo sha256 sopra, uscita nuova
+    `cpu/comparison/report.json`; 8 CPU, 30G, 30 minuti.
+  - Prova col submitter reale e ssh finto superata (`comparison_submitter_dryrun.json`); ledger comune non toccato.
+- Budget: consumate 125,089 core-ore (124,994 + 0,096 misurate); caso peggiore con checkout e confronto 129,756 su 310.
+- Prova in sola lettura del cancello che precede il push del riferimento di deploy (`pre-deploy`, 13:22:49): 12 controlli
+  superati; riferimento di deploy assente, cartella del checkout assente, nessun hook nel canonico, i nove file del manifest
+  invariati, 0 job in corsia. Configurazione letta: `receive.denycurrentbranch updateInstead`; il riferimento di deploy non e'
+  un ramo estratto, quindi il push non aggiorna alcun working tree. Il cancello vero lo rifaccio subito prima del push.
+- Pubblicato sul ramo di esecuzione, punta `cf6983ca3a52e7037a440333a1776bdfe61021d4` (SHA remoto verificato): `2b7b455`
+  (raccolta, validazione, manifest, piano), `b12a86e` (righe e prova col submitter), `cf6983c` (prova del cancello).
+- Limiti dichiarati: `comparison_stage.py` non e' ancora rivisto da GPT; `gate-checkout` e `gate-compare` non sono mai stati
+  eseguiti sul reale (servono riferimento di deploy e checkout); il controllo del runtime dello stadio `compare` gira solo
+  dentro il job (riletto a mano nel dispatcher: 8 thread, come la ridge).
+- Non fatto: nessun riferimento di deploy, nessun checkout, nessun confronto, nessuna scrittura su Leonardo oltre ai sei job.
+  Aspetto la seconda review di GPT; la regola «Due fit per volta» resta in vigore.
+
+### 2026-11-06 | Claude | Linea 1: seconda review di GPT approvata; riferimento di deploy, checkout del manifest COMPLETED 0:0, confronto SOTTOMESSO alle 14:36 (job 63671773); cade «Due fit per volta»
+- Seconda review di GPT letta su origin alle 14:25: `codex/scaling-300m-20261104` @ `01308218d1271802a55886c7b13fcca5ff30e17d`
+  (14:22:37), `docs/reviews/gpt_review_scaling_comparison_release_20261106.md`: «APPROVATO, nessun blocco.» sulla consegna
+  `cf6983c`. Commit protetto in locale (`refs/keep/gpt-scaling-review2-0130821`). Il testo della richiesta l'aveva girato
+  Simone verso le 14:14 («Girato a GPT»).
+- Verso le 14:17 Simone ha incollato anche la risposta di GPT alla prima review (`098d2b0`): era gia' stata letta su origin
+  alle 13:09 ed eseguita alle 13:13 (sei aggregati). Nessuna azione nuova.
+- `pre-deploy` fresco alle 14:26:36: 12 controlli superati (nove file del manifest invariati, uscita del confronto e cartella
+  del checkout assenti, ID logici mai usati, nessun hook nel canonico, riferimento non estratto, 0 job in corsia).
+- Riferimento di deploy pubblicato fra le 14:29:02 e le 14:29:40, come ramo nuovo e nient'altro:
+  `git push leonardo 2b7b4551c6059d5456e6e12d171ef687eb0818f4:refs/heads/deploy/scaling_300m_comparison_inputs_20261106_v1`.
+  `git ls-remote leonardo` restituisce lo stesso SHA. Nessun push forzato, `main` di Leonardo non toccato.
+- `gate-checkout` fresco alle 14:29:48: 13 controlli superati. Prima riga rivista inviata alle 14:30:13:
+  `SCALING-inputs-checkout-20261106` = job 63671405, `COMPLETED 0:0` in 40 secondi (14:30:43-14:31:23), 2 CPU, 4G, memoria
+  massima 176 MB. Log: «checkout di campagna pronto» per la cartella e il commit attesi, 2.040 file.
+- `gate-compare` fresco alle 14:35:02: 11 controlli superati (checkout con HEAD uguale al commit e albero pulito; manifest
+  con percorso, sha256 e dimensione del piano; nove pin invariati; uscita assente; ID del confronto mai usato) e guardia degli
+  argomenti del dispatcher reale: confronto accettato, tre alterazioni rifiutate. E' la prima esecuzione reale dei due cancelli.
+- **Confronto sottomesso alle 14:36:12:** `SCALING-compare-20261106` = job 63671773 (seconda riga rivista: 8 CPU, 30G, 30
+  minuti, codice congelato `aef665b`, manifest `162da7fb...`). `RUNNING` dalle 14:36:30. Stato nel ledger comune: `sottomesso`.
+- **Corsia seriale: da adesso cade la regola «Due fit per volta» della linea 2** (decisione di Simone delle 11:17, registro
+  `bf7f7a4`): nel ledger comune compare sottomesso un ID che comincia con `SCALING-compare-`. Non ho scritto alla sottochat 2
+  (Simone: «Lo dico io»). Finche' gira, il confronto occupa tutti i 30G dell'utente in `lrd_all_serial`: al piu' fino alle
+  15:07, oltre alla tolleranza dello scheduler.
+- Pubblicato sul ramo di esecuzione, punta `1d12ebe6dda23e184db29ddbbdae7ae61734f87c` (SHA remoto verificato): stati dei tre
+  cancelli, prova della guardia, due ricevute (copie degli `state.json` del ledger) e la lettura
+  `comparison_submission_reading_20261106.txt`.
+- Budget: consumate 125,112 core-ore (125,089 + 0,022 misurate dal checkout); confronto richiesto 4,0, massimo 4,4; caso
+  peggiore 129,512 su 310.
+- Nessun retry, nessun rilancio, nessuna dipendenza fra i due job; nessuno score aperto. Restano: fine del confronto, raccolta
+  e validazione tecnica dell'esito (punti D della Review 10), terza review di GPT, poi la mia analisi scientifica separata.
+- In preparazione e non ancora pubblicato: `outcome_stage.py` (raccolta e validazione dell'esito senza stampare score), da
+  provare in locale sulla scena sintetica prima dell'uso.
+
 ### 2026-11-06 | Claude | Linea 2, EPN15: 24 fit conclusi, raccolta finale e aggregazione pubblicate (3ba5e64)
 - Stato: gli otto C1 finetune e scratch sono `COMPLETED 0:0` fra le 10:16:07 e le 10:33:31 (38.285-38.552 secondi). In tutto 27 job
   su 27 `COMPLETED 0:0`, riavvii 0, nessun rilancio, nessuna cancellazione.
@@ -9395,6 +9691,42 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   resta a 9-10 job finche' i sedici non sono tutti dentro, poi scende di uno a ogni benchmark concluso.
 - Chiuso il caso aperto della mia voce precedente: la catena dello scaling non si e' fermata, i quattordici fit sono `COMPLETED 0:0`.
 - Nessuna azione mia sui job delle altre linee.
+
+### 2026-11-06 | Claude | Linea 1: punti del piano degli aggregati da guardare (scelte mie, limiti delle prove, corsia seriale)
+- **Niente catena fra i sei aggregati (scelta mia, corretta nel piano v2).** La prima versione (`21447b5`) li legava con
+  `afterok`, come i 14 fit. L'ho tolta prima di chiedere la review: un job dipendente entra in graduatoria solo alla fine del
+  precedente e i job gia' in attesa gli passano davanti (visto il 05/11), e i fit della linea 2 sulla stessa corsia hanno un
+  limite fino a 4 ore l'uno. Gli aggregati non dipendono l'uno dall'altro. Conseguenza: un errore del primo non ferma gli altri
+  cinque; se il difetto e' comune falliscono tutti in pochi secondi, e in nessun caso rilancio senza analisi e nuova review.
+- **Corsia seriale, per il coordinamento e per Simone.** Il dispatcher congelato impone 30G anche agli aggregati, quasi tutta
+  la memoria dell'utente in `lrd_all_serial` (30.800 MB, lettura mia del 05/11): un aggregato parte solo se nessun altro job
+  seriale dell'utente e' in corsa. I job della linea 2 chiedono 8 CPU e 30 GiB: 16 benchmark (limite 30 minuti), poi 51 fit
+  (48 con limite 4 ore, 3 con 1 ora; `consolidation_long_20261105/launch_plan.json`, ramo della linea 2 a `2df9aff`). La corsia
+  va quindi a un job alla volta; a parita' di utente passa chi aspetta da piu' tempo (lettura mia). I sei aggregati entrano in
+  coda prima della fine dei benchmark e occupano la corsia per circa un quarto d'ora subito dopo. **Il confronto no:** nasce
+  dopo raccolta, manifest e seconda review di GPT; se nel frattempo la linea 2 mette in coda un'ondata di fit, checkout e
+  confronto (40 minuti di limite in tutto) aspettano dietro: fino a 8 fit, cioe' fino a 32 ore col limite pieno. La durata
+  reale dei fit non la conosco. L'ordine lo decide Simone: glielo chiedo dicendo l'effetto sulle due linee.
+- **Disposizione delle uscite: scelta mia.** Una cartella per cella e compito sotto `cpu/probe_aggregates/`, creata dal job; i due
+  file accanto (`aggregate.oof.npz`, `aggregate.audit.jsonl`) li scrive il codice congelato. Fuori dal codice e da `$WORK/wearusfm`.
+- **Limite delle prove.** I controlli sull'allocazione (partizione, nodo, CPU, memoria, limite di tempo) girano solo dentro il
+  job. Quelle righe del dispatcher di recupero (148-166) sono identiche a quelle di `scaling_readers.sbatch` in `aef665b`
+  (144-162), con cui `SCALING-pose-validate-20261105` (63591791) e' passato a 2 CPU e 30G; con il dispatcher di recupero sono
+  passati ridge e 14 fit a 8 CPU. Mai provato su un job reale: il limite di 600 secondi.
+- **Submitter.** Uso `--timeout 120` (i fit usavano 60) e il comando ssh predefinito. Un'uscita 255 di ssh lascia lo stato
+  `ambiguo`: si riconcilia con `--riconcilia`, non si invia di nuovo.
+
+### 2026-11-06 | Claude | Linea 1: difetto del mio cancello d'invio trovato da GPT (squeue fallito contato come coda vuota), corretto in 1c83189
+- **Il difetto (mio).** `final_stages.py check` contava le righe di `squeue_serial.stdout` senza chiedere prima `exit == 0`: una
+  lettura fallita e vuota dava zero job, dieci posti liberi e «CANCELLO SUPERATO». Lo stesso per `sacct`: con exit diverso da 0 e
+  uscita intatta i controlli passavano. Trovato e riprodotto da GPT (`1e03fb3`,
+  `docs/reviews/scaling_aggregate_queue_guard_20261106_check.py`). Nessun effetto: il cancello non e' mai stato usato per un invio.
+- **La correzione.** Rifiuto in testa a `checks`, prima di qualunque lettura dell'uscita, anche quando il codice d'uscita manca o
+  non e' un intero. Una coda davvero vuota con lettura riuscita continua a passare (caso della regressione).
+- **Limite, dichiarato.** La regressione prova la logica del cancello, non la lettura remota. `state` scrive comunque il file
+  dello stato anche se `squeue` fallisce (resta come prova): il rifiuto arriva in `check` e in `plan`.
+- **Per GPT, se riesegue la sua riproduzione sul commit nuovo:** oltre a commit, hash e ultima asserzione, serve tollerare
+  l'uscita vuota (`splitlines()[-1]`): ora il rifiuto non stampa righe su stdout, il messaggio esce con `SystemExit`.
 
 ### 2026-11-06 | Claude | Linea 2: margine stretto sul limite dei benchmark; note sulla chiusura di EPN15
 - Per GPT consolidamento, benchmark: ninapro_db2 pre ha usato 1.422 secondi su 1.800 (79 % del limite). I sei fit sommano 1.399
