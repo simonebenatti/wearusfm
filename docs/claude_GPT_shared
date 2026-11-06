@@ -7509,6 +7509,35 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   (ID nel `launch_plan.json`, stati di sottomissione, log di audit; `build_inputs`, `apply_to_plans --check`, `pin_phase fit --dry-run`
   OK; 342 test superati). Stato: 12 fit su 72 conclusi; prossima ondata la 7 (righe 15-16) allo stesso C-1.
 
+### 2026-11-06 | Claude | Coordinamento: parere sulle teste per classificazione e regressione (domanda di Simone); nessun job
+- Domanda di Simone alla chat di coordinamento, 06/11 sera: «Le teste devono necessriamente essere tutte omogenee? secondo me
+  una testa di classificaizone cmoew quella che abbiamo adesso va molt bene, ma la stessa struttura per la regressione forse è
+  insuffciente. dici che si possono provare delle teste diverse per classificazone e regressione? Ad esempio, una versone di
+  temponet come testa per la regressione come la vedi? troppo grossa ?». Risposta nella chat subito dopo questa voce, scritta
+  alle 21:16: parere mio, non una proposta di esperimento; la direzione scientifica resta di GPT e la decisione di Simone.
+- Fatti riletti prima di rispondere: la testa di posa del pretraining legge a ogni patch da 25 ms la media sui K latenti e fa
+  `LayerNorm -> Linear(d, 20)`, lineare per criterio e inizializzata a zero (`src/wearusfm/model/pose_head.py`); la ridge legge
+  la stessa media per patch dalla cache 160 x 384 per finestra (`src/wearusfm/harness/pose_eval.py`); il pannello «posa testa
+  allenata» della valutazione lunga e' la predizione della testa gia' nel teacher, non una testa nuova
+  (`docs/consolidation_long_execution_20261105.md`, riga 45). Piano scientifico del 02/11: lettore temporale minimo
+  t-100/t/t+100 ms, `E_dyn` di B 0,859512 -> 0,855321 (-0,004191); contrasti fra slot (M384/M48/S384/S720) quasi nulli;
+  «6c. Modifica testa/pooling/FM - non avviata. Intervenire solo su una precisa ipotesi con confronto separato»;
+  «7a. Obiettivo posa dinamica - da scegliere».
+- Parere dato: le teste non devono essere omogenee; l'omogeneita' attuale e' una scelta del protocollo delle sonde (lettori
+  lineari per misurare la rappresentazione, non la testa). Per la classificazione la testa pooled lineare basta. Per la
+  regressione il lettore attuale e' per istante e lineare: i lettori lineari piu' ricchi non hanno recuperato la dinamica, e
+  nessuna prova dice nulla di un lettore non lineare temporale (limite 4 della lettura parziale di GPT sullo scaling). Una testa
+  convoluzionale temporale in stile TEMPONet sui latenti per patch e' un'ipotesi precisa, adatta al punto 6c; la taglia non e'
+  il problema: da qualche centinaio di migliaia a pochi milioni di parametri, cioe' dall'1% al 10% del 30M e sotto l'1% del
+  300M (TEMPONet originale: 460 kB a 8 bit nel lavoro del 2020, 70,9 kB nella versione per regressione su NinaPro DB8 del 2021;
+  numeri letti da una ricerca web, non dai PDF). Il problema e' l'attribuzione: con una testa capace il guadagno non e' piu'
+  solo della rappresentazione, quindi serve la stessa testa anche sul solo sEMG grezzo (o sul solo tokenizer) come controllo,
+  con criteri fissati prima e selezione sui soli utenti train. Tenere separati due livelli: (A) lettore sui latenti congelati,
+  economico, dalle cache per patch gia' previste dal harness, senza toccare il FM ne' le campagne in corso; (B) testa dentro il
+  pretraining (7a): cambia che cosa l'encoder e' spinto a codificare, e una testa grande puo' rendere i latenti meno leggibili
+  linearmente; va deciso a parte e non insieme a un tokenizer nuovo.
+- Nulla di deciso, nessun job, nessun costo preventivato. Testo per GPT pronto nella chat, da usare solo se Simone lo vuole.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
