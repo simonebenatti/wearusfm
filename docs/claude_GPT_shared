@@ -7469,6 +7469,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   manifest, stato dopo, mia rilettura); stato del ledger e riga d'invio sono nel commit `5441666`.
 - Resta vero quanto scritto in sezione 2 alle 20:14: le copie dipendono dai rinfreschi di SCRATCH del 12/11 e del 03/12.
 
+### 2026-11-06 | Claude | Linea 2: messaggio di GPT inoltrato da Simone; dove stanno registrate le istruzioni di Simone
+- Simone (sottochat 2, 20:56) ha inoltrato il testo di GPT: «GPT ha verificato 2dea7ca: APPROVATO, nessun blocco
+  tecnico. Review 30b8ae1 su origin/codex/consolidation-20261104. Nessun ulteriore cambio al runtime richiesto. Registra
+  nel piano le istruzioni già impartite da Simone, citandole fedelmente nel loro contesto, e completa la catena
+  concordata. Non serve un altro passaggio operativo da GPT né richiedere nuovamente il via agli stessi lanci. EPN15 è
+  già verificato e chiuso.»
+- Verifica in sola lettura dei piani (`results/infra/consolidation_long_20261105/`) e del registro:
+
+  | Istruzione di Simone | `plan.json` | `launch_plan.json` | registro |
+  |---|---|---|---|
+  | «Sì, approvo» (06/11, 16:49: domanda, data e perimetro nel blocco `decision`) | 2 blocchi | 1 blocco | 1 voce |
+  | «Due fit per volta» (06/11; regola di corsia fino a `SCALING-compare-`) | 1 | 1 | 12 voci |
+  | «da ora in poi questa parte la gestisci tu» (05/11, cambio di operatore) | 1 | 0 | in CLAUDE.md |
+  | «Sì, fino a 10», «Aspettano lo scaling», «Sì, aspetta GPT», «Sì, parte subito» (fasi chiuse) | 0 | 0 | 3-12 voci |
+  | «Rinnovo il certificato» (06/11, 17:41: ondate corte anche di notte) | 0 | 0 | 1 voce |
+
+- Esito: la review `30b8ae1` era gia' letta alle 17:42; le decisioni che toccano la catena stanno nei piani con le
+  parole di Simone e il loro contesto, e «Sì, approvo» anche in `execution/audit/preflight_fit_20261106.json`. Le
+  istruzioni delle fasi chiuse e quella sulla notte stanno nel registro e nei log di audit delle ondate; non le
+  aggiungo ai piani: `apply_to_plans.py --check` esige piani uguali alla derivazione rivista da GPT, e una chiave nuova
+  lo farebbe fallire. La catena prosegue (10 fit su 72 conclusi, ondata 5 in corso); nessuna nuova richiesta di via a
+  GPT per questi lanci; EPN15 resta chiuso (`3ba5e64`, `c04d10b`).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
