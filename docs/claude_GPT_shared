@@ -7842,6 +7842,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   Stato: 54 fit su 72 conclusi, 3 in corsia; prossima ondata la 22 (righe 58-62: cinque fit `pre` e `post` di EPN612, limiti
   02:00:00 e 01:15:00, 7 h 45 sommate).
 
+### 2026-11-07 | Claude | Linea 2, fase fit A1: ondata 21 conclusa, ondata 22 inviata (righe 58-62 di 72, cinque fit di EPN612)
+- Ondata 21, tutti e tre `COMPLETED 0:0`, uno alla volta in corsia: `63745044` LONG-FIT-G19618-pre-epn612-F0123
+  (08:43:55-09:04:03, 00:20:08 su 02:00:00, partito per primo col limite piu' corto), `63745042`
+  LONG-FIT-G49046-pool-ninapro_db6-F01 (09:04:15-09:15:03, 00:10:48 su 02:45:00) e `63745043` LONG-FIT-G49046-pool-ninapro_db6-F23
+  (09:15:23-09:28:35, 00:13:12 su 02:45:00), gli ultimi due in attesa per `QOSMaxCpuPerUserLimit`; con questi DB6 e' completo
+  (`pre` e `post` alle tre dosi, `pool` a dosi 39.237 e 49.046). Report letti solo nei campi di provenienza (sha256
+  `907af08c4552…`, `5f690ce12b69…`, `9e02d6195fd6…`, 4 file ciascuno, kind/checkpoint/dataset/view uguali ai pin di fase);
+  nessun punteggio letto. Consumo: 8 CPU x 44:08 = 5,88 core-ore; fase fit 117,55 core-ore (111,67 + 5,88), 0 GPU-ore.
+- C-1 alle 09:29 (`PRECHECK_OK`, log in `execution/audit/precheck_fit_wave22_20261107.log`): `$WORK` 41,57 GiB liberi (soglia
+  10,724; utente sbenatti 175,9 GiB), scratch scrivibile, ledger riletto, seriale vuota, rami sorvegliati fermi dall'ultimo
+  riscontro, certificato ssh valido fino alle 12:32:13. Fuori linea 2, su `boost_usr_prod`: `63593128` (linea 3) in esecuzione
+  da 23 minuti e `63696864` SCALING-300M-train19618 (linea 1) in coda; nessuna azione su di essi.
+- Ondata 22 inviata alle 09:29:40-43 col submitter comune (`--agente claude`, campagna `consolidation_long_20261105`, ledger
+  `prenotato` -> `sottomesso`), cinque job a 4 fold interi (7 h 45 di limiti sommati): `63747196`
+  LONG-FIT-G39237-pre-epn612-F0123 e `63747197` LONG-FIT-G49046-pre-epn612-F0123 (limite 02:00:00), `63747198`
+  LONG-FIT-G19618-post-epn612-F0123, `63747199` LONG-FIT-G39237-post-epn612-F0123 e `63747201` LONG-FIT-G49046-post-epn612-F0123
+  (limite 01:15:00); 8 CPU / 30 GiB, checkout congelato `consolidation-long-fit-20261105` (`a70e29e`). Sorvegliante in sola
+  lettura ogni 5 minuti. Registrazione sul ramo di esecuzione `claude/consolidation-long-exec-20261105`: commit `9cc5a9d` (ID
+  nel `launch_plan.json`, stati di sottomissione, log di audit; `build_inputs`, `apply_to_plans --check`, `pin_phase fit
+  --dry-run` OK; 342 test superati). Stato: 57 fit su 72 conclusi, 5 in corsia; restano le ondate 23 (righe 63-65: `pool` di
+  EPN612 a dosi 39.237 e 49.046, limite 03:45:00, e il primo fit di UCI, 00:30:00; 8 h sommate) e 24 (righe 66-72: i sette fit
+  restanti di UCI, 00:30:00 ciascuno).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
