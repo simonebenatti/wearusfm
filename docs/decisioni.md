@@ -6725,3 +6725,17 @@ quattro `code_sha` di fase, 103 ricevute, 107 log). **VERDETTO: APPROVATO.**
 di quella lettura (mancava la voce sulla sintesi) ed e' stato chiuso con la voce `42fc3f8`. La formula «i sette criteri …
 soddisfatti nei contenuti» della voce precedente e della voce di registro `42fc3f8` va letta cosi'. Nessun punteggio letto;
 la lettura scientifica resta a GPT consolidamento.
+
+### 07/11/2026 — Valutazione lunga: firma di Simone sulle conclusioni 1-4 della review GPT `57c4d7e`
+
+Simone, 07/11/2026 alle 14:54, alla domanda di Claude «Firmi le conclusioni 1-4 di GPT (chiusura verificata,
+riferimenti 49.046 posa e 19.618 classificazione)?»: «Sì, firmo». La firma copre le conclusioni 1-4 di
+`docs/reviews/consolidation_long_results_20261107.md` (GPT consolidamento, commit `57c4d7e` su
+`codex/consolidation-20261104`): (1) valutazione lunga chiusa come eseguita e verificata; (2) per la posa 49.046 come
+riferimento esplorativo, con ridge post e testa allenata affiancati; (3) per il primario di classificazione 19.618
+secondo V-R1, conservando il secondario post-backbone e l'eterogeneita' per dataset senza promuovere un nuovo primario;
+(4) nessuna promozione generale del FM, nessuna modifica di loss o architettura, nessuna nuova dose o esperimento
+derivano da questa chiusura; EPN15 resta una prova sul teacher 19.618; le decisioni successive richiedono un protocollo
+distinto. Esclusa dalla firma la conclusione 5 (conservazione di circa 19,61 GiB di LONG_ROOT prima della purge):
+decisione separata di Simone, ancora aperta; nessuna copia eseguita. La firma non autorizza attivita' operative ne'
+nuovi job. Letture convergenti di Claude: registro `44bc7f0` e rettifica `3231062`.
