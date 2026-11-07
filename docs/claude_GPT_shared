@@ -8087,6 +8087,25 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   dell'esecuzione di A e le risorse restano decisioni di Simone all'approvazione del protocollo (la disposizione del
   05/11 nomina Claude operatore solo per EPN15 e per la valutazione lunga). Conservazione (conclusione 5) ancora aperta.
 
+### 2026-11-07 | Claude | Linea 2: conservazione su `$WORK` dell'intera LONG_ROOT decisa da Simone («Tutto, 19,6 GiB»); job di copia inviato
+- Simone, 07/11/2026 (fra le 15:10 e le 15:24), alla domanda «Conservo le uscite della valutazione lunga su $WORK prima
+  della purge di metà dicembre?»: «Tutto, 19,6 GiB». Chiude la conclusione 5 della review GPT `57c4d7e` (insieme
+  completo); decisione, perimetro, criteri di esito e preventivo in `docs/decisioni.md` sul ramo di esecuzione
+  (commit `8614807`). Letture del 07/11 alle 15:24-15:29: LONG_ROOT 354 file, 174 cartelle, nessun link,
+  21.062.138.097 byte (19,62 GiB), file piu' vecchio del 05/11 22:29; destinazione
+  `$WORK/wearusfm_runs/results/consolidation_long_20261105` assente; quota di progetto 40.206.628 kB liberi, dopo la
+  copia 19.638.133 kB (18,73 GiB), sopra la soglia C-1 di 10,724 GiB.
+- Strumento: `scripts/slurm/preserve_long_to_work.sbatch` (questo ramo, commit `5b9b43c`), derivato dallo script di
+  spostamento del 06/11 ma in sola copia (modi e date conservati; nessuna rinomina, link o rimozione; quota
+  ricontrollata prima di copiare; confronto di elenco, dimensioni, albero e sha256 di ogni file; ricevuta in
+  `$WORK/wearusfm_runs/results/storage_preserve_20261107/`). Collaudo in cartella finta su SCRATCH: 29 controlli
+  superati; prova a secco sui percorsi veri senza scritture.
+- Invio alle 15:31 con submitter e ledger comuni, `--agente claude`: `LONG-PRESERVE-WORK-20261107`, job **63781257**,
+  campagna `consolidation_long_20261105`, `lrd_all_serial`, 1 CPU, 2 GB, limite 40 minuti: al massimo 0,67 core-ore,
+  0 GPU-ore. In coda dietro i job seriali della linea 3 gia' sottomessi, che non ritarda. Fuori perimetro, decisione
+  separata di Simone: le dipendenze fuori LONG_ROOT indicate da GPT (T100-G 19.618 su SCRATCH: 26 file, 23 MB,
+  datati 04/11). Esito, verifica contro `preservation_inventory.json` e consuntivo in una voce successiva.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
