@@ -7801,6 +7801,27 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   OK; 342 test superati). Stato: 46 fit su 72 conclusi, 6 in corsia; prossima ondata la 20 (righe 53-54: `pool` di DB6 a
   dose 39.237, coppie di fold F01 e F23, limiti 02:45:00).
 
+### 2026-11-07 | Claude | Linea 2, fase fit A1: ondata 19 conclusa (sei fit di DB6), ondata 20 inviata (righe 53-54 di 72)
+- Ondata 19, tutti e sei `COMPLETED 0:0`, uno alla volta in corsia (prima i tre `post` col limite piu' corto): `63741783`
+  LONG-FIT-G19618-post-ninapro_db6-F0123 (07:22:05-07:27:10, 00:05:05 su 00:45:00), `63741784` LONG-FIT-G39237-post-ninapro_db6-F0123
+  (07:27:21-07:31:30, 00:04:09), `63741785` LONG-FIT-G49046-post-ninapro_db6-F0123 (07:31:49-07:35:31, 00:03:42), `63741780`
+  LONG-FIT-G19618-pre-ninapro_db6-F0123 (07:36:02-07:47:05, 00:11:03 su 01:30:00), `63741781` LONG-FIT-G39237-pre-ninapro_db6-F0123
+  (07:47:39-07:57:05, 00:09:26), `63741782` LONG-FIT-G49046-pre-ninapro_db6-F0123 (07:58:02-08:09:13, 00:11:11); le viste `pre` e
+  `post` di DB6 sono complete. Report letti solo nei campi di provenienza (sha256 `87c4b497fb86…`, `edbbb8ab6ecc…`,
+  `243f2d5f7e7d…`, `207002c3363f…`, `ad22ec2fc0c5…`, `47c111c75ff0…`, 4 file ciascuno, kind/checkpoint/dataset/view uguali ai
+  pin di fase); nessun punteggio letto. Consumo: 8 CPU x 44:36 = 5,95 core-ore; fase fit 108,35 core-ore (102,40 + 5,95), 0 GPU-ore.
+- C-1 alle 08:12 (`PRECHECK_OK`, log in `execution/audit/precheck_fit_wave20_20261107.log`): `$WORK` 41,57 GiB liberi (soglia
+  10,724; utente sbenatti 175,9 GiB), scratch scrivibile, ledger riletto, seriale vuota, rami sorvegliati fermi dall'ultimo
+  riscontro, certificato ssh valido fino alle 12:32:13. In coda su `boost_usr_prod`, fuori linea 2: `63593128` (linea 3) e
+  `63696864` SCALING-300M-train19618 (linea 1); nessuna azione su di essi.
+- Ondata 20 inviata alle 08:12:51-54 col submitter comune (`--agente claude`, campagna `consolidation_long_20261105`, ledger
+  `prenotato` -> `sottomesso`), due job da 02:45:00 (5 h 30 sommate): `63743983` LONG-FIT-G39237-pool-ninapro_db6-F01 e
+  `63743984` LONG-FIT-G39237-pool-ninapro_db6-F23 (vista `pool` di DB6 a coppie di fold); 8 CPU / 30 GiB, checkout congelato
+  `consolidation-long-fit-20261105` (`a70e29e`). Sorvegliante in sola lettura ogni 5 minuti. Registrazione sul ramo di
+  esecuzione `claude/consolidation-long-exec-20261105`: commit `30b7b6d` (ID nel `launch_plan.json`, stati di sottomissione, log
+  di audit; `build_inputs`, `apply_to_plans --check`, `pin_phase fit --dry-run` OK; 342 test superati). Stato: 52 fit su 72
+  conclusi, 2 in corsia; prossima ondata la 21 (righe 55-57: `pool` di DB6 a dose 49.046, F01 e F23, e il primo fit di EPN612).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
