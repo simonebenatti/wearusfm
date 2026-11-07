@@ -7136,6 +7136,35 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Chiedo a GPT la review unica del pacchetto (`f6dc8ec`); testo pronto consegnato a Simone. Nessun invio prima
   dell'esito favorevole.
 
+### 2026-11-07 | Claude | Linea 1: B-1 della review `c2df17e` corretto, nuovo commit della consegna `40797b1`; nessun invio
+- Review GPT `c2df17e` sul pacchetto `f6dc8ec`: DA RIVEDERE per il solo B-1, «`gate()` calcola i posti disponibili, ma
+  li restituisce soltanto fra i dati informativi» e «Il comando `lines` non legge il verbale del cancello». GPT: «La
+  correzione di B-1 va pubblicata da Claude con le regressioni; la sua verifica chiude il rilascio dello stesso
+  pacchetto.» Giudizi a-f conformi; precisazioni 1-3 non bloccanti. Ho corretto solo B-1 e le tre precisazioni, che
+  stanno sullo stesso percorso cancello -> generazione; codice congelato e deploy del training `73524b6` invariati.
+- Correzione (`scripts/scaling_plans19618.py`, commit `40797b1ccb640b8b986f30539f05a73ac0a8f485` su `claude/scaling-300m-exec-20261106`,
+  SHA remoto verificato): il cancello di ogni stadio ammette una tranche concreta (numero e ID) = i primi job non
+  ancora nel ledger che entrano nei posti liberi della coda seriale (10 meno i job presenti) e nel limite di linea
+  (4 meno i job `SCALING-*` gia' presenti; `gate --line-limit N` lo cambia e resta nel verbale); tranche vuota =
+  cancello non superato. `lines <stadio>` legge l'ultimo verbale dello stadio ed emette solo quella tranche, con gli
+  stessi comandi, risorse e catena `afterok`; rifiuta (stato 1, `nessuna riga: <motivo>`) senza verbale, con verbale
+  non superato, lettura piu' vecchia di 30 minuti, ledger dello stadio o checkout `code` cambiati; `--max N` puo' solo
+  accorciare (1 <= N <= tranche). Stadi GPU: tranche = stadio intero. `lines checkout-<nome> --sha C` richiede il
+  verbale superato dello stesso commit e l'ID mai usato. `stage_lines` resta il generatore puro: la riproduzione di
+  GPT va rifatta su `main(["lines", ...])` o `admitted_lines`.
+- Precisazioni recepite: (1) il cancello dei lettori richiede la raccolta `COMPLETED 0:0` di ogni checkout usato,
+  con lo stesso job del ledger; (2) un errore prima dei controlli lascia `evidence/gates/<stadio>_<ora>_refused.json`
+  con il testo dell'errore e ferma il comando; (3) `budget-table` stampa il caso peggiore a 15 job: 345,17.
+- Regressioni in `tests/cpu/test_scaling_gates19618.py` (70 test, due nuovi): coda piena -> cancello non superato e
+  zero righe; un posto -> una riga; sei aggregati -> tranche di 4, di 3 con un job della linea presente, di 2 con
+  otto posti occupati, di 6 con `--line-limit 6`; `--max` oltre la tranche, 0 e -1 -> rifiuto senza emissione; coda
+  libera -> le stesse righe di `stage_lines` con la catena del piano; verbale vecchio, ledger cambiato, `--sha` su
+  uno stadio di job -> rifiuto; verbale di rifiuto.
+- Test del pacchetto 19618 (`tests/cpu/test_scaling_*19618*.py`): 617 passati in 3 min 33 s; suite completa in corso.
+- Piano `evaluation_chain_plan.md` (§4, §5, §6, §8, §9) e `docs/decisioni.md` aggiornati nello stesso commit.
+- Training 63696864 alle 14:37 del 07/11: `PENDING` per `Priority`. Nessun job dello stadio B inviato; rilascio sospeso fino
+  alla verifica di GPT della correzione. Limite di linea 4: lettura mia, prudente, finche' Simone non dispone altrimenti.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
