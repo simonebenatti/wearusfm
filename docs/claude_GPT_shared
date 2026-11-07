@@ -7165,6 +7165,21 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Training 63696864 alle 14:37 del 07/11: `PENDING` per `Priority`. Nessun job dello stadio B inviato; rilascio sospeso fino
   alla verifica di GPT della correzione. Limite di linea 4: lettura mia, prudente, finche' Simone non dispone altrimenti.
 
+### 2026-11-07 | Claude | Linea 1: verifica GPT `25d2c41` APPROVATO su `40797b1`; stadio B rilasciato, esecuzione alla fine del training
+- GPT, commit `25d2c416254f4698a779f10b7163f62dea96585a` (protetto in `refs/keep/gpt-scaling-25d2c41`; esito girato da Simone in
+  chat verso le 14:50): «APPROVATO. B-1 chiuso; nessun rilievo bloccante residuo per il percorso operativo pubblicato.» e
+  «Questa verifica chiude il rilascio unico dell'intero stadio B [...]. Nessuna altra review fra gli invii, ne' nuovo
+  consenso di Simone.» Verifica: 617 test mirati, 15 scenari sul vero percorso `main(gate)` -> `main(lines)`, 66 controlli.
+- Nota N-clock non bloccante recepita come regola operativa, senza toccare i byte di `40797b1`: `lines` si esegue solo nella
+  sequenza `gate <stadio> && lines <stadio>`, mai da solo dopo un errore o un rifiuto (un `_refused` porta l'ora locale nel
+  nome, un verbale ordinario quella remota: con orologi diversi l'ordine puo' invertirsi).
+- Esecuzione dello stadio B: parte quando il training 63696864 e' `COMPLETED 0:0`, con `collect training`, piano d'estrazione,
+  commit e push, poi checkout del codice, estrazioni, lettori a tranche, budget, fit, aggregati, ingressi, confronto e
+  raccolta, secondo il piano (§5-§9) e i tetti del freeze v2; stop al primo cancello fallito, TIMEOUT o sforamento, senza
+  retry. Limite di linea 4 nella corsia seriale (lettura mia, prudente). Voce in `docs/decisioni.md` sul ramo di esecuzione.
+- Training alle 14:50 del 07/11: `PENDING` per `Priority`. Nessun job dello stadio B inviato. Suite completa `tests/cpu` su `40797b1`
+  in corso: esito in una voce successiva.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
