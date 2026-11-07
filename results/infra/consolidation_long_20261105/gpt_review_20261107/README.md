@@ -63,3 +63,14 @@ scientifico o di campagna è cambiato.
 La corrispondenza col ledger corrente vale per la copia locale verificata il
 07/11; per una riproduzione futura conservare i 107 stati originali. I percorsi
 remoti nei pin indicano l'origine dei file, non una dipendenza di rete degli script.
+
+## Seconda conservazione verificata
+
+Dopo «Sì, aggiungila», `preservation_t100g_verification.json` verifica la consegna
+`2930d7d`, job 63785874: 26 file, 6 directory, 23.981.927 byte. Tre coppie di manifest
+identiche, sei hash uguali alla ricevuta, p1/p2 uguali ai pin storici. 195 controlli
+locali riproducibili con `docs/reviews/check_long_t100g_preservation_20261107.py
+--repo . --out /private/tmp/long-t100g-preservation` (comando su una riga).
+Insieme alla prima copia: 380 file, 21.086.120.024 byte; totale campagna e copie
+109 allocazioni, 176,836111 coreh / 3,373611 GPUh. Nessuna nuova lettura dei payload,
+query sacct, verifica dei timestamp o backup implicito delle altre dipendenze del progetto.

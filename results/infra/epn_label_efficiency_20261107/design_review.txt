@@ -1,0 +1,11 @@
+Review indipendente locale del disegno — 07/11/2026
+Agente critico: /root/handoff_epn15. Nessun job o modifica runtime.
+Verdetto: disegno coerente, nessun errore bloccante rilevato.
+Ricalcolati: 72 fit GPU nuovi con due LR e riuso condizionato scratch100;
+766,2188889 GPUh a update costanti; 239,78936655 nell'alternativa a 15 epoche,
+usando costi per fold e rapporti di update effettivi; conteggi 11/22/53/106,
+59.355/59.625 update e 15 occasioni validation. Primario area log(n), 100% secondario.
+Rilievo accolto: esplicitare shuffle per passaggio, batch finale incompleto,
+assenza di drop_last e di reset optimizer/schedule/RNG tra passaggi del subset.
+Limite: verifica del disegno e dei conti locali, non runtime o benchmark GPU.
+La review richiesta a Claude e la decisione su ricetta/budget restano aperte.

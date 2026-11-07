@@ -1,0 +1,227 @@
+{
+  "approved_core_hours_cap": null,
+  "approved_gpu_hours_cap": null,
+  "bootstrap": {
+    "conditioned_on_single_subset_and_training_seed": true,
+    "confidence_level": 0.95,
+    "interval": "percentile",
+    "paired_all_cells": true,
+    "replicates": 2000,
+    "seed": 20261102,
+    "unit": "held_subject"
+  },
+  "data_input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+  "dataset": "epn612_development",
+  "executable": false,
+  "folds": 4,
+  "fractions": [
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1.0
+  ],
+  "frozen_cache": {
+    "bytes": 294936151,
+    "dimension": 768,
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/p2/epn612.npz",
+    "preservation_commit": "424f0ecc5dc23120ac84a7f2e3e1a24fede2b250",
+    "sha256": "f7339e8950b27bb649b7b09dcc4f76b154f99891157c446b00aa5d21931fe70b",
+    "view": "x_pool"
+  },
+  "frozen_reader": {
+    "C": [
+      0.001,
+      0.01,
+      0.1,
+      1,
+      10,
+      100
+    ],
+    "class_weight": "balanced",
+    "max_iter": 12000,
+    "nonconvergence": "blocks cell; no dropping a C candidate",
+    "penalty": "l2",
+    "refit": "selected train only",
+    "scaler_fit": "selected train only",
+    "solver": "lbfgs",
+    "threads": 8,
+    "tie_break": "smallest C",
+    "tol": 0.0001
+  },
+  "implementation_status": "not_implemented",
+  "launch_authorized": false,
+  "lr_candidates": {
+    "finetune": [
+      {
+        "encoder": 1e-05,
+        "head": 0.001
+      },
+      {
+        "encoder": 0.0001,
+        "head": 0.01
+      }
+    ],
+    "scratch": [
+      {
+        "encoder": 0.0001,
+        "head": 0.001
+      },
+      {
+        "encoder": 0.001,
+        "head": 0.01
+      }
+    ]
+  },
+  "matrix": {
+    "frozen100_reused_cells": 4,
+    "frozen_C_fits_per_cell": 6,
+    "frozen_refits_per_cell": 1,
+    "new_finetune_cells": 20,
+    "new_frozen_cells": 16,
+    "new_gpu_candidates": 72,
+    "new_scratch_cells": 16,
+    "scratch100_reused_cells": 4
+  },
+  "new_experiments_submitted": false,
+  "official_test_allowed": false,
+  "operator": "claude",
+  "optimizer": {
+    "clip_grad_norm": 1.0,
+    "name": "AdamW",
+    "weight_decay": 0.01
+  },
+  "precision": "BF16",
+  "preparation_instruction": "A GPT",
+  "primary": {
+    "full100_in_primary": false,
+    "metric": "normalized_trapezoidal_log_subject_count_area_FT_minus_scratch_pp",
+    "new_rule_not_V_R1": true,
+    "practical_margin_pp_proposed": 1.0,
+    "practical_rule": "benefit: estimate >=1pp and CI lower >0; deterioration: estimate <=-1pp and CI upper <0; otherwise resolved small or inconclusive",
+    "subject_counts": [
+      11,
+      22,
+      53,
+      106
+    ]
+  },
+  "protocol": "epn-label-efficiency-20261107-v1-draft",
+  "recommended_policy": {
+    "all_candidates_complete_budget": true,
+    "batch": 8,
+    "cosine_horizon": "total updates per fold",
+    "name": "fixed_updates_100pct",
+    "restart_between_fractions": true,
+    "shuffle": "historical per-pass shuffle; no drop_last; no optimizer/schedule/RNG reset between passes",
+    "updates_by_fold": [
+      59355,
+      59355,
+      59625,
+      59625
+    ],
+    "validation_opportunities": 15,
+    "validation_steps_by_fold": [
+      [
+        3957,
+        7914,
+        11871,
+        15828,
+        19785,
+        23742,
+        27699,
+        31656,
+        35613,
+        39570,
+        43527,
+        47484,
+        51441,
+        55398,
+        59355
+      ],
+      [
+        3957,
+        7914,
+        11871,
+        15828,
+        19785,
+        23742,
+        27699,
+        31656,
+        35613,
+        39570,
+        43527,
+        47484,
+        51441,
+        55398,
+        59355
+      ],
+      [
+        3975,
+        7950,
+        11925,
+        15900,
+        19875,
+        23850,
+        27825,
+        31800,
+        35775,
+        39750,
+        43725,
+        47700,
+        51675,
+        55650,
+        59625
+      ],
+      [
+        3975,
+        7950,
+        11925,
+        15900,
+        19875,
+        23850,
+        27825,
+        31800,
+        35775,
+        39750,
+        43725,
+        47700,
+        51675,
+        55650,
+        59625
+      ]
+    ],
+    "warmup_updates": 100
+  },
+  "regimes": [
+    "finetune_teacher49046",
+    "scratch",
+    "frozen_logistic_teacher49046"
+  ],
+  "resource_gate": "all GPU cells must pass before any fit; no partial matrix launch",
+  "reuse": {
+    "frozen100": "conditional equivalence bridge to 4 LONG49046 pool held fold predictions",
+    "if_not_proven": "stop preparation of executable matrix; no silent additional fits",
+    "scratch100": "conditional equivalence bridge to 8 historical candidates and 4 selected OOF"
+  },
+  "review_commit": null,
+  "rounding": "ceil",
+  "scientific_owner": "gpt_consolidation",
+  "selection": {
+    "candidate": "highest validation balanced accuracy; tie candidate0",
+    "checkpoint": "highest validation balanced accuracy; tie earliest validation step",
+    "divergence": "persist nonfinite outcome; nonselectable candidate; select surviving completed candidate if any and disclose; missing cell blocks primary",
+    "grid_extensions": false,
+    "held_predictions": "once per new cell only after both candidates; historical selected OOF reused without new inference",
+    "operational_failure": "OOM/TIMEOUT/node failure stops phase; no automatic retry or resource extension"
+  },
+  "status": "awaiting_claude_design_review",
+  "subset_realizations": 1,
+  "subset_seed": 20261107,
+  "subset_selection": "ascending SHA256 UTF8 20261107|fold={fold}|subject={full_id}; tie full_id lexicographic; prefixes; original row order retained",
+  "teacher": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt",
+    "sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490"
+  },
+  "training_seed": 0
+}

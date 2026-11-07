@@ -1,8 +1,9 @@
 # Conservazione della valutazione lunga: copia su WORK verificata dai manifest
 
-**Aggiornamento del 07/11/2026: conservazione di LONG_ROOT eseguita da Claude
-e verificata da GPT sui manifest pubblicati.** Decisione separata di Simone:
-«Tutto, 19,6 GiB». Le dipendenze fuori LONG_ROOT restano una decisione distinta.
+**Aggiornamento del 07/11/2026: conservazione richiesta completata da Claude
+e verificata da GPT sui manifest pubblicati per entrambe le copie.** Decisioni
+separate di Simone: «Tutto, 19,6 GiB» per LONG_ROOT e «Sì, aggiungila» per
+la dipendenza T100-G 19.618. Il secondo intervento chiude la decisione rimasta aperta.
 Nessuna operazione remota, copia, job o monitor eseguito da GPT.
 
 ## Esito della copia e verifica locale
@@ -41,6 +42,41 @@ attuale: verifica le prove archiviate della copia. L'originale non è stato
 cancellato o sostituito dall'operazione e rimane soggetto alla purge SCRATCH.
 
 [Audit locale della conservazione](../../results/infra/consolidation_long_20261105/gpt_review_20261107/preservation_verification.json).
+
+## Secondo esito: dipendenza T100-G 19.618
+
+Prove: `2930d7d6feb6a054ae0ce9fded98ac5ac1b12abe` sul ramo di esecuzione;
+registro Claude `9c44fbba0f7c96871717fa087c5cb7c2482e253e`. Script esteso con
+`PRESERVE_SET`, commit `29dd8eb`, selezione `t100g-19618`.
+Job `LONG-PRESERVE-WORK-T100G-20261107`, **63785874**, riportato COMPLETED 0:0
+il 07/11 dalle 16:33:00 alle 16:33:08 CET: 8 s, zero GPUh,
+**0,004444 coreh** sulle due CPU allocate (una richiesta).
+
+Originale:
+`/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G`.
+Copia:
+`/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G`.
+
+Verificati localmente **26 file, 6 directory (radice inclusa), 23.981.927 byte**:
+le tre coppie di manifest sono identiche, i sei hash coincidono con la ricevuta,
+`inventory_check_t100g.json` concorda. I report `p1.json` e `p2.json` hanno gli
+stessi hash dei riferimenti storici nel piano e nella sintesi lunga. Un solo
+invio nel ledger; hash dello script stdin uguale al commit dichiarato e
+`PRESERVE_SET` corretto. Nessuna nuova lettura dei payload remoti; restano i
+medesimi limiti su permessi, timestamp e contabilità riportata dall'operatore.
+
+[Audit T100-G](../../results/infra/consolidation_long_20261105/gpt_review_20261107/preservation_t100g_verification.json).
+
+| Copia verificata | File | Byte | Job | Coreh |
+|---|---:|---:|---:|---:|
+| LONG_ROOT | 354 | 21.062.138.097 | 63781257 | 0,086667 |
+| T100-G 19.618 | 26 | 23.981.927 | 63785874 | 0,004444 |
+| Totale delle due copie | 380 | 21.086.120.024 | due job | 0,091111 |
+
+**Consuntivo della valutazione lunga e delle due copie:** 109 allocazioni,
+176,836111 coreh e 3,373611 GPUh (arrotondati 176,836 / 3,374), esclusi
+pretraining ed EPN15. I manifest e le ricevute sono conservati sotto
+`$WORK/wearusfm_runs/results/storage_preserve_20261107/` e nei commit pubblicati.
 
 Radice originale:
 `/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/`.
@@ -90,17 +126,18 @@ di dover risolvere dopo la purge dipendenze mancanti.
 
 ## Dipendenze fuori LONG_ROOT
 
-**Stato separato, ancora aperto nella consegna qui verificata.** Claude indica
-26 file T100-G 19.618 su SCRATCH, circa 23 MB, come oggetto della decisione
-separata di Simone in corso. Non sono inclusi nella copia di LONG_ROOT né
-certificati come già conservati da questa verifica.
+**La dipendenza T100-G 19.618 nominata nella consegna è ora copiata e
+verificata**, come descritto nel secondo esito. Il seguente elenco mantiene
+le dipendenze necessarie alla riproduzione: non va interpretato come una nuova
+verifica di backup dell'intero progetto, dei raw o di ogni artefatto storico.
 
 Una copia della sola radice lunga **non è autosufficiente**. Servono anche:
 
-- Le OOF, i report, gli audit e le cache storiche **T100-G 19.618/pool**, riusati
-  senza refit. I report `p1.json`/`p2.json` sono sotto
+- Le OOF, i report e gli audit storici **T100-G 19.618/pool**, riusati senza
+  refit, sono compresi nei 26 file copiati. I percorsi originali dei report sono
   `$SCRATCH/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/`.
-  Gli altri percorsi sono fissati da `historical_classification_plan`,
+  Le eventuali cache storiche di estrazione esterne non sono contenute in questa
+  directory di sonde; non se ne dichiara qui un nuovo backup. I percorsi sono fissati da `historical_classification_plan`,
   `historical_extraction_plan` e dai rispettivi report nel piano lungo.
 - I riferimenti della replica **T25-L−B19618**, inclusi gli input OOF se si
   vuole riprodurla a partire dalle predizioni. Il suo report aggregato è già
@@ -114,9 +151,9 @@ Una copia della sola radice lunga **non è autosufficiente**. Servono anche:
 
 Le copie originali su SCRATCH conservano le proprie scadenze: i primi file
 del lungo risalgono al 05–06/11, quindi senza rinnovi i 40 giorni portano a metà
-dicembre. La copia eseguita su WORK non dipende dalla purge di SCRATCH. Per le
-dipendenze esterne ancora da decidere non assumere rinnovi o proroghe e non
-far decorrere i 40 giorni dalla chiusura della campagna.
+dicembre. Le due copie eseguite su WORK non dipendono dalla purge di SCRATCH.
+Nessuna proroga o rinnovo è implicito e i 40 giorni delle copie originali
+non decorrono dalla chiusura della campagna.
 
 Le quattro vecchie cartelle `passo6` spostate su SCRATCH il 06/11 sono un'altra
 consegna e non sono protette da un backup di LONG_ROOT. La loro conservazione

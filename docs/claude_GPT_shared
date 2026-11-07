@@ -178,6 +178,40 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-07 | GPT consolidamento | Conservazione completa verificata; protocollo A preparato per review
+
+Simone ha affidato la preparazione di A a GPT («A GPT») e autorizzato la copia
+T100-G 19.618 («Sì, aggiungila»). Verificata la consegna Claude `2930d7d6feb6a054ae0ce9fded98ac5ac1b12abe`,
+registro `9c44fbba0f7c96871717fa087c5cb7c2482e253e`, script `29dd8eb`:
+**26 file, 6 directory, 23.981.927 byte**, tre coppie di manifest originali/copia
+identiche, sei hash uguali alla ricevuta, report p1/p2 uguali ai pin del lungo.
+Audit locale riprodotto, 195 controlli; un invio nel ledger del job 63785874.
+Insieme a LONG_ROOT già verificata (`ef79eec`): **380 file, 21.086.120.024 byte**.
+Consuntivo lungo e due copie, esclusi pretraining/EPN15: **109 allocazioni,
+176,836111 coreh / 3,373611 GPUh**; nessuna nuova query sacct.
+
+[Nota di conservazione aggiornata](reviews/consolidation_long_preservation_20261107.md).
+Originali SCRATCH e piani congelati conservati; copie WORK non soggette alla purge SCRATCH.
+I manifest verificano contenuto/albero archiviati, non nuovi payload remoti o modi/date.
+Nessun job, copia, monitor o deploy di GPT.
+
+Preparati [protocollo A](protocol_a_epn_label_efficiency_20261107.md), proposta strutturata,
+conteggi e stime in `results/infra/epn_label_efficiency_20261107/`, più
+[prompt per la review di Claude](prompt_claude_protocol_a_20261107.md).
+Stato **awaiting_claude_design_review**, non eseguibile, runtime non implementato.
+FT dal teacher 49.046 contro scratch, congelato logistico CPU sul pool, train annidati
+11/22/53/106 soggetti e riferimento 100%, validation/held storici fissi, due LR.
+Raccomandazione da discutere: pari update del 100% con 15 occasioni validation;
+primario area media FT−scratch su log(n) nei quattro train ridotti. Soglia pratica 1 pp
+proposta per la nuova area, non V-R1. Riuso scratch100/frozen100 condizionato alla parità.
+
+Controllo indipendente e ricalcolo confermano **72 fit GPU nuovi, circa 766,22 GPUh**
+a update costanti; alternativa a 15 epoche per frazione **239,79 GPUh**. Sono soli fit,
+prima di CPU, benchmark e margini; nessun budget approvato. La media storica 8,21 GPUh
+includeva frozen: FT e scratch richiedono circa 10,64 per candidato. Non si riduce
+la griglia tacitamente. Politica e costo finale passano dalla decisione di Simone;
+Claude resta operatore. Nessun sorgente runtime modificato, nessuna suite GPU dichiarata.
+
 ### 2026-11-07 | GPT consolidamento | Conservazione LONG_ROOT su WORK verificata dai manifest
 
 Decisione separata di Simone, 07/11/2026: **«Tutto, 19,6 GiB»**. Consegna operatore
@@ -5908,6 +5942,23 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-07 | GPT consolidamento | Conservazione T100-G chiusa; limiti e costo della proposta A
+
+La dipendenza storica T100-G 19.618 è ora nella copia WORK verificata: chiuso il punto
+rimasto aperto nella voce precedente. Non si dichiara un backup generale dei raw o delle
+altre cache del progetto. Contabilità della copia ricalcolata dai valori dell'operatore
+(8 s × 2 CPU = 0,004444 coreh), senza sacct nuovo; modi/date non presenti nei manifest.
+
+Per A il 5% significa 11 soggetti train più 24 validation, circa 15% delle etichette
+train+val del pieno; non «5% delle etichette totali». Un solo sottoinsieme annidato e
+un solo seme di training: IC held condizionali, non varianza fra training/subset.
+Pari update e 15 epoche sono due domande operative diverse: non usarle come ripieghi
+a posteriori. Stime 766,22 / 239,79 GPUh escludono overhead e CPU; nessun tetto autorizzato.
+Il critico ha chiesto di fissare shuffle, ultimo batch e nessun reset di optimizer,
+schedule/RNG fra passaggi: accolto nel protocollo e nella proposta. Il riuso 100%
+richiede una prova più forte del solo conteggio di update; se fallisce, nessun nuovo
+fit implicito. Protocollo ancora in review di disegno, nessun esperimento avviato.
 
 ### 2026-11-07 | GPT consolidamento | LONG_ROOT conservata; dipendenze esterne ancora separate
 

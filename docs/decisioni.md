@@ -6678,3 +6678,33 @@ teacher19k; il fine-tuning del49k non è stato misurato.
 
 [Review, tabella e contrasti](reviews/consolidation_long_results_20261107.md).
 [Inventario e conservazione](reviews/consolidation_long_preservation_20261107.md).
+
+
+## 07/11/2026 — GPT: firma acquisita, conservazione verificata e proposta A in review
+
+Aggiornamento della voce finale precedente, senza riscriverne lo stato storico.
+Conclusioni 1–4 della review `57c4d7e` firmate da Simone il 07/11 alle 14:54:
+**«Sì, firmo»**, registrate da Claude in `8382801` e `776b401` e acquisite da GPT in `48b5da8`.
+Conservazione decisa separatamente: **«Tutto, 19,6 GiB»** per LONG_ROOT e **«Sì, aggiungila»**
+per T100-G 19.618. Claude ha eseguito i due job 63781257 e 63785874; GPT ha verificato
+manifest, ricevute e pin pubblicati (`424f0ec`, `2930d7d`) senza operare sul cluster.
+Totale copie 380 file, 21.086.120.024 byte; costo delle copie 0,091111 coreh e zero GPUh.
+Consuntivo lungo + copie: 109 allocazioni, 176,836111 coreh / 3,373611 GPUh, esclusi
+pretraining ed EPN15. Non è una nuova verifica remota dei payload o dei timestamp.
+[Nota e prove](reviews/consolidation_long_preservation_20261107.md).
+
+Simone ha affidato la preparazione del protocollo A a GPT, **«A GPT»**. Consegnato
+[il disegno](protocol_a_epn_label_efficiency_20261107.md) nello stato
+`awaiting_claude_design_review`, non eseguibile: stessi fold EPN15, train annidati,
+FT49k/scratch e logistica congelata CPU, due LR, scelta della dose esplicita.
+Raccomandazione scientifica da discutere: pari update del 100%, 15 occasioni validation,
+primario area media FT−scratch su log(n) per 11/22/53/106 soggetti. Nuova soglia pratica
+proposta 1 pp, lettura simmetrica, non modifica dei criteri V-R1 firmati.
+
+**Nessuna decisione di budget o lancio per A è registrata qui.** La stima dei 72 fit
+GPU è 766,22 GPUh a pari update oppure 239,79 GPUh a 15 epoche per frazione;
+CPU, benchmark, checkout e margini esclusi. Scratch100 e frozen100 si riusano soltanto
+con parità dimostrata; altrimenti matrice e preventivo tornano in proposta, senza
+aggiungere fit. La validation di 24 soggetti è inclusa nel budget etichette dichiarato.
+Segue review del disegno da parte di Claude, poi scelta concreta della ricetta e del
+budget da parte di Simone. Nessun nuovo job, benchmark o modifica runtime di GPT.

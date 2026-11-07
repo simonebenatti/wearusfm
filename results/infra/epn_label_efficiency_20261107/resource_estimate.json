@@ -1,0 +1,51 @@
+{
+  "allocation_caps": null,
+  "alternative": {
+    "new_gpu_candidate_fits": 72,
+    "policy": "fixed_15_epochs",
+    "projected_fit_gpu_hours": 239.78936655048057
+  },
+  "assumptions": [
+    "two historical LR candidates per regime",
+    "8 historical scratch100 candidates reused only after equivalence gate",
+    "all new FT initialized at teacher49046",
+    "linear cost extrapolation, not allocation cap; preprocessing/validation do not scale exactly with updates",
+    "CPU frozen, benchmarks, aggregation, checkouts and resource margins excluded"
+  ],
+  "basis": {
+    "path": "results/infra/finetune15_20261105/final/accounting.json",
+    "sha256": "83dacdd69dacc0efe76fa3bfde6bcd3a529a52c81734c50d54699940ba6c04a9"
+  },
+  "benchmark_jobs_submitted": false,
+  "fallback_if_scratch_reuse_fails": {
+    "automatic_retry": false,
+    "new_fits": 80,
+    "requires_new_plan_and_budget": true
+  },
+  "frozen_cpu": {
+    "C_candidates_per_cell": 6,
+    "cpu_hours": null,
+    "expected_new_cells": 16,
+    "logical_cells": 20,
+    "possible_historical_cells": 4,
+    "requires_benchmark": true
+  },
+  "one_candidate_illustration_only": {
+    "fixed_epochs_gpu_hours": 119.89468327524028,
+    "fixed_updates_gpu_hours": 383.1094444444444,
+    "new_fits": 36,
+    "not_current_proposal": true
+  },
+  "per_candidate_gpu_hours": {
+    "finetune": 10.643611111111111,
+    "scratch": 10.63982638888889
+  },
+  "recommended": {
+    "new_gpu_candidate_fits": 72,
+    "new_gpu_cells": 36,
+    "policy": "fixed_updates_100pct",
+    "projected_fit_gpu_hours": 766.2188888888888,
+    "reused_scratch_candidates": 8
+  },
+  "status": "preliminary_not_benchmarked_not_authorized"
+}

@@ -1,0 +1,216 @@
+{
+  "basis": "Independent read of existing four scratch15 held arrays, SHA checked against final receipts; no new predictions",
+  "subjects": 314,
+  "classes": [
+    "fist",
+    "noGesture",
+    "open",
+    "pinch",
+    "waveIn",
+    "waveOut"
+  ],
+  "windows": 47100,
+  "per_subject_per_class": 25,
+  "folds": [
+    {
+      "fold": 0,
+      "subjects": {
+        "train": 211,
+        "val": 24,
+        "held": 79
+      },
+      "rows": {
+        "train": 31650,
+        "val": 3600,
+        "held": 11850
+      },
+      "fraction_table": [
+        {
+          "fraction": 0.05,
+          "train_subjects": 11,
+          "train_windows": 1650,
+          "train_plus_val_windows": 5250,
+          "updates_at15epochs": 3105
+        },
+        {
+          "fraction": 0.1,
+          "train_subjects": 22,
+          "train_windows": 3300,
+          "train_plus_val_windows": 6900,
+          "updates_at15epochs": 6195
+        },
+        {
+          "fraction": 0.25,
+          "train_subjects": 53,
+          "train_windows": 7950,
+          "train_plus_val_windows": 11550,
+          "updates_at15epochs": 14910
+        },
+        {
+          "fraction": 0.5,
+          "train_subjects": 106,
+          "train_windows": 15900,
+          "train_plus_val_windows": 19500,
+          "updates_at15epochs": 29820
+        },
+        {
+          "fraction": 1,
+          "train_subjects": 211,
+          "train_windows": 31650,
+          "train_plus_val_windows": 35250,
+          "updates_at15epochs": 59355
+        }
+      ]
+    },
+    {
+      "fold": 1,
+      "subjects": {
+        "train": 211,
+        "val": 24,
+        "held": 79
+      },
+      "rows": {
+        "train": 31650,
+        "val": 3600,
+        "held": 11850
+      },
+      "fraction_table": [
+        {
+          "fraction": 0.05,
+          "train_subjects": 11,
+          "train_windows": 1650,
+          "train_plus_val_windows": 5250,
+          "updates_at15epochs": 3105
+        },
+        {
+          "fraction": 0.1,
+          "train_subjects": 22,
+          "train_windows": 3300,
+          "train_plus_val_windows": 6900,
+          "updates_at15epochs": 6195
+        },
+        {
+          "fraction": 0.25,
+          "train_subjects": 53,
+          "train_windows": 7950,
+          "train_plus_val_windows": 11550,
+          "updates_at15epochs": 14910
+        },
+        {
+          "fraction": 0.5,
+          "train_subjects": 106,
+          "train_windows": 15900,
+          "train_plus_val_windows": 19500,
+          "updates_at15epochs": 29820
+        },
+        {
+          "fraction": 1,
+          "train_subjects": 211,
+          "train_windows": 31650,
+          "train_plus_val_windows": 35250,
+          "updates_at15epochs": 59355
+        }
+      ]
+    },
+    {
+      "fold": 2,
+      "subjects": {
+        "train": 212,
+        "val": 24,
+        "held": 78
+      },
+      "rows": {
+        "train": 31800,
+        "val": 3600,
+        "held": 11700
+      },
+      "fraction_table": [
+        {
+          "fraction": 0.05,
+          "train_subjects": 11,
+          "train_windows": 1650,
+          "train_plus_val_windows": 5250,
+          "updates_at15epochs": 3105
+        },
+        {
+          "fraction": 0.1,
+          "train_subjects": 22,
+          "train_windows": 3300,
+          "train_plus_val_windows": 6900,
+          "updates_at15epochs": 6195
+        },
+        {
+          "fraction": 0.25,
+          "train_subjects": 53,
+          "train_windows": 7950,
+          "train_plus_val_windows": 11550,
+          "updates_at15epochs": 14910
+        },
+        {
+          "fraction": 0.5,
+          "train_subjects": 106,
+          "train_windows": 15900,
+          "train_plus_val_windows": 19500,
+          "updates_at15epochs": 29820
+        },
+        {
+          "fraction": 1,
+          "train_subjects": 212,
+          "train_windows": 31800,
+          "train_plus_val_windows": 35400,
+          "updates_at15epochs": 59625
+        }
+      ]
+    },
+    {
+      "fold": 3,
+      "subjects": {
+        "train": 212,
+        "val": 24,
+        "held": 78
+      },
+      "rows": {
+        "train": 31800,
+        "val": 3600,
+        "held": 11700
+      },
+      "fraction_table": [
+        {
+          "fraction": 0.05,
+          "train_subjects": 11,
+          "train_windows": 1650,
+          "train_plus_val_windows": 5250,
+          "updates_at15epochs": 3105
+        },
+        {
+          "fraction": 0.1,
+          "train_subjects": 22,
+          "train_windows": 3300,
+          "train_plus_val_windows": 6900,
+          "updates_at15epochs": 6195
+        },
+        {
+          "fraction": 0.25,
+          "train_subjects": 53,
+          "train_windows": 7950,
+          "train_plus_val_windows": 11550,
+          "updates_at15epochs": 14910
+        },
+        {
+          "fraction": 0.5,
+          "train_subjects": 106,
+          "train_windows": 15900,
+          "train_plus_val_windows": 19500,
+          "updates_at15epochs": 29820
+        },
+        {
+          "fraction": 1,
+          "train_subjects": 212,
+          "train_windows": 31800,
+          "train_plus_val_windows": 35400,
+          "updates_at15epochs": 59625
+        }
+      ]
+    }
+  ]
+}

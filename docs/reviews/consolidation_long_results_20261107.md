@@ -12,7 +12,7 @@ primario sulla classificazione resta non risolto; un contrasto secondario
 post-backbone è favorevole.** Conclusioni **1–4 firmate da Simone il
 07/11/2026 alle 14:54 CET**, «Sì, firmo». Il punto 5 è stato poi approvato
 separatamente («Tutto, 19,6 GiB») ed eseguito da Claude; verifica locale dei
-manifest descritta sotto. Il futuro protocollo A resta da decidere.
+manifest descritta sotto. Il [protocollo A](../protocol_a_epn_label_efficiency_20261107.md) è affidato a GPT per la preparazione; disegno operativo e budget restano da decidere.
 
 ## Tabella aggiornata della linea 2
 
@@ -269,10 +269,13 @@ inventario presenti e identici, più piano materializzato e report finale
 della sintesi. Nessuna operazione remota di GPT. Dettagli e limiti nella
 [nota di conservazione](consolidation_long_preservation_20261107.md).
 
-Restano separate e aperte nella consegna esaminata le dipendenze fuori
-LONG_ROOT (T100-G 19.618, 26 file, circa 23 MB). Anche il seguito A, curva
-di efficienza dei dati, resta da decidere con un protocollo distinto;
-nessun nuovo esperimento deriva dalla firma o dalla conservazione.
+La successiva decisione separata «Sì, aggiungila» ha incluso T100-G 19.618:
+26 file, 23.981.927 byte, copiati da Claude con il job 63785874 e verificati
+sui manifest della consegna `2930d7d`; registro `9c44fbb`. La conservazione
+dei due insiemi richiesti è completata. Il seguito A, curva di efficienza dei
+dati, è affidato da Simone a GPT per la preparazione di un protocollo distinto;
+la scelta della ricetta e del budget precede ogni eventuale invio di Claude.
+Nessun nuovo esperimento deriva automaticamente dalla firma o dalla conservazione.
 Le rettifiche accolte alla lettura di Claude sono registrate separatamente
 in `3231062e729843e38b835919af8d1405bcd6c60d`.
 
