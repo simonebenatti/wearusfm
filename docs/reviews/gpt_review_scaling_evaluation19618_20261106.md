@@ -1,5 +1,75 @@
 # Review GPT — linea 1, valutazione della continuazione a 19.618
 
+## Esito aggiornato del 07/11/2026 — APPROVATO su 40797b1
+
+**APPROVATO. B-1 chiuso; nessun rilievo bloccante residuo per il percorso operativo pubblicato.**
+Commit del pacchetto: `40797b1ccb640b8b986f30539f05a73ac0a8f485`, su
+`origin/claude/scaling-300m-exec-20261106`. Sostituisce `f6dc8ec`; il deploy del training
+`73524b63be534f81b3db4ade4b7fc7f47129a0f3` non cambia.
+
+Questa verifica **chiude il rilascio unico dell'intero stadio B**: Claude puo' eseguire checkout,
+estrazioni, validazione e benchmark, costruzione dei budget, ridge e fit, aggregati, ingressi del
+confronto, confronto e raccolta, rispettando i controlli del piano. Nessuna altra review fra
+gli invii, ne' nuovo consenso di Simone. I pin ancora inesistenti saranno prodotti dai
+costruttori rivisti e pubblicati nei checkout di soli documenti/evidenze previsti; non devono
+tornare in review. Invariati stop, budget, perimetro e divieto di retry o estensioni implicite.
+
+### Chiusura del difetto
+
+La verifica usa il percorso effettivo `main(["gate", ...])` -> `main(["lines", ...])` ->
+`admitted_lines()`. `stage_lines()` resta correttamente un generatore puro: chiamarlo da solo
+non verifica il nuovo percorso di rilascio. La riproduzione storica della prima review resta
+conservata come prova del difetto di `f6dc8ec`, non come test della correzione.
+
+- Il cancello registra numero e ID della tranche ammessa; zero posti produce un esito negativo.
+- `lines` consuma la tranche del verbale e non genera job ulteriori. Nella riproduzione indipendente
+  sui benchmark: coda vuota -> quattro righe, nove job di altre linee -> una, dieci -> nessuna;
+  quattro job della linea gia' presenti -> nessuna; due della linea e sette altrui -> una.
+- `--max` puo' solo accorciare. Verificati rifiuto senza verbale, verbale fallito/scaduto,
+  ledger dello stadio cambiato e identita' del checkout `code` cambiata. Le risorse e le catene
+  `afterok` delle righe ammesse restano quelle del generatore precedente.
+- I sei aggregati procedono nelle tranche previste, al massimo quattro con il limite di default.
+  `--line-limit` non amplia la tabella dei job o il budget: resta una disposizione di coordinamento,
+  da registrare come nel piano; il default approvato e' quattro.
+- Il controllo dei checkout raccolti richiede `COMPLETED 0:0` e lo stesso ID SLURM del ledger.
+  Le eccezioni prima dei controlli producono il verbale `_refused`; il conto predefinito di
+  `budget-table` ora mostra il massimo a quindici shard, 345,166667 core-ore.
+
+Il diff tocca esattamente cinque file operativi, di test e documentazione. Verificati invariati
+i quindici file derivati, le quindici sorgenti congelate, `src/`, training, piano di training,
+endpoint, policy scientifica e freeze. Sessantasei controlli indipendenti confermano perimetro
+e risorse; ventitre' funzioni di piani, job, budget e raccolta sono identiche tramite confronto AST.
+
+### Nota non bloccante N-clock — ordinamento dei verbali con orologi diversi
+
+Resta una limitazione riprodotta in `latest_gate()`: i verbali ordinari usano nel nome l'ora
+remota, quelli `_refused` l'ora locale. Con il Mac indietro di tre minuti, scarto espressamente
+tollerato dal codice, un rifiuto successivo puo' ordinarsi prima di un PASS precedente.
+Una chiamata **isolata** a `lines` puo' allora recuperare il vecchio PASS. Non attesto quindi
+la garanzia assoluta «qualsiasi ultimo rifiuto invalida sempre ogni precedente verbale».
+
+La nota **non blocca questo rilascio**: il percorso pubblicato e' `gate ... && lines ...`,
+e il piano impone lo stop al primo errore. L'eccezione del nuovo cancello interrompe tale
+sequenza prima di `lines`; la prova indipendente conferma zero chiamate a `lines` in quel
+percorso. Dopo un errore non va eseguito `lines` da solo per riutilizzare un vecchio verbale:
+vale gia' la sequenza e la regola di stop del piano, senza un nuovo passaggio di approvazione.
+Per un futuro riuso autonomo di `lines`, usare un unico ordine locale dei tentativi, inclusi
+i rifiuti, mantenendo separata l'ora remota impiegata per la verifica di freschezza.
+Nessuna modifica ai byte di `40797b1` e' richiesta per questa nota prima dell'esecuzione.
+
+**Suite mirata rieseguita: 617 test passati in 232,74 s, nessun fallimento.**
+La prova indipendente del percorso CLI comprende 15 scenari, inclusa la distinzione fra
+la chiamata isolata e la sequenza prescritta nella nota N-clock.
+
+Le evidenze di questa verifica sono in
+`results/infra/scaling_300m_20261104/evaluation19618_b1_closure_20261107/`:
+suite mirata e riepilogo, pin del rilascio, audit di perimetro/risorse e riproduzione del
+percorso CLI con repository/ledger temporanei. Nessun accesso a Leonardo, nessun deploy,
+invio o modifica del worktree Claude da parte di GPT. La suite completa dichiarata da
+Claude resta distinta dalla suite mirata rieseguita qui.
+
+## Esito iniziale su f6dc8ec — storico, superato dalla chiusura sopra
+
 **DA RIVEDERE — un solo rilievo bloccante, B-1, nel collegamento fra cancello della coda e tranche di invii.**
 Derivazione, lettura scientifica e preventivo sono conformi. Non occorre cambiare il training,
 gli algoritmi dei lettori, il controllo a 30M, il budget o i criteri dell'endpoint.

@@ -1,0 +1,337 @@
+{
+  "old": "f6dc8ec0fb33ae1bcf6d34018194c2e9c71f7cb5",
+  "new": "40797b1ccb640b8b986f30539f05a73ac0a8f485",
+  "read_only_local": true,
+  "checks": [
+    {
+      "check": "exact5scopefiles",
+      "pass": true
+    },
+    {
+      "check": "no src changes",
+      "pass": true
+    },
+    {
+      "check": "derivations verify15",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged scripts/scaling_evaluation19618.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged scripts/scaling_evaluation.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged scripts/scaling_pose_readout19618.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged scripts/scaling_pose_readout.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged scripts/scaling_probe19618.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged scripts/scaling_probe.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged scripts/scaling_compare19618.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged scripts/scaling_compare.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged scripts/scaling_reading19618.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged scripts/scaling_reading.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged scripts/slurm/scaling_evaluation19618.sbatch",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged scripts/slurm/scaling_evaluation.sbatch",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged scripts/slurm/scaling_readers19618.sbatch",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged scripts/slurm/scaling_readers_recovery.sbatch",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged tests/cpu/test_scaling_evaluation19618.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged tests/cpu/test_scaling_evaluation.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged tests/cpu/test_scaling_pose_readout19618.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged tests/cpu/test_scaling_pose_readout.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged tests/cpu/test_scaling_probe19618.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged tests/cpu/test_scaling_probe.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged tests/cpu/test_scaling_compare19618.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged tests/cpu/test_scaling_compare.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged tests/cpu/test_scaling_reading19618.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged tests/cpu/test_scaling_reading.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged tests/cpu/test_scaling_evaluation19618_launcher.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged tests/cpu/test_scaling_evaluation_launcher.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged tests/cpu/test_scaling_readers19618_launcher.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged tests/cpu/test_scaling_readers_launcher.py",
+      "pass": true
+    },
+    {
+      "check": "derived unchanged tests/cpu/test_scaling_readers19618_limits.py",
+      "pass": true
+    },
+    {
+      "check": "frozen source unchanged tests/cpu/test_scaling_readers_recovery_launcher.py",
+      "pass": true
+    },
+    {
+      "check": "pin unchanged results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json",
+      "pass": true
+    },
+    {
+      "check": "pin unchanged results/infra/scaling_300m_20261104/continuation19618_20261106/training_plan.json",
+      "pass": true
+    },
+    {
+      "check": "pin unchanged results/infra/scaling_300m_20261104/continuation19618_20261106/endpoint19618_reading.md",
+      "pass": true
+    },
+    {
+      "check": "pin unchanged results/infra/scaling_300m_20261104/continuation19618_20261106/scientific_reading_policy_19618.json",
+      "pass": true
+    },
+    {
+      "check": "pin unchanged scripts/scaling_continue.py",
+      "pass": true
+    },
+    {
+      "check": "pin unchanged scripts/slurm/scaling_continue.sbatch",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function extraction_plan",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function candidate_pose_caches",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function pose_plan",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function candidate_probe_caches",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function control_probe_caches",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function probe_plan",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function accounting",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function pose_budget",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function probe_resources",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function fit_state",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function comparison_inputs",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function jobs",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function checkout_job",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function stage_table",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function stage_lines",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function checkout_lines",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function build_budgets",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function build_comparison_inputs",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function collect",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function evidence",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function accounting_pin",
+      "pass": true
+    },
+    {
+      "check": "unchanged numerical/resource function release_check",
+      "pass": true
+    },
+    {
+      "check": "budget maximum345.166667",
+      "pass": true
+    },
+    {
+      "check": "budget flags",
+      "pass": true
+    },
+    {
+      "check": "fits default15shards246coreh",
+      "pass": true
+    },
+    {
+      "check": "checkout max0.8coreh",
+      "pass": true
+    },
+    {
+      "check": "eight-thread CPUstage unchanged",
+      "pass": true
+    }
+  ],
+  "checks_passed": 66,
+  "changed_files": [
+    "docs/decisioni.md",
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/evaluation_chain_plan.md",
+    "scripts/scaling_plans19618.py",
+    "tests/cpu/test_scaling_gates19618.py",
+    "tests/cpu/test_scaling_plans19618.py"
+  ],
+  "budget_table": {
+    "stages": {
+      "checkout": {
+        "jobs": 5,
+        "requested_core_hours": 0.5,
+        "core_hours_with_scheduler_margin": 0.8,
+        "cap_with_scheduler_margin": 0.8
+      },
+      "pose-validate": {
+        "jobs": 1,
+        "requested_core_hours": 1.0,
+        "core_hours_with_scheduler_margin": 1.1,
+        "cap_with_scheduler_margin": 1.1
+      },
+      "pose-benchmark": {
+        "jobs": 3,
+        "requested_core_hours": 4.0,
+        "core_hours_with_scheduler_margin": 5.2,
+        "cap_with_scheduler_margin": 5.2
+      },
+      "probe-benchmark": {
+        "jobs": 15,
+        "requested_core_hours": 70.66666666666667,
+        "core_hours_with_scheduler_margin": 76.66666666666667,
+        "cap_with_scheduler_margin": 76.66666666666667
+      },
+      "pose-ridge": {
+        "jobs": 1,
+        "requested_core_hours": 8.0,
+        "core_hours_with_scheduler_margin": 8.4,
+        "cap_with_scheduler_margin": 8.4
+      },
+      "probe-aggregate": {
+        "jobs": 6,
+        "requested_core_hours": 2.0,
+        "core_hours_with_scheduler_margin": 2.6,
+        "cap_with_scheduler_margin": 2.6
+      },
+      "compare": {
+        "jobs": 1,
+        "requested_core_hours": 4.0,
+        "core_hours_with_scheduler_margin": 4.4,
+        "cap_with_scheduler_margin": 4.4
+      },
+      "probe-fit": {
+        "jobs": 15,
+        "requested_core_hours": 240.0,
+        "core_hours_with_scheduler_margin": 246.0,
+        "cap_with_scheduler_margin": 246
+      }
+    },
+    "core_hours_with_scheduler_margin": 345.1666666666667,
+    "cap": 350,
+    "within_stage_caps": true,
+    "within_total_cap": true
+  },
+  "line_limit_assessment": "Only changes temporal tranche admission; gate remains bounded by global10slots and unchanged fixed job table. Does not authorize extra jobs or cost. Default4 until Simone changes coordination.",
+  "checkout_evidence_assessment": "New _collected_checkout compares collected COMPLETED0:0 accounting jobID to commonledger. Existing collect verified rawreceipt and rejects missing/failingjob. Gate now requires evidence for everyusedcheckout."
+}

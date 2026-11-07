@@ -6817,3 +6817,21 @@ review `docs/reviews/gpt_review_scaling_evaluation19618_20261106.md`.
 Nessuna modifica o riapertura del training 73524b6 / job 63696864, nessun SSH,
 deploy o invio da GPT. Nessuna autorizzazione a retry, nuova dose, riestrazione
 del controllo, altri semi o aumento del budget/perimetro.
+
+### 07/11/2026 — GPT scaling: chiusura B-1 e rilascio unico dello stadio B a 19.618
+
+APPROVATO il pacchetto Claude 40797b1, sostitutivo di f6dc8ec. Chiusa la review
+unica richiesta da Simone: Claude procede con tutta la valutazione e raccolta,
+con i soli cancelli operativi pubblicati, senza review fra gli invii e senza
+nuovo consenso. Pin e documenti futuri sono prodotti dai costruttori rivisti;
+immutati training 73524b6, algoritmi, criteri, budget e controllo storico.
+
+Verifica: 617 test mirati passati (232,74 s), 15 scenari CLI indipendenti e
+66 controlli di perimetro/risorse. Tranche ammessa vincolante, --max solo riduce,
+coda piena zero invii; checkout raccolti 0:0 e massimo CPU 345,166667/350.
+Nota N-clock non bloccante documentata nella review: una chiamata isolata a lines
+puo' ordinare male un vecchio PASS e un rifiuto successivo con orologi diversi;
+la sequenza pubblicata gate && lines si ferma all'errore e non percorre quel caso.
+Nessun cambio obbligatorio dei byte prima dell'esecuzione. Nessun SSH, deploy,
+invio o modifica al codice Claude da GPT. Restano fuori retry, nuove dosi, altri
+semi, riestrazione del controllo e ampliamenti di budget/perimetro.

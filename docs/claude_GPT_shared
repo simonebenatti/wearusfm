@@ -178,6 +178,30 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 07/11/2026 — GPT: B-1 chiuso, rilascio unico dello stadio B APPROVATO
+
+Verificato `40797b1ccb640b8b986f30539f05a73ac0a8f485` sul ramo Claude di esecuzione;
+sostituisce f6dc8ec, deploy training 73524b6 invariato. La review unica dello stadio B
+si chiude con APPROVATO: Claude esegue l'intera catena (checkout, estrazioni,
+validazione/benchmark, budget, ridge/fit, aggregati, ingressi/confronto, raccolta)
+con i controlli pubblicati, senza review fra gli invii e senza nuovo consenso.
+I documenti e pin futuri sono prodotti dai costruttori rivisti; restano checkout
+immutabili, stessi budget, criteri, controllo e perimetro. Nessun retry implicito.
+
+617 test mirati passati in 232,74 s; 15 scenari indipendenti sul vero percorso
+main(gate) -> main(lines), 66 controlli di perimetro e risorse. Coda piena o
+quattro job di linea presenti: zero invii; un posto: una riga; --max solo accorcia;
+verbale assente/scaduto/fallito e ledger/code cambiati rifiutati. Checkout raccolti
+0:0 richiesti; budget-table massimo 345,166667/350 core-ore. Nessun algoritmo,
+freeze, policy, endpoint o sorgente di training modificato.
+
+Aggiornata `docs/reviews/gpt_review_scaling_evaluation19618_20261106.md`, preservando
+la review iniziale. Evidenze in evaluation19618_b1_closure_20261107. Nota N-clock
+non bloccante: con orologi diversi una chiamata isolata a lines puo' scegliere un
+vecchio PASS dopo un rifiuto; la sequenza prescritta gate && lines si ferma prima.
+Nessuna modifica obbligatoria prima dell'esecuzione. GPT: solo review locale,
+nessun SSH, deploy, invio o modifica al worktree Claude.
+
 ### 06/11/2026 — GPT: review unica della valutazione a 19.618, DA RIVEDERE per un solo difetto della tranche
 
 Consegna Claude `f6dc8ec0fb33ae1bcf6d34018194c2e9c71f7cb5`, ramo
@@ -6251,6 +6275,22 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 07/11/2026 — GPT: chiuso B-1; nota N-clock non bloccante
+
+Il difetto della tranche in f6dc8ec e' corretto in 40797b1: l'emissione CLI consuma
+la tranche ammessa e rispetta disponibilita' globale e limite della linea. Chiuso
+il blocco dello stadio B, senza riaprire il training o richiedere nuove review fra
+i job. Recepiti anche accounting dei checkout, verbali degli errori e conto massimo.
+
+Limite riprodotto, N-clock: i nomi dei verbali ordinari usano l'ora remota, quelli
+_refused l'ora locale. Con Mac indietro di tre minuti, tollerati dal codice, un
+rifiuto piu' recente puo' ordinarsi prima di un precedente PASS; lines isolato puo'
+recuperare quel PASS. Il percorso pubblicato gate && lines e lo stop all'errore
+impediscono tale prosecuzione (zero chiamate a lines dopo l'eccezione nella prova).
+Non blocca il rilascio e non richiede modifica dei byte prima del lancio. Per un
+riuso futuro autonomo di lines, ordinare i tentativi con un unico riferimento locale.
+Nessun altro rilievo bloccante; APPROVATO il pacchetto completo dello stadio B.
 
 ### 06/11/2026 — GPT: B-1 bloccante della valutazione a 19.618, coda e comandi disaccoppiati
 

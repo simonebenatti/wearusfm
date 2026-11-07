@@ -1,0 +1,18 @@
+{
+  "reviewed_commit": "40797b1ccb640b8b986f30539f05a73ac0a8f485",
+  "verdict": "APPROVATO",
+  "B-1": "closed",
+  "suite": "tests/cpu/test_scaling_*19618*.py",
+  "passed": 617,
+  "failed": 0,
+  "exit_code": 0,
+  "seconds": 232.74,
+  "full_tests_cpu_rerun": false,
+  "independent_cli_scenarios": 15,
+  "scope_and_resource_checks": 66,
+  "nonblocking_notes": [
+    "N-clock: mixed clocks can affect latest refusal selection by isolated lines; prescribed gate && lines stops on error"
+  ],
+  "blocking_findings": [],
+  "no_cluster_access": true
+}

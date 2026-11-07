@@ -1,0 +1,139 @@
+{
+  "commit": "40797b1ccb640b8b986f30539f05a73ac0a8f485",
+  "cases": [
+    {
+      "name": "tranche",
+      "mine": 0,
+      "others": 0,
+      "line_limit": null,
+      "gate_status": 0,
+      "lines_status": 0,
+      "command_count": 4,
+      "stderr": ""
+    },
+    {
+      "name": "tranche",
+      "mine": 0,
+      "others": 9,
+      "line_limit": null,
+      "gate_status": 0,
+      "lines_status": 0,
+      "command_count": 1,
+      "stderr": ""
+    },
+    {
+      "name": "tranche",
+      "mine": 0,
+      "others": 10,
+      "line_limit": null,
+      "gate_status": 1,
+      "lines_status": 1,
+      "command_count": 0,
+      "stderr": "nessuna riga: the latest gate of probe-benchmark did not pass: no line to submit\n"
+    },
+    {
+      "name": "tranche",
+      "mine": 4,
+      "others": 0,
+      "line_limit": null,
+      "gate_status": 1,
+      "lines_status": 1,
+      "command_count": 0,
+      "stderr": "nessuna riga: the latest gate of probe-benchmark did not pass: no line to submit\n"
+    },
+    {
+      "name": "tranche",
+      "mine": 2,
+      "others": 7,
+      "line_limit": null,
+      "gate_status": 0,
+      "lines_status": 0,
+      "command_count": 1,
+      "stderr": ""
+    },
+    {
+      "name": "tranche",
+      "mine": 0,
+      "others": 0,
+      "line_limit": 6,
+      "gate_status": 0,
+      "lines_status": 0,
+      "command_count": 6,
+      "stderr": ""
+    },
+    {
+      "name": "missing_gate",
+      "lines_status": 1,
+      "command_count": 0,
+      "stderr": "nessuna riga: no gate record for pose-benchmark: run the gate first\n"
+    },
+    {
+      "name": "old_gate",
+      "lines_status": 1,
+      "command_count": 0,
+      "stderr": "nessuna riga: gate record of pose-benchmark older than 1800 seconds: run the gate again\n"
+    },
+    {
+      "name": "max_expands",
+      "lines_status": 1,
+      "command_count": 0,
+      "stderr": "nessuna riga: --max must be between 1 and the admitted tranche (3)\n"
+    },
+    {
+      "name": "max_shortens",
+      "lines_status": 0,
+      "command_count": 2,
+      "stderr": ""
+    },
+    {
+      "name": "ledger_changed",
+      "lines_status": 1,
+      "command_count": 0,
+      "stderr": "nessuna riga: the ledger of pose-benchmark changed after the gate: run the gate again\n"
+    },
+    {
+      "name": "code_changed",
+      "lines_status": 1,
+      "command_count": 0,
+      "stderr": "nessuna riga: the code checkout changed after the gate\n"
+    },
+    {
+      "name": "later_failed_gate",
+      "lines_status": 1,
+      "command_count": 0,
+      "stderr": "nessuna riga: the latest gate of pose-benchmark did not pass: no line to submit\n"
+    },
+    {
+      "name": "later_refusal_with_supported_clock_skew",
+      "first_gate": {
+        "status": 0,
+        "exception": null,
+        "stdout": "PASS  checkout code: expected HEAD and clean tree\nPASS  checkout plans: expected HEAD and clean tree\nPASS  document pose_plan: remote bytes equal to the published ones\nPASS  files pinned inside the checkouts are in their commits (2)\nPASS  outputs of the jobs still to submit are absent\nPASS  jobs already in the ledger were submitted by this line\nPASS  jobs already submitted are COMPLETED 0:0 (0)\nPASS  checkouts used were collected COMPLETED 0:0 (2)\nPASS  free space on $WORK at least 5 GiB\nPASS  a tranche of at least one job is admitted (3 of 3 to submit)\n{\n \"serial_jobs\": 0,\n \"serial_room\": 10,\n \"line_jobs\": 0,\n \"work_free_gib\": 23.721336364746094,\n \"to_submit\": [\n  \"SCALING-19618-pose-bench-30m-natural-20261106\",\n  \"SCALING-19618-pose-bench-300m-natural-20261106\",\n  \"SCALING-19618-pose-bench-300m-matched-20261106\"\n ],\n \"line_limit\": 4,\n \"submittable_now\": 3,\n \"tranche\": [\n  \"SCALING-19618-pose-bench-30m-natural-20261106\",\n  \"SCALING-19618-pose-bench-300m-natural-20261106\",\n  \"SCALING-19618-pose-bench-300m-matched-20261106\"\n ]\n}\n{\"written\": \"results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/gates/pose-benchmark_20261108T100300Z.json\", \"sha256\": \"91db6436a50a7a671d137c726aa5b66434b6e8d65099c0447b0804500bd0247b\", \"bytes\": 2029}\n",
+        "stderr": ""
+      },
+      "second_gate": {
+        "status": null,
+        "exception": "ValueError: remote read failed after the preceding successful gate",
+        "stdout": "{\"written\": \"results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/gates/pose-benchmark_20261108T100001Z_refused.json\", \"sha256\": \"72c0fd911024e32ba183e3c73ab43d5bc7fefd156f422701452b21851bc1da02\", \"bytes\": 261}\n",
+        "stderr": ""
+      },
+      "lines_after_refusal": {
+        "status": 0,
+        "exception": null,
+        "stdout": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py --agente claude --campagna scaling-300m-20261104 --timeout 120 --id SCALING-19618-pose-bench-30m-natural-20261106 --gpu-ore 0 -- --cpus-per-task=8 --mem=30G --time=00:10:00 --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1,EXPECTED_SHA=24486a22f2785628e04411e656b43ab8697590ad /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/slurm/scaling_readers19618.sbatch pose-benchmark /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_plans19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/readers/pose_plan.json c0d561d73d7aa1fd6d2487956b3b036dc89b16a543161e7e71051cb1ed08f05c /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/pose_benchmark/T100-G-30M-natural --cell T100-G-30M-natural\n/Users/simonebenatti/.venvs/wearusfm-tok/bin/python /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py --agente claude --campagna scaling-300m-20261104 --timeout 120 --id SCALING-19618-pose-bench-300m-natural-20261106 --gpu-ore 0 --dopo SCALING-19618-pose-bench-30m-natural-20261106 -- --cpus-per-task=8 --mem=30G --time=00:10:00 --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1,EXPECTED_SHA=24486a22f2785628e04411e656b43ab8697590ad /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/slurm/scaling_readers19618.sbatch pose-benchmark /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_plans19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/readers/pose_plan.json c0d561d73d7aa1fd6d2487956b3b036dc89b16a543161e7e71051cb1ed08f05c /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/pose_benchmark/T100-G-300M-natural --cell T100-G-300M-natural\n/Users/simonebenatti/.venvs/wearusfm-tok/bin/python /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py --agente claude --campagna scaling-300m-20261104 --timeout 120 --id SCALING-19618-pose-bench-300m-matched-20261106 --gpu-ore 0 --dopo SCALING-19618-pose-bench-300m-natural-20261106 -- --cpus-per-task=8 --mem=30G --time=00:10:00 --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1,EXPECTED_SHA=24486a22f2785628e04411e656b43ab8697590ad /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/slurm/scaling_readers19618.sbatch pose-benchmark /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_plans19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/readers/pose_plan.json c0d561d73d7aa1fd6d2487956b3b036dc89b16a543161e7e71051cb1ed08f05c /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/pose_benchmark/T100-G-300M-matched --cell T100-G-300M-matched\n",
+        "stderr": ""
+      },
+      "record_names": [
+        "pose-benchmark_20261108T100001Z_refused.json",
+        "pose-benchmark_20261108T100300Z.json"
+      ],
+      "latest_gate_passed": true
+    },
+    {
+      "name": "prescribed_gate_and_lines_control_flow",
+      "gate_exception": "ValueError: remote read failed after the preceding successful gate",
+      "lines_invocations": 0,
+      "note": "Matches gate && lines: gate exception has nonzero process status, so lines is not invoked."
+    }
+  ]
+}
