@@ -8124,6 +8124,22 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   i percorsi su SCRATCH (cancellazione a 40 giorni dal 15/12 circa). Aperta la decisione di Simone sulle dipendenze
   fuori LONG_ROOT (T100-G 19.618 su SCRATCH, 26 file, 23 MB). Nessun altro mio job in coda.
 
+### 2026-11-07 | Claude | Linea 2: conservazione su `$WORK` anche della dipendenza T100-G 19.618 («Sì, aggiungila»); secondo job di copia inviato
+- Simone, 07/11/2026 (fra le 15:55 e le 16:31), alla domanda «Aggiungo alla copia anche la dipendenza T100-G su SCRATCH
+  (26 file, 23 MB)?»: «Sì, aggiungila». E' la dipendenza fuori LONG_ROOT indicata da GPT nella nota di conservazione
+  (`57c4d7e`). Decisione, perimetro, criteri di esito e preventivo in `docs/decisioni.md` sul ramo di esecuzione
+  (commit `8ad93eb`). Letture del 07/11 alle 16:31: `$SCRATCH/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G`
+  26 file, 6 cartelle, nessun link, 23.981.927 byte, file dal 04/11 10:43 al 04/11 15:28; destinazione
+  `$WORK/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G` assente; quota di progetto 18.757.796 kB liberi,
+  dopo la copia 18.734.376 kB (17,87 GiB), sopra la soglia C-1.
+- Strumento: `scripts/slurm/preserve_long_to_work.sbatch` esteso con `PRESERVE_SET` (`long-root` predefinito, gia'
+  eseguito; `t100g-19618` nuovo), commit `29dd8eb` su questo ramo. Collaudo in cartella finta su SCRATCH: 32 controlli
+  superati (casi del primo collaudo ripetuti sul nuovo elenco, elenco non valido rifiutato, elenco predefinito ancora
+  funzionante, LONG_ROOT non toccata dall'elenco nuovo); prova a secco sui percorsi veri senza scritture.
+- Invio alle 16:33 con submitter e ledger comuni, `--agente claude`: `LONG-PRESERVE-WORK-T100G-20261107`, job
+  **63785874**, campagna `consolidation_long_20261105`, `lrd_all_serial`, 1 CPU, 1 GB, limite 10 minuti: al massimo
+  0,17 core-ore, 0 GPU-ore. Corsia seriale vuota. Esito, verifica dal Mac e consuntivo in una voce successiva.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
