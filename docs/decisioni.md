@@ -6374,3 +6374,28 @@ nessun nuovo training o estensione a 49k in questa consegna.
 Confronti posa sottomessi: 63786157 e 63786158. Tutti i job previsti sono ora
 inviati. Si registrano le ricevute e si interrompono i controlli, senza attendere
 i risultati, secondo l'ultima istruzione di Simone. Nessun monitor in background.
+
+
+### 07/11/2026 — T100-LQ: chiusura della matrice e valutazione scientifica
+
+Su richiesta di Simone si raccolgono gli esiti finali, senza nuove prove. Tutti
+16 job CPU scientifici più i due checkout sono COMPLETED 0:0; originali e
+accounting verificati, bootstrap e convergenza ricalcolati indipendentemente.
+Consuntivo CPU 13,143333 core-ore contro 51; training 17,065556 GPU-ore contro 22,
+compreso il tentativo fallito prima degli update; estrazioni 1,739444 GPU-ore
+separate. Nessun job residuo della matrice LQ, nessun monitor in background.
+
+Lettura congelata: il primario EPN migliora sul lineare di +1,531 pp [1,013; 2,015],
+non mostra superiorità sulla GELU (+0,055 pp [−0,512; 0,603]); il primario posa non
+migliora a nessuna delle due dosi. A 19.618 E_dyn LQ 0,844088, L 0,843363, delta
++0,000726 [−0,001190; +0,002724]. P1/P2 non mostrano miglioramenti aggregati certi;
+NI 1 pp sostenuta contro i lineari, P2 contro GELU irrisolta. DB3 secondario
+sfavorevole e beneficio sulle statiche a 5.000 che scompare a 19.618 riportati.
+
+Raccomandazione scientifica, non autorizzazione o rilascio di una nuova campagna:
+non dare priorità a LQ49k per recuperare la posa. Se si studia la dose, mantenere
+T100-L come controllo pari dose; GELU è il riferimento pratico secondario.
+Non cambiare epsilon né promuovere LQ come base automatica della contrastiva.
+Il seguito del fork resta la proposta con un solo termine contrastivo e base
+fissata, da revisionare prima del deploy. Nessuna estensione scientifica avviata.
+Dettagli e limiti in docs/logsquare_scientific_readout_20261107.md; griglia aggiornata.

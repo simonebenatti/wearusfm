@@ -1,0 +1,62 @@
+{
+  "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/compare/report.json",
+  "sha256": "e2439d883134ea9bf8a89ec4a4024c3e0990713fb8b0867e0eec4b3943587304",
+  "bytes": 263158,
+  "accounting": {
+    "JobIDRaw": "63786158",
+    "State": "COMPLETED",
+    "ExitCode": "0:0",
+    "ElapsedRaw": 34,
+    "AllocCPUS": 2,
+    "AllocTRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1",
+    "Start": "2026-11-07T16:36:17",
+    "End": "2026-11-07T16:36:51"
+  },
+  "sidecars": {
+    "T25-L_coefficients": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/19618/ridge/T25-L.coefficients.npz",
+      "sha256": "2c3d4502d29639e757dd174fa6dc1c4bebabcd10f0acd4f2da657855469adcbe",
+      "bytes": 59371
+    },
+    "T25-L_predictions": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/19618/ridge/T25-L.predictions.npy",
+      "sha256": "7100b3e1fee2f54eab1cc37813ab42173fefbd353a74f7a65241ab04ba463274",
+      "bytes": 439216768
+    },
+    "T100-L_coefficients": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/19618/ridge/T100-L.coefficients.npz",
+      "sha256": "11696ce451d81d163816ee99fb810096b03186d9edfe2b448d8573bc6c820f35",
+      "bytes": 59359
+    },
+    "T100-L_predictions": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/19618/ridge/T100-L.predictions.npy",
+      "sha256": "4d3ff2777fba7ac1e52d6442639e39ec7a48aeefbc74620aa8286da3068a5c3c",
+      "bytes": 439216768
+    },
+    "T100-G_coefficients": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/19618/ridge/T100-G.coefficients.npz",
+      "sha256": "d7657ba6b6c0b89d430f8b740363082cee7ecc761a02bf59bb1221109b9b9106",
+      "bytes": 59377
+    },
+    "T100-G_predictions": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_pose_readout_20261103/19618/ridge/T100-G.predictions.npy",
+      "sha256": "4088debc04e9bbdd48b048824bf5b7320bbee97cbecd253ad0716c19a4beb2e0",
+      "bytes": 439216768
+    },
+    "T100-LQ_coefficients": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/ridge/T100-LQ.coefficients.npz",
+      "sha256": "583506fabe6d5a65e5fd0d2e93d31be6a07a66dc887b18da9fdc9fb5a442dc59",
+      "bytes": 59353
+    },
+    "T100-LQ_predictions": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/ridge/T100-LQ.predictions.npy",
+      "sha256": "444fce47f0119154ca4a4bfafb4a7998e34e2b1dca97265077546d225dbfbda7",
+      "bytes": 439216768
+    }
+  },
+  "log": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/logsquare_pose_readout_63786158.out",
+    "sha256": "1949e72ef5b4f5799fd3970fcb9a6ebb5d6838059d465d52fedfd11999ad51fc",
+    "bytes": 1047
+  }
+}

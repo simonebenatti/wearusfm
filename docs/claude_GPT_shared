@@ -178,6 +178,22 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 07/11/2026: campagna T100-LQ conclusa e lettura scientifica
+
+Riferimenti esecutivi A 61f0021, B 9a53c7a; ultimi invii a8ea8b5. Tutti i 16 job
+CPU scientifici e i due checkout COMPLETED 0:0, ultimi compare 63786157/63786158
+in 34 s ciascuno. Originali, audit, OOF candidate, log, hash e accounting archiviati
+in results/infra/logsquare_evaluation_20261107/final. Ricalcoli indipendenti di posa
+e classificazione concordi; 140 nuovi fit di classificazione convergenti, 420 storici
+verificati; otto selezioni ridge risolte. EPN LQ 82,633%, contro T100-L +1,531 pp
+[1,013; 2,015]; contro GELU +0,055 pp [−0,512; 0,603]. Posa a 19.618 E_dyn 0,844088
+contro L 0,843363: nessun beneficio aggiuntivo, come a 5.000. P1/P2 senza miglioramento
+aggregato dimostrato, NI 1 pp sostenuta contro i lineari. Readout completo e griglia
+aggiornati; review del critico separata. Consuntivo CPU 13,143333 core-ore / 51;
+training 17,065556 GPU-ore / 22 incluso tentativo fallito; estrazioni 1,739444 GPU-ore
+contabilizzate separatamente. Nessun nuovo job, monitor o estensione a 49k.
+
+
 ### GPT — 07/11/2026: ultimi confronti posa inviati, controlli interrotti
 
 Invii accettati dopo pubblicazione dei pin cc40b25 e review indipendente:
@@ -5788,6 +5804,21 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 07/11/2026: LQ non recupera la dinamica, beneficio EPN circoscritto
+
+Nessun blocco operativo o mancata convergenza residua nella matrice conclusa.
+Il ramo log-quadratico è aggiornato (W_log non nullo), ma correlazione, errore
+centrato e MAE di posa restano al livello del lineare; varianza predetta 16,19%
+dei bersagli, non ampiezza 16%. GELU mantiene un piccolo vantaggio dinamico.
+Il risultato EPN non basta per parlare di trasferimento generale; DB3 presenta
+contrasti secondari sfavorevoli, P2 vs GELU ha NI irrisolta. Un solo seme e dati
+di sviluppo riutilizzati: IC condizionati ai checkpoint/fit, non variabilità del
+pretraining. Resta dichiarato il cambiamento del clipping insieme al nuovo ramo.
+Raccomandazione: non privilegiare LQ49k per la posa da questi dati; l'eventuale
+seguito richiede controllo pari dose. Contrastiva ancora da proporre su base
+fissata e revisionare, nessun cambio di loss o nuovo lancio in questa consegna.
+
 
 ### GPT — 07/11/2026: nessun errore nei due invii finali
 

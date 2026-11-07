@@ -1,5 +1,15 @@
 # T100-LQ: esecuzione dei lettori e dei confronti
 
+**Stato finale 07/11/2026: tutti i 16 job scientifici CPU e i due checkout sono COMPLETED 0:0.**
+Ultimi confronti 63786157 e 63786158: 34 s ciascuno, conclusi alle 16:36:15 e
+16:36:51 CET. Consuntivo della tranche CPU, checkout compresi: **13,143333 core-ore
+su 51**, zero GPU. Rapporti, audit, OOF del candidato, log e accounting archiviati
+con SHA/byte originali sotto `results/infra/logsquare_evaluation_20261107/final/`.
+Ricalcoli indipendenti e [valutazione scientifica finale](logsquare_scientific_readout_20261107.md):
+beneficio EPN rispetto a T100-L, nessun beneficio dinamico aggiuntivo, nessuna
+superiorità aggregata P1/P2 dimostrata. Nessun job residuo, nuovo lancio o monitor.
+Le sezioni successive conservano la sequenza operativa storica.
+
 ## Prerequisiti soddisfatti
 
 Tutte le estrazioni sono COMPLETED 0:0: posa 5.000 (63615952, 1.866 s),

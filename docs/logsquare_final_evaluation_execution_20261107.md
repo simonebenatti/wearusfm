@@ -1,5 +1,11 @@
 # T100-LQ: endpoint finale e valutazioni
 
+**Conclusione 07/11/2026:** tutte le estrazioni, i fit e i confronti sono completi.
+[Valutazione scientifica](logsquare_scientific_readout_20261107.md) e
+[consuntivo CPU](logsquare_cpu_execution_20261107.md) pubblicati con verifiche
+indipendenti. Nessun job residuo della matrice LQ, nessuna estensione a 49k o
+monitor in background. Le indicazioni di attesa sotto sono lo storico esecutivo.
+
 ## Training completato
 
 63593128 COMPLETED 0:0 il 07/11/2026, dalle 09:06:13 alle 12:15:41 CET,
