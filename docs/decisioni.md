@@ -6739,3 +6739,42 @@ derivano da questa chiusura; EPN15 resta una prova sul teacher 19.618; le decisi
 distinto. Esclusa dalla firma la conclusione 5 (conservazione di circa 19,61 GiB di LONG_ROOT prima della purge):
 decisione separata di Simone, ancora aperta; nessuna copia eseguita. La firma non autorizza attivita' operative ne'
 nuovi job. Letture convergenti di Claude: registro `44bc7f0` e rettifica `3231062`.
+
+### 07/11/2026 — Valutazione lunga: conservazione su `$WORK` dell'intera LONG_ROOT decisa da Simone («Tutto, 19,6 GiB»); preventivo del job di copia
+
+Simone, 07/11/2026 (risposta ricevuta fra le 15:10 e le 15:24), alla domanda di Claude «Conservo le uscite della
+valutazione lunga su $WORK prima della purge di metà dicembre?»: «Tutto, 19,6 GiB». La decisione chiude la conclusione 5
+della review GPT `57c4d7e` (`docs/reviews/consolidation_long_preservation_20261107.md`, che raccomanda l'insieme completo)
+e, per la sola LONG_ROOT, supera l'indicazione del 05/11 «no li terremo per piu di 40 giorni».
+
+Perimetro: l'intera radice `/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105`
+(letture del 07/11 alle 15:24-15:29: 354 file, 174 cartelle, nessun link, 21.062.138.097 byte di file = 19,62 GiB; file
+piu' vecchio del 05/11 alle 22:29, quindi scadenza a 40 giorni dal 15/12 circa), copiata in
+`/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105` (assente alle 15:24) conservando modi e
+date; manifest e ricevuta in `$WORK/wearusfm_runs/results/storage_preserve_20261107/`. Sola copia: l'originale non viene
+toccato ne' rimosso; i piani congelati continuano a nominare i percorsi su SCRATCH. Fuori perimetro, da decidere a parte:
+le dipendenze fuori LONG_ROOT elencate da GPT (cache e report storici T100-G 19.618 sotto
+`$SCRATCH/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/`: 26 file, 23 MB, datati 04/11; checkpoint e
+ricevute su `$WORK` gia' persistenti).
+
+Strumento: `scripts/slurm/preserve_long_to_work.sbatch` (ramo `worktree-claude-training-engine`, commit `5b9b43c`), derivato
+dallo script di spostamento del 06/11 senza rinomine, link e rimozioni. Collaudo del 07/11 alle 15:29 in una cartella
+finta su SCRATCH, 29 controlli superati (prova a secco senza scritture; copia alterata nel contenuto o nella dimensione
+rifiutata, originale intatto e copia lasciata per l'ispezione; copia corretta verificata con 7 manifest e date
+conservate; destinazione esistente e link nella sorgente rifiutati; modo e radice non validi rifiutati; log
+`~/wearusfm_local/logs/preserve_long_sandbox_test_20261107.txt`) e prova a secco sui percorsi veri (uscita 0, nessuna
+scrittura; quota di progetto 40.206.628 kB liberi, servono 20.568.495, dopo la copia 19.638.133 kB = 18,73 GiB, sopra la
+soglia C-1 di 10,724 GiB che il job ricontrolla prima di copiare).
+
+Criteri di esito, fissati prima del lancio: elenco dei file, dimensioni, albero delle cartelle e sha256 di ogni file
+identici fra originale e copia; 354 file e 21.062.138.097 byte; ricevuta scritta; job `COMPLETED 0:0`; originale su SCRATCH
+invariato. Verifica dal Mac: manifest della copia confrontato con l'inventario di GPT (`preservation_inventory.json`, 352
+file con sha256 e byte, sottoinsieme dei 354). Un controllo fallito lascia la copia per l'ispezione, esce con 1 e
+richiede una nuova decisione: nessun rilancio automatico.
+
+Preventivo: job `LONG-PRESERVE-WORK-20261107`, campagna `consolidation_long_20261105`, `lrd_all_serial`, 1 CPU, 2 GB,
+limite 40 minuti: al massimo 0,67 core-ore (1,33 se sacct conta 2 CPU come il 06/11), 0 GPU-ore, a carico della linea 2
+(residuo A1 1.534,9 core-ore: mia lettura, non una nuova dose). Riferimento: lo spostamento del 06/11 di 18,07 GiB con
+sha256 e' durato 4 min 25 s. In coda dietro i job seriali della linea 3 gia' sottomessi, che non ritarda. Autorizzazione:
+la decisione di Simone comprende l'esecuzione della copia come job CPU con manifest sha256, descritta nella stessa
+domanda; costo sotto i 5 GPU-ore (28/10). Esito in una voce successiva.
