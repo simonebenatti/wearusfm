@@ -15,10 +15,16 @@
 # della valutazione lunga su $WORK prima della purge di meta' dicembre?»: «Tutto, 19,6 GiB». Raccomandazione di GPT
 # consolidamento in docs/reviews/consolidation_long_preservation_20261107.md (commit 57c4d7e): conservare l'intera
 # radice e un manifest che mappa originale e copia con sha256 e byte uguali; i piani congelati continuano a nominare i
-# percorsi originali su $SCRATCH.
+# percorsi originali su $SCRATCH. Seconda voce aggiunta il 07/11/2026: Simone, alla domanda «Aggiungo alla copia anche
+# la dipendenza T100-G su SCRATCH (26 file, 23 MB)?», ha risposto «Sì, aggiungila»: sono le OOF, i report, gli audit e
+# le cache storici T100-G 19.618 riusati dalla valutazione lunga senza refit, dipendenza fuori LONG_ROOT indicata da
+# GPT nella stessa nota.
 #
-# Elenco CHIUSO di una voce: `wearusfm_runs/results/consolidation_long_20261105` (LONG_ROOT), stesso percorso relativo
-# sotto $WORK. SOLO COPIA: l'originale su $SCRATCH non viene rinominato, linkato, toccato ne' rimosso; nulla viene
+# Elenchi CHIUSI di una voce ciascuno, scelti con PRESERVE_SET, stesso percorso relativo sotto $WORK:
+#   long-root (predefinito; eseguito il 07/11, job 63781257): `wearusfm_runs/results/consolidation_long_20261105`
+#     (LONG_ROOT);
+#   t100g-19618: `wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G`.
+# SOLO COPIA: l'originale su $SCRATCH non viene rinominato, linkato, toccato ne' rimosso; nulla viene
 # sovrascritto. Per la voce: (1) la sorgente deve esistere, essere una cartella, non essere un link e non contenere
 # link o file speciali; la destinazione non deve esistere; (2) lo spazio libero di $WORK dopo la copia deve restare
 # sopra la soglia C-1 della linea 2 (10,724 GiB, docs/decisioni.md); (3) copia conservando modi e date; (4) confronto
@@ -33,7 +39,8 @@
 # Uso (dal Mac, con il submitter comune; lo script va a sbatch su stdin):
 #   python scripts/submit_job.py --id <ID> --agente claude --campagna consolidation_long_20261105 --gpu-ore 0 \
 #     --script-stdin scripts/slurm/preserve_long_to_work.sbatch -- --partition=lrd_all_serial --nodes=1 --ntasks=1 \
-#     --cpus-per-task=1 --mem=2G --time=00:40:00 --no-requeue --export=ALL,PRESERVE_MODE=copy,EXPECTED_SHA=<commit>
+#     --cpus-per-task=1 --mem=2G --time=00:40:00 --no-requeue \
+#     --export=ALL,PRESERVE_MODE=copy,PRESERVE_SET=<elenco>,EXPECTED_SHA=<commit>
 
 set -uo pipefail
 export LC_ALL=C
@@ -41,7 +48,12 @@ export LC_ALL=C
 MODE="${PRESERVE_MODE:-dry-run}"
 case "$MODE" in dry-run|copy) ;; *) echo "PRESERVE_MODE non valido: $MODE"; exit 2 ;; esac
 
-ITEMS=( "wearusfm_runs/results/consolidation_long_20261105" )
+SET="${PRESERVE_SET:-long-root}"
+case "$SET" in
+  long-root)   ITEMS=( "wearusfm_runs/results/consolidation_long_20261105" ) ;;
+  t100g-19618) ITEMS=( "wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G" ) ;;
+  *) echo "PRESERVE_SET non valido: $SET"; exit 2 ;;
+esac
 MIN_FREE_KB=11244930   # 10,724 GiB in kB: soglia C-1 della linea 2, da rispettare DOPO la copia
 
 if [ -n "${PRESERVE_TEST_ROOT:-}" ]; then
@@ -81,9 +93,10 @@ copy_one() {
   local rel="$1" src="$S/$1" dst="$W/$1" tag n_src b_src free need after victim
   tag="$(printf '%s' "$rel" | tr '/ ' '__')"
   echo "=== $rel"
-  case "$rel" in
-    wearusfm_runs/results/consolidation_long_20261105) ;;
-    *) echo "RIFIUTATO: fuori dall'elenco chiuso: $rel"; return 1 ;;
+  case "$SET:$rel" in
+    long-root:wearusfm_runs/results/consolidation_long_20261105) ;;
+    t100g-19618:wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G) ;;
+    *) echo "RIFIUTATO: fuori dall'elenco chiuso: $SET:$rel"; return 1 ;;
   esac
   if [ -L "$src" ]; then echo "RIFIUTATO: la sorgente e' un link: $src"; return 1; fi
   if [ ! -d "$src" ]; then echo "RIFIUTATO: sorgente assente o non cartella: $src"; return 1; fi
@@ -144,12 +157,12 @@ copy_one() {
   echo "VERIFICATO: $n_src file, $b_src byte, sha256 identici; copia in $dst, originale intatto; ricevuta $OUT/$tag.receipt.txt"
 }
 
-echo "modo: $MODE; da $S a $W; commit atteso: ${EXPECTED_SHA:-}; $(date '+%Y-%m-%d %H:%M:%S %Z') su $(hostname)"
+echo "modo: $MODE; elenco: $SET; da $S a $W; commit atteso: ${EXPECTED_SHA:-}; $(date '+%Y-%m-%d %H:%M:%S %Z') su $(hostname)"
 echo "--- quota di progetto prima (kB usati, limite)"; quota
 ok=0; bad=0
 for rel in "${ITEMS[@]}"; do
   if copy_one "$rel"; then ok=$((ok+1)); else bad=$((bad+1)); fi
 done
 echo "--- quota di progetto dopo"; quota
-echo "=== riepilogo ($MODE): riuscite=$ok problemi=$bad su ${#ITEMS[@]} voci; $(date '+%H:%M:%S') ==="
+echo "=== riepilogo ($MODE, $SET): riuscite=$ok problemi=$bad su ${#ITEMS[@]} voci; $(date '+%H:%M:%S') ==="
 [ "$bad" -eq 0 ]
