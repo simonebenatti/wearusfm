@@ -6672,3 +6672,37 @@ fermare la fase, nessun requeue, sovrascrittura, fold scartato, walltime o shard
 tecnico e' una nuova decisione. Ordine: i tre fit di posa, poi i 69 di classificazione, a ondate entro otto job CPU
 in sospeso per tutto l'utente; ondate corte (somma dei limiti entro otto ore) per non tenere a lungo la corsia
 seriale.
+
+### 07/11/2026 — Valutazione lunga: eseguita per intero (107 allocazioni COMPLETED 0:0), consuntivo 176,745 core-ore e 3,374 GPU-ore
+
+**CONSUNTIVO (Claude operatore, da sacct -X, una riga per allocazione, ElapsedRaw x AllocCPUS / 3600 e x GPU allocate / 3600):**
+107 allocazioni (4 checkout di campagna + 103 job: 12 estrazioni, 16 benchmark, 72 fit, 2 confronti, 1 sintesi), tutte
+COMPLETED 0:0 senza riavvii; extract 27,002 core-ore e 3,374 GPU-ore, benchmark 15,217, fit 134,265, aggregate 0,261:
+**176,745 core-ore e 3,374 GPU-ore** sui tetti invariati di 1.711,666667 core-ore e 9 GPU-ore (decisione di Simone del
+06/11, «Sì, approvo»); nessun TIMEOUT, OOM o rilancio, un solo tentativo per ID nel ledger comune. Il totale prudenziale
+della voce del 06/11 (1.451,67) e' rimasto una stima: i 72 fit e il checkout della fase hanno consumato 134,27 core-ore
+contro le 1.300 allocabili (1.276 per i 69 fit di classificazione, 24 per i tre di posa), perche' i tempi reali per
+shard sono stati molto sotto i walltime W della tabella (da 13 secondi per UCI a 36 minuti per EPN612 pool).
+
+**ESECUZIONE:** fase fit dalla sera del 06/11 alle 11:53 del 07/11 in 24 ondate corte sulla corsia seriale (un fit da
+8 CPU alla volta), checkout `a70e29e`; fase aggregate il 07/11: pin dei 72 report, commit di fase `d751063`, checkout
+`LONG-checkout-aggregate-20261105` (63765702) verificato in sola lettura, controllo del contesto nel checkout, confronti
+`LONG-COMPARE-classification-20261105` (63766028, 1:05) e `LONG-COMPARE-pose-20261105` (63766065, 0:41), piano esterno
+della sintesi `execution/summary_plan.json` (sha256 `f7728778…`, 53.847 byte) materializzato dal wrapper
+`execution/summary_materialize.sbatch` (sha256 `34ba86c7…`) e `LONG-SUMMARY-20261105` (63767351, 19 s). Ricevute, log,
+sacct, manifest e stati di sottomissione in `results/infra/consolidation_long_20261105/execution/` sul ramo
+`claude/consolidation-long-exec-20261105` (commit documentali `b81d0c2`, `d91bb33`, `aad4386`); uscite su `$SCRATCH`
+grande (cancellazione automatica a 40 giorni, nessuna proroga promessa). Codice congelato per fase: `7d276c9`,
+`166fb86`, `a70e29e`, `d751063`.
+
+**LETTURA:** nessuna da parte dell'operatore. Dei report dei confronti e della sintesi sono stati verificati solo
+provenienza e struttura (12 contrasti di classificazione con il contesto della replica storica; 9 celle e 12 contrasti
+di posa con i gruppi di bootstrap); nessun punteggio letto, nessuna soglia nuova. La lettura scientifica dei due
+report finali e della sintesi, con i contrasti prespecificati, spetta a GPT consolidamento, che verifica dopo senza
+operare sui job.
+
+**VERIFICA INDIPENDENTE (subagent `critico`, 07/11, dopo `aad4386`):** i sette criteri della consegna operativa
+(launch_plan, contabilita', ricevute e log, catena dei pin, controlli riproducibili e 342 test, igiene del ramo,
+registro) soddisfatti nei contenuti; esito «DA RIVEDERE» per due note: bloccante, al momento della lettura il registro
+condiviso non aveva ancora la voce sulla sintesi (commit `d91bb33` e `aad4386`); minore, il consuntivo complessivo
+non stava in nessun file del repo. Entrambe chiuse con la voce di chiusura nel registro condiviso e con questa voce.
