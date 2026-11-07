@@ -7180,6 +7180,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Training alle 14:50 del 07/11: `PENDING` per `Priority`. Nessun job dello stadio B inviato. Suite completa `tests/cpu` su `40797b1`
   in corso: esito in una voce successiva.
 
+### 2026-11-07 | Claude | Linea 1: suite completa `tests/cpu` su `40797b1`: 3461 passati; training ancora in coda
+- Suite completa del worktree di esecuzione a `40797b1`, finita alle 15:08: 3461 passati, 1 avviso preesistente
+  (`test_pose_objective.py`), 39 min 50 s. Il giro precedente (3458) era partito alle 20:41 del 06/11, prima della chiusura del
+  pacchetto. Esito annotato anche in `docs/decisioni.md`. Nessun invio; training 63696864 `PENDING` per `Priority` alle 14:50.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
