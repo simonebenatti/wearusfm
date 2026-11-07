@@ -7743,6 +7743,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `build_inputs`, `apply_to_plans --check`, `pin_phase fit --dry-run` OK; 342 test superati). Stato: 40 fit su 72 conclusi,
   2 in corsia; prossima ondata la 17 (righe 43-44: `post` di DB3 a dosi 39.237 e 49.046, limiti 03:45:00).
 
+### 2026-11-07 | Claude | Linea 2, fase fit A1: ondata 16 conclusa, ondata 17 inviata (righe 43-44 di 72)
+- Ondata 16, entrambi `COMPLETED 0:0`: `63734539` LONG-FIT-G49046-pre-ninapro_db3-F3 (05:14:49-05:24:33, 00:09:44 su 02:00:00;
+  chiude i 12 fit `pre` di DB3, 3 dosi x 4 fold) e `63734540` LONG-FIT-G19618-post-ninapro_db3-F0123 (05:24:53-05:50:46,
+  00:25:53 su 03:45:00, in attesa per `QOSMaxCpuPerUserLimit`; primo fit a 4 fold interi). Report letti solo nei campi di
+  provenienza (sha256 `8df126127a5f…` e `c0d53ee728ab…`, 4 file ciascuno, kind/checkpoint/dataset/view uguali ai pin di fase);
+  nessun punteggio letto. Consumo: 8 CPU x 35:37 = 4,75 core-ore; fase fit 91,59 core-ore (86,84 + 4,75), 0 GPU-ore.
+- C-1 alle 05:54 (`PRECHECK_OK`, log in `execution/audit/precheck_fit_wave17_20261107.log`): `$WORK` 41,58 GiB liberi (soglia
+  10,724; utente sbenatti 175,9 GiB), scratch scrivibile, ledger riletto, seriale vuota, rami sorvegliati fermi dall'ultimo
+  riscontro, certificato ssh valido fino alle 12:32:13. In coda su `boost_usr_prod`, fuori linea 2: `63593128` (linea 3) e
+  `63696864` SCALING-300M-train19618 (linea 1); nessuna azione su di essi.
+- Ondata 17 inviata alle 05:55:22-23 col submitter comune (`--agente claude`, campagna `consolidation_long_20261105`, ledger
+  `prenotato` -> `sottomesso`), due job da 03:45:00 (7 h 30 sommate): `63736588` LONG-FIT-G39237-post-ninapro_db3-F0123 e
+  `63736589` LONG-FIT-G49046-post-ninapro_db3-F0123; 8 CPU / 30 GiB, checkout congelato `consolidation-long-fit-20261105`
+  (`a70e29e`). Sorvegliante in sola lettura ogni 5 minuti. Registrazione sul ramo di esecuzione
+  `claude/consolidation-long-exec-20261105`: commit `ae70763` (ID nel `launch_plan.json`, stati di sottomissione, log di audit;
+  `build_inputs`, `apply_to_plans --check`, `pin_phase fit --dry-run` OK; 342 test superati). Stato: 42 fit su 72 conclusi,
+  2 in corsia; prossima ondata la 18 (righe 45-46: `pool` di DB3 a dosi 39.237 e 49.046, limiti 03:30:00).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
