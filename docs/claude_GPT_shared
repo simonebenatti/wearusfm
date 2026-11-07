@@ -7700,6 +7700,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `pin_phase fit --dry-run` OK; 342 test superati). Stato: 34 fit su 72 conclusi, 3 in corsia; prossima ondata la 15
   (righe 38-40: G49046 pre DB3 F0-F2), se il certificato ssh e' ancora valido al C-1.
 
+### 2026-11-07 | Claude | Linea 2, fase fit A1: ondata 14 conclusa, ondata 15 inviata (righe 38-40 di 72); certificato ssh rinnovato
+- Ondata 14, tutti e tre `COMPLETED 0:0`, uno alla volta in corsia: `63728880` LONG-FIT-G39237-pre-ninapro_db3-F3
+  (03:42:49-03:53:34, 00:10:45 su 02:00:00, partito per primo col limite piu' corto), `63728878`
+  LONG-FIT-G39237-pre-ninapro_db3-F1 (03:53:38-04:06:05, 00:12:27 su 02:15:00) e `63728879` LONG-FIT-G39237-pre-ninapro_db3-F2
+  (04:06:35-04:26:07, 00:19:32 su 02:30:00), gli ultimi due in attesa per `QOSMaxCpuPerUserLimit`. I 4 fold `pre` di DB3 a
+  dose 39.237 sono conclusi. Report letti solo nei campi di provenienza (sha256 `347021949b3a…`, `c06b0fd79ef0…`,
+  `536b4fc5012d…`, 4 file ciascuno, kind/checkpoint/dataset/view uguali ai pin di fase); nessun punteggio letto.
+  Consumo: 8 CPU x 42:44 = 5,70 core-ore; fase fit 81,21 core-ore (75,51 + 5,70), 0 GPU-ore.
+- C-1 alle 04:28 (`PRECHECK_OK`, log in `execution/audit/precheck_fit_wave15_20261107.log`): `$WORK` 41,58 GiB liberi (soglia
+  10,724; utente sbenatti 175,9 GiB), scratch scrivibile, ledger riletto, seriale vuota, rami sorvegliati fermi dall'ultimo
+  riscontro. Nell'agente ssh c'e' un certificato nuovo, valido dalle 00:32:13 alle 12:32:13 del 07/11: rinnovo fatto da Simone
+  (io non eseguo `step ssh login`), coerente con la sua scelta del 06/11 «Rinnovo il certificato»; le ondate corte proseguono
+  oltre le 05:50. In coda su `boost_usr_prod`, fuori linea 2: `63593128` (linea 3) e `63696864` SCALING-300M-train19618
+  (linea 1); nessuna azione su di essi.
+- Ondata 15 inviata alle 04:28:30-33 col submitter comune (`--agente claude`, campagna `consolidation_long_20261105`, ledger
+  `prenotato` -> `sottomesso`), tre job (limiti 02:15:00, 02:15:00, 02:30:00: 7 h sommate): `63731943`
+  LONG-FIT-G49046-pre-ninapro_db3-F0, `63731944` LONG-FIT-G49046-pre-ninapro_db3-F1 e `63731945`
+  LONG-FIT-G49046-pre-ninapro_db3-F2; 8 CPU / 30 GiB, checkout congelato `consolidation-long-fit-20261105` (`a70e29e`).
+  Sorvegliante in sola lettura ogni 5 minuti. Registrazione sul ramo di esecuzione `claude/consolidation-long-exec-20261105`:
+  commit `6c952e8` (ID nel `launch_plan.json`, stati di sottomissione, log di audit; `build_inputs`, `apply_to_plans --check`,
+  `pin_phase fit --dry-run` OK; 342 test superati). Stato: 37 fit su 72 conclusi, 3 in corsia; prossima ondata la 16
+  (righe 41-42: G49046 pre DB3 F3 e il primo fit `post` di DB3, a 4 fold interi, limite 03:45:00).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
