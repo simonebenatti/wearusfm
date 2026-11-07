@@ -2,6 +2,9 @@
 
 Data: 06/11/2026, sera. Autore del codice e operatore: Claude. Review: GPT, una sola, su questo pacchetto.
 **Stato: training inviato (job 63696864, in coda); nessun job dello stadio B inviato, nessun pin a 19.618 esistente.**
+Review GPT `c2df17e` (07/11): DA RIVEDERE per il solo B-1 (cancello della coda non vincolante per `lines`); corretto
+in questo commit (§5, §6, §8, §9 e regressioni in `tests/cpu/test_scaling_gates19618.py`); il rilascio dello stadio B
+resta sospeso fino alla verifica di GPT della correzione.
 Completa `chain_plan.md` (§4 e §10), che resta com'e' nel commit di deploy `73524b6` del training.
 
 ## 1. Regola di rilascio e che cosa chiede questa review
@@ -84,8 +87,9 @@ Campagna `scaling-300m-20261104`, agente `claude`, submitter e ledger comuni. Ri
 | confronto | 1 | 4,00 | 4,40 | 4,40 |
 | **totale** | | | **<= 345,17** | **350** |
 
-`budget-table` stampa 343,17 con il caso peggiore dei fit in 10 job; con 15 job il margine sale di 2 core-ore: 345,17,
-lo stesso numero del freeze (`budgeted_core_hours_with_scheduler_margin`), riserva 4,83.
+`budget-table` stampa il caso peggiore dei fit in 15 job da 7.200 s (240 richieste, 246 con margine): 345,17 in
+totale, lo stesso numero del freeze (`budgeted_core_hours_with_scheduler_margin`), riserva 4,83. Con 10 job il
+margine scende di 2 core-ore (343,17): e' il numero che la tabella stampava prima della correzione di B-1.
 
 - Estrazioni: 7 GPU-ore richieste (2,5 + 2 + 2,5), tolleranza 0,15 (lo 0,20 e' del training); 56 core-ore allegate,
   rendicontate a parte. Fit: il piano reale nasce dai 15 benchmark a 19.618 (formula, arrotondamento e packing a
@@ -102,7 +106,16 @@ lo stesso numero del freeze (`budgeted_core_hours_with_scheduler_margin`), riser
 
 Ogni passo e' un comando di `scaling_plans19618.py` (§9). Un documento esiste solo se il suo costruttore accetta
 tutte le evidenze; un job si invia solo se il cancello vivo passa; ogni cancello lascia il suo verbale in
-`evidence/gates/<stadio>_<ora UTC>.json`. Niente e' automatico fra un passo e l'altro: li eseguo io, uno alla volta.
+`evidence/gates/<stadio>_<ora UTC>.json`, con la tranche ammessa (numero e ID); un errore sollevato prima
+dell'elenco dei controlli (lettura remota fallita, ledger incoerente, argomenti mancanti) lascia
+`evidence/gates/<stadio>_<ora UTC>_refused.json` con il testo dell'errore e ferma il comando. Le righe d'invio
+le emette solo `lines <stadio>`, che legge l'ultimo verbale dello stadio (correzione di B-1, review GPT `c2df17e`):
+rifiuta senza verbale, con verbale non superato o rifiutato, con lettura piu' vecchia di 30 minuti, se il ledger
+dello stadio o il checkout `code` sono cambiati dopo il cancello; emette esattamente i job della tranche ammessa,
+nell'ordine e con la catena `afterok` del piano; `--max N` puo' solo accorciarla (1 <= N <= tranche), mai
+allargarla; con tranche vuota il cancello non passa e `lines` non emette nulla. Per un checkout, `lines
+checkout-<nome> --sha <C>` richiede l'ultimo verbale di quel checkout superato per lo stesso commit `C` e l'ID
+mai usato nel ledger. Niente e' automatico fra un passo e l'altro: li eseguo io, uno alla volta.
 
 1. Training `COMPLETED 0:0` -> `collect training`: `sacct -P` grezzo, log, le nove ricevute copiate, hash del
    checkpoint a 19.618 (non copiato), inventario esatto della cartella. Qualunque altro stato: stop e diagnosi.
@@ -139,22 +152,32 @@ tutte le evidenze; un job si invia solo se il cancello vivo passa; ogni cancello
 Cancello vivo di ogni stadio di job (`gate <stadio>`): HEAD e albero pulito di ogni checkout usato
 (`GIT_OPTIONAL_LOCKS=0`); byte remoti dei documenti pubblicati uguali a quelli nel repo; file pinnati dentro i
 checkout presenti nei rispettivi commit; uscite dei job da inviare assenti; job gia' nel ledger inviati da questa
-linea; job gia' inviati dello stadio `COMPLETED 0:0` (qualunque altro stato ferma la tranche successiva); `$WORK`
-con almeno 5 GiB liberi. Cancello di ogni checkout (`gate checkout-<nome>`): il commit discende dal pacchetto
+linea; job gia' inviati dello stadio `COMPLETED 0:0` (qualunque altro stato ferma la tranche successiva); ogni
+checkout usato raccolto `COMPLETED 0:0` (`evidence/checkout-<nome>/<nome>/accounting.json` con lo stesso job del
+ledger: la raccolta `collect checkout-*` non si puo' omettere); `$WORK` con almeno 5 GiB liberi; tranche ammessa
+di almeno un job (§6). Cancello di ogni checkout (`gate checkout-<nome>`): il commit discende dal pacchetto
 rivisto e da ogni checkout precedente aggiungendo solo file sotto `evidence/`, `evaluation/`, `readers/`,
 `submissions/` o modifiche in `docs/` (un documento gia' distribuito non si riscrive); i checkout nascono
 nell'ordine `code`, `plans`, `budgets`, `inputs`, una volta ciascuno; i documenti del checkout sono nel commit con
 i byte pubblicati; riferimento di deploy assente; cartella assente; ID mai usato; un posto libero nella coda
-seriale; `$WORK`. Il commit di ogni checkout si legge dalla ricevuta del ledger (`CAMPAIGN_SHA`), mai a mano.
+seriale; limite di linea (§6) con un posto per il checkout; `$WORK`. Il commit di ogni checkout si legge dalla
+ricevuta del ledger (`CAMPAIGN_SHA`), mai a mano.
 
 ## 6. Corsia seriale, tranche, spazio, manutenzioni
 
 - `lrd_all_serial` per utente: 8 CPU in esecuzione, 2 job in esecuzione, 10 sottomessi, condivisi con la linea 2.
   Un job a 8 CPU occupa da solo la corsia: gira un lettore alla volta, di qualunque linea. Il cancello legge la coda
-  seriale e dichiara `submittable_now` = posti liberi fino a 10; `lines <stadio> --max N` emette solo i job non
-  ancora nel ledger, in catena `afterok` (il primo fallimento ferma gli altri; un job in attesa di un'altra linea
-  passa davanti alla catena). Lettura mia, prudente, finche' Simone non dispone altrimenti: tengo al massimo 4 job
-  della linea 1 sottomessi insieme nella corsia seriale.
+  seriale (`squeue` dell'utente sulla partizione) e ammette una tranche = i primi job dello stadio non ancora nel
+  ledger che entrano sia nei posti liberi (10 meno i job presenti, di qualunque linea) sia nel limite di linea
+  (4 meno i job della linea 1 presenti, riconosciuti dal nome `SCALING-*` che il submitter da' a ogni job);
+  `submittable_now` e' la lunghezza della tranche e la tranche e' nel verbale. `lines <stadio>` emette solo
+  quella tranche, in catena `afterok` (il primo fallimento ferma gli altri; un job in attesa di un'altra linea
+  passa davanti alla catena); con zero posti nessuna riga. Il limite di linea e' la lettura mia, prudente,
+  finche' Simone non dispone altrimenti: al massimo 4 job della linea 1 sottomessi insieme nella corsia seriale;
+  un valore diverso si passa a `gate <stadio> --line-limit N` e resta scritto nel verbale. Gli stadi GPU
+  (estrazioni) non passano dalla corsia seriale: la tranche e' l'intero stadio. Il controllo vale per lo stato
+  letto in quel momento: un invio di un'altra linea fra cancello e `lines` resta possibile e si ferma al primo
+  esito diverso da `sottomesso` (§7).
 - Tempo di corsia della linea 1 ai limiti: validazione 0,5 h, benchmark 0,5 + 8,8 h, ridge 1 h, fit fino a 30 h,
   aggregati 1 h, confronto 0,5 h: fino a circa 43 h di orologio, da spartire con la linea 2. Chi passa prima lo
   decide Simone; io non tocco job di altre linee.
@@ -181,7 +204,12 @@ seriale; `$WORK`. Il commit di ogni checkout si legge dalla ricevuta del ledger 
   19.618 e' quella del training.
 - I benchmark a 5.000 non sono misure a 19.618: il piano dei fit nasce dai benchmark nuovi (freeze v2).
 - Le righe d'invio contengono lo SHA del checkout `code`, che esiste solo dopo il commit del piano d'estrazione:
-  per questo non sono pubblicate ora; le genera `lines` dal ledger, e ogni gate le ricontrolla.
+  per questo non sono pubblicate ora; le genera `lines` dal verbale del cancello e dal ledger.
+- Il verbale lega `lines` allo stato letto dal cancello (coda, ledger, checkout), non rende atomica la QoS di
+  Slurm rispetto alle altre linee: fra cancello e invio restano il coordinamento fra operatori e lo stop al
+  primo rifiuto.
+- Un errore sollevato prima dell'elenco dei controlli lascia un verbale `_refused` con il testo dell'errore, non
+  l'elenco dei controlli: l'esito di quel cancello e' il rifiuto, da registrare.
 
 ## 9. Comandi
 
@@ -194,19 +222,21 @@ Sempre dal worktree d'esecuzione, con `PY="OMP_NUM_THREADS=1 OPENBLAS_NUM_THREAD
     $PY gate extractions                      &&  $PY lines extractions                   # tre righe
     $PY collect extractions                   # poi: reader-plans; commit; gate/lines checkout-plans; collect
     $PY gate pose-validate                    &&  $PY lines pose-validate
-    $PY gate pose-benchmark                   &&  $PY lines pose-benchmark
-    $PY gate probe-benchmark                  &&  $PY lines probe-benchmark --max <N>    # a tranche
+    $PY gate pose-benchmark                   &&  $PY lines pose-benchmark               # la tranche del verbale
+    $PY gate probe-benchmark                  &&  $PY lines probe-benchmark [--max <N>]  # a tranche; --max solo accorcia
     $PY collect pose-validate; ... pose-benchmark; ... probe-benchmark   # poi: budgets; commit; checkout-budgets
     $PY gate pose-ridge                       &&  $PY lines pose-ridge
-    $PY gate probe-fit                        &&  $PY lines probe-fit --max <N>          # a tranche
+    $PY gate probe-fit                        &&  $PY lines probe-fit [--max <N>]        # a tranche; --max solo accorcia
     $PY collect pose-ridge; $PY collect probe-fit
-    $PY gate probe-aggregate                  &&  $PY lines probe-aggregate               # sei righe in catena
+    $PY gate probe-aggregate                  &&  $PY lines probe-aggregate               # sei job, a tranche di al piu' 4
     $PY collect probe-aggregate               # poi: comparison-inputs; commit; checkout-inputs; collect
     $PY gate compare                          &&  $PY lines compare
     $PY collect compare                       # poi: consuntivo, esito tecnico, analisi scientifica
 
 Ogni riga d'invio si esegue cosi' com'e' (`bash -c "$riga"`), una alla volta; stop al primo esito diverso da
-`sottomesso`. Ricevuta = copia dello stato del ledger in `submissions/<ID>.json`. Dopo ogni attivita': registro
+`sottomesso`. `lines` esce con stato 1 e `nessuna riga: <motivo>` su stderr quando non c'e' una tranche da
+inviare; il cancello si ripete quando la corsia si libera. Ricevuta = copia dello stato del ledger in
+`submissions/<ID>.json`. Dopo ogni attivita': registro
 (`docs/claude_GPT_shared`), commit e push con SHA remoto verificato. Test del pacchetto:
 
     OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ~/.venvs/wearusfm-tok/bin/python -B -c "import sys, glob; \

@@ -6764,3 +6764,26 @@ estensione scientifica, nuovi training, retry o pollingAI.
 - Consuntivo del checkout A0 (`SCALING-300M-cont19618-checkout-20261106`, job 63695634): `COMPLETED 0:0`, 69 s su 2 CPU,
   0,04 core-ore su 0,17 richieste, picco 171 MiB, 0 GPU-ore. Evidenze in `evidence/checkout-training/`.
 - Stato: pacchetto in review da GPT. Nessun job dello stadio B inviato; nessun pin a 19.618 esiste ancora.
+
+### 07/11/2026 — Claude, linea 1: B-1 della review GPT corretto; tranche ammessa dal cancello e righe vincolate al verbale
+
+- Review GPT `c2df17e` sul pacchetto `f6dc8ec`: DA RIVEDERE per il solo rilievo bloccante B-1: «`gate()` calcola i posti
+  disponibili, ma li restituisce soltanto fra i dati informativi» e «Il comando `lines` non legge il verbale del cancello».
+  Derivazione, cancelli, cinque checkout, costi (345,17 su 350) ed endpoint giudicati conformi; S-2 e S-4 dopo il confronto.
+  GPT: «La correzione di B-1 va pubblicata da Claude con le regressioni; la sua verifica chiude il rilascio dello stesso
+  pacchetto», senza review fra gli invii e senza un nuovo consenso di Simone.
+- Correzione (`scripts/scaling_plans19618.py`): il cancello di ogni stadio ammette una tranche concreta (numero e ID): i
+  primi job non ancora nel ledger che entrano nei posti liberi della coda seriale (10 meno i job presenti) e nel limite
+  di linea (4 meno i job `SCALING-*` presenti; `--line-limit N` lo cambia e resta nel verbale); con tranche vuota il
+  cancello non passa. `lines <stadio>` legge l'ultimo verbale dello stadio ed emette solo quella tranche, con comandi,
+  risorse e catena `afterok` invariati; rifiuta senza verbale, verbale non superato, lettura piu' vecchia di 30 minuti,
+  ledger o checkout `code` cambiati; `--max N` puo' solo accorciare (1 <= N <= tranche). Stadi GPU: tranche = stadio.
+  Le righe di un checkout richiedono il verbale superato dello stesso commit. Precisazioni non bloccanti recepite:
+  il cancello dei lettori richiede la raccolta `COMPLETED 0:0` di ogni checkout usato, con lo stesso job del ledger;
+  un errore prima dei controlli lascia un verbale `_refused` con il testo dell'errore; `budget-table` stampa il caso
+  peggiore a 15 job (345,17). Codice congelato `aef665b`..`97125bd` e deploy del training `73524b6` invariati.
+- Regressioni (`tests/cpu/test_scaling_gates19618.py`, 70 test): coda piena zero righe; un posto una riga; sei aggregati
+  in tranche di 4, 3 con un job della linea presente, 2 con otto posti occupati; `--max` oltre la tranche, 0 e -1
+  rifiutati senza emissione; coda libera stesse righe di `stage_lines`; verbale vecchio o ledger cambiato rifiutati.
+- Limite di linea: resta la lettura mia, prudente (4), finche' Simone non dispone altrimenti.
+- Stato: nessun job dello stadio B inviato; rilascio sospeso fino alla verifica di GPT. Training 63696864 in coda.

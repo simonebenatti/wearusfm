@@ -6,6 +6,7 @@ gates (checkouts, published documents, outputs, queue, space) and the rule that 
 run on a scratch repository and a scratch ledger. The hand-over from the training wrapper to the extraction is
 exercised on the files really written by the wrapper. Nothing reaches Leonardo or the common ledger.
 """
+import calendar
 import copy
 from dataclasses import replace
 import importlib
@@ -277,14 +278,26 @@ def export(name, sha1):
     return f"--export=ALL,CAMPAIGN={S.CHECKOUTS[name]},CAMPAIGN_SHA={sha1},EXPECTED_SHA={sha1}"
 
 
+def accounting_bytes(slurm, state="COMPLETED", exit_code="0:0"):
+    return json.dumps({"JobIDRaw": str(slurm), "State": state, "ExitCode": exit_code}).encode()
+
+
+def collected(repo, name, slurm, state="COMPLETED", exit_code="0:0"):
+    """What `collect checkout-<name>` leaves after the checkout job: its accounting, read by the gates of the readers."""
+    target = repo / S.PACKAGE / f"evidence/checkout-{name}/{name}/accounting.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(accounting_bytes(slurm, state, exit_code))
+
+
 @pytest.fixture
 def chain(tmp_path):
-    """Reviewed package X, code checkout Y (extraction plan), plans checkout Z (reader plans); ledger with the code checkout."""
+    """Reviewed package X, code checkout Y (extraction plan), plans checkout Z (reader plans, collected accounting of Y);
+    ledger with the code checkout."""
     repo, ledger = tmp_path / "repo", tmp_path / "ledger"
     repo.mkdir()
     git(repo, "init", "-q")
     shared = {relative: (ROOT / relative).read_bytes() for relative in S.SHARED.values()}
-    reviewed = commit(repo, {**shared, "scripts/reader.py": b"reviewed = True\n",
+    reviewed = commit(repo, {**shared, S.FREEZE: (ROOT / S.FREEZE).read_bytes(), "scripts/reader.py": b"reviewed = True\n",
                              "results/infra/tokenizer_review_20261103/comparison_configurations.json":
                              (ROOT / "results/infra/tokenizer_review_20261103/comparison_configurations.json").read_bytes()}, "reviewed package")
     package = S.PACKAGE + "/"
@@ -292,7 +305,8 @@ def chain(tmp_path):
                          package + "evidence/training/collection.json": b"{}\n"}, "extraction plan")
     documents = commit(repo, {package + S.DOCUMENTS["pose_plan"][1]: S.dumps(plans.new_pose_plan()),
                               package + S.DOCUMENTS["probe_plan"][1]: S.dumps(plans.new_probe_plan()),
-                              package + "evidence/extractions/collection.json": b"{}\n", "docs/decisioni.md": b"consuntivo\n"}, "reader plans")
+                              package + "evidence/extractions/collection.json": b"{}\n", "docs/decisioni.md": b"consuntivo\n",
+                              package + "evidence/checkout-code/code/accounting.json": accounting_bytes(700)}, "reader plans")
     ledger_entry(ledger, S.checkout_job("code")["id"], 700, ["sbatch", export("code", code), "/dev/stdin"])
     return repo, ledger, reviewed, code, documents
 
@@ -318,9 +332,12 @@ def test_lane_reads_the_shared_serial_queue_and_the_project_quota():
     reading = {"commands": {"squeue": {"exit": 0, "stdout": QUEUE}, "quota": {"exit": 0, "stdout": QUOTA}}}
     state = S.lane(reading)
     assert state["serial_jobs"] == 2 and state["serial_room"] == 8 and state["work_free_gib"] == pytest.approx(23.72, abs=.01)
+    assert state["line_jobs"] == 1  # the jobs of this line are named after their logical IDs: SCALING-...
+    mixed = "1|SCALING-19618-pose-validate-20261106|RUNNING|2|None\n2|LOGSQ-a|PENDING|8|x\n3|SCALING-x|PENDING|1|x\n4||PENDING|1|x\n"
+    assert S.lane({"commands": {"squeue": {"exit": 0, "stdout": mixed}, "quota": {"exit": 0, "stdout": QUOTA}}})["line_jobs"] == 2
     over = QUOTA.replace("1048868200 ", "1073741900*")
     assert S.lane({"commands": {"squeue": {"exit": 0, "stdout": ""}, "quota": {"exit": 0, "stdout": over}}}) == {
-        "serial_jobs": 0, "serial_room": 10, "work_free_gib": pytest.approx(-76 / 2**20)}
+        "serial_jobs": 0, "serial_room": 10, "line_jobs": 0, "work_free_gib": pytest.approx(-76 / 2**20)}
     for squeue, quota in (({"exit": 1, "stdout": ""}, {"exit": 0, "stdout": QUOTA}), ({"exit": 0, "stdout": QUEUE}, {"exit": 1, "stdout": ""}),
                           ({"exit": 0, "stdout": QUEUE}, {"exit": 0, "stdout": QUOTA.replace("20147512", "1")}),
                           ({"exit": 0, "stdout": QUEUE}, {"exit": 0, "stdout": QUOTA.replace(S.WORK, "/other")}),
@@ -349,7 +366,7 @@ def test_checkout_commit_comes_from_the_receipt_of_the_common_ledger(tmp_path):
 
 def test_later_checkouts_only_add_documents_to_the_reviewed_package(chain):
     repo, _, reviewed, code, documents = chain
-    assert S.release_check(reviewed, code, repo) == 2 and S.release_check(reviewed, documents, repo) == 6
+    assert S.release_check(reviewed, code, repo) == 2 and S.release_check(reviewed, documents, repo) == 7
     changed = commit(repo, {"scripts/reader.py": b"reviewed = False\n"}, "code after the review")
     with pytest.raises(ValueError, match="change outside the documents of the chain after the review: M\tscripts/reader.py"):
         S.release_check(reviewed, changed, repo)
@@ -363,7 +380,7 @@ def test_later_checkouts_only_add_documents_to_the_reviewed_package(chain):
     git(repo, "checkout", "-q", "-B", "side", documents)
     plan = S.PACKAGE + "/" + S.DOCUMENTS["pose_plan"][1]
     rewritten = commit(repo, {plan: b"{}\n"}, "side")
-    assert S.release_check(reviewed, rewritten, repo) == 6 and S.release_check(code, documents, repo, "an earlier checkout") == 4
+    assert S.release_check(reviewed, rewritten, repo) == 7 and S.release_check(code, documents, repo, "an earlier checkout") == 5
     with pytest.raises(ValueError, match="after an earlier checkout: M\t" + plan):
         S.release_check(documents, rewritten, repo, "an earlier checkout")
     with pytest.raises(ValueError, match="does not descend from the review"):
@@ -382,13 +399,18 @@ def test_checkout_gate_before_the_deploy_of_a_document_commit(chain):
         return S.checkout_gate("plans", documents, reviewed, reading, deploy, repo, ledger)
 
     checks, facts = run()
-    assert all(ok for _, ok in checks) and len(checks) == 8 and facts["serial_room"] == 8
+    assert all(ok for _, ok in checks) and len(checks) == 9 and facts["serial_room"] == 8
+    assert facts["tranche"] == [job["id"]] and facts["line_limit"] == 4 and facts["line_jobs"] == 1
     assert all(ok for _, ok in run(documents)[0])  # the reference is already at this commit: the push is a no-op
     failed = lambda result: [name for name, ok in result[0] if not ok]  # noqa: E731
     assert failed(run("e" * 40)) == ["deploy reference absent or already at this commit"]
     assert failed(run(exists={job["out"]: True})) == ["checkout folder absent"]
     full = "\n".join("%d|x|PENDING|8|Priority" % n for n in range(10)) + "\n"
     assert failed(run(commands__squeue={"stdout": full})) == ["one free place in the serial queue"]
+    crowded = "\n".join("%d|SCALING-19618-probe-bench-%d-20261106|PENDING|8|Priority" % (n, n) for n in range(4)) + "\n"
+    assert failed(run(commands__squeue={"stdout": crowded})) == ["line limit 4 leaves a place for this checkout"]
+    wider = S.checkout_gate("plans", documents, reviewed, live({}, {}, [job], commands__squeue={"stdout": crowded}), None, repo, ledger, 5)
+    assert all(ok for _, ok in wider[0]) and wider[1]["line_limit"] == 5
     low = QUOTA.replace("1048868200", str(1073741824 - 4 * 2**20))
     assert failed(run(commands__quota={"stdout": low})) == ["free space on $WORK at least 5 GiB"]
     (repo / S.PACKAGE / S.DOCUMENTS["pose_plan"][1]).write_bytes(b"{}\n")  # local document differs from the committed one
@@ -409,6 +431,7 @@ def test_checkout_gate_before_the_deploy_of_a_document_commit(chain):
 def test_gate_before_a_tranche_reads_checkouts_documents_outputs_queue_and_space(chain):
     repo, ledger, _, code, documents = chain
     ledger_entry(ledger, S.checkout_job("plans")["id"], 701, ["sbatch", export("plans", documents)])
+    collected(repo, "plans", 701)
     request, commits, published, table, submitted = S.gate_request("pose-benchmark", repo, ledger)
     assert commits == {"code": code, "plans": documents} and submitted == {} and list(published) == ["pose_plan"]
     assert request["hashed"] == [f"{S.checkout('plans')}/{S.PACKAGE}/readers/pose_plan.json"] and request["exists"] == [j["out"] for j in table]
@@ -421,12 +444,14 @@ def test_gate_before_a_tranche_reads_checkouts_documents_outputs_queue_and_space
     checks, facts = run()
     assert all(ok for _, ok in checks), checks
     assert facts["to_submit"] == [j["id"] for j in table] and facts["submittable_now"] == 3 and facts["serial_jobs"] == 2
+    assert facts["tranche"] == [j["id"] for j in table] and facts["line_limit"] == 4 and facts["line_jobs"] == 1
     assert [name for name, _ in checks] == [
         "checkout code: expected HEAD and clean tree", "checkout plans: expected HEAD and clean tree",
         "document pose_plan: remote bytes equal to the published ones",
         "files pinned inside the checkouts are in their commits (2)",  # projection and source contract, in the code checkout
         "outputs of the jobs still to submit are absent", "jobs already in the ledger were submitted by this line",
-        "jobs already submitted are COMPLETED 0:0 (0)", "free space on $WORK at least 5 GiB"]
+        "jobs already submitted are COMPLETED 0:0 (0)", "checkouts used were collected COMPLETED 0:0 (2)",
+        "free space on $WORK at least 5 GiB", "a tranche of at least one job is admitted (3 of 3 to submit)"]
     failed = lambda result: [name for name, ok in result[0] if not ok]  # noqa: E731
     assert failed(run(commands__head_code={"stdout": "e" * 40 + "\n"})) == ["checkout code: expected HEAD and clean tree"]
     assert failed(run(commands__status_plans={"stdout": "?? new_file\n"})) == ["checkout plans: expected HEAD and clean tree"]
@@ -439,6 +464,11 @@ def test_gate_before_a_tranche_reads_checkouts_documents_outputs_queue_and_space
     assert failed(run(commands__quota={"stdout": low})) == ["free space on $WORK at least 5 GiB"]
     full = "\n".join("%d|x|PENDING|8|Priority" % n for n in range(9)) + "\n"
     assert run(commands__squeue={"stdout": full})[1]["submittable_now"] == 1
+    collected(repo, "plans", 702)  # the accounting of another job, or none at all: the checkout was not collected
+    assert failed(run()) == ["checkouts used were collected COMPLETED 0:0 (2)"]
+    collected(repo, "plans", 701, state="FAILED", exit_code="1:0")
+    assert failed(run()) == ["checkouts used were collected COMPLETED 0:0 (2)"]
+    collected(repo, "plans", 701)
 
     # After the first job: a new tranche needs it COMPLETED 0:0; any other ledger state stops (no blind retry).
     ledger_entry(ledger, table[0]["id"], 900)
@@ -463,7 +493,10 @@ def test_gate_of_the_extractions_reads_the_plan_in_the_code_checkout(chain):
     assert commits == {"code": code} and request["hashed"] == [f"{S.checkout('code')}/{S.PACKAGE}/evaluation/extraction_plan.json"]
     checks, facts = S.gate(live(commits, published, table), commits, published, table, submitted, repo, ledger)
     assert all(ok for _, ok in checks), checks
-    assert facts["submittable_now"] == 3  # GPU partition: the serial queue does not limit the three extractions
+    assert facts["submittable_now"] == 3 and facts["tranche"] == [j["id"] for j in table]  # GPU partition: not limited by the serial queue
+    full = "\n".join("%d|SCALING-19618-x-%d|PENDING|8|Priority" % (n, n) for n in range(10)) + "\n"
+    checks, facts = S.gate(live(commits, published, table, commands__squeue={"stdout": full}), commits, published, table, submitted, repo, ledger)
+    assert all(ok for _, ok in checks) and facts["tranche"] == [j["id"] for j in table] and facts["serial_room"] == 0
     # Relative pins of the extraction plan (contract, comparison, splits) are read in the commit of the code checkout.
     assert [name for name, _ in checks][2] == "files pinned inside the checkouts are in their commits (3)"
     with pytest.raises(OSError):  # no stage starts before its checkouts exist in the ledger
@@ -587,7 +620,7 @@ def test_every_gate_leaves_its_record_among_the_evidence(chain, monkeypatch, cap
     assert record == {"protocol": S.GATE_PROTOCOL, "stage": "checkout-plans", "read_at_utc": "2026-11-08T10:00:00Z", "passed": True,
                       "checks": record["checks"], "facts": record["facts"], "commit": documents, "reviewed": reviewed,
                       "deploy_reference": None}
-    assert len(record["checks"]) == 8 and all(ok is True for _, ok in record["checks"]) and record["facts"]["serial_room"] == 8
+    assert len(record["checks"]) == 9 and all(ok is True for _, ok in record["checks"]) and record["facts"]["serial_room"] == 8
     assert asked[-1] == {"exists": [S.checkout("plans")], "commands": {"squeue": S.QUEUE, "quota": S.QUOTA}}
     git(repo, "push", "-q", "leonardo", f"{code}:refs/heads/deploy/{S.CHECKOUTS['plans']}")
     answers.append(live({}, {}, [job], time_utc="2026-11-08T10:01:00Z"))
@@ -595,20 +628,20 @@ def test_every_gate_leaves_its_record_among_the_evidence(chain, monkeypatch, cap
     record = json.loads((gates / "checkout-plans_20261108T100100Z.json").read_text())
     assert record["passed"] is False and record["deploy_reference"] == code
     assert [name for name, ok in record["checks"] if not ok] == ["deploy reference absent or already at this commit"]
-    with pytest.raises(ValueError, match="needs --sha and --reviewed"):
-        S.run_gate("checkout-plans", documents, None, repo, ledger)
 
     # Tranche of a job stage: the same record, with the commits of its checkouts and the jobs already sent.
     ledger_entry(ledger, job["id"], 701, ["sbatch", export("plans", documents)])
+    collected(repo, "plans", 701)
     _, commits, published, table, _ = S.gate_request("pose-benchmark", repo, ledger)
     answers.append(live(commits, published, table, time_utc="2026-11-08T10:02:00Z"))
     capsys.readouterr()
     assert S.run_gate("pose-benchmark", root=repo, ledger=ledger) == 0
     out = capsys.readouterr().out
-    assert out.count("PASS  ") == 8 and "FAIL" not in out and '"submittable_now": 3' in out
+    assert out.count("PASS  ") == 10 and "FAIL" not in out and '"submittable_now": 3' in out
     record = json.loads((gates / "pose-benchmark_20261108T100200Z.json").read_text())
     assert record["passed"] is True and record["commits"] == {"code": code, "plans": documents} and record["submitted"] == {}
     assert record["documents"] == published and record["facts"]["to_submit"] == [j["id"] for j in table]
+    assert record["facts"]["tranche"] == [j["id"] for j in table] and record["facts"]["line_limit"] == 4
     assert list(asked[-1]["slurm_jobs"]) == [] and asked[-1]["exists"] == [j["out"] for j in table]
     answers.append(live(commits, published, table, exists={j["out"]: True for j in table}, time_utc="2026-11-08T10:03:00Z"))
     assert S.run_gate("pose-benchmark", root=repo, ledger=ledger) == 1
@@ -619,6 +652,111 @@ def test_every_gate_leaves_its_record_among_the_evidence(chain, monkeypatch, cap
         "pose-benchmark_20261108T100300Z.json"]
     # The records are additions under evidence/: a later checkout may carry them.
     later = commit(repo, {}, "gate records")
-    assert S.release_check(reviewed, later, repo) == 10 and S.release_check(documents, later, repo, "an earlier checkout") == 4
+    assert S.release_check(reviewed, later, repo) == 12 and S.release_check(documents, later, repo, "an earlier checkout") == 5
     with pytest.raises(ValueError, match="unexpected time of the remote reading"):
         S.gate_record("compare", [], {}, {"time_utc": ""}, {})
+
+
+def test_tranche_admitted_by_the_gate_respects_the_queue_and_the_line_limit(chain):
+    """B-1 of the GPT review (c2df17e): admission and generation are bound to the same tranche, number and IDs."""
+    repo, ledger, _, code, documents = chain
+    ledger_entry(ledger, S.checkout_job("plans")["id"], 701, ["sbatch", export("plans", documents)])
+    collected(repo, "plans", 701)
+    _, commits, published, table, submitted = S.gate_request("pose-benchmark", repo, ledger)
+    ids = [j["id"] for j in table]
+    others = lambda n: "".join("%d|LOGSQ-%d|PENDING|8|Priority\n" % (n, n) for n in range(n))  # noqa: E731  another line
+    mine = lambda n: "".join("%d|SCALING-19618-probe-bench-%d-20261106|PENDING|8|Priority\n" % (900 + n, n) for n in range(n))  # noqa: E731
+    failed = lambda result: [name for name, ok in result[0] if not ok]  # noqa: E731
+
+    def run(queue, limit=S.LINE_SERIAL_LIMIT, table=table, published=published, commits=commits, submitted=submitted):
+        reading = live(commits, published, table, commands__squeue={"stdout": queue})
+        return S.gate(reading, commits, published, table, submitted, repo, ledger, limit)
+
+    none = "a tranche of at least one job is admitted (0 of 3 to submit)"
+    checks, facts = run(others(10))  # full queue: nothing admitted, and the gate fails on that alone
+    assert failed((checks, facts)) == [none] and facts["tranche"] == [] and facts["submittable_now"] == 0
+    checks, facts = run(others(9))  # one place: the first job of the table alone
+    assert all(ok for _, ok in checks) and facts["tranche"] == ids[:1] and facts["submittable_now"] == 1
+    checks, facts = run("")  # free queue: the whole stage, within the line limit
+    assert all(ok for _, ok in checks) and facts["tranche"] == ids and facts["line_jobs"] == 0 and facts["line_limit"] == 4
+    checks, facts = run(mine(4))  # four jobs of this line already there: no place, even with six free in the queue
+    assert failed((checks, facts)) == [none] and facts["line_jobs"] == 4 and facts["serial_room"] == 6
+    assert run(mine(2))[1]["tranche"] == ids[:2] and run(mine(2) + others(7))[1]["tranche"] == ids[:1]
+    assert run(mine(4), limit=10)[1]["tranche"] == ids and run(mine(4), limit=10)[1]["line_limit"] == 10
+    # Six aggregates: at most four together, minus the jobs of this line already present.
+    aggregates = S.jobs("probe-aggregate", {"protocol": S.C.RESOURCE_PROTOCOL, "shards": []})
+    assert len(aggregates) == 6
+    few = lambda queue, limit=S.LINE_SERIAL_LIMIT: run(queue, limit, aggregates, {}, {"code": code}, {})  # noqa: E731
+    assert few("")[1]["tranche"] == [j["id"] for j in aggregates[:4]]
+    assert few(mine(1))[1]["tranche"] == [j["id"] for j in aggregates[:3]]
+    assert few(others(8))[1]["tranche"] == [j["id"] for j in aggregates[:2]]
+    assert few("", 6)[1]["tranche"] == [j["id"] for j in aggregates]
+    assert failed(few(others(10))) == ["a tranche of at least one job is admitted (0 of 6 to submit)"]
+
+
+def test_lines_come_only_from_the_tranche_admitted_by_the_latest_gate(chain, monkeypatch, capsys):
+    """B-1: `lines` reads the record of its gate; zero places give zero lines; --max only shortens the admitted tranche."""
+    repo, ledger, reviewed, code, documents = chain
+    bare = repo.parent / "leonardo.git"
+    subprocess.run(["git", "init", "-q", "--bare", str(bare)], check=True)
+    git(repo, "remote", "add", "leonardo", str(bare))
+    answers = []
+    monkeypatch.setattr(S, "remote_read", lambda **request: answers.pop(0))
+    monkeypatch.setattr(S, "ROOT", repo)
+    monkeypatch.setattr(S, "LEDGER", ledger)
+    monkeypatch.setattr(S, "_now", lambda: calendar.timegm((2026, 11, 8, 10, 5, 0)))  # five minutes after the readings
+    others = lambda n: "".join("%d|LOGSQ-%d|PENDING|8|Priority\n" % (n, n) for n in range(n))  # noqa: E731
+    refused = lambda text: (1, [], "nessuna riga: " + text)  # noqa: E731
+
+    def lines(*argv):
+        capsys.readouterr()
+        status = S.main(["lines", *argv])
+        out, err = capsys.readouterr()
+        return status, out.splitlines(), err.strip()
+
+    # Checkout stage: its two lines need the passed gate of that very commit, before its submission.
+    assert lines("checkout-plans", "--sha", documents) == refused("no gate record for checkout-plans: run the gate first")
+    job = S.checkout_job("plans")
+    answers.append(live({}, {}, [job]))
+    assert S.main(["gate", "checkout-plans", "--sha", documents, "--reviewed", reviewed]) == 0
+    assert lines("checkout-plans", "--sha", documents) == (0, S.checkout_lines("plans", documents), "")
+    assert lines("checkout-plans") == refused("a checkout needs --sha")
+    assert lines("checkout-plans", "--sha", code) == refused("the latest gate of checkout-plans was for another commit")
+    assert lines("checkout-plans", "--sha", documents, "--max", "1") == refused("--max applies to job stages only")
+    ledger_entry(ledger, job["id"], 701, ["sbatch", export("plans", documents)])
+    assert lines("checkout-plans", "--sha", documents) == refused("checkout already in the ledger: plans")
+    # A refusal raised before the checks leaves its own record, which is then the latest record of its stage.
+    with pytest.raises(ValueError, match="needs --sha and --reviewed"):
+        S.main(["gate", "checkout-plans", "--sha", documents])
+    record = json.loads((repo / S.PACKAGE / "evidence/gates/checkout-plans_20261108T100500Z_refused.json").read_text())
+    assert record["passed"] is False and record["refused"] == "ValueError: a checkout gate needs --sha and --reviewed"
+    assert record["stage"] == "checkout-plans" and record["commit"] == documents and record["reviewed"] is None
+    assert lines("checkout-plans", "--sha", documents) == refused("the latest gate of checkout-plans did not pass: no line to submit")
+
+    # Job stage: no gate yet, failed gate, one place, free queue.
+    collected(repo, "plans", 701)
+    _, commits, published, table, _ = S.gate_request("pose-benchmark", repo, ledger)
+    ids, whole = [j["id"] for j in table], S.stage_lines("pose-benchmark", code, repo)
+    assert lines("pose-benchmark") == refused("no gate record for pose-benchmark: run the gate first")
+    answers.append(live(commits, published, table, commands__squeue={"stdout": others(10)}, time_utc="2026-11-08T10:01:00Z"))
+    assert S.main(["gate", "pose-benchmark"]) == 1
+    assert lines("pose-benchmark") == refused("the latest gate of pose-benchmark did not pass: no line to submit")
+    answers.append(live(commits, published, table, commands__squeue={"stdout": others(9)}, time_utc="2026-11-08T10:02:00Z"))
+    assert S.main(["gate", "pose-benchmark"]) == 0
+    assert lines("pose-benchmark") == (0, whole[:1], "") and lines("pose-benchmark", "--max", "1") == (0, whole[:1], "")
+    for value in ("2", "3", "0", "-1"):
+        assert lines("pose-benchmark", "--max", value) == refused("--max must be between 1 and the admitted tranche (1)")
+    answers.append(live(commits, published, table, time_utc="2026-11-08T10:03:00Z"))  # QUEUE: one job of this line, eight places
+    assert S.main(["gate", "pose-benchmark"]) == 0
+    assert lines("pose-benchmark") == (0, whole, "") and len(whole) == 3  # the commands, resources and chain of the plan
+    assert lines("pose-benchmark", "--max", "2") == (0, whole[:2], "")
+    assert "--dopo" not in whole[0] and f"--dopo {ids[0]}" in whole[1] and f"--dopo {ids[1]}" in whole[2]
+    assert lines("pose-benchmark", "--max", "4") == refused("--max must be between 1 and the admitted tranche (3)")
+    assert lines("pose-benchmark", "--sha", code) == refused("--sha applies to checkout stages only")
+    # The record binds the moment and the ledger: a stale gate, or a job sent after it, ask for a new gate.
+    monkeypatch.setattr(S, "_now", lambda: calendar.timegm((2026, 11, 8, 10, 33, 1)))  # 1801 s after the reading
+    assert lines("pose-benchmark") == refused("gate record of pose-benchmark older than 1800 seconds: run the gate again")
+    monkeypatch.setattr(S, "_now", lambda: calendar.timegm((2026, 11, 8, 10, 0, 0)))  # the Mac three minutes behind: tolerated
+    assert lines("pose-benchmark") == (0, whole, "")
+    ledger_entry(ledger, ids[0], 900)
+    assert lines("pose-benchmark") == refused("the ledger of pose-benchmark changed after the gate: run the gate again")

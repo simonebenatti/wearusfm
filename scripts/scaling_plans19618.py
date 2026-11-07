@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import calendar
 import functools
 import gzip
 import hashlib
@@ -25,6 +26,7 @@ import re
 import shlex
 import subprocess
 import sys
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -73,6 +75,10 @@ STAGE_DOCUMENTS = {"extractions": ("extraction_plan",), "pose-validate": ("pose_
                    "compare": ("comparison_inputs", "pose_plan", "probe_plan")}
 SERIAL_SUBMIT_LIMIT = 10  # jobs per user in the serial QoS, shared with the other lines
 FITS_PER_FOLD = len(C.C_GRID) + 1  # the candidates of the grid and the refit: seven fits per dataset and fold
+LINE_SERIAL_LIMIT = 4  # jobs of this line submitted together in the serial queue: prudent default until Simone says otherwise
+LINE_JOB_PREFIX = "SCALING-"  # the submitter names every job of this line after its logical ID
+GATE_MAX_AGE_SECONDS = 1800  # submission lines come only from a gate read within this time
+CLOCK_SKEW_SECONDS = 300  # tolerated difference between the clock of the login node and the one of the Mac
 WORK_PROJECT, WORK_FREE_GIB = "20147512", 5  # outputs and checkouts of the whole stage B take about 2 GiB on $WORK
 
 
@@ -744,7 +750,8 @@ def budget_table(shards=None):
         table = jobs(stage, {"protocol": C.RESOURCE_PROTOCOL, "shards": []}) if stage == "probe-aggregate" else jobs(stage)
         row(stage, table, stages[stage.replace("-", "_")]["core_hours_with_scheduler_margin"])
     fit = stages["probe_fit"]
-    worst = [{"cpus": fit["cpus"], "seconds": fit["maximum_seconds_each"]}] * 10  # 240 core-hours in the fewest jobs
+    each = fit["requested_core_hours"] * 3600 // (fit["cpus"] * fit["maximum_shards"])
+    worst = [{"cpus": fit["cpus"], "seconds": each}] * fit["maximum_shards"]  # 240 core-hours in the most jobs: largest margin
     row("probe-fit", shards if shards is not None else worst, fit["core_hours_with_scheduler_margin"])
     total = sum(r["core_hours_with_scheduler_margin"] for r in rows.values())
     return {"stages": rows, "core_hours_with_scheduler_margin": total, "cap": limits["cpu_only_core_hours_cap"],
@@ -913,8 +920,10 @@ def lane(reading):
     require("prj " + WORK_PROJECT in quota["stdout"] and tokens.count(WORK) == 1, "unexpected quota answer")
     used, limit = (int(x.rstrip("*")) for x in tokens[tokens.index(WORK) + 1:][:2])
     require(limit > 0, "unexpected quota answer")
-    waiting = [line for line in queue["stdout"].splitlines() if line.strip()]
-    return {"serial_jobs": len(waiting), "serial_room": SERIAL_SUBMIT_LIMIT - len(waiting), "work_free_gib": (limit - used) / 2**20}
+    waiting = [line.split("|") for line in queue["stdout"].splitlines() if line.strip()]
+    mine = [row for row in waiting if len(row) > 1 and row[1].startswith(LINE_JOB_PREFIX)]  # this line's jobs already there
+    return {"serial_jobs": len(waiting), "serial_room": SERIAL_SUBMIT_LIMIT - len(waiting), "line_jobs": len(mine),
+            "work_free_gib": (limit - used) / 2**20}
 
 
 def _blob_sha256(commit, relative, root=ROOT):
@@ -983,9 +992,21 @@ def _completed(answer, slurm):
     return any(r.get("JobIDRaw") == slurm and r.get("State") == "COMPLETED" and r.get("ExitCode") == "0:0" for r in rows)
 
 
-def gate(reading, commits, documents, table, submitted, root=ROOT, ledger=LEDGER):
+def _collected_checkout(name, ledger, root):
+    """The checkout job was collected after COMPLETED 0:0: its accounting is among the evidence with its Slurm ID."""
+    try:
+        record = _load(f"{PACKAGE}/evidence/checkout-{name}/{name}/accounting.json", root)
+        return (record.get("JobIDRaw") == ledger_job(checkout_job(name)["id"], ledger) and record.get("State") == "COMPLETED" and
+                record.get("ExitCode") == "0:0")
+    except (OSError, ValueError):
+        return False
+
+
+def gate(reading, commits, documents, table, submitted, root=ROOT, ledger=LEDGER, line_limit=LINE_SERIAL_LIMIT):
     """Mechanical gate before a tranche of a job stage: (checks, facts). Nothing is submitted here.
-    submitted: {logical ID: Slurm ID} of the jobs of the stage already sent; they must have completed."""
+    submitted: {logical ID: Slurm ID} of the jobs of the stage already sent; they must have completed.
+    The admitted tranche (facts["tranche"]) is what `lines` may emit: the jobs still to submit that fit in the free
+    places of the serial queue and in the limit of this line, counting the jobs of this line already there."""
     commands, files, state = reading["commands"], {f["path"]: f for f in reading["files"]}, lane(reading)
     todo = [job for job in table if not (Path(ledger) / job["id"]).exists()]
 
@@ -1003,13 +1024,18 @@ def gate(reading, commits, documents, table, submitted, root=ROOT, ledger=LEDGER
                ("jobs already in the ledger were submitted by this line", all(job["id"] in submitted for job in table if job not in todo)),
                ("jobs already submitted are COMPLETED 0:0 (%d)" % len(submitted),
                 all(_completed(reading["sacct"][slurm], slurm) for slurm in submitted.values())),
+               ("checkouts used were collected COMPLETED 0:0 (%d)" % len(commits),
+                all(_collected_checkout(name, ledger, root) for name in commits)),
                ("free space on $WORK at least %d GiB" % WORK_FREE_GIB, state["work_free_gib"] >= WORK_FREE_GIB)]
     serial = all(job["gpus"] == 0 for job in table)
-    room = max(0, min(len(todo), state["serial_room"])) if serial else len(todo)
-    return checks, {**state, "to_submit": [job["id"] for job in todo], "submittable_now": room}
+    room = max(0, min(len(todo), state["serial_room"], line_limit - state["line_jobs"])) if serial else len(todo)
+    tranche = [job["id"] for job in todo[:room]]
+    checks.append(("a tranche of at least one job is admitted (%d of %d to submit)" % (len(tranche), len(todo)), len(tranche) >= 1))
+    return checks, {**state, "to_submit": [job["id"] for job in todo], "line_limit": line_limit, "submittable_now": room,
+                    "tranche": tranche}
 
 
-def checkout_gate(name, commit, reviewed, reading, deploy_ref, root=ROOT, ledger=LEDGER):
+def checkout_gate(name, commit, reviewed, reading, deploy_ref, root=ROOT, ledger=LEDGER, line_limit=LINE_SERIAL_LIMIT):
     """Gate before the deploy reference and the checkout job of a document commit: (checks, facts)."""
     changed, order = release_check(reviewed, commit, root), list(CHECKOUTS)
     earlier = {c: checkout_commit(c, ledger) for c in order if c != name and (Path(ledger) / checkout_job(c)["id"]).exists()}
@@ -1029,8 +1055,9 @@ def checkout_gate(name, commit, reviewed, reading, deploy_ref, root=ROOT, ledger
               ("checkout folder absent", reading["exists"][job["out"]] is False),
               ("logical ID never used in the ledger", not (Path(ledger) / job["id"]).exists()),
               ("one free place in the serial queue", state["serial_room"] >= 1),
+              ("line limit %d leaves a place for this checkout" % line_limit, state["line_jobs"] < line_limit),
               ("free space on $WORK at least %d GiB" % WORK_FREE_GIB, state["work_free_gib"] >= WORK_FREE_GIB)]
-    return checks, state
+    return checks, {**state, "line_limit": line_limit, "tranche": [job["id"]]}
 
 
 # ---------------------------------------------------------------------------------------------
@@ -1158,9 +1185,25 @@ def gate_record(stage, checks, facts, reading, context):
     return f"evidence/gates/{stage}_{stamp}.json", dumps(record)
 
 
-def run_gate(stage, commit=None, reviewed=None, root=ROOT, ledger=LEDGER):
+def run_gate(stage, commit=None, reviewed=None, root=ROOT, ledger=LEDGER, line_limit=LINE_SERIAL_LIMIT):
     """Reads the live state once (read-only), prints every check and records the outcome among the evidence;
-    exit status 1 if any check fails."""
+    exit status 1 if any check fails. A refusal raised before the checks leaves its own record and is re-raised."""
+    try:
+        reading, checks, facts, context = _gate_reading(stage, commit, reviewed, root, ledger, line_limit)
+    except Exception as error:
+        stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime(_now()))
+        _write(f"evidence/gates/{stage}_{stamp}_refused.json", dumps({
+            "protocol": GATE_PROTOCOL, "stage": stage, "passed": False, "recorded_at_utc": stamp,
+            "refused": "%s: %s" % (type(error).__name__, error), "commit": commit, "reviewed": reviewed}), root)
+        raise
+    for name, ok in checks:
+        print("%s  %s" % ("PASS" if ok else "FAIL", name))
+    print(json.dumps(facts, indent=1))
+    _write(*gate_record(stage, checks, facts, reading, context), root)
+    return 0 if all(ok for _, ok in checks) else 1
+
+
+def _gate_reading(stage, commit, reviewed, root, ledger, line_limit):
     if stage.startswith("checkout-"):
         name = stage[len("checkout-"):]
         require(commit is not None and reviewed is not None, "a checkout gate needs --sha and --reviewed")
@@ -1170,22 +1213,57 @@ def run_gate(stage, commit=None, reviewed=None, root=ROOT, ledger=LEDGER):
         references = [line.split()[0] for line in done.stdout.splitlines() if "\t" in line]
         reference = references[0] if references else None
         reading = remote_read(exists=[checkout(name)], commands={"squeue": QUEUE, "quota": QUOTA})
-        checks, facts = checkout_gate(name, commit, reviewed, reading, reference, root, ledger)
-        context = {"commit": commit, "reviewed": reviewed, "deploy_reference": reference}
-    else:
-        request, commits, documents, table, submitted = gate_request(stage, root, ledger)
-        if stage == "probe-aggregate":
-            fits = build_fit_state(commits["code"], root)
-        reading = remote_read(slurm_jobs=submitted.values(), **request)
-        checks, facts = gate(reading, commits, documents, table, submitted, root, ledger)
-        if stage == "probe-aggregate":
-            facts["fits"] = fits
-        context = {"commits": commits, "documents": documents, "submitted": submitted}
-    for name, ok in checks:
-        print("%s  %s" % ("PASS" if ok else "FAIL", name))
-    print(json.dumps(facts, indent=1))
-    _write(*gate_record(stage, checks, facts, reading, context), root)
-    return 0 if all(ok for _, ok in checks) else 1
+        checks, facts = checkout_gate(name, commit, reviewed, reading, reference, root, ledger, line_limit)
+        return reading, checks, facts, {"commit": commit, "reviewed": reviewed, "deploy_reference": reference}
+    request, commits, documents, table, submitted = gate_request(stage, root, ledger)
+    if stage == "probe-aggregate":
+        fits = build_fit_state(commits["code"], root)
+    reading = remote_read(slurm_jobs=submitted.values(), **request)
+    checks, facts = gate(reading, commits, documents, table, submitted, root, ledger, line_limit)
+    if stage == "probe-aggregate":
+        facts["fits"] = fits
+    return reading, checks, facts, {"commits": commits, "documents": documents, "submitted": submitted}
+
+
+def _now():
+    return time.time()
+
+
+def latest_gate(stage, root=ROOT):
+    """The most recent record of the gate of a stage, refusals included."""
+    found = sorted((Path(root) / PACKAGE / "evidence/gates").glob(f"{stage}_*.json"))
+    require(found, "no gate record for %s: run the gate first" % stage)
+    record = json.loads(found[-1].read_text())
+    require(record.get("protocol") == GATE_PROTOCOL and record.get("stage") == stage, "unexpected gate record: " + found[-1].name)
+    return record
+
+
+def admitted_lines(stage, sha=None, limit=None, root=ROOT, ledger=LEDGER, now=None):
+    """Submission lines of the tranche admitted by the latest gate of the stage, or a shorter prefix of it (`limit`):
+    never a job outside that tranche, never without a passed gate read recently and still matching the ledger."""
+    record = latest_gate(stage, root)
+    require(record.get("passed") is True, "the latest gate of %s did not pass: no line to submit" % stage)
+    read_at = calendar.timegm(time.strptime(record["read_at_utc"], "%Y-%m-%dT%H:%M:%SZ"))
+    age = (_now() if now is None else now) - read_at
+    require(-CLOCK_SKEW_SECONDS <= age <= GATE_MAX_AGE_SECONDS,
+            "gate record of %s older than %d seconds: run the gate again" % (stage, GATE_MAX_AGE_SECONDS))
+    if stage.startswith("checkout-"):
+        name = stage[len("checkout-"):]
+        require(limit is None, "--max applies to job stages only")
+        require(sha is not None, "a checkout needs --sha")
+        require(record.get("commit") == sha, "the latest gate of %s was for another commit" % stage)
+        require(not (Path(ledger) / checkout_job(name)["id"]).exists(), "checkout already in the ledger: " + name)
+        return checkout_lines(name, sha)
+    require(sha is None, "--sha applies to checkout stages only")
+    table, tranche = stage_table(stage, root), list(record["facts"]["tranche"])
+    submitted = {job["id"]: ledger_job(job["id"], ledger) for job in table if (Path(ledger) / job["id"]).exists()}
+    require(submitted == record["submitted"] and not any(job_id in submitted for job_id in tranche),
+            "the ledger of %s changed after the gate: run the gate again" % stage)
+    code = checkout_commit("code", ledger)
+    require(code == record["commits"]["code"], "the code checkout changed after the gate")
+    require(limit is None or (type(limit) is int and 1 <= limit <= len(tranche)),
+            "--max must be between 1 and the admitted tranche (%d)" % len(tranche))
+    return stage_lines(stage, code, root, only=tranche[:limit])
 
 
 def main(argv=None):
@@ -1199,7 +1277,9 @@ def main(argv=None):
         command.add_argument("stage", help="a job stage, or checkout-<code|plans|budgets|inputs>")
         command.add_argument("--sha", help="checkout stages: commit to deploy")
     sub.choices["gate"].add_argument("--reviewed", help="checkout stages: commit of the package reviewed by GPT")
-    sub.choices["lines"].add_argument("--max", type=int, help="job stages: at most this many of the jobs not yet submitted")
+    sub.choices["gate"].add_argument("--line-limit", type=int, default=LINE_SERIAL_LIMIT,
+                                     help="jobs of this line submitted together in the serial queue (default %d)" % LINE_SERIAL_LIMIT)
+    sub.choices["lines"].add_argument("--max", type=int, help="job stages: a shorter prefix of the admitted tranche")
     args = parser.parse_args(argv)
     if args.command == "extraction-plan":
         build_extraction_plan()
@@ -1212,14 +1292,13 @@ def main(argv=None):
     elif args.command == "collect":
         run_collect(args.stage)
     elif args.command == "gate":
-        return run_gate(args.stage, args.sha, args.reviewed)
+        return run_gate(args.stage, args.sha, args.reviewed, ROOT, LEDGER, args.line_limit)
     elif args.command == "lines":
-        if args.stage.startswith("checkout-"):
-            require(args.sha is not None, "a checkout needs --sha")
-            text = checkout_lines(args.stage[len("checkout-"):], args.sha)
-        else:
-            todo = [job["id"] for job in stage_table(args.stage) if not (LEDGER / job["id"]).exists()]
-            text = stage_lines(args.stage, checkout_commit("code"), only=todo[:args.max])
+        try:
+            text = admitted_lines(args.stage, args.sha, args.max, ROOT, LEDGER)
+        except (ValueError, OSError) as error:
+            print("nessuna riga: %s" % error, file=sys.stderr)
+            return 1
         print("\n".join(text))
     else:
         print(json.dumps(budget_table(), indent=1))

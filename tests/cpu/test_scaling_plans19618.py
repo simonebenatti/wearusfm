@@ -111,6 +111,7 @@ def test_cpu_budget_stays_inside_every_stage_cap_and_the_350_core_hours():
             assert row["core_hours_with_scheduler_margin"] == pytest.approx(row["cap_with_scheduler_margin"]), name
     fifteen = [{"cpus": 8, "seconds": 7200}] * 15  # 240 core-hours in the largest number of shards
     worst = S.budget_table(fifteen)
+    assert table["stages"]["probe-fit"] == worst["stages"]["probe-fit"]  # the default table shows the 15-shard maximum
     assert worst["stages"]["probe-fit"]["core_hours_with_scheduler_margin"] == pytest.approx(246)
     assert worst["core_hours_with_scheduler_margin"] == pytest.approx(freeze["budgeted_core_hours_with_scheduler_margin"])
     assert worst["within_stage_caps"] and worst["within_total_cap"]
