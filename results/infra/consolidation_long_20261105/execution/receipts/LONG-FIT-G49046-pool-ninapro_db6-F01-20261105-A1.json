@@ -1,0 +1,169 @@
+{
+  "amendment": {
+    "id": "A1",
+    "input_compatibility": {
+      "bytes": 65919,
+      "path": "results/infra/consolidation_long_20261105/amendment_a1/input_compatibility.json",
+      "sha256": "983df48465531014275b6f5f677e6907a1219f26fbeef529b6489ea85c473c95"
+    },
+    "input_source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1"
+  },
+  "artifacts": {
+    "audit": {
+      "bytes": 54124,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db6/F01/probe.audit.jsonl",
+      "sha256": "9499ad61063f11601445e2805cc3727ef231a9959c81183687f1b84be5ed4ba5"
+    },
+    "oof": {
+      "bytes": 725756,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db6/F01/probe.oof.npz",
+      "sha256": "2913529ff581165619a3e574c7819d839b9e03dfe6f0021cf27706361b4c41db"
+    },
+    "probe": {
+      "bytes": 31852,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db6/F01/probe.json",
+      "sha256": "9475806b16215170bf74226e533cb059db5b0b871e25a00b1c1e3a9ef9e33d2c"
+    }
+  },
+  "benchmark_manifest": {
+    "bytes": 4671,
+    "path": "results/infra/consolidation_long_20261105/execution/manifests/classification_benchmark_receipts.json",
+    "sha256": "cf2f9eb8232c15d3990ee315b91b6feec8ed3c15e0fd21bb0b24c98ae3383080"
+  },
+  "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+  "checkpoint_step": 49046,
+  "checkpoint_unchanged": false,
+  "code_sha": "a70e29e4abb09e6e23fad34ca6b7b9e28874952a",
+  "complete": true,
+  "dataset": "ninapro_db6",
+  "extraction_receipt": {
+    "bytes": 5986,
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p1/report.json",
+    "sha256": "21a243cc470bcdafef54b147c7bfe479f0a3d477bcbc25ae8ffdb11a7ec07e39"
+  },
+  "fold_indices": [
+    0,
+    1
+  ],
+  "frozen_teacher_unchanged": false,
+  "global_resource_gate_passed": true,
+  "historical_numeric_match": {
+    "compatible": true,
+    "exact_match": false,
+    "extra_threadpools": [
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 8,
+        "prefix": "libgomp",
+        "threading_layer": null,
+        "version": null
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 8,
+        "prefix": "libomp",
+        "threading_layer": null,
+        "version": null
+      }
+    ],
+    "historical_numeric_context": {
+      "features_dtype": "float32",
+      "numpy": "1.26.4",
+      "python": "3.11.6",
+      "scipy": "1.12.0",
+      "sklearn": "1.4.1.post1",
+      "threadpools": [
+        {
+          "architecture": "SkylakeX",
+          "internal_api": "openblas",
+          "num_threads": 8,
+          "prefix": "libopenblas",
+          "threading_layer": "pthreads",
+          "version": "0.3.21.dev"
+        },
+        {
+          "architecture": "SkylakeX",
+          "internal_api": "openblas",
+          "num_threads": 8,
+          "prefix": "libopenblas",
+          "threading_layer": "pthreads",
+          "version": "0.3.23.dev"
+        },
+        {
+          "architecture": null,
+          "internal_api": "openmp",
+          "num_threads": 8,
+          "prefix": "libgomp",
+          "threading_layer": null,
+          "version": null
+        }
+      ]
+    },
+    "historical_numeric_sha256": "07b776bafeacb0facc809e24f27f5fc34979bf7dd09e1ee0aa132cd22d945908",
+    "historical_reports": {
+      "p1": [
+        {
+          "bytes": 20533,
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p1.json",
+          "sha256": "4ded85b93946d93dc09b5a5ad64452ad319708aa608545796fcd6ef126172031"
+        }
+      ],
+      "p2": [
+        {
+          "bytes": 57166,
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G/p2.json",
+          "sha256": "ef53b8ab6a7fccb675b14db10ebb74be68e82e5a250214b618edad7d7c9d8d5c"
+        }
+      ]
+    },
+    "numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+    "policy": {
+      "equal_fields": [
+        "python",
+        "numpy",
+        "scipy",
+        "sklearn",
+        "features_dtype"
+      ],
+      "extra_pools": "only internal_api=openmp and integer num_threads=8",
+      "historical_pools": "multiset inclusion with exact equality of all six fields",
+      "interpretation": "same historical numerical libraries, versions and threads; new process also imports torch; extra OpenMP runtimes do not establish identical fitted predictions",
+      "name": "historical-libraries-plus-openmp8-v1",
+      "new_benchmarks_and_fits": "one exact numeric_sha256 across all new cells",
+      "pool_fields": [
+        "internal_api",
+        "prefix",
+        "version",
+        "num_threads",
+        "architecture",
+        "threading_layer"
+      ]
+    }
+  },
+  "kind": "fit-classification",
+  "measured_resources": {
+    "elapsed_seconds": 628.4761264557019,
+    "peak_rss_bytes": 2178768896
+  },
+  "plan_sha256": "4cf0fdbea8fbc6bbc892b0688bea64b29c71bc652ac2d9996b89b416d8de0968",
+  "protocol": "consolidation-long-evaluation-20261105-v1",
+  "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+  "resource_gate": {
+    "dataset": "ninapro_db6",
+    "folds": [
+      0,
+      1
+    ],
+    "max_projected_seconds": 9300.0,
+    "passed": true,
+    "projected_peak_rss_bytes": 3846352896.0,
+    "projected_seconds": 8811.92526581768,
+    "step": 49046,
+    "view": "pool",
+    "walltime_seconds": 9900
+  },
+  "source_sha256": "77e09626271b1aeded8d7f3df77ef9557115e903a9aca8e280e3f3259527ac88",
+  "view": "pool"
+}
