@@ -1,6 +1,6 @@
 {
   "phase": "aggregate",
-  "collected_at": "2026-11-07T12:34:51+01:00",
+  "collected_at": "2026-11-07T12:42:01+01:00",
   "receipts": {
     "LONG-COMPARE-classification-20261105": {
       "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/comparison/classification/report.json",
@@ -11,12 +11,17 @@
       "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/comparison/pose/report.json",
       "sha256": "926bc8537109f41a65d2a22bf14c149b35495a7dcc45969b5542090595c0ab7c",
       "bytes": 157885
+    },
+    "LONG-SUMMARY-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/summary/report.json",
+      "sha256": "b0cfa0eb3979567788075e63f5494e47adb95c8753a4b410fe3c63b8625e90d3",
+      "bytes": 2848018
     }
   },
   "accounting": {
-    "rows": 3,
+    "rows": 4,
     "gpu_hours": 0.0,
-    "allocated_core_hours": 0.250556,
+    "allocated_core_hours": 0.261111,
     "rule": "ElapsedRaw x allocated GPUs / 3600 and ElapsedRaw x AllocCPUS / 3600, one row per allocation (sacct -X)"
   }
 }

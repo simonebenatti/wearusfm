@@ -1,0 +1,51 @@
+{
+ "id": "LONG-SUMMARY-20261105",
+ "creato": "2026-11-07T12:38:12+01:00",
+ "agente": "claude",
+ "campagna": "consolidation_long_20261105",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "d75106304d1592fbea6d81fc4c1220e669cffecf",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LONG-SUMMARY-20261105",
+  "--comment=wearusfm:LONG-SUMMARY-20261105",
+  "--account=IscrB_WearUsFM",
+  "--partition=lrd_all_serial",
+  "--nodes=1",
+  "--ntasks=1",
+  "--cpus-per-task=2",
+  "--mem=2G",
+  "--time=00:10:00",
+  "--no-requeue",
+  "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_long_%j.out",
+  "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/consolidation_long_%j.out",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-long-aggregate-20261105,EXPECTED_SHA=d75106304d1592fbea6d81fc4c1220e669cffecf"
+ ],
+ "dopo": null,
+ "script_stdin": "results/infra/consolidation_long_20261105/execution/summary_materialize.sbatch",
+ "script_stdin_sha256": "34ba86c73b237d9fc3b9f40d60d2a90f2ea3c2b3bfa32d9b9e5bfb463a8d742a",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-07T12:38:12+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-07T12:38:12+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-07T12:38:17+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63767351,
+   "uscita": 0,
+   "stdout": "63767351\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63767351,
+ "uscita": 0,
+ "stdout": "63767351\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}
