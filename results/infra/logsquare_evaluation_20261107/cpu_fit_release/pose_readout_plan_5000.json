@@ -1,0 +1,245 @@
+{
+  "step": 5000,
+  "recipe": {
+    "which": "teacher",
+    "cached_features": "mean_K64_fp16",
+    "dim": 384,
+    "normalization": "stateless LayerNorm FP32",
+    "normalization_eps": 1e-05,
+    "offset": 6,
+    "common_centers": "6 <= t and t+6 < n_patches",
+    "target_support": "central target mask only",
+    "fit_precision": "float64",
+    "intercept": "unpenalized",
+    "cv": "alternating sorted train users; two folds; pooled masked standardized SSE",
+    "alpha_exponents": [
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "max_extensions_per_side": 3,
+    "tie_break": "smallest alpha",
+    "dynamic_threshold": 0.2574231028556824,
+    "dynamic_selection": "original full-window pose_var",
+    "min_centered_points": 2,
+    "bootstrap": {
+      "unit": "user",
+      "replicates": 2000,
+      "seed": 20261102
+    },
+    "batch_windows": 64
+  },
+  "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "fold_users": [
+    [
+      "03d49b393e",
+      "06d17ebbe4",
+      "1223558697",
+      "323f919c83",
+      "32cbfe3221",
+      "3589743749",
+      "3f79dccf7a",
+      "5ef3a0537e",
+      "65228c03b3",
+      "76bfc2d385",
+      "82f6fe243f",
+      "8bd1c0ff16",
+      "915e7ab7da",
+      "9261f6ab56",
+      "bd64911c18",
+      "c2991a87f6",
+      "d8b3b209f4",
+      "e5ffa40c92",
+      "eab042e9de",
+      "ef59709d32"
+    ],
+    [
+      "055bb1b487",
+      "1066cc94fc",
+      "2cc385c3cd",
+      "32473f0e96",
+      "342248118e",
+      "3669295621",
+      "47c605ad6f",
+      "60e5a2b0a4",
+      "70ad60b9a1",
+      "79d6b65fef",
+      "84a77feea6",
+      "8db8aaea3b",
+      "91e58c0561",
+      "9fcad1a5cc",
+      "bd84652be9",
+      "ce52651f99",
+      "e03cea741b",
+      "e666e9de6e",
+      "ec7f7bbbcd",
+      "fba9f08c33"
+    ]
+  ],
+  "references": {
+    "train": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz",
+      "sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23",
+      "bytes": 257675076,
+      "n_windows": 1907,
+      "n_users": 40,
+      "n_recordings": 200
+    },
+    "val": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz",
+      "sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904",
+      "bytes": 2485295825,
+      "n_windows": 18548,
+      "n_users": 15,
+      "n_recordings": 1950
+    }
+  },
+  "protocol": "tokenizer-logsquare-pose-readout-20261104-v1",
+  "status": "APPROVED_FOR_EVALUATION",
+  "sources": {
+    "scripts/tokenizer_pose_readout.py": "18a15436e48045447661d3aaab6a8770819527b4ff97a2837d9be3930bad7fb3",
+    "scripts/pose_temporal_readout.py": "b0adaaacde63151519f6a50aaf9d60aa9a2acabc13b59c8b37582dadb292a815",
+    "scripts/pose_e3_b.py": "859dc19b7867a9597fe7fe868cde8833471a1db7da018113809e6a6fda831782",
+    "scripts/pose_dynamics.py": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8",
+    "scripts/logsquare_pose_readout.py": "65bfc70b1c01d2cca75723fc84fdac1e84a2edb5c9c26cd9e86e10542eb0b1c8"
+  },
+  "resources": {
+    "validate": {
+      "cpus": 2,
+      "memory_mib": 30720,
+      "seconds": 1800
+    },
+    "benchmark": {
+      "cpus": 8,
+      "memory_mib": 30720,
+      "seconds": 900
+    },
+    "ridge": {
+      "cpus": 8,
+      "memory_mib": 30720,
+      "seconds": 1800
+    },
+    "compare": {
+      "cpus": 2,
+      "memory_mib": 30720,
+      "seconds": 1800
+    }
+  },
+  "contrasts": {
+    "primary": "T100-LQ_minus_T100-L",
+    "secondary": [
+      "T100-LQ_minus_T25-L",
+      "T100-LQ_minus_T100-G"
+    ]
+  },
+  "historical": {
+    "plan": {
+      "path": "results/infra/tokenizer_evaluation_20261103/pose_readout_plan_5000.json",
+      "sha256": "9efbf8279b1a6fdbcd551bae2326e36b74f551c7469f5cbd46842c49906b39ba"
+    },
+    "report": {
+      "path": "results/infra/tokenizer_evaluation_20261103/cpu_5000/final/report.json",
+      "sha256": "2a7d8ccfaade9d8a540ecfb4e95821f5d67a93df735afbafb4ea6e863df980c3"
+    },
+    "code_sha": "70fd080149c11d10917059875d31a5a2820f176a",
+    "numeric_context": {
+      "versions": {
+        "python": "3.11.6",
+        "numpy": "1.26.4",
+        "torch": "2.2.0a0+git6c8c5ad"
+      },
+      "threads": {
+        "OMP_NUM_THREADS": "8",
+        "MKL_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8"
+      },
+      "torch_threads": 8,
+      "threadpools": [
+        {
+          "internal_api": "openblas",
+          "prefix": "libopenblas",
+          "version": "0.3.23.dev",
+          "num_threads": 8,
+          "architecture": "SkylakeX",
+          "threading_layer": "pthreads"
+        },
+        {
+          "internal_api": "openmp",
+          "prefix": "libgomp",
+          "version": null,
+          "num_threads": 8,
+          "architecture": null,
+          "threading_layer": null
+        },
+        {
+          "internal_api": "openmp",
+          "prefix": "libomp",
+          "version": null,
+          "num_threads": 8,
+          "architecture": null,
+          "threading_layer": null
+        }
+      ]
+    }
+  },
+  "caches": {
+    "train": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz",
+      "sha256": "881b58e7e455a883f3256d4ee736f822e5c837c8bfe88bb560d06e700fb5cbf2",
+      "bytes": 257774193,
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/train_subset.npz.provenance.json",
+      "provenance_sha256": "409d08653b4557894c75c97130f3145c0c3fe46d3d979da3ec1243c152c26760",
+      "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/receipt.json",
+      "receipt_sha256": "3dca283a6cb70f1bff435471027c63381ee3d2049acdcbd78349d103a1195946",
+      "checkpoint_sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9",
+      "extraction_code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210"
+    },
+    "val": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz",
+      "sha256": "ae95cd20dabe83b3d69a844a29bee71369c43324a084ad6a36a5560b2a4264ac",
+      "bytes": 2485995330,
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/val.npz.provenance.json",
+      "provenance_sha256": "126edd42dd1a675087b50fb598bec8d3a8aeafc0a0f6ac7784b0f2b707ecb704",
+      "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261105/5000/pose/receipt.json",
+      "receipt_sha256": "3dca283a6cb70f1bff435471027c63381ee3d2049acdcbd78349d103a1195946",
+      "checkpoint_sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9",
+      "extraction_code_sha": "9720fc8f7510bd8e7640164630da30515a8b3210"
+    }
+  },
+  "fit_release": {
+    "status": "BENCHMARK_READ_AND_ACCEPTED",
+    "validate": {
+      "report": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/validate/report.json",
+        "sha256": "af016e7ce934225f3d6e9499265ff0df4d6816f34c4c9e8d6defdaed625c577d"
+      },
+      "accounting": {
+        "State": "COMPLETED",
+        "ExitCode": "0:0",
+        "ElapsedRaw": 18,
+        "AllocCPUS": 2,
+        "AllocTRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1",
+        "JobIDRaw": "63775679"
+      }
+    },
+    "benchmark": {
+      "report": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/benchmark/report.json",
+        "sha256": "94908d932bb9bd96739d37e6b3faa350c69eb6b72896ae4f166f122367a8cea8"
+      },
+      "accounting": {
+        "State": "COMPLETED",
+        "ExitCode": "0:0",
+        "ElapsedRaw": 18,
+        "AllocCPUS": 8,
+        "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+        "JobIDRaw": "63775686"
+      }
+    },
+    "required_seconds": 240
+  }
+}

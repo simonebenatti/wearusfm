@@ -6348,3 +6348,9 @@ condivisi, tetto 51 core-ore e zero GPU. I fit posa rimangono condizionati ai
 benchmark train e al gate di 1.800 s; nuova release e checkout dopo la lettura.
 Le sonde riusano i gate storici esplicitamente come proxy. Esecuzione dettagliata
 in docs/logsquare_cpu_execution_20261107.md; nessun monitor in background.
+
+Dodici job CPU A sottomessi. Il solo rifiuto per limite di dieci job in coda è
+risolto dopo completamenti osservati, con storia nel ledger e nessun job duplicato.
+Quattro preparatori posa conclusi: entrambi i gate danno 240 s, entro il tetto di
+1.800 s. Si pubblicano due fit_release nuove, senza cambiare i piani A o le sonde;
+le ridge useranno un checkout B nuovo. Risorse complessive sempre 51 core-ore.

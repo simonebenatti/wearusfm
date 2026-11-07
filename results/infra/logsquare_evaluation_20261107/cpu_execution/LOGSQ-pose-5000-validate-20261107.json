@@ -1,0 +1,51 @@
+{
+ "id": "LOGSQ-pose-5000-validate-20261107",
+ "creato": "2026-11-07T14:06:55+01:00",
+ "agente": "gpt",
+ "campagna": "logsquare-cpu-a-20261107",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "61f0021753fedf170eb1a7d40fde3fa40a638861",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LOGSQ-pose-5000-validate-20261107",
+  "--comment=wearusfm:LOGSQ-pose-5000-validate-20261107",
+  "--nodes=1",
+  "--ntasks=1",
+  "--cpus-per-task=2",
+  "--mem=30G",
+  "--time=00:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-a-20261107,EXPECTED_SHA=61f0021753fedf170eb1a7d40fde3fa40a638861",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-a-20261107/scripts/slurm/logsquare_pose_readout.sbatch",
+  "results/infra/logsquare_evaluation_20261107/cpu_readout/pose_readout_plan_5000.json",
+  "validate",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/validate",
+  "54958f4ee7dbfa0ab6d1e997752b1a6cc5f73bbf3be33d0136474bb3ace9b0c7"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-07T14:06:55+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-07T14:06:55+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-07T14:06:57+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63775679,
+   "uscita": 0,
+   "stdout": "63775679\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63775679,
+ "uscita": 0,
+ "stdout": "63775679\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

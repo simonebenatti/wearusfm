@@ -178,6 +178,15 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 07/11/2026: 12 lettori CPU inviati, gate posa superati
+
+Checkout A 61f0021 verificato; 12 job CPU sottomessi tramite il ledger comune.
+Quattro preparatori già COMPLETED 0:0: 63775679/63775686/63775698/63775700,
+18/18/19/15 s. Entrambi i gate della ridge richiedono 240 s contro 1.800 s di
+allocazione congelata; nuove copie dei piani con la sola fit_release, da usare
+nel checkout B. Sonde: cinque shard e aggregati in coda; confronto 63775886
+con dipendenze corrette. Budget totale invariato a 51 core-ore, zero GPU.
+
 ### GPT — 07/11/2026: nove cache LQ verificate e piani CPU effettivi
 
 Completate le tre estrazioni finali senza errori: posa 63772648 in 1.845 s,
@@ -5747,6 +5756,14 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 07/11/2026: limite di coda CPU gestito, nessun job perso
+
+Aggregato P2 rifiutato da SLURM per QOSMaxSubmitJobPerUserLimit, senza creare job.
+Misurata la QoS lrd_all_serial: 10 invii e 8 CPU complessivi per utente. Dopo tre
+completamenti, invio accettato con --dopo-rifiuto (63775884), poi confronto 63775886.
+Storia del rifiuto conservata; nessuna duplicazione, modifica di tetto o retry
+scientifico. Tutti i gate preparatori posa passano con identità e risorse corrette.
 
 ### GPT — 07/11/2026: controlli finali di integrità delle estrazioni LQ
 

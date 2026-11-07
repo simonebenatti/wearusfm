@@ -1,0 +1,86 @@
+{
+  "status": "BENCHMARK_READ_AND_ACCEPTED",
+  "unchanged_total_cpu_cap_core_hours": 51,
+  "new_resources_beyond_published_cap": false,
+  "checkout": {
+    "id": "LOGSQ-cpu-checkout-b-20261107",
+    "campaign": "logsquare-cpu-b-20261107",
+    "cpus": 2,
+    "memory_gib": 4,
+    "seconds_cap": 600,
+    "core_hours_cap": 0.3333333333333333,
+    "gpu_hours_cap": 0
+  },
+  "jobs": [
+    {
+      "id": "LOGSQ-pose-5000-ridge-20261107",
+      "kind": "pose",
+      "step": 5000,
+      "stage": "ridge",
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds_cap": 1800,
+      "gpu_hours_cap": 0,
+      "core_hours_cap": 4.0,
+      "checkout": "B",
+      "plan": "results/infra/logsquare_evaluation_20261107/cpu_fit_release/pose_readout_plan_5000.json",
+      "plan_sha256": "ce86036be16aa3396d904ed97c6a545ce0da0a24a7009e73df99fc35144da9d1",
+      "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/ridge",
+      "submission_gate": "published_fit_release_and_new_checkout"
+    },
+    {
+      "id": "LOGSQ-pose-5000-compare-20261107",
+      "kind": "pose",
+      "step": 5000,
+      "stage": "compare",
+      "cpus": 2,
+      "memory_gib": 30,
+      "seconds_cap": 1800,
+      "gpu_hours_cap": 0,
+      "core_hours_cap": 1.0,
+      "checkout": "B",
+      "plan": "results/infra/logsquare_evaluation_20261107/cpu_fit_release/pose_readout_plan_5000.json",
+      "plan_sha256": "ce86036be16aa3396d904ed97c6a545ce0da0a24a7009e73df99fc35144da9d1",
+      "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/compare",
+      "submission_gate": "ridge_completed_and_candidate_report_sha_verified"
+    },
+    {
+      "id": "LOGSQ-pose-19618-ridge-20261107",
+      "kind": "pose",
+      "step": 19618,
+      "stage": "ridge",
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds_cap": 1800,
+      "gpu_hours_cap": 0,
+      "core_hours_cap": 4.0,
+      "checkout": "B",
+      "plan": "results/infra/logsquare_evaluation_20261107/cpu_fit_release/pose_readout_plan_19618.json",
+      "plan_sha256": "4b9afef400c7c18122e34aeed5a94478f5cb90ffada7895b5d331ed93c9f6919",
+      "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/ridge",
+      "submission_gate": "published_fit_release_and_new_checkout"
+    },
+    {
+      "id": "LOGSQ-pose-19618-compare-20261107",
+      "kind": "pose",
+      "step": 19618,
+      "stage": "compare",
+      "cpus": 2,
+      "memory_gib": 30,
+      "seconds_cap": 1800,
+      "gpu_hours_cap": 0,
+      "core_hours_cap": 1.0,
+      "checkout": "B",
+      "plan": "results/infra/logsquare_evaluation_20261107/cpu_fit_release/pose_readout_plan_19618.json",
+      "plan_sha256": "4b9afef400c7c18122e34aeed5a94478f5cb90ffada7895b5d331ed93c9f6919",
+      "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/compare",
+      "submission_gate": "ridge_completed_and_candidate_report_sha_verified"
+    }
+  ],
+  "gate_required_seconds_by_step": {
+    "5000": 240,
+    "19618": 240
+  },
+  "ridge_allocated_seconds_per_endpoint": 1800,
+  "compare_requires_actual_completed_report_hash": true
+}

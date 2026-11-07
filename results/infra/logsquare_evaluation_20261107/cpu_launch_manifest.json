@@ -1,0 +1,127 @@
+{
+  "code_sha": "61f0021753fedf170eb1a7d40fde3fa40a638861",
+  "checkout_job": 63775529,
+  "checkout_state": "COMPLETED 0:0",
+  "checkout_elapsed_seconds": 19,
+  "checkout_core_hours": 0.010555555555555556,
+  "checkout_verified_clean_readonly_sources_plans": true,
+  "jobs": {
+    "LOGSQ-cpu-checkout-a-20261107": {
+      "state": "sottomesso",
+      "job": 63775529,
+      "dopo": null
+    },
+    "LOGSQ-pose-5000-validate-20261107": {
+      "state": "sottomesso",
+      "job": 63775679,
+      "dopo": null
+    },
+    "LOGSQ-pose-5000-benchmark-20261107": {
+      "state": "sottomesso",
+      "job": 63775686,
+      "dopo": null
+    },
+    "LOGSQ-pose-19618-validate-20261107": {
+      "state": "sottomesso",
+      "job": 63775698,
+      "dopo": null
+    },
+    "LOGSQ-pose-19618-benchmark-20261107": {
+      "state": "sottomesso",
+      "job": 63775700,
+      "dopo": null
+    },
+    "LOGSQ-probe-db2-01-20261107": {
+      "state": "sottomesso",
+      "job": 63775757,
+      "dopo": null
+    },
+    "LOGSQ-probe-db2-23-20261107": {
+      "state": "sottomesso",
+      "job": 63775769,
+      "dopo": null
+    },
+    "LOGSQ-probe-db3-20261107": {
+      "state": "sottomesso",
+      "job": 63775772,
+      "dopo": null
+    },
+    "LOGSQ-probe-db6-20261107": {
+      "state": "sottomesso",
+      "job": 63775773,
+      "dopo": null
+    },
+    "LOGSQ-probe-p2-20261107": {
+      "state": "sottomesso",
+      "job": 63775774,
+      "dopo": null
+    },
+    "LOGSQ-probe-aggregate-p1-20261107": {
+      "state": "sottomesso",
+      "job": 63775775,
+      "dopo": [
+        "LOGSQ-probe-db2-01-20261107",
+        "LOGSQ-probe-db2-23-20261107",
+        "LOGSQ-probe-db3-20261107",
+        "LOGSQ-probe-db6-20261107"
+      ]
+    },
+    "LOGSQ-probe-aggregate-p2-20261107": {
+      "state": "sottomesso",
+      "job": 63775884,
+      "dopo": "LOGSQ-probe-p2-20261107"
+    },
+    "LOGSQ-probe-compare-20261107": {
+      "state": "sottomesso",
+      "job": 63775886,
+      "dopo": [
+        "LOGSQ-probe-aggregate-p1-20261107",
+        "LOGSQ-probe-aggregate-p2-20261107"
+      ]
+    }
+  },
+  "not_submitted": [],
+  "rejection": "QOSMaxSubmitJobPerUserLimit: aggregate-p2, no SLURM job created",
+  "no_background_monitoring": true,
+  "rejection_resolved": "aggregate-p2 rejected with no job at MaxSubmitPU=10; submitted with --dopo-rifiuto after three preparators completed; no cap or science change",
+  "partition_qos": {
+    "name": "lrd_all_serial",
+    "MaxSubmitPU": 10,
+    "MaxJobsPU": 2,
+    "MaxTRESPU": {
+      "cpu": 8,
+      "mem_mib": 30800,
+      "node": 1
+    }
+  },
+  "preparator_accounting": {
+    "63775679": {
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": 18,
+      "AllocCPUS": 2,
+      "AllocTRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1"
+    },
+    "63775686": {
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": 18,
+      "AllocCPUS": 8,
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1"
+    },
+    "63775698": {
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": 19,
+      "AllocCPUS": 2,
+      "AllocTRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1"
+    },
+    "63775700": {
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": 15,
+      "AllocCPUS": 8,
+      "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1"
+    }
+  }
+}

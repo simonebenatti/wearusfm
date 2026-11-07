@@ -20,7 +20,8 @@ T100-L è il riferimento primario; T100-G e T25-L sono secondari.
 Manifest operativo: `results/infra/logsquare_evaluation_20261107/cpu_job_manifest.json`.
 Sedici job CPU scientifici e due checkout condivisi, tetto complessivo 51 core-ore,
 zero GPU. Ogni job scientifico usa al massimo 8 CPU, 30G e 60 minuti.
-Le due release di fit posa sono ancora nulle: nessuna ridge prima del benchmark.
+Nei piani del checkout A le due release di fit posa sono nulle: nessuna ridge
+prima del benchmark. Le release successive del checkout B sono descritte sotto.
 
 | Famiglia | Job | CPU per job | Tetto per job | Checkout |
 | --- | ---: | ---: | ---: | --- |
@@ -57,3 +58,25 @@ Avvisi di convergenza sospendono l'interpretazione interessata, conservando i nu
 Autorizzazione operativa di Simone già acquisita. Uso di submitter e ledger comuni,
 SHA pubblicato e verificato, checkout nuovi e immutabili; nessun monitor in background.
 Il launcher posa include la correzione dell'interprete già verificata con 43 test.
+
+## Esito dei preparatori e rilascio dei fit
+
+Checkout A 63775529 COMPLETED 0:0 in 19 s, SHA 61f0021753fedf170eb1a7d40fde3fa40a638861,
+pulito e in sola lettura; pin e sorgenti verificati. Tutti i 12 job A accettati.
+Un invio (aggregato P2) è stato rifiutato senza creare job per MaxSubmitPU=10;
+dopo tre completamenti è stato accettato con --dopo-rifiuto, conservando la storia.
+La QoS della seriale ammette complessivamente 8 CPU, 30.800 MiB, un nodo e due job
+attivi per utente; i fit da 8 CPU/30G procedono quindi uno alla volta. Nessun
+aggiramento del limite o modifica delle risorse. Aggregato P2 63775884 e confronto
+sonde 63775886 hanno le dipendenze previste.
+
+| Dose | Verifica | Benchmark | V | S | E | Proxy richiesto | Tetto |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
+| 5.000 | 63775679, 18 s | 63775686, 18 s | 18 | 3,07627 | 0,08998 | 240 s | 1.800 s |
+| 19.618 | 63775698, 19 s | 63775700, 15 s | 19 | 2,92590 | 0,09024 | 240 s | 1.800 s |
+
+Quattro COMPLETED 0:0; ricevute originali e accounting verificati. I gate passano
+senza aumenti di tetto. Due nuove copie dei piani in cpu_fit_release aggiungono
+soltanto fit_release; i piani A e la catena sonde restano immutati. Manifest B
+in cpu_fit_job_manifest.json. Nuovo checkout B prima delle due ridge; i confronti
+posa restano da inviare dopo i rapporti completi e la verifica dei loro SHA.

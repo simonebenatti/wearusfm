@@ -107,3 +107,33 @@ storici e identità numeriche. Ricalcolata la contabilità: quattro estrazioni
 1,739444 GPU-ore / 13,915556 core-ore; tre finali 1,221111 / 9,768889, checkout
 esclusi. Nessuna ridge rilasciata dal solo manifest: restano obbligatori gate
 misurati, release pinnata e nuovo checkout B. Nessun blocco trovato.
+
+## Verifica indipendente delle release ridge e del manifest B
+
+**APPROVATO il rilascio dei due fit posa dopo pubblicazione e checkout B.**
+Decompressi e ricalcolati SHA/byte dei quattro rapporti preparatori; identita'
+di job, accounting, piano, codice A `61f0021753fedf170eb1a7d40fde3fa40a638861`,
+cache, riferimenti e ricetta coincidono. Tutti i job sono registrati COMPLETED
+0:0; validate usa 2 CPU, benchmark 8 CPU, entrambi 30G e nessuna GPU. Il contesto
+numerico dei benchmark coincide esattamente con quello storico a otto thread.
+I cinque sorgenti restano invariati.
+
+Ricalcolo separato dal generatore e dalla funzione del gate:
+
+| Dose | V, accounting validate (s) | S (s) | E (s) | Formula prima dell'arrotondamento (s) | Richiesta arrotondata (s) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 5.000 | 18 | 3,076266342 | 0,089982333 | 226,513050127 | 240 |
+| 19.618 | 19 | 2,925895695 | 0,090236562 | 227,036891927 | 240 |
+
+Formula invariata: `ceil_a_60s[1,5*(2V+11S+13E)+120]`; entrambe le richieste
+sono entro il tetto congelato di 1.800 s. E' un proxy prudente, non una durata
+garantita. Nei piani sotto `cpu_fit_release` cambia soltanto `fit_release`;
+identita' scientifica e byte dei piani A coincidono con il commit congelato.
+SHA dei piani B: 5.000 `ce86036be16aa3396d904ed97c6a545ce0da0a24a7009e73df99fc35144da9d1`;
+19.618 `4b9afef400c7c18122e34aeed5a94478f5cb90ffada7895b5d331ed93c9f6919`.
+
+Il manifest B risolve solo percorso e SHA dei quattro job gia' previsti;
+ID, risorse, output e gate restano quelli pubblicati. Totale CPU invariato a
+51 core-ore; i confronti richiedono ancora il rapporto ridge completo e il suo
+SHA effettivo. Nessuna modifica alla catena sonde sul checkout A. Controllo
+locale in sola lettura degli artefatti; nessun job, fit o accesso remoto.

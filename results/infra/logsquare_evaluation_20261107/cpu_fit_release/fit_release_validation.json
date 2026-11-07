@@ -1,0 +1,120 @@
+{
+  "complete": true,
+  "checkout_A_code_sha": "61f0021753fedf170eb1a7d40fde3fa40a638861",
+  "source_plans": {
+    "pose_readout_plan_5000.json": {
+      "path": "results/infra/logsquare_evaluation_20261107/cpu_readout/pose_readout_plan_5000.json",
+      "sha256": "54958f4ee7dbfa0ab6d1e997752b1a6cc5f73bbf3be33d0136474bb3ace9b0c7",
+      "bytes": 7048
+    },
+    "pose_readout_plan_19618.json": {
+      "path": "results/infra/logsquare_evaluation_20261107/cpu_readout/pose_readout_plan_19618.json",
+      "sha256": "b020d671ff55e3680e9cf3aca4f2a63bdb0cb5d534b5013fc4ec37402aff5b8a",
+      "bytes": 7057
+    }
+  },
+  "observations": {
+    "5000": {
+      "validate_elapsed_seconds": 18,
+      "statistics_seconds": 3.076266341842711,
+      "three_eigensystems_seconds": 0.08998233266174793,
+      "required_seconds": 240,
+      "allocated_seconds": 1800,
+      "gate_passed": true,
+      "evaluation_sha256": "41a1b4e9c7838c19dc4d1b6bd03af386b99d48bc6b8956a680c02e8bcfe7d248",
+      "only_plan_change": "fit_release",
+      "fit_release": {
+        "status": "BENCHMARK_READ_AND_ACCEPTED",
+        "validate": {
+          "report": {
+            "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/validate/report.json",
+            "sha256": "af016e7ce934225f3d6e9499265ff0df4d6816f34c4c9e8d6defdaed625c577d"
+          },
+          "accounting": {
+            "State": "COMPLETED",
+            "ExitCode": "0:0",
+            "ElapsedRaw": 18,
+            "AllocCPUS": 2,
+            "AllocTRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1",
+            "JobIDRaw": "63775679"
+          }
+        },
+        "benchmark": {
+          "report": {
+            "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/benchmark/report.json",
+            "sha256": "94908d932bb9bd96739d37e6b3faa350c69eb6b72896ae4f166f122367a8cea8"
+          },
+          "accounting": {
+            "State": "COMPLETED",
+            "ExitCode": "0:0",
+            "ElapsedRaw": 18,
+            "AllocCPUS": 8,
+            "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+            "JobIDRaw": "63775686"
+          }
+        },
+        "required_seconds": 240
+      }
+    },
+    "19618": {
+      "validate_elapsed_seconds": 19,
+      "statistics_seconds": 2.925895694643259,
+      "three_eigensystems_seconds": 0.09023656230419874,
+      "required_seconds": 240,
+      "allocated_seconds": 1800,
+      "gate_passed": true,
+      "evaluation_sha256": "654ba1db003b5ac56e944d6b8cbe1bc57b9c262459f7f96dc06cf3e2e3844b69",
+      "only_plan_change": "fit_release",
+      "fit_release": {
+        "status": "BENCHMARK_READ_AND_ACCEPTED",
+        "validate": {
+          "report": {
+            "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/validate/report.json",
+            "sha256": "1f5953fbd89463bbf164597954a5154c482b529f4c8cdafc9c0f91cceb75f2b6"
+          },
+          "accounting": {
+            "State": "COMPLETED",
+            "ExitCode": "0:0",
+            "ElapsedRaw": 19,
+            "AllocCPUS": 2,
+            "AllocTRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1",
+            "JobIDRaw": "63775698"
+          }
+        },
+        "benchmark": {
+          "report": {
+            "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/benchmark/report.json",
+            "sha256": "fe054a2ea318180a33590ab2d625c3974288473485e06759280e467e63b57019"
+          },
+          "accounting": {
+            "State": "COMPLETED",
+            "ExitCode": "0:0",
+            "ElapsedRaw": 15,
+            "AllocCPUS": 8,
+            "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1",
+            "JobIDRaw": "63775700"
+          }
+        },
+        "required_seconds": 240
+      }
+    }
+  },
+  "plans": {
+    "pose_readout_plan_5000.json": {
+      "sha256": "ce86036be16aa3396d904ed97c6a545ce0da0a24a7009e73df99fc35144da9d1",
+      "bytes": 8140
+    },
+    "pose_readout_plan_19618.json": {
+      "sha256": "4b9afef400c7c18122e34aeed5a94478f5cb90ffada7895b5d331ed93c9f6919",
+      "bytes": 8151
+    }
+  },
+  "sources": {
+    "scripts/tokenizer_pose_readout.py": "18a15436e48045447661d3aaab6a8770819527b4ff97a2837d9be3930bad7fb3",
+    "scripts/pose_temporal_readout.py": "b0adaaacde63151519f6a50aaf9d60aa9a2acabc13b59c8b37582dadb292a815",
+    "scripts/pose_e3_b.py": "859dc19b7867a9597fe7fe868cde8833471a1db7da018113809e6a6fda831782",
+    "scripts/pose_dynamics.py": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8",
+    "scripts/logsquare_pose_readout.py": "65bfc70b1c01d2cca75723fc84fdac1e84a2edb5c9c26cd9e86e10542eb0b1c8"
+  },
+  "runtime_gate_with_exact_local_reports_passed": true
+}
