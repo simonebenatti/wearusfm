@@ -1,0 +1,16 @@
+wave 24: 7 jobs, limits 3.50 h: LONG-FIT-G39237-pre-uci_emg-F0123-20261105-A1, LONG-FIT-G49046-pre-uci_emg-F0123-20261105-A1, LONG-FIT-G19618-post-uci_emg-F0123-20261105-A1, LONG-FIT-G39237-post-uci_emg-F0123-20261105-A1, LONG-FIT-G49046-post-uci_emg-F0123-20261105-A1, LONG-FIT-G39237-pool-uci_emg-F0123-20261105-A1, LONG-FIT-G49046-pool-uci_emg-F0123-20261105-A1
+  certificate valid to 2026-11-07 12:32:13 (51 min left)
+  Leonardo clock: 2026-11-07 11:41:36 CET
+  LONG-FIT-G39237-pool-epn612-F0123-20261105-A1 | 63751327 | COMPLETED 0:0 | 10:30:52-11:07:13 | 00:36:21 of 03:45:00
+  LONG-FIT-G49046-pool-epn612-F0123-20261105-A1 | 63751328 | COMPLETED 0:0 | 11:08:02-11:37:45 | 00:29:43 of 03:45:00
+  LONG-FIT-G19618-pre-uci_emg-F0123-20261105-A1 | 63751330 | COMPLETED 0:0 | 11:07:33-11:07:49 | 00:00:16 of 00:30:00
+  report LONG-FIT-G39237-pool-epn612-F0123-20261105-A1: sha256 bbedddcc85ca… 5997 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 39237, 'dataset': 'epn612', 'view': 'pool', 'fold_indices': [0, 1, 2, 3], 'global_resource_gate_passed': True}
+  report LONG-FIT-G49046-pool-epn612-F0123-20261105-A1: sha256 cc2b7a5b3ff4… 5996 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 49046, 'dataset': 'epn612', 'view': 'pool', 'fold_indices': [0, 1, 2, 3], 'global_resource_gate_passed': True}
+  report LONG-FIT-G19618-pre-uci_emg-F0123-20261105-A1: sha256 b36a593069e7… 5991 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 19618, 'dataset': 'uci_emg', 'view': 'pre', 'fold_indices': [0, 1, 2, 3], 'global_resource_gate_passed': True}
+  WORK free 41.57 GiB (threshold 10.724); user sbenatti 175.9 GiB
+  queue (other project filtered): 2 jobs, 0 on lrd_all_serial
+    63696864|SCALING-300M-train19618-20261106|boost_usr_prod|PENDING|0:00|14:45:00|Priority
+    63593128|LOGSQ-T100-LQ-19618-20261105|boost_usr_prod|RUNNING|2:35:24|4:00:00|None
+  watched branches: unchanged since the last ack
+log: /Users/simonebenatti/wearusfm_local/logs/line2_long_fit_precheck_wave24_20261107_1141.txt
+PRECHECK_OK

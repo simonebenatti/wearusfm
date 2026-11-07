@@ -1,0 +1,68 @@
+{
+ "id": "LONG-FIT-G39237-pool-uci_emg-F0123-20261105-A1",
+ "creato": "2026-11-07T11:47:51+01:00",
+ "agente": "claude",
+ "campagna": "consolidation_long_20261105",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "a70e29e4abb09e6e23fad34ca6b7b9e28874952a",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LONG-FIT-G39237-pool-uci_emg-F0123-20261105-A1",
+  "--comment=wearusfm:LONG-FIT-G39237-pool-uci_emg-F0123-20261105-A1",
+  "--partition=lrd_all_serial",
+  "--nodes=1",
+  "--ntasks=1",
+  "--cpus-per-task=8",
+  "--mem=30G",
+  "--time=00:30:00",
+  "--no-requeue",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-long-fit-20261105,EXPECTED_SHA=a70e29e4abb09e6e23fad34ca6b7b9e28874952a",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-long-fit-20261105/scripts/slurm/consolidation_long.sbatch",
+  "--plan",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-long-fit-20261105/results/infra/consolidation_long_20261105/plan.json",
+  "--expected-code",
+  "a70e29e4abb09e6e23fad34ca6b7b9e28874952a",
+  "--stage",
+  "fit-classification",
+  "--out",
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/uci_emg/F0123",
+  "--step",
+  "39237",
+  "--dataset",
+  "uci_emg",
+  "--view",
+  "pool",
+  "--folds",
+  "0",
+  "1",
+  "2",
+  "3"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-07T11:47:51+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-07T11:47:51+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-07T11:47:52+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63762294,
+   "uscita": 0,
+   "stdout": "63762294\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63762294,
+ "uscita": 0,
+ "stdout": "63762294\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}
