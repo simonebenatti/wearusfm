@@ -1,0 +1,14 @@
+wave 18: 2 jobs, limits 7.00 h: LONG-FIT-G39237-pool-ninapro_db3-F0123-20261105-A1, LONG-FIT-G49046-pool-ninapro_db3-F0123-20261105-A1
+  certificate valid to 2026-11-07 12:32:13 (351 min left)
+  Leonardo clock: 2026-11-07 06:40:58 CET
+  LONG-FIT-G39237-post-ninapro_db3-F0123-20261105-A1 | 63736588 | COMPLETED 0:0 | 05:55:45-06:17:25 | 00:21:40 of 03:45:00
+  LONG-FIT-G49046-post-ninapro_db3-F0123-20261105-A1 | 63736589 | COMPLETED 0:0 | 06:17:28-06:38:11 | 00:20:43 of 03:45:00
+  report LONG-FIT-G39237-post-ninapro_db3-F0123-20261105-A1: sha256 2374b09de99c… 6019 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 39237, 'dataset': 'ninapro_db3', 'view': 'post', 'fold_indices': [0, 1, 2, 3], 'global_resource_gate_passed': True}
+  report LONG-FIT-G49046-post-ninapro_db3-F0123-20261105-A1: sha256 40ddca79d293… 6019 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 49046, 'dataset': 'ninapro_db3', 'view': 'post', 'fold_indices': [0, 1, 2, 3], 'global_resource_gate_passed': True}
+  WORK free 41.57 GiB (threshold 10.724); user sbenatti 175.9 GiB
+  queue (other project filtered): 2 jobs, 0 on lrd_all_serial
+    63593128|LOGSQ-T100-LQ-19618-20261105|boost_usr_prod|PENDING|0:00|4:00:00|PartitionConfig
+    63696864|SCALING-300M-train19618-20261106|boost_usr_prod|PENDING|0:00|14:45:00|Priority
+  watched branches: unchanged since the last ack
+log: /Users/simonebenatti/wearusfm_local/logs/line2_long_fit_precheck_wave18_20261107_0640.txt
+PRECHECK_OK
