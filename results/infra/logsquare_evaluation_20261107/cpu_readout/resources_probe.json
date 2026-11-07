@@ -1,0 +1,64 @@
+{
+  "protocol": "logsquare-probe-resource-20261104-v1",
+  "status": "APPROVED_FOR_PROBES",
+  "method": "historical_per_shard_gate_reuse",
+  "new_benchmark_job": false,
+  "historical_resources": {
+    "path": "results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/resources_fit_aggregate.json",
+    "sha256": "2b92e1fdbadd6ba2a86e32f0fbaccb295f1b3bf83fce7f02f4b9251f72da18fc"
+  },
+  "recipe_sha256": "7aff2ccbeb6c2697eb911198c133df5fe5c06edd149d5231e77f2cb996cc80e6",
+  "numeric_sha256": "07b776bafeacb0facc809e24f27f5fc34979bf7dd09e1ee0aa132cd22d945908",
+  "jobs": {
+    "db2-01": {
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds_cap": 3600
+    },
+    "db2-23": {
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds_cap": 3600
+    },
+    "db3": {
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds_cap": 1800
+    },
+    "db6": {
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds_cap": 1800
+    },
+    "p2": {
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds_cap": 3600
+    },
+    "aggregate-p1": {
+      "cpus": 2,
+      "memory_gib": 30,
+      "seconds_cap": 1200
+    },
+    "aggregate-p2": {
+      "cpus": 2,
+      "memory_gib": 30,
+      "seconds_cap": 1200
+    },
+    "compare": {
+      "cpus": 2,
+      "memory_gib": 30,
+      "seconds_cap": 1800
+    }
+  },
+  "gpu_hours_cap": 0,
+  "core_hours_cap": 34.33333333333333,
+  "historical_T100-L_fit_core_hours": 13.257777777777777,
+  "policy_notes": [
+    "Reuse of prior measured completed fits as the CPU benchmark gate, explicitly subject to Claude review; this is not a newly measured LQ benchmark.",
+    "All five shard types: three original arms completed within the same CPU/memory/time caps. Exact same numerical source hashes, recipe and numeric_context are required; candidate fold counts must match historical T100-L.",
+    "Pool768 FP32 width, row/subject support and folds unchanged. Feature values can change solver iteration counts; historical timing is a proxy, not a guarantee.",
+    "No automatic cap increase, C-grid change, candidate exclusion or retry. Convergence warnings retain descriptive values but suspend the corresponding solver interpretation.",
+    "A source/numeric/shape mismatch blocks the reuse gate and needs a documented review, not relaxed validation."
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "complete": true,
+  "remote_cache_contents_rechecked_by_runtime": true,
+  "evidence": {
+    "pose5000": {
+      "job": 63615952,
+      "receipt_sha256": "3dca283a6cb70f1bff435471027c63381ee3d2049acdcbd78349d103a1195946",
+      "verification_sha256": "e58e94ac0070105f6a392b4064bf09591f0cab198cf7475b74699d0bf2ad771a",
+      "checkpoint_sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9",
+      "cache_sha256": {
+        "train": "881b58e7e455a883f3256d4ee736f822e5c837c8bfe88bb560d06e700fb5cbf2",
+        "val": "ae95cd20dabe83b3d69a844a29bee71369c43324a084ad6a36a5560b2a4264ac"
+      }
+    },
+    "pose19618": {
+      "job": 63772648,
+      "receipt_sha256": "c90d08c4d5cfed649e2e847e007e1fbe1b0bd804bb9ae61e13c6e90375b017ad",
+      "verification_sha256": "06e8a5320ab0e4f21b62724fad0e5a56520a6dd30cabda82525028fdc283afff",
+      "checkpoint_sha256": "316fa96fb10a941a1e3be230e2738b19bbfb83f691dd940e4d32e089ebb2c214",
+      "cache_sha256": {
+        "train": "6364061d156a5c718b8becf865ddb6a14471899439ef90301457268322c89fb5",
+        "val": "75f563eba475f721f6fa3e9690ec4c2c7f8ea09723bbe2935d9acde763a4b1a4"
+      }
+    },
+    "p1": {
+      "job": 63772649,
+      "receipt_sha256": "ada75f924f4671969faa0ebc4bf741fe8f4e781410c85887ab6251e5c685b371",
+      "verification_sha256": "dca694b8feff5d1176937a2273196ed9c987a9838197fa121762ab0a3cb82cda",
+      "checkpoint_sha256": "316fa96fb10a941a1e3be230e2738b19bbfb83f691dd940e4d32e089ebb2c214",
+      "cache_sha256": {
+        "ninapro_db2": "d635fe33326b61388ce69cc06019ad49d119062498fe9c3d6bbfa2d2b1c16ce4",
+        "ninapro_db3": "5e8044df9c43628f93df23f8d8c53b2c4d9363aaefb52d25010fbffba3a5f9a4",
+        "ninapro_db6": "1ea6c53b77601d2e18004f391fed97842c3dd82982117057d250f08418baba4f"
+      }
+    },
+    "p2": {
+      "job": 63772650,
+      "receipt_sha256": "bde725c158f26d88bb5cd0749ad2cc0fce2b48995e3550f4d1a117076e908bbb",
+      "verification_sha256": "622ebd95f78c3364efaba38625f210807e33ef231b5dec7656653328d5937da5",
+      "checkpoint_sha256": "316fa96fb10a941a1e3be230e2738b19bbfb83f691dd940e4d32e089ebb2c214",
+      "cache_sha256": {
+        "epn612": "a97074efdf3b3bdb2a98bc5d73131810fec9537d72be637e1ee6589c8946c71a",
+        "uci_emg": "c4c7ea2db3b7f48be91d31ffdc4e8290d2b114745d118279e9d0b7be4d4d96d0"
+      }
+    }
+  },
+  "plans": {
+    "pose_readout_plan_5000.json": {
+      "sha256": "54958f4ee7dbfa0ab6d1e997752b1a6cc5f73bbf3be33d0136474bb3ace9b0c7",
+      "bytes": 7048
+    },
+    "pose_readout_plan_19618.json": {
+      "sha256": "b020d671ff55e3680e9cf3aca4f2a63bdb0cb5d534b5013fc4ec37402aff5b8a",
+      "bytes": 7057
+    },
+    "resources_probe.json": {
+      "sha256": "6ebfb14883f757dc4b3a4f3bd8b87f0f4ed4b4446fd4c8d3b6b8267950f292d5",
+      "bytes": 2284
+    },
+    "probe_plan_19618.json": {
+      "sha256": "5fd487d182d8438ac484d8a0d6d87d157dc8a64d14e241642a854b60c7f23fb1",
+      "bytes": 36681
+    }
+  },
+  "pose_sources": {
+    "scripts/tokenizer_pose_readout.py": "18a15436e48045447661d3aaab6a8770819527b4ff97a2837d9be3930bad7fb3",
+    "scripts/pose_temporal_readout.py": "b0adaaacde63151519f6a50aaf9d60aa9a2acabc13b59c8b37582dadb292a815",
+    "scripts/pose_e3_b.py": "859dc19b7867a9597fe7fe868cde8833471a1db7da018113809e6a6fda831782",
+    "scripts/pose_dynamics.py": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8",
+    "scripts/logsquare_pose_readout.py": "65bfc70b1c01d2cca75723fc84fdac1e84a2edb5c9c26cd9e86e10542eb0b1c8"
+  },
+  "probe_sources": {
+    "scripts/tokenizer_probe.py": "0bdf7ab248fb7a5b48bffd2e3dc805259e9b5282d0907de0f00718fe4fc0f0fd",
+    "scripts/calibration_probe.py": "197d19d061aa188a5a6c87305e60087f25b346e1966ad949c1a6ab7f8522aac3",
+    "scripts/channel_readout.py": "746e2ce9d81da27bc089d1ec8b62f270d8b70c9f5c42a2420370f4b7f113c20a",
+    "src/wearusfm/harness/downstream_ab.py": "ea3b91423fe6c12743acb9679e4a3e9e214d84e4135769aeb4bbd82ed97b3164",
+    "src/wearusfm/harness/p1_cross_subject.py": "7045b947920d314e7b25e85dc41e42de6bc5dc42aef0812c485b247bda31c4ce",
+    "scripts/logsquare_probe.py": "75243209d584f5c26e65b0d8950e6ae97ea4e6fb46a906f379440271eaef7f67"
+  },
+  "core_hours_cap_including_two_shared_checkouts": 51
+}

@@ -178,6 +178,18 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 07/11/2026: nove cache LQ verificate e piani CPU effettivi
+
+Completate le tre estrazioni finali senza errori: posa 63772648 in 1.845 s,
+P1 63772649 in 832 s, P2 63772650 in 1.719 s. Ricalcolati SHA e byte di tutte
+le nove cache, inclusa la posa 5.000; ricevute e provenienze originali archiviate.
+Consuntivo quattro estrazioni 1,739444 GPU-ore / 13,915556 core-ore, checkout
+separati. Due piani posa e piano sonde effettivi passano i validatori originali e
+la review indipendente. Nessuna modifica a ricette, fold o sorgenti numerici.
+Manifest: 16 job CPU più due checkout condivisi, 51 core-ore, zero GPU. Prima
+quattro preparatori posa e catena sonde; poi fit posa soltanto dopo gate misurati
+e nuove release. Nessun nuovo consenso richiesto, nessun monitor in background.
+
 ### GPT — 07/11/2026: launcher CPU posa corretto e seguito pronto
 
 Spostate soltanto quattro righe di attivazione moduli/venv prima del guard Python.
@@ -5735,6 +5747,15 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 07/11/2026: controlli finali di integrità delle estrazioni LQ
+
+Nessun errore o eccedenza: quattro estrazioni COMPLETED 0:0 entro i tetti,
+8 CPU / 1 GPU / 100G ciascuna. Identità e hash di tutte le nove cache corretti.
+Il controllo delle allocazioni è stato eseguito esplicitamente oltre al generatore
+locale dei piani. Fit posa non ancora rilasciati: devono passare validate/benchmark
+con accounting e rapporto pinnati. I margini storici delle sonde restano un proxy,
+non una garanzia di durata o convergenza; nessun retry automatico.
 
 ### GPT — 07/11/2026: ordine dell'interprete CPU corretto prima del primo invio
 

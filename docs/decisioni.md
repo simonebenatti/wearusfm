@@ -6338,3 +6338,13 @@ guard Python, 43 test e review indipendente favorevole. Nessuna modifica ai
 sorgenti numerici o alle estrazioni attive. Handoff CPU: 16 job più due checkout
 condivisi, 51 core-ore totali, zero GPU; i pin effettivi si pubblicheranno dopo le
 nove cache complete. Ricevuta originale posa 5.000 archiviata e verificata.
+
+### 07/11/2026 — Nove cache LQ verificate, seguito CPU
+
+Estrattori finali COMPLETED 0:0, ricevute originali archiviate e hash delle nove
+cache ricalcolati. Piani effettivi CPU verificati sui riferimenti storici: nessun
+cambio di scienza. Si esegue il seguito già approvato, 16 job più due checkout
+condivisi, tetto 51 core-ore e zero GPU. I fit posa rimangono condizionati ai
+benchmark train e al gate di 1.800 s; nuova release e checkout dopo la lettura.
+Le sonde riusano i gate storici esplicitamente come proxy. Esecuzione dettagliata
+in docs/logsquare_cpu_execution_20261107.md; nessun monitor in background.
