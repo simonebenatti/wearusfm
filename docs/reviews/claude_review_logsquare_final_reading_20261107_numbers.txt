@@ -1,0 +1,266 @@
+# Numeri estratti dai rapporti finali di T100-LQ letti da Leonardo il 07/11/2026 alle 17:43 (sola lettura)
+
+## File letti (byte, sha256) sotto /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/
+      8118  fe054a2ea318180a33590ab2d625c3974288473485e06759280e467e63b57019  pose/19618/benchmark/report.json
+    263158  e2439d883134ea9bf8a89ec4a4024c3e0990713fb8b0867e0eec4b3943587304  pose/19618/compare/report.json
+     70248  2c2c59242e88973eac4bca20a7494bd8873ecc6342f88194d4d49ccc3ea7751d  pose/19618/ridge/report.json
+      9635  1f5953fbd89463bbf164597954a5154c482b529f4c8cdafc9c0f91cceb75f2b6  pose/19618/validate/report.json
+      8111  94908d932bb9bd96739d37e6b3faa350c69eb6b72896ae4f166f122367a8cea8  pose/5000/benchmark/report.json
+    263400  8b21ea1647add4053727d819b588b168ac0f34b4257cc9882c69548117c2851b  pose/5000/compare/report.json
+     70372  5ed2e16a6f152ed92b7e7be03bcb61b08ecd393330ef9ff0abfeb6c3d0f4eb10  pose/5000/ridge/report.json
+      9628  af016e7ce934225f3d6e9499265ff0df4d6816f34c4c9e8d6defdaed625c577d  pose/5000/validate/report.json
+     20417  9bf14200d940fc034c330a7f26854f33871fca8dfd453bed717f7a3022028d61  probe/aggregate-p1.json
+     57083  286d11e81bc8ad85417976bd7e3dc299c34a989052e6f946f0c7154c9a9ec121  probe/aggregate-p2.json
+    878936  3517fc272ca5a258953d23d71e9b3aa894527755cbbcd153b93864b9503e7bfc  probe/compare.json
+      6077  12eec24772b633da008c7840ffa9d1655ca20779f3d7d72ac29aef7ddd279f95  probe/db2-01/shard.json
+      6084  af1d166b01ed700c6eb9016a736908e8acb5c6e7d352220e8a30e66c43c302e5  probe/db2-23/shard.json
+      7504  ad5ad92a789f3c24f3441ca396a25d5eeb8d069f15b8d97f106c136659fa9d4f  probe/db3/shard.json
+      7474  1df9d38f26cec62f1d8e244fb2e13e123991a440be191d1ee43fab2d01d8612f  probe/db6/shard.json
+     56283  f760a58fc402de66e0079da1a89606137c769c636fb9135ee5570acb0356f316  probe/p2/shard.json
+
+## Posa (script _pose.py)
+
+################ POSA, passo 5000: job 63786157, status=compared, complete=True
+candidate report pin: {'path': '/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/ridge/report.json', 'sha256': '5ed2e16a6f152ed92b7e7be03bcb61b08ecd393330ef9ff0abfeb6c3d0f4eb10'}
+historical report pin: {'path': 'results/infra/tokenizer_evaluation_20261103/cpu_5000/final/report.json', 'sha256': '2a7d8ccfaade9d8a540ecfb4e95821f5d67a93df735afbafb4ea6e863df980c3'}
+
+-- selezione di alpha (fit.selection) per braccio
+  T100-LQ  alpha=1e+06 cv_mse=0.868546 | griglia: 1e-02:0.96838 1e-01:0.96834 1e+00:0.96800 1e+01:0.96483 1e+02:0.94512 1e+03:0.90735 1e+04:0.88285 1e+05:0.87077 1e+06:0.86855 1e+07:0.92511
+          altri campi: {"extensions": {"lower": 0, "upper": 3}, "boundary_unresolved": false, "boundary": null, "objective": "pooled masked standardized SSE / valid elements across both held-out folds; raw-SSE ridge penalty", "tie_break": "smallest alpha", "fold_users": [["03d49b393e", "06d17ebbe4", "1223558697", "323f919
+  T100-L   alpha=1e+05 cv_mse=0.870347 | griglia: 1e-02:0.96295 1e-01:0.96291 1e+00:0.96259 1e+01:0.95953 1e+02:0.94039 1e+03:0.90254 1e+04:0.87840 1e+05:0.87035 1e+06:0.87174
+          altri campi: {"extensions": {"lower": 0, "upper": 2}, "boundary_unresolved": false, "boundary": null, "objective": "pooled masked standardized SSE / valid elements across both held-out folds; raw-SSE ridge penalty", "tie_break": "smallest alpha", "fold_users": [["03d49b393e", "06d17ebbe4", "1223558697", "323f919
+  T25-L    alpha=1e+06 cv_mse=0.887410 | griglia: 1e-02:0.98014 1e-01:0.98011 1e+00:0.97977 1e+01:0.97660 1e+02:0.95814 1e+03:0.92696 1e+04:0.90828 1e+05:0.89269 1e+06:0.88741 1e+07:0.93760
+          altri campi: {"extensions": {"lower": 0, "upper": 3}, "boundary_unresolved": false, "boundary": null, "objective": "pooled masked standardized SSE / valid elements across both held-out folds; raw-SSE ridge penalty", "tie_break": "smallest alpha", "fold_users": [["03d49b393e", "06d17ebbe4", "1223558697", "323f919
+  T100-G   alpha=1e+06 cv_mse=0.844473 | griglia: 1e-02:0.94944 1e-01:0.94942 1e+00:0.94917 1e+01:0.94684 1e+02:0.93049 1e+03:0.89050 1e+04:0.86063 1e+05:0.84511 1e+06:0.84447 1e+07:0.91312
+          altri campi: {"extensions": {"lower": 0, "upper": 3}, "boundary_unresolved": false, "boundary": null, "objective": "pooled masked standardized SSE / valid elements across both held-out folds; raw-SSE ridge penalty", "tie_break": "smallest alpha", "fold_users": [["03d49b393e", "06d17ebbe4", "1223558697", "323f919
+
+-- gruppo dynamic: finestre selezionate per braccio: {'T100-LQ': 8329, 'T100-L': 8329, 'T25-L': 8329, 'T100-G': 8329}
+  braccio   E=cent/vary         IC95 (bootstrap)     corr  varp/vary   MAE rad  gain_mean  gain_cent  n_win
+  T100-LQ      0.912850 [  0.896635,   0.926307]   0.3000     0.0609 0.3322580     0.1144     0.0871   8327
+  T100-L       0.910612 [  0.892517,   0.925879]   0.2991     0.0836 0.3317865     0.0910     0.0894   8327
+  T25-L        0.921457 [  0.906890,   0.933432]   0.2855     0.0534 0.3362736     0.0971     0.0785   8327
+  T100-G       0.899816 [  0.882383,   0.915685]   0.3213     0.0708 0.3253098     0.1484     0.1002   8327
+  contrasti prespecificati (delta_ratio = (SSE_LQ - SSE_ctrl)/sum vary; negativo = LQ meglio):
+    T100-LQ_minus_T100-L   primary   delta=+0.002238 IC95=[-0.000242, +0.004880] riduzione relativa=-0.2458% segnale2%=False
+    T100-LQ_minus_T25-L    secondary delta=-0.008607 IC95=[-0.011759, -0.005579] riduzione relativa=+0.9341% segnale2%=False
+    T100-LQ_minus_T100-G   secondary delta=+0.013035 IC95=[+0.007875, +0.018795] riduzione relativa=-1.4486% segnale2%=False
+  ricalcolo indipendente dei tre contrasti: IDENTICO
+    contesto (mio, stessi draw) T25-L-T100-L   delta=+0.010845 IC95=[+0.006861, +0.015351] riduzione relativa=-1.1910%
+    contesto (mio, stessi draw) T100-G-T100-L  delta=-0.010797 IC95=[-0.017374, -0.005466] riduzione relativa=+1.1856%
+  primario per utente: LQ meglio in 3 su 15, peggio in 12; mediana delta/vary per utente = +0.00299
+
+-- gruppo all: finestre selezionate per braccio: {'T100-LQ': 18548, 'T100-L': 18548, 'T25-L': 18548, 'T100-G': 18548}
+  braccio   E=cent/vary         IC95 (bootstrap)     corr  varp/vary   MAE rad  gain_mean  gain_cent  n_win
+  T100-LQ      0.934495 [  0.919008,   0.947506]   0.2562     0.0718 0.2906041     0.2667     0.0655  16620
+  T100-L       0.936962 [  0.920166,   0.951933]   0.2576     0.0992 0.2892415     0.2460     0.0630  16620
+  T25-L        0.942023 [  0.928165,   0.953238]   0.2412     0.0648 0.2949522     0.2262     0.0580  16620
+  T100-G       0.923817 [  0.907165,   0.938944]   0.2762     0.0820 0.2837357     0.3352     0.0762  16620
+  contrasti prespecificati (delta_ratio = (SSE_LQ - SSE_ctrl)/sum vary; negativo = LQ meglio):
+    T100-LQ_minus_T100-L   primary   delta=-0.002467 IC95=[-0.004713, -0.000172] riduzione relativa=+0.2633% segnale2%=False
+    T100-LQ_minus_T25-L    secondary delta=-0.007528 IC95=[-0.010718, -0.004568] riduzione relativa=+0.7991% segnale2%=False
+    T100-LQ_minus_T100-G   secondary delta=+0.010678 IC95=[+0.006146, +0.015588] riduzione relativa=-1.1559% segnale2%=False
+  ricalcolo indipendente dei tre contrasti: IDENTICO
+    contesto (mio, stessi draw) T25-L-T100-L   delta=+0.005061 IC95=[+0.000747, +0.009649] riduzione relativa=-0.5402%
+    contesto (mio, stessi draw) T100-G-T100-L  delta=-0.013145 IC95=[-0.018387, -0.008606] riduzione relativa=+1.4029%
+  primario per utente: LQ meglio in 9 su 15, peggio in 6; mediana delta/vary per utente = -0.00336
+
+-- gruppo static: finestre selezionate per braccio: {'T100-LQ': 8329, 'T100-L': 8329, 'T25-L': 8329, 'T100-G': 8329}
+  braccio   E=cent/vary         IC95 (bootstrap)     corr  varp/vary   MAE rad  gain_mean  gain_cent  n_win
+  T100-LQ      1.043372 [  1.028403,   1.059775]   0.1170     0.1267 0.2508374     1.0328    -0.0434   8293
+  T100-L       1.069504 [  1.049681,   1.091379]   0.1286     0.1780 0.2486242     1.0260    -0.0695   8293
+  T25-L        1.045470 [  1.032521,   1.059540]   0.1098     0.1222 0.2555030     0.8756    -0.0455   8293
+  T100-G       1.044548 [  1.030799,   1.058742]   0.1263     0.1386 0.2440451     1.2748    -0.0445   8293
+  contrasti prespecificati (delta_ratio = (SSE_LQ - SSE_ctrl)/sum vary; negativo = LQ meglio):
+    T100-LQ_minus_T100-L   primary   delta=-0.026132 IC95=[-0.032046, -0.020293] riduzione relativa=+2.4434% segnale2%=True
+    T100-LQ_minus_T25-L    secondary delta=-0.002098 IC95=[-0.006027, +0.001432] riduzione relativa=+0.2007% segnale2%=False
+    T100-LQ_minus_T100-G   secondary delta=-0.001176 IC95=[-0.005810, +0.004220] riduzione relativa=+0.1126% segnale2%=False
+  ricalcolo indipendente dei tre contrasti: IDENTICO
+    contesto (mio, stessi draw) T25-L-T100-L   delta=-0.024034 IC95=[-0.033237, -0.014782] riduzione relativa=+2.2472%
+    contesto (mio, stessi draw) T100-G-T100-L  delta=-0.024955 IC95=[-0.035084, -0.017214] riduzione relativa=+2.3334%
+  primario per utente: LQ meglio in 15 su 15, peggio in 0; mediana delta/vary per utente = -0.02429
+
+-- W_log (descrittivo R1-b), passo 5000
+  teacher  colonne=64 min=0.0412 max=0.2023 | fourier: n=24 media=0.1383 quota_norme2=35.05% spline: n=24 media=0.0655 quota_norme2=8.00% mlp: n=16 media=0.1069 quota_norme2=13.91% non_mlp: n=48 media=0.1019 quota_norme2=43.05%
+  student  colonne=64 min=0.0430 max=0.2089 | fourier: n=24 media=0.1422 quota_norme2=34.34% spline: n=24 media=0.0695 quota_norme2=8.35% mlp: n=16 media=0.1138 quota_norme2=14.61% non_mlp: n=48 media=0.1058 quota_norme2=42.70%
+  altri campi: {"descriptive_only": true}
+
+################ POSA, passo 19618: job 63786158, status=compared, complete=True
+candidate report pin: {'path': '/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/ridge/report.json', 'sha256': '2c2c59242e88973eac4bca20a7494bd8873ecc6342f88194d4d49ccc3ea7751d'}
+historical report pin: {'path': 'results/infra/tokenizer_evaluation_20261103/cpu_19618/final/report.json', 'sha256': 'e1011f7a91645ce07399654950a7230084e8d22dbf248cca277e76e487f2e446'}
+
+-- selezione di alpha (fit.selection) per braccio
+  T100-LQ  alpha=1e+05 cv_mse=0.760360 | griglia: 1e-02:0.87945 1e-01:0.87944 1e+00:0.87924 1e+01:0.87738 1e+02:0.86335 1e+03:0.82344 1e+04:0.78771 1e+05:0.76036 1e+06:0.76116
+          altri campi: {"extensions": {"lower": 0, "upper": 2}, "boundary_unresolved": false, "boundary": null, "objective": "pooled masked standardized SSE / valid elements across both held-out folds; raw-SSE ridge penalty", "tie_break": "smallest alpha", "fold_users": [["03d49b393e", "06d17ebbe4", "1223558697", "323f919
+  T100-L   alpha=1e+05 cv_mse=0.760781 | griglia: 1e-02:0.87597 1e-01:0.87595 1e+00:0.87580 1e+01:0.87437 1e+02:0.86332 1e+03:0.82832 1e+04:0.78974 1e+05:0.76078 1e+06:0.76384
+          altri campi: {"extensions": {"lower": 0, "upper": 2}, "boundary_unresolved": false, "boundary": null, "objective": "pooled masked standardized SSE / valid elements across both held-out folds; raw-SSE ridge penalty", "tie_break": "smallest alpha", "fold_users": [["03d49b393e", "06d17ebbe4", "1223558697", "323f919
+  T25-L    alpha=1e+05 cv_mse=0.762365 | griglia: 1e-02:0.87230 1e-01:0.87228 1e+00:0.87212 1e+01:0.87057 1e+02:0.85890 1e+03:0.82453 1e+04:0.78894 1e+05:0.76236 1e+06:0.76943
+          altri campi: {"extensions": {"lower": 0, "upper": 2}, "boundary_unresolved": false, "boundary": null, "objective": "pooled masked standardized SSE / valid elements across both held-out folds; raw-SSE ridge penalty", "tie_break": "smallest alpha", "fold_users": [["03d49b393e", "06d17ebbe4", "1223558697", "323f919
+  T100-G   alpha=1e+05 cv_mse=0.755271 | griglia: 1e-02:0.85591 1e-01:0.85590 1e+00:0.85575 1e+01:0.85435 1e+02:0.84346 1e+03:0.80971 1e+04:0.77873 1e+05:0.75527 1e+06:0.75999
+          altri campi: {"extensions": {"lower": 0, "upper": 2}, "boundary_unresolved": false, "boundary": null, "objective": "pooled masked standardized SSE / valid elements across both held-out folds; raw-SSE ridge penalty", "tie_break": "smallest alpha", "fold_users": [["03d49b393e", "06d17ebbe4", "1223558697", "323f919
+
+-- gruppo dynamic: finestre selezionate per braccio: {'T100-LQ': 8329, 'T100-L': 8329, 'T25-L': 8329, 'T100-G': 8329}
+  braccio   E=cent/vary         IC95 (bootstrap)     corr  varp/vary   MAE rad  gain_mean  gain_cent  n_win
+  T100-LQ      0.844088 [  0.823439,   0.863894]   0.3949     0.1619 0.3003698     0.2525     0.1559   8327
+  T100-L       0.843363 [  0.822275,   0.863226]   0.3958     0.1561 0.3003701     0.2576     0.1566   8327
+  T25-L        0.851975 [  0.830512,   0.872204]   0.3847     0.1478 0.3042238     0.2328     0.1480   8327
+  T100-G       0.838933 [  0.818348,   0.858542]   0.4014     0.1688 0.3000681     0.2589     0.1611   8327
+  contrasti prespecificati (delta_ratio = (SSE_LQ - SSE_ctrl)/sum vary; negativo = LQ meglio):
+    T100-LQ_minus_T100-L   primary   delta=+0.000726 IC95=[-0.001190, +0.002724] riduzione relativa=-0.0860% segnale2%=False
+    T100-LQ_minus_T25-L    secondary delta=-0.007887 IC95=[-0.010246, -0.005484] riduzione relativa=+0.9257% segnale2%=False
+    T100-LQ_minus_T100-G   secondary delta=+0.005156 IC95=[+0.003040, +0.007297] riduzione relativa=-0.6146% segnale2%=False
+  ricalcolo indipendente dei tre contrasti: IDENTICO
+    contesto (mio, stessi draw) T25-L-T100-L   delta=+0.008613 IC95=[+0.006726, +0.010603] riduzione relativa=-1.0212%
+    contesto (mio, stessi draw) T100-G-T100-L  delta=-0.004430 IC95=[-0.007286, -0.001475] riduzione relativa=+0.5253%
+  primario per utente: LQ meglio in 6 su 15, peggio in 9; mediana delta/vary per utente = +0.00094
+
+-- gruppo all: finestre selezionate per braccio: {'T100-LQ': 18548, 'T100-L': 18548, 'T25-L': 18548, 'T100-G': 18548}
+  braccio   E=cent/vary         IC95 (bootstrap)     corr  varp/vary   MAE rad  gain_mean  gain_cent  n_win
+  T100-LQ      0.874064 [  0.855098,   0.892907]   0.3583     0.1663 0.2606468     0.5139     0.1259  16620
+  T100-L       0.872725 [  0.853957,   0.891008]   0.3591     0.1603 0.2605916     0.5219     0.1273  16620
+  T25-L        0.880350 [  0.861442,   0.898976]   0.3485     0.1529 0.2632400     0.4866     0.1196  16620
+  T100-G       0.869735 [  0.851144,   0.888739]   0.3646     0.1732 0.2606445     0.5227     0.1303  16620
+  contrasti prespecificati (delta_ratio = (SSE_LQ - SSE_ctrl)/sum vary; negativo = LQ meglio):
+    T100-LQ_minus_T100-L   primary   delta=+0.001340 IC95=[-0.000336, +0.002885] riduzione relativa=-0.1535% segnale2%=False
+    T100-LQ_minus_T25-L    secondary delta=-0.006286 IC95=[-0.008593, -0.004015] riduzione relativa=+0.7140% segnale2%=False
+    T100-LQ_minus_T100-G   secondary delta=+0.004330 IC95=[+0.002452, +0.006323] riduzione relativa=-0.4978% segnale2%=False
+  ricalcolo indipendente dei tre contrasti: IDENTICO
+    contesto (mio, stessi draw) T25-L-T100-L   delta=+0.007625 IC95=[+0.005797, +0.009329] riduzione relativa=-0.8737%
+    contesto (mio, stessi draw) T100-G-T100-L  delta=-0.002990 IC95=[-0.005871, -0.000135] riduzione relativa=+0.3426%
+  primario per utente: LQ meglio in 3 su 15, peggio in 12; mediana delta/vary per utente = +0.00250
+
+-- gruppo static: finestre selezionate per braccio: {'T100-LQ': 8329, 'T100-L': 8329, 'T25-L': 8329, 'T100-G': 8329}
+  braccio   E=cent/vary         IC95 (bootstrap)     corr  varp/vary   MAE rad  gain_mean  gain_cent  n_win
+  T100-LQ      1.024849 [  1.010413,   1.038956]   0.1884     0.1884 0.2227232     1.8291    -0.0248   8293
+  T100-L       1.020421 [  1.005387,   1.034889]   0.1890     0.1814 0.2226149     1.8517    -0.0204   8293
+  T25-L        1.023079 [  1.010497,   1.034951]   0.1840     0.1786 0.2241128     1.7634    -0.0231   8293
+  T100-G       1.024675 [  1.008603,   1.039487]   0.1929     0.1950 0.2230067     1.8493    -0.0247   8293
+  contrasti prespecificati (delta_ratio = (SSE_LQ - SSE_ctrl)/sum vary; negativo = LQ meglio):
+    T100-LQ_minus_T100-L   primary   delta=+0.004429 IC95=[+0.000934, +0.008211] riduzione relativa=-0.4340% segnale2%=False
+    T100-LQ_minus_T25-L    secondary delta=+0.001770 IC95=[-0.002230, +0.005547] riduzione relativa=-0.1730% segnale2%=False
+    T100-LQ_minus_T100-G   secondary delta=+0.000174 IC95=[-0.003439, +0.004037] riduzione relativa=-0.0170% segnale2%=False
+  ricalcolo indipendente dei tre contrasti: IDENTICO
+    contesto (mio, stessi draw) T25-L-T100-L   delta=+0.002658 IC95=[-0.001332, +0.007126] riduzione relativa=-0.2605%
+    contesto (mio, stessi draw) T100-G-T100-L  delta=+0.004254 IC95=[+0.000281, +0.008296] riduzione relativa=-0.4169%
+  primario per utente: LQ meglio in 3 su 15, peggio in 12; mediana delta/vary per utente = +0.00407
+
+-- W_log (descrittivo R1-b), passo 19618
+  teacher  colonne=64 min=0.1238 max=0.3929 | fourier: n=24 media=0.2678 quota_norme2=24.74% spline: n=24 media=0.1949 quota_norme2=13.28% mlp: n=16 media=0.3258 quota_norme2=23.97% non_mlp: n=48 media=0.2313 quota_norme2=38.01%
+  student  colonne=64 min=0.1254 max=0.3921 | fourier: n=24 media=0.2699 quota_norme2=24.82% spline: n=24 media=0.1962 quota_norme2=13.26% mlp: n=16 media=0.3273 quota_norme2=23.85% non_mlp: n=48 media=0.2330 quota_norme2=38.07%
+  altri campi: {"descriptive_only": true}
+
+## Classificazione: valori riportati da compare.json
+reading_status: solver_converged_by_criterion | decision_valid: True | scope: conditional descriptive criteria only; no automatic FM adoption or continuation
+uncertainty: paired subject bootstrap conditional on one pretraining seed, fixed checkpoints and fitted probes; development validation; no multiplicity adjustment
+
+-- fit_audit per cella (convergenza)
+  T100-LQ/p1 {"fits": 84, "convergence_warnings": 0, "reached_limit": 0, "converged_by_criterion": true, "unresolved_fits": []}
+  T100-LQ/p2 {"fits": 56, "convergence_warnings": 0, "reached_limit": 0, "converged_by_criterion": true, "unresolved_fits": []}
+  T100-G/p1  {"fits": 84, "convergence_warnings": 0, "reached_limit": 0, "converged_by_criterion": true, "unresolved_fits": []}
+  T100-G/p2  {"fits": 56, "convergence_warnings": 0, "reached_limit": 0, "converged_by_criterion": true, "unresolved_fits": []}
+  T100-L/p1  {"fits": 84, "convergence_warnings": 0, "reached_limit": 0, "converged_by_criterion": true, "unresolved_fits": []}
+  T100-L/p2  {"fits": 56, "convergence_warnings": 0, "reached_limit": 0, "converged_by_criterion": true, "unresolved_fits": []}
+  T25-L/p1   {"fits": 84, "convergence_warnings": 0, "reached_limit": 0, "converged_by_criterion": true, "unresolved_fits": []}
+  T25-L/p2   {"fits": 56, "convergence_warnings": 0, "reached_limit": 0, "converged_by_criterion": true, "unresolved_fits": []}
+
+-- compiti (balanced accuracy %, IC95 appaiato)
+  p1: T25-L 17.51 [16.08, 18.97] | T100-L 17.40 [16.21, 18.57] | T100-G 17.19 [15.87, 18.54] | T100-LQ 17.13 [15.87, 18.43]
+     T100-LQ_minus_T100-L   delta=-0.267 pp IC95=[-0.845, +0.312] NI1pp=supported
+     T100-LQ_minus_T25-L    delta=-0.372 pp IC95=[-0.912, +0.209] NI1pp=supported
+     T100-LQ_minus_T100-G   delta=-0.054 pp IC95=[-0.656, +0.503] NI1pp=supported
+  p2: T25-L 79.52 [75.21, 83.26] | T100-L 78.72 [74.93, 82.25] | T100-G 80.52 [75.86, 84.48] | T100-LQ 79.76 [75.77, 83.24]
+     T100-LQ_minus_T100-L   delta=+1.036 pp IC95=[-0.397, +2.495] NI1pp=supported
+     T100-LQ_minus_T25-L    delta=+0.238 pp IC95=[-0.894, +1.604] NI1pp=supported
+     T100-LQ_minus_T100-G   delta=-0.760 pp IC95=[-2.584, +1.183] NI1pp=unresolved
+
+-- dataset
+  epn612 (primary_classification): soggetti=314 classi=6 draw con classi mancanti=0 monoclasse=0
+     T25-L 81.60 [80.28, 82.89] | T100-L 81.10 [79.79, 82.37] | T100-G 82.58 [81.34, 83.85] | T100-LQ 82.63 [81.42, 83.88]
+     T100-LQ_minus_T100-L   delta=+1.531 pp IC95=[+1.013, +2.015]
+     T100-LQ_minus_T25-L    delta=+1.032 pp IC95=[+0.512, +1.569]
+     T100-LQ_minus_T100-G   delta=+0.055 pp IC95=[-0.512, +0.603]
+  ninapro_db2 (secondary_dataset): soggetti=32 classi=49 draw con classi mancanti=0 monoclasse=0
+     T25-L 18.56 [16.45, 20.70] | T100-L 18.68 [16.91, 20.44] | T100-G 18.22 [16.33, 20.17] | T100-LQ 18.63 [16.64, 20.67]
+     T100-LQ_minus_T100-L   delta=-0.049 pp IC95=[-0.818, +0.728]
+     T100-LQ_minus_T25-L    delta=+0.071 pp IC95=[-0.522, +0.642]
+     T100-LQ_minus_T100-G   delta=+0.407 pp IC95=[-0.378, +1.091]
+  ninapro_db3 (secondary_dataset): soggetti=8 classi=49 draw con classi mancanti=0 monoclasse=0
+     T25-L 3.15 [2.70, 3.67] | T100-L 2.83 [2.13, 3.58] | T100-G 3.38 [2.32, 4.46] | T100-LQ 2.43 [1.93, 3.13]
+     T100-LQ_minus_T100-L   delta=-0.405 pp IC95=[-1.220, +0.363]
+     T100-LQ_minus_T25-L    delta=-0.725 pp IC95=[-1.484, -0.123]
+     T100-LQ_minus_T100-G   delta=-0.952 pp IC95=[-1.798, -0.225]
+  ninapro_db6 (secondary_dataset): soggetti=8 classi=7 draw con classi mancanti=0 monoclasse=0
+     T25-L 34.82 [30.99, 38.18] | T100-L 34.14 [31.66, 36.69] | T100-G 33.75 [30.91, 36.76] | T100-LQ 33.20 [31.55, 35.07]
+     T100-LQ_minus_T100-L   delta=-0.937 pp IC95=[-2.730, +0.790]
+     T100-LQ_minus_T25-L    delta=-1.617 pp IC95=[-4.234, +1.156]
+     T100-LQ_minus_T100-G   delta=-0.549 pp IC95=[-2.586, +1.362]
+  uci_emg (secondary_dataset): soggetti=19 classi=6 draw con classi mancanti=0 monoclasse=0
+     T25-L 77.44 [69.07, 84.88] | T100-L 76.34 [69.01, 83.34] | T100-G 78.46 [69.16, 86.19] | T100-LQ 76.88 [69.15, 83.67]
+     T100-LQ_minus_T100-L   delta=+0.540 pp IC95=[-2.297, +3.522]
+     T100-LQ_minus_T25-L    delta=-0.556 pp IC95=[-2.693, +2.068]
+     T100-LQ_minus_T100-G   delta=-1.575 pp IC95=[-5.309, +2.400]
+
+-- original_provenance (chiavi): ['protocol', 'code_sha', 'plan_sha256', 'plan_content_sha256', 'plan_path', 'numeric_sha256', 'oof_sha256', 'audit_sha256']
+candidate_reports: [{'path': '/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/probe/aggregate-p1.json', 'sha256': '9bf14200d940fc034c330a7f26854f33871fca8dfd453bed717f7a3022028d61'}, {'path': '/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/probe/aggregate-p2.json', 'sha256': '286d11e81bc8ad85417976bd7e3dc299c34a989052e6f946f0c7154c9a9ec121'}]
+
+## Classificazione: ricalcolo indipendente (script _probe.py)
+ARMS storici: ('T25-L', 'T100-L', 'T100-G') | TASKS: {'p1': ('ninapro_db2', 'ninapro_db3', 'ninapro_db6'), 'p2': ('epn612', 'uci_emg')} | WEIGHTS: {'p1': (0.6153846153846154, 0.23076923076923078, 0.15
+  contesto epn612       T25-L_minus_T100-L   delta=+0.499 pp IC95=[-0.113, +1.074]
+  contesto epn612       T100-G_minus_T100-L  delta=+1.476 pp IC95=[+0.828, +2.121]
+  epn612       per soggetto LQ vs T100-L: meglio 185, uguale 18, peggio 111 su 314
+  contesto ninapro_db2  T25-L_minus_T100-L   delta=-0.120 pp IC95=[-0.841, +0.699]
+  contesto ninapro_db2  T100-G_minus_T100-L  delta=-0.455 pp IC95=[-1.199, +0.373]
+  ninapro_db2  per soggetto LQ vs T100-L: meglio 17, uguale 0, peggio 15 su 32
+  contesto ninapro_db3  T25-L_minus_T100-L   delta=+0.320 pp IC95=[-0.174, +0.723]
+  contesto ninapro_db3  T100-G_minus_T100-L  delta=+0.547 pp IC95=[-0.165, +1.342]
+  ninapro_db3  per soggetto LQ vs T100-L: meglio 3, uguale 0, peggio 5 su 8
+  contesto ninapro_db6  T25-L_minus_T100-L   delta=+0.680 pp IC95=[-1.142, +2.431]
+  contesto ninapro_db6  T100-G_minus_T100-L  delta=-0.388 pp IC95=[-1.409, +0.654]
+  ninapro_db6  per soggetto LQ vs T100-L: meglio 3, uguale 0, peggio 5 su 8
+  contesto uci_emg      T25-L_minus_T100-L   delta=+1.097 pp IC95=[-2.620, +4.280]
+  contesto uci_emg      T100-G_minus_T100-L  delta=+2.116 pp IC95=[-2.071, +5.856]
+  uci_emg      per soggetto LQ vs T100-L: meglio 9, uguale 3, peggio 7 su 19
+  contesto p1           T25-L_minus_T100-L   delta=+0.105 pp IC95=[-0.430, +0.673] NI1pp=supported
+  contesto p1           T100-G_minus_T100-L  delta=-0.214 pp IC95=[-0.729, +0.340] NI1pp=supported
+  contesto p2           T25-L_minus_T100-L   delta=+0.798 pp IC95=[-1.061, +2.430] NI1pp=unresolved
+  contesto p2           T100-G_minus_T100-L  delta=+1.796 pp IC95=[-0.352, +3.644] NI1pp=supported
+PROBLEMI nel ricalcolo: nessuno: celle, contrasti ed etichette NI identici
+
+## Job e consuntivo (sacct letto il 07/11 alle 17:43 e 17:51)
+JobID|JobName|Partition|State|Submit|Start|End|Elapsed|TimelimitRaw|AllocTRES|ExitCode
+63592939|LOGSQ-training-checkout-20261105|lrd_all_serial|COMPLETED|2026-11-05T15:15:41|2026-11-05T15:15:43|2026-11-05T15:16:07|00:00:24|10|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|0:0
+63593091|LOGSQ-T100-LQ-5000-20261105|boost_usr_prod|COMPLETED|2026-11-05T15:18:24|2026-11-05T15:31:30|2026-11-05T16:37:40|01:06:10|90|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1|0:0
+63593128|LOGSQ-T100-LQ-19618-20261105|boost_usr_prod|COMPLETED|2026-11-05T15:18:42|2026-11-07T09:06:13|2026-11-07T12:15:41|03:09:28|240|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1|0:0
+63614193|LOGSQ-infer-checkout-20261105|lrd_all_serial|COMPLETED|2026-11-05T19:02:40|2026-11-05T19:02:51|2026-11-05T19:03:19|00:00:28|10|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|0:0
+63614514|LOGSQ-infer-5000-20261105|boost_usr_prod|COMPLETED|2026-11-05T19:06:45|2026-11-05T19:07:00|2026-11-05T19:08:50|00:01:50|30|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1|0:0
+63615611|LOGSQ-pose-checkout-20261105|lrd_all_serial|COMPLETED|2026-11-05T19:19:44|2026-11-05T19:19:52|2026-11-05T19:20:22|00:00:30|10|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|0:0
+63615952|LOGSQ-pose-5000-20261105|boost_usr_prod|COMPLETED|2026-11-05T19:24:02|2026-11-05T19:24:49|2026-11-05T19:55:55|00:31:06|50|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1|0:0
+63772400|LOGSQ-extract-checkout-20261107|lrd_all_serial|COMPLETED|2026-11-07T13:24:59|2026-11-07T13:25:16|2026-11-07T13:25:40|00:00:24|10|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|0:0
+63772648|LOGSQ-pose-19618-20261107|boost_usr_prod|COMPLETED|2026-11-07T13:27:54|2026-11-07T13:28:03|2026-11-07T13:58:48|00:30:45|50|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1|0:0
+63772649|LOGSQ-p1-19618-20261107|boost_usr_prod|COMPLETED|2026-11-07T13:27:55|2026-11-07T13:28:03|2026-11-07T13:41:55|00:13:52|35|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1|0:0
+63772650|LOGSQ-p2-19618-20261107|boost_usr_prod|COMPLETED|2026-11-07T13:27:56|2026-11-07T13:28:03|2026-11-07T13:56:42|00:28:39|50|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1|0:0
+63775529|LOGSQ-cpu-checkout-a-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:05:28|2026-11-07T14:05:36|2026-11-07T14:05:55|00:00:19|10|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|0:0
+63775679|LOGSQ-pose-5000-validate-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:06:57|2026-11-07T14:08:36|2026-11-07T14:08:54|00:00:18|30|billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63775686|LOGSQ-pose-5000-benchmark-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:06:59|2026-11-07T14:07:34|2026-11-07T14:07:52|00:00:18|15|billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63775698|LOGSQ-pose-19618-validate-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:07:01|2026-11-07T14:09:22|2026-11-07T14:09:41|00:00:19|30|billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63775700|LOGSQ-pose-19618-benchmark-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:07:02|2026-11-07T14:08:10|2026-11-07T14:08:25|00:00:15|15|billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63775757|LOGSQ-probe-db2-01-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:07:14|2026-11-07T14:31:59|2026-11-07T14:59:24|00:27:25|60|billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63775769|LOGSQ-probe-db2-23-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:07:15|2026-11-07T14:59:39|2026-11-07T15:25:46|00:26:07|60|billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63775772|LOGSQ-probe-db3-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:07:17|2026-11-07T14:09:58|2026-11-07T14:18:42|00:08:44|30|billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63775773|LOGSQ-probe-db6-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:07:18|2026-11-07T14:19:01|2026-11-07T14:31:05|00:12:04|30|billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63775774|LOGSQ-probe-p2-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:07:19|2026-11-07T15:25:50|2026-11-07T15:46:49|00:20:59|60|billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63775775|LOGSQ-probe-aggregate-p1-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:07:21|2026-11-07T15:48:56|2026-11-07T15:49:06|00:00:10|20|billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63775884|LOGSQ-probe-aggregate-p2-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:09:24|2026-11-07T15:49:28|2026-11-07T15:49:38|00:00:10|20|billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63775886|LOGSQ-probe-compare-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:09:26|2026-11-07T15:52:56|2026-11-07T15:53:18|00:00:22|30|billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63776832|LOGSQ-cpu-checkout-b-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:22:09|2026-11-07T14:31:19|2026-11-07T14:31:39|00:00:20|10|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|0:0
+63777428|LOGSQ-pose-5000-ridge-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:33:29|2026-11-07T15:46:55|2026-11-07T15:47:50|00:00:55|30|billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63777429|LOGSQ-pose-19618-ridge-20261107|lrd_all_serial|COMPLETED|2026-11-07T14:33:30|2026-11-07T15:47:53|2026-11-07T15:48:54|00:01:01|30|billing=8,cpu=8,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63786157|LOGSQ-pose-5000-compare-20261107|lrd_all_serial|COMPLETED|2026-11-07T16:35:35|2026-11-07T16:35:41|2026-11-07T16:36:15|00:00:34|30|billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+63786158|LOGSQ-pose-19618-compare-20261107|lrd_all_serial|COMPLETED|2026-11-07T16:35:36|2026-11-07T16:36:17|2026-11-07T16:36:51|00:00:34|30|billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1|0:0
+=== sacct LOGSQ 04/11-05/11 prima delle 15:00
+JobID|JobName|Partition|State|Start|End|ElapsedRaw|TimelimitRaw|AllocTRES|ExitCode
+63525639|LOGSQ-checkout-20261104|lrd_all_serial|COMPLETED|2026-11-04T18:24:22|2026-11-04T18:24:49|27|10|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|0:0
+63525730|LOGSQ-preflight-20261104|boost_usr_prod|COMPLETED|2026-11-04T18:26:05|2026-11-04T18:28:33|148|30|billing=32,cpu=32,gres/gpu=4,mem=240G,node=1|0:0
+63531256|LOGSQ-training-checkout-20261104|lrd_all_serial|COMPLETED|2026-11-04T21:04:19|2026-11-04T21:04:41|22|10|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|0:0
+63532335|LOGSQ-T100-LQ-5000-20261104|boost_usr_prod|FAILED|2026-11-05T06:35:40|2026-11-05T06:36:01|21|90|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1|1:0
+63590929|LOGSQ-initdiag-checkout-20261105|lrd_all_serial|COMPLETED|2026-11-05T14:52:39|2026-11-05T14:53:25|46|10|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|0:0
+63591184|LOGSQ-initdiag-run-20261105|boost_usr_prod|COMPLETED|2026-11-05T14:56:56|2026-11-05T14:57:52|56|15|billing=32,cpu=32,gres/gpu=4,mem=240G,node=1|0:0

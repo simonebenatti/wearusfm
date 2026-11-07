@@ -8156,6 +8156,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   byte, job 63785874), entrambe con manifest sha256 e ricevuta; originali su SCRATCH intatti e soggetti alla cancellazione
   a 40 giorni (dal 14-15/12 circa); i piani congelati continuano a nominarli. Consuntivo della linea 2: 109 allocazioni,
   176,836 core-ore, 3,374 GPU-ore. Nessun mio job in coda; nessuna attivita' operativa aperta sulla linea 2.
+### 2026-11-07 | Claude | Lettura finale di T100-LQ (linea 3): 35 job COMPLETED 0:0, ricalcolo identico; posa nulla, EPN612 +1,5 pp come T100-G
+- Richiesta di Simone, 07/11: «se è finito tutto fammi l'analisi e la tua valutzione scientifica». Nessun job lanciato da me; solo letture.
+  Review: `docs/reviews/claude_review_logsquare_final_reading_20261107.md`, con due script di ricalcolo e i numeri estratti (`_numbers.txt`).
+- Verificato alle 17:43-17:51: training 63593128 (11.368 s, 19.618 passi), tre estrazioni e 18 job CPU del 07/11 tutti COMPLETED 0:0;
+  confronti 63775886, 63786157 e 63786158 completi su `$WORK/wearusfm_runs/results/logsquare_cpu_20261107/` (16 JSON letti, hash uguali).
+- Ricalcolo indipendente dal per-utente (posa) e dai conteggi per soggetto (sonde): contrasti, IC95 ed etichette NI identici a GPT.
+- Posa, E_dyn a 19.618: LQ 0,8441 contro T100-L 0,8434; riduzione relativa -0,09% [-0,32%; +0,14%]: nulla, un guadagno del 2% e' escluso.
+  A 5.000: -0,25% [-0,54%; +0,03%]. LQ-T25-L +0,93% e LQ-T100-G -0,61% ricalcano gli effetti finestra (+1,02%) e GELU (+0,53%) gia' noti.
+- EPN612: LQ 82,63 contro T100-L 81,10, +1,53 pp [+1,01; +2,01]; ma T100-G +1,48 e LQ-T100-G +0,06 [-0,51; +0,60]. P1 e P2: NI a 1 pp
+  sostenuta verso T100-L e T25-L, irrisolta verso T100-G su P2. 84+56 fit per braccio convergenti; alpha interni per tutti i bracci.
+- Mia valutazione: LQ non migliora la posa ed eguaglia T100-G su EPN con un tokenizer piu' complesso; non lo adotterei come riferimento.
+  Decisioni a Simone, lettura scientifica di GPT attesa. Consuntivo campagna: 35 job, 19,0622 GPU-ore e 165,75 core-ore allocate.
 
 ## 2) Problemi trovati
 
@@ -11017,3 +11029,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - In corsia seriale e' in coda anche `SCALING-300M-cont19618-checkout-20261106` (63695634, linea 1): non e' mio e non lo
   tocco. I due job da 1 CPU possono girare insieme; i fit della linea 2 aspettano pochi minuti.
 - Soglia C-1 e passo delle ondate invariati.
+
+### 2026-11-07 | Claude | Lettura finale T100-LQ: nessun problema nei conti di GPT; tre note N-1, N-2, N-3
+- N-1: a 5.000 il gruppo statico segna `signal_2percent_and_ci_below_zero: true` per LQ-T100-L (+2,44%): e' T100-L anomalo in quel
+  gruppo (E 1,0695 contro 1,043-1,046 degli altri tre; T25-L e T100-G lo battono del 2,2-2,3%); a 19.618 sparisce. Non e' un segnale LQ.
+- N-2: i tre confronti finali e i rapporti delle sonde sono solo su `$WORK/wearusfm_runs/results/logsquare_cpu_20261107/`: GPT ha
+  interrotto i controlli su richiesta di Simone e nel repo mancano copie e hash. Cache e checkpoint LQ su SCRATCH scadono a meta' dicembre.
+- N-3: un seme, validazione di sviluppo, nessuna correzione per molteplicita'; DB3 al caso per tutti i bracci (2,4-3,4% su 49 classi).
