@@ -137,3 +137,13 @@ ID, risorse, output e gate restano quelli pubblicati. Totale CPU invariato a
 51 core-ore; i confronti richiedono ancora il rapporto ridge completo e il suo
 SHA effettivo. Nessuna modifica alla catena sonde sul checkout A. Controllo
 locale in sola lettura degli artefatti; nessun job, fit o accesso remoto.
+
+## Verifica dei rapporti ridge e degli ultimi invii
+
+APPROVATO per i due confronti. Report originali verificati per byte/SHA,
+accounting COMPLETED 0:0 (55 e 61 s), 8 CPU / 30G / zero GPU, ID del ledger,
+piani e codice B, sorgenti e contesto numerico, fit_release e pin di coefficienti
+e predizioni coerenti. Argomenti del piano concreto corretti: 2 CPU / 30G /
+30 min ciascuno, zero GPU, 2 core-ore totali già previste. Omissione di afterok
+accettata: i fit sono già conclusi e verificati, tutti i gate runtime restano
+attivi. Nessuna interpretazione delle metriche e nessuna nuova scelta scientifica.

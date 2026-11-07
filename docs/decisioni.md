@@ -6370,3 +6370,7 @@ Su richiesta di Simone si controlla una volta, si inviano i confronti pronti e
 poi ci si ferma. Entrambi i fit sono COMPLETED 0:0 (55 e 61 s), con report e
 artefatti verificati. Due confronti da 2 CPU / 30G / 30 min, già nel piano;
 nessun nuovo training o estensione a 49k in questa consegna.
+
+Confronti posa sottomessi: 63786157 e 63786158. Tutti i job previsti sono ora
+inviati. Si registrano le ricevute e si interrompono i controlli, senza attendere
+i risultati, secondo l'ultima istruzione di Simone. Nessun monitor in background.

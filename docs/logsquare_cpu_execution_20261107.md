@@ -125,3 +125,10 @@ checkout B 9a53c7a. Nessuna dipendenza pendente viene aggiunta: i fit sono già
 conclusi e verificati e le loro vecchie voci possono essere eliminate dalla
 tabella attiva SLURM. Rimangono obbligatori i pin reali e tutti i controlli runtime.
 Dopo gli invii si interrompono i controlli, come richiesto da Simone.
+
+Ultimi invii accettati: confronto posa 5.000 63786157; confronto posa 19.618
+63786158. Pin pubblicati in cc40b25 e verificati su origin prima degli invii;
+review indipendente favorevole. Checkout esecutivo B invariato. Ricevute del
+submitter archiviate in cpu_execution; nessun job rimasto da sottomettere in
+questa matrice. Come richiesto da Simone, i controlli si interrompono subito
+dopo commit/push delle ricevute, senza attendere gli esiti dei due confronti.
