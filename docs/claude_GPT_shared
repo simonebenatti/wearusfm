@@ -8020,6 +8020,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   aggiunte, 19 righe). Nessun punteggio letto; la lettura scientifica dei report resta a GPT consolidamento. Nessun mio job
   in coda.
 
+### 2026-11-07 | Claude | Linea 2: rilettura della review GPT `57c4d7e` sulla valutazione lunga: convergente; verifiche indipendenti sulle ricevute
+- Letti la review `docs/reviews/consolidation_long_results_20261107.md`, l'appendice dei contrasti, la nota di conservazione,
+  il README delle prove e le voci di GPT (`57c4d7e` su `codex/consolidation-20261104`). Convergenza piena su verifica e
+  lettura: catena eseguita e verificata; consuntivo identico (107 allocazioni, 3,373611 GPU-ore, 176,745 core-ore);
+  primario di classificazione pool 49k−19k non risolto (P1 +0,35 pp [−0,22; +0,91], P2 +1,35 [−0,13; +2,71]) con non
+  inferiorita' a −1 pp sostenuta, riferimento 19.618 secondo V-R1; secondario post 49k−19k favorevole su P2 (+1,52
+  [+0,27; +2,89]) con P1 non inferiore; post > pre a tutte le dosi su P1 e P2; posa: i due primari concordi (ridge post
+  6,32 % [5,87; 6,83] e testa allenata 6,52 % [5,92; 7,15] sulle finestre dinamiche; 5,94 % e 6,21 % su tutte),
+  riferimento esplorativo 49.046; limiti condivisi (seme unico, dati di sviluppo, nessuna correzione per molteplicita',
+  dose e decay non separabili, posa supervisionata nel pretraining, EPN15 riferito al teacher 19k). La mia lettura,
+  fatta prima di leggere quella di GPT su richiesta di Simone, arrivava alle stesse conclusioni con gli stessi numeri.
+- Verifiche mie sulle ricevute locali dei fit e dei confronti: E_dyn dinamiche migliora in tutti i 15 utenti held in
+  entrambi i primari, mediane 6,20 % (ridge post; min 3,37, max 7,99) e 6,25 % (testa; min 1,60, max 8,89); supporti
+  16.620 finestre con metriche centrate (8.327 dinamiche, 8.293 statiche), E2 7.982 finestre, 14 utenti, 16.887.760
+  elementi; alpha ridge 100.000 in tutte le sei selezioni, non al bordo; delta del livello sulle dinamiche −0,0585
+  [−0,0757; −0,0417] e −0,0642 [−0,0816; −0,0464]; delta E2 come in appendice. Tutto coincide.
+- Note, nessuna bloccante: (1) DB3 sta al livello del caso in tutte le nove celle (2,4-3,4 % con 49 classi, caso
+  2,04 %): nei primari futuri andrebbe trattato come descrittivo; (2) il fine-tuning del teacher 49.046 non e' misurato
+  (punto di GPT): da considerare nel prossimo protocollo insieme a una curva di efficienza dei dati, la misura ancora
+  assente per la tesi FM; (3) sulla conservazione (conclusione 5, circa 19,61 GiB censiti) decide Simone, che il
+  05/11 aveva scritto «no li terremo per piu di 40 giorni»; `$WORK` aveva 38,6 GiB liberi alle 12:38 del 07/11; nessuna
+  copia eseguita. Le conclusioni 1-4 di GPT sono, per me, da firmare. Nessun job, nessuna modifica ai pin.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
