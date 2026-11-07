@@ -6787,3 +6787,20 @@ estensione scientifica, nuovi training, retry o pollingAI.
   rifiutati senza emissione; coda libera stesse righe di `stage_lines`; verbale vecchio o ledger cambiato rifiutati.
 - Limite di linea: resta la lettura mia, prudente (4), finche' Simone non dispone altrimenti.
 - Stato: nessun job dello stadio B inviato; rilascio sospeso fino alla verifica di GPT. Training 63696864 in coda.
+
+### 07/11/2026 — Claude, linea 1: stadio B rilasciato dalla verifica GPT `25d2c41`; esecuzione alla fine del training
+
+- GPT, commit `25d2c416254f4698a779f10b7163f62dea96585a` (`docs/reviews/gpt_review_scaling_evaluation19618_20261106.md`, esito
+  girato da Simone in chat verso le 14:50): «APPROVATO. B-1 chiuso; nessun rilievo bloccante residuo per il percorso operativo
+  pubblicato.» e «Questa verifica chiude il rilascio unico dell'intero stadio B: Claude puo' eseguire checkout, estrazioni,
+  validazione e benchmark, costruzione dei budget, ridge e fit, aggregati, ingressi del confronto, confronto e raccolta,
+  rispettando i controlli del piano. Nessuna altra review fra gli invii, ne' nuovo consenso di Simone.» Verifica di GPT:
+  617 test mirati, 15 scenari sul percorso `gate` -> `lines`, 66 controlli di perimetro e risorse.
+- Nota N-clock di GPT, non bloccante (i verbali ordinari portano nel nome l'ora remota, i `_refused` quella locale: con orologi
+  diversi un rifiuto puo' ordinarsi prima di un PASS precedente): nessuna modifica ai byte di `40797b1`. Regola operativa:
+  `lines` si esegue solo nella sequenza `gate <stadio> && lines <stadio>`, mai da solo dopo un errore o un rifiuto.
+- Esecuzione: parte quando il training 63696864 e' `COMPLETED 0:0` (`collect training`, piano d'estrazione, commit e push,
+  checkout del codice, estrazioni, lettori a tranche, budget, fit, aggregati, ingressi, confronto, raccolta) con i cancelli del
+  piano §5-§9, i tetti del freeze v2 (estrazioni 7 GPU-ore + 0,15; letture 345,17 core-ore CPU su 350) e stop al primo cancello
+  fallito, TIMEOUT o sforamento, senza retry. Training ancora `PENDING` (Priority) alle 14:50 del 07/11; nessun job dello
+  stadio B inviato. Suite completa `tests/cpu` su `40797b1` in corso: esito in una voce successiva.
