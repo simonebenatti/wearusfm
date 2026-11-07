@@ -1,0 +1,16 @@
+wave 22: 5 jobs, limits 7.75 h: LONG-FIT-G39237-pre-epn612-F0123-20261105-A1, LONG-FIT-G49046-pre-epn612-F0123-20261105-A1, LONG-FIT-G19618-post-epn612-F0123-20261105-A1, LONG-FIT-G39237-post-epn612-F0123-20261105-A1, LONG-FIT-G49046-post-epn612-F0123-20261105-A1
+  certificate valid to 2026-11-07 12:32:13 (183 min left)
+  Leonardo clock: 2026-11-07 09:29:31 CET
+  LONG-FIT-G49046-pool-ninapro_db6-F01-20261105-A1 | 63745042 | COMPLETED 0:0 | 09:04:15-09:15:03 | 00:10:48 of 02:45:00
+  LONG-FIT-G49046-pool-ninapro_db6-F23-20261105-A1 | 63745043 | COMPLETED 0:0 | 09:15:23-09:28:35 | 00:13:12 of 02:45:00
+  LONG-FIT-G19618-pre-epn612-F0123-20261105-A1 | 63745044 | COMPLETED 0:0 | 08:43:55-09:04:03 | 00:20:08 of 02:00:00
+  report LONG-FIT-G49046-pool-ninapro_db6-F01-20261105-A1: sha256 5f690ce12b69… 5977 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 49046, 'dataset': 'ninapro_db6', 'view': 'pool', 'fold_indices': [0, 1], 'global_resource_gate_passed': True}
+  report LONG-FIT-G49046-pool-ninapro_db6-F23-20261105-A1: sha256 9e02d6195fd6… 5978 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 49046, 'dataset': 'ninapro_db6', 'view': 'pool', 'fold_indices': [2, 3], 'global_resource_gate_passed': True}
+  report LONG-FIT-G19618-pre-epn612-F0123-20261105-A1: sha256 907af08c4552… 5989 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 19618, 'dataset': 'epn612', 'view': 'pre', 'fold_indices': [0, 1, 2, 3], 'global_resource_gate_passed': True}
+  WORK free 41.57 GiB (threshold 10.724); user sbenatti 175.9 GiB
+  queue (other project filtered): 2 jobs, 0 on lrd_all_serial
+    63696864|SCALING-300M-train19618-20261106|boost_usr_prod|PENDING|0:00|14:45:00|Priority
+    63593128|LOGSQ-T100-LQ-19618-20261105|boost_usr_prod|RUNNING|23:18|4:00:00|None
+  watched branches: unchanged since the last ack
+log: /Users/simonebenatti/wearusfm_local/logs/line2_long_fit_precheck_wave22_20261107_0929.txt
+PRECHECK_OK
