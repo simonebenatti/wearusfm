@@ -1,0 +1,53 @@
+{
+ "id": "LOGSQ-pose-19618-20261107",
+ "creato": "2026-11-07T13:27:53+01:00",
+ "agente": "gpt",
+ "campagna": "logsquare-extract-19618-20261107",
+ "gpu_ore_stimate": 0.8333333333333334,
+ "codice_sha": "c1963236a08690998c812c86278bdefbf745ccf1",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LOGSQ-pose-19618-20261107",
+  "--comment=wearusfm:LOGSQ-pose-19618-20261107",
+  "--nodes=1",
+  "--gres=gpu:1",
+  "--cpus-per-task=8",
+  "--mem=100G",
+  "--time=00:50:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-extract-19618-20261107,EXPECTED_SHA=c1963236a08690998c812c86278bdefbf745ccf1",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-extract-19618-20261107/scripts/slurm/logsquare_evaluation.sbatch",
+  "results/infra/logsquare_evaluation_20261107/extraction_plan_19618.json",
+  "19618",
+  "extract-pose",
+  "none",
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261107/19618/pose",
+  "2900aef4796a0bed4f98dcb9cc5f228fedca91409cf02f91c465afb268c6cd08"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-07T13:27:53+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-07T13:27:53+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-07T13:27:54+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63772648,
+   "uscita": 0,
+   "stdout": "63772648\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 63772648,
+ "uscita": 0,
+ "stdout": "63772648\n",
+ "stderr": ""
+}

@@ -178,6 +178,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 07/11/2026, 13:28 CET: tre estrazioni finali LQ in esecuzione
+
+Consegna c196323 pubblicata e verificata, checkout 63772400 completato in 24 s,
+110 sorgenti e pin corretti, codice pulito e in sola lettura. Sottomesse con submitter
+e ledger comuni: posa 63772648, P1 63772649, P2 63772650. Tutte RUNNING dalle
+13:28:03 CET, 1 GPU / 8 CPU / 100G ciascuna, tetti 50 / 35 / 50 min.
+Nessun duplicato e nessun nuovo benchmark di inferenza. Lettori CPU dopo le cache.
+
 ### GPT — 07/11/2026: training LQ completo e preparazione estrazioni finali
 
 63593128 COMPLETED 0:0 alle 12:15:41 CET, 11.368 s, 19.618 passi per max_steps.
@@ -5716,6 +5724,14 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 07/11/2026: invii finali corretti; controllo preventivo dei launcher CPU
+
+Nessun errore nei tre invii o nel checkout. Le estrazioni usano c196323 immutabile.
+Nel controllo preventivo del lettore CPU posa è emerso che il guard dei percorsi
+invoca Python prima del caricamento del modulo/venv, pur richiedendo API moderne.
+Correzione tecnica separata in preparazione con regressione; non riguarda i tre
+estrattori in esecuzione né i sorgenti numerici dei fit.
 
 ### GPT — 07/11/2026: attesa di coda terminata, endpoint LQ integro
 

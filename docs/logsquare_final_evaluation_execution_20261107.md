@@ -52,3 +52,13 @@ Nessuna contrastiva, cambio di loss, nuova dose o monitor in background.
 
 Review indipendente di prontezza: APPROVATO. Pin, originali, contesto e risorse
 verificati; stato APPROVED_FOR_EXTRACTION pubblicato nei due nuovi piani.
+
+## Sottomissioni e avvio
+
+Consegna esecutiva `c1963236a08690998c812c86278bdefbf745ccf1`, pubblicata e verificata
+su origin. Checkout 63772400 COMPLETED 0:0 in 24 s, pulito e in sola lettura,
+SHA/piano e 110 sorgenti ricontrollati. Le tre estrazioni sono state accettate al primo
+invio e sono RUNNING dalle 13:28:03 CET del 07/11: posa 63772648, P1 63772649,
+P2 63772650. Risorse e tempi osservati corrispondono al piano. Ricevute archiviate
+sotto `results/infra/logsquare_evaluation_20261107/execution/`.
+Nessun job CPU di lettura ancora sottomesso.

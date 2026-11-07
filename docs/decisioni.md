@@ -6326,3 +6326,9 @@ estrazioni finali sullo stesso benchmark approvato: 2,25 GPU-ore / 18 core-ore,
 più 0,333333 core-ore di checkout condiviso. Nuovo piano con il solo pin 19.618;
 nessun cambio scientifico. Letture CPU dei due endpoint dopo le nove cache,
 come già richiesto; nessun monitor in background.
+
+Tre estrazioni avviate alle 13:28:03 CET: posa 63772648, P1 63772649, P2 63772650,
+sullo SHA congelato c196323 dopo checkout 63772400 verificato. Nessun duplicato.
+Il controllo preventivo del launcher CPU posa individua una questione di ordine
+nell'attivazione dell'interprete: si corregge e verifica separatamente prima dei
+lettori, senza modificare i job o la ricetta scientifica.
