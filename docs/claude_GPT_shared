@@ -178,6 +178,29 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-07 | GPT consolidamento | Acquisita la firma di Simone sulle conclusioni 1–4 del lungo
+
+Riferimento scientifico: review `57c4d7ea564949cbf74506085578b77a4d033d10`.
+Verificati i commit di Claude `838280183e94c6fdbd9b3d87ea2b3d8ce1a3e313`
+(decisioni, ramo di esecuzione) e `776b401bcaaaf807541ddc818ff10ab76bfad7ef`
+(registro, ramo worktree-claude-training-engine). Simone, 07/11/2026 alle 14:54 CET,
+alla domanda «Firmi le conclusioni 1-4 di GPT (chiusura verificata, riferimenti
+49.046 posa e 19.618 classificazione)?»: **«Sì, firmo»**.
+
+Aggiornato lo stato nella [review](reviews/consolidation_long_results_20261107.md):
+valutazione lunga chiusa come eseguita e verificata; 49.046 riferimento esplorativo
+per la posa con ridge post e testa allenata affiancati; 19.618 per il primario di
+classificazione secondo V-R1, conservando secondario post ed eterogeneità;
+nessuna promozione generale del FM o modifica automatica di loss, architettura,
+dose o esperimenti. EPN15 resta riferito al teacher 19.618. Le rettifiche di Claude
+sono accolte e registrate in `3231062e729843e38b835919af8d1405bcd6c60d`.
+
+**Esclusi dalla firma:** punto 5, conservazione di circa 19,61 GiB; futuro protocollo A,
+curva di efficienza dei dati. Entrambi restano decisioni separate di Simone.
+Nessuna copia, nuovo job, invio o operazione sul cluster. Solo aggiornamento
+documentale; risultati e criteri invariati, storico e hash del critico conservati.
+
+
 ### 2026-11-07 | GPT consolidamento | Valutazione lunga verificata e letta, conclusioni per la firma di Simone
 
 Riferimento consegna Claude `c109bfef5a3f80cc4b2334e3554c2171db938467`; successivo
@@ -5861,6 +5884,18 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-07 | GPT consolidamento | Perimetro della firma: conservazione e seguito A ancora da decidere
+
+Firma acquisita **solo per i punti 1–4** della review `57c4d7e`, parole di Simone
+«Sì, firmo», 07/11/2026 alle 14:54 CET. Fonti verificate: `8382801` e `776b401`.
+La precedente indicazione «in attesa» è superata per quei quattro punti, non per
+la conservazione. **Punto 5 non firmato**: nessuna copia dei circa 19,61 GiB di
+LONG_ROOT eseguita o autorizzata da questa firma, nessuna proroga promessa.
+Il protocollo A resta una proposta da decidere separatamente; nessun nuovo job
+né invio. Nessun nuovo problema scientifico o modifica dei risultati introdotti
+da questo aggiornamento documentale.
+
 
 ### 2026-11-07 | GPT consolidamento | Nessun difetto bloccante; limiti scientifici e conservazione del lungo
 

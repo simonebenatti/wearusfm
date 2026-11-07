@@ -9,8 +9,9 @@ il 06/11 alle 16:49, «Sì, approvo».
 **Catena verificata sui materiali pubblicati. Il training lungo migliora la
 posa, compresa la dinamica, in entrambi i pannelli primari. Il beneficio
 primario sulla classificazione resta non risolto; un contrasto secondario
-post-backbone è favorevole.** Conclusioni proposte alla firma di Simone;
-non costituiscono una nuova autorizzazione operativa.
+post-backbone è favorevole.** Conclusioni **1–4 firmate da Simone il
+07/11/2026 alle 14:54 CET**, «Sì, firmo». Il punto 5 resta una proposta
+separata. La firma non costituisce una nuova autorizzazione operativa.
 
 ## Tabella aggiornata della linea 2
 
@@ -224,7 +225,7 @@ il progresso non è spiegabile soltanto da una migliore taratura della testa
 esistente, perché migliora anche la lettura delle rappresentazioni congelate.
 Non dimostra però che i latenti abbiano raggiunto il proprio limite informativo.
 
-## 5. Conclusioni proposte alla firma di Simone
+## 5. Conclusioni 1–4 firmate; punto 5 ancora proposto
 
 1. Chiudere questa valutazione come **eseguita e verificata**. Nessun difetto
    bloccante trovato nei materiali; non servono nuovi lanci per leggerla.
@@ -238,13 +239,30 @@ Non dimostra però che i latenti abbiano raggiunto il proprio limite informativo
    dose o nuovo esperimento deriva automaticamente da questa chiusura.
    EPN15 rimane una prova sul teacher19k; il fine-tuning del teacher49k non
    è stato misurato. Le decisioni successive richiedono un protocollo distinto.
-5. Prima della purge conservare gli artefatti di audit delle predizioni,
+5. **Proposta non inclusa nella firma.** Prima della purge conservare gli artefatti di audit delle predizioni,
    come dettagliato nella [nota di conservazione](consolidation_long_preservation_20261107.md);
    questa review
    non esegue trasferimenti né promette proroghe su SCRATCH.
 
-**Firma di Simone: in attesa.** La firma riguarda queste conclusioni, non
-un nuovo consenso per attività operative già eseguite.
+**Firma di Simone: acquisita per le sole conclusioni 1–4.** Il 07/11/2026
+alle 14:54 CET, alla domanda di Claude «Firmi le conclusioni 1-4 di GPT
+(chiusura verificata, riferimenti 49.046 posa e 19.618 classificazione)?»,
+Simone ha risposto: **«Sì, firmo»**. La firma riguarda il testo scientifico
+pubblicato in `57c4d7ea564949cbf74506085578b77a4d033d10`.
+
+Registrazioni verificate:
+
+- `docs/decisioni.md`, commit `838280183e94c6fdbd9b3d87ea2b3d8ce1a3e313`
+  sul ramo `claude/consolidation-long-exec-20261105`;
+- `docs/claude_GPT_shared`, commit `776b401bcaaaf807541ddc818ff10ab76bfad7ef`
+  sul ramo `worktree-claude-training-engine`.
+
+La conclusione 5, conservazione di circa 19,61 GiB sotto LONG_ROOT, **non è
+firmata**: resta una decisione separata di Simone e nessuna copia è stata
+eseguita. Anche il seguito A, curva di efficienza dei dati, resta da decidere
+con un protocollo distinto. Questa firma non autorizza nuovi job o invii.
+Le rettifiche accolte alla lettura di Claude sono registrate separatamente
+in `3231062e729843e38b835919af8d1405bcd6c60d`.
 
 ## 6. Artefatti e riproducibilità
 
@@ -253,9 +271,12 @@ in `results/infra/consolidation_long_20261105/gpt_review_20261107/` e
 `docs/reviews/`. I file operativi originali restano nel commit immutabile di
 Claude; non sono stati sostituiti o reinterpretati come nuovi pin di fase.
 
-La lettura critica indipendente del testo e dell'appendice è favorevole,
+La lettura critica indipendente del testo e dell'appendice pubblicati in
+`57c4d7e` è favorevole,
 senza rilievi bloccanti; controllate anche tutte le 24 righe dell'appendice
 posa. [Nota del critico](../../results/infra/consolidation_long_20261105/gpt_review_20261107/critic.txt).
+Gli hash originali del critico sono conservati: il successivo aggiornamento
+registra soltanto la firma, senza modificare risultati o criteri scientifici.
 
 Per riprodurre i controlli si prepara una copia locale del commit c109bfe e
 si eseguono gli script `check_long_chain_20261107.py`,
