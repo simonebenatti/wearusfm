@@ -1,5 +1,10 @@
 # Piano scientifico dopo sonde, PSD-3, PCA, temporale e contrasti fra slot — 02/11/2026
 
+**Seguito proposto il 07/11, ancora da revisionare:** [contrastiva su T100-G](contrastive_proposal_20261107.md),
+due bracci nuovi C0/C1 a pari inizializzazione e dose, cambia soltanto il peso
+InfoNCE. P1/P2 primari e guardia sulla posa; controllo del peso sul train,
+nessuna nuova loss dinamica o tokenizer. Stato PROPOSTA, nessun codice/job.
+
 **Aggiornamento 07/11, linea T100-LQ conclusa:** ramo log-quadratico a 19.618 passi,
 EPN **82,633%**, **+1,531 pp [1,013; 2,015]** contro T100-L, senza superiorità
 sulla GELU (+0,055 pp [−0,512; +0,603]). Posa E_dyn **0,844088** contro **0,843363**

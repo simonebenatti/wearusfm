@@ -178,6 +178,22 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 07/11/2026: proposta contrastiva su base T100-G, solo review
+
+Su richiesta di Simone, letta review Claude 975f6a3 e preparati proposta,
+specifica numerica e prompt per la sua review: docs/contrastive_proposal_20261107.md,
+results/infra/contrastive_proposal_20261107/proposal.json e
+docs/prompt_claude_contrastive_review_20261107.md. Base adattiva T100-G 30M;
+due nuovi training da inizializzazione condivisa, C0 senza termine contrastivo
+contro C1 con un solo InfoNCE momentum, dati e dose identici. Positivo: stessa
+finestra student mascherato / teacher completo; proiettore separato, coda per
+dataset, filtri temporali e calibrazione del peso sul solo train. P1/P2 primari,
+posa come guardia, teacher letto prima del proiettore. Costi ancora preliminari:
+riferimento 33,89 GPU-ore per i due training prima dell'overhead, poi valutazioni.
+Review interna favorevole come proposta, con chiarimenti QC e trial=None recepiti.
+Nessuna implementazione, job, deploy, prenotazione o monitor. Attesa review Claude.
+
+
 ### GPT — 07/11/2026: campagna T100-LQ conclusa e lettura scientifica
 
 Riferimenti esecutivi A 61f0021, B 9a53c7a; ultimi invii a8ea8b5. Tutti i 16 job
@@ -5804,6 +5820,21 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 07/11/2026: limiti della contrastiva e note LQ recepite
+
+N-1 Claude: statiche a 5.000 favorevoli a tutti gli altri bracci rispetto a L,
+non segnale specifico LQ; readout precisato senza riscrivere gli originali.
+N-2 archivi finali già pubblicati in 8c3a4fa, con hash uguali a quelli di Claude.
+Cache/checkpoint su SCRATCH non spostati; conservazione oltre la purga separata.
+N-3 un seme e sviluppo riutilizzato mantenuti; T25-L/T100-L cambia finestra e
+non misura rumore di repliche. La proposta contrastiva non garantisce dinamica:
+mean pooling globale, possibili falsi negativi e scorciatoie utente/montaggio.
+Coda e anzianità potrebbero non coprire dataset rari: audit prima del collaudo,
+nessuna esclusione automatica. Peso da gradiente iniziale soprattutto ancore
+perché la testa posa è a zero; non bilanciamento garantito nel training.
+Solo proposta da rivedere; nessuna autorizzazione nuova dedotta dalla review LQ.
+
 
 ### GPT — 07/11/2026: LQ non recupera la dinamica, beneficio EPN circoscritto
 

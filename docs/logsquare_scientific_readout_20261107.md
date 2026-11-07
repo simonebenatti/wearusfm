@@ -46,6 +46,8 @@ La scomposizione dell'MSE standardizzato sulle dinamiche conferma il quadro. A 1
 
 I gruppi non primari sono pubblicati nella verifica indipendente. Sulle finestre statiche a 5.000 LQ riduce l'errore centrato del 2,44% rispetto a L, delta −0,026132 [−0,032046; −0,020293], con entrambi i rapporti sopra 1. Questo vantaggio non persiste a 19.618: delta +0,004429 [+0,000934; +0,008211]. Non viene usato per promuovere il candidato dopo il risultato del primario dinamico.
 
+Precisazione dopo la review Claude 975f6a3: nello stesso gruppo statico a 5.000 anche T25-L e T100-G migliorano su T100-L del 2,25% e 2,33%. È T100-L a essere più sfavorevole in quel gruppo/dose; la bandiera numerica del report non identifica un segnale specifico LQ. Originali immutati, interpretazione esplicitata.
+
 ## Classificazione: beneficio specifico su EPN, nessuna superiorità sulla GELU
 
 | Misura | LQ−T100-L, pp [IC95] | LQ−T25-L, pp [IC95] | LQ−T100-G, pp [IC95] |

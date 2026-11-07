@@ -6399,3 +6399,25 @@ Non cambiare epsilon né promuovere LQ come base automatica della contrastiva.
 Il seguito del fork resta la proposta con un solo termine contrastivo e base
 fissata, da revisionare prima del deploy. Nessuna estensione scientifica avviata.
 Dettagli e limiti in docs/logsquare_scientific_readout_20261107.md; griglia aggiornata.
+
+
+### 07/11/2026 — Seconda domanda della linea 3: proposta contrastiva da revisionare
+
+Simone chiede una proposta con base e confronto, poi review Claude prima dei
+lanci. Proposta GPT: T100-G 30M, C0 e C1 nuovi da stessa inizializzazione,
+ancore 0,2 + posa 1 invariati, JEPA 0; un solo InfoNCE asimmetrico fra student
+mascherato e teacher EMA completo. Coda per dataset, gestione deterministica
+dei negativi e proiettore separato. Positivi, esclusioni, temperatura 0,2,
+calibrazione train del peso, verifiche DDP/ripresa e criteri proposti in
+docs/contrastive_proposal_20261107.md. La scelta G usa risultati di sviluppo.
+
+P1/P2 nuovi primari con correzione per due confronti, guardia di non inferiorità
+sulla posa; nessun nuovo criterio applicato ai risultati LQ già chiusi. Due
+training di riferimento costerebbero 33,89 GPU-ore prima dell'overhead; preventivo
+esecutivo e tetti restano da misurare dopo review e collaudo separato. Non è un
+budget approvato o un piano runtime. Review interna favorevole; Claude deve
+rivedere la consegna prima dell'implementazione. Nessun job, deploy o monitor.
+
+Review LQ 975f6a3 letta: N-1 contestualizzata, N-2 già chiusa per gli archivi in
+8c3a4fa, N-3 mantenuta con precisazione che cambiare finestra non è una replica.
+Conservazione dei checkpoint/cache oltre la purga SCRATCH non decisa qui.

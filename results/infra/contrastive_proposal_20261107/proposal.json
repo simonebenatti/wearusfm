@@ -1,0 +1,160 @@
+{
+  "status": "PROPOSED_FOR_CLAUDE_REVIEW",
+  "executable_plan": false,
+  "implementation_exists": false,
+  "training_authorized_by_this_document": false,
+  "jobs_submitted": [],
+  "scientific_document": "docs/contrastive_proposal_20261107.md",
+  "scope": "new contrastive screening on T100-G; no deployment",
+  "base": {
+    "name": "T100-G",
+    "size": "30M",
+    "window_ms": 100,
+    "hop_ms": 25,
+    "activation": "gelu",
+    "logsquare": false,
+    "reference_config": "results/infra/tokenizer_execution_20261103/19618/T100-G/config.json",
+    "reference_config_sha256": "f9d0318462fd30a5592087ef72c63d3036a88ff1d07fc0dad8624e36253c2cfa",
+    "choice_uses_previous_development_results": true
+  },
+  "arms": {
+    "C0": {
+      "initialization": "shared untrained, seed 0",
+      "contrastive_weight": 0
+    },
+    "C1": {
+      "initialization": "shared untrained, seed 0",
+      "contrastive_weight": "one train-only calibration, then fixed except declared ramp"
+    }
+  },
+  "shared": {
+    "seed": 0,
+    "batch_global": 32,
+    "world_size": 4,
+    "accum_steps": 1,
+    "lr": 0.0001,
+    "warmup_steps": 1962,
+    "grad_clip": 1,
+    "ema_momentum": 0.996,
+    "anchor_weight": 0.2,
+    "pose_weight": 1,
+    "jepa_weight": 0,
+    "schedule_kind": "wsd",
+    "schedule_total_steps": 49046,
+    "decay_fraction": 0.2,
+    "endpoints": [
+      5000,
+      19618
+    ],
+    "no_warm_start": true,
+    "same_stream_masks_montages": true
+  },
+  "objective": {
+    "name": "asymmetric momentum InfoNCE",
+    "query": "student historical masked view",
+    "positive": "EMA teacher unmasked same physical window and montage",
+    "readout": "mean enc.z over K and physical QC-valid times, including computed hidden queries",
+    "projector": [
+      384,
+      384,
+      128
+    ],
+    "projector_activation": "gelu",
+    "normalization": "FP32 L2 on projected output only",
+    "normalization_eps": 1e-08,
+    "batchnorm": false,
+    "temperature": 0.2,
+    "global_loss_denominator": 32,
+    "invalid_query_contribution": 0,
+    "min_negatives": 32,
+    "new_signal_augmentations": []
+  },
+  "queue": {
+    "per_dataset": true,
+    "capacity_per_dataset": 1024,
+    "max_age_updates": 256,
+    "current_global_keys_in_denominator": true,
+    "teacher_keys_detached": true,
+    "same_subject_allowed": true,
+    "same_physical_window_excluded": true,
+    "same_recording_min_gap_seconds": 4,
+    "different_trials_without_comparable_coordinates": "excluded if same session",
+    "continuous_trial_none_is_valid": true,
+    "deduplication": "newest key; current batch before queue; global index tie-break",
+    "update_frequency": "once per successful optimizer update, pre-update teacher keys",
+    "checkpoint_all_state": true
+  },
+  "weight_calibration": {
+    "weight_value": null,
+    "updates": 0,
+    "prefill_train_batches": 256,
+    "gradient_train_batches": 32,
+    "target_encoder_gradient_norm_ratio": 0.1,
+    "formula": "0.1 * median(norm_global_g_base/norm_global_g_NCE)",
+    "allowed_range": [
+      0.0001,
+      1
+    ],
+    "clamp": false,
+    "parameters": "tokenizer identity local pool backbone",
+    "known_limit": "initial zero pose head makes encoder base gradient mostly anchors",
+    "reset_all_state_before_training": true,
+    "lambda_zero_first_updates": 256,
+    "lambda_ramp_updates": 256
+  },
+  "coverage": {
+    "metadata_audit_batches": 1024,
+    "min_global_fraction": 0.9,
+    "min_per_dataset_fraction": 0.8,
+    "min_queries_per_dataset": 32,
+    "scope": "negative eligibility first; full valid-view coverage checked in CUDA preflight and runtime",
+    "underobserved_dataset": "stop and review, never silently exclude"
+  },
+  "evaluation": {
+    "model": "teacher before contrastive projector",
+    "pose_steps": [
+      5000,
+      19618
+    ],
+    "classification_steps": [
+      19618
+    ],
+    "pose_reader": "instantaneous ridge K64 mean",
+    "classification_reader": "historical converged logistic pool768 no PCA",
+    "primary_contrast": "C1 minus C0 at equal step",
+    "primary_classification": [
+      "P1",
+      "P2"
+    ],
+    "secondary_classification": "all five datasets individually, EPN included",
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 20261107,
+    "positive_screen": {
+      "one_primary_min_delta_pp": 0.5,
+      "one_primary_lower_ci97_5_above": 0,
+      "multiplicity": "Bonferroni across two primary classification endpoints",
+      "other_primary_lower_ci95_above_pp": -1,
+      "pose_relative_error_increase_upper_ci95_below": 0.02
+    },
+    "single_pretraining_seed_limit": true,
+    "not_external_regression_transfer": true
+  },
+  "resources_provisional": {
+    "not_a_budget_release": true,
+    "metadata_cpu_hour_envelope": 2,
+    "gpu_preflight_hour_envelope": 2,
+    "historical_training_gpu_hours_per_arm": 16.944444444444443,
+    "two_arm_training_reference_gpu_hours": 33.888888888888886,
+    "historical_two_arm_training_cap_gpu_hours": 44,
+    "extraction_gpu_hour_reference": 5.5,
+    "inference_benchmark_gpu_hour_envelope": 1,
+    "cpu_evaluation_hour_envelope": 102,
+    "checkouts_not_included": true,
+    "requires_measured_budget_before_any_training": true
+  },
+  "review": {
+    "claude_status": "pending",
+    "review_only_request": true
+  },
+  "no_background_monitoring": true
+}
