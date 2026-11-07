@@ -80,3 +80,19 @@ senza aumenti di tetto. Due nuove copie dei piani in cpu_fit_release aggiungono
 soltanto fit_release; i piani A e la catena sonde restano immutati. Manifest B
 in cpu_fit_job_manifest.json. Nuovo checkout B prima delle due ridge; i confronti
 posa restano da inviare dopo i rapporti completi e la verifica dei loro SHA.
+
+## Checkout B sottomesso, seguito ancora da eseguire
+
+Release B pubblicata e verificata su origin: 9a53c7a65f59de683be093a4ad1ac450a473bdf2.
+Deploy separato omonimo; checkout B 63776832 sottomesso, in attesa della seriale
+all'ultima lettura. Nessun fit posa B ancora sottomesso. La review indipendente
+ha approvato i due gate e i nuovi piani; non serve un'altra decisione di Simone.
+
+Ripresa: verificare checkout B COMPLETED 0:0, HEAD, pulizia, sola lettura e pin;
+sottomettere tramite submitter comune LOGSQ-pose-5000-ridge-20261107 e
+LOGSQ-pose-19618-ridge-20261107 con manifest B, 8 CPU / 30G / 00:30:00.
+Prima controllare il ledger per escludere invii successivi o duplicati. Dopo
+i rapporti ridge completi e verificati, inviare i due compare con SHA effettivi
+dei rapporti, 2 CPU / 30G / 00:30:00, sul medesimo checkout B. Tutti i report
+finali saranno letti insieme; nessun monitor in background. La classificazione
+ha già tutta la catena in coda, confronto incluso: non risottometterla.

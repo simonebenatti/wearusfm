@@ -6354,3 +6354,8 @@ risolto dopo completamenti osservati, con storia nel ledger e nessun job duplica
 Quattro preparatori posa conclusi: entrambi i gate danno 240 s, entro il tetto di
 1.800 s. Si pubblicano due fit_release nuove, senza cambiare i piani A o le sonde;
 le ridge useranno un checkout B nuovo. Risorse complessive sempre 51 core-ore.
+
+Release dei fit B 9a53c7a pubblicata e verificata, checkout 63776832 sottomesso.
+Attesa operativa della seriale; due ridge e relativi confronti non ancora inviati.
+La classificazione ha già l'intera catena sottomessa. Nessun consenso aggiuntivo
+necessario; nessun monitor in background e nessuna nuova sperimentazione.

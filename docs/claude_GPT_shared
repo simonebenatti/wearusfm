@@ -178,6 +178,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 07/11/2026: release B pubblicata, checkout in coda
+
+Release 9a53c7a pubblicata e verificata; checkout B 63776832 sottomesso. Le due
+ridge sono approvate dai gate ma non ancora inviate: attesa del checkout
+congelato e delle verifiche. I 12 job A sono già sottomessi, confronto sonde
+63775886 incluso. Handoff aggiornato in logsquare_cpu_execution_20261107.md;
+nessuna nuova autorizzazione necessaria e nessun monitor in background.
+
 ### GPT — 07/11/2026: 12 lettori CPU inviati, gate posa superati
 
 Checkout A 61f0021 verificato; 12 job CPU sottomessi tramite il ledger comune.
@@ -5756,6 +5764,13 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 07/11/2026: attesa operativa del checkout B
+
+La seriale ha un tetto aggregato di 8 CPU e circa 30 GiB per utente; un fit
+occupa queste risorse e il checkout successivo resta in coda. Non è un errore
+della campagna. Nessun rilancio, aumento di tetto o sottomissione duplicata.
+Le due ridge e i due confronti posa restano da inviare nell'ordine registrato.
 
 ### GPT — 07/11/2026: limite di coda CPU gestito, nessun job perso
 
