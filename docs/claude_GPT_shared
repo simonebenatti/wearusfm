@@ -7679,6 +7679,27 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `pin_phase fit --dry-run` OK; 342 test superati). Stato: 31 fit su 72 conclusi, 3 in corsia; prossima ondata la 14
   (righe 35-37: G39237 pre DB3 F1-F3).
 
+### 2026-11-07 | Claude | Linea 2, fase fit A1: ondata 13 conclusa, ondata 14 inviata (righe 35-37 di 72)
+- Ondata 13, tutti e tre `COMPLETED 0:0`, uno alla volta in corsia: `63724978` LONG-FIT-G19618-pre-ninapro_db3-F3
+  (02:57:03-03:08:30, 00:11:27 su 02:00:00, partito per primo col limite piu' corto), `63724979`
+  LONG-FIT-G39237-pre-ninapro_db3-F0 (03:08:40-03:28:34, 00:19:54 su 02:15:00) e `63724977` LONG-FIT-G19618-pre-ninapro_db3-F2
+  (03:28:44-03:41:55, 00:13:11 su 02:30:00), gli ultimi due in attesa per `QOSMaxCpuPerUserLimit`. I 4 fold `pre` di DB3 a dose
+  19.618 sono conclusi. Report letti solo nei campi di provenienza (sha256 `10bcd010dcd6…`, `33df5de0a0a0…`, `8d6ad4fb16e4…`,
+  4 file ciascuno, kind/checkpoint/dataset/view uguali ai pin di fase); nessun punteggio letto.
+  Consumo: 8 CPU x 44:32 = 5,94 core-ore; fase fit 75,51 core-ore (69,57 + 5,94), 0 GPU-ore.
+- C-1 alle 03:42 (`PRECHECK_OK`, log in `execution/audit/precheck_fit_wave14_20261107.log`): `$WORK` 41,59 GiB liberi (soglia
+  10,724; utente sbenatti 175,9 GiB), scratch scrivibile, ledger riletto, seriale vuota, rami sorvegliati fermi dall'ultimo
+  riscontro, certificato ssh valido fino alle 05:50:43. In coda su `boost_usr_prod`, fuori linea 2: `63593128` (linea 3) e
+  `63696864` SCALING-300M-train19618 (linea 1); nessuna azione su di essi.
+- Ondata 14 inviata alle 03:42:37-39 col submitter comune (`--agente claude`, campagna `consolidation_long_20261105`, ledger
+  `prenotato` -> `sottomesso`), tre job (limiti 02:15:00, 02:30:00, 02:00:00: 6 h 45 sommate): `63728878`
+  LONG-FIT-G39237-pre-ninapro_db3-F1, `63728879` LONG-FIT-G39237-pre-ninapro_db3-F2 e `63728880`
+  LONG-FIT-G39237-pre-ninapro_db3-F3; 8 CPU / 30 GiB, checkout congelato `consolidation-long-fit-20261105` (`a70e29e`).
+  Sorvegliante in sola lettura ogni 5 minuti. Registrazione sul ramo di esecuzione `claude/consolidation-long-exec-20261105`:
+  commit `298b33c` (ID nel `launch_plan.json`, stati di sottomissione, log di audit; `build_inputs`, `apply_to_plans --check`,
+  `pin_phase fit --dry-run` OK; 342 test superati). Stato: 34 fit su 72 conclusi, 3 in corsia; prossima ondata la 15
+  (righe 38-40: G49046 pre DB3 F0-F2), se il certificato ssh e' ancora valido al C-1.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
