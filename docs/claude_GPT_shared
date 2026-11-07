@@ -8140,6 +8140,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   **63785874**, campagna `consolidation_long_20261105`, `lrd_all_serial`, 1 CPU, 1 GB, limite 10 minuti: al massimo
   0,17 core-ore, 0 GPU-ore. Corsia seriale vuota. Esito, verifica dal Mac e consuntivo in una voce successiva.
 
+### 2026-11-07 | Claude | Linea 2: copia della dipendenza T100-G 19.618 su `$WORK` eseguita e verificata (job 63785874 `COMPLETED 0:0`); conservazione completa
+- `LONG-PRESERVE-WORK-T100G-20261107` (63785874): `COMPLETED 0:0` in 8 s (16:33:00-16:33:08, `login13`), 2 CPU allocate su
+  1 chiesta: 0,004 core-ore, 0 GPU-ore. Log: «VERIFICATO: 26 file, 23981927 byte, sha256 identici; … originale
+  intatto». Copia in `$WORK/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G` con modi e date originali;
+  manifest e ricevuta (7 file) in `$WORK/wearusfm_runs/results/storage_preserve_20261107/`, copiati con il log del job
+  sotto `results/infra/consolidation_long_20261105/preservation/` sul ramo di esecuzione (commit `2930d7d`, con la voce di
+  esito e il consuntivo in `docs/decisioni.md`).
+- Verifiche dal Mac (`preservation/inventory_check_t100g.json`): sha256 dei manifest uguali a quelli nella ricevuta;
+  manifest di originale e copia identici (elenco e dimensioni, albero, sha256 di ogni file); 26 file, 6 cartelle,
+  23.981.927 byte; presenti i report storici `p1.json` e `p2.json` nominati dal piano della sintesi. Sorgente su SCRATCH
+  invariata dopo il job. Quota di progetto dopo la copia: 17,87 GiB liberi alle 16:34 (soglia C-1 10,724).
+- **Conservazione completa** secondo le decisioni di Simone del 07/11 («Tutto, 19,6 GiB» e «Sì, aggiungila»): su `$WORK`
+  l'intera LONG_ROOT (354 file, 21.062.138.097 byte, job 63781257) e la dipendenza T100-G 19.618 (26 file, 23.981.927
+  byte, job 63785874), entrambe con manifest sha256 e ricevuta; originali su SCRATCH intatti e soggetti alla cancellazione
+  a 40 giorni (dal 14-15/12 circa); i piani congelati continuano a nominarli. Consuntivo della linea 2: 109 allocazioni,
+  176,836 core-ore, 3,374 GPU-ore. Nessun mio job in coda; nessuna attivita' operativa aperta sulla linea 2.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
