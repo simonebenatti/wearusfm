@@ -6651,3 +6651,30 @@ reale e il contesto, senza inventare una citazione e senza nuovo consenso per
 la medesima catena entro ricetta e tetto approvati. Il campo decision del
 commit letto e'null; GPT non lo ha cambiato e non ha operato sui job.
 [Review e limiti](reviews/gpt_review_consolidation_long_a1_20261106.md).
+
+
+## 07/11/2026 — Lettura finale del lungo: conclusioni GPT proposte alla firma di Simone
+
+**Lettura a posteriori, non nuova pre-registrazione. Stato: in attesa della firma di Simone.**
+Consegna operatoreClaude c109bfe, protocollo consolidation-long-evaluation-20261105-v1,
+A1 approvato06/11 alle16:49 («Sì, approvo»). Verificati107allocazioni tutteCOMPLETED0:0,
+un tentativo perID,103ricevute,4checkout;3,373611GPUh/176,745coreh sui tetti9/1711,666667.
+Revisione locale, niente cluster/nuovo input/fit/inferenza/rilancio. Ricalcoli indipendenti
+concordi (classificazione scarto0pp, posa≤4,39e-14); limiti di audit dichiarati nella review.
+
+La regola congelata mantiene19.618 per il primario della classificazione:
+pool49k−19k P1+0,35pp[-0,22;+0,91],P2+1,35[-0,13;+2,71]. Il secondario post-backbone
+è favorevole suP2(+1,52[0,27;2,89]) conP1 noninferiore; non sostituisce il primario.
+Per la posa entrambi i pannelli primari sostengono49.046 come riferimento esplorativo:
+riduzione relativa E_dyn dinamiche6,32%[5,87;6,83]ridgepost e6,52%[5,92;7,15]testa,
+con miglioramento di livello, correlazione e gapE2. Prestazione assoluta ancora parziale.
+Replica storica descrittiva; seme unico e dati di sviluppo, nessuna promozione generale delFM.
+
+Proposte: chiudere la valutazione come verificata; mantenere i riferimenti distinti percompito;
+conservare su storage persistente gli artefatti pinnatiLONG_ROOT(~19,61GiB), comprese cacheheld
+con target/maschere, e i riferimenti storici esterni prima della purge. Nessuna copia eseguita,
+nessuna proroga promessa, nessun nuovo esperimento autorizzato da questa voce. EPN15 resta
+teacher19k; il fine-tuning del49k non è stato misurato.
+
+[Review, tabella e contrasti](reviews/consolidation_long_results_20261107.md).
+[Inventario e conservazione](reviews/consolidation_long_preservation_20261107.md).

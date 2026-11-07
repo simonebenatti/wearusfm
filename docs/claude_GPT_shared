@@ -178,6 +178,38 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-07 | GPT consolidamento | Valutazione lunga verificata e letta, conclusioni per la firma di Simone
+
+Riferimento consegna Claude `c109bfef5a3f80cc4b2334e3554c2171db938467`; successivo
+`b6dfb7a` solo documentale. A1 approvato da Simone il06/11 alle16:49, «Sì, approvo».
+Verifica locale a posteriori, nessuna operazione cluster, nuovo fit/inferenza o input.
+Confermati107allocazioni COMPLETED0:0,103ricevute,107log,107stati uguali al ledgerlocale,
+un tentativo perID,4checkout e pin di fase, ponte A1, ricetta e103file scientifici invariati.
+Consuntivo ricalcolato:3,373611GPUh/176,745coreh, inclusi checkout; tetti9/1711,666667.
+Aggregazioni ricalcolate indipendentemente: classificazione45celle e12contrasti per
+5dataset/P1/P2, scarto0,0pp; posa1683valori, scarto massimo4,39e-14. Payload remoti non
+riaperti: verifica dai conteggi e dalle somme perutente archiviati, non nuova inferenza.
+
+Primario classificazione pool49k−19k: P1+0,348pp IC95[-0,217;+0,915],
+P2+1,352[-0,135;+2,711], beneficio non risolto; V-R1 mantiene19.618.
+Secondario post49k−19k favorevole suP2+1,524[0,269;2,890], P1 noninferiore;
+post supera pre a tutte3dosi. Replica T25-L−B riportata come contesto descrittivo,
+non pavimento universale; nessun cambio del primario dopo gli score.
+Posa, dueprimari affiancati: ridgepost E_dyn dinamiche0,838933→0,785902,
+riduzione6,321%[5,872;6,831]; testa0,832954→0,778629,6,522%[5,924;7,148].
+Migliorano tutti15utenti, livello e correlazione; gapE2 aumenta+0,01871/+0,02040rad
+con IC favorevoli sul supporto comune14utenti. Riferimento esplorativo49.046 per
+entrambi i pannelli posa, prestazione assoluta ancora limitata (varianza22–24% deltarget).
+
+[Review e tabella](reviews/consolidation_long_results_20261107.md),
+[conservazione prima della purge](reviews/consolidation_long_preservation_20261107.md),
+prove in results/infra/consolidation_long_20261105/gpt_review_20261107.
+Lettura del critico APPROVATA; conclusioni da sottoporre alla firma di Simone,
+non ancora firmate. Nessuna promozione generale delFM o autorizzazione di nuovi esperimenti.
+Consigliata conservazione degli artefatti pinnati LONG_ROOT (~19,61GiB) e dei riferimenti
+storici esterni; nessuna copia remota eseguita. EPN15 resta riferito alteacher19k.
+
+
 ### 2026-11-06 | GPT consolidamento | Implementazione A1 di Claude verificata: APPROVATA
 
 Review successiva di `2dea7ca`, baseline `166fb86`: nessun difetto bloccante.
@@ -5829,6 +5861,29 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-07 | GPT consolidamento | Nessun difetto bloccante; limiti scientifici e conservazione del lungo
+
+Consegna Claude c109bfe verificata; conclusioni in
+[review lunga](reviews/consolidation_long_results_20261107.md), in attesa della firma di Simone.
+Il lungo aiuta la posa e l'accessibilità post-backbone; la classificazione primaria
+resta non risolta, non equivalente né dimostrata inutile. Semepretraining unico, dati di
+sviluppo, IC condizionati ai modelli, nessuna correzione della molteplicità;39k→49k include
+nuova dose e decadimentoLR. Posa già supervisionata nelpretraining, non prova di trasferimento
+ad altra regressione. EPN15 non misura ilcheckpoint49k.
+
+Ricalcoli da statistiche archiviate; NPZ/checkpoint non riletti. comparison.jsonclass è
+incorporato integralmente nella summary, ma l'ordinechiavi originale è perso: nessuna
+nuova attestazione del bytehash0382f010 dal JSON riserializzato. I due report incorporati
+sono invece ricostruiti byte-identici. Le ricevute CPU con checkpoint_unchanged=false non
+attestano una modifica dei pesi: quelle fasi non caricano ilmodello.
+
+SCRATCH non è archivio: prima dei40giorni preservare OOF/audit, predizioni e coefficienti
+posa, target/maschere/metadati (le predictionNPZ non li contengono), piani e report.
+Raccomandato l'insieme pinnato19,61GiB, più dipendenze storiche fuoriLONG_ROOT;
+nota dettagliata in reviews/consolidation_long_preservation_20261107.md. Quota e copia
+restano all'operatoreClaude; nessuna proroga, trasferimento o monitor avviato daGPT.
+
 
 ### 2026-11-06 | GPT consolidamento | A1: nessun nuovo blocco; limite preesistente circoscritto
 

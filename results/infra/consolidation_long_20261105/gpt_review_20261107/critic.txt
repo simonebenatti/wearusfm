@@ -1,0 +1,19 @@
+Lettura critica indipendente finale — consolidamento lungo — 07/11/2026
+
+Verdetto: APPROVATO. Nessun errore numerico o sovrainterpretazione bloccante nei tre documenti letti, inclusa la nota di conservazione.
+
+Review SHA256: 4f18a8682b7568299d95ae7f1f2fcdbd30e9e70796ec88dfb55152efed4a406b
+Appendice SHA256: 04397862c3ac0eadf5dac5fdd82ffaf0dc3764a8474c4a9e73ce04e7f5dc83b9
+Nota conservazione SHA256: 52bde3fc581b82dda9338ab33ad7ac00cbf579c3d3096310bf6c6267c8ac8fec
+
+Classificazione: i 12 contrasti e le nove celle coincidono con il ricalcolo indipendente dai conteggi della summary. Il primario pool 49k−19k resta non risolto; la non inferiorità è distinta dall’equivalenza; il secondario favorevole post-backbone resta dichiaratamente secondario. Soglie V-R1, pesi P1/P2, eterogeneità per dataset e replica storica sono riportati correttamente.
+
+Posa: verificate automaticamente tutte le 24 righe delle due tabelle di appendice (12 contrasti dynamic/E2 e 12 all/static) contro il report incorporato. Il testo mantiene affiancati i due primari, distingue miglioramento relativo e qualità assoluta, precisa il supporto crop6 e i limiti di E2. Nessun nuovo ricalcolo dai payload effettuato in questa rilettura.
+
+EPN15: +0,83 pp è coerente con la verifica precedente; viene attribuito alla pipeline e al teacher 19k, senza trasformarlo in una prova di fine-tuning del checkpoint lungo.
+
+Limiti e responsabilità sono espliciti: un seme, sviluppo, bootstrap condizionato, molteplicità, dose e decadimento non isolabili, nessuna nuova operazione o autorizzazione scientifica derivata automaticamente. La precisazione sulla varianza ridotta è corretta: non dimostra da sola errore di scala e non autorizza un aumento artificiale delle ampiezze. I nuovi link sono coerenti con le consegne.
+
+Conservazione: APPROVATA come raccomandazione, non come ricevuta di backup. La nota distingue i circa 19,61 GiB censiti da una misura remota attuale; riconosce che le NPZ delle predizioni posa contengono solo prediction e richiedono bersagli/supporti delle cache held (12,834 GiB); mantiene esplicite le dipendenze storiche esterne a LONG_ROOT, la verifica di quota e hash dell’operatore e il termine inferiore a 40 giorni. Non promette copie già eseguite, autosufficienza della sola radice o proroghe.
+
+Questa rilettura non ripete la verifica del ledger e non certifica nuovamente i byte dei payload remoti. Nessuna modifica al repository, accesso cluster, fit o inferenza.

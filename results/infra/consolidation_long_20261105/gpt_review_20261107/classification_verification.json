@@ -1,0 +1,858 @@
+{
+  "scope": "Independent reaggregation of saved per-subject/class counts embedded in published summary; raw OOF and checkpoint payloads not read; no fit, inference, cluster call or alternate seed",
+  "source_summary": "/private/tmp/wearusfm-long-final-review-20261107/results/infra/consolidation_long_20261105/execution/receipts/LONG-SUMMARY-20261105.json",
+  "source_summary_sha256": "b0cfa0eb3979567788075e63f5494e47adb95c8753a4b410fe3c63b8625e90d3",
+  "classification_artifact_pin": {
+    "bytes": 1977116,
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/comparison/classification/comparison.json",
+    "sha256": "0382f010148cbc21706aa580087304947536bb366f9bc3488855e7de1d5bbf01"
+  },
+  "raw_comparison_bytes_independently_verified": false,
+  "bootstrap": {
+    "replicates": 2000,
+    "seed": 20261102,
+    "max_abs_difference_pp": 0.0
+  },
+  "support_checks": {
+    "epn612": {
+      "subjects": 314,
+      "classes": 6,
+      "windows": 47100,
+      "paired_denominators_all_nine_cells": true,
+      "draw_hash_match": true,
+      "replicates_missing_classes": 0
+    },
+    "ninapro_db2": {
+      "subjects": 32,
+      "classes": 49,
+      "windows": 38544,
+      "paired_denominators_all_nine_cells": true,
+      "draw_hash_match": true,
+      "replicates_missing_classes": 0
+    },
+    "ninapro_db3": {
+      "subjects": 8,
+      "classes": 49,
+      "windows": 9834,
+      "paired_denominators_all_nine_cells": true,
+      "draw_hash_match": true,
+      "replicates_missing_classes": 0
+    },
+    "ninapro_db6": {
+      "subjects": 8,
+      "classes": 7,
+      "windows": 33961,
+      "paired_denominators_all_nine_cells": true,
+      "draw_hash_match": true,
+      "replicates_missing_classes": 0
+    },
+    "uci_emg": {
+      "subjects": 19,
+      "classes": 6,
+      "windows": 364,
+      "paired_denominators_all_nine_cells": true,
+      "draw_hash_match": true,
+      "replicates_missing_classes": 0
+    }
+  },
+  "tasks": {
+    "p1": {
+      "cells": {
+        "19618/pre": {
+          "balanced_accuracy_percent": 15.372383542712075,
+          "ci95_percent": [
+            14.093071436284923,
+            16.62113536028708
+          ]
+        },
+        "19618/post": {
+          "balanced_accuracy_percent": 17.076506477187834,
+          "ci95_percent": [
+            15.830306729438618,
+            18.35070882671622
+          ]
+        },
+        "19618/pool": {
+          "balanced_accuracy_percent": 17.18658769968897,
+          "ci95_percent": [
+            15.870538092452325,
+            18.53749851940005
+          ]
+        },
+        "39237/pre": {
+          "balanced_accuracy_percent": 15.435202720295585,
+          "ci95_percent": [
+            14.273215656312537,
+            16.64208743021402
+          ]
+        },
+        "39237/post": {
+          "balanced_accuracy_percent": 17.550317418511664,
+          "ci95_percent": [
+            16.19217056823719,
+            18.946304949541087
+          ]
+        },
+        "39237/pool": {
+          "balanced_accuracy_percent": 17.51979991681164,
+          "ci95_percent": [
+            16.14975086526846,
+            18.949769753445807
+          ]
+        },
+        "49046/pre": {
+          "balanced_accuracy_percent": 16.016557832776364,
+          "ci95_percent": [
+            14.768144058689705,
+            17.346197777002118
+          ]
+        },
+        "49046/post": {
+          "balanced_accuracy_percent": 17.59896354648765,
+          "ci95_percent": [
+            16.25258436162409,
+            18.96011235942073
+          ]
+        },
+        "49046/pool": {
+          "balanced_accuracy_percent": 17.534842581660413,
+          "ci95_percent": [
+            16.123067607771326,
+            18.977831374221196
+          ]
+        }
+      },
+      "contrasts": {
+        "pre:49046-19618": {
+          "delta_pp": 0.6441742900642866,
+          "ci95_pp": [
+            0.12770921314182693,
+            1.1797354295878992
+          ],
+          "reading": "below_practical_margin",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "pre:39237-19618": {
+          "delta_pp": 0.06281917758350908,
+          "ci95_pp": [
+            -0.3853774113889784,
+            0.5740973917977885
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "pre:49046-39237": {
+          "delta_pp": 0.5813551124807775,
+          "ci95_pp": [
+            0.19304075617670516,
+            0.9591957930543217
+          ],
+          "reading": "below_practical_margin",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "post:49046-19618": {
+          "delta_pp": 0.5224570692998143,
+          "ci95_pp": [
+            -0.09400218041512032,
+            1.147176401706267
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "post:39237-19618": {
+          "delta_pp": 0.4738109413238323,
+          "ci95_pp": [
+            0.009739679727008501,
+            0.995331530679636
+          ],
+          "reading": "below_practical_margin",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "post:49046-39237": {
+          "delta_pp": 0.048646127975982,
+          "ci95_pp": [
+            -0.34022153678138467,
+            0.4092736867443091
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "pool:49046-19618": {
+          "delta_pp": 0.3482548819714437,
+          "ci95_pp": [
+            -0.21734577704982508,
+            0.9145263044735671
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "supported",
+          "role": "primary_dose"
+        },
+        "pool:39237-19618": {
+          "delta_pp": 0.33321221712266647,
+          "ci95_pp": [
+            -0.1518837135610189,
+            0.7975148179520091
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "pool:49046-39237": {
+          "delta_pp": 0.015042664848777254,
+          "ci95_pp": [
+            -0.46270322061305863,
+            0.47533723531021393
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "19618:post-pre": {
+          "delta_pp": 1.7041229344757576,
+          "ci95_pp": [
+            1.0690105108328791,
+            2.377794596630915
+          ],
+          "reading": "practical_benefit",
+          "noninferiority_1pp": "supported",
+          "role": "depth_diagnostic"
+        },
+        "39237:post-pre": {
+          "delta_pp": 2.1151146982160807,
+          "ci95_pp": [
+            1.5050452629761113,
+            2.746108851300381
+          ],
+          "reading": "practical_benefit",
+          "noninferiority_1pp": "supported",
+          "role": "depth_diagnostic"
+        },
+        "49046:post-pre": {
+          "delta_pp": 1.5824057137112852,
+          "ci95_pp": [
+            0.8449904203837431,
+            2.2960914420754426
+          ],
+          "reading": "practical_benefit",
+          "noninferiority_1pp": "supported",
+          "role": "depth_diagnostic"
+        }
+      }
+    },
+    "p2": {
+      "cells": {
+        "19618/pre": {
+          "balanced_accuracy_percent": 78.29242674259535,
+          "ci95_percent": [
+            74.01654910534134,
+            82.02237722745407
+          ]
+        },
+        "19618/post": {
+          "balanced_accuracy_percent": 80.87902902509651,
+          "ci95_percent": [
+            76.44417287005953,
+            84.76778153602211
+          ]
+        },
+        "19618/pool": {
+          "balanced_accuracy_percent": 80.51745663605598,
+          "ci95_percent": [
+            75.86463082356771,
+            84.48344620839481
+          ]
+        },
+        "39237/pre": {
+          "balanced_accuracy_percent": 78.76808391393286,
+          "ci95_percent": [
+            74.68548293844415,
+            82.24146254465924
+          ]
+        },
+        "39237/post": {
+          "balanced_accuracy_percent": 80.92853928538135,
+          "ci95_percent": [
+            76.24178987207763,
+            85.00186301106335
+          ]
+        },
+        "39237/pool": {
+          "balanced_accuracy_percent": 80.75378271045928,
+          "ci95_percent": [
+            76.5435682771358,
+            84.47789216034333
+          ]
+        },
+        "49046/pre": {
+          "balanced_accuracy_percent": 78.49575605529381,
+          "ci95_percent": [
+            73.39892845847086,
+            82.536561475859
+          ]
+        },
+        "49046/post": {
+          "balanced_accuracy_percent": 82.40266606011815,
+          "ci95_percent": [
+            78.16676068274641,
+            85.97782864853228
+          ]
+        },
+        "49046/pool": {
+          "balanced_accuracy_percent": 81.86915104258718,
+          "ci95_percent": [
+            77.69314086925021,
+            85.50879227013989
+          ]
+        }
+      },
+      "contrasts": {
+        "pre:49046-19618": {
+          "delta_pp": 0.20332931269845256,
+          "ci95_pp": [
+            -2.1474423293959197,
+            2.804714870946319
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "unresolved",
+          "role": "secondary_dose"
+        },
+        "pre:39237-19618": {
+          "delta_pp": 0.47565717133750685,
+          "ci95_pp": [
+            -0.7793777740353364,
+            1.7600301209974614
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "pre:49046-39237": {
+          "delta_pp": -0.2723278586390543,
+          "ci95_pp": [
+            -2.6485120185236584,
+            2.2337413268233064
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "unresolved",
+          "role": "secondary_dose"
+        },
+        "post:49046-19618": {
+          "delta_pp": 1.52363703502163,
+          "ci95_pp": [
+            0.2694808370646304,
+            2.889530597403777
+          ],
+          "reading": "practical_benefit",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "post:39237-19618": {
+          "delta_pp": 0.049510260284835184,
+          "ci95_pp": [
+            -1.128779453452232,
+            1.2561777296095806
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "unresolved",
+          "role": "secondary_dose"
+        },
+        "post:49046-39237": {
+          "delta_pp": 1.4741267747367948,
+          "ci95_pp": [
+            0.173513657678111,
+            2.8547599423076093
+          ],
+          "reading": "practical_benefit",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "pool:49046-19618": {
+          "delta_pp": 1.3516944065311898,
+          "ci95_pp": [
+            -0.1347107978373696,
+            2.710799292381705
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "supported",
+          "role": "primary_dose"
+        },
+        "pool:39237-19618": {
+          "delta_pp": 0.23632607440329245,
+          "ci95_pp": [
+            -1.328517353917743,
+            1.6292209269286058
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "unresolved",
+          "role": "secondary_dose"
+        },
+        "pool:49046-39237": {
+          "delta_pp": 1.1153683321278973,
+          "ci95_pp": [
+            -0.10686854652657563,
+            2.406634874459957
+          ],
+          "reading": "inconclusive",
+          "noninferiority_1pp": "supported",
+          "role": "secondary_dose"
+        },
+        "19618:post-pre": {
+          "delta_pp": 2.5866022825011603,
+          "ci95_pp": [
+            0.6233523559412415,
+            4.788009239377618
+          ],
+          "reading": "practical_benefit",
+          "noninferiority_1pp": "supported",
+          "role": "depth_diagnostic"
+        },
+        "39237:post-pre": {
+          "delta_pp": 2.1604553714484886,
+          "ci95_pp": [
+            0.3543399681183715,
+            4.073773634107844
+          ],
+          "reading": "practical_benefit",
+          "noninferiority_1pp": "supported",
+          "role": "depth_diagnostic"
+        },
+        "49046:post-pre": {
+          "delta_pp": 3.9069100048243377,
+          "ci95_pp": [
+            1.7420170600259541,
+            5.8622462495853105
+          ],
+          "reading": "practical_benefit",
+          "noninferiority_1pp": "supported",
+          "role": "depth_diagnostic"
+        }
+      }
+    }
+  },
+  "dataset_primary": {
+    "epn612": {
+      "delta_pp": 1.9320594479830255,
+      "ci95_pp": [
+        1.4224522292993522,
+        2.4352972399150703
+      ],
+      "reading": "practical_benefit",
+      "noninferiority_1pp": "supported",
+      "role": "primary_dose"
+    },
+    "ninapro_db2": {
+      "delta_pp": 0.8372475131660534,
+      "ci95_pp": [
+        0.03827777798098731,
+        1.6313902637285704
+      ],
+      "reading": "below_practical_margin",
+      "noninferiority_1pp": "supported",
+      "role": "primary_dose"
+    },
+    "ninapro_db3": {
+      "delta_pp": -0.4888223783894422,
+      "ci95_pp": [
+        -1.114764066605021,
+        0.05096782736991319
+      ],
+      "reading": "inconclusive",
+      "noninferiority_1pp": "unresolved",
+      "role": "primary_dose"
+    },
+    "ninapro_db6": {
+      "delta_pp": -0.3520997522656666,
+      "ci95_pp": [
+        -2.4492946957310164,
+        1.5785331049805755
+      ],
+      "reading": "inconclusive",
+      "noninferiority_1pp": "unresolved",
+      "role": "primary_dose"
+    },
+    "uci_emg": {
+      "delta_pp": 0.771329365079354,
+      "ci95_pp": [
+        -2.13565448589847,
+        3.483128370116778
+      ],
+      "reading": "inconclusive",
+      "noninferiority_1pp": "unresolved",
+      "role": "primary_dose"
+    }
+  },
+  "dataset_cells": {
+    "epn612": {
+      "19618/pre": {
+        "balanced_accuracy_percent": 77.20169851380044,
+        "ci95_percent": [
+          75.91279193205945,
+          78.49262208067941
+        ]
+      },
+      "19618/post": {
+        "balanced_accuracy_percent": 81.74309978768576,
+        "ci95_percent": [
+          80.52855626326965,
+          83.03625265392782
+        ]
+      },
+      "19618/pool": {
+        "balanced_accuracy_percent": 82.57749469214436,
+        "ci95_percent": [
+          81.3352441613588,
+          83.8514331210191
+        ]
+      },
+      "39237/pre": {
+        "balanced_accuracy_percent": 78.9384288747346,
+        "ci95_percent": [
+          77.57324840764332,
+          80.28450106157113
+        ]
+      },
+      "39237/post": {
+        "balanced_accuracy_percent": 82.5732484076433,
+        "ci95_percent": [
+          81.29718683651804,
+          83.81109341825903
+        ]
+      },
+      "39237/pool": {
+        "balanced_accuracy_percent": 83.49256900212313,
+        "ci95_percent": [
+          82.27346072186837,
+          84.69432059447982
+        ]
+      },
+      "49046/pre": {
+        "balanced_accuracy_percent": 79.76645435244161,
+        "ci95_percent": [
+          78.48593418259023,
+          81.10196390658174
+        ]
+      },
+      "49046/post": {
+        "balanced_accuracy_percent": 83.92569002123142,
+        "ci95_percent": [
+          82.73885350318473,
+          85.08492569002122
+        ]
+      },
+      "49046/pool": {
+        "balanced_accuracy_percent": 84.50955414012739,
+        "ci95_percent": [
+          83.3078025477707,
+          85.66454352441613
+        ]
+      }
+    },
+    "ninapro_db2": {
+      "19618/pre": {
+        "balanced_accuracy_percent": 15.772871798931298,
+        "ci95_percent": [
+          13.811204855529208,
+          17.694963637035286
+        ]
+      },
+      "19618/post": {
+        "balanced_accuracy_percent": 18.44909973702396,
+        "ci95_percent": [
+          16.611273824409242,
+          20.342596335279335
+        ]
+      },
+      "19618/pool": {
+        "balanced_accuracy_percent": 18.223724514473194,
+        "ci95_percent": [
+          16.325005833034083,
+          20.166583188512806
+        ]
+      },
+      "39237/pre": {
+        "balanced_accuracy_percent": 15.689991111818486,
+        "ci95_percent": [
+          13.855753823676059,
+          17.602593491664067
+        ]
+      },
+      "39237/post": {
+        "balanced_accuracy_percent": 19.057715167061083,
+        "ci95_percent": [
+          17.014928650687253,
+          21.14554690389321
+        ]
+      },
+      "39237/pool": {
+        "balanced_accuracy_percent": 18.996048037420653,
+        "ci95_percent": [
+          16.905153102179032,
+          21.110938936350202
+        ]
+      },
+      "49046/pre": {
+        "balanced_accuracy_percent": 16.327787077003972,
+        "ci95_percent": [
+          14.409130986853787,
+          18.300855697371027
+        ]
+      },
+      "49046/post": {
+        "balanced_accuracy_percent": 19.08266984760767,
+        "ci95_percent": [
+          17.161487232693975,
+          21.0835931556274
+        ]
+      },
+      "49046/pool": {
+        "balanced_accuracy_percent": 19.06097202763925,
+        "ci95_percent": [
+          17.004989705274564,
+          21.22841091295965
+        ]
+      }
+    },
+    "ninapro_db3": {
+      "19618/pre": {
+        "balanced_accuracy_percent": 2.5236312835192014,
+        "ci95_percent": [
+          1.6041638544836134,
+          3.4513861062031275
+        ]
+      },
+      "19618/post": {
+        "balanced_accuracy_percent": 3.0752001679724397,
+        "ci95_percent": [
+          2.191988265452389,
+          4.120507384562836
+        ]
+      },
+      "19618/pool": {
+        "balanced_accuracy_percent": 3.3797019271144966,
+        "ci95_percent": [
+          2.3218270859377106,
+          4.461199714429313
+        ]
+      },
+      "39237/pre": {
+        "balanced_accuracy_percent": 2.4344510322131634,
+        "ci95_percent": [
+          2.158932885515499,
+          2.7348955679253972
+        ]
+      },
+      "39237/post": {
+        "balanced_accuracy_percent": 2.6688959663464176,
+        "ci95_percent": [
+          1.8207655472369049,
+          3.655178429604813
+        ]
+      },
+      "39237/pool": {
+        "balanced_accuracy_percent": 2.801772881632648,
+        "ci95_percent": [
+          1.842417038521661,
+          3.835126590902989
+        ]
+      },
+      "49046/pre": {
+        "balanced_accuracy_percent": 2.72561270957079,
+        "ci95_percent": [
+          2.1049621747818947,
+          3.4635122227154023
+        ]
+      },
+      "49046/post": {
+        "balanced_accuracy_percent": 2.9350599571595724,
+        "ci95_percent": [
+          2.233339272018407,
+          3.5748766060448784
+        ]
+      },
+      "49046/pool": {
+        "balanced_accuracy_percent": 2.8908795487250543,
+        "ci95_percent": [
+          2.137887160747811,
+          3.5972231764843947
+        ]
+      }
+    },
+    "ninapro_db6": {
+      "19618/pre": {
+        "balanced_accuracy_percent": 33.04355890662448,
+        "ci95_percent": [
+          30.90556843839163,
+          34.999157684393474
+        ]
+      },
+      "19618/post": {
+        "balanced_accuracy_percent": 32.58809290166641,
+        "ci95_percent": [
+          30.257268908654684,
+          35.135683356174304
+        ]
+      },
+      "19618/pool": {
+        "balanced_accuracy_percent": 33.748369099413786,
+        "ci95_percent": [
+          30.911320102152406,
+          36.756649174654044
+        ]
+      },
+      "39237/pre": {
+        "balanced_accuracy_percent": 33.91717668632761,
+        "ci95_percent": [
+          32.008131854941716,
+          36.142278922915395
+        ]
+      },
+      "39237/post": {
+        "balanced_accuracy_percent": 33.84285860256186,
+        "ci95_percent": [
+          30.99560202592626,
+          37.071520614117006
+        ]
+      },
+      "39237/pool": {
+        "balanced_accuracy_percent": 33.691847987144044,
+        "ci95_percent": [
+          31.18947580144795,
+          36.5713871350379
+        ]
+      },
+      "49046/pre": {
+        "balanced_accuracy_percent": 34.70805854067427,
+        "ci95_percent": [
+          32.328194671038304,
+          37.44448082782662
+        ]
+      },
+      "49046/post": {
+        "balanced_accuracy_percent": 33.65999372599966,
+        "ci95_percent": [
+          30.78460435178564,
+          37.057066437682614
+        ]
+      },
+      "49046/pool": {
+        "balanced_accuracy_percent": 33.39626934714811,
+        "ci95_percent": [
+          30.532598142108373,
+          36.51043835154761
+        ]
+      }
+    },
+    "uci_emg": {
+      "19618/pre": {
+        "balanced_accuracy_percent": 79.38315497139027,
+        "ci95_percent": [
+          70.74779868782322,
+          86.83217896699205
+        ]
+      },
+      "19618/post": {
+        "balanced_accuracy_percent": 80.01495826250729,
+        "ci95_percent": [
+          71.31421398594141,
+          87.68522130795819
+        ]
+      },
+      "19618/pool": {
+        "balanced_accuracy_percent": 78.45741857996761,
+        "ci95_percent": [
+          69.15843654205409,
+          86.18979873990534
+        ]
+      },
+      "39237/pre": {
+        "balanced_accuracy_percent": 78.59773895313111,
+        "ci95_percent": [
+          70.76568376291587,
+          85.36430633082374
+        ]
+      },
+      "39237/post": {
+        "balanced_accuracy_percent": 79.28383016311939,
+        "ci95_percent": [
+          69.98227593793624,
+          87.24219976260122
+        ]
+      },
+      "39237/pool": {
+        "balanced_accuracy_percent": 78.01499641879542,
+        "ci95_percent": [
+          69.70547374325076,
+          85.26790340049256
+        ]
+      },
+      "49046/pre": {
+        "balanced_accuracy_percent": 77.225057758146,
+        "ci95_percent": [
+          66.95978780078991,
+          85.16374551276022
+        ]
+      },
+      "49046/post": {
+        "balanced_accuracy_percent": 80.87964209900485,
+        "ci95_percent": [
+          72.44607665802492,
+          87.95010943191242
+        ]
+      },
+      "49046/pool": {
+        "balanced_accuracy_percent": 79.22874794504696,
+        "ci95_percent": [
+          71.0329483016983,
+          86.32112321387805
+        ]
+      }
+    }
+  },
+  "v_r1_reading": {
+    "pre:49046-19618": "small_or_inconclusive",
+    "pre:39237-19618": "small_or_inconclusive",
+    "pre:49046-39237": "small_or_inconclusive",
+    "post:49046-19618": "practical_benefit",
+    "post:39237-19618": "small_or_inconclusive",
+    "post:49046-39237": "practical_benefit",
+    "pool:49046-19618": "small_or_inconclusive",
+    "pool:39237-19618": "small_or_inconclusive",
+    "pool:49046-39237": "small_or_inconclusive",
+    "19618:post-pre": "practical_benefit",
+    "39237:post-pre": "practical_benefit",
+    "49046:post-pre": "practical_benefit"
+  },
+  "classification_reference_candidate": 19618,
+  "historical_replica": {
+    "p1": {
+      "ci95_pp": [
+        0.08984067234337215,
+        0.925892179921504
+      ],
+      "delta_pp": 0.5103711275108391,
+      "name": "T25-L_minus_B19618"
+    },
+    "p2": {
+      "ci95_pp": [
+        -1.3824376017647058,
+        1.064751579009175
+      ],
+      "delta_pp": -0.09332459098290169,
+      "name": "T25-L_minus_B19618"
+    }
+  },
+  "limitations": [
+    "single pretraining seed, fixed fitted probes and checkpoints; bootstrap over held subjects only",
+    "development datasets and many prespecified comparisons without multiplicity adjustment",
+    "P2 averages EPN314subjects and UCI19subjects with equal weight; uncertainty is not proportional to subject count",
+    "post/pre equal-width reader accessibility diagnostic; not a test of all information or a new architecture",
+    "pool baseline19618 uses pinned historical OOF; compatible numerical context with extra OpenMP runtimes is not exact context equality",
+    "39k-to49k combines additional training and scheduled decay; cannot isolate a decay-only effect"
+  ]
+}
