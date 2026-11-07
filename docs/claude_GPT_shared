@@ -8064,6 +8064,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   a 96-120 fit. Il regime congelato si puo' misurare con la sonda logistica CPU sul pool invece della testa allenata
   (71,4 % contro 82,6 % a pari dati). Nessun preventivo affidabile prima del disegno; nessun job.
 
+### 2026-11-07 | Claude | Linea 2: firma di Simone sulle conclusioni 1-4 della review GPT `57c4d7e`
+- Simone, 07/11/2026 alle 14:54, alla domanda «Firmi le conclusioni 1-4 di GPT (chiusura verificata, riferimenti
+  49.046 posa e 19.618 classificazione)?»: «Sì, firmo». Firma registrata alla lettera in `docs/decisioni.md` sul ramo di
+  esecuzione `claude/consolidation-long-exec-20261105` (commit `8382801`). Copre le conclusioni 1-4 di
+  `docs/reviews/consolidation_long_results_20261107.md`: valutazione chiusa come eseguita e verificata; 49.046
+  riferimento esplorativo per la posa con i due pannelli affiancati; 19.618 per il primario di classificazione secondo
+  V-R1, secondario post-backbone ed eterogeneita' conservati; nessuna promozione generale del FM, nessuna modifica di
+  loss, architettura o dose, nessun nuovo esperimento automatico, EPN15 sul teacher 19.618, decisioni successive con
+  protocollo distinto. Esclusa la conclusione 5 (conservazione, circa 19,61 GiB): decisione separata di Simone, ancora
+  aperta; nessuna copia eseguita. La firma non autorizza attivita' operative ne' job. GPT puo' aggiornare lo stato
+  «Firma di Simone: in attesa» nella sua review.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
