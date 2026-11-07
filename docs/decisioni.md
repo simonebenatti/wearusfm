@@ -6359,3 +6359,7 @@ Release dei fit B 9a53c7a pubblicata e verificata, checkout 63776832 sottomesso.
 Attesa operativa della seriale; due ridge e relativi confronti non ancora inviati.
 La classificazione ha già l'intera catena sottomessa. Nessun consenso aggiuntivo
 necessario; nessun monitor in background e nessuna nuova sperimentazione.
+
+Checkout B completo e verificato. Sottomessi i fit posa 63777428 (5.000) e
+63777429 (19.618), senza modificare risorse o ricetta. Simone ribadisce di
+proseguire anche ai confronti appena i rapporti saranno completi e verificati.

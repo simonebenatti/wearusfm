@@ -78,6 +78,18 @@
         "LOGSQ-probe-aggregate-p1-20261107",
         "LOGSQ-probe-aggregate-p2-20261107"
       ]
+    },
+    "LOGSQ-pose-5000-ridge-20261107": {
+      "state": "sottomesso",
+      "job": 63777428,
+      "dopo": null,
+      "code_sha": "9a53c7a65f59de683be093a4ad1ac450a473bdf2"
+    },
+    "LOGSQ-pose-19618-ridge-20261107": {
+      "state": "sottomesso",
+      "job": 63777429,
+      "dopo": null,
+      "code_sha": "9a53c7a65f59de683be093a4ad1ac450a473bdf2"
     }
   },
   "not_submitted": [],
@@ -127,8 +139,11 @@
   "checkout_B": {
     "code_sha": "9a53c7a65f59de683be093a4ad1ac450a473bdf2",
     "job": 63776832,
-    "state": "SUBMITTED",
-    "ridge_jobs_submitted": false,
-    "expected_code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-b-20261107"
+    "state": "COMPLETED 0:0",
+    "ridge_jobs_submitted": true,
+    "expected_code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-b-20261107",
+    "elapsed_seconds": 20,
+    "core_hours": 0.011111111111111112,
+    "verified_clean_readonly_sources_plans_and_preparator_reports": true
   }
 }

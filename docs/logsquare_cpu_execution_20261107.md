@@ -96,3 +96,14 @@ i rapporti ridge completi e verificati, inviare i due compare con SHA effettivi
 dei rapporti, 2 CPU / 30G / 00:30:00, sul medesimo checkout B. Tutti i report
 finali saranno letti insieme; nessun monitor in background. La classificazione
 ha già tutta la catena in coda, confronto incluso: non risottometterla.
+
+## Fit posa sottomessi
+
+Simone conferma di proseguire fino ai confronti senza un altro consenso. Checkout B
+63776832 COMPLETED 0:0 il 07/11 dalle 14:31:19 alle 14:31:39 CET, 20 s; verificati
+SHA, pulizia, sola lettura, piani, cinque sorgenti e hash dei quattro rapporti
+preparatori. Sottomessi i due fit: 5.000 → 63777428; 19.618 → 63777429.
+Risorse esatte 8 CPU, 30G, 30 min ciascuno; invii tramite ledger comune, nessun
+duplicato. I confronti restano da inviare dopo COMPLETED 0:0 dei fit e verifica
+degli hash dei rapporti e degli artefatti, sul medesimo checkout B. Nessun monitor
+in background; il seguito viene gestito nella chat corrente.
