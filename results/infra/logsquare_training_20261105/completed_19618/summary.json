@@ -1,0 +1,63 @@
+{
+  "stopped": "max_steps",
+  "steps": 19618,
+  "elapsed_s": 11311.290523767471,
+  "parameters": 28386589,
+  "device": "cuda:0",
+  "gpu_max_memory_gib": 15.828901290893555,
+  "code": {
+    "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261105",
+    "sha": "26cf367364f39778e019a53fba3529847c740b5e"
+  },
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.2.0a0+git6c8c5ad",
+    "cuda": "12.1",
+    "pip_freeze_file": null,
+    "pip_freeze_sha256": null,
+    "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"
+  },
+  "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "world_size": 4,
+  "batch_per_process": 8,
+  "prefetch": true,
+  "prefetch_audit_steps": null,
+  "accum_steps": 1,
+  "micro_batch": 8,
+  "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch",
+  "pose_panel_timing": {
+    "prepare_s": 25.12082120217383,
+    "evaluations_s": [
+      3.492032017558813,
+      3.4731808863580227,
+      3.4711841363459826,
+      3.4827596321702003,
+      3.4707271866500378,
+      3.468579277396202,
+      3.484620312228799,
+      3.474395912140608,
+      3.4844120740890503,
+      3.4743713960051537,
+      3.472481179982424,
+      3.46713325753808,
+      3.4629287980496883,
+      3.464224822819233,
+      3.4738103467971087,
+      3.4642271641641855,
+      3.4725419469177723,
+      3.4722468368709087,
+      3.4709627348929644,
+      3.4663662742823362,
+      3.470940662547946,
+      3.478290429338813,
+      3.468854308128357,
+      3.4821583051234484,
+      3.4907330125570297,
+      3.4667150788009167,
+      3.4922748673707247,
+      3.471912309527397,
+      3.4687494933605194
+    ],
+    "total_s": 125.87463586218655
+  }
+}

@@ -178,6 +178,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 07/11/2026: training LQ completo e preparazione estrazioni finali
+
+63593128 COMPLETED 0:0 alle 12:15:41 CET, 11.368 s, 19.618 passi per max_steps.
+Ricevute originali e log archiviati; hash dei checkpoint 5.000 e 19.618 ricalcolati,
+5.000 invariato. Configurazioni uguali salvo max_steps; ripresa verificata dal 5.000.
+Consuntivo incluso tentativo fallito: 17,065556 GPU-ore / 136,524444 core-ore, entro
+22 / 176. Preparati nuovi pin per tre estrazioni indipendenti, senza cambiare i
+110 sorgenti o il benchmark: posa 50 min, P1 35 min, P2 50 min, 1 GPU ciascuna.
+Piano in docs/logsquare_final_evaluation_execution_20261107.md. Letture scientifiche
+alla fine come richiesto; nessun nuovo training FM.
+
 ### GPT — 06/11/2026, 16:50–16:53 CET: stato della continuazione LQ
 
 63593128 ancora PENDING; motivo ora PartitionConfig invece di Priority. Letture
@@ -5705,6 +5716,13 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 07/11/2026: attesa di coda terminata, endpoint LQ integro
+
+Nessun errore del training o arresto per tempo: conclusione a 19.618, ricevuta
+completa e checkpoint nominato verificato. squeue non restituisce più il job perché
+è concluso; sacct riporta COMPLETED 0:0. La qualità scientifica resta da valutare
+sulle cache e sui confronti appaiati, non dalla loss stampata nel log.
 
 ### GPT — 06/11/2026: PartitionConfig è un motivo generico, causa specifica non provata
 

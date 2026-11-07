@@ -20,7 +20,7 @@
     "63593091": "PENDING Priority",
     "63593128": "PENDING Dependency"
   },
-  "status_observed_cet": "2026-11-06 16:51",
+  "status_observed_cet": "2026-11-07 13:17",
   "continuation_afterok_job": 63593091,
   "estimated_training_gpu_hours": 16.7051975581359,
   "max_training_gpu_hours": 22,
@@ -35,9 +35,11 @@
   "submitter": "common scripts/submit_job.py via byte-identical science worktree copy; common ledger",
   "latest_states": {
     "63593091": "COMPLETED 0:0",
-    "63593128": "PENDING PartitionConfig"
+    "63593128": "COMPLETED 0:0"
   },
   "phase5000_validation": "results/infra/logsquare_training_20261105/phase5000_validation.json",
   "benchmark_job": 63614514,
-  "pose5000_extraction_job": 63615952
+  "pose5000_extraction_job": 63615952,
+  "phase19618_collection": "results/infra/logsquare_training_20261105/completed_19618/collection.json",
+  "final_training_costs": "results/infra/logsquare_training_20261105/training_costs_final.json"
 }

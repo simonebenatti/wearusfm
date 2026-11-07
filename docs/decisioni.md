@@ -6316,3 +6316,13 @@ le letture scientifiche fino alla disponibilità anche dell'endpoint finale e de
 relative estrazioni. Nessun lettore CPU 5.000 sottomesso; nessun nuovo job.
 Continuazione 63593128 ancora PENDING Priority alle 20:41 CET. Cache e ricevuta
 sono complete e verificate; la decisione cambia il momento della lettura, non i criteri.
+
+### 07/11/2026 — T100-LQ completo: estrazioni finali e letture già approvate
+
+Simone chiede di procedere ai confronti. Verificato 63593128 COMPLETED 0:0 a 19.618,
+checkpoint e ricevute corretti, dose e ricetta rispettate. Training complessivo
+17,065556 GPU-ore, incluso tentativo fallito, entro 22. Si preparano le tre
+estrazioni finali sullo stesso benchmark approvato: 2,25 GPU-ore / 18 core-ore,
+più 0,333333 core-ore di checkout condiviso. Nuovo piano con il solo pin 19.618;
+nessun cambio scientifico. Letture CPU dei due endpoint dopo le nove cache,
+come già richiesto; nessun monitor in background.

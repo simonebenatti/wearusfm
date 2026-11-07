@@ -1,0 +1,31 @@
+{
+  "status": "COMPLETE",
+  "jobs": [
+    {
+      "job": 63532335,
+      "elapsed_seconds": 21,
+      "state": "FAILED before updates"
+    },
+    {
+      "job": 63593091,
+      "elapsed_seconds": 3970,
+      "state": "COMPLETED 0:0",
+      "checkpoint_step": 5000
+    },
+    {
+      "job": 63593128,
+      "elapsed_seconds": 11368,
+      "state": "COMPLETED 0:0",
+      "checkpoint_step": 19618
+    }
+  ],
+  "gpus_per_job": 4,
+  "cpus_per_job": 32,
+  "total_training_gpu_hours": 17.065555555555555,
+  "total_training_core_hours": 136.52444444444444,
+  "gpu_hours_cap": 22,
+  "core_hours_cap": 176,
+  "within_caps": true,
+  "accounting_basis": "sacct top-level job ElapsedRaw; extern of continuation lasted one second longer",
+  "other_phases_accounted_separately": true
+}

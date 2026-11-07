@@ -1,0 +1,48 @@
+{
+  "utc": "2026-11-07T12:18:39.281986Z",
+  "files": {
+    "launch.json": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_training_20261105/T100-LQ/19618/launch.json",
+      "bytes": 2779,
+      "sha256": "1afe2f98fef770c13cf831e5d4b3f1abc3bc966f9e50c0a239882dc9749ba869"
+    },
+    "config.json": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_training_20261105/T100-LQ/19618/config.json",
+      "bytes": 3669,
+      "sha256": "a90f2c907e13fb73faf535ce85cea6033e345631ccbdc0d5929780f3f8599b7b"
+    },
+    "summary.json": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_training_20261105/T100-LQ/19618/summary.json",
+      "bytes": 2351,
+      "sha256": "346015756fb7e0ef93a35ab589a56c9a9601db3d13c4ae183d517330680671db"
+    },
+    "receipt.json": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_training_20261105/T100-LQ/19618/receipt.json",
+      "bytes": 4265,
+      "sha256": "049b623a9d97304067ec583b735da709977aad42c73891fb7381a5d1e907479e"
+    },
+    "logsquare_train_63593128.out": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/logsquare_train_63593128.out",
+      "bytes": 31711,
+      "sha256": "6913ca9429c2a3f3e3df21546171417bd8097f37c4a8ca09a0e743df4e7df869"
+    }
+  },
+  "checkpoints": {
+    "checkpoint_step0005000.pt": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint_step0005000.pt",
+      "bytes": 454776554,
+      "sha256": "6233b0705e8db2caaf3c84068812053878ec2291887be88740302fe6c844b0a9"
+    },
+    "checkpoint_step0019618.pt": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/logsquare_20261105/T100-LQ/checkpoint_step0019618.pt",
+      "bytes": 454776554,
+      "sha256": "316fa96fb10a941a1e3be230e2738b19bbfb83f691dd940e4d32e089ebb2c214"
+    }
+  },
+  "stop_present": false,
+  "sacct": "63532335|FAILED|1:0|21|2026-11-05T06:35:40|2026-11-05T06:36:01|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1\n63532335.batch|FAILED|1:0|21|2026-11-05T06:35:40|2026-11-05T06:36:01|cpu=32,gres/gpu=4,mem=480G,node=1\n63532335.extern|COMPLETED|0:0|21|2026-11-05T06:35:40|2026-11-05T06:36:01|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1\n63593091|COMPLETED|0:0|3970|2026-11-05T15:31:30|2026-11-05T16:37:40|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1\n63593091.batch|COMPLETED|0:0|3970|2026-11-05T15:31:30|2026-11-05T16:37:40|cpu=32,gres/gpu=4,mem=480G,node=1\n63593091.extern|COMPLETED|0:0|3970|2026-11-05T15:31:30|2026-11-05T16:37:40|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1\n63593128|COMPLETED|0:0|11368|2026-11-07T09:06:13|2026-11-07T12:15:41|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1\n63593128.batch|COMPLETED|0:0|11368|2026-11-07T09:06:13|2026-11-07T12:15:41|cpu=32,gres/gpu=4,mem=480G,node=1\n63593128.extern|COMPLETED|0:0|11369|2026-11-07T09:06:13|2026-11-07T12:15:42|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1\n",
+  "new_paths": {
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-extract-19618-20261107": false,
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/logsquare_evaluation_20261107/19618": false
+  }
+}
