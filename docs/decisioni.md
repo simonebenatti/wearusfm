@@ -6800,3 +6800,36 @@ Consuntivo della linea 2 aggiornato: 108 allocazioni, 176,832 core-ore, 3,374 GP
 conserva le date originali; i piani congelati continuano a nominare i percorsi su SCRATCH, che restano soggetti alla
 cancellazione a 40 giorni (dal 15/12 circa) e ai rinfreschi. Resta aperta la decisione di Simone sulle dipendenze fuori
 LONG_ROOT (T100-G 19.618 su SCRATCH, 26 file, 23 MB).
+
+### 07/11/2026 — Valutazione lunga: conservazione su `$WORK` anche della dipendenza T100-G 19.618 («Sì, aggiungila»); preventivo del secondo job di copia
+
+Simone, 07/11/2026 (risposta ricevuta fra le 15:55 e le 16:31), alla domanda di Claude «Aggiungo alla copia anche la
+dipendenza T100-G su SCRATCH (26 file, 23 MB)?»: «Sì, aggiungila». E' la dipendenza fuori LONG_ROOT indicata da GPT nella
+nota di conservazione (`57c4d7e`): OOF, report, audit e cache storici T100-G 19.618 riusati dalla valutazione lunga senza
+refit (i report `p1.json` e `p2.json` sono citati dal piano della sintesi).
+
+Perimetro: la cartella `/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G`
+(letture del 07/11 alle 16:31: 26 file, 6 cartelle, nessun link, 23.981.927 byte; file dal 04/11 10:43 al 04/11 15:28,
+quindi scadenza a 40 giorni dal 14/12 circa), copiata in
+`/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G` (cartella madre assente alle
+16:31, creata dal job) conservando modi e date; manifest e ricevuta nella stessa `storage_preserve_20261107/`. Sola copia,
+originale intatto; i piani continuano a nominare i percorsi su SCRATCH. Le altre dipendenze citate dalle prove (dataset
+processati su SCRATCH, coperti dai rinfreschi; checkpoint e ricevute gia' su `$WORK`) restano fuori.
+
+Strumento: `scripts/slurm/preserve_long_to_work.sbatch` esteso con `PRESERVE_SET` (`long-root` predefinito, gia' eseguito;
+`t100g-19618` nuovo), commit `29dd8eb` sul ramo comune. Collaudo del 07/11 alle 16:31 in cartella finta su SCRATCH: 32
+controlli superati (i casi del primo collaudo ripetuti sul nuovo elenco; elenco non valido rifiutato; elenco predefinito
+ancora funzionante; con l'elenco nuovo la voce LONG_ROOT non viene toccata; log
+`~/wearusfm_local/logs/preserve_t100g_sandbox_test_20261107.txt`). Prova a secco sui percorsi veri: uscita 0, nessuna
+scrittura; quota di progetto 18.757.796 kB liberi, servono 23.420, dopo la copia 18.734.376 kB = 17,87 GiB, sopra la
+soglia C-1.
+
+Criteri di esito, fissati prima del lancio: elenco, dimensioni, albero e sha256 identici fra originale e copia; 26 file e
+23.981.927 byte; ricevuta scritta; `COMPLETED 0:0`; originale invariato. Verifica dal Mac dei manifest contro la ricevuta
+e dell'originale contro la copia (GPT non ha pubblicato un inventario di questa cartella). Un controllo fallito lascia la
+copia per l'ispezione, esce con 1 e richiede una nuova decisione.
+
+Preventivo: job `LONG-PRESERVE-WORK-T100G-20261107`, campagna `consolidation_long_20261105`, `lrd_all_serial`, 1 CPU, 1 GB,
+limite 10 minuti: al massimo 0,17 core-ore (0,33 se sacct conta 2 CPU), 0 GPU-ore, a carico della linea 2. Corsia seriale
+vuota alle 16:31. Autorizzazione: la risposta di Simone alla domanda che descriveva la copia; costo sotto i 5 GPU-ore
+(28/10). Esito in una voce successiva.
