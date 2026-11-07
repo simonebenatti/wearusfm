@@ -6803,4 +6803,7 @@ estensione scientifica, nuovi training, retry o pollingAI.
   checkout del codice, estrazioni, lettori a tranche, budget, fit, aggregati, ingressi, confronto, raccolta) con i cancelli del
   piano §5-§9, i tetti del freeze v2 (estrazioni 7 GPU-ore + 0,15; letture 345,17 core-ore CPU su 350) e stop al primo cancello
   fallito, TIMEOUT o sforamento, senza retry. Training ancora `PENDING` (Priority) alle 14:50 del 07/11; nessun job dello
-  stadio B inviato. Suite completa `tests/cpu` su `40797b1` in corso: esito in una voce successiva.
+  stadio B inviato.
+- Suite completa `tests/cpu` sul worktree a `40797b1`, finita alle 15:08 del 07/11: 3461 passati, 1 avviso preesistente
+  (`test_pose_objective.py`), 39 min 50 s. Il giro precedente (3458) era partito alle 20:41 del 06/11, prima della chiusura
+  del pacchetto. Log: `~/wearusfm_local/logs/stageB_full_suite_2.log`.
