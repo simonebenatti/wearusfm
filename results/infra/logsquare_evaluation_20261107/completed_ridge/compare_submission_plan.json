@@ -1,0 +1,79 @@
+{
+  "code_sha": "9a53c7a65f59de683be093a4ad1ac450a473bdf2",
+  "gpu_hours_cap": 0,
+  "core_hours_cap": 2,
+  "jobs": [
+    {
+      "id": "LOGSQ-pose-5000-compare-20261107",
+      "candidate_report": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/ridge/report.json",
+        "sha256": "5ed2e16a6f152ed92b7e7be03bcb61b08ecd393330ef9ff0abfeb6c3d0f4eb10",
+        "bytes": 70372
+      },
+      "argv": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--id",
+        "LOGSQ-pose-5000-compare-20261107",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "logsquare-cpu-b-20261107",
+        "--gpu-ore",
+        "0",
+        "--",
+        "--nodes=1",
+        "--ntasks=1",
+        "--cpus-per-task=2",
+        "--mem=30G",
+        "--time=00:30:00",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-b-20261107,EXPECTED_SHA=9a53c7a65f59de683be093a4ad1ac450a473bdf2",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-b-20261107/scripts/slurm/logsquare_pose_readout.sbatch",
+        "results/infra/logsquare_evaluation_20261107/cpu_fit_release/pose_readout_plan_5000.json",
+        "compare",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/compare",
+        "ce86036be16aa3396d904ed97c6a545ce0da0a24a7009e73df99fc35144da9d1",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/ridge/report.json",
+        "5ed2e16a6f152ed92b7e7be03bcb61b08ecd393330ef9ff0abfeb6c3d0f4eb10"
+      ],
+      "command": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python '/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py' --id LOGSQ-pose-5000-compare-20261107 --agente gpt --campagna logsquare-cpu-b-20261107 --gpu-ore 0 -- --nodes=1 --ntasks=1 --cpus-per-task=2 --mem=30G --time=00:30:00 --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-b-20261107,EXPECTED_SHA=9a53c7a65f59de683be093a4ad1ac450a473bdf2 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-b-20261107/scripts/slurm/logsquare_pose_readout.sbatch results/infra/logsquare_evaluation_20261107/cpu_fit_release/pose_readout_plan_5000.json compare /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/compare ce86036be16aa3396d904ed97c6a545ce0da0a24a7009e73df99fc35144da9d1 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/5000/ridge/report.json 5ed2e16a6f152ed92b7e7be03bcb61b08ecd393330ef9ff0abfeb6c3d0f4eb10",
+      "dependency_note": "No pending dependency: ridge already COMPLETED 0:0, report and output hashes verified before submission; avoids dependency on SLURM records purged after completion."
+    },
+    {
+      "id": "LOGSQ-pose-19618-compare-20261107",
+      "candidate_report": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/ridge/report.json",
+        "sha256": "2c2c59242e88973eac4bca20a7494bd8873ecc6342f88194d4d49ccc3ea7751d",
+        "bytes": 70248
+      },
+      "argv": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--id",
+        "LOGSQ-pose-19618-compare-20261107",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "logsquare-cpu-b-20261107",
+        "--gpu-ore",
+        "0",
+        "--",
+        "--nodes=1",
+        "--ntasks=1",
+        "--cpus-per-task=2",
+        "--mem=30G",
+        "--time=00:30:00",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-b-20261107,EXPECTED_SHA=9a53c7a65f59de683be093a4ad1ac450a473bdf2",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-b-20261107/scripts/slurm/logsquare_pose_readout.sbatch",
+        "results/infra/logsquare_evaluation_20261107/cpu_fit_release/pose_readout_plan_19618.json",
+        "compare",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/compare",
+        "4b9afef400c7c18122e34aeed5a94478f5cb90ffada7895b5d331ed93c9f6919",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/ridge/report.json",
+        "2c2c59242e88973eac4bca20a7494bd8873ecc6342f88194d4d49ccc3ea7751d"
+      ],
+      "command": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python '/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py' --id LOGSQ-pose-19618-compare-20261107 --agente gpt --campagna logsquare-cpu-b-20261107 --gpu-ore 0 -- --nodes=1 --ntasks=1 --cpus-per-task=2 --mem=30G --time=00:30:00 --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-b-20261107,EXPECTED_SHA=9a53c7a65f59de683be093a4ad1ac450a473bdf2 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-cpu-b-20261107/scripts/slurm/logsquare_pose_readout.sbatch results/infra/logsquare_evaluation_20261107/cpu_fit_release/pose_readout_plan_19618.json compare /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/compare 4b9afef400c7c18122e34aeed5a94478f5cb90ffada7895b5d331ed93c9f6919 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/logsquare_cpu_20261107/pose/19618/ridge/report.json 2c2c59242e88973eac4bca20a7494bd8873ecc6342f88194d4d49ccc3ea7751d",
+      "dependency_note": "No pending dependency: ridge already COMPLETED 0:0, report and output hashes verified before submission; avoids dependency on SLURM records purged after completion."
+    }
+  ]
+}

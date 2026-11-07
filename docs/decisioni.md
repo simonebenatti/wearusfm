@@ -6363,3 +6363,10 @@ necessario; nessun monitor in background e nessuna nuova sperimentazione.
 Checkout B completo e verificato. Sottomessi i fit posa 63777428 (5.000) e
 63777429 (19.618), senza modificare risorse o ricetta. Simone ribadisce di
 proseguire anche ai confronti appena i rapporti saranno completi e verificati.
+
+### 07/11/2026 — Verifica puntuale e ultimi invii posa
+
+Su richiesta di Simone si controlla una volta, si inviano i confronti pronti e
+poi ci si ferma. Entrambi i fit sono COMPLETED 0:0 (55 e 61 s), con report e
+artefatti verificati. Due confronti da 2 CPU / 30G / 30 min, già nel piano;
+nessun nuovo training o estensione a 49k in questa consegna.

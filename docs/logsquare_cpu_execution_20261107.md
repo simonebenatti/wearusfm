@@ -107,3 +107,21 @@ Risorse esatte 8 CPU, 30G, 30 min ciascuno; invii tramite ledger comune, nessun
 duplicato. I confronti restano da inviare dopo COMPLETED 0:0 dei fit e verifica
 degli hash dei rapporti e degli artefatti, sul medesimo checkout B. Nessun monitor
 in background; il seguito viene gestito nella chat corrente.
+
+## Fit completi: preparazione degli ultimi due confronti
+
+Verifica puntuale richiesta da Simone, senza monitor successivo. Entrambi i fit
+COMPLETED 0:0: 63777428 in 55 s, 63777429 in 61 s, 8 CPU / 30G / zero GPU.
+Ricalcolati gli hash dei rapporti, dei coefficienti e delle predizioni remote;
+ricetta, dose, pin delle cache, sorgenti, contesto numerico e release dei fit
+coincidono con i piani B. Originali e verifiche in completed_ridge. Tutti gli
+otto job della classificazione sono anch'essi COMPLETED 0:0; nessuna lettura
+scientifica aggiunta a questo controllo operativo.
+
+I due confronti sono gli ultimi invii previsti: 2 CPU / 30G / 30 min ciascuno,
+zero GPU, 2 core-ore massime già comprese nel tetto di 51. Piano concreto con
+percorsi e hash in completed_ridge/compare_submission_plan.json. Si riusa il
+checkout B 9a53c7a. Nessuna dipendenza pendente viene aggiunta: i fit sono già
+conclusi e verificati e le loro vecchie voci possono essere eliminate dalla
+tabella attiva SLURM. Rimangono obbligatori i pin reali e tutti i controlli runtime.
+Dopo gli invii si interrompono i controlli, come richiesto da Simone.

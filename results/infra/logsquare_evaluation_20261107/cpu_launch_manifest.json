@@ -83,13 +83,21 @@
       "state": "sottomesso",
       "job": 63777428,
       "dopo": null,
-      "code_sha": "9a53c7a65f59de683be093a4ad1ac450a473bdf2"
+      "code_sha": "9a53c7a65f59de683be093a4ad1ac450a473bdf2",
+      "slurm_state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 55,
+      "core_hours": 0.12222222222222222
     },
     "LOGSQ-pose-19618-ridge-20261107": {
       "state": "sottomesso",
       "job": 63777429,
       "dopo": null,
-      "code_sha": "9a53c7a65f59de683be093a4ad1ac450a473bdf2"
+      "code_sha": "9a53c7a65f59de683be093a4ad1ac450a473bdf2",
+      "slurm_state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 61,
+      "core_hours": 0.13555555555555557
     }
   },
   "not_submitted": [],
@@ -145,5 +153,10 @@
     "elapsed_seconds": 20,
     "core_hours": 0.011111111111111112,
     "verified_clean_readonly_sources_plans_and_preparator_reports": true
-  }
+  },
+  "all_classification_jobs_completed_0_0_observed_20261107": true,
+  "remaining_compare_jobs": [
+    "LOGSQ-pose-5000-compare-20261107",
+    "LOGSQ-pose-19618-compare-20261107"
+  ]
 }
