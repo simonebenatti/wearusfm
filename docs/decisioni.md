@@ -6332,3 +6332,9 @@ sullo SHA congelato c196323 dopo checkout 63772400 verificato. Nessun duplicato.
 Il controllo preventivo del launcher CPU posa individua una questione di ordine
 nell'attivazione dell'interprete: si corregge e verifica separatamente prima dei
 lettori, senza modificare i job o la ricetta scientifica.
+
+Launcher CPU posa corretto prima del primo invio: attivazione del venv prima del
+guard Python, 43 test e review indipendente favorevole. Nessuna modifica ai
+sorgenti numerici o alle estrazioni attive. Handoff CPU: 16 job più due checkout
+condivisi, 51 core-ore totali, zero GPU; i pin effettivi si pubblicheranno dopo le
+nove cache complete. Ricevuta originale posa 5.000 archiviata e verificata.

@@ -1,0 +1,29 @@
+{
+  "status": "READY_PENDING_FINAL_CACHES",
+  "review": "APPROVED by independent lq_benchmark_readiness",
+  "launcher": "scripts/slurm/logsquare_pose_readout.sbatch",
+  "launcher_sha256": "53aab96b4603f7b5107ee316d46ca18cf65c3cb760bdd6b71ac9fa71164619fd",
+  "previous_launcher_sha256": "9eaef784402935b6d49292207cdef9dee91378af8cb0e6d712bd74dfa20092d6",
+  "test_file": "tests/cpu/test_logsquare_pose_readout.py",
+  "test_sha256": "ec9fe216e3154f9ce5d48deab89710b5bdbf8b9406a40821da9cac901e223e7c",
+  "test_results": {
+    "implementation_passed": 43,
+    "implementation_seconds": 3.17,
+    "independent_passed": 43,
+    "independent_seconds": 3.65,
+    "previous_launcher_regression_exit_code": 73,
+    "fixed_launcher_regression_exit_code": 0,
+    "bash_syntax_passed": true
+  },
+  "unchanged_scientific_source_counts": {
+    "inference_extraction": 110,
+    "pose5000": 5,
+    "pose19618": 5
+  },
+  "scientific_cpu_jobs": 16,
+  "shared_checkout_jobs": 2,
+  "gpu_hours_cap": 0,
+  "cpu_core_hours_cap_including_checkout": 51,
+  "jobs_submitted": false,
+  "no_change_to_scientific_recipe": true
+}

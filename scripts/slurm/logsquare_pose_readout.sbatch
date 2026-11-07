@@ -56,6 +56,10 @@ if [ "$SECS" -ne "$SECONDS_CAP" ]; then
 fi
 source "$CODE_DIR/scripts/slurm/lib_code_dir.sh"
 code_dir_setup
+module purge
+module load profile/deeplrn
+module load cineca-ai/4.3.0
+source "$WORK/venv_wearusfm/bin/activate"
 python3 - "$CODE_DIR" "$PLAN_REL" "$OUT" "$WORK" "$PLAN_SHA" <<'PY'
 from pathlib import Path
 import hashlib
@@ -74,10 +78,6 @@ if not out_arg.is_absolute() or out_arg != out or out_arg.exists() or out_arg.is
 if any(out.is_relative_to(root) for root in (code, work / 'wearusfm', work / 'wearusfm_campaigns')):
     raise SystemExit('output inside code')
 PY
-module purge
-module load profile/deeplrn
-module load cineca-ai/4.3.0
-source "$WORK/venv_wearusfm/bin/activate"
 export OMP_NUM_THREADS="$CPUS" OPENBLAS_NUM_THREADS="$CPUS" MKL_NUM_THREADS="$CPUS"
 export PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES=""
 python3 scripts/logsquare_pose_readout.py "$STAGE" --plan "$CODE_DIR/$PLAN_REL" \

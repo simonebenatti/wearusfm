@@ -178,6 +178,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 07/11/2026: launcher CPU posa corretto e seguito pronto
+
+Spostate soltanto quattro righe di attivazione moduli/venv prima del guard Python.
+Regressione funzionale: launcher vecchio exit 73, nuovo corretto; 43 test passati
+anche nella verifica indipendente, bash -n corretto. Review del critico APPROVATA.
+110 sorgenti estrazione e cinque sorgenti numerici per piano posa invariati.
+Handoff pubblicato: 16 job CPU più due checkout condivisi, tetto 51 core-ore,
+zero GPU. Si completano i pin dopo le nove cache; nessun job CPU ancora inviato.
+Ricevuta originale completa della posa 5.000 archiviata ora senza perdita e
+verificata contro lo SHA remoto già registrato; prima era presente il riepilogo.
+
 ### GPT — 07/11/2026, 13:28 CET: tre estrazioni finali LQ in esecuzione
 
 Consegna c196323 pubblicata e verificata, checkout 63772400 completato in 24 s,
@@ -5724,6 +5735,13 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 07/11/2026: ordine dell'interprete CPU corretto prima del primo invio
+
+Guard di percorso precedente all'attivazione del venv: difetto riprodotto con
+interprete iniziale incompatibile e corretto. Non cambia la matematica, non richiede
+nuovo benchmark GPU e non modifica i tre job in corso. La catena CPU resta in attesa
+delle cache complete, con gate e tetti congelati; nessun nuovo consenso necessario.
 
 ### GPT — 07/11/2026: invii finali corretti; controllo preventivo dei launcher CPU
 

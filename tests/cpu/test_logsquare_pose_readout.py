@@ -1,7 +1,9 @@
 """Oracles for candidate-only ridge, provenance and four-cell paired bootstrap."""
 import copy
 import json
+import os
 from pathlib import Path
+import shlex
 import subprocess
 import re
 import sys
@@ -205,6 +207,69 @@ def test_launcher_syntax_and_no_submission():
     assert '--expected-plan-sha256 "$PLAN_SHA"' in text
     assert '"$SECS" -ne "$SECONDS_CAP"' in text
     assert 'CUDA_VISIBLE_DEVICES=""' in text
+
+
+def test_launcher_activates_python_before_path_guard(tmp_path):
+    """Run the real shell and path guard; the initial Python cannot run it."""
+    # compare also works on macOS Bash 3, whose nounset rejects empty arrays.
+    stage, cpus, walltime = "compare", 2, "00:30:00"
+    work = tmp_path.resolve() / "work"
+    code = work / "wearusfm_campaigns" / "frozen"
+    (code / "scripts/slurm").mkdir(parents=True)
+    (code / "scripts/slurm/lib_code_dir.sh").write_text(
+        'code_dir_setup() { cd "$CODE_DIR"; }\n'
+    )
+    plan_path = code / "plan.json"
+    plan_path.write_text("{}\n")
+    plan_sha = L.Q.D.file_sha256(plan_path)
+    initial_bin = work / "initial-bin"
+    active_bin = work / "venv_wearusfm/bin"
+    initial_bin.mkdir()
+    active_bin.mkdir(parents=True)
+    trace = work / "trace"
+
+    def executable(path, body):
+        path.write_text("#!/bin/bash\nset -eu\n" + body)
+        path.chmod(0o755)
+
+    executable(initial_bin / "scontrol", f"printf 'TimeLimit={walltime}\\n'\n")
+    executable(initial_bin / "module", 'printf "module %s\\n" "$*" >> "$TEST_TRACE"\n')
+    executable(initial_bin / "python3", "echo 'legacy Python reached before activation' >&2\nexit 73\n")
+    (active_bin / "activate").write_text(
+        'export PATH="$WORK/venv_wearusfm/bin:$PATH"\n'
+        'printf "activate\\n" >> "$TEST_TRACE"\n'
+    )
+    executable(active_bin / "python3", (
+        'if [ "$1" = - ]; then\n'
+        '  printf "guard\\n" >> "$TEST_TRACE"\n'
+        f'  exec {shlex.quote(sys.executable)} "$@"\n'
+        'fi\n'
+        '[ "$1" = scripts/logsquare_pose_readout.py ]\n'
+        '[ "$2" = "$TEST_STAGE" ]\n'
+        '[ "$OMP_NUM_THREADS" = "$SLURM_CPUS_PER_TASK" ]\n'
+        '[ "$OPENBLAS_NUM_THREADS" = "$SLURM_CPUS_PER_TASK" ]\n'
+        '[ "$MKL_NUM_THREADS" = "$SLURM_CPUS_PER_TASK" ]\n'
+        '[ "$PYTHONDONTWRITEBYTECODE" = 1 ]\n'
+        '[ "${CUDA_VISIBLE_DEVICES-unset}" = "" ]\n'
+        'printf "readout\\n" >> "$TEST_TRACE"\n'
+    ))
+    env = {**os.environ, "WORK": str(work), "CODE_DIR": str(code),
+           "EXPECTED_SHA": "a" * 40, "SLURM_JOB_ID": "123",
+           "SLURM_JOB_NUM_NODES": "1", "SLURM_NTASKS": "1",
+           "SLURM_CPUS_PER_TASK": str(cpus), "SLURM_MEM_PER_NODE": "30720",
+           "PATH": str(initial_bin) + os.pathsep + os.environ["PATH"],
+           "TEST_TRACE": str(trace), "TEST_STAGE": stage}
+    env.pop("BASH_ENV", None)
+    args = ["bash", str(ROOT / "scripts/slurm/logsquare_pose_readout.sbatch"),
+            "plan.json", stage, str(work / "new-output"), plan_sha]
+    if stage == "compare":
+        args.extend([str(work / "candidate.json"), "b" * 64])
+    result = subprocess.run(args, env=env, capture_output=True, text=True, timeout=10)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert trace.read_text().splitlines() == [
+        "module purge", "module load profile/deeplrn", "module load cineca-ai/4.3.0",
+        "activate", "guard", "readout",
+    ]
 
 
 def lq_artifact(tmp_path):
