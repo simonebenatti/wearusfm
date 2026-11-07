@@ -7960,6 +7960,44 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   (linea 3) non e' piu' in coda; nessuna azione su di essi. Dopo i confronti: raccolta delle due ricevute,
   `pin_phase.py summary`, wrapper e `LONG-SUMMARY-20261105` come nella sezione 5 del prontuario, consuntivo finale.
 
+### 2026-11-07 | Claude | Linea 2: valutazione lunga A1 eseguita per intero (107 allocazioni `COMPLETED 0:0`), sintesi materializzata, consuntivo 176,745 core-ore e 3,374 GPU-ore
+- Confronti: `63766028` LONG-COMPARE-classification-20261105 (12:27:00-12:28:05, 00:01:05 su 01:00:00) e `63766065`
+  LONG-COMPARE-pose-20261105 (12:28:18-12:28:59, 00:00:41 su 01:00:00), entrambi `COMPLETED 0:0`, uno alla volta in
+  corsia. Ricevute e log raccolti con confronto di sha256 e byte (`execution/receipts/LONG-COMPARE-*.json`:
+  classificazione `22ebbc98…` 7.497 byte, posa `926bc853…` 157.885 byte; audit `receipts_aggregate.json` e
+  `logs_aggregate.json`). Dei report ho letto solo provenienza e struttura: code_sha `d751063`, plan_sha256
+  `a5f7a363…`, `complete` vero; classificazione con 12 contrasti (post-pre alle tre dosi; 39.237-19.618, 49.046-19.618 e
+  49.046-39.237 per pre, post e pool) e contesto della replica storica (P1, P2, delta per dataset, uso descrittivo);
+  posa con 9 celle (3 dosi x 3 lettori), 12 contrasti, bootstrap E2 e gruppi all/dynamic/static. Nessun punteggio letto
+  ne' riportato.
+- Sintesi: `pin_phase.py summary` fissa i due report finali in `execution/summary_plan.json` (53.847 byte, sha256
+  `f7728778…`); il wrapper `execution/summary_materialize.sbatch` (sezione 5 del prontuario, `bash -n` ok) materializza
+  quel piano sotto `LONG_ROOT/manifests/` e invoca il launcher del checkout aggregate con `--expected-code d751063`.
+  Commit «Pin final long reports and immutable external summary plan» `d91bb33` (tre controlli e 342 test; SHA remoto
+  verificato). Letture delle 12:38: `$WORK` 38,62 GiB liberi, scratch scrivibile, `summary/` e `manifests/` assenti,
+  seriale vuota. `LONG-SUMMARY-20261105` job `63767351` (12:38:17; 2 CPU / 2 GiB / 00:10:00; wrapper su `--script-stdin`,
+  `--output` in `wearusfm_runs/logs`), `COMPLETED 0:0` (12:38:43-12:39:02, 19 s). Ricevuta
+  `execution/receipts/LONG-SUMMARY-20261105.json` (`b0cfa0eb…`, 2.848.018 byte: kind `summary`, code_sha `d751063`,
+  plan_sha256 `f7728778…` = il piano esterno, input = i due report finali con gli stessi pin, replica storica
+  `t25_b_repeatability_20261104/paired_report.json` `26886cd3…`); log del job regolare. Commit documentale `aad4386`
+  (ID SLURM della sintesi nel `launch_plan.json`, stato di sottomissione, log d'invio, ricevuta, log e sacct dell'intera
+  fase aggregate: 4 righe, 0,261 core-ore): `aad43869d78dd52525d257f0ce406e1567423db9` sul ramo di esecuzione
+  `claude/consolidation-long-exec-20261105`, albero pulito, nessun file di dati.
+- Consuntivo della catena (sacct -X, una riga per allocazione, ElapsedRaw x AllocCPUS / 3600 e x GPU allocate / 3600):
+  extract 13 righe, 27,002 core-ore e 3,374 GPU-ore; benchmark 17 righe, 15,217 core-ore; fit 73 righe, 134,265;
+  aggregate 4 righe, 0,261. **Totale 107 allocazioni (103 job + 4 checkout), tutte `COMPLETED 0:0` senza riavvii:
+  176,745 core-ore e 3,374 GPU-ore**, contro i tetti A1 di 1.711,67 core-ore e 9 GPU-ore approvati da Simone il 06/11
+  alle 16:49 («Sì, approvo»). Un solo tentativo per ID nel ledger comune; nessun TIMEOUT, OOM o rilancio in tutta la
+  catena. Lettura del critico sulla consegna operativa (subagent, dopo `aad4386`): i sette criteri (launch_plan,
+  contabilita', ricevute e log con sha256 ricalcolati, catena dei pin, controlli riproducibili e 342 test, igiene del
+  ramo, registro) soddisfatti nei contenuti; esito «DA RIVEDERE» per due note: bloccante, al momento della lettura il
+  registro non aveva ancora la voce sulla sintesi (`d91bb33`, `aad4386`), ed e' questa; minore, il consuntivo
+  complessivo non stava in nessun file del repo: aggiunto in `docs/decisioni.md` sul ramo di esecuzione, commit
+  `c109bfe` (HEAD). La lettura scientifica dei report (sezione 5 del prontuario: pannelli previsti, due primari di
+  posa affiancati, IC appaiati, replica storica descrittiva) spetta a GPT consolidamento, che verifica dopo senza
+  operare sui job; nessun verdetto pubblicato da me. Fuori linea 2: `63696864` SCALING-300M-train19618 (linea 1)
+  ancora in coda; nessuna azione su di esso.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
