@@ -7914,6 +7914,52 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   dell'aggregato e quarto checkout. Il certificato ssh scade alle 12:32:13: i passaggi che non rientrano si fermano e
   riprendono dopo il rinnovo, senza letture ne' invii nel frattempo.
 
+### 2026-11-07 | Claude | Linea 2: fase fit A1 conclusa (72 fit su 72), fase aggregate rilasciata (`d751063`), quarto checkout verificato, due confronti inviati
+- Ondata 24 (i sette fit di UCI), tutti `COMPLETED 0:0` fra le 11:50 e le 11:53, 13-25 secondi ciascuno (8 CPU x 1:58 =
+  0,26 core-ore): `63762237` G39237-pre, `63762239` G49046-pre, `63762242` G19618-post, `63762272` G39237-post, `63762284`
+  G49046-post, `63762294` G39237-pool, `63762307` G49046-pool (tutti `-uci_emg-F0123-20261105-A1`). **Fase fit conclusa:
+  72 fit su 72 `COMPLETED 0:0`, un solo tentativo per ID** (ledger: 72 ID, una riga `sottomesso` ciascuno; sacct archiviato
+  in `execution/accounting/sacct_fit.tsv`: 73 righe col checkout, tutte `COMPLETED 0:0`, 134,265 core-ore allocate,
+  0 GPU-ore; somma delle ondate 134,27). Raccolta sul Mac: 72 ricevute in `execution/receipts/` (sha256 e byte uguali ai
+  remoti, audit `execution/audit/receipts_fit.json`) e 73 log SLURM in `execution/logs/` (audit `logs_fit.json`).
+  Incidenti operativi: Simone ha fermato lo strumento verso le 11:58, durante la prima raccolta (69 ricevute copiate,
+  nessun file parziale lasciato); raccolta ripetuta alle 12:02; la copia dei log si e' fermata per timeout di `scp` su una
+  connessione ssh multiplexata rimasta appesa dopo il rinnovo del certificato, ripetuta alle 12:12; gli strumenti
+  confrontano sha256 e byte prima di usare una copia e non sovrascrivono copie diverse. Certificato ssh rinnovato da
+  Simone alle 12:09:33 («Rinnovo il certificato» verso le 12:00, «rinnovato» verso le 12:11), valido fino alle 00:09:33
+  dell'08/11. Nessun punteggio letto.
+- Pin e rilascio dell'aggregato: `amendment_a1/pin_phase.py aggregate` (69 report di classificazione, uno per shard
+  registrato, con record dell'emendamento e gate superato; 3 di posa con held aperto dopo le due ridge) scrive
+  `execution/manifests/classification_fit_manifest.json` (sha256 `ae6a7090…`, 20.087 byte) e `pose_fit_manifest.json`
+  (`3c3bfb3a…`, 922 byte) e fissa i pin nel piano. Controlli: `build_inputs --check`, `apply_to_plans --check`,
+  `pin_phase aggregate --dry-run` OK, `git diff --check`, 342 test superati. Commit di fase «Release amended long
+  aggregate phase (A1)» `d75106304d1592fbea6d81fc4c1220e669cffecf` sul ramo `claude/consolidation-long-exec-20261105`,
+  SHA remoto verificato: e' il `LONG_PHASE_SHA` dell'aggregato.
+- Deployment e quarto checkout: ref `refs/heads/deploy/consolidation-long-aggregate-20261105` = `d751063` su leonardo
+  (prima assente; i tre ref precedenti invariati), letture delle 12:18: `$WORK` 38,72 GiB liberi (soglia 10,724),
+  scratch scrivibile, `comparison/` e `summary/` assenti sotto la radice delle uscite, seriale vuota. Checkout
+  `LONG-checkout-aggregate-20261105`, job `63765702` (12:21:26, `campaign_checkout.sbatch` su stdin, sha256 `eaafc432…`
+  uguale a quello della fase fit; `COMPLETED 0:0` in 27 s, 2 CPU contabilizzate = 0,015 core-ore). Verifica in sola
+  lettura (`execution/audit/checkout_verify_aggregate_20261107.log`): HEAD = `d751063`, 2.367 file, 0 righe di stato,
+  0 voci scrivibili, 17 file chiave con sha256 uguali alle copie locali del commit, checkout precedenti e `main` canonico
+  intatti. Controllo del contesto nel checkout dal nodo di login con l'ambiente dei job
+  (`execution/audit/context_check_aggregate_20261107.log`, 46 s, nessun file creato): `load_context` sul piano pinnato,
+  i 69 report di classificazione con artefatti pinnati e provenienza uguale allo shard registrato, un solo contesto
+  numerico, 15 celle di cache, i due insiemi di report storici, i 3 report di posa con 9 celle e artefatti pinnati; le
+  uscite dei confronti non esistono. E' il controllo in sola lettura chiesto dalla sezione 6 dell'emendamento per gli
+  stadi che creano la directory di uscita prima dei controlli d'identita'.
+- Invii: letture delle 12:26 (`$WORK` 38,62 GiB liberi, scratch scrivibile, uscite assenti, seriale vuota); righe generate
+  dalla matrice (`gen_submit_lines.py aggregate d751063`) e inviate col submitter comune (`--agente claude`, ledger
+  `prenotato` -> `sottomesso`): `LONG-COMPARE-classification-20261105` job `63766028` (12:26:50) e `LONG-COMPARE-pose-20261105`
+  job `63766065` (12:26:58), 8 CPU / 30 GiB / 01:00:00 ciascuno (al massimo 16 core-ore), checkout congelato
+  `consolidation-long-aggregate-20261105`. Sorvegliante in sola lettura ogni 3 minuti. Commit documentale `b81d0c2`
+  (code_sha dell'aggregato e ID SLURM nel `launch_plan.json`, stati di sottomissione del checkout e dei due job, log di
+  audit; i tre controlli e i 342 test rifatti). Consuntivo della catena finora, da sacct: extract 27,00 core-ore e
+  3,374 GPU-ore, benchmark 15,22, fit 134,27, checkout dell'aggregato 0,02: 176,50 core-ore e 3,374 GPU-ore (tetti A1:
+  1.711,67 core-ore e 9 GPU-ore). Fuori linea 2: `63696864` SCALING-300M-train19618 (linea 1) ancora in coda; `63593128`
+  (linea 3) non e' piu' in coda; nessuna azione su di essi. Dopo i confronti: raccolta delle due ricevute,
+  `pin_phase.py summary`, wrapper e `LONG-SUMMARY-20261105` come nella sezione 5 del prontuario, consuntivo finale.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
