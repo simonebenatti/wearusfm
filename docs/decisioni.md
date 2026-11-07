@@ -6833,3 +6833,24 @@ Preventivo: job `LONG-PRESERVE-WORK-T100G-20261107`, campagna `consolidation_lon
 limite 10 minuti: al massimo 0,17 core-ore (0,33 se sacct conta 2 CPU), 0 GPU-ore, a carico della linea 2. Corsia seriale
 vuota alle 16:31. Autorizzazione: la risposta di Simone alla domanda che descriveva la copia; costo sotto i 5 GPU-ore
 (28/10). Esito in una voce successiva.
+
+### 07/11/2026 — Valutazione lunga: copia della dipendenza T100-G 19.618 su `$WORK` eseguita e verificata (job 63785874, `COMPLETED 0:0`); consuntivo e chiusura della conservazione
+
+Job `LONG-PRESERVE-WORK-T100G-20261107` (63785874): `COMPLETED 0:0`, 16:33:00-16:33:08 (8 s) su `login13`, 2 CPU allocate
+su 1 chiesta: 0,004 core-ore, 0 GPU-ore (preventivo 0,17). Log del job: «VERIFICATO: 26 file, 23981927 byte, sha256
+identici; copia in /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/tokenizer_probe_20261103/19618/T100-G, originale
+intatto». Quota di progetto dopo la copia: 1.055.007.564 kB usati, liberi 18.734.260 kB = 17,87 GiB alle 16:34, sopra la
+soglia C-1. Manifest e ricevuta (7 file) in `$WORK/wearusfm_runs/results/storage_preserve_20261107/`, copiati nel repo
+sotto `results/infra/consolidation_long_20261105/preservation/` con il log del job.
+
+Verifiche dal Mac (`preservation/inventory_check_t100g.json`): sha256 dei sei manifest uguali a quelli nella ricevuta;
+manifest dell'originale e della copia identici (elenco e dimensioni, albero, sha256 di ogni file); 26 file, 6 cartelle,
+23.981.927 byte; presenti i report storici `p1.json` e `p2.json` nominati dal piano della sintesi. Sorgente su SCRATCH
+invariata dopo il job (stessi conteggi e byte, nessun file piu' recente della ricevuta). Criteri di esito della voce
+precedente: tutti soddisfatti.
+
+Con questa voce la conservazione decisa da Simone il 07/11 («Tutto, 19,6 GiB» e «Sì, aggiungila») e' completa: su
+`$WORK` stanno l'intera LONG_ROOT (354 file, 21.062.138.097 byte) e la dipendenza T100-G 19.618 (26 file, 23.981.927
+byte), entrambe con manifest sha256 e ricevuta; gli originali su SCRATCH restano intatti e soggetti alla cancellazione a
+40 giorni (dal 14-15/12 circa); i piani congelati continuano a nominarli. Consuntivo della linea 2 aggiornato: 109
+allocazioni, 176,836 core-ore, 3,374 GPU-ore (tetti A1 1.711,67 e 9). Nessun mio job in coda.
