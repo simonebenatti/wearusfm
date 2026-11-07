@@ -7887,6 +7887,33 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `build_inputs`, `apply_to_plans --check`, `pin_phase fit --dry-run` OK; 342 test superati). Stato: 62 fit su 72 conclusi,
   3 in corsia; resta l'ondata 24 (righe 66-72: i sette fit restanti di UCI, limite 00:30:00 ciascuno).
 
+### 2026-11-07 | Claude | Linea 2, fase fit A1: ondata 23 conclusa (pool di EPN612 e primo fit di UCI), ondata 24 inviata (righe 66-72 di 72, l'ultima)
+- Ondata 23, tutti e tre `COMPLETED 0:0`, uno alla volta in corsia: `63751327` LONG-FIT-G39237-pool-epn612-F0123
+  (10:30:52-11:07:13, 00:36:21 su 03:45:00), `63751330` LONG-FIT-G19618-pre-uci_emg-F0123 (11:07:33-11:07:49, 00:00:16 su
+  00:30:00) e `63751328` LONG-FIT-G49046-pool-epn612-F0123 (11:08:02-11:37:45, 00:29:43 su 03:45:00); le tre viste di EPN612
+  sono complete. Il fit di UCI e' durato 16 secondi, il tempo piu' breve della fase: log del job regolare (checkout `a70e29e`
+  verificato, allocazione accettata con 8 CPU / 30 GiB / 1.800 s, nessun errore) e report regolare come gli altri (4 file,
+  5.991 byte contro 5.996-5.997 dei due di EPN612); il limite di 00:30:00 era gia' il piu' basso del piano. Report letti solo nei
+  campi di provenienza (sha256 `bbedddcc85ca…`, `cc2b7a5b3ff4…`, `b36a593069e7…`, kind/checkpoint/dataset/view uguali ai pin di
+  fase, `global_resource_gate_passed` vero); nessun punteggio letto. Consumo: 8 CPU x 66:20 = 8,84 core-ore; fase fit
+  134,01 core-ore (125,17 + 8,84), 0 GPU-ore.
+- C-1 alle 11:41 (`PRECHECK_OK`, log in `execution/audit/precheck_fit_wave24_20261107.log`): `$WORK` 41,57 GiB liberi (soglia
+  10,724; utente sbenatti 175,9 GiB), scratch scrivibile, ledger riletto, seriale vuota, rami sorvegliati fermi dall'ultimo
+  riscontro, certificato ssh valido fino alle 12:32:13 (51 minuti al C-1). Fuori linea 2, su `boost_usr_prod`: `63593128`
+  (linea 3) in esecuzione da 2 h 35 e `63696864` SCALING-300M-train19618 (linea 1) in coda; nessuna azione su di essi.
+- Ondata 24 inviata alle 11:47:43-53 col submitter comune (`--agente claude`, campagna `consolidation_long_20261105`, ledger
+  `prenotato` -> `sottomesso`), sette job con limite 00:30:00 ciascuno (3 h 30 sommate): `63762237`
+  LONG-FIT-G39237-pre-uci_emg-F0123, `63762239` LONG-FIT-G49046-pre-uci_emg-F0123, `63762242`
+  LONG-FIT-G19618-post-uci_emg-F0123, `63762272` LONG-FIT-G39237-post-uci_emg-F0123, `63762284`
+  LONG-FIT-G49046-post-uci_emg-F0123, `63762294` LONG-FIT-G39237-pool-uci_emg-F0123 e `63762307`
+  LONG-FIT-G49046-pool-uci_emg-F0123; 8 CPU / 30 GiB, checkout congelato `consolidation-long-fit-20261105` (`a70e29e`).
+  Sorvegliante in sola lettura ogni 3 minuti. Registrazione sul ramo di esecuzione `claude/consolidation-long-exec-20261105`:
+  commit `db67797` (ID nel `launch_plan.json`: tutti i 72 fit hanno ora un job SLURM; stati di sottomissione, log di audit;
+  `build_inputs`, `apply_to_plans --check`, `pin_phase fit --dry-run` OK; 342 test superati). Stato: 65 fit su 72 conclusi,
+  7 in corsia; e' l'ultima ondata della fase fit. Al termine: raccolta di fine fase (ricevute, log, consuntivo), pin
+  dell'aggregato e quarto checkout. Il certificato ssh scade alle 12:32:13: i passaggi che non rientrano si fermano e
+  riprendono dopo il rinnovo, senza letture ne' invii nel frattempo.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
