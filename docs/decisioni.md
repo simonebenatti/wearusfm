@@ -6706,3 +6706,22 @@ operare sui job.
 registro) soddisfatti nei contenuti; esito «DA RIVEDERE» per due note: bloccante, al momento della lettura il registro
 condiviso non aveva ancora la voce sulla sintesi (commit `d91bb33` e `aad4386`); minore, il consuntivo complessivo
 non stava in nessun file del repo. Entrambe chiuse con la voce di chiusura nel registro condiviso e con questa voce.
+
+### 07/11/2026 — Valutazione lunga: riverifica del critico sulla chiusura, VERDETTO APPROVATO; precisazione sulla lettura precedente
+
+**RIVERIFICA (subagent `critico`, 07/11, su richiesta di Simone «Sì, rilancialo»; stato dei rami: esecuzione `c109bfe`, registro
+`42fc3f8`):** cinque criteri, tutti soddisfatti: nota 1 chiusa (voce di registro sulla sintesi, riga 7963 del registro, marcatore
+unico), nota 2 chiusa (consuntivo nella voce precedente), igiene dei rami (alberi puliti, HEAD = origin, i due commit toccano solo
+`docs/decisioni.md` e `docs/claude_GPT_shared`, nessun codice: test non rieseguiti), contabilita' ricalcolata dai quattro
+`sacct_<fase>.tsv` e dal ledger (13/17/73/4 righe, 27,002 (+3,374 GPU-ore) / 15,217 / 134,265 / 0,261; totale 107 allocazioni,
+176,745 core-ore e 3,374 GPU-ore, tutte COMPLETED 0:0 senza riavvii; 107 `prenotato` + 107 `sottomesso`, un solo tentativo per ID,
+mappa ID-job uguale a sacct e a `launch_plan.json`; «Sì, approvo» alla lettera in `launch_plan.json`,
+`phase_source_policy/amendment_A1/decision/quote`; sha256 delle tre ricevute finali, del piano esterno `f7728778…` e del wrapper
+`34ba86c7…` ricalcolati e uguali agli audit e allo `script_stdin_sha256` del ledger), nessuna regressione (103 job con ID SLURM,
+quattro `code_sha` di fase, 103 ricevute, 107 log). **VERDETTO: APPROVATO.**
+
+**PRECISAZIONE richiesta dal critico (nota minore), senza riscrivere la voce precedente:** la lettura precedente, fatta su
+`aad4386`, aveva soddisfatto sei criteri su sette, non sette: il settimo, il registro condiviso, non era soddisfatto al momento
+di quella lettura (mancava la voce sulla sintesi) ed e' stato chiuso con la voce `42fc3f8`. La formula «i sette criteri …
+soddisfatti nei contenuti» della voce precedente e della voce di registro `42fc3f8` va letta cosi'. Nessun punteggio letto;
+la lettura scientifica resta a GPT consolidamento.
