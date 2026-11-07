@@ -8106,6 +8106,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   separata di Simone: le dipendenze fuori LONG_ROOT indicate da GPT (T100-G 19.618 su SCRATCH: 26 file, 23 MB,
   datati 04/11). Esito, verifica contro `preservation_inventory.json` e consuntivo in una voce successiva.
 
+### 2026-11-07 | Claude | Linea 2: copia dell'intera LONG_ROOT su `$WORK` eseguita e verificata (job 63781257 `COMPLETED 0:0`), inventario GPT confermato
+- `LONG-PRESERVE-WORK-20261107` (63781257): `COMPLETED 0:0` in 2 min 36 s (15:49:54-15:52:30, `login13`), 2 CPU allocate
+  su 1 chiesta: 0,087 core-ore, 0 GPU-ore. Log: «VERIFICATO: 354 file, 21062138097 byte, sha256 identici; … originale
+  intatto». Copia in `$WORK/wearusfm_runs/results/consolidation_long_20261105` con modi e date originali; manifest e
+  ricevuta (7 file) in `$WORK/wearusfm_runs/results/storage_preserve_20261107/`, copiati con il log del job sotto
+  `results/infra/consolidation_long_20261105/preservation/` sul ramo di esecuzione (commit `424f0ec`, con la voce di esito
+  e il consuntivo in `docs/decisioni.md`).
+- Verifiche dal Mac (`preservation/inventory_check.json`): sha256 dei manifest uguali a quelli nella ricevuta; manifest
+  di originale e copia identici (elenco e dimensioni, albero, sha256 di ogni file); 354 file, 174 cartelle,
+  21.062.138.097 byte. **I 352 file di `preservation_inventory.json` (review `57c4d7e`) sono tutti nella copia con
+  sha256 e byte uguali**; i 2 file in piu' sono `manifests/summary_plan_f7728778….json` (53.847 byte) e
+  `summary/report.json` (2.848.018 byte), prodotti dalla sintesi del 07/11 e assenti dall'inventario. Sorgente su SCRATCH
+  invariata dopo il job (stessi conteggi e byte, nessun file piu' recente della ricevuta). Quota di progetto dopo la
+  copia: 17,89 GiB liberi alle 15:53 (soglia C-1 10,724).
+- Consuntivo della linea 2: 108 allocazioni, 176,832 core-ore, 3,374 GPU-ore. I piani congelati continuano a nominare
+  i percorsi su SCRATCH (cancellazione a 40 giorni dal 15/12 circa). Aperta la decisione di Simone sulle dipendenze
+  fuori LONG_ROOT (T100-G 19.618 su SCRATCH, 26 file, 23 MB). Nessun altro mio job in coda.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
