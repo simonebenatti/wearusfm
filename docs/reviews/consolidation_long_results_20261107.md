@@ -10,8 +10,9 @@ il 06/11 alle 16:49, «Sì, approvo».
 posa, compresa la dinamica, in entrambi i pannelli primari. Il beneficio
 primario sulla classificazione resta non risolto; un contrasto secondario
 post-backbone è favorevole.** Conclusioni **1–4 firmate da Simone il
-07/11/2026 alle 14:54 CET**, «Sì, firmo». Il punto 5 resta una proposta
-separata. La firma non costituisce una nuova autorizzazione operativa.
+07/11/2026 alle 14:54 CET**, «Sì, firmo». Il punto 5 è stato poi approvato
+separatamente («Tutto, 19,6 GiB») ed eseguito da Claude; verifica locale dei
+manifest descritta sotto. Il futuro protocollo A resta da decidere.
 
 ## Tabella aggiornata della linea 2
 
@@ -225,7 +226,7 @@ il progresso non è spiegabile soltanto da una migliore taratura della testa
 esistente, perché migliora anche la lettura delle rappresentazioni congelate.
 Non dimostra però che i latenti abbiano raggiunto il proprio limite informativo.
 
-## 5. Conclusioni 1–4 firmate; punto 5 ancora proposto
+## 5. Conclusioni 1–4 firmate; punto 5 eseguito su decisione separata
 
 1. Chiudere questa valutazione come **eseguita e verificata**. Nessun difetto
    bloccante trovato nei materiali; non servono nuovi lanci per leggerla.
@@ -239,7 +240,8 @@ Non dimostra però che i latenti abbiano raggiunto il proprio limite informativo
    dose o nuovo esperimento deriva automaticamente da questa chiusura.
    EPN15 rimane una prova sul teacher19k; il fine-tuning del teacher49k non
    è stato misurato. Le decisioni successive richiedono un protocollo distinto.
-5. **Proposta non inclusa nella firma.** Prima della purge conservare gli artefatti di audit delle predizioni,
+5. **Non incluso nella firma delle 14:54; successivamente approvato ed eseguito.**
+   Prima della purge conservare gli artefatti di audit delle predizioni,
    come dettagliato nella [nota di conservazione](consolidation_long_preservation_20261107.md);
    questa review
    non esegue trasferimenti né promette proroghe su SCRATCH.
@@ -257,10 +259,20 @@ Registrazioni verificate:
 - `docs/claude_GPT_shared`, commit `776b401bcaaaf807541ddc818ff10ab76bfad7ef`
   sul ramo `worktree-claude-training-engine`.
 
-La conclusione 5, conservazione di circa 19,61 GiB sotto LONG_ROOT, **non è
-firmata**: resta una decisione separata di Simone e nessuna copia è stata
-eseguita. Anche il seguito A, curva di efficienza dei dati, resta da decidere
-con un protocollo distinto. Questa firma non autorizza nuovi job o invii.
+La conclusione 5 non era inclusa nella firma delle 14:54. Simone ha poi
+deciso separatamente, il 07/11/2026: **«Tutto, 19,6 GiB»**. Claude ha eseguito
+la copia dell'intera LONG_ROOT su WORK con il job 63781257; prove in
+`424f0ecc5dc23120ac84a7f2e3e1a24fede2b250`, registro
+`51a611a2cac7d1b29a528f7c67a5cd1d5b130d1d`. Verifica GPT sui manifest:
+354 file, 174 directory, 21.062.138.097 byte; tutti i 352 elementi del nostro
+inventario presenti e identici, più piano materializzato e report finale
+della sintesi. Nessuna operazione remota di GPT. Dettagli e limiti nella
+[nota di conservazione](consolidation_long_preservation_20261107.md).
+
+Restano separate e aperte nella consegna esaminata le dipendenze fuori
+LONG_ROOT (T100-G 19.618, 26 file, circa 23 MB). Anche il seguito A, curva
+di efficienza dei dati, resta da decidere con un protocollo distinto;
+nessun nuovo esperimento deriva dalla firma o dalla conservazione.
 Le rettifiche accolte alla lettura di Claude sono registrate separatamente
 in `3231062e729843e38b835919af8d1405bcd6c60d`.
 
@@ -275,8 +287,8 @@ La lettura critica indipendente del testo e dell'appendice pubblicati in
 `57c4d7e` è favorevole,
 senza rilievi bloccanti; controllate anche tutte le 24 righe dell'appendice
 posa. [Nota del critico](../../results/infra/consolidation_long_20261105/gpt_review_20261107/critic.txt).
-Gli hash originali del critico sono conservati: il successivo aggiornamento
-registra soltanto la firma, senza modificare risultati o criteri scientifici.
+Gli hash originali del critico sono conservati: gli aggiornamenti successivi
+registrano firma e conservazione, senza modificare risultati o criteri scientifici.
 
 Per riprodurre i controlli si prepara una copia locale del commit c109bfe e
 si eseguono gli script `check_long_chain_20261107.py`,

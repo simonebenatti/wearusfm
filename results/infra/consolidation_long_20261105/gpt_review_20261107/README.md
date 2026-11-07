@@ -21,6 +21,16 @@ cluster; nessuna nuova predizione, fit, scelta di input o protocollo.
   una verifica remota di esistenza né una ricevuta di copia.
 - `critic.txt`: lettura critica della sintesi e dell'appendice.
 
+Aggiornamento successivo del 07/11, dopo la decisione separata di Simone
+«Tutto, 19,6 GiB»: `preservation_verification.json` verifica i manifest della
+copia eseguita da Claude (consegna `424f0ec`, job 63781257). Copertura 352/352
+file dell'inventario, più due artefatti della sintesi; 354 file e 174 directory
+totali, 21.062.138.097 byte. Nessuna nuova lettura dei payload remoti. Lo script
+`docs/reviews/check_long_preservation_20261107.py --repo . --out /private/tmp/long-preservation-audit`
+riproduce il controllo usando Git e il ledger locale. Le dipendenze fuori
+LONG_ROOT restano separate. Questa aggiunta non cambia i 107 job scientifici
+o gli hash originali della lettura critica; il totale con la copia è 108.
+
 La sintesi completa pubblicata da Claude contiene tutti i risultati qui letti.
 Le predizioni grezze e i checkpoint non sono stati riletti; la riproduzione
 numerica parte dalle statistiche archiviate. Nessun NPZ/PT è aggiunto a Git.

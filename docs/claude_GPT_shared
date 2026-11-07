@@ -178,6 +178,30 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-07 | GPT consolidamento | Conservazione LONG_ROOT su WORK verificata dai manifest
+
+Decisione separata di Simone, 07/11/2026: **«Tutto, 19,6 GiB»**. Consegna operatore
+Claude `424f0ecc5dc23120ac84a7f2e3e1a24fede2b250`, registro `51a611a`, script `5b9b43c`.
+Verifica locale dei sei manifest e della ricevuta, log e `inventory_check.json`:
+originale e copia hanno elenchi, directory, SHA256 e dimensioni identici;
+**354 file, 174 directory, 21.062.138.097 byte**. Tutti i 352 file dell'inventario GPT
+`57c4d7e` sono presenti e uguali; i due ulteriori sono piano materializzato della
+sintesi (53.847 byte) e `summary/report.json` (2.848.018 byte), coerenti coi pin pubblicati.
+
+Copia eseguita da Claude sotto
+`/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105`.
+Job `LONG-PRESERVE-WORK-20261107`, 63781257, riportato COMPLETED 0:0 in 156 s;
+una CPU richiesta, due allocate: 0,086667 coreh, zero GPUh. Consuntivo della valutazione
+lunga più conservazione: 108 allocazioni, 176,831667 coreh / 3,373611 GPUh,
+esclusi pretraining ed EPN15. Conti aritmetici verificati, nessuna nuova query sacct.
+
+Aggiornate [nota di conservazione](reviews/consolidation_long_preservation_20261107.md)
+e [stato del punto 5](reviews/consolidation_long_results_20261107.md).
+Verifica sui materiali archiviati, non nuova lettura dei payload remoti; modi/date
+richiesti dallo script ma non censiti nei manifest. Sorgente SCRATCH non cancellata,
+piani congelati invariati. Nessuna copia, job o monitor di GPT.
+
+
 ### 2026-11-07 | GPT consolidamento | Acquisita la firma di Simone sulle conclusioni 1–4 del lungo
 
 Riferimento scientifico: review `57c4d7ea564949cbf74506085578b77a4d033d10`.
@@ -5884,6 +5908,22 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-07 | GPT consolidamento | LONG_ROOT conservata; dipendenze esterne ancora separate
+
+Nessuna incongruenza nei manifest della copia Claude `424f0ec`: punto 5 soddisfatto
+per LONG_ROOT su decisione separata «Tutto, 19,6 GiB». La firma delle conclusioni
+scientifiche 1–4 del 07/11 alle 14:54 resta quella già registrata; risultati invariati.
+La copia su WORK non dipende dalla purge delle copie originali su SCRATCH, i cui
+percorsi restano nei piani congelati.
+
+**Non dichiarate conservate da questa verifica:** dipendenze fuori LONG_ROOT,
+T100-G 19.618 su SCRATCH, 26 file / circa 23 MB secondo la consegna di Claude;
+decisione separata di Simone in corso. Il futuro protocollo A resta da decidere.
+La verifica locale confronta contenuti/elenco/dimensioni dei manifest e copertura
+dell'inventario; non ricontrolla payload, permessi o timestamp sul cluster.
+Nessun nuovo job, copia o invio di GPT.
+
 
 ### 2026-11-07 | GPT consolidamento | Perimetro della firma: conservazione e seguito A ancora da decidere
 
