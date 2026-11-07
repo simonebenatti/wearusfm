@@ -7865,6 +7865,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   EPN612 a dosi 39.237 e 49.046, limite 03:45:00, e il primo fit di UCI, 00:30:00; 8 h sommate) e 24 (righe 66-72: i sette fit
   restanti di UCI, 00:30:00 ciascuno).
 
+### 2026-11-07 | Claude | Linea 2, fase fit A1: ondata 22 conclusa (cinque fit di EPN612), ondata 23 inviata (righe 63-65 di 72)
+- Ondata 22, tutti e cinque `COMPLETED 0:0`, uno alla volta in corsia: `63747196` LONG-FIT-G39237-pre-epn612-F0123
+  (09:29:40-09:47:18, 00:17:38 su 02:00:00), `63747198` LONG-FIT-G19618-post-epn612-F0123 (09:47:56-09:55:37, 00:07:41 su
+  01:15:00), `63747199` LONG-FIT-G39237-post-epn612-F0123 (09:55:54-10:02:47, 00:06:53), `63747201`
+  LONG-FIT-G49046-post-epn612-F0123 (10:02:58-10:09:32, 00:06:34) e `63747197` LONG-FIT-G49046-pre-epn612-F0123
+  (10:09:54-10:28:15, 00:18:21 su 02:00:00); le viste `pre` e `post` di EPN612 sono complete. Report letti solo nei campi di
+  provenienza (sha256 `6dc98aed75cb…`, `985933fa0a5c…`, `1206b22fc838…`, `c6fb49faed68…`, `0d17823f5b49…`, 4 file ciascuno,
+  kind/checkpoint/dataset/view uguali ai pin di fase); nessun punteggio letto. Consumo: 8 CPU x 57:07 = 7,62 core-ore; fase
+  fit 125,17 core-ore (117,55 + 7,62), 0 GPU-ore.
+- C-1 alle 10:30 (`PRECHECK_OK`, log in `execution/audit/precheck_fit_wave23_20261107.log`): `$WORK` 41,57 GiB liberi (soglia
+  10,724; utente sbenatti 175,9 GiB), scratch scrivibile, ledger riletto, seriale vuota, rami sorvegliati fermi dall'ultimo
+  riscontro, certificato ssh valido fino alle 12:32:13. Fuori linea 2, su `boost_usr_prod`: `63593128` (linea 3) in esecuzione
+  da 1 h 24 e `63696864` SCALING-300M-train19618 (linea 1) in coda; nessuna azione su di essi.
+- Ondata 23 inviata alle 10:30:43-49 col submitter comune (`--agente claude`, campagna `consolidation_long_20261105`, ledger
+  `prenotato` -> `sottomesso`), tre job (limiti 03:45:00, 03:45:00, 00:30:00: 8 h sommate, al tetto dell'ondata corta):
+  `63751327` LONG-FIT-G39237-pool-epn612-F0123, `63751328` LONG-FIT-G49046-pool-epn612-F0123 e `63751330`
+  LONG-FIT-G19618-pre-uci_emg-F0123 (primo fit di UCI); 8 CPU / 30 GiB, checkout congelato `consolidation-long-fit-20261105`
+  (`a70e29e`). Sorvegliante in sola lettura ogni 5 minuti. Registrazione sul ramo di esecuzione
+  `claude/consolidation-long-exec-20261105`: commit `f3c666b` (ID nel `launch_plan.json`, stati di sottomissione, log di audit;
+  `build_inputs`, `apply_to_plans --check`, `pin_phase fit --dry-run` OK; 342 test superati). Stato: 62 fit su 72 conclusi,
+  3 in corsia; resta l'ondata 24 (righe 66-72: i sette fit restanti di UCI, limite 00:30:00 ciascuno).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
