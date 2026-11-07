@@ -7822,6 +7822,26 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   di audit; `build_inputs`, `apply_to_plans --check`, `pin_phase fit --dry-run` OK; 342 test superati). Stato: 52 fit su 72
   conclusi, 2 in corsia; prossima ondata la 21 (righe 55-57: `pool` di DB6 a dose 49.046, F01 e F23, e il primo fit di EPN612).
 
+### 2026-11-07 | Claude | Linea 2, fase fit A1: ondata 20 conclusa, ondata 21 inviata (righe 55-57 di 72)
+- Ondata 20, entrambi `COMPLETED 0:0`: `63743983` LONG-FIT-G39237-pool-ninapro_db6-F01 (08:14:23-08:25:29, 00:11:06 su 02:45:00)
+  e `63743984` LONG-FIT-G39237-pool-ninapro_db6-F23 (08:25:42-08:39:31, 00:13:49 su 02:45:00, in attesa per
+  `QOSMaxCpuPerUserLimit`). Report letti solo nei campi di provenienza (sha256 `2a9ec903d5d3…` e `5998a87cf94b…`, 4 file
+  ciascuno, kind/checkpoint/dataset/view uguali ai pin di fase); nessun punteggio letto. Consumo: 8 CPU x 24:55 = 3,32 core-ore;
+  fase fit 111,67 core-ore (108,35 + 3,32), 0 GPU-ore.
+- C-1 alle 08:43 (`PRECHECK_OK`, log in `execution/audit/precheck_fit_wave21_20261107.log`): `$WORK` 41,57 GiB liberi (soglia
+  10,724; utente sbenatti 175,9 GiB), scratch scrivibile, ledger riletto, seriale vuota, rami sorvegliati fermi dall'ultimo
+  riscontro, certificato ssh valido fino alle 12:32:13. In coda su `boost_usr_prod`, fuori linea 2: `63593128` (linea 3) e
+  `63696864` SCALING-300M-train19618 (linea 1); nessuna azione su di essi.
+- Ondata 21 inviata alle 08:43:40-42 col submitter comune (`--agente claude`, campagna `consolidation_long_20261105`, ledger
+  `prenotato` -> `sottomesso`), tre job (limiti 02:45:00, 02:45:00, 02:00:00: 7 h 30 sommate): `63745042`
+  LONG-FIT-G49046-pool-ninapro_db6-F01, `63745043` LONG-FIT-G49046-pool-ninapro_db6-F23 (chiudono la vista `pool` di DB6 a
+  dosi 39.237 e 49.046) e `63745044` LONG-FIT-G19618-pre-epn612-F0123 (primo fit di EPN612, 4 fold interi); 8 CPU / 30 GiB,
+  checkout congelato `consolidation-long-fit-20261105` (`a70e29e`). Sorvegliante in sola lettura ogni 5 minuti. Registrazione
+  sul ramo di esecuzione `claude/consolidation-long-exec-20261105`: commit `1ec23d4` (ID nel `launch_plan.json`, stati di
+  sottomissione, log di audit; `build_inputs`, `apply_to_plans --check`, `pin_phase fit --dry-run` OK; 342 test superati).
+  Stato: 54 fit su 72 conclusi, 3 in corsia; prossima ondata la 22 (righe 58-62: cinque fit `pre` e `post` di EPN612, limiti
+  02:00:00 e 01:15:00, 7 h 45 sommate).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
