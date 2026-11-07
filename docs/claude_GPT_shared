@@ -7998,6 +7998,28 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   operare sui job; nessun verdetto pubblicato da me. Fuori linea 2: `63696864` SCALING-300M-train19618 (linea 1)
   ancora in coda; nessuna azione su di esso.
 
+### 2026-11-07 | Claude | Linea 2: riverifica del critico sulla chiusura della valutazione lunga, VERDETTO APPROVATO; precisazione sulla lettura precedente
+- Su richiesta di Simone («Sì, rilancialo») ho rilanciato il critico in sola lettura sullo stato attuale dei rami (esecuzione
+  `c109bfe`, registro `42fc3f8`), con cinque criteri: nota 1 chiusa (voce di registro sulla sintesi), nota 2 chiusa (consuntivo
+  in `docs/decisioni.md`), igiene dei rami, contabilita' ricalcolata, nessuna regressione. Tutti soddisfatti, **VERDETTO:
+  APPROVATO**. Prove riportate dal critico: voce del 07/11 alla riga 7963 del registro, marcatore `## 2)` unico; sha256 delle
+  tre ricevute finali (`22ebbc98…` 7.497 byte, `926bc853…` 157.885, `b0cfa0eb…` 2.848.018), del piano esterno (`f7728778…`,
+  53.847 byte) e del wrapper (`34ba86c7…`) ricalcolati e uguali agli audit e allo `script_stdin_sha256` del ledger; `code_sha`
+  `d751063` in tutte e tre le ricevute, `complete` vero, `plan_sha256` della sintesi = sha256 del piano esterno; consuntivo
+  ricalcolato dai quattro `sacct_<fase>.tsv`: 13/17/73/4 righe, 27,002 (+3,374 GPU-ore) / 15,217 / 134,265 / 0,261, totale
+  107 allocazioni, 176,745 core-ore e 3,374 GPU-ore, tutte `COMPLETED 0:0` senza riavvii; ledger: 107 `prenotato` + 107
+  `sottomesso`, un solo tentativo per ID, mappa ID-job uguale a sacct e a `launch_plan.json`; «Sì, approvo» alla lettera in
+  `launch_plan.json` (`phase_source_policy/amendment_A1/decision/quote`); i diff `aad4386..c109bfe` e `6ab353c..42fc3f8`
+  toccano solo `docs/decisioni.md` (34 righe aggiunte) e `docs/claude_GPT_shared` (38 aggiunte), nessun codice, test non
+  rieseguiti perche' invariati; `launch_plan.json` con 103 job e quattro `code_sha` di fase, 103 ricevute e 107 log invariati.
+- Nota minore del critico, accolta con questa voce senza riscrivere le precedenti: la voce di chiusura `42fc3f8` qui sopra e il
+  paragrafo «VERIFICA INDIPENDENTE» di `docs/decisioni.md` (`c109bfe`) dicono «i sette criteri … soddisfatti nei contenuti»;
+  la lettura precedente, fatta su `aad4386`, ne aveva soddisfatti **sei su sette**: il settimo, il registro condiviso, non era
+  soddisfatto al momento di quella lettura (mancava la voce sulla sintesi) ed e' stato chiuso con `42fc3f8`. Stessa
+  precisazione e verdetto appesi a `docs/decisioni.md` sul ramo di esecuzione, commit `b6dfb7a` (HEAD, = origin; solo
+  aggiunte, 19 righe). Nessun punteggio letto; la lettura scientifica dei report resta a GPT consolidamento. Nessun mio job
+  in coda.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
