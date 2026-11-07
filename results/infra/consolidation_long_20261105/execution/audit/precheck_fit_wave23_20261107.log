@@ -1,0 +1,20 @@
+wave 23: 3 jobs, limits 8.00 h: LONG-FIT-G39237-pool-epn612-F0123-20261105-A1, LONG-FIT-G49046-pool-epn612-F0123-20261105-A1, LONG-FIT-G19618-pre-uci_emg-F0123-20261105-A1
+  certificate valid to 2026-11-07 12:32:13 (122 min left)
+  Leonardo clock: 2026-11-07 10:30:30 CET
+  LONG-FIT-G39237-pre-epn612-F0123-20261105-A1 | 63747196 | COMPLETED 0:0 | 09:29:40-09:47:18 | 00:17:38 of 02:00:00
+  LONG-FIT-G49046-pre-epn612-F0123-20261105-A1 | 63747197 | COMPLETED 0:0 | 10:09:54-10:28:15 | 00:18:21 of 02:00:00
+  LONG-FIT-G19618-post-epn612-F0123-20261105-A1 | 63747198 | COMPLETED 0:0 | 09:47:56-09:55:37 | 00:07:41 of 01:15:00
+  LONG-FIT-G39237-post-epn612-F0123-20261105-A1 | 63747199 | COMPLETED 0:0 | 09:55:54-10:02:47 | 00:06:53 of 01:15:00
+  LONG-FIT-G49046-post-epn612-F0123-20261105-A1 | 63747201 | COMPLETED 0:0 | 10:02:58-10:09:32 | 00:06:34 of 01:15:00
+  report LONG-FIT-G39237-pre-epn612-F0123-20261105-A1: sha256 6dc98aed75cb… 5989 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 39237, 'dataset': 'epn612', 'view': 'pre', 'fold_indices': [0, 1, 2, 3], 'global_resource_gate_passed': True}
+  report LONG-FIT-G49046-pre-epn612-F0123-20261105-A1: sha256 985933fa0a5c… 5987 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 49046, 'dataset': 'epn612', 'view': 'pre', 'fold_indices': [0, 1, 2, 3], 'global_resource_gate_passed': True}
+  report LONG-FIT-G19618-post-epn612-F0123-20261105-A1: sha256 1206b22fc838… 5995 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 19618, 'dataset': 'epn612', 'view': 'post', 'fold_indices': [0, 1, 2, 3], 'global_resource_gate_passed': True}
+  report LONG-FIT-G39237-post-epn612-F0123-20261105-A1: sha256 c6fb49faed68… 5995 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 39237, 'dataset': 'epn612', 'view': 'post', 'fold_indices': [0, 1, 2, 3], 'global_resource_gate_passed': True}
+  report LONG-FIT-G49046-post-epn612-F0123-20261105-A1: sha256 0d17823f5b49… 5994 bytes, 4 files, {'kind': 'fit-classification', 'checkpoint_step': 49046, 'dataset': 'epn612', 'view': 'post', 'fold_indices': [0, 1, 2, 3], 'global_resource_gate_passed': True}
+  WORK free 41.57 GiB (threshold 10.724); user sbenatti 175.9 GiB
+  queue (other project filtered): 2 jobs, 0 on lrd_all_serial
+    63696864|SCALING-300M-train19618-20261106|boost_usr_prod|PENDING|0:00|14:45:00|Priority
+    63593128|LOGSQ-T100-LQ-19618-20261105|boost_usr_prod|RUNNING|1:24:18|4:00:00|None
+  watched branches: unchanged since the last ack
+log: /Users/simonebenatti/wearusfm_local/logs/line2_long_fit_precheck_wave23_20261107_1030.txt
+PRECHECK_OK
