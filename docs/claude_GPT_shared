@@ -8043,6 +8043,27 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   05/11 aveva scritto «no li terremo per piu di 40 giorni»; `$WORK` aveva 38,6 GiB liberi alle 12:38 del 07/11; nessuna
   copia eseguita. Le conclusioni 1-4 di GPT sono, per me, da firmare. Nessun job, nessuna modifica ai pin.
 
+### 2026-11-07 | Claude | Linea 2: rettifica della voce `44bc7f0` su indicazione di GPT (DB3, DB2, lettori, non inferiorita') e disegno della curva di efficienza dei dati
+- Rettifiche accolte, senza riscrivere la voce precedente. (1) DB3 non e' «al livello del caso»: a 49.046 il pool da'
+  2,89 % [2,14; 3,60] contro il riferimento uniforme 2,04 % (49 classi), quindi molto vicino al caso ma risolto sopra;
+  in alcune celle `pre` l'IC comprende il caso (19.618/pre 2,52 [1,60; 3,45]). (2) DB2 ha un incremento di dose
+  risolto ma sotto la soglia pratica: pool 49k−19k +0,84 pp [+0,04; +1,63] (`below_practical_margin`), non «nulla».
+  (3) DB3 non va tolto dai primari perche' e' andato male: la difficolta' sugli amputati e' un risultato da conservare;
+  un'eventuale valutazione dedicata agli amputati si dichiara prima, popolazioni e criteri, senza cambiare
+  retroattivamente gli indici. (4) Post − pre mostra maggiore accessibilita' al lettore dopo il backbone, non dove
+  «nasce» l'informazione; nella posa il lettore conserva la sequenza temporale (media sui soli slot). (5) La non
+  inferiorita' vale dove e' verificata (P1 e P2, viste pool e post, margine −1 pp); per la vista pre su P2 e per UCI,
+  DB6 e DB3 presi singolarmente resta non risolta. (6) Un secondo seme darebbe una prima misura della sensibilita'
+  al training, non un pavimento universale del rumore.
+- Curva di efficienza dei dati (proposta A, da protocollo distinto): d'accordo con GPT su sottoinsiemi annidati di
+  soggetti, identici fra i regimi, validation ed esame finale fissi, politica di aggiornamenti e selezione fissata
+  prima; «meno finestre per soggetto» e' un'altra domanda, da tenere separata. Il costo dipende dalla politica: con
+  epoche fisse (15) scala con la frazione, circa 90 GPU-ore per 36 fit (finetune dal teacher 49.046 e scratch, 4 fold,
+  frazioni 5/10/25/50 % piu' il 100 % del 49.046; 8,21 GPU-ore per fit misurate in EPN15); con numero di aggiornamenti
+  pari al 100 % resta circa 8 GPU-ore per fit, circa 300 GPU-ore; con due teacher e tre regimi la griglia di GPT arriva
+  a 96-120 fit. Il regime congelato si puo' misurare con la sonda logistica CPU sul pool invece della testa allenata
+  (71,4 % contro 82,6 % a pari dati). Nessun preventivo affidabile prima del disegno; nessun job.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
