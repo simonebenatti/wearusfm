@@ -6778,3 +6778,25 @@ limite 40 minuti: al massimo 0,67 core-ore (1,33 se sacct conta 2 CPU come il 06
 sha256 e' durato 4 min 25 s. In coda dietro i job seriali della linea 3 gia' sottomessi, che non ritarda. Autorizzazione:
 la decisione di Simone comprende l'esecuzione della copia come job CPU con manifest sha256, descritta nella stessa
 domanda; costo sotto i 5 GPU-ore (28/10). Esito in una voce successiva.
+
+### 07/11/2026 — Valutazione lunga: copia dell'intera LONG_ROOT su `$WORK` eseguita e verificata (job 63781257, `COMPLETED 0:0`); consuntivo
+
+Job `LONG-PRESERVE-WORK-20261107` (63781257): `COMPLETED 0:0`, 15:49:54-15:52:30 (156 s) su `login13`, 2 CPU allocate su
+1 chiesta: 0,087 core-ore, 0 GPU-ore (preventivo 0,67 core-ore). Log del job: «VERIFICATO: 354 file, 21062138097 byte,
+sha256 identici; copia in /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105, originale
+intatto». Quota di progetto prima 1.034.405.012 kB usati, dopo 1.054.983.124: liberi 18.758.700 kB = 17,89 GiB alle
+15:53, sopra la soglia C-1 di 10,724 GiB. Manifest e ricevuta in `$WORK/wearusfm_runs/results/storage_preserve_20261107/`
+(7 file), copiati nel repo sotto `results/infra/consolidation_long_20261105/preservation/` insieme al log del job.
+
+Verifiche dal Mac (`preservation/inventory_check.json`): sha256 dei sei manifest uguali a quelli scritti nella ricevuta;
+manifest dell'originale e della copia identici byte per byte (elenco e dimensioni, albero delle cartelle, sha256 di ogni
+file); 354 file, 174 cartelle, 21.062.138.097 byte; i 352 file dell'inventario di GPT (`preservation_inventory.json`,
+review `57c4d7e`, 21.059.236.232 byte) tutti presenti nella copia con sha256 e byte uguali; i 2 file in piu' sono
+`manifests/summary_plan_f7728778….json` (53.847 byte) e `summary/report.json` (2.848.018 byte), prodotti dalla sintesi
+del 07/11 alle 12:38-12:39 e assenti dall'inventario. Sorgente su SCRATCH invariata dopo il job (354 file, 174 cartelle,
+stessi byte, nessun file piu' recente della ricevuta). Criteri di esito della voce precedente: tutti soddisfatti.
+
+Consuntivo della linea 2 aggiornato: 108 allocazioni, 176,832 core-ore, 3,374 GPU-ore (tetti A1 1.711,67 e 9). La copia
+conserva le date originali; i piani congelati continuano a nominare i percorsi su SCRATCH, che restano soggetti alla
+cancellazione a 40 giorni (dal 15/12 circa) e ai rinfreschi. Resta aperta la decisione di Simone sulle dipendenze fuori
+LONG_ROOT (T100-G 19.618 su SCRATCH, 26 file, 23 MB).

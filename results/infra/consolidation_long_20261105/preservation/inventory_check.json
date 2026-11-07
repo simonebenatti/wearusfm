@@ -1,0 +1,41 @@
+{
+ "job": 63781257,
+ "logical_id": "LONG-PRESERVE-WORK-20261107",
+ "checked_at": "2026-11-07T15:54:05+01:00",
+ "receipt_manifest_hashes_match": true,
+ "source_equals_copy": {
+  "sizes": true,
+  "dirs": true,
+  "sha256": true
+ },
+ "copy_files": 354,
+ "copy_bytes": 21062138097,
+ "copy_dirs": 174,
+ "gpt_inventory": {
+  "commit": "57c4d7e",
+  "files": 352,
+  "bytes": 21059236232,
+  "groups": {
+   "feature_cache": 21,
+   "metadata/audit": 242,
+   "classification_OOF": 69,
+   "pose_predictions_and_coefficients": 15,
+   "benchmark_timing_arrays": 5
+  }
+ },
+ "inventory_files_missing_in_copy": [],
+ "inventory_files_mismatching": [],
+ "copy_files_not_in_inventory": [
+  {
+   "path": "manifests/summary_plan_f7728778681431314849ff6f21ba55695ebab799d74f806347faf9eba3286a50.json",
+   "bytes": 53847,
+   "sha256": "f7728778681431314849ff6f21ba55695ebab799d74f806347faf9eba3286a50"
+  },
+  {
+   "path": "summary/report.json",
+   "bytes": 2848018,
+   "sha256": "b0cfa0eb3979567788075e63f5494e47adb95c8753a4b410fe3c63b8625e90d3"
+  }
+ ],
+ "verdict": "OK"
+}
