@@ -7185,6 +7185,31 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   (`test_pose_objective.py`), 39 min 50 s. Il giro precedente (3458) era partito alle 20:41 del 06/11, prima della chiusura del
   pacchetto. Esito annotato anche in `docs/decisioni.md`. Nessun invio; training 63696864 `PENDING` per `Priority` alle 14:50.
 
+### 2026-11-08 | Claude | Linea 1: training 63696864 `FAILED` alla ripresa: causa trovata (ordine di import torch/numpy, MKL contro OpenBLAS); nessun rilancio
+- Job 63696864: `FAILED 1:0` su lrdn2625 dopo 3 min 25 s (05:25:56-05:29:21). Ripresa superata fino al controllo dell'identita'
+  dell'insieme fisso (`run._write_or_check`): «insieme fisso della diagnostica di stabilita' diverso da quello del run [...]: per
+  cambiarlo serve un run nuovo». Nessun passo di training, nessuna ricevuta. Stop senza retry, come da freeze v2.
+- Quattro job di diagnosi in sola lettura dei dati: 63860499 (48 s, 4 CPU), 63861166 (1:40, 4 CPU), 63861825 (2:18, 4 GPU, 0,153
+  GPU-ore), 63864244 (3:24, 8 CPU). Finestre identiche al 05/11 (256/256), seme uguale, zero salti, ma tutti gli 8 hash dei batch
+  diversi; pannello della posa 8/64 uguali. Ricalcolo deterministico su login08 e su lrdn0474, con e senza torchrun/CUDA/DDP.
+  Esclusi con prove: codice, config, manifest, scale, finestre, pose_stats, file di dati (ctime 15/10 e 27/10), ambiente, denormali.
+- Causa: l'ORDINE DI IMPORT. `torchrun scripts/train_jepa.py` (run 5.000, LQ del 07/11, launcher di GPT) importa `torch` prima di
+  numpy; il mio `scaling_continue.py worker` importa `wearusfm.training.run` (numpy) prima di torch, come i miei driver di diagnosi.
+  Sulle stesse finestre: numpy prima = contenuto nuovo (0/8, 8/64); torch prima, e la CLI pura, = contenuto del 05/11 (8/8, 64/64).
+  Meccanismo (dladdr, /proc/self/maps): `import torch` carica `libtorch_global_deps.so` con RTLD_GLOBAL e rende globale MKL, che
+  esporta anche i simboli `64_` di numpy; con torch prima `np.linalg.solve` (condizioni iniziali di `sosfiltfilt`) e `power @ bands`
+  dei target vanno su MKL (`libmkl_avx512`, `libmkl_vml_avx512`), altrimenti sull'OpenBLAS di numpy. Cambiano solo `signals` e
+  `anchor_targets`: 1-2 campioni per finestra, errore relativo <= 1,6e-7; target fra 1e-16 e 2e-7 assoluti. I dati sono invariati
+  (impronte sha256 di 412 file, 4,37 GB, raccolte come base).
+- Prove, script e log in `results/infra/scaling_300m_20261104/continuation19618_20261106/failure_63696864_diagnosis_20261108/`
+  (ramo d'esecuzione); voce in `docs/decisioni.md`. Consuntivo: fallito 0,228 GPU-ore e 1,82 core-ore; diagnosi 0,153 GPU-ore e
+  1,84 core-ore. Nessun job dello stadio B inviato; lo stadio B resta rilasciato ma fermo senza un training `COMPLETED 0:0`.
+- Proposta NON eseguita, ramo `claude/scaling-300m-fix-importorder-20261108`: `import torch` prima di `wearusfm.training.run` nel
+  wrapper (una riga, motivo in commento) e test statico sull'ordine di import. Per rilanciare: decisione di Simone (freeze v2: «un
+  solo segmento, nessun retry»), piano v2 (pin del wrapper e cartella del run), review unica di GPT, nuovo deploy e checkout.
+- Nota: i miei script di valutazione importano numpy prima di torch e i lettori solo numpy (percorso OpenBLAS): differenze
+  all'ultimo bit rispetto a estrazioni via launcher torch-first, rilevanti solo per identita' bit a bit (lettura mia).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9826,3 +9851,16 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   con delta «stimabile ma non risolto», al posto di «nessuna taglia legge quei dati»; sulle finestre statiche il
   riferimento 1 e' una previsione senza variazioni temporali, non una media globale (ricontrollato su
   `scripts/pose_dynamics.py` del codice congelato).
+
+### 2026-11-08 | Claude | Linea 1: il contenuto dell'insieme fisso dipende dall'ordine di import (torch prima o dopo numpy): MKL contro OpenBLAS
+- **Trovato da me** diagnosticando il `FAILED` del training 63696864 (job 63864244 e sonda sul login, 08/11): con `import torch`
+  prima di numpy, numpy lega `np.linalg.solve` e il matmul a MKL (resa globale da `libtorch_global_deps.so`, che esporta anche i
+  simboli `64_`); con numpy prima li lega al suo OpenBLAS. `sosfiltfilt` (condizioni iniziali) e `power @ bands` cambiano all'ultimo
+  bit: `signals` 1-2 campioni per finestra (<= 1,6e-7 relativo), `anchor_targets` fra 1e-16 e 2e-7. Finestre, seme, dati, codice
+  e config identici. Spiega anche la nota del 05/11 sui confronti di `numeric_sha256` con e senza torch.
+- **Effetto.** Un controllo di identita' bit a bit (come `fixed_eval_set.json` alla ripresa) passa solo se il processo che riprende
+  importa nello stesso ordine di quello che ha scritto il file. Il run a 5.000 e tutti i launcher di GPT (`torchrun
+  scripts/train_jepa.py`) sono torch-first; il mio wrapper di continuazione e i miei script di valutazione sono numpy-first.
+  Nessun effetto sui risultati scientifici (differenze all'ultimo bit), ma confronti bit a bit fra percorsi diversi non reggono.
+- **Correzione proposta**, non eseguita: `import torch` per primo nel wrapper, test statico sull'ordine di import; piano v2 e review
+  unica di GPT prima di qualunque rilancio. Da valutare se fissare l'ordine anche negli script di valutazione o nei launcher.
