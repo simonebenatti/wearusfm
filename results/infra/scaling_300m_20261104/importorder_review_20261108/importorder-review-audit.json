@@ -1,0 +1,519 @@
+{
+  "diagnosis_commit": "913b4ae4bdfd8de709641ef39383a9fa7e0020f0",
+  "fix_commit": "0c5b974af2483faf767a2e171183ae1af0dcdb19",
+  "checks": [
+    {
+      "name": "diagnosis HEAD",
+      "passed": true
+    },
+    {
+      "name": "fix HEAD",
+      "passed": true
+    },
+    {
+      "name": "reviewed worktrees clean",
+      "passed": true
+    },
+    {
+      "name": "fix changes only wrapper and test",
+      "passed": true
+    },
+    {
+      "name": "scientific src and trainer unchanged",
+      "passed": true
+    },
+    {
+      "name": "only semantic wrapper change is import torch",
+      "passed": true
+    },
+    {
+      "name": "numpy_first fixed A recount",
+      "passed": true
+    },
+    {
+      "name": "numpy_first fixed B recount",
+      "passed": true
+    },
+    {
+      "name": "numpy_first fixed same windows",
+      "passed": true
+    },
+    {
+      "name": "numpy_first panel A recount",
+      "passed": true
+    },
+    {
+      "name": "numpy_first panel B recount",
+      "passed": true
+    },
+    {
+      "name": "numpy_first panel same windows",
+      "passed": true
+    },
+    {
+      "name": "numpy_first no skips and thread1",
+      "passed": true
+    },
+    {
+      "name": "run_first fixed A recount",
+      "passed": true
+    },
+    {
+      "name": "run_first fixed B recount",
+      "passed": true
+    },
+    {
+      "name": "run_first fixed same windows",
+      "passed": true
+    },
+    {
+      "name": "run_first panel A recount",
+      "passed": true
+    },
+    {
+      "name": "run_first panel B recount",
+      "passed": true
+    },
+    {
+      "name": "run_first panel same windows",
+      "passed": true
+    },
+    {
+      "name": "run_first no skips and thread1",
+      "passed": true
+    },
+    {
+      "name": "torch_first fixed A recount",
+      "passed": true
+    },
+    {
+      "name": "torch_first fixed B recount",
+      "passed": true
+    },
+    {
+      "name": "torch_first fixed same windows",
+      "passed": true
+    },
+    {
+      "name": "torch_first panel A recount",
+      "passed": true
+    },
+    {
+      "name": "torch_first panel B recount",
+      "passed": true
+    },
+    {
+      "name": "torch_first panel same windows",
+      "passed": true
+    },
+    {
+      "name": "torch_first no skips and thread1",
+      "passed": true
+    },
+    {
+      "name": "torch first matches original identities",
+      "passed": true
+    },
+    {
+      "name": "run first and numpy first reproduce failed contents",
+      "passed": true
+    },
+    {
+      "name": "run first and numpy first per-component hashes same",
+      "passed": true
+    },
+    {
+      "name": "only signals and anchor targets differ",
+      "passed": true
+    },
+    {
+      "name": "CLI fixed_eval_set.json exact historical pin",
+      "passed": true
+    },
+    {
+      "name": "CLI pose_panel_set.json exact historical pin",
+      "passed": true
+    },
+    {
+      "name": "run-first array differences none",
+      "passed": true
+    },
+    {
+      "name": "array differences only signals and anchors",
+      "passed": true
+    },
+    {
+      "name": "diagnostic3 variants same contents",
+      "passed": true
+    },
+    {
+      "name": "diagnostic3 GPU and CPU same new identity",
+      "passed": true
+    },
+    {
+      "name": "failure at fixed identity and start5000",
+      "passed": true
+    },
+    {
+      "name": "fixed set guard before data stream and train loop",
+      "passed": true
+    },
+    {
+      "name": "v1 pins old wrapper exactly",
+      "passed": true
+    },
+    {
+      "name": "40 launcher tests green",
+      "passed": true
+    },
+    {
+      "name": "seven expected v1 pin failures reproduced",
+      "passed": true
+    }
+  ],
+  "n_checks": 42,
+  "historical_cli_identity_files": {
+    "fixed_eval_set.json": {
+      "sha256": "af2f7cb1f54449af22a8bac8566c3736117ab15699474cc8b9609babfa028af5",
+      "bytes": 22232
+    },
+    "pose_panel_set.json": {
+      "sha256": "7b21e1c079111a11685dcc46a4606cca5110619fbab854a2f69f51153741c018",
+      "bytes": 83267
+    }
+  },
+  "changed_components": [
+    "anchor_targets",
+    "signals"
+  ],
+  "array_differences": {
+    "arrays": 1204,
+    "different": 96,
+    "signals": {
+      "fixed0.signals[0]": {
+        "n_diff": 1,
+        "n": 68824,
+        "max_abs_diff": 2.9103830456733704e-11,
+        "max_abs_ref": 10.106337547302246,
+        "max_rel_diff": 7.138761023764007e-08
+      },
+      "fixed0.signals[10]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 9.094947017729282e-13,
+        "max_abs_ref": 59.501651763916016,
+        "max_rel_diff": 1.1386239342622304e-07
+      },
+      "fixed0.signals[11]": {
+        "n_diff": 2,
+        "n": 256000,
+        "max_abs_diff": 7.450580596923828e-09,
+        "max_abs_ref": 64.88648223876953,
+        "max_rel_diff": 8.100681753376364e-08
+      },
+      "fixed0.signals[13]": {
+        "n_diff": 2,
+        "n": 229376,
+        "max_abs_diff": 1.4901161193847656e-08,
+        "max_abs_ref": 10.848613739013672,
+        "max_rel_diff": 1.1443453148957942e-07
+      },
+      "fixed0.signals[14]": {
+        "n_diff": 2,
+        "n": 128000,
+        "max_abs_diff": 1.4551915228366852e-11,
+        "max_abs_ref": 152.8804473876953,
+        "max_rel_diff": 1.0660811464721936e-07
+      },
+      "fixed0.signals[16]": {
+        "n_diff": 2,
+        "n": 92448,
+        "max_abs_diff": 5.820766091346741e-11,
+        "max_abs_ref": 90.19386291503906,
+        "max_rel_diff": 1.297603054661399e-07
+      },
+      "fixed0.signals[17]": {
+        "n_diff": 1,
+        "n": 78848,
+        "max_abs_diff": 4.547473508864641e-13,
+        "max_abs_ref": 10.225810050964355,
+        "max_rel_diff": 6.315968714227932e-08
+      },
+      "fixed0.signals[1]": {
+        "n_diff": 2,
+        "n": 688128,
+        "max_abs_diff": 2.3283064365386963e-10,
+        "max_abs_ref": 465.8514099121094,
+        "max_rel_diff": 1.2756459855325163e-07
+      },
+      "fixed0.signals[23]": {
+        "n_diff": 1,
+        "n": 136192,
+        "max_abs_diff": 1.1368683772161603e-13,
+        "max_abs_ref": 11.543781280517578,
+        "max_rel_diff": 1.645088723336299e-07
+      },
+      "fixed0.signals[24]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 1.4210854715202004e-14,
+        "max_abs_ref": 66.34627532958984,
+        "max_rel_diff": 6.351335155446705e-08
+      },
+      "fixed0.signals[25]": {
+        "n_diff": 1,
+        "n": 128000,
+        "max_abs_diff": 5.960464477539063e-08,
+        "max_abs_ref": 506.16461181640625,
+        "max_rel_diff": 6.863583801063691e-08
+      },
+      "fixed0.signals[26]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 1.4551915228366852e-11,
+        "max_abs_ref": 82.75721740722656,
+        "max_rel_diff": 9.892196817522009e-08
+      },
+      "fixed0.signals[27]": {
+        "n_diff": 1,
+        "n": 229376,
+        "max_abs_diff": 4.547473508864641e-13,
+        "max_abs_ref": 10.845732688903809,
+        "max_rel_diff": 8.277137775689732e-08
+      },
+      "fixed0.signals[29]": {
+        "n_diff": 1,
+        "n": 128000,
+        "max_abs_diff": 1.1368683772161603e-13,
+        "max_abs_ref": 16.682762145996094,
+        "max_rel_diff": 1.8291442120161055e-07
+      },
+      "fixed0.signals[2]": {
+        "n_diff": 2,
+        "n": 256000,
+        "max_abs_diff": 3.725290298461914e-09,
+        "max_abs_ref": 48.54986572265625,
+        "max_rel_diff": 1.0842141669928344e-07
+      },
+      "fixed0.signals[31]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 9.313225746154785e-10,
+        "max_abs_ref": 87.93081665039062,
+        "max_rel_diff": 7.410535202191266e-08
+      },
+      "fixed0.signals[3]": {
+        "n_diff": 2,
+        "n": 256000,
+        "max_abs_diff": 9.313225746154785e-10,
+        "max_abs_ref": 132.2548370361328,
+        "max_rel_diff": 3.028559620073253e-06
+      },
+      "fixed0.signals[5]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 9.094947017729282e-13,
+        "max_abs_ref": 56.83427429199219,
+        "max_rel_diff": 5.968802264324827e-08
+      },
+      "fixed0.signals[6]": {
+        "n_diff": 9,
+        "n": 1032192,
+        "max_abs_diff": 1.1920928955078125e-07,
+        "max_abs_ref": 465.8522644042969,
+        "max_rel_diff": 1.1608445283244905e-07
+      },
+      "fixed0.signals[7]": {
+        "n_diff": 1,
+        "n": 136192,
+        "max_abs_diff": 1.862645149230957e-09,
+        "max_abs_ref": 10.718928337097168,
+        "max_rel_diff": 1.1040782553002105e-07
+      },
+      "fixed0.signals[8]": {
+        "n_diff": 1,
+        "n": 128000,
+        "max_abs_diff": 7.450580596923828e-09,
+        "max_abs_ref": 447.1199645996094,
+        "max_rel_diff": 6.830363149917592e-08
+      },
+      "fixed0.signals[9]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 2.2737367544323206e-13,
+        "max_abs_ref": 86.82636260986328,
+        "max_rel_diff": 7.193953740863139e-08
+      },
+      "fixed1.signals[10]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 5.684341886080802e-14,
+        "max_abs_ref": 77.14396667480469,
+        "max_rel_diff": 2.0398311713332734e-07
+      },
+      "fixed1.signals[13]": {
+        "n_diff": 1,
+        "n": 229376,
+        "max_abs_diff": 3.725290298461914e-09,
+        "max_abs_ref": 10.849556922912598,
+        "max_rel_diff": 6.104680372976436e-08
+      },
+      "fixed1.signals[14]": {
+        "n_diff": 1,
+        "n": 128000,
+        "max_abs_diff": 2.3283064365386963e-10,
+        "max_abs_ref": 232.08221435546875,
+        "max_rel_diff": 9.552054494088806e-08
+      },
+      "fixed1.signals[16]": {
+        "n_diff": 2,
+        "n": 256000,
+        "max_abs_diff": 4.76837158203125e-07,
+        "max_abs_ref": 96.08345031738281,
+        "max_rel_diff": 9.381331225911087e-08
+      },
+      "fixed1.signals[19]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 3.725290298461914e-09,
+        "max_abs_ref": 63.43507766723633,
+        "max_rel_diff": 9.425618813082722e-08
+      },
+      "fixed1.signals[20]": {
+        "n_diff": 2,
+        "n": 193536,
+        "max_abs_diff": 1.862645149230957e-09,
+        "max_abs_ref": 11.543753623962402,
+        "max_rel_diff": 7.536915624304955e-08
+      },
+      "fixed1.signals[23]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 1.4551915228366852e-11,
+        "max_abs_ref": 61.25736618041992,
+        "max_rel_diff": 1.0217843399492847e-07
+      },
+      "fixed1.signals[24]": {
+        "n_diff": 2,
+        "n": 128000,
+        "max_abs_diff": 2.9802322387695312e-08,
+        "max_abs_ref": 278.4397888183594,
+        "max_rel_diff": 1.1939289192030094e-07
+      },
+      "fixed1.signals[26]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 1.4551915228366852e-11,
+        "max_abs_ref": 57.76761245727539,
+        "max_rel_diff": 1.04951441067247e-07
+      },
+      "fixed1.signals[28]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 9.313225746154785e-10,
+        "max_abs_ref": 64.88809204101562,
+        "max_rel_diff": 6.040563835893344e-08
+      },
+      "fixed1.signals[29]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 7.275957614183426e-12,
+        "max_abs_ref": 52.72574234008789,
+        "max_rel_diff": 7.609647602546279e-08
+      },
+      "fixed1.signals[2]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 9.313225746154785e-10,
+        "max_abs_ref": 107.7807846069336,
+        "max_rel_diff": 6.379718008808349e-08
+      },
+      "fixed1.signals[4]": {
+        "n_diff": 1,
+        "n": 216496,
+        "max_abs_diff": 4.547473508864641e-13,
+        "max_abs_ref": 11.43453598022461,
+        "max_rel_diff": 6.337672188215682e-08
+      },
+      "fixed1.signals[6]": {
+        "n_diff": 2,
+        "n": 256000,
+        "max_abs_diff": 1.1641532182693481e-10,
+        "max_abs_ref": 107.78092956542969,
+        "max_rel_diff": 1.2151774939892764e-07
+      },
+      "fixed1.signals[7]": {
+        "n_diff": 2,
+        "n": 155648,
+        "max_abs_diff": 3.725290298461914e-09,
+        "max_abs_ref": 69.36845397949219,
+        "max_rel_diff": 8.976765438016782e-08
+      },
+      "fixed1.signals[9]": {
+        "n_diff": 1,
+        "n": 256000,
+        "max_abs_diff": 3.637978807091713e-12,
+        "max_abs_ref": 61.07621383666992,
+        "max_rel_diff": 6.859371094445584e-08
+      },
+      "panel0.signals[1]": {
+        "n_diff": 1,
+        "n": 128000,
+        "max_abs_diff": 1.8189894035458565e-12,
+        "max_abs_ref": 98.6147689819336,
+        "max_rel_diff": 6.000364582152011e-08
+      },
+      "panel1.signals[1]": {
+        "n_diff": 2,
+        "n": 128000,
+        "max_abs_diff": 9.313225746154785e-10,
+        "max_abs_ref": 35.28700637817383,
+        "max_rel_diff": 1.0645238794528901e-07
+      },
+      "panel1.signals[2]": {
+        "n_diff": 3,
+        "n": 128000,
+        "max_abs_diff": 2.3283064365386963e-10,
+        "max_abs_ref": 28.878265380859375,
+        "max_rel_diff": 9.34952022002039e-08
+      },
+      "panel1.signals[3]": {
+        "n_diff": 1,
+        "n": 128000,
+        "max_abs_diff": 7.450580596923828e-09,
+        "max_abs_ref": 17.508495330810547,
+        "max_rel_diff": 1.9442076561536553e-07
+      }
+    },
+    "max_other_abs": 3.938917316759216e-07
+  },
+  "old_wrapper_sha256": "0628ad6eb83e1f9c0be873925798f8cc9a320c1bcac98a001763f6345c7db863",
+  "new_wrapper_sha256": "ed4b2ca473ea2057d7dc3e9b102a2e49eadf42d0c89ee30ef41e7c761e926edb",
+  "diagnostic_fingerprints": {
+    "protocol": "scaling-diag-importorder-20261108-v4",
+    "slurm_job_id": "63864244",
+    "n_sessions": 101,
+    "n_fixed_sessions": 37,
+    "n_panel_recordings": 64,
+    "n_files": 412,
+    "n_bytes": 4369969809,
+    "elapsed_s": 15.7,
+    "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+    "roots": [
+      "/leonardo_work/IscrB_WearUsFM/data/processed",
+      "/leonardo_scratch/large/userexternal/sbenatti/data/processed"
+    ]
+  },
+  "tests": {
+    "launcher_passed": 40,
+    "launcher_seconds": 45.62,
+    "expected_old_plan_failures": 7,
+    "targeted_pin_seconds": 3.32
+  },
+  "assessment": "Minimal code correction is technically approved for the diagnosed path; operational recovery package is not yet released because v1 pins, output directory, IDs and retry accounting require a new immutable plan. Historical identity equality is demonstrated; GPU trajectory bitwise equality is not newly proven.",
+  "limits": [
+    "Diagnostic array magnitudes cover only dumped first two fixed/panel batches, not all training examples.",
+    "Current412 fingerprints are a future baseline; not a full historical hash proof of75760posefiles.",
+    "dladdr/CDLL global symbols and lazy MKL loading corroborate library mechanism, while causal import-order identity reproduction is stronger than threadpool inventory alone."
+  ]
+}

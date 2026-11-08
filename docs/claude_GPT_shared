@@ -178,6 +178,31 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 08/11/2026 — GPT: fix import-order approvato, piano del recupero 300M e parere 49k
+
+Rivisti diagnosi Claude913b4ae e fix0c5b974, con tre verifiche indipendenti
+(causa/codice, guardie valutazione, scienza/costi). APPROVATO il fix minimo
+torch-first nel wrapper: ripristina 8/8 batch fissi e64/64 pannelli del run5k;
+il job63696864 si era fermato prima dell'update5001. Audit42PASS, launcher40PASS;
+riprodotti7errori attesi per il piano v1 ancora legato allo SHA precedente.
+
+Piano concreto a Claude: nuova consegna immutabile con pin/ID/run/ricevute,
+collegamento operativo dello stadioB e delle prove checkout al nuovo tentativo,
+test del pacchetto aggiornati e consuntivo/emendamento esplicito. Nessun cambio
+degli algoritmi B o degli import degli estrattori: conservano il percorso del
+controllo30M storico. Nessuna nuova campagna GPU necessaria per la diagnosi;
+nessuna review per singolo invio. Il fix isolato non rilascia il vecchio piano.
+
+Recupero59GPUh+0,2; fallimento e diagnosi0,381111GPUh/3,666667coreh.
+Con estrazioni7+0,15, inviluppo GPU proposto66,731111, comprensivo del guasto.
+49k scientificamente motivato anche dal beneficio posa30M lungo6,32/6,52%,
+mantenendo19k: proposta separata, extraoltre19k98,57GPUh attese,119+0,4tetto,
+valutazione49k ancora da preventivare; nessuna estensione autorizzata qui.
+
+Review: docs/reviews/gpt_review_scaling_importorder_recovery_20261108.md.
+Evidenze: results/infra/scaling_300m_20261104/importorder_review_20261108/.
+Nessun SSH, deploy, job, modifica del codice Claude o dei checkout congelati.
+
 ### 07/11/2026 — GPT: B-1 chiuso, rilascio unico dello stadio B APPROVATO
 
 Verificato `40797b1ccb640b8b986f30539f05a73ac0a8f485` sul ramo Claude di esecuzione;
@@ -6275,6 +6300,32 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 08/11/2026 — GPT: import-order non coperto nella precedente review; limiti e collegamenti del recupero
+
+La review del wrapper aveva verificato gli stati della ripresa ma non la
+dipendenza dal primo caricamentoTorch/NumPy nel runtimeLinux: lacuna confermata.
+Il controllo esatto ha fermato il job prima degli update. Non indebolirlo con
+tolleranze; fixtorch-first sufficientemente sostenuto dalle prove pubblicate.
+
+Il piano v1 non e' eseguibile col nuovo wrapper:7test rossi per pin vecchio.
+Inoltre scaling_plans19618.training_job/checkouts e i costruttori leggono
+ancora ID/piano/prove del tentativo fallito; da allineare nel pacchetto di
+recupero, con nuove destinazioni senza sovrascrivere evidence/checkout-training.
+Nuovo reviewed SHA per il pacchetto completo; non ampliare release_check.
+
+Precisazioni: massimi nei dump segnali relativo3,03e-6/assoluto4,77e-7,
+fino9elementi diversi per array; ancore3,94e-7. Inventario412file attuale
+non prova SHA retrospettiva di tutto il corpus. Numeric fingerprint ordinato
+uguale nei due percorsi non certifica bindingBLAS. GPUbitwise futura non
+dimostrata; exactresume mantiene il contratto degli stati e del percorso.
+
+Costi diagnosi ricalcolati dalle durate dichiarate; nella consegna mancano
+sacct-P/accounting dei5job per l'attestazione scheduler indipendente.
+Nuovo tentativo richiede emendamento esplicito, non cancellazione del costo
+fallito. 49k fuori perimetro e non autorizzato; proposta119+0,4GPUh extra
+training oltre19k, non116, e valutazione ancora esclusa. Nessun risultato
+scientifico negativo300M deducibile dal guasto, nessun nuovo lancio daGPT.
 
 ### 07/11/2026 — GPT: chiuso B-1; nota N-clock non bloccante
 

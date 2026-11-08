@@ -1,0 +1,72 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+________ test_published_plan_is_valid_and_bound_to_the_current_sources _________
+tests/cpu/test_scaling_continue.py:60: in test_published_plan_is_valid_and_bound_to_the_current_sources
+    assert plan["execution_source_sha256"] == {p: R.sha256_file(ROOT / p) for p in C.EXECUTION_SOURCES}
+E   AssertionError: assert {'scripts/sca...98a45b7f7aa0'} == {'scripts/sca...98a45b7f7aa0'}
+E
+E     Omitting 3 identical items, use -vv to show
+E     Differing items:
+E     {'scripts/scaling_continue.py': '0628ad6eb83e1f9c0be873925798f8cc9a320c1bcac98a001763f6345c7db863'} != {'scripts/scaling_continue.py': 'ed4b2ca473ea2057d7dc3e9b102a2e49eadf42d0c89ee30ef41e7c761e926edb'}
+E     Use -v to get more diff
+_ test_job_seeds_a_new_directory_trains_once_and_certifies_the_endpoint_with_the_5000_run_untouched _
+tests/cpu/test_scaling_continue.py:751: in test_job_seeds_a_new_directory_trains_once_and_certifies_the_endpoint_with_the_5000_run_untouched
+    receipt = C.execute(plan_path, CODE, out)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/scaling_continue.py:449: in execute
+    states["execution_source:" + path] = M.resolve_pin({"path": str(M._contained_source(path, ROOT)), "sha256": sha})
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/scaling_train.py:71: in resolve_pin
+    require(state["sha256"] == pin["sha256"] and ("bytes" not in pin or state["bytes"] == pin["bytes"]),
+scripts/tokenizer_train.py:32: in require
+    raise ValueError(message)
+E   ValueError: artifact SHA/size mismatch: /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-fix/scripts/scaling_continue.py
+_ test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly[trainer_fails] _
+tests/cpu/test_scaling_continue.py:796: in test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly
+    assert not (out / "receipt.json").exists() and (out / "launch.json").exists()
+E   AssertionError: assert (not False and False)
+E    +  where False = exists()
+E    +    where exists = (PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-589/test_job_without_a_complete_un0/receipts') / 'receipt.json').exists
+E    +  and   False = exists()
+E    +    where exists = (PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-589/test_job_without_a_complete_un0/receipts') / 'launch.json').exists
+_ test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly[time_limit] _
+tests/cpu/test_scaling_continue.py:796: in test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly
+    assert not (out / "receipt.json").exists() and (out / "launch.json").exists()
+E   AssertionError: assert (not False and False)
+E    +  where False = exists()
+E    +    where exists = (PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-589/test_job_without_a_complete_un1/receipts') / 'receipt.json').exists
+E    +  and   False = exists()
+E    +    where exists = (PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-589/test_job_without_a_complete_un1/receipts') / 'launch.json').exists
+_ test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly[5000_modified] _
+tests/cpu/test_scaling_continue.py:796: in test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly
+    assert not (out / "receipt.json").exists() and (out / "launch.json").exists()
+E   AssertionError: assert (not False and False)
+E    +  where False = exists()
+E    +    where exists = (PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-589/test_job_without_a_complete_un2/receipts') / 'receipt.json').exists
+E    +  and   False = exists()
+E    +    where exists = (PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-589/test_job_without_a_complete_un2/receipts') / 'launch.json').exists
+_ test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly[5000_gains_file] _
+tests/cpu/test_scaling_continue.py:796: in test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly
+    assert not (out / "receipt.json").exists() and (out / "launch.json").exists()
+E   AssertionError: assert (not False and False)
+E    +  where False = exists()
+E    +    where exists = (PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-589/test_job_without_a_complete_un3/receipts') / 'receipt.json').exists
+E    +  and   False = exists()
+E    +    where exists = (PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-589/test_job_without_a_complete_un3/receipts') / 'launch.json').exists
+_ test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly[missing_rank] _
+tests/cpu/test_scaling_continue.py:796: in test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly
+    assert not (out / "receipt.json").exists() and (out / "launch.json").exists()
+E   AssertionError: assert (not False and False)
+E    +  where False = exists()
+E    +    where exists = (PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-589/test_job_without_a_complete_un4/receipts') / 'receipt.json').exists
+E    +  and   False = exists()
+E    +    where exists = (PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-589/test_job_without_a_complete_un4/receipts') / 'launch.json').exists
+=========================== short test summary info ============================
+FAILED tests/cpu/test_scaling_continue.py::test_published_plan_is_valid_and_bound_to_the_current_sources
+FAILED tests/cpu/test_scaling_continue.py::test_job_seeds_a_new_directory_trains_once_and_certifies_the_endpoint_with_the_5000_run_untouched
+FAILED tests/cpu/test_scaling_continue.py::test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly[trainer_fails]
+FAILED tests/cpu/test_scaling_continue.py::test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly[time_limit]
+FAILED tests/cpu/test_scaling_continue.py::test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly[5000_modified]
+FAILED tests/cpu/test_scaling_continue.py::test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly[5000_gains_file]
+FAILED tests/cpu/test_scaling_continue.py::test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_be_retried_blindly[missing_rank]
+7 failed, 110 deselected in 3.32s

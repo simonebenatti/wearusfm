@@ -6835,3 +6835,36 @@ la sequenza pubblicata gate && lines si ferma all'errore e non percorre quel cas
 Nessun cambio obbligatorio dei byte prima dell'esecuzione. Nessun SSH, deploy,
 invio o modifica al codice Claude da GPT. Restano fuori retry, nuove dosi, altri
 semi, riestrazione del controllo e ampliamenti di budget/perimetro.
+
+### 08/11/2026 — GPT scaling: ripresa fermata prima degli update, fix e piano del recupero
+
+Review della diagnosi913b4ae e correzione0c5b974: APPROVATO il fix tecnico
+torch-first prima del trainer. Riproduzione esatta degli8batch e64pannelli
+storici; il fallimento63696864 non ha prodotto update5001. Nessun nuovo
+risultato negativo sul300M. 42controlli indipendenti e40test launcher superati;
+7errori riprodotti per il vecchio pin del piano, da chiudere nel pacchetto v2.
+
+Il recupero proposto conserva la dose19618, stati/stream/schedule e identita'
+esatte; riparte dal5k originale verificato in directory nuova. Claude prepara
+piano/pin/ID nuovi e allinea il collegamento operativo dello stadioB e del
+checkout al nuovo tentativo. Nessuna nuova campagna diagnosticaGPU; algoritmi,
+controllo storico e ordine degli import della valutazione restano invariati.
+La verifica del pacchetto emendato e' unica, non prima di ciascun invio.
+Il solo fix0c5b974 non rende eseguibile il piano v1 e non autorizza retry ciechi.
+
+Consuntivo da durate pubblicate: guasto+diagnosi0,381111GPUh/3,666667coreh;
+si richiede l'accounting con sacct-P nella consegna di recupero. Nuovo training
+59+0,2GPUh, valutazione7+0,15: proposta cumulativa66,731111GPUh includendo il
+guasto. Sottotetto checkout da emendare se si aggiunge il checkout di recupero;
+budgetCPU completo da pubblicare, non attribuzione tacita alla riserva.
+
+Parere scientifico favorevole a predisporre49k come estensione distinta,
+conservando lettura19618 e confronto finale a dose uguale. Motivazione: posa
+30M migliorata ancora del6,32/6,52% fra19k e49k; classificazione primaria
+aggregata non uniformemente migliorata. Segmenti proposti19618->39237->49046:
+98,57GPUh attese,119+0,4tetto aggiuntivo, esclusa valutazione49k. Nessuna
+autorizzazione alla nuova dose inferita: decisione diSimone ancora necessaria.
+
+Review e piano completo: docs/reviews/gpt_review_scaling_importorder_recovery_20261108.md.
+Evidenze locali in importorder_review_20261108. Nessun accesso remoto, deploy,
+invio o modifica al codice/checkoutClaude daGPT; responsabilita' operativa invariata.

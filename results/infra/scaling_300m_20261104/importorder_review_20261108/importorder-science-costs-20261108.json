@@ -1,0 +1,129 @@
+{
+  "source_pins": {
+    "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json": "32e0a33e76da1ee58a853c0229414ee66e1bdddf280da3dfbe21040831e771b8",
+    "results/infra/scaling_300m_20261104/scientific5000_completion_20261105/summary.json": "f0975c4de0f810b0b5782984e699b50c41c1c67ad930aa9dd0bd650979182af9"
+  },
+  "selected_seconds_per_update": 2.9330107113361357,
+  "recipe": "same 4 GPUs, global batch32, WSD total49046/warmup1962/decay39237; no restart or shortening of schedule",
+  "formula": "ceil900(steps*max(14665.05355668068/5000,2.7666786608873997)*1.20+1200) per segment",
+  "segments": [
+    {
+      "start": 5000,
+      "end": 19618,
+      "steps": 14618,
+      "updates_projected_seconds": 42874.75057831163,
+      "updates_projected_gpu_hours": 47.638611753679584,
+      "expected_with_20min_overhead_seconds": 44074.75057831163,
+      "expected_with_20min_overhead_gpu_hours": 48.97194508701292,
+      "requested_cap_seconds": 53100,
+      "requested_cap_gpu_hours": 59.0,
+      "requested_cap_allocated_cpu_hours": 472.0,
+      "fits_24h_partition": true,
+      "scheduler_grace_gpu_hours_at_180s": 0.2
+    },
+    {
+      "start": 19618,
+      "end": 39237,
+      "steps": 19619,
+      "updates_projected_seconds": 57542.73714570364,
+      "updates_projected_gpu_hours": 63.93637460633738,
+      "expected_with_20min_overhead_seconds": 58742.73714570364,
+      "expected_with_20min_overhead_gpu_hours": 65.26970793967071,
+      "requested_cap_seconds": 71100,
+      "requested_cap_gpu_hours": 79.0,
+      "requested_cap_allocated_cpu_hours": 632.0,
+      "fits_24h_partition": true,
+      "scheduler_grace_gpu_hours_at_180s": 0.2
+    },
+    {
+      "start": 39237,
+      "end": 49046,
+      "steps": 9809,
+      "updates_projected_seconds": 28769.902067496154,
+      "updates_projected_gpu_hours": 31.966557852773505,
+      "expected_with_20min_overhead_seconds": 29969.902067496154,
+      "expected_with_20min_overhead_gpu_hours": 33.29989118610684,
+      "requested_cap_seconds": 36000,
+      "requested_cap_gpu_hours": 40.0,
+      "requested_cap_allocated_cpu_hours": 320.0,
+      "fits_24h_partition": true,
+      "scheduler_grace_gpu_hours_at_180s": 0.2
+    }
+  ],
+  "sum_5000_to_49046_three_segments": {
+    "steps": 44046,
+    "updates_projected_seconds": 129187.38979151142,
+    "updates_projected_gpu_hours": 143.54154421279048,
+    "expected_with_20min_overhead_seconds": 132787.38979151144,
+    "expected_with_20min_overhead_gpu_hours": 147.54154421279046,
+    "requested_cap_seconds": 160200,
+    "requested_cap_gpu_hours": 178.0,
+    "requested_cap_allocated_cpu_hours": 1424.0
+  },
+  "extra_19618_to_49046_two_segments": {
+    "steps": 29428,
+    "updates_projected_seconds": 86312.6392131998,
+    "updates_projected_gpu_hours": 95.90293245911089,
+    "expected_with_20min_overhead_seconds": 88712.6392131998,
+    "expected_with_20min_overhead_gpu_hours": 98.56959912577756,
+    "requested_cap_seconds": 107100,
+    "requested_cap_gpu_hours": 119.0,
+    "requested_cap_allocated_cpu_hours": 952.0
+  },
+  "invalid_single_job_19618_to_49046": {
+    "start": 19618,
+    "end": 49046,
+    "steps": 29428,
+    "updates_projected_seconds": 86312.6392131998,
+    "updates_projected_gpu_hours": 95.90293245911089,
+    "expected_with_20min_overhead_seconds": 87512.6392131998,
+    "expected_with_20min_overhead_gpu_hours": 97.23626579244423,
+    "requested_cap_seconds": 105300,
+    "requested_cap_gpu_hours": 117.0,
+    "requested_cap_allocated_cpu_hours": 936.0,
+    "fits_24h_partition": false,
+    "scheduler_grace_gpu_hours_at_180s": 0.2
+  },
+  "past_gpu_costs": {
+    "preflight_63526191": {
+      "seconds": 546,
+      "gpus": 4,
+      "basis": "docs/scaling_300m_execution_20261104.md:112 published duration",
+      "gpu_hours": 0.6066666666666667
+    },
+    "production_memory_63527446": {
+      "seconds": 1619,
+      "gpus": 4,
+      "basis": "production_memory_63527446/accounting.json allocation row",
+      "gpu_hours": 1.798888888888889
+    },
+    "scientific5000_63532932": {
+      "seconds": 14761,
+      "gpus": 4,
+      "basis": "scientific5000_completion_20261105/sacct.txt allocation row",
+      "gpu_hours": 16.40111111111111
+    },
+    "extractions_5000_five_jobs": {
+      "gpu_hours": 4.8533333333333335,
+      "basis": "five published accounting.json files, four classification plus pose"
+    },
+    "failed_continuation_63696864": {
+      "seconds": 205,
+      "gpus": 4,
+      "basis": "diagnosis README.md published duration 3m25s; no resumed update accepted",
+      "gpu_hours": 0.22777777777777777
+    },
+    "diagnosis_gpu_63861825": {
+      "seconds": 138,
+      "gpus": 4,
+      "basis": "diagnosis README.md published duration 2m18s; other three diagnostic jobs CPU only",
+      "gpu_hours": 0.15333333333333332
+    }
+  },
+  "past_gpu_hours_sum": 24.041111111111107,
+  "failed_and_diagnosis_gpu_hours": 0.38111111111111107,
+  "past_scope": "line1 preflight+S3+scientific5k+five extractions+failed continuation+diagnosis; excludes historical30M training and line2/line3",
+  "limitations": "Timing extrapolation, not measurement at later dose. Queue wait excluded. 49k extractions/CPU fits and metadata checkouts not budgeted here. Original19k evaluation caps7GPUh/350CPUh remain separate; cannot claim reusable49k control fit without source/support/recipe audit.",
+  "authorized_new_49046_budget": false,
+  "submission_performed": false
+}
