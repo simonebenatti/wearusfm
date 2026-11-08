@@ -135,3 +135,31 @@ def test_unregistered_plan_or_output_stops_before_training(launch, bad):
     if bad == "code": kwargs["receipt"] = code / "output"
     result = run(**kwargs)
     assert result.returncode != 0 and '"argv"' not in result.stdout
+
+
+def _first_imports(script):
+    """Top-level imports of torch, numpy, scipy and wearusfm in order of first appearance."""
+    import ast
+    seen = []
+    for node in ast.parse(Path(script).read_text()).body:
+        names = []
+        if isinstance(node, ast.Import):
+            names = [alias.name for alias in node.names]
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            names = [node.module]
+        for name in names:
+            root = name.split(".")[0]
+            if root in ("torch", "numpy", "scipy", "wearusfm") and root not in seen:
+                seen.append(root)
+    return seen
+
+
+def test_worker_imports_torch_before_numpy_and_wearusfm_like_the_trainer_entry_point():
+    """Job 63696864 (08/11/2026) failed at resume because the recomputed fixed-set identity differed from the seeded one with
+    identical windows, data, code and configuration: the worker imported wearusfm.training.run (hence numpy) before torch, so numpy
+    bound its `64_`-suffixed BLAS/LAPACK symbols to its own OpenBLAS; with torch first (as `torchrun scripts/train_jepa.py`, the 5000
+    run) MKL, published globally by libtorch_global_deps, provides them, and sosfiltfilt initial conditions (np.linalg.solve) and anchor
+    targets (power @ bands) come out bit-identical to the 5000 run (diagnosis jobs 63861166 and 63864244). The order is a contract."""
+    for script in ("scripts/scaling_continue.py", "scripts/train_jepa.py"):
+        order = _first_imports(ROOT / script)
+        assert order and order[0] == "torch", (script, order)
