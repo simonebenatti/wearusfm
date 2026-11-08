@@ -1,0 +1,87 @@
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1 @ 73524b63be534f81b3db4ade4b7fc7f47129a0f3
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+diag4 job 63864244 su login08.leonardo.local, checkout /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1 @ 73524b63be534f81b3db4ade4b7fc7f47129a0f3, uscite /leonardo_work/IscrB_WearUsFM/wearusfm_runs/diag/scaling_300m_20261104/fixedeval_19618_20261108_c
+argomenti: 75
+=== variante numpy_first (11:34:08) ===
+DIAG4 numpy_first: insieme fisso = A 0/8, = B 8/8; pannello = A 8/64, = B 64/64; finestre uguali ad A True/True; ftz {'ftz': False, 'daz': False}; salti 0; thread torch 1; librerie 229; moduli 1594
+=== variante torch_first (11:35:08) ===
+DIAG4 torch_first: insieme fisso = A 8/8, = B 0/8; pannello = A 64/64, = B 8/64; finestre uguali ad A True/True; ftz {'ftz': False, 'daz': False}; salti 0; thread torch 1; librerie 231; moduli 1594
+=== variante run_first (11:35:40) ===
+DIAG4 run_first: insieme fisso = A 0/8, = B 8/8; pannello = A 8/64, = B 64/64; finestre uguali ad A True/True; ftz {'ftz': False, 'daz': False}; salti 0; thread torch 1; librerie 229; moduli 1594
+=== CLI pura (11:36:12) ===
+CLI pura: file presenti dopo 46 s
+total 41
+drwxr-xr-x. 2 sbenatti interactive    4096 Nov  8 11:36 .
+drwxr-xr-x. 6 sbenatti interactive    4096 Nov  8 11:36 ..
+-rw-r--r--. 1 sbenatti interactive    3215 Nov  8 11:36 config.json
+-rw-r--r--. 1 sbenatti interactive       0 Nov  8 11:36 fixed_eval.jsonl
+-rw-r--r--. 1 sbenatti interactive   22232 Nov  8 11:36 fixed_eval_set.json
+-rw-r--r--. 1 sbenatti interactive       0 Nov  8 11:36 metrics.jsonl
+-rw-r--r--. 1 sbenatti interactive 1757497 Nov  8 11:36 origin_sessions.json
+-rw-r--r--. 1 sbenatti interactive       0 Nov  8 11:36 pose_panel.jsonl
+-rw-r--r--. 1 sbenatti interactive   83267 Nov  8 11:36 pose_panel_set.json
+-rw-r--r--. 1 sbenatti interactive     210 Nov  8 11:36 pose_provenance.json
+preset 300m: 292.1 M parametri, 19618 passi, batch 32, dispositivo cpu, 19879 scale di sessione, ancora RVQ spenta, tokenizer: finestra 100 ms, passo 25 ms, overlap 75 ms, attivazione gelu, raggio query 0 patch
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+=== impronte (11:37:02) ===
+IMPRONTE: {"protocol": "scaling-diag-importorder-20261108-v4", "slurm_job_id": "63864244", "n_sessions": 101, "n_fixed_sessions": 37, "n_panel_recordings": 64, "n_files": 412, "n_bytes": 4369969809, "elapsed_s": 15.7, "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose", "roots": ["/leonardo_work/IscrB_WearUsFM/data/processed", "/leonardo_scratch/large/userexternal/sbenatti/data/processed"]}
+=== sintesi (11:37:21) ===
+TABELLA (hash uguali ad A = run 5000 del 05/11, a B = ricalcolo di ieri; insieme fisso su 8, pannello su 64):
+  numpy_first  {"fixed_A": 0, "fixed_B": 8, "panel_A": 8, "panel_B": 64, "windows_A": true}
+  torch_first  {"fixed_A": 8, "fixed_B": 0, "panel_A": 64, "panel_B": 8, "windows_A": true}
+  run_first    {"fixed_A": 0, "fixed_B": 8, "panel_A": 8, "panel_B": 64, "windows_A": true}
+  plain_cli    {"fixed_A": 8, "fixed_B": 0, "panel_A": 64, "panel_B": 8, "windows_A": true}
+DIFFERENZE numeriche torch_first vs numpy_first: 1204 array, 96 diversi
+    fixed0.anchor_targets[11].log_env {"n_diff": 61, "n": 5120, "max_abs_diff": 6.782265721261282e-13, "max_abs_ref": 2.368173061771657, "max_rel_diff": 1.655984012461242e-10}
+    fixed0.anchor_targets[11].log_rms {"n_diff": 3, "n": 5120, "max_abs_diff": 2.6627533511458523e-11, "max_abs_ref": 3.331301449898906, "max_rel_diff": 7.995043596387024e-11}
+    fixed0.anchor_targets[13].log_env {"n_diff": 60, "n": 4480, "max_abs_diff": 7.072120666862247e-13, "max_abs_ref": 1.1336879072864479, "max_rel_diff": 1.4349886230009615e-12}
+    fixed0.anchor_targets[13].log_rms {"n_diff": 4, "n": 4480, "max_abs_diff": 1.0432543717797671e-11, "max_abs_ref": 1.4684592570408206, "max_rel_diff": 1.612289010893031e-11}
+    fixed0.anchor_targets[13].ms_slow {"n_diff": 12, "n": 107520, "max_abs_diff": 2.0432439651330014e-07, "max_abs_ref": 11.547287228265395, "max_rel_diff": 7.803794976463062e-08}
+    fixed0.anchor_targets[16].log_rms {"n_diff": 2, "n": 1920, "max_abs_diff": 1.3322676295501878e-15, "max_abs_ref": 4.050834263792824, "max_rel_diff": 3.591042146489462e-15}
+    fixed0.anchor_targets[1].log_env {"n_diff": 40, "n": 13440, "max_abs_diff": 8.326672684688674e-16, "max_abs_ref": 5.800569187639522, "max_rel_diff": 2.895949939912363e-15}
+    fixed0.anchor_targets[1].log_rms {"n_diff": 3, "n": 13440, "max_abs_diff": 2.0414225865295066e-14, "max_abs_ref": 5.434008671548053, "max_rel_diff": 3.049267828941899e-13}
+    fixed0.anchor_targets[25].band_shape {"n_diff": 10, "n": 12800, "max_abs_diff": 7.410373115135371e-08, "max_abs_ref": 9.527988464083716, "max_rel_diff": 2.282558983752765e-08}
+    fixed0.anchor_targets[25].log_env {"n_diff": 20, "n": 2560, "max_abs_diff": 3.053124419949427e-11, "max_abs_ref": 4.4091532773298, "max_rel_diff": 1.1567358779503408e-10}
+    fixed0.anchor_targets[25].log_rms {"n_diff": 2, "n": 2560, "max_abs_diff": 8.589455813279301e-10, "max_abs_ref": 5.479431753764172, "max_rel_diff": 9.202111311116478e-09}
+    fixed0.anchor_targets[2].log_env {"n_diff": 21, "n": 5120, "max_abs_diff": 6.961098364399732e-14, "max_abs_ref": 2.0434280964318114, "max_rel_diff": 2.2504062110343113e-13}
+    fixed0.anchor_targets[2].log_rms {"n_diff": 1, "n": 5120, "max_abs_diff": 1.047884001792454e-12, "max_abs_ref": 2.834610873477318, "max_rel_diff": 2.3233041707603266e-12}
+    fixed0.anchor_targets[31].log_env {"n_diff": 36, "n": 5120, "max_abs_diff": 6.661338147750939e-16, "max_abs_ref": 2.7249904154541524, "max_rel_diff": 5.691929840402435e-16}
+    fixed0.anchor_targets[31].log_rms {"n_diff": 3, "n": 5120, "max_abs_diff": 6.217248937900877e-15, "max_abs_ref": 3.5457336772066625, "max_rel_diff": 3.492618787772504e-15}
+    fixed0.anchor_targets[3].log_env {"n_diff": 20, "n": 5120, "max_abs_diff": 2.3037127760972e-15, "max_abs_ref": 2.7076008042348856, "max_rel_diff": 1.0261598430196909e-14}
+    fixed0.anchor_targets[3].log_rms {"n_diff": 1, "n": 5120, "max_abs_diff": 1.6042722705833512e-13, "max_abs_ref": 3.638643335612628, "max_rel_diff": 4.056110429673171e-13}
+    fixed0.anchor_targets[6].band_shape {"n_diff": 10, "n": 100800, "max_abs_diff": 9.404543721558412e-08, "max_abs_ref": 7.65640824304122, "max_rel_diff": 2.8258212306441815e-08}
+    fixed0.anchor_targets[6].log_env {"n_diff": 148, "n": 20160, "max_abs_diff": 3.8773712018880246e-10, "max_abs_ref": 5.800570902261232, "max_rel_diff": 1.228687474233055e-09}
+    fixed0.anchor_targets[6].log_rms {"n_diff": 10, "n": 20160, "max_abs_diff": 2.7463782220626953e-09, "max_abs_ref": 5.542294650333952, "max_rel_diff": 3.387126011078527e-08}
+    fixed0.anchor_targets[6].ms_fast {"n_diff": 1, "n": 120960, "max_abs_diff": 1.8206929897068846e-07, "max_abs_ref": 16.44536942914332, "max_rel_diff": 9.734109858544054e-08}
+    fixed0.anchor_targets[6].ms_slow {"n_diff": 36, "n": 483840, "max_abs_diff": 1.6102515409954776e-07, "max_abs_ref": 13.981436411925968, "max_rel_diff": 4.021702692490716e-08}
+    fixed0.anchor_targets[7].log_env {"n_diff": 34, "n": 2660, "max_abs_diff": 8.43769498715119e-15, "max_abs_ref": 1.175225859635166, "max_rel_diff": 1.3083001276081662e-14}
+    fixed0.anchor_targets[7].log_rms {"n_diff": 3, "n": 2660, "max_abs_diff": 8.237854842718662e-14, "max_abs_ref": 1.4684809127817688, "max_rel_diff": 8.200376623472356e-14}
+    fixed0.anchor_targets[7].ms_slow {"n_diff": 8, "n": 63840, "max_abs_diff": 1.1460728477352689e-07, "max_abs_ref": 10.183359123468838, "max_rel_diff": 8.508809021702781e-08}
+    fixed0.anchor_targets[8].log_env {"n_diff": 20, "n": 2560, "max_abs_diff": 3.552713678800501e-14, "max_abs_ref": 4.409152972890996, "max_rel_diff": 2.2710713027856745e-14}
+    fixed0.anchor_targets[8].log_rms {"n_diff": 1, "n": 2560, "max_abs_diff": 1.885824829628291e-12, "max_abs_ref": 5.158057355401454, "max_rel_diff": 1.7488506894822042e-12}
+    fixed0.signals[0] {"n_diff": 1, "n": 68824, "max_abs_diff": 2.9103830456733704e-11, "max_abs_ref": 10.106337547302246, "max_rel_diff": 7.138761023764007e-08}
+    fixed0.signals[10] {"n_diff": 1, "n": 256000, "max_abs_diff": 9.094947017729282e-13, "max_abs_ref": 59.501651763916016, "max_rel_diff": 1.1386239342622304e-07}
+    fixed0.signals[11] {"n_diff": 2, "n": 256000, "max_abs_diff": 7.450580596923828e-09, "max_abs_ref": 64.88648223876953, "max_rel_diff": 8.100681753376364e-08}
+    fixed0.signals[13] {"n_diff": 2, "n": 229376, "max_abs_diff": 1.4901161193847656e-08, "max_abs_ref": 10.848613739013672, "max_rel_diff": 1.1443453148957942e-07}
+    fixed0.signals[14] {"n_diff": 2, "n": 128000, "max_abs_diff": 1.4551915228366852e-11, "max_abs_ref": 152.8804473876953, "max_rel_diff": 1.0660811464721936e-07}
+    fixed0.signals[16] {"n_diff": 2, "n": 92448, "max_abs_diff": 5.820766091346741e-11, "max_abs_ref": 90.19386291503906, "max_rel_diff": 1.297603054661399e-07}
+    fixed0.signals[17] {"n_diff": 1, "n": 78848, "max_abs_diff": 4.547473508864641e-13, "max_abs_ref": 10.225810050964355, "max_rel_diff": 6.315968714227932e-08}
+    fixed0.signals[1] {"n_diff": 2, "n": 688128, "max_abs_diff": 2.3283064365386963e-10, "max_abs_ref": 465.8514099121094, "max_rel_diff": 1.2756459855325163e-07}
+    fixed0.signals[23] {"n_diff": 1, "n": 136192, "max_abs_diff": 1.1368683772161603e-13, "max_abs_ref": 11.543781280517578, "max_rel_diff": 1.645088723336299e-07}
+    fixed0.signals[24] {"n_diff": 1, "n": 256000, "max_abs_diff": 1.4210854715202004e-14, "max_abs_ref": 66.34627532958984, "max_rel_diff": 6.351335155446705e-08}
+    fixed0.signals[25] {"n_diff": 1, "n": 128000, "max_abs_diff": 5.960464477539063e-08, "max_abs_ref": 506.16461181640625, "max_rel_diff": 6.863583801063691e-08}
+    fixed0.signals[26] {"n_diff": 1, "n": 256000, "max_abs_diff": 1.4551915228366852e-11, "max_abs_ref": 82.75721740722656, "max_rel_diff": 9.892196817522009e-08}
+    fixed0.signals[27] {"n_diff": 1, "n": 229376, "max_abs_diff": 4.547473508864641e-13, "max_abs_ref": 10.845732688903809, "max_rel_diff": 8.277137775689732e-08}
+DIFFERENZE numeriche run_first vs numpy_first: 1204 array, 0 diversi
+diag4 conclusa (11:37:24); uscite in /leonardo_work/IscrB_WearUsFM/wearusfm_runs/diag/scaling_300m_20261104/fixedeval_19618_20261108_c

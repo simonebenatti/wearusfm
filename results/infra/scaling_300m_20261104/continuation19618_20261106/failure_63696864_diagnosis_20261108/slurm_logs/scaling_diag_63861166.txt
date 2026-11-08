@@ -1,0 +1,20 @@
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1 @ 73524b63be534f81b3db4ade4b7fc7f47129a0f3
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+nodo login08.leonardo.local; cpu: model name	: Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz; flags avx512: avx512f
+preset 300m: 292.1 M parametri, 19618 passi, batch 32, dispositivo cpu, 19879 scale di sessione, ancora RVQ spenta, tokenizer: finestra 100 ms, passo 25 ms, overlap 75 ms, attivazione gelu, raggio query 0 patch
+{"diagnosis": "done"}
+FISSO: due volte identico True | uguale a diag1 True | uguale al seme False | hash uguali al seme 0 / 8
+COMPONENTI diverse fra le due esecuzioni: []
+PANNELLO: {"identical": false, "key_equal": {"batch_sha256": false, "excluded": true, "mask_strategy": true, "n_valid": true, "n_valid_per_joint": true, "pose_stats_sha256": true, "recordings": true, "sampling": true, "schema_version": true, "seed": true, "users": true, "window_s": true, "window_users": true, "windows": true}, "n_batches": [64, 64], "hash_equal_count": 8, "timing_s": 23.0}
+STREAM: [{"index": 0, "metrics_step": null}, {"index": 1, "metrics_step": null}, {"index": 2, "metrics_step": null}, {"index": 3, "metrics_step": null}, {"index": 4, "metrics_step": null}, {"index": 5, "metrics_step": null}]
+diagnosi 2 scritta in /leonardo_work/IscrB_WearUsFM/wearusfm_runs/diag/scaling_300m_20261104/fixedeval_19618_20261108_b

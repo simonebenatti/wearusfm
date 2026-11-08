@@ -6807,3 +6807,54 @@ estensione scientifica, nuovi training, retry o pollingAI.
 - Suite completa `tests/cpu` sul worktree a `40797b1`, finita alle 15:08 del 07/11: 3461 passati, 1 avviso preesistente
   (`test_pose_objective.py`), 39 min 50 s. Il giro precedente (3458) era partito alle 20:41 del 06/11, prima della chiusura
   del pacchetto. Log: `~/wearusfm_local/logs/stageB_full_suite_2.log`.
+
+### 08/11/2026 — Claude, linea 1: training 63696864 `FAILED` alla ripresa; causa trovata (ordine di import, MKL contro OpenBLAS); nessun rilancio
+
+- Esito: `SCALING-300M-train19618-20261106`, job 63696864, `FAILED 1:0` su lrdn2625 dopo 3 min 25 s (05:25:56-05:29:21 dell'08/11,
+  in coda dalle 20:33 del 06/11). La ripresa ha superato checkpoint, config, schedule, stream, firma dei dati e statistiche della
+  posa; si e' fermata al controllo dell'identita' dell'insieme fisso (`training/run._write_or_check`): «insieme fisso della
+  diagnostica di stabilita' diverso da quello del run [...]: per cambiarlo serve un run nuovo». Nessun passo di training eseguito,
+  nessuna ricevuta scritta; la cartella `T100-G-300M-19618-from5000` contiene solo i file seminati e il log. Stop senza retry,
+  come previsto dal freeze v2 e dalla voce del 07/11.
+- Diagnosi, quattro job in sola lettura dei dati (0 GPU salvo il terzo), nessun run toccato:
+  - 63860499 (48 s, 4 CPU, login08): finestre dell'insieme fisso identiche a quelle del 05/11 (256/256), seme uguale, zero
+    sessioni saltate, ma tutti gli 8 hash del contenuto dei batch diversi; file delle 37 sessioni presenti, mtime <= 05/11.
+  - 63861166 (1 min 40 s, 4 CPU): ricalcolo deterministico (due volte uguale), hash per componente; pannello della posa uguale al
+    05/11 in ogni chiave tranne `batch_sha256`, dove 8 batch su 64 coincidono (3, 16, 17, 22, 23, 41, 44, 52).
+  - 63861825 (2 min 18 s, 4 GPU, lrdn0474, 0,153 GPU-ore; tetto dichiarato 1,67): stesso contenuto «nuovo» su nodo GPU, con
+    torchrun+CUDA+DDP e senza, in ripresa e da zero: la ripresa in se' non c'entra. Esclusi: codice (`src/` identico fra
+    `dc96559` e `73524b6`), config (solo `max_steps`), manifest, scale, finestre, pose_stats (sha256), file di dati (ctime del 15/10
+    e del 27/10), ambiente cineca-ai/4.3.0, venv, kernel, denormali (FTZ/DAZ spenti ovunque).
+  - 63864244 (3 min 24 s, 8 CPU, login08): la causa. Il contenuto dipende dall'ORDINE DI IMPORT. `torchrun scripts/train_jepa.py`
+    (percorso del run a 5.000, del LQ ripreso il 07/11 e di ogni launcher di GPT) importa `torch` prima di numpy; il mio wrapper
+    `scaling_continue.py worker` importa `wearusfm.training.run` (quindi numpy) prima di torch, e cosi' tutti i miei driver di
+    diagnosi. Esiti sulle stesse 256 finestre: `numpy_first` e `run_first` = contenuto nuovo (0/8, 8/64); `torch_first` e CLI pura
+    `python3 scripts/train_jepa.py` = contenuto del 05/11 (8/8, 64/64). Meccanismo, verificato sul login con `dladdr` e
+    `/proc/self/maps`: `import torch` carica `libtorch_global_deps.so` con RTLD_GLOBAL e porta MKL nello spazio globale; MKL
+    esporta anche i simboli con suffisso `64_` che numpy lega al caricamento. Con torch prima, `np.linalg.solve` (condizioni
+    iniziali di `sosfiltfilt`) e il matmul `power @ bands` dei target delle ancore girano su MKL (compaiono `libmkl_avx512` e
+    `libmkl_vml_avx512`); con numpy prima restano sull'OpenBLAS 0.3.23 di numpy. Differiscono solo `signals` e `anchor_targets`.
+  - Grandezza (torch_first contro numpy_first, primi due batch, 1.204 array, 96 diversi): `signals` 1-2 campioni per finestra su
+    69-688 mila, errore relativo massimo 1,6e-7 (un ulp float32); `anchor_targets` log_env/log_rms fra 1e-16 e 1e-10 assoluti,
+    band_shape/ms_* fino a 2e-7. Numericamente irrilevante, ma sufficiente a rompere un controllo di identita' bit a bit.
+  - Dati invariati: impronte sha256, dimensione, mtime/ctime e inode di 412 file (4,37 GB) delle 37 sessioni e 64 registrazioni
+    raccolte in `fingerprints.json` come base per il futuro.
+- Prove e script: `results/infra/scaling_300m_20261104/continuation19618_20261106/failure_63696864_diagnosis_20261108/` (log
+  SLURM, ricevute del job fallito, rapporti e script dei quattro job, sonda del login). Uscite grandi rimaste su Leonardo:
+  `$WORK/wearusfm_runs/diag/scaling_300m_20261104/fixedeval_19618_20261108{,_b,_c}` (419 MB, dump degli array) e
+  `$SCRATCH/wearusfm_runs/diag/.../fixedeval_19618_20261108_gpu` (4,4 GB, copie del checkpoint; cancellazione automatica a 40 giorni).
+- Consuntivo: training fallito 0,228 GPU-ore e 1,82 core-ore (tetto del training 59 GPU-ore); diagnosi 0,153 GPU-ore e 1,84
+  core-ore (0,053 + 0,111 + 1,227 + 0,453). Totale del tentativo 0,381 GPU-ore, 3,66 core-ore. Nessun job dello stadio B inviato.
+- Proposta, NON eseguita: una riga nel wrapper (`import torch` prima di `wearusfm.training.run`, con il motivo in commento) e un
+  test statico sull'ordine di import di `scaling_continue.py` e `train_jepa.py`, sul ramo
+  `claude/scaling-300m-fix-importorder-20261108`. Con quella riga il controllo d'identita' passa e la continuazione prosegue sullo
+  stesso percorso numerico dei primi 5.000 passi. Per rilanciare servono: la decisione di Simone (il freeze v2 e la voce del 06/11
+  dicevano «un solo segmento di training, nessun retry»; questo non sarebbe un retry cieco ma una ripresa con causa trovata), un
+  piano v2 (il piano pubblicato fissa lo sha256 del wrapper e la cartella del run gia' creata: 7 test del wrapper lo segnalano sul
+  ramo di proposta), la review unica di GPT del pacchetto modificato, un nuovo riferimento di deploy e checkout. Costo del
+  training invariato.
+- Nota per le valutazioni (lettura mia): `scaling_evaluation19618.py` e `scaling_preflight.py` importano numpy prima di torch; i
+  lettori (`scaling_probe19618.py`, `scaling_pose_readout19618.py`, `scaling_compare19618.py`) importano solo numpy: percorso
+  OpenBLAS. Rispetto a un'estrazione via launcher con torch per primo, differenze all'ultimo bit nei segnali filtrati e nei target:
+  rilevanti solo per confronti di identita' bit a bit fra percorsi diversi, non per il perimetro scientifico.
+- Domanda di Simone sul portare il seguito a 49.046: risposta in chat come lettura, nessuna decisione registrata.

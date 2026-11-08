@@ -1,0 +1,42 @@
+########## torch_first
+torch_first | kernel MKL gia' caricati: []
+   simbolo globale sgemm_           -> libmkl_intel_lp64.so.2
+   simbolo globale dgemm_           -> libmkl_intel_lp64.so.2
+   simbolo globale dgesv_           -> libmkl_intel_lp64.so.2
+   simbolo globale cblas_sgemm      -> libmkl_intel_lp64.so.2
+   simbolo globale cblas_sgemm64_   -> non risolto (AttributeError)
+   simbolo globale sgemm_64_        -> libmkl_intel_lp64.so.2
+   simbolo globale vsLn             -> libmkl_intel_lp64.so.2
+   simbolo globale vmsLn            -> libmkl_intel_lp64.so.2
+   simbolo globale LAPACKE_dgesv    -> libmkl_intel_lp64.so.2
+   dopo np.linalg.solve     : nuove librerie ['libmkl_avx512.so.2', 'libmkl_vml_avx512.so.2']
+   dopo np matmul f32       : nuove librerie []
+   dopo np.log f64          : nuove librerie []
+   dopo scipy.fft.rfft f32  : nuove librerie []
+   dopo iirnotch            : nuove librerie []
+   dopo sosfilt_zi          : nuove librerie []
+   dopo sosfiltfilt         : nuove librerie []
+   dopo scipy.linalg.solve  : nuove librerie []
+   dopo torch cpu log       : nuove librerie []
+   dopo torch cpu matmul    : nuove librerie []
+########## numpy_first
+numpy_first | kernel MKL gia' caricati: []
+   simbolo globale sgemm_           -> libmkl_intel_lp64.so.2
+   simbolo globale dgemm_           -> libmkl_intel_lp64.so.2
+   simbolo globale dgesv_           -> libmkl_intel_lp64.so.2
+   simbolo globale cblas_sgemm      -> libmkl_intel_lp64.so.2
+   simbolo globale cblas_sgemm64_   -> non risolto (AttributeError)
+   simbolo globale sgemm_64_        -> libmkl_intel_lp64.so.2
+   simbolo globale vsLn             -> libmkl_intel_lp64.so.2
+   simbolo globale vmsLn            -> libmkl_intel_lp64.so.2
+   simbolo globale LAPACKE_dgesv    -> libmkl_intel_lp64.so.2
+   dopo np.linalg.solve     : nuove librerie []
+   dopo np matmul f32       : nuove librerie []
+   dopo np.log f64          : nuove librerie []
+   dopo scipy.fft.rfft f32  : nuove librerie []
+   dopo iirnotch            : nuove librerie []
+   dopo sosfilt_zi          : nuove librerie []
+   dopo sosfiltfilt         : nuove librerie []
+   dopo scipy.linalg.solve  : nuove librerie ['libmkl_avx512.so.2', 'libmkl_vml_avx512.so.2']
+   dopo torch cpu log       : nuove librerie []
+   dopo torch cpu matmul    : nuove librerie []

@@ -1,0 +1,589 @@
+{
+ "protocol": "scaling-diag-fixedeval-20261108-v1",
+ "slurm_job_id": "63860499",
+ "failed_job": "63696864",
+ "code_sha": "73524b63be534f81b3db4ade4b7fc7f47129a0f3",
+ "node": "login08.leonardo.local",
+ "cpu": "x86_64",
+ "versions": {
+  "python": "3.11.6",
+  "numpy": "1.26.4",
+  "torch": "2.2.0a0+git6c8c5ad"
+ },
+ "threads": {
+  "omp": "1",
+  "torch": 1
+ },
+ "trainer_argv_used": [
+  "--preset",
+  "300m",
+  "--manifest",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+  "--root",
+  "/leonardo_work/IscrB_WearUsFM/data/processed",
+  "--root",
+  "/leonardo_scratch/large/userexternal/sbenatti/data/processed",
+  "--scales",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+  "--max-steps",
+  "19618",
+  "--window1-rules",
+  "--datasets",
+  "all",
+  "--prefetch",
+  "--fixed-eval-every",
+  "500",
+  "--manifest-sha256",
+  "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+  "--erank-min",
+  "38.4",
+  "--window-seconds",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+  "--batch-size",
+  "32",
+  "--accum-steps",
+  "1",
+  "--seed",
+  "0",
+  "--schedule",
+  "wsd",
+  "--total-steps",
+  "49046",
+  "--steps-at-d",
+  "98094",
+  "--keep-checkpoints",
+  "5000:19618",
+  "--lr",
+  "0.0001",
+  "--nested",
+  "1",
+  "--jepa-weight",
+  "0",
+  "--pose-root",
+  "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+  "--pose-weight",
+  "1.0",
+  "--pose-unprompted",
+  "on",
+  "--pose-grad-every",
+  "500",
+  "--pose-panel-every",
+  "500",
+  "--pose-panel-users",
+  "32",
+  "--pose-panel-recordings",
+  "2",
+  "--pose-panel-windows",
+  "4",
+  "--log-batch-origin",
+  "--masked-loss-radius",
+  "0",
+  "--tokenizer-activation",
+  "gelu",
+  "--window-ms",
+  "100.0",
+  "--time-limit-s",
+  "51300",
+  "--out-dir",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/diag/scaling_300m_20261104/fixedeval_19618_20261108/cli_out",
+  "--num-workers",
+  "0",
+  "--device",
+  "cpu"
+ ],
+ "seeded_equals_previous": true,
+ "index": {
+  "rows": 19034,
+  "roots": [
+   "/leonardo_work/IscrB_WearUsFM/data/processed",
+   "/leonardo_scratch/large/userexternal/sbenatti/data/processed"
+  ],
+  "params": {
+   "version": "manifest-v1",
+   "quota": {
+    "A": 0.2,
+    "B": 0.75,
+    "C": 0.05
+   },
+   "alpha": 0.5,
+   "max_passes": 8.0,
+   "epochs": 4.0,
+   "patch_ms": 25.0,
+   "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+   "classes": {
+    "ninapro_db2": "A",
+    "ninapro_db3": "A",
+    "ninapro_db4": "A",
+    "ninapro_db6": "A",
+    "ninapro_db7": "A",
+    "camargo2021": "A",
+    "zhang2026:anatomical": "A",
+    "kaifosh": "B",
+    "emg2qwerty": "B",
+    "emg2pose": "B",
+    "grabmyo": "B",
+    "putemg": "B",
+    "ninapro_db5": "B",
+    "ninapro_db8": "B",
+    "ninapro_db10": "B",
+    "zhang2026:random": "B",
+    "capgmyo": "C",
+    "csl_hdemg": "C",
+    "hyser": "C"
+   },
+   "rvq_on": [
+    "camargo2021",
+    "capgmyo",
+    "emg2pose",
+    "emg2qwerty",
+    "grabmyo",
+    "hyser",
+    "kaifosh",
+    "ninapro_db10",
+    "ninapro_db2",
+    "ninapro_db3",
+    "ninapro_db4",
+    "ninapro_db6",
+    "ninapro_db7",
+    "ninapro_db8",
+    "zhang2026"
+   ],
+   "rvq_off": [
+    "csl_hdemg",
+    "ninapro_db5",
+    "putemg"
+   ],
+   "revision": {
+    "version": "v1.1",
+    "from_sha256": "9ab0fc5f90889973b55635ba6a2d485699b842d747b9629186d2b309b402d781",
+    "change": "sha256 dei sidecar di CapgMyo dopo la correzione della griglia a 16x8 (fatti 14 e 26, Simone 07/10/2026); nient'altro"
+   },
+   "nested": "1",
+   "derived_rule": "base temporale: ore delle sessioni campionabili secondo window_s congelato (valore positivo; null = nessuna finestra, peso 0); D9 su quelle ore (pesi nella classe proporzionali a ore^alpha, tetto di max_passes passaggi a epochs epoche); se la classe C non raggiunge la sua quota perche' tutte le sue unita' sono al tetto, A resta alla sua quota e il solo residuo di C va a B, riallocato con gli stessi pesi e lo stesso tetto; A o B senza capacita': errore esplicito; nessun fattore comune sui pesi (accordo GPT-Claude del 15/10/2026, docs/accordo_operativo_finestra1_20261015.md)",
+   "derived_inputs": {
+    "parent_file_sha256": "853f35ac5252ef901be390385164c6dc5658f45270441eb74557c6be317ed6d3",
+    "parent_hash_declared": "b3b4a3cbda375bee8ca6a6edcfe47e02928aefef595bb99fec203e3d10b1b32b",
+    "parent_hash_content": "52549ef816fd34d56604ea437ab862804a021a8a20f7d12d3d57c22001f6ed9c",
+    "parent_version": "manifest-v1",
+    "parent_revision": "v1.1",
+    "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+    "window_seconds_sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+    "window_seconds_manifest": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo4/manifest_59253155.json.gz",
+    "window_config": {
+     "min_window_s": 1.0,
+     "max_window_s": 4.0,
+     "align_ms": 200.0,
+     "patch_ms": 25.0,
+     "run_margin_s": 0.2,
+     "split_at_gaps": true
+    }
+   },
+   "derived_hours": {
+    "hours_nominal": 822.8601656950157,
+    "hours_samplable": 822.3938563894601,
+    "hours_excluded": 0.46630930555555555,
+    "sessions_excluded": 62
+   },
+   "residual_c_to_b": 0.0,
+   "virtual_montages": "D6a: le quote sono della classe d'origine; i montaggi virtuali delle griglie HD restano in classe C"
+  },
+  "datasets": [
+   "camargo2021",
+   "capgmyo",
+   "csl_hdemg",
+   "emg2pose",
+   "emg2qwerty",
+   "grabmyo",
+   "hyser",
+   "ninapro_db10",
+   "ninapro_db2",
+   "ninapro_db3",
+   "ninapro_db4",
+   "ninapro_db5",
+   "ninapro_db6",
+   "ninapro_db7",
+   "ninapro_db8",
+   "putemg",
+   "zhang2026"
+  ],
+  "scales": 19879,
+  "window_s": 19034
+ },
+ "timing_s": {
+  "index": 0.24,
+  "fixed_set": 30.81
+ },
+ "compare": {
+  "seed_equal": true,
+  "seed_seeded": [
+   0,
+   5151
+  ],
+  "seed_now": [
+   0,
+   5151
+  ],
+  "windows": {
+   "n_seeded": 256,
+   "n_now": 256,
+   "equal_positions": 256,
+   "first_difference": null,
+   "first_seeded": null,
+   "first_now": null,
+   "sessions_only_seeded": [],
+   "sessions_only_now": []
+  },
+  "batch_sha256": {
+   "n_seeded": 8,
+   "n_now": 8,
+   "equal": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ]
+  },
+  "identical": false
+ },
+ "skipped_sessions": {},
+ "session_files": {
+  "csl_hdemg/s01/session4": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/data/processed/csl_hdemg/s01/session4",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-09-24T15:58:57"
+  },
+  "emg2pose/u0ba89d682e/2022-07-22-1658476800-15c99-cv-emg-pose-demonstration@2-recording-8_right": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u0ba89d682e/2022-07-22-1658476800-15c99-cv-emg-pose-demonstration@2-recording-8_right",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:33:58"
+  },
+  "emg2pose/u2e45fde443/2022-10-03-1664784000-1f9b6-cv-emg-pose-demonstration@2-recording-4_right": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u2e45fde443/2022-10-03-1664784000-1f9b6-cv-emg-pose-demonstration@2-recording-4_right",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:33:21"
+  },
+  "emg2pose/u66cb44c2dc/2022-08-04-1659600000-10ae7-cv-emg-pose-demonstration@2-recording-1_right": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u66cb44c2dc/2022-08-04-1659600000-10ae7-cv-emg-pose-demonstration@2-recording-1_right",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:33:55"
+  },
+  "emg2pose/u87aa3b3887/2022-08-30-1661846400-8419c-cv-emg-pose-demonstration@2-recording-14_right": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u87aa3b3887/2022-08-30-1661846400-8419c-cv-emg-pose-demonstration@2-recording-14_right",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:33:20"
+  },
+  "emg2pose/u9c1a1875e7/2022-11-03-1667462400-bee22-cv-emg-pose-train@2-recording-13_right": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u9c1a1875e7/2022-11-03-1667462400-bee22-cv-emg-pose-train@2-recording-13_right",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:33:47"
+  },
+  "emg2pose/uf3d1d06b13/2022-08-31-1661932800-b7d96-cv-emg-pose-demonstration@2-recording-3_left": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/uf3d1d06b13/2022-08-31-1661932800-b7d96-cv-emg-pose-demonstration@2-recording-3_left",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:32:50"
+  },
+  "emg2qwerty/u03432025/2021-07-22-1626990242-keystrokes-dca-study@1-235fe8d6-9339-48e9-b67e-7105d7294d9e": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u03432025/2021-07-22-1626990242-keystrokes-dca-study@1-235fe8d6-9339-48e9-b67e-7105d7294d9e",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:21"
+  },
+  "emg2qwerty/u03537794/2021-06-03-1622769045-keystrokes-dca-study@1-98830534-8a96-4490-82ee-649c81e4d3e5": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u03537794/2021-06-03-1622769045-keystrokes-dca-study@1-98830534-8a96-4490-82ee-649c81e4d3e5",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:19"
+  },
+  "emg2qwerty/u12565339/2021-03-24-1616630863-keystrokes-dca-study@1-ba445214-0169-4179-95f5-0d047482b10d": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u12565339/2021-03-24-1616630863-keystrokes-dca-study@1-ba445214-0169-4179-95f5-0d047482b10d",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:17"
+  },
+  "emg2qwerty/u66161848/2021-06-21-1624283084-keystrokes-dca-study@1-721e62ce-2796-4212-bec0-49b3cc99bef1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u66161848/2021-06-21-1624283084-keystrokes-dca-study@1-721e62ce-2796-4212-bec0-49b3cc99bef1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:21"
+  },
+  "emg2qwerty/u68186383/2021-03-28-1616949969-keystrokes-dca-study@1-a2130278-ef80-46f0-92c9-b68149175bdd": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u68186383/2021-03-28-1616949969-keystrokes-dca-study@1-a2130278-ef80-46f0-92c9-b68149175bdd",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:18"
+  },
+  "emg2qwerty/u76574170/2021-06-25-1624643865-keystrokes-dca-study@1-595bc03a-09e0-4f1f-8987-848d1788530f": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u76574170/2021-06-25-1624643865-keystrokes-dca-study@1-595bc03a-09e0-4f1f-8987-848d1788530f",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:18"
+  },
+  "emg2qwerty/u85881224/2021-07-01-1625160605-keystrokes-dca-study@1-7d09d115-389c-424c-a649-5c480f8c5e52": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u85881224/2021-07-01-1625160605-keystrokes-dca-study@1-7d09d115-389c-424c-a649-5c480f8c5e52",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:22"
+  },
+  "emg2qwerty/u94305460/2021-07-14-1626296384-keystrokes-dca-study@1-f16ddfeb-827e-4668-aa6b-c9f39f9e83f4": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u94305460/2021-07-14-1626296384-keystrokes-dca-study@1-f16ddfeb-827e-4668-aa6b-c9f39f9e83f4",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:18"
+  },
+  "emg2qwerty/u97890030/2021-07-03-1625342169-keystrokes-dca-study@1-83db389d-2eb5-48ec-9e60-992e297b2f6c": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u97890030/2021-07-03-1625342169-keystrokes-dca-study@1-83db389d-2eb5-48ec-9e60-992e297b2f6c",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:19"
+  },
+  "grabmyo/p09/session2": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/data/processed/grabmyo/p09/session2",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-09-24T15:22:21"
+  },
+  "grabmyo/p17/session2": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/data/processed/grabmyo/p17/session2",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-09-24T15:24:26"
+  },
+  "grabmyo/p21/session3": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/data/processed/grabmyo/p21/session3",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-09-24T15:25:57"
+  },
+  "hyser/s01/session2_random": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/hyser/s01/session2_random",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:28:01"
+  },
+  "ninapro_db10/s010/ex1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db10/s010/ex1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:03"
+  },
+  "ninapro_db10/s021/ex1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db10/s021/ex1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:03"
+  },
+  "ninapro_db10/s101/ex1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db10/s101/ex1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:03"
+  },
+  "ninapro_db10/s106/ex1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db10/s106/ex1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:03"
+  },
+  "ninapro_db2/s07/session1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s07/session1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:27:56"
+  },
+  "ninapro_db2/s30/session1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s30/session1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:27:56"
+  },
+  "ninapro_db4/s07/session1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db4/s07/session1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:35:02"
+  },
+  "ninapro_db5/s03/session1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/data/processed/ninapro_db5/s03/session1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-09-30T13:16:37"
+  },
+  "ninapro_db6/s01/D2_T2": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D2_T2",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:27:55"
+  },
+  "ninapro_db6/s08/D1_T1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D1_T1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:27:55"
+  },
+  "ninapro_db6/s09/D2_T1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D2_T1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:27:55"
+  },
+  "ninapro_db7/s03/session1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db7/s03/session1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:27:53"
+  },
+  "ninapro_db7/s14/session1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db7/s14/session1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:27:53"
+  },
+  "ninapro_db7/s18/session1": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db7/s18/session1",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:27:52"
+  },
+  "putemg/p36/repeats_short_2018-04-27-08-36-53-991": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/data/processed/putemg/p36/repeats_short_2018-04-27-08-36-53-991",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-09-24T15:43:22"
+  },
+  "putemg/p51/sequential_2018-04-26-10-26-06-515": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_work/IscrB_WearUsFM/data/processed/putemg/p51/sequential_2018-04-26-10-26-06-515",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-09-24T15:46:52"
+  },
+  "zhang2026/HG_P535J10/random": {
+   "in_index": true,
+   "in_seeded": true,
+   "in_now": true,
+   "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/zhang2026/HG_P535J10/random",
+   "exists": true,
+   "bytes": 4096,
+   "mtime": "2026-10-15T13:28:05"
+  }
+ },
+ "cli_status": 0
+}

@@ -1,0 +1,3882 @@
+{
+ "summary": {
+  "protocol": "scaling-diag-importorder-20261108-v4",
+  "slurm_job_id": "63864244",
+  "n_sessions": 101,
+  "n_fixed_sessions": 37,
+  "n_panel_recordings": 64,
+  "n_files": 412,
+  "n_bytes": 4369969809,
+  "elapsed_s": 15.7,
+  "pose_root": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+  "roots": [
+   "/leonardo_work/IscrB_WearUsFM/data/processed",
+   "/leonardo_scratch/large/userexternal/sbenatti/data/processed"
+  ]
+ },
+ "sessions": {
+  "csl_hdemg/s01/session4": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_work/IscrB_WearUsFM/data/processed/csl_hdemg/s01/session4",
+   "files": {
+    "metadata.json": {
+     "bytes": 180824,
+     "mtime": "2026-09-24T15:58:57",
+     "ctime": "2026-09-24T15:58:57",
+     "inode": 144121788366903804,
+     "sha256": "09354cfd90ce67292117ef409fa490b2f443e31332dadfc79b241d2930524ee5"
+    },
+    "data_int16.npy": {
+     "bytes": 598671488,
+     "mtime": "2026-09-24T15:58:57",
+     "ctime": "2026-09-24T15:58:57",
+     "inode": 144121788366903803,
+     "sha256": "8c96e119c83fd6b1f4b7f0d9816f2d0e6f48918266eb69e50a78d931bcb360e3"
+    }
+   }
+  },
+  "emg2pose/u057e6195fe/2022-07-28-1658995200-9786e-cv-emg-pose-demonstration@2-recording-13_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u057e6195fe/2022-07-28-1658995200-9786e-cv-emg-pose-demonstration@2-recording-13_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17100,
+     "mtime": "2026-10-15T13:33:06",
+     "ctime": "2026-10-15T13:33:06",
+     "inode": 234195180671034418,
+     "sha256": "b0ea0bd047f512d981a5eb68517642c21bd8b50e4ec783e83891dda805ec7f5d"
+    },
+    "data_int16.npy": {
+     "bytes": 3777664,
+     "mtime": "2026-10-15T13:33:06",
+     "ctime": "2026-10-15T13:33:06",
+     "inode": 234195180671034417,
+     "sha256": "b0e94810d0c80969db991a8ba6fc36ca2b49b4313f1223829a02b973fc775961"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 472288,
+     "mtime": "2026-10-27T11:07:37",
+     "ctime": "2026-10-27T11:07:37",
+     "inode": 180152741157483685,
+     "sha256": "565f02de27de80ee3413ebc0248473f817d8ada7d27a5d21b2c4e6eb44e3a398"
+    },
+    "pose_valid.npy": {
+     "bytes": 11932,
+     "mtime": "2026-10-27T11:07:37",
+     "ctime": "2026-10-27T11:07:37",
+     "inode": 180152741157483686,
+     "sha256": "a725c251d5b7bbea4371a7b667958702151d7498a3e259efda9cb23371b9828e"
+    },
+    "pose_meta.json": {
+     "bytes": 5560,
+     "mtime": "2026-10-27T11:07:37",
+     "ctime": "2026-10-27T11:07:37",
+     "inode": 180152741157483687,
+     "sha256": "08f95427d665b463674d90c782f1e655ff57009276c87df00ce8addcecc96b8d"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u057e6195fe/2022-07-28-1658995200-9786e-cv-emg-pose-demonstration@2-recording-13_left"
+  },
+  "emg2pose/u057e6195fe/2022-07-28-1658995200-fca9d-cv-emg-pose-demonstration@2-recording-2_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u057e6195fe/2022-07-28-1658995200-fca9d-cv-emg-pose-demonstration@2-recording-2_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17099,
+     "mtime": "2026-10-15T13:33:07",
+     "ctime": "2026-10-15T13:33:07",
+     "inode": 4161333240617076493,
+     "sha256": "318c16ac75a8a9a283e3cf39277cfea0bca82e12b3090a8417becf94ef8c28e3"
+    },
+    "data_int16.npy": {
+     "bytes": 3059648,
+     "mtime": "2026-10-15T13:33:07",
+     "ctime": "2026-10-15T13:33:07",
+     "inode": 4161333240617076492,
+     "sha256": "d4bef8a754b0f6bbb29433336db91a20b69c68dcf0877f4e7410429e624be7cf"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 382568,
+     "mtime": "2026-10-27T11:08:18",
+     "ctime": "2026-10-27T11:08:18",
+     "inode": 180152741157483781,
+     "sha256": "bfe1caa729aaf904ea02cafc9a8422979ebfe3e2f36c7d41996c8c8202a9bf18"
+    },
+    "pose_valid.npy": {
+     "bytes": 9689,
+     "mtime": "2026-10-27T11:08:18",
+     "ctime": "2026-10-27T11:08:18",
+     "inode": 180152741157483782,
+     "sha256": "c2ff748ad0be0ef3a7063532025a4c5b1e9247c60a60f96e23b6654e3a2821a7"
+    },
+    "pose_meta.json": {
+     "bytes": 5447,
+     "mtime": "2026-10-27T11:08:18",
+     "ctime": "2026-10-27T11:08:18",
+     "inode": 180152741157483783,
+     "sha256": "84341bcd26e5992d476339b6423b25d55dd7a5e474d9aed38eaa9920fa298c3c"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u057e6195fe/2022-07-28-1658995200-fca9d-cv-emg-pose-demonstration@2-recording-2_right"
+  },
+  "emg2pose/u0ba89d682e/2022-07-22-1658476800-15c99-cv-emg-pose-demonstration@2-recording-8_right": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u0ba89d682e/2022-07-22-1658476800-15c99-cv-emg-pose-demonstration@2-recording-8_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17120,
+     "mtime": "2026-10-15T13:33:58",
+     "ctime": "2026-10-15T13:33:58",
+     "inode": 180152665928433566,
+     "sha256": "eb1cb567d3931866257358f1002e028a1038f8e1e2e8eebbcd3ee54dd55b3581"
+    },
+    "data_int16.npy": {
+     "bytes": 3851712,
+     "mtime": "2026-10-15T13:33:58",
+     "ctime": "2026-10-15T13:33:58",
+     "inode": 180152665928433565,
+     "sha256": "9950bd93afe2f625bbf3f05737aef32c5b994c532c09c5182111709fc17c7338"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 481568,
+     "mtime": "2026-10-27T11:02:05",
+     "ctime": "2026-10-27T11:02:05",
+     "inode": 162139590872826924,
+     "sha256": "5f9784a5c090f87fda9ad6fc9e368eb2031a6912f232da657d4d289ca9ed88bc"
+    },
+    "pose_valid.npy": {
+     "bytes": 12164,
+     "mtime": "2026-10-27T11:02:05",
+     "ctime": "2026-10-27T11:02:05",
+     "inode": 162139590872826925,
+     "sha256": "53f708b235383198e9be4d2f41904b16942b381711efe0e8be88802965972be1"
+    },
+    "pose_meta.json": {
+     "bytes": 5468,
+     "mtime": "2026-10-27T11:02:05",
+     "ctime": "2026-10-27T11:02:05",
+     "inode": 162139590872826926,
+     "sha256": "a4c9d8c8aeb4bd162c061a632001b1b099c4c4fd714cf91f7297b04722bd629b"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u0ba89d682e/2022-07-22-1658476800-15c99-cv-emg-pose-demonstration@2-recording-8_right"
+  },
+  "emg2pose/u2038d88aa3/2022-10-25-1666684800-10028-cv-emg-pose-demonstration@2-recording-8_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u2038d88aa3/2022-10-25-1666684800-10028-cv-emg-pose-demonstration@2-recording-8_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17100,
+     "mtime": "2026-10-15T13:32:55",
+     "ctime": "2026-10-15T13:32:55",
+     "inode": 4161333240617085652,
+     "sha256": "d60e3d19b71b8d23741a8c04a7e21f2f172da34f5ff9ef5c1f2d5a1a6956026a"
+    },
+    "data_int16.npy": {
+     "bytes": 2809056,
+     "mtime": "2026-10-15T13:32:55",
+     "ctime": "2026-10-15T13:32:55",
+     "inode": 4161333240617085651,
+     "sha256": "0f56c9f9f45992e69eff06247a23da44cc3f49822ac91bda8e1591badf4a7d69"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 351208,
+     "mtime": "2026-10-27T11:56:42",
+     "ctime": "2026-10-27T11:56:42",
+     "inode": 162139590872833344,
+     "sha256": "ff6f655cb8bbaa1b4b28b5cc459dd74b3e0e99d85b277018f30b20fb9debd85f"
+    },
+    "pose_valid.npy": {
+     "bytes": 8905,
+     "mtime": "2026-10-27T11:56:42",
+     "ctime": "2026-10-27T11:56:42",
+     "inode": 162139590872833345,
+     "sha256": "8ef235027a96739e20c87caa2b8e2d3de3f13f95e307d10df745d83973c1292f"
+    },
+    "pose_meta.json": {
+     "bytes": 5576,
+     "mtime": "2026-10-27T11:56:42",
+     "ctime": "2026-10-27T11:56:42",
+     "inode": 162139590872833346,
+     "sha256": "33a32df36f1c7d7e5b4bce8b895ba7ab4cd480f4b39554e2ecaca0fed58d3fa2"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u2038d88aa3/2022-10-25-1666684800-10028-cv-emg-pose-demonstration@2-recording-8_right"
+  },
+  "emg2pose/u2038d88aa3/2022-10-25-1666684800-7ab57-cv-emg-pose-demonstration@2-recording-1_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": true,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u2038d88aa3/2022-10-25-1666684800-7ab57-cv-emg-pose-demonstration@2-recording-1_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17067,
+     "mtime": "2026-10-15T13:32:55",
+     "ctime": "2026-10-15T13:32:55",
+     "inode": 4161333240617085661,
+     "sha256": "b462b005089988441d7c4fd714a61a4d30ac464c322cf04ab5cf8d00878f56c5"
+    },
+    "data_int16.npy": {
+     "bytes": 4028128,
+     "mtime": "2026-10-15T13:32:55",
+     "ctime": "2026-10-15T13:32:55",
+     "inode": 4161333240617085660,
+     "sha256": "619fb72655e0338d0bfd3994939d251fec9fa3d7f1ac716d98a2a58189054bfb"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 503608,
+     "mtime": "2026-10-27T11:56:49",
+     "ctime": "2026-10-27T11:56:49",
+     "inode": 216180508743242793,
+     "sha256": "4d8a585dba9b61bc6547847f55b4ed98a9373ff51b3a6b464aff9368602b4949"
+    },
+    "pose_valid.npy": {
+     "bytes": 12715,
+     "mtime": "2026-10-27T11:56:49",
+     "ctime": "2026-10-27T11:56:49",
+     "inode": 216180508743242794,
+     "sha256": "9491a380f1962cf1eb4112ec1cca793c753872b968dc4ae3baff4c8f51e4cd89"
+    },
+    "pose_meta.json": {
+     "bytes": 5598,
+     "mtime": "2026-10-27T11:56:49",
+     "ctime": "2026-10-27T11:56:49",
+     "inode": 216180508743242795,
+     "sha256": "c5513bd1138a195d480d68bbd3eb8132a04083d452077215acec6b8d3b9a3e62"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u2038d88aa3/2022-10-25-1666684800-7ab57-cv-emg-pose-demonstration@2-recording-1_left"
+  },
+  "emg2pose/u22808ee66c/2022-11-22-1669104000-69f54-cv-emg-pose-train@2-recording-3_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u22808ee66c/2022-11-22-1669104000-69f54-cv-emg-pose-train@2-recording-3_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17067,
+     "mtime": "2026-10-15T13:33:00",
+     "ctime": "2026-10-15T13:33:00",
+     "inode": 180152666867954580,
+     "sha256": "41d930ea47bc2429aad8e7af9c98bf328bcea0328b2d8b3e30285fbfbb547908"
+    },
+    "data_int16.npy": {
+     "bytes": 3777536,
+     "mtime": "2026-10-15T13:33:00",
+     "ctime": "2026-10-15T13:33:00",
+     "inode": 180152666867954579,
+     "sha256": "432c469bca1b5e0d29d1811fa1246493baddbece7d6960fe831145093860dac6"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 472288,
+     "mtime": "2026-10-27T12:14:25",
+     "ctime": "2026-10-27T12:14:25",
+     "inode": 4161333312541028262,
+     "sha256": "433dd1093d25876c3bcb97525901395a28cd19d6fd8f0007b279490281e4efd4"
+    },
+    "pose_valid.npy": {
+     "bytes": 11932,
+     "mtime": "2026-10-27T12:14:25",
+     "ctime": "2026-10-27T12:14:25",
+     "inode": 4161333312541028263,
+     "sha256": "8b2a09f847607d46f687312723c02f68b54abc1aa49b4cbc34c272bb1b5d7162"
+    },
+    "pose_meta.json": {
+     "bytes": 5550,
+     "mtime": "2026-10-27T12:14:25",
+     "ctime": "2026-10-27T12:14:25",
+     "inode": 4161333312541028264,
+     "sha256": "5efb9e20ac3f25b814b69b6db771bd39f5275084d8f3a0c4abb191f1e5cf3902"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u22808ee66c/2022-11-22-1669104000-69f54-cv-emg-pose-train@2-recording-3_right"
+  },
+  "emg2pose/u22808ee66c/2022-11-22-1669104000-a6a03-cv-emg-pose-train@2-recording-1_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u22808ee66c/2022-11-22-1669104000-a6a03-cv-emg-pose-train@2-recording-1_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17079,
+     "mtime": "2026-10-15T13:33:00",
+     "ctime": "2026-10-15T13:33:00",
+     "inode": 252209935729915309,
+     "sha256": "d83d2ed17a23fe552735c881885c635fe6d5329df2486c231863871be234ea66"
+    },
+    "data_int16.npy": {
+     "bytes": 4057056,
+     "mtime": "2026-10-15T13:33:00",
+     "ctime": "2026-10-15T13:33:00",
+     "inode": 252209935729915306,
+     "sha256": "a87de652b91e6445a4ae0864cc0a21b7a66071613941735fa7b4d66d42cb8038"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 507208,
+     "mtime": "2026-10-27T12:14:31",
+     "ctime": "2026-10-27T12:14:31",
+     "inode": 198169192611018974,
+     "sha256": "7f42c868a150387a3867db27f4e8819bdc72288d1a4c091399164c3435441bb2"
+    },
+    "pose_valid.npy": {
+     "bytes": 12805,
+     "mtime": "2026-10-27T12:14:31",
+     "ctime": "2026-10-27T12:14:31",
+     "inode": 198169192611018975,
+     "sha256": "6fb64e1ed88103c8af4b73bb5e9a5592e8f367bb879a2f98e8534399b04591cb"
+    },
+    "pose_meta.json": {
+     "bytes": 5643,
+     "mtime": "2026-10-27T12:14:31",
+     "ctime": "2026-10-27T12:14:31",
+     "inode": 198169192611018976,
+     "sha256": "e2d172475b5181c9f43da3cc606b2659ad9bfcf9b4d64c6175ca8d8f33a4554f"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u22808ee66c/2022-11-22-1669104000-a6a03-cv-emg-pose-train@2-recording-1_right"
+  },
+  "emg2pose/u2e45fde443/2022-10-03-1664784000-1f9b6-cv-emg-pose-demonstration@2-recording-4_right": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u2e45fde443/2022-10-03-1664784000-1f9b6-cv-emg-pose-demonstration@2-recording-4_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17098,
+     "mtime": "2026-10-15T13:33:21",
+     "ctime": "2026-10-15T13:33:21",
+     "inode": 252209935629198977,
+     "sha256": "d1a657ae6a5b08649a5cba2ebf9a60bcdad238678c7ad2ebf664dfb1df0f4d0f"
+    },
+    "data_int16.npy": {
+     "bytes": 2831072,
+     "mtime": "2026-10-15T13:33:21",
+     "ctime": "2026-10-15T13:33:21",
+     "inode": 252209935629198976,
+     "sha256": "c4338d879bc0f3c803ba2852ff303af2e27e1efb217ed201d551198845ce12c6"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 353968,
+     "mtime": "2026-10-27T11:40:59",
+     "ctime": "2026-10-27T11:40:59",
+     "inode": 216180508743240615,
+     "sha256": "4daede8e5f244140da8ddc631a7692620ba615811213cf30fc5576512330f231"
+    },
+    "pose_valid.npy": {
+     "bytes": 8974,
+     "mtime": "2026-10-27T11:40:59",
+     "ctime": "2026-10-27T11:40:59",
+     "inode": 216180508743240616,
+     "sha256": "c0cce8c1e049c4c06cee5e8e2f56a06ce0546efec3d1a661bf0285bccb41a285"
+    },
+    "pose_meta.json": {
+     "bytes": 5565,
+     "mtime": "2026-10-27T11:40:59",
+     "ctime": "2026-10-27T11:40:59",
+     "inode": 216180508743240617,
+     "sha256": "66f260e0e3c727098fa91fa94abec19026a76db9b3b7e4cefe3021405eefb550"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u2e45fde443/2022-10-03-1664784000-1f9b6-cv-emg-pose-demonstration@2-recording-4_right"
+  },
+  "emg2pose/u34269a8572/2022-11-10-1668067200-0f8df-cv-emg-pose-train@2-recording-9_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u34269a8572/2022-11-10-1668067200-0f8df-cv-emg-pose-train@2-recording-9_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17051,
+     "mtime": "2026-10-15T13:32:53",
+     "ctime": "2026-10-15T13:32:53",
+     "inode": 162139476603300344,
+     "sha256": "70db865bbf41f88da45762f28c770762f5eee030ef1dccbd62cf3214879fa776"
+    },
+    "data_int16.npy": {
+     "bytes": 3720672,
+     "mtime": "2026-10-15T13:32:53",
+     "ctime": "2026-10-15T13:32:53",
+     "inode": 162139476603300343,
+     "sha256": "579e5f95b2867c5f6bba8af49eab525a1d1c9a785c192ba18e172cca3af9bb44"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 465168,
+     "mtime": "2026-10-27T12:06:40",
+     "ctime": "2026-10-27T12:06:40",
+     "inode": 198169192611015707,
+     "sha256": "953ec4a61a69941bddc9b6fc0b28ca705712a62e159a7a4064f717c1316a385a"
+    },
+    "pose_valid.npy": {
+     "bytes": 11754,
+     "mtime": "2026-10-27T12:06:40",
+     "ctime": "2026-10-27T12:06:40",
+     "inode": 198169192611015708,
+     "sha256": "7b1d70ec127f045bb2a87cc046ee5a83bb3261359cbe692c722b12e3c699ad79"
+    },
+    "pose_meta.json": {
+     "bytes": 5448,
+     "mtime": "2026-10-27T12:06:40",
+     "ctime": "2026-10-27T12:06:40",
+     "inode": 198169192611015709,
+     "sha256": "65c2e61a7488de77a1f165df6132d7c70c49909f67a969f8261b66e21f1de92d"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u34269a8572/2022-11-10-1668067200-0f8df-cv-emg-pose-train@2-recording-9_left"
+  },
+  "emg2pose/u34269a8572/2022-11-10-1668067200-c1394-cv-emg-pose-train@2-recording-9_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u34269a8572/2022-11-10-1668067200-c1394-cv-emg-pose-train@2-recording-9_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17074,
+     "mtime": "2026-10-15T13:32:53",
+     "ctime": "2026-10-15T13:32:53",
+     "inode": 144124011314518270,
+     "sha256": "d8f3c9c313b83cea9cfb24748fb4e6c7262545a39a6c12b671d37934f5f95971"
+    },
+    "data_int16.npy": {
+     "bytes": 3707872,
+     "mtime": "2026-10-15T13:32:53",
+     "ctime": "2026-10-15T13:32:53",
+     "inode": 144124011314518269,
+     "sha256": "e0f52d2c26dcaae2971e306e367f0e87afdf41d4cb9e91925ecba3147e2cb350"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 463568,
+     "mtime": "2026-10-27T12:07:24",
+     "ctime": "2026-10-27T12:07:24",
+     "inode": 198169192611016061,
+     "sha256": "a154785a65dab1f649b7618dcb39cabeeb6b47324c69e495ef3c9f3c7eba4371"
+    },
+    "pose_valid.npy": {
+     "bytes": 11714,
+     "mtime": "2026-10-27T12:07:24",
+     "ctime": "2026-10-27T12:07:24",
+     "inode": 198169192611016063,
+     "sha256": "d7083684c62332f6baaa2c07e86d63389ed82f41618adfba4b4b89320b485eb9"
+    },
+    "pose_meta.json": {
+     "bytes": 5404,
+     "mtime": "2026-10-27T12:07:24",
+     "ctime": "2026-10-27T12:07:24",
+     "inode": 198169192611016064,
+     "sha256": "8c82ee2e7827d384ace6309dee79f93f5ddfa952c9daf1963393de60c0024f96"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u34269a8572/2022-11-10-1668067200-c1394-cv-emg-pose-train@2-recording-9_right"
+  },
+  "emg2pose/u3589743749/2022-06-17-1655452800-3c0d4-cv-emg-pose-demonstration@2-recording-15_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u3589743749/2022-06-17-1655452800-3c0d4-cv-emg-pose-demonstration@2-recording-15_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17154,
+     "mtime": "2026-10-15T13:34:02",
+     "ctime": "2026-10-15T13:34:02",
+     "inode": 216180415545778431,
+     "sha256": "f75012fb9104f864c0811502ff8948aa582cfe677addd8437ae3b12c14d5c3b6"
+    },
+    "data_int16.npy": {
+     "bytes": 2711680,
+     "mtime": "2026-10-15T13:34:02",
+     "ctime": "2026-10-15T13:34:02",
+     "inode": 216180415545778430,
+     "sha256": "42bb59faf10b4af7ab65e2f7cfd4ab2f27af8b070c452fa06c9ec112fe738a20"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 339048,
+     "mtime": "2026-10-27T10:46:07",
+     "ctime": "2026-10-27T10:46:07",
+     "inode": 180152741157479985,
+     "sha256": "6783842358bfdfb1b03beebc2e40ac9ee5bebe84a8df0a6fc171c9beda03c4ed"
+    },
+    "pose_valid.npy": {
+     "bytes": 8601,
+     "mtime": "2026-10-27T10:46:07",
+     "ctime": "2026-10-27T10:46:07",
+     "inode": 180152741157479986,
+     "sha256": "12e2c90e8812d2085afe1dc29ea749268c17ac1ab930ccad60ab9f5ddff9c75e"
+    },
+    "pose_meta.json": {
+     "bytes": 5516,
+     "mtime": "2026-10-27T10:46:07",
+     "ctime": "2026-10-27T10:46:07",
+     "inode": 180152741157479987,
+     "sha256": "82a4edf91038ed32073c0260fe207671e27de1b46a7bf13d5e2015af4936a0bf"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u3589743749/2022-06-17-1655452800-3c0d4-cv-emg-pose-demonstration@2-recording-15_left"
+  },
+  "emg2pose/u3589743749/2022-06-17-1655452800-e000d-cv-emg-pose-train@2-recording-13_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u3589743749/2022-06-17-1655452800-e000d-cv-emg-pose-train@2-recording-13_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 18637,
+     "mtime": "2026-10-15T13:34:02",
+     "ctime": "2026-10-15T13:34:02",
+     "inode": 198169100302773269,
+     "sha256": "b648a668086446a15505e3981f463cdfb516775fa7c5e061486f954308dff616"
+    },
+    "data_int16.npy": {
+     "bytes": 15079264,
+     "mtime": "2026-10-15T13:34:02",
+     "ctime": "2026-10-15T13:34:02",
+     "inode": 198169100302773268,
+     "sha256": "227debfb95a25e5ca9aa3cd4181a995ddd8d88939645e26c2a68ed243b90a9f4"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 1885008,
+     "mtime": "2026-10-27T10:46:59",
+     "ctime": "2026-10-27T10:46:59",
+     "inode": 4161333312541015116,
+     "sha256": "38366e95b44f9ad57cce04abaca95cb2dbdba72c338f5fa665c3e588bc352086"
+    },
+    "pose_valid.npy": {
+     "bytes": 47250,
+     "mtime": "2026-10-27T10:46:59",
+     "ctime": "2026-10-27T10:46:59",
+     "inode": 4161333312541015117,
+     "sha256": "ff8090d0cb757da1d0fa57facde9f04f1252026447e5f48e715aba53eea3b6e2"
+    },
+    "pose_meta.json": {
+     "bytes": 7005,
+     "mtime": "2026-10-27T10:46:59",
+     "ctime": "2026-10-27T10:46:59",
+     "inode": 4161333312541015118,
+     "sha256": "d7ebb6b903c2fbe1bacf59868401f298cfa2b4f374a32d0c5de733dfe7d6e3fd"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u3589743749/2022-06-17-1655452800-e000d-cv-emg-pose-train@2-recording-13_right"
+  },
+  "emg2pose/u3b8495fc25/2022-07-21-1658390400-20b37-cv-emg-pose-demonstration@2-recording-12_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u3b8495fc25/2022-07-21-1658390400-20b37-cv-emg-pose-demonstration@2-recording-12_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17115,
+     "mtime": "2026-10-15T13:34:16",
+     "ctime": "2026-10-15T13:34:16",
+     "inode": 180152665928433381,
+     "sha256": "7851623fff971ef703a2df17bdcbd6e604c037b8719cbf18b771f077994e2363"
+    },
+    "data_int16.npy": {
+     "bytes": 2850016,
+     "mtime": "2026-10-15T13:34:16",
+     "ctime": "2026-10-15T13:34:16",
+     "inode": 180152665928433380,
+     "sha256": "2e890f3e4975e8fd2682c3d61f1e2883af92ad5ba16ef6f23675339438302b3d"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 356328,
+     "mtime": "2026-10-27T11:00:36",
+     "ctime": "2026-10-27T11:00:36",
+     "inode": 144124114494393517,
+     "sha256": "2de9a7211a6bc3fef042364f9956ce60cc28310a534428ac3db2c34ede6a7455"
+    },
+    "pose_valid.npy": {
+     "bytes": 9033,
+     "mtime": "2026-10-27T11:00:36",
+     "ctime": "2026-10-27T11:00:36",
+     "inode": 144124114494393518,
+     "sha256": "adb2f58647c02093ee0dd6e1fa9e074744fad300e54a693f45f07bbde757e6a1"
+    },
+    "pose_meta.json": {
+     "bytes": 5733,
+     "mtime": "2026-10-27T11:00:36",
+     "ctime": "2026-10-27T11:00:36",
+     "inode": 144124114494393519,
+     "sha256": "35d228e5bcc5f37cbd65c5827ddef2c2c75954295ef0ccb71cae026f6a67f1c3"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u3b8495fc25/2022-07-21-1658390400-20b37-cv-emg-pose-demonstration@2-recording-12_right"
+  },
+  "emg2pose/u3b8495fc25/2022-07-21-1658390400-fb08d-cv-emg-pose-demonstration@2-recording-8_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u3b8495fc25/2022-07-21-1658390400-fb08d-cv-emg-pose-demonstration@2-recording-8_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17098,
+     "mtime": "2026-10-15T13:34:15",
+     "ctime": "2026-10-15T13:34:15",
+     "inode": 144124011314426782,
+     "sha256": "08332143b167288d7d85709198af66a8bc0ea94b45aae89df258645fd62aa99d"
+    },
+    "data_int16.npy": {
+     "bytes": 3783296,
+     "mtime": "2026-10-15T13:34:15",
+     "ctime": "2026-10-15T13:34:15",
+     "inode": 144124011314426781,
+     "sha256": "67c14d9c0408f01c59bd1f1e9578c3eb84b66f0c67b3ebec054f6655204c6fc7"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 473008,
+     "mtime": "2026-10-27T11:01:44",
+     "ctime": "2026-10-27T11:01:44",
+     "inode": 4161333312541016816,
+     "sha256": "07bd59195fee67f3096eb13c3f3d961155df5a9be6c0b054c53adc3147009689"
+    },
+    "pose_valid.npy": {
+     "bytes": 11950,
+     "mtime": "2026-10-27T11:01:44",
+     "ctime": "2026-10-27T11:01:44",
+     "inode": 4161333312541016817,
+     "sha256": "f449a04ffe6390303f1fb6ec3de9236f465d6ac7150aaac52ff9f7a53d1c2281"
+    },
+    "pose_meta.json": {
+     "bytes": 5511,
+     "mtime": "2026-10-27T11:01:44",
+     "ctime": "2026-10-27T11:01:44",
+     "inode": 4161333312541016818,
+     "sha256": "4738593aaba8a4cb79edced0a1e4449d5844e6f9707d307ab3b4baa1f2e953df"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u3b8495fc25/2022-07-21-1658390400-fb08d-cv-emg-pose-demonstration@2-recording-8_left"
+  },
+  "emg2pose/u3f79dccf7a/2022-07-12-1657612800-aa649-cv-emg-pose-demonstration@2-recording-6_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u3f79dccf7a/2022-07-12-1657612800-aa649-cv-emg-pose-demonstration@2-recording-6_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17187,
+     "mtime": "2026-10-15T13:32:52",
+     "ctime": "2026-10-15T13:32:52",
+     "inode": 198169100302773842,
+     "sha256": "7bbffb02b206984645147cff29f235da44498bca32b84830892a7d7c164eaab9"
+    },
+    "data_int16.npy": {
+     "bytes": 2981824,
+     "mtime": "2026-10-15T13:32:52",
+     "ctime": "2026-10-15T13:32:52",
+     "inode": 198169100302773841,
+     "sha256": "1706b083358f4ed39c3599ddafb229d31a0daea6cbbeee800df56254f20f9cf5"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 372808,
+     "mtime": "2026-10-27T10:52:30",
+     "ctime": "2026-10-27T10:52:30",
+     "inode": 4161333312541015844,
+     "sha256": "15d1fd1d15ff6f2d6f0795403fca92fbb0709dc2cf2da773383c98f8f9ea571b"
+    },
+    "pose_valid.npy": {
+     "bytes": 9445,
+     "mtime": "2026-10-27T10:52:30",
+     "ctime": "2026-10-27T10:52:30",
+     "inode": 4161333312541015845,
+     "sha256": "dfdce8bc47cb855db784875669bcbf24d0b692dab49d528b02909f8ce70017e5"
+    },
+    "pose_meta.json": {
+     "bytes": 5563,
+     "mtime": "2026-10-27T10:52:30",
+     "ctime": "2026-10-27T10:52:30",
+     "inode": 4161333312541015846,
+     "sha256": "ee5b94a3fa07094c11fb567206d899cdb2d2bf08a312deb96d4667a6eb263998"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u3f79dccf7a/2022-07-12-1657612800-aa649-cv-emg-pose-demonstration@2-recording-6_left"
+  },
+  "emg2pose/u3f79dccf7a/2022-07-12-1657612800-aa649-cv-emg-pose-demonstration@2-recording-8_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u3f79dccf7a/2022-07-12-1657612800-aa649-cv-emg-pose-demonstration@2-recording-8_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17131,
+     "mtime": "2026-10-15T13:32:52",
+     "ctime": "2026-10-15T13:32:52",
+     "inode": 252209935025300267,
+     "sha256": "0804b11fe3028a3b704a81fd211e0fe29060aad07d57767564bf1f15faf855c4"
+    },
+    "data_int16.npy": {
+     "bytes": 5014976,
+     "mtime": "2026-10-15T13:32:52",
+     "ctime": "2026-10-15T13:32:52",
+     "inode": 252209935025300266,
+     "sha256": "23b7b9bb62027ac8689d1f54f76b782cb6dc6ea7c006c364a34d65a0fae55d4f"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 626968,
+     "mtime": "2026-10-27T10:52:24",
+     "ctime": "2026-10-27T10:52:24",
+     "inode": 198169192610988124,
+     "sha256": "d17e71f871cb9f9ff1cbad4d3676c9bc6538812e7688a0a79c187c5f9b58449b"
+    },
+    "pose_valid.npy": {
+     "bytes": 15799,
+     "mtime": "2026-10-27T10:52:24",
+     "ctime": "2026-10-27T10:52:24",
+     "inode": 198169192610988125,
+     "sha256": "8583d37dbd601715ae0a6155f43646a65f82fd1ab30f94ac14316281642ae55a"
+    },
+    "pose_meta.json": {
+     "bytes": 5450,
+     "mtime": "2026-10-27T10:52:24",
+     "ctime": "2026-10-27T10:52:24",
+     "inode": 198169192610988126,
+     "sha256": "4c262905fc958baeeb92f850e6e33f12caccf2f0bbb9671d234446ad13585270"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u3f79dccf7a/2022-07-12-1657612800-aa649-cv-emg-pose-demonstration@2-recording-8_right"
+  },
+  "emg2pose/u5359e252a0/2022-09-21-1663747200-bcc57-cv-emg-pose-demonstration@2-recording-3_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u5359e252a0/2022-09-21-1663747200-bcc57-cv-emg-pose-demonstration@2-recording-3_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17079,
+     "mtime": "2026-10-15T13:32:59",
+     "ctime": "2026-10-15T13:32:59",
+     "inode": 144124011314434302,
+     "sha256": "262385a2d8e7b49c004d7f98e83d743299b2929154de9737844c148d3cb7dba7"
+    },
+    "data_int16.npy": {
+     "bytes": 2727360,
+     "mtime": "2026-10-15T13:32:59",
+     "ctime": "2026-10-15T13:32:59",
+     "inode": 144124011314434301,
+     "sha256": "8989660e428a69ea9d8d7accd2b31595f32173084b6dfa21d394a6f0b3a5e863"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 341008,
+     "mtime": "2026-10-27T11:33:35",
+     "ctime": "2026-10-27T11:33:35",
+     "inode": 252210029447429325,
+     "sha256": "c80f5a10869ea2d5c71ebd7842724e70dbaf90e5346603d4eeee7e35e1e66786"
+    },
+    "pose_valid.npy": {
+     "bytes": 8650,
+     "mtime": "2026-10-27T11:33:35",
+     "ctime": "2026-10-27T11:33:35",
+     "inode": 252210029447429326,
+     "sha256": "76da3dfa743e0cbfc235872d046afafa4a8778ce4be6f2cdbe05667dfe1330a7"
+    },
+    "pose_meta.json": {
+     "bytes": 5755,
+     "mtime": "2026-10-27T11:33:35",
+     "ctime": "2026-10-27T11:33:35",
+     "inode": 252210029447429327,
+     "sha256": "57d8e1db4797835f0e6653c4f0a569cebaf934b8ec1baf10ae866085c1cd706e"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u5359e252a0/2022-09-21-1663747200-bcc57-cv-emg-pose-demonstration@2-recording-3_left"
+  },
+  "emg2pose/u5359e252a0/2022-09-21-1663747200-f4150-cv-emg-pose-train@2-recording-3_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u5359e252a0/2022-09-21-1663747200-f4150-cv-emg-pose-train@2-recording-3_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17048,
+     "mtime": "2026-10-15T13:32:59",
+     "ctime": "2026-10-15T13:32:59",
+     "inode": 198169100302791962,
+     "sha256": "09b8f076fe63b07ca1349b5355b48954c506c79c23bd9ceaf28d9ac1e938c11b"
+    },
+    "data_int16.npy": {
+     "bytes": 3779808,
+     "mtime": "2026-10-15T13:32:59",
+     "ctime": "2026-10-15T13:32:59",
+     "inode": 198169100302791955,
+     "sha256": "26b3e94226a1b43c43eeddf78b1c48fc1c03c319c4af175dcbada4c3601d0a1f"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 472568,
+     "mtime": "2026-10-27T11:33:15",
+     "ctime": "2026-10-27T11:33:15",
+     "inode": 180152741157487963,
+     "sha256": "ba3001f346b0e8e03ff61d07610e7b9bc53357afb5d9d94a93ff3048d05b361a"
+    },
+    "pose_valid.npy": {
+     "bytes": 11939,
+     "mtime": "2026-10-27T11:33:15",
+     "ctime": "2026-10-27T11:33:15",
+     "inode": 180152741157487964,
+     "sha256": "1d7bc30a7fd733b159e3dc1fb757cd44ef559002b079c2eac85484db13c2176a"
+    },
+    "pose_meta.json": {
+     "bytes": 5480,
+     "mtime": "2026-10-27T11:33:15",
+     "ctime": "2026-10-27T11:33:15",
+     "inode": 180152741157487965,
+     "sha256": "b9b640fc9c5002d4818c7a794183fe088a6c0b4a51dd19248c57fe8da1591d06"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u5359e252a0/2022-09-21-1663747200-f4150-cv-emg-pose-train@2-recording-3_left"
+  },
+  "emg2pose/u5c3e677177/2022-11-09-1667980800-faa56-cv-emg-pose-train@2-recording-14_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": true,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u5c3e677177/2022-11-09-1667980800-faa56-cv-emg-pose-train@2-recording-14_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17046,
+     "mtime": "2026-10-15T13:33:48",
+     "ctime": "2026-10-15T13:33:48",
+     "inode": 252209935713053101,
+     "sha256": "8a0aa8410f1b91e9e76ae7eba5451c073724c41f788446bd3d08cf8f30e77f0a"
+    },
+    "data_int16.npy": {
+     "bytes": 2748608,
+     "mtime": "2026-10-15T13:33:48",
+     "ctime": "2026-10-15T13:33:48",
+     "inode": 252209935713053099,
+     "sha256": "af506e6713180aca427f4225d2e3eaf696dfff2577567d657047ac3d05a00765"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 343688,
+     "mtime": "2026-10-27T12:06:27",
+     "ctime": "2026-10-27T12:06:27",
+     "inode": 4161333312541026121,
+     "sha256": "ebc825aec6d0bd400c415eb6b7d7192ae664db2f6ce8464a6244561393bd3277"
+    },
+    "pose_valid.npy": {
+     "bytes": 8717,
+     "mtime": "2026-10-27T12:06:27",
+     "ctime": "2026-10-27T12:06:27",
+     "inode": 4161333312541026122,
+     "sha256": "b7d471118d2fa7e7ae9eee970b81442c893d0cee6ce013b26babb7ad971e1db7"
+    },
+    "pose_meta.json": {
+     "bytes": 5466,
+     "mtime": "2026-10-27T12:06:27",
+     "ctime": "2026-10-27T12:06:27",
+     "inode": 4161333312541026123,
+     "sha256": "bbf3205b79378655b6fa97827e606f65f1a52ecd0e8824c2b324eadb5863526d"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u5c3e677177/2022-11-09-1667980800-faa56-cv-emg-pose-train@2-recording-14_right"
+  },
+  "emg2pose/u5c3e677177/2022-11-09-1667980800-faa56-cv-emg-pose-train@2-recording-5_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": true,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u5c3e677177/2022-11-09-1667980800-faa56-cv-emg-pose-train@2-recording-5_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17046,
+     "mtime": "2026-10-15T13:33:48",
+     "ctime": "2026-10-15T13:33:48",
+     "inode": 252209935713053123,
+     "sha256": "96318d51c34c7fd30e140314e63654be1a4a812c37e1aa9e23858ab697451050"
+    },
+    "data_int16.npy": {
+     "bytes": 3754496,
+     "mtime": "2026-10-15T13:33:48",
+     "ctime": "2026-10-15T13:33:48",
+     "inode": 252209935713053121,
+     "sha256": "21a55485438dd918ea20c66e096ee225c468002c3725909dc707051788f66187"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 469408,
+     "mtime": "2026-10-27T12:06:28",
+     "ctime": "2026-10-27T12:06:28",
+     "inode": 234195271737705600,
+     "sha256": "da8c1c96ccaeca8ad4e298e3b16ba2fae9f9d0fb95b4dc7c7505c7461de2b583"
+    },
+    "pose_valid.npy": {
+     "bytes": 11860,
+     "mtime": "2026-10-27T12:06:28",
+     "ctime": "2026-10-27T12:06:28",
+     "inode": 234195271737705601,
+     "sha256": "a62ba228de4e4d695a4d17bf3b7b58ebc40324bb2b1905a25939439b6a410e4c"
+    },
+    "pose_meta.json": {
+     "bytes": 5405,
+     "mtime": "2026-10-27T12:06:28",
+     "ctime": "2026-10-27T12:06:28",
+     "inode": 234195271737705602,
+     "sha256": "a6fa7929b6f085c747bfae59753ff8a558c723ef913bbb40f8825c7de0c0e32d"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u5c3e677177/2022-11-09-1667980800-faa56-cv-emg-pose-train@2-recording-5_left"
+  },
+  "emg2pose/u65546ad185/2022-10-14-1665734400-066a8-cv-emg-pose-demonstration@2-recording-6_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u65546ad185/2022-10-14-1665734400-066a8-cv-emg-pose-demonstration@2-recording-6_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17106,
+     "mtime": "2026-10-15T13:33:43",
+     "ctime": "2026-10-15T13:33:43",
+     "inode": 4161333240617084396,
+     "sha256": "4f27593c1ce7b5320fbb068ba7f5f49d01e15f9d29886db2ef5f0ec51eb7e66f"
+    },
+    "data_int16.npy": {
+     "bytes": 2917824,
+     "mtime": "2026-10-15T13:33:43",
+     "ctime": "2026-10-15T13:33:43",
+     "inode": 4161333240617084395,
+     "sha256": "260b999da42689ac94c001551a1f193eacc7a3aa7a0380294b6923955374bc62"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 364808,
+     "mtime": "2026-10-27T11:48:55",
+     "ctime": "2026-10-27T11:48:55",
+     "inode": 144124114494399813,
+     "sha256": "e1f3b682fa0138dc21be4875813b859feddda59410acca66544933b846d4246e"
+    },
+    "pose_valid.npy": {
+     "bytes": 9245,
+     "mtime": "2026-10-27T11:48:55",
+     "ctime": "2026-10-27T11:48:55",
+     "inode": 144124114494399814,
+     "sha256": "26c80c871047befcf5b5c1d9cd78988c6aa5914d07ad5de4c897b5cb498fd16c"
+    },
+    "pose_meta.json": {
+     "bytes": 5685,
+     "mtime": "2026-10-27T11:48:55",
+     "ctime": "2026-10-27T11:48:55",
+     "inode": 144124114494399815,
+     "sha256": "7fa434966b5a263ab35f2c1a3c18002eeb6872f9d220e024645ff58e91ff2f4f"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u65546ad185/2022-10-14-1665734400-066a8-cv-emg-pose-demonstration@2-recording-6_left"
+  },
+  "emg2pose/u65546ad185/2022-10-14-1665734400-080b5-cv-emg-pose-train@2-recording-4_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u65546ad185/2022-10-14-1665734400-080b5-cv-emg-pose-train@2-recording-4_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17073,
+     "mtime": "2026-10-15T13:33:43",
+     "ctime": "2026-10-15T13:33:43",
+     "inode": 162139461839295847,
+     "sha256": "0f6265f27a0587defaf44c9702b29ef3bd6373d094c7a8f6222e02f1b34d2617"
+    },
+    "data_int16.npy": {
+     "bytes": 3739072,
+     "mtime": "2026-10-15T13:33:43",
+     "ctime": "2026-10-15T13:33:43",
+     "inode": 162139461839295846,
+     "sha256": "f0270bd12608b3765494b3d08de7b87ca406973e25ee47aa3524856d053a811e"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 467488,
+     "mtime": "2026-10-27T11:49:07",
+     "ctime": "2026-10-27T11:49:07",
+     "inode": 252210029447432768,
+     "sha256": "77221cafa10089c652ef774ae11db801f0e549d7b9086affde3cac8dc4d2266b"
+    },
+    "pose_valid.npy": {
+     "bytes": 11812,
+     "mtime": "2026-10-27T11:49:07",
+     "ctime": "2026-10-27T11:49:07",
+     "inode": 252210029447432769,
+     "sha256": "3447e904e420901b5ec7129ae915f0e9e2b661f21d6e44a2178a06753386e296"
+    },
+    "pose_meta.json": {
+     "bytes": 5462,
+     "mtime": "2026-10-27T11:49:07",
+     "ctime": "2026-10-27T11:49:07",
+     "inode": 252210029447432770,
+     "sha256": "d8846ee0684b61cfea408cd10e950729b03323881933cb4ce88842fbcf92ddc4"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u65546ad185/2022-10-14-1665734400-080b5-cv-emg-pose-train@2-recording-4_right"
+  },
+  "emg2pose/u66cb44c2dc/2022-08-04-1659600000-10ae7-cv-emg-pose-demonstration@2-recording-1_right": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u66cb44c2dc/2022-08-04-1659600000-10ae7-cv-emg-pose-demonstration@2-recording-1_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17090,
+     "mtime": "2026-10-15T13:33:55",
+     "ctime": "2026-10-15T13:33:55",
+     "inode": 252209935025302074,
+     "sha256": "dc30986864f1bff02845832a26b3ba346096e63066e653300f12fff822ba8ef1"
+    },
+    "data_int16.npy": {
+     "bytes": 3959136,
+     "mtime": "2026-10-15T13:33:55",
+     "ctime": "2026-10-15T13:33:55",
+     "inode": 252209935025302073,
+     "sha256": "0848e93d3a1aeda551b4aee1ce6748ebf5f2c0042cd7a480c4b569fc2a8ae781"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 494968,
+     "mtime": "2026-10-27T11:12:55",
+     "ctime": "2026-10-27T11:12:55",
+     "inode": 216180508743236837,
+     "sha256": "912074790cda91285ebedc93e0f73c97ca8810c5d77136c3984e2e4a39f0d4a4"
+    },
+    "pose_valid.npy": {
+     "bytes": 12499,
+     "mtime": "2026-10-27T11:12:55",
+     "ctime": "2026-10-27T11:12:55",
+     "inode": 216180508743236838,
+     "sha256": "84ea2e66133d318637e2b2b6945baf3373c33ee8fae9ba59985cce96bdc9e5a9"
+    },
+    "pose_meta.json": {
+     "bytes": 5493,
+     "mtime": "2026-10-27T11:12:55",
+     "ctime": "2026-10-27T11:12:55",
+     "inode": 216180508743236839,
+     "sha256": "3d85577e0bf296b74b433dc79e89080162f46b298e5f62dff18f038d7a7f9b5f"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u66cb44c2dc/2022-08-04-1659600000-10ae7-cv-emg-pose-demonstration@2-recording-1_right"
+  },
+  "emg2pose/u751c72b291/2022-05-18-1652860800-59b49-cv-emg-pose-demonstration@2-recording-28_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u751c72b291/2022-05-18-1652860800-59b49-cv-emg-pose-demonstration@2-recording-28_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17095,
+     "mtime": "2026-10-15T13:33:20",
+     "ctime": "2026-10-15T13:33:20",
+     "inode": 252209935025298575,
+     "sha256": "e4a1a21b2f916a946702580617cc355b41ab0fac548c76c4613bee8e90297e0c"
+    },
+    "data_int16.npy": {
+     "bytes": 4493696,
+     "mtime": "2026-10-15T13:33:20",
+     "ctime": "2026-10-15T13:33:20",
+     "inode": 252209935025298574,
+     "sha256": "9f4216120596485c34ea2bcebaa13573ec8a828f2200584c4c7bf4c40a654d25"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 561808,
+     "mtime": "2026-10-27T10:37:07",
+     "ctime": "2026-10-27T10:37:07",
+     "inode": 234195271737685295,
+     "sha256": "606240a00b85e9b51ae4ef63fef7b05ca9376d8bc8c72ad29daaed1a3bb43bff"
+    },
+    "pose_valid.npy": {
+     "bytes": 14170,
+     "mtime": "2026-10-27T10:37:07",
+     "ctime": "2026-10-27T10:37:07",
+     "inode": 234195271737685296,
+     "sha256": "ed5d036012eb17dd20629ae7bdf218a0e3eba9fccc5c1d13dc0cc2dfc8ca0cb2"
+    },
+    "pose_meta.json": {
+     "bytes": 5467,
+     "mtime": "2026-10-27T10:37:07",
+     "ctime": "2026-10-27T10:37:07",
+     "inode": 234195271737685297,
+     "sha256": "d9799885ec9c516cbfc05ade838919c2ef329a259aa3755bac76ba5bfa8fc4e8"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u751c72b291/2022-05-18-1652860800-59b49-cv-emg-pose-demonstration@2-recording-28_right"
+  },
+  "emg2pose/u751c72b291/2022-05-18-1652860800-59b49-cv-emg-pose-demonstration@2-recording-35_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u751c72b291/2022-05-18-1652860800-59b49-cv-emg-pose-demonstration@2-recording-35_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17085,
+     "mtime": "2026-10-15T13:33:21",
+     "ctime": "2026-10-15T13:33:21",
+     "inode": 144124011314424504,
+     "sha256": "e55c37ddf6cf421fa2a29e77eecf4f9a6fc1066c473d68d1d9178bd81e779c71"
+    },
+    "data_int16.npy": {
+     "bytes": 4690880,
+     "mtime": "2026-10-15T13:33:21",
+     "ctime": "2026-10-15T13:33:21",
+     "inode": 144124011314424503,
+     "sha256": "6950d980c1317064790634edcbae3a23ed5966057fe75b46ed4a7308527859da"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 586448,
+     "mtime": "2026-10-27T10:37:14",
+     "ctime": "2026-10-27T10:37:14",
+     "inode": 4161333312541013700,
+     "sha256": "ea7b10e57cac06cb6d660f061bdb75175ab2583c6d6443b6564a295c9118e174"
+    },
+    "pose_valid.npy": {
+     "bytes": 14786,
+     "mtime": "2026-10-27T10:37:14",
+     "ctime": "2026-10-27T10:37:14",
+     "inode": 4161333312541013701,
+     "sha256": "ee993d8e724635fd72d3ca75f2f7eb3ad46c14c74bb3a35cfd00aad8beea53cb"
+    },
+    "pose_meta.json": {
+     "bytes": 5421,
+     "mtime": "2026-10-27T10:37:14",
+     "ctime": "2026-10-27T10:37:14",
+     "inode": 4161333312541013702,
+     "sha256": "4f231c28469f9e011b7160ba23c0d7523db6eb8ca61e42f1b18cafd7ad301ce4"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u751c72b291/2022-05-18-1652860800-59b49-cv-emg-pose-demonstration@2-recording-35_left"
+  },
+  "emg2pose/u76932c8337/2022-07-05-1657008000-12581-cv-emg-pose-train@2-recording-7_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": true,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u76932c8337/2022-07-05-1657008000-12581-cv-emg-pose-train@2-recording-7_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17788,
+     "mtime": "2026-10-15T13:34:16",
+     "ctime": "2026-10-15T13:34:16",
+     "inode": 234195180671032672,
+     "sha256": "0307102cdce8ade3ff04323fea74486ff1ed3707e8b5ba7f0cefe98a187bb4eb"
+    },
+    "data_int16.npy": {
+     "bytes": 3793856,
+     "mtime": "2026-10-15T13:34:16",
+     "ctime": "2026-10-15T13:34:16",
+     "inode": 234195180671032671,
+     "sha256": "b43b5d9c68c933bdcee48341caf5546c8cf435ff6d1931728006a8308ac5dbb3"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 474328,
+     "mtime": "2026-10-27T10:48:07",
+     "ctime": "2026-10-27T10:48:07",
+     "inode": 216180508743233170,
+     "sha256": "f092fa8386885ef7b3e87dda39aee0ce634b7c69da45c7f06f7ed511d7f5a08e"
+    },
+    "pose_valid.npy": {
+     "bytes": 11983,
+     "mtime": "2026-10-27T10:48:07",
+     "ctime": "2026-10-27T10:48:07",
+     "inode": 216180508743233171,
+     "sha256": "5dea3f1a1cea055206f3eda286691f8656bb842ab720d6f4484bd08ff777119c"
+    },
+    "pose_meta.json": {
+     "bytes": 6086,
+     "mtime": "2026-10-27T10:48:07",
+     "ctime": "2026-10-27T10:48:07",
+     "inode": 216180508743233172,
+     "sha256": "d298ebe3bab9fcd0fe0a334a85dcc285a0c09aa780d49391f4461075797c8fc8"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u76932c8337/2022-07-05-1657008000-12581-cv-emg-pose-train@2-recording-7_left"
+  },
+  "emg2pose/u76932c8337/2022-07-05-1657008000-c0ab0-cv-emg-pose-train@2-recording-1_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": true,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u76932c8337/2022-07-05-1657008000-c0ab0-cv-emg-pose-train@2-recording-1_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17059,
+     "mtime": "2026-10-15T13:34:16",
+     "ctime": "2026-10-15T13:34:16",
+     "inode": 4161333240617074062,
+     "sha256": "bba5761fd38c592e707caea0d3ff195135b1a24b3b8ce59d4561c8988985ab0f"
+    },
+    "data_int16.npy": {
+     "bytes": 6248928,
+     "mtime": "2026-10-15T13:34:16",
+     "ctime": "2026-10-15T13:34:16",
+     "inode": 4161333240617074061,
+     "sha256": "a20c37d77a10a9a46abf3b6363411d41a4eab052f8d4605bf4ff567c111a1dc4"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 781208,
+     "mtime": "2026-10-27T10:48:28",
+     "ctime": "2026-10-27T10:48:28",
+     "inode": 180152741157480570,
+     "sha256": "af4ff2caa496e878dd0fcc9e27234c55c8a7baf2e241b9451c38782b824c56eb"
+    },
+    "pose_valid.npy": {
+     "bytes": 19655,
+     "mtime": "2026-10-27T10:48:28",
+     "ctime": "2026-10-27T10:48:28",
+     "inode": 180152741157480571,
+     "sha256": "e92624c0f6346093db510c59d58b5473f5c10754d9f86350b1e20f99c33fccef"
+    },
+    "pose_meta.json": {
+     "bytes": 5559,
+     "mtime": "2026-10-27T10:48:28",
+     "ctime": "2026-10-27T10:48:28",
+     "inode": 180152741157480572,
+     "sha256": "dcef244d0a9be8ec1be6ae70243cf1eec8e3de469c5fbf18de4b944ed097ac94"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u76932c8337/2022-07-05-1657008000-c0ab0-cv-emg-pose-train@2-recording-1_left"
+  },
+  "emg2pose/u77202ba0fc/2022-07-20-1658304000-3ea9e-cv-emg-pose-demonstration@2-recording-7_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u77202ba0fc/2022-07-20-1658304000-3ea9e-cv-emg-pose-demonstration@2-recording-7_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17055,
+     "mtime": "2026-10-15T13:32:48",
+     "ctime": "2026-10-15T13:32:48",
+     "inode": 162139461839287951,
+     "sha256": "f8ac7c4417b4c6a5521752c63e50788674a533a027899c440b3f98ac790985e8"
+    },
+    "data_int16.npy": {
+     "bytes": 2888896,
+     "mtime": "2026-10-15T13:32:48",
+     "ctime": "2026-10-15T13:32:48",
+     "inode": 162139461839287950,
+     "sha256": "c079a438592b590c1f251457bfe271425497acdc4abb3af18c31943ba084011b"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 361208,
+     "mtime": "2026-10-27T10:59:33",
+     "ctime": "2026-10-27T10:59:33",
+     "inode": 234195271737690286,
+     "sha256": "82c510cbb050908d2b7b17cc6d72160769c6e81f3e988de3f313c5c9186bef3e"
+    },
+    "pose_valid.npy": {
+     "bytes": 9155,
+     "mtime": "2026-10-27T10:59:33",
+     "ctime": "2026-10-27T10:59:33",
+     "inode": 234195271737690287,
+     "sha256": "fd20cff6166234e9b7f5674fccc8767bede13362ab78bbe77aeb059ec53531a0"
+    },
+    "pose_meta.json": {
+     "bytes": 5498,
+     "mtime": "2026-10-27T10:59:33",
+     "ctime": "2026-10-27T10:59:33",
+     "inode": 234195271737690288,
+     "sha256": "7397f946334ebc5acae65758367cd427c5400d0b97ae97c3f35303823a6e59cb"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u77202ba0fc/2022-07-20-1658304000-3ea9e-cv-emg-pose-demonstration@2-recording-7_left"
+  },
+  "emg2pose/u77202ba0fc/2022-07-20-1658304000-957ab-cv-emg-pose-train@2-recording-3_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u77202ba0fc/2022-07-20-1658304000-957ab-cv-emg-pose-train@2-recording-3_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17045,
+     "mtime": "2026-10-15T13:32:48",
+     "ctime": "2026-10-15T13:32:48",
+     "inode": 162139461839287972,
+     "sha256": "f252368efd3f305855b95279c3c73c5e2c5ef82be9482d1d6b418803c2ee7106"
+    },
+    "data_int16.npy": {
+     "bytes": 4267456,
+     "mtime": "2026-10-15T13:32:48",
+     "ctime": "2026-10-15T13:32:48",
+     "inode": 162139461839287971,
+     "sha256": "09224de55c6ae95e150104f243d64f7b55ce5f4043a34d821da0e2e1167d038e"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 533528,
+     "mtime": "2026-10-27T10:59:49",
+     "ctime": "2026-10-27T10:59:49",
+     "inode": 234195271737690306,
+     "sha256": "95ebf400014c6394dbac13957342f2bb0dd03b98120426a6c306a92626b44ea8"
+    },
+    "pose_valid.npy": {
+     "bytes": 13463,
+     "mtime": "2026-10-27T10:59:49",
+     "ctime": "2026-10-27T10:59:49",
+     "inode": 234195271737690307,
+     "sha256": "e77eebfe27f889d7585fd34522938eebd967dec378ab4dd8a2f5deeb921136f2"
+    },
+    "pose_meta.json": {
+     "bytes": 5448,
+     "mtime": "2026-10-27T10:59:49",
+     "ctime": "2026-10-27T10:59:49",
+     "inode": 234195271737690308,
+     "sha256": "d3226cb9abf531faf7fca13a1ec94fdf5b5fe6d3cf18e4c4203ca9c31893b8db"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u77202ba0fc/2022-07-20-1658304000-957ab-cv-emg-pose-train@2-recording-3_right"
+  },
+  "emg2pose/u786ba539e1/2022-09-22-1663833600-789b7-cv-emg-pose-train@2-recording-9_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u786ba539e1/2022-09-22-1663833600-789b7-cv-emg-pose-train@2-recording-9_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17081,
+     "mtime": "2026-10-15T13:33:50",
+     "ctime": "2026-10-15T13:33:50",
+     "inode": 234195180671063723,
+     "sha256": "0b5dc1ce8f04b8d546f99d167675a0fc099fab6c39cdbdde6f48b7d9036b14ef"
+    },
+    "data_int16.npy": {
+     "bytes": 3784928,
+     "mtime": "2026-10-15T13:33:50",
+     "ctime": "2026-10-15T13:33:50",
+     "inode": 234195180671063722,
+     "sha256": "11349ba9bd496bb91a5062f2fac2be775d7ceeb93d2160f0e8d730106fef7063"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 473208,
+     "mtime": "2026-10-27T11:35:07",
+     "ctime": "2026-10-27T11:35:07",
+     "inode": 216180508743239654,
+     "sha256": "69088afb769d165441c00e9296e9547491e79c9c658a434f6c018bf13d7be0dd"
+    },
+    "pose_valid.npy": {
+     "bytes": 11955,
+     "mtime": "2026-10-27T11:35:07",
+     "ctime": "2026-10-27T11:35:07",
+     "inode": 216180508743239655,
+     "sha256": "df8b57b2e5ba408540fe3817e76ecad30fb9a22b8127fbf15bd06d689bd179bc"
+    },
+    "pose_meta.json": {
+     "bytes": 5536,
+     "mtime": "2026-10-27T11:35:07",
+     "ctime": "2026-10-27T11:35:07",
+     "inode": 216180508743239656,
+     "sha256": "569a787f301ba8545c93efd8f911fecc1d74648c12a75d81f689e932a80661df"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u786ba539e1/2022-09-22-1663833600-789b7-cv-emg-pose-train@2-recording-9_right"
+  },
+  "emg2pose/u786ba539e1/2022-09-22-1663833600-925bb-cv-emg-pose-demonstration@2-recording-14_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u786ba539e1/2022-09-22-1663833600-925bb-cv-emg-pose-demonstration@2-recording-14_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17074,
+     "mtime": "2026-10-15T13:33:50",
+     "ctime": "2026-10-15T13:33:50",
+     "inode": 252209935629187411,
+     "sha256": "30357e9fb5131c837f1d940ec15563edd7d4829c88b8d71ece397e1721a8d3ba"
+    },
+    "data_int16.npy": {
+     "bytes": 3759840,
+     "mtime": "2026-10-15T13:33:50",
+     "ctime": "2026-10-15T13:33:50",
+     "inode": 252209935629187410,
+     "sha256": "7ab59c6dec875856cebf67231866576b9c385ae3bfa041f1b61f889c467a41e4"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 470088,
+     "mtime": "2026-10-27T11:35:12",
+     "ctime": "2026-10-27T11:35:12",
+     "inode": 4161333312541020796,
+     "sha256": "91e3c1f6bb20d6bd9d4279c6473b565401a9dcd60787d04a711a9134c4db72a9"
+    },
+    "pose_valid.npy": {
+     "bytes": 11877,
+     "mtime": "2026-10-27T11:35:12",
+     "ctime": "2026-10-27T11:35:12",
+     "inode": 4161333312541020797,
+     "sha256": "2e8f75905072f3162b3db0c49413b0d0a9c414e38d8687b640eb5372852eebce"
+    },
+    "pose_meta.json": {
+     "bytes": 5482,
+     "mtime": "2026-10-27T11:35:12",
+     "ctime": "2026-10-27T11:35:12",
+     "inode": 4161333312541020798,
+     "sha256": "9fc59a5210c7d1519418017ba4d40ac2eb5e2da5f2154eff3d0bc600081c4466"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u786ba539e1/2022-09-22-1663833600-925bb-cv-emg-pose-demonstration@2-recording-14_left"
+  },
+  "emg2pose/u7afcdcd6be/2022-07-26-1658822400-40f70-cv-emg-pose-demonstration@2-recording-19_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u7afcdcd6be/2022-07-26-1658822400-40f70-cv-emg-pose-demonstration@2-recording-19_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17153,
+     "mtime": "2026-10-15T13:33:25",
+     "ctime": "2026-10-15T13:33:25",
+     "inode": 216180415545780079,
+     "sha256": "f3c71cf9073a85f0e8cbebcd64bd502990fdd429d0cdbe2d510b3a3ea019278e"
+    },
+    "data_int16.npy": {
+     "bytes": 2868704,
+     "mtime": "2026-10-15T13:33:25",
+     "ctime": "2026-10-15T13:33:25",
+     "inode": 216180415545780078,
+     "sha256": "417186146b7206dffcaa242b798bf1adc8dfe267f48d4c0914f8165a658e5526"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 358688,
+     "mtime": "2026-10-27T11:04:40",
+     "ctime": "2026-10-27T11:04:40",
+     "inode": 162139590872827184,
+     "sha256": "380286ce7614d45ef00b7103135748ab06919caeaa1c64287adc7a437593dca0"
+    },
+    "pose_valid.npy": {
+     "bytes": 9092,
+     "mtime": "2026-10-27T11:04:40",
+     "ctime": "2026-10-27T11:04:40",
+     "inode": 162139590872827185,
+     "sha256": "c40693fb2b6332704fd0bc69edb97cf9c30937b4211a6d2caf93d94e554e8eb2"
+    },
+    "pose_meta.json": {
+     "bytes": 5446,
+     "mtime": "2026-10-27T11:04:40",
+     "ctime": "2026-10-27T11:04:40",
+     "inode": 162139590872827186,
+     "sha256": "179f5e1468956fab7042716abab911cd2df1f76b91900dd8bf2cfe81997bdc4c"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u7afcdcd6be/2022-07-26-1658822400-40f70-cv-emg-pose-demonstration@2-recording-19_right"
+  },
+  "emg2pose/u7afcdcd6be/2022-07-26-1658822400-48514-cv-emg-pose-train@2-recording-4_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u7afcdcd6be/2022-07-26-1658822400-48514-cv-emg-pose-train@2-recording-4_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17039,
+     "mtime": "2026-10-15T13:33:25",
+     "ctime": "2026-10-15T13:33:25",
+     "inode": 198169100302774898,
+     "sha256": "6b54ec1176005038623b947ba8e9137c48319bd677d8476d0e03c7fba2ed3c63"
+    },
+    "data_int16.npy": {
+     "bytes": 4044480,
+     "mtime": "2026-10-15T13:33:25",
+     "ctime": "2026-10-15T13:33:25",
+     "inode": 198169100302774897,
+     "sha256": "157ffb51b91af664e341e14ba3b41b6b1ce69cd74a909da1adfd5adf6e0626d6"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 505648,
+     "mtime": "2026-10-27T11:04:55",
+     "ctime": "2026-10-27T11:04:55",
+     "inode": 180152741157483313,
+     "sha256": "805f01e62b4f724896279bd8ae64a6f7e9a98ca9a87928923a970254235a2640"
+    },
+    "pose_valid.npy": {
+     "bytes": 12766,
+     "mtime": "2026-10-27T11:04:55",
+     "ctime": "2026-10-27T11:04:55",
+     "inode": 180152741157483314,
+     "sha256": "7542b5b1e91fe5e5732e5e59304a14317aa4a4b6ae7036ff34646324d660eee2"
+    },
+    "pose_meta.json": {
+     "bytes": 5422,
+     "mtime": "2026-10-27T11:04:55",
+     "ctime": "2026-10-27T11:04:55",
+     "inode": 180152741157483315,
+     "sha256": "c56d9aa44fb8d8e12436cd348f53589afdea42b5d44eb0fd6054491e184f4cd3"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u7afcdcd6be/2022-07-26-1658822400-48514-cv-emg-pose-train@2-recording-4_left"
+  },
+  "emg2pose/u827c91d800/2022-11-17-1668672000-2c3e2-cv-emg-pose-demonstration@2-recording-13_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u827c91d800/2022-11-17-1668672000-2c3e2-cv-emg-pose-demonstration@2-recording-13_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17098,
+     "mtime": "2026-10-15T13:33:08",
+     "ctime": "2026-10-15T13:33:08",
+     "inode": 234195182835262602,
+     "sha256": "a887fe284f0cefa87da549f62d64de7fde30170b77de917b1115bd93de84aff4"
+    },
+    "data_int16.npy": {
+     "bytes": 3778784,
+     "mtime": "2026-10-15T13:33:08",
+     "ctime": "2026-10-15T13:33:08",
+     "inode": 234195182835262601,
+     "sha256": "dd5b2c003117124746b5dc146b45d20f463edd18dc87b065376bce03d1fc487c"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 472448,
+     "mtime": "2026-10-27T12:11:30",
+     "ctime": "2026-10-27T12:11:30",
+     "inode": 252210029447439399,
+     "sha256": "59262ffa49ef030e34d0d6366b887befe474e29bc3bf8b5f1c5efae59c9401d6"
+    },
+    "pose_valid.npy": {
+     "bytes": 11936,
+     "mtime": "2026-10-27T12:11:30",
+     "ctime": "2026-10-27T12:11:30",
+     "inode": 252210029447439400,
+     "sha256": "72d49c5e9ac1f4a4127fbbb42803cf9b1c2ea8ffef764cd2c255b93eab82145a"
+    },
+    "pose_meta.json": {
+     "bytes": 5615,
+     "mtime": "2026-10-27T12:11:30",
+     "ctime": "2026-10-27T12:11:30",
+     "inode": 252210029447439401,
+     "sha256": "e0151ea72f701a9e46d0afa204b270a348cb19d84cbc8a1c95a6439b031a7c4b"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u827c91d800/2022-11-17-1668672000-2c3e2-cv-emg-pose-demonstration@2-recording-13_left"
+  },
+  "emg2pose/u827c91d800/2022-11-17-1668672000-50e20-cv-emg-pose-demonstration@2-recording-10_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u827c91d800/2022-11-17-1668672000-50e20-cv-emg-pose-demonstration@2-recording-10_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17151,
+     "mtime": "2026-10-15T13:33:08",
+     "ctime": "2026-10-15T13:33:08",
+     "inode": 180152666867954148,
+     "sha256": "aef88fd743859a4d8958a57dc7c9105f03b7908762524466523b44c038e3f17c"
+    },
+    "data_int16.npy": {
+     "bytes": 2983648,
+     "mtime": "2026-10-15T13:33:08",
+     "ctime": "2026-10-15T13:33:08",
+     "inode": 180152666867954147,
+     "sha256": "dd23fd38197b66eeb22d81f4521a8439d4a9275e229f6a9585a16a08ce89a8f4"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 373048,
+     "mtime": "2026-10-27T12:11:47",
+     "ctime": "2026-10-27T12:11:47",
+     "inode": 198169192611018195,
+     "sha256": "3c58635f29b6aecfc1d88cc9d5e2f9148fcf4084043b26b69b3a99fd3a9f0c7d"
+    },
+    "pose_valid.npy": {
+     "bytes": 9451,
+     "mtime": "2026-10-27T12:11:47",
+     "ctime": "2026-10-27T12:11:47",
+     "inode": 198169192611018196,
+     "sha256": "30780fa02d2378398faaf711ab5b1271cd4c2d5b0ddff5ecd7fbf4c242e75d12"
+    },
+    "pose_meta.json": {
+     "bytes": 5610,
+     "mtime": "2026-10-27T12:11:47",
+     "ctime": "2026-10-27T12:11:47",
+     "inode": 198169192611018197,
+     "sha256": "396625abb5aa7dea9f648c87d7d3e308992af80623d75026d3825cfb71e12b62"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u827c91d800/2022-11-17-1668672000-50e20-cv-emg-pose-demonstration@2-recording-10_right"
+  },
+  "emg2pose/u87aa3b3887/2022-08-30-1661846400-8419c-cv-emg-pose-demonstration@2-recording-14_right": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u87aa3b3887/2022-08-30-1661846400-8419c-cv-emg-pose-demonstration@2-recording-14_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17125,
+     "mtime": "2026-10-15T13:33:20",
+     "ctime": "2026-10-15T13:33:20",
+     "inode": 4161333240617077696,
+     "sha256": "e3b2b75b3259fa9ed54c70c731e6ddbe832ac7e766d0dbd3b1d7d00ab8ccd394"
+    },
+    "data_int16.npy": {
+     "bytes": 3285472,
+     "mtime": "2026-10-15T13:33:20",
+     "ctime": "2026-10-15T13:33:20",
+     "inode": 4161333240617077695,
+     "sha256": "ffc82dc5f503b7ea127b61a672925d5bf38a908486c703becef3ed83f980d21d"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 410768,
+     "mtime": "2026-10-27T11:18:02",
+     "ctime": "2026-10-27T11:18:02",
+     "inode": 144124114494395981,
+     "sha256": "a74c32e581f9b22260342680f513c590953992fc4e611ecd6c9fbf62ba336f09"
+    },
+    "pose_valid.npy": {
+     "bytes": 10394,
+     "mtime": "2026-10-27T11:18:02",
+     "ctime": "2026-10-27T11:18:02",
+     "inode": 144124114494395982,
+     "sha256": "55bfa29930cf59240b557117c70255ce705f954a1a0ec2743c2af797b3ecac22"
+    },
+    "pose_meta.json": {
+     "bytes": 5481,
+     "mtime": "2026-10-27T11:18:02",
+     "ctime": "2026-10-27T11:18:02",
+     "inode": 144124114494395983,
+     "sha256": "18f1677c846a495157772f313d8d21041f0de2b4db9a28fb568bbafb8de1aeb9"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u87aa3b3887/2022-08-30-1661846400-8419c-cv-emg-pose-demonstration@2-recording-14_right"
+  },
+  "emg2pose/u92f25d4f36/2022-09-22-1663833600-9a406-cv-emg-pose-demonstration@2-recording-4_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u92f25d4f36/2022-09-22-1663833600-9a406-cv-emg-pose-demonstration@2-recording-4_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17086,
+     "mtime": "2026-10-15T13:33:49",
+     "ctime": "2026-10-15T13:33:49",
+     "inode": 162139461839294622,
+     "sha256": "4d517d2a40fa2056c296231c4856f118fc66d55a62b2a65c9121df05eec65b05"
+    },
+    "data_int16.npy": {
+     "bytes": 2885088,
+     "mtime": "2026-10-15T13:33:49",
+     "ctime": "2026-10-15T13:33:49",
+     "inode": 162139461839294621,
+     "sha256": "e86f7dca481f2e533448e1c7b087ccd46cd3204229114b0a5f49aaf87ae85369"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 360728,
+     "mtime": "2026-10-27T11:35:27",
+     "ctime": "2026-10-27T11:35:27",
+     "inode": 252210029447429616,
+     "sha256": "8acf327117231eb1f468e0b238ed1776344cedced6429b0b97adb0f25b27a9f6"
+    },
+    "pose_valid.npy": {
+     "bytes": 9143,
+     "mtime": "2026-10-27T11:35:27",
+     "ctime": "2026-10-27T11:35:27",
+     "inode": 252210029447429617,
+     "sha256": "b2b83a98e2a186711782291bef548dc44bb8c307e0d261a749fc17600fc27e35"
+    },
+    "pose_meta.json": {
+     "bytes": 5673,
+     "mtime": "2026-10-27T11:35:27",
+     "ctime": "2026-10-27T11:35:27",
+     "inode": 252210029447429618,
+     "sha256": "ce4e15dc6815c9d8314418ace24a5015d6c67be0718758e32b50a454f5911e4e"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u92f25d4f36/2022-09-22-1663833600-9a406-cv-emg-pose-demonstration@2-recording-4_right"
+  },
+  "emg2pose/u92f25d4f36/2022-09-22-1663833600-9a406-cv-emg-pose-demonstration@2-recording-9_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u92f25d4f36/2022-09-22-1663833600-9a406-cv-emg-pose-demonstration@2-recording-9_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17086,
+     "mtime": "2026-10-15T13:33:49",
+     "ctime": "2026-10-15T13:33:49",
+     "inode": 234195180671063774,
+     "sha256": "406af895395e33f8c2949eeb83922f55236955720f7f4fa2e9bea98837e364ca"
+    },
+    "data_int16.npy": {
+     "bytes": 2880736,
+     "mtime": "2026-10-15T13:33:49",
+     "ctime": "2026-10-15T13:33:49",
+     "inode": 234195180671063773,
+     "sha256": "cd6c625277edd816fe6be29d00221e868dc0d937fdb08f3d956f98d07843aa87"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 360168,
+     "mtime": "2026-10-27T11:35:33",
+     "ctime": "2026-10-27T11:35:33",
+     "inode": 4161333312541020832,
+     "sha256": "01a650e818442c1a5cb88a27040df74b74f5379207fa42d445ce5e177be30093"
+    },
+    "pose_valid.npy": {
+     "bytes": 9129,
+     "mtime": "2026-10-27T11:35:33",
+     "ctime": "2026-10-27T11:35:33",
+     "inode": 4161333312541020833,
+     "sha256": "35f79c6191758103da93bb3b4a56d69aa2c0c22121af3c6c18a6ef7cc51dd7a9"
+    },
+    "pose_meta.json": {
+     "bytes": 5504,
+     "mtime": "2026-10-27T11:35:33",
+     "ctime": "2026-10-27T11:35:33",
+     "inode": 4161333312541020834,
+     "sha256": "b35376b9c769ac6e315606e17a45b630af757bd5f667b13ff2246d071ac9c9ca"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u92f25d4f36/2022-09-22-1663833600-9a406-cv-emg-pose-demonstration@2-recording-9_right"
+  },
+  "emg2pose/u937c4a3e64/2022-07-27-1658908800-88ebc-cv-emg-pose-train@2-recording-7_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u937c4a3e64/2022-07-27-1658908800-88ebc-cv-emg-pose-train@2-recording-7_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17083,
+     "mtime": "2026-10-15T13:33:12",
+     "ctime": "2026-10-15T13:33:12",
+     "inode": 252209935025301501,
+     "sha256": "2667d497826addeba31b73489b12315f6c29098745ecab5bd10469b2be4a5b5a"
+    },
+    "data_int16.npy": {
+     "bytes": 3805376,
+     "mtime": "2026-10-15T13:33:12",
+     "ctime": "2026-10-15T13:33:12",
+     "inode": 252209935025301500,
+     "sha256": "1fd6347bf928e4a74312cfb1e14b4b7b94b86a0c46626d9d48a09f2765290734"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 475768,
+     "mtime": "2026-10-27T11:06:48",
+     "ctime": "2026-10-27T11:06:48",
+     "inode": 234195271737692043,
+     "sha256": "e2329ff9e48b4ea37d075f0aa245706924887472a313935d9133b076231a921b"
+    },
+    "pose_valid.npy": {
+     "bytes": 12019,
+     "mtime": "2026-10-27T11:06:48",
+     "ctime": "2026-10-27T11:06:48",
+     "inode": 234195271737692044,
+     "sha256": "f01fffed702b653723d80307f562965764a1904759059059ae3052300db7bf19"
+    },
+    "pose_meta.json": {
+     "bytes": 5458,
+     "mtime": "2026-10-27T11:06:48",
+     "ctime": "2026-10-27T11:06:48",
+     "inode": 234195271737692045,
+     "sha256": "55855180cc302a10d3b6cb0a2a566794bee6e09503227efe450378dd8d095852"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u937c4a3e64/2022-07-27-1658908800-88ebc-cv-emg-pose-train@2-recording-7_right"
+  },
+  "emg2pose/u937c4a3e64/2022-07-27-1658908800-9394d-cv-emg-pose-train@2-recording-7_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u937c4a3e64/2022-07-27-1658908800-9394d-cv-emg-pose-train@2-recording-7_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17107,
+     "mtime": "2026-10-15T13:33:12",
+     "ctime": "2026-10-15T13:33:12",
+     "inode": 4161333240617076262,
+     "sha256": "c76cc807dc2c5f24425db306faf3df3e90fbb97b9f4b8642ffdc859d0e16da96"
+    },
+    "data_int16.npy": {
+     "bytes": 3763936,
+     "mtime": "2026-10-15T13:33:12",
+     "ctime": "2026-10-15T13:33:12",
+     "inode": 4161333240617076261,
+     "sha256": "af37edfe95d4684eb4e7ee3fd16722c5d024cbb623c26168a65351df3b58127e"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 470568,
+     "mtime": "2026-10-27T11:06:50",
+     "ctime": "2026-10-27T11:06:50",
+     "inode": 180152741157483593,
+     "sha256": "580cda04cbe5e73f56158256564b8d8d8631acaf4479ba9b1f67dc9919dee905"
+    },
+    "pose_valid.npy": {
+     "bytes": 11889,
+     "mtime": "2026-10-27T11:06:50",
+     "ctime": "2026-10-27T11:06:50",
+     "inode": 180152741157483594,
+     "sha256": "01418c179bee236c932d7e922ffa443d8a693fc1b7332ea940f65394211febb1"
+    },
+    "pose_meta.json": {
+     "bytes": 5515,
+     "mtime": "2026-10-27T11:06:50",
+     "ctime": "2026-10-27T11:06:50",
+     "inode": 180152741157483595,
+     "sha256": "020ccd337c72e38be981d7d15e6679a14711e827e7dcb6fe7dd9fa84891bea43"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u937c4a3e64/2022-07-27-1658908800-9394d-cv-emg-pose-train@2-recording-7_right"
+  },
+  "emg2pose/u969483f088/2022-11-08-1667894400-8b41d-cv-emg-pose-demonstration@2-recording-5_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u969483f088/2022-11-08-1667894400-8b41d-cv-emg-pose-demonstration@2-recording-5_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17128,
+     "mtime": "2026-10-15T13:33:37",
+     "ctime": "2026-10-15T13:33:37",
+     "inode": 216180415545853170,
+     "sha256": "5b7d98dc72d4743f97e825e54e77d91307001e454bdfe7e72618164ca65062e7"
+    },
+    "data_int16.npy": {
+     "bytes": 3039168,
+     "mtime": "2026-10-15T13:33:37",
+     "ctime": "2026-10-15T13:33:37",
+     "inode": 216180415545853169,
+     "sha256": "b52cd0cf63a0b1fa719d1510c6564d5203701217926f2f1e0868cb4dfc018b6e"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 380008,
+     "mtime": "2026-10-27T12:05:20",
+     "ctime": "2026-10-27T12:05:20",
+     "inode": 234195271737705293,
+     "sha256": "9698ae5277bf2014bde6b1efa05d58c617d5e750c344a727276e770fa7fbe3a1"
+    },
+    "pose_valid.npy": {
+     "bytes": 9625,
+     "mtime": "2026-10-27T12:05:20",
+     "ctime": "2026-10-27T12:05:20",
+     "inode": 234195271737705294,
+     "sha256": "73fbdeef94bc24bcb4012c3dbafdb2695b50c22fe55724af45a9510232f3b27a"
+    },
+    "pose_meta.json": {
+     "bytes": 5803,
+     "mtime": "2026-10-27T12:05:20",
+     "ctime": "2026-10-27T12:05:20",
+     "inode": 234195271737705295,
+     "sha256": "a4ff2e92f7219f78cfa87332a604a6f8f20108a52c846aa1643979d001776d59"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u969483f088/2022-11-08-1667894400-8b41d-cv-emg-pose-demonstration@2-recording-5_right"
+  },
+  "emg2pose/u969483f088/2022-11-08-1667894400-9a492-cv-emg-pose-train@2-recording-10_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u969483f088/2022-11-08-1667894400-9a492-cv-emg-pose-train@2-recording-10_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17047,
+     "mtime": "2026-10-15T13:33:37",
+     "ctime": "2026-10-15T13:33:37",
+     "inode": 144124011314518031,
+     "sha256": "32a8f099a5cb7cec2cab0dbc868542cfd9c82a9e56e6258e64c38c344d9d5acf"
+    },
+    "data_int16.npy": {
+     "bytes": 3741664,
+     "mtime": "2026-10-15T13:33:37",
+     "ctime": "2026-10-15T13:33:37",
+     "inode": 144124011314518030,
+     "sha256": "d617e3711eef2efca5af4e079a6f2ef1d3407b07ca3049608729a53e8f0523e6"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 467808,
+     "mtime": "2026-10-27T12:05:21",
+     "ctime": "2026-10-27T12:05:21",
+     "inode": 180152741157494037,
+     "sha256": "8937b7cb4a128f929fddee572c61726abf617fc4f38a15b845fb58905ef27729"
+    },
+    "pose_valid.npy": {
+     "bytes": 11820,
+     "mtime": "2026-10-27T12:05:21",
+     "ctime": "2026-10-27T12:05:21",
+     "inode": 180152741157494038,
+     "sha256": "643e2b82920eb476691cbdc151b9f9c86945ed51a17d8b601b1330e9948d4a1d"
+    },
+    "pose_meta.json": {
+     "bytes": 5438,
+     "mtime": "2026-10-27T12:05:21",
+     "ctime": "2026-10-27T12:05:21",
+     "inode": 180152741157494039,
+     "sha256": "2eaf2e44cf721da1d8df153ec940085e5f459ceaca6737eb0e951e9df3d57a9c"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u969483f088/2022-11-08-1667894400-9a492-cv-emg-pose-train@2-recording-10_left"
+  },
+  "emg2pose/u9c1a1875e7/2022-11-03-1667462400-bee22-cv-emg-pose-train@2-recording-13_right": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u9c1a1875e7/2022-11-03-1667462400-bee22-cv-emg-pose-train@2-recording-13_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17055,
+     "mtime": "2026-10-15T13:33:47",
+     "ctime": "2026-10-15T13:33:47",
+     "inode": 216180415545852908,
+     "sha256": "80ac069125d349537736faa2be727acdd00db7b645322e089b00b0e66fa0ce14"
+    },
+    "data_int16.npy": {
+     "bytes": 15245760,
+     "mtime": "2026-10-15T13:33:47",
+     "ctime": "2026-10-15T13:33:47",
+     "inode": 216180415545852907,
+     "sha256": "1ac076e3be5a73dda5df3290f044b2d5709e2d4ac78884d4058248d844e15460"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 1905808,
+     "mtime": "2026-10-27T12:03:01",
+     "ctime": "2026-10-27T12:03:01",
+     "inode": 144124114494402047,
+     "sha256": "ab00074e03ef55156b83bd776130dd39bfa2a565e4239d6e68225cfe1d5c6452"
+    },
+    "pose_valid.npy": {
+     "bytes": 47770,
+     "mtime": "2026-10-27T12:03:01",
+     "ctime": "2026-10-27T12:03:01",
+     "inode": 144124114494402048,
+     "sha256": "b0ce884ee290778b66eb4e2e5534c4b1b203739a2900e9be99a21bd8390ed304"
+    },
+    "pose_meta.json": {
+     "bytes": 5697,
+     "mtime": "2026-10-27T12:03:01",
+     "ctime": "2026-10-27T12:03:01",
+     "inode": 144124114494402049,
+     "sha256": "a225feb686b86a0afecf63de2c943776d0067fc2a8af78748225d1e35d287c24"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u9c1a1875e7/2022-11-03-1667462400-bee22-cv-emg-pose-train@2-recording-13_right"
+  },
+  "emg2pose/u9ea3bd3394/2022-09-28-1664352000-8cc51-cv-emg-pose-demonstration@2-recording-13_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u9ea3bd3394/2022-09-28-1664352000-8cc51-cv-emg-pose-demonstration@2-recording-13_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17117,
+     "mtime": "2026-10-15T13:34:09",
+     "ctime": "2026-10-15T13:34:09",
+     "inode": 144124011314434732,
+     "sha256": "ae020e1ff5cd2a5bf65008b843e1f99f3de8487c4d75c34bf35c2f050d8f5aa9"
+    },
+    "data_int16.npy": {
+     "bytes": 3798752,
+     "mtime": "2026-10-15T13:34:09",
+     "ctime": "2026-10-15T13:34:09",
+     "inode": 144124011314434731,
+     "sha256": "13d4233f2761db6defb35165e7e06f6a3d3fc21bdb74ed4d2b4091de40b5a3c0"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 474928,
+     "mtime": "2026-10-27T11:38:20",
+     "ctime": "2026-10-27T11:38:20",
+     "inode": 198169192611003478,
+     "sha256": "c2a84592cc1ce06ed67f5a1aec99a9ee076ae23449ba23d067132379d5c02723"
+    },
+    "pose_valid.npy": {
+     "bytes": 11998,
+     "mtime": "2026-10-27T11:38:20",
+     "ctime": "2026-10-27T11:38:20",
+     "inode": 198169192611003479,
+     "sha256": "278ea63bf66d6e6a8f04db4394855bbce89946ee9828998a8d978f8b5a1884c2"
+    },
+    "pose_meta.json": {
+     "bytes": 5589,
+     "mtime": "2026-10-27T11:38:20",
+     "ctime": "2026-10-27T11:38:20",
+     "inode": 198169192611003480,
+     "sha256": "3636069c4c64032337d40791b2427cc9a70fe03c2c43ebe8a390cf36f4d26ac3"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u9ea3bd3394/2022-09-28-1664352000-8cc51-cv-emg-pose-demonstration@2-recording-13_right"
+  },
+  "emg2pose/u9ea3bd3394/2022-09-28-1664352000-b12b4-cv-emg-pose-train@2-recording-6_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/u9ea3bd3394/2022-09-28-1664352000-b12b4-cv-emg-pose-train@2-recording-6_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17067,
+     "mtime": "2026-10-15T13:34:09",
+     "ctime": "2026-10-15T13:34:09",
+     "inode": 180152665928450606,
+     "sha256": "82d0503cfecf24835eadab30fc0df6f1068cb98d14a3020ba03dd13dde7dfd42"
+    },
+    "data_int16.npy": {
+     "bytes": 3762656,
+     "mtime": "2026-10-15T13:34:09",
+     "ctime": "2026-10-15T13:34:09",
+     "inode": 180152665928450605,
+     "sha256": "86a31ed8e8110d590a5db149bbf95d554718d57adc38719afeb9c733817d3a06"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 470408,
+     "mtime": "2026-10-27T11:38:23",
+     "ctime": "2026-10-27T11:38:23",
+     "inode": 198169192611003489,
+     "sha256": "2b1d5d5aa641634288a7836657c51d70bf0fa5c3523d90ef3acd75e27c53e09d"
+    },
+    "pose_valid.npy": {
+     "bytes": 11885,
+     "mtime": "2026-10-27T11:38:23",
+     "ctime": "2026-10-27T11:38:23",
+     "inode": 198169192611003490,
+     "sha256": "f5a8d5f3e955deb44bbb1f1b950940bc94caea62c04daf188a67df4d8809a6f5"
+    },
+    "pose_meta.json": {
+     "bytes": 5541,
+     "mtime": "2026-10-27T11:38:23",
+     "ctime": "2026-10-27T11:38:23",
+     "inode": 198169192611003491,
+     "sha256": "f3d787f4b862fb29eede3f6101ee928258036f03e6476d1bcc70738d3597472f"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/u9ea3bd3394/2022-09-28-1664352000-b12b4-cv-emg-pose-train@2-recording-6_right"
+  },
+  "emg2pose/uaf1317ea3d/2022-07-21-1658390400-0f0b8-cv-emg-pose-demonstration@2-recording-3_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/uaf1317ea3d/2022-07-21-1658390400-0f0b8-cv-emg-pose-demonstration@2-recording-3_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17136,
+     "mtime": "2026-10-15T13:33:22",
+     "ctime": "2026-10-15T13:33:22",
+     "inode": 252209935025300941,
+     "sha256": "664e3364c9c1ec561d765804ab9c375727416b5e374eac4e0632024047f037a3"
+    },
+    "data_int16.npy": {
+     "bytes": 2832352,
+     "mtime": "2026-10-15T13:33:22",
+     "ctime": "2026-10-15T13:33:22",
+     "inode": 252209935025300940,
+     "sha256": "65d193e8b2ffc5f0b3dcc3bb9ba14a6895ac96bdcedb8ac54122a1a02ddecb08"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 354128,
+     "mtime": "2026-10-27T11:00:38",
+     "ctime": "2026-10-27T11:00:38",
+     "inode": 144124114494393521,
+     "sha256": "0c6df924796c6e151e048f8f3721b4408ee03a1f6fef08b8d2724c1a63ebf01e"
+    },
+    "pose_valid.npy": {
+     "bytes": 8978,
+     "mtime": "2026-10-27T11:00:38",
+     "ctime": "2026-10-27T11:00:38",
+     "inode": 144124114494393522,
+     "sha256": "516fd0be708e51a353e9742d6fdfabe89ddc43d6703920d0dac2d7e3a854398e"
+    },
+    "pose_meta.json": {
+     "bytes": 5467,
+     "mtime": "2026-10-27T11:00:38",
+     "ctime": "2026-10-27T11:00:38",
+     "inode": 144124114494393523,
+     "sha256": "f3d6065ed4249a530d1867f190064b818160deef0318ba4502e6a0c18d8161b8"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/uaf1317ea3d/2022-07-21-1658390400-0f0b8-cv-emg-pose-demonstration@2-recording-3_right"
+  },
+  "emg2pose/uaf1317ea3d/2022-07-21-1658390400-0f0b8-cv-emg-pose-demonstration@2-recording-8_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": true,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/uaf1317ea3d/2022-07-21-1658390400-0f0b8-cv-emg-pose-demonstration@2-recording-8_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17118,
+     "mtime": "2026-10-15T13:33:22",
+     "ctime": "2026-10-15T13:33:22",
+     "inode": 252209935025300938,
+     "sha256": "e5f700c7be6b90e1895dc3dc9e839d239647d3707886172e83889530fe4ea97a"
+    },
+    "data_int16.npy": {
+     "bytes": 3812320,
+     "mtime": "2026-10-15T13:33:22",
+     "ctime": "2026-10-15T13:33:22",
+     "inode": 252209935025300937,
+     "sha256": "49122fdb1fd9ac8d830810c2fa5498a8ba2f2d04ba799d2013285fb71918d6d9"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 476648,
+     "mtime": "2026-10-27T11:00:37",
+     "ctime": "2026-10-27T11:00:37",
+     "inode": 180152741157482613,
+     "sha256": "537a68dc1065e20d6ee8e1233540c89e1c26371796ad0b758c4d6b4bd99171f4"
+    },
+    "pose_valid.npy": {
+     "bytes": 12041,
+     "mtime": "2026-10-27T11:00:37",
+     "ctime": "2026-10-27T11:00:37",
+     "inode": 180152741157482614,
+     "sha256": "d63ed4e22db06392b061605c24c8e5e4db9cf5e9ae77542b619c0f049d0a7a93"
+    },
+    "pose_meta.json": {
+     "bytes": 5484,
+     "mtime": "2026-10-27T11:00:37",
+     "ctime": "2026-10-27T11:00:37",
+     "inode": 180152741157482615,
+     "sha256": "ec409b54cebe6b6d31c19f8245ff1644d8a2da363bb3e21130aef1bd614bde5d"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/uaf1317ea3d/2022-07-21-1658390400-0f0b8-cv-emg-pose-demonstration@2-recording-8_right"
+  },
+  "emg2pose/ub27941d454/2022-10-26-1666771200-75ade-cv-emg-pose-demonstration@2-recording-2_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ub27941d454/2022-10-26-1666771200-75ade-cv-emg-pose-demonstration@2-recording-2_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17121,
+     "mtime": "2026-10-15T13:34:05",
+     "ctime": "2026-10-15T13:34:05",
+     "inode": 216180415545793599,
+     "sha256": "b720f60723c224384faeaf0e45e76272a4b7257d41e9cc4d79616a3847ae7f90"
+    },
+    "data_int16.npy": {
+     "bytes": 2836704,
+     "mtime": "2026-10-15T13:34:05",
+     "ctime": "2026-10-15T13:34:05",
+     "inode": 216180415545793598,
+     "sha256": "89b0140f44708b830a20fb56ab046fb5679390b80948c5597d5406e8fa722b26"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 354688,
+     "mtime": "2026-10-27T11:57:13",
+     "ctime": "2026-10-27T11:57:13",
+     "inode": 216180508743242818,
+     "sha256": "de90820a30292c27ac8b36f025baf4215b7d168ed69d5cbb3f8bdde4530ba591"
+    },
+    "pose_valid.npy": {
+     "bytes": 8992,
+     "mtime": "2026-10-27T11:57:13",
+     "ctime": "2026-10-27T11:57:13",
+     "inode": 216180508743242819,
+     "sha256": "bcc993c287451489c8d76672b182b824043e63d84fc8f9a8b4b4ff77a0477954"
+    },
+    "pose_meta.json": {
+     "bytes": 5442,
+     "mtime": "2026-10-27T11:57:13",
+     "ctime": "2026-10-27T11:57:13",
+     "inode": 216180508743242820,
+     "sha256": "c61c73db3f5b06cb5101cdf1c943125f2de672ee449bef73999e05f6158d55c2"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ub27941d454/2022-10-26-1666771200-75ade-cv-emg-pose-demonstration@2-recording-2_left"
+  },
+  "emg2pose/ub27941d454/2022-10-26-1666771200-e5a33-cv-emg-pose-train@2-recording-5_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ub27941d454/2022-10-26-1666771200-e5a33-cv-emg-pose-train@2-recording-5_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17047,
+     "mtime": "2026-10-15T13:34:05",
+     "ctime": "2026-10-15T13:34:05",
+     "inode": 4161333240617086771,
+     "sha256": "a4b8d8d4f3193f96c0a9a53e724c9519754c2cfe3d8cf0ec6d54e4d7c554caf2"
+    },
+    "data_int16.npy": {
+     "bytes": 3696096,
+     "mtime": "2026-10-15T13:34:05",
+     "ctime": "2026-10-15T13:34:05",
+     "inode": 4161333240617086770,
+     "sha256": "79de3c810485c5c574ba12904b0469aa1869f41a91620cc1e4e738e551189d24"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 462088,
+     "mtime": "2026-10-27T11:57:59",
+     "ctime": "2026-10-27T11:57:59",
+     "inode": 216180508743242915,
+     "sha256": "4e03cd48aaa69f0f688fe10509836b16c2cb5e4f7b54ff39cfbe6be273b882f6"
+    },
+    "pose_valid.npy": {
+     "bytes": 11677,
+     "mtime": "2026-10-27T11:57:59",
+     "ctime": "2026-10-27T11:57:59",
+     "inode": 216180508743242916,
+     "sha256": "e040abf1e35d5856da34bf80d76ca3d6170540aad10f596b98e5cb6883bc5d02"
+    },
+    "pose_meta.json": {
+     "bytes": 5457,
+     "mtime": "2026-10-27T11:57:59",
+     "ctime": "2026-10-27T11:57:59",
+     "inode": 216180508743242917,
+     "sha256": "4e9145f4e7a978732de3baadadb616f9a954bc098ca3ffac9bf13871fb9692f3"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ub27941d454/2022-10-26-1666771200-e5a33-cv-emg-pose-train@2-recording-5_left"
+  },
+  "emg2pose/ub5064e141f/2022-10-24-1666598400-089c0-cv-emg-pose-train@2-recording-13_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": true,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ub5064e141f/2022-10-24-1666598400-089c0-cv-emg-pose-train@2-recording-13_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17044,
+     "mtime": "2026-10-15T13:33:32",
+     "ctime": "2026-10-15T13:33:32",
+     "inode": 198169100302795943,
+     "sha256": "0519e2fb6f299e12910e7db81ada9b0c7ea1d16906ae04092382816533c726ab"
+    },
+    "data_int16.npy": {
+     "bytes": 16910208,
+     "mtime": "2026-10-15T13:33:32",
+     "ctime": "2026-10-15T13:33:32",
+     "inode": 198169100302795942,
+     "sha256": "c779628f70679e681330c287be7b868dc98996c3b210ead80400ecd4c2e12482"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 2113888,
+     "mtime": "2026-10-27T11:55:45",
+     "ctime": "2026-10-27T11:55:45",
+     "inode": 198169192611009550,
+     "sha256": "c0e8668cf6da1cf6b5d556d4136398c7f3ad464fd803348d66de4f6474422e49"
+    },
+    "pose_valid.npy": {
+     "bytes": 52972,
+     "mtime": "2026-10-27T11:55:45",
+     "ctime": "2026-10-27T11:55:45",
+     "inode": 198169192611009551,
+     "sha256": "d6c3f33c2c2a85240610534edb0aaa439a42481175f6ada02463faca15e026eb"
+    },
+    "pose_meta.json": {
+     "bytes": 5729,
+     "mtime": "2026-10-27T11:55:45",
+     "ctime": "2026-10-27T11:55:45",
+     "inode": 198169192611009552,
+     "sha256": "0bb57f243d0a051f01a4f2d4c9a2f77d1e5f8a3c31d8953c898a9108da322f79"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ub5064e141f/2022-10-24-1666598400-089c0-cv-emg-pose-train@2-recording-13_left"
+  },
+  "emg2pose/ub5064e141f/2022-10-24-1666598400-ec7a1-cv-emg-pose-train@2-recording-3_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ub5064e141f/2022-10-24-1666598400-ec7a1-cv-emg-pose-train@2-recording-3_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17034,
+     "mtime": "2026-10-15T13:33:32",
+     "ctime": "2026-10-15T13:33:32",
+     "inode": 252209935629272044,
+     "sha256": "b2e4d4ebcef2053867d7b931aef6f68f87abffb3d1f43b2ff2dfd531b7d4f63e"
+    },
+    "data_int16.npy": {
+     "bytes": 3824864,
+     "mtime": "2026-10-15T13:33:32",
+     "ctime": "2026-10-15T13:33:32",
+     "inode": 252209935629272043,
+     "sha256": "aa95b8901f11d49bedabc734f55b7168983180e15f5fe793c4e2dbe931d4663f"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 478208,
+     "mtime": "2026-10-27T11:56:37",
+     "ctime": "2026-10-27T11:56:37",
+     "inode": 234195271737702958,
+     "sha256": "8fc0e0299a8f4573758e2532b453780b594452a406026a917a4acd3285d2e66b"
+    },
+    "pose_valid.npy": {
+     "bytes": 12080,
+     "mtime": "2026-10-27T11:56:37",
+     "ctime": "2026-10-27T11:56:37",
+     "inode": 234195271737702959,
+     "sha256": "58ad6d1965aa5414b32def7d96dd37d888609c8165461ce03fbfdec37602303b"
+    },
+    "pose_meta.json": {
+     "bytes": 5500,
+     "mtime": "2026-10-27T11:56:37",
+     "ctime": "2026-10-27T11:56:37",
+     "inode": 234195271737702960,
+     "sha256": "79782db8e84d406aea9a2f4df87dbee13c176796e01aa59e3bcbf366357c649f"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ub5064e141f/2022-10-24-1666598400-ec7a1-cv-emg-pose-train@2-recording-3_left"
+  },
+  "emg2pose/ub6fa6cd36f/2022-11-15-1668499200-32508-cv-emg-pose-demonstration@2-recording-5_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ub6fa6cd36f/2022-11-15-1668499200-32508-cv-emg-pose-demonstration@2-recording-5_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17130,
+     "mtime": "2026-10-15T13:33:38",
+     "ctime": "2026-10-15T13:33:38",
+     "inode": 162139476603300700,
+     "sha256": "bd55672ad2bf11281b7beaaa09228f80a24464a6ecc0d6768afd19bf10dafc28"
+    },
+    "data_int16.npy": {
+     "bytes": 2975968,
+     "mtime": "2026-10-15T13:33:38",
+     "ctime": "2026-10-15T13:33:38",
+     "inode": 162139476603300699,
+     "sha256": "dbe616c34384d9833d81491a76612dcd82ea562a249523b8490f33e4ebbc9e54"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 372088,
+     "mtime": "2026-10-27T12:09:52",
+     "ctime": "2026-10-27T12:09:52",
+     "inode": 144124114494403957,
+     "sha256": "aee1f5244c54f222f70bae0aec85d0e3054b144a9c4d0718e027cd49073bd86a"
+    },
+    "pose_valid.npy": {
+     "bytes": 9427,
+     "mtime": "2026-10-27T12:09:52",
+     "ctime": "2026-10-27T12:09:52",
+     "inode": 144124114494403958,
+     "sha256": "546a09657627896bd7a1257cfa16df41a85ef7d433692fa46151282dec6bd17d"
+    },
+    "pose_meta.json": {
+     "bytes": 5836,
+     "mtime": "2026-10-27T12:09:52",
+     "ctime": "2026-10-27T12:09:52",
+     "inode": 144124114494403960,
+     "sha256": "3d802c1d956e7868ceab6d8bb758a778be990d9e336501f0dd88fabd77765604"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ub6fa6cd36f/2022-11-15-1668499200-32508-cv-emg-pose-demonstration@2-recording-5_right"
+  },
+  "emg2pose/ub6fa6cd36f/2022-11-15-1668499200-80338-cv-emg-pose-train@2-recording-6_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ub6fa6cd36f/2022-11-15-1668499200-80338-cv-emg-pose-train@2-recording-6_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17060,
+     "mtime": "2026-10-15T13:33:38",
+     "ctime": "2026-10-15T13:33:38",
+     "inode": 144124011314518545,
+     "sha256": "2027588d5511378275e54e98716d591327e77d62c7cbb6d8e0d05a62f8976305"
+    },
+    "data_int16.npy": {
+     "bytes": 3631584,
+     "mtime": "2026-10-15T13:33:38",
+     "ctime": "2026-10-15T13:33:38",
+     "inode": 144124011314518544,
+     "sha256": "0bd9d0c435b6af1a4d6940f2a89480c1786b332318f2672ccf4d859211b1f9c2"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 454048,
+     "mtime": "2026-10-27T12:10:01",
+     "ctime": "2026-10-27T12:10:01",
+     "inode": 180152741157495646,
+     "sha256": "0356310ebabcd1fe823a10df0b6f72d5c106aa25aea83280183fea7ee3bb489a"
+    },
+    "pose_valid.npy": {
+     "bytes": 11476,
+     "mtime": "2026-10-27T12:10:01",
+     "ctime": "2026-10-27T12:10:01",
+     "inode": 180152741157495647,
+     "sha256": "6e535793f9ac32b7ef1c442b0ed1d2197e78ad9c0801aaff8a444d175e812611"
+    },
+    "pose_meta.json": {
+     "bytes": 5567,
+     "mtime": "2026-10-27T12:10:01",
+     "ctime": "2026-10-27T12:10:01",
+     "inode": 180152741157495648,
+     "sha256": "dc997bb6eb8ef1bc4df1ebe4636b1c61a89d197e82c2e48181c8e33092bc7512"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ub6fa6cd36f/2022-11-15-1668499200-80338-cv-emg-pose-train@2-recording-6_right"
+  },
+  "emg2pose/ub99b939f3f/2022-07-13-1657699200-d7fb9-cv-emg-pose-demonstration@2-recording-18_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ub99b939f3f/2022-07-13-1657699200-d7fb9-cv-emg-pose-demonstration@2-recording-18_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17108,
+     "mtime": "2026-10-15T13:32:51",
+     "ctime": "2026-10-15T13:32:51",
+     "inode": 180152665928432486,
+     "sha256": "73ce7c7c2b8c5d41fdf3882fa6d74bfc76c9d5ef4a4f81e1326c264405d72a56"
+    },
+    "data_int16.npy": {
+     "bytes": 4044480,
+     "mtime": "2026-10-15T13:32:51",
+     "ctime": "2026-10-15T13:32:51",
+     "inode": 180152665928432485,
+     "sha256": "ee777b8d35a07cc121922556aff11d7cdf5651bd705f336e9b3088cae418cca2"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 505648,
+     "mtime": "2026-10-27T10:53:26",
+     "ctime": "2026-10-27T10:53:26",
+     "inode": 180152741157481189,
+     "sha256": "c46d468eecaa0d8ab09f97681cdee8d4e1f346bedcd34d44c1545f36c7ceeea5"
+    },
+    "pose_valid.npy": {
+     "bytes": 12766,
+     "mtime": "2026-10-27T10:53:26",
+     "ctime": "2026-10-27T10:53:26",
+     "inode": 180152741157481190,
+     "sha256": "7e8147134528ee2d5caad0186ceffbd58c949d0c6d0e20463de003b6df787fcd"
+    },
+    "pose_meta.json": {
+     "bytes": 5481,
+     "mtime": "2026-10-27T10:53:26",
+     "ctime": "2026-10-27T10:53:26",
+     "inode": 180152741157481191,
+     "sha256": "6502ec26d80599403d92e9a406ccb6801e7e05dfa79fae43ef617f1a8aee15f9"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ub99b939f3f/2022-07-13-1657699200-d7fb9-cv-emg-pose-demonstration@2-recording-18_right"
+  },
+  "emg2pose/ub99b939f3f/2022-07-13-1657699200-d7fb9-cv-emg-pose-demonstration@2-recording-1_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ub99b939f3f/2022-07-13-1657699200-d7fb9-cv-emg-pose-demonstration@2-recording-1_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17110,
+     "mtime": "2026-10-15T13:32:52",
+     "ctime": "2026-10-15T13:32:52",
+     "inode": 234195180671033209,
+     "sha256": "6b9eaf92636862c782201ebb2d1fa914ae4a37eb03af80760e8fcebf64dde020"
+    },
+    "data_int16.npy": {
+     "bytes": 4252864,
+     "mtime": "2026-10-15T13:32:52",
+     "ctime": "2026-10-15T13:32:52",
+     "inode": 234195180671033208,
+     "sha256": "bcd6d81b33a02b0e33688d1b8a843dc677d942bcb46392fb8b390dd3f0da2477"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 531688,
+     "mtime": "2026-10-27T10:53:32",
+     "ctime": "2026-10-27T10:53:32",
+     "inode": 252210029447420288,
+     "sha256": "7baa1865aeab1c02e38f4562aa1416c05479290c4b62d01ab1e7b6224f3c5d6b"
+    },
+    "pose_valid.npy": {
+     "bytes": 13417,
+     "mtime": "2026-10-27T10:53:32",
+     "ctime": "2026-10-27T10:53:32",
+     "inode": 252210029447420289,
+     "sha256": "f0fee33c9426c6ec96f5cbb387e43078fe4811b778684854532d6a23672204ad"
+    },
+    "pose_meta.json": {
+     "bytes": 5457,
+     "mtime": "2026-10-27T10:53:32",
+     "ctime": "2026-10-27T10:53:32",
+     "inode": 252210029447420290,
+     "sha256": "b10b72b6f8ca8b757007998c84820fbca79f58c01d185414cc8554cf86d51f5e"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ub99b939f3f/2022-07-13-1657699200-d7fb9-cv-emg-pose-demonstration@2-recording-1_right"
+  },
+  "emg2pose/ubd84652be9/2022-04-14-1649923200-a4549-cv-emg-pose-train@2-recording-16_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ubd84652be9/2022-04-14-1649923200-a4549-cv-emg-pose-train@2-recording-16_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17067,
+     "mtime": "2026-10-15T13:33:01",
+     "ctime": "2026-10-15T13:33:01",
+     "inode": 234195180671031354,
+     "sha256": "ceab029c8ae0c15c81d72eb2c1cd8174daf50eda8f476b5fe13cff870adbc27a"
+    },
+    "data_int16.npy": {
+     "bytes": 2991552,
+     "mtime": "2026-10-15T13:33:01",
+     "ctime": "2026-10-15T13:33:01",
+     "inode": 234195180671031353,
+     "sha256": "85f6c930ad12f9150128488f720e387aae36cbbe7d3469137a9f4012cce4ece2"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 374048,
+     "mtime": "2026-10-27T10:36:09",
+     "ctime": "2026-10-27T10:36:09",
+     "inode": 216180508743231381,
+     "sha256": "1b345b3cdf7757a958cc7d79c236e3447327b9edaeda5b5118429d082b25ddd2"
+    },
+    "pose_valid.npy": {
+     "bytes": 9476,
+     "mtime": "2026-10-27T10:36:09",
+     "ctime": "2026-10-27T10:36:09",
+     "inode": 216180508743231382,
+     "sha256": "c3e8017e7219a63eb027b23dfb32265730b1788f758774d571a4b00a9ef40df5"
+    },
+    "pose_meta.json": {
+     "bytes": 5396,
+     "mtime": "2026-10-27T10:36:09",
+     "ctime": "2026-10-27T10:36:09",
+     "inode": 216180508743231383,
+     "sha256": "1ea5abeb99afed3f821161e12859074e7f107c076bc41b3b82ab4817dae1a681"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ubd84652be9/2022-04-14-1649923200-a4549-cv-emg-pose-train@2-recording-16_right"
+  },
+  "emg2pose/ubd84652be9/2022-04-14-1649923200-f08de-cv-emg-pose-train@2-recording-8_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ubd84652be9/2022-04-14-1649923200-f08de-cv-emg-pose-train@2-recording-8_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 19549,
+     "mtime": "2026-10-15T13:33:01",
+     "ctime": "2026-10-15T13:33:01",
+     "inode": 180152665928429844,
+     "sha256": "989c42b6c90566da7b57d2996736f85005e98ad0e948c77cde09a5fa86054384"
+    },
+    "data_int16.npy": {
+     "bytes": 3940288,
+     "mtime": "2026-10-15T13:33:01",
+     "ctime": "2026-10-15T13:33:01",
+     "inode": 180152665928429843,
+     "sha256": "c47d6c0bb5fbae17162caafbfa7a69a7cfdf2077a28c286addb282a0fd21a8ba"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 492648,
+     "mtime": "2026-10-27T10:36:27",
+     "ctime": "2026-10-27T10:36:27",
+     "inode": 4161333312541013592,
+     "sha256": "0356e0277c4744120be2b302b6147715b6804a0352327da5329986aad2f952a7"
+    },
+    "pose_valid.npy": {
+     "bytes": 12441,
+     "mtime": "2026-10-27T10:36:27",
+     "ctime": "2026-10-27T10:36:27",
+     "inode": 4161333312541013593,
+     "sha256": "f8f2b60b244c1a246286f0c688e4aab77186e742aedae12430cb72cd39f81110"
+    },
+    "pose_meta.json": {
+     "bytes": 7447,
+     "mtime": "2026-10-27T10:36:27",
+     "ctime": "2026-10-27T10:36:27",
+     "inode": 4161333312541013594,
+     "sha256": "39b862142a7c6fbdbb80fe28ee84af027863ebebed66c91f8eb7ffa3a69ea84c"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ubd84652be9/2022-04-14-1649923200-f08de-cv-emg-pose-train@2-recording-8_right"
+  },
+  "emg2pose/ube762396f6/2022-07-18-1658131200-89e33-cv-emg-pose-demonstration@2-recording-22_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": true,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ube762396f6/2022-07-18-1658131200-89e33-cv-emg-pose-demonstration@2-recording-22_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17108,
+     "mtime": "2026-10-15T13:32:59",
+     "ctime": "2026-10-15T13:32:59",
+     "inode": 144124011314426344,
+     "sha256": "706a9a857bb52d9106edb7ffed98d5d0f61aa32fd82436a2f6a79fec15dd0a98"
+    },
+    "data_int16.npy": {
+     "bytes": 3851712,
+     "mtime": "2026-10-15T13:32:59",
+     "ctime": "2026-10-15T13:32:59",
+     "inode": 144124011314426343,
+     "sha256": "8e93088290bc6782b33f9afb81b0e4baee922c73572cf1d03a531179d8f9f274"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 481568,
+     "mtime": "2026-10-27T10:56:46",
+     "ctime": "2026-10-27T10:56:46",
+     "inode": 216180508743234618,
+     "sha256": "2bf1495101c0ac9b01315ffbc362ae4bb20d8837051c622f95ec0830e6681300"
+    },
+    "pose_valid.npy": {
+     "bytes": 12164,
+     "mtime": "2026-10-27T10:56:46",
+     "ctime": "2026-10-27T10:56:46",
+     "inode": 216180508743234619,
+     "sha256": "7123daff4c6db2039730b69cebd2d50176065da844ea198b6a0922e7d1d0d1ea"
+    },
+    "pose_meta.json": {
+     "bytes": 5463,
+     "mtime": "2026-10-27T10:56:46",
+     "ctime": "2026-10-27T10:56:46",
+     "inode": 216180508743234620,
+     "sha256": "aac939101fc5264d43d716c79325c8e04aeb2841b40695a0a5cf4ed82d10cec7"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ube762396f6/2022-07-18-1658131200-89e33-cv-emg-pose-demonstration@2-recording-22_right"
+  },
+  "emg2pose/ube762396f6/2022-07-18-1658131200-ae09d-cv-emg-pose-train@2-recording-10_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ube762396f6/2022-07-18-1658131200-ae09d-cv-emg-pose-train@2-recording-10_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17036,
+     "mtime": "2026-10-15T13:32:59",
+     "ctime": "2026-10-15T13:32:59",
+     "inode": 144124011314426391,
+     "sha256": "6d254d1b34f894fba7a03d3670917fddf14bf187581f3b8aaa1e226914669356"
+    },
+    "data_int16.npy": {
+     "bytes": 4023776,
+     "mtime": "2026-10-15T13:32:59",
+     "ctime": "2026-10-15T13:32:59",
+     "inode": 144124011314426390,
+     "sha256": "434e59f45349b113dcde57863b7045c1aacf7459e39c6ec6e16f8a285f66de4d"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 503048,
+     "mtime": "2026-10-27T10:57:08",
+     "ctime": "2026-10-27T10:57:08",
+     "inode": 144124114494393102,
+     "sha256": "bc26037325b1c5c001fac62a523f9876bc41facf5f857fd9a2b2f1fb27faeef6"
+    },
+    "pose_valid.npy": {
+     "bytes": 12701,
+     "mtime": "2026-10-27T10:57:08",
+     "ctime": "2026-10-27T10:57:08",
+     "inode": 144124114494393103,
+     "sha256": "d8ac88f8d456ef85af610d47e8c32deeb45f7539fc3cdd641b41c3bbdc52db3b"
+    },
+    "pose_meta.json": {
+     "bytes": 5385,
+     "mtime": "2026-10-27T10:57:08",
+     "ctime": "2026-10-27T10:57:08",
+     "inode": 144124114494393104,
+     "sha256": "47f317bf28ab1838852c218e95b083db5bd77d62916d500e37c31c4a17e4dae8"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ube762396f6/2022-07-18-1658131200-ae09d-cv-emg-pose-train@2-recording-10_left"
+  },
+  "emg2pose/uc664b157c0/2022-11-10-1668067200-79514-cv-emg-pose-demonstration@2-recording-1_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/uc664b157c0/2022-11-10-1668067200-79514-cv-emg-pose-demonstration@2-recording-1_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17089,
+     "mtime": "2026-10-15T13:33:35",
+     "ctime": "2026-10-15T13:33:35",
+     "inode": 252209935713059272,
+     "sha256": "8928c6c2102c76c80660a459648924bc0d05a3d583877280a99b75d673a99c6a"
+    },
+    "data_int16.npy": {
+     "bytes": 4062208,
+     "mtime": "2026-10-15T13:33:35",
+     "ctime": "2026-10-15T13:33:35",
+     "inode": 252209935713059270,
+     "sha256": "9b964326e367bfa05710d5537caf31d288cf0295538faff587d8ec014065e384"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 507888,
+     "mtime": "2026-10-27T12:07:06",
+     "ctime": "2026-10-27T12:07:06",
+     "inode": 234195271737705833,
+     "sha256": "33f5b2aa332e3e80ef1ceac6c020299f49d6cb0d16ea8a568f92ea082c7abc10"
+    },
+    "pose_valid.npy": {
+     "bytes": 12822,
+     "mtime": "2026-10-27T12:07:06",
+     "ctime": "2026-10-27T12:07:06",
+     "inode": 234195271737705834,
+     "sha256": "5ccc14563699b18309246640de1cfbd5703fa7d1f0f472207492c0f50a640af3"
+    },
+    "pose_meta.json": {
+     "bytes": 5542,
+     "mtime": "2026-10-27T12:07:06",
+     "ctime": "2026-10-27T12:07:06",
+     "inode": 234195271737705835,
+     "sha256": "61778b67e9c1580c5320ec0018e2ad939da0a0e49a10e71c56368aaf9ee3a580"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/uc664b157c0/2022-11-10-1668067200-79514-cv-emg-pose-demonstration@2-recording-1_left"
+  },
+  "emg2pose/uc664b157c0/2022-11-10-1668067200-79514-cv-emg-pose-demonstration@2-recording-9_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/uc664b157c0/2022-11-10-1668067200-79514-cv-emg-pose-demonstration@2-recording-9_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17085,
+     "mtime": "2026-10-15T13:33:35",
+     "ctime": "2026-10-15T13:33:35",
+     "inode": 234195182835261927,
+     "sha256": "294f6cccf153e3c45ed27f26f8412e030a12a677af31094b9a84892426193042"
+    },
+    "data_int16.npy": {
+     "bytes": 2949376,
+     "mtime": "2026-10-15T13:33:35",
+     "ctime": "2026-10-15T13:33:35",
+     "inode": 234195182835261926,
+     "sha256": "2ee099a944d14067bce2885c1f8aa40d392e1b7ee26997df2fecef59afbcaf61"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 368768,
+     "mtime": "2026-10-27T12:07:01",
+     "ctime": "2026-10-27T12:07:01",
+     "inode": 144124114494403118,
+     "sha256": "95cbfd25e6d43c8127063ae538aedfc7a58fc64365bc3ebbd8c3cef273d14b3a"
+    },
+    "pose_valid.npy": {
+     "bytes": 9344,
+     "mtime": "2026-10-27T12:07:01",
+     "ctime": "2026-10-27T12:07:01",
+     "inode": 144124114494403119,
+     "sha256": "a8694ae70b90abf05abbd71e8e130e0e1a1a1f1600e01afb8536abc4a05c973b"
+    },
+    "pose_meta.json": {
+     "bytes": 5662,
+     "mtime": "2026-10-27T12:07:01",
+     "ctime": "2026-10-27T12:07:01",
+     "inode": 144124114494403120,
+     "sha256": "f01ed2faa4a232c9320c0a71298640eafb2fc1f7643e8b5fa3482e357273af94"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/uc664b157c0/2022-11-10-1668067200-79514-cv-emg-pose-demonstration@2-recording-9_right"
+  },
+  "emg2pose/ud89102dc16/2022-09-27-1664265600-a5d51-cv-emg-pose-train@2-recording-3_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ud89102dc16/2022-09-27-1664265600-a5d51-cv-emg-pose-train@2-recording-3_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17057,
+     "mtime": "2026-10-15T13:33:55",
+     "ctime": "2026-10-15T13:33:55",
+     "inode": 198169100302793949,
+     "sha256": "fd487c0560572a4c4cf491672a7c3c5f5f0a838d0c4bdb78ab2fc5d2772a64ef"
+    },
+    "data_int16.npy": {
+     "bytes": 3734464,
+     "mtime": "2026-10-15T13:33:55",
+     "ctime": "2026-10-15T13:33:55",
+     "inode": 198169100302793948,
+     "sha256": "18cbba3d492a0278de21dc76dbd7567273d7c9aad1a320419ea525bf9b4938b4"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 466888,
+     "mtime": "2026-10-27T11:37:58",
+     "ctime": "2026-10-27T11:37:58",
+     "inode": 180152741157488953,
+     "sha256": "4e294a46fb172cbc773b795a2f4bf0832f03fca6e2cbb01e4ca194c115de3fe8"
+    },
+    "pose_valid.npy": {
+     "bytes": 11797,
+     "mtime": "2026-10-27T11:37:58",
+     "ctime": "2026-10-27T11:37:58",
+     "inode": 180152741157488954,
+     "sha256": "729bf07ce6c52d064f37addccfef1c78b286e6c9c3db6f1d6eaa548adad1bc7a"
+    },
+    "pose_meta.json": {
+     "bytes": 5472,
+     "mtime": "2026-10-27T11:37:58",
+     "ctime": "2026-10-27T11:37:58",
+     "inode": 180152741157488955,
+     "sha256": "e6bb14a94cc8cd563d3f8a7cf4baf5c820765eb778a3f44a788ea374362d060e"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ud89102dc16/2022-09-27-1664265600-a5d51-cv-emg-pose-train@2-recording-3_right"
+  },
+  "emg2pose/ud89102dc16/2022-09-27-1664265600-a5d51-cv-emg-pose-train@2-recording-4_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ud89102dc16/2022-09-27-1664265600-a5d51-cv-emg-pose-train@2-recording-4_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17041,
+     "mtime": "2026-10-15T13:33:55",
+     "ctime": "2026-10-15T13:33:55",
+     "inode": 4161333240617082767,
+     "sha256": "4cbba552141c694b9b19d0e4b1c87ff5feab5c46469d184096e92bd6c81f41d6"
+    },
+    "data_int16.npy": {
+     "bytes": 3685568,
+     "mtime": "2026-10-15T13:33:55",
+     "ctime": "2026-10-15T13:33:55",
+     "inode": 4161333240617082766,
+     "sha256": "b0b9f676db7ae4e262f0f570409a978dcf4fcaa6756c7f125805812bef400092"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 460808,
+     "mtime": "2026-10-27T11:37:53",
+     "ctime": "2026-10-27T11:37:53",
+     "inode": 4161333312541021094,
+     "sha256": "49db4f3a0951e1d52eaf97eb74ae4dcbf6a83a438eaa7b5d073034d73d0b1f7f"
+    },
+    "pose_valid.npy": {
+     "bytes": 11645,
+     "mtime": "2026-10-27T11:37:53",
+     "ctime": "2026-10-27T11:37:53",
+     "inode": 4161333312541021095,
+     "sha256": "cbe726aeb942f01aa25a7ed62324c94a7ea51fb2fc297dbeee43e660424146fa"
+    },
+    "pose_meta.json": {
+     "bytes": 5541,
+     "mtime": "2026-10-27T11:37:53",
+     "ctime": "2026-10-27T11:37:53",
+     "inode": 4161333312541021096,
+     "sha256": "ebae1e76fc0da938dbf758cc0ae283bc0b011bd2b9045215f8be2bf912e71e83"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ud89102dc16/2022-09-27-1664265600-a5d51-cv-emg-pose-train@2-recording-4_left"
+  },
+  "emg2pose/ue03cea741b/2022-07-07-1657180800-2fe0d-cv-emg-pose-demonstration@2-recording-6_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ue03cea741b/2022-07-07-1657180800-2fe0d-cv-emg-pose-demonstration@2-recording-6_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17578,
+     "mtime": "2026-10-15T13:32:50",
+     "ctime": "2026-10-15T13:32:50",
+     "inode": 198169100302773559,
+     "sha256": "81c56738844c720c9a19c871a13826a3377ad57cf861fe39f45b81ec9de513df"
+    },
+    "data_int16.npy": {
+     "bytes": 3195616,
+     "mtime": "2026-10-15T13:32:50",
+     "ctime": "2026-10-15T13:32:50",
+     "inode": 198169100302773558,
+     "sha256": "b470a47d8fafc1f1923ac5e3d12641b8d3102e3040a03d3e83ca0ae13cb48dd4"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 399528,
+     "mtime": "2026-10-27T10:50:08",
+     "ctime": "2026-10-27T10:50:08",
+     "inode": 180152741157480790,
+     "sha256": "b649e643161e0de98f4c1cc07ea9e3b0def69da6b3357d8d622b91424d808684"
+    },
+    "pose_valid.npy": {
+     "bytes": 10113,
+     "mtime": "2026-10-27T10:50:08",
+     "ctime": "2026-10-27T10:50:08",
+     "inode": 180152741157480791,
+     "sha256": "0f13317b3d99a26f406fb52f6906179db9af63c1c55b220bbf74458129fe17eb"
+    },
+    "pose_meta.json": {
+     "bytes": 6030,
+     "mtime": "2026-10-27T10:50:08",
+     "ctime": "2026-10-27T10:50:08",
+     "inode": 180152741157480792,
+     "sha256": "a8df9011a90dd78dc0c9353769064585f9ee02246d9eac7328adba71818cd0a4"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ue03cea741b/2022-07-07-1657180800-2fe0d-cv-emg-pose-demonstration@2-recording-6_left"
+  },
+  "emg2pose/ue03cea741b/2022-07-07-1657180800-bf202-cv-emg-pose-train@2-recording-10_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/ue03cea741b/2022-07-07-1657180800-bf202-cv-emg-pose-train@2-recording-10_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17055,
+     "mtime": "2026-10-15T13:32:50",
+     "ctime": "2026-10-15T13:32:50",
+     "inode": 252209935025300020,
+     "sha256": "9af3ee83aea8b3c09fab2aebc4648042b6e224df3e3957f97caa41d033c8b548"
+    },
+    "data_int16.npy": {
+     "bytes": 6250944,
+     "mtime": "2026-10-15T13:32:50",
+     "ctime": "2026-10-15T13:32:50",
+     "inode": 252209935025300019,
+     "sha256": "4073e4fddffc56df8ebad164caa0993f6b2f4ce36753ade18626df452bf92ab5"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 781448,
+     "mtime": "2026-10-27T10:50:13",
+     "ctime": "2026-10-27T10:50:13",
+     "inode": 198169192610987517,
+     "sha256": "1a311766aac9d69faac9a4c05deaf226f874c08fa7d4877d464cbb85c11aeb6d"
+    },
+    "pose_valid.npy": {
+     "bytes": 19661,
+     "mtime": "2026-10-27T10:50:13",
+     "ctime": "2026-10-27T10:50:13",
+     "inode": 198169192610987518,
+     "sha256": "8f2c09ccdd2728224f041d14555885549f07a83cc93cdcbcecc4b4edd1690135"
+    },
+    "pose_meta.json": {
+     "bytes": 5390,
+     "mtime": "2026-10-27T10:50:13",
+     "ctime": "2026-10-27T10:50:13",
+     "inode": 198169192610987519,
+     "sha256": "ffbcc7cb793ed8ec9c611a21d0c2de737f00185d8429dbf7fa4bc1e480f5f27c"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/ue03cea741b/2022-07-07-1657180800-bf202-cv-emg-pose-train@2-recording-10_right"
+  },
+  "emg2pose/uf1b6a408bf/2022-11-11-1668153600-bb726-cv-emg-pose-train@2-recording-1_right": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/uf1b6a408bf/2022-11-11-1668153600-bb726-cv-emg-pose-train@2-recording-1_right",
+   "files": {
+    "metadata.json": {
+     "bytes": 17067,
+     "mtime": "2026-10-15T13:33:42",
+     "ctime": "2026-10-15T13:33:42",
+     "inode": 162139476603300532,
+     "sha256": "fa3551ed92f030c9669711aeb08e9ae217b08d72548f0718d81e043b30cc8ac9"
+    },
+    "data_int16.npy": {
+     "bytes": 3963360,
+     "mtime": "2026-10-15T13:33:42",
+     "ctime": "2026-10-15T13:33:42",
+     "inode": 162139476603300531,
+     "sha256": "04600547c1ac0031e6c1951438b25ba9c3ec569dca2a4c72b5ee874f77a9d520"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 495528,
+     "mtime": "2026-10-27T12:08:25",
+     "ctime": "2026-10-27T12:08:25",
+     "inode": 252210029447437817,
+     "sha256": "20456629537c8a35c7f3234ef4648378680f29c1158f940a9d00e966f4938ef9"
+    },
+    "pose_valid.npy": {
+     "bytes": 12513,
+     "mtime": "2026-10-27T12:08:25",
+     "ctime": "2026-10-27T12:08:25",
+     "inode": 252210029447437818,
+     "sha256": "4d4c6c64faafaae5ab8130db4d15b2cd76241649633e230577332c7cb0c667e5"
+    },
+    "pose_meta.json": {
+     "bytes": 5414,
+     "mtime": "2026-10-27T12:08:25",
+     "ctime": "2026-10-27T12:08:25",
+     "inode": 252210029447437819,
+     "sha256": "0ec912c060169d92e0bff8fa531ccd1d6e91b2f58b029aaec8979da223ac638b"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/uf1b6a408bf/2022-11-11-1668153600-bb726-cv-emg-pose-train@2-recording-1_right"
+  },
+  "emg2pose/uf1b6a408bf/2022-11-11-1668153600-bb726-cv-emg-pose-train@2-recording-6_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/uf1b6a408bf/2022-11-11-1668153600-bb726-cv-emg-pose-train@2-recording-6_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17044,
+     "mtime": "2026-10-15T13:33:42",
+     "ctime": "2026-10-15T13:33:42",
+     "inode": 180152666867952805,
+     "sha256": "8cb57b5996d4e87940cee229cd74baac385a85f9f3d2389ac51b74f98d311b31"
+    },
+    "data_int16.npy": {
+     "bytes": 3739616,
+     "mtime": "2026-10-15T13:33:42",
+     "ctime": "2026-10-15T13:33:42",
+     "inode": 180152666867952804,
+     "sha256": "5880db6189a2931279c799bdd62b2c4a531a70cc34165247b630224598a65423"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 467528,
+     "mtime": "2026-10-27T12:08:19",
+     "ctime": "2026-10-27T12:08:19",
+     "inode": 216180508743250006,
+     "sha256": "5a3fe574913ca800b0ebe9d2862335f1ae3f35eac54aedbf018133aa3d28e498"
+    },
+    "pose_valid.npy": {
+     "bytes": 11813,
+     "mtime": "2026-10-27T12:08:19",
+     "ctime": "2026-10-27T12:08:19",
+     "inode": 216180508743250007,
+     "sha256": "3f60054a0041f7238803f81957d6d2a18a63b0c134b7295bb2864d50ab578220"
+    },
+    "pose_meta.json": {
+     "bytes": 5564,
+     "mtime": "2026-10-27T12:08:19",
+     "ctime": "2026-10-27T12:08:19",
+     "inode": 216180508743250008,
+     "sha256": "0554a4d9c919d53a79309dbb880e3cf870eb2e32c5ec85931da202d33ed17967"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/uf1b6a408bf/2022-11-11-1668153600-bb726-cv-emg-pose-train@2-recording-6_left"
+  },
+  "emg2pose/uf3d1d06b13/2022-08-31-1661932800-b7d96-cv-emg-pose-demonstration@2-recording-3_left": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/uf3d1d06b13/2022-08-31-1661932800-b7d96-cv-emg-pose-demonstration@2-recording-3_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17057,
+     "mtime": "2026-10-15T13:32:50",
+     "ctime": "2026-10-15T13:32:50",
+     "inode": 198169100302777906,
+     "sha256": "00ccd1a7c1b1e4faf18cf97ee4499fe89bd55c89e0766f6f20a69cb06df16f67"
+    },
+    "data_int16.npy": {
+     "bytes": 2955232,
+     "mtime": "2026-10-15T13:32:50",
+     "ctime": "2026-10-15T13:32:50",
+     "inode": 198169100302777905,
+     "sha256": "dc6e428445ca5d4365d099477b403c96445c1ba9dc64b5e025730126186d43be"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 369488,
+     "mtime": "2026-10-27T11:19:32",
+     "ctime": "2026-10-27T11:19:32",
+     "inode": 252210029447426137,
+     "sha256": "d50fff50ee78c901bd8e49b692ba25aef479ac34240371fbce8e9e5836c48f33"
+    },
+    "pose_valid.npy": {
+     "bytes": 9362,
+     "mtime": "2026-10-27T11:19:32",
+     "ctime": "2026-10-27T11:19:32",
+     "inode": 252210029447426138,
+     "sha256": "5d8cd3f04ecd51a51a7b0a0853cd016e175b1d192e268d082afb0bf099448094"
+    },
+    "pose_meta.json": {
+     "bytes": 5711,
+     "mtime": "2026-10-27T11:19:32",
+     "ctime": "2026-10-27T11:19:32",
+     "inode": 252210029447426139,
+     "sha256": "ea3cb51d04dc372f99b6cbb0578ff2ce3430cc3c84ef87432227fd698414fa51"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/uf3d1d06b13/2022-08-31-1661932800-b7d96-cv-emg-pose-demonstration@2-recording-3_left"
+  },
+  "emg2pose/uf6a246de38/2022-06-06-1654502400-13dba-cv-emg-pose-demonstration@2-recording-7_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/uf6a246de38/2022-06-06-1654502400-13dba-cv-emg-pose-demonstration@2-recording-7_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17106,
+     "mtime": "2026-10-15T13:33:19",
+     "ctime": "2026-10-15T13:33:19",
+     "inode": 4161333240617073010,
+     "sha256": "1117a1f4c0648d05d0f72bc6370b03c6bffca95fbefc3589f2554347ed32d8fe"
+    },
+    "data_int16.npy": {
+     "bytes": 2895232,
+     "mtime": "2026-10-15T13:33:19",
+     "ctime": "2026-10-15T13:33:19",
+     "inode": 4161333240617073009,
+     "sha256": "dc5c8bdb1f9931ed6ca024177e3f1dfd2ecf699998bb945a5c991b2665645d2b"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 362008,
+     "mtime": "2026-10-27T10:38:11",
+     "ctime": "2026-10-27T10:38:11",
+     "inode": 198169192610983279,
+     "sha256": "e0f148e203aa540405f21276ecdb319207e394b4d7ff3ebb0f16ee9e9f532611"
+    },
+    "pose_valid.npy": {
+     "bytes": 9175,
+     "mtime": "2026-10-27T10:38:11",
+     "ctime": "2026-10-27T10:38:11",
+     "inode": 198169192610983280,
+     "sha256": "6c7f48dc56796a0e2bd2f5baa61e02c50352fc334dda0ac5508c4703714d48ec"
+    },
+    "pose_meta.json": {
+     "bytes": 5780,
+     "mtime": "2026-10-27T10:38:11",
+     "ctime": "2026-10-27T10:38:11",
+     "inode": 198169192610983281,
+     "sha256": "f83a53261df322c2fb392e8b92b814f7c9d16a7e57002889366a9cc4510a580a"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/uf6a246de38/2022-06-06-1654502400-13dba-cv-emg-pose-demonstration@2-recording-7_left"
+  },
+  "emg2pose/uf6a246de38/2022-06-06-1654502400-ec386-cv-emg-pose-demonstration@2-recording-20_left": {
+   "in_index": true,
+   "in_fixed": false,
+   "in_panel": true,
+   "panel_unchanged_A_vs_B": false,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose/uf6a246de38/2022-06-06-1654502400-ec386-cv-emg-pose-demonstration@2-recording-20_left",
+   "files": {
+    "metadata.json": {
+     "bytes": 17076,
+     "mtime": "2026-10-15T13:33:19",
+     "ctime": "2026-10-15T13:33:19",
+     "inode": 216180415545777562,
+     "sha256": "f8dfe043af001ae005e138dc61b238b217765792730bbb134823feab4945c261"
+    },
+    "data_int16.npy": {
+     "bytes": 4057472,
+     "mtime": "2026-10-15T13:33:19",
+     "ctime": "2026-10-15T13:33:19",
+     "inode": 216180415545777561,
+     "sha256": "96258e542d4eb37860c6e316f0ce98e3052716856fd062e46d853fe7f04ce6e6"
+    },
+    "pose_200hz_f16.npy": {
+     "bytes": 507288,
+     "mtime": "2026-10-27T10:38:30",
+     "ctime": "2026-10-27T10:38:30",
+     "inode": 4161333312541013882,
+     "sha256": "2d44d47c438ec0eb67f13b3cd3001a76051e78b6376b48b87698d802bda52e74"
+    },
+    "pose_valid.npy": {
+     "bytes": 12807,
+     "mtime": "2026-10-27T10:38:30",
+     "ctime": "2026-10-27T10:38:30",
+     "inode": 4161333312541013883,
+     "sha256": "637260f886659ed0c64a9f18fed94a7985c507266a89531de4b3d372b1531501"
+    },
+    "pose_meta.json": {
+     "bytes": 5425,
+     "mtime": "2026-10-27T10:38:30",
+     "ctime": "2026-10-27T10:38:30",
+     "inode": 4161333312541013884,
+     "sha256": "36d34d3cd51ec787df681b72066dbb9136356e82aa5097803843e3de821cd32d"
+    }
+   },
+   "pose_dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/uf6a246de38/2022-06-06-1654502400-ec386-cv-emg-pose-demonstration@2-recording-20_left"
+  },
+  "emg2qwerty/u03432025/2021-07-22-1626990242-keystrokes-dca-study@1-235fe8d6-9339-48e9-b67e-7105d7294d9e": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u03432025/2021-07-22-1626990242-keystrokes-dca-study@1-235fe8d6-9339-48e9-b67e-7105d7294d9e",
+   "files": {
+    "metadata.json": {
+     "bytes": 31674,
+     "mtime": "2026-10-15T13:35:21",
+     "ctime": "2026-10-15T13:35:21",
+     "inode": 162139461839273064,
+     "sha256": "a1aa3530c46c9c8db0d970ce142e3340e357efabbd69ac54bc492995c2f67e00"
+    },
+    "data_int16.npy": {
+     "bytes": 232190464,
+     "mtime": "2026-10-15T13:35:21",
+     "ctime": "2026-10-15T13:35:21",
+     "inode": 162139461839273061,
+     "sha256": "a9f72305368e93c1738560172717e70e6fe5355ee47fe2dd45a0b7d0234eea46"
+    }
+   }
+  },
+  "emg2qwerty/u03537794/2021-06-03-1622769045-keystrokes-dca-study@1-98830534-8a96-4490-82ee-649c81e4d3e5": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u03537794/2021-06-03-1622769045-keystrokes-dca-study@1-98830534-8a96-4490-82ee-649c81e4d3e5",
+   "files": {
+    "metadata.json": {
+     "bytes": 31747,
+     "mtime": "2026-10-15T13:35:19",
+     "ctime": "2026-10-15T13:35:19",
+     "inode": 162139461839272655,
+     "sha256": "97d8b34c1f1755f25b4c37a4c822168da5f39fa8112239ab3f9fb2b78dd77161"
+    },
+    "data_int16.npy": {
+     "bytes": 202319680,
+     "mtime": "2026-10-15T13:35:19",
+     "ctime": "2026-10-15T13:35:19",
+     "inode": 162139461839272652,
+     "sha256": "de3681eec9cae6f332a19a73338237920d9235fc639eb29b8f3d82a4a94e5406"
+    }
+   }
+  },
+  "emg2qwerty/u12565339/2021-03-24-1616630863-keystrokes-dca-study@1-ba445214-0169-4179-95f5-0d047482b10d": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u12565339/2021-03-24-1616630863-keystrokes-dca-study@1-ba445214-0169-4179-95f5-0d047482b10d",
+   "files": {
+    "metadata.json": {
+     "bytes": 31622,
+     "mtime": "2026-10-15T13:35:17",
+     "ctime": "2026-10-15T13:35:17",
+     "inode": 180152665928404843,
+     "sha256": "1610195a8ce6754640ac29fbc06b2648f6808bf9db57c0edb41f0d3d29037ca2"
+    },
+    "data_int16.npy": {
+     "bytes": 112451136,
+     "mtime": "2026-10-15T13:35:17",
+     "ctime": "2026-10-15T13:35:17",
+     "inode": 180152665928404840,
+     "sha256": "b08c4755e7d6f1bcabd62f5373ae7dd4ecdb4c1aed21f79cda686d8ab7c0fa02"
+    }
+   }
+  },
+  "emg2qwerty/u66161848/2021-06-21-1624283084-keystrokes-dca-study@1-721e62ce-2796-4212-bec0-49b3cc99bef1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u66161848/2021-06-21-1624283084-keystrokes-dca-study@1-721e62ce-2796-4212-bec0-49b3cc99bef1",
+   "files": {
+    "metadata.json": {
+     "bytes": 31648,
+     "mtime": "2026-10-15T13:35:21",
+     "ctime": "2026-10-15T13:35:21",
+     "inode": 216180415545768233,
+     "sha256": "b4238fd93adee4fa899e3c105724fe6f73bb134e94d765e979f69ef1a45d3d5e"
+    },
+    "data_int16.npy": {
+     "bytes": 166077568,
+     "mtime": "2026-10-15T13:35:21",
+     "ctime": "2026-10-15T13:35:21",
+     "inode": 216180415545768230,
+     "sha256": "e68bf964c9f05190b23afb1f4409ae964eb7761c06e9506196cf20ee7f9e51a9"
+    }
+   }
+  },
+  "emg2qwerty/u68186383/2021-03-28-1616949969-keystrokes-dca-study@1-a2130278-ef80-46f0-92c9-b68149175bdd": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u68186383/2021-03-28-1616949969-keystrokes-dca-study@1-a2130278-ef80-46f0-92c9-b68149175bdd",
+   "files": {
+    "metadata.json": {
+     "bytes": 31623,
+     "mtime": "2026-10-15T13:35:18",
+     "ctime": "2026-10-15T13:35:18",
+     "inode": 252209935025255518,
+     "sha256": "94d060c819ce274edde15cd70c5a2283a60c48501f7dc6469e9c882988110c72"
+    },
+    "data_int16.npy": {
+     "bytes": 102428672,
+     "mtime": "2026-10-15T13:35:18",
+     "ctime": "2026-10-15T13:35:18",
+     "inode": 252209935025255515,
+     "sha256": "c4a115d17e215190ab16b606e70a1d19cb3b5c3e58069a1db3eb3e64b40a1cbb"
+    }
+   }
+  },
+  "emg2qwerty/u76574170/2021-06-25-1624643865-keystrokes-dca-study@1-595bc03a-09e0-4f1f-8987-848d1788530f": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u76574170/2021-06-25-1624643865-keystrokes-dca-study@1-595bc03a-09e0-4f1f-8987-848d1788530f",
+   "files": {
+    "metadata.json": {
+     "bytes": 31677,
+     "mtime": "2026-10-15T13:35:18",
+     "ctime": "2026-10-15T13:35:18",
+     "inode": 234195180671016705,
+     "sha256": "9f479b2fe86312f1c2b423c76d2c1a4efe01ca2fcb7698c2b04e5d390a68103b"
+    },
+    "data_int16.npy": {
+     "bytes": 108955776,
+     "mtime": "2026-10-15T13:35:18",
+     "ctime": "2026-10-15T13:35:18",
+     "inode": 234195180671016702,
+     "sha256": "923756c6ca0d75f87058c9e7e24c66c111fc6b04165725e8342e575b4d08adf5"
+    }
+   }
+  },
+  "emg2qwerty/u85881224/2021-07-01-1625160605-keystrokes-dca-study@1-7d09d115-389c-424c-a649-5c480f8c5e52": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u85881224/2021-07-01-1625160605-keystrokes-dca-study@1-7d09d115-389c-424c-a649-5c480f8c5e52",
+   "files": {
+    "metadata.json": {
+     "bytes": 31653,
+     "mtime": "2026-10-15T13:35:22",
+     "ctime": "2026-10-15T13:35:22",
+     "inode": 4161333240617033459,
+     "sha256": "e02daa8cd25cc8d1b7fb5016b5bf446a971a06c9d1ca64b24bf975fe50ab0322"
+    },
+    "data_int16.npy": {
+     "bytes": 118527040,
+     "mtime": "2026-10-15T13:35:22",
+     "ctime": "2026-10-15T13:35:22",
+     "inode": 4161333240617033456,
+     "sha256": "6e10a07f4a12789b0757ad9140910657e3427febbfbde4d135cb675cb6c9ec66"
+    }
+   }
+  },
+  "emg2qwerty/u94305460/2021-07-14-1626296384-keystrokes-dca-study@1-f16ddfeb-827e-4668-aa6b-c9f39f9e83f4": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u94305460/2021-07-14-1626296384-keystrokes-dca-study@1-f16ddfeb-827e-4668-aa6b-c9f39f9e83f4",
+   "files": {
+    "metadata.json": {
+     "bytes": 31652,
+     "mtime": "2026-10-15T13:35:18",
+     "ctime": "2026-10-15T13:35:18",
+     "inode": 180152665928407560,
+     "sha256": "472ab2a9e37126a4372d0d123f28349bca4562de95ee83bd165680577f43cc7e"
+    },
+    "data_int16.npy": {
+     "bytes": 142190144,
+     "mtime": "2026-10-15T13:35:18",
+     "ctime": "2026-10-15T13:35:18",
+     "inode": 180152665928407557,
+     "sha256": "4c4e92252ee9bb47df973f52c356bf33582195c1723c88a23478e2c55add333f"
+    }
+   }
+  },
+  "emg2qwerty/u97890030/2021-07-03-1625342169-keystrokes-dca-study@1-83db389d-2eb5-48ec-9e60-992e297b2f6c": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2qwerty/u97890030/2021-07-03-1625342169-keystrokes-dca-study@1-83db389d-2eb5-48ec-9e60-992e297b2f6c",
+   "files": {
+    "metadata.json": {
+     "bytes": 31652,
+     "mtime": "2026-10-15T13:35:19",
+     "ctime": "2026-10-15T13:35:19",
+     "inode": 252209935025256001,
+     "sha256": "c9ddc0cb2167119f8102d76e34b67bead1bfa34387f258939465ed1242fffbca"
+    },
+    "data_int16.npy": {
+     "bytes": 104662464,
+     "mtime": "2026-10-15T13:35:19",
+     "ctime": "2026-10-15T13:35:19",
+     "inode": 252209935025255998,
+     "sha256": "6f814a98ffa09ebcda13e685112360f5c6ecc328e7692fa442ee442788172aa0"
+    }
+   }
+  },
+  "grabmyo/p09/session2": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_work/IscrB_WearUsFM/data/processed/grabmyo/p09/session2",
+   "files": {
+    "metadata.json": {
+     "bytes": 33648,
+     "mtime": "2026-09-24T15:22:21",
+     "ctime": "2026-09-24T15:22:21",
+     "inode": 144121788366901768,
+     "sha256": "336b3c28f843e35ad4e41cc1bb49727a03a6b454147777f0c1d6b8afaedd071f"
+    },
+    "data_int16.npy": {
+     "bytes": 68239488,
+     "mtime": "2026-09-24T15:22:21",
+     "ctime": "2026-09-24T15:22:21",
+     "inode": 144121788366901764,
+     "sha256": "940acd1966bbf80c75bef0c4f212aa046681a1227b30f8e102cd44f1650285f7"
+    }
+   }
+  },
+  "grabmyo/p17/session2": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_work/IscrB_WearUsFM/data/processed/grabmyo/p17/session2",
+   "files": {
+    "metadata.json": {
+     "bytes": 33648,
+     "mtime": "2026-09-24T15:24:26",
+     "ctime": "2026-09-24T15:24:26",
+     "inode": 144121788366902014,
+     "sha256": "19a64668353b6100ef5fa0627ec67be28ae6ba232bb82a07544255ef37059b1c"
+    },
+    "data_int16.npy": {
+     "bytes": 68239488,
+     "mtime": "2026-09-24T15:24:26",
+     "ctime": "2026-09-24T15:24:26",
+     "inode": 144121788366902013,
+     "sha256": "a7866b83185d2e92c0be91a8604621cb7ffdd76a3fd853dfd7fede174e45a90f"
+    }
+   }
+  },
+  "grabmyo/p21/session3": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_work/IscrB_WearUsFM/data/processed/grabmyo/p21/session3",
+   "files": {
+    "metadata.json": {
+     "bytes": 33648,
+     "mtime": "2026-09-24T15:25:57",
+     "ctime": "2026-09-24T15:25:57",
+     "inode": 144121788366902217,
+     "sha256": "1bbe114b70451d34016927899041fb6d3c68b9656b69dfc15bae75d45cbb367f"
+    },
+    "data_int16.npy": {
+     "bytes": 68239488,
+     "mtime": "2026-09-24T15:25:57",
+     "ctime": "2026-09-24T15:25:57",
+     "inode": 144121788366902212,
+     "sha256": "11aa79bff7cd3958905cbe7da0605cbeed29eea3bfa22d5fee4cd4caa0948924"
+    }
+   }
+  },
+  "hyser/s01/session2_random": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/hyser/s01/session2_random",
+   "files": {
+    "metadata.json": {
+     "bytes": 254535,
+     "mtime": "2026-10-15T13:28:01",
+     "ctime": "2026-10-15T13:28:01",
+     "inode": 4161333240616981074,
+     "sha256": "75f582a04a0b3187802bb14f830ad45db6d4a28908256e0612d7cddf70948301"
+    },
+    "data_int16.npy": {
+     "bytes": 131072128,
+     "mtime": "2026-10-15T13:28:01",
+     "ctime": "2026-10-15T13:28:01",
+     "inode": 4161333240616981070,
+     "sha256": "4ec97a7d8e691fc62dc43a50ec03188965d2b30b268e86b01d406abccdd65d12"
+    }
+   }
+  },
+  "ninapro_db10/s010/ex1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db10/s010/ex1",
+   "files": {
+    "metadata.json": {
+     "bytes": 18969,
+     "mtime": "2026-10-15T13:35:03",
+     "ctime": "2026-10-15T13:35:03",
+     "inode": 180152665928472503,
+     "sha256": "116b1559254797fe40903d2d5e9a169e920137855a789b4d9cac665eaddbdb1c"
+    },
+    "data_int16.npy": {
+     "bytes": 185968256,
+     "mtime": "2026-10-15T13:35:03",
+     "ctime": "2026-10-15T13:35:03",
+     "inode": 180152665928472501,
+     "sha256": "1592a00f112ffaa5e9a71143c94d5a567f000099f43d5a0f1b23d48f110c2a50"
+    }
+   }
+  },
+  "ninapro_db10/s021/ex1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db10/s021/ex1",
+   "files": {
+    "metadata.json": {
+     "bytes": 18847,
+     "mtime": "2026-10-15T13:35:03",
+     "ctime": "2026-10-15T13:35:03",
+     "inode": 234195182835263367,
+     "sha256": "9c002581e3ecfbfd0592fff954d7bb1536b8dd46063879d6714c853c43350533"
+    },
+    "data_int16.npy": {
+     "bytes": 212099840,
+     "mtime": "2026-10-15T13:35:03",
+     "ctime": "2026-10-15T13:35:03",
+     "inode": 234195182835263362,
+     "sha256": "7cc305298bde8e54b11903126f68fcb91fe45f3f1a2cf0d27e9c3c4fbba6f488"
+    }
+   }
+  },
+  "ninapro_db10/s101/ex1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db10/s101/ex1",
+   "files": {
+    "metadata.json": {
+     "bytes": 18843,
+     "mtime": "2026-10-15T13:35:03",
+     "ctime": "2026-10-15T13:35:03",
+     "inode": 216180415545854907,
+     "sha256": "aa0b39d640af98bf25680e7b4300075a5262da00f999865db5837bbabd4c82b6"
+    },
+    "data_int16.npy": {
+     "bytes": 208092656,
+     "mtime": "2026-10-15T13:35:03",
+     "ctime": "2026-10-15T13:35:03",
+     "inode": 216180415545854905,
+     "sha256": "42629cfbd713e2db82575c3aff9b32e731dfecb3eda2406714898e4cbf7e8090"
+    }
+   }
+  },
+  "ninapro_db10/s106/ex1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db10/s106/ex1",
+   "files": {
+    "metadata.json": {
+     "bytes": 18850,
+     "mtime": "2026-10-15T13:35:03",
+     "ctime": "2026-10-15T13:35:03",
+     "inode": 144124011314521667,
+     "sha256": "ba0337347a65e8b29f32ce896aee52d5ce6c1396dd9bb84b93cd7e39143ea3b8"
+    },
+    "data_int16.npy": {
+     "bytes": 207961568,
+     "mtime": "2026-10-15T13:35:03",
+     "ctime": "2026-10-15T13:35:03",
+     "inode": 144124011314521665,
+     "sha256": "9752b2acd4fb9177ce0379e060e57756d0a1716212f2c0edd785d13d2858f787"
+    }
+   }
+  },
+  "ninapro_db2/s07/session1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s07/session1",
+   "files": {
+    "metadata.json": {
+     "bytes": 13173,
+     "mtime": "2026-10-15T13:27:56",
+     "ctime": "2026-10-15T13:27:56",
+     "inode": 180152662942143825,
+     "sha256": "1795b2556adf8ce750aa915676faf0f2b7538eda6fcf8f69cb8918e766c1b517"
+    },
+    "data_int16.npy": {
+     "bytes": 125204216,
+     "mtime": "2026-10-15T13:27:56",
+     "ctime": "2026-10-15T13:27:56",
+     "inode": 180152662942143819,
+     "sha256": "92c25b9af29c7ea93cff8ebbb3cc0c56b7b27b80e85fdce9eb2b345e9ef46c18"
+    }
+   }
+  },
+  "ninapro_db2/s30/session1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s30/session1",
+   "files": {
+    "metadata.json": {
+     "bytes": 13115,
+     "mtime": "2026-10-15T13:27:56",
+     "ctime": "2026-10-15T13:27:56",
+     "inode": 144124009468954302,
+     "sha256": "7d273bf0972b78dcd42687491a7ec62cc0d7ca10405aae8e1b866432cdd1e10a"
+    },
+    "data_int16.npy": {
+     "bytes": 123442640,
+     "mtime": "2026-10-15T13:27:56",
+     "ctime": "2026-10-15T13:27:56",
+     "inode": 144124009468954298,
+     "sha256": "54f013523e3e112cf749a3d4e4ec7a75237bf8141464bc80e5da2b3ce122dd7c"
+    }
+   }
+  },
+  "ninapro_db4/s07/session1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db4/s07/session1",
+   "files": {
+    "metadata.json": {
+     "bytes": 13319,
+     "mtime": "2026-10-15T13:35:02",
+     "ctime": "2026-10-15T13:35:02",
+     "inode": 4161333240617011721,
+     "sha256": "3d99a627ca287e9dd9035d6a9ad46a3356a390fb80de01d79d6bb27b306f7054"
+    },
+    "data_int16.npy": {
+     "bytes": 131328272,
+     "mtime": "2026-10-15T13:35:02",
+     "ctime": "2026-10-15T13:35:02",
+     "inode": 4161333240583448276,
+     "sha256": "c8853c26ffb80f2bb65d52a211e59efd50323ff44e2938e08226961c508eb7db"
+    }
+   }
+  },
+  "ninapro_db5/s03/session1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_work/IscrB_WearUsFM/data/processed/ninapro_db5/s03/session1",
+   "files": {
+    "metadata.json": {
+     "bytes": 16231,
+     "mtime": "2026-09-30T13:16:37",
+     "ctime": "2026-09-30T13:16:37",
+     "inode": 144121795832716074,
+     "sha256": "aa075a4c59f60c959a12e6260d4958ad90894729e0cd415bea91b0669342ecb7"
+    },
+    "data_int16.npy": {
+     "bytes": 18426720,
+     "mtime": "2026-09-30T13:16:37",
+     "ctime": "2026-09-30T13:16:37",
+     "inode": 144121795832716072,
+     "sha256": "1805a82260138d22326212b7ddd8bd376d1938f6b2bbff9b2b6d5206e48e327f"
+    }
+   }
+  },
+  "ninapro_db6/s01/D2_T2": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D2_T2",
+   "files": {
+    "metadata.json": {
+     "bytes": 16461,
+     "mtime": "2026-10-15T13:27:55",
+     "ctime": "2026-10-15T13:27:55",
+     "inode": 4161333240616979957,
+     "sha256": "565bd441ab173bb0651c8a7e8e1b478ac0f24834ca796bcaa977c7894ee9de48"
+    },
+    "data_int16.npy": {
+     "bytes": 45589504,
+     "mtime": "2026-10-15T13:27:55",
+     "ctime": "2026-10-15T13:27:55",
+     "inode": 4161333240616979955,
+     "sha256": "ed017b79c47d9b45495c3fdab8ec9c251f4429780d5f6e8d04bd6bada0be4336"
+    }
+   }
+  },
+  "ninapro_db6/s08/D1_T1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D1_T1",
+   "files": {
+    "metadata.json": {
+     "bytes": 16461,
+     "mtime": "2026-10-15T13:27:55",
+     "ctime": "2026-10-15T13:27:55",
+     "inode": 234195180318656467,
+     "sha256": "8934a9269c0a9bc4886616781b8903a84d9962aed6cee90185291dc7e3c24c1b"
+    },
+    "data_int16.npy": {
+     "bytes": 45776288,
+     "mtime": "2026-10-15T13:27:55",
+     "ctime": "2026-10-15T13:27:55",
+     "inode": 234195180318656056,
+     "sha256": "ed775d626de8bca3e34c8890a3fcd7e5c74ca2c84378e17c4e08c084cdfaa6f9"
+    }
+   }
+  },
+  "ninapro_db6/s09/D2_T1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D2_T1",
+   "files": {
+    "metadata.json": {
+     "bytes": 16460,
+     "mtime": "2026-10-15T13:27:55",
+     "ctime": "2026-10-15T13:27:55",
+     "inode": 198169099480687076,
+     "sha256": "e8bb026abdd9f7c640c35fea2d2410512aa7f3054bafeb0a609d34686e7583f1"
+    },
+    "data_int16.npy": {
+     "bytes": 45818848,
+     "mtime": "2026-10-15T13:27:55",
+     "ctime": "2026-10-15T13:27:55",
+     "inode": 198169099480687074,
+     "sha256": "cbe5a09bc802b3cdb9fe5a74c059f1f4c1ec717dd8ad3449caee8c5c9026872c"
+    }
+   }
+  },
+  "ninapro_db7/s03/session1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db7/s03/session1",
+   "files": {
+    "metadata.json": {
+     "bytes": 12930,
+     "mtime": "2026-10-15T13:27:53",
+     "ctime": "2026-10-15T13:27:53",
+     "inode": 4161333240616979986,
+     "sha256": "2e7e11de180187b1684632387b487742b0f5fe6c3f12cd4f7925bdbb572797db"
+    },
+    "data_int16.npy": {
+     "bytes": 104037080,
+     "mtime": "2026-10-15T13:27:53",
+     "ctime": "2026-10-15T13:27:53",
+     "inode": 4161333240616979984,
+     "sha256": "31a73c2345f7167c066f0568bd2c44381c45ed15a8b8ee5e66d2c9b1d399e791"
+    }
+   }
+  },
+  "ninapro_db7/s14/session1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db7/s14/session1",
+   "files": {
+    "metadata.json": {
+     "bytes": 12935,
+     "mtime": "2026-10-15T13:27:53",
+     "ctime": "2026-10-15T13:27:53",
+     "inode": 216180413817767718,
+     "sha256": "44e3fce18dcce03cd14459384bc519c82bb19f8040092627e61616abbe456634"
+    },
+    "data_int16.npy": {
+     "bytes": 103940264,
+     "mtime": "2026-10-15T13:27:53",
+     "ctime": "2026-10-15T13:27:53",
+     "inode": 216180413817767716,
+     "sha256": "8bf6977c7cce77c9f985088f937fe02be2396346929d8992d1ec32a8ad27916f"
+    }
+   }
+  },
+  "ninapro_db7/s18/session1": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db7/s18/session1",
+   "files": {
+    "metadata.json": {
+     "bytes": 12934,
+     "mtime": "2026-10-15T13:27:52",
+     "ctime": "2026-10-15T13:27:52",
+     "inode": 144124009468958840,
+     "sha256": "28dc7145e09b3879f2bd388cc70a2ca366f7733e5820e9aa543b7740d337860c"
+    },
+    "data_int16.npy": {
+     "bytes": 103945592,
+     "mtime": "2026-10-15T13:27:52",
+     "ctime": "2026-10-15T13:27:52",
+     "inode": 144124009468958836,
+     "sha256": "ac4e129e3eb5a35781777b58740b69022d28300c2e9d23690e2ae224ced41370"
+    }
+   }
+  },
+  "putemg/p36/repeats_short_2018-04-27-08-36-53-991": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_work/IscrB_WearUsFM/data/processed/putemg/p36/repeats_short_2018-04-27-08-36-53-991",
+   "files": {
+    "metadata.json": {
+     "bytes": 23814,
+     "mtime": "2026-09-24T15:43:22",
+     "ctime": "2026-09-24T15:43:22",
+     "inode": 144121787410565024,
+     "sha256": "a4a089433a5b8db99c2687efdae7ec156ce0e332b1a1745aab1991d359f13ff8"
+    },
+    "data_int16.npy": {
+     "bytes": 66650240,
+     "mtime": "2026-09-24T15:43:22",
+     "ctime": "2026-09-24T15:43:22",
+     "inode": 144121787410565022,
+     "sha256": "3b3ef87b98eed0abd9fb141853bb18fc2cc6e2df938414cf174bd50ef276756e"
+    }
+   }
+  },
+  "putemg/p51/sequential_2018-04-26-10-26-06-515": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_work/IscrB_WearUsFM/data/processed/putemg/p51/sequential_2018-04-26-10-26-06-515",
+   "files": {
+    "metadata.json": {
+     "bytes": 23807,
+     "mtime": "2026-09-24T15:46:52",
+     "ctime": "2026-09-24T15:46:52",
+     "inode": 144121787410565303,
+     "sha256": "21a3ef62b5784a87cf258a4bb67badfffa77e5ae74a8b4a9856801ea619af24a"
+    },
+    "data_int16.npy": {
+     "bytes": 64684160,
+     "mtime": "2026-09-24T15:46:52",
+     "ctime": "2026-09-24T15:46:52",
+     "inode": 144121787410565301,
+     "sha256": "87732b4772cd13fd16e42a6a56dd8921600ddfb97ef6233ad652e560c9080c5c"
+    }
+   }
+  },
+  "zhang2026/HG_P535J10/random": {
+   "in_index": true,
+   "in_fixed": true,
+   "in_panel": false,
+   "panel_unchanged_A_vs_B": null,
+   "dir": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/zhang2026/HG_P535J10/random",
+   "files": {
+    "metadata.json": {
+     "bytes": 10718,
+     "mtime": "2026-10-15T13:28:05",
+     "ctime": "2026-10-15T13:28:05",
+     "inode": 180152665928430749,
+     "sha256": "efb90a0b7b6e2c66420a4dd81f05c930912e22b7ec9d14767a02250cde547a39"
+    },
+    "data_int16.npy": {
+     "bytes": 22204496,
+     "mtime": "2026-10-15T13:28:05",
+     "ctime": "2026-10-15T13:28:05",
+     "inode": 180152665928430748,
+     "sha256": "c553ffcdfdc5129ca14f34f4fa596ea3dc60865f533ffc45582ff3970425d019"
+    }
+   }
+  }
+ }
+}

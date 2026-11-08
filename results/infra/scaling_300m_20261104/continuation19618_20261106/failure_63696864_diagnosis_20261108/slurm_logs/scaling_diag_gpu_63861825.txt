@@ -1,0 +1,49 @@
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1 @ 73524b63be534f81b3db4ade4b7fc7f47129a0f3
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+nodo lrdn0474.leonardo.local; cpu: model name	: Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz; gpu: NVIDIA A100-SXM-64GB, 535.274.02
+copia del checkpoint: 3 s; sha256 della copia: 37279995d0d484e2
+argv scritti; --distributed presente nel base: True
+=== resume (torchrun, 4 processi) 10:54:17 ===
+uscita torchrun resume: 1 (attesa: non zero, il processo 0 si ferma apposta); file: 1
+DIAG resume rank 0: insieme fisso calcolato e salvato
+  File "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 347, in wrapper
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+=== fresh (torchrun, 4 processi) 10:55:07 ===
+uscita torchrun fresh: 1 (attesa: non zero, il processo 0 si ferma apposta); file: 1
+DIAG fresh rank 0: insieme fisso calcolato e salvato
+  File "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 347, in wrapper
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+=== plain_cuda (processo singolo) 10:55:35 ===
+uscita plain_cuda: 3 (attesa 3)
+DIAG plain_cuda rank 0: insieme fisso calcolato e salvato
+=== plain_cpu (processo singolo) 10:55:58 ===
+uscita plain_cpu: 3 (attesa 3)
+DIAG plain_cpu rank 0: insieme fisso calcolato e salvato
+=== confronto 10:56:21 ===
+resume      nodo lrdn0474.leonardo.local: uguale al seme False (hash 0/8, finestre True); uguale a login08 True (hash 8/8); denormali azzerati False; transformers True; cuda True; thread torch 1; librerie 27
+fresh       nodo lrdn0474.leonardo.local: uguale al seme False (hash 0/8, finestre True); uguale a login08 True (hash 8/8); denormali azzerati False; transformers True; cuda True; thread torch 1; librerie 27
+plain_cuda  nodo lrdn0474.leonardo.local: uguale al seme False (hash 0/8, finestre True); uguale a login08 True (hash 8/8); denormali azzerati False; transformers True; cuda True; thread torch 1; librerie 27
+plain_cpu   nodo lrdn0474.leonardo.local: uguale al seme False (hash 0/8, finestre True); uguale a login08 True (hash 8/8); denormali azzerati False; transformers True; cuda False; thread torch 1; librerie 27
+componenti resume vs fresh: identiche True; diverse: []
+componenti resume vs plain_cuda: identiche True; diverse: []
+componenti resume vs plain_cpu: identiche True; diverse: []
+componenti fresh vs plain_cuda: identiche True; diverse: []
+componenti fresh vs plain_cpu: identiche True; diverse: []
+componenti plain_cuda vs plain_cpu: identiche True; diverse: []
+diagnosi GPU scritta in /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/diag/scaling_300m_20261104/fixedeval_19618_20261108_gpu; durata totale 132 s

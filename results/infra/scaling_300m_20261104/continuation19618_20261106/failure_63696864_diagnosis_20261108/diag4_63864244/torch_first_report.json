@@ -1,0 +1,1556 @@
+{
+ "protocol": "scaling-diag-importorder-20261108-v4",
+ "mode": "torch_first",
+ "slurm_job_id": "63864244",
+ "node": "login08.leonardo.local",
+ "code_sha": "73524b63be534f81b3db4ade4b7fc7f47129a0f3",
+ "run_file": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1/src/wearusfm/training/run.py",
+ "numpy_file": "/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/numpy/__init__.py",
+ "versions": {
+  "python": "3.11.6",
+  "numpy": "1.26.4",
+  "torch": "2.2.0a0+git6c8c5ad"
+ },
+ "ftz": {
+  "ftz": false,
+  "daz": false
+ },
+ "torch_threads": 1,
+ "omp": "1",
+ "libs": [
+  "_C.cpython-311-x86_64-linux-gnu.so",
+  "_ansari_swilk_statistics.cpython-311-x86_64-linux-gnu.so",
+  "_arpack.cpython-311-x86_64-linux-gnu.so",
+  "_asyncio.cpython-311-x86_64-linux-gnu.so",
+  "_bglu_dense.cpython-311-x86_64-linux-gnu.so",
+  "_biasedurn.cpython-311-x86_64-linux-gnu.so",
+  "_bisect.cpython-311-x86_64-linux-gnu.so",
+  "_blake2.cpython-311-x86_64-linux-gnu.so",
+  "_bounded_integers.cpython-311-x86_64-linux-gnu.so",
+  "_bspl.cpython-311-x86_64-linux-gnu.so",
+  "_bz2.cpython-311-x86_64-linux-gnu.so",
+  "_ccallback_c.cpython-311-x86_64-linux-gnu.so",
+  "_ckdtree.cpython-311-x86_64-linux-gnu.so",
+  "_cobyla.cpython-311-x86_64-linux-gnu.so",
+  "_comb.cpython-311-x86_64-linux-gnu.so",
+  "_common.cpython-311-x86_64-linux-gnu.so",
+  "_contextvars.cpython-311-x86_64-linux-gnu.so",
+  "_conv.cpython-311-x86_64-linux-gnu.so",
+  "_csparsetools.cpython-311-x86_64-linux-gnu.so",
+  "_csv.cpython-311-x86_64-linux-gnu.so",
+  "_ctypes.cpython-311-x86_64-linux-gnu.so",
+  "_cythonized_array_utils.cpython-311-x86_64-linux-gnu.so",
+  "_datetime.cpython-311-x86_64-linux-gnu.so",
+  "_decimal.cpython-311-x86_64-linux-gnu.so",
+  "_decomp_lu_cython.cpython-311-x86_64-linux-gnu.so",
+  "_decomp_update.cpython-311-x86_64-linux-gnu.so",
+  "_direct.cpython-311-x86_64-linux-gnu.so",
+  "_distance_pybind.cpython-311-x86_64-linux-gnu.so",
+  "_distance_wrap.cpython-311-x86_64-linux-gnu.so",
+  "_dop.cpython-311-x86_64-linux-gnu.so",
+  "_ellip_harm_2.cpython-311-x86_64-linux-gnu.so",
+  "_errors.cpython-311-x86_64-linux-gnu.so",
+  "_fblas.cpython-311-x86_64-linux-gnu.so",
+  "_fitpack.cpython-311-x86_64-linux-gnu.so",
+  "_flapack.cpython-311-x86_64-linux-gnu.so",
+  "_flinalg.cpython-311-x86_64-linux-gnu.so",
+  "_flow.cpython-311-x86_64-linux-gnu.so",
+  "_generator.cpython-311-x86_64-linux-gnu.so",
+  "_group_columns.cpython-311-x86_64-linux-gnu.so",
+  "_hashlib.cpython-311-x86_64-linux-gnu.so",
+  "_hausdorff.cpython-311-x86_64-linux-gnu.so",
+  "_heapq.cpython-311-x86_64-linux-gnu.so",
+  "_highs_constants.cpython-311-x86_64-linux-gnu.so",
+  "_highs_wrapper.cpython-311-x86_64-linux-gnu.so",
+  "_interpolative.cpython-311-x86_64-linux-gnu.so",
+  "_json.cpython-311-x86_64-linux-gnu.so",
+  "_lbfgsb.cpython-311-x86_64-linux-gnu.so",
+  "_lsap.cpython-311-x86_64-linux-gnu.so",
+  "_lsoda.cpython-311-x86_64-linux-gnu.so",
+  "_lzma.cpython-311-x86_64-linux-gnu.so",
+  "_matching.cpython-311-x86_64-linux-gnu.so",
+  "_matfuncs_expm.cpython-311-x86_64-linux-gnu.so",
+  "_matfuncs_sqrtm_triu.cpython-311-x86_64-linux-gnu.so",
+  "_max_len_seq_inner.cpython-311-x86_64-linux-gnu.so",
+  "_min_spanning_tree.cpython-311-x86_64-linux-gnu.so",
+  "_minpack.cpython-311-x86_64-linux-gnu.so",
+  "_minpack2.cpython-311-x86_64-linux-gnu.so",
+  "_moduleTNC.cpython-311-x86_64-linux-gnu.so",
+  "_mt19937.cpython-311-x86_64-linux-gnu.so",
+  "_multiarray_tests.cpython-311-x86_64-linux-gnu.so",
+  "_multiarray_umath.cpython-311-x86_64-linux-gnu.so",
+  "_multiprocessing.cpython-311-x86_64-linux-gnu.so",
+  "_mvn.cpython-311-x86_64-linux-gnu.so",
+  "_nd_image.cpython-311-x86_64-linux-gnu.so",
+  "_ni_label.cpython-311-x86_64-linux-gnu.so",
+  "_objects.cpython-311-x86_64-linux-gnu.so",
+  "_odepack.cpython-311-x86_64-linux-gnu.so",
+  "_opcode.cpython-311-x86_64-linux-gnu.so",
+  "_pava_pybind.cpython-311-x86_64-linux-gnu.so",
+  "_pcg64.cpython-311-x86_64-linux-gnu.so",
+  "_peak_finding_utils.cpython-311-x86_64-linux-gnu.so",
+  "_philox.cpython-311-x86_64-linux-gnu.so",
+  "_pickle.cpython-311-x86_64-linux-gnu.so",
+  "_pocketfft_internal.cpython-311-x86_64-linux-gnu.so",
+  "_posixsubprocess.cpython-311-x86_64-linux-gnu.so",
+  "_ppoly.cpython-311-x86_64-linux-gnu.so",
+  "_proxy.cpython-311-x86_64-linux-gnu.so",
+  "_qhull.cpython-311-x86_64-linux-gnu.so",
+  "_qmc_cy.cpython-311-x86_64-linux-gnu.so",
+  "_quadpack.cpython-311-x86_64-linux-gnu.so",
+  "_queue.cpython-311-x86_64-linux-gnu.so",
+  "_random.cpython-311-x86_64-linux-gnu.so",
+  "_rbfinterp_pythran.cpython-311-x86_64-linux-gnu.so",
+  "_reordering.cpython-311-x86_64-linux-gnu.so",
+  "_rgi_cython.cpython-311-x86_64-linux-gnu.so",
+  "_rotation.cpython-311-x86_64-linux-gnu.so",
+  "_selector.cpython-311-x86_64-linux-gnu.so",
+  "_sfc64.cpython-311-x86_64-linux-gnu.so",
+  "_sha512.cpython-311-x86_64-linux-gnu.so",
+  "_shortest_path.cpython-311-x86_64-linux-gnu.so",
+  "_sigtools.cpython-311-x86_64-linux-gnu.so",
+  "_slsqp.cpython-311-x86_64-linux-gnu.so",
+  "_sobol.cpython-311-x86_64-linux-gnu.so",
+  "_socket.cpython-311-x86_64-linux-gnu.so",
+  "_solve_toeplitz.cpython-311-x86_64-linux-gnu.so",
+  "_sosfilt.cpython-311-x86_64-linux-gnu.so",
+  "_sparsetools.cpython-311-x86_64-linux-gnu.so",
+  "_specfun.cpython-311-x86_64-linux-gnu.so",
+  "_spectral.cpython-311-x86_64-linux-gnu.so",
+  "_spline.cpython-311-x86_64-linux-gnu.so",
+  "_ssl.cpython-311-x86_64-linux-gnu.so",
+  "_stats.cpython-311-x86_64-linux-gnu.so",
+  "_stats_pythran.cpython-311-x86_64-linux-gnu.so",
+  "_struct.cpython-311-x86_64-linux-gnu.so",
+  "_superlu.cpython-311-x86_64-linux-gnu.so",
+  "_tools.cpython-311-x86_64-linux-gnu.so",
+  "_traversal.cpython-311-x86_64-linux-gnu.so",
+  "_trlib.cpython-311-x86_64-linux-gnu.so",
+  "_typing.cpython-311-x86_64-linux-gnu.so",
+  "_uarray.cpython-311-x86_64-linux-gnu.so",
+  "_ufuncs.cpython-311-x86_64-linux-gnu.so",
+  "_ufuncs_cxx.cpython-311-x86_64-linux-gnu.so",
+  "_umath_linalg.cpython-311-x86_64-linux-gnu.so",
+  "_upfirdn_apply.cpython-311-x86_64-linux-gnu.so",
+  "_uuid.cpython-311-x86_64-linux-gnu.so",
+  "_vode.cpython-311-x86_64-linux-gnu.so",
+  "_voronoi.cpython-311-x86_64-linux-gnu.so",
+  "_zeros.cpython-311-x86_64-linux-gnu.so",
+  "array.cpython-311-x86_64-linux-gnu.so",
+  "beta_ufunc.cpython-311-x86_64-linux-gnu.so",
+  "binascii.cpython-311-x86_64-linux-gnu.so",
+  "binom_ufunc.cpython-311-x86_64-linux-gnu.so",
+  "bit_generator.cpython-311-x86_64-linux-gnu.so",
+  "cmath.cpython-311-x86_64-linux-gnu.so",
+  "cython_blas.cpython-311-x86_64-linux-gnu.so",
+  "cython_lapack.cpython-311-x86_64-linux-gnu.so",
+  "cython_special.cpython-311-x86_64-linux-gnu.so",
+  "defs.cpython-311-x86_64-linux-gnu.so",
+  "dfitpack.cpython-311-x86_64-linux-gnu.so",
+  "fcntl.cpython-311-x86_64-linux-gnu.so",
+  "givens_elimination.cpython-311-x86_64-linux-gnu.so",
+  "grp.cpython-311-x86_64-linux-gnu.so",
+  "h5.cpython-311-x86_64-linux-gnu.so",
+  "h5a.cpython-311-x86_64-linux-gnu.so",
+  "h5ac.cpython-311-x86_64-linux-gnu.so",
+  "h5d.cpython-311-x86_64-linux-gnu.so",
+  "h5ds.cpython-311-x86_64-linux-gnu.so",
+  "h5f.cpython-311-x86_64-linux-gnu.so",
+  "h5fd.cpython-311-x86_64-linux-gnu.so",
+  "h5g.cpython-311-x86_64-linux-gnu.so",
+  "h5i.cpython-311-x86_64-linux-gnu.so",
+  "h5l.cpython-311-x86_64-linux-gnu.so",
+  "h5o.cpython-311-x86_64-linux-gnu.so",
+  "h5p.cpython-311-x86_64-linux-gnu.so",
+  "h5pl.cpython-311-x86_64-linux-gnu.so",
+  "h5r.cpython-311-x86_64-linux-gnu.so",
+  "h5s.cpython-311-x86_64-linux-gnu.so",
+  "h5t.cpython-311-x86_64-linux-gnu.so",
+  "h5z.cpython-311-x86_64-linux-gnu.so",
+  "hypergeom_ufunc.cpython-311-x86_64-linux-gnu.so",
+  "interpnd.cpython-311-x86_64-linux-gnu.so",
+  "invgauss_ufunc.cpython-311-x86_64-linux-gnu.so",
+  "ld-2.28.so",
+  "levyst.cpython-311-x86_64-linux-gnu.so",
+  "libaec-001fb5f0.so.0.0.12",
+  "libarcher.so",
+  "libbz2.so.1.0.8",
+  "libc-2.28.so",
+  "libc10.so",
+  "libc10_cuda.so",
+  "libcrypto.so.1.1.1k",
+  "libcublas.so.12.1.0.26",
+  "libcublasLt.so.12.1.0.26",
+  "libcudart.so.12.1.55",
+  "libcudnn.so.8.9.7",
+  "libcufft.so.11.0.2.4",
+  "libcupti.so.2023.1.0",
+  "libcurand.so.10.3.2.56",
+  "libcusparse.so.12.0.2.55",
+  "libdl-2.28.so",
+  "libevent_core-2.1.so.6.0.2",
+  "libevent_pthreads-2.1.so.6.0.2",
+  "libffi.so.8.1.2",
+  "libgcc_s.so.1",
+  "libgfortran-040039e1.so.5.0.0",
+  "libgomp.so.1.0.0",
+  "libhdf5-7f639dcd.so.310.2.0",
+  "libhdf5_hl-123198ff.so.310.0.2",
+  "libhwloc.so.15.2.0",
+  "libiconv.so.2.6.1",
+  "libintl.so.8.4.0",
+  "liblzma.so.5.4.1",
+  "libm-2.28.so",
+  "libmkl_avx512.so.2",
+  "libmkl_core.so.2",
+  "libmkl_gnu_thread.so.2",
+  "libmkl_intel_lp64.so.2",
+  "libmkl_vml_avx512.so.2",
+  "libmpi.so.40.30.6",
+  "libnccl.so.2.19.1",
+  "libnuma.so.1.0.0",
+  "libnvJitLink.so.12.1.55",
+  "libnvToolsExt.so.1.0.0",
+  "libnvrtc.so.12.1.55",
+  "libomp.so",
+  "libopen-pal.so.40.30.3",
+  "libopen-rte.so.40.30.3",
+  "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+  "libopenblasp-r0-23e5df77.3.21.dev.so",
+  "libpthread-2.28.so",
+  "libpython3.11.so.1.0",
+  "libquadmath-96973f99.so.0.0.0",
+  "librt-2.28.so",
+  "libshm.so",
+  "libssl.so.1.1.1k",
+  "libstdc++.so.6.0.30",
+  "libsz-b66d1717.so.2.0.1",
+  "libtorch.so",
+  "libtorch_cpu.so",
+  "libtorch_cuda.so",
+  "libtorch_global_deps.so",
+  "libtorch_python.so",
+  "libutil-2.28.so",
+  "libuuid.so.1.3.0",
+  "libz.so.1.3.0.zlib-ng",
+  "math.cpython-311-x86_64-linux-gnu.so",
+  "messagestream.cpython-311-x86_64-linux-gnu.so",
+  "mmap.cpython-311-x86_64-linux-gnu.so",
+  "mtrand.cpython-311-x86_64-linux-gnu.so",
+  "nbinom_ufunc.cpython-311-x86_64-linux-gnu.so",
+  "ncf_ufunc.cpython-311-x86_64-linux-gnu.so",
+  "nct_ufunc.cpython-311-x86_64-linux-gnu.so",
+  "ncx2_ufunc.cpython-311-x86_64-linux-gnu.so",
+  "pypocketfft.cpython-311-x86_64-linux-gnu.so",
+  "rcont.cpython-311-x86_64-linux-gnu.so",
+  "select.cpython-311-x86_64-linux-gnu.so",
+  "skewnorm_ufunc.cpython-311-x86_64-linux-gnu.so",
+  "unicodedata.cpython-311-x86_64-linux-gnu.so",
+  "unuran_wrapper.cpython-311-x86_64-linux-gnu.so",
+  "utils.cpython-311-x86_64-linux-gnu.so",
+  "zlib.cpython-311-x86_64-linux-gnu.so"
+ ],
+ "n_modules": 1594,
+ "numpy_runtime": "[{'numpy_version': '1.26.4',\n  'python': '3.11.6 (main, Feb  6 2024, 18:28:10) [GCC 8.5.0 20210514 (Red Hat '\n            '8.5.0-16)]',\n  'uname': uname_result(system='Linux', node='login08.leonardo.local', release='4.18.0-477.27.1.el8_8.x86_64', version='#1 SMP Thu Aug 31 10:29:22 EDT 2023', machine='x86_64')},\n {'simd_extensions': {'baseline': ['SSE', 'SSE2', 'SSE3'],\n                      'found': ['SSSE3',\n                                'SSE41',\n                                'POPCNT',\n                                'SSE42',\n                                'AVX',\n                                'F16C',\n                                'FMA3',\n                                'AVX2',\n                                'AVX512F',\n                                'AVX512CD',\n                                'AVX512_SKX',\n                                'AVX512_CLX',\n                                'AVX512_CNL',\n                                'AVX512_ICL'],\n                      'not_found': ['AVX512_KNL', 'AVX512_KNM']}},\n {'filepath': '/leonardo/prod/spack/5.2/install/0.21/linux-rhel8-icelake/gcc-8.5.0/gcc-12.2.0-gmhym3kmbzqlpwkzhgab2xsoygsdwxcl/lib64/libgomp.so.1.0.0',\n  'internal_api': 'openmp',\n  'num_threads': 1,\n  'prefix': 'libgomp',\n  'user_api': 'openmp',\n  'version': None},\n {'filepath': '/usr/lib64/libomp.so',\n  'internal_api': 'openmp',\n  'num_threads': 1,\n  'prefix': 'libomp',\n  'user_api': 'openmp',\n  'version': None},\n {'architecture': 'SkylakeX',\n  'filepath': '/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/numpy.libs/libopenblas64_p-r0-0cf96a72.3.23.dev.so',\n  'internal_api': 'openblas',\n  'num_threads': 1,\n  'prefix': 'libopenblas',\n  'threading_layer': 'pthreads',\n  'user_api': 'blas',\n  'version': '0.3.23.dev'},\n {'architecture': 'SkylakeX',\n  'filepath': '/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/scipy.libs/libopenblasp-r0-23e5df77.3.21.dev.so',\n  'internal_api': 'openblas',\n  'num_threads': 1,\n  'prefix': 'libopenblas',\n  'threading_layer': 'pthreads',\n  'user_api': 'blas',\n  'version': '0.3.21.dev'}]\n",
+ "skips": {},
+ "timing_s": {
+  "index_and_fixed": 15.8,
+  "panel": 10.7
+ },
+ "fixed_vs_A": {
+  "identical": true,
+  "windows_equal": true,
+  "hash_equal": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "n_hash_equal": 8,
+  "n": 8
+ },
+ "fixed_vs_B": {
+  "identical": false,
+  "windows_equal": true,
+  "hash_equal": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "n_hash_equal": 0,
+  "n": 8
+ },
+ "panel_vs_A": {
+  "identical": true,
+  "windows_equal": true,
+  "hash_equal": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "n_hash_equal": 64,
+  "n": 64
+ },
+ "panel_vs_B": {
+  "identical": false,
+  "windows_equal": true,
+  "hash_equal": [
+   false,
+   false,
+   false,
+   true,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   true,
+   true,
+   false,
+   false,
+   false,
+   false,
+   true,
+   true,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   true,
+   false,
+   false,
+   true,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   true,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "n_hash_equal": 8,
+  "n": 64
+ },
+ "fixed_components": [
+  {
+   "signals": "f472f131f47187dcfc325366864930b329185a19aa3aa9ebb3ce75f9bfbbe448",
+   "fs": "877765895b71ec1883818f1bfe499e432407dcc6d124871c32feadcc496bea79",
+   "counts": "d0ca6fe24d252da2bf167a8d66582e1adf46c7b39a4e0ba0b99cdd78287feef3",
+   "qc_valid": "11faf025d98cdde717c04ef2c8b7f683555cdd3648cef41b165075241a33908a",
+   "codes": "c90176528b7e615fc617b8a33540b133bb9d368267e8f88d7968f1f500f9b2b0",
+   "sets": "ca69900cca4c24379fc2d99beea871fa828b12c473fcee04cb5f2966d504de6f",
+   "visible": "b29bb9450f56177f4b78b2c0ccc336ca66773b97d399ccad1f0bba0f5b53bf55",
+   "kind": "7f27e83984a146a89135d8a1af2d76c1c481843e8af544bce9aeae04ecf0aad1",
+   "rvq_on": "799a1b7f740042882629b1595ff71f8e7a0e702e990c96f7451a6fd5fd71ef72",
+   "anchor_targets": "835666f35ae375d7dc11b88dd720e8017ba598fbd5b9f1f00ae90806d968f91b",
+   "n_patches": "d549a2eebeb12214cc95ebedbe9b1ecec478b7a55d3a4dadf5ed02856f3f768d",
+   "rows": "3deac9521246df7da4fb99940abbfdca0dc60920a9bada3865cb76ceee397da3",
+   "windows": "1e5fc0cd32d337aef3f1495148c51625a9dfc18b7b971980f248682029da677d",
+   "skipped_sessions": "e4f60d0aa6d7f3d3b6a6494b1c861b99f649c6f9ec51abaf201b20f297327c95",
+   "rvq_codes": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "presented": "2029a114eb7ec5fcc2d4d5ed212b627d1f52a16c78b0a09a5ecce8ef5fcf6cfd",
+   "index": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "band_limit": "cfa3ce688bbff5d7b89e39366f7ee2c47cce88bba75e28ebf55c1092f4a6be41",
+   "edge_guard": "fb5eb909d44be48bce80bf8f16d042ab80f5f076a3c26596686342ef4107f2b2",
+   "region": "9e6be055f108a29806033f30aeed2e6725f848f3f90f68c771e84072f64c9a32",
+   "pose": "ce7f18abf51fae295969ef89313e4ee3557efeee570f62b5dfa3c280f99d1ad0"
+  },
+  {
+   "signals": "e6364b43633c3bcdde371b1ad6ab2d13c9843ad50d11f138feccadf45747f442",
+   "fs": "981e841a2e9d3f7a9e685f5c82497b960f9d12c860adc5ab1e45d499ede705cc",
+   "counts": "8a459d189ebe26d67032051ed82cf8cf42e658e4e9d1710676d77363aa21af95",
+   "qc_valid": "1bf8d6433d8e9004687fee6e1bd07b0926f7a6cc7a9627ed1c02a5bb883a2690",
+   "codes": "46171a603e58f5ad3af5fe6e140ed11f851bf7c779315d828787f253ea967500",
+   "sets": "c5e92acae492fa2d913e65db9b95a756e9a1173e43067e4c0807ad792a5f07a3",
+   "visible": "d81af0c909e1959f61d5081e633dfb2155ee42a80f9d83fa24b9951744fdd054",
+   "kind": "08811194ce22f38804436d08b110b1e3b4086d7814d2bc77952d28fedd540d32",
+   "rvq_on": "893f94e79b2b8739aa0acad4e52f21aca9e3c58a07174b01092069c9e970fc7f",
+   "anchor_targets": "40820aa9b4a026913ea447f04576f46a1bb757032dfa0819280a4dfdf90e3ab0",
+   "n_patches": "55970f62df590b3f45948e6273f1daca029ec6973e7252b043edef2e41ed4823",
+   "rows": "83ac3f9537df0452659442d975ca9c2a8b5ef9a5f7f68225423911ec8c230098",
+   "windows": "97ba370b4b9571b83e10c06ee660547632978d6bfdf99347270e50cf7f7a57f9",
+   "skipped_sessions": "e4f60d0aa6d7f3d3b6a6494b1c861b99f649c6f9ec51abaf201b20f297327c95",
+   "rvq_codes": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "presented": "dbf42efbacd44143f611ccc69ff04baa3ff91c9cd8115480789389e04beb3ae3",
+   "index": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "band_limit": "c0e14a2c3d97d21c56b90d36a663d1908ff8c74fa8e35d8c6f565a86e915a3e7",
+   "edge_guard": "5f2b8747fd58e86896a2febbfc8351ce955d8864e34bf8db330156811dba91ad",
+   "region": "8c7ad38f69ba9b9cd1f7f66b7774f947aca036302c874e7f42d2a2d2cc8383e9",
+   "pose": "5f90bd787c7bbf104a87c9d6fb6fda6347c1a0a495b212e03753322a849dd4fb"
+  },
+  {
+   "signals": "5d919ddd23e1656896e7df060f29df857ba95cd4c8872b636de5ca11c5fa190c",
+   "fs": "6dff6b0f43e6e087e58af878ae2167ec14a290fbf0d83697781c2c28d0e2c5f8",
+   "counts": "464c0c398698869b5870d7a7cd4a6e7b78b821f5e1473d4f264fb46933df8bf9",
+   "qc_valid": "55872595f67cd645820e8fa6450f690f1fec34bc4a0b40735f91a22638c66d9e",
+   "codes": "8fecd473060258f81c8eb8040b321d83e33b9b00ea71cb6fa152eb535468eee4",
+   "sets": "3621608d0574c5059d3a4a27e4a0aeb475cfbd1044a77f1da7ab83a146ab082d",
+   "visible": "7db9a320d32c888c96858f8c4dd3409574fabf5fef7e5b865a60d5e407d25dd5",
+   "kind": "2584c67160265e6819d4981421f8836b03f83670a90688dced83f1650c7c8267",
+   "rvq_on": "4e39956eda451f2263082b02bc9e6e54e33121758c97e6a64b9a37224cf6c749",
+   "anchor_targets": "d77991ebb5695c8b2c21f0aad22a5ee11376545bc738c4e3f017305b65c8650f",
+   "n_patches": "d97ddec3195b66b795f90e438a45f1e7a8fc2b05ea351b05725b46b2abd9df03",
+   "rows": "a591d7a01ab1aa936dde7dc9aca60b5086db0e30f706b71761713cfd23b5385c",
+   "windows": "5c6db5c9df0dc3d7de03d6191829df9170d5da94306a585c35fddae6e5f7126e",
+   "skipped_sessions": "e4f60d0aa6d7f3d3b6a6494b1c861b99f649c6f9ec51abaf201b20f297327c95",
+   "rvq_codes": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "presented": "2029a114eb7ec5fcc2d4d5ed212b627d1f52a16c78b0a09a5ecce8ef5fcf6cfd",
+   "index": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "band_limit": "dc052a93daf1e89c9956f42ff439e94e4a9f0e84b00b9f37b6b0445003557c45",
+   "edge_guard": "0938b641b3a6451ac6566f50e5d9289d243f32b0706d5b9b688371e8f8452591",
+   "region": "899198df6fc054e68e276a303b1db4d3034b740764c9707f2bd8f559f5e6c1b1",
+   "pose": "e3c700049d8cec58f19c62bc877f089667c90f91df626b51172da913989804d6"
+  },
+  {
+   "signals": "57eac7e04dff3eec6680f41229658a99177c5c6f9fffc2cf5ef4701739ea5280",
+   "fs": "f776bd2422f60aa7ac54fea47534299d8711208c8c7078931fe47f7b2956a814",
+   "counts": "b6a54bb05f36cf11c46fb85caea7c1734062d02c06af384933db2528bd82ede9",
+   "qc_valid": "9a9f4bdef94764299586d5f6ec4c474e71a220050b26362dfc6cf09c0ce1e19e",
+   "codes": "bafb9e848a59a33c69e29d71d658fe2345e846955f14b319ecc662c44a86a018",
+   "sets": "8e20c232b0d5e3b1b6b219e7bb4d187bccc02cbe5245879fe8ada8f9ce5a98d9",
+   "visible": "140f37a7027c4f9aa234e2fb2719a611d3f4922885c156d5fe041313dadf5566",
+   "kind": "830d7ff2dc904e1f7b9c41f8a5e118e5fe6bd76dd8bb7a3011ee6652432c6f64",
+   "rvq_on": "898a234acf97c95f633dc2ab982a9c2467c4db4fb1dff46a3f710abc7e84d5cb",
+   "anchor_targets": "955cfd3888e6e9cbbdfbb50dffa4f50386a6b9b75e8a4223ed5a3e7446ce7ba8",
+   "n_patches": "9c9f0d93b480c4906101bb3959a74f42a4af24626bb0a8441c349683e889398a",
+   "rows": "912a15349d6765092cc0a3c7d3ee8e175864fae5121e6622ee1bbc9d6499ef6f",
+   "windows": "efb741f76a499c90c8f0fccc09afbd08e8844d31cfc98824ac418d580db4c051",
+   "skipped_sessions": "e4f60d0aa6d7f3d3b6a6494b1c861b99f649c6f9ec51abaf201b20f297327c95",
+   "rvq_codes": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "presented": "45706dbbf7c472092fb4932e3c48983fe229aafe94927c073eabd807900998d8",
+   "index": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "band_limit": "5e38d87860ee5c0c2c9ea48b9d1b595c799a4e90ace004703eaefdb94e5fac78",
+   "edge_guard": "7d53e0ec15733bc31aafe500dbef55d03230af92481f067f083d81610cb9e0ff",
+   "region": "5e496cc0bf28a21b30164f3358b07d1fa3e9b8f51a6d6ca26e56b69ce413449c",
+   "pose": "83cc77b5c117b3688c6dedb1189bcb248a7ff32b12f33eb7dbc9fc0354f09e5d"
+  },
+  {
+   "signals": "c47f75f047ac149a4bb95ff9fb3a8932c55511d1ef0ac3aafd569249be16e46b",
+   "fs": "903016b54e013f4fcbcf9e7694b7948f82eae8618c6a3ad5b553e7ce6e4788d7",
+   "counts": "7aa0d1347839779a8797cf157613e13f60150453eed15fb542ff6bbf771daae3",
+   "qc_valid": "7fddc1a59fe476100e6243b873b6a1c1c72f5396684d411711232f632246c762",
+   "codes": "025243426e6cb397113ebba59d7bae75bfb50e4542325adfb37d6ece8c9c6d4f",
+   "sets": "b27d70c032b607bd6f7b669cca3b5a5b375460025bf11ab31fd260008b9c62d4",
+   "visible": "e47dd0f0fa7862286bd7485f6cf8ffebc225499f7e4f208f10747e46057c5db7",
+   "kind": "e424c392abb2666d6610113c86e6d643026c1e688df908252bd843241afa2f03",
+   "rvq_on": "d33d45a39060424ff3289c6a5c8de006655359f632e85b4ca9d5921d55e4c386",
+   "anchor_targets": "aaf54099f945907bb21dee0bb2a6f5a4d22dec0e15dbb439739cd68f5cb51229",
+   "n_patches": "341371d19c4d72ac47d4cabe0195eae27def0605e3630c5358ed10edd745d950",
+   "rows": "570867acb4ed6bff2b93e7f064106280608a665eeaa7079c55037f7368e8fab7",
+   "windows": "5a971faab75f1924592ba9f96697cd91914d36c69a938d6be9cba1b3482499dc",
+   "skipped_sessions": "e4f60d0aa6d7f3d3b6a6494b1c861b99f649c6f9ec51abaf201b20f297327c95",
+   "rvq_codes": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "presented": "76ec9d3624ca2a05291592e41772d95e2ab9c17acf57504c77d16bfb242e116b",
+   "index": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "band_limit": "d806c20241c2d50968576f800b84bb14ac126dd493117f00e141e99f029d4489",
+   "edge_guard": "7d6e51ded41ec32e5f1f5812b874b621f1542b1ba7ddfab9a1738a8c5cfd0b58",
+   "region": "37898a98408115a040a48218e59ed17088897917bf9b558d6b994f5f5cd29157",
+   "pose": "a48bd64e67a51da02ab1f36dec36f721bfa81614f99a73d96cc68ff7614090f2"
+  },
+  {
+   "signals": "8b54fe50eecd4dadc08e110f25a3f960c5ba31ac418809ebc5c3d729cc395c23",
+   "fs": "36cd8d32f066d1c3e746fd96ca965505cb2b063620186cb7d51c4843e585672a",
+   "counts": "4093a5899cde49837cfbc482048c60fbfd28baf2585ea79824d918ab2de351ce",
+   "qc_valid": "b2d3d5da3cab55f180acf8195b8f68682ec2c58141aefd5c89561a287bb8aea4",
+   "codes": "0c0999028c4cb76621c58d9f68d5f5d3564bf1624ba40de824198eb6dcbddbb9",
+   "sets": "0fed3107caba8926acc78a9a6979a82b9c5e86a34e0c90ed49e216803bf41ae1",
+   "visible": "7e5e12340fb8fae9b77017a1f166ab6264fc95fc0ac33d24eea960f928af2b89",
+   "kind": "1b38403c96dc6156532fb8345c152ca991730d62d515a407d71768ab11ca4092",
+   "rvq_on": "cfe6f2d57fd665b455bb75cced06960586da653e426c9834a2ae5ff8916c7ddb",
+   "anchor_targets": "7b700d04e98226e4c75ed192d230449da626321d1a4d82000524fce40f01cd51",
+   "n_patches": "9c6f4958f001b5d1e55e31743282da0db2d9bb184759580a9ccbb8289fc95878",
+   "rows": "e852ccd51d5578157943152a9cfb67bf16ba17878060b402317c4de461af21a5",
+   "windows": "6fa237e2a2cb0bd1ebce014294e2c2d64f34c800ba1e7e74b4a0663b0496320e",
+   "skipped_sessions": "e4f60d0aa6d7f3d3b6a6494b1c861b99f649c6f9ec51abaf201b20f297327c95",
+   "rvq_codes": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "presented": "2029a114eb7ec5fcc2d4d5ed212b627d1f52a16c78b0a09a5ecce8ef5fcf6cfd",
+   "index": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "band_limit": "99ee6886fa7fa1b0d547e6635bc6dc5313c5be4be9892ee815e4d3bcf908e4f1",
+   "edge_guard": "e28a0d59f4f178049eb3733588298fb90d01bc362426be139dbdb407ab4b3676",
+   "region": "43fd9d543e2cad285c795b9d35474f007d3ce83d1182fb72490d26d173c2f4bd",
+   "pose": "9d0927c4f2e068ae6e0f9ccb48c0fd2c31345ba35691818577e4a0e54b7a1def"
+  },
+  {
+   "signals": "4f4154de9f92d0a002ec27bb08ab9d4feff07f029ca1f05f04ff4c4408b1d4ce",
+   "fs": "857f38a1b179e15b12196dc9344f069fee1a8bfe765de90f3eaac31b461ce5fa",
+   "counts": "c6a26fd535cf1d6fff5e281b110b530f720c74d2a1091f1d6a822778fc17213d",
+   "qc_valid": "0e36470b8c5a2b85d5db9d5bfd8a55b836171cae277aa8408c75208bc47a347e",
+   "codes": "68a907a3b370bddb81dc2df601d200ea967894d9c506276d413222896a446d40",
+   "sets": "25e878f67f052e1717daa7621fb25564c0d34a44561dd51c8a9929500ed61981",
+   "visible": "5638a0df1f277ab70373d03d3efabaf406359eacfe1cf80fb78a6f8a490d15aa",
+   "kind": "fbd2f787e0e7cd1ce4d11dbb43c10f0247b203f08c2043cd3aefa5a45ede8da0",
+   "rvq_on": "d290a55c04cb7019dbd55a0145e2cf13eb6e0441ead01aa587c5bd021c729840",
+   "anchor_targets": "76e039599895488f5918f1a427234495bfecad5f5f12df9d2eb9fca6e523fada",
+   "n_patches": "d8d3429c60fbc3d7e9ceb1b182686aecb5221c0103fd0e4f902120cc24411026",
+   "rows": "3c864df021fc6207689d0ba1bbbf3ee6f2faa5f8e5000641f4e5937df46529b4",
+   "windows": "edd0c295b86a1fdfeb45b906446f8998c0ccc2be31ed54d394cdfc3a234887cb",
+   "skipped_sessions": "e4f60d0aa6d7f3d3b6a6494b1c861b99f649c6f9ec51abaf201b20f297327c95",
+   "rvq_codes": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "presented": "2029a114eb7ec5fcc2d4d5ed212b627d1f52a16c78b0a09a5ecce8ef5fcf6cfd",
+   "index": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "band_limit": "f098f7efc441bab5f39fc2fc45f8dbac9824e6e30c6026ab7922a8c62f8d305e",
+   "edge_guard": "ea48931d7f9f70869e01e4a09f805bcd846904f92a9d6e452b9d12d038420fc4",
+   "region": "24a0589950280f345a42d9849ef134f7f9ca493341209c7fe07befd22fbf72d1",
+   "pose": "8b48b0b4872143bf3fc1a25d345a408f5c41891436f228c2c24107caa73b7ef0"
+  },
+  {
+   "signals": "7759e121debfacdc2e04fdbd650c27eca9e3451098094cb76d8a202df867394e",
+   "fs": "27b922a45b41ebdc2b493fdf99c24ec1c5810ad78fa08e9dde5a4e63ac668978",
+   "counts": "5318cd0a1d7bf3c6c0d6b8836c84ae541ba04fa7fd97497d7037eb79a593d809",
+   "qc_valid": "1480190a7a0aeaedc3afd6fde03e34fbb365b7de1c8589515c5cd9445cd3d14c",
+   "codes": "a737e61335466bab40bf8fd00e02a55fc0fab0a77d8fe991556dd82c04795466",
+   "sets": "729b31ef3c56c6ff9af9934bdb6e24256c5542ba70bdaf2a8abde63457936962",
+   "visible": "716b1f0563640ca8408a06b4e096f1e046ce7194132f281e00eb94385d573960",
+   "kind": "75b31fd7e861e7b58ecdbd90c77db111c668b3dadc6f7930fa8c5a1d8d4f9c60",
+   "rvq_on": "af8a8dd62478c25f2ce4373375914bf715ff506be9f43478a305bc0c566e918d",
+   "anchor_targets": "bb188b84241dc09bc2b9ad9158c0de608835bba1747556b5378edc6bb32fb7eb",
+   "n_patches": "ae5e8b343a28fdff3904e3d88af0ef6c7dc4c0043889cbf0adb2dec706b15b50",
+   "rows": "11b39365d6fb26c74b3bf10f2d355432d1979a59485d93bfed8c61fc54c520a6",
+   "windows": "674222a1ed46429528bb6a5224b1cd6586fa23a53c4a28aa5f0621dea290edd3",
+   "skipped_sessions": "e4f60d0aa6d7f3d3b6a6494b1c861b99f649c6f9ec51abaf201b20f297327c95",
+   "rvq_codes": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "presented": "2029a114eb7ec5fcc2d4d5ed212b627d1f52a16c78b0a09a5ecce8ef5fcf6cfd",
+   "index": "97cccb1b1197f11c6edbb0d93975220592ef8faf618c8770a131e4f7dfe567cc",
+   "band_limit": "d89bdcabb2c8b410118010ed86d27b6bdf068a6219b2446749c659ba257467b4",
+   "edge_guard": "60016c7b3d2d248793bc3926ab7f3917d1b6576a86f33ba781de8ce6d8f74daa",
+   "region": "5da04209812ddac8183019ef40624d2751746f1aa26ad92bda71a50965222b9f",
+   "pose": "f5159087959cc8f6220a9ecf375ee5a245d16fd6edba56d5df66c2929eaaf5df"
+  }
+ ],
+ "fixed_stats": [
+  {
+   "skipped_sessions": 0,
+   "signals_error": "ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (32,) + inhomogeneous part."
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_error": "ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (32,) + inhomogeneous part."
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_error": "ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (32,) + inhomogeneous part."
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_error": "ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (32,) + inhomogeneous part."
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_error": "ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (32,) + inhomogeneous part."
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_error": "ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (32,) + inhomogeneous part."
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_error": "ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (32,) + inhomogeneous part."
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_error": "ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (32,) + inhomogeneous part."
+  }
+ ],
+ "panel_stats": [
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 3.437559144003899e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.2961825177626451e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.8494116577348905e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 5.260902185000305e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.8240289136883803e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.061650181100049e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.0652136239741594e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.5123470095422817e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.5564884279228863e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 7.352687703132688e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 8.127265573421028e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.154705387307331e-05,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 5.945394150330685e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.5804042707022745e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 4.349916707724333e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.639831791384495e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.935073669301346e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 5.1615931084825206e-08,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.174107521568658e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.0870258595095947e-05,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 4.669652298616711e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.451898353683646e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 4.412403541209642e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 8.117572178889532e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.204140628236928e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.5746644521641429e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.801931771045929e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.9923658101106412e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.0603206394298468e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.9349321266636252e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 6.368060212480486e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 3.0465682812064188e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 7.190348583208106e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.0577886087048682e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 5.497032020684856e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.6372906631877413e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.2694865745288553e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.6171729839697946e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 4.3146476969013747e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.0048764781677164e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.4334353863887372e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.0893608052574564e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 6.115704564990665e-08,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 3.605044867072138e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.2968991686411755e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.3669481546685347e-08,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 7.188537892943714e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.1587529772659764e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 4.41914835391799e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.2703368668098847e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 2.9177224405430024e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 5.28019199919072e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 4.0039903979049996e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.1235945294174599e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.2072413824171235e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 3.091729013249278e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.0965241926896852e-05,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.0609454648147221e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.0883894901780877e-05,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 8.55216001127701e-07,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 1.379055447614519e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 5.710948869364074e-08,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 5.575078375841258e-06,
+   "subnormal_f32": 0
+  },
+  {
+   "skipped_sessions": 0,
+   "signals_dtype": "float32",
+   "signals_shape": [
+    4,
+    16,
+    8000
+   ],
+   "zeros": 0,
+   "nonfinite": 0,
+   "min_abs_nonzero": 7.256928142851393e-07,
+   "subnormal_f32": 0
+  }
+ ],
+ "panel_unchanged_A_vs_B": [
+  false,
+  false,
+  false,
+  true,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  true,
+  true,
+  false,
+  false,
+  false,
+  false,
+  true,
+  true,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  true,
+  false,
+  false,
+  true,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  true,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false
+ ]
+}
