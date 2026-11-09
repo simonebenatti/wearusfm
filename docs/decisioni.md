@@ -7814,3 +7814,11 @@ Registrato prima di inviare il run completo; grandezza primaria, riferimento 6,8
 4. **Job della replica: 3 ore** (al massimo 3 GPU-ore, stima ~2,1 h); un processo per GPU, CUDA graph. Tetto complessivo dell'attivita'
    invariato (5 GPU-ore, 40 core-ore). Speso finora: 0,434 GPU-ore (collaudi 63985852 8 min 15 s, 63986820 11 min 46 s annullato da me
    perche' ridondante, 63987432 6 min 2 s; billing 8 per GPU: 3,47 ore locali) e ~0,26 core-ore CPU (cinque checkout, due cache).
+
+### 2026-11-09 — Replica di TEMPONet su DB8: normodotati e amputati separati nella sintesi (richiesta di Simone, durante il run completo)
+
+Simone, 09/11/2026, dopo la domanda «ma il db8non è quello degli amputati ?» e la risposta (10 normodotati S1-S10, 2 amputati transradiali
+S11-S12): «si tieni separati normali e amputati». La sintesi (`scripts/temponet_db8_summary.py`) riporta per i due gruppi MAE dei fold con e
+senza EMA, modello `full`, accuratezze a 10 e 15 gradi, alpha, per seme e per DoA. **Descrittivo, nessun verdetto per gruppo:** la grandezza
+primaria e il criterio restano sui 12 soggetti, come la media di [Z21]; aggiunta fatta mentre il run 63988277 era in corso, dopo che nel log
+erano comparsi valori di test per modello, quindi non e' una regola fissata prima dei dati.

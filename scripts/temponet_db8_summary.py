@@ -22,6 +22,9 @@ REFERENCE = {"mae_deg": 6.89, "mae_sd_deg": 2.08, "acc_10deg": 0.814, "acc_15deg
              "lstm_mae_deg": 7.04, "mlp_mae_deg": 7.14, "svm_mae_deg": 7.28}
 FOLDS = ("fold1", "fold2")
 N_SUBJECTS = 12
+# NinaPro DB8: «Ten able-bodied (Subjects 1-10) and two right-hand transradial amputee participants (Subjects 11-12)». Simone, 09/11/2026:
+# «si tieni separati normali e amputati»: sintesi per gruppo descrittiva; il criterio primario resta sui 12 soggetti, come [Z21].
+GROUPS = {"normodotati": tuple(range(1, 11)), "amputati": (11, 12)}
 
 
 def load_units(run_dir: Path) -> list[dict]:
@@ -64,6 +67,25 @@ def summarize(units: list[dict], seeds_expected: list[int] | None = None, refere
     acc = {f"acc_{t}deg": float(np.mean([[by_key[(s, k)]["models"][f]["test_ema"][f"acc_{t}deg"] for f in FOLDS] for s in subjects
                                          for k in seeds])) for t in (10, 15)}
     alphas = np.array([[[by_key[(s, k)]["models"][f]["alpha"] for f in FOLDS] for k in seeds] for s in subjects])  # (S, K, 2, 5)
+    groups = {}
+    for gname, gsubjects in GROUPS.items():
+        idx = [subjects.index(s) for s in gsubjects if s in subjects]
+        if not idx:
+            continue
+        g_full = [by_key[key]["models"]["full"]["test_ema"]["mae_deg"] for key in full_keys if key[0] in gsubjects]
+        groups[gname] = {
+            "subjects": [subjects[i] for i in idx],
+            "fold_mae_deg": float(fold_ema[idx].mean()),
+            "raw_fold_mae_deg": float(fold_raw[idx].mean()),
+            "per_seed_mae_deg": [float(v) for v in fold_ema[idx].mean(axis=(0, 2, 3))],
+            "per_doa_mae_deg": [float(v) for v in fold_ema[idx].mean(axis=(0, 1, 2))],
+            "subject_doa_sd_deg": float(subj_doa[idx].std()),
+            **{f"acc_{t}deg": float(np.mean([[by_key[(subjects[i], k)]["models"][f]["test_ema"][f"acc_{t}deg"] for f in FOLDS]
+                                             for i in idx for k in seeds])) for t in (10, 15)},
+            "alpha_mean": float(alphas[idx].mean()),
+            "full_mae_deg": float(np.mean(g_full)) if g_full else None,
+            "full_n_units": len(g_full),
+        }
     out = {
         "criterion": {"reference_mae_deg": reference, "tolerance_deg": tolerance,
                       "quantity": "MAE test A3 dopo EMA, media su soggetti x DoA x fold1/fold2 x semi"},
@@ -91,6 +113,7 @@ def summarize(units: list[dict], seeds_expected: list[int] | None = None, refere
         **acc,
         "alpha_mean": float(alphas.mean()),
         "alpha_sd": float(alphas.std()),
+        "groups": groups,  # descrittivo (richiesta di Simone del 09/11), nessun verdetto per gruppo
         "reference": REFERENCE,
     }
     return out
@@ -115,7 +138,16 @@ def to_markdown(s: dict) -> str:
         "| Soggetto | MAE (gradi) |",
         "|---|---|",
     ]
-    lines += [f"| {k} | {v:.3f} |" for k, v in s["per_subject_mae_deg"].items()]
+    lines += [f"| {k}{' (amputato)' if int(k) in GROUPS['amputati'] else ''} | {v:.3f} |" for k, v in s["per_subject_mae_deg"].items()]
+    if s.get("groups"):
+        lines += ["", "Normodotati e amputati separati (descrittivo, nessun verdetto per gruppo; il criterio resta sui 12 soggetti):", "",
+                  "| Gruppo | Soggetti | MAE fold con EMA | senza EMA | `full` | acc. 10 gradi | acc. 15 gradi | alpha medio |",
+                  "|---|---|---|---|---|---|---|---|"]
+        for gname, g in s["groups"].items():
+            full = f"{g['full_mae_deg']:.3f}" if g["full_mae_deg"] is not None else "-"
+            subj = f"{g['subjects'][0]}-{g['subjects'][-1]}" if len(g["subjects"]) > 1 else str(g["subjects"][0])
+            lines.append(f"| {gname} | {subj} | {g['fold_mae_deg']:.3f} | {g['raw_fold_mae_deg']:.3f} | {full} | {g['acc_10deg']:.3f} "
+                         f"| {g['acc_15deg']:.3f} | {g['alpha_mean']:.3f} |")
     lines += ["", "| DoA | MAE (gradi) |", "|---|---|"]
     names = ("rotazione pollice", "flessione pollice", "flessione indice", "flessione medio", "flessione anulare+mignolo")
     lines += [f"| {n} | {v:.3f} |" for n, v in zip(names, s["per_doa_mae_deg"])]

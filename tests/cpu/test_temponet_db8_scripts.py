@@ -179,6 +179,18 @@ def test_full_seeds_option_skips_full_for_other_seeds(cache, tmp_path):
     assert set(u0["models"]) == {"fold1", "fold2", "full"} and set(u1["models"]) == {"fold1", "fold2"}
 
 
+def test_summary_separates_able_bodied_and_amputees():
+    units = [_unit(s, k, 9.0 if s >= 11 else 7.0, full_mae=8.0 if s >= 11 else 6.0) for s in range(1, 13) for k in (0, 1, 2)]
+    s = temponet_db8_summary.summarize(units, [0, 1, 2])
+    assert s["primary_mae_deg"] == pytest.approx((10 * 7.0 + 2 * 9.0) / 12)  # il criterio resta sui 12 soggetti
+    g = s["groups"]
+    assert g["normodotati"]["subjects"] == list(range(1, 11)) and g["amputati"]["subjects"] == [11, 12]
+    assert g["normodotati"]["fold_mae_deg"] == pytest.approx(7.0) and g["amputati"]["fold_mae_deg"] == pytest.approx(9.0)
+    assert g["normodotati"]["full_mae_deg"] == pytest.approx(6.0) and g["amputati"]["full_n_units"] == 6
+    md = temponet_db8_summary.to_markdown(s)
+    assert "| 11 (amputato) |" in md and "| normodotati | 1-10 |" in md and "| amputati | 11-12 |" in md
+
+
 def test_summary_incomplete_when_a_seed_is_missing():
     units = [_unit(s, k, 6.9) for s in range(1, 13) for k in (0, 1)]
     assert temponet_db8_summary.summarize(units, [0, 1, 2])["verdict"] == "incompleta"

@@ -8508,6 +8508,14 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   soggetti x semi 0, 1, 2, `full` solo col seme 0, sintesi alla fine. Prime epoche: 4,7 s per 4.475 passi (1,05 ms per passo); stima ~2,5 ore.
   Uscite in `$WORK/wearusfm_runs/temponet_db8/full_20261109`. Nessun altro job della replica in coda.
 
+### 2026-11-09 | Claude | Baseline TEMPONet: sintesi con normodotati e amputati separati (richiesta di Simone), criterio invariato | Codice di questa voce
+
+- Simone: «si tieni separati normali e amputati» (dopo la domanda sul DB8: 10 normodotati S1-S10, 2 amputati transradiali S11-S12, fonte la
+  pagina ufficiale gia' citata nell'ingest). Aggiunti a `scripts/temponet_db8_summary.py` i gruppi (MAE dei fold con e senza EMA, `full`,
+  accuratezze, alpha, per seme e per DoA) e la marcatura degli amputati nella tabella per soggetto; un test nuovo (34 della replica).
+- Descrittivo: nessun verdetto per gruppo, criterio sui 12 soggetti invariato (voce in `docs/decisioni.md`). La sintesi si rifa' sul Mac sui
+  JSON del run 63988277 (in corso, 27 unita' su 36 alle 16:53); nessun deploy nuovo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
