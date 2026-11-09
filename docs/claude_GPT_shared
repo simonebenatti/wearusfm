@@ -8500,6 +8500,14 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Suite CPU completa sul codice 60b35bd (lanciata sul Mac alle 13:55): 3.370 passati, 1 avviso, 44 min 58 s (3.344 di main + 26 nuovi).
   33 test della replica passati sul codice di questa voce.
 
+### 2026-11-09 | Claude | Baseline TEMPONet: run completo inviato (63988277) col protocollo emendato | Codice 92bceb5
+
+- Deploy `deploy/temponet-db8-20261109-v6` = 92bceb5; checkout `TEMPONET-DB8-checkout-20261109-v6` = 63988203 COMPLETED 0:0 (27 s,
+  `$WORK/wearusfm_campaigns/temponet-db8-92bceb5`).
+- `TEMPONET-DB8-full-20261109` = 63988277, 1 GPU, limite 3 ore, partito alle 14:52 su lrdn0001; cuDNN benchmark, passo di training 8, 12
+  soggetti x semi 0, 1, 2, `full` solo col seme 0, sintesi alla fine. Prime epoche: 4,7 s per 4.475 passi (1,05 ms per passo); stima ~2,5 ore.
+  Uscite in `$WORK/wearusfm_runs/temponet_db8/full_20261109`. Nessun altro job della replica in coda.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
