@@ -6935,3 +6935,17 @@ estensione scientifica, nuovi training, retry o pollingAI.
   uscita esistente o fuori piano, ordine numpy-first): 7 passate. Due rotture volute del wrapper (ripristino di `train`,
   controllo del codice) le fanno fallire, 5 test ciascuna; wrapper poi ripristinato dal commit, SHA-256 uguale al pin del piano.
   Suite completa `tests/cpu` su `cb48c5b` avviata alle 11:07 del 09/11.
+
+### 09/11/2026 — Simone firma l'inviluppo emendato del recupero v2 della linea 1
+
+- Simone, 09/11 alle 11:40, alla domanda «Firmi l'inviluppo emendato del recupero v2 (66,73 GPU-ore, 347,58 core-ore CPU)?»:
+  «Sì, firmo».
+- Firmato: `results/infra/scaling_300m_20261104/continuation19618_20261109_v2/budget_envelope.json`, SHA-256
+  `224743dff392bcd07a2a9a69fd8341b9b8f42e09d1176c2e14aefca20199736e`, nel commit di deploy `cb48c5b`. Comprende il secondo
+  tentativo dello stesso segmento 5.000 -> 19.618 e le voci della voce precedente: GPU-ore con margine 66,731111 (freeze 66,35);
+  core-ore CPU senza GPU 347,584444 su 350; fase checkout 1,066667 (freeze 0,8); pre-controllo dell'identita' 1,533333, voce
+  nuova; core-ore nei job GPU 533,848889 (freeze 530,8). Il freeze v2 e i suoi pin non cambiano.
+- Non firmato: nessuna dose oltre 19.618. La proposta di GPT per 49.046 resta una decisione separata.
+- Prima dei lanci restano: la review favorevole di GPT del pacchetto (punta `71de5c3`), il rinnovo del certificato ssh, la
+  rilettura con `make_training_plan.py --check` superata e il `sacct -P` dei cinque job coerente con l'inviluppo. Poi la sequenza
+  della voce precedente, senza altre richieste di consenso fra i passaggi (regola di Simone del 06/11 alle 17:22).
