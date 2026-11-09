@@ -8537,6 +8537,16 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Serve un nuovo tetto GPU per l'attivita' (12 GPU-ore in tutto; le core-ore restano nel tetto di 40). Soglie e cancelli vincolanti solo
   dopo l'approvazione, con voce in `docs/decisioni.md` prima del primo job.
 
+### 2026-11-09 | Claude | Baseline TEMPONet, diagnosi: piano approvato da Simone, codice dei passi 1-2 pronto, passo 1 inviato (64001955) | Codice 9584631
+
+- Simone: «Approve the plan» (domanda: piano e tetto di 12 GPU-ore). Cancelli, regola di scelta e tetto congelati in `docs/decisioni.md`
+  (bd06f10) prima di qualunque job. Il passo 0 (domanda agli autori, bozza nel piano) resta a Simone.
+- Codice: `scripts/db8_classical_baselines.py` (WL, SVR RBF con C per DoA scelto in validazione, MLP (100, 100, 100), protocolli fold e full,
+  cancello) e launcher CPU; `--target-norm` (V1), modo `screen` del launcher, `--hide-test-in-log`, `scripts/temponet_db8_screen.py` (solo
+  validazione, regola di scelta). 51 test della replica e della diagnosi passati. Prova locale dei tempi: SVR 3-7 s per fit su 11.500 finestre.
+- Deploy `deploy/temponet-db8-20261109-v7` = 9584631; checkout 64001887 COMPLETED 0:0 (36 s). Passo 1 `TEMPONET-DB8-classical-20261109` =
+  64001955, `lrd_all_serial`, 8 CPU, limite 4 ore (al massimo 32 core-ore), RUNNING su login08. Il passo 2 parte solo dopo il cancello.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
