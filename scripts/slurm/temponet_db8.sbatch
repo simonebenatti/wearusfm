@@ -40,11 +40,12 @@ if torch.cuda.device_count() != 1:
 print('GPU:', torch.cuda.get_device_name(0), '| torch', torch.__version__, '| CUDA', torch.version.cuda)
 PY
 if [ "$MODE" = smoke ]; then
-  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --subjects 1 2 3 4 --seeds 0 --epochs 1 --workers 4 \
+  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --emg-unit uV --subjects 1 2 3 4 --seeds 0 --epochs 1 --workers 4 \
     --time-budget-s 1200 || exit 1
   python3 scripts/temponet_db8_summary.py "$OUT" --seeds 0 || exit 1
 else
-  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --seeds 0 1 2 --workers 4 --time-budget-s 6000 || exit 1
+  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --emg-unit uV --seeds 0 1 2 --workers 4 --time-budget-s 6000 \
+    || exit 1
   python3 scripts/temponet_db8_summary.py "$OUT" --seeds 0 1 2 || exit 1
 fi
 du -sh "$OUT"

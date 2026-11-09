@@ -8458,6 +8458,19 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   nel manifest (`n_samples_source`, `trimmed_tail_samples`); un valore non finito interno o una coda piu' lunga restano errori. Tre test nuovi
   (29 in tutto per la replica, passati). Nessun effetto sul criterio congelato. Prossimi: nuovo deploy e checkout, cache in `cache_v2`.
 
+### 2026-11-09 | Claude | Baseline TEMPONet: cache di DB8 pronta (63985594); ingresso in microvolt deciso sulle statistiche della cache, prima di ogni training | Codice 97bb97a, poi questa voce
+
+- Deploy `deploy/temponet-db8-20261109-v2` = 97bb97a; checkout 63985538 COMPLETED 0:0 (29 s); cache `TEMPONET-DB8-cache-20261109-v2` =
+  63985594 COMPLETED 0:0 in 47 s (4 min 38 s di CPU, MaxRSS 20,3 GB, 8 CPU): 36 acquisizioni, 5,0 GB in
+  `$SCRATCH/wearusfm_runs/temponet_db8/cache_v2`, tagliato un solo campione (S5 A1). Manifest copiato in
+  `results/temponet_db8/cache_v2_manifest.json` (solo statistiche e sha256, nessun segnale).
+- Statistiche: EMG con deviazione standard mediana 12,5 microvolt (5° percentile 3,7; 95° 41,4); canali vuoti degli amputati come
+  nell'ingest (S11 14-16, S12 13-16); nove movimenti, A1/A2 con 10 ripetizioni (S5 A1 piu' corta, 3 per almeno un movimento; A2 fino a 11),
+  A3 con 2.
+- Unita' dell'ingresso: da millivolt a **microvolt**. In millivolt la varianza dopo la prima convoluzione (~0,33 x var(x)) sarebbe ~5e-6 al 5°
+  percentile, sotto l'eps 1e-5 della BatchNorm; il documento lasciava l'unita' da confermare sulla cache. Cambio di scala costante, deciso sui
+  soli dati prima di qualunque training; criterio congelato invariato. 29 test della replica passati.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B

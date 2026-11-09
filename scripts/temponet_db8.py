@@ -216,7 +216,7 @@ def main(argv=None) -> int:
     ap.add_argument("--batch", type=int, default=64)
     ap.add_argument("--window", type=int, default=db8.WINDOW)
     ap.add_argument("--step", type=int, default=db8.STEP)
-    ap.add_argument("--emg-unit", choices=sorted(EMG_UNIT_SCALE), default="mV",
+    ap.add_argument("--emg-unit", choices=sorted(EMG_UNIT_SCALE), default="uV",
                     help="unita' dell'ingresso: cambio di scala costante, non una normalizzazione (vedi il documento)")
     ap.add_argument("--symmetric-padding", action="store_true", help="padding simmetrico come Q-PPG invece che causale")
     ap.add_argument("--max-steps-per-epoch", type=int, default=0, help="solo collaudo: tetto ai passi per epoca")

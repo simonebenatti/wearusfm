@@ -94,9 +94,12 @@ Scelte dichiarate (non specificate da [Z21]):
    test e si media. Analisi secondaria: modello `full` su A1 + A2, con alpha dalle predizioni fuori fold.
 2. **Bersaglio**: DoA all'ultimo campione della finestra (regressione causale).
 3. **Passo delle finestre**: 32 campioni (16 ms) in training e in test, il passo d'inferenza di [Z21] secondo [Z23].
-4. **Unita' dell'ingresso**: EMG in millivolt (x 1000 rispetto ai volt del file). E' un cambio di scala costante, non una normalizzazione: con i
-   volt (deviazioni standard attese di decine di microvolt, da confermare con le statistiche della cache prima del collaudo) la varianza dopo la
-   prima convoluzione sarebbe dell'ordine di 1e-9, sotto l'`eps` 1e-5 della BatchNorm, che smetterebbe di normalizzare.
+4. **Unita' dell'ingresso**: EMG in **microvolt** (x 1e6 rispetto ai volt del file). E' un cambio di scala costante, non una normalizzazione.
+   Con l'inizializzazione di PyTorch la varianza dopo la prima convoluzione e' circa 0,33 x var(x); le statistiche della cache (`cache_v2`,
+   36 acquisizioni x 16 canali) danno deviazione standard mediana 12,5 microvolt, 3,7 al 5° percentile, 41,4 al 95°. In volt quella varianza
+   sarebbe ~5e-11, in millivolt ~5e-5 al canale mediano e ~5e-6 al 5° percentile, vicina o sotto l'`eps` 1e-5 della BatchNorm; in microvolt e'
+   ~50, ben sopra. La prima stesura diceva millivolt con ampiezze stimate «di decine di microvolt» da confermare sulla cache: corretta a
+   microvolt il 09/11, prima di qualunque training, sulle sole statistiche dei dati.
 5. **Padding**: causale per le convoluzioni dilatate (eq. 1 e testo di [Z21]); 2 per la convoluzione con stride. Q-PPG usa padding simmetrico:
    resta disponibile con `--symmetric-padding`, non usato.
 6. **Ordine nel blocco con stride**: Conv -> AvgPool -> BatchNorm -> ReLU, come Q-PPG (in inferenza pool e BatchNorm commutano).
@@ -104,7 +107,9 @@ Scelte dichiarate (non specificate da [Z21]):
    19 epoche fp32. TF32 disattivato.
 8. **EMA**: y'_0 = y_0, griglia di alpha 0,00-0,99 a passo 0,01, pareggi all'alpha piu' piccolo, EMA che riparte a ogni registrazione.
 9. **Registrazioni intere**, riposi compresi, nessuna rimozione dei transitori (DB8 e' fatto per la regressione dei transitori, [Z21] sez. II-B).
-10. **Amputati**: 16 ingressi anche per S11 e S12, con i canali senza sensore (a zero) tenuti come sono.
+10. **Amputati**: 16 ingressi anche per S11 e S12, con i canali senza sensore (a zero) tenuti come sono (S11: canali 14-16; S12: 13-16,
+    deviazione standard nulla nella cache). Ripetizioni per movimento nella cache: A1 10 (S5 ne ha 3 per almeno un movimento: registrazione
+    piu' corta, 1.041 s), A2 10 o 11, A3 2; nove movimenti ovunque.
 11. **Semi**: tre (0, 1, 2), per stimare la variabilita' dovuta al training; [Z21] riporta un solo valore.
 12. **Valori non finiti**: in tutto il raw (36 file controllati il 09/11) c'e' un solo campione non finito, l'ultimo di `S5_E1_A1`, con NaN nelle 18
     colonne del guanto. Regola: si scarta una coda finale non finita lunga al massimo 1 s (qui un campione), registrata nel manifest della cache
