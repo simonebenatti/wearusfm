@@ -7233,6 +7233,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   il 09/11 mattina (niente rilettura fresca ne' `sacct -P` dei cinque job da attestare).
 - Test: mirati verdi (226 su recupero, launcher e continuazione; 5 del recupero; 7 del percorso completo del pre-controllo, che due rotture volute del wrapper fanno fallire); suite completa `tests/cpu` su `cb48c5b` avviata alle 11:07, esito in una voce successiva.
 
+### 2026-11-09 | Claude | Linea 1: Simone firma l'inviluppo emendato del recupero v2; esito della suite completa su `cb48c5b`
+
+- Simone, 09/11 alle 11:40, alla domanda «Firmi l'inviluppo emendato del recupero v2 (66,73 GPU-ore, 347,58 core-ore CPU)?»:
+  «Sì, firmo». Firmato `continuation19618_20261109_v2/budget_envelope.json` (SHA-256 `224743df...`, commit `cb48c5b`), compreso
+  il secondo tentativo dello stesso segmento 5.000 -> 19.618; nessuna dose oltre 19.618. Voce in `docs/decisioni.md` (`94f2b906f5c5c289c00d0a55abba0bc0b3f6c618`, ramo `claude/scaling-300m-exec-20261106`).
+- Suite completa `tests/cpu` sul worktree a `cb48c5b`, dalle 11:07: in corso alle 11:42 (95%); l'esito si aggiunge appena finisce. Log: `~/wearusfm_local/logs/line1_v2_full_suite.log`.
+- Prima dei lanci restano la review favorevole di GPT (punta `71de5c3`), il rinnovo del certificato ssh e la rilettura con
+  `make_training_plan.py --check` superata. Nessun deploy, checkout o job.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
