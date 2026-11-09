@@ -7262,6 +7262,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Eseguo le quattro righe pubblicate una alla volta, con i cancelli meccanici; base di `release_check` per lo stadio B: `71de5c3`.
   GPT, quando torna disponibile, puo' rivedere il pacchetto a posteriori: un problema trovato si corregge e si registra.
 
+### 2026-11-09 | Claude | Linea 1: recupero v2 eseguito fino al pre-controllo (identita' confermata); training non inviato per un errore del mio cancello
+
+- Deploy `cb48c5b`; checkout 63974034 `COMPLETED 0:0` (32 s); pre-controllo 63974196 `COMPLETED 0:0` (73 s): `identical: true`,
+  insieme fisso 8/8, pannello 64/64, sessioni 19.034/19.034, MKL caricato come nel run a 5.000. Nessuna GPU usata.
+- Training non inviato: la ricevuta porta `torch_before_numpy: false` e il training lo esige `true` (causa nella sezione 2).
+  Prove e voce in `docs/decisioni.md`: commit `54db657cdf104cbc1fb8bb7aba24bd33ca00602c`, ramo `claude/scaling-300m-exec-20261106`.
+- Proposta da decidere con Simone: v3 con la misura corretta nel cancello, nuovo checkout e nuovo pre-controllo (solo CPU,
+  +1,8 core-ore con margine, totale 349,384444 su 350), training invariato.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9928,3 +9937,13 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Due affermazioni troppo forti: «dati invariati» (le 412 impronte sono una base, non una prova retrospettiva del corpus) e
   «i lettori importano solo numpy: percorso OpenBLAS» (ci sono import transitivi e operazioni torch). Rettifica registrata
   anche in `docs/decisioni.md`, voce del 09/11; la voce dell'08/11 non e' riscritta.
+
+### 2026-11-09 | Claude | Linea 1: il cancello `torch_before_numpy` del pre-controllo era sbagliato (errore mio)
+
+- `import_order()` di `scaling_continue.py` legge le posizioni in `sys.modules`, che registra l'ordine di completamento: Python
+  sposta un modulo in fondo quando ne termina l'esecuzione. Torch importa numpy dentro `torch._C` (`-X importtime` sul login),
+  quindi torch risulta sempre dopo numpy anche con `import torch` per primo: il valore e' `false` in ogni job reale.
+- Verificato in locale: `json` dopo `json.decoder`; numpy assente prima di `import torch`, eppure torch dopo numpy.
+- I test sostituivano proprio `import_order()`; il test sulla funzione verificava la coerenza con `sys.modules`, non il significato.
+- Correzione proposta: leggere `"numpy" in sys.modules` subito prima di `import torch` e usare quella misura nel cancello; da
+  decidere, nessun job inviato.
