@@ -7020,3 +7020,14 @@ estensione scientifica, nuovi training, retry o pollingAI.
 - Test mirati: 369 passati (continuazione, cancelli, piani e lettura dello stadio B), piu' recupero, launcher e derivazione.
   Una rottura voluta del cancello nuovo fa fallire 6 test. Suite completa `tests/cpu` su `d3f431b` avviata: il training si
   invia solo con la suite verde.
+
+### 09/11/2026 — Claude, linea 1: suite completa sul v3 con un solo fallimento, di un test su uno stato transitorio; corretto
+
+- Suite completa `tests/cpu` sul worktree a `d3f431b`, 12:19-12:54: 3549 passati, 1 fallito, 1 avviso preesistente, 34 min 51 s.
+  Fallito `test_scaling_gates19618.py::test_checkouts_and_training_are_rows_of_the_same_table`: verificava che le cartelle delle
+  prove del v3 non esistessero ancora. Le ho raccolte alle 12:24 e 12:26, durante la suite, e il test e' arrivato verso le 12:40.
+  Il codice non c'entra.
+- Correzione, solo nel test: le due cartelle esistono e contengono soltanto i job v3, 63977208 e 63977268. Il file dei cancelli
+  e quello del recupero passano, 75 su 75. Il codice che gira sul cluster resta quello di `d3f431b`.
+- Base di `release_check` per lo stadio B: questo commit, cioe' la punta del pacchetto v3 `01997df` piu' le prove e questa sola
+  correzione di test. Simone, 09/11 alle 12:54: «se ha finto lancia tutto». Ora si invia il training v3.

@@ -638,8 +638,11 @@ def test_checkouts_and_training_are_rows_of_the_same_table():
     kept = {"checkout-training/training": "63695634", "checkout-training-v2/training": "63974034", "identity-precheck": "63974196"}
     assert all(json.loads((PACKAGE / "evidence" / folder / "accounting.json").read_text())["JobIDRaw"] == job_id
                for folder, job_id in kept.items())
-    assert S.evidence_dir("checkout-training") == PACKAGE / "evidence/checkout-training-v3" and not S.evidence_dir("checkout-training").exists()
-    assert S.evidence_dir("identity-precheck") == PACKAGE / "evidence/identity-precheck-v3" and not S.evidence_dir("identity-precheck").exists()
+    assert S.evidence_dir("checkout-training") == PACKAGE / "evidence/checkout-training-v3"
+    assert S.evidence_dir("identity-precheck") == PACKAGE / "evidence/identity-precheck-v3"
+    # Collected on 09/11, those folders hold the v3 jobs only (checkout 63977208, pre-check 63977268), never a v1 or v2 record.
+    collected = {S.evidence_dir("checkout-training") / "training": "63977208", S.evidence_dir("identity-precheck"): "63977268"}
+    assert {folder: json.loads((folder / "accounting.json").read_text())["JobIDRaw"] for folder in collected} == collected
     assert S.evidence_dir("training") == PACKAGE / "evidence/training"
     assert all(S.evidence_dir(stage) == PACKAGE / "evidence" / stage for stage in ("extractions", "probe-fit", "checkout-code"))
     assert [S.stage_table("checkout-" + name) for name in S.CHECKOUTS] == [[S.checkout_job(name)] for name in S.CHECKOUTS]
