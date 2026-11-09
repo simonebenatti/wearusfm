@@ -7210,6 +7210,29 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Nota: i miei script di valutazione importano numpy prima di torch e i lettori solo numpy (percorso OpenBLAS): differenze
   all'ultimo bit rispetto a estrazioni via launcher torch-first, rilevanti solo per identita' bit a bit (lettura mia).
 
+### 2026-11-09 | Claude | Linea 1: pacchetto di recupero v2 della continuazione 300M 5.000 -> 19.618; in review, inviluppo emendato da firmare, nessun lancio
+
+- Mandato: alla domanda «Procedo con il pacchetto v2, con un pre-controllo CPU dell'identita' prima del training?» Simone ha
+  risposto «Sì, prepara v2» (09/11 alle 09:07); poi ha inoltrato la review GPT `6f73209` con «gpt suggerisce questo anche».
+- Consegna sul ramo `claude/scaling-300m-exec-20261106`: commit di deploy `cb48c5b81b2fc4ef07b67b616345836e585c6d02` (codice, test, piano v2, letture,
+  inviluppo, rilettura) e commit `71de5c341b24327a833af202eec1d57994da1005` (righe d'invio, voce di `docs/decisioni.md`, nota in `evaluation_chain_plan.md`).
+- Contenuto: `scripts/scaling_continue.py` con torch per primo e il sottocomando `identity-precheck`, piu' il cancello che lo
+  esige in `run`; `scripts/slurm/scaling_identity_precheck.sbatch` (4 CPU, 24G, 20 min, 0 GPU); piano v2
+  `results/infra/scaling_300m_20261104/continuation19618_20261109_v2/training_plan.json` (`19441cd663db059840a36651d987d76d4154419258816058950590c1594b6fe0`); identita' unica
+  `RECOVERY` in `scripts/scaling_plans19618.py`; prove del nuovo checkout in `evidence/checkout-training-v2/`; legame
+  piano-ricevuta (`plan_sha256`, `execution_source_sha256`, ricevuta del pre-controllo, ID Slurm del job raccolto);
+  generatore `recovery_lines`; `budget_envelope.json` con il consuntivo e l'inviluppo emendato; `remote_read.sh` e
+  `make_training_plan.py --check` per la rilettura prima del deploy.
+- Punti 1-6 della review GPT recepiti; `release_check` invariato. Pre-controllo tenuto come approvato da Simone, e quindi
+  sottoposto a questa review (GPT: «un eventuale canary numerico nel processo effettivo è un miglioramento futuro, non una
+  condizione aggiuntiva di questo recupero»).
+- Inviluppo emendato, proposta da firmare: GPU-ore con margine 66,35 -> 66,731111; core-ore CPU senza GPU 345,166667 ->
+  347,584444 su 350; fase checkout 0,8 -> 1,066667; pre-controllo 1,533333 (voce nuova); core-ore nei job GPU 530,8 ->
+  533,848889. Il freeze v2 non cambia.
+- Stato: nessun deploy, checkout o job. Mancano la firma di Simone, la review di GPT e il rinnovo del certificato ssh, scaduto
+  il 09/11 mattina (niente rilettura fresca ne' `sacct -P` dei cinque job da attestare).
+- Test: mirati verdi (226 su recupero, launcher e continuazione; 5 del recupero; 7 del percorso completo del pre-controllo, che due rotture volute del wrapper fanno fallire); suite completa `tests/cpu` su `cb48c5b` avviata alle 11:07, esito in una voce successiva.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9864,3 +9887,15 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   Nessun effetto sui risultati scientifici (differenze all'ultimo bit), ma confronti bit a bit fra percorsi diversi non reggono.
 - **Correzione proposta**, non eseguita: `import torch` per primo nel wrapper, test statico sull'ordine di import; piano v2 e review
   unica di GPT prima di qualunque rilancio. Da valutare se fissare l'ordine anche negli script di valutazione o nei launcher.
+
+### 2026-11-09 | Claude | Linea 1: rettifica delle mie cifre dell'08/11 sull'ordine di import (segnalata da GPT, verificata)
+
+- GPT, review `6f73209`: le cifre del mio messaggio dell'08/11 vanno rettificate. Verificato su
+  `diag4_63864244/summary.json` (torch_first contro numpy_first, 1.204 array, 96 diversi).
+- Segnali: 42 array diversi; elementi diversi per array 1 in 27 array, 2 in 13, 3 in 1, 9 in 1 (avevo scritto «1-2 campioni
+  per finestra»). Massimo assoluto 4,77e-7, massimo relativo per elemento 3,03e-6 (avevo scritto 1,6e-7).
+- Ancore: 54 array, da 1 a 148 elementi diversi. Massimi assoluti `log_env` 3,9e-10, `log_rms` 3,2e-9, `band_shape` 1,4e-7,
+  `ms_fast` 1,8e-7, `ms_slow` 3,9e-7 (avevo scritto «fra 1e-16 e 1e-10» e «fino a 2e-7»).
+- Due affermazioni troppo forti: «dati invariati» (le 412 impronte sono una base, non una prova retrospettiva del corpus) e
+  «i lettori importano solo numpy: percorso OpenBLAS» (ci sono import transitivi e operazioni torch). Rettifica registrata
+  anche in `docs/decisioni.md`, voce del 09/11; la voce dell'08/11 non e' riscritta.
