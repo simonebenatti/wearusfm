@@ -7822,3 +7822,16 @@ S11-S12): «si tieni separati normali e amputati». La sintesi (`scripts/tempone
 senza EMA, modello `full`, accuratezze a 10 e 15 gradi, alpha, per seme e per DoA. **Descrittivo, nessun verdetto per gruppo:** la grandezza
 primaria e il criterio restano sui 12 soggetti, come la media di [Z21]; aggiunta fatta mentre il run 63988277 era in corso, dopo che nel log
 erano comparsi valori di test per modello, quindi non e' una regola fissata prima dei dati.
+
+### 2026-11-09 — Replica di TEMPONet su DB8: ESITO e CONSUNTIVO (Claude)
+
+**Esito secondo il criterio congelato: NON REPLICATA.** Run `TEMPONET-DB8-full-20261109` = 63988277 (codice 92bceb5), COMPLETED 0:0, 36 unita'
+su 36. MAE primaria 8,795 gradi (semi 8,754 / 8,877 / 8,755) contro 6,89 ± 0,30. Descrittivi: accuratezze 0,691 e 0,822 (pubblicate 0,814 e
+0,900), alpha 0,931 (0,862), `full` col seme 0 7,778, normodotati 8,680 e amputati 9,373. Dettagli e ipotesi in
+`docs/temponet_db8_replication.md`, sezione «Esito». Come stabilito, nessun nuovo run senza una diagnosi registrata; prossimi passi da decidere
+con Simone.
+
+**Consuntivo dell'attivita'** (tetto 5 GPU-ore e 40 core-ore): **2,907 GPU-ore** (collaudi 0,434: 63985852 8 min 15 s, 63986820 11 min 46 s
+annullato, 63987432 6 min 2 s; run 63988277 2 h 28 min 21 s), 23,25 ore locali con billing 8; job solo CPU 0,27 core-ore (sei checkout per 181 s
+su 1 CPU; cache 63985267 fallita in 52 s e 63985594 in 47 s, 8 CPU). Spazio: cache 5,0 GB su `$SCRATCH` (cancellazione a 40 giorni, rigenerabile;
+`cache_v1` parziale da non usare), risultati 56 MB su `$WORK`.

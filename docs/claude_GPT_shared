@@ -8516,6 +8516,16 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Descrittivo: nessun verdetto per gruppo, criterio sui 12 soggetti invariato (voce in `docs/decisioni.md`). La sintesi si rifa' sul Mac sui
   JSON del run 63988277 (in corso, 27 unita' su 36 alle 16:53); nessun deploy nuovo.
 
+### 2026-11-09 | Claude | Baseline TEMPONet: run completo concluso (63988277), esito NON REPLICATA secondo il criterio; consuntivo | Codice 92bceb5
+
+- `TEMPONET-DB8-full-20261109` = 63988277: COMPLETED 0:0 in 2 h 28 min 21 s (2,47 GPU-ore, MaxRSS 6,7 GB), 36 unita' su 36. Ricevute in
+  `results/temponet_db8/full_20261109/`; sintesi rifatta sul Mac con i gruppi, identica a quella del job sulle chiavi comuni.
+- MAE primaria 8,795 gradi contro 6,89 ± 0,30: **non replicata**. Semi 8,754 / 8,877 / 8,755; dev. std. soggetto x DoA 2,21 (pubblicata 2,08);
+  accuratezze 0,691 e 0,822 (0,814 e 0,900); alpha 0,931 (0,862). Descrittivi: `full` col seme 0 7,778, migliore della media dei fold in 12
+  soggetti su 12; fold2 8,389 e fold1 9,202; normodotati 8,680, amputati 9,373 (S11 7,53, S12 11,22).
+- Consuntivo: 2,907 GPU-ore (23,25 ore locali) e 0,27 core-ore di job solo CPU, dentro il tetto di 5 GPU-ore e 40 core-ore. Nessun job in coda.
+- Nessun nuovo run senza diagnosi registrata (regola della voce del criterio). Ipotesi nel documento della replica; decisione a Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12492,3 +12502,10 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
 - Il raw ufficiale `S5_E1_A1.mat` ha NaN nelle 18 colonne del guanto all'ultimo campione (indice 2.081.528 su 2.081.529); nessun altro valore
   non finito nei 36 file. Trattato scartando la coda (un campione), con regola e registrazione nel manifest; la lettura del codice degli autori
   (`pulp-bio/event-based-semg-regression`) non gestisce i NaN.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: replica non riuscita entro la tolleranza (8,80 contro 6,89 gradi)
+
+- La distanza e' sistematica (tre semi entro 0,12 gradi) e piu' grande della differenza fra i metodi del paper (SVM 7,28, LSTM 7,04). Il
+  modello su due sessioni (7,78) la riduce ma non la chiude. Causa non accertata: dettagli di training non dichiarati da COINS 2021 (passo
+  delle finestre, schedule del learning rate, normalizzazione del bersaglio, modello finale sulle sessioni unite). La via piu' economica per
+  chiarirli e' chiedere il setup agli autori; nessun rilancio fatto o previsto senza una decisione.

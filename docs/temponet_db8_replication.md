@@ -142,3 +142,46 @@ copiano sul Mac e si committano in `results/temponet_db8/`.
 
 Quantizzazione int8 e QAT con NeMO, deployment su GAP8, baseline SVM/MLP su Waveform Length, altri dataset (HYSER di [Z24]), uso della rete come
 baseline del FM sui benchmark del progetto.
+
+## Esito del run completo (09/11/2026, job 63988277)
+
+`TEMPONET-DB8-full-20261109` = 63988277, codice 92bceb5, COMPLETED 0:0 in 2 h 28 min 21 s (2,47 GPU-ore); 36 unita' su 36. Ricevute in
+`results/temponet_db8/full_20261109/` (`run.json`, `units/`, `summary.json` e `summary.md` con i gruppi, `summary_job.*` calcolata dal job,
+identica sulle chiavi comuni); modelli e predizioni restano in `$WORK/wearusfm_runs/temponet_db8/full_20261109` (56 MB).
+
+**Verdetto secondo il criterio congelato: non replicata.** MAE primaria **8,795 gradi** contro 6,89 (+1,905; limite 7,19).
+
+| Grandezza | Replica | [Z21] / [Z23] |
+|---|---|---|
+| MAE fold1/fold2, EMA, 3 semi (primaria) | **8,795** (semi 8,754 / 8,877 / 8,755, dev. std. 0,071) | **6,89** |
+| dev. std. sui 60 valori soggetto x DoA | 2,21 | 2,08 |
+| accuratezza a 10 e 15 gradi | 0,691 e 0,822 | 0,814 e 0,900 |
+| alpha dell'EMA | 0,931 ± 0,030 | 0,862 ± 0,044 |
+| senza EMA (fold) | 9,356 | - |
+| `full` (A1 + A2, seme 0, descrittivo) | 7,778 (senza EMA 8,241) | - |
+| fold1 (training su A1) e fold2 (su A2) | 9,202 e 8,389 | - |
+| riferimenti del paper | - | SVM 7,28; MLP 7,14; LSTM 7,04 |
+
+Per DoA (fold, EMA): rotazione del pollice 11,39; flessione del pollice 6,47; indice 8,29; medio 9,48; anulare+mignolo 8,34.
+
+Normodotati e amputati separati (richiesta di Simone del 09/11; descrittivo, nessun verdetto per gruppo):
+
+| Gruppo | Soggetti | fold con EMA | senza EMA | `full` | acc. 10 | acc. 15 | alpha |
+|---|---|---|---|---|---|---|---|
+| normodotati | S1-S10 | 8,680 | 9,213 | 7,611 | 0,695 | 0,826 | 0,927 |
+| amputati | S11-S12 | 9,373 | 10,069 | 8,613 | 0,671 | 0,803 | 0,952 |
+
+Fra gli amputati S11 e' fra i migliori (7,53) e S12 il peggiore di tutti (11,22). Per soggetto (media su fold e semi) i normodotati vanno da
+7,57 (S2) a 9,59 (S9).
+
+Letture descrittive, nessuna e' un criterio:
+
+- La distanza e' sistematica: tre semi entro 0,12 gradi, dispersione fra soggetti e DoA come quella pubblicata (2,21 contro 2,08).
+- Piu' dati per modello aiutano: `full` (due sessioni) e' migliore della media dei due fold in 12 soggetti su 12 col seme 0 (7,78 contro 8,75);
+  fold2, allenato sulla sessione che precede il test, e' migliore di fold1 (8,39 contro 9,20). Anche `full` resta fuori tolleranza.
+- Alpha piu' alto del pubblicato (0,93 contro 0,86): le uscite grezze sono piu' rumorose e l'EMA le liscia di piu'.
+
+Ipotesi sulla distanza (da verificare, nessuna e' accertata): dettagli di training non dichiarati da [Z21] (passo delle finestre di training,
+che nei collaudi conta attraverso il numero di passi di Adam; schedule del learning rate, «initial learning rate»; normalizzazione del
+bersaglio), modello finale allenato sulle due sessioni unite invece che per fold, differenze nella definizione del MAE o del tempo di test.
+Le letture dell'architettura sono vincolate dal conteggio esatto dei parametri e sono la causa meno probabile.
