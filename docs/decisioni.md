@@ -6965,3 +6965,14 @@ estensione scientifica, nuovi training, retry o pollingAI.
   pre-controllo) sono passati a parte: 5 e 7.
 - Prove: `results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/recovery-reread-20261109/`.
 - Delle condizioni dei lanci resta solo la review favorevole di GPT. Nessun deploy, checkout o job.
+
+### 09/11/2026 — Simone autorizza i lanci del recupero v2 della linea 1 senza la review di GPT
+
+- Simone, 09/11 alle 11:46, dopo la rilettura superata: «allora puoi lanciare, no need per la review di gpt, che ha finito i token».
+- Effetto: per il pacchetto di recupero v2 (commit di deploy `cb48c5b`, punta del pacchetto `71de5c3`) la review unica di GPT
+  della regola del 06/11 non e' richiesta. Claude esegue le quattro righe di `continuation19618_20261109_v2/training_submit_lines.txt`
+  una alla volta, con i cancelli meccanici scritti li': stop al primo esito diverso, nessun retry, nessuna dose oltre 19.618.
+- Per lo stadio B la base di `release_check` e' la punta `71de5c3`, il pacchetto approvato da Simone. Lo stadio B resta quello
+  rilasciato da GPT il 07/11 (`25d2c41`), con i soli collegamenti operativi del recupero.
+- Restano invariati: inviluppo firmato (`94f2b90`), rilettura e attestazione (`1f97319`). Quando GPT torna disponibile puo'
+  rivedere il pacchetto a posteriori; un problema trovato si corregge e si registra, senza riscrivere i risultati.
