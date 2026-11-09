@@ -16,6 +16,7 @@ Uso (GPU, `scripts/slurm/temponet_db8.sbatch`):
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -79,6 +80,12 @@ class Signal:
             offset += r.n_samples
         self.ends = torch.from_numpy(np.concatenate(ends)).to(device)
         self.offsets = torch.arange(-(window - 1), 1, device=device)
+
+    def with_targets(self, doa):
+        """Copia che condivide emg e finestre, con bersagli diversi (bersaglio standardizzato della variante V1)."""
+        new = copy.copy(self)
+        new.doa = doa
+        return new
 
     def batch(self, ends):
         idx = ends[:, None] + self.offsets[None, :]
@@ -205,10 +212,33 @@ def graph_check(sig: Signal, cfg: argparse.Namespace, device, steps: int = 60) -
     return out
 
 
+def denormalizer(net, mu, sd):
+    """Rete che restituisce gradi da una rete allenata sul bersaglio standardizzato: uscita * sd + mu (buffer salvati col modello)."""
+    from torch import nn
+
+    class Denorm(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.net = net
+            self.register_buffer("mu", mu.clone())
+            self.register_buffer("sd", sd.clone())
+
+        def forward(self, x):
+            return self.net(x) * self.sd + self.mu
+
+    return Denorm()
+
+
 def train(sig: Signal, val: Signal | None, cfg: argparse.Namespace, seed: int, device):
     import torch
 
     model, opt, loss_fn = build(cfg, seed, device)
+    eval_model = model
+    if getattr(cfg, "target_norm", False):  # V1: L1 sul bersaglio standardizzato con le statistiche delle finestre di training
+        y = sig.doa[sig.ends].double()
+        mu, sd = y.mean(dim=0).float(), y.std(dim=0).clamp_min(1e-6).float()
+        sig = sig.with_targets((sig.doa - mu) / sd)
+        eval_model = denormalizer(model, mu, sd)
     use_graph = device.type == "cuda" and not cfg.no_cuda_graph
     stepper = Stepper(model, opt, loss_fn, sig, cfg.batch, use_graph, device)
     gen = torch.Generator().manual_seed(seed)
@@ -229,13 +259,13 @@ def train(sig: Signal, val: Signal | None, cfg: argparse.Namespace, seed: int, d
             raise FloatingPointError(f"loss non finita all'epoca {epoch + 1}")
         row = {"epoch": epoch + 1, "train_l1_deg": train_loss, "steps": steps, "seconds": round(time.time() - t0, 2)}
         if val is not None:
-            vp, vt = predict(model, val)
+            vp, vt = predict(eval_model, val)
             row["val_mae_raw_deg"] = float(db8.mae_per_doa(vp, vt).mean())
         history.append(row)
         if cfg.log_epochs:
             print(f"  seme {seed} epoca {epoch + 1}: train L1 {train_loss:.3f}"
                   + (f", val {row['val_mae_raw_deg']:.3f}" if "val_mae_raw_deg" in row else "") + f", {row['seconds']:.1f} s", flush=True)
-    return model, history
+    return eval_model, history
 
 
 def run_unit(subject: int, seed: int, cfg: argparse.Namespace) -> dict:
@@ -295,8 +325,11 @@ def run_unit(subject: int, seed: int, cfg: argparse.Namespace) -> dict:
         target_path = out_dir / "predictions" / f"S{subject}_test_target.npy"
         if not target_path.exists():
             np.save(target_path, test_tgt.astype(np.float32))
-        print(f"S{subject} seme {seed} {name}: test MAE {entry['test_ema']['mae_deg']:.3f} (grezzo {entry['test_raw']['mae_deg']:.3f}), "
-              f"alpha medio {np.mean(alpha):.3f}, {entry['train_seconds']:.0f} s", flush=True)
+        if cfg.hide_test_in_log:  # screening del passo 2 della diagnosi: il test non si guarda prima del passo 3
+            shown = f"validazione MAE {entry['val_ema']['mae_deg']:.3f}" if "val_ema" in entry else "test nascosto"
+        else:
+            shown = f"test MAE {entry['test_ema']['mae_deg']:.3f} (grezzo {entry['test_raw']['mae_deg']:.3f})"
+        print(f"S{subject} seme {seed} {name}: {shown}, alpha medio {np.mean(alpha):.3f}, {entry['train_seconds']:.0f} s", flush=True)
     result["seconds"] = round(time.time() - t0, 1)
     result["device_name"] = torch.cuda.get_device_name(device) if device.type == "cuda" else "cpu"
     return result
@@ -336,6 +369,8 @@ def main(argv=None) -> int:
     ap.add_argument("--emg-unit", choices=sorted(EMG_UNIT_SCALE), default="uV",
                     help="unita' dell'ingresso: cambio di scala costante, non una normalizzazione (vedi il documento)")
     ap.add_argument("--symmetric-padding", action="store_true", help="padding simmetrico come Q-PPG invece che causale")
+    ap.add_argument("--target-norm", action="store_true", help="V1: L1 sul bersaglio standardizzato per DoA (statistiche di training)")
+    ap.add_argument("--hide-test-in-log", action="store_true", help="nel log la validazione al posto del test (screening)")
     ap.add_argument("--max-steps-per-epoch", type=int, default=0, help="solo collaudo: tetto ai passi per epoca")
     ap.add_argument("--workers", type=int, default=1, help="processi in parallelo; sulla stessa GPU senza MPS si alternano (time-slicing)")
     ap.add_argument("--no-cuda-graph", action="store_true", help="passo di training in eager anche su GPU")

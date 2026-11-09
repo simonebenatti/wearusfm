@@ -18,12 +18,16 @@
 #   completo: 12 soggetti x semi 0, 1, 2 (full solo col seme 0), 19 epoche, passo di training 8, un processo, poi la sintesi;
 #     3 ore (al massimo 3 GPU-ore; emendamento del 09/11 in docs/decisioni.md)
 #     sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_db8.sbatch full <cache> <uscite> [cudnn]
+#   screening (passo 2 della diagnosi, docs/temponet_db8_diagnosis_plan.md): V1, V3, V13 su fold1/fold2, seme 0, passo di training 8;
+#     solo validazione nel log e nella sintesi; 2 ore e 30 (al massimo 2,5 GPU-ore)
+#     sbatch --time=02:30:00 --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_db8.sbatch screen <cache> <uscite> benchmark
 #   [cudnn]: deterministic (predefinito), default o benchmark; vedi scripts/temponet_db8_profile.py
 # Le uscite vanno in una cartella NUOVA fuori dal codice; nessun riavvio automatico, nessun nuovo tentativo.
 set -uo pipefail
-MODE="${1:?smoke o full}"; CACHE="${2:?cartella della cache}"; OUT="${3:?cartella delle uscite}"; CUDNN="${4:-deterministic}"
+MODE="${1:?smoke, full o screen}"; CACHE="${2:?cartella della cache}"; OUT="${3:?cartella delle uscite}"; CUDNN="${4:-deterministic}"
 case "$CUDNN" in deterministic|default|benchmark) ;; *) echo "modo cuDNN: deterministic, default o benchmark"; exit 2;; esac
-case "$MODE" in smoke) EXPECTED_TIME=00:30:00;; full) EXPECTED_TIME=03:00:00;; *) echo "modo: smoke o full"; exit 2;; esac
+case "$MODE" in smoke) EXPECTED_TIME=00:30:00;; full) EXPECTED_TIME=03:00:00;; screen) EXPECTED_TIME=02:30:00;;
+  *) echo "modo: smoke, full o screen"; exit 2;; esac
 for P in "$CACHE" "$OUT"; do case "$P" in /*) ;; *) echo "percorso relativo rifiutato: $P"; exit 2;; esac; done
 case "$OUT" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*|\
 "$WORK/wearusfm_campaigns"/*|/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/*|"$SCRATCH/data/raw"/*) echo "uscite dentro il codice o nel raw: rifiutato"; exit 2;; esac
@@ -54,6 +58,13 @@ if [ "$MODE" = smoke ]; then
   python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT/step4" --emg-unit uV --cudnn-mode "$CUDNN" --subjects 1 --seeds 0 \
     --epochs 19 --train-step 4 \
     --models fold1 --workers 1 || exit 1
+elif [ "$MODE" = screen ]; then
+  COMMON=(--cache "$CACHE" --emg-unit uV --cudnn-mode "$CUDNN" --seeds 0 --models fold1 fold2 --train-step 8 --hide-test-in-log --log-epochs
+    --workers 1)
+  python3 scripts/temponet_db8.py "${COMMON[@]}" --out "$OUT/V1" --target-norm || exit 1
+  python3 scripts/temponet_db8.py "${COMMON[@]}" --out "$OUT/V3" --symmetric-padding || exit 1
+  python3 scripts/temponet_db8.py "${COMMON[@]}" --out "$OUT/V13" --target-norm --symmetric-padding || exit 1
+  python3 scripts/temponet_db8_screen.py "$OUT" || exit 1
 else
   python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --emg-unit uV --cudnn-mode "$CUDNN" --seeds 0 1 2 --workers 1 \
     --train-step 8 --full-seeds 0 --log-epochs --time-budget-s 9600 \

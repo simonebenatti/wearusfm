@@ -13,6 +13,7 @@ sys.path.insert(0, str(REPO / "scripts"))
 import temponet_db8  # noqa: E402
 import temponet_db8_cache  # noqa: E402
 import temponet_db8_summary  # noqa: E402
+import temponet_db8_screen  # noqa: E402
 
 
 def _raw_root(tmp_path, subjects=(1,), n=3000):
@@ -137,6 +138,72 @@ def test_stepper_eager_matches_a_plain_training_loop(cache):
     for a, b in zip(m1.state_dict().values(), m2.state_dict().values()):
         assert torch.equal(a, b)
     assert st.take_total() == pytest.approx(total) and st.take_total() == 0.0
+
+
+def test_target_norm_trains_on_standardized_targets_and_predicts_degrees(cache, tmp_path, capsys):
+    import torch
+
+    from wearusfm.harness import db8_regression as db8
+
+    out = tmp_path / "run_tn"
+    assert temponet_db8.main(["--cache", str(cache), "--out", str(out), "--subjects", "1", "--seeds", "0", "--epochs", "1",
+                              "--batch", "16", "--workers", "1", "--device", "cpu", "--models", "fold1", "fold2",
+                              "--target-norm", "--hide-test-in-log"]) == 0
+    log = capsys.readouterr().out
+    assert "validazione MAE" in log and "test MAE" not in log
+    sd = torch.load(out / "models" / "S1_seed0_fold1.pt")
+    rec = db8.load_cached(cache, 1, 1)
+    y = rec.doa[db8.window_ends(rec.n_samples)].astype(np.float64)
+    np.testing.assert_allclose(sd["mu"].numpy(), y.mean(axis=0), rtol=1e-4)
+    np.testing.assert_allclose(sd["sd"].numpy(), y.std(axis=0, ddof=1), rtol=1e-3)
+    unit = json.loads((out / "units" / "S1_seed0.json").read_text())
+    assert set(unit["models"]) == {"fold1", "fold2"} and np.isfinite(unit["models"]["fold2"]["val_ema"]["mae_deg"])
+    run = json.loads((out / "run.json").read_text())
+    assert run["args"]["target_norm"] and run["args"]["hide_test_in_log"]
+
+
+def test_with_targets_shares_signal_and_denormalizer():
+    import torch
+
+    from wearusfm.harness import db8_regression as db8
+
+    rec = db8.Recording(np.zeros((600, 16), np.float32), np.arange(3000, dtype=np.float32).reshape(600, 5), "x")
+    sig = temponet_db8.Signal([rec], torch.device("cpu"), 1.0, 256, 32)
+    other = sig.with_targets(sig.doa * 0)
+    assert other.emg is sig.emg and other.ends is sig.ends and float(other.doa.abs().sum()) == 0 and float(sig.doa.sum()) > 0
+    net = torch.nn.Linear(2, 2, bias=False)
+    torch.nn.init.eye_(net.weight)
+    den = temponet_db8.denormalizer(net, torch.tensor([10.0, -5.0]), torch.tensor([2.0, 3.0]))
+    assert torch.allclose(den(torch.tensor([[1.0, 1.0]])), torch.tensor([[12.0, -2.0]]))
+    assert set(den.state_dict()) == {"net.weight", "mu", "sd"}
+
+
+def _val_unit(subject, val):
+    return {"subject": subject, "seed": 0, "models": {f: {"val_ema": {"mae_deg": val}} for f in ("fold1", "fold2")}}
+
+
+@pytest.mark.parametrize("vals,choice", [
+    ({"V1": 9.5, "V3": 9.8, "V13": 9.6}, "V1"),
+    ({"V1": 9.8, "V3": 9.75, "V13": 9.9}, "V0"),
+    ({"V1": 9.706, "V3": 9.9, "V13": 9.9}, "V1"),
+])
+def test_screen_choice_rule(tmp_path, vals, choice):
+    for v, val in vals.items():
+        (tmp_path / v / "units").mkdir(parents=True)
+        for s in range(1, 13):
+            (tmp_path / v / "units" / f"S{s}_seed0.json").write_text(json.dumps(_val_unit(s, val)))
+    assert temponet_db8_screen.main([str(tmp_path)]) == 0
+    s = json.loads((tmp_path / "screen.json").read_text())
+    assert s["choice"] == choice and s["v0_val_mae_deg"] == 9.906
+
+
+def test_screen_incomplete_makes_no_choice(tmp_path):
+    for v in ("V1", "V3", "V13"):
+        (tmp_path / v / "units").mkdir(parents=True)
+        for s in range(1, 12):  # manca S12
+            (tmp_path / v / "units" / f"S{s}_seed0.json").write_text(json.dumps(_val_unit(s, 9.0)))
+    assert temponet_db8_screen.main([str(tmp_path)]) == 0
+    assert json.loads((tmp_path / "screen.json").read_text())["choice"] is None
 
 
 def _unit(subject, seed, fold_mae, full_mae=7.0):
