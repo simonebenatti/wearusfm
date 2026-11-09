@@ -1,0 +1,79 @@
+=== date inizio
+2026-11-06 17:40:47 CET
+=== job LQ in attesa (sola lettura)
+JobId=63593128
+QOS=normal
+JobState=PENDING
+Reason=PartitionConfig
+Dependency=(null)
+TimeLimit=04:00:00
+SubmitTime=2026-11-05T15:18:42
+EligibleTime=2026-11-05T16:38:00
+StartTime=Unknown
+Partition=boost_usr_prod
+ReqNodeList=(null)
+ExcNodeList=(null)
+NumNodes=1
+NumCPUs=32
+ReqTRES=cpu=32,mem=480G,node=1,billing=32,gres/gpu=4
+MinMemoryNode=480G
+Features=(null)
+TresPerNode=gres/gpu:4
+=== job training 5000
+JobID|JobName|Partition|QOS|State|ExitCode|Elapsed|Timelimit|Submit|Start|End|ReqTRES|AllocTRES|NodeList
+63532932|SCALING-300M-train5000-20261104|boost_usr_prod|normal|COMPLETED|0:0|04:06:01|05:30:00|2026-11-04T21:34:49|2026-11-05T07:16:12|2026-11-05T11:22:13|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1|lrdn1310
+=== dimensione di un checkout di campagna
+92M	/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_scientific5000_20261104_v1
+=== sha256 run 300M a 5000
+37279995d0d484e241b032eb9b6b23a31c16a5947a0e2cf0c575da0cb70641aa  checkpoint.pt
+37279995d0d484e241b032eb9b6b23a31c16a5947a0e2cf0c575da0cb70641aa  checkpoint_step0005000.pt
+9ce530a0f847f4c8d3291968c186be51dafbc11acf1d68a5d1fdf31655d0f4a3  config.json
+ad51fd7036e964cfdb42ee1925f071f8119361695872c9951be9b32948818208  fixed_eval.jsonl
+af2f7cb1f54449af22a8bac8566c3736117ab15699474cc8b9609babfa028af5  fixed_eval_set.json
+06873e1d800409fd02c592b5d151c0e83c32b00c1ed0c2d5c75248c4333d693c  metrics.jsonl
+aa837c099d43b4e52bba68b31aabc4e0d40a385c7291dffd2a0ebee600e4dc9d  origin_sessions.json
+c762ebf4b643bef8f45631b01b5d2a9c4b0c4f0786d5cdded53de49e1263a08b  pose_panel.jsonl
+7b21e1c079111a11685dcc46a4606cca5110619fbab854a2f69f51153741c018  pose_panel_set.json
+0463d2b9ac3cc49abf1667e91ff9594581dc623997a8318b1b9a457c8a03322e  pose_provenance.json
+8ca3a46da40b04ed8ff9b8100078bfd7110aca6bb2ddc92e17d6bee534bb4ef0  summary.json
+=== sha256 ricevute 5000
+6120b82627160df67fc5ef7b7a9760d5f2def03175dd7e9677213c20ee2b76e0  config.json
+f1521ce7464bb7e43ef5e1f1ae31e20db226c4464284c824e566b39058bd23e9  launch.json
+0ac5fe8130da2759113fe14af33c7326c42a20d2e7df5426da96ba9e7f415aa8  receipt.json
+f0975c4de0f810b0b5782984e699b50c41c1c67ad930aa9dd0bd650979182af9  summary.json
+=== sha256 controllo 30M
+a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056  checkpoint_step0019618.pt
+a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056  checkpoint.pt
+2f7a2899214273275e45be99317650206db4f85951d62f070788abfbde60b265  config.json
+46f89b1414385d246d32f0f4c0b6c04e62294de72d9fc07a9a69a8158d1a3eea  summary.json
+af2f7cb1f54449af22a8bac8566c3736117ab15699474cc8b9609babfa028af5  fixed_eval_set.json
+7b21e1c079111a11685dcc46a4606cca5110619fbab854a2f69f51153741c018  pose_panel_set.json
+aa837c099d43b4e52bba68b31aabc4e0d40a385c7291dffd2a0ebee600e4dc9d  origin_sessions.json
+=== sha256 cache controllo 19618
+951198bd5c62e02e9ba224f698bb3cbeb2b9eac9d144a653e809010d85e37cab  pose/train_subset.npz
+33b619b567dd35e905db14a89b179b3ee5cde5a8daf9b050fe65be5737869b2a  pose/train_subset.npz.provenance.json
+af0810f0f5c181d88e57861ff92d927ad4b0527de666f64157e5136f94457152  pose/val.npz
+c1bb472068d25720182d43a21d3929d25d05b08093b52d44403ed77ae2549435  pose/val.npz.provenance.json
+bc02048ba49c575860209860712d3488152c70a4bee81dddc1935341bde83057  pose/receipt.json
+d9ef65ccfbdc4fcdd381ca60a052f4e66d0206de181e89e70532853499e32c57  p1/ninapro_db2.npz
+9b31c642b31a47e2f47eb2c221c0efd8de507ae075397bbe05d919acdec92691  p1/ninapro_db2.npz.provenance.json
+e853c11cccb007ba7dae8e1c011f55a599421cd3a1cc386601dcca76836f895e  p1/ninapro_db3.npz
+3259e083fa97f639e1924df1769161eb36f48f7149cedb15f322af530c5840b1  p1/ninapro_db3.npz.provenance.json
+6d8524e99d91c7da292ffbc31f0f5faf3fd9e511cf7a4ce02a1d0ac93f47be52  p1/ninapro_db6.npz
+e1a0e23f167a48922259d129b8427b89aaef6913d71dd54d4f4e23e4776a4d83  p1/ninapro_db6.npz.provenance.json
+9fb776049e9fe0c7c065c56ffad2d6078e792c4c4438497090dbb82328f21631  p1/receipt.json
+ea9cb4289982d3d536e590c75b8e9638a703bfe25ef63d50b744ef30bb66e699  p2/epn612.npz
+7eadcfcc10ba1b34d8c554c9ac0b768fd5a337371cedbbc1b15cea7e1aa1fff8  p2/epn612.npz.provenance.json
+97ac45717cf75991d631c243c12db7cf12428dcb1f5141d90376370ca20c8a46  p2/uci_emg.npz
+de913e25633006e759a38e62c9aae9b379bc7866343eb61b77ca651e5d543f98  p2/uci_emg.npz.provenance.json
+1bcca82e3a232a1442e6cce02b46c5d833c4157371015fa7780ece9c1da6b315  p2/receipt.json
+=== sha256 riferimenti posa
+c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23  train_subset.npz
+2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904  val.npz
+=== sha256 ingressi del training
+6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec  /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz
+76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486  /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json
+e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0  /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json
+757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e  /leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json
+=== date fine
+2026-11-06 17:41:15 CET

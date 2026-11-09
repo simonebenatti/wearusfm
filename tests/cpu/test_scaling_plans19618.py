@@ -12,6 +12,7 @@ import hashlib
 import importlib.util
 import itertools
 import json
+import shutil
 from pathlib import Path
 import shlex
 import stat
@@ -77,7 +78,8 @@ def old_extraction(arm=ARM):
 
 def test_job_tables_are_the_allocations_of_the_budget_freeze():
     freeze = load("continuation19618_budget_freeze_20261105_v2.json")
-    assert sha(ROOT / S.FREEZE) == load("continuation19618_20261106/training_plan.json")["budget_freeze"]["sha256"]
+    assert sha(ROOT / S.FREEZE) == load("continuation19618_20261109_v2/training_plan.json")["budget_freeze"]["sha256"]
+    assert sha(ROOT / S.FREEZE) == load("continuation19618_20261106/training_plan.json")["budget_freeze"]["sha256"]  # same freeze
     stages = freeze["readers"]["stages"]
     extractions = S.jobs("extractions")
     assert [(j["flags"], j["seconds"], j["gpus"], j["cpus"], j["memory"]) for j in extractions] == [
@@ -376,7 +378,8 @@ def test_pose_budget_stops_before_the_fit_on_any_failed_gate(change, message):
 # 19618 documents: real control evidence, candidate fixtures re-labelled from the real 5000 files
 
 NEW_CHECKPOINT = "9" * 64
-TRAINING = load("continuation19618_20261106/training_plan.json")
+TRAINING = load("continuation19618_20261109_v2/training_plan.json")  # the recovery plan (v2); v1 failed at resume (63696864)
+TRAINING_SHA = sha(ROOT / S.RECOVERY["plan"])
 
 
 def training_files():
@@ -389,7 +392,10 @@ def training_files():
                "config_file_sha256": files["config"]["sha256"], "start_step": 5000, "additional_steps": 14618,
                "scientific_endpoint": True, "previous_run_unchanged": True, "further_training_authorized": False,
                "control_checkpoint_sha256": S.E.CONTROL_CHECKPOINT_SHA256, "code_sha": CODE,
-               "training_source_contract_sha256": TRAINING["source_contract"]["sha256"]}
+               "training_source_contract_sha256": TRAINING["source_contract"]["sha256"],
+               "plan_sha256": TRAINING_SHA, "execution_source_sha256": dict(TRAINING["execution_source_sha256"]), "slurm_job_id": "500",
+               "identity_precheck": {"receipt": TRAINING["identity_precheck"]["receipt_dir"] + "/identity_precheck.json",
+                                     "sha256": "3" * 64, "slurm_job_id": "499"}}
     files["receipt"] = S.pin(out + "/receipt.json", body(receipt))
     return files, receipt, {"stopped": "max_steps", "steps": 19618}
 
@@ -399,7 +405,7 @@ def new_extraction_plan(change=None):
     training = copy.deepcopy(TRAINING)
     if change:
         change(files, receipt, summary, training)
-    return S.extraction_plan(load("extraction_plan_5000_20261105.json"), training, files, receipt, summary)
+    return S.extraction_plan(load("extraction_plan_5000_20261105.json"), training, files, receipt, summary, TRAINING_SHA)
 
 
 def test_extraction_plan_pins_only_the_certified_300m_endpoint_and_keeps_the_reviewed_inputs():
@@ -438,12 +444,22 @@ def test_extraction_plan_pins_only_the_certified_300m_endpoint_and_keeps_the_rev
     (lambda f, r, s, t: f["checkpoint"].update(path=f["checkpoint"]["path"].replace("-from5000", "")), "not the planned one"),
     (lambda f, r, s, t: f["checkpoint"].pop("bytes"), "not the planned one"),
     (lambda f, r, s, t: f.pop("summary"), "exactly the four"),
-    (lambda f, r, s, t: t["control"]["checkpoint"].update(sha256="8" * 64), "control/contract differs")])
+    (lambda f, r, s, t: t["control"]["checkpoint"].update(sha256="8" * 64), "control/contract differs"),
+    # The receipt of another plan or attempt: the hashes are checked, not only the paths (the failed v1 above all).
+    (lambda f, r, s, t: r.update(plan_sha256=sha(PACKAGE / "training_plan.json")), "receipt differs: plan_sha256"),
+    (lambda f, r, s, t: r.pop("plan_sha256"), "receipt differs: plan_sha256"),
+    (lambda f, r, s, t: r["execution_source_sha256"].update({"scripts/scaling_continue.py": load(
+        "continuation19618_20261106/training_plan.json")["execution_source_sha256"]["scripts/scaling_continue.py"]}),
+     "receipt differs: execution_source_sha256"),
+    (lambda f, r, s, t: r.pop("identity_precheck"), "receipt differs: identity_precheck"),
+    (lambda f, r, s, t: r["identity_precheck"].update(receipt=TRAINING["receipt_dir"] + "/identity_precheck.json"),
+     "receipt differs: identity_precheck"),
+    (lambda f, r, s, t: r["identity_precheck"].update(sha256="x"), "receipt differs: identity_precheck")])
 def test_extraction_plan_needs_the_completed_exact_continuation(change, message):
     with pytest.raises(ValueError, match=message):
         new_extraction_plan(change)
     with pytest.raises(ValueError, match="reviewed 5000 extraction plan"):
-        S.extraction_plan(new_extraction_plan(), TRAINING, *training_files())
+        S.extraction_plan(new_extraction_plan(), TRAINING, *training_files(), TRAINING_SHA)
 
 
 def relabel(text, old_plan_sha, plan_sha):
@@ -809,14 +825,15 @@ def test_checkout_lines_publish_a_deploy_reference_and_one_cpu_checkout():
                           f"--export=ALL,CAMPAIGN={campaign},CAMPAIGN_SHA={CODE},EXPECTED_SHA={CODE}", "/dev/stdin"]
         assert "main" not in push and "--force" not in push and "+" not in push
     assert len(set(S.CHECKOUTS.values())) == 4 and all("19618" in c and c.endswith("_v1") for c in S.CHECKOUTS.values())
-    assert not set(S.CHECKOUTS.values()) & {"scaling_300m_continuation19618_20261106_v1", "scaling_300m_evaluation_20261105_v1"}
+    assert not set(S.CHECKOUTS.values()) & {"scaling_300m_continuation19618_20261106_v1", S.RECOVERY["campaign"],
+                                            "scaling_300m_evaluation_20261105_v1"}
     with pytest.raises(ValueError, match="full commit SHA"):
         S.checkout_lines("code", "deadbeef")
 
 
 def test_documents_are_built_once_from_collected_evidence_on_disk(tmp_path, monkeypatch):
     """Command-line path of the first two builders, on a scratch root with collected evidence."""
-    for relative in (S.INFRA + "/extraction_plan_5000_20261105.json", S.PACKAGE + "/training_plan.json",
+    for relative in (S.INFRA + "/extraction_plan_5000_20261105.json", S.RECOVERY["plan"],
                      S.INFRA + "/cpu_readers_20261105/pose_plan.json", S.INFRA + "/cpu_readers_20261105/probe_plan.json",
                      "results/infra/tokenizer_evaluation_20261103/pose_readout_plan_19618.json",
                      "results/infra/tokenizer_evaluation_20261103/probe_plan_19618.json",
@@ -837,9 +854,24 @@ def test_documents_are_built_once_from_collected_evidence_on_disk(tmp_path, monk
     for found in reading["files"]:
         if found["path"] == files["checkpoint"]["path"]:
             found.update(sha256=NEW_CHECKPOINT)
-    manifest = S.collect("training", [job], {job["id"]: "500"}, reading, tmp_path / S.PACKAGE / "evidence" / "training")
+    manifest = S.collect("training", [job], {job["id"]: "500"}, reading, S.evidence_dir("training", tmp_path))
     assert manifest["files"]["checkpoint_step0019618.pt"]["stored"] == "pin-only" and manifest["jobs"][job["id"]]["gpu_hours"] == 33 * 4 / 3600
     assert manifest["files"]["slurm_log.txt"]["path"] == S.LOGS + "/scaling_continue_500.out"
+    # Evidence of another job under the recovery stage (the failed v1 ID, or another Slurm job than the receipt's) is refused.
+    other = tmp_path / "other"
+    for relative in (S.INFRA + "/extraction_plan_5000_20261105.json", S.RECOVERY["plan"]):
+        (other / relative).parent.mkdir(parents=True, exist_ok=True)
+        (other / relative).write_bytes((ROOT / relative).read_bytes())
+    for change in (lambda c: c.update(jobs={"SCALING-300M-train19618-20261106": c["jobs"][job["id"]]}),
+                   lambda c: c["jobs"][job["id"]].update(job_slurm="63696864")):
+        shutil.rmtree(S.evidence_dir("training", other), ignore_errors=True)
+        shutil.copytree(S.evidence_dir("training", tmp_path), S.evidence_dir("training", other))
+        rewritten = json.loads((S.evidence_dir("training", other) / "collection.json").read_text())
+        change(rewritten)
+        (S.evidence_dir("training", other) / "collection.json").write_text(json.dumps(rewritten))
+        with pytest.raises(ValueError, match="not the recovery job"):
+            S.build_extraction_plan(other)
+    assert not (other / S.PACKAGE / S.DOCUMENTS["extraction_plan"][1]).exists()
     S.build_extraction_plan(tmp_path)
     plan = tmp_path / S.PACKAGE / S.DOCUMENTS["extraction_plan"][1]
     assert json.loads(plan.read_text())["checkpoints"][ARM]["sha256"] == NEW_CHECKPOINT

@@ -9,6 +9,11 @@ source contract; the recipe differs only in --out-dir and --max-steps, plus the
 operational time limit. Student, teacher, AdamW moments, per-rank RNG, data stream
 position and the original 49046/1962 schedule are restored by the unchanged trainer.
 This is orchestration: not a new trainer and not a submitter.
+
+v2 (09/11/2026, after the FAILED resume of job 63696864): `import torch` comes first, as in `torchrun scripts/train_jepa.py`
+(the import order decides whether numpy binds MKL or its own OpenBLAS, hence the last bits of the fixed diagnostic sets), and
+the GPU job is gated by `identity-precheck`: a CPU job on the frozen checkout recomputes the three identity files of the 5000
+run on the worker's own import path and must find them byte-identical before any GPU hour is spent.
 """
 from __future__ import annotations
 
@@ -19,9 +24,11 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import platform
 import shutil
 import subprocess
 import sys
+import time
 
 import torch  # noqa: F401  # FIRST, before numpy/wearusfm, like `torchrun scripts/train_jepa.py` (the 5000 run): `import torch`
 # publishes MKL globally (libtorch_global_deps, RTLD_GLOBAL) and MKL also exports the `64_`-suffixed BLAS/LAPACK symbols that
@@ -45,13 +52,16 @@ T, P, CLI, require = M.T, M.P, M.CLI, M.require
 torch = T.torch
 PROTOCOL = "scaling-continuation-training-20261106-v1"
 RANK_PROTOCOL = "scaling-continuation-rank-20261106-v1"
+IDENTITY_PROTOCOL = "scaling-continuation-identity-precheck-20261109-v1"
+PRECHECK_ALLOCATION = {"partition": "lrd_all_serial", "cpus": 4, "memory": "24G", "walltime_seconds": 1200}
+PRECHECK_RECEIPT = "identity_precheck.json"
 FREEZE_PROTOCOL = "scaling-continuation19618-budget-freeze-20261105-v2"
 ARM = M.ARM
 START, END = 5000, 19618
 PARAMETERS = 292054847
 MARKER = "CONTINUATION.json"
 EXECUTION_SOURCES = {"scripts/scaling_continue.py", "scripts/scaling_train.py", "scripts/scaling_preflight.py",
-                     "scripts/slurm/scaling_continue.sbatch"}
+                     "scripts/slurm/scaling_continue.sbatch", "scripts/slurm/scaling_identity_precheck.sbatch"}
 IDENTITY_FILES = ("fixed_eval_set.json", "pose_panel_set.json", "origin_sessions.json")
 SEED_FILES = ("checkpoint.pt",) + IDENTITY_FILES
 PREVIOUS_FILES = {"checkpoint.pt", "checkpoint_step0005000.pt", "config.json", "fixed_eval.jsonl", "metrics.jsonl",
@@ -157,11 +167,15 @@ def validate_plan(plan, context):
         M.pin_schema(pin)
         require(Path(pin["path"]).is_absolute(), "control caches require absolute paths")
     M.parse_utc(control["required_until_utc"])
-    paths = [Path(plan.get(name, "")) for name in ("run_dir", "receipt_dir")]
+    precheck = plan.get("identity_precheck")
+    require(isinstance(precheck, dict) and set(precheck) == {"protocol", "receipt_dir", "allocation"} and
+            precheck["protocol"] == IDENTITY_PROTOCOL and precheck["allocation"] == PRECHECK_ALLOCATION and
+            isinstance(precheck["receipt_dir"], str), "missing or wrong identity pre-check gate (v2)")
+    paths = [Path(plan.get(name, "")) for name in ("run_dir", "receipt_dir")] + [Path(precheck["receipt_dir"])]
     old = Path(previous["run_dir"])
-    require(all(path.is_absolute() for path in (*paths, old)) and paths[0] != paths[1] and
-            not any(a == b or a.is_relative_to(b) or b.is_relative_to(a) for a in paths for b in (old,)),
-            "new absolute run and receipt directories, distinct from the 5000 run, are required")
+    require(all(path.is_absolute() for path in (*paths, old)) and len(set(paths)) == len(paths) and
+            not any(a.is_relative_to(b) or b.is_relative_to(a) for i, a in enumerate(paths) for j, b in enumerate((*paths, old)) if i != j),
+            "new absolute run, receipt and pre-check directories, distinct from each other and from the 5000 run, are required")
     return derive_recipe(context, plan["run_dir"])
 
 
@@ -398,6 +412,167 @@ def verify_outputs(plan, run_dir, out, cfg, signature, before, code, job, plan_s
             "memory": check_rank_records(out, summary, plan, code, job, plan_sha)}
 
 
+def precheck_argv(argv, out_dir):
+    """The plan's trainer argv for one CPU process without DDP: the identity sets depend on data, recipe and numerics, not on
+    device, workers or process group (diagnosis jobs 63861825 and 63864244 of 08/11/2026)."""
+    argv = [a for a in argv if a != "--distributed"]
+    require("--out-dir" in argv, "missing output directory")
+    for flag, value in (("--out-dir", str(out_dir)), ("--num-workers", "0"), ("--device", "cpu")):
+        require(argv.count(flag) <= 1, "duplicate argument: " + flag)
+        if flag in argv:
+            argv[argv.index(flag) + 1] = value
+        else:
+            argv += [flag, value]  # the 5000 command leaves --device to its default (cuda where available)
+    return argv
+
+
+def identity_sets(cfg, manifest, roots, scales, window_s):
+    """What rank 0 of the unchanged trainer computes and checks before the first update (training/run.train), without the model:
+    the fixed diagnostic set, the pose panel and the session list, keyed by the identity files they are checked against."""
+    index = R.load_index(manifest, roots, cfg.datasets, cfg.nested)
+    if cfg.nested is not None:
+        R.check_derived_binding(index.params, cfg, window_s)
+    scales = dict(scales or {})
+    out = {}
+    if cfg.fixed_eval_every:
+        out["fixed_eval_set.json"] = R._fixed_eval_set(index, cfg, scales, window_s)[1]
+    if cfg.pose_panel_every:
+        out["pose_panel_set.json"] = R._pose_panel_set(index, cfg, scales, window_s)[1]
+    if cfg.log_batch_origin:
+        out["origin_sessions.json"] = [R._session_key(r) for r in index.rows]
+    return out
+
+
+def compare_identity(expected, computed):
+    """The trainer's own test (run._write_or_check: the JSON on disk against the object) plus where the two differ."""
+    report = {"equal": expected == computed}
+    if isinstance(expected, dict) and isinstance(computed, dict):
+        report["keys_differing"] = sorted(k for k in set(expected) | set(computed) if expected.get(k) != computed.get(k))
+        for key in ("batch_sha256", "windows"):
+            if isinstance(expected.get(key), list) and isinstance(computed.get(key), list):
+                report[key + "_equal"] = [sum(a == b for a, b in zip(expected[key], computed[key])), len(expected[key]), len(computed[key])]
+    elif isinstance(expected, list) and isinstance(computed, list):
+        report["length"] = [len(expected), len(computed)]
+        report["first_difference"] = next((i for i, (a, b) in enumerate(zip(expected, computed)) if a != b), None)
+    return report
+
+
+def import_order():
+    modules = list(sys.modules)
+    position = {name: modules.index(name) if name in modules else None for name in ("torch", "numpy", "scipy")}
+    return {"torch_before_numpy": position["torch"] is not None and position["numpy"] is not None and position["torch"] < position["numpy"],
+            "positions": position}
+
+
+def numeric_libraries():
+    """BLAS/LAPACK/MKL/OpenMP libraries mapped in this process (Linux only): the one numpy bound decides the last bits."""
+    maps = Path("/proc/self/maps")
+    if not maps.exists():
+        return None
+    names = set()
+    for line in maps.read_text().splitlines():
+        parts = line.split()
+        base = os.path.basename(parts[-1]) if len(parts) >= 6 else ""
+        if any(key in base.lower() for key in ("mkl", "blas", "lapack", "libomp", "libgomp")):
+            names.add(base)
+    return sorted(names)
+
+
+def check_precheck_fields(fields, plan):
+    expected = plan["identity_precheck"]["allocation"]
+    require(fields.get("Partition") == expected["partition"] and str(fields.get("Account", "")).lower() == plan["allocation"]["account"] and
+            fields.get("NumNodes") == "1" and fields.get("NumCPUs") == str(expected["cpus"]) and
+            M.slurm_seconds(fields.get("TimeLimit")) == expected["walltime_seconds"], "actual pre-check allocation differs from plan")
+    tres = dict(part.split("=", 1) for part in fields.get("AllocTRES", "").split(",") if "=" in part)
+    require(tres.get("cpu") == str(expected["cpus"]) and tres.get("node") == "1" and "gres/gpu" not in tres and
+            tres.get("mem") in (expected["memory"], "%dM" % (int(expected["memory"].rstrip("G")) * 1024)),
+            "actual pre-check resources differ from plan")
+
+
+def verify_precheck_allocation(plan):
+    job = os.environ.get("SLURM_JOB_ID", "")
+    require(job.isdigit() and int(job) > 0, "identity pre-check requires a real SLURM allocation")
+    raw = subprocess.check_output(["scontrol", "show", "job", "-o", job], text=True)
+    fields = dict(part.split("=", 1) for part in raw.split() if "=" in part)
+    require(fields.get("JobId") == job and fields.get("JobState") == "RUNNING", "wrong or nonrunning SLURM allocation")
+    check_precheck_fields(fields, plan)
+    return job
+
+
+def identity_precheck(plan_path, expected_code, out):
+    """CPU gate before the GPU job: on the frozen checkout and on the worker's import path, the three identity files of the 5000
+    run are recomputed through the unchanged CLI (train replaced after argument parsing and configuration) and must be identical."""
+    code, plan_state, plan, contract_state, context, previous_cfg, cfg, argv = load(plan_path, expected_code)
+    job = verify_precheck_allocation(plan)
+    out, previous = Path(out), plan["previous"]
+    require(out.is_absolute() and str(out) == plan["identity_precheck"]["receipt_dir"], "wrong pre-check directory")
+    require(not out.exists() and not out.is_symlink() and not any(out.resolve().is_relative_to(root) for root in CODE_ROOTS),
+            "new output outside code required; no overwrite")
+    states = dict(context["states"])
+    states["execution_plan"] = plan_state
+    for path, sha in plan["execution_source_sha256"].items():
+        states["execution_source:" + path] = M.resolve_pin({"path": str(M._contained_source(path, ROOT)), "sha256": sha})
+    inputs = context["contract"]["inputs"]
+    for name, pin in inputs.items():
+        states["input:" + name] = M.resolve_pin(pin)
+    R.check_input_files(Path(inputs["manifest"]["path"]), Path(inputs["windows"]["path"]), cfg.nested, inputs["manifest"]["sha256"])
+    old_dir, expected = Path(previous["run_dir"]), {}
+    require(old_dir.is_dir() and not old_dir.is_symlink(), "missing 5000 run directory")
+    for name in IDENTITY_FILES:
+        states["previous:" + name] = M.resolve_pin({"path": str(old_dir / name), **previous["files"][name]})
+        expected[name] = json.loads(Path(states["previous:" + name]["path"]).read_text())
+    require(CLI.R is R, "the trainer CLI must share this process's training module")
+    out.mkdir(parents=True, exist_ok=False)
+    computed, timing, call = {}, {}, {}
+
+    def capture(cfg_cli, manifest, roots, out_dir, *, scales=None, window_s=None, **options):
+        require(R.config_to_dict(cfg_cli) == R.config_to_dict(cfg) and Path(out_dir) == out / "trainer_out",
+                "CLI configuration differs from the plan recipe")
+        call.update(device=options.get("device"), num_workers=options.get("num_workers"), distributed=options.get("dist") is not None)
+        started = time.perf_counter()
+        computed.update(identity_sets(cfg_cli, manifest, roots, scales, window_s))
+        timing["identity_seconds"] = round(time.perf_counter() - started, 1)
+        return {"identity_precheck": True}
+
+    cli = precheck_argv(argv, out / "trainer_out")
+    original, R.train = R.train, capture
+    try:
+        require(CLI.main(cli[1:]) == 0, "trainer CLI failed")
+    finally:
+        R.train = original
+    require(set(computed) == set(IDENTITY_FILES), "identity sets not computed: " + str(sorted(set(IDENTITY_FILES) - set(computed))))
+    comparison = {name: compare_identity(expected[name], computed[name]) for name in IDENTITY_FILES}
+    identical = all(report["equal"] for report in comparison.values())
+    P.check_unchanged(states)
+    receipt = {"protocol": IDENTITY_PROTOCOL, "arm": ARM, "start_step": START, "end_step": END, "identical": identical,
+               "code_sha": code, "plan_sha256": plan_state["sha256"], "slurm_job_id": job, "node": platform.node(),
+               "previous_run_dir": str(old_dir),
+               "previous_identity_sha256": {name: previous["files"][name]["sha256"] for name in IDENTITY_FILES},
+               "comparison": comparison, "trainer_argv": argv, "precheck_argv": cli, "cli_call": call, "import_order": import_order(),
+               "numeric_libraries": numeric_libraries(),
+               "versions": {"python": platform.python_version(), "numpy": R.np.__version__, "torch": torch.__version__},
+               "threads": {key: os.environ.get(key) for key in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")},
+               "denormals_flushed": bool((R.np.array([1e-40], dtype=R.np.float32) * R.np.float32(1.0))[0] == 0.0),
+               "timing_seconds": timing, "training_source_contract_sha256": contract_state["sha256"], "verified_inputs": states}
+    P.write_json(out / PRECHECK_RECEIPT, receipt)
+    require(identical, "identity sets differ from the 5000 run: the GPU job must not be submitted")
+    return receipt
+
+
+def check_identity_precheck(plan, code, plan_state, states):
+    """The GPU job runs only after a passed pre-check of this very plan and code, on the worker's import order."""
+    path = Path(plan["identity_precheck"]["receipt_dir"]) / PRECHECK_RECEIPT
+    require(path.is_file() and not path.is_symlink(), "identity pre-check receipt missing: " + str(path))
+    states["identity_precheck"] = P.file_identity(path)
+    receipt = json.loads(path.read_text())
+    require(receipt.get("protocol") == IDENTITY_PROTOCOL and receipt.get("identical") is True and receipt.get("code_sha") == code and
+            receipt.get("plan_sha256") == plan_state["sha256"] and receipt.get("import_order", {}).get("torch_before_numpy") is True and
+            receipt.get("previous_identity_sha256") == {name: plan["previous"]["files"][name]["sha256"] for name in IDENTITY_FILES} and
+            str(receipt.get("slurm_job_id", "")).isdigit(), "identity pre-check of this plan and code not passed")
+    return {"receipt": str(path), "sha256": states["identity_precheck"]["sha256"], "slurm_job_id": receipt["slurm_job_id"],
+            "node": receipt.get("node"), "comparison": receipt.get("comparison")}
+
+
 def load(plan_path, expected_code):
     code = P.code_identity(expected_code)
     plan_state = P.file_identity(plan_path)
@@ -445,6 +620,7 @@ def execute(plan_path, expected_code, out):
                 "new output outside code required; no overwrite")
     states = dict(context["states"])
     states["execution_plan"] = plan_state
+    precheck = check_identity_precheck(plan, code, plan_state, states)  # v2 gate: passed on this plan and code, torch first
     for path, sha in plan["execution_source_sha256"].items():
         states["execution_source:" + path] = M.resolve_pin({"path": str(M._contained_source(path, ROOT)), "sha256": sha})
     check_budget_freeze(plan, states)
@@ -479,7 +655,7 @@ def execute(plan_path, expected_code, out):
     P.write_json(run_dir / MARKER, {**identity, "previous_run_dir": str(old_dir), "seeded_files": seeded,
                                     "previous_trained_state_sha256": old_resume["trained_state_sha256"]})
     P.write_json(out / "launch.json", {**identity, "trainer_argv": argv, "seeded_files": seeded, "control": control,
-        "previous_trained_state_sha256": old_resume["trained_state_sha256"],
+        "identity_precheck": precheck, "previous_trained_state_sha256": old_resume["trained_state_sha256"],
         "previous_optimizer": {k: v for k, v in before.items() if k != "adam_steps"}, "verified_inputs": states})
     command = [sys.executable, "-m", "torch.distributed.run", "--standalone", "--nproc_per_node=4",
                str(ROOT / "scripts/scaling_continue.py"), "worker", "--plan", plan_state["path"],
@@ -505,7 +681,7 @@ def execute(plan_path, expected_code, out):
                    scientific_source_sha256=context["contract"]["scientific_source_sha256"],
                    execution_source_sha256=plan["execution_source_sha256"], reference_code_sha=M.BASE_CODE_SHA,
                    control_checkpoint_sha256=plan["control"]["checkpoint"]["sha256"], control=control,
-                   budget_freeze_sha256=plan["budget_freeze"]["sha256"], optimizer=evidence["optimizer"],
+                   budget_freeze_sha256=plan["budget_freeze"]["sha256"], identity_precheck=precheck, optimizer=evidence["optimizer"],
                    tranche=evidence["tranche"], memory=evidence["memory"], previous_run_unchanged=True,
                    scientific_endpoint=True, automatic_continuation=False, further_training_authorized=False)
     P.write_json(out / "receipt.json", receipt)
@@ -517,11 +693,12 @@ def main(argv=None):
     commands = parser.add_subparsers(dest="mode", required=True)
     offline = commands.add_parser("check-plan", help="local plan, source and recipe checks only; never launches")
     offline.add_argument("--plan", type=Path, required=True)
-    for name in ("run", "worker"):
+    for name in ("run", "worker", "identity-precheck"):
         command = commands.add_parser(name)
         command.add_argument("--plan", type=Path, required=True)
         command.add_argument("--expected-code-sha", required=True)
-    commands.choices["run"].add_argument("--out", type=Path, required=True)
+    for name in ("run", "identity-precheck"):
+        commands.choices[name].add_argument("--out", type=Path, required=True)
     commands.choices["worker"].add_argument("--launch-sha256", required=True)
     args = parser.parse_args(argv)
     if args.mode == "check-plan":
@@ -538,6 +715,8 @@ def main(argv=None):
                           "trainer_argv": trainer_argv}, indent=2))
     elif args.mode == "run":
         execute(args.plan, args.expected_code_sha, args.out)
+    elif args.mode == "identity-precheck":
+        identity_precheck(args.plan, args.expected_code_sha, args.out)
     else:
         worker(args.plan, args.expected_code_sha, args.launch_sha256)
     return 0

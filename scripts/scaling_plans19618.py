@@ -43,6 +43,12 @@ GATE_PROTOCOL = "scaling-gate-19618-20261106-v1"
 WORK, SCRATCH = "/leonardo_work/IscrB_WearUsFM", "/leonardo_scratch/large/userexternal/sbenatti"
 INFRA = "results/infra/scaling_300m_20261104"
 PACKAGE = INFRA + "/continuation19618_20261106"
+# Recovery attempt of the 5000 -> 19618 training (v2, 09/11/2026): the single source of its identity in this chain. The v1
+# attempt (plan PACKAGE/training_plan.json, checkout 63695634, training 63696864 FAILED at resume on 08/11) keeps its files.
+RECOVERY = {"plan": INFRA + "/continuation19618_20261109_v2/training_plan.json",
+            "campaign": "scaling_300m_continuation19618_20261109_v2", "checkout": "SCALING-300M-cont19618-checkout-20261109-v2",
+            "precheck": "SCALING-300M-cont19618-idcheck-20261109-v2", "training": "SCALING-300M-train19618-20261109-v2"}
+EVIDENCE_DIRS = {"checkout-training": "checkout-training-v2"}  # PACKAGE/evidence/checkout-training: the v1 checkout (63695634)
 FREEZE = INFRA + "/continuation19618_budget_freeze_20261105_v2.json"
 CAMPAIGN = "scaling-300m-20261104"
 CHECKOUTS = {"code": "scaling_300m_evaluation19618_20261106_v1", "plans": "scaling_300m_plans19618_20261106_v1",
@@ -128,9 +134,10 @@ def clock(seconds):
 # ---------------------------------------------------------------------------------------------
 # Plans
 
-def extraction_plan(previous, training, files, receipt, summary):
-    """previous: reviewed 5,000 extraction plan. training: training_plan.json of the continuation.
-    files: remote pins of the completed checkpoint, config, receipt and summary; receipt and summary: content."""
+def extraction_plan(previous, training, files, receipt, summary, training_sha256):
+    """previous: reviewed 5,000 extraction plan. training: training_plan.json of the continuation, training_sha256 the hash of
+    its bytes. files: remote pins of the completed checkpoint, config, receipt and summary; receipt and summary: content.
+    The receipt must name this plan and its execution sources (hashes, not only paths) and the identity pre-check it passed."""
     require(previous.get("protocol") == "scaling-evaluation-20261104-v1" and previous.get("step") == 5000 and
             previous.get("arms") == list(ARMS), "not the reviewed 5000 extraction plan")
     run, out = training["run_dir"], training["receipt_dir"]
@@ -146,9 +153,15 @@ def extraction_plan(previous, training, files, receipt, summary):
               "start_step": E.START, "additional_steps": STEP - E.START, "scientific_endpoint": True,
               "previous_run_unchanged": True, "further_training_authorized": False,
               "control_checkpoint_sha256": E.CONTROL_CHECKPOINT_SHA256,
-              "training_source_contract_sha256": previous["training_source_contract"]["sha256"]}
+              "training_source_contract_sha256": previous["training_source_contract"]["sha256"],
+              "plan_sha256": training_sha256, "execution_source_sha256": training["execution_source_sha256"]}
+    require(ST.digest(training_sha256), "hash of the training plan required")
     for key, value in wanted.items():
         require(receipt.get(key) == value and type(receipt.get(key)) is type(value), "training receipt differs: " + key)
+    precheck = receipt.get("identity_precheck")
+    require(isinstance(precheck, dict) and ST.digest(precheck.get("sha256", "")) and
+            precheck.get("receipt") == training["identity_precheck"]["receipt_dir"] + "/identity_precheck.json",
+            "training receipt differs: identity_precheck")
     require(training["control"]["checkpoint"]["sha256"] == E.CONTROL_CHECKPOINT_SHA256 and
             training["source_contract"]["sha256"] == previous["training_source_contract"]["sha256"],
             "training plan control/contract differs")
@@ -596,17 +609,26 @@ def training_job(training):
     """The reviewed training job as a row of the same table: nine receipts, the endpoint hashed and not copied."""
     out, name, allocation = training["receipt_dir"], f"checkpoint_step{STEP:07d}.pt", training["allocation"]
     names = ["config.json", "launch.json", *(f"rank_{n}.json" for n in range(4)), "receipt.json", "summary.json", "training.log"]
-    return _job("training", "SCALING-300M-train19618-20261106", allocation["cpus"], allocation["walltime_seconds"], out, "",
+    return _job("training", RECOVERY["training"], allocation["cpus"], allocation["walltime_seconds"], out, "",
                 files={n: f"{out}/{n}" for n in names}, gpus=allocation["gpus"], memory=allocation["memory"],
                 pinned={name: f"{training['run_dir']}/{name}"}, exact=names, log="scaling_continue")
 
 
+def precheck_job(training):
+    """The CPU identity pre-check of the recovery plan (0 GPU): one receipt, required by the training job of the same plan and
+    code (`scaling_continue.py identity-precheck`); collected as its own stage before the training is submitted."""
+    gate = training["identity_precheck"]
+    out, allocation = gate["receipt_dir"], gate["allocation"]
+    return _job("identity-precheck", RECOVERY["precheck"], allocation["cpus"], allocation["walltime_seconds"], out, "",
+                files={"identity_precheck.json": out + "/identity_precheck.json"}, memory=allocation["memory"],
+                exact=["identity_precheck.json"], log="scaling_identity_precheck")
+
+
 def checkout_job(name):
-    """name: one of CHECKOUTS, or "training" for the checkout already published with the training stage."""
+    """name: one of CHECKOUTS, or "training" for the frozen checkout of the recovery attempt (v2) of the training."""
     if name == "training":
-        return _job("checkout", "SCALING-300M-cont19618-checkout-20261106", 2, 300,
-                    f"{WORK}/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1", name, files={}, memory="4G",
-                    log="campaign_checkout")
+        return _job("checkout", RECOVERY["checkout"], 2, 300, f"{WORK}/wearusfm_campaigns/{RECOVERY['campaign']}", name,
+                    files={}, memory="4G", log="campaign_checkout")
     return _job("checkout", f"SCALING-19618-{name}-checkout-20261106", CHECKOUT["cpus"], CHECKOUT["seconds"], checkout(name), name,
                 files={}, memory="%dG" % CHECKOUT["memory_gib"], log="campaign_checkout")
 
@@ -675,7 +697,9 @@ def jobs(stage, resources=None):
 def stage_table(stage, root=ROOT):
     """Table of any collectable stage, from the published documents of this repository."""
     if stage == "training":
-        return [training_job(_load(PACKAGE + "/training_plan.json", root))]
+        return [training_job(_load(RECOVERY["plan"], root))]
+    if stage == "identity-precheck":
+        return [precheck_job(_load(RECOVERY["plan"], root))]
     if stage.startswith("checkout-"):
         return [checkout_job(stage[len("checkout-"):])]
     resources = None
@@ -700,6 +724,25 @@ def checkout_lines(name, commit):
              f"--export=ALL,CAMPAIGN={campaign},CAMPAIGN_SHA={commit},EXPECTED_SHA={commit}", "/dev/stdin"]
     return [shlex.join(["git", "-C", MAC, "push", "leonardo", f"{commit}:refs/heads/deploy/{campaign}"]),
             _submit(job["id"], 0, flags, stdin=MAC + "/scripts/slurm/campaign_checkout.sbatch")]
+
+
+def recovery_lines(commit, root=ROOT):
+    """Submission lines of the recovery attempt, in order, from its plan and its identity: deploy reference (never main), frozen
+    checkout, identity pre-check (CPU, 0 GPU) and training (one segment, the frozen 59 GPU-hour cap). Sent one at a time, each
+    only after the previous one ended as expected and was read; no afterok chain, no retry."""
+    require(ST.digest(commit, 40), "full commit SHA required")
+    plan, campaign = _load(RECOVERY["plan"], root), RECOVERY["campaign"]
+    code, checkout, precheck, training = f"{WORK}/wearusfm_campaigns/{campaign}", checkout_job("training"), precheck_job(plan), training_job(plan)
+    export = f"--export=ALL,CODE_DIR={code},EXPECTED_SHA={commit}"
+    return [shlex.join(["git", "-C", MAC, "push", "leonardo", f"{commit}:refs/heads/deploy/{campaign}"]),
+            _submit(checkout["id"], 0, [f"--cpus-per-task={checkout['cpus']}", f"--mem={checkout['memory']}",
+                                        f"--time={clock(checkout['seconds'])}",
+                                        f"--export=ALL,CAMPAIGN={campaign},CAMPAIGN_SHA={commit},EXPECTED_SHA={commit}", "/dev/stdin"],
+                    stdin=MAC + "/scripts/slurm/campaign_checkout.sbatch"),
+            _submit(precheck["id"], 0, [export, code + "/scripts/slurm/scaling_identity_precheck.sbatch", RECOVERY["plan"],
+                                        precheck["out"]]),
+            _submit(training["id"], training["gpus"] * training["seconds"] / 3600,
+                    [export, code + "/scripts/slurm/scaling_continue.sbatch", RECOVERY["plan"], training["out"]])]
 
 
 def stage_lines(stage, code_sha, root=ROOT, only=None):
@@ -889,9 +932,14 @@ def collect(stage, table, slurm_ids, reading, directory):
     return manifest
 
 
+def evidence_dir(stage, root=ROOT):
+    """Folder of the collected evidence of a stage; the recovery checkout has its own, the v1 one keeps its record."""
+    return Path(root) / PACKAGE / "evidence" / EVIDENCE_DIRS.get(stage, stage)
+
+
 def evidence(stage, root=ROOT):
     """Collected files of a stage as {name: (original bytes or None, remote pin)}, checked against the manifest."""
-    directory = Path(root) / PACKAGE / "evidence" / stage
+    directory = evidence_dir(stage, root)
     manifest, out = json.loads((directory / "collection.json").read_text()), {}
     for name, entry in manifest["files"].items():
         if entry["stored"] == "absent":
@@ -907,7 +955,7 @@ def evidence(stage, root=ROOT):
 
 def accounting_pin(stage, local, root=ROOT):
     """The accounting JSON is distributed by the budgets checkout: remote path there, local bytes here."""
-    relative = f"{PACKAGE}/evidence/{stage}/{local + '/' if local else ''}accounting.json"
+    relative = f"{PACKAGE}/evidence/{EVIDENCE_DIRS.get(stage, stage)}/{local + '/' if local else ''}accounting.json"
     data = (Path(root) / relative).read_bytes()
     return json.loads(data), pin(f"{checkout('budgets')}/{relative}", data)
 
@@ -995,7 +1043,8 @@ def _completed(answer, slurm):
 def _collected_checkout(name, ledger, root):
     """The checkout job was collected after COMPLETED 0:0: its accounting is among the evidence with its Slurm ID."""
     try:
-        record = _load(f"{PACKAGE}/evidence/checkout-{name}/{name}/accounting.json", root)
+        stage = "checkout-" + name
+        record = _load(f"{PACKAGE}/evidence/{EVIDENCE_DIRS.get(stage, stage)}/{name}/accounting.json", root)
         return (record.get("JobIDRaw") == ledger_job(checkout_job(name)["id"], ledger) and record.get("State") == "COMPLETED" and
                 record.get("ExitCode") == "0:0")
     except (OSError, ValueError):
@@ -1082,12 +1131,16 @@ def _extraction(root=ROOT):
 
 
 def build_extraction_plan(root=ROOT):
-    files, _ = evidence("training", root)
-    training = _load(PACKAGE + "/training_plan.json", root)
+    files, manifest = evidence("training", root)
+    data = (Path(root) / RECOVERY["plan"]).read_bytes()
+    training, receipt = json.loads(data), json.loads(files["receipt.json"][0])
+    require(list(manifest["jobs"]) == [RECOVERY["training"]] and
+            str(receipt.get("slurm_job_id")) == manifest["jobs"][RECOVERY["training"]]["job_slurm"],
+            "the collected training is not the recovery job")
     pins = {name: files[key][1] for name, key in (("checkpoint", f"checkpoint_step{STEP:07d}.pt"), ("config", "config.json"),
                                                   ("receipt", "receipt.json"), ("summary", "summary.json"))}
-    plan = extraction_plan(_load(INFRA + "/extraction_plan_5000_20261105.json", root), training, pins,
-                           json.loads(files["receipt.json"][0]), json.loads(files["summary.json"][0]))
+    plan = extraction_plan(_load(INFRA + "/extraction_plan_5000_20261105.json", root), training, pins, receipt,
+                           json.loads(files["summary.json"][0]), digest(data))
     _write(DOCUMENTS["extraction_plan"][1], dumps(plan), root)
 
 
@@ -1105,7 +1158,7 @@ def build_reader_plans(code_sha, root=ROOT):
     control_dir = Path(root) / PACKAGE / "control19618_identity"
     control = control_probe_caches(_load("results/infra/tokenizer_evaluation_20261103/probe_plan_19618.json", root),
                                    {ds: (control_dir / f"{ds}.npz.provenance.json").read_bytes() for ds in DATASETS},
-                                   _load(PACKAGE + "/training_plan.json", root)["control"]["checkpoint"])
+                                   _load(RECOVERY["plan"], root)["control"]["checkpoint"])
     reviewed = INFRA + "/cpu_readers_20261105/"
     _write(DOCUMENTS["pose_plan"][1], dumps(pose_plan(
         _load(reviewed + "pose_plan.json", root),
@@ -1172,7 +1225,7 @@ def run_collect(stage, root=ROOT):
                           [log_path(job, slurm_ids[job["id"]]) for job in table], slurm_ids.values(),
                           hashed=[path for job in table for path in job["pinned"].values()],
                           listings=[job["folder"] for job in table])
-    manifest = collect(stage, table, slurm_ids, reading, Path(root) / PACKAGE / "evidence" / stage)
+    manifest = collect(stage, table, slurm_ids, reading, evidence_dir(stage, root))
     print(json.dumps({"collected": stage, "jobs": manifest["jobs"], "files": len(manifest["files"])}, indent=1))
 
 
@@ -1272,6 +1325,7 @@ def main(argv=None):
     for name in ("extraction-plan", "reader-plans", "budgets", "comparison-inputs", "budget-table"):
         sub.add_parser(name)
     sub.add_parser("collect").add_argument("stage")
+    sub.add_parser("recovery-lines").add_argument("--sha", required=True, help="commit to deploy (code and recovery plan)")
     for name in ("gate", "lines"):
         command = sub.add_parser(name)
         command.add_argument("stage", help="a job stage, or checkout-<code|plans|budgets|inputs>")
@@ -1291,6 +1345,8 @@ def main(argv=None):
         build_comparison_inputs(checkout_commit("code"))
     elif args.command == "collect":
         run_collect(args.stage)
+    elif args.command == "recovery-lines":
+        print("\n".join(recovery_lines(args.sha)))
     elif args.command == "gate":
         return run_gate(args.stage, args.sha, args.reviewed, ROOT, LEDGER, args.line_limit)
     elif args.command == "lines":

@@ -14,6 +14,7 @@ import importlib.util
 import itertools
 import json
 from pathlib import Path
+import shutil
 import stat
 import subprocess
 import sys
@@ -219,8 +220,22 @@ def test_endpoint_written_by_the_training_wrapper_is_the_one_accepted_by_the_ext
              "summary": out / "summary.json"}
     files = {name: S.pin(str(path), path.read_bytes()) for name, path in paths.items()}
     receipt, summary = json.loads(paths["receipt"].read_text()), json.loads(paths["summary"].read_text())
-    built = S.extraction_plan(load("extraction_plan_5000_20261105.json"), training, files, receipt, summary)
+    built = S.extraction_plan(load("extraction_plan_5000_20261105.json"), training, files, receipt, summary, sha(plan_path))
     endpoint = built["checkpoints"][ARM]
+    # The receipt names the plan that ran (hash), its execution sources and the identity pre-check that admitted the job:
+    # the plan, the sources or the pre-check of another attempt (the failed v1 above all) are refused, not only other paths.
+    assert receipt["plan_sha256"] == sha(plan_path) and receipt["execution_source_sha256"] == training["execution_source_sha256"]
+    assert receipt["identity_precheck"]["receipt"] == training["identity_precheck"]["receipt_dir"] + "/identity_precheck.json"
+    v1 = json.loads((PACKAGE / "training_plan.json").read_text())
+    for plan_doc, plan_sha, message in ((training, sha(PACKAGE / "training_plan.json"), "receipt differs: plan_sha256"),
+                                        ({**training, "execution_source_sha256": v1["execution_source_sha256"]}, sha(plan_path),
+                                         "receipt differs: execution_source_sha256"),
+                                        ({**training, "identity_precheck": {**training["identity_precheck"],
+                                                                            "receipt_dir": training["receipt_dir"] + "_v1"}},
+                                         sha(plan_path), "receipt differs: identity_precheck"),
+                                        (v1, sha(PACKAGE / "training_plan.json"), "not the planned one")):
+        with pytest.raises(ValueError, match=message):
+            S.extraction_plan(load("extraction_plan_5000_20261105.json"), plan_doc, files, receipt, summary, plan_sha)
     assert endpoint["sha256"] == receipt["checkpoint_sha256"] == sha(paths["checkpoint"]) and receipt["protocol"] == S.E.TRAIN_PROTOCOL
 
     # The extractor reads those four files: configuration, summary and receipt pass, up to the load of the weights.
@@ -348,12 +363,22 @@ def test_lane_reads_the_shared_serial_queue_and_the_project_quota():
 
 
 def test_checkout_commit_comes_from_the_receipt_of_the_common_ledger(tmp_path):
-    receipt = PACKAGE / "submissions/SCALING-300M-cont19618-checkout-20261106.json"  # real submission of 06/11
+    receipt = PACKAGE / "submissions/SCALING-300M-cont19618-checkout-20261106.json"  # real submission of 06/11 (failed v1 attempt)
     target = tmp_path / "SCALING-300M-cont19618-checkout-20261106"
     target.mkdir()
     (target / "state.json").write_bytes(receipt.read_bytes())
-    assert S.checkout_commit("training", tmp_path) == "73524b63be534f81b3db4ade4b7fc7f47129a0f3"
     assert S.ledger_job("SCALING-300M-cont19618-checkout-20261106", tmp_path) == "63695634"
+    with pytest.raises(OSError):  # the v1 checkout (73524b6, job 63695634) is not the training checkout of the recovery
+        S.checkout_commit("training", tmp_path)
+    recovery = S.RECOVERY
+    ledger_entry(tmp_path, recovery["checkout"], 900, ["sbatch", f"--export=ALL,CAMPAIGN={recovery['campaign']},CAMPAIGN_SHA={CODE},"
+                                                       f"EXPECTED_SHA={CODE}", "/dev/stdin"])
+    assert S.checkout_commit("training", tmp_path) == CODE
+    shutil.rmtree(tmp_path / recovery["checkout"])
+    ledger_entry(tmp_path, recovery["checkout"], 901, ["sbatch", "--export=ALL,CAMPAIGN=scaling_300m_continuation19618_20261106_v1,"
+                                                       f"CAMPAIGN_SHA={CODE},EXPECTED_SHA={CODE}", "/dev/stdin"])
+    with pytest.raises(ValueError, match="unexpected checkout submission"):  # the v1 checkout folder under the recovery ID
+        S.checkout_commit("training", tmp_path)
     ledger_entry(tmp_path, S.checkout_job("plans")["id"], 1, ["sbatch", export("code", CODE)])
     with pytest.raises(ValueError, match="unexpected checkout submission"):  # the reference of another checkout
         S.checkout_commit("plans", tmp_path)
@@ -372,6 +397,7 @@ def test_later_checkouts_only_add_documents_to_the_reviewed_package(chain):
         S.release_check(reviewed, changed, repo)
     for files, message in (({"tests/cpu/test_new.py": b"\n"}, "A\ttests/cpu/test_new.py"),
                            ({S.PACKAGE + "/training_plan.json": b"{}\n"}, "training_plan.json"),
+                           ({S.RECOVERY["plan"]: b"{}\n"}, "continuation19618_20261109_v2/training_plan.json"),
                            ({S.SHARED["splits"]: b"{}\n"}, "M\tsplits/v1/splits_v1.json")):
         git(repo, "checkout", "-q", "-B", "side", documents)
         with pytest.raises(ValueError, match=message):
@@ -381,6 +407,12 @@ def test_later_checkouts_only_add_documents_to_the_reviewed_package(chain):
     plan = S.PACKAGE + "/" + S.DOCUMENTS["pose_plan"][1]
     rewritten = commit(repo, {plan: b"{}\n"}, "side")
     assert S.release_check(reviewed, rewritten, repo) == 7 and S.release_check(code, documents, repo, "an earlier checkout") == 5
+    # Submissions and evidence of the recovery attempt go where the chain already admits additions; the allowlist is unchanged.
+    git(repo, "checkout", "-q", "-B", "side", documents)
+    attempt = commit(repo, {f"{S.PACKAGE}/submissions/{S.RECOVERY['precheck']}.json": b"{}\n",
+                            str(S.evidence_dir("identity-precheck", "")) + "/identity_precheck.json": b"{}\n",
+                            str(S.evidence_dir("checkout-training", "")) + "/training/accounting.json": b"{}\n"}, "attempt")
+    assert S.release_check(reviewed, attempt, repo) == 10
     with pytest.raises(ValueError, match="after an earlier checkout: M\t" + plan):
         S.release_check(documents, rewritten, repo, "an earlier checkout")
     with pytest.raises(ValueError, match="does not descend from the review"):
@@ -584,14 +616,28 @@ def test_collection_of_fits_pins_the_predictions_copies_reports_and_checks_the_f
 
 
 def test_checkouts_and_training_are_rows_of_the_same_table():
-    training = S.checkout_job("training")
+    training = S.checkout_job("training")  # the frozen checkout of the recovery attempt (v2), not the v1 one
     assert (training["id"], training["cpus"], training["seconds"], training["log"]) == (
-        "SCALING-300M-cont19618-checkout-20261106", 2, 300, "campaign_checkout")
-    assert training["out"] == S.WORK + "/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1"
+        "SCALING-300M-cont19618-checkout-20261109-v2", 2, 300, "campaign_checkout")
+    assert training["out"] == S.WORK + "/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2"
+    plan = json.loads((ROOT / S.RECOVERY["plan"]).read_text())
+    precheck, job = S.precheck_job(plan), S.training_job(plan)
+    assert (precheck["stage"], precheck["id"], precheck["cpus"], precheck["memory"], precheck["seconds"], precheck["gpus"], precheck["log"]) == (
+        "identity-precheck", "SCALING-300M-cont19618-idcheck-20261109-v2", 4, "24G", 1200, 0, "scaling_identity_precheck")
+    assert precheck["out"] == plan["identity_precheck"]["receipt_dir"] and precheck["exact"] == ["identity_precheck.json"]
+    assert precheck["files"] == {"identity_precheck.json": precheck["out"] + "/identity_precheck.json"} and precheck["pinned"] == {}
+    assert job["id"] == "SCALING-300M-train19618-20261109-v2" and job["out"] == plan["receipt_dir"]
+    assert S.stage_table("training") == [job] and S.stage_table("identity-precheck") == [precheck]
+    # The v1 checkout keeps its collected record; the recovery checkout is collected elsewhere and never over it.
+    v1 = json.loads((PACKAGE / "evidence/checkout-training/training/accounting.json").read_text())
+    assert v1["JobIDRaw"] == "63695634" and S.evidence_dir("checkout-training") == PACKAGE / "evidence/checkout-training-v2"
+    assert not S.evidence_dir("checkout-training").exists() and S.evidence_dir("training") == PACKAGE / "evidence/training"
+    assert all(S.evidence_dir(stage) == PACKAGE / "evidence" / stage for stage in ("extractions", "probe-fit", "checkout-code"))
     assert [S.stage_table("checkout-" + name) for name in S.CHECKOUTS] == [[S.checkout_job(name)] for name in S.CHECKOUTS]
     assert all(job["files"] == {} and job["pinned"] == {} and job["exact"] is None for name in S.CHECKOUTS for job in [S.checkout_job(name)])
     assert S.log_path(S.jobs("extractions")[0], "5") == S.LOGS + "/scaling_evaluation19618_5.out"
-    for launcher, name in (("scaling_continue.sbatch", "scaling_continue"), ("scaling_evaluation19618.sbatch", "scaling_evaluation19618"),
+    for launcher, name in (("scaling_continue.sbatch", "scaling_continue"), ("scaling_identity_precheck.sbatch", "scaling_identity_precheck"),
+                           ("scaling_evaluation19618.sbatch", "scaling_evaluation19618"),
                            ("scaling_readers19618.sbatch", "scaling_readers19618"), ("campaign_checkout.sbatch", "campaign_checkout")):
         assert f"#SBATCH -o {S.LOGS}/{name}_%j.out" in (ROOT / "scripts/slurm" / launcher).read_text()
     assert set(S.STAGE_DOCUMENTS) == {"extractions", "pose-validate", "pose-benchmark", "probe-benchmark", "pose-ridge", "probe-fit",

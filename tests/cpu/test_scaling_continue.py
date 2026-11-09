@@ -32,7 +32,9 @@ C = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(C)
 BASE = ROOT / "results/infra/scaling_300m_20261104"
 CONTRACT = BASE / "training_source_contract.json"
-PLAN = BASE / "continuation19618_20261106/training_plan.json"
+PLAN = BASE / "continuation19618_20261109_v2/training_plan.json"  # v2 (09/11): import order fixed, identity pre-check gate
+PLAN_V1 = BASE / "continuation19618_20261106/training_plan.json"  # superseded: job 63696864 FAILED at resume (08/11)
+PRECHECK_JOB = "122"
 SIGNATURE = {"test": "data"}
 CODE, JOB, PLAN_SHA, PANEL = "d" * 40, "123", "e" * 64, "c" * 64
 CONTROL_CONFIG = ROOT / "results/infra/tokenizer_execution_20261103/19618/T100-G/config.json"
@@ -72,6 +74,32 @@ def test_published_plan_is_valid_and_bound_to_the_current_sources(context, plan,
     assert 4 * plan["allocation"]["walltime_seconds"] / 3600 == 59.0
     assert C.main(["check-plan", "--plan", str(PLAN)]) == 0
     assert json.loads(capsys.readouterr().out)["runtime_readiness_checked"] is False
+
+
+def test_v2_plan_supersedes_the_failed_v1_attempt_with_the_same_science(context, plan):
+    """Same arm, dose, recipe, 5000 run, control and budget freeze; new execution sources (wrapper with torch first and the
+    pre-check launcher), new output directories, the pre-check gate and a later retention horizon. The v1 plan is refused."""
+    v1 = json.loads(PLAN_V1.read_text())
+    with pytest.raises(ValueError, match="execution source pins"):  # it pins neither the pre-check launcher nor the new wrapper
+        C.validate_plan(v1, context)
+    with pytest.raises(ValueError, match="identity pre-check gate"):  # and it has no pre-check gate
+        C.validate_plan({**v1, "execution_source_sha256": plan["execution_source_sha256"]}, context)
+    assert {k for k in set(plan) | set(v1) if plan.get(k) != v1.get(k)} == {"execution_source_sha256", "identity_precheck",
+                                                                               "superseded_attempt", "run_dir", "receipt_dir", "control"}
+    assert {k for k in plan["control"] if plan["control"][k] != v1["control"][k]} == {"required_until_utc"}
+    assert plan["control"]["required_until_utc"] == "2026-12-01T00:00:00Z" and v1["control"]["required_until_utc"] == "2026-11-22T00:00:00Z"
+    assert plan["previous"] == v1["previous"] and plan["allocation"] == v1["allocation"] and plan["budget_freeze"] == v1["budget_freeze"]
+    assert plan["run_dir"].endswith("/T100-G-300M-19618-from5000-v2") and plan["receipt_dir"].endswith("/continuation19618_v2")
+    assert plan["identity_precheck"] == {"protocol": C.IDENTITY_PROTOCOL, "allocation": C.PRECHECK_ALLOCATION,
+                                         "receipt_dir": plan["receipt_dir"] + "_identity_precheck"}
+    assert plan["identity_precheck"]["allocation"] == {"partition": "lrd_all_serial", "cpus": 4, "memory": "24G", "walltime_seconds": 1200}
+    superseded = plan["superseded_attempt"]
+    assert (superseded["slurm_job_id"], superseded["run_dir"], superseded["receipt_dir"]) == ("63696864", v1["run_dir"], v1["receipt_dir"])
+    assert superseded["plan_sha256"] == R.sha256_file(PLAN_V1) and (ROOT / superseded["diagnosis"]).is_file()
+    assert set(plan["execution_source_sha256"]) - set(v1["execution_source_sha256"]) == {"scripts/slurm/scaling_identity_precheck.sbatch"}
+    unchanged = {"scripts/scaling_train.py", "scripts/scaling_preflight.py", "scripts/slurm/scaling_continue.sbatch"}
+    assert all(plan["execution_source_sha256"][p] == v1["execution_source_sha256"][p] for p in unchanged)
+    assert plan["execution_source_sha256"]["scripts/scaling_continue.py"] != v1["execution_source_sha256"]["scripts/scaling_continue.py"]
 
 
 def test_recipe_changes_only_output_dose_and_operational_timeout(context, plan):
@@ -129,8 +157,18 @@ def _mutations():
     def control(p): p["control"]["artifacts"] = {}
     def horizon(p): del p["control"]["required_until_utc"]
     def copy_(p): p["previous"]["receipt_copy"]["sha256"] = "a" * 64
+    def precheck_missing(p): del p["identity_precheck"]
+    def precheck_protocol(p): p["identity_precheck"]["protocol"] = "scaling-continuation-identity-precheck-20261106-v0"
+    def precheck_same(p): p["identity_precheck"]["receipt_dir"] = p["receipt_dir"]
+    def precheck_inside(p): p["identity_precheck"]["receipt_dir"] = p["run_dir"] + "/precheck"
+    def precheck_in_5000(p): p["identity_precheck"]["receipt_dir"] = p["previous"]["run_dir"] + "/precheck"
+    def precheck_relative(p): p["identity_precheck"]["receipt_dir"] = "results/precheck"
+    def precheck_cpus(p): p["identity_precheck"]["allocation"]["cpus"] = 8
+    def precheck_partition(p): p["identity_precheck"]["allocation"]["partition"] = "boost_usr_prod"
+    def precheck_extra(p): p["identity_precheck"]["slurm_job_id"] = "1"
     return [end, start, added, gpus, time, qos, memory, missing, extra, same, inside, receipts, relative, sources, science,
-            contract, control, horizon, copy_]
+            contract, control, horizon, copy_, precheck_missing, precheck_protocol, precheck_same, precheck_inside, precheck_in_5000,
+            precheck_relative, precheck_cpus, precheck_partition, precheck_extra]
 
 
 @pytest.mark.parametrize("change", _mutations(), ids=lambda f: f.__name__)
@@ -467,6 +505,23 @@ def old_panel(old):
     (old / "pose_panel.jsonl").write_text("".join(json.dumps({"step": s, "panel_sha256": PANEL}) + "\n" for s in (0, 500, 5000)))
 
 
+def precheck_path(plan_path):
+    return Path(json.loads(plan_path.read_text())["identity_precheck"]["receipt_dir"]) / C.PRECHECK_RECEIPT
+
+
+def write_precheck(plan_path, **changes):
+    """What a passed identity pre-check of this plan and code leaves (the fields the GPU job requires)."""
+    plan = json.loads(plan_path.read_text())
+    receipt = {"protocol": C.IDENTITY_PROTOCOL, "identical": True, "code_sha": CODE, "plan_sha256": R.sha256_file(plan_path),
+               "slurm_job_id": PRECHECK_JOB, "node": "lrdn0001", "import_order": {"torch_before_numpy": True},
+               "previous_identity_sha256": {name: plan["previous"]["files"][name]["sha256"] for name in C.IDENTITY_FILES},
+               "comparison": {name: {"equal": True} for name in C.IDENTITY_FILES}, **changes}
+    path = precheck_path(plan_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(receipt))
+    return path
+
+
 @pytest.fixture
 def endpoint(context, plan, tmp_path, monkeypatch):
     """Synthetic complete endpoint with tiny checkpoints; the 300M model is never built in tests."""
@@ -658,7 +713,7 @@ def control(context, plan, monkeypatch):
 def test_control_is_reverified_from_reviewed_receipt_inventories_checkpoint_and_all_caches(context, control):
     check, pins, seen, identities = control
     states = {}
-    assert check(states) == {"required_until_utc": "2026-11-22T00:00:00Z", "earliest_scratch_expiry_utc": None}
+    assert check(states) == {"required_until_utc": "2026-12-01T00:00:00Z", "earliest_scratch_expiry_utc": None}
     (path, cfg, step, signature), = identities
     assert path == pins["checkpoint"]["path"] and step == 19618 and signature == SIGNATURE
     assert R.config_to_dict(cfg) == json.loads(CONTROL_CONFIG.read_text())
@@ -723,8 +778,10 @@ def cluster(context, plan, tmp_path, monkeypatch):
     plan["previous"].update(run_dir=str(old), files={name: file_pin(old / name) for name in C.PREVIOUS_FILES},
                             receipt={**plan["previous"]["receipt"], "path": str(receipt)})
     plan.update(run_dir=str(run), receipt_dir=str(out))
+    plan["identity_precheck"]["receipt_dir"] = str(tmp_path / "precheck")
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(json.dumps(plan))
+    write_precheck(plan_path)
     behaviour = {}
 
     def trainer(command, cwd, env, stdout, stderr, check):
@@ -764,13 +821,21 @@ def test_job_seeds_a_new_directory_trains_once_and_certifies_the_endpoint_with_t
     assert receipt["memory"]["peak_allocated_gib"] == 40.0 and receipt["optimizer"]["adam_step_max"] == 19618
     launch, marker = json.loads((out / "launch.json").read_text()), json.loads((run / C.MARKER).read_text())
     assert launch["trainer_argv"] == receipt["trainer_argv"] and set(launch["seeded_files"]) == set(C.SEED_FILES) == set(marker["seeded_files"])
-    assert {"previous:checkpoint.pt", "previous_receipt", "budget_freeze", "input:manifest", "execution_plan"} <= set(launch["verified_inputs"])
+    assert {"previous:checkpoint.pt", "previous_receipt", "budget_freeze", "input:manifest", "execution_plan",
+            "identity_precheck"} <= set(launch["verified_inputs"])
     assert marker["previous_run_dir"] == str(old) and marker["slurm_job_id"] == JOB and launch["previous_optimizer"]["adam_step_max"] == 5000
+    precheck = precheck_path(plan_path)  # the GPU job records which pre-check admitted it
+    assert launch["identity_precheck"] == receipt["identity_precheck"] == {
+        "receipt": str(precheck), "sha256": R.sha256_file(precheck), "slurm_job_id": PRECHECK_JOB, "node": "lrdn0001",
+        "comparison": {name: {"equal": True} for name in C.IDENTITY_FILES}}
+    assert launch["verified_inputs"]["identity_precheck"]["sha256"] == R.sha256_file(precheck)
     with pytest.raises(ValueError, match="no overwrite"):  # a second job cannot reuse or replace the endpoint
         C.execute(plan_path, CODE, out)
 
 
-@pytest.mark.parametrize("change", ["stop_in_5000", "extra_in_5000", "existing_run", "existing_receipts", "input", "wrong_out"])
+@pytest.mark.parametrize("change", ["stop_in_5000", "extra_in_5000", "existing_run", "existing_receipts", "input", "wrong_out",
+                                    "precheck_missing", "precheck_failed", "precheck_protocol", "precheck_code", "precheck_plan",
+                                    "precheck_order", "precheck_identity", "precheck_job"])
 def test_job_stops_before_creating_any_output(cluster, tmp_path, change):
     plan_path, old, run, out, _, _ = cluster
     if change == "stop_in_5000": (old / "STOP").write_text("allarme")
@@ -778,6 +843,14 @@ def test_job_stops_before_creating_any_output(cluster, tmp_path, change):
     if change == "existing_run": run.mkdir()
     if change == "existing_receipts": out.mkdir()
     if change == "input": (tmp_path / "input_scales.json").write_text(json.dumps({"scales": {"x": 2.0}, "window_s": {}}))
+    if change == "precheck_missing": precheck_path(plan_path).unlink()
+    if change == "precheck_failed": write_precheck(plan_path, identical=False)  # the pre-check found a difference: no GPU job
+    if change == "precheck_protocol": write_precheck(plan_path, protocol="scaling-diag-fixedeval-20261108-v1")
+    if change == "precheck_code": write_precheck(plan_path, code_sha="a" * 40)  # passed on another checkout
+    if change == "precheck_plan": write_precheck(plan_path, plan_sha256="a" * 64)  # passed on another plan
+    if change == "precheck_order": write_precheck(plan_path, import_order={"torch_before_numpy": False})
+    if change == "precheck_identity": write_precheck(plan_path, previous_identity_sha256={n: "a" * 64 for n in C.IDENTITY_FILES})
+    if change == "precheck_job": write_precheck(plan_path, slurm_job_id="")
     with pytest.raises(ValueError):
         C.execute(plan_path, CODE, tmp_path / "other" if change == "wrong_out" else out)
     assert not (out / "launch.json").exists() and not (run / C.MARKER).exists() and not (tmp_path / "other").exists()
@@ -796,3 +869,91 @@ def test_job_without_a_complete_untouched_endpoint_writes_no_receipt_and_cannot_
     assert not (out / "receipt.json").exists() and (out / "launch.json").exists()
     with pytest.raises(ValueError, match="no overwrite"):
         C.execute(plan_path, CODE, out)
+
+
+# ---------------------------------------------------------------- v2: the CPU identity pre-check before the GPU job
+
+
+def test_precheck_argv_is_the_plan_recipe_on_one_cpu_process_without_ddp(context, plan):
+    _, cfg, argv = C.validate_plan(plan, context)
+    cli = C.precheck_argv(argv, Path("/elsewhere/trainer_out"))
+    assert cli[0] == "scripts/train_jepa.py" and "--distributed" in argv and "--distributed" not in cli
+    for flag, value in (("--out-dir", "/elsewhere/trainer_out"), ("--num-workers", "0"), ("--device", "cpu")):
+        assert cli.count(flag) == 1 and cli[cli.index(flag) + 1] == value, flag
+    kept = [a for a in argv if a != "--distributed"]
+    kept[kept.index("--out-dir") + 1], kept[kept.index("--num-workers") + 1] = "/elsewhere/trainer_out", "0"
+    assert cli == kept + ["--device", "cpu"]  # the 5000 command leaves --device to its default: here it is explicit
+    # Same RunConfig as the GPU job: device, workers, DDP and output directory are arguments of train(), not of the recipe.
+    assert R.config_to_dict(C.CLI.build_config(C.CLI.build_parser().parse_args(cli[1:]))) == R.config_to_dict(cfg)
+    explicit = C.precheck_argv(argv + ["--device", "cuda"], Path("/x"))  # an explicit device is replaced, not kept
+    assert explicit.count("--device") == 1 and explicit[explicit.index("--device") + 1] == "cpu"
+    for flag, value in (("--num-workers", "3"), ("--out-dir", "/y")):
+        with pytest.raises(ValueError, match="duplicate argument"):
+            C.precheck_argv(argv + [flag, value], Path("/x"))
+    with pytest.raises(ValueError, match="duplicate argument"):
+        C.precheck_argv(argv + ["--device", "cuda", "--device", "cuda"], Path("/x"))
+    with pytest.raises(ValueError, match="missing output directory"):
+        C.precheck_argv([a for a in argv if a not in ("--out-dir", plan["run_dir"])], Path("/x"))
+
+
+def test_compare_identity_reports_where_the_sets_differ():
+    expected = {"seed": [0, 5151], "windows": [["a", None, 0, 10], ["b", 1, 5, 15]], "batch_sha256": ["x", "y"]}
+    assert C.compare_identity(expected, json.loads(json.dumps(expected))) == {
+        "equal": True, "keys_differing": [], "batch_sha256_equal": [2, 2, 2], "windows_equal": [2, 2, 2]}
+    assert C.compare_identity(expected, {**expected, "batch_sha256": ["x", "z"]}) == {  # the failure of 08/11: same windows, other content
+        "equal": False, "keys_differing": ["batch_sha256"], "batch_sha256_equal": [1, 2, 2], "windows_equal": [2, 2, 2]}
+    assert C.compare_identity(expected, {**expected, "windows": expected["windows"][:1], "extra": 1}) == {
+        "equal": False, "keys_differing": ["extra", "windows"], "batch_sha256_equal": [2, 2, 2], "windows_equal": [1, 2, 1]}
+    assert C.compare_identity(["s1", "s2", "s3"], ["s1", "s9", "s3"]) == {"equal": False, "length": [3, 3], "first_difference": 1}
+    assert C.compare_identity(["s1"], ["s1"]) == {"equal": True, "length": [1, 1], "first_difference": None}
+    assert C.compare_identity(["s1"], {"a": 1}) == {"equal": False}
+
+
+def test_identity_sets_are_exactly_the_files_the_unchanged_trainer_checks_at_resume(tmp_path):
+    """On tiny data: what identity_sets computes without a model is byte for byte what train() wrote and will verify at resume."""
+    root, mpath = _tree(tmp_path)
+    cfg = _config(4)
+    R.train(cfg, mpath, [root], tmp_path / "run", log=lambda m: None, num_workers=0)
+    computed = C.identity_sets(cfg, mpath, [root], {}, None)
+    assert set(computed) == {"fixed_eval_set.json", "origin_sessions.json"}  # the tiny data have no pose panel
+    for name, value in computed.items():
+        written = json.loads((tmp_path / "run" / name).read_text())
+        assert written == value and C.compare_identity(written, value)["equal"], name
+    assert computed["fixed_eval_set.json"]["seed"] == [cfg.seed, R.FIXED_EVAL_SEED] and len(computed["origin_sessions.json"]) > 1
+    assert C.identity_sets(replace(cfg, fixed_eval_every=0, log_batch_origin=False), mpath, [root], None, None) == {}
+    # Another seed or batch size is another fixed set: the comparison sees it, as the trainer did on 08/11.
+    other = C.identity_sets(replace(cfg, seed=cfg.seed + 1), mpath, [root], {}, None)["fixed_eval_set.json"]
+    report = C.compare_identity(computed["fixed_eval_set.json"], other)
+    assert report["equal"] is False and "seed" in report["keys_differing"]
+
+
+def test_import_order_and_numeric_libraries_describe_this_process():
+    order, modules = C.import_order(), list(sys.modules)
+    assert order["positions"]["torch"] == modules.index("torch") and order["positions"]["numpy"] == modules.index("numpy")
+    assert order["torch_before_numpy"] == (modules.index("torch") < modules.index("numpy"))
+    libraries = C.numeric_libraries()
+    assert libraries is None or (isinstance(libraries, list) and all(isinstance(x, str) for x in libraries))  # Linux only
+
+
+PRECHECK_FIELDS = {"JobId": PRECHECK_JOB, "JobState": "RUNNING", "Partition": "lrd_all_serial", "Account": "iscrb_wearusfm",
+                   "NumNodes": "1", "NumCPUs": "4", "TimeLimit": "00:20:00", "AllocTRES": "cpu=4,mem=24G,node=1"}
+
+
+@pytest.mark.parametrize("change", [None, {"Partition": "boost_usr_prod"}, {"Account": "other_account"}, {"NumNodes": "2"},
+                                    {"NumCPUs": "8"}, {"TimeLimit": "00:30:00"}, {"TimeLimit": "04:00:00"},
+                                    {"AllocTRES": "cpu=4,mem=24G,node=1,gres/gpu=1"}, {"AllocTRES": "cpu=8,mem=24G,node=1"},
+                                    {"AllocTRES": "cpu=4,mem=32G,node=1"}, {"JobState": "PENDING"}, {"JobId": "9"}])
+def test_actual_precheck_allocation_must_be_the_small_serial_one_of_the_plan(plan, monkeypatch, change):
+    fields = {**PRECHECK_FIELDS, **(change or {})}
+    monkeypatch.setenv("SLURM_JOB_ID", PRECHECK_JOB)
+    monkeypatch.setattr(C.subprocess, "check_output", lambda command, text: " ".join(f"{k}={v}" for k, v in fields.items()) + "\n"
+                        if command == ["scontrol", "show", "job", "-o", PRECHECK_JOB] else pytest.fail(str(command)))
+    if change is None:
+        assert C.verify_precheck_allocation(plan) == PRECHECK_JOB
+        C.check_precheck_fields({**fields, "AllocTRES": "cpu=4,mem=24576M,node=1"}, plan)  # the other spelling of 24G
+    else:
+        with pytest.raises(ValueError):
+            C.verify_precheck_allocation(plan)
+    monkeypatch.delenv("SLURM_JOB_ID")
+    with pytest.raises(ValueError, match="real SLURM allocation"):
+        C.verify_precheck_allocation(plan)
