@@ -1,0 +1,52 @@
+{
+ "kind": "temponet_db8_run_v1",
+ "args": {
+  "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/temponet_db8/cache_v2",
+  "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_db8/smoke3_20261109/step32",
+  "subjects": [
+   1
+  ],
+  "seeds": [
+   0
+  ],
+  "epochs": 19,
+  "lr": 0.0001,
+  "batch": 64,
+  "window": 256,
+  "step": 32,
+  "train_step": 0,
+  "models": [
+   "fold1",
+   "fold2",
+   "full"
+  ],
+  "emg_unit": "uV",
+  "symmetric_padding": false,
+  "max_steps_per_epoch": 0,
+  "workers": 1,
+  "no_cuda_graph": false,
+  "cudnn_mode": "benchmark",
+  "log_epochs": false,
+  "check_graph": true,
+  "device": "cuda",
+  "time_budget_s": 0.0
+ },
+ "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/temponet-db8-5e64f4e",
+ "code_sha": "5e64f4ef253028e310177710be33964521c19b08",
+ "slurm_job_id": "63987432",
+ "python": "3.11.6",
+ "numpy": "1.26.4",
+ "torch": "2.2.0a0+git6c8c5ad",
+ "cuda": "12.1",
+ "started": "2026-11-09T14:42:37+0100",
+ "model": {
+  "parameters": 70917,
+  "macs": 2410656,
+  "out_length": 4
+ },
+ "finished": "2026-11-09T14:44:26+0100",
+ "seconds": 110.4,
+ "status": {
+  "S1_seed0": "ok"
+ }
+}

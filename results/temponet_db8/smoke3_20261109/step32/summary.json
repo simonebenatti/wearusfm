@@ -1,0 +1,58 @@
+{
+ "criterion": {
+  "reference_mae_deg": 6.89,
+  "tolerance_deg": 0.3,
+  "quantity": "MAE test A3 dopo EMA, media su soggetti x DoA x fold1/fold2 x semi"
+ },
+ "complete": false,
+ "subjects": [
+  1
+ ],
+ "seeds": [
+  0
+ ],
+ "primary_mae_deg": 9.729044676763339,
+ "verdict": "incompleta",
+ "delta_vs_reference_deg": 2.839044676763339,
+ "below_lstm_7_04": false,
+ "per_seed_mae_deg": [
+  9.729044676763339
+ ],
+ "seed_sd_deg": null,
+ "subject_doa_sd_deg": 1.5065208891380542,
+ "per_subject_mae_deg": {
+  "1": 9.72904467676334
+ },
+ "per_doa_mae_deg": [
+  10.8856500587268,
+  7.06639919644756,
+  9.954386879600367,
+  11.381751349202727,
+  9.357035899839243
+ ],
+ "fold_mae_deg": {
+  "fold1": 9.650190618267027,
+  "fold2": 9.80789873525965
+ },
+ "raw_fold_mae_deg": 10.27320757014503,
+ "full_mae_deg": 8.837458627596654,
+ "raw_full_mae_deg": 9.41880655877478,
+ "full_per_seed_mae_deg": [
+  8.837458627596654
+ ],
+ "acc_10deg": 0.6807950626247958,
+ "acc_15deg": 0.7495613238942337,
+ "alpha_mean": 0.9359999999999999,
+ "alpha_sd": 0.020591260281973982,
+ "reference": {
+  "mae_deg": 6.89,
+  "mae_sd_deg": 2.08,
+  "acc_10deg": 0.814,
+  "acc_15deg": 0.9,
+  "alpha_mean": 0.862,
+  "alpha_sd": 0.044,
+  "lstm_mae_deg": 7.04,
+  "mlp_mae_deg": 7.14,
+  "svm_mae_deg": 7.28
+ }
+}

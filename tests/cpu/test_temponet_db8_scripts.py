@@ -156,6 +156,29 @@ def test_summary_verdicts(mae, verdict):
     assert s["alpha_mean"] == pytest.approx(0.86) and s["seed_sd_deg"] == pytest.approx(0.0)
 
 
+def test_summary_with_full_only_for_seed_0():
+    units = []
+    for s in range(1, 13):
+        for k in (0, 1, 2):
+            u = _unit(s, k, 7.0, full_mae=6.5)
+            if k:
+                del u["models"]["full"]
+            units.append(u)
+    s = temponet_db8_summary.summarize(units, [0, 1, 2])
+    assert s["complete"] and s["full_seeds"] == [0] and s["full_n_units"] == 12
+    assert s["full_mae_deg"] == pytest.approx(6.5) and s["fold_seed0_mae_deg"] == pytest.approx(7.0)
+    assert "solo seme 0" in temponet_db8_summary.to_markdown(s)
+
+
+def test_full_seeds_option_skips_full_for_other_seeds(cache, tmp_path):
+    out = tmp_path / "run_fs"
+    assert temponet_db8.main(["--cache", str(cache), "--out", str(out), "--subjects", "1", "--seeds", "0", "1", "--epochs", "1",
+                              "--batch", "16", "--workers", "1", "--device", "cpu", "--full-seeds", "0"]) == 0
+    u0 = json.loads((out / "units" / "S1_seed0.json").read_text())
+    u1 = json.loads((out / "units" / "S1_seed1.json").read_text())
+    assert set(u0["models"]) == {"fold1", "fold2", "full"} and set(u1["models"]) == {"fold1", "fold2"}
+
+
 def test_summary_incomplete_when_a_seed_is_missing():
     units = [_unit(s, k, 6.9) for s in range(1, 13) for k in (0, 1)]
     assert temponet_db8_summary.summarize(units, [0, 1, 2])["verdict"] == "incompleta"

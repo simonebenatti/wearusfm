@@ -1,0 +1,180 @@
+{
+ "subject": 1,
+ "torch": "2.2.0a0+git6c8c5ad",
+ "cudnn": 8907,
+ "gpu": "NVIDIA A100-SXM-64GB",
+ "settings": [
+  {
+   "deterministic": true,
+   "benchmark": false,
+   "eager_ms_per_step": 18.45625400543213,
+   "graph_ms_per_step": 14.637813568115234
+  },
+  {
+   "deterministic": false,
+   "benchmark": false,
+   "eager_ms_per_step": 4.124240875244141,
+   "graph_ms_per_step": 1.0979700088500977
+  },
+  {
+   "deterministic": false,
+   "benchmark": true,
+   "eager_ms_per_step": 4.106588363647461,
+   "graph_ms_per_step": 1.0989809036254883
+  }
+ ],
+ "top_kernels_deterministic": [
+  {
+   "kernel": "void at::native::col2im_kernel<float, float>(long, float const*, long, long, long, long, long, long, long, long, long, long, long, long, long, float*)",
+   "calls": 3200,
+   "total_ms": 32.415
+  },
+  {
+   "kernel": "void at::native::im2col_kernel<float>(long, float const*, long, long, long, long, long, long, long, long, long, long, long, long, float*)",
+   "calls": 7680,
+   "total_ms": 24.361
+  },
+  {
+   "kernel": "ampere_sgemm_32x128_tn",
+   "calls": 1280,
+   "total_ms": 20.48
+  },
+  {
+   "kernel": "ampere_sgemm_32x32_sliced1x4_nn",
+   "calls": 2580,
+   "total_ms": 16.776
+  },
+  {
+   "kernel": "ampere_sgemm_32x32_sliced1x4_tn",
+   "calls": 2590,
+   "total_ms": 16.182
+  },
+  {
+   "kernel": "ampere_sgemm_32x32_sliced1x4_nt",
+   "calls": 2580,
+   "total_ms": 12.903
+  },
+  {
+   "kernel": "void gemmSN_NN_kernel<float, 256, 4, 2, 8, 4, 4, false, cublasGemvTensorStridedBatched<float const>, cublasGemvTensorStridedBatched<float const>, cublasGemvTens",
+   "calls": 1280,
+   "total_ms": 3.85
+  },
+  {
+   "kernel": "void cudnn::cnn::wgrad_alg1_engine<float, float, 128, 5, 5, 3, 3, 3, false, true>(int, int, int, float const*, int, float*, float const*, kernel_grad_params, un",
+   "calls": 10,
+   "total_ms": 3.028
+  },
+  {
+   "kernel": "ampere_sgemm_32x128_nt",
+   "calls": 650,
+   "total_ms": 2.62
+  },
+  {
+   "kernel": "void cudnn::cnn::dgrad2d_grouped_direct_kernel<float, int, float, float, false, true, 0, 0>(cudnn::cnn::GroupedDirectParams, float const*, float const*, float*,",
+   "calls": 10,
+   "total_ms": 1.32
+  },
+  {
+   "kernel": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::BinaryFunctor<float, float, float, at::native::binary_internal::DivFu",
+   "calls": 700,
+   "total_ms": 1.183
+  },
+  {
+   "kernel": "void cudnn::bn_bw_1C11_kernel_new<float, float, float2, 32, true, 1>(float, float, float, float, cudnnTensorStruct, float const*, cudnnTensorStruct, float const",
+   "calls": 50,
+   "total_ms": 0.581
+  },
+  {
+   "kernel": "void cudnn::cnn::wgrad2d_grouped_direct_kernel<false, true, int, float, float, float>(cudnn::cnn::WgradGroupedDirectParams, float const*, float const*, float*, ",
+   "calls": 10,
+   "total_ms": 0.543
+  },
+  {
+   "kernel": "void implicit_convolve_sgemm<float, float, 128, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_conv_params",
+   "calls": 20,
+   "total_ms": 0.417
+  },
+  {
+   "kernel": "void cudnn::bn_fw_tr_1C11_singleread<float, 512, true, 1, 2, 0>(cudnn::bn_fw_tr_1C11_args<float>)",
+   "calls": 70,
+   "total_ms": 0.403
+  }
+ ],
+ "top_kernels_benchmark": [
+  {
+   "kernel": "void wgrad_alg0_engine<float, 128, 5, 5, 3, 3, 3, false, 512>(int, int, int, float const*, int, float*, float const*, kernel_grad_params, unsigned long long, in",
+   "calls": 90,
+   "total_ms": 1.863
+  },
+  {
+   "kernel": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::BinaryFunctor<float, float, float, at::native::binary_internal::DivFu",
+   "calls": 700,
+   "total_ms": 1.608
+  },
+  {
+   "kernel": "void cudnn::detail::dgrad_engine<float, 512, 6, 5, 3, 3, 3, false>(int, int, int, float const*, int, float const*, int, float*, kernel_grad_params, unsigned lon",
+   "calls": 60,
+   "total_ms": 1.018
+  },
+  {
+   "kernel": "cudnn_infer_ampere_scudnn_128x32_relu_small_nn_v1",
+   "calls": 40,
+   "total_ms": 0.819
+  },
+  {
+   "kernel": "void cudnn::bn_bw_1C11_kernel_new<float, float, float2, 32, true, 1>(float, float, float, float, cudnnTensorStruct, float const*, cudnnTensorStruct, float const",
+   "calls": 50,
+   "total_ms": 0.644
+  },
+  {
+   "kernel": "void implicit_convolve_sgemm<float, float, 128, 5, 5, 3, 3, 3, 1, false, false, false>(int, int, int, float const*, int, float*, float const*, kernel_conv_param",
+   "calls": 30,
+   "total_ms": 0.488
+  },
+  {
+   "kernel": "void implicit_convolve_sgemm<float, float, 128, 5, 5, 3, 3, 3, 1, false, false, true>(int, int, int, float const*, int, float*, float const*, kernel_conv_params",
+   "calls": 20,
+   "total_ms": 0.473
+  },
+  {
+   "kernel": "cudnn_infer_ampere_scudnn_128x64_stridedB_small_nn_v1",
+   "calls": 20,
+   "total_ms": 0.473
+  },
+  {
+   "kernel": "void cudnn::bn_fw_tr_1C11_singleread<float, 512, true, 1, 2, 0>(cudnn::bn_fw_tr_1C11_args<float>)",
+   "calls": 70,
+   "total_ms": 0.468
+  },
+  {
+   "kernel": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::direct_copy_kernel_cuda(at::TensorIteratorBase&)::{lambda()#3}::opera",
+   "calls": 120,
+   "total_ms": 0.42
+  },
+  {
+   "kernel": "void at::native::vectorized_elementwise_kernel<4, at::native::BinaryFunctor<float, float, float, at::native::(anonymous namespace)::threshold_kernel_impl<float>",
+   "calls": 110,
+   "total_ms": 0.262
+  },
+  {
+   "kernel": "ampere_sgemm_32x32_sliced1x4_tn",
+   "calls": 30,
+   "total_ms": 0.248
+  },
+  {
+   "kernel": "void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::",
+   "calls": 110,
+   "total_ms": 0.24
+  },
+  {
+   "kernel": "void precomputed_convolve_sgemm<float, 1024, 5, 5, 4, 3, 3, 1, false>(int, int, int, float const*, int, float*, float const*, kernel_conv_params, unsigned long ",
+   "calls": 10,
+   "total_ms": 0.233
+  },
+  {
+   "kernel": "void at::native::(anonymous namespace)::avg_pool2d_backward_out_cuda_frame<float, float>(int, float const*, long, long, long, long, long, int, int, int, int, in",
+   "calls": 30,
+   "total_ms": 0.231
+  }
+ ]
+}

@@ -93,7 +93,9 @@ Scelte dichiarate (non specificate da [Z21]):
    movimento ciascuna, [K19]). `fold1`: training su A1, validazione su A2; `fold2`: il contrario. Come in [Z20], i modelli dei fold si valutano sul
    test e si media. Analisi secondaria: modello `full` su A1 + A2, con alpha dalle predizioni fuori fold.
 2. **Bersaglio**: DoA all'ultimo campione della finestra (regressione causale).
-3. **Passo delle finestre**: 32 campioni (16 ms) in training e in test, il passo d'inferenza di [Z21] secondo [Z23].
+3. **Passo delle finestre**: 32 campioni (16 ms) in validazione e test, il passo d'inferenza di [Z21] secondo [Z23]; in training **8 campioni
+   (4 ms)**, scelto sulla validazione di S1 nei collaudi (emendamento del 09/11 in `docs/decisioni.md`): con Adam a lr 1e-4 e 19 epoche conta
+   il numero di passi, e a passo 32 la rete resta sottoaddestrata.
 4. **Unita' dell'ingresso**: EMG in **microvolt** (x 1e6 rispetto ai volt del file). E' un cambio di scala costante, non una normalizzazione.
    Con l'inizializzazione di PyTorch la varianza dopo la prima convoluzione e' circa 0,33 x var(x); le statistiche della cache (`cache_v2`,
    36 acquisizioni x 16 canali) danno deviazione standard mediana 12,5 microvolt, 3,7 al 5° percentile, 41,4 al 95°. In volt quella varianza
@@ -110,7 +112,10 @@ Scelte dichiarate (non specificate da [Z21]):
 10. **Amputati**: 16 ingressi anche per S11 e S12, con i canali senza sensore (a zero) tenuti come sono (S11: canali 14-16; S12: 13-16,
     deviazione standard nulla nella cache). Ripetizioni per movimento nella cache: A1 10 (S5 ne ha 3 per almeno un movimento: registrazione
     piu' corta, 1.041 s), A2 10 o 11, A3 2; nove movimenti ovunque.
-11. **Semi**: tre (0, 1, 2), per stimare la variabilita' dovuta al training; [Z21] riporta un solo valore.
+11. **Semi**: tre (0, 1, 2), per stimare la variabilita' dovuta al training; [Z21] riporta un solo valore. Il modello `full` solo col seme 0.
+13. **cuDNN non deterministico**: con `cudnn.deterministic=True` le convoluzioni dilatate passano per im2col/col2im di PyTorch, 13 volte piu'
+    lente; si rinuncia alla riproducibilita' bit per bit (tre semi). Passo di training catturato in un CUDA graph, verificato contro l'eager
+    (stessi parametri, differenza 0 in modo deterministico).
 12. **Valori non finiti**: in tutto il raw (36 file controllati il 09/11) c'e' un solo campione non finito, l'ultimo di `S5_E1_A1`, con NaN nelle 18
     colonne del guanto. Regola: si scarta una coda finale non finita lunga al massimo 1 s (qui un campione), registrata nel manifest della cache
     (`trimmed_tail_samples`); qualunque altro valore non finito ferma il job. Trovato dal primo job di cache (63985267, fallito sul controllo).
@@ -126,8 +131,8 @@ x 2 modelli di fold x 3 semi. Riferimento 6,89 gradi, tolleranza ±0,30. Tutto i
 |---|---|---|---|
 | checkout di campagna | `campaign_checkout.sbatch` | 1 CPU, 10 min | 0,17 core-ore |
 | cache .npy | `temponet_db8_cache.sbatch` | `lrd_all_serial`, 8 CPU, 1 h | 8 core-ore, 0 GPU-ore |
-| collaudo | `temponet_db8.sbatch smoke` | 1 GPU, `boost_qos_dbg`, 30 min; soggetti 1-4, seme 0, una epoca | 0,5 GPU-ore |
-| replica | `temponet_db8.sbatch full` | 1 GPU, 2 h; 36 unita' (12 soggetti x 3 semi) su 4 worker | 2 GPU-ore |
+| collaudi (tre) | `temponet_db8.sbatch smoke` | 1 GPU, `boost_qos_dbg`, 30 min ciascuno: velocita', equivalenza eager/graph, curve di S1 | 0,434 GPU-ore spese |
+| replica | `temponet_db8.sbatch full ... benchmark` | 1 GPU, 3 h; 36 unita' (12 soggetti x 3 semi, `full` solo col seme 0), un processo | 3 GPU-ore |
 
 Uscite fuori dal codice: cache in `$SCRATCH/wearusfm_runs/temponet_db8/cache_v1` (rigenerabile dal raw), risultati in
 `$WORK/wearusfm_runs/temponet_db8/<run>` (`run.json`, `units/`, `predictions/`, `models/`, `summary.json`, `summary.md`); sintesi e ricevute si

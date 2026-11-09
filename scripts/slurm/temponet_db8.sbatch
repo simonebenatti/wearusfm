@@ -6,7 +6,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=100G
-#SBATCH --time=02:00:00
+#SBATCH --time=03:00:00
 #SBATCH --no-requeue
 #SBATCH -J temponet_db8
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/temponet_db8_%j.out
@@ -15,14 +15,15 @@
 #   collaudo: controllo eager/graph e tempi; soggetto 1, seme 0, 19 epoche con passo di training 32 e (solo fold1) 4;
 #     QoS boost_qos_dbg, 30 minuti (al massimo 0,5 GPU-ore)
 #     sbatch --qos=boost_qos_dbg --time=00:30:00 --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_db8.sbatch smoke <cache> <uscite> [cudnn]
-#   completo: 12 soggetti x semi 0, 1, 2, 19 epoche, un processo, poi la sintesi; 2 ore (al massimo 2 GPU-ore)
+#   completo: 12 soggetti x semi 0, 1, 2 (full solo col seme 0), 19 epoche, passo di training 8, un processo, poi la sintesi;
+#     3 ore (al massimo 3 GPU-ore; emendamento del 09/11 in docs/decisioni.md)
 #     sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_db8.sbatch full <cache> <uscite> [cudnn]
 #   [cudnn]: deterministic (predefinito), default o benchmark; vedi scripts/temponet_db8_profile.py
 # Le uscite vanno in una cartella NUOVA fuori dal codice; nessun riavvio automatico, nessun nuovo tentativo.
 set -uo pipefail
 MODE="${1:?smoke o full}"; CACHE="${2:?cartella della cache}"; OUT="${3:?cartella delle uscite}"; CUDNN="${4:-deterministic}"
 case "$CUDNN" in deterministic|default|benchmark) ;; *) echo "modo cuDNN: deterministic, default o benchmark"; exit 2;; esac
-case "$MODE" in smoke) EXPECTED_TIME=00:30:00;; full) EXPECTED_TIME=02:00:00;; *) echo "modo: smoke o full"; exit 2;; esac
+case "$MODE" in smoke) EXPECTED_TIME=00:30:00;; full) EXPECTED_TIME=03:00:00;; *) echo "modo: smoke o full"; exit 2;; esac
 for P in "$CACHE" "$OUT"; do case "$P" in /*) ;; *) echo "percorso relativo rifiutato: $P"; exit 2;; esac; done
 case "$OUT" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*|\
 "$WORK/wearusfm_campaigns"/*|/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/*|"$SCRATCH/data/raw"/*) echo "uscite dentro il codice o nel raw: rifiutato"; exit 2;; esac
@@ -55,7 +56,7 @@ if [ "$MODE" = smoke ]; then
     --models fold1 --workers 1 || exit 1
 else
   python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --emg-unit uV --cudnn-mode "$CUDNN" --seeds 0 1 2 --workers 1 \
-    --time-budget-s 6000 \
+    --train-step 8 --full-seeds 0 --log-epochs --time-budget-s 9600 \
     || exit 1
   python3 scripts/temponet_db8_summary.py "$OUT" --seeds 0 1 2 || exit 1
 fi

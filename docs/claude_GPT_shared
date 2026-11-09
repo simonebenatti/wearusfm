@@ -8487,6 +8487,19 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Collaudo 2 (prossimo, `boost_qos_dbg`): controllo eager/graph; S1, seme 0, tre modelli, 19 epoche a passo 32; S1 fold1 a passo 4. La scelta
   del passo di training, se servira', si fara' sulla sola curva di validazione (dati di training) e si registrera' prima del run completo.
 
+### 2026-11-09 | Claude | Baseline TEMPONet: collaudi 2 e 3, causa della lentezza trovata (cuDNN deterministico), emendamento prima del run completo | Codice 5e64f4e, poi questa voce
+
+- Collaudo 2 `TEMPONET-DB8-smoke2-20261109` = 63986820 (codice ff41dc9): controllo eager/graph esatto (differenza 0) ma 18,5 ms per passo in
+  eager e 14,6 col graph; annullato da me dopo 11 min 46 s perche' ridondante col collaudo 3 (nessuna ricevuta: l'unita' si salvava a fine).
+- Collaudo 3 `TEMPONET-DB8-smoke3-20261109` = 63987432 (codice 5e64f4e, cuDNN benchmark), COMPLETED 0:0 in 6 min 2 s. Profilo: con
+  `deterministic=True` le convoluzioni dilatate usano im2col/col2im di PyTorch; senza vincolo 4,1 ms in eager e 1,1 col graph. S1 seme 0 a
+  passo di training 32: 25 s per `fold1` (contro 421 s), validazione grezza ~11,5 dall'epoca 11; `fold1` a passo 4: ~10,3. Ricevute (JSON,
+  profilo) in `results/temponet_db8/smoke3_20261109/`.
+- Emendamento in `docs/decisioni.md` prima del run completo, criterio invariato: passo di training 8 (scelto sulla validazione, non sul test),
+  cuDNN non deterministico, `full` solo col seme 0, job da 3 ore. Speso finora 0,434 GPU-ore e ~0,26 core-ore CPU.
+- Suite CPU completa sul codice 60b35bd (lanciata sul Mac alle 13:55): 3.370 passati, 1 avviso, 44 min 58 s (3.344 di main + 26 nuovi).
+  33 test della replica passati sul codice di questa voce.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B

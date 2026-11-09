@@ -265,7 +265,7 @@ def run_unit(subject: int, seed: int, cfg: argparse.Namespace) -> dict:
             raise RuntimeError(f"graph diverso dall'eager: {check['max_abs_param_diff']}")
     preds = {}
     for k, name in enumerate(MODELS):  # k fissa il seme del modello anche quando se ne allena solo una parte
-        if name not in cfg.models:
+        if name not in cfg.models or (name == "full" and cfg.full_seeds is not None and seed not in cfg.full_seeds):
             continue
         train_acqs, val_acq = SPLITS[name]
         tr = tsig[train_acqs[0]] if len(train_acqs) == 1 else Signal([recs[a] for a in train_acqs], device, scale, cfg.window, train_step)
@@ -332,6 +332,7 @@ def main(argv=None) -> int:
     ap.add_argument("--step", type=int, default=db8.STEP, help="passo delle finestre di validazione e test (16 ms)")
     ap.add_argument("--train-step", type=int, default=0, help="passo delle finestre di training (0 = come --step)")
     ap.add_argument("--models", nargs="*", choices=MODELS, default=list(MODELS), help="modelli da allenare (full richiede fold1 e fold2)")
+    ap.add_argument("--full-seeds", type=int, nargs="*", default=None, help="semi per cui allenare anche full (predefinito: tutti)")
     ap.add_argument("--emg-unit", choices=sorted(EMG_UNIT_SCALE), default="uV",
                     help="unita' dell'ingresso: cambio di scala costante, non una normalizzazione (vedi il documento)")
     ap.add_argument("--symmetric-padding", action="store_true", help="padding simmetrico come Q-PPG invece che causale")

@@ -7797,3 +7797,20 @@ con LSTM 7,04. Nessuna selezione sul test, epoche fisse; se l'esito non e' «rep
 **Tetto dell'attivita'.** 5 GPU-ore e 40 core-ore in tutto (checkout 0,17 core-ore, cache CPU 8 core-ore, collaudo `boost_qos_dbg` 0,5 GPU-ore,
 replica 2 GPU-ore; il resto e' margine per un solo rilancio dopo una correzione diagnosticata). Ogni job sotto le 5 GPU-ore della regola del
 28/10; ore locali al massimo ~28 (GPU con billing 8). Consuntivo in questa voce a fine attivita'.
+
+### 2026-11-09 — Replica di TEMPONet su DB8: emendamento del protocollo dopo i collaudi, PRIMA del run completo (Claude)
+
+Registrato prima di inviare il run completo; grandezza primaria, riferimento 6,89 e tolleranza ±0,30 della voce precedente **invariati**.
+
+1. **Passo delle finestre di training: 8 campioni (4 ms)** invece di 32; validazione e test restano a 16 ms. Il paper non dichiara il passo di
+   training. Scelta sulla sola validazione (A2, dati di training) di S1 `fold1` nei collaudi: a passo 32 la MAE grezza di validazione si ferma a
+   ~11,5 gradi dall'epoca 11 (loss di training 10,4 all'epoca 19), a passo 4 a ~10,3 (loss 8,6); a parita' di passi di ottimizzazione le due
+   curve coincidono, quindi conta il numero di passi (Adam a lr 1e-4 sposta ogni peso di ~1e-4 per passo). Il passo 8 ne recupera la maggior
+   parte a meta' del costo del passo 4. I numeri di test di S1 sono comparsi nei log dei collaudi ma non sono entrati nella scelta.
+2. **cuDNN non deterministico** (`--cudnn-mode benchmark`): con `deterministic=True` PyTorch esegue le convoluzioni dilatate con im2col/col2im
+   (14,6 ms per passo col CUDA graph), senza vincolo 1,1 ms (profilo del collaudo 3). Risultati non riproducibili bit per bit; la variabilita'
+   e' coperta dai tre semi. Il controllo eager/graph resta deterministico (differenza 0 in due collaudi).
+3. **Modello `full` (A1 + A2, descrittivo) solo per il seme 0.**
+4. **Job della replica: 3 ore** (al massimo 3 GPU-ore, stima ~2,1 h); un processo per GPU, CUDA graph. Tetto complessivo dell'attivita'
+   invariato (5 GPU-ore, 40 core-ore). Speso finora: 0,434 GPU-ore (collaudi 63985852 8 min 15 s, 63986820 11 min 46 s annullato da me
+   perche' ridondante, 63987432 6 min 2 s; billing 8 per GPU: 3,47 ore locali) e ~0,26 core-ore CPU (cinque checkout, due cache).

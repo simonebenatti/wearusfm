@@ -54,8 +54,10 @@ def summarize(units: list[dict], seeds_expected: list[int] | None = None, refere
 
     fold_ema = np.stack([arr(f, "test_ema") for f in FOLDS], axis=2)  # (S, K, 2, 5)
     fold_raw = np.stack([arr(f, "test_raw") for f in FOLDS], axis=2)
-    full_ema = arr("full", "test_ema")  # (S, K, 5)
-    full_raw = arr("full", "test_raw")
+    full_keys = [(s, k) for s in subjects for k in seeds if "full" in by_key[(s, k)]["models"]]  # full puo' mancare per alcuni semi
+    full_ema = np.array([by_key[key]["models"]["full"]["test_ema"]["mae_per_doa_deg"] for key in full_keys], dtype=float).reshape(-1, 5)
+    full_raw = np.array([by_key[key]["models"]["full"]["test_raw"]["mae_per_doa_deg"] for key in full_keys], dtype=float).reshape(-1, 5)
+    full_seeds = sorted({k for _, k in full_keys})
     primary = float(fold_ema.mean())
     per_seed = fold_ema.mean(axis=(0, 2, 3))
     subj_doa = fold_ema.mean(axis=(1, 2))  # (S, 5): media su semi e fold
@@ -79,9 +81,13 @@ def summarize(units: list[dict], seeds_expected: list[int] | None = None, refere
         "per_doa_mae_deg": [float(v) for v in fold_ema.mean(axis=(0, 1, 2))],
         "fold_mae_deg": {f: float(fold_ema[:, :, i].mean()) for i, f in enumerate(FOLDS)},
         "raw_fold_mae_deg": float(fold_raw.mean()),
-        "full_mae_deg": float(full_ema.mean()),
-        "raw_full_mae_deg": float(full_raw.mean()),
-        "full_per_seed_mae_deg": [float(v) for v in full_ema.mean(axis=(0, 2))],
+        "full_seeds": full_seeds,
+        "full_n_units": len(full_keys),
+        "full_mae_deg": float(full_ema.mean()) if full_keys else None,
+        "raw_full_mae_deg": float(full_raw.mean()) if full_keys else None,
+        "full_per_seed_mae_deg": {str(k): float(np.mean([by_key[(s, kk)]["models"]["full"]["test_ema"]["mae_deg"] for s, kk in full_keys
+                                                         if kk == k])) for k in full_seeds},
+        "fold_seed0_mae_deg": float(fold_ema[:, seeds.index(0)].mean()) if 0 in seeds else None,
         **acc,
         "alpha_mean": float(alphas.mean()),
         "alpha_sd": float(alphas.std()),
@@ -101,7 +107,9 @@ def to_markdown(s: dict) -> str:
         f"- Dev. std. sui 60 valori soggetto x DoA: {s['subject_doa_sd_deg']:.2f} (pubblicata 2,08, IWASI 2023).",
         f"- Accuratezza a 10 e 15 gradi: {s['acc_10deg']:.3f} e {s['acc_15deg']:.3f} (pubblicate 0,814 e 0,900).",
         f"- Alpha dell'EMA: media {s['alpha_mean']:.3f}, dev. std. {s['alpha_sd']:.3f} (pubblicate 0,862 e 0,044).",
-        f"- Senza EMA (fold): {s['raw_fold_mae_deg']:.3f}. Modello `full` (A1+A2): {s['full_mae_deg']:.3f} con EMA, {s['raw_full_mae_deg']:.3f} senza.",
+        f"- Senza EMA (fold): {s['raw_fold_mae_deg']:.3f}."
+        + (f" Modello `full` (A1+A2; semi {s['full_seeds']}, {s['full_n_units']} unita'): {s['full_mae_deg']:.3f} con EMA,"
+           f" {s['raw_full_mae_deg']:.3f} senza; fold con il solo seme 0: {s['fold_seed0_mae_deg']:.3f}." if s["full_mae_deg"] is not None else ""),
         f"- Sotto la LSTM di Koch et al. (7,04): {'si' if s['below_lstm_7_04'] else 'no'}.",
         "",
         "| Soggetto | MAE (gradi) |",
