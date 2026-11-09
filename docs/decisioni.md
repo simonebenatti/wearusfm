@@ -6858,3 +6858,80 @@ estensione scientifica, nuovi training, retry o pollingAI.
   OpenBLAS. Rispetto a un'estrazione via launcher con torch per primo, differenze all'ultimo bit nei segnali filtrati e nei target:
   rilevanti solo per confronti di identita' bit a bit fra percorsi diversi, non per il perimetro scientifico.
 - Domanda di Simone sul portare il seguito a 49.046: risposta in chat come lettura, nessuna decisione registrata.
+
+### 09/11/2026 — Claude, linea 1: pacchetto di recupero v2 della continuazione 300M 5.000 -> 19.618; in review, inviluppo emendato da firmare, nessun lancio
+
+- Mandato: alla domanda «Procedo con il pacchetto v2, con un pre-controllo CPU dell'identita' prima del training?» Simone ha
+  risposto «Sì, prepara v2» (09/11 alle 09:07). Poi ha inoltrato la review di GPT con «gpt suggerisce questo anche».
+- Review GPT `6f732090c136bbc972cfde09f0f42c85e5f307c2` (08/11 18:45, `docs/reviews/gpt_review_scaling_importorder_recovery_20261108.md`
+  sul ramo `codex/scaling-300m-20261104`): «APPROVATO il fix tecnico e l'impostazione del recupero a 19.618. Il commit 0c5b974
+  non è ancora un pacchetto operativo rilasciabile: conserva il piano del tentativo fallito.» Chiede un pacchetto di recupero
+  in sei punti. Recepimento, nel commit di deploy `cb48c5b81b2fc4ef07b67b616345836e585c6d02`:
+  1. Piano v2 immutabile `results/infra/scaling_300m_20261104/continuation19618_20261109_v2/training_plan.json`: wrapper corretto,
+     ID logici, riferimento di deploy e cartelle nuove. Piano, checkout e run del v1 restano com'erano. Si riparte dal checkpoint
+     originale a 5.000: il wrapper ne riverifica gli 11 file all'avvio, la rilettura prima del deploy li riverifica di nuovo.
+  2. Ricetta, dose, allocazione e tetto invariati: un test confronta i due piani chiave per chiave.
+  3. Stadio B legato al recupero da un'unica sorgente, `RECOVERY` in `scripts/scaling_plans19618.py`: ID di checkout,
+     pre-controllo e training, piano letto da `stage_table`, `build_extraction_plan` e `build_reader_plans`. Le prove del nuovo
+     checkout vanno in `evidence/checkout-training-v2/`; quelle del checkout v1 (63695634) restano. La lista dei percorsi ammessi
+     di `release_check` non cambia: invii e prove del recupero vanno in `submissions/` ed `evidence/`, gia' ammesse.
+  4. Parte scientifica dello stadio B invariata: estrattori, lettori, S8, bootstrap e proiezioni.
+  5. Test: i sette che si fermavano sul pin v1 girano sul piano v2. Test nuovi sul rifiuto di piano, ID e prove del tentativo
+     fallito. Legame piano-ricevuta verificabile: `extraction_plan` esige nella ricevuta `plan_sha256` e `execution_source_sha256`
+     del piano v2 e la ricevuta del suo pre-controllo; `build_extraction_plan` esige l'ID Slurm del job di recupero raccolto.
+     Righe d'invio nuove dal generatore `recovery_lines`.
+  6. Consuntivo e inviluppo emendato in `budget_envelope.json`, con aritmetica esatta (sotto).
+- Pre-controllo dell'identita': job solo CPU (4 CPU, 24G, 20 minuti al massimo, 0 GPU-ore) sul checkout congelato, con lo stesso
+  percorso di import del worker. Ricalcola con la CLI invariata i tre file d'identita' del run a 5.000 e li vuole identici bit per
+  bit. Il training ne esige la ricevuta, sullo stesso piano e codice, prima di creare uscite. 24G come la diagnosi 63861166, che
+  ha calcolato gli stessi insiemi su 4 CPU. La review di GPT scrive: «un eventuale canary numerico nel processo effettivo è un
+  miglioramento futuro, non una condizione aggiuntiva di questo recupero»; il pre-controllo resta un punto di questa review.
+- Rettifica della voce dell'08/11, segnalata da GPT e verificata su `diag4_63864244/summary.json` (torch_first contro
+  numpy_first, 1.204 array, 96 diversi):
+  - segnali: 42 array diversi. Elementi diversi per array: 1 in 27 array, 2 in 13, 3 in 1, 9 in 1, non «1-2 campioni per
+    finestra». Massimo assoluto 4,77e-7, massimo relativo per elemento 3,03e-6, non 1,6e-7.
+  - ancore: 54 array diversi, da 1 a 148 elementi (148 su 20.160 nel `log_env` dell'elemento 6 del primo batch fisso). Massimi
+    assoluti: `log_env` 3,9e-10, `log_rms` 3,2e-9, `band_shape` 1,4e-7, `ms_fast` 1,8e-7, `ms_slow` 3,9e-7. Non «fra 1e-16 e
+    1e-10» e «fino a 2e-7».
+  - «Dati invariati» era troppo forte: le 412 impronte sono una base per il futuro, non una prova retrospettiva dell'intero
+    corpus. La prova forte resta la riproduzione esatta delle identita' storiche.
+  - «i lettori importano solo numpy: percorso OpenBLAS» era troppo forte: ci sono import transitivi di torch e operazioni torch.
+    Descrizione corretta, di GPT: «entry point NumPy-first, con l'insieme delle dipendenze comune e congelato».
+- Inviluppo emendato, PROPOSTA da firmare (il freeze v2 e i suoi pin non cambiano):
+
+  | Voce | Freeze v2 | Emendato |
+  |---|---:|---:|
+  | GPU-ore con margine | 66,35 | 66,731111 |
+  | Core-ore CPU senza GPU, con margine (tetto 350 invariato) | 345,166667 | 347,584444 |
+  | Fase checkout, con margine | 0,8 | 1,066667 |
+  | Pre-controllo dell'identita', con margine (voce nuova) | — | 1,533333 |
+  | Core-ore nei job GPU, con margine | 530,8 | 533,848889 |
+
+  Restano nel conto il training fallito (0,227778 GPU-ore, 1,822222 core-ore) e le quattro diagnosi (0,153333 GPU-ore; 1,226667
+  core-ore nel job GPU e 0,617778 senza GPU). Il checkout v1 occupava gia' il posto del checkout del training nella tabella dello
+  stadio B: quello del recupero e' un sesto checkout. Cifre uguali al conto di GPT dell'08/11 (66,731111 e 346,051111), piu' il
+  pre-controllo. Ore locali del recupero: training 472 (billing 32 per 14,75 h), pre-controllo 1,33 e checkout 0,17 se il billing
+  della corsia seriale e' pari alle CPU, come nel checkout v1 (billing=2). Del passo restano, dopo il training, le estrazioni
+  (7 GPU-ore + 0,15) e i lettori come congelati. Escluse: dosi oltre 19.618 (la proposta di GPT per 49.046 resta una decisione
+  separata di Simone) e tempi di coda. Durate di training fallito e diagnosi: lette con sacct l'08/11; il `sacct -P` originale
+  si raccoglie con la rilettura prima del deploy, e una differenza ferma il recupero.
+- Decisione richiesta a Simone: firma dell'inviluppo emendato e del secondo tentativo dello stesso segmento (il freeze diceva un
+  segmento, nessun retry cieco). Senza firma non parte nulla, anche con la review favorevole di GPT.
+- Stato operativo: il certificato ssh e' scaduto il 09/11 fra le 09:10 e le 09:20. Mancano quindi rilettura fresca, attestazione
+  sacct, deploy e lanci; il rinnovo spetta a Simone. Il piano v2 e' costruito dalle letture del 06/11, identiche byte per byte.
+- Sequenza dopo review, firma e certificato, uno stop al primo esito diverso e nessun retry: rilettura con `remote_read.sh` e
+  `make_training_plan.py --check` (`passed: true`), riferimento di deploy, checkout (`COMPLETED 0:0`, `collect checkout-training`),
+  pre-controllo (`COMPLETED 0:0`, `collect identity-precheck`, `identical: true`), training (`collect training`), poi lo stadio B
+  come rivisto. Base di `release_check`: il commit del pacchetto v2 rivisto da GPT.
+- Righe d'invio: `continuation19618_20261109_v2/training_submit_lines.txt`, prodotte da `scaling_plans19618.py recovery-lines
+  --sha cb48c5b81b2fc4ef07b67b616345836e585c6d02`; un test le confronta col generatore e verifica che quel commit contenga il piano
+  e i cinque sorgenti d'esecuzione con gli hash del piano.
+- Test mirati: continuazione, cancelli, piani e lettura dello stadio B diedero 358 passati e 2 falliti, entrambi test nuovi con il
+  messaggio atteso sbagliato. Corretti i due test (e il messaggio del wrapper per `--out-dir` duplicato, poi piano e inviluppo
+  ricostruiti), il giro su recupero, launcher e continuazione senza le quattro prove lunghe di ripresa (passate nel giro precedente) ha dato
+  226 passati; i test del
+  recupero con le righe pubblicate 5 su 5. Aggiunte poi due prove del percorso completo del pre-controllo (CLI del trainer
+  sostituita come nel job reale, ricevuta prodotta e poi accettata dal training; differenza, ricetta diversa, ingresso cambiato,
+  uscita esistente o fuori piano, ordine numpy-first): 7 passate. Due rotture volute del wrapper (ripristino di `train`,
+  controllo del codice) le fanno fallire, 5 test ciascuna; wrapper poi ripristinato dal commit, SHA-256 uguale al pin del piano.
+  Suite completa `tests/cpu` su `cb48c5b` avviata alle 11:07 del 09/11.

@@ -957,3 +957,111 @@ def test_actual_precheck_allocation_must_be_the_small_serial_one_of_the_plan(pla
     monkeypatch.delenv("SLURM_JOB_ID")
     with pytest.raises(ValueError, match="real SLURM allocation"):
         C.verify_precheck_allocation(plan)
+
+
+@pytest.fixture
+def precheck(context, plan, tmp_path, monkeypatch):
+    """identity_precheck() end to end on local stand-ins: scheduler, git identity, the remote inputs and the identity files of the
+    5000 run. The trainer CLI is replaced by what train_jepa.main does up to train() (parse, configure, call), as in the real job
+    where train() itself is replaced; the identity sets by the published values (their computation has its own test above)."""
+    inputs = {}
+    for name in context["contract"]["inputs"]:
+        path = tmp_path / f"input_{name}.json"
+        path.write_text(json.dumps({"scales": {}, "window_s": {}, "name": name}))
+        inputs[name] = {"path": str(path), "sha256": R.sha256_file(path)}
+    local = {**context, "contract": {**context["contract"], "inputs": inputs}}
+    monkeypatch.setattr(C.M, "check_source_contract", lambda path: local)
+    monkeypatch.setattr(C.P, "code_identity", lambda expected: expected)
+    monkeypatch.setattr(C.R, "check_input_files", lambda *arguments: None)
+    monkeypatch.setattr(C, "verify_precheck_allocation", lambda plan: PRECHECK_JOB)
+    monkeypatch.setattr(C, "import_order", lambda: {"torch_before_numpy": True, "positions": {"torch": 1, "numpy": 2, "scipy": None}})
+    old, out = tmp_path / "old", tmp_path / "precheck"
+    old.mkdir()
+    sets = {"fixed_eval_set.json": {"seed": [0, 5151], "windows": [["a/1/1", None, 0, 10]], "batch_sha256": ["x"]},
+            "pose_panel_set.json": {"seed": [0, 7272], "batch_sha256": ["p"]}, "origin_sessions.json": ["a/1/1", "b/2/1"]}
+    for name, value in sets.items():
+        (old / name).write_text(json.dumps(value))
+    plan["previous"].update(run_dir=str(old), files={**plan["previous"]["files"], **{name: file_pin(old / name) for name in sets}})
+    plan.update(run_dir=str(tmp_path / "run"), receipt_dir=str(tmp_path / "receipts"))
+    plan["identity_precheck"]["receipt_dir"] = str(out)
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text(json.dumps(plan))
+    calls, behaviour = [], {}
+
+    def cli_main(argv):
+        args = C.CLI.build_parser().parse_args(argv)
+        cfg = C.CLI.build_config(args)
+        calls.append(list(argv))
+        if behaviour.get("seed"): cfg = replace(cfg, seed=cfg.seed + 1)  # noqa: E701
+        if behaviour.get("input"): Path(inputs["scales"]["path"]).write_text("{}")  # noqa: E701
+        C.R.train(cfg, args.manifest, args.root, args.out_dir, scales={}, device=args.device, num_workers=args.num_workers,
+                  time_limit_s=args.time_limit_s, log=print, window_s={}, init_from=args.init_from, dist=None,
+                  branch_from=args.branch_from)
+        return 0
+
+    def identity_sets(cfg, manifest, roots, scales, window_s):
+        computed = json.loads(json.dumps(sets))
+        if behaviour.get("differ"):  # the failure of 08/11: same windows, other content of the batches
+            computed["fixed_eval_set.json"]["batch_sha256"] = ["y"]
+        return computed
+
+    monkeypatch.setattr(C.CLI, "main", cli_main)
+    monkeypatch.setattr(C, "identity_sets", identity_sets)
+    return plan_path, out, behaviour, calls
+
+
+def test_precheck_runs_the_trainer_cli_on_cpu_and_writes_the_receipt_the_gpu_job_accepts(precheck):
+    plan_path, out, _, calls = precheck
+    trainer = C.R.train
+    receipt = C.identity_precheck(plan_path, CODE, out)
+    assert C.R.train is trainer and len(calls) == 1 and sorted(p.name for p in out.iterdir()) == [C.PRECHECK_RECEIPT]
+    assert json.loads((out / C.PRECHECK_RECEIPT).read_text()) == json.loads(json.dumps(receipt))
+    plan = json.loads(plan_path.read_text())
+    assert receipt["protocol"] == C.IDENTITY_PROTOCOL and receipt["identical"] is True and receipt["code_sha"] == CODE
+    assert receipt["plan_sha256"] == R.sha256_file(plan_path) and receipt["slurm_job_id"] == PRECHECK_JOB
+    assert receipt["previous_identity_sha256"] == {n: plan["previous"]["files"][n]["sha256"] for n in C.IDENTITY_FILES}
+    assert all(receipt["comparison"][n]["equal"] for n in C.IDENTITY_FILES)
+    assert receipt["cli_call"] == {"device": "cpu", "num_workers": 0, "distributed": False}
+    assert calls[0] == receipt["precheck_argv"][1:] and "--distributed" not in calls[0]
+    assert receipt["precheck_argv"][receipt["precheck_argv"].index("--out-dir") + 1] == str(out / "trainer_out")
+    assert {"execution_plan", "input:manifest", "previous:fixed_eval_set.json"} <= set(receipt["verified_inputs"])
+    # The consumer of the GPU job accepts exactly this receipt, for this plan and code only.
+    states = {}
+    admitted = C.check_identity_precheck(plan, CODE, C.P.file_identity(plan_path), states)
+    assert admitted["slurm_job_id"] == PRECHECK_JOB and admitted["sha256"] == R.sha256_file(out / C.PRECHECK_RECEIPT)
+    assert states["identity_precheck"]["sha256"] == admitted["sha256"]
+    with pytest.raises(ValueError, match="not passed"):
+        C.check_identity_precheck(plan, "a" * 40, C.P.file_identity(plan_path), {})
+    with pytest.raises(ValueError, match="no overwrite"):  # one pre-check per plan: no second run over the receipt
+        C.identity_precheck(plan_path, CODE, out)
+
+
+@pytest.mark.parametrize("change", ["differ", "seed", "input", "existing", "elsewhere", "order"])
+def test_precheck_refuses_differences_other_recipes_changed_inputs_and_reused_outputs(precheck, tmp_path, monkeypatch, change):
+    plan_path, out, behaviour, calls = precheck
+    trainer, plan = C.R.train, json.loads(plan_path.read_text())
+    if change in ("differ", "seed", "input"):
+        behaviour[change] = True
+    if change == "existing":
+        out.mkdir()
+    if change == "order":  # a process where numpy came first: the receipt says so and the GPU job refuses it
+        monkeypatch.setattr(C, "import_order", lambda: {"torch_before_numpy": False, "positions": {"torch": 9, "numpy": 2, "scipy": None}})
+        C.identity_precheck(plan_path, CODE, out)
+        with pytest.raises(ValueError, match="not passed"):
+            C.check_identity_precheck(plan, CODE, C.P.file_identity(plan_path), {})
+        return
+    message = {"differ": "identity sets differ", "seed": "CLI configuration differs", "input": "input changed",
+               "existing": "no overwrite", "elsewhere": "wrong pre-check directory"}[change]
+    with pytest.raises(ValueError, match=message):
+        C.identity_precheck(plan_path, CODE, tmp_path / "elsewhere" if change == "elsewhere" else out)
+    assert C.R.train is trainer  # the trainer entry point is restored whatever happened
+    if change == "differ":  # the receipt records where the sets differ, and the GPU job refuses it
+        receipt = json.loads((out / C.PRECHECK_RECEIPT).read_text())
+        assert receipt["identical"] is False and receipt["comparison"]["fixed_eval_set.json"]["batch_sha256_equal"] == [0, 1, 1]
+        assert receipt["comparison"]["fixed_eval_set.json"]["windows_equal"] == [1, 1, 1]
+        with pytest.raises(ValueError, match="not passed"):
+            C.check_identity_precheck(plan, CODE, C.P.file_identity(plan_path), {})
+    else:
+        assert not (out / C.PRECHECK_RECEIPT).exists()
+    if change in ("existing", "elsewhere"):
+        assert calls == []  # refused before computing anything

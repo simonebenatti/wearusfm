@@ -7,6 +7,14 @@ in questo commit (§5, §6, §8, §9 e regressioni in `tests/cpu/test_scaling_ga
 resta sospeso fino alla verifica di GPT della correzione.
 Completa `chain_plan.md` (§4 e §10), che resta com'e' nel commit di deploy `73524b6` del training.
 
+**Nota del 09/11/2026.** Il training 63696864 e' `FAILED 1:0` alla ripresa (08/11, ordine di import; diagnosi in
+`failure_63696864_diagnosis_20261108/`). Il training dello stadio B e' ora il recupero v2:
+`../continuation19618_20261109_v2/` (piano, letture, inviluppo emendato, righe d'invio). In `scripts/scaling_plans19618.py`
+l'unica sorgente della sua identita' e' `RECOVERY`: piano, ID di checkout, pre-controllo e training. Le prove del checkout del
+recupero vanno in `evidence/checkout-training-v2/`; quelle del pre-controllo in `evidence/identity-precheck/`. La ricevuta del
+training deve portare `plan_sha256` ed `execution_source_sha256` del piano v2. `release_check` non cambia; la sua base diventa il
+commit del pacchetto v2 rivisto da GPT. Le sezioni sotto descrivono il pacchetto del 06/11 e non sono riscritte.
+
 ## 1. Regola di rilascio e che cosa chiede questa review
 
 - Simone, 06/11 alle 17:22: «si autorizzo maq non voglio una ennersima review di gpt prima di ogni lancio, ne facciamo
