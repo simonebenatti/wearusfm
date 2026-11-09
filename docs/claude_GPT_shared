@@ -8552,6 +8552,14 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Simone: «non rispondono vai avanti». Il passo 0 (domanda agli autori) si chiude senza risposte; i passi 1-3 procedono coi cancelli congelati
   (`docs/decisioni.md`, bd06f10). Passo 1 (64001955) alle 18:46: 8 soggetti su 12 finiti, ~35 min l'uno; cancello solo sui 12 soggetti.
 
+### 2026-11-09 | Claude | Baseline TEMPONet, diagnosi: passo 1 concluso (64001955), cancello «indizio H1»; passo 2 inviato (64005316) | Codice 9584631
+
+- Passo 1: COMPLETED 0:0 in 57 min 37 s, 7,68 core-ore allocate, 12 soggetti su 12; ricevute in `results/temponet_db8/classical_20261109/`.
+  SVR fold 8,279, SVR full 7,366 (pubblicata 7,28): cancello «indizio H1», i modelli del paper sarebbero allenati sulle sessioni unite.
+  MLP (descrittivo) fold 7,691, full 6,824 (pubblicato 7,14). Limiti: C = 100 (bordo della griglia) in 97 fit su 120; nessun MLP a convergenza.
+- Conseguenza congelata: passo 2 (screening V1, V3, V13 in validazione) inviato come `TEMPONET-DB8-screen-20261109` = 64005316, 1 GPU, limite
+  2 h 30 min; poi passo 3 con `full` come grandezza principale (fold e full x 3 semi). Spesa GPU finora 2,907 ore su 12.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12535,3 +12543,9 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   modello su due sessioni (7,78) la riduce ma non la chiude. Causa non accertata: dettagli di training non dichiarati da COINS 2021 (passo
   delle finestre, schedule del learning rate, normalizzazione del bersaglio, modello finale sulle sessioni unite). La via piu' economica per
   chiarirli e' chiedere il setup agli autori; nessun rilancio fatto o previsto senza una decisione.
+
+### 2026-11-09 | Claude | Baseline TEMPONet, diagnosi: con la stessa catena l'MLP su WL batte la TEMPONet
+
+- MLP su Waveform Length 7,69 (fold) e 6,82 (full) contro TEMPONet 8,80 e 7,78: nel paper e' il contrario (TCN 6,89, MLP 7,14). Il protocollo
+  fold spiega circa un grado anche per la SVR (8,28 contro 7,37), ma la TCN resta sotto le baseline: difetto del suo training da isolare al
+  passo 2. La SVR usa quasi sempre il bordo della griglia di C: i suoi numeri sono un limite superiore.

@@ -108,3 +108,32 @@ nuovo tetto, **12 GPU-ore in tutto** (2,907 spese + 7 + margine), per decisione 
 
 Nessuna selezione sul test; niente quantizzazione int8 o QAT; nessuna variante oltre V1, V3 e V13 senza una nuova proposta; nessuna
 riscrittura dell'esito del run 63988277.
+
+## Esiti
+
+### Passo 0 — 09/11/2026
+
+Simone: «non rispondono vai avanti». Nessuna risposta degli autori; i passi 1-3 procedono coi cancelli congelati.
+
+### Passo 1 — job 64001955, 09/11/2026
+
+`TEMPONET-DB8-classical-20261109` = 64001955 (codice 9584631), COMPLETED 0:0 in 57 min 37 s (8 CPU, 7,68 core-ore allocate, 5 h 56 min di CPU),
+12 soggetti su 12. Ricevute in `results/temponet_db8/classical_20261109/`.
+
+**Cancello: «indizio H1».** SVR fold **8,279** (sopra 7,58), SVR full **7,366** (dentro 7,28 ± 0,30): il numero pubblicato della SVR torna con
+il training sulle sessioni 1 e 2 unite, non per fold. Conseguenza congelata: passo 2, poi passo 3 con `full` come grandezza principale.
+
+| Modello | fold con EMA | full con EMA | acc. 10 / 15 (fold) | pubblicato |
+|---|---|---|---|---|
+| SVR | 8,279 | **7,366** | 0,733 / 0,859 | 7,28 (0,795 / 0,883) |
+| MLP (descrittivo) | 7,691 | 6,824 | 0,778 / 0,894 | 7,14 (0,799 / 0,889) |
+| TEMPONet (run 63988277) | 8,795 | 7,778 (seme 0) | 0,691 / 0,822 | 6,89 (0,814 / 0,900) |
+
+Normodotati e amputati (descrittivo): SVR full 7,232 e 8,032; MLP full 6,581 e 8,038. S12 e' il soggetto peggiore anche per SVR e MLP (9,8-10,4),
+S11 fra i migliori: la difficolta' di S12 non e' propria della TCN.
+
+Limiti, da dire senza correggere a posteriori: la SVR ha scelto C = 100, il bordo superiore della griglia congelata, in 97 fit su 120 (C = 10 in
+21, C = 1 in 2): con C piu' grandi SVR fold e full potrebbero scendere ancora, quindi i numeri della SVR sono un limite superiore. Nessun MLP ha
+raggiunto la convergenza di scikit-learn in 200 iterazioni (l'MLP era descrittivo). Letture descrittive: con le stesse finestre e la stessa
+EMA, l'MLP su WL batte la TEMPONet in entrambi i protocolli (7,69 contro 8,80 fold; 6,82 contro 7,78 full), cosa che il paper non riporta (TCN
+6,89 contro MLP 7,14): resta un difetto proprio del training della TCN, oggetto del passo 2.

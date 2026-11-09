@@ -1,0 +1,60 @@
+{
+ "kind": "db8_classical_baselines_v1",
+ "args": {
+  "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/temponet_db8/cache_v2",
+  "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_db8/classical_20261109",
+  "summarize": null,
+  "subjects": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "workers": 8,
+  "mlp_seed": 0,
+  "time_budget_s": 12600.0
+ },
+ "code_sha": "9584631c16f43a8e380af83c6b76f8b4c307fc31",
+ "slurm_job_id": "64001955",
+ "python": "3.11.6",
+ "numpy": "1.26.4",
+ "sklearn": "1.4.1.post1",
+ "C_grid": [
+  0.1,
+  1.0,
+  10.0,
+  100.0
+ ],
+ "mlp_hidden": [
+  100,
+  100,
+  100
+ ],
+ "wl_window": 120,
+ "svr_step": 200,
+ "mlp_step": 50,
+ "started": "2026-11-09T17:57:34+0100",
+ "status": {
+  "S1": "ok",
+  "S2": "ok",
+  "S3": "ok",
+  "S4": "ok",
+  "S5": "ok",
+  "S6": "ok",
+  "S7": "ok",
+  "S8": "ok",
+  "S9": "ok",
+  "S10": "ok",
+  "S11": "ok",
+  "S12": "ok"
+ },
+ "seconds": 3438.6
+}
