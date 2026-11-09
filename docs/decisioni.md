@@ -7835,3 +7835,19 @@ con Simone.
 annullato, 63987432 6 min 2 s; run 63988277 2 h 28 min 21 s), 23,25 ore locali con billing 8; job solo CPU 0,27 core-ore (sei checkout per 181 s
 su 1 CPU; cache 63985267 fallita in 52 s e 63985594 in 47 s, 8 CPU). Spazio: cache 5,0 GB su `$SCRATCH` (cancellazione a 40 giorni, rigenerabile;
 `cache_v1` parziale da non usare), risultati 56 MB su `$WORK`.
+
+### 2026-11-09 — Diagnosi della distanza di TEMPONet dal paper: piano APPROVATO da Simone; cancelli, scelta e tetto congelati (Claude)
+
+Alla domanda «Do you approve the plan and the 12 GPU-hour cap?» Simone risponde «Approve the plan». Piano: `docs/temponet_db8_diagnosis_plan.md`
+(commit 91de0c7). L'approvazione comprende i lanci dei passi 1-3 (regola del 28/10) e il **nuovo tetto dell'attivita': 12 GPU-ore in tutto**
+(2,907 gia' spese), core-ore invariate (40 in tutto). Il passo 0 (domanda agli autori, bozza nel piano) resta a Simone; i passi 1-3 procedono.
+Congelati qui, prima del primo job:
+
+1. **Passo 1** (SVR RBF e MLP su Waveform Length, protocolli fold e full, griglia di C 0,1-1-10-100 scelta per DoA sulla MAE di validazione dopo
+   EMA, MLP (100, 100, 100) descrittivo). Lettura sulla MAE di test della SVR, riferimento 7,28, tolleranza 0,30: fold entro 6,98-7,58 ->
+   «fold coerente», passo 2; fold > 7,58 e full entro 6,98-7,58 -> «indizio H1», passo 2 e poi passo 3 con `full` come grandezza principale;
+   fold > 7,58 e full > 7,58 -> «indizio H2», stop alla TCN; ogni altro caso -> «non conclusivo», passo 2.
+2. **Passo 2** (V1 bersaglio standardizzato, V3 padding simmetrico, V13): si sceglie la variante con la MAE di validazione (fold, EMA, 12
+   soggetti x 2 fold, seme 0) piu' bassa solo se migliora la base V0 = 9,906 di almeno 0,20 gradi; altrimenti V0. Il test non entra nella scelta.
+3. **Passo 3**: configurazione scelta, 12 soggetti x 3 semi; riferimento 6,89, tolleranza 0,30, etichette della replica; composizione secondo il
+   passo 1 (fold x 3 semi + `full` seme 0, oppure tutto x 3 semi nel caso H1). Seconda analisi dichiarata, il verdetto del run 63988277 resta.
