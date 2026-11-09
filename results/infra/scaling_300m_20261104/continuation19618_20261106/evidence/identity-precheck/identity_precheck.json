@@ -1,0 +1,1217 @@
+{
+  "protocol": "scaling-continuation-identity-precheck-20261109-v1",
+  "arm": "T100-G-300M",
+  "start_step": 5000,
+  "end_step": 19618,
+  "identical": true,
+  "code_sha": "cb48c5b81b2fc4ef07b67b616345836e585c6d02",
+  "plan_sha256": "19441cd663db059840a36651d987d76d4154419258816058950590c1594b6fe0",
+  "slurm_job_id": "63974196",
+  "node": "login08.leonardo.local",
+  "previous_run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000",
+  "previous_identity_sha256": {
+    "fixed_eval_set.json": "af2f7cb1f54449af22a8bac8566c3736117ab15699474cc8b9609babfa028af5",
+    "pose_panel_set.json": "7b21e1c079111a11685dcc46a4606cca5110619fbab854a2f69f51153741c018",
+    "origin_sessions.json": "aa837c099d43b4e52bba68b31aabc4e0d40a385c7291dffd2a0ebee600e4dc9d"
+  },
+  "comparison": {
+    "fixed_eval_set.json": {
+      "equal": true,
+      "keys_differing": [],
+      "batch_sha256_equal": [
+        8,
+        8,
+        8
+      ],
+      "windows_equal": [
+        256,
+        256,
+        256
+      ]
+    },
+    "pose_panel_set.json": {
+      "equal": true,
+      "keys_differing": [],
+      "batch_sha256_equal": [
+        64,
+        64,
+        64
+      ],
+      "windows_equal": [
+        256,
+        256,
+        256
+      ]
+    },
+    "origin_sessions.json": {
+      "equal": true,
+      "length": [
+        19034,
+        19034
+      ],
+      "first_difference": null
+    }
+  },
+  "trainer_argv": [
+    "scripts/train_jepa.py",
+    "--preset",
+    "300m",
+    "--manifest",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+    "--root",
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "--root",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed",
+    "--scales",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+    "--out-dir",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v2",
+    "--num-workers",
+    "6",
+    "--distributed",
+    "--max-steps",
+    "19618",
+    "--window1-rules",
+    "--datasets",
+    "all",
+    "--prefetch",
+    "--fixed-eval-every",
+    "500",
+    "--manifest-sha256",
+    "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "--erank-min",
+    "38.4",
+    "--window-seconds",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+    "--batch-size",
+    "32",
+    "--accum-steps",
+    "1",
+    "--seed",
+    "0",
+    "--schedule",
+    "wsd",
+    "--total-steps",
+    "49046",
+    "--steps-at-d",
+    "98094",
+    "--keep-checkpoints",
+    "5000:19618",
+    "--lr",
+    "0.0001",
+    "--nested",
+    "1",
+    "--jepa-weight",
+    "0",
+    "--pose-root",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+    "--pose-weight",
+    "1.0",
+    "--pose-unprompted",
+    "on",
+    "--pose-grad-every",
+    "500",
+    "--pose-panel-every",
+    "500",
+    "--pose-panel-users",
+    "32",
+    "--pose-panel-recordings",
+    "2",
+    "--pose-panel-windows",
+    "4",
+    "--log-batch-origin",
+    "--masked-loss-radius",
+    "0",
+    "--tokenizer-activation",
+    "gelu",
+    "--window-ms",
+    "100.0",
+    "--time-limit-s",
+    "51300"
+  ],
+  "precheck_argv": [
+    "scripts/train_jepa.py",
+    "--preset",
+    "300m",
+    "--manifest",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+    "--root",
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "--root",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed",
+    "--scales",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+    "--out-dir",
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v2_identity_precheck/trainer_out",
+    "--num-workers",
+    "0",
+    "--max-steps",
+    "19618",
+    "--window1-rules",
+    "--datasets",
+    "all",
+    "--prefetch",
+    "--fixed-eval-every",
+    "500",
+    "--manifest-sha256",
+    "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "--erank-min",
+    "38.4",
+    "--window-seconds",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+    "--batch-size",
+    "32",
+    "--accum-steps",
+    "1",
+    "--seed",
+    "0",
+    "--schedule",
+    "wsd",
+    "--total-steps",
+    "49046",
+    "--steps-at-d",
+    "98094",
+    "--keep-checkpoints",
+    "5000:19618",
+    "--lr",
+    "0.0001",
+    "--nested",
+    "1",
+    "--jepa-weight",
+    "0",
+    "--pose-root",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose",
+    "--pose-weight",
+    "1.0",
+    "--pose-unprompted",
+    "on",
+    "--pose-grad-every",
+    "500",
+    "--pose-panel-every",
+    "500",
+    "--pose-panel-users",
+    "32",
+    "--pose-panel-recordings",
+    "2",
+    "--pose-panel-windows",
+    "4",
+    "--log-batch-origin",
+    "--masked-loss-radius",
+    "0",
+    "--tokenizer-activation",
+    "gelu",
+    "--window-ms",
+    "100.0",
+    "--time-limit-s",
+    "51300",
+    "--device",
+    "cpu"
+  ],
+  "cli_call": {
+    "device": "cpu",
+    "num_workers": 0,
+    "distributed": false
+  },
+  "import_order": {
+    "torch_before_numpy": false,
+    "positions": {
+      "torch": 989,
+      "numpy": 256,
+      "scipy": 1008
+    }
+  },
+  "numeric_libraries": [
+    "_fblas.cpython-311-x86_64-linux-gnu.so",
+    "_flapack.cpython-311-x86_64-linux-gnu.so",
+    "cython_blas.cpython-311-x86_64-linux-gnu.so",
+    "cython_lapack.cpython-311-x86_64-linux-gnu.so",
+    "libcublas.so.12.1.0.26",
+    "libcublasLt.so.12.1.0.26",
+    "libgomp.so.1.0.0",
+    "libmkl_avx512.so.2",
+    "libmkl_core.so.2",
+    "libmkl_gnu_thread.so.2",
+    "libmkl_intel_lp64.so.2",
+    "libmkl_vml_avx512.so.2",
+    "libomp.so",
+    "libopenblas64_p-r0-0cf96a72.3.23.dev.so",
+    "libopenblasp-r0-23e5df77.3.21.dev.so"
+  ],
+  "versions": {
+    "python": "3.11.6",
+    "numpy": "1.26.4",
+    "torch": "2.2.0a0+git6c8c5ad"
+  },
+  "threads": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "denormals_flushed": false,
+  "timing_seconds": {
+    "identity_seconds": 52.6
+  },
+  "training_source_contract_sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+  "verified_inputs": {
+    "scripts/slurm/lib_code_dir.sh": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/scripts/slurm/lib_code_dir.sh",
+      "sha256": "0f961f459516f146ffe935d757f71f054e5b5ee62b4c68e88ff34153d708ee19",
+      "bytes": 3570,
+      "inode": 252208040793652112,
+      "mtime_ns": 1794221360000000000,
+      "ctime_ns": 1794221366000000000
+    },
+    "scripts/slurm/tokenizer_train.sbatch": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/scripts/slurm/tokenizer_train.sbatch",
+      "sha256": "d9e7680777d3083a362bf4b2537c13e9c1d6ff716a4a7ce50c3e5576cb6a2381",
+      "bytes": 3945,
+      "inode": 252208040793652175,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221366000000000
+    },
+    "scripts/tokenizer_preflight.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/scripts/tokenizer_preflight.py",
+      "sha256": "3bdd90d0a30c1089953345c0b63415f8c40974939af6dd05da63f11d59affe69",
+      "bytes": 33007,
+      "inode": 270223527859195894,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221366000000000
+    },
+    "scripts/tokenizer_train.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/scripts/tokenizer_train.py",
+      "sha256": "d948fe30ad35543bdf7aa05fb174fd550cc398f0f2b63efc546592a1a3e2dda2",
+      "bytes": 11879,
+      "inode": 270223527859195896,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221366000000000
+    },
+    "scripts/train_jepa.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/scripts/train_jepa.py",
+      "sha256": "b9f7fcfccd68034d4cc566c1ef29008e9ab4d7233529f501f2076cda207f8006",
+      "bytes": 21704,
+      "inode": 270223527859195897,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221366000000000
+    },
+    "src/wearusfm/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 144121949730132657,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 162135431666780799,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/collate.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/collate.py",
+      "sha256": "0e4279b057b3fe3878fc14b9cf6532443807b15ae23e85ada7da2cacfd871f93",
+      "bytes": 4170,
+      "inode": 162135431666780800,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/consumer.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/consumer.py",
+      "sha256": "575f0ebcb6f635372674571a19c0c9c8b5bac0bcf59421469a71ad980cb41c09",
+      "bytes": 3519,
+      "inode": 162135431666780801,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/manifest.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/manifest.py",
+      "sha256": "489b99030660ebadd79bea89e1c3be4dd1a9383e50127a855937d43840f64430",
+      "bytes": 6705,
+      "inode": 162135431666780802,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/masking.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/masking.py",
+      "sha256": "4612b363c69dbb501ee646dc525e9c5568e9b51da0f89d5e97ad20eadef1a61d",
+      "bytes": 3943,
+      "inode": 162135431666780803,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/pipeline.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/pipeline.py",
+      "sha256": "d53fcb3464f24211e774e1dc1440e8aa26ec9d980e67cb97c3dcfedaaf109744",
+      "bytes": 6180,
+      "inode": 162135431666780804,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/pose_targets.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/pose_targets.py",
+      "sha256": "8453b16c72124603d95019d988e0c6c8e131f3ededf0b073555c6d90fc0519b9",
+      "bytes": 11038,
+      "inode": 162135431666780805,
+      "mtime_ns": 1794221361000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/pretraining_loader.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/pretraining_loader.py",
+      "sha256": "851e881a7cb216f3623f1ded585ce2d7517abd7c39966f803f74b8e88abc01b2",
+      "bytes": 44635,
+      "inode": 162135431666780806,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/pretraining_manifest.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/pretraining_manifest.py",
+      "sha256": "73d9dd681d5b66d9a1e8006f7931ccb34e1f47dfb7589e27ab0521f8217262d3",
+      "bytes": 23192,
+      "inode": 162135431666780807,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/processed.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/processed.py",
+      "sha256": "8329dc5ba8bb7d88796640f6dd4757c4e13c9ffad129ea2a320cd9e7dbadb9e9",
+      "bytes": 13858,
+      "inode": 162135431666780808,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/rvq_codes.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/rvq_codes.py",
+      "sha256": "fa4dba6f4e9e85946042fe6b0f0b77a7e80cee9c6e516c041393b67b02a0c67f",
+      "bytes": 8340,
+      "inode": 162135431666780809,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/shards.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/shards.py",
+      "sha256": "b10457010b08c12e3c33c7a68d303cb2459584ba7df3356b3928ac18076fd4e2",
+      "bytes": 2750,
+      "inode": 162135431666780810,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/synthetic.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/synthetic.py",
+      "sha256": "f881e775d0d1a815de36b0e1b8ba91ac9cb82600ed3dcf398082f17bf777f50f",
+      "bytes": 2894,
+      "inode": 162135431666780811,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/transforms.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/transforms.py",
+      "sha256": "a6707882a3f6b6d29846016f266b458f5b538cf01d9d471c4488196bd96691fd",
+      "bytes": 6682,
+      "inode": 162135431666780812,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/data/virtual_montage.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/data/virtual_montage.py",
+      "sha256": "40c352b91c60248e1aad5faf140cf89e56c6c3edba94f2571d58faaa62a4b8d5",
+      "bytes": 8576,
+      "inode": 162135431666780813,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/gate/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/gate/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 252208040793652180,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/gate/consistency.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/gate/consistency.py",
+      "sha256": "2b756bc46c205a3ee593cd37316c15e169cd45e20bc3f55bb01c407111b51e58",
+      "bytes": 7135,
+      "inode": 252208040793652181,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 162135431666780815,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/anchor_candidates.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/anchor_candidates.py",
+      "sha256": "ab44587869a98376e379249e8143cdf112e382e192515da3eaf97c0a9b7eb47a",
+      "bytes": 5253,
+      "inode": 162135431666780816,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/baselines.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/baselines.py",
+      "sha256": "ba3dbe19f596e51c4466f925fec59d886aa287f314af39f5810432a9e8fe589f",
+      "bytes": 2078,
+      "inode": 162135431666780817,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/benchmarks.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/benchmarks.py",
+      "sha256": "8f9baf3c4fc1c81af06bdbea27c8a93db95bff28a91f51b6333899d3c973de9f",
+      "bytes": 8042,
+      "inode": 162135431666780818,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/channel_readout.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/channel_readout.py",
+      "sha256": "e82a0796be2e10338b4c9a4615d92eed87666adc351d7e20a69342c5d35fed98",
+      "bytes": 9935,
+      "inode": 162135431666780819,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/downstream_ab.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/downstream_ab.py",
+      "sha256": "ea3b91423fe6c12743acb9679e4a3e9e214d84e4135769aeb4bbd82ed97b3164",
+      "bytes": 7344,
+      "inode": 162135431666780820,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/feature_sets.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/feature_sets.py",
+      "sha256": "9c16fc817ebc9acb11c25b1d96a0f469a4fb7d7cea68b43afaa75e9e452d7b4b",
+      "bytes": 4032,
+      "inode": 162135431666780821,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/features_hudgins.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/features_hudgins.py",
+      "sha256": "86678ba36d20dced450d673f3869e642be8dc76ed9cccdaab4e5ac1b26bec252",
+      "bytes": 2277,
+      "inode": 162135431666780822,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/fm_features.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/fm_features.py",
+      "sha256": "2561f2de0a6e8d797195041b2fa3695815adb44d202098d4c408c4175e11bcfc",
+      "bytes": 14250,
+      "inode": 162135431666780823,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/normalization.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/normalization.py",
+      "sha256": "d449bd524a2e69b456af3b9655e97b14e7932213235a98404ed3947291847df5",
+      "bytes": 2228,
+      "inode": 162135431666780824,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/p1_cross_subject.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/p1_cross_subject.py",
+      "sha256": "7045b947920d314e7b25e85dc41e42de6bc5dc42aef0812c485b247bda31c4ce",
+      "bytes": 6867,
+      "inode": 162135431666780825,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/pose_eval.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/pose_eval.py",
+      "sha256": "b333d59656f1b5d4fa0863aa967cc0158e8de0ad2cc040c7b8341579f3075f59",
+      "bytes": 27799,
+      "inode": 162135431666780826,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/probe.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/probe.py",
+      "sha256": "98dcc1a1fbd55593c0a1740d458df2f3943becde3eb2060d411e30e02e750998",
+      "bytes": 4764,
+      "inode": 162135431666780827,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/protocol.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/protocol.py",
+      "sha256": "07ac9fa1ada8f43e1aaf82f53145e47ee7dfef33d2c53415ad46f8acf0f2456c",
+      "bytes": 2664,
+      "inode": 162135431666780828,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/psd3_compare.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/psd3_compare.py",
+      "sha256": "068549c829c2d5f75e54615400bb62fd9510cc1876ff17d117c5d3904b2f7703",
+      "bytes": 15562,
+      "inode": 162135431666780829,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/psd3_inputs.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/psd3_inputs.py",
+      "sha256": "c50c94bc9bd5c40fcc2ebe36abd2576c85591476de885e3d182d4f90248e159d",
+      "bytes": 11301,
+      "inode": 162135431666780830,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/psd3_readers.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/psd3_readers.py",
+      "sha256": "73e0214a94e9888c2ff4d022818e2430afae2c4ed91d8fe407f28117fffec56b",
+      "bytes": 20465,
+      "inode": 162135431666780831,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/random_encoder.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/random_encoder.py",
+      "sha256": "6cdb50a5f2bda7974b16e41adcef645c780f33863a1bcabd4cb0adc2195591cc",
+      "bytes": 4551,
+      "inode": 162135431666780832,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/spectral_ab.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/spectral_ab.py",
+      "sha256": "63ec613c59896fde42a333cae7acf37c8958813ff1a3bbaf37896dab8a84e3ea",
+      "bytes": 7339,
+      "inode": 162135431666780833,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/spectral_probe.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/spectral_probe.py",
+      "sha256": "05fb15da39ccbac658bfb4b35d8504b64b4b4e75adb69c3794c7228ef35f2cea",
+      "bytes": 4223,
+      "inode": 162135431666780834,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/splits.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/splits.py",
+      "sha256": "51039fe49c211b8670445e1f037faae4c08b6290a881757e779971f71adc501e",
+      "bytes": 3597,
+      "inode": 162135431666780835,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/training_stability.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/training_stability.py",
+      "sha256": "00f74e4e4c779258e4d2692bd921f196a517695ab6e18d7a16617ca585cceb52",
+      "bytes": 6197,
+      "inode": 162135431666780836,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/harness/traps.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/harness/traps.py",
+      "sha256": "85f14e44a660a1ab744b84907682851df8f58b46a4ec6488a132755e85f0db24",
+      "bytes": 2063,
+      "inode": 162135431666780837,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 198164869239892299,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/camargo.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/camargo.py",
+      "sha256": "5b60789de19e0e37179445ca78fc7b09010b5205ad483c9b6e6efba5442721bb",
+      "bytes": 6014,
+      "inode": 198164869239892300,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/capgmyo.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/capgmyo.py",
+      "sha256": "66325bdbd3e7c95c3364dc5b96f4aa34936b67ee8779ed329c0b85141abcd081",
+      "bytes": 7516,
+      "inode": 198164869239892301,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/common.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/common.py",
+      "sha256": "4ef13d98e7440092b192848fb007acdc78bb8701f5d535126bc48f3ffb5ced04",
+      "bytes": 5142,
+      "inode": 198164869239892302,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/csl_hdemg.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/csl_hdemg.py",
+      "sha256": "e18d22dc592b20a69a60cd985ea2ce02bf2d9028670935487b3e3782e60c53a9",
+      "bytes": 5909,
+      "inode": 198164869239892303,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/emg2pose.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/emg2pose.py",
+      "sha256": "93f50ff29828ded0818db348a04fb981890e3054f8fdc3de1589db1d5d23e5fb",
+      "bytes": 8067,
+      "inode": 198164869239892304,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/emg2pose_pose.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/emg2pose_pose.py",
+      "sha256": "82aaff5c997ab69c1cc09cb0a9cf2dabf85bca90cbabec72fded1c0789d97a85",
+      "bytes": 47485,
+      "inode": 198164869239892305,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/emg2qwerty.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/emg2qwerty.py",
+      "sha256": "a271e9f21aebcb742bf5008ada2e5383dcd912544d05b77498b35a1c900d629f",
+      "bytes": 7718,
+      "inode": 198164869239892306,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/grabmyo.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/grabmyo.py",
+      "sha256": "930ecbccf36b2e23ca85e840eeedb93b0f735723bf7c7eacb247ecc3261ecc0d",
+      "bytes": 7725,
+      "inode": 198164869239892307,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/hyser.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/hyser.py",
+      "sha256": "11ff8c7aa34323dd1d769af8c493efe8da821b523baa0582239324cfe6dab12e",
+      "bytes": 10784,
+      "inode": 198164869239892308,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/kaifosh.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/kaifosh.py",
+      "sha256": "6e2e0380b8962b7eb352a718c5d948a25c08a2f9ccdd4581b2deb8ed2756b52a",
+      "bytes": 8162,
+      "inode": 198164869239892309,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/ninapro_db10.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/ninapro_db10.py",
+      "sha256": "e173696be5a628bc0ebb4fca73b9e6565d73cdf33e98f3d1517a9112c92b22fd",
+      "bytes": 10292,
+      "inode": 198164869239892310,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/ninapro_db5.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/ninapro_db5.py",
+      "sha256": "3c9e7586c31f77c40e0972fc99ccbe33f2299daed88debb17daa759d1007e6cc",
+      "bytes": 10929,
+      "inode": 198164869239892311,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/ninapro_db6.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/ninapro_db6.py",
+      "sha256": "fb3206e0d957a261c00bcd4a47c920c61a291d07f7b65bdc681209402f9ac5a1",
+      "bytes": 9492,
+      "inode": 198164869239892312,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/ninapro_db8.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/ninapro_db8.py",
+      "sha256": "e00c5bb19302197d95dc2b024f99cf147b6a1e68bc1865cd97d5f8d17e17d832",
+      "bytes": 11666,
+      "inode": 198164869239892313,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/ninapro_std.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/ninapro_std.py",
+      "sha256": "d3d8818c7543959301420bb16b6fc6bfd4c30c6eb0d28126dc6d1e650301c40e",
+      "bytes": 14242,
+      "inode": 198164869239892314,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/putemg.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/putemg.py",
+      "sha256": "f06b0b2bbf213cd5dce51eb917c2ad30af5fca7dac75181154e49536836afa4b",
+      "bytes": 7169,
+      "inode": 198164869239892315,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/ingest/zhang2026.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/ingest/zhang2026.py",
+      "sha256": "a019cc20e0a04bfcb8db6475bd8c3c0aceb3561b7a7e93400b33e793a510077c",
+      "bytes": 14821,
+      "inode": 198164869239892316,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/metadata/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/metadata/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 270223527859195902,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/metadata/schema.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/metadata/schema.py",
+      "sha256": "690d022f934e6a82bcf1c32e9ec1df43efdd2655222de01afa9323c9df52afc4",
+      "bytes": 11439,
+      "inode": 270223527859195903,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/metadata/taxonomy.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/metadata/taxonomy.py",
+      "sha256": "64f8ab4472a006d33f99202a0e9d6e3937e02bc971b82df3af8485ea33815af2",
+      "bytes": 15158,
+      "inode": 270223527859195904,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 216179035737182097,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/anchor_targets.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/anchor_targets.py",
+      "sha256": "d3394896bf7c1aada47687f8d230a02edd526f20e3c2dd55f1c78b5ee7052f58",
+      "bytes": 11326,
+      "inode": 216179035737182098,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/anchors.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/anchors.py",
+      "sha256": "d820d973d2967a0121e96dbbec3bf6d51f50f06aa68adb64a22228d13f771adc",
+      "bytes": 7856,
+      "inode": 216179035737182099,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/backbone.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/backbone.py",
+      "sha256": "fb6317751f6c4fe57327896419f479498d2e5e1ba92e3ca43634d5e7b75b5e89",
+      "bytes": 6745,
+      "inode": 216179035737182100,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/branch_masking.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/branch_masking.py",
+      "sha256": "db4e99584e6e51b0ad1dc6a0138100be356dadbfdc77daff16bca313c49bae16",
+      "bytes": 21302,
+      "inode": 216179035737182101,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/channel_codes.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/channel_codes.py",
+      "sha256": "390480ca460c852a52e8c1885c2725e1e1e0af95bd7f2bb1e3b36b15fdee36fb",
+      "bytes": 19237,
+      "inode": 216179035737182102,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/channel_identity.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/channel_identity.py",
+      "sha256": "8c0d2f9ecf387f7967c7492bf3373c82e924edc959520bbdde9522715608be12",
+      "bytes": 5581,
+      "inode": 216179035737182103,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/fm.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/fm.py",
+      "sha256": "6c91c1795e5506728dc1d163e0546d78c153e7674bdb11296e369337650d77b5",
+      "bytes": 14135,
+      "inode": 216179035737182104,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/frontend.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/frontend.py",
+      "sha256": "42cb6ae3f1084b6c2e1350416f9d356552d6009ed9a889b3c6dc8226d94a8ad0",
+      "bytes": 12983,
+      "inode": 216179035737182105,
+      "mtime_ns": 1794221362000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/geometry.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/geometry.py",
+      "sha256": "f2a5da0c3d570cbb333b59f7cbb90304611e2f27987d84a0c20c7893079c0d1e",
+      "bytes": 1944,
+      "inode": 216179035737182106,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/local_encoder.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/local_encoder.py",
+      "sha256": "b861eb53e7300248a1999765c078ffb17f9abaf14dd92a0124014bfa5ff4992b",
+      "bytes": 7961,
+      "inode": 216179035737182107,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/patch_tokens.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/patch_tokens.py",
+      "sha256": "6107faf2a15a009c2d43cf59927186c52eeb29bcce2426e820adb694f4d85e43",
+      "bytes": 5180,
+      "inode": 216179035737182108,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/perceiver.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/perceiver.py",
+      "sha256": "1ffb562901c4c8280128c8d4aa37afba92da5db2ffe919709ea26bc129f51481",
+      "bytes": 5112,
+      "inode": 216179035737182109,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/pose_head.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/pose_head.py",
+      "sha256": "01fe3d4d3b1dde0235fbfd53c95e5297a31ee28cdffbd04c5c6b8e8344e56717",
+      "bytes": 2055,
+      "inode": 216179035737182110,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/proxy.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/proxy.py",
+      "sha256": "759279987f2bd3c0b3fd4d50145de4287090b2f57c5ef236f359408f3f422537",
+      "bytes": 8898,
+      "inode": 216179035737182111,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/query_decoder.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/query_decoder.py",
+      "sha256": "a766a9a2528844a8cc1c09db6fb8645e581cecdc3f660d92ff759ed0990af0af",
+      "bytes": 7839,
+      "inode": 216179035737182112,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/spectral_branches.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/spectral_branches.py",
+      "sha256": "5ac9b30c6442a4c93d19bd708ca35cfeb454de83f249ede28332060bbd70599f",
+      "bytes": 30618,
+      "inode": 216179035737182113,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/spectral_step1.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/spectral_step1.py",
+      "sha256": "4a4173f7110287d9dd34635458decf4d84cffe2cdcc0b7e1c5f5249ff45f6b56",
+      "bytes": 8860,
+      "inode": 216179035737182114,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/model/spectral_targets.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/model/spectral_targets.py",
+      "sha256": "292582fb50c2583b8fc3181457cfa568d3480c2781f39b4c48df96fb2e5b205c",
+      "bytes": 1161,
+      "inode": 216179035737182115,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/preprocessing/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/preprocessing/__init__.py",
+      "sha256": "8ee00fefea175bb6eb63a8efdf3a7846c5e2e282eeb7228091520c5cc77116e4",
+      "bytes": 65,
+      "inode": 198164869239892318,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/preprocessing/canonical_view.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/preprocessing/canonical_view.py",
+      "sha256": "d01994231e6588f47d7445554e0f4a9b21baacdd3c8b639684fbd3bb066bd7ca",
+      "bytes": 5668,
+      "inode": 198164869239892319,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/tokenizer_checks/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/tokenizer_checks/__init__.py",
+      "sha256": "fd22070f64cac8f6a0c38e017bfb5f678abb6f860d865d0e26828778bb673629",
+      "bytes": 75,
+      "inode": 270223527859195906,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/tokenizer_checks/branch_probe.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/tokenizer_checks/branch_probe.py",
+      "sha256": "cdee56c465f5eb4c1cc1e20756990771bee34ffb08b9cbb91d2056231397ce1d",
+      "bytes": 7142,
+      "inode": 270223527859195907,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/tokenizer_checks/continuous_features.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/tokenizer_checks/continuous_features.py",
+      "sha256": "d3d4fa7f7d805e67b10ebacd3c6968e3ca37f3d749c9d425d9615d617f602049",
+      "bytes": 8316,
+      "inode": 270223527859195908,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/tokenizer_checks/emg2pose.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/tokenizer_checks/emg2pose.py",
+      "sha256": "0d8f7ed0d719b624e3fe11112a2b76ecbd217a95970e9f5dda731144c53e4d5c",
+      "bytes": 1595,
+      "inode": 270223527859195909,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/tokenizer_checks/metrics.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/tokenizer_checks/metrics.py",
+      "sha256": "8067b9d0d00a36e2a13b0672d832d4b8dbba7c3ae1bc7f8560ab29de9ab5b701",
+      "bytes": 11580,
+      "inode": 270223527859195910,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/tokenizer_checks/neurorvq.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/tokenizer_checks/neurorvq.py",
+      "sha256": "8eda3ae7ae2a48fb1289129758eaa1ff6a8454d9acf3acadecc868523c873492",
+      "bytes": 8094,
+      "inode": 270223527859195911,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/tokenizer_checks/pipeline.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/tokenizer_checks/pipeline.py",
+      "sha256": "dd7e1567cadda3e1b351771c063987566698f631e09359a6c1969ef5003f6bb0",
+      "bytes": 15631,
+      "inode": 270223527859195912,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/tokenizer_checks/run_io.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/tokenizer_checks/run_io.py",
+      "sha256": "9bda5451e2d16730fab0fe444e26b391bcf4aeb35a16d658c13f25372fa91518",
+      "bytes": 1723,
+      "inode": 270223527859195913,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/tokenizer_checks/sessions.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/tokenizer_checks/sessions.py",
+      "sha256": "4e3b25b5f341ced08056554ddfb89e14592100088cdafd30bfcff14f53f15a88",
+      "bytes": 7102,
+      "inode": 270223527859195914,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/training/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/training/__init__.py",
+      "sha256": "e9477c745cfaa543b2abd30ffdcb0fb64673b5bc1177c552262a5fe5f945eaf1",
+      "bytes": 63,
+      "inode": 216179035737182117,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/training/jepa.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/training/jepa.py",
+      "sha256": "98c715597360ad133d3d5f26b10077f4e9c5ca3a6c80b58fac8bc2e5c8375f29",
+      "bytes": 40920,
+      "inode": 216179035737182118,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/training/masking.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/training/masking.py",
+      "sha256": "6049614839ecf692564b05fc09fcdb5af8ade8c84116a8b4e0893cb489267f79",
+      "bytes": 12628,
+      "inode": 216179035737182119,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/training/pairing.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/training/pairing.py",
+      "sha256": "fba0b9d21f916c14d91b297e9a7705738279a68b98ac689b86a70b6f7e540a4b",
+      "bytes": 1961,
+      "inode": 216179035737182120,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/training/run.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/training/run.py",
+      "sha256": "c7d8ee87ad4ff3ff7951f545b78b41da5ed6cee6f162429ff0fe503b2397acac",
+      "bytes": 116966,
+      "inode": 216179035737182121,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "src/wearusfm/training/spectral_calibration.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/src/wearusfm/training/spectral_calibration.py",
+      "sha256": "51ac24b23c791a7701f357b4090d3e97c81d7bf8cb903b037b635282cc701318",
+      "bytes": 2961,
+      "inode": 216179035737182122,
+      "mtime_ns": 1794221363000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "comparison": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/results/infra/tokenizer_review_20261103/comparison_configurations.json",
+      "sha256": "5d43bda19389e8f9829ddc2a21f4a97804082cbf5067a047e74d422e0b14c071",
+      "bytes": 8792,
+      "inode": 252208040793652008,
+      "mtime_ns": 1794221356000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "config_30m": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/results/infra/tokenizer_review_20261103/config_T100-G.json",
+      "sha256": "dd68e9008b853b12ee38111c4c37370157f166aa70375cfb308bd22d5b6ab0fd",
+      "bytes": 3593,
+      "inode": 252208040793652009,
+      "mtime_ns": 1794221356000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "reference_training_receipt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/results/infra/tokenizer_execution_20261103/5000/T100-G/receipt.json",
+      "sha256": "d0a50fe777d1bf66df7670158324b48444875c645c1a9bbcb3d55e40560d96c7",
+      "bytes": 2876,
+      "inode": 252208040793651970,
+      "mtime_ns": 1794221354000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "contract": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/results/infra/scaling_300m_20261104/training_source_contract.json",
+      "sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+      "bytes": 13685,
+      "inode": 180150727371430270,
+      "mtime_ns": 1794221352000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "execution_plan": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/results/infra/scaling_300m_20261104/continuation19618_20261109_v2/training_plan.json",
+      "sha256": "19441cd663db059840a36651d987d76d4154419258816058950590c1594b6fe0",
+      "bytes": 22288,
+      "inode": 234194319613912462,
+      "mtime_ns": 1794221350000000000,
+      "ctime_ns": 1794221367000000000
+    },
+    "execution_source:scripts/scaling_continue.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/scripts/scaling_continue.py",
+      "sha256": "5d0df17d24193ac544e5e7a5a1a0871c297b7f435c1f95e7806f68d0fe9b44cc",
+      "bytes": 49177,
+      "inode": 270223527859195860,
+      "mtime_ns": 1794221359000000000,
+      "ctime_ns": 1794221366000000000
+    },
+    "execution_source:scripts/scaling_preflight.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/scripts/scaling_preflight.py",
+      "sha256": "0a3224190957986425cd17e24001a3b8bcc7ba98fa1c190d45bbcc1e48531e04",
+      "bytes": 18784,
+      "inode": 270223527859195867,
+      "mtime_ns": 1794221359000000000,
+      "ctime_ns": 1794221366000000000
+    },
+    "execution_source:scripts/scaling_train.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/scripts/scaling_train.py",
+      "sha256": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac",
+      "bytes": 27444,
+      "inode": 270223527859195874,
+      "mtime_ns": 1794221359000000000,
+      "ctime_ns": 1794221366000000000
+    },
+    "execution_source:scripts/slurm/scaling_continue.sbatch": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/scripts/slurm/scaling_continue.sbatch",
+      "sha256": "66cadb957c4bf1c77351b860f2c4baf56c7750cbdee4419d05d998a45b7f7aa0",
+      "bytes": 3994,
+      "inode": 252208040793652137,
+      "mtime_ns": 1794221360000000000,
+      "ctime_ns": 1794221366000000000
+    },
+    "execution_source:scripts/slurm/scaling_identity_precheck.sbatch": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2/scripts/slurm/scaling_identity_precheck.sbatch",
+      "sha256": "2cdcbe9b2f307f6131c61f4a16fdecb9d5491810a553f91e1b116d10f37126c5",
+      "bytes": 4328,
+      "inode": 252208040793652140,
+      "mtime_ns": 1794221360000000000,
+      "ctime_ns": 1794221366000000000
+    },
+    "input:manifest": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+      "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+      "bytes": 1688959,
+      "inode": 270223356144401172,
+      "mtime_ns": 1792085383000000000,
+      "ctime_ns": 1792085383000000000
+    },
+    "input:scales": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+      "sha256": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+      "bytes": 2234011,
+      "inode": 270223339937658928,
+      "mtime_ns": 1791379314000000000,
+      "ctime_ns": 1791379314000000000
+    },
+    "input:windows": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+      "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+      "bytes": 2156652,
+      "inode": 270223339937655074,
+      "mtime_ns": 1791219393000000000,
+      "ctime_ns": 1791219393000000000
+    },
+    "input:pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+      "bytes": 7377,
+      "inode": 162139590872838380,
+      "mtime_ns": 1793104228000000000,
+      "ctime_ns": 1793104228000000000
+    },
+    "previous:fixed_eval_set.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000/fixed_eval_set.json",
+      "sha256": "af2f7cb1f54449af22a8bac8566c3736117ab15699474cc8b9609babfa028af5",
+      "bytes": 22232,
+      "inode": 234195181878947377,
+      "mtime_ns": 1793859457000000000,
+      "ctime_ns": 1793859457000000000
+    },
+    "previous:pose_panel_set.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000/pose_panel_set.json",
+      "sha256": "7b21e1c079111a11685dcc46a4606cca5110619fbab854a2f69f51153741c018",
+      "bytes": 83267,
+      "inode": 234195181878947378,
+      "mtime_ns": 1793859478000000000,
+      "ctime_ns": 1793859478000000000
+    },
+    "previous:origin_sessions.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000/origin_sessions.json",
+      "sha256": "aa837c099d43b4e52bba68b31aabc4e0d40a385c7291dffd2a0ebee600e4dc9d",
+      "bytes": 1757497,
+      "inode": 234195181878947379,
+      "mtime_ns": 1793859478000000000,
+      "ctime_ns": 1793859478000000000
+    }
+  }
+}

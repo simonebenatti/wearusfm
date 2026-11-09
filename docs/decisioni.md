@@ -6976,3 +6976,25 @@ estensione scientifica, nuovi training, retry o pollingAI.
   rilasciato da GPT il 07/11 (`25d2c41`), con i soli collegamenti operativi del recupero.
 - Restano invariati: inviluppo firmato (`94f2b90`), rilettura e attestazione (`1f97319`). Quando GPT torna disponibile puo'
   rivedere il pacchetto a posteriori; un problema trovato si corregge e si registra, senza riscrivere i risultati.
+
+### 09/11/2026 — Claude, linea 1: recupero v2 fermato prima del training per un errore del mio cancello; identita' confermata, nessuna GPU usata
+
+- Eseguito, secondo le righe pubblicate: riferimento `deploy/scaling_300m_continuation19618_20261109_v2` a `cb48c5b`; checkout
+  `SCALING-300M-cont19618-checkout-20261109-v2` = job 63974034, `COMPLETED 0:0`, 32 s, 0,017778 core-ore (checkout a `cb48c5b`,
+  pulito, in sola lettura; hash di piano, wrapper e launcher uguali ai pin); pre-controllo
+  `SCALING-300M-cont19618-idcheck-20261109-v2` = job 63974196, `COMPLETED 0:0`, 73 s, 0,081111 core-ore, picco 2,08 GiB.
+  Prove: `continuation19618_20261106/evidence/checkout-training-v2/` e `evidence/identity-precheck/`; ricevute d'invio in
+  `submissions/`.
+- Esito del pre-controllo: `identical: true`. Insieme fisso 8/8 batch e 256/256 finestre, pannello della posa 64/64 batch, sessioni
+  19.034 su 19.034, tutti uguali al run a 5.000. Caricati `libmkl_avx512` e `libmkl_vml_avx512`, il percorso numerico del run a 5.000.
+- Fermo: la ricevuta porta `import_order.torch_before_numpy: false`, e il training lo esige `true`. Il training rifiuterebbe la
+  ricevuta all'avvio, dopo l'attesa in coda GPU. La riga 4 non e' stata inviata.
+- Causa, verificata: errore mio nella misura. Python sposta un modulo in fondo a `sys.modules` quando ne termina l'esecuzione,
+  quindi l'ordine registrato e' quello di completamento. Torch importa numpy mentre carica `torch._C`; `-X importtime` sul login
+  lo conferma. Torch completa quindi dopo numpy anche quando il suo import parte per primo. All'avvio dell'interprete numpy non e'
+  caricato: 33 moduli, nessun `sitecustomize`. Prova locale: `json` completa dopo `json.decoder`; con numpy assente prima di
+  `import torch`, torch risulta comunque dopo numpy. I test non l'hanno colto perche' sostituivano proprio quella misura.
+- Proposta, NON eseguita: un v3 che legge `"numpy" in sys.modules` subito prima di `import torch` e mette questa misura nel cancello,
+  accanto a `identical` e ai pin. Servono piano, riferimento di deploy, checkout e pre-controllo nuovi; il training non cambia.
+  Costo in piu', solo CPU, con margine: 0,266667 core-ore per il checkout e 1,533333 per il pre-controllo. Il totale CPU senza GPU
+  passa a 349,384444 su 350. Serve la decisione di Simone, perche' cambia due voci dell'inviluppo firmato.
