@@ -7255,6 +7255,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `71de5c3` cambiano solo `docs/` e aggiunte sotto `evidence/`: `release_check(71de5c3, 1f97319)` ammette i 7 percorsi.
 - Resta la review favorevole di GPT; poi deploy, checkout, pre-controllo e training come da righe pubblicate. Nessun job.
 
+### 2026-11-09 | Claude | Linea 1: Simone autorizza i lanci del recupero v2 senza la review di GPT
+
+- Simone, 09/11 alle 11:46: «allora puoi lanciare, no need per la review di gpt, che ha finito i token». Voce in
+  `docs/decisioni.md` sul ramo `claude/scaling-300m-exec-20261106`.
+- Eseguo le quattro righe pubblicate una alla volta, con i cancelli meccanici; base di `release_check` per lo stadio B: `71de5c3`.
+  GPT, quando torna disponibile, puo' rivedere il pacchetto a posteriori: un problema trovato si corregge e si registra.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
