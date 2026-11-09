@@ -1,0 +1,201 @@
+=== date
+2026-11-09 12:21:30 CET
+login02.leonardo.local
+=== run 300M a 5000
+total 9141776
+-rw-r--r--. 1 sbenatti interactive 4673783740 2026-11-05 11:21 checkpoint.pt
+-rw-r--r--. 1 sbenatti interactive 4673783740 2026-11-05 11:21 checkpoint_step0005000.pt
+-rw-r--r--. 1 sbenatti interactive       3214 2026-11-05 07:16 config.json
+-rw-r--r--. 1 sbenatti interactive      17136 2026-11-05 11:20 fixed_eval.jsonl
+-rw-r--r--. 1 sbenatti interactive      22232 2026-11-05 07:17 fixed_eval_set.json
+-rw-r--r--. 1 sbenatti interactive    7765417 2026-11-05 11:20 metrics.jsonl
+-rw-r--r--. 1 sbenatti interactive    1757497 2026-11-05 07:17 origin_sessions.json
+-rw-r--r--. 1 sbenatti interactive    3914601 2026-11-05 11:21 pose_panel.jsonl
+-rw-r--r--. 1 sbenatti interactive      83267 2026-11-05 07:17 pose_panel_set.json
+-rw-r--r--. 1 sbenatti interactive        210 2026-11-05 07:16 pose_provenance.json
+-rw-r--r--. 1 sbenatti interactive       1824 2026-11-05 11:21 summary.json
+=== cartella runs scaling
+total 12
+drwxr-xr-x. 2 sbenatti interactive 4096 2026-11-04 21:09 production_memory_v1
+drwxr-xr-x. 2 sbenatti interactive 4096 2026-11-08 05:28 T100-G-300M-19618-from5000
+drwxr-xr-x. 2 sbenatti interactive 4096 2026-11-05 11:21 T100-G-300M-5000
+=== ricevute 5000
+total 92
+-rw-r--r--. 1 sbenatti interactive  3595 2026-11-05 11:22 config.json
+-rw-r--r--. 1 sbenatti interactive 65641 2026-11-05 07:16 launch.json
+-rw-r--r--. 1 sbenatti interactive 15217 2026-11-05 11:22 receipt.json
+-rw-r--r--. 1 sbenatti interactive  1902 2026-11-05 11:22 summary.json
+=== cartella ricevute scaling
+total 12
+drwxr-xr-x. 2 sbenatti interactive 4096 2026-11-04 18:45 preflight_05d4bf0
+drwxr-xr-x. 2 sbenatti interactive 4096 2026-11-04 21:09 production_memory_v1
+drwxr-xr-x. 2 sbenatti interactive 4096 2026-11-05 11:22 scientific5000_v1
+=== cartella ricevute scaling su scratch
+total 8
+drwxr-xr-x. 2 sbenatti interactive 4096 2026-11-08 05:28 continuation19618_v1
+drwxr-xr-x. 2 sbenatti interactive 4096 2026-11-09 11:52 continuation19618_v2_identity_precheck
+=== controllo 30M T100-G
+total 1376936
+-rw-r--r--. 1 sbenatti interactive 454381728 2026-11-03 23:27 checkpoint.pt
+-rw-r--r--. 1 sbenatti interactive 454381728 2026-11-03 12:34 checkpoint_step0005000.pt
+-rw-r--r--. 1 sbenatti interactive 454381728 2026-11-03 23:27 checkpoint_step0019618.pt
+-rw-r--r--. 1 sbenatti interactive      3213 2026-11-03 20:19 config.json
+-rw-r--r--. 1 sbenatti interactive     62338 2026-11-03 23:25 fixed_eval.jsonl
+-rw-r--r--. 1 sbenatti interactive     22232 2026-11-03 11:30 fixed_eval_set.json
+-rw-r--r--. 1 sbenatti interactive  30421878 2026-11-03 23:27 metrics.jsonl
+-rw-r--r--. 1 sbenatti interactive   1757497 2026-11-03 11:30 origin_sessions.json
+-rw-r--r--. 1 sbenatti interactive  14426197 2026-11-03 23:25 pose_panel.jsonl
+-rw-r--r--. 1 sbenatti interactive     83267 2026-11-03 11:30 pose_panel_set.json
+-rw-r--r--. 1 sbenatti interactive       210 2026-11-03 20:19 pose_provenance.json
+-rw-r--r--. 1 sbenatti interactive      2220 2026-11-03 23:27 summary.json
+=== cache controllo 19618
+--- pose
+total 2683156
+-rw-r--r--. 1 sbenatti interactive    3725360 2026-11-04 08:49 receipt.json
+-rw-r--r--. 1 sbenatti interactive      19708 2026-11-04 08:24 train.log
+-rw-r--r--. 1 sbenatti interactive  257737302 2026-11-04 08:24 train_subset.npz
+-rw-r--r--. 1 sbenatti interactive       2445 2026-11-04 08:24 train_subset.npz.provenance.json
+-rw-r--r--. 1 sbenatti interactive     190921 2026-11-04 08:49 val.log
+-rw-r--r--. 1 sbenatti interactive 2485853898 2026-11-04 08:49 val.npz
+-rw-r--r--. 1 sbenatti interactive       2435 2026-11-04 08:49 val.npz.provenance.json
+--- p1
+total 1934660
+-rw-r--r--. 1 sbenatti interactive 829630226 2026-11-04 08:28 ninapro_db2.npz
+-rw-r--r--. 1 sbenatti interactive      2558 2026-11-04 08:35 ninapro_db2.npz.provenance.json
+-rw-r--r--. 1 sbenatti interactive 211675898 2026-11-04 08:30 ninapro_db3.npz
+-rw-r--r--. 1 sbenatti interactive      2555 2026-11-04 08:35 ninapro_db3.npz.provenance.json
+-rw-r--r--. 1 sbenatti interactive 939641974 2026-11-04 08:35 ninapro_db6.npz
+-rw-r--r--. 1 sbenatti interactive      2557 2026-11-04 08:36 ninapro_db6.npz.provenance.json
+-rw-r--r--. 1 sbenatti interactive       869 2026-11-04 08:35 p1.log
+-rw-r--r--. 1 sbenatti interactive    110345 2026-11-04 08:36 receipt.json
+--- p2
+total 717608
+-rw-r--r--. 1 sbenatti interactive 729002730 2026-11-04 08:48 epn612.npz
+-rw-r--r--. 1 sbenatti interactive      2585 2026-11-04 08:49 epn612.npz.provenance.json
+-rw-r--r--. 1 sbenatti interactive       729 2026-11-04 08:49 p2.log
+-rw-r--r--. 1 sbenatti interactive    199863 2026-11-04 08:49 receipt.json
+-rw-r--r--. 1 sbenatti interactive   5606354 2026-11-04 08:49 uci_emg.npz
+-rw-r--r--. 1 sbenatti interactive      2580 2026-11-04 08:49 uci_emg.npz.provenance.json
+=== riferimenti posa
+total 2679824
+-rw-r--r--. 1 sbenatti interactive       1732 2026-10-29 01:52 extraction_receipt.json
+-rw-r--r--. 1 sbenatti interactive  257675076 2026-10-29 01:27 train_subset.npz
+-rw-r--r--. 1 sbenatti interactive     110378 2026-10-29 01:27 train_subset.npz.provenance.json
+-rw-r--r--. 1 sbenatti interactive 2485295825 2026-10-29 01:52 val.npz
+-rw-r--r--. 1 sbenatti interactive    1038241 2026-10-29 01:52 val.npz.provenance.json
+=== campagne scaling
+/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_comparison_inputs_20261106_v1
+/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261106_v1
+/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2
+/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_budgets_20261105_v1
+/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1
+/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1
+/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_memory_20261104_v1
+/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_preflight_20261104_05d4bf0
+/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_scientific5000_20261104_v1
+=== deploy refs scaling
+refs/heads/deploy/scaling_300m_comparison_inputs_20261106_v1 2b7b4551c6059d5456e6e12d171ef687eb0818f4
+refs/heads/deploy/scaling_300m_continuation19618_20261106_v1 73524b63be534f81b3db4ade4b7fc7f47129a0f3
+refs/heads/deploy/scaling_300m_continuation19618_20261109_v2 cb48c5b81b2fc4ef07b67b616345836e585c6d02
+refs/heads/deploy/scaling_300m_cpu_budgets_20261105_v1 ec221a64f47b66c6c7ac0b04444f5421b3e58e7a
+refs/heads/deploy/scaling_300m_cpu_plans_20261105_v1 1bde83e5be036ad6168ad25f6ffa80069ea58700
+refs/heads/deploy/scaling_300m_evaluation_20261105_v1 aef665ba7ea66fc80291846487907bb3ef9107df
+refs/heads/deploy/scaling_300m_memory_20261104_v1 0d5f0f90074bbaf1142be86d22490e360b632c63
+refs/heads/deploy/scaling_300m_preflight_20261104_05d4bf0 05d4bf0663481522a56d96c0b07847924cf5bd26
+refs/heads/deploy/scaling_300m_scientific5000_20261104_v1 dc96559405b5fff971a3be06a6ca59c992d342dc
+=== qos normal
+normal|40|||||||
+=== assoc
+iscrb_wearusfm||boost_qos_bprod,boost_qos_dbg,boost_qos_lprod,normal|||
+=== partition
+PartitionName=boost_usr_prod
+AllowQos=ALL
+QoS=boost_usr_prod
+DefaultTime=00:30:00
+MaxNodes=64
+MaxTime=1-00:00:00
+State=UP
+TotalNodes=3320
+DefMemPerCPU=15400
+MaxMemPerNode=UNLIMITED
+=== partition seriale
+PartitionName=lrd_all_serial
+MaxTime=04:00:00
+MaxCPUsPerNode=UNLIMITED
+State=UP
+TotalNodes=2
+DefMemPerCPU=3850
+MaxMemPerNode=UNLIMITED
+=== reservations
+ReservationName=s_int_SNC StartTime=2026-07-22T18:17:48 EndTime=2027-07-22T18:17:48 Duration=365-00:00:00
+   Nodes=lrdn[0944,1416,1590,3320,4574,4586,4945,4948] NodeCnt=8 CoreCnt=576 Features=(null) PartitionName=(null) Flags=MAINT,SPEC_NODES
+   TRES=cpu=576
+   Users=ddibari0,amonteru,fsalvado,ibaccare,gamati01 Groups=(null) Accounts=(null) Licenses=(null) State=ACTIVE BurstBuffer=(null)
+   MaxStartDelay=(null)
+
+ReservationName=maint_dcgp_PB1 StartTime=2027-01-15T08:00:00 EndTime=2027-01-18T08:00:00 Duration=3-00:00:00
+   Nodes=lrdn[3745-4992] NodeCnt=1248 CoreCnt=139776 Features=(null) PartitionName=dcgp_usr_prod Flags=SPEC_NODES
+   TRES=cpu=139776
+   Users=(null) Groups=(null) Accounts=cin_sanity Licenses=(null) State=INACTIVE BurstBuffer=(null)
+   MaxStartDelay=(null)
+
+ReservationName=maint_4B1 StartTime=2026-11-10T07:00:00 EndTime=2026-11-12T07:00:00 Duration=2-00:00:00
+   Nodes=lrdn[2701-3240] NodeCnt=540 CoreCnt=17280 Features=(null) PartitionName=boost_usr_prod Flags=MAINT,SPEC_NODES
+   TRES=cpu=17280
+   Users=(null) Groups=(null) Accounts=cin_sanity Licenses=(null) State=INACTIVE BurstBuffer=(null)
+   MaxStartDelay=(null)
+
+ReservationName=maint_4B2 StartTime=2026-11-12T07:00:00 EndTime=2026-11-14T07:00:00 Duration=2-00:00:00
+   Nodes=lrdn[3241-3420] NodeCnt=180 CoreCnt=5760 Features=(null) PartitionName=boost_usr_prod Flags=MAINT,SPEC_NODES
+   TRES=cpu=5760
+   Users=(null) Groups=(null) Accounts=cin_sanity Licenses=(null) State=INACTIVE BurstBuffer=(null)
+   MaxStartDelay=(null)
+
+ReservationName=maint_23112026_booster StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00
+   Nodes=lrdn[0001-3456] NodeCnt=3456 CoreCnt=110592 Features=(null) PartitionName=boost_usr_prod Flags=MAINT,SPEC_NODES
+   TRES=cpu=110592
+   Users=(null) Groups=(null) Accounts=cin_sanity Licenses=(null) State=INACTIVE BurstBuffer=(null)
+   MaxStartDelay=(null)
+
+ReservationName=maint_4NB-UPS StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00
+   Nodes=lrdn[3457-3744,3793-3822,3871-3900,3949-3978,4027-4056,4105-4134,4183-4212,4261-4290,4339-4368,4417-4446,4495-4524,4573-4602,4651-4680,4729-4758,4807-4836,4885-4914,4963-4992] NodeCnt=768 CoreCnt=86016 Features=(null) PartitionName=dcgp_usr_prod Flags=MAINT,IGNORE_JOBS,SPEC_NODES
+   TRES=cpu=86016
+   Users=(null) Groups=(null) Accounts=cin_sanity Licenses=(null) State=INACTIVE BurstBuffer=(null)
+   MaxStartDelay=(null)
+
+ReservationName=maint_23112026_dcgp StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00
+   Nodes=lrdn[3745-3792,3823-3870,3901-3948,3979-4026,4057-4104,4135-4182,4213-4260,4291-4338,4369-4416,4447-4494,4525-4572,4603-4650,4681-4728,4759-4806,4837-4884,4915-4962] NodeCnt=768 CoreCnt=86016 Features=(null) PartitionName=dcgp_usr_prod Flags=MAINT,SPEC_NODES
+   TRES=cpu=86016
+   Users=(null) Groups=(null) Accounts=cin_sanity Licenses=(null) State=INACTIVE BurstBuffer=(null)
+   MaxStartDelay=(null)
+
+ReservationName=maint_23112026_vizser StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00
+   Nodes=login[08,13],viz[02-16] NodeCnt=17 CoreCnt=1088 Features=(null) PartitionName=(null) Flags=MAINT,SPEC_NODES
+   TRES=cpu=2176
+   Users=(null) Groups=(null) Accounts=cin_sanity Licenses=(null) State=INACTIVE BurstBuffer=(null)
+   MaxStartDelay=(null)
+
+ReservationName=s_int_node_ecc StartTime=2026-11-09T08:58:03 EndTime=2026-11-11T08:58:03 Duration=2-00:00:00
+   Nodes=lrdn3434 NodeCnt=1 CoreCnt=32 Features=(null) PartitionName=boost_usr_prod Flags=IGNORE_JOBS,SPEC_NODES
+   TRES=cpu=32
+   Users=(null) Groups=(null) Accounts=cin_staff Licenses=(null) State=ACTIVE BurstBuffer=(null)
+   MaxStartDelay=(null)
+
+=== squeue mio
+=== saldo
+-----------------------------------------------------------------------------------------------------------------------------------------
+account                start         end         total        localCluster   totConsumed     totConsumed     monthTotal     monthConsumed
+                                             (local h)   Consumed(local h)     (local h)               %      (local h)         (local h)
+-----------------------------------------------------------------------------------------------------------------------------------------
+IscrB_WearUsFM      20260107    20270107       2000000             1308137       1308137            65.4        164383               7325
+=== sinfo boost
+      1 allocated 2998
+      1 completing 3
+      1 mixed 240
+      1 mixed- 56
+      1 planned 23
+=== quota work
+Disk quotas for prj 20147512 (pid 20147512):
+     Filesystem    used   quota   limit   grace   files   quota   limit   grace
+/leonardo_work/IscrB_WearUsFM
+                 922.9G      1T      0k       -  960811       0       0       -
