@@ -62,7 +62,7 @@ if plan.get("protocol") != "scaling-continuation-training-20261106-v1" or plan.g
         (plan["start_step"], plan["end_step"]) != (5000, 19618):
     raise SystemExit("consentito solo il pre-controllo della continuazione 300M 5000 -> 19618")
 precheck = plan.get("identity_precheck")
-if not isinstance(precheck, dict) or precheck.get("protocol") != "scaling-continuation-identity-precheck-20261109-v1" or \
+if not isinstance(precheck, dict) or precheck.get("protocol") != "scaling-continuation-identity-precheck-20261109-v2" or \
         precheck.get("allocation") != {"partition": "lrd_all_serial", "cpus": 4, "memory": "24G", "walltime_seconds": 1200}:
     raise SystemExit("pre-controllo richiesto: lrd_all_serial, 4 CPU, 24G, 1200 s")
 if precheck.get("receipt_dir") != str(out_arg):

@@ -14,6 +14,9 @@ v2 (09/11/2026, after the FAILED resume of job 63696864): `import torch` comes f
 (the import order decides whether numpy binds MKL or its own OpenBLAS, hence the last bits of the fixed diagnostic sets), and
 the GPU job is gated by `identity-precheck`: a CPU job on the frozen checkout recomputes the three identity files of the 5000
 run on the worker's own import path and must find them byte-identical before any GPU hour is spent.
+v3 (09/11/2026): the import order of the receipt is read as `"numpy" in sys.modules` just before `import torch`. The v2 gate read
+positions in sys.modules, which keeps completion order (importlib moves a module to the end once executed): torch, which imports
+numpy while loading torch._C, always ends after numpy, so the v2 flag was false in every real job (pre-check 63974196).
 """
 from __future__ import annotations
 
@@ -30,7 +33,8 @@ import subprocess
 import sys
 import time
 
-import torch  # noqa: F401  # FIRST, before numpy/wearusfm, like `torchrun scripts/train_jepa.py` (the 5000 run): `import torch`
+NUMPY_BEFORE_TORCH = "numpy" in sys.modules  # read just BEFORE `import torch`; sys.modules order is completion, not start, order
+import torch  # noqa: F401,E402  # FIRST, before numpy/wearusfm, like `torchrun scripts/train_jepa.py` (the 5000 run): `import torch`
 # publishes MKL globally (libtorch_global_deps, RTLD_GLOBAL) and MKL also exports the `64_`-suffixed BLAS/LAPACK symbols that
 # numpy binds at load; numpy imported first binds to its own OpenBLAS instead, so sosfiltfilt initial conditions
 # (np.linalg.solve) and anchor targets (power @ bands) differ in the last bits and the trainer's fixed-set identity check fails
@@ -52,7 +56,7 @@ T, P, CLI, require = M.T, M.P, M.CLI, M.require
 torch = T.torch
 PROTOCOL = "scaling-continuation-training-20261106-v1"
 RANK_PROTOCOL = "scaling-continuation-rank-20261106-v1"
-IDENTITY_PROTOCOL = "scaling-continuation-identity-precheck-20261109-v1"
+IDENTITY_PROTOCOL = "scaling-continuation-identity-precheck-20261109-v2"
 PRECHECK_ALLOCATION = {"partition": "lrd_all_serial", "cpus": 4, "memory": "24G", "walltime_seconds": 1200}
 PRECHECK_RECEIPT = "identity_precheck.json"
 FREEZE_PROTOCOL = "scaling-continuation19618-budget-freeze-20261105-v2"
@@ -458,10 +462,12 @@ def compare_identity(expected, computed):
 
 
 def import_order():
+    """How numpy and torch entered this process. `numpy_loaded_before_torch` is read just before this module's `import torch`
+    (numpy loaded by then could bind its own OpenBLAS). The sys.modules positions are completion order, kept as context only:
+    importlib moves a module to the end once executed, so torch, which imports numpy while loading torch._C, ends after numpy."""
     modules = list(sys.modules)
-    position = {name: modules.index(name) if name in modules else None for name in ("torch", "numpy", "scipy")}
-    return {"torch_before_numpy": position["torch"] is not None and position["numpy"] is not None and position["torch"] < position["numpy"],
-            "positions": position}
+    return {"numpy_loaded_before_torch": NUMPY_BEFORE_TORCH,
+            "completion_positions": {name: modules.index(name) if name in modules else None for name in ("torch", "numpy", "scipy")}}
 
 
 def numeric_libraries():
@@ -566,7 +572,7 @@ def check_identity_precheck(plan, code, plan_state, states):
     states["identity_precheck"] = P.file_identity(path)
     receipt = json.loads(path.read_text())
     require(receipt.get("protocol") == IDENTITY_PROTOCOL and receipt.get("identical") is True and receipt.get("code_sha") == code and
-            receipt.get("plan_sha256") == plan_state["sha256"] and receipt.get("import_order", {}).get("torch_before_numpy") is True and
+            receipt.get("plan_sha256") == plan_state["sha256"] and receipt.get("import_order", {}).get("numpy_loaded_before_torch") is False and
             receipt.get("previous_identity_sha256") == {name: plan["previous"]["files"][name]["sha256"] for name in IDENTITY_FILES} and
             str(receipt.get("slurm_job_id", "")).isdigit(), "identity pre-check of this plan and code not passed")
     return {"receipt": str(path), "sha256": states["identity_precheck"]["sha256"], "slurm_job_id": receipt["slurm_job_id"],

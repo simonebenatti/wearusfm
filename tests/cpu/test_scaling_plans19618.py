@@ -78,7 +78,7 @@ def old_extraction(arm=ARM):
 
 def test_job_tables_are_the_allocations_of_the_budget_freeze():
     freeze = load("continuation19618_budget_freeze_20261105_v2.json")
-    assert sha(ROOT / S.FREEZE) == load("continuation19618_20261109_v2/training_plan.json")["budget_freeze"]["sha256"]
+    assert sha(ROOT / S.FREEZE) == load("continuation19618_20261109_v3/training_plan.json")["budget_freeze"]["sha256"]
     assert sha(ROOT / S.FREEZE) == load("continuation19618_20261106/training_plan.json")["budget_freeze"]["sha256"]  # same freeze
     stages = freeze["readers"]["stages"]
     extractions = S.jobs("extractions")
@@ -378,7 +378,7 @@ def test_pose_budget_stops_before_the_fit_on_any_failed_gate(change, message):
 # 19618 documents: real control evidence, candidate fixtures re-labelled from the real 5000 files
 
 NEW_CHECKPOINT = "9" * 64
-TRAINING = load("continuation19618_20261109_v2/training_plan.json")  # the recovery plan (v2); v1 failed at resume (63696864)
+TRAINING = load("continuation19618_20261109_v3/training_plan.json")  # the recovery plan (v3); v1 failed (63696864), v2 stopped
 TRAINING_SHA = sha(ROOT / S.RECOVERY["plan"])
 
 
@@ -825,7 +825,8 @@ def test_checkout_lines_publish_a_deploy_reference_and_one_cpu_checkout():
                           f"--export=ALL,CAMPAIGN={campaign},CAMPAIGN_SHA={CODE},EXPECTED_SHA={CODE}", "/dev/stdin"]
         assert "main" not in push and "--force" not in push and "+" not in push
     assert len(set(S.CHECKOUTS.values())) == 4 and all("19618" in c and c.endswith("_v1") for c in S.CHECKOUTS.values())
-    assert not set(S.CHECKOUTS.values()) & {"scaling_300m_continuation19618_20261106_v1", S.RECOVERY["campaign"],
+    assert not set(S.CHECKOUTS.values()) & {"scaling_300m_continuation19618_20261106_v1", "scaling_300m_continuation19618_20261109_v2",
+                                            S.RECOVERY["campaign"],
                                             "scaling_300m_evaluation_20261105_v1"}
     with pytest.raises(ValueError, match="full commit SHA"):
         S.checkout_lines("code", "deadbeef")

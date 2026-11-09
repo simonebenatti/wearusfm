@@ -32,8 +32,9 @@ C = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(C)
 BASE = ROOT / "results/infra/scaling_300m_20261104"
 CONTRACT = BASE / "training_source_contract.json"
-PLAN = BASE / "continuation19618_20261109_v2/training_plan.json"  # v2 (09/11): import order fixed, identity pre-check gate
+PLAN = BASE / "continuation19618_20261109_v3/training_plan.json"  # v3 (09/11): import order fixed, pre-check gate corrected
 PLAN_V1 = BASE / "continuation19618_20261106/training_plan.json"  # superseded: job 63696864 FAILED at resume (08/11)
+PLAN_V2 = BASE / "continuation19618_20261109_v2/training_plan.json"  # superseded: pre-check 63974196 refused by its own gate
 PRECHECK_JOB = "122"
 SIGNATURE = {"test": "data"}
 CODE, JOB, PLAN_SHA, PANEL = "d" * 40, "123", "e" * 64, "c" * 64
@@ -76,20 +77,33 @@ def test_published_plan_is_valid_and_bound_to_the_current_sources(context, plan,
     assert json.loads(capsys.readouterr().out)["runtime_readiness_checked"] is False
 
 
-def test_v2_plan_supersedes_the_failed_v1_attempt_with_the_same_science(context, plan):
+def test_recovery_plan_supersedes_the_failed_v1_attempt_and_the_v2_package_with_the_same_science(context, plan):
     """Same arm, dose, recipe, 5000 run, control and budget freeze; new execution sources (wrapper with torch first and the
-    pre-check launcher), new output directories, the pre-check gate and a later retention horizon. The v1 plan is refused."""
-    v1 = json.loads(PLAN_V1.read_text())
+    pre-check launcher), new output directories, the pre-check gate and a later retention horizon. The v1 and v2 plans are refused."""
+    v1, v2 = json.loads(PLAN_V1.read_text()), json.loads(PLAN_V2.read_text())
     with pytest.raises(ValueError, match="execution source pins"):  # it pins neither the pre-check launcher nor the new wrapper
         C.validate_plan(v1, context)
     with pytest.raises(ValueError, match="identity pre-check gate"):  # and it has no pre-check gate
         C.validate_plan({**v1, "execution_source_sha256": plan["execution_source_sha256"]}, context)
+    with pytest.raises(ValueError, match="identity pre-check gate"):  # the v2 gate names the v1 receipt protocol of the pre-check
+        C.validate_plan(v2, context)
     assert {k for k in set(plan) | set(v1) if plan.get(k) != v1.get(k)} == {"execution_source_sha256", "identity_precheck",
-                                                                               "superseded_attempt", "run_dir", "receipt_dir", "control"}
+                                                                               "superseded_attempt", "superseded_package",
+                                                                               "run_dir", "receipt_dir", "control"}
+    # Against v2: only the corrected wrapper and pre-check launcher, the pre-check protocol and the new output folders.
+    assert {k for k in set(plan) | set(v2) if plan.get(k) != v2.get(k)} == {"execution_source_sha256", "identity_precheck",
+                                                                               "superseded_attempt", "superseded_package",
+                                                                               "run_dir", "receipt_dir"}
+    assert {k for k in plan["execution_source_sha256"] if plan["execution_source_sha256"][k] != v2["execution_source_sha256"][k]} == {
+        "scripts/scaling_continue.py", "scripts/slurm/scaling_identity_precheck.sbatch"}
+    assert v2["identity_precheck"]["protocol"].endswith("-v1") and plan["identity_precheck"]["protocol"].endswith("-v2")
+    package = plan["superseded_package"]
+    assert (package["plan_sha256"], package["checkout_job"], package["precheck_job"]) == (R.sha256_file(PLAN_V2), "63974034", "63974196")
+    assert package["precheck_receipt_dir"] == v2["identity_precheck"]["receipt_dir"] and all((ROOT / p).is_dir() for p in package["evidence"])
     assert {k for k in plan["control"] if plan["control"][k] != v1["control"][k]} == {"required_until_utc"}
     assert plan["control"]["required_until_utc"] == "2026-12-01T00:00:00Z" and v1["control"]["required_until_utc"] == "2026-11-22T00:00:00Z"
     assert plan["previous"] == v1["previous"] and plan["allocation"] == v1["allocation"] and plan["budget_freeze"] == v1["budget_freeze"]
-    assert plan["run_dir"].endswith("/T100-G-300M-19618-from5000-v2") and plan["receipt_dir"].endswith("/continuation19618_v2")
+    assert plan["run_dir"].endswith("/T100-G-300M-19618-from5000-v3") and plan["receipt_dir"].endswith("/continuation19618_v3")
     assert plan["identity_precheck"] == {"protocol": C.IDENTITY_PROTOCOL, "allocation": C.PRECHECK_ALLOCATION,
                                          "receipt_dir": plan["receipt_dir"] + "_identity_precheck"}
     assert plan["identity_precheck"]["allocation"] == {"partition": "lrd_all_serial", "cpus": 4, "memory": "24G", "walltime_seconds": 1200}
@@ -513,7 +527,7 @@ def write_precheck(plan_path, **changes):
     """What a passed identity pre-check of this plan and code leaves (the fields the GPU job requires)."""
     plan = json.loads(plan_path.read_text())
     receipt = {"protocol": C.IDENTITY_PROTOCOL, "identical": True, "code_sha": CODE, "plan_sha256": R.sha256_file(plan_path),
-               "slurm_job_id": PRECHECK_JOB, "node": "lrdn0001", "import_order": {"torch_before_numpy": True},
+               "slurm_job_id": PRECHECK_JOB, "node": "lrdn0001", "import_order": {"numpy_loaded_before_torch": False},
                "previous_identity_sha256": {name: plan["previous"]["files"][name]["sha256"] for name in C.IDENTITY_FILES},
                "comparison": {name: {"equal": True} for name in C.IDENTITY_FILES}, **changes}
     path = precheck_path(plan_path)
@@ -835,7 +849,7 @@ def test_job_seeds_a_new_directory_trains_once_and_certifies_the_endpoint_with_t
 
 @pytest.mark.parametrize("change", ["stop_in_5000", "extra_in_5000", "existing_run", "existing_receipts", "input", "wrong_out",
                                     "precheck_missing", "precheck_failed", "precheck_protocol", "precheck_code", "precheck_plan",
-                                    "precheck_order", "precheck_identity", "precheck_job"])
+                                    "precheck_order", "precheck_v2_receipt", "precheck_identity", "precheck_job"])
 def test_job_stops_before_creating_any_output(cluster, tmp_path, change):
     plan_path, old, run, out, _, _ = cluster
     if change == "stop_in_5000": (old / "STOP").write_text("allarme")
@@ -848,7 +862,9 @@ def test_job_stops_before_creating_any_output(cluster, tmp_path, change):
     if change == "precheck_protocol": write_precheck(plan_path, protocol="scaling-diag-fixedeval-20261108-v1")
     if change == "precheck_code": write_precheck(plan_path, code_sha="a" * 40)  # passed on another checkout
     if change == "precheck_plan": write_precheck(plan_path, plan_sha256="a" * 64)  # passed on another plan
-    if change == "precheck_order": write_precheck(plan_path, import_order={"torch_before_numpy": False})
+    if change == "precheck_order": write_precheck(plan_path, import_order={"numpy_loaded_before_torch": True})
+    if change == "precheck_v2_receipt": write_precheck(plan_path, protocol="scaling-continuation-identity-precheck-20261109-v1",
+                                                       import_order={"torch_before_numpy": True})  # the shape of the v2 receipt
     if change == "precheck_identity": write_precheck(plan_path, previous_identity_sha256={n: "a" * 64 for n in C.IDENTITY_FILES})
     if change == "precheck_job": write_precheck(plan_path, slurm_job_id="")
     with pytest.raises(ValueError):
@@ -929,10 +945,34 @@ def test_identity_sets_are_exactly_the_files_the_unchanged_trainer_checks_at_res
 
 def test_import_order_and_numeric_libraries_describe_this_process():
     order, modules = C.import_order(), list(sys.modules)
-    assert order["positions"]["torch"] == modules.index("torch") and order["positions"]["numpy"] == modules.index("numpy")
-    assert order["torch_before_numpy"] == (modules.index("torch") < modules.index("numpy"))
+    assert order["numpy_loaded_before_torch"] is C.NUMPY_BEFORE_TORCH
+    assert order["completion_positions"]["torch"] == modules.index("torch") and order["completion_positions"]["numpy"] == modules.index("numpy")
     libraries = C.numeric_libraries()
     assert libraries is None or (isinstance(libraries, list) and all(isinstance(x, str) for x in libraries))  # Linux only
+
+
+def _fresh_import_order(first=""):
+    """import_order() of the wrapper loaded in a NEW process, after the statements `first`."""
+    code = (first + "; import importlib.util, json; spec = importlib.util.spec_from_file_location('w', %r); "
+            "w = importlib.util.module_from_spec(spec); spec.loader.exec_module(w); print(json.dumps(w.import_order()))"
+            % str(ROOT / "scripts/scaling_continue.py")).lstrip("; ")
+    done = subprocess.run([sys.executable, "-B", "-c", code], capture_output=True, text=True, cwd=ROOT,
+                          env={**os.environ, "PYTHONPATH": str(ROOT / "src")})
+    assert done.returncode == 0, done.stderr[-2000:]
+    return json.loads(done.stdout.strip().splitlines()[-1])
+
+
+def test_numpy_before_torch_is_read_before_the_wrapper_imports_torch_not_from_the_completion_order():
+    """sys.modules keeps completion order: importlib moves a module to the end once executed, so torch, which imports numpy
+    while loading torch._C, always ends after numpy. The v2 gate read that order and was false in every real job (pre-check
+    63974196); the wrapper now reads `"numpy" in sys.modules` on the line before `import torch`."""
+    lines = (ROOT / "scripts/scaling_continue.py").read_text().splitlines()
+    first_torch = next(i for i, line in enumerate(lines) if line.startswith("import torch"))
+    assert lines[first_torch - 1].startswith('NUMPY_BEFORE_TORCH = "numpy" in sys.modules')
+    clean = _fresh_import_order()
+    assert clean["numpy_loaded_before_torch"] is False
+    assert clean["completion_positions"]["torch"] > clean["completion_positions"]["numpy"]  # what the v2 flag mistook for an order
+    assert _fresh_import_order("import numpy")["numpy_loaded_before_torch"] is True
 
 
 PRECHECK_FIELDS = {"JobId": PRECHECK_JOB, "JobState": "RUNNING", "Partition": "lrd_all_serial", "Account": "iscrb_wearusfm",
@@ -974,7 +1014,8 @@ def precheck(context, plan, tmp_path, monkeypatch):
     monkeypatch.setattr(C.P, "code_identity", lambda expected: expected)
     monkeypatch.setattr(C.R, "check_input_files", lambda *arguments: None)
     monkeypatch.setattr(C, "verify_precheck_allocation", lambda plan: PRECHECK_JOB)
-    monkeypatch.setattr(C, "import_order", lambda: {"torch_before_numpy": True, "positions": {"torch": 1, "numpy": 2, "scipy": None}})
+    monkeypatch.setattr(C, "import_order", lambda: {"numpy_loaded_before_torch": False,
+                                                    "completion_positions": {"torch": 9, "numpy": 2, "scipy": None}})
     old, out = tmp_path / "old", tmp_path / "precheck"
     old.mkdir()
     sets = {"fixed_eval_set.json": {"seed": [0, 5151], "windows": [["a/1/1", None, 0, 10]], "batch_sha256": ["x"]},
@@ -1045,7 +1086,8 @@ def test_precheck_refuses_differences_other_recipes_changed_inputs_and_reused_ou
     if change == "existing":
         out.mkdir()
     if change == "order":  # a process where numpy came first: the receipt says so and the GPU job refuses it
-        monkeypatch.setattr(C, "import_order", lambda: {"torch_before_numpy": False, "positions": {"torch": 9, "numpy": 2, "scipy": None}})
+        monkeypatch.setattr(C, "import_order", lambda: {"numpy_loaded_before_torch": True,
+                                                        "completion_positions": {"torch": 9, "numpy": 2, "scipy": None}})
         C.identity_precheck(plan_path, CODE, out)
         with pytest.raises(ValueError, match="not passed"):
             C.check_identity_precheck(plan, CODE, C.P.file_identity(plan_path), {})

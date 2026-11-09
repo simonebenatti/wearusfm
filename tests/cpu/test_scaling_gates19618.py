@@ -370,6 +370,12 @@ def test_checkout_commit_comes_from_the_receipt_of_the_common_ledger(tmp_path):
     assert S.ledger_job("SCALING-300M-cont19618-checkout-20261106", tmp_path) == "63695634"
     with pytest.raises(OSError):  # the v1 checkout (73524b6, job 63695634) is not the training checkout of the recovery
         S.checkout_commit("training", tmp_path)
+    v2 = "SCALING-300M-cont19618-checkout-20261109-v2"  # real submission of 09/11 (v2 package, stopped before the training)
+    (tmp_path / v2).mkdir()
+    (tmp_path / v2 / "state.json").write_bytes((PACKAGE / "submissions" / (v2 + ".json")).read_bytes())
+    assert S.ledger_job(v2, tmp_path) == "63974034"
+    with pytest.raises(OSError):  # nor is the v2 one (cb48c5b)
+        S.checkout_commit("training", tmp_path)
     recovery = S.RECOVERY
     ledger_entry(tmp_path, recovery["checkout"], 900, ["sbatch", f"--export=ALL,CAMPAIGN={recovery['campaign']},CAMPAIGN_SHA={CODE},"
                                                        f"EXPECTED_SHA={CODE}", "/dev/stdin"])
@@ -397,7 +403,7 @@ def test_later_checkouts_only_add_documents_to_the_reviewed_package(chain):
         S.release_check(reviewed, changed, repo)
     for files, message in (({"tests/cpu/test_new.py": b"\n"}, "A\ttests/cpu/test_new.py"),
                            ({S.PACKAGE + "/training_plan.json": b"{}\n"}, "training_plan.json"),
-                           ({S.RECOVERY["plan"]: b"{}\n"}, "continuation19618_20261109_v2/training_plan.json"),
+                           ({S.RECOVERY["plan"]: b"{}\n"}, "continuation19618_20261109_v3/training_plan.json"),
                            ({S.SHARED["splits"]: b"{}\n"}, "M\tsplits/v1/splits_v1.json")):
         git(repo, "checkout", "-q", "-B", "side", documents)
         with pytest.raises(ValueError, match=message):
@@ -618,20 +624,23 @@ def test_collection_of_fits_pins_the_predictions_copies_reports_and_checks_the_f
 def test_checkouts_and_training_are_rows_of_the_same_table():
     training = S.checkout_job("training")  # the frozen checkout of the recovery attempt (v2), not the v1 one
     assert (training["id"], training["cpus"], training["seconds"], training["log"]) == (
-        "SCALING-300M-cont19618-checkout-20261109-v2", 2, 300, "campaign_checkout")
-    assert training["out"] == S.WORK + "/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v2"
+        "SCALING-300M-cont19618-checkout-20261109-v3", 2, 300, "campaign_checkout")
+    assert training["out"] == S.WORK + "/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v3"
     plan = json.loads((ROOT / S.RECOVERY["plan"]).read_text())
     precheck, job = S.precheck_job(plan), S.training_job(plan)
     assert (precheck["stage"], precheck["id"], precheck["cpus"], precheck["memory"], precheck["seconds"], precheck["gpus"], precheck["log"]) == (
-        "identity-precheck", "SCALING-300M-cont19618-idcheck-20261109-v2", 4, "24G", 1200, 0, "scaling_identity_precheck")
+        "identity-precheck", "SCALING-300M-cont19618-idcheck-20261109-v3", 4, "24G", 1200, 0, "scaling_identity_precheck")
     assert precheck["out"] == plan["identity_precheck"]["receipt_dir"] and precheck["exact"] == ["identity_precheck.json"]
     assert precheck["files"] == {"identity_precheck.json": precheck["out"] + "/identity_precheck.json"} and precheck["pinned"] == {}
-    assert job["id"] == "SCALING-300M-train19618-20261109-v2" and job["out"] == plan["receipt_dir"]
+    assert job["id"] == "SCALING-300M-train19618-20261109-v3" and job["out"] == plan["receipt_dir"]
     assert S.stage_table("training") == [job] and S.stage_table("identity-precheck") == [precheck]
-    # The v1 checkout keeps its collected record; the recovery checkout is collected elsewhere and never over it.
-    v1 = json.loads((PACKAGE / "evidence/checkout-training/training/accounting.json").read_text())
-    assert v1["JobIDRaw"] == "63695634" and S.evidence_dir("checkout-training") == PACKAGE / "evidence/checkout-training-v2"
-    assert not S.evidence_dir("checkout-training").exists() and S.evidence_dir("training") == PACKAGE / "evidence/training"
+    # The v1 checkout and the v2 checkout and pre-check keep their collected records; the recovery collects elsewhere.
+    kept = {"checkout-training/training": "63695634", "checkout-training-v2/training": "63974034", "identity-precheck": "63974196"}
+    assert all(json.loads((PACKAGE / "evidence" / folder / "accounting.json").read_text())["JobIDRaw"] == job_id
+               for folder, job_id in kept.items())
+    assert S.evidence_dir("checkout-training") == PACKAGE / "evidence/checkout-training-v3" and not S.evidence_dir("checkout-training").exists()
+    assert S.evidence_dir("identity-precheck") == PACKAGE / "evidence/identity-precheck-v3" and not S.evidence_dir("identity-precheck").exists()
+    assert S.evidence_dir("training") == PACKAGE / "evidence/training"
     assert all(S.evidence_dir(stage) == PACKAGE / "evidence" / stage for stage in ("extractions", "probe-fit", "checkout-code"))
     assert [S.stage_table("checkout-" + name) for name in S.CHECKOUTS] == [[S.checkout_job(name)] for name in S.CHECKOUTS]
     assert all(job["files"] == {} and job["pinned"] == {} and job["exact"] is None for name in S.CHECKOUTS for job in [S.checkout_job(name)])

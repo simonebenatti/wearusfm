@@ -125,7 +125,7 @@ def test_protocols_and_dose_differ_while_recipes_grids_and_shared_modules_do_not
 def test_registered_control_is_the_one_of_the_budget_freeze_and_of_the_training_plan():
     import scaling_evaluation19618 as E
     freeze = json.loads((BASE / "continuation19618_budget_freeze_20261105_v2.json").read_text())
-    plan = json.loads((BASE / "continuation19618_20261109_v2/training_plan.json").read_text())
+    plan = json.loads((BASE / "continuation19618_20261109_v3/training_plan.json").read_text())
     assert E.CONTROL_CHECKPOINT_SHA256 == freeze["control19618"]["checkpoint_sha256"] == plan["control"]["checkpoint"]["sha256"]
     assert freeze["control19618"]["historical_arm_name"] == "T100-G" and freeze["control19618"]["arm"] == E.ARMS[0]
     assert (freeze["start_step"], freeze["end_step"], freeze["additional_steps"]) == (E.START, E.STEP, E.STEP - E.START)

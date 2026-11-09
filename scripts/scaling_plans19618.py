@@ -43,12 +43,15 @@ GATE_PROTOCOL = "scaling-gate-19618-20261106-v1"
 WORK, SCRATCH = "/leonardo_work/IscrB_WearUsFM", "/leonardo_scratch/large/userexternal/sbenatti"
 INFRA = "results/infra/scaling_300m_20261104"
 PACKAGE = INFRA + "/continuation19618_20261106"
-# Recovery attempt of the 5000 -> 19618 training (v2, 09/11/2026): the single source of its identity in this chain. The v1
-# attempt (plan PACKAGE/training_plan.json, checkout 63695634, training 63696864 FAILED at resume on 08/11) keeps its files.
-RECOVERY = {"plan": INFRA + "/continuation19618_20261109_v2/training_plan.json",
-            "campaign": "scaling_300m_continuation19618_20261109_v2", "checkout": "SCALING-300M-cont19618-checkout-20261109-v2",
-            "precheck": "SCALING-300M-cont19618-idcheck-20261109-v2", "training": "SCALING-300M-train19618-20261109-v2"}
-EVIDENCE_DIRS = {"checkout-training": "checkout-training-v2"}  # PACKAGE/evidence/checkout-training: the v1 checkout (63695634)
+# Recovery of the 5000 -> 19618 training (v3, 09/11/2026): the single source of its identity in this chain. Kept as they are:
+# v1 (plan PACKAGE/training_plan.json, checkout 63695634, training 63696864 FAILED at resume on 08/11) and v2 (plan
+# continuation19618_20261109_v2, checkout 63974034, pre-check 63974196 passed but refused by its own gate: no training).
+RECOVERY = {"plan": INFRA + "/continuation19618_20261109_v3/training_plan.json",
+            "campaign": "scaling_300m_continuation19618_20261109_v3", "checkout": "SCALING-300M-cont19618-checkout-20261109-v3",
+            "precheck": "SCALING-300M-cont19618-idcheck-20261109-v3", "training": "SCALING-300M-train19618-20261109-v3"}
+# Evidence folders of the recovery stages; the v1 checkout (checkout-training) and the v2 checkout and pre-check
+# (checkout-training-v2, identity-precheck) keep their records.
+EVIDENCE_DIRS = {"checkout-training": "checkout-training-v3", "identity-precheck": "identity-precheck-v3"}
 FREEZE = INFRA + "/continuation19618_budget_freeze_20261105_v2.json"
 CAMPAIGN = "scaling-300m-20261104"
 CHECKOUTS = {"code": "scaling_300m_evaluation19618_20261106_v1", "plans": "scaling_300m_plans19618_20261106_v1",

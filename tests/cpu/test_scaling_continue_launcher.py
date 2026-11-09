@@ -17,7 +17,7 @@ PRECHECK_WRAPPER = ["scripts/scaling_continue.py", "identity-precheck"]
 TRAINING_PLAN = {"protocol": "scaling-continuation-training-20261106-v1", "arm": "T100-G-300M", "start_step": 5000, "end_step": 19618,
                  "allocation": {"account": "iscrb_wearusfm", "partition": "boost_usr_prod", "qos": "normal", "nodes": 1, "gpus": 4,
                                 "cpus": 32, "memory": "480G", "walltime_seconds": 53100}}
-PRECHECK = {"protocol": "scaling-continuation-identity-precheck-20261109-v1",
+PRECHECK = {"protocol": "scaling-continuation-identity-precheck-20261109-v2",
             "allocation": {"partition": "lrd_all_serial", "cpus": 4, "memory": "24G", "walltime_seconds": 1200}}
 TRAINING_SLURM = {"SLURM_CPUS_PER_TASK": "32", "SLURM_MEM_PER_NODE": "491520", "SLURM_JOB_PARTITION": "boost_usr_prod"}
 PRECHECK_SLURM = {"SLURM_CPUS_PER_TASK": "4", "SLURM_MEM_PER_NODE": "24576", "SLURM_JOB_PARTITION": "lrd_all_serial"}
