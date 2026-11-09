@@ -98,16 +98,115 @@ def predict(model, sig: Signal, batch: int = 8192) -> tuple[np.ndarray, np.ndarr
     return np.concatenate(preds), np.concatenate(targets)
 
 
-def train(sig: Signal, val: Signal | None, cfg: argparse.Namespace, seed: int, device):
+GRAPH_TOLERANCE = 1e-5  # differenza massima ammessa fra parametri eager e graph nel controllo
+GRAPH_WARMUP = 3  # passi veri (contati nell'epoca) eseguiti in eager su uno stream laterale prima della cattura
+
+
+class Stepper:
+    """Un passo di training (finestre -> L1 -> backward -> Adam) in eager o catturato in un CUDA graph.
+
+    Con il graph, i primi GRAPH_WARMUP passi della prima epoca sono passi veri in eager su uno stream laterale (ricetta PyTorch «whole network
+    capture»); la cattura registra senza eseguire, poi ogni passo e' copia degli indici + replay. Gradienti messi a None prima della cattura: il
+    backward catturato li scrive, non li accumula. Dropout: RNG compatibile con i graph (offset che avanza a ogni replay). Il numero di passi
+    per epoca resta identico all'eager.
+    """
+
+    def __init__(self, model, opt, loss_fn, sig: Signal, batch: int, use_graph: bool, device):
+        import torch
+
+        self.model, self.opt, self.loss_fn, self.sig, self.use_graph = model, opt, loss_fn, sig, use_graph
+        self.ends = torch.zeros(batch, dtype=torch.long, device=device)
+        self.total = torch.zeros((), dtype=torch.float64, device=device)
+        self.graph = None
+        self.side = torch.cuda.Stream(device) if use_graph else None
+        self.done = 0
+
+    def _eager(self):
+        x, y = self.sig.batch(self.ends)
+        self.opt.zero_grad(set_to_none=True)
+        loss = self.loss_fn(self.model(x), y)
+        loss.backward()
+        self.opt.step()
+        self.total.add_(loss.detach())
+
+    def step(self, ends):
+        import torch
+
+        self.ends.copy_(ends)
+        if not self.use_graph:
+            self._eager()
+        elif self.graph is None and self.done < GRAPH_WARMUP:
+            self.side.wait_stream(torch.cuda.current_stream())
+            with torch.cuda.stream(self.side):
+                self._eager()
+            torch.cuda.current_stream().wait_stream(self.side)
+        else:
+            if self.graph is None:
+                self.opt.zero_grad(set_to_none=True)
+                self.graph = torch.cuda.CUDAGraph()
+                with torch.cuda.graph(self.graph):
+                    x, y = self.sig.batch(self.ends)
+                    loss = self.loss_fn(self.model(x), y)
+                    loss.backward()
+                    self.opt.step()
+                    self.total.add_(loss.detach())
+            self.graph.replay()
+        self.done += 1
+
+    def take_total(self) -> float:
+        value = float(self.total)
+        self.total.zero_()
+        return value
+
+
+def build(cfg: argparse.Namespace, seed: int, device, dropout: float = 0.5):
     import torch
     from torch import nn
 
     from wearusfm.model.temponet import TEMPONet
 
     torch.manual_seed(seed)
-    model = TEMPONet(in_channels=db8.N_EMG, window=cfg.window, out_dim=db8.N_DOA, causal=not cfg.symmetric_padding).to(device)
-    opt = torch.optim.Adam(model.parameters(), lr=cfg.lr)
-    loss_fn = nn.L1Loss()
+    model = TEMPONet(in_channels=db8.N_EMG, window=cfg.window, out_dim=db8.N_DOA, causal=not cfg.symmetric_padding,
+                     dropout=dropout).to(device)
+    capturable = device.type == "cuda"  # stesso Adam in eager e nel graph
+    opt = torch.optim.Adam(model.parameters(), lr=cfg.lr, capturable=capturable)
+    return model, opt, nn.L1Loss()
+
+
+def graph_check(sig: Signal, cfg: argparse.Namespace, device, steps: int = 60) -> dict:
+    """Su GPU: stessi pesi iniziali, stessi batch, dropout 0; `steps` passi eager contro graph; differenza massima dei parametri e tempi."""
+    import torch
+
+    gen = torch.Generator().manual_seed(12345)
+    batches = sig.ends[torch.randperm(len(sig.ends), generator=gen)[: steps * cfg.batch].to(device)].view(steps, cfg.batch)
+    out = {}
+    params = {}
+    for mode in ("eager", "graph"):
+        model, opt, loss_fn = build(cfg, 777, device, dropout=0.0)
+        model.train()
+        st = Stepper(model, opt, loss_fn, sig, cfg.batch, mode == "graph", device)
+        for i in range(GRAPH_WARMUP + 1):
+            st.step(batches[i])
+        torch.cuda.synchronize()
+        t0 = time.time()
+        for i in range(GRAPH_WARMUP + 1, steps):
+            st.step(batches[i])
+        torch.cuda.synchronize()
+        out[f"{mode}_ms_per_step"] = 1000 * (time.time() - t0) / (steps - GRAPH_WARMUP - 1)
+        out[f"{mode}_loss_sum"] = st.take_total()
+        params[mode] = [p.detach().clone() for p in model.parameters()] + [b.detach().clone() for b in model.buffers()]
+    diffs = [float((a.double() - b.double()).abs().max()) for a, b in zip(params["eager"], params["graph"])]
+    out["max_abs_param_diff"] = max(diffs)
+    out["steps"] = steps
+    return out
+
+
+def train(sig: Signal, val: Signal | None, cfg: argparse.Namespace, seed: int, device):
+    import torch
+
+    model, opt, loss_fn = build(cfg, seed, device)
+    use_graph = device.type == "cuda" and not cfg.no_cuda_graph
+    stepper = Stepper(model, opt, loss_fn, sig, cfg.batch, use_graph, device)
     gen = torch.Generator().manual_seed(seed)
     n = len(sig.ends)
     steps = n // cfg.batch
@@ -118,15 +217,10 @@ def train(sig: Signal, val: Signal | None, cfg: argparse.Namespace, seed: int, d
         t0 = time.time()
         model.train()
         perm = torch.randperm(n, generator=gen).to(device)
-        total = torch.zeros((), device=device, dtype=torch.float64)
+        batches = sig.ends[perm[: steps * cfg.batch]].view(steps, cfg.batch)
         for i in range(steps):
-            x, y = sig.batch(sig.ends[perm[i * cfg.batch : (i + 1) * cfg.batch]])
-            opt.zero_grad(set_to_none=True)
-            loss = loss_fn(model(x), y)
-            loss.backward()
-            opt.step()
-            total += loss.detach()
-        train_loss = float(total / steps)
+            stepper.step(batches[i])
+        train_loss = stepper.take_total() / steps
         if not np.isfinite(train_loss):
             raise FloatingPointError(f"loss non finita all'epoca {epoch + 1}")
         row = {"epoch": epoch + 1, "train_l1_deg": train_loss, "steps": steps, "seconds": round(time.time() - t0, 2)}
@@ -151,13 +245,24 @@ def run_unit(subject: int, seed: int, cfg: argparse.Namespace) -> dict:
     provenance = check_cache(cache, subject)
     recs = {a: db8.load_cached(cache, subject, a) for a in db8.ACQUISITIONS}
     scale = EMG_UNIT_SCALE[cfg.emg_unit]
-    sig = {a: Signal([recs[a]], device, scale, cfg.window, cfg.step) for a in db8.ACQUISITIONS}
+    sig = {a: Signal([recs[a]], device, scale, cfg.window, cfg.step) for a in db8.ACQUISITIONS}  # validazione e test: passo 16 ms
+    train_step = cfg.train_step or cfg.step
+    tsig = sig if train_step == cfg.step else {a: Signal([recs[a]], device, scale, cfg.window, train_step) for a in (1, 2)}
     out_dir = Path(cfg.out)
     result = {"subject": subject, "seed": seed, "provenance": provenance, "models": {}}
+    if cfg.check_graph and device.type == "cuda" and subject == cfg.subjects[0] and seed == cfg.seeds[0]:
+        check = graph_check(sig[1], cfg, device)
+        result["graph_check"] = check
+        print(f"controllo eager/graph: differenza massima {check['max_abs_param_diff']:.3g}, "
+              f"{check['eager_ms_per_step']:.2f} ms contro {check['graph_ms_per_step']:.2f} ms per passo", flush=True)
+        if check["max_abs_param_diff"] > GRAPH_TOLERANCE:
+            raise RuntimeError(f"graph diverso dall'eager: {check['max_abs_param_diff']}")
     preds = {}
-    for k, name in enumerate(MODELS):
+    for k, name in enumerate(MODELS):  # k fissa il seme del modello anche quando se ne allena solo una parte
+        if name not in cfg.models:
+            continue
         train_acqs, val_acq = SPLITS[name]
-        tr = sig[train_acqs[0]] if len(train_acqs) == 1 else Signal([recs[a] for a in train_acqs], device, scale, cfg.window, cfg.step)
+        tr = tsig[train_acqs[0]] if len(train_acqs) == 1 else Signal([recs[a] for a in train_acqs], device, scale, cfg.window, train_step)
         model_seed = 1_000_000 * seed + 1_000 * subject + k
         tm = time.time()
         model, history = train(tr, sig[val_acq] if val_acq else None, cfg, model_seed, device)
@@ -180,8 +285,9 @@ def run_unit(subject: int, seed: int, cfg: argparse.Namespace) -> dict:
         result["models"][name] = entry
         torch.save(model.state_dict(), out_dir / "models" / f"S{subject}_seed{seed}_{name}.pt")
         np.save(out_dir / "predictions" / f"S{subject}_seed{seed}_{name}_test_raw.npy", test_pred.astype(np.float32))
-        if seed == cfg.seeds[0] and k == 0:
-            np.save(out_dir / "predictions" / f"S{subject}_test_target.npy", test_tgt.astype(np.float32))
+        target_path = out_dir / "predictions" / f"S{subject}_test_target.npy"
+        if not target_path.exists():
+            np.save(target_path, test_tgt.astype(np.float32))
         print(f"S{subject} seme {seed} {name}: test MAE {entry['test_ema']['mae_deg']:.3f} (grezzo {entry['test_raw']['mae_deg']:.3f}), "
               f"alpha medio {np.mean(alpha):.3f}, {entry['train_seconds']:.0f} s", flush=True)
     result["seconds"] = round(time.time() - t0, 1)
@@ -215,15 +321,21 @@ def main(argv=None) -> int:
     ap.add_argument("--lr", type=float, default=1e-4)
     ap.add_argument("--batch", type=int, default=64)
     ap.add_argument("--window", type=int, default=db8.WINDOW)
-    ap.add_argument("--step", type=int, default=db8.STEP)
+    ap.add_argument("--step", type=int, default=db8.STEP, help="passo delle finestre di validazione e test (16 ms)")
+    ap.add_argument("--train-step", type=int, default=0, help="passo delle finestre di training (0 = come --step)")
+    ap.add_argument("--models", nargs="*", choices=MODELS, default=list(MODELS), help="modelli da allenare (full richiede fold1 e fold2)")
     ap.add_argument("--emg-unit", choices=sorted(EMG_UNIT_SCALE), default="uV",
                     help="unita' dell'ingresso: cambio di scala costante, non una normalizzazione (vedi il documento)")
     ap.add_argument("--symmetric-padding", action="store_true", help="padding simmetrico come Q-PPG invece che causale")
     ap.add_argument("--max-steps-per-epoch", type=int, default=0, help="solo collaudo: tetto ai passi per epoca")
-    ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--workers", type=int, default=1, help="processi in parallelo; sulla stessa GPU senza MPS si alternano (time-slicing)")
+    ap.add_argument("--no-cuda-graph", action="store_true", help="passo di training in eager anche su GPU")
+    ap.add_argument("--check-graph", action="store_true", help="prima della prima unita': equivalenza eager/graph e tempi per passo")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--time-budget-s", type=float, default=0.0, help="nessuna unita' nuova dopo questo tempo (0 = nessun limite)")
     args = ap.parse_args(argv)
+    if "full" in args.models and not {"fold1", "fold2"} <= set(args.models):
+        ap.error("full richiede fold1 e fold2 (alpha dalle predizioni fuori fold)")
     out = Path(args.out)
     if out.exists() and any(out.iterdir()):
         print(f"{out} non e' vuota: serve una cartella nuova", file=sys.stderr)

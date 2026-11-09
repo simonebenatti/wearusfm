@@ -85,6 +85,19 @@ def test_training_and_summary_end_to_end(cache, tmp_path):
     assert temponet_db8.main(args) == 2
 
 
+def test_train_step_and_model_subset(cache, tmp_path):
+    out = tmp_path / "run_sub"
+    assert temponet_db8.main(["--cache", str(cache), "--out", str(out), "--subjects", "1", "--seeds", "0", "--epochs", "1",
+                              "--batch", "16", "--workers", "1", "--device", "cpu", "--train-step", "16", "--models", "fold1"]) == 0
+    unit = json.loads((out / "units" / "S1_seed0.json").read_text())
+    assert set(unit["models"]) == {"fold1"}
+    assert unit["models"]["fold1"]["n_train_windows"] == len(range(255, 3000, 16))
+    assert unit["models"]["fold1"]["test_ema"]["n_instants"] == len(range(255, 3000, 32))  # test sempre a 16 ms
+    assert (out / "predictions" / "S1_test_target.npy").is_file()
+    with pytest.raises(SystemExit):
+        temponet_db8.main(["--cache", str(cache), "--out", str(tmp_path / "x"), "--models", "fold1", "full", "--device", "cpu"])
+
+
 def test_cache_tampering_is_detected(cache, tmp_path):
     arr = np.load(cache / "S1_A1_emg.npy")
     arr[0, 0] += 1.0
@@ -93,6 +106,35 @@ def test_cache_tampering_is_detected(cache, tmp_path):
     assert temponet_db8.main(["--cache", str(cache), "--out", str(out), "--subjects", "1", "--seeds", "0", "--epochs", "1",
                               "--batch", "16", "--workers", "1", "--device", "cpu"]) == 1
     assert "sha256" in (out / "units" / "S1_seed0.error").read_text()
+
+
+def test_stepper_eager_matches_a_plain_training_loop(cache):
+    import argparse
+
+    import torch
+
+    from wearusfm.harness import db8_regression as db8
+
+    cfg = argparse.Namespace(window=256, symmetric_padding=False, lr=1e-3, batch=8)
+    rec = db8.load_cached(cache, 1, 1)
+    sig = temponet_db8.Signal([rec], torch.device("cpu"), 1e6, 256, 32)
+    batches = sig.ends[: 5 * 8].view(5, 8)
+    m1, o1, l1 = temponet_db8.build(cfg, 3, torch.device("cpu"), dropout=0.0)
+    st = temponet_db8.Stepper(m1, o1, l1, sig, 8, False, torch.device("cpu"))
+    for b in batches:
+        st.step(b)
+    m2, o2, l2 = temponet_db8.build(cfg, 3, torch.device("cpu"), dropout=0.0)
+    total = 0.0
+    for b in batches:
+        x, y = sig.batch(b)
+        o2.zero_grad(set_to_none=True)
+        loss = l2(m2(x), y)
+        loss.backward()
+        o2.step()
+        total += float(loss.detach())
+    for a, b in zip(m1.state_dict().values(), m2.state_dict().values()):
+        assert torch.equal(a, b)
+    assert st.take_total() == pytest.approx(total) and st.take_total() == 0.0
 
 
 def _unit(subject, seed, fold_mae, full_mae=7.0):

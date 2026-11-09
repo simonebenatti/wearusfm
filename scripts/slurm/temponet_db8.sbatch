@@ -12,9 +12,10 @@
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/temponet_db8_%j.out
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/temponet_db8_%j.out
 # Replica di TEMPONet su NinaPro DB8 (docs/temponet_db8_replication.md; criteri in docs/decisioni.md, voce del 09/11/2026). Una GPU.
-#   collaudo: soggetti 1-4, seme 0, una epoca, 4 worker; QoS boost_qos_dbg, 30 minuti (al massimo 0,5 GPU-ore)
+#   collaudo: controllo eager/graph e tempi; soggetto 1, seme 0, 19 epoche con passo di training 32 e (solo fold1) 4;
+#     QoS boost_qos_dbg, 30 minuti (al massimo 0,5 GPU-ore)
 #     sbatch --qos=boost_qos_dbg --time=00:30:00 --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_db8.sbatch smoke <cache> <uscite>
-#   completo: 12 soggetti x semi 0, 1, 2, 19 epoche, 4 worker, poi la sintesi; 2 ore (al massimo 2 GPU-ore)
+#   completo: 12 soggetti x semi 0, 1, 2, 19 epoche, un processo, poi la sintesi; 2 ore (al massimo 2 GPU-ore)
 #     sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_db8.sbatch full <cache> <uscite>
 # Le uscite vanno in una cartella NUOVA fuori dal codice; nessun riavvio automatico, nessun nuovo tentativo.
 set -uo pipefail
@@ -40,11 +41,15 @@ if torch.cuda.device_count() != 1:
 print('GPU:', torch.cuda.get_device_name(0), '| torch', torch.__version__, '| CUDA', torch.version.cuda)
 PY
 if [ "$MODE" = smoke ]; then
-  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --emg-unit uV --subjects 1 2 3 4 --seeds 0 --epochs 1 --workers 4 \
-    --time-budget-s 1200 || exit 1
-  python3 scripts/temponet_db8_summary.py "$OUT" --seeds 0 || exit 1
+  # 1) controllo eager/graph; soggetto 1, seme 0, tre modelli, 19 epoche, passo di training 32 (quello del criterio)
+  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT/step32" --emg-unit uV --check-graph --subjects 1 --seeds 0 --epochs 19 \
+    --workers 1 || exit 1
+  python3 scripts/temponet_db8_summary.py "$OUT/step32" --seeds 0 || exit 1
+  # 2) stesso soggetto e seme, solo fold1, passo di training 4: curva di validazione con 8 volte i passi per epoca
+  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT/step4" --emg-unit uV --subjects 1 --seeds 0 --epochs 19 --train-step 4 \
+    --models fold1 --workers 1 || exit 1
 else
-  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --emg-unit uV --seeds 0 1 2 --workers 4 --time-budget-s 6000 \
+  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --emg-unit uV --seeds 0 1 2 --workers 1 --time-budget-s 6000 \
     || exit 1
   python3 scripts/temponet_db8_summary.py "$OUT" --seeds 0 1 2 || exit 1
 fi

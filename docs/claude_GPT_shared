@@ -8471,6 +8471,22 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   percentile, sotto l'eps 1e-5 della BatchNorm; il documento lasciava l'unita' da confermare sulla cache. Cambio di scala costante, deciso sui
   soli dati prima di qualunque training; criterio congelato invariato. 29 test della replica passati.
 
+### 2026-11-09 | Claude | Baseline TEMPONet: collaudo 1 eseguito (63985852); training troppo lento con 4 processi e uscita ancora a zero dopo un'epoca; passo con CUDA graph e collaudo 2 preparati | Codice 985af8e, poi questa voce
+
+- `TEMPONET-DB8-smoke-20261109` = 63985852 (checkout 63985785, `deploy/temponet-db8-20261109-v3` = 985af8e), `boost_qos_dbg`, COMPLETED 0:0
+  in 8 min 15 s (0,14 GPU-ore): soggetti 1-4, seme 0, una epoca per modello, 4 processi sulla stessa GPU. Ricevute in
+  `results/temponet_db8/smoke_20261109/` (JSON e log; modelli e predizioni restano su $WORK).
+- Velocita': ~80 ms per passo per processo (20 ms aggregati), processi al 90-94% di CPU: senza MPS i contesti si alternano sulla GPU e i
+  kernel di TEMPONet sono minuscoli. Il run completo avrebbe richiesto ~20 ore invece di 2.
+- Apprendimento: dopo un'epoca la loss di training (22-25 gradi) coincide con la media dei |DoA| (per S2 25,8 contro 25,3): l'uscita e' ancora
+  vicina a zero. Con Adam a lr 1e-4 ogni peso si sposta al massimo di ~1e-4 per passo e un'epoca a passo 32 sono ~1.100 passi; il modello
+  `full` (doppi passi) e' gia' piu' basso. Lettura sulla sola loss di training, non sul test.
+- Modifiche: passo di training catturato in un CUDA graph (forward, backward e Adam `capturable`), un processo per GPU, controllo eager/graph
+  con dropout 0 e stessi batch (tolleranza 1e-5 sui parametri) e misura dei ms per passo; opzioni `--train-step` (passo delle finestre di
+  training, non dichiarato da [Z21]; validazione e test restano a 16 ms) e `--models`. 31 test della replica passati.
+- Collaudo 2 (prossimo, `boost_qos_dbg`): controllo eager/graph; S1, seme 0, tre modelli, 19 epoche a passo 32; S1 fold1 a passo 4. La scelta
+  del passo di training, se servira', si fara' sulla sola curva di validazione (dati di training) e si registrera' prima del run completo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
