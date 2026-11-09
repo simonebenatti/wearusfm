@@ -1,0 +1,37 @@
+{
+  "stage": "checkout-training",
+  "remote_time_utc": "2026-11-09T11:24:06Z",
+  "jobs": {
+    "SCALING-300M-cont19618-checkout-20261109-v3": {
+      "job_slurm": "63977208",
+      "local": "training",
+      "elapsed_seconds": 29,
+      "core_hours": 0.01611111111111111,
+      "gpu_hours": 0.0,
+      "folder": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v3",
+      "listing": [
+        ".claude",
+        ".git",
+        ".gitignore",
+        "CLAUDE.md",
+        "bench",
+        "docs",
+        "pyproject.toml",
+        "results",
+        "scripts",
+        "splits",
+        "src",
+        "tests",
+        "third_party"
+      ]
+    }
+  },
+  "files": {
+    "training/slurm_log.txt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/campaign_checkout_63977208.out",
+      "sha256": "2365684c8368226dffe63c5432fe3f040e1ac6f4891b3185211a80811bbcec79",
+      "bytes": 3941,
+      "stored": "plain"
+    }
+  }
+}

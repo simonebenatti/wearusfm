@@ -1,0 +1,31 @@
+{
+  "stage": "identity-precheck",
+  "remote_time_utc": "2026-11-09T11:26:36Z",
+  "jobs": {
+    "SCALING-300M-cont19618-idcheck-20261109-v3": {
+      "job_slurm": "63977268",
+      "local": "",
+      "elapsed_seconds": 70,
+      "core_hours": 0.07777777777777778,
+      "gpu_hours": 0.0,
+      "folder": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v3_identity_precheck",
+      "listing": [
+        "identity_precheck.json"
+      ]
+    }
+  },
+  "files": {
+    "identity_precheck.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v3_identity_precheck/identity_precheck.json",
+      "sha256": "1b8f0b11ba87bc40fc8e2790ec3762e7d6064cc16de862d4ed73c756fa4e0757",
+      "bytes": 55780,
+      "stored": "plain"
+    },
+    "slurm_log.txt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_identity_precheck_63977268.out",
+      "sha256": "893cd486c338f57510af10895bff26a6f89921bbc6e387f5a701e92e2715b083",
+      "bytes": 2670,
+      "stored": "plain"
+    }
+  }
+}
