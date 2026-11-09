@@ -142,8 +142,9 @@ EMA, l'MLP su WL batte la TEMPONet in entrambi i protocolli (7,69 contro 8,80 fo
 
 `TEMPONET-DB8-screen-20261109` = 64005316 (codice 9584631), COMPLETED 0:0 in 1 h 52 min 14 s (1 GPU: **1,871 GPU-ore**), 72 modelli di fold su
 72 (3 varianti x 12 soggetti x 2 fold, seme 0), ~93 s l'uno. Ricevute in `results/temponet_db8/screen_20261109/`, solo validazione: `screen.json`,
-`screen.md`, i `run.json` e il log del job (con `--hide-test-in-log` non contiene numeri di test, controllato prima della copia). Le unita' con le
-metriche di test restano su Leonardo, chiuse: il test si apre solo al passo 3.
+`screen.md` e i `run.json`. Il log del job (`temponet_db8_64005316.out` in `wearusfm_runs/logs`, fuori dal commit per la regola `*.out`) non contiene
+numeri di test grazie a `--hide-test-in-log`, controllato prima della copia. Le unita' con le metriche di test restano su Leonardo, chiuse: il test
+si apre solo al passo 3.
 
 | Variante | validazione (fold, EMA) | fold1 | fold2 | da V0 | soggetti meglio / peggio di V0 |
 |---|---|---|---|---|---|
