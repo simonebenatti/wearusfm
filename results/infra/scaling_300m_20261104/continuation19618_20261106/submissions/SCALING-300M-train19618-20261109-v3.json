@@ -1,0 +1,44 @@
+{
+ "id": "SCALING-300M-train19618-20261109-v3",
+ "creato": "2026-11-09T12:56:11+01:00",
+ "agente": "claude",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 59.0,
+ "codice_sha": "d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-300M-train19618-20261109-v3",
+  "--comment=wearusfm:SCALING-300M-train19618-20261109-v3",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v3,EXPECTED_SHA=d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v3/scripts/slurm/scaling_continue.sbatch",
+  "results/infra/scaling_300m_20261104/continuation19618_20261109_v3/training_plan.json",
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v3"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-09T12:56:11+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-09T12:56:11+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-09T12:56:14+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63979977,
+   "uscita": 0,
+   "stdout": "63979977\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  }
+ ],
+ "job_slurm": 63979977,
+ "uscita": 0,
+ "stdout": "63979977\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}

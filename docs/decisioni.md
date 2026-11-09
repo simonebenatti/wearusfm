@@ -7031,3 +7031,15 @@ estensione scientifica, nuovi training, retry o pollingAI.
   e quello del recupero passano, 75 su 75. Il codice che gira sul cluster resta quello di `d3f431b`.
 - Base di `release_check` per lo stadio B: questo commit, cioe' la punta del pacchetto v3 `01997df` piu' le prove e questa sola
   correzione di test. Simone, 09/11 alle 12:54: «se ha finto lancia tutto». Ora si invia il training v3.
+
+### 09/11/2026 — Claude, linea 1: training del recupero v3 inviato (job 63979977)
+
+- `SCALING-300M-train19618-20261109-v3` = job 63979977, inviato alle 12:57 con la riga 4 di
+  `continuation19618_20261109_v3/training_submit_lines.txt`. Stato `PENDING` (Priority) su `boost_usr_prod`, QoS normal,
+  14:45:00, 1 nodo, 32 CPU, 4 GPU, account `iscrb_wearusfm`, dal checkout `scaling_300m_continuation19618_20261109_v3` a `d3f431b`.
+  Al massimo 59 GPU-ore (472 ore locali); dentro l'inviluppo v3, GPU-ore con margine 66,731111.
+- Prima dell'invio, in sola lettura: cartelle del run e delle ricevute v3 assenti, nessun job della linea in coda, run a 5.000 con
+  i suoi 11 file. Il cancello del training ammette la ricevuta del pre-controllo 63977268 (verifica locale col codice del wrapper).
+- All'avvio il wrapper riverifica allocazione, pre-controllo, sorgenti, ingressi, run a 5.000 e controllo, e semina la cartella
+  nuova; poi la verifica d'identita' del trainer alla ripresa. Stop al primo errore, nessun retry. A fine job: `collect training`,
+  piano d'estrazione e stadio B come rilasciato.
