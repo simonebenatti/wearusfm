@@ -25,7 +25,8 @@ N_SUBJECTS = 12
 
 
 def load_units(run_dir: Path) -> list[dict]:
-    return [json.loads(p.read_text()) for p in sorted((run_dir / "units").glob("S*_seed*.json"))]
+    paths = [p for p in sorted((run_dir / "units").glob("S*_seed*.json")) if not p.name.endswith(".partial.json")]
+    return [json.loads(p.read_text()) for p in paths]  # le .partial.json sono avanzamenti di unita' non finite
 
 
 def verdict(m: float, reference: float, tolerance: float, complete: bool) -> str:

@@ -14,12 +14,14 @@
 # Replica di TEMPONet su NinaPro DB8 (docs/temponet_db8_replication.md; criteri in docs/decisioni.md, voce del 09/11/2026). Una GPU.
 #   collaudo: controllo eager/graph e tempi; soggetto 1, seme 0, 19 epoche con passo di training 32 e (solo fold1) 4;
 #     QoS boost_qos_dbg, 30 minuti (al massimo 0,5 GPU-ore)
-#     sbatch --qos=boost_qos_dbg --time=00:30:00 --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_db8.sbatch smoke <cache> <uscite>
+#     sbatch --qos=boost_qos_dbg --time=00:30:00 --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_db8.sbatch smoke <cache> <uscite> [cudnn]
 #   completo: 12 soggetti x semi 0, 1, 2, 19 epoche, un processo, poi la sintesi; 2 ore (al massimo 2 GPU-ore)
-#     sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_db8.sbatch full <cache> <uscite>
+#     sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_db8.sbatch full <cache> <uscite> [cudnn]
+#   [cudnn]: deterministic (predefinito), default o benchmark; vedi scripts/temponet_db8_profile.py
 # Le uscite vanno in una cartella NUOVA fuori dal codice; nessun riavvio automatico, nessun nuovo tentativo.
 set -uo pipefail
-MODE="${1:?smoke o full}"; CACHE="${2:?cartella della cache}"; OUT="${3:?cartella delle uscite}"
+MODE="${1:?smoke o full}"; CACHE="${2:?cartella della cache}"; OUT="${3:?cartella delle uscite}"; CUDNN="${4:-deterministic}"
+case "$CUDNN" in deterministic|default|benchmark) ;; *) echo "modo cuDNN: deterministic, default o benchmark"; exit 2;; esac
 case "$MODE" in smoke) EXPECTED_TIME=00:30:00;; full) EXPECTED_TIME=02:00:00;; *) echo "modo: smoke o full"; exit 2;; esac
 for P in "$CACHE" "$OUT"; do case "$P" in /*) ;; *) echo "percorso relativo rifiutato: $P"; exit 2;; esac; done
 case "$OUT" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*|\
@@ -41,15 +43,19 @@ if torch.cuda.device_count() != 1:
 print('GPU:', torch.cuda.get_device_name(0), '| torch', torch.__version__, '| CUDA', torch.version.cuda)
 PY
 if [ "$MODE" = smoke ]; then
+  # 0) profilo del passo (ms per passo con tre impostazioni cuDNN, kernel piu' costosi)
+  mkdir -p "$OUT" && python3 scripts/temponet_db8_profile.py --cache "$CACHE" --out "$OUT/profile.json" || exit 1
   # 1) controllo eager/graph; soggetto 1, seme 0, tre modelli, 19 epoche, passo di training 32 (quello del criterio)
-  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT/step32" --emg-unit uV --check-graph --subjects 1 --seeds 0 --epochs 19 \
-    --workers 1 || exit 1
+  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT/step32" --emg-unit uV --cudnn-mode "$CUDNN" --check-graph --subjects 1 \
+    --seeds 0 --epochs 19 --workers 1 || exit 1
   python3 scripts/temponet_db8_summary.py "$OUT/step32" --seeds 0 || exit 1
   # 2) stesso soggetto e seme, solo fold1, passo di training 4: curva di validazione con 8 volte i passi per epoca
-  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT/step4" --emg-unit uV --subjects 1 --seeds 0 --epochs 19 --train-step 4 \
+  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT/step4" --emg-unit uV --cudnn-mode "$CUDNN" --subjects 1 --seeds 0 \
+    --epochs 19 --train-step 4 \
     --models fold1 --workers 1 || exit 1
 else
-  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --emg-unit uV --seeds 0 1 2 --workers 1 --time-budget-s 6000 \
+  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --emg-unit uV --cudnn-mode "$CUDNN" --seeds 0 1 2 --workers 1 \
+    --time-budget-s 6000 \
     || exit 1
   python3 scripts/temponet_db8_summary.py "$OUT" --seeds 0 1 2 || exit 1
 fi

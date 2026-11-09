@@ -73,6 +73,8 @@ def test_training_and_summary_end_to_end(cache, tmp_path):
     for m in unit["models"].values():
         assert np.isfinite(m["test_ema"]["mae_deg"]) and len(m["alpha"]) == 5
     assert (out / "models" / "S1_seed0_full.pt").is_file()
+    assert not (out / "units" / "S1_seed0.partial.json").exists()  # tolto a fine unita'
+    (out / "units" / "S2_seed0.partial.json").write_text("{}")  # un'unita' non finita non entra nella sintesi
     assert np.load(out / "predictions" / "S1_seed0_fold2_test_raw.npy").shape == (np.load(out / "predictions" / "S1_test_target.npy").shape)
     run = json.loads((out / "run.json").read_text())
     assert run["model"]["parameters"] == 70_917 and run["status"] == {"S1_seed0": "ok"}

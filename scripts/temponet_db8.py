@@ -98,6 +98,7 @@ def predict(model, sig: Signal, batch: int = 8192) -> tuple[np.ndarray, np.ndarr
     return np.concatenate(preds), np.concatenate(targets)
 
 
+CUDNN_MODES = {"deterministic": (True, False), "default": (False, False), "benchmark": (False, True)}  # (deterministic, benchmark)
 GRAPH_TOLERANCE = 1e-5  # differenza massima ammessa fra parametri eager e graph nel controllo
 GRAPH_WARMUP = 3  # passi veri (contati nell'epoca) eseguiti in eager su uno stream laterale prima della cattura
 
@@ -179,6 +180,8 @@ def graph_check(sig: Signal, cfg: argparse.Namespace, device, steps: int = 60) -
 
     gen = torch.Generator().manual_seed(12345)
     batches = sig.ends[torch.randperm(len(sig.ends), generator=gen)[: steps * cfg.batch].to(device)].view(steps, cfg.batch)
+    saved = (torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark)
+    torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = True, False  # equivalenza esatta: algoritmi deterministici
     out = {}
     params = {}
     for mode in ("eager", "graph"):
@@ -198,6 +201,7 @@ def graph_check(sig: Signal, cfg: argparse.Namespace, device, steps: int = 60) -
     diffs = [float((a.double() - b.double()).abs().max()) for a, b in zip(params["eager"], params["graph"])]
     out["max_abs_param_diff"] = max(diffs)
     out["steps"] = steps
+    torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = saved
     return out
 
 
@@ -228,6 +232,9 @@ def train(sig: Signal, val: Signal | None, cfg: argparse.Namespace, seed: int, d
             vp, vt = predict(model, val)
             row["val_mae_raw_deg"] = float(db8.mae_per_doa(vp, vt).mean())
         history.append(row)
+        if cfg.log_epochs:
+            print(f"  seme {seed} epoca {epoch + 1}: train L1 {train_loss:.3f}"
+                  + (f", val {row['val_mae_raw_deg']:.3f}" if "val_mae_raw_deg" in row else "") + f", {row['seconds']:.1f} s", flush=True)
     return model, history
 
 
@@ -235,8 +242,7 @@ def run_unit(subject: int, seed: int, cfg: argparse.Namespace) -> dict:
     import torch
 
     torch.set_num_threads(1)
-    torch.backends.cudnn.benchmark = False
-    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = CUDNN_MODES[cfg.cudnn_mode]
     torch.backends.cuda.matmul.allow_tf32 = False
     torch.backends.cudnn.allow_tf32 = False
     device = torch.device(cfg.device)
@@ -283,6 +289,7 @@ def run_unit(subject: int, seed: int, cfg: argparse.Namespace) -> dict:
         entry["test_raw"] = db8.evaluate(test_pred, test_tgt)
         entry["test_ema"] = db8.evaluate(db8.ema(test_pred, alpha), test_tgt)
         result["models"][name] = entry
+        (out_dir / "units" / f"S{subject}_seed{seed}.partial.json").write_text(json.dumps(result, indent=1))  # avanzamento
         torch.save(model.state_dict(), out_dir / "models" / f"S{subject}_seed{seed}_{name}.pt")
         np.save(out_dir / "predictions" / f"S{subject}_seed{seed}_{name}_test_raw.npy", test_pred.astype(np.float32))
         target_path = out_dir / "predictions" / f"S{subject}_test_target.npy"
@@ -305,6 +312,7 @@ def worker(job: tuple[int, int, dict]) -> tuple[int, int, str]:
     try:
         result = run_unit(subject, seed, cfg)
         dst.write_text(json.dumps(result, indent=1))
+        dst.with_suffix(".partial.json").unlink(missing_ok=True)
         return subject, seed, "ok"
     except Exception:  # registrato e riportato: il job esce con errore, nessun nuovo tentativo
         dst.with_suffix(".error").write_text(traceback.format_exc())
@@ -330,6 +338,9 @@ def main(argv=None) -> int:
     ap.add_argument("--max-steps-per-epoch", type=int, default=0, help="solo collaudo: tetto ai passi per epoca")
     ap.add_argument("--workers", type=int, default=1, help="processi in parallelo; sulla stessa GPU senza MPS si alternano (time-slicing)")
     ap.add_argument("--no-cuda-graph", action="store_true", help="passo di training in eager anche su GPU")
+    ap.add_argument("--cudnn-mode", choices=sorted(CUDNN_MODES), default="deterministic",
+                    help="algoritmi cuDNN: deterministic (riproducibile), default o benchmark (scelta per misura, non deterministica)")
+    ap.add_argument("--log-epochs", action="store_true", help="una riga per epoca (loss di training e MAE di validazione)")
     ap.add_argument("--check-graph", action="store_true", help="prima della prima unita': equivalenza eager/graph e tempi per passo")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--time-budget-s", type=float, default=0.0, help="nessuna unita' nuova dopo questo tempo (0 = nessun limite)")
