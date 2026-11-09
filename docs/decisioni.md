@@ -7776,3 +7776,24 @@ Report `docs/reviews/integration_main_20261106.md`; pin e prove in
 nessuna scrittura su Leonardo, modifica dei checkout attivi o dei riferimenti deploy,
 nessun job nuovo e nessun costo cluster di questa integrazione. I piani storici mantengono
 hash e ricette congelati; non si ripuntano su main i job già inviati.
+
+### 2026-11-09 — Replica di TEMPONet su NinaPro DB8: grandezza primaria, criterio e tetto congelati prima del lancio (Claude)
+
+**Mandato.** Simone, 09/11/2026: «allora qua in autonomia testiamo la TCN temponet. Da internet e dai repository ti scarichi la rete, la alleni
+e la testi sul suo dataset di riferimento guardando i paper che trovi in letteratura e replichi i risultati per un task di regressione (guarda
+prevlentemente i lavori di zanghieri e orlandi). Poi una volta che abbiamo l codice funzionante vediamo.» Attivita' nuova, fuori dalle tre linee;
+codice e operazioni a Claude. Protocollo, fonti e scelte: `docs/temponet_db8_replication.md`.
+
+**Grandezza primaria (fissata qui, prima di qualunque job).** M = MAE in gradi sull'acquisizione 3 di NinaPro DB8, dopo l'EMA con alpha per
+soggetto e DoA scelto sulle sole predizioni di validazione, media su 12 soggetti x 5 DoA x 2 modelli di fold (training A1/validazione A2 e
+viceversa) x 3 semi (0, 1, 2); TEMPONet-64 fp32 (70.917 parametri), 19 epoche, Adam 1e-4, batch 64, loss L1.
+
+**Criterio.** Riferimento 6,89 gradi ([Z21] Tab. I, int8). Tolleranza simmetrica 0,30 gradi (circa l'errore standard di una media su 60 valori
+soggetto x DoA con deviazione standard 2,08, [Z23]). |M − 6,89| ≤ 0,30: **replicata**; M > 7,19: **non replicata**; M < 6,59: **non coerente
+(migliore del pubblicato)**, da indagare prima di qualunque uso; unita' mancanti: **incompleta**. Descrittivi, senza soglia: modello `full`,
+uscite senza EMA, accuratezze a 10 e 15 gradi (0,814 e 0,900), alpha (0,862 ± 0,044), deviazioni standard per seme e soggetto x DoA, confronto
+con LSTM 7,04. Nessuna selezione sul test, epoche fisse; se l'esito non e' «replicata», nessun nuovo run senza una diagnosi registrata.
+
+**Tetto dell'attivita'.** 5 GPU-ore e 40 core-ore in tutto (checkout 0,17 core-ore, cache CPU 8 core-ore, collaudo `boost_qos_dbg` 0,5 GPU-ore,
+replica 2 GPU-ore; il resto e' margine per un solo rilancio dopo una correzione diagnosticata). Ogni job sotto le 5 GPU-ore della regola del
+28/10; ore locali al massimo ~28 (GPU con billing 8). Consuntivo in questa voce a fine attivita'.

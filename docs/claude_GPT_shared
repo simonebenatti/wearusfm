@@ -8427,6 +8427,24 @@ Copertura combinata3344casi, nessuno irrisolto o saltato; non è una seconda sui
 Report `docs/reviews/integration_main_20261106.md` e prove in `results/infra/integration_main_20261106/`.
 Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione sul cluster.
 
+### 2026-11-09 | Claude | Baseline TEMPONet: replica su NinaPro DB8 preparata (codice, test, criterio congelato); nessun job ancora | Ramo `claude/temponet-db8-20261109`, base main e114a78
+
+- Mandato di Simone del 09/11 (citazione in `docs/decisioni.md`): «in autonomia testiamo la TCN temponet [...] replichi i risultati per un task
+  di regressione (guarda prevlentemente i lavori di zanghieri e orlandi)». E' la baseline «CNN/TCN da zero» dell'harness v10; attivita' fuori
+  dalle tre linee, codice e operazioni a Claude, worktree separato `.claude/worktrees/claude-temponet`.
+- Fonti lette (postprint IRIS Unibo): Zanghieri et al. COINS 2021 (TEMPONet di regressione su DB8, MAE 6,89 gradi int8, Tab. I), TBioCAS 2020
+  (TEMPONet originale), IWASI 2023 (passo d'inferenza 16 ms, 6,89 ± 2,08), TBioCAS 2024 con Orlandi (HYSER, forza, rete diversa); Krasoulis et
+  al. 2019 e Data Sheet 1 (matrice delle 5 DoA, eq. S2). Codice: nessun repository pubblico della TEMPONet di regressione; letti in sola lettura
+  `pulp-bio/event-based-semg-regression` (caricatore DB8 e matrice DoA degli autori) e `EmbeddedML-EDAGroup/Q-PPG` (TEMPONet PyTorch di Burrello).
+- Reimplementazione: `src/wearusfm/model/temponet.py` (70.917 parametri = i 70,9 kB int8 del paper con la lettura documentata),
+  `src/wearusfm/harness/db8_regression.py` (DoA, finestre, EMA, alpha, metriche), `scripts/temponet_db8_cache.py`, `scripts/temponet_db8.py`,
+  `scripts/temponet_db8_summary.py`, launcher `scripts/slurm/temponet_db8_cache.sbatch` e `temponet_db8.sbatch`; protocollo e undici scelte
+  dichiarate in `docs/temponet_db8_replication.md`.
+- Grandezza primaria e criterio congelati in `docs/decisioni.md` prima di qualunque job: MAE test A3 dopo EMA su 12 soggetti x 5 DoA x 2 fold x
+  3 semi, riferimento 6,89, tolleranza ±0,30. Tetto dell'attivita' 5 GPU-ore e 40 core-ore; ogni job sotto le 5 GPU-ore.
+- Test: 26 nuovi in `tests/cpu` (modello, regressione DB8, catena cache -> training -> sintesi su dati finti), tutti passati; esito della suite
+  completa nella voce successiva. Nessun deploy, nessun job in questa voce.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12385,3 +12403,15 @@ allentata e tutti i161casi inizialmente falliti/in errore passano nella riesecuz
 Main integrato non sostituisce i checkout dei job attivi; nessun intervento su checkpoint, cache,
 ambienti, ledger o riferimenti deploy. D-5 già corretto e verificato; nessun seguito scientifico
 nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main_20261106.md`.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: ambiguita' delle fonti risolte e un limite operativo | Ramo `claude/temponet-db8-20261109`
+
+- COINS 2021 non fissa due dettagli dell'architettura (canali delle tre convoluzioni di un blocco; unita' di FC I: «4x units as Block III's
+  channels»). La lettura alla lettera di FC I darebbe 125.504 pesi contro i 70,9 kB dichiarati; con canali uguali nel blocco e FC I a 64 unita' su
+  4 x 64 ingressi il conteggio e' 70.917 e, con Block III a 192, 481.541 (< 500 k del testo). Adottata questa lettura, con test.
+- I 3,16 MMAC dichiarati tornano solo contando le convoluzioni con stride a stride 1 (3,23 M); a stride applicato sono 2,41 M. Solo osservazione.
+- Krasoulis 2019, Data Sheet 1, eq. S2: la matrice stampata ha 19 righe per 18 DoF (ultima riga tutta a zero); si usano le prime 18 come il
+  codice degli autori.
+- Il protocollo dei fold e altre dieci scelte non sono specificati dal paper: dichiarate prima dei risultati nel documento della replica.
+- Lettura dei `.mat` di DB8 sul login node interrotta da me dopo 4 minuti di CPU su un solo file (limite 10): la lettura passa a un job CPU di
+  cache, una volta sola. Nessun effetto su altri utenti o job.
