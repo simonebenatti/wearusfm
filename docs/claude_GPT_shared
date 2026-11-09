@@ -7281,6 +7281,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   righe e decisioni `01997dfafe10013daaade28540fe8e5ffbcf4220` (ramo `claude/scaling-300m-exec-20261106`).
 - Test mirati verdi (369 + recupero, launcher, derivazione); suite completa in corso: il training parte solo con la suite verde.
 
+### 2026-11-09 | Claude | Linea 1: training del recupero v3 inviato (job 63979977); suite completa e test corretto
+
+- Rilettura delle 12:21 superata; deploy `d3f431b`; checkout 63977208 (29 s) e pre-controllo 63977268 (70 s) `COMPLETED 0:0`:
+  `identical: true`, `numpy_loaded_before_torch: false`. Il cancello del training ammette la ricevuta (verifica locale).
+- Suite completa su `d3f431b`: 3549 passati, 1 fallito per un mio test che verificava l'assenza delle cartelle delle prove v3,
+  raccolte durante la suite. Corretto solo il test (`44d3adf`), 75 su 75 nei due file; codice sul cluster invariato. Base di
+  `release_check` per lo stadio B: `44d3adf`.
+- Simone, 09/11 alle 12:54: «se ha finto lancia tutto». Training `SCALING-300M-train19618-20261109-v3` = job 63979977, `PENDING`
+  (Priority), 4 GPU, 14:45:00, al massimo 59 GPU-ore. Voce in `docs/decisioni.md`, ramo `claude/scaling-300m-exec-20261106`.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
