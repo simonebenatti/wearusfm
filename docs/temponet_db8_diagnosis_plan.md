@@ -137,3 +137,27 @@ Limiti, da dire senza correggere a posteriori: la SVR ha scelto C = 100, il bord
 raggiunto la convergenza di scikit-learn in 200 iterazioni (l'MLP era descrittivo). Letture descrittive: con le stesse finestre e la stessa
 EMA, l'MLP su WL batte la TEMPONet in entrambi i protocolli (7,69 contro 8,80 fold; 6,82 contro 7,78 full), cosa che il paper non riporta (TCN
 6,89 contro MLP 7,14): resta un difetto proprio del training della TCN, oggetto del passo 2.
+
+### Passo 2 — job 64005316, 09/11/2026
+
+`TEMPONET-DB8-screen-20261109` = 64005316 (codice 9584631), COMPLETED 0:0 in 1 h 52 min 14 s (1 GPU: **1,871 GPU-ore**), 72 modelli di fold su
+72 (3 varianti x 12 soggetti x 2 fold, seme 0), ~93 s l'uno. Ricevute in `results/temponet_db8/screen_20261109/`, solo validazione: `screen.json`,
+`screen.md`, i `run.json` e il log del job (con `--hide-test-in-log` non contiene numeri di test, controllato prima della copia). Le unita' con le
+metriche di test restano su Leonardo, chiuse: il test si apre solo al passo 3.
+
+| Variante | validazione (fold, EMA) | fold1 | fold2 | da V0 | soggetti meglio / peggio di V0 |
+|---|---|---|---|---|---|
+| V0 (run 63988277) | 9,906 | 9,666 | 10,145 | | |
+| V1 bersaglio standardizzato | 9,594 | 9,488 | 9,700 | −0,312 | 11 / 1 |
+| V3 padding simmetrico | 9,941 | 9,704 | 10,178 | +0,035 | 5 / 7 |
+| V13 entrambi | **9,590** | 9,458 | 9,721 | −0,316 | 11 / 1 |
+
+**Regola congelata: scelta V13** (validazione piu' bassa, guadagno 0,316 sopra la soglia di 0,20). Lettura descrittiva: il guadagno viene dal
+bersaglio standardizzato (H3); V1 e V13 differiscono di 0,005, entro il rumore, e il padding simmetrico da solo non migliora (H4 non sostenuta).
+Quanto di questo guadagno passi al test, e quanta della distanza dal paper chiuda, lo dice solo il passo 3.
+
+### Passo 3 — job 64010753, inviato il 09/11/2026
+
+`TEMPONET-DB8-confirm-20261109` = 64010753, codice 5a26a19 (checkout `temponet-db8-5a26a19`, job 64005365), variante V13, fold e `full` x 3
+semi su 12 soggetti, `full` grandezza principale (caso H1), limite 4 h 30 min: al massimo **4,5 GPU-ore**. Spesa GPU dell'attivita' finora
+2,907 + 1,871 = **4,778 ore**; col passo 3 al massimo 9,278 sul tetto di 12.

@@ -8560,6 +8560,14 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Conseguenza congelata: passo 2 (screening V1, V3, V13 in validazione) inviato come `TEMPONET-DB8-screen-20261109` = 64005316, 1 GPU, limite
   2 h 30 min; poi passo 3 con `full` come grandezza principale (fold e full x 3 semi). Spesa GPU finora 2,907 ore su 12.
 
+### 2026-11-09 | Claude | Baseline TEMPONet, diagnosi: passo 2 concluso (64005316), scelta V13; passo 3 inviato (64010753) | Codice 5a26a19
+
+- Passo 2: COMPLETED 0:0 in 1 h 52 min 14 s (1,871 GPU-ore), 72 modelli di fold su 72; ricevute di sola validazione in
+  `results/temponet_db8/screen_20261109/` (test chiuso fino al passo 3). Validazione (fold, EMA, seme 0): V0 9,906, V1 9,594, V3 9,941, V13 9,590.
+- Regola congelata: **V13** (guadagno 0,316 sopra la soglia di 0,20). V1 e V13 entro 0,005: il guadagno viene dal bersaglio standardizzato.
+- Passo 3 inviato come `TEMPONET-DB8-confirm-20261109` = 64010753: checkout `temponet-db8-5a26a19` (job 64005365), V13, fold e full x 3 semi,
+  `full` grandezza principale, limite 4 h 30 min. Spesa GPU finora 4,778 ore; col passo 3 al massimo 9,278 su 12.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12549,3 +12557,9 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
 - MLP su Waveform Length 7,69 (fold) e 6,82 (full) contro TEMPONet 8,80 e 7,78: nel paper e' il contrario (TCN 6,89, MLP 7,14). Il protocollo
   fold spiega circa un grado anche per la SVR (8,28 contro 7,37), ma la TCN resta sotto le baseline: difetto del suo training da isolare al
   passo 2. La SVR usa quasi sempre il bordo della griglia di C: i suoi numeri sono un limite superiore.
+
+### 2026-11-09 | Claude | Baseline TEMPONet, diagnosi: il bersaglio standardizzato aiuta in validazione, il padding simmetrico no
+
+- Validazione dei fold (seme 0): bersaglio standardizzato per DoA (V1) −0,31 gradi, migliore di V0 in 11 soggetti su 12; padding simmetrico
+  (V3) +0,04, migliore in 5 su 12; insieme (V13) −0,32. H3 sostenuta in validazione, H4 no. Il guadagno e' piccolo rispetto alla distanza
+  dal paper: quanto passi al test lo misura il passo 3 (64010753).
