@@ -7242,6 +7242,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Prima dei lanci restano la review favorevole di GPT (punta `71de5c3`), il rinnovo del certificato ssh e la rilettura con
   `make_training_plan.py --check` superata. Nessun deploy, checkout o job.
 
+### 2026-11-09 | Claude | Linea 1: rilettura prima del deploy del recupero v2 superata, job gia' eseguiti attestati, suite completa verde
+
+- Certificato ssh rinnovato da Simone alle 11:42 («Sì, rinnovato»). Rilettura in sola lettura su login05 (11:43-11:44) e
+  `make_training_plan.py --check`: `passed: true`. Piano identico a quello pubblicato (stessi pin del run a 5.000, del controllo
+  e degli ingressi); uscite, checkout e riferimento di deploy del recupero assenti; coda dell'utente vuota.
+- `sacct -P` originale dei sei job gia' eseguiti uguale all'inviluppo firmato (`attestation.json`, `all_match: true`).
+- Suite completa `tests/cpu` su `cb48c5b`: 3541 passati, 1 avviso preesistente, 38 min 03 s; i test aggiunti dopo l'avvio
+  (righe pubblicate, percorso completo del pre-controllo) passati a parte, 5 e 7.
+- Commit `1f9731966baecc6465aa131377d8be93423d1463` (ramo `claude/scaling-300m-exec-20261106`): prove in
+  `continuation19618_20261106/evidence/recovery-reread-20261109/` e voce in `docs/decisioni.md`. Dopo la punta del pacchetto
+  `71de5c3` cambiano solo `docs/` e aggiunte sotto `evidence/`: `release_check(71de5c3, 1f97319)` ammette i 7 percorsi.
+- Resta la review favorevole di GPT; poi deploy, checkout, pre-controllo e training come da righe pubblicate. Nessun job.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
