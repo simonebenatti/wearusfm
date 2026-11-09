@@ -6998,3 +6998,25 @@ estensione scientifica, nuovi training, retry o pollingAI.
   accanto a `identical` e ai pin. Servono piano, riferimento di deploy, checkout e pre-controllo nuovi; il training non cambia.
   Costo in piu', solo CPU, con margine: 0,266667 core-ore per il checkout e 1,533333 per il pre-controllo. Il totale CPU senza GPU
   passa a 349,384444 su 350. Serve la decisione di Simone, perche' cambia due voci dell'inviluppo firmato.
+
+### 09/11/2026 — Claude, linea 1: recupero v3 con il cancello del pre-controllo corretto; inviluppo emendato approvato da Simone
+
+- Simone, 09/11 alle 12:06, alla domanda «Preparo il v3 col cancello corretto e un nuovo pre-controllo (solo CPU, +1,8
+  core-ore)?»: «Sì, prepara il v3». Vale per il v3 l'autorizzazione delle 11:46 a lanciare senza la review di GPT.
+- Correzione: il wrapper legge `"numpy" in sys.modules` subito prima di `import torch` (`NUMPY_BEFORE_TORCH`). La ricevuta del
+  pre-controllo riporta `numpy_loaded_before_torch` e le posizioni di completamento, queste ultime solo come contesto. Il training
+  esige `identical: true` e `numpy_loaded_before_torch: false`. Protocollo del pre-controllo `-v2`. In processi nuovi la misura
+  da' `false` senza numpy caricato e `true` con `import numpy` prima del wrapper; l'ordine di completamento mette torch dopo numpy
+  in entrambi i casi.
+- Pacchetto: commit di deploy `d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06`. Piano v3
+  `results/infra/scaling_300m_20261104/continuation19618_20261109_v3/training_plan.json`, SHA-256
+  `f450ec5d08baaac7d8e65f3e3eb4edd3c6559b91863e5df56e76ecf86798dbbf`, costruito dalle letture del 09/11 alle 11:43. Rispetto al
+  v2 cambiano solo il wrapper, il launcher del pre-controllo, il protocollo del pre-controllo, le cartelle `-v3` e i blocchi sul
+  v1 e sul v2. Identita' `RECOVERY` v3 nello stadio B, con prove in `evidence/checkout-training-v3/` ed `evidence/identity-precheck-v3/`.
+  Righe d'invio in `training_submit_lines.txt`, dal generatore della catena.
+- Inviluppo v3 (`budget_envelope.json`), ricavato dalle prove attestate degli otto job gia' eseguiti: GPU-ore con margine
+  66,731111, invariate; core-ore CPU senza GPU 349,384444 su 350, cioe' le 347,584444 firmate piu' 1,8; fase checkout 1,333333;
+  pre-controllo 3,066667; core-ore nei job GPU 533,848889. Il v2 ha usato 0,098889 core-ore reali e nessuna GPU.
+- Test mirati: 369 passati (continuazione, cancelli, piani e lettura dello stadio B), piu' recupero, launcher e derivazione.
+  Una rottura voluta del cancello nuovo fa fallire 6 test. Suite completa `tests/cpu` su `d3f431b` avviata: il training si
+  invia solo con la suite verde.

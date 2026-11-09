@@ -1,0 +1,22 @@
+# Linea 1, recupero della continuazione 300M 5.000 -> 19.618: scaling_300m_continuation19618_20261109_v3. Lanci autorizzati da Simone il 09/11
+# («allora puoi lanciare, no need per la review di gpt»; per il v3: «Sì, prepara il v3»), dopo la rilettura in sola lettura
+# superata (remote_read.sh, poi make_training_plan.py <listing> <sha256> --check con "passed": true).
+# Commit di deploy (codice e piano): d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06
+# Piano: results/infra/scaling_300m_20261104/continuation19618_20261109_v3/training_plan.json, SHA-256 f450ec5d08baaac7d8e65f3e3eb4edd3c6559b91863e5df56e76ecf86798dbbf
+# Prodotte da: scripts/scaling_plans19618.py recovery-lines --sha d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06
+# Una riga alla volta, cosi' com'e'; ognuna solo dopo che la precedente e' finita come atteso ed e' stata letta; stop al
+# primo esito diverso; nessun retry, nessuna catena afterok.
+# 1) Riferimento di deploy su leonardo (non tocca il working tree di $WORK/wearusfm; mai main). Atteso: ramo nuovo; poi
+#    `git ls-remote leonardo refs/heads/deploy/scaling_300m_continuation19618_20261109_v3` uguale al commit di deploy.
+git -C /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec push leonardo d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06:refs/heads/deploy/scaling_300m_continuation19618_20261109_v3
+# 2) Checkout di campagna congelato: corsia seriale, 2 CPU, 4G, 5 minuti, 0 GPU-ore. Atteso: `sottomesso`, poi
+#    COMPLETED 0:0; poi `scaling_plans19618.py collect checkout-training` (prove in evidence/checkout-training-v3/).
+/Users/simonebenatti/.venvs/wearusfm-tok/bin/python /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py --agente claude --campagna scaling-300m-20261104 --timeout 120 --id SCALING-300M-cont19618-checkout-20261109-v3 --gpu-ore 0 --script-stdin /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/campaign_checkout.sbatch -- --cpus-per-task=2 --mem=4G --time=00:05:00 --export=ALL,CAMPAIGN=scaling_300m_continuation19618_20261109_v3,CAMPAIGN_SHA=d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06,EXPECTED_SHA=d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06 /dev/stdin
+# 3) Pre-controllo dell'identita': corsia seriale, 4 CPU, 24G, 20 minuti, 0 GPU-ore. Atteso: `sottomesso`, poi COMPLETED 0:0;
+#    poi `scaling_plans19618.py collect identity-precheck` (prove in evidence/identity-precheck-v3/) e nella ricevuta
+#    "identical": true e "numpy_loaded_before_torch": false.
+/Users/simonebenatti/.venvs/wearusfm-tok/bin/python /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py --agente claude --campagna scaling-300m-20261104 --timeout 120 --id SCALING-300M-cont19618-idcheck-20261109-v3 --gpu-ore 0 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v3,EXPECTED_SHA=d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v3/scripts/slurm/scaling_identity_precheck.sbatch results/infra/scaling_300m_20261104/continuation19618_20261109_v3/training_plan.json /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v3_identity_precheck
+# 4) Training 5.000 -> 19.618: 1 nodo, 4 GPU, 32 CPU, 480G, 14:45:00, QoS normal; al massimo 59 GPU-ore. Prima dell'invio: suite
+#    completa tests/cpu verde sul commit di deploy e, in sola lettura, cartelle del run e delle ricevute ancora assenti.
+#    Atteso: `sottomesso`; a fine job `scaling_plans19618.py collect training`.
+/Users/simonebenatti/.venvs/wearusfm-tok/bin/python /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/submit_job.py --agente claude --campagna scaling-300m-20261104 --timeout 120 --id SCALING-300M-train19618-20261109-v3 --gpu-ore 59 -- --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v3,EXPECTED_SHA=d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v3/scripts/slurm/scaling_continue.sbatch results/infra/scaling_300m_20261104/continuation19618_20261109_v3/training_plan.json /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v3

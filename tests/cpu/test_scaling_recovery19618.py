@@ -91,6 +91,22 @@ def test_recovery_lines_come_from_the_single_identity_and_the_recovery_plan():
         S.recovery_lines("deadbeef")
 
 
+def test_published_lines_are_the_generator_output_for_a_deploy_commit_that_carries_the_plan_and_its_sources():
+    text = (V3 / "training_submit_lines.txt").read_text().splitlines()
+    named = [line.rsplit(" ", 1)[1] for line in text if line.startswith("# Commit di deploy")]
+    lines = [line for line in text if line.strip() and not line.startswith("#")]
+    assert len(named) == 1 and lines == S.recovery_lines(named[0])
+    check_lines(lines, named[0])
+
+    def blob(relative):  # the bytes of a file in the deploy commit, as the frozen checkout will hold them
+        done = subprocess.run(["git", "-C", str(ROOT), "show", f"{named[0]}:{relative}"], capture_output=True)
+        assert done.returncode == 0, relative
+        return hashlib.sha256(done.stdout).hexdigest()
+
+    assert blob(S.RECOVERY["plan"]) == sha(ROOT / S.RECOVERY["plan"]) and f"SHA-256 {sha(ROOT / S.RECOVERY['plan'])}" in "\n".join(text)
+    assert {path: blob(path) for path in PLAN["execution_source_sha256"]} == PLAN["execution_source_sha256"]
+
+
 def test_envelope_is_rebuilt_exactly_from_attested_evidence_and_keeps_every_attempt_in_the_account(capsys):
     published = json.loads((V3 / "budget_envelope.json").read_text())
     assert published == json.loads(json.dumps(envelope.build())) and envelope.main(["--check"]) == 0
