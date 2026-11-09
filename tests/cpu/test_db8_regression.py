@@ -123,3 +123,34 @@ def test_non_finite_values_are_rejected(tmp_path):
     _fake_mat(src, nan=True)
     with pytest.raises(ValueError, match="non finiti"):
         db8.to_cache_arrays(db8.read_raw(src))
+    with pytest.raises(ValueError, match="coda"):
+        db8.trim_raw(db8.read_raw(src))  # NaN interno: non e' una coda
+
+
+def _raw(n=100):
+    return {"emg": np.zeros((n, 16)), "glove": np.zeros((n, 18)), "restimulus": np.zeros(n), "rerepetition": np.zeros(n)}
+
+
+def test_trailing_non_finite_tail_is_trimmed():
+    raw = _raw()
+    raw["glove"][-1, :] = np.nan  # come S5_E1_A1: guanto NaN nell'ultimo campione
+    out, trimmed = db8.trim_raw(raw)
+    assert trimmed == 1 and all(v.shape[0] == 99 for v in out.values())
+    db8.to_cache_arrays(out)  # nessun errore dopo il taglio
+    clean, zero = db8.trim_raw(_raw())
+    assert zero == 0 and clean["emg"].shape[0] == 100
+    raw = _raw()
+    raw["emg"][97:, 3] = np.inf
+    raw["glove"][98, 0] = np.nan
+    assert db8.trim_raw(raw)[1] == 3
+
+
+def test_long_or_interrupted_tails_are_errors():
+    raw = _raw(5000)
+    raw["glove"][-2500:, 0] = np.nan  # piu' di un secondo
+    with pytest.raises(ValueError, match="oltre"):
+        db8.finite_length(raw)
+    raw = _raw()
+    raw["glove"][[95, 97, 98, 99], 0] = np.nan  # buco a 96: non e' una coda contigua
+    with pytest.raises(ValueError, match="coda"):
+        db8.finite_length(raw)

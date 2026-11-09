@@ -8445,6 +8445,19 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Test: 26 nuovi in `tests/cpu` (modello, regressione DB8, catena cache -> training -> sintesi su dati finti), tutti passati; esito della suite
   completa nella voce successiva. Nessun deploy, nessun job in questa voce.
 
+### 2026-11-09 | Claude | Baseline TEMPONet: checkout e primo job di cache; cache fermata dal controllo dei valori non finiti, corretta | Codice 60b35bd, poi la correzione di questa voce
+
+- Deploy `deploy/temponet-db8-20261109` = 60b35bd; checkout `TEMPONET-DB8-checkout-20261109` = 63985167, COMPLETED 0:0 in 36 s
+  (`$WORK/wearusfm_campaigns/temponet-db8-60b35bd`).
+- Cache `TEMPONET-DB8-cache-20261109` = 63985267: FAILED 1:0 dopo 52 s, 4 minuti di CPU, MaxRSS 18,5 GB; 28 acquisizioni su 36 scritte in
+  `$SCRATCH/wearusfm_runs/temponet_db8/cache_v1` (parziale: non si usa). Causa: il controllo dei valori non finiti di `to_cache_arrays`.
+- Diagnosi in sola lettura degli otto file non scritti (lettura di pochi secondi sul login node, `ulimit -t 300`): l'unico campione non finito
+  di DB8 e' l'ultimo di `S5_E1_A1` (NaN nelle 18 colonne del guanto); gli altri sette sono puliti e non erano stati scritti solo perche' il
+  pool si e' fermato. Gli altri 28 avevano gia' superato il controllo nel job.
+- Correzione: `finite_length`/`trim_raw` in `harness/db8_regression.py` scartano una coda finale non finita di al massimo 1 s e la registrano
+  nel manifest (`n_samples_source`, `trimmed_tail_samples`); un valore non finito interno o una coda piu' lunga restano errori. Tre test nuovi
+  (29 in tutto per la replica, passati). Nessun effetto sul criterio congelato. Prossimi: nuovo deploy e checkout, cache in `cache_v2`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12415,3 +12428,9 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
 - Il protocollo dei fold e altre dieci scelte non sono specificati dal paper: dichiarate prima dei risultati nel documento della replica.
 - Lettura dei `.mat` di DB8 sul login node interrotta da me dopo 4 minuti di CPU su un solo file (limite 10): la lettura passa a un job CPU di
   cache, una volta sola. Nessun effetto su altri utenti o job.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: un campione NaN nel raw di DB8 (S5_E1_A1, ultimo campione del guanto)
+
+- Il raw ufficiale `S5_E1_A1.mat` ha NaN nelle 18 colonne del guanto all'ultimo campione (indice 2.081.528 su 2.081.529); nessun altro valore
+  non finito nei 36 file. Trattato scartando la coda (un campione), con regola e registrazione nel manifest; la lettura del codice degli autori
+  (`pulp-bio/event-based-semg-regression`) non gestisce i NaN.

@@ -106,6 +106,9 @@ Scelte dichiarate (non specificate da [Z21]):
 9. **Registrazioni intere**, riposi compresi, nessuna rimozione dei transitori (DB8 e' fatto per la regressione dei transitori, [Z21] sez. II-B).
 10. **Amputati**: 16 ingressi anche per S11 e S12, con i canali senza sensore (a zero) tenuti come sono.
 11. **Semi**: tre (0, 1, 2), per stimare la variabilita' dovuta al training; [Z21] riporta un solo valore.
+12. **Valori non finiti**: in tutto il raw (36 file controllati il 09/11) c'e' un solo campione non finito, l'ultimo di `S5_E1_A1`, con NaN nelle 18
+    colonne del guanto. Regola: si scarta una coda finale non finita lunga al massimo 1 s (qui un campione), registrata nel manifest della cache
+    (`trimmed_tail_samples`); qualunque altro valore non finito ferma il job. Trovato dal primo job di cache (63985267, fallito sul controllo).
 
 ## Grandezza primaria e criterio
 

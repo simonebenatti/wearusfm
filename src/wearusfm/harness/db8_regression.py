@@ -96,6 +96,31 @@ def read_raw(path: str | Path) -> dict[str, np.ndarray]:
     return out
 
 
+MAX_TRIMMED_TAIL = 2000  # 1 s a 2 kHz
+
+
+def finite_length(raw: dict[str, np.ndarray]) -> int:
+    """Campioni utili: una coda finale con valori non finiti in emg o glove (al massimo MAX_TRIMMED_TAIL campioni) si scarta; ogni altro
+    valore non finito e' un errore. Caso reale (09/11/2026, tutti i 36 file controllati): S5_E1_A1 ha NaN nelle 18 colonne del guanto nel solo
+    ultimo campione."""
+    n = raw["emg"].shape[0]
+    bad = ~(np.isfinite(raw["emg"]).all(axis=1) & np.isfinite(raw["glove"]).all(axis=1))
+    if not bad.any():
+        return n
+    first = int(np.flatnonzero(bad)[0])
+    if not bad[first:].all():
+        raise ValueError("valori non finiti in emg o glove non limitati alla coda della registrazione")
+    if n - first > MAX_TRIMMED_TAIL:
+        raise ValueError(f"coda non finita di {n - first} campioni, oltre i {MAX_TRIMMED_TAIL} ammessi")
+    return first
+
+
+def trim_raw(raw: dict[str, np.ndarray]) -> tuple[dict[str, np.ndarray], int]:
+    """(raw senza la coda non finita, campioni scartati)."""
+    n = finite_length(raw)
+    return {k: v[:n] for k, v in raw.items()}, int(raw["emg"].shape[0] - n)
+
+
 def cache_file(cache_dir: str | Path, subject: int, acquisition: int, array: str) -> Path:
     if array not in CACHE_ARRAYS:
         raise ValueError(f"array di cache sconosciuto: {array}")

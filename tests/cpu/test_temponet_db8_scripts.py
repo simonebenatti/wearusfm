@@ -46,6 +46,19 @@ def test_cache_manifest(cache):
     assert temponet_db8_cache.main(["--raw-root", str(cache), "--out", str(cache), "--workers", "1"]) == 2
 
 
+def test_cache_trims_trailing_nan_and_records_it(tmp_path):
+    root = _raw_root(tmp_path)
+    src = root / "DB8" / "S1_E1_A1.mat"
+    mat = sio.loadmat(src)
+    mat["glove"][-1, :] = np.nan  # come S5_E1_A1 del raw reale
+    sio.savemat(src, {k: v for k, v in mat.items() if not k.startswith("__")})
+    out = tmp_path / "cache_nan"
+    assert temponet_db8_cache.main(["--raw-root", str(root), "--out", str(out), "--workers", "1", "--subjects", "1"]) == 0
+    e = json.loads((out / "manifest.json").read_text())["entries"][0]
+    assert (e["acquisition"], e["n_samples_source"], e["trimmed_tail_samples"], e["n_samples"]) == (1, 3000, 1, 2999)
+    assert np.isfinite(np.load(out / "S1_A1_doa.npy")).all()
+
+
 def test_training_and_summary_end_to_end(cache, tmp_path):
     out = tmp_path / "run"
     args = ["--cache", str(cache), "--out", str(out), "--subjects", "1", "--seeds", "0", "--epochs", "2", "--batch", "16",

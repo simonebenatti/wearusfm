@@ -70,9 +70,12 @@ def one(job: tuple[str, str, int, int]) -> dict:
     t0 = time.time()
     raw = db8.read_raw(src)
     t_read = time.time() - t0
+    n_source = int(raw["emg"].shape[0])
+    raw, trimmed = db8.trim_raw(raw)  # coda finale non finita (S5 A1: un campione); ogni altro valore non finito ferma il job
     arrays = db8.to_cache_arrays(raw)
     entry = {"subject": s, "acquisition": a, "source": str(src), "source_bytes": src.stat().st_size,
-             "source_mtime": int(src.stat().st_mtime), "source_sha256": sha256(src), "read_seconds": round(t_read, 1)}
+             "source_mtime": int(src.stat().st_mtime), "source_sha256": sha256(src), "read_seconds": round(t_read, 1),
+             "n_samples_source": n_source, "trimmed_tail_samples": trimmed}
     entry.update(describe(raw, arrays))
     outputs = {}
     for name, arr in arrays.items():
