@@ -6949,3 +6949,19 @@ estensione scientifica, nuovi training, retry o pollingAI.
 - Prima dei lanci restano: la review favorevole di GPT del pacchetto (punta `71de5c3`), il rinnovo del certificato ssh, la
   rilettura con `make_training_plan.py --check` superata e il `sacct -P` dei cinque job coerente con l'inviluppo. Poi la sequenza
   della voce precedente, senza altre richieste di consenso fra i passaggi (regola di Simone del 06/11 alle 17:22).
+
+### 09/11/2026 — Claude, linea 1: rilettura prima del deploy superata, job gia' eseguiti attestati, suite completa verde; resta la review di GPT
+
+- Simone, 09/11 alle 11:42, alla domanda «Hai rinnovato il certificato ssh di Leonardo?»: «Sì, rinnovato».
+- Rilettura in sola lettura con `continuation19618_20261109_v2/remote_read.sh` su login05, 11:43:36-11:44:06 CET. Poi
+  `make_training_plan.py --check` con esito `passed: true`. Il piano ricostruito dalle letture fresche e' identico a quello
+  pubblicato: stessi pin del run a 5.000 (11 file), delle ricevute, del controllo 30M, delle cache e degli ingressi. Cartelle del
+  run, delle ricevute e del pre-controllo v2, checkout e riferimento di deploy del recupero: assenti. Coda dell'utente vuota.
+- Attestazione: il `sacct -P` originale dei sei job gia' eseguiti coincide con le righe `spent` dell'inviluppo firmato (durate, CPU,
+  GPU, stato: `all_match: true`). La diagnosi 63861166, che ha calcolato gli stessi insiemi del pre-controllo su 4 CPU, ha avuto un
+  picco di 2.993.724 KiB: i 24G del pre-controllo bastano con margine.
+- Suite completa `tests/cpu` sul worktree a `cb48c5b`, 11:07-11:45: 3541 passati, 1 avviso preesistente
+  (`test_pose_objective.py`), 38 min 03 s. I test aggiunti dopo l'avvio della suite (righe pubblicate, percorso completo del
+  pre-controllo) sono passati a parte: 5 e 7.
+- Prove: `results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/recovery-reread-20261109/`.
+- Delle condizioni dei lanci resta solo la review favorevole di GPT. Nessun deploy, checkout o job.

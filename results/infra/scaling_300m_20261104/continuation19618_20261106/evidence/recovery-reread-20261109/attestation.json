@@ -1,0 +1,133 @@
+{
+ "protocol": "scaling-continuation-recovery-attestation-20261109-v1",
+ "envelope_sha256": "224743dff392bcd07a2a9a69fd8341b9b8f42e09d1176c2e14aefca20199736e",
+ "jobs": [
+  {
+   "slurm_job_id": "63695634",
+   "expected": {
+    "logical_id": "SCALING-300M-cont19618-checkout-20261106",
+    "elapsed_seconds": 69,
+    "cpus": 2,
+    "gpus": 0,
+    "state": "COMPLETED 0:0"
+   },
+   "sacct": {
+    "logical_id": "SCALING-300M-cont19618-checkout-20261106",
+    "elapsed_seconds": 69,
+    "cpus": 2,
+    "gpus": 0,
+    "state": "COMPLETED 0:0"
+   },
+   "max_rss": [
+    "175076K"
+   ],
+   "match": true
+  },
+  {
+   "slurm_job_id": "63696864",
+   "expected": {
+    "logical_id": "SCALING-300M-train19618-20261106",
+    "elapsed_seconds": 205,
+    "cpus": 32,
+    "gpus": 4,
+    "state": "FAILED 1:0"
+   },
+   "sacct": {
+    "logical_id": "SCALING-300M-train19618-20261106",
+    "elapsed_seconds": 205,
+    "cpus": 32,
+    "gpus": 4,
+    "state": "FAILED 1:0"
+   },
+   "max_rss": [
+    "35460760K"
+   ],
+   "match": true
+  },
+  {
+   "slurm_job_id": "63860499",
+   "expected": {
+    "logical_id": "SCALING-300M-diag-fixedeval-20261108",
+    "elapsed_seconds": 48,
+    "cpus": 4,
+    "gpus": 0,
+    "state": "COMPLETED 0:0"
+   },
+   "sacct": {
+    "logical_id": "SCALING-300M-diag-fixedeval-20261108",
+    "elapsed_seconds": 48,
+    "cpus": 4,
+    "gpus": 0,
+    "state": "COMPLETED 0:0"
+   },
+   "max_rss": [
+    "1961936K"
+   ],
+   "match": true
+  },
+  {
+   "slurm_job_id": "63861166",
+   "expected": {
+    "logical_id": "SCALING-300M-diag-fixedeval2-20261108",
+    "elapsed_seconds": 100,
+    "cpus": 4,
+    "gpus": 0,
+    "state": "COMPLETED 0:0"
+   },
+   "sacct": {
+    "logical_id": "SCALING-300M-diag-fixedeval2-20261108",
+    "elapsed_seconds": 100,
+    "cpus": 4,
+    "gpus": 0,
+    "state": "COMPLETED 0:0"
+   },
+   "max_rss": [
+    "2993724K"
+   ],
+   "match": true
+  },
+  {
+   "slurm_job_id": "63861825",
+   "expected": {
+    "logical_id": "SCALING-300M-diag-fixedeval-gpu-20261108",
+    "elapsed_seconds": 138,
+    "cpus": 32,
+    "gpus": 4,
+    "state": "COMPLETED 0:0"
+   },
+   "sacct": {
+    "logical_id": "SCALING-300M-diag-fixedeval-gpu-20261108",
+    "elapsed_seconds": 138,
+    "cpus": 32,
+    "gpus": 4,
+    "state": "COMPLETED 0:0"
+   },
+   "max_rss": [
+    "28712796K"
+   ],
+   "match": true
+  },
+  {
+   "slurm_job_id": "63864244",
+   "expected": {
+    "logical_id": "SCALING-300M-diag-importorder-20261108",
+    "elapsed_seconds": 204,
+    "cpus": 8,
+    "gpus": 0,
+    "state": "COMPLETED 0:0"
+   },
+   "sacct": {
+    "logical_id": "SCALING-300M-diag-importorder-20261108",
+    "elapsed_seconds": 204,
+    "cpus": 8,
+    "gpus": 0,
+    "state": "COMPLETED 0:0"
+   },
+   "max_rss": [
+    "6978612K"
+   ],
+   "match": true
+  }
+ ],
+ "all_match": true
+}
