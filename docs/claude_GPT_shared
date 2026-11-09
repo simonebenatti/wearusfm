@@ -8526,6 +8526,17 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Consuntivo: 2,907 GPU-ore (23,25 ore locali) e 0,27 core-ore di job solo CPU, dentro il tetto di 5 GPU-ore e 40 core-ore. Nessun job in coda.
 - Nessun nuovo run senza diagnosi registrata (regola della voce del criterio). Ipotesi nel documento della replica; decisione a Simone.
 
+### 2026-11-09 | Claude | Baseline TEMPONet: piano di diagnosi della distanza dal paper (proposta, nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Su richiesta di Simone («Yes, prepare it»): `docs/temponet_db8_diagnosis_plan.md`. Sei ipotesi (modelli finali sulle sessioni unite,
+  pipeline o dati diversi, bersaglio normalizzato, padding, dose di training, int8 esclusa) e quattro passi: 0) domanda agli autori, con bozza
+  per Zanghieri da far inviare a Simone; 1) baseline classiche di Tab. I (WL + SVR RBF e MLP) nei protocolli fold e full, solo CPU (≤ 32
+  core-ore), con lettura a cancelli contro 7,28 ± 0,30; 2) varianti della TCN V1 (bersaglio standardizzato), V3 (padding simmetrico), V13,
+  scelte solo in validazione contro la base gia' disponibile (9,906, run 63988277) con miglioramento minimo 0,20 (≤ 2,5 GPU-ore); 3) conferma
+  sul test una volta sola (≤ 3 o 4,5 GPU-ore), senza riscrivere il verdetto del run 63988277.
+- Serve un nuovo tetto GPU per l'attivita' (12 GPU-ore in tutto; le core-ore restano nel tetto di 40). Soglie e cancelli vincolanti solo
+  dopo l'approvazione, con voce in `docs/decisioni.md` prima del primo job.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
