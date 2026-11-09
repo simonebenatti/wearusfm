@@ -7271,6 +7271,16 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Proposta da decidere con Simone: v3 con la misura corretta nel cancello, nuovo checkout e nuovo pre-controllo (solo CPU,
   +1,8 core-ore con margine, totale 349,384444 su 350), training invariato.
 
+### 2026-11-09 | Claude | Linea 1: recupero v3 con il cancello del pre-controllo corretto (deploy d3f431b); lanci in corso
+
+- Simone, 09/11 alle 12:06: «Sì, prepara il v3» (domanda: v3 col cancello corretto e un nuovo pre-controllo, solo CPU, +1,8
+  core-ore). Vale l'autorizzazione delle 11:46 a lanciare senza la review di GPT.
+- Il wrapper legge `"numpy" in sys.modules` subito prima di `import torch`; il training esige `identical: true` e
+  `numpy_loaded_before_torch: false`. Piano v3 `f450ec5d...` (letture del 09/11 11:43), identita' `RECOVERY` v3, prove in cartelle
+  nuove, inviluppo 349,384444 core-ore CPU su 350 dalle prove attestate. Commit di deploy `d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06`,
+  righe e decisioni `01997dfafe10013daaade28540fe8e5ffbcf4220` (ramo `claude/scaling-300m-exec-20261106`).
+- Test mirati verdi (369 + recupero, launcher, derivazione); suite completa in corso: il training parte solo con la suite verde.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
