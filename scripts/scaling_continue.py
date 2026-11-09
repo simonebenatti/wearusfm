@@ -23,6 +23,11 @@ import shutil
 import subprocess
 import sys
 
+import torch  # noqa: F401  # FIRST, before numpy/wearusfm, like `torchrun scripts/train_jepa.py` (the 5000 run): `import torch`
+# publishes MKL globally (libtorch_global_deps, RTLD_GLOBAL) and MKL also exports the `64_`-suffixed BLAS/LAPACK symbols that
+# numpy binds at load; numpy imported first binds to its own OpenBLAS instead, so sosfiltfilt initial conditions
+# (np.linalg.solve) and anchor targets (power @ bands) differ in the last bits and the trainer's fixed-set identity check fails
+# at resume (job 63696864, 08/11/2026; diagnosis jobs 63861166 and 63864244).
 from wearusfm.training import run as R
 
 ROOT = Path(__file__).resolve().parents[1]
