@@ -21,13 +21,19 @@
 #   screening (passo 2 della diagnosi, docs/temponet_db8_diagnosis_plan.md): V1, V3, V13 su fold1/fold2, seme 0, passo di training 8;
 #     solo validazione nel log e nella sintesi; 2 ore e 30 (al massimo 2,5 GPU-ore)
 #     sbatch --time=02:30:00 --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_db8.sbatch screen <cache> <uscite> benchmark
+#   conferma (passo 3, caso H1): variante scelta dallo screening, fold e full x semi 0, 1, 2, passo di training 8, sintesi con full come
+#     grandezza primaria; 4 ore e 30 (al massimo 4,5 GPU-ore)
+#     sbatch --time=04:30:00 --export=ALL,... temponet_db8.sbatch confirm <cache> <uscite> benchmark <V0|V1|V3|V13>
 #   [cudnn]: deterministic (predefinito), default o benchmark; vedi scripts/temponet_db8_profile.py
 # Le uscite vanno in una cartella NUOVA fuori dal codice; nessun riavvio automatico, nessun nuovo tentativo.
 set -uo pipefail
-MODE="${1:?smoke, full o screen}"; CACHE="${2:?cartella della cache}"; OUT="${3:?cartella delle uscite}"; CUDNN="${4:-deterministic}"
+MODE="${1:?smoke, full, screen o confirm}"; CACHE="${2:?cartella della cache}"; OUT="${3:?cartella delle uscite}"; CUDNN="${4:-deterministic}"
 case "$CUDNN" in deterministic|default|benchmark) ;; *) echo "modo cuDNN: deterministic, default o benchmark"; exit 2;; esac
-case "$MODE" in smoke) EXPECTED_TIME=00:30:00;; full) EXPECTED_TIME=03:00:00;; screen) EXPECTED_TIME=02:30:00;;
-  *) echo "modo: smoke, full o screen"; exit 2;; esac
+case "$MODE" in smoke) EXPECTED_TIME=00:30:00;; full) EXPECTED_TIME=03:00:00;; screen) EXPECTED_TIME=02:30:00;; confirm) EXPECTED_TIME=04:30:00;;
+  *) echo "modo: smoke, full, screen o confirm"; exit 2;; esac
+VARIANT="${5:-V0}"
+case "$VARIANT" in V0) VFLAGS=();; V1) VFLAGS=(--target-norm);; V3) VFLAGS=(--symmetric-padding);; V13) VFLAGS=(--target-norm --symmetric-padding);;
+  *) echo "variante: V0, V1, V3 o V13"; exit 2;; esac
 for P in "$CACHE" "$OUT"; do case "$P" in /*) ;; *) echo "percorso relativo rifiutato: $P"; exit 2;; esac; done
 case "$OUT" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*|\
 "$WORK/wearusfm_campaigns"/*|/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/*|"$SCRATCH/data/raw"/*) echo "uscite dentro il codice o nel raw: rifiutato"; exit 2;; esac
@@ -65,6 +71,10 @@ elif [ "$MODE" = screen ]; then
   python3 scripts/temponet_db8.py "${COMMON[@]}" --out "$OUT/V3" --symmetric-padding || exit 1
   python3 scripts/temponet_db8.py "${COMMON[@]}" --out "$OUT/V13" --target-norm --symmetric-padding || exit 1
   python3 scripts/temponet_db8_screen.py "$OUT" || exit 1
+elif [ "$MODE" = confirm ]; then
+  python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --emg-unit uV --cudnn-mode "$CUDNN" --seeds 0 1 2 --workers 1 \
+    --train-step 8 --log-epochs --time-budget-s 15000 "${VFLAGS[@]}" || exit 1
+  python3 scripts/temponet_db8_summary.py "$OUT" --seeds 0 1 2 --primary full || exit 1
 else
   python3 scripts/temponet_db8.py --cache "$CACHE" --out "$OUT" --emg-unit uV --cudnn-mode "$CUDNN" --seeds 0 1 2 --workers 1 \
     --train-step 8 --full-seeds 0 --log-epochs --time-budget-s 9600 \

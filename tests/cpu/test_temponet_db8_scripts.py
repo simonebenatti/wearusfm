@@ -258,6 +258,18 @@ def test_summary_separates_able_bodied_and_amputees():
     assert "| 11 (amputato) |" in md and "| normodotati | 1-10 |" in md and "| amputati | 11-12 |" in md
 
 
+def test_summary_with_full_as_primary():
+    units = [_unit(s, k, 8.8, full_mae=7.0) for s in range(1, 13) for k in (0, 1, 2)]
+    s = temponet_db8_summary.summarize(units, [0, 1, 2], primary_model="full")
+    assert s["criterion"]["primary_model"] == "full" and s["primary_mae_deg"] == pytest.approx(7.0) and s["verdict"] == "replicata"
+    assert s["fold_mae_all_deg"] == pytest.approx(8.8)
+    assert "modello full" in temponet_db8_summary.to_markdown(s)
+    del units[5]["models"]["full"]  # full mancante per un'unita': incompleta
+    assert temponet_db8_summary.summarize(units, [0, 1, 2], primary_model="full")["verdict"] == "incompleta"
+    with pytest.raises(ValueError):
+        temponet_db8_summary.summarize(units, [0, 1, 2], primary_model="altro")
+
+
 def test_summary_incomplete_when_a_seed_is_missing():
     units = [_unit(s, k, 6.9) for s in range(1, 13) for k in (0, 1)]
     assert temponet_db8_summary.summarize(units, [0, 1, 2])["verdict"] == "incompleta"

@@ -41,7 +41,10 @@ def verdict(m: float, reference: float, tolerance: float, complete: bool) -> str
 
 
 def summarize(units: list[dict], seeds_expected: list[int] | None = None, reference: float = REFERENCE_MAE_DEG,
-              tolerance: float = 0.30) -> dict:
+              tolerance: float = 0.30, primary_model: str = "fold") -> dict:
+    """primary_model: "fold" (replica, run 63988277) o "full" (passo 3 della diagnosi nel caso H1, decisioni.md 09/11/2026)."""
+    if primary_model not in ("fold", "full"):
+        raise ValueError("primary_model: fold o full")
     if not units:
         raise ValueError("nessuna unita'")
     subjects = sorted({u["subject"] for u in units})
@@ -61,7 +64,12 @@ def summarize(units: list[dict], seeds_expected: list[int] | None = None, refere
     full_ema = np.array([by_key[key]["models"]["full"]["test_ema"]["mae_per_doa_deg"] for key in full_keys], dtype=float).reshape(-1, 5)
     full_raw = np.array([by_key[key]["models"]["full"]["test_raw"]["mae_per_doa_deg"] for key in full_keys], dtype=float).reshape(-1, 5)
     full_seeds = sorted({k for _, k in full_keys})
-    primary = float(fold_ema.mean())
+    full_complete = all((s, k) in by_key and "full" in by_key[(s, k)]["models"] for s in range(1, N_SUBJECTS + 1) for k in seeds_expected)
+    if primary_model == "full":
+        primary = float(full_ema.mean()) if full_keys else float("nan")
+        complete = complete and full_complete
+    else:
+        primary = float(fold_ema.mean())
     per_seed = fold_ema.mean(axis=(0, 2, 3))
     subj_doa = fold_ema.mean(axis=(1, 2))  # (S, 5): media su semi e fold
     acc = {f"acc_{t}deg": float(np.mean([[by_key[(s, k)]["models"][f]["test_ema"][f"acc_{t}deg"] for f in FOLDS] for s in subjects
@@ -87,8 +95,10 @@ def summarize(units: list[dict], seeds_expected: list[int] | None = None, refere
             "full_n_units": len(g_full),
         }
     out = {
-        "criterion": {"reference_mae_deg": reference, "tolerance_deg": tolerance,
-                      "quantity": "MAE test A3 dopo EMA, media su soggetti x DoA x fold1/fold2 x semi"},
+        "criterion": {"reference_mae_deg": reference, "tolerance_deg": tolerance, "primary_model": primary_model,
+                      "quantity": ("MAE test A3 dopo EMA, media su soggetti x DoA x semi del modello full (A1 + A2)" if primary_model == "full"
+                                   else "MAE test A3 dopo EMA, media su soggetti x DoA x fold1/fold2 x semi")},
+        "fold_mae_all_deg": float(fold_ema.mean()),
         "complete": bool(complete),
         "subjects": subjects,
         "seeds": seeds,
@@ -123,7 +133,7 @@ def to_markdown(s: dict) -> str:
     lines = [
         "# Replica di TEMPONet su NinaPro DB8: sintesi",
         "",
-        f"- Grandezza primaria (MAE test, EMA, fold1/fold2): **{s['primary_mae_deg']:.3f} gradi**, riferimento {s['criterion']['reference_mae_deg']:.2f}"
+        f"- Grandezza primaria (MAE test, EMA, {'modello full' if s['criterion'].get('primary_model') == 'full' else 'fold1/fold2'}): **{s['primary_mae_deg']:.3f} gradi**, riferimento {s['criterion']['reference_mae_deg']:.2f}"
         f" (differenza {s['delta_vs_reference_deg']:+.3f}), tolleranza {s['criterion']['tolerance_deg']:.2f}: **{s['verdict']}**.",
         f"- Per seme: {', '.join(f'{v:.3f}' for v in s['per_seed_mae_deg'])}"
         + (f" (dev. std. {s['seed_sd_deg']:.3f})" if s["seed_sd_deg"] is not None else "") + ".",
@@ -161,9 +171,10 @@ def main(argv=None) -> int:
     ap.add_argument("--seeds", type=int, nargs="*", default=[0, 1, 2], help="semi attesi per la completezza")
     ap.add_argument("--reference", type=float, default=REFERENCE_MAE_DEG)
     ap.add_argument("--tolerance", type=float, default=0.30)
+    ap.add_argument("--primary", choices=("fold", "full"), default="fold", help="modello della grandezza primaria")
     args = ap.parse_args(argv)
     run_dir = Path(args.run_dir)
-    s = summarize(load_units(run_dir), args.seeds, args.reference, args.tolerance)
+    s = summarize(load_units(run_dir), args.seeds, args.reference, args.tolerance, args.primary)
     out = Path(args.out) if args.out else run_dir
     out.mkdir(parents=True, exist_ok=True)
     (out / "summary.json").write_text(json.dumps(s, indent=1))
