@@ -4,6 +4,9 @@ Grandezza primaria (fissata prima dei risultati in `docs/decisioni.md`, voce del
 media su 12 soggetti x 5 DoA x 2 modelli di fold (fold1, fold2) x semi. Verdetto rispetto ai 6,89 gradi di [Z21] Tab. I con tolleranza
 simmetrica: dentro -> «replicata»; sopra -> «non replicata»; sotto -> «non coerente (migliore del pubblicato)»; mancano unita' -> «incompleta».
 Tutto il resto (modello `full`, uscite senza EMA, accuratezze, alpha, deviazioni standard) e' descrittivo.
+Con `--primary full` (passo 3 della diagnosi, caso H1) la grandezza primaria e' la stessa media sul modello `full`. Nel JSON le chiavi senza
+prefisso `full` descrivono sempre i modelli di fold; le descrittive del `full` stanno in `full_details`, e la sintesi in markdown dichiara il
+modello di ogni riga (correzione del 10/11/2026: prima le righe per seme, per soggetto e per DoA, sotto la primaria `full`, erano del fold).
 
 Uso: python3 scripts/temponet_db8_summary.py <cartella del run> [--out <cartella>] [--reference 6.89] [--tolerance 0.30]
 """
@@ -64,6 +67,24 @@ def summarize(units: list[dict], seeds_expected: list[int] | None = None, refere
     full_ema = np.array([by_key[key]["models"]["full"]["test_ema"]["mae_per_doa_deg"] for key in full_keys], dtype=float).reshape(-1, 5)
     full_raw = np.array([by_key[key]["models"]["full"]["test_raw"]["mae_per_doa_deg"] for key in full_keys], dtype=float).reshape(-1, 5)
     full_seeds = sorted({k for _, k in full_keys})
+    full_per_seed = {str(k): float(np.mean([by_key[(s, kk)]["models"]["full"]["test_ema"]["mae_deg"] for s, kk in full_keys if kk == k]))
+                     for k in full_seeds}
+    full_details = None  # descrittive del modello full con le stesse definizioni delle chiavi di fold (correzione del 10/11/2026)
+    if full_keys:
+        full_subjects = sorted({s for s, _ in full_keys})
+        f_subj_doa = np.array([np.mean([by_key[key]["models"]["full"]["test_ema"]["mae_per_doa_deg"] for key in full_keys if key[0] == s],
+                                       axis=0) for s in full_subjects])  # (S, 5): media sui semi
+        f_alpha = np.array([by_key[key]["models"]["full"]["alpha"] for key in full_keys], dtype=float)
+        full_details = {
+            "subjects": full_subjects,
+            "seed_sd_deg": float(np.std(list(full_per_seed.values()), ddof=1)) if len(full_seeds) > 1 else None,
+            "subject_doa_sd_deg": float(f_subj_doa.std()),
+            "per_subject_mae_deg": {str(s): float(v) for s, v in zip(full_subjects, f_subj_doa.mean(axis=1))},
+            "per_doa_mae_deg": [float(v) for v in f_subj_doa.mean(axis=0)],
+            **{f"acc_{t}deg": float(np.mean([by_key[key]["models"]["full"]["test_ema"][f"acc_{t}deg"] for key in full_keys])) for t in (10, 15)},
+            "alpha_mean": float(f_alpha.mean()),
+            "alpha_sd": float(f_alpha.std()),
+        }
     full_complete = all((s, k) in by_key and "full" in by_key[(s, k)]["models"] for s in range(1, N_SUBJECTS + 1) for k in seeds_expected)
     if primary_model == "full":
         primary = float(full_ema.mean()) if full_keys else float("nan")
@@ -81,6 +102,8 @@ def summarize(units: list[dict], seeds_expected: list[int] | None = None, refere
         if not idx:
             continue
         g_full = [by_key[key]["models"]["full"]["test_ema"]["mae_deg"] for key in full_keys if key[0] in gsubjects]
+        g_full_acc = {f"full_acc_{t}deg": float(np.mean([by_key[key]["models"]["full"]["test_ema"][f"acc_{t}deg"] for key in full_keys
+                                                          if key[0] in gsubjects])) if g_full else None for t in (10, 15)}
         groups[gname] = {
             "subjects": [subjects[i] for i in idx],
             "fold_mae_deg": float(fold_ema[idx].mean()),
@@ -93,6 +116,7 @@ def summarize(units: list[dict], seeds_expected: list[int] | None = None, refere
             "alpha_mean": float(alphas[idx].mean()),
             "full_mae_deg": float(np.mean(g_full)) if g_full else None,
             "full_n_units": len(g_full),
+            **g_full_acc,
         }
     out = {
         "criterion": {"reference_mae_deg": reference, "tolerance_deg": tolerance, "primary_model": primary_model,
@@ -117,9 +141,10 @@ def summarize(units: list[dict], seeds_expected: list[int] | None = None, refere
         "full_n_units": len(full_keys),
         "full_mae_deg": float(full_ema.mean()) if full_keys else None,
         "raw_full_mae_deg": float(full_raw.mean()) if full_keys else None,
-        "full_per_seed_mae_deg": {str(k): float(np.mean([by_key[(s, kk)]["models"]["full"]["test_ema"]["mae_deg"] for s, kk in full_keys
-                                                         if kk == k])) for k in full_seeds},
+        "full_per_seed_mae_deg": full_per_seed,
         "fold_seed0_mae_deg": float(fold_ema[:, seeds.index(0)].mean()) if 0 in seeds else None,
+        # le chiavi senza prefisso full (per seme, per soggetto, per DoA, deviazioni standard, accuratezze, alpha) descrivono i modelli di fold
+        "full_details": full_details,
         **acc,
         "alpha_mean": float(alphas.mean()),
         "alpha_sd": float(alphas.std()),
@@ -129,7 +154,52 @@ def summarize(units: list[dict], seeds_expected: list[int] | None = None, refere
     return out
 
 
+DOA_NAMES = ("rotazione pollice", "flessione pollice", "flessione indice", "flessione medio", "flessione anulare+mignolo")
+
+
+def _markdown_full_primary(s: dict) -> str:
+    """Grandezza primaria sul modello full: ogni riga descrittiva dichiara il suo modello; il fold e' la grandezza secondaria."""
+    fd = s["full_details"]
+    seeds = s["full_per_seed_mae_deg"]
+    lines = [
+        "# Replica di TEMPONet su NinaPro DB8: sintesi",
+        "",
+        f"- Grandezza primaria (MAE test, EMA, modello full): **{s['primary_mae_deg']:.3f} gradi**, riferimento {s['criterion']['reference_mae_deg']:.2f}"
+        f" (differenza {s['delta_vs_reference_deg']:+.3f}), tolleranza {s['criterion']['tolerance_deg']:.2f}: **{s['verdict']}**.",
+        f"- `full` per seme: {', '.join(f'{v:.3f}' for v in seeds.values())}"
+        + (f" (dev. std. {fd['seed_sd_deg']:.3f})" if fd["seed_sd_deg"] is not None else "") + f"; senza EMA {s['raw_full_mae_deg']:.3f}.",
+        f"- `full`, dev. std. sui 60 valori soggetto x DoA: {fd['subject_doa_sd_deg']:.2f} (pubblicata 2,08, IWASI 2023).",
+        f"- `full`, accuratezza a 10 e 15 gradi: {fd['acc_10deg']:.3f} e {fd['acc_15deg']:.3f} (pubblicate 0,814 e 0,900).",
+        f"- `full`, alpha dell'EMA (dalle predizioni fuori fold): media {fd['alpha_mean']:.3f}, dev. std. {fd['alpha_sd']:.3f}"
+        " (pubblicate 0,862 e 0,044).",
+        f"- Fold (secondaria): {s['fold_mae_all_deg']:.3f} con EMA (per seme {', '.join(f'{v:.3f}' for v in s['per_seed_mae_deg'])};"
+        f" fold1 {s['fold_mae_deg']['fold1']:.3f}, fold2 {s['fold_mae_deg']['fold2']:.3f}), {s['raw_fold_mae_deg']:.3f} senza;"
+        f" accuratezza {s['acc_10deg']:.3f} e {s['acc_15deg']:.3f}; alpha medio {s['alpha_mean']:.3f}.",
+        f"- Sotto la LSTM di Koch et al. (7,04): {'si' if s['below_lstm_7_04'] else 'no'}.",
+        "",
+        "| Soggetto | `full` (gradi) | fold (gradi) |",
+        "|---|---|---|",
+    ]
+    lines += [f"| {k}{' (amputato)' if int(k) in GROUPS['amputati'] else ''} | {fd['per_subject_mae_deg'].get(k, float('nan')):.3f} | {v:.3f} |"
+              for k, v in s["per_subject_mae_deg"].items()]
+    if s.get("groups"):
+        lines += ["", "Normodotati e amputati separati (descrittivo, nessun verdetto per gruppo; il criterio resta sui 12 soggetti):", "",
+                  "| Gruppo | Soggetti | `full` | `full` acc. 10 / 15 | fold con EMA | fold senza EMA | fold acc. 10 / 15 | fold alpha medio |",
+                  "|---|---|---|---|---|---|---|---|"]
+        for gname, g in s["groups"].items():
+            subj = f"{g['subjects'][0]}-{g['subjects'][-1]}" if len(g["subjects"]) > 1 else str(g["subjects"][0])
+            full = (f"{g['full_mae_deg']:.3f} | {g['full_acc_10deg']:.3f} / {g['full_acc_15deg']:.3f}" if g["full_mae_deg"] is not None
+                    else "- | -")
+            lines.append(f"| {gname} | {subj} | {full} | {g['fold_mae_deg']:.3f} | {g['raw_fold_mae_deg']:.3f} "
+                         f"| {g['acc_10deg']:.3f} / {g['acc_15deg']:.3f} | {g['alpha_mean']:.3f} |")
+    lines += ["", "| DoA | `full` (gradi) | fold (gradi) |", "|---|---|---|"]
+    lines += [f"| {n} | {a:.3f} | {b:.3f} |" for n, a, b in zip(DOA_NAMES, fd["per_doa_mae_deg"], s["per_doa_mae_deg"])]
+    return "\n".join(lines) + "\n"
+
+
 def to_markdown(s: dict) -> str:
+    if s["criterion"].get("primary_model") == "full" and s.get("full_details"):
+        return _markdown_full_primary(s)
     lines = [
         "# Replica di TEMPONet su NinaPro DB8: sintesi",
         "",
@@ -159,8 +229,7 @@ def to_markdown(s: dict) -> str:
             lines.append(f"| {gname} | {subj} | {g['fold_mae_deg']:.3f} | {g['raw_fold_mae_deg']:.3f} | {full} | {g['acc_10deg']:.3f} "
                          f"| {g['acc_15deg']:.3f} | {g['alpha_mean']:.3f} |")
     lines += ["", "| DoA | MAE (gradi) |", "|---|---|"]
-    names = ("rotazione pollice", "flessione pollice", "flessione indice", "flessione medio", "flessione anulare+mignolo")
-    lines += [f"| {n} | {v:.3f} |" for n, v in zip(names, s["per_doa_mae_deg"])]
+    lines += [f"| {n} | {v:.3f} |" for n, v in zip(DOA_NAMES, s["per_doa_mae_deg"])]
     return "\n".join(lines) + "\n"
 
 

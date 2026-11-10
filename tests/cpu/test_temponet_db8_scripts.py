@@ -270,6 +270,31 @@ def test_summary_with_full_as_primary():
         temponet_db8_summary.summarize(units, [0, 1, 2], primary_model="altro")
 
 
+def test_summary_full_primary_describes_the_full_model():
+    """Con la primaria full ogni riga descrittiva dichiara il modello: fold e full con valori diversi per soggetto e seme."""
+    units = []
+    for s in range(1, 13):
+        for k in (0, 1, 2):
+            u = _unit(s, k, 8.0 + 0.1 * s, full_mae=6.0 + 0.1 * s + 0.01 * k)
+            u["models"]["full"]["test_ema"].update(acc_10deg=0.7, acc_15deg=0.85)
+            u["models"]["full"]["alpha"] = [0.93] * 5
+            units.append(u)
+    s = temponet_db8_summary.summarize(units, [0, 1, 2], primary_model="full")
+    fd = s["full_details"]
+    assert s["primary_mae_deg"] == pytest.approx(6.65 + 0.01) and s["fold_mae_all_deg"] == pytest.approx(8.65)
+    assert fd["per_subject_mae_deg"]["12"] == pytest.approx(7.21) and s["per_subject_mae_deg"]["12"] == pytest.approx(9.2)
+    assert fd["acc_10deg"] == pytest.approx(0.7) and s["acc_10deg"] == pytest.approx(0.8) and fd["alpha_mean"] == pytest.approx(0.93)
+    assert list(s["full_per_seed_mae_deg"].values()) == pytest.approx([6.65, 6.66, 6.67]) and fd["seed_sd_deg"] == pytest.approx(0.01)
+    assert s["groups"]["amputati"]["full_acc_15deg"] == pytest.approx(0.85)
+    md = temponet_db8_summary.to_markdown(s)
+    assert "- `full` per seme: 6.650, 6.660, 6.670 (dev. std. 0.010)" in md
+    assert "- `full`, accuratezza a 10 e 15 gradi: 0.700 e 0.850" in md and "- Fold (secondaria): 8.650 con EMA" in md
+    assert "| 12 (amputato) | 7.210 | 9.200 |" in md and "| rotazione pollice | 6.660 | 8.650 |" in md
+    assert "| amputati | 11-12 | 7.160 | 0.700 / 0.850 | 9.150 |" in md
+    fold_md = temponet_db8_summary.to_markdown(temponet_db8_summary.summarize(units, [0, 1, 2]))
+    assert "- Per seme: 8.650, 8.650, 8.650" in fold_md and "`full` per seme" not in fold_md  # modo fold invariato
+
+
 def test_summary_incomplete_when_a_seed_is_missing():
     units = [_unit(s, k, 6.9) for s in range(1, 13) for k in (0, 1)]
     assert temponet_db8_summary.summarize(units, [0, 1, 2])["verdict"] == "incompleta"

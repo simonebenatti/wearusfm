@@ -157,8 +157,58 @@ si apre solo al passo 3.
 bersaglio standardizzato (H3); V1 e V13 differiscono di 0,005, entro il rumore, e il padding simmetrico da solo non migliora (H4 non sostenuta).
 Quanto di questo guadagno passi al test, e quanta della distanza dal paper chiuda, lo dice solo il passo 3.
 
-### Passo 3 — job 64010753, inviato il 09/11/2026
+### Passo 3 — job 64010753, 09-10/11/2026
 
 `TEMPONET-DB8-confirm-20261109` = 64010753, codice 5a26a19 (checkout `temponet-db8-5a26a19`, job 64005365), variante V13, fold e `full` x 3
-semi su 12 soggetti, `full` grandezza principale (caso H1), limite 4 h 30 min: al massimo **4,5 GPU-ore**. Spesa GPU dell'attivita' finora
-2,907 + 1,871 = **4,778 ore**; col passo 3 al massimo 9,278 sul tetto di 12.
+semi su 12 soggetti, `full` grandezza principale (caso H1). Inviato il 09/11 alle 20:53, COMPLETED 0:0 alle 00:34 del 10/11 in 3 h 40 min 4 s
+(**3,668 GPU-ore**), 36 unita' su 36. Ricevute in `results/temponet_db8/confirm_20261109/`: unita', `run.json`, sintesi del job (`summary_job.*`)
+e sintesi corretta (`summary.*`, vedi sotto).
+
+**Esito secondo il criterio congelato: NON REPLICATA.** MAE `full` con EMA **7,585 gradi** (semi 7,651 / 7,507 / 7,597) contro 6,89 ± 0,30,
+differenza +0,695. Stesso valore ricalcolato a parte sul Mac direttamente dalle unita'. E' una seconda analisi coi dettagli scelti in
+validazione: il verdetto del run 63988277 (8,795, fold) resta com'e'.
+
+| | V0 (run 63988277) | V13 (passo 3) | pubblicato |
+|---|---|---|---|
+| `full` con EMA | 7,778 (solo seme 0) | **7,585** (seme 0: 7,651) | 6,89 |
+| fold con EMA | 8,795 | 8,509 | |
+| accuratezza a 10 / 15 gradi, `full` | 0,729 / 0,873 (seme 0) | 0,743 / 0,889 | 0,814 / 0,900 |
+| alpha dell'EMA, `full` | 0,932 ± 0,023 (seme 0) | 0,929 ± 0,027 | 0,862 ± 0,044 |
+| dev. std. sui 60 valori soggetto x DoA, `full` | | 2,05 | 2,08 |
+
+Descrittivi: `full` migliore del fold in 12 soggetti su 12; normodotati 7,394 e amputati 8,540 (S11 6,574, S12 10,506); per DoA da 5,70
+(flessione del pollice) a 9,97 (rotazione del pollice).
+
+**Lettura.**
+- La catena (cache, DoA, split, EMA, metriche) e' coerente col paper: la SVR del passo 1 col protocollo `full` torna a 7,37 contro 7,28.
+- Il protocollo spiega circa un grado: fold 8,51, `full` 7,59.
+- V13 toglie circa 0,1-0,3 gradi: fold da 8,795 a 8,509, `full` col seme 0 da 7,778 a 7,651. In validazione il guadagno veniva dal bersaglio
+  standardizzato, e il padding simmetrico da solo non aiutava; sul test si e' misurata solo V13.
+- Restano **0,70 gradi propri del training della TCN**. Con la stessa catena e lo stesso protocollo, l'MLP su Waveform Length (6,824,
+  descrittivo) fa meglio della TEMPONet di 0,76 gradi; nel paper e' il contrario.
+- Interpretazione: l'alpha piu' alto del pubblicato (0,93 contro 0,86) indica uscite grezze piu' rumorose, che chiedono piu' lisciatura.
+
+Ipotesi rimaste, non verificate: dose e schedule del training (H5: epoche, learning rate e sua schedule) e altri dettagli non dichiarati
+(augmentation, weight decay, normalizzazione dell'ingresso). Come stabilito dal piano, nessuna variante oltre V1, V3 e V13 senza una nuova proposta.
+
+**Correzione della sintesi, dopo il run (presentazione, non il verdetto).** Con `--primary full`, sotto la primaria `full` la sintesi del job
+riportava righe del fold senza dichiararlo: per seme (8,517 / 8,547 / 8,463), per soggetto, per DoA, deviazione standard, accuratezze e alpha.
+`scripts/temponet_db8_summary.py` ora calcola le stesse descrittive anche per il `full` (`full_details`, e `full_acc_*` per gruppo). La sintesi
+in markdown dichiara il modello di ogni riga e mette fold e `full` affiancati nelle tabelle. Test d'uguaglianza sulle ricevute reali:
+- modo fold (run 63988277): markdown identico byte per byte;
+- nei due modi: chiavi JSON preesistenti identiche, si aggiungono solo le chiavi nuove;
+- nuovo test CPU con fold e `full` diversi; 53 test passati.
+
+La sintesi del job resta come ricevuta (`summary_job.*`).
+
+**Consuntivo della diagnosi.**
+- Passo 1: 7,68 core-ore (solo CPU).
+- Passo 2: 1,871 GPU-ore.
+- Passo 3: 3,668 GPU-ore.
+- Due checkout: 0,04 core-ore.
+- Totale: **5,538 GPU-ore e 7,72 core-ore**.
+
+Con la replica, l'attivita' arriva a **8,445 GPU-ore sul tetto di 12** (67,6 ore locali con billing 8) e **8,04 core-ore sul tetto di 40**.
+Rettifica al consuntivo della replica: i checkout allocano 2 CPU, non 1, quindi i job solo CPU della replica valgono 0,32 core-ore e non 0,27.
+
+Spazio: risultati 198 MB su `$WORK` (`confirm` 72, `screen` 57, `full` 56 MB) e cache 5,0 GB su `$SCRATCH`.

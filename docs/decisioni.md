@@ -7851,3 +7851,26 @@ Congelati qui, prima del primo job:
    soggetti x 2 fold, seme 0) piu' bassa solo se migliora la base V0 = 9,906 di almeno 0,20 gradi; altrimenti V0. Il test non entra nella scelta.
 3. **Passo 3**: configurazione scelta, 12 soggetti x 3 semi; riferimento 6,89, tolleranza 0,30, etichette della replica; composizione secondo il
    passo 1 (fold x 3 semi + `full` seme 0, oppure tutto x 3 semi nel caso H1). Seconda analisi dichiarata, il verdetto del run 63988277 resta.
+
+### 2026-11-10 — Diagnosi della distanza di TEMPONet dal paper: ESITO e CONSUNTIVO (Claude)
+
+Passi eseguiti coi cancelli congelati nella voce precedente (Simone: «Approve the plan»; passo 0 chiuso con «non rispondono vai avanti»).
+Dettagli in `docs/temponet_db8_diagnosis_plan.md`, sezione «Esiti».
+
+1. **Passo 1**: job 64001955, codice 9584631. Cancello: **«indizio H1»**. SVR fold 8,279, SVR full 7,366 (pubblicata 7,28). Limite dichiarato:
+   C = 100, il bordo della griglia, in 97 fit su 120.
+2. **Passo 2**: job 64005316, codice 9584631, sola validazione. V0 9,906, V1 9,594, V3 9,941, V13 9,590: regola congelata -> **V13**.
+3. **Passo 3**: job 64010753, codice 5a26a19, V13, fold e `full` x 3 semi, `full` primaria. Esito: **NON REPLICATA**. MAE `full` con EMA
+   7,585 (semi 7,651 / 7,507 / 7,597) contro 6,89 ± 0,30; fold 8,509. E' una seconda analisi: il verdetto del run 63988277 resta.
+
+**Correzione dopo il run, solo di presentazione** (verdetto e grandezza primaria invariati). Nella sintesi del job, sotto la primaria `full`,
+le righe descrittive erano del fold. Ora `scripts/temponet_db8_summary.py` dichiara il modello di ogni riga. Test d'uguaglianza: in modo fold il
+markdown e' identico byte per byte e le chiavi JSON preesistenti restano identiche.
+
+**Consuntivo**:
+- Diagnosi: 5,538 GPU-ore (passo 2 1,871, passo 3 3,668) e 7,72 core-ore (passo 1 7,68, due checkout 0,04).
+- Attivita' intera: **8,445 GPU-ore sul tetto di 12** (67,6 ore locali con billing 8) e **8,04 core-ore sul tetto di 40**.
+- Rettifica della voce «ESITO e CONSUNTIVO» del 09/11: i checkout allocano 2 CPU, non 1, quindi i job solo CPU della replica valgono 0,32 core-ore,
+  non 0,27.
+
+Il piano e' esaurito. Ogni altra variante (per esempio dose e schedule del training, H5) richiede una nuova proposta da approvare.

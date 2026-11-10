@@ -185,3 +185,13 @@ Ipotesi sulla distanza (da verificare, nessuna e' accertata): dettagli di traini
 che nei collaudi conta attraverso il numero di passi di Adam; schedule del learning rate, «initial learning rate»; normalizzazione del
 bersaglio), modello finale allenato sulle due sessioni unite invece che per fold, differenze nella definizione del MAE o del tempo di test.
 Le letture dell'architettura sono vincolate dal conteggio esatto dei parametri e sono la causa meno probabile.
+
+## Seconda analisi: diagnosi della distanza (09-10/11/2026)
+
+Piano e passi in `docs/temponet_db8_diagnosis_plan.md`, approvato da Simone («Approve the plan»), cancelli congelati in `docs/decisioni.md`.
+Cosa e' emerso:
+- La SVR su Waveform Length torna al valore pubblicato (7,37 contro 7,28) solo col modello allenato sulle sessioni 1 e 2 unite («indizio H1»).
+- In validazione si e' scelta la variante V13: bersaglio standardizzato e padding simmetrico.
+- Con V13 e la stessa grandezza calcolata sul modello `full`: **7,585 gradi**, ancora **non replicata** (+0,695). Il fold scende a 8,509.
+
+Il verdetto della sezione precedente resta com'e'; la distanza residua e' propria del training della TCN.

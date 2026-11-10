@@ -8568,6 +8568,18 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Passo 3 inviato come `TEMPONET-DB8-confirm-20261109` = 64010753: checkout `temponet-db8-5a26a19` (job 64005365), V13, fold e full x 3 semi,
   `full` grandezza principale, limite 4 h 30 min. Spesa GPU finora 4,778 ore; col passo 3 al massimo 9,278 su 12.
 
+### 2026-11-10 | Claude | Baseline TEMPONet, diagnosi: passo 3 concluso (64010753), NON REPLICATA anche con V13 e `full` | Codice 5a26a19
+
+- Passo 3 COMPLETED 0:0 alle 00:34 del 10/11, durata 3 h 40 min 4 s (3,668 GPU-ore), 36 unita' su 36.
+- Ricevute in `results/temponet_db8/confirm_20261109/`: unita', `run.json`, sintesi del job e sintesi corretta.
+- MAE `full` con EMA **7,585** (semi 7,651 / 7,507 / 7,597) contro 6,89 ± 0,30: **non replicata** (+0,695); fold 8,509 (V0 8,795).
+  Ricalcolata a parte dalle unita'.
+- Normodotati 7,394, amputati 8,540; accuratezza 0,743 / 0,889; alpha 0,929.
+- Sintesi corretta, solo nella presentazione: con `--primary full` le righe descrittive erano del fold senza etichetta. Test d'uguaglianza
+  sulle ricevute reali; 53 test passati. Voce in `docs/decisioni.md`.
+- Consuntivo dell'attivita': 8,445 GPU-ore su 12, 8,04 core-ore su 40.
+- Il piano e' esaurito: altre varianti solo con una nuova proposta a Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12563,3 +12575,19 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
 - Validazione dei fold (seme 0): bersaglio standardizzato per DoA (V1) −0,31 gradi, migliore di V0 in 11 soggetti su 12; padding simmetrico
   (V3) +0,04, migliore in 5 su 12; insieme (V13) −0,32. H3 sostenuta in validazione, H4 no. Il guadagno e' piccolo rispetto alla distanza
   dal paper: quanto passi al test lo misura il passo 3 (64010753).
+
+### 2026-11-10 | Claude | Baseline TEMPONet: la sintesi con `--primary full` mescolava righe del fold sotto la primaria `full` (corretto)
+
+- Nella sintesi del job 64010753, le righe per seme (8,517 / 8,547 / 8,463), per soggetto, per DoA, deviazione standard, accuratezze e alpha
+  erano dei modelli di fold, scritte senza etichetta sotto la primaria `full`. Verdetto e grandezza primaria erano giusti.
+- Causa: il modo `full` aggiunto al passo 3 (5a26a19) cambiava solo la primaria. Il test usava gli stessi valori per fold e `full`, quindi
+  non poteva accorgersene.
+- Correzione: `full_details` e tabelle con le due colonne. Test nuovo con valori diversi. Modo fold identico byte per byte sulla ricevuta
+  del run 63988277.
+
+### 2026-11-10 | Claude | Baseline TEMPONet: restano 0,70 gradi propri del training della TCN
+
+- Il protocollo spiega circa un grado: col modello `full` 7,59 invece di 8,51. V13 toglie altri 0,1-0,3 gradi.
+- Con la stessa catena l'MLP su Waveform Length fa 6,82 e batte la TEMPONet (7,59), mentre nel paper la TCN e' davanti (6,89 contro 7,14).
+- L'alpha dell'EMA scelto e' piu' alto del pubblicato (0,93 contro 0,86): uscite grezze piu' rumorose.
+- Ipotesi rimaste, non verificate: dose e schedule del training (H5) e altri dettagli non dichiarati. Prossimo passo da decidere con Simone.
