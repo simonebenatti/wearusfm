@@ -8593,6 +8593,19 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   differisce di 0,076. Per rientrare nella tolleranza servono −0,40 sul `full`: l'esito piu' probabile e' una baseline un po' piu' forte, non la
   replica.
 
+### 2026-11-10 | Claude | Baseline TEMPONet, H5 approvata: regola congelata, codice f830b9f, passo A inviato (64062336) | Codice f830b9f
+
+- Simone: «Approvo», alla domanda «Approvi la proposta H5 con il nuovo tetto di 15 GPU-ore?». Voce in `docs/decisioni.md` (028616c) prima del
+  primo job: W1 coseno, W2 epoca finale a 1e-5, base V13 9,628, soglia 0,20, tetto 15 GPU-ore.
+- Codice: `--lr-schedule`, `--final-epochs`, `--final-lr` (58132b4). Con uno schedule il learning rate e' un tensore riscritto prima di ogni
+  passo e letto dal CUDA graph; nel PyTorch di Leonardo il ramo capturable foreach lo divide con `_foreach_div_` a tensore, senza conversione
+  in numero. Col learning rate costante il percorso resta quello di prima. Controllo eager/graph con lo schedule compresso nei suoi 60 passi.
+- Correzione prima del lancio (f830b9f): un controllo fallito faceva fallire solo la prima unita' e le altre partivano comunque; ora il run si
+  ferma prima di allenare. Il checkout di 58132b4 (job 64061858) non si usa.
+- Test: 35 TEMPONet e 11 baseline classiche passati; con la regola della diagnosi lo screening da' uscite identiche byte per byte.
+- Checkout `temponet-db8-f830b9f` (job 64062227); passo A inviato come `TEMPONET-DB8-h5screen-20261110` = 64062336, 1 GPU, limite 1 h 45 min.
+  Spesa GPU finora 8,445 ore; col passo A al massimo 10,195 su 15.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
