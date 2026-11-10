@@ -7976,3 +7976,20 @@ tratto da' `(t1 - t0 - finestra) // passo + 1` finestre, che partono da `t0 + k 
 Il punto 4 della voce precedente diventa: finestre effettive di **10.255 campioni** (10.000 + 255 di contesto di TEMPONet) a passo 10.000, con
 quelle stesse formule; istanti `o + 255 + 10 m` con m = 0-999, ognuno con 255 campioni di storia dentro il tratto. L'EMA riparte a ogni
 finestra. Restano invariati il cancello, la grandezza principale, le letture e le risorse.
+
+### 2026-11-11 — TEMPONet su emg2pose: passo 0 FALLITO per I/O (job 64096497); correzione pronta, rilancio da decidere (Claude)
+
+- **Esito:** job 64096497 (checkout 9677e59), FAILED 1:0 dopo 1 h 50 min 08 s, a budget interno esaurito. Ha elaborato 2.949 registrazioni su
+  8.117 e il manifest e' incompleto. Nessun numero di modello calcolato. SLURM ha cancellato senza farlo partire il collaudo 64097115, in afterok.
+- **Diagnosi** (sacct): 3 min 24 s di CPU su 1 h 50; 226 GB letti per 2.949 registrazioni, quando ne servivano circa 50. Scorrendo i membri
+  con `tarfile` sul file normale, la lettura anticipata di Lustre portava dentro anche i dati dei membri di training saltati: il job ha letto il
+  tar quasi in sequenza, a circa 34 MB/s.
+- **Correzione** (codice 0c19c4b):
+  - indice del tar dalle sole intestazioni, con `pread` e `POSIX_FADV_RANDOM`;
+  - ogni membro di validazione e test letto con un'unica `pread`, in 4 thread;
+  - HDF5 aperto in memoria.
+  Il calcolo non cambia. Test: indice uguale a quello di `tarfile` in formato PAX e GNU con nomi lunghi; passo 0 end-to-end invariato.
+- **Consuntivo del tentativo:** 2 CPU x 1 h 50 min 08 s = **3,67 core-ore**, sulle 4 previste per il passo 0.
+- **Rilancio proposto:** 2 CPU, limite 1 h (≤ 2 core-ore), cartella nuova. Porterebbe il passo 0 a ≤ 5,7 core-ore, oltre le 4 previste, quindi
+  **serve una decisione di Simone**: superare il budget di un passo richiede una decisione registrata. Il tetto dell'attivita', 10 core-ore,
+  regge: circa 5,8 in tutto.

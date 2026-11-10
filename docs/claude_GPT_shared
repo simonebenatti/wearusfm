@@ -12675,3 +12675,12 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   la validazione grezza di 0,07. Dopo l'EMA restano 0,06-0,10 gradi, quanto differiscono due esecuzioni dello stesso seme (0,076).
 - Gli amputati guadagnano di piu' (−0,28 e −0,30) dei normodotati (−0,02 e −0,06): due soggetti, lettura descrittiva.
 - Restano ipotesi non verificate e non ricostruibili dal testo del paper: QAT int8 vera, definizione della metrica o degli istanti di test.
+
+### 2026-11-11 | Claude | TEMPONet su emg2pose: il passo 0 ha letto quasi tutto il tar per la lettura anticipata di Lustre (job 64096497 fallito)
+
+- Il job ha fatto 2.949 registrazioni su 8.117 in 1 h 50, con 226 GB letti e 3 min 24 s di CPU. Causa: scorrendo i membri con `tarfile` sul
+  file normale, la lettura anticipata trascinava i dati dei membri di training saltati. L'ingest delle pose del 27/10 non ne soffriva, perche'
+  leggeva tutti i membri.
+- Correzione: indice del tar con `pread` senza lettura anticipata, una `pread` per membro in 4 thread, HDF5 in memoria; test di uguaglianza
+  dell'indice con `tarfile`. Il rilancio (≤ 2 core-ore) supera il budget del passo 0 (4 core-ore, gia' 3,67 spese): attende una decisione di
+  Simone.
