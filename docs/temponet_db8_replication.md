@@ -203,7 +203,10 @@ validazione due schedule: coseno sulle 19 epoche (W1) e un'epoca finale a 1e-5 (
 di 0,20, quindi nessuna conferma sul test. Lo schedule riduce le oscillazioni fra epoche, ma l'EMA ne toglieva gia' gran parte.
 **La replica si chiude a 7,585 gradi contro 6,89: non replicata.** I verdetti precedenti restano.
 
-## Conclusioni (10/11/2026, proposta di Claude, da firmare)
+## Conclusioni (10/11/2026, firmate da Simone)
+
+Proposta di Claude (b507712); alla domanda «Firmi queste conclusioni?» Simone ha risposto «Sì, firmo» (voce in `docs/decisioni.md`). Il testo
+sotto e' quello firmato.
 
 **In sintesi.** La TEMPONet ricostruita da [Z21] non replica il valore pubblicato su NinaPro DB8. Con la catena piu' fedele ottenuta fa
 **7,585 gradi** di MAE contro **6,89** (+0,70, fuori dalla tolleranza di ±0,30). La catena di dati e valutazione invece regge: la SVR del paper

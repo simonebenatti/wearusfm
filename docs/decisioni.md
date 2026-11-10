@@ -7917,3 +7917,19 @@ Passo A eseguito con la regola congelata nella voce precedente (Simone: «Approv
 **8,07 core-ore sul tetto di 40**.
 
 Il piano H5 e' esaurito; ogni altra variante richiede una nuova proposta approvata.
+
+### 2026-11-10 — TEMPONet su DB8: conclusioni della replica FIRMATE da Simone (Claude)
+
+Alla domanda «Firmi queste conclusioni?» Simone risponde «Sì, firmo». La firma copre la sezione «Conclusioni» di
+`docs/temponet_db8_replication.md` com'era nel commit b507712, compresi i punti su cosa ne segue per il progetto. In breve:
+
+1. **Non replicata.** Con la catena piu' fedele (V13, modello `full` sulle sessioni 1 e 2, EMA, 3 semi) la TEMPONet fa 7,585 gradi contro 6,89
+   (+0,70); i tre verdetti dell'attivita' (8,795; 7,585; 7,585 dopo H5) restano.
+2. **Catena verificata:** la SVR su Waveform Length torna al valore del paper (7,37 contro 7,28). La distanza residua e' propria del training
+   della TCN: con la stessa catena l'MLP su WL fa 6,82.
+3. **Scomposizione:** protocollo −1,02; V13 −0,13 a parita' di seme; schedule del learning rate ≤ 0,10 in validazione, sotto soglia.
+4. **Per il progetto:** come baseline «CNN/TCN da zero» dell'harness si riporta la misura nostra (7,59 con questa catena), distinta dal valore
+   pubblicato (6,89) e con la distanza dichiarata; l'MLP su WL si tiene accanto alla TCN; nei confronti su DB8 il protocollo fold/`full` va fissato.
+
+Restano aperte, non verificabili dal testo, le ipotesi elencate nella sezione (dettagli di training non dichiarati, QAT int8 vera, definizione
+della metrica o degli istanti di test). Attivita' chiusa: 9,983 GPU-ore sul tetto di 15 e 8,07 core-ore sul tetto di 40.
