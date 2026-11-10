@@ -8632,6 +8632,18 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   distinta dal valore pubblicato, con l'MLP su WL accanto.
 - Attivita' chiusa: 9,983 GPU-ore su 15, 8,07 core-ore su 40. Nessun job aperto.
 
+### 2026-11-10 | Claude | TEMPONet su emg2pose: proposta preparata, nessun job
+
+- Simone: «Sì, preparala», alla domanda «Preparo la proposta per TEMPONet su emg2pose?». Documento `docs/temponet_emg2pose_plan.md`.
+- Misura nuova, non replica: nessun risultato pubblicato di TEMPONet su emg2pose (ricerca del 10/11). Riferimento: compito di regressione di
+  emg2pose (arXiv 2412.02725, Tab. 4), vemg2pose 12,2 / 15,2 / 15,8 gradi su utenti nuovi / fasi nuove / entrambi.
+- Protocollo ufficiale letto nel codice di emg2pose: finestre di 10.000 campioni dentro tratti senza fallimenti della cinematica inversa (righe
+  coi 20 angoli a zero); L1 sugli angoli; media e dev. std. fra utenti.
+- TEMPONet con la configurazione finale di DB8 (V13, 20 uscite, 71.412 parametri), un modello per i 158 utenti di training; EMA con alpha dalla
+  validazione; cancello prima del test (rapporto col predittore costante < 0,9 sulla validazione).
+- Passi: CPU per tratti e bersagli ufficiali, collaudo dbg, training col seme 0 (≤ 3,5 GPU-ore), valutazione; facoltativi i semi 1 e 2.
+  Tetto proposto 5 GPU-ore con un seme, 14 con tre. Due scelte a Simone: quando guardare il test e quanti semi.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
