@@ -7933,3 +7933,35 @@ Alla domanda «Firmi queste conclusioni?» Simone risponde «Sì, firmo». La fi
 
 Restano aperte, non verificabili dal testo, le ipotesi elencate nella sezione (dettagli di training non dichiarati, QAT int8 vera, definizione
 della metrica o degli istanti di test). Attivita' chiusa: 9,983 GPU-ore sul tetto di 15 e 8,07 core-ore sul tetto di 40.
+
+### 2026-11-10 — TEMPONet su emg2pose: proposta APPROVATA da Simone (un seme, test dopo il cancello); regole e tetto congelati prima del primo job (Claude)
+
+Alla domanda «Approvi la proposta con un seme e il test subito dopo il cancello?» Simone risponde «Approvo». Proposta:
+`docs/temponet_emg2pose_plan.md` (commit 2c760d1). L'approvazione comprende i lanci dei passi 0-3 (regola del 28/10); il passo 4 (semi 1 e 2)
+non e' approvato. **Tetto dell'attivita': 5 GPU-ore e 10 core-ore.** Ogni job resta sotto le 5 GPU-ore. Congelati qui, prima del primo job:
+
+1. **Configurazione:** TEMPONet di [Z21] in V13, cioe' bersaglio standardizzato con `pose_stats.json` (statistiche `all`) e padding simmetrico,
+   con 20 uscite (71.412 parametri). Loss L1, Adam 1e-4 costante, batch 64, 19 epoche in float32; cuDNN benchmark, CUDA graph e controllo
+   eager/graph all'inizio. Un solo modello per i 158 utenti di training e i due lati. Seme 0. Si usa il modello finale, senza scelta dell'epoca.
+2. **Ingresso:** 16 canali a 2 kHz nelle unita' native (int16 diviso per `int16_scale`), finestra di 256 campioni, nessun filtro. Una scala
+   costante 10^k, con k intero tale che la deviazione standard mediana dei canali di 1.000 registrazioni di training (seme 0) cada fra 3 e 30;
+   se due valori di k lo soddisfano, quello piu' vicino a 10 in scala logaritmica.
+3. **Training:** finestre che finiscono all'ultimo campione di un blocco valido a 200 Hz dell'ingest delle pose, a passo 8 blocchi (40 ms), con
+   255 campioni di storia nella registrazione. Bersaglio: la media del blocco. Regola meccanica, solo sulla velocita' misurata nel collaudo: se il
+   passo supera 1,6 ms, il passo delle finestre sale al primo multiplo di 10 campioni con cui 19 epoche stanno in 2 h 45 min.
+4. **Valutazione:** finestre ufficiali di emg2pose, da 10.000 campioni a passo 10.000, dentro tratti senza fallimenti della cinematica inversa
+   lunghi almeno 10.000 campioni. Un fallimento e' una riga coi 20 angoli `np.isclose` a zero; i tratti si ricalcolano dal raw. Istanti ogni 10
+   campioni dall'inizio di ogni finestra, con almeno 255 campioni di storia; bersaglio esatto a 2 kHz; errore in gradi. EMA causale per giunto,
+   alpha sulla griglia 0,00-0,99 scelto sulla validazione, ripartita a ogni finestra.
+5. **Grandezza principale:** MAE angolare in gradi con EMA, per condizione di test (`user`, `stage`, `user_stage`). Per ogni utente e' la media
+   sui suoi istanti; si riportano media e dev. std. fra utenti. Descrittivi: uscita grezza, media pesata per istanti, per lato, per mano in
+   movimento.
+6. **Cancello prima del test**, sulla validazione (15 utenti, finestre ufficiali, media fra utenti): MAE di TEMPONet con EMA / MAE del predittore
+   costante (posa media del training per giunto) **< 0,9**. Se non passa, il test non si guarda e si apre una diagnosi.
+7. **Lettura descrittiva** per condizione, rispetto alla Tab. 4 di [E24] (vemg2pose 12,2 / 15,2 / 15,8; NeuroPose 13,2 / 17,2 / 17,5;
+   SensingDynamics 15,5 / 18,8 / 18,7). Categorie: sotto vemg2pose; fra vemg2pose e NeuroPose; fra NeuroPose e SensingDynamics; sopra
+   SensingDynamics. Non e' un verdetto, perche' contesto e training sono diversi.
+8. **Test una volta**, subito dopo il cancello; nessuna scelta dopo averlo guardato. Un passo incompleto non si legge; nessun rilancio senza
+   diagnosi.
+9. **Risorse:** passo 0 su CPU (`lrd_all_serial`, 2 core, ≤ 2 h, ≤ 4 core-ore); passo 1 dbg 30 min (≤ 0,5 GPU-ore); passo 2 1 GPU, 3 h 30,
+   8 CPU, 120 GB (≤ 3,5 GPU-ore); passo 3 1 GPU, 45 min (≤ 0,75 GPU-ore). Totale previsto 4,75 GPU-ore sul tetto di 5.
