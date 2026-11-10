@@ -7874,3 +7874,31 @@ markdown e' identico byte per byte e le chiavi JSON preesistenti restano identic
   non 0,27.
 
 Il piano e' esaurito. Ogni altra variante (per esempio dose e schedule del training, H5) richiede una nuova proposta da approvare.
+
+### 2026-11-10 — TEMPONet su DB8, proposta H5 (schedule del learning rate): APPROVATA da Simone; regola, soglia e tetto congelati prima del primo job (Claude)
+
+Alla domanda «Approvi la proposta H5 con il nuovo tetto di 15 GPU-ore?» Simone risponde «Approvo». Proposta: `docs/temponet_db8_h5_plan.md`
+(commit e39aac1). L'approvazione comprende i lanci dei passi A e B (regola del 28/10; B solo se A sceglie una variante) e il **nuovo tetto
+dell'attivita': 15 GPU-ore in tutto** (8,445 gia' spese), core-ore invariate (40 in tutto). Ogni job resta sotto le 5 GPU-ore. Congelati qui,
+prima del primo job:
+
+1. **Varianti**, entrambe su V13 (bersaglio standardizzato e padding simmetrico), Adam con learning rate iniziale 1e-4, batch 64, passo di
+   training 8, 19 epoche:
+   - **W1**: coseno da 1e-4 a 0 sulle 19 epoche, aggiornato a ogni passo: lr = 1e-4 · (1 + cos(π t / T)) / 2, con t = passi gia' fatti e
+     T = 19 × passi per epoca (primo passo 1e-4, ultimo ~0).
+   - **W2**: 19 epoche a 1e-4 costante piu' un'epoca a 1e-5, sostituto in fp32 dell'epoca finale di QAT (ipotesi: il paper non dichiara il
+     learning rate della QAT).
+   Nessun'altra variante.
+2. **Passo A** (screening in sola validazione; fold1 e fold2, seme 0, 12 soggetti): si sceglie la variante con la MAE di validazione (fold, EMA,
+   media su 12 soggetti × 2 fold) piu' bassa, solo se migliora la base V13 = **9,628** gradi (media di 9,590, job 64005316, e 9,666, job 64010753,
+   seme 0) di almeno **0,20** gradi (confronto a meno di 1e-9 gradi di arrotondamento float). Altrimenti resta V13: la replica si chiude a
+   7,585 e il passo B non si fa. A parita' esatta vale l'ordine W1, W2. Uno screening incompleto non sceglie. Il test non entra nella scelta: log
+   e sintesi del passo A mostrano solo la validazione.
+3. **Passo B** (conferma, solo se il passo A sceglie): variante scelta, fold e `full` × semi 0, 1, 2 su 12 soggetti, `full` grandezza primaria;
+   riferimento 6,89, tolleranza ±0,30, etichette della replica; normodotati (S1-S10) e amputati (S11-S12) separati e descrittivi. E' una terza
+   analisi: i verdetti del run 63988277 e del passo 3 della diagnosi (7,585, non replicata) restano.
+4. **Controllo eager/graph** in ogni job dei passi A e B, prima di allenare: 60 passi eager contro CUDA graph, con lo schedule della variante
+   compresso nei 60 passi; differenza massima dei parametri ≤ 1e-5, altrimenti il job si ferma. Col learning rate costante resta il percorso di
+   oggi (numero float).
+5. **Risorse**: passo A 1 GPU con limite 1 h 45 min (≤ 1,75 GPU-ore); passo B 1 GPU con limite 4 h 30 min (≤ 4,5 GPU-ore); due checkout CPU
+   (2 CPU, pochi minuti). Totale previsto 14,7 GPU-ore sul tetto di 15. Nessun rilancio senza diagnosi.
