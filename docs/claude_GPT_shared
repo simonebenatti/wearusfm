@@ -8580,6 +8580,19 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Consuntivo dell'attivita': 8,445 GPU-ore su 12, 8,04 core-ore su 40.
 - Il piano e' esaurito: altre varianti solo con una nuova proposta a Simone.
 
+### 2026-11-10 | Claude | Baseline TEMPONet: proposta H5 (schedule del learning rate) preparata, nessun job
+
+- Simone: «Sì, preparala», alla domanda «Preparo una proposta per H5 (dose e schedule del training)?». Documento
+  `docs/temponet_db8_h5_plan.md`.
+- La dose (19 epoche, batch 64) e il learning rate iniziale 1e-4 sono dichiarati da [Z21]. Restano liberi lo schedule («initial learning
+  rate») e il learning rate dell'epoca finale di QAT.
+- Varianti su V13: W1, annealing a coseno sulle 19 epoche; W2, 19 epoche costanti piu' un'epoca a 1e-5.
+- Passo A in validazione (≤ 1,75 GPU-ore): si sceglie una variante solo se migliora di almeno 0,20 la base V13 (9,628, media di due esecuzioni
+  col seme 0). Passo B di conferma (≤ 4,5 GPU-ore) solo in quel caso. Nuovo tetto proposto: 15 GPU-ore in tutto.
+- Curve del passo 3: con V13 la validazione e' piatta dall'epoca 5 e oscilla di ~0,5 fra un'epoca e l'altra. Lo stesso seme ripetuto
+  differisce di 0,076. Per rientrare nella tolleranza servono −0,40 sul `full`: l'esito piu' probabile e' una baseline un po' piu' forte, non la
+  replica.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
