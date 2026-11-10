@@ -11,6 +11,13 @@
 Scrive in una cartella NUOVA `<out>/<split>/<u...>/<stem>.npz` (`starts` (finestre,) int64 e `targets` (finestre, 1000, 20) float32 in radianti)
 e `manifest.json`, con righe per registrazione, totali per split e condizione, e scala. Nessun numero di modello: solo bersagli e conteggi.
 
+Lettura del tar (correzione dopo il job 64096497, fallito per I/O: 226 GB letti in 1 h 50 per 2.949 registrazioni, 3 min 24 s di CPU).
+Scorrendo i membri con `tarfile` sul file normale, la lettura anticipata di Lustre trascinava i dati dei membri di training saltati. Ora:
+- l'indice si costruisce leggendo le sole intestazioni con `pread` su un descrittore con `POSIX_FADV_RANDOM`;
+- ogni membro di validazione e di test si legge con un'unica `pread`, in thread paralleli;
+- l'HDF5 si apre in memoria.
+Il calcolo non cambia.
+
 Uso (CPU, `scripts/slurm/emg2pose_eval_targets.sbatch`):
   python3 scripts/emg2pose_eval_targets.py --tar <tar> --csv <csv> --processed-root <emg2pose> --pose-root <emg2pose_pose> --out <cartella>
 """
@@ -18,13 +25,16 @@ Uso (CPU, `scripts/slurm/emg2pose_eval_targets.sbatch`):
 from __future__ import annotations
 
 import argparse
+import collections
 import hashlib
+import io
 import json
 import os
 import sys
 import tarfile
 import time
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
@@ -34,6 +44,67 @@ from wearusfm.ingest import emg2pose as E2P
 from wearusfm.ingest import emg2pose_pose as PP
 
 EVAL_SPLITS = ("val", "test")
+
+
+class PreadFile(io.RawIOBase):
+    """File in sola lettura servito con `os.pread`, senza lettura anticipata (`POSIX_FADV_RANDOM` dove c'e'): per `tarfile`, che ne legge
+    solo le intestazioni da 512 byte."""
+
+    def __init__(self, path: str | Path):
+        super().__init__()
+        self.fd = os.open(path, os.O_RDONLY)
+        if hasattr(os, "posix_fadvise"):
+            os.posix_fadvise(self.fd, 0, 0, os.POSIX_FADV_RANDOM)
+        self.pos = 0
+        self.size = os.fstat(self.fd).st_size
+        self.reads = 0
+
+    def readable(self) -> bool:
+        return True
+
+    def seekable(self) -> bool:
+        return True
+
+    def tell(self) -> int:
+        return self.pos
+
+    def seek(self, offset: int, whence: int = io.SEEK_SET) -> int:
+        self.pos = offset if whence == io.SEEK_SET else self.pos + offset if whence == io.SEEK_CUR else self.size + offset
+        return self.pos
+
+    def readinto(self, b) -> int:
+        data = os.pread(self.fd, len(b), self.pos)
+        b[: len(data)] = data
+        self.pos += len(data)
+        self.reads += 1
+        return len(data)
+
+    def close(self) -> None:
+        if not self.closed:
+            os.close(self.fd)
+        super().close()
+
+
+def tar_index(path: str | Path) -> dict[str, tuple[int, int]]:
+    """{stem della registrazione: (offset dei dati, dimensione)}, dalle sole intestazioni del tar."""
+    out = {}
+    with PreadFile(path) as raw, tarfile.open(fileobj=raw, mode="r:") as tf:
+        for m in tf:
+            if m.isfile() and E2P._is_recording(m.name):
+                out[Path(m.name).stem] = (int(m.offset_data), int(m.size))
+    return out
+
+
+def read_exact(fd: int, offset: int, size: int) -> bytes:
+    """`size` byte da `offset` con pread (ripetuta se il sistema ne restituisce meno)."""
+    parts, done = [], 0
+    while done < size:
+        chunk = os.pread(fd, size - done, offset + done)
+        if not chunk:
+            raise OSError(f"fine del file a {offset + done}, attesi {size} byte da {offset}")
+        parts.append(chunk)
+        done += len(chunk)
+    return b"".join(parts)
 
 
 def measure_scale(rows: list[dict], processed_root: Path, n: int, seed: int) -> dict:
@@ -84,6 +155,7 @@ def main(argv=None) -> int:
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--limit", type=int, default=0, help="solo collaudo: al massimo N registrazioni di validazione e test")
     ap.add_argument("--time-budget-s", type=float, default=0.0, help="ferma l'elaborazione dopo questo tempo (manifest incompleto, uscita 1)")
+    ap.add_argument("--io-threads", type=int, default=4, help="letture parallele dei membri del tar")
     args = ap.parse_args(argv)
     out = Path(args.out)
     if out.exists() and any(out.iterdir()):
@@ -103,31 +175,64 @@ def main(argv=None) -> int:
     recs, problems = {}, []
     deadline = t0 + args.time_budget_s if args.time_budget_s > 0 else float("inf")
     stopped = False
-    with tarfile.open(args.tar, "r:") as tf:
-        for ref in E2P.iter_recordings(tf):
-            if ref.stem not in wanted or ref.stem in recs:
-                continue
-            if time.time() > deadline or (args.limit and len(recs) >= args.limit):
-                stopped = True
-                break
-            row = by_stem[ref.stem]
-            u, s = R.recording_key(row)
-            angles = PP.read_pose(tf.extractfile(ref.info if ref.info is not None else ref.member))["angles"]
-            n_proc = json.loads((processed_root / u / s / "metadata.json").read_text())["shape"][0]
-            pose_file = pose_root / u / s / "pose_200hz_f16.npy"
-            blocks = np.load(pose_file, mmap_mode="r") if pose_file.is_file() else None
-            info, starts, targets = process(angles, n_proc, blocks)
-            dst = out / row["split"] / u / f"{s}.npz"
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            np.savez(dst, starts=starts, targets=targets)
-            info.update({"split": row["split"], "generalization": row["generalization"], "user": row["user"], "side": row["side"],
-                         "moving_hand": row["moving_hand"], "stage": row["stage"], "file": str(dst.relative_to(out)),
-                         "pose_blocks_found": blocks is not None})
-            if not info["aligned"]:
-                problems.append(f"{ref.stem}: {info['n_samples']} campioni nel raw contro {info['n_processed']} nel processato")
-            if not info["instants_all_valid"]:
-                problems.append(f"{ref.stem}: istanti valutati con fallimenti della cinematica inversa")
-            recs[ref.stem] = info
+    t_idx = time.time()
+    index = tar_index(args.tar)
+    manifest["tar_index"] = {"members": len(index), "seconds": round(time.time() - t_idx, 1)}
+    order = sorted((s for s in wanted if s in index), key=lambda s: index[s][0])  # nell'ordine del tar
+    problems += [f"{s}: non trovata nel tar" for s in sorted(wanted - set(index))]
+    if args.limit:
+        order = order[: args.limit]
+    print(f"indice del tar: {len(index)} registrazioni in {manifest['tar_index']['seconds']:.0f} s; da leggere {len(order)}", flush=True)
+    fd = os.open(args.tar, os.O_RDONLY)
+    bytes_read = 0
+    try:
+        with ThreadPoolExecutor(max_workers=max(1, args.io_threads)) as ex:
+            pending: collections.deque = collections.deque()
+            todo = iter(order)
+
+            def submit_next() -> None:
+                stem = next(todo, None)
+                if stem is not None:
+                    pending.append((stem, ex.submit(read_exact, fd, *index[stem])))
+
+            for _ in range(2 * max(1, args.io_threads)):
+                submit_next()
+            while pending:
+                if time.time() > deadline:
+                    stopped = True
+                    for _, fut in pending:
+                        fut.cancel()
+                    break
+                stem, fut = pending.popleft()
+                data = fut.result()
+                submit_next()
+                bytes_read += len(data)
+                row = by_stem[stem]
+                u, s = R.recording_key(row)
+                angles = PP.read_pose(io.BytesIO(data))["angles"]
+                del data
+                n_proc = json.loads((processed_root / u / s / "metadata.json").read_text())["shape"][0]
+                pose_file = pose_root / u / s / "pose_200hz_f16.npy"
+                blocks = np.load(pose_file, mmap_mode="r") if pose_file.is_file() else None
+                info, starts, targets = process(angles, n_proc, blocks)
+                dst = out / row["split"] / u / f"{s}.npz"
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                np.savez(dst, starts=starts, targets=targets)
+                info.update({"split": row["split"], "generalization": row["generalization"], "user": row["user"], "side": row["side"],
+                             "moving_hand": row["moving_hand"], "stage": row["stage"], "file": str(dst.relative_to(out)),
+                             "pose_blocks_found": blocks is not None})
+                if not info["aligned"]:
+                    problems.append(f"{stem}: {info['n_samples']} campioni nel raw contro {info['n_processed']} nel processato")
+                if not info["instants_all_valid"]:
+                    problems.append(f"{stem}: istanti valutati con fallimenti della cinematica inversa")
+                recs[stem] = info
+                if len(recs) % 1000 == 0:
+                    print(f"  {len(recs)} registrazioni, {bytes_read / 2**30:.1f} GiB, {time.time() - t0:.0f} s", flush=True)
+    finally:
+        os.close(fd)
+    manifest["bytes_read_from_tar"] = bytes_read
+    if args.limit and len(order) < len(wanted):
+        stopped = True
     missing = sorted(wanted - set(recs))
     totals = defaultdict(lambda: {"recordings": 0, "recordings_without_windows": 0, "windows": 0, "instants": 0, "users": set()})
     for info in recs.values():

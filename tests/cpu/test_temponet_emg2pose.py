@@ -293,3 +293,31 @@ def test_train_then_eval_end_to_end_on_cpu(tmp_path, monkeypatch):
     assert t["conditions"]["user"]["ema"]["n_users"] == 1 and t["conditions"]["stage"]["ema"]["n_users"] == 1
     assert t["conditions"]["user_stage"]["ema"]["mean_over_users_deg"] is None and t["conditions"]["user"]["reading"]
     assert "| user | 1 |" in (ev2 / "eval.md").read_text()
+
+
+@pytest.mark.parametrize("fmt", ["pax", "gnu"])
+def test_tar_index_matches_tarfile_and_reads_the_members(tmp_path, fmt):
+    import io
+    import os
+    import tarfile
+
+    recs = {"x" * 150 + "-recording-1_left": b"a" * 1000, "short_right": b"b" * 513, "vuota": b""}  # nome oltre i 100 caratteri ustar
+    tar = tmp_path / f"t_{fmt}.tar"
+    with tarfile.open(tar, "w", format=tarfile.PAX_FORMAT if fmt == "pax" else tarfile.GNU_FORMAT) as tf:
+        d = tarfile.TarInfo("emg2pose_data")
+        d.type = tarfile.DIRTYPE
+        tf.addfile(d)
+        for stem, data in recs.items():
+            info = tarfile.TarInfo(f"emg2pose_data/{stem}.hdf5")
+            info.size = len(data)
+            tf.addfile(info, io.BytesIO(data))
+    idx = emg2pose_eval_targets.tar_index(tar)
+    with tarfile.open(tar) as tf:
+        ref = {Path(m.name).stem: (m.offset_data, m.size) for m in tf if m.isfile()}
+    assert idx == ref and set(idx) == set(recs)
+    fd = os.open(tar, os.O_RDONLY)
+    try:
+        for stem, (off, size) in idx.items():
+            assert emg2pose_eval_targets.read_exact(fd, off, size) == recs[stem]
+    finally:
+        os.close(fd)
