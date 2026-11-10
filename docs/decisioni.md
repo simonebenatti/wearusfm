@@ -7965,3 +7965,14 @@ non e' approvato. **Tetto dell'attivita': 5 GPU-ore e 10 core-ore.** Ogni job re
    diagnosi.
 9. **Risorse:** passo 0 su CPU (`lrd_all_serial`, 2 core, ≤ 2 h, ≤ 4 core-ore); passo 1 dbg 30 min (≤ 0,5 GPU-ore); passo 2 1 GPU, 3 h 30,
    8 CPU, 120 GB (≤ 3,5 GPU-ore); passo 3 1 GPU, 45 min (≤ 0,75 GPU-ore). Totale previsto 4,75 GPU-ore sul tetto di 5.
+
+### 2026-11-10 — TEMPONet su emg2pose: emendamento delle finestre di valutazione PRIMA del primo job (Claude)
+
+Rileggendo `test_analysis.py`, `data.py` e `utils.py` di emg2pose prima di scrivere il codice, nessun dato letto e nessun job lanciato. La
+finestra ufficiale comprende anche il contesto del modello (`effective_window_length = window_length + context_length`), a passo 10.000. I
+tratti senza fallimenti vengono da `get_contiguous_ones`, con la fine **inclusa**, e si tengono se `t1 - t0 >=` la finestra effettiva; ogni
+tratto da' `(t1 - t0 - finestra) // passo + 1` finestre, che partono da `t0 + k × passo`. Il modello predice gli ultimi 10.000 campioni.
+
+Il punto 4 della voce precedente diventa: finestre effettive di **10.255 campioni** (10.000 + 255 di contesto di TEMPONet) a passo 10.000, con
+quelle stesse formule; istanti `o + 255 + 10 m` con m = 0-999, ognuno con 255 campioni di storia dentro il tratto. L'EMA riparte a ogni
+finestra. Restano invariati il cancello, la grandezza principale, le letture e le risorse.
