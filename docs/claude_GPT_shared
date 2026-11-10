@@ -8644,6 +8644,19 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Passi: CPU per tratti e bersagli ufficiali, collaudo dbg, training col seme 0 (≤ 3,5 GPU-ore), valutazione; facoltativi i semi 1 e 2.
   Tetto proposto 5 GPU-ore con un seme, 14 con tre. Due scelte a Simone: quando guardare il test e quanti semi.
 
+### 2026-11-10 | Claude | TEMPONet su emg2pose: proposta approvata, codice 9677e59 e 27d53b0, passo 0 e collaudo inviati
+
+- Simone: «Approvo», alla domanda «Approvi la proposta con un seme e il test subito dopo il cancello?». Voce in `docs/decisioni.md`
+  (9c0863b): tetto 5 GPU-ore e 10 core-ore; il passo 4 (semi 1 e 2) non e' approvato.
+- Emendamento prima del primo job (dbbcbf4), dalla rilettura di `test_analysis.py`: la finestra ufficiale comprende il contesto del modello.
+  Quindi 10.255 campioni a passo 10.000, con la fine dei tratti inclusa come in `get_contiguous_ones`. Cancello e letture invariati.
+- Codice: protocollo ufficiale e passo 0 (9677e59); training con l'EMG in RAM, raccolta in un thread e CUDA graph; valutazione con cancello
+  (27d53b0). Test: 13 nuovi, tra cui reimplementazioni letterali di `get_contiguous_ones` e `WindowedEmgDataset`; 71 insieme a DB8 e
+  all'ingest delle pose.
+- Passo 0 `TEMPONET-E2P-targets-20261110` = 64096497 (CPU, checkout `temponet-emg2pose-9677e59`), partito alle 19:03. Collaudo
+  `TEMPONET-E2P-smoke-20261110` = 64097115 in afterok (dbg, checkout `temponet-emg2pose-27d53b0`). Training e valutazione si inviano dopo la
+  lettura del collaudo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
