@@ -192,3 +192,104 @@ def test_eval_targets_flags_misalignment(tmp_path):
     assert emg2pose_eval_targets.main(["--tar", str(tar), "--csv", str(csv), "--processed-root", str(proc), "--pose-root", str(pose),
                                        "--out", str(out), "--n-scale", "1"]) == 1
     assert "processato" in json.loads((out / "manifest.json").read_text())["problems"][0]
+
+
+# --- training e valutazione (CPU) -------------------------------------------------------------------------------------------------------
+
+import temponet_emg2pose as TE  # noqa: E402
+
+
+def _dataset(tmp_path):
+    specs = [("tr1", "ua", "train", "none", 30_000, [(9_000, 9_100)]), ("tr2", "ub", "train", "none", 24_000, []),
+             ("va1", "uv", "val", "user", 21_000, []), ("te1", "ut", "test", "user", 21_000, []),
+             ("te2", "ua", "test", "stage", 11_000, [])]
+    tar, csv, proc, pose = _synthetic(tmp_path, specs)
+    (pose / "pose_stats.json").write_text(json.dumps({"split": "train", "all": {"mean": [0.7] * 20, "std": [0.4] * 20}}))
+    targets = tmp_path / "targets"
+    assert emg2pose_eval_targets.main(["--tar", str(tar), "--csv", str(csv), "--processed-root", str(proc), "--pose-root", str(pose),
+                                       "--out", str(targets), "--n-scale", "2"]) == 0
+    return csv, proc, pose, targets / "manifest.json"
+
+
+def test_host_store_gather_and_feeder_chunks(tmp_path):
+    import torch
+
+    csv, proc, pose, _ = _dataset(tmp_path)
+    rows = [r for r in R.read_rows(csv) if r["split"] == "train"]
+    st = TE.HostStore(rows, proc, 3)
+    raw0 = np.load(proc / "uua" / "tr1" / "data_int16.npy")
+    raw1 = np.load(proc / "uub" / "tr2" / "data_int16.npy")
+    ends = torch.tensor([255, 29_999, 30_000 + 300])
+    w = st.gather(ends).numpy()
+    np.testing.assert_array_equal(w[0], raw0[0:256])
+    np.testing.assert_array_equal(w[1], raw0[29_744:30_000])
+    np.testing.assert_array_equal(w[2], raw1[45:301])
+    meta0 = json.loads((proc / "uua" / "tr1" / "metadata.json").read_text())
+    assert float(st.factor[0]) == pytest.approx(1e3 / meta0["int16_scale"], rel=1e-6)
+    e, fw, ys = TE.block_index(st, pose, 8)
+    assert len(e) == len(fw) == len(ys) and int(e.min()) >= 255
+    order = torch.randperm(len(e), generator=torch.Generator().manual_seed(0))
+    fd = TE.Feeder(st, e, fw, ys, batch=4, k=3, pin=False)
+    fd.start(order, steps=7)
+    seen = 0
+    for b, c in fd.chunks():
+        m = c * 4
+        sel = order[seen * 4 : seen * 4 + m]
+        np.testing.assert_array_equal(fd.bx[b][:m].numpy(), st.gather(e[sel]).numpy())
+        np.testing.assert_array_equal(fd.by[b][:m].numpy(), ys[sel].numpy())
+        seen += c
+        fd.release(b)
+    assert seen == 7
+
+
+def test_stepper_matches_a_plain_loop_on_scaled_input_and_standardized_target():
+    import torch
+
+    rng = np.random.default_rng(3)
+    x = torch.from_numpy(rng.integers(-3000, 3000, size=(3, 4, 256, 16)).astype(np.int16))
+    f = torch.from_numpy(rng.uniform(0.01, 0.02, size=(3, 4)).astype(np.float32))
+    y = torch.from_numpy(rng.normal(0.7, 0.4, size=(3, 4, 20)).astype(np.float16))
+    mu, sd = np.full(20, 0.7), np.full(20, 0.4)
+    cpu = torch.device("cpu")
+    m1, o1, l1 = TE.build(5, cpu, 1e-3, dropout=0.0)
+    st = TE.Stepper(m1, o1, l1, mu, sd, 4, False, cpu)
+    for i in range(3):
+        st.step(x[i], f[i], y[i])
+    m2, o2, l2 = TE.build(5, cpu, 1e-3, dropout=0.0)
+    total = 0.0
+    for i in range(3):
+        xi = x[i].permute(0, 2, 1).float() * f[i][:, None, None]
+        yi = (y[i].float() - torch.tensor(mu, dtype=torch.float32)) / torch.tensor(sd, dtype=torch.float32)
+        o2.zero_grad(set_to_none=True)
+        loss = l2(m2(xi), yi)
+        loss.backward()
+        o2.step()
+        total += float(loss.detach())
+    for a, b in zip(m1.state_dict().values(), m2.state_dict().values()):
+        assert torch.equal(a, b)
+    assert st.take_total() == pytest.approx(total)
+
+
+def test_train_then_eval_end_to_end_on_cpu(tmp_path, monkeypatch):
+    csv, proc, pose, manifest = _dataset(tmp_path)
+    common = ["--csv", str(csv), "--processed-root", str(proc), "--pose-root", str(pose), "--targets-manifest", str(manifest), "--device", "cpu"]
+    run = tmp_path / "run"
+    assert TE.main(["train", *common, "--out", str(run), "--epochs", "2", "--batch", "16", "--chunk-steps", "3", "--max-steps-per-epoch", "7"]) == 0
+    r = json.loads((run / "run.json").read_text())
+    assert r["status"] == "ok" and r["scale_exponent_k"] == 3 and r["parameters"] == 71_412 and r["steps_per_epoch"] == 7
+    h = json.loads((run / "history.json").read_text())
+    assert [row["epoch"] for row in h] == [1, 2] and all(np.isfinite(row["val_mae_raw_deg"]) for row in h)
+    assert (run / "model_final.pt").is_file() and len(list((run / "checkpoints").glob("*.pt"))) == 2
+    ev = tmp_path / "eval_val"
+    assert TE.main(["eval", *common, "--out", str(ev), "--model-dir", str(run), "--val-only"]) == 0
+    e = json.loads((ev / "eval.json").read_text())
+    assert e["test"].startswith("non calcolato") and len(e["alpha"]) == 20 and e["val"]["windows"] == 2 and "ratio" in e["gate"]
+    assert "Test non calcolato" in (ev / "eval.md").read_text()
+    monkeypatch.setattr(TE.R, "gate", lambda m, c: {"model_deg": 1.0, "constant_deg": 2.0, "ratio": 0.5, "max_ratio": 0.9, "passed": True})
+    ev2 = tmp_path / "eval_test"
+    assert TE.main(["eval", *common, "--out", str(ev2), "--model-dir", str(run)]) == 0
+    t = json.loads((ev2 / "eval.json").read_text())["test"]
+    assert t["windows"] == 3 and set(t["conditions"]) == set(R.CONDITIONS)
+    assert t["conditions"]["user"]["ema"]["n_users"] == 1 and t["conditions"]["stage"]["ema"]["n_users"] == 1
+    assert t["conditions"]["user_stage"]["ema"]["mean_over_users_deg"] is None and t["conditions"]["user"]["reading"]
+    assert "| user | 1 |" in (ev2 / "eval.md").read_text()
