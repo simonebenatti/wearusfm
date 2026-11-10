@@ -7902,3 +7902,18 @@ prima del primo job:
    oggi (numero float).
 5. **Risorse**: passo A 1 GPU con limite 1 h 45 min (≤ 1,75 GPU-ore); passo B 1 GPU con limite 4 h 30 min (≤ 4,5 GPU-ore); due checkout CPU
    (2 CPU, pochi minuti). Totale previsto 14,7 GPU-ore sul tetto di 15. Nessun rilancio senza diagnosi.
+
+### 2026-11-10 — TEMPONet su DB8, H5 (schedule del learning rate): ESITO e CONSUNTIVO (Claude)
+
+Passo A eseguito con la regola congelata nella voce precedente (Simone: «Approvo»). Dettagli in `docs/temponet_db8_h5_plan.md`, «Esito».
+
+1. **Passo A**: job 64062336, codice f830b9f, sola validazione. W1 9,566, W2 9,531, base V13 9,628. Il guadagno migliore, 0,097, e' sotto la
+   soglia di 0,20: **resta V13**. Il passo B non si fa e la replica si chiude a **7,585** gradi, **non replicata**. Controlli eager/graph con lo
+   schedule: differenza 0 in entrambe le varianti.
+2. **Correzione prima del lancio** (f830b9f): con `--check-graph` un controllo fallito ora ferma il run prima di allenare, come scritto al
+   punto 4 della voce precedente; prima falliva solo la prima unita'. Il checkout di 58132b4 (job 64061858) non e' stato usato.
+
+**Consuntivo**: H5 1,538 GPU-ore e 0,03 core-ore. Attivita' intera: **9,983 GPU-ore sul tetto di 15** (79,9 ore locali con billing 8) e
+**8,07 core-ore sul tetto di 40**.
+
+Il piano H5 e' esaurito; ogni altra variante richiede una nuova proposta approvata.

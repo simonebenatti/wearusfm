@@ -8606,6 +8606,15 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Checkout `temponet-db8-f830b9f` (job 64062227); passo A inviato come `TEMPONET-DB8-h5screen-20261110` = 64062336, 1 GPU, limite 1 h 45 min.
   Spesa GPU finora 8,445 ore; col passo A al massimo 10,195 su 15.
 
+### 2026-11-10 | Claude | Baseline TEMPONet, H5: passo A concluso (64062336), nessuna variante sopra la soglia; replica chiusa a 7,585 | Codice f830b9f
+
+- Passo A `COMPLETED 0:0` in 1 h 32 min 18 s (1,538 GPU-ore), 48 modelli di fold su 48. Controllo eager/graph con lo schedule: differenza 0 in
+  W1 (60 valori del learning rate) e in W2 (1e-4 e 1e-5).
+- Validazione (fold, EMA, seme 0): W1 9,566, W2 9,531, base V13 9,628. Guadagno massimo 0,097, sotto la soglia di 0,20: resta V13, il passo B
+  non si fa. Ricevute di sola validazione in `results/temponet_db8/h5_screen_20261110/`; il test dei 48 modelli resta non letto.
+- La replica si chiude a 7,585 (V13, `full`, tre semi): non replicata. Esito in `docs/temponet_db8_h5_plan.md` e `docs/decisioni.md`.
+- Consuntivo dell'attivita': 9,983 GPU-ore su 15, 8,07 core-ore su 40. Il piano H5 e' esaurito.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12617,3 +12626,10 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
 - Con la stessa catena l'MLP su Waveform Length fa 6,82 e batte la TEMPONet (7,59), mentre nel paper la TCN e' davanti (6,89 contro 7,14).
 - L'alpha dell'EMA scelto e' piu' alto del pubblicato (0,93 contro 0,86): uscite grezze piu' rumorose.
 - Ipotesi rimaste, non verificate: dose e schedule del training (H5) e altri dettagli non dichiarati. Prossimo passo da decidere con Simone.
+
+### 2026-11-10 | Claude | Baseline TEMPONet, H5: lo schedule del learning rate non spiega la distanza
+
+- Il coseno dimezza le oscillazioni della validazione fra epoche (mediana 0,30 contro 0,55 di V13 col seme 0); l'epoca finale a 1e-5 migliora
+  la validazione grezza di 0,07. Dopo l'EMA restano 0,06-0,10 gradi, quanto differiscono due esecuzioni dello stesso seme (0,076).
+- Gli amputati guadagnano di piu' (−0,28 e −0,30) dei normodotati (−0,02 e −0,06): due soggetti, lettura descrittiva.
+- Restano ipotesi non verificate e non ricostruibili dal testo del paper: QAT int8 vera, definizione della metrica o degli istanti di test.

@@ -195,3 +195,10 @@ Cosa e' emerso:
 - Con V13 e la stessa grandezza calcolata sul modello `full`: **7,585 gradi**, ancora **non replicata** (+0,695). Il fold scende a 8,509.
 
 Il verdetto della sezione precedente resta com'e'; la distanza residua e' propria del training della TCN.
+
+## Terza analisi: schedule del learning rate (H5, 10/11/2026)
+
+Proposta in `docs/temponet_db8_h5_plan.md`, approvata da Simone («Approvo»), regola congelata in `docs/decisioni.md`. Su V13 si sono provati in
+validazione due schedule: coseno sulle 19 epoche (W1) e un'epoca finale a 1e-5 (W2). Il miglioramento e' di 0,06 e 0,10 gradi, sotto la soglia
+di 0,20, quindi nessuna conferma sul test. Lo schedule riduce le oscillazioni fra epoche, ma l'EMA ne toglieva gia' gran parte.
+**La replica si chiude a 7,585 gradi contro 6,89: non replicata.** I verdetti precedenti restano.
