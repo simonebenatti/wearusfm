@@ -111,6 +111,11 @@ def predict(model, sig: Signal, batch: int = 8192) -> tuple[np.ndarray, np.ndarr
 
 CUDNN_MODES = {"deterministic": (True, False), "default": (False, False), "benchmark": (False, True)}  # (deterministic, benchmark)
 GRAPH_TOLERANCE = 1e-5  # differenza massima ammessa fra parametri eager e graph nel controllo
+CHECK_FAILED = "controllo fallito"  # stato della prima unita' quando il controllo eager/graph fallisce: le altre non partono
+
+
+class GraphCheckError(RuntimeError):
+    """Controllo eager/graph fallito o non eseguibile: il run si ferma prima di allenare."""
 GRAPH_WARMUP = 3  # passi veri (contati nell'epoca) eseguiti in eager su uno stream laterale prima della cattura
 LR_SCHEDULES = ("constant", "cosine")
 
@@ -376,14 +381,18 @@ def run_unit(subject: int, seed: int, cfg: argparse.Namespace) -> dict:
     out_dir = Path(cfg.out)
     result = {"subject": subject, "seed": seed, "provenance": provenance, "models": {}}
     if cfg.check_graph and device.type == "cuda" and subject == cfg.subjects[0] and seed == cfg.seeds[0]:
-        check = graph_check(sig[1], cfg, device)
+        try:
+            check = graph_check(sig[1], cfg, device)
+        except Exception as e:  # anche un errore del controllo ferma il run
+            raise GraphCheckError(f"controllo eager/graph non eseguito: {e!r}") from e
         result["graph_check"] = check
+        (out_dir / "graph_check.json").write_text(json.dumps(check, indent=1))  # ricevuta senza numeri di test
         sched = check.get("lr_schedule")
         print(f"controllo eager/graph: differenza massima {check['max_abs_param_diff']:.3g}, "
               f"{check['eager_ms_per_step']:.2f} ms contro {check['graph_ms_per_step']:.2f} ms per passo"
               + (f"; learning rate da {sched['first']:.3g} a {sched['last']:.3g} ({sched['distinct']} valori)" if sched else ""), flush=True)
         if check["max_abs_param_diff"] > GRAPH_TOLERANCE:
-            raise RuntimeError(f"graph diverso dall'eager: {check['max_abs_param_diff']}")
+            raise GraphCheckError(f"graph diverso dall'eager: {check['max_abs_param_diff']}")
     preds = {}
     for k, name in enumerate(MODELS):  # k fissa il seme del modello anche quando se ne allena solo una parte
         if name not in cfg.models or (name == "full" and cfg.full_seeds is not None and seed not in cfg.full_seeds):
@@ -438,9 +447,25 @@ def worker(job: tuple[int, int, dict]) -> tuple[int, int, str]:
         dst.write_text(json.dumps(result, indent=1))
         dst.with_suffix(".partial.json").unlink(missing_ok=True)
         return subject, seed, "ok"
+    except GraphCheckError:
+        dst.with_suffix(".error").write_text(traceback.format_exc())
+        return subject, seed, CHECK_FAILED
     except Exception:  # registrato e riportato: il job esce con errore, nessun nuovo tentativo
         dst.with_suffix(".error").write_text(traceback.format_exc())
         return subject, seed, "errore"
+
+
+def run_jobs(jobs: list, workers: int) -> list[tuple[int, int, str]]:
+    if workers <= 1:
+        return [worker(j) for j in jobs]
+    import multiprocessing as mp
+
+    status = []
+    with mp.get_context("spawn").Pool(workers, maxtasksperchild=1) as pool:
+        for res in pool.imap_unordered(worker, jobs):
+            print(f"unita' S{res[0]} seme {res[1]}: {res[2]}", flush=True)
+            status.append(res)
+    return status
 
 
 def main(argv=None) -> int:
@@ -501,15 +526,15 @@ def main(argv=None) -> int:
     (out / "run.json").write_text(json.dumps(run, indent=1))
     jobs = [(s, seed, cfg) for seed in args.seeds for s in args.subjects]
     status = []
-    if args.workers <= 1:
-        status = [worker(j) for j in jobs]
-    else:
-        import multiprocessing as mp
-
-        with mp.get_context("spawn").Pool(args.workers, maxtasksperchild=1) as pool:
-            for res in pool.imap_unordered(worker, jobs):
-                print(f"unita' S{res[0]} seme {res[1]}: {res[2]}", flush=True)
-                status.append(res)
+    if args.check_graph and jobs:  # la prima unita' fa il controllo eager/graph: gira da sola, e se il controllo fallisce le altre non partono
+        status = run_jobs(jobs[:1], args.workers)
+        jobs = jobs[1:]
+        if status[0][2] == CHECK_FAILED:
+            for s, seed, _ in jobs:
+                (out / "units" / f"S{s}_seed{seed}.skipped").write_text("controllo eager/graph fallito: unita' non avviata\n")
+                status.append((s, seed, "saltato"))
+            jobs = []
+    status += run_jobs(jobs, args.workers)
     run["finished"] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
     run["seconds"] = round(time.time() - t0, 1)
     run["status"] = {f"S{s}_seed{seed}": st for s, seed, st in sorted(status)}

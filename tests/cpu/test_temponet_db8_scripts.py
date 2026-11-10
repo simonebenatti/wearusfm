@@ -437,3 +437,35 @@ def test_screen_h5_incomplete_or_missing_makes_no_choice(tmp_path):
     (other / "W1" / "units").mkdir(parents=True)
     assert temponet_db8_screen.main([str(other), "--rule", "h5"]) == 0
     assert json.loads((other / "screen.json").read_text())["choice"] is None
+
+
+def test_failed_graph_check_stops_the_run_before_training(cache, tmp_path, monkeypatch):
+    calls = []
+
+    def failing(subject, seed, cfg):
+        calls.append((subject, seed))
+        raise temponet_db8.GraphCheckError("graph diverso dall'eager: 0.1")
+
+    monkeypatch.setattr(temponet_db8, "run_unit", failing)
+    out = tmp_path / "run_gc"
+    assert temponet_db8.main(["--cache", str(cache), "--out", str(out), "--subjects", "1", "2", "--seeds", "0", "1", "--device", "cpu",
+                              "--check-graph"]) == 1
+    assert calls == [(1, 0)]  # solo la prima unita', quella del controllo
+    run = json.loads((out / "run.json").read_text())
+    assert run["status"] == {"S1_seed0": "controllo fallito", "S1_seed1": "saltato", "S2_seed0": "saltato", "S2_seed1": "saltato"}
+    assert (out / "units" / "S2_seed1.skipped").is_file() and "GraphCheckError" in (out / "units" / "S1_seed0.error").read_text()
+
+
+def test_passed_graph_check_runs_every_unit_once(cache, tmp_path, monkeypatch):
+    calls = []
+
+    def passing(subject, seed, cfg):
+        calls.append((subject, seed))
+        return {"subject": subject, "seed": seed, "models": {}}
+
+    monkeypatch.setattr(temponet_db8, "run_unit", passing)
+    out = tmp_path / "run_ok"
+    assert temponet_db8.main(["--cache", str(cache), "--out", str(out), "--subjects", "1", "2", "--seeds", "0", "1", "--device", "cpu",
+                              "--check-graph"]) == 0
+    assert calls == [(1, 0), (2, 0), (1, 1), (2, 1)]
+    assert set(json.loads((out / "run.json").read_text())["status"].values()) == {"ok"}
