@@ -70,6 +70,7 @@ def test_training_and_summary_end_to_end(cache, tmp_path):
     f1, full = unit["models"]["fold1"], unit["models"]["full"]
     assert f1["train_acquisitions"] == [1] and f1["val_acquisition"] == 2 and full["train_acquisitions"] == [1, 2]
     assert len(f1["history"]) == 2 and "val_mae_raw_deg" in f1["history"][0]
+    assert "lr_first" not in f1["history"][0]  # learning rate costante: percorso di prima, nessuna chiave dello schedule
     assert full["n_train_windows"] == 2 * f1["n_train_windows"]
     for m in unit["models"].values():
         assert np.isfinite(m["test_ema"]["mae_deg"]) and len(m["alpha"]) == 5
@@ -79,6 +80,7 @@ def test_training_and_summary_end_to_end(cache, tmp_path):
     assert np.load(out / "predictions" / "S1_seed0_fold2_test_raw.npy").shape == (np.load(out / "predictions" / "S1_test_target.npy").shape)
     run = json.loads((out / "run.json").read_text())
     assert run["model"]["parameters"] == 70_917 and run["status"] == {"S1_seed0": "ok"}
+    assert (run["args"]["lr_schedule"], run["args"]["final_epochs"], run["args"]["final_lr"]) == ("constant", 0, None)
     assert temponet_db8_summary.main([str(out), "--seeds", "0"]) == 0
     s = json.loads((out / "summary.json").read_text())
     assert s["verdict"] == "incompleta" and not s["complete"]
@@ -298,3 +300,140 @@ def test_summary_full_primary_describes_the_full_model():
 def test_summary_incomplete_when_a_seed_is_missing():
     units = [_unit(s, k, 6.9) for s in range(1, 13) for k in (0, 1)]
     assert temponet_db8_summary.summarize(units, [0, 1, 2])["verdict"] == "incompleta"
+
+
+# Proposta H5 (docs/temponet_db8_h5_plan.md): schedule del learning rate
+
+
+def test_lr_schedule_values():
+    import math
+
+    w1 = temponet_db8.LRSchedule("cosine", 1e-4, 19, 100)
+    values = [w1.value(e, i) for e in range(19) for i in range(100)]
+    assert values[0] == 1e-4 and 0 < values[-1] < 1e-9 and w1.total_epochs == 19
+    assert all(a > b for a, b in zip(values, values[1:]))  # decresce a ogni passo
+    assert w1.value(9, 50) == pytest.approx(5e-5)  # meta' dei passi: meta' del valore iniziale
+    assert values[-1] == pytest.approx(1e-4 * 0.5 * (1 + math.cos(math.pi * 1899 / 1900)))
+    w2 = temponet_db8.LRSchedule("constant", 1e-4, 19, 100, final_epochs=1, final_lr=1e-5)
+    assert w2.total_epochs == 20 and w2.value(0, 0) == w2.value(18, 99) == 1e-4 and w2.value(19, 0) == w2.value(19, 99) == 1e-5
+    with pytest.raises(ValueError):
+        temponet_db8.LRSchedule("constant", 1e-4, 19, 100, final_epochs=1)
+    with pytest.raises(ValueError):
+        temponet_db8.LRSchedule("step", 1e-4, 19, 100)
+
+
+def test_check_lrs_compresses_the_schedule_into_the_check():
+    import argparse
+
+    base = {"lr": 1e-4, "epochs": 19}
+    assert temponet_db8.check_lrs(argparse.Namespace(**base, lr_schedule="constant", final_epochs=0, final_lr=None), 60) is None
+    w1 = temponet_db8.check_lrs(argparse.Namespace(**base, lr_schedule="cosine", final_epochs=0, final_lr=None), 60)
+    assert len(w1) == 60 == len(set(w1)) and w1[0] == 1e-4 and w1[-1] < 1e-6
+    w2 = temponet_db8.check_lrs(argparse.Namespace(**base, lr_schedule="constant", final_epochs=1, final_lr=1e-5), 60)
+    assert w2 == [1e-4] * 30 + [1e-5] * 30  # il cambio cade dopo la cattura del graph (passo GRAPH_WARMUP)
+    assert temponet_db8.GRAPH_WARMUP < 30
+
+
+def test_tensor_lr_matches_the_float_path_and_follows_the_schedule(cache):
+    import argparse
+
+    import torch
+
+    from wearusfm.harness import db8_regression as db8
+
+    cpu = torch.device("cpu")
+    sig = temponet_db8.Signal([db8.load_cached(cache, 1, 1)], cpu, 1e6, 256, 32)
+    batches = sig.ends[: 6 * 8].view(6, 8)
+    base = argparse.Namespace(window=256, symmetric_padding=False, lr=1e-3, batch=8)
+
+    def run(cfg, lrs=None):
+        model, opt, loss_fn = temponet_db8.build(cfg, 3, cpu, dropout=0.0)
+        st = temponet_db8.Stepper(model, opt, loss_fn, sig, 8, False, cpu)
+        for i, b in enumerate(batches):
+            st.step(b, None if lrs is None else lrs[i])
+        return model, opt, st
+
+    def same(m1, m2):
+        return all(torch.equal(a, b) for a, b in zip(m1.state_dict().values(), m2.state_dict().values()))
+
+    m_float, o_float, st_float = run(base)
+    assert isinstance(o_float.param_groups[0]["lr"], float)  # senza schedule: numero float come prima
+    with pytest.raises(ValueError):
+        st_float.step(batches[0], 1e-3)
+    # valori costanti col tensore: stessi pesi del numero float, bit per bit
+    m_const, o_const, _ = run(argparse.Namespace(**vars(base), lr_schedule="constant", final_epochs=1, final_lr=1e-3), [1e-3] * 6)
+    assert torch.is_tensor(o_const.param_groups[0]["lr"]) and same(m_float, m_const)
+    # coseno: il tensore riscritto prima di ogni passo equivale al numero float impostato a mano prima di ogni passo
+    sched = temponet_db8.LRSchedule("cosine", 1e-3, 1, 6)
+    lrs = [sched.value(0, i) for i in range(6)]
+    m_cos, o_cos, _ = run(argparse.Namespace(**vars(base), lr_schedule="cosine", final_epochs=0, final_lr=None), lrs)
+    m_ref, o_ref, l_ref = temponet_db8.build(base, 3, cpu, dropout=0.0)
+    for lr, b in zip(lrs, batches):
+        o_ref.param_groups[0]["lr"] = lr
+        x, y = sig.batch(b)
+        o_ref.zero_grad(set_to_none=True)
+        l_ref(m_ref(x), y).backward()
+        o_ref.step()
+    assert same(m_cos, m_ref) and not same(m_cos, m_float) and float(o_cos.param_groups[0]["lr"]) == lrs[-1]
+
+
+@pytest.mark.parametrize("extra", [["--lr-schedule", "cosine"], ["--final-epochs", "1", "--final-lr", "1e-5"]])
+def test_training_with_lr_schedules_end_to_end(cache, tmp_path, extra, capsys):
+    import math
+
+    out = tmp_path / "run_lr"
+    assert temponet_db8.main(["--cache", str(cache), "--out", str(out), "--subjects", "1", "--seeds", "0", "--epochs", "2", "--batch", "16",
+                              "--workers", "1", "--device", "cpu", "--models", "fold1", "fold2", "--target-norm", "--symmetric-padding",
+                              "--hide-test-in-log", *extra]) == 0
+    assert "test MAE" not in capsys.readouterr().out
+    unit = json.loads((out / "units" / "S1_seed0.json").read_text())
+    for name in ("fold1", "fold2"):
+        h = unit["models"][name]["history"]
+        steps = h[0]["steps"]
+        if extra[0] == "--lr-schedule":  # W1: due epoche, dal valore iniziale a ~0
+            assert len(h) == 2 and h[0]["lr_first"] == 1e-4 and h[0]["lr_first"] > h[0]["lr_last"] > h[1]["lr_first"] > h[1]["lr_last"]
+            assert h[1]["lr_last"] == pytest.approx(1e-4 * 0.5 * (1 + math.cos(math.pi * (2 * steps - 1) / (2 * steps))))
+        else:  # W2: le due epoche a 1e-4 e una in piu' a 1e-5
+            assert [(r["lr_first"], r["lr_last"]) for r in h] == [(1e-4, 1e-4), (1e-4, 1e-4), (1e-5, 1e-5)]
+        assert np.isfinite(unit["models"][name]["val_ema"]["mae_deg"])
+    args = json.loads((out / "run.json").read_text())["args"]
+    assert args["target_norm"] and args["symmetric_padding"]
+
+
+def test_final_epochs_and_final_lr_go_together(cache, tmp_path):
+    for k, extra in enumerate((["--final-epochs", "1"], ["--final-lr", "1e-5"], ["--final-epochs", "-1", "--final-lr", "1e-5"])):
+        with pytest.raises(SystemExit):
+            temponet_db8.main(["--cache", str(cache), "--out", str(tmp_path / f"x{k}"), "--device", "cpu", *extra])
+
+
+@pytest.mark.parametrize("vals,choice", [
+    ({"W1": 9.40, "W2": 9.50}, "W1"),
+    ({"W1": 9.45, "W2": 9.44}, "V13"),
+    ({"W1": 9.50, "W2": 9.428}, "W2"),  # guadagno di 0,20 esatti: in float 0,1999999999999993, ammesso
+    ({"W1": 9.30, "W2": 9.30}, "W1"),  # parita' esatta: vale l'ordine W1, W2
+])
+def test_screen_h5_rule(tmp_path, vals, choice):
+    assert 9.628 - 9.428 < 0.20  # senza la tolleranza di arrotondamento il terzo caso sarebbe respinto
+    for v, val in vals.items():
+        (tmp_path / v / "units").mkdir(parents=True)
+        for s in range(1, 13):
+            (tmp_path / v / "units" / f"S{s}_seed0.json").write_text(json.dumps(_val_unit(s, val)))
+    assert temponet_db8_screen.main([str(tmp_path), "--rule", "h5"]) == 0
+    s = json.loads((tmp_path / "screen.json").read_text())
+    assert (s["rule"], s["base"], s["base_val_mae_deg"], s["choice"]) == ("h5", "V13", 9.628, choice)
+    md = (tmp_path / "screen.md").read_text()
+    assert "Base V13 (media di 9,590, job 64005316, e 9,666, job 64010753, seme 0): 9.628 gradi." in md
+    assert ("la replica si chiude a 7,585 e il passo B non si fa" in md) == (choice == "V13")
+
+
+def test_screen_h5_incomplete_or_missing_makes_no_choice(tmp_path):
+    for v in ("W1", "W2"):
+        (tmp_path / v / "units").mkdir(parents=True)
+        for s in range(1, 13 if v == "W1" else 12):  # a W2 manca S12
+            (tmp_path / v / "units" / f"S{s}_seed0.json").write_text(json.dumps(_val_unit(s, 9.0)))
+    assert temponet_db8_screen.main([str(tmp_path), "--rule", "h5"]) == 0
+    assert json.loads((tmp_path / "screen.json").read_text())["choice"] is None
+    other = tmp_path / "solo_W1"
+    (other / "W1" / "units").mkdir(parents=True)
+    assert temponet_db8_screen.main([str(other), "--rule", "h5"]) == 0
+    assert json.loads((other / "screen.json").read_text())["choice"] is None

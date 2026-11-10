@@ -8,6 +8,9 @@ Training: TEMPONet-64 (`wearusfm.model.temponet`), loss L1, Adam lr 1e-4 costant
 finale di quantization-aware training int8 non si replica), finestre di 256 campioni con passo 32 e bersaglio all'ultimo campione.
 Post-processing: EMA causale con alpha per DoA scelto sulla griglia 0,00-0,99 con le sole predizioni di validazione; test su A3 con quell'alpha.
 Nessuna selezione sul test: le epoche sono fisse, la curva di validazione per epoca e' solo descrittiva.
+Proposta H5 (`docs/temponet_db8_h5_plan.md`): `--lr-schedule cosine` (W1) o `--final-epochs 1 --final-lr 1e-5` (W2). Solo con uno schedule il
+learning rate e' un tensore, aggiornato prima di ogni passo e letto anche dal CUDA graph; col learning rate costante il percorso resta quello di
+prima, a numero float.
 
 Uso (GPU, `scripts/slurm/temponet_db8.sbatch`):
   python3 scripts/temponet_db8.py --cache <cache> --out <cartella NUOVA> --seeds 0 1 2 --workers 4
@@ -19,6 +22,7 @@ import argparse
 import copy
 import hashlib
 import json
+import math
 import os
 import platform
 import sys
@@ -108,6 +112,63 @@ def predict(model, sig: Signal, batch: int = 8192) -> tuple[np.ndarray, np.ndarr
 CUDNN_MODES = {"deterministic": (True, False), "default": (False, False), "benchmark": (False, True)}  # (deterministic, benchmark)
 GRAPH_TOLERANCE = 1e-5  # differenza massima ammessa fra parametri eager e graph nel controllo
 GRAPH_WARMUP = 3  # passi veri (contati nell'epoca) eseguiti in eager su uno stream laterale prima della cattura
+LR_SCHEDULES = ("constant", "cosine")
+
+
+class LRSchedule:
+    """Learning rate del passo `step` (da 0) dell'epoca `epoch` (da 0); proposta H5, `docs/temponet_db8_h5_plan.md`.
+
+    Le prime `epochs` epoche seguono `kind`: `constant` a `lr`, oppure `cosine` da `lr` a 0 aggiornato a ogni passo,
+    lr * (1 + cos(pi * t / T)) / 2 con t = passi gia' fatti e T = epochs * steps_per_epoch (primo passo lr, ultimo ~0).
+    Le `final_epochs` epoche successive sono a `final_lr` costante (W2: sostituto in fp32 dell'epoca finale di QAT).
+    """
+
+    def __init__(self, kind: str, lr: float, epochs: int, steps_per_epoch: int, final_epochs: int = 0, final_lr: float | None = None):
+        if kind not in LR_SCHEDULES:
+            raise ValueError(f"schedule sconosciuto: {kind}")
+        if final_epochs and final_lr is None:
+            raise ValueError("le epoche finali richiedono il loro learning rate")
+        if epochs < 1 or steps_per_epoch < 1 or final_epochs < 0:
+            raise ValueError("epoche e passi per epoca devono essere positivi")
+        self.kind, self.lr, self.epochs, self.steps_per_epoch = kind, lr, epochs, steps_per_epoch
+        self.final_epochs, self.final_lr = final_epochs, final_lr
+
+    @property
+    def total_epochs(self) -> int:
+        return self.epochs + self.final_epochs
+
+    def value(self, epoch: int, step: int) -> float:
+        if epoch >= self.epochs:
+            return self.final_lr
+        if self.kind == "constant":
+            return self.lr
+        t = epoch * self.steps_per_epoch + step
+        return self.lr * 0.5 * (1.0 + math.cos(math.pi * t / (self.epochs * self.steps_per_epoch)))
+
+
+def schedule_active(cfg: argparse.Namespace) -> bool:
+    """Vero con uno schedule non costante o con epoche finali: solo allora il learning rate e' un tensore."""
+    return getattr(cfg, "lr_schedule", "constant") != "constant" or getattr(cfg, "final_epochs", 0) > 0
+
+
+def make_schedule(cfg: argparse.Namespace, steps_per_epoch: int) -> LRSchedule | None:
+    """Schedule del training (None col learning rate costante: percorso a numero float, invariato)."""
+    if not schedule_active(cfg):
+        return None
+    return LRSchedule(cfg.lr_schedule, cfg.lr, cfg.epochs, steps_per_epoch, cfg.final_epochs, cfg.final_lr)
+
+
+def check_lrs(cfg: argparse.Namespace, steps: int) -> list[float] | None:
+    """Learning rate dei passi del controllo eager/graph: lo schedule della variante compresso in `steps` passi (None se costante).
+
+    Con le epoche finali, meta' dei passi segue lo schedule principale e meta' sta a `final_lr`: il cambio avviene dopo la cattura del graph.
+    """
+    if not schedule_active(cfg):
+        return None
+    final = 1 if cfg.final_epochs else 0
+    spe = steps // (1 + final)
+    sched = LRSchedule(cfg.lr_schedule, cfg.lr, 1, spe, final, cfg.final_lr)
+    return [sched.value(i // spe, i % spe) for i in range(steps)]
 
 
 class Stepper:
@@ -117,6 +178,8 @@ class Stepper:
     capture»); la cattura registra senza eseguire, poi ogni passo e' copia degli indici + replay. Gradienti messi a None prima della cattura: il
     backward catturato li scrive, non li accumula. Dropout: RNG compatibile con i graph (offset che avanza a ogni replay). Il numero di passi
     per epoca resta identico all'eager.
+    Con uno schedule (H5) l'ottimizzatore ha un learning rate tensore: `step(ends, lr)` lo riscrive sul posto prima del passo, sullo stesso
+    stream, e il replay lo legge dalla memoria (stesso schema degli indici `ends`).
     """
 
     def __init__(self, model, opt, loss_fn, sig: Signal, batch: int, use_graph: bool, device):
@@ -125,6 +188,8 @@ class Stepper:
         self.model, self.opt, self.loss_fn, self.sig, self.use_graph = model, opt, loss_fn, sig, use_graph
         self.ends = torch.zeros(batch, dtype=torch.long, device=device)
         self.total = torch.zeros((), dtype=torch.float64, device=device)
+        lr = opt.param_groups[0]["lr"]
+        self.lr_t = lr if torch.is_tensor(lr) else None
         self.graph = None
         self.side = torch.cuda.Stream(device) if use_graph else None
         self.done = 0
@@ -137,10 +202,14 @@ class Stepper:
         self.opt.step()
         self.total.add_(loss.detach())
 
-    def step(self, ends):
+    def step(self, ends, lr: float | None = None):
         import torch
 
         self.ends.copy_(ends)
+        if lr is not None:
+            if self.lr_t is None:
+                raise ValueError("learning rate per passo richiesto con un ottimizzatore a learning rate float")
+            self.lr_t.fill_(lr)
         if not self.use_graph:
             self._eager()
         elif self.graph is None and self.done < GRAPH_WARMUP:
@@ -177,16 +246,25 @@ def build(cfg: argparse.Namespace, seed: int, device, dropout: float = 0.5):
     model = TEMPONet(in_channels=db8.N_EMG, window=cfg.window, out_dim=db8.N_DOA, causal=not cfg.symmetric_padding,
                      dropout=dropout).to(device)
     capturable = device.type == "cuda"  # stesso Adam in eager e nel graph
-    opt = torch.optim.Adam(model.parameters(), lr=cfg.lr, capturable=capturable)
+    lr = cfg.lr
+    if schedule_active(cfg):  # H5: tensore riscritto prima di ogni passo; tipo dell'aritmetica che Adam usa con un numero float
+        # (su GPU, ramo capturable foreach: il numero diventa float32; su CPU, ramo a tensore singolo: aritmetica Python in float64)
+        lr = torch.tensor(cfg.lr, dtype=torch.float32 if capturable else torch.float64, device=device)
+    opt = torch.optim.Adam(model.parameters(), lr=lr, capturable=capturable)
     return model, opt, nn.L1Loss()
 
 
 def graph_check(sig: Signal, cfg: argparse.Namespace, device, steps: int = 60) -> dict:
-    """Su GPU: stessi pesi iniziali, stessi batch, dropout 0; `steps` passi eager contro graph; differenza massima dei parametri e tempi."""
+    """Su GPU: stessi pesi iniziali, stessi batch, dropout 0; `steps` passi eager contro graph; differenza massima dei parametri e tempi.
+
+    Con uno schedule (H5) il learning rate cambia durante i passi come nella variante (`check_lrs`): un graph che avesse fissato il valore
+    alla cattura si allontanerebbe dall'eager ben oltre la tolleranza.
+    """
     import torch
 
     gen = torch.Generator().manual_seed(12345)
     batches = sig.ends[torch.randperm(len(sig.ends), generator=gen)[: steps * cfg.batch].to(device)].view(steps, cfg.batch)
+    lrs = check_lrs(cfg, steps) or [None] * steps
     saved = (torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark)
     torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = True, False  # equivalenza esatta: algoritmi deterministici
     out = {}
@@ -196,18 +274,22 @@ def graph_check(sig: Signal, cfg: argparse.Namespace, device, steps: int = 60) -
         model.train()
         st = Stepper(model, opt, loss_fn, sig, cfg.batch, mode == "graph", device)
         for i in range(GRAPH_WARMUP + 1):
-            st.step(batches[i])
+            st.step(batches[i], lrs[i])
         torch.cuda.synchronize()
         t0 = time.time()
         for i in range(GRAPH_WARMUP + 1, steps):
-            st.step(batches[i])
+            st.step(batches[i], lrs[i])
         torch.cuda.synchronize()
         out[f"{mode}_ms_per_step"] = 1000 * (time.time() - t0) / (steps - GRAPH_WARMUP - 1)
         out[f"{mode}_loss_sum"] = st.take_total()
         params[mode] = [p.detach().clone() for p in model.parameters()] + [b.detach().clone() for b in model.buffers()]
+        if lrs[0] is not None:
+            out[f"{mode}_lr_after"] = float(opt.param_groups[0]["lr"])  # ultimo valore scritto nel tensore
     diffs = [float((a.double() - b.double()).abs().max()) for a, b in zip(params["eager"], params["graph"])]
     out["max_abs_param_diff"] = max(diffs)
     out["steps"] = steps
+    if lrs[0] is not None:
+        out["lr_schedule"] = {"first": lrs[0], "last": lrs[-1], "distinct": len(set(lrs))}
     torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = saved
     return out
 
@@ -246,18 +328,25 @@ def train(sig: Signal, val: Signal | None, cfg: argparse.Namespace, seed: int, d
     steps = n // cfg.batch
     if cfg.max_steps_per_epoch:
         steps = min(steps, cfg.max_steps_per_epoch)
+    sched = make_schedule(cfg, steps)  # None col learning rate costante: percorso di prima
     history = []
-    for epoch in range(cfg.epochs):
+    for epoch in range(cfg.epochs if sched is None else sched.total_epochs):
         t0 = time.time()
         model.train()
         perm = torch.randperm(n, generator=gen).to(device)
         batches = sig.ends[perm[: steps * cfg.batch]].view(steps, cfg.batch)
-        for i in range(steps):
-            stepper.step(batches[i])
+        if sched is None:
+            for i in range(steps):
+                stepper.step(batches[i])
+        else:
+            for i in range(steps):
+                stepper.step(batches[i], sched.value(epoch, i))
         train_loss = stepper.take_total() / steps
         if not np.isfinite(train_loss):
             raise FloatingPointError(f"loss non finita all'epoca {epoch + 1}")
         row = {"epoch": epoch + 1, "train_l1_deg": train_loss, "steps": steps, "seconds": round(time.time() - t0, 2)}
+        if sched is not None:
+            row["lr_first"], row["lr_last"] = sched.value(epoch, 0), sched.value(epoch, steps - 1)
         if val is not None:
             vp, vt = predict(eval_model, val)
             row["val_mae_raw_deg"] = float(db8.mae_per_doa(vp, vt).mean())
@@ -289,8 +378,10 @@ def run_unit(subject: int, seed: int, cfg: argparse.Namespace) -> dict:
     if cfg.check_graph and device.type == "cuda" and subject == cfg.subjects[0] and seed == cfg.seeds[0]:
         check = graph_check(sig[1], cfg, device)
         result["graph_check"] = check
+        sched = check.get("lr_schedule")
         print(f"controllo eager/graph: differenza massima {check['max_abs_param_diff']:.3g}, "
-              f"{check['eager_ms_per_step']:.2f} ms contro {check['graph_ms_per_step']:.2f} ms per passo", flush=True)
+              f"{check['eager_ms_per_step']:.2f} ms contro {check['graph_ms_per_step']:.2f} ms per passo"
+              + (f"; learning rate da {sched['first']:.3g} a {sched['last']:.3g} ({sched['distinct']} valori)" if sched else ""), flush=True)
         if check["max_abs_param_diff"] > GRAPH_TOLERANCE:
             raise RuntimeError(f"graph diverso dall'eager: {check['max_abs_param_diff']}")
     preds = {}
@@ -370,6 +461,10 @@ def main(argv=None) -> int:
                     help="unita' dell'ingresso: cambio di scala costante, non una normalizzazione (vedi il documento)")
     ap.add_argument("--symmetric-padding", action="store_true", help="padding simmetrico come Q-PPG invece che causale")
     ap.add_argument("--target-norm", action="store_true", help="V1: L1 sul bersaglio standardizzato per DoA (statistiche di training)")
+    ap.add_argument("--lr-schedule", choices=LR_SCHEDULES, default="constant",
+                    help="H5: constant (come prima) o cosine (da --lr a 0 sulle --epochs epoche, aggiornato a ogni passo; W1)")
+    ap.add_argument("--final-epochs", type=int, default=0, help="H5: epoche in piu' a --final-lr dopo le --epochs (W2: 1)")
+    ap.add_argument("--final-lr", type=float, default=None, help="H5: learning rate delle epoche finali (W2: 1e-5)")
     ap.add_argument("--hide-test-in-log", action="store_true", help="nel log la validazione al posto del test (screening)")
     ap.add_argument("--max-steps-per-epoch", type=int, default=0, help="solo collaudo: tetto ai passi per epoca")
     ap.add_argument("--workers", type=int, default=1, help="processi in parallelo; sulla stessa GPU senza MPS si alternano (time-slicing)")
@@ -383,6 +478,8 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     if "full" in args.models and not {"fold1", "fold2"} <= set(args.models):
         ap.error("full richiede fold1 e fold2 (alpha dalle predizioni fuori fold)")
+    if args.final_epochs < 0 or (args.final_epochs > 0) != (args.final_lr is not None):
+        ap.error("--final-epochs (positivo) e --final-lr vanno insieme")
     out = Path(args.out)
     if out.exists() and any(out.iterdir()):
         print(f"{out} non e' vuota: serve una cartella nuova", file=sys.stderr)
