@@ -202,3 +202,52 @@ Proposta in `docs/temponet_db8_h5_plan.md`, approvata da Simone («Approvo»), r
 validazione due schedule: coseno sulle 19 epoche (W1) e un'epoca finale a 1e-5 (W2). Il miglioramento e' di 0,06 e 0,10 gradi, sotto la soglia
 di 0,20, quindi nessuna conferma sul test. Lo schedule riduce le oscillazioni fra epoche, ma l'EMA ne toglieva gia' gran parte.
 **La replica si chiude a 7,585 gradi contro 6,89: non replicata.** I verdetti precedenti restano.
+
+## Conclusioni (10/11/2026, proposta di Claude, da firmare)
+
+**In sintesi.** La TEMPONet ricostruita da [Z21] non replica il valore pubblicato su NinaPro DB8. Con la catena piu' fedele ottenuta fa
+**7,585 gradi** di MAE contro **6,89** (+0,70, fuori dalla tolleranza di ±0,30). La catena di dati e valutazione invece regge: la SVR del paper
+torna al suo valore. Tre analisi, tre verdetti «non replicata»: 8,795 (criterio originale, fold), 7,585 (V13, `full`), 7,585 dopo H5.
+
+**Fatti misurati** (criteri congelati prima di ogni job):
+1. **Catena coerente col paper.** Con la stessa cache, le stesse finestre, la stessa EMA e la stessa metrica, la SVR su Waveform Length fa 7,37
+   contro 7,28 pubblicato (training sulle sessioni 1 e 2). Dati, matrice DoF->DoA, finestre, EMA e metrica sono quindi poco probabili come causa
+   principale. Limite: C = 100 al bordo della griglia, la SVR e' un limite superiore.
+2. **Protocollo.** I numeri pubblicati tornano con modelli allenati sulle sessioni 1 e 2 unite e testati sulla 3, non con i modelli dei singoli
+   fold. E' un indizio ricavato dalla SVR, non una frase del paper. Per la TCN il protocollo vale circa un grado.
+3. **Distanza sistematica.** Semi 7,651 / 7,507 / 7,597 (dev. std. 0,073). Accuratezza a 10 e 15 gradi 0,743 / 0,889 contro 0,814 / 0,900;
+   dispersione fra soggetti e DoA come quella pubblicata (2,05 contro 2,08).
+4. **Ordine dei modelli invertito.** Con la stessa catena l'MLP su WL (descrittivo) fa 6,82 e batte la nostra TEMPONet di 0,76; nel paper la
+   TEMPONet batte l'MLP (6,89 contro 7,14). La distanza residua e' propria del training della TCN.
+5. **Provato senza effetto sufficiente:** passo delle finestre di training (da 8 a 4 campioni −0,07 su S1), padding simmetrico (+0,04 in
+   validazione), schedule del learning rate (−0,06 e −0,10 in validazione, sotto la soglia). Il bersaglio standardizzato aiuta di 0,1-0,3:
+   sul test misurato solo insieme al padding simmetrico (V13), che da solo in validazione non aiutava. L'architettura e' vincolata dal
+   conteggio esatto dei parametri (70.917, cioe' 70,9 kB in int8).
+
+| Configurazione | MAE (gradi) | variazione |
+|---|---|---|
+| primo run: V0, fold, 3 semi (criterio originale) | 8,795 | |
+| V0, modello `full`, seme 0 | 7,778 | −1,02 (protocollo) |
+| V13, modello `full`, seme 0 | 7,651 | −0,13 (V13) |
+| V13, modello `full`, 3 semi (risultato finale) | **7,585** | |
+| schedule del learning rate (H5) | - | ≤ 0,10 in validazione, sotto la soglia |
+| pubblicato ([Z21]) | 6,89 | restano +0,70 |
+
+Gruppi (descrittivo): normodotati 7,39, amputati 8,54. S12 e' il soggetto piu' difficile per tutti i modelli (TCN 10,51; SVR e MLP 9,8-10,4);
+l'altro amputato, S11, e' il migliore dei 12 per la TCN (6,57). Per DoA la rotazione del pollice e' la piu' difficile (9,97) e la flessione del pollice la piu' facile (5,70).
+
+**Aperto** (ipotesi non verificate e non ricostruibili dal testo del paper):
+- dettagli di training non dichiarati: augmentation, weight decay, scelta del modello fra le epoche, normalizzazione dell'ingresso;
+- la QAT int8 vera: il valore pubblicato e' del modello quantizzato;
+- definizione della metrica o degli istanti di test.
+Un indizio: l'alpha dell'EMA scelto e' piu' alto del pubblicato (0,93 contro 0,86), quindi le nostre uscite grezze sono piu' rumorose. Puo'
+chiudere la questione solo il setup degli autori; la domanda del passo 0 non ha avuto risposta.
+
+**Cosa ne segue per il progetto** (lettura di Claude):
+- Il codice funziona ed e' verificato nelle parti condivise: cache con sha256, protocollo, EMA, metrica, controllo eager/graph. Come baseline
+  «CNN/TCN da zero» dell'harness va riportata la misura nostra (7,59 con questa catena), distinta dal valore pubblicato (6,89) e con la distanza
+  dichiarata.
+- Le baseline classiche sulla stessa catena sono forti: l'MLP su WL (6,82) e' economico e conviene tenerlo accanto alla TCN.
+- Nei confronti su DB8 il protocollo va fissato: fold contro `full` vale circa un grado, piu' di tutte le varianti di training provate.
+
+**Costi dell'attivita':** 9,983 GPU-ore sul tetto di 15 (79,9 ore locali con billing 8) e 8,07 core-ore sul tetto di 40.

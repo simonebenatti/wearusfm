@@ -8615,6 +8615,15 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - La replica si chiude a 7,585 (V13, `full`, tre semi): non replicata. Esito in `docs/temponet_db8_h5_plan.md` e `docs/decisioni.md`.
 - Consuntivo dell'attivita': 9,983 GPU-ore su 15, 8,07 core-ore su 40. Il piano H5 e' esaurito.
 
+### 2026-11-10 | Claude | Baseline TEMPONet: conclusioni della replica (proposta, da firmare)
+
+- Simone: «quindi tiriamole conclusioni». Sezione «Conclusioni» in `docs/temponet_db8_replication.md`.
+- Non replicata: 7,585 gradi contro 6,89 (+0,70) con la catena piu' fedele (V13, `full`, 3 semi). La catena regge: la SVR fa 7,37 contro 7,28.
+- Dal primo run: protocollo −1,02, V13 −0,13 a parita' di seme, schedule del learning rate ≤ 0,10 in validazione. Restano +0,70 propri del
+  training della TCN: con la stessa catena l'MLP su WL fa 6,82.
+- Per il progetto: come baseline va riportata la misura nostra, distinta dal valore pubblicato; l'MLP su WL va tenuto accanto; nei confronti
+  su DB8 il protocollo fold/`full` va fissato.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
