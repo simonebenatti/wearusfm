@@ -1,0 +1,63 @@
+{
+  "stopped": "max_steps",
+  "steps": 19618,
+  "elapsed_s": 42965.63330960274,
+  "parameters": 292054847,
+  "device": "cuda:0",
+  "gpu_max_memory_gib": 36.8984375,
+  "code": {
+    "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_continuation19618_20261109_v3",
+    "sha": "d3f431bd3aa66b5cc2a45765c78dd6e096ce9b06"
+  },
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.2.0a0+git6c8c5ad",
+    "cuda": "12.1",
+    "pip_freeze_file": null,
+    "pip_freeze_sha256": null,
+    "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"
+  },
+  "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "world_size": 4,
+  "batch_per_process": 8,
+  "prefetch": true,
+  "prefetch_audit_steps": null,
+  "accum_steps": 1,
+  "micro_batch": 8,
+  "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch",
+  "pose_panel_timing": {
+    "prepare_s": 25.01096747815609,
+    "evaluations_s": [
+      15.00155891571194,
+      15.031801131553948,
+      15.025894336402416,
+      15.011106272228062,
+      15.022173666395247,
+      15.004773703403771,
+      15.011688509956002,
+      15.026645988225937,
+      15.016859270632267,
+      15.023892321623862,
+      15.040519448928535,
+      15.022228767164052,
+      15.029809053987265,
+      15.030547436326742,
+      15.046003424562514,
+      15.0385757163167,
+      15.045801640488207,
+      15.051507317461073,
+      15.032284496352077,
+      15.03894284274429,
+      15.03168335929513,
+      15.053595901466906,
+      15.041004001162946,
+      15.060624115169048,
+      15.053295238874853,
+      15.036691295914352,
+      15.033887285739183,
+      15.025342996232212,
+      15.05275802873075
+    ],
+    "total_s": 460.9524639612064
+  }
+}

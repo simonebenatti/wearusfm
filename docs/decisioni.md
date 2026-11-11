@@ -7043,3 +7043,21 @@ estensione scientifica, nuovi training, retry o pollingAI.
 - All'avvio il wrapper riverifica allocazione, pre-controllo, sorgenti, ingressi, run a 5.000 e controllo, e semina la cartella
   nuova; poi la verifica d'identita' del trainer alla ripresa. Stop al primo errore, nessun retry. A fine job: `collect training`,
   piano d'estrazione e stadio B come rilasciato.
+
+### 11/11/2026 — Claude, linea 1: training del recupero v3 `COMPLETED 0:0`; prove raccolte e piano d'estrazione a 19.618
+
+- `SCALING-300M-train19618-20261109-v3` = job 63979977: in coda dalle 12:56 del 09/11, partito alle 04:21:54 dell'11/11
+  (39 h 26 min di attesa per priorita'), finito alle 16:21:20, `COMPLETED 0:0`, 11:59:26 (43.166 s). Ultimo passo in
+  `metrics.jsonl`: 19.618. Nella cartella del run `checkpoint_step0019618.pt` e `checkpoint.pt`, 4.673.783.740 byte ciascuno.
+- Consuntivo da `sacct`: 47,962222 GPU-ore su un tetto di 59; 383,697778 core-ore allocate su 472; `MaxRSS` 120.012.176 KiB
+  su 480G. Dentro l'inviluppo v3.
+- `collect training`, 17:55: 11 file in `continuation19618_20261106/evidence/training/` (`sacct -P` grezzo, log, ricevute,
+  hash del checkpoint, inventario della cartella delle ricevute: 9 file). Ricevuta: protocollo
+  `scaling-continuation-training-20261106-v1`, `complete: true`, `start_step` 5.000, `plan_sha256` del piano v3
+  `f450ec5d...`, `code_sha` `d3f431b`, `checkpoint_sha256` `d7ebe9d8...`, uguale all'hash letto sul cluster.
+- `extraction-plan`: `continuation19618_20261106/evaluation/extraction_plan.json`, sha256 `3cb94b05...`, 5.595 byte.
+- Seguito, come da `evaluation_chain_plan.md` §5 e §9: push verificato di questo commit, poi `gate checkout-code --sha
+  <questo commit> --reviewed 44d3adf` e le due righe del checkout, una alla volta; `collect checkout-code`; `gate extractions`
+  e le tre righe. Stop al primo cancello fallito o esito diverso da `sottomesso`.
+- Rinfresco firmato dello scratch del 12/11: con job della linea 1 in esecuzione va fatto escludendo i file pinnati
+  (`evaluation_chain_plan.md` §6). Lo coordina Simone.
