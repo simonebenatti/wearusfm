@@ -8000,3 +8000,25 @@ Alla domanda «Approvi il rilancio del passo 0 (≤ 2 core-ore, passo 0 a ≤ 5,
 **5,7 core-ore**: 3,67 spese nel tentativo 64096497 piu' al massimo 2 del rilancio, con limite di 1 h su 2 CPU. Il tetto dell'attivita' resta
 10 core-ore e 5 GPU-ore. Il rilancio usa il codice 0c19c4b (checkout `temponet-emg2pose-0c19c4b`, job 64120902) e una cartella nuova; il
 collaudo segue in afterok sullo stesso checkout. Nessun'altra regola cambia.
+
+### 2026-11-11 — TEMPONet su emg2pose: ESITO e CONSUNTIVO dei passi 0-3 (Claude)
+
+Eseguiti con le regole congelate nelle voci del 10/11 (approvazione ed emendamento) e dell'11/11 (rilancio del passo 0). Dettagli in
+`docs/temponet_emg2pose_plan.md`, «Esito»; ricevute in `results/temponet_emg2pose/`.
+
+1. **Training**: job 64169771, codice 0c19c4b, `COMPLETED 0:0` in 3 h 04 min 46 s.
+   - 19 epoche da 328.746 passi, a 1,085 ms per passo.
+   - Controllo eager/graph: differenza 0.
+   - Modello finale, senza scelta dell'epoca.
+2. **Cancello** (job 64169772, validazione): 15,116 / 18,191 = **0,831 < 0,9, superato**.
+3. **Test, letto una volta** (stesso job). MAE con EMA, media ± dev. std. fra utenti:
+   - utenti nuovi **14,55 ± 1,54**;
+   - fasi nuove **17,67 ± 1,60**;
+   - utenti e fasi nuovi **17,60 ± 1,76**.
+
+   Lettura descrittiva (regola 7): **fra NeuroPose e SensingDynamics in tutte e tre le condizioni**. Vale anche con l'uscita grezza (14,86,
+   18,06 e 17,97). In `user_stage` la distanza da NeuroPose e' di soli 0,10 gradi.
+4. Nessuna scelta e' stata presa dopo il test. Il passo 4 (semi 1 e 2) resta non approvato.
+
+**Consuntivo**: **3,513 GPU-ore sul tetto di 5** (28,1 ore locali con billing 8) e **4,583 core-ore sul tetto di 10**. Ogni passo resta
+sotto il proprio budget: collaudo 0,120, training 3,079, valutazione 0,313; passo 0 4,522 su 5,7.

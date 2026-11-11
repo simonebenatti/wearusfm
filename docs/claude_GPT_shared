@@ -8679,6 +8679,26 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Inviati: training `TEMPONET-E2P-train-20261111` = 64169771 (3 h 30) e valutazione `TEMPONET-E2P-eval-20261111` = 64169772 in afterok
   (45 min). Consumo finora: 4,58 core-ore su 10 (passo 0: 4,52 su 5,7) e 0,12 GPU-ore su 5.
 
+### 2026-11-11 | Claude | TEMPONet su emg2pose: training (64169771) e valutazione (64169772) conclusi; cancello superato, test letto una volta | Codice 0c19c4b
+
+- **Training:** `COMPLETED 0:0` in 3 h 04 min 46 s.
+  - 19 epoche da 328.746 passi, a 1,085 ms per passo.
+  - Controllo eager/graph: differenza 0.
+  - Memoria massima 78,15 GB.
+  - Validazione grezza per epoca da 16,00 a 15,63 gradi.
+- **Valutazione:** `COMPLETED 0:0` in 18 min 47 s.
+  - Cancello sulla validazione: 15,116 / 18,191 = 0,831 < 0,9, superato.
+  - Alpha dell'EMA per giunto da 0,89 a 0,97.
+- **Test, letto una volta.** MAE con EMA, media ± dev. std. fra utenti:
+  - `user` 14,55 ± 1,54;
+  - `stage` 17,67 ± 1,60;
+  - `user_stage` 17,60 ± 1,76.
+
+  In tutte e tre le condizioni cade fra NeuroPose e SensingDynamics della Tab. 4 di [E24], anche con l'uscita grezza (14,86, 18,06 e 17,97).
+- **Ricevute e documenti:** ricevute in `results/temponet_emg2pose/` (sha256 uguali a Leonardo); esito in `docs/temponet_emg2pose_plan.md`;
+  voce in `docs/decisioni.md`.
+- **Consuntivo:** 3,513 GPU-ore su 5 e 4,583 core-ore su 10. Il passo 4 non e' approvato.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12706,3 +12726,13 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
 - Correzione: indice del tar con `pread` senza lettura anticipata, una `pread` per membro in 4 thread, HDF5 in memoria; test di uguaglianza
   dell'indice con `tarfile`. Il rilancio (≤ 2 core-ore) supera il budget del passo 0 (4 core-ore, gia' 3,67 spese): attende una decisione di
   Simone.
+
+### 2026-11-11 | Claude | TEMPONet su emg2pose: sulle fasi nuove guadagna solo il 10% sul predittore costante; in `user_stage` la categoria e' fragile
+
+- Rapporto col predittore costante (posa media del training): 0,831 sugli utenti nuovi, 0,896 sulle fasi nuove, 0,899 su utenti e fasi nuovi.
+  Il salto da utenti nuovi a fasi nuove (+3,13 gradi) e' simile a quello delle baseline di [E24] (+3,0 / +4,0 / +3,3).
+- In `user_stage` TEMPONet supera NeuroPose di 0,10 gradi, dell'ordine della variabilita' fra semi vista su DB8 (0,07-0,15). Con un seme quella
+  categoria e' fragile; le altre distanze dalle soglie vanno da 0,47 a 1,35 gradi. Lettura dopo il test: nessuna scelta ne dipende.
+- Il contesto corto (128 ms contro 5,9 s di vemg2pose) era il limite atteso, ma questi numeri non lo isolano.
+- Efficienza: circa 28 minuti del training sono andati negli indici delle finestre (lettura delle pose di 19.086 registrazioni). Il dato e'
+  dedotto dalle date dei file. Per altri semi l'indice si potrebbe salvare una volta.

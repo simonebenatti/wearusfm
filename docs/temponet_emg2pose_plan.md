@@ -3,6 +3,8 @@
 Claude, 10/11/2026. Alla domanda «Preparo la proposta per TEMPONet su emg2pose?» Simone ha risposto «Sì, preparala».
 **E' una proposta: nessun job lanciato, nessun codice scritto.** Regole e soglie diventano vincolanti solo dopo l'approvazione, con una voce in
 `docs/decisioni.md` committata prima del primo job.
+**Stato, 11/11 pomeriggio:** approvata («Approvo», un seme), passi 0-3 eseguiti, cancello superato, test letto una volta: TEMPONet fra NeuroPose
+e SensingDynamics in tutte e tre le condizioni. Il passo 4 non e' approvato. Vedi «Esito».
 
 ## Scopo
 
@@ -169,3 +171,75 @@ Con billing 8 una GPU-ora vale 8 ore locali.
 - nessun uso dei dati di test nel pretraining.
 
 Una TEMPONet con piu' contesto sarebbe un altro modello, da proporre a parte.
+
+## Esito (11/11/2026)
+
+Passi 0-3 eseguiti con le regole congelate in `docs/decisioni.md`: approvazione ed emendamento delle finestre del 10/11, rilancio del passo 0
+dell'11/11. Training e valutazione dal codice 0c19c4b (checkout `temponet-emg2pose-0c19c4b`, job 64120902). Ricevute in
+`results/temponet_emg2pose/`, con sha256 uguali a quelli su Leonardo.
+
+| Passo | Job | Esito | Durata | Consumo |
+|---|---|---|---|---|
+| 0, primo tentativo | 64096497 | `FAILED 1:0` (I/O, vedi `docs/decisioni.md`) | 1 h 50 min 08 s | 3,671 core-ore |
+| 0, rilancio | 64165740 | `COMPLETED 0:0` | 25 min 31 s | 0,851 core-ore |
+| 1, collaudo | 64165743 | `COMPLETED 0:0` | 7 min 13 s | 0,120 GPU-ore |
+| 2, training | 64169771 | `COMPLETED 0:0` | 3 h 04 min 46 s | 3,079 GPU-ore |
+| 3, valutazione | 64169772 | `COMPLETED 0:0` | 18 min 47 s | 0,313 GPU-ore |
+
+Tre checkout CPU (64096213, 64097008, 64120902) da 36-38 s: 0,062 core-ore. Il collaudo 64097115 e' stato cancellato da SLURM senza partire
+(afterok del primo tentativo del passo 0).
+
+**Training** (seme 0, 19 epoche, passo delle finestre 8 blocchi):
+- 17.136 registrazioni, 61,75 GiB caricati in 2.190 s; 21.039.763 finestre, 328.746 passi per epoca (6.246.174 in tutto) a 1,085 ms.
+- Controllo eager/graph: differenza massima 0.
+- La loss di training (L1 sul bersaglio standardizzato) scende a ogni epoca, da 0,734 a 0,707.
+- La validazione grezza per epoca (istanti a 50 Hz, solo descrittiva) scende da 16,00 a 15,63 gradi. Nelle ultime dieci epoche resta fra 15,63
+  e 15,71, tranne l'epoca 18 (16,01).
+- Memoria massima 78,15 GB su 120.
+- Circa 28 minuti, fra il caricamento e il controllo eager/graph, sono andati negli indici delle finestre: lettura delle pose di 19.086
+  registrazioni. Il dato e' dedotto dalle date dei file e non misurato a parte.
+- Si usa il modello finale, come stabilito.
+
+**Cancello** (validazione: 15 utenti, 1.609 registrazioni, 12.468 finestre ufficiali):
+- MAE con EMA 15,116 gradi (dev. std. fra utenti 1,19) contro 18,191 del predittore costante: rapporto **0,831 < 0,9, superato**.
+- Grezza 15,387.
+- Alpha per giunto da 0,89 a 0,97, mediana 0,96: costanti di tempo da 43 a 164 ms sugli istanti a 200 Hz.
+
+**Test**, letto una volta subito dopo il cancello (5.884 registrazioni, 48.299 finestre). MAE in gradi, media ± dev. std. fra utenti:
+
+| Condizione | Utenti | Finestre | TEMPONet con EMA | grezza | pesata per istanti | costante | rapporto con la costante | vemg2pose / NeuroPose / SensingDynamics | Lettura |
+|---|---|---|---|---|---|---|---|---|---|
+| utenti nuovi (`user`) | 20 | 15.346 | **14,55 ± 1,54** | 14,86 | 14,35 | 17,51 | 0,831 | 12,2 / 13,2 / 15,5 | fra NeuroPose e SensingDynamics |
+| fasi nuove (`stage`) | 158 | 29.146 | **17,67 ± 1,60** | 18,06 | 17,58 | 19,73 | 0,896 | 15,2 / 17,2 / 18,8 | fra NeuroPose e SensingDynamics |
+| utenti e fasi nuovi (`user_stage`) | 20 | 3.807 | **17,60 ± 1,76** | 17,97 | 17,44 | 19,58 | 0,899 | 15,8 / 17,5 / 18,7 | fra NeuroPose e SensingDynamics |
+
+**Lettura** (regola 7, descrittiva, non un verdetto). In tutte e tre le condizioni TEMPONet cade **fra NeuroPose e SensingDynamics**.
+- Le categorie restano le stesse con l'uscita grezza, che e' il confronto piu' diretto, perche' le baseline di [E24] non usano l'EMA.
+- Distanze da vemg2pose: +2,35, +2,47 e +1,80 gradi.
+- Distanze da NeuroPose: +1,35, +0,47 e +0,10 gradi.
+- L'EMA toglie 0,31, 0,38 e 0,37 gradi.
+
+Descrittivi sul test intero (condizioni insieme, con EMA):
+- per lato: destra 17,21 ± 1,82, sinistra 17,62 ± 1,95 (178 utenti);
+- per mano: in movimento 17,50 ± 1,66 (178 utenti), ferma 10,58 ± 2,06 (20 utenti, 6,9% degli istanti).
+
+Osservazioni (interpretazioni dopo il test, nessuna scelta ne dipende):
+- **Fasi nuove.** TEMPONet toglie il 17% dell'errore del predittore costante sugli utenti nuovi (2,97 gradi), ma solo il 10% sulle fasi nuove
+  (2,06) e su utenti e fasi nuovi (1,98). Il salto da utenti nuovi a fasi nuove (+3,13 gradi) e' simile a quello delle baseline (vemg2pose +3,0,
+  NeuroPose +4,0, SensingDynamics +3,3).
+- **Contesto corto.** Era il limite atteso (128 ms contro i 5,9 s di vemg2pose, sezione «Rischi»), ma questi numeri non lo isolano: servirebbe
+  un modello con piu' contesto, cioe' un altro modello.
+- **Un solo seme.** In `user_stage` la distanza da NeuroPose (0,10 gradi) e' dell'ordine della variabilita' fra semi vista su DB8 (0,07-0,15):
+  in quella condizione la categoria e' fragile. Le altre distanze dalle soglie delle categorie vanno da 0,47 a 1,35 gradi.
+
+**Consuntivo:**
+- **3,513 GPU-ore sul tetto di 5** (28,1 ore locali con billing 8): collaudo 0,120, training 3,079 e valutazione 0,313, ciascuno sotto il
+  proprio budget (0,5, 3,5 e 0,75).
+- **4,583 core-ore sul tetto di 10**: passo 0 4,522 su 5,7 e checkout 0,062.
+
+Conservazione:
+- Modello finale in `$WORK/wearusfm_runs/temponet_emg2pose/train_20261111/model_final.pt` (313.772 byte, sha256 `d2d4bed9...3582`), con i
+  checkpoint per epoca nella stessa cartella. Cartelle di training e valutazione su `$WORK`: 5,5 MB.
+- Bersagli del passo 0 su `$SCRATCH`, rigenerabili e soggetti alla cancellazione a 40 giorni.
+
+Il passo 4 (semi 1 e 2) resta non approvato. Una scelta presa adesso verrebbe dopo aver guardato il test.
