@@ -7291,6 +7291,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Simone, 09/11 alle 12:54: «se ha finto lancia tutto». Training `SCALING-300M-train19618-20261109-v3` = job 63979977, `PENDING`
   (Priority), 4 GPU, 14:45:00, al massimo 59 GPU-ore. Voce in `docs/decisioni.md`, ramo `claude/scaling-300m-exec-20261106`.
 
+### 2026-11-11 | Claude | Linea 1: training del recupero v3 `COMPLETED 0:0`; stadio B avviato e fermo alla raccolta del checkout `code`
+
+- Training 63979977: in coda dalle 12:56 del 09/11, partito alle 04:21 dell'11/11, `COMPLETED 0:0` alle 16:21 (11:59:26), passo
+  19.618. Consuntivo: 47,962222 GPU-ore su 59; 383,697778 core-ore allocate su 472.
+- `collect training` (11 file in `evidence/training/`): ricevuta completa, piano v3, codice `d3f431b`, hash del checkpoint uguale a
+  quello letto sul cluster. `extraction-plan`: sha `3cb94b05...`. Commit `df2de35` sul ramo `claude/scaling-300m-exec-20261106`,
+  push verificato; test del pacchetto 19.618 su `df2de35`: 628 passati.
+- `gate checkout-code --sha df2de35 --reviewed 44d3adf`: 9 controlli su 9. Riferimento `deploy/scaling_300m_evaluation19618_20261106_v1`
+  pubblicato a `df2de35`; checkout `SCALING-19618-code-checkout-20261106` = job 64194074, `COMPLETED 0:0` in 34 s.
+- `collect checkout-code` rifiutato (sezione 2). Correzione proposta e non distribuita nel commit `2e79815`; nessun invio
+  dopo il checkout, nessuna GPU usata dopo il training. Voce in `docs/decisioni.md`.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9967,3 +9979,13 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - I test sostituivano proprio `import_order()`; il test sulla funzione verificava la coerenza con `sys.modules`, non il significato.
 - Correzione proposta: leggere `"numpy" in sys.modules` subito prima di `import torch` e usare quella misura nel cancello; da
   decidere, nessun job inviato.
+
+### 2026-11-11 | Claude | Linea 1: i checkout dello stadio B erano pubblicati a 1 CPU, ma la coda seriale ne assegna 2 (errore mio)
+
+- `lrd_all_serial` assegna core interi da due thread (`login13`, `ThreadsPerCore=2`): il checkout 64194074 ha chiesto 1 CPU e ne
+  ha avute 2. `accounting()` esige `AllocCPUS` uguale al job pubblicato e rifiuta la raccolta; non ha scritto nulla.
+- Il freeze v2 scrive 2 CPU per checkout; il pacchetto dello stadio B ne metteva 1 per far stare cinque checkout negli 0,8
+  core-ore congelati. I test usavano contabilita' finte a 1 CPU; il caso reale non era mai stato raccolto.
+- Correzione proposta in `2e79815`: checkout a 2 CPU; tetto 4/3 per la riga dei checkout; `rereview_check`, cioe' una review
+  fatta dopo un checkout copre solo lo strumento del Mac, i test CPU, `docs/` e i file nuovi della campagna. `release_check` non
+  cambia. Emendamento +8/15 core-ore con margine: solo CPU 349,917778 su 350; GPU-ore invariate. Da decidere, nessun job inviato.
