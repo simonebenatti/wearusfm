@@ -107,9 +107,17 @@ def test_published_lines_are_the_generator_output_for_a_deploy_commit_that_carri
     assert {path: blob(path) for path in PLAN["execution_source_sha256"]} == PLAN["execution_source_sha256"]
 
 
-def test_envelope_is_rebuilt_exactly_from_attested_evidence_and_keeps_every_attempt_in_the_account(capsys):
+def test_envelope_is_rebuilt_exactly_from_attested_evidence_and_keeps_every_attempt_in_the_account(capsys, monkeypatch):
     published = json.loads((V3 / "budget_envelope.json").read_text())
-    assert published == json.loads(json.dumps(envelope.build())) and envelope.main(["--check"]) == 0
+    # Built on 09/11 from the stage-B table with its four checkouts at 1 CPU; the amendment of 11/11 counts them at 2 CPUs.
+    with monkeypatch.context() as patch:
+        patch.setitem(S.CHECKOUT, "cpus", 1)
+        assert published == json.loads(json.dumps(envelope.build())) and envelope.main(["--check"]) == 0
+    now, amendment = envelope.build(), json.loads((ROOT / S.CHECKOUT_AMENDMENT).read_text())
+    assert (Fraction(now["amended"]["cpu_only_core_hours_with_margin"]["exact"]) ==
+            Fraction(published["amended"]["cpu_only_core_hours_with_margin"]["exact"]) + Fraction(8, 15) ==
+            Fraction(amendment["cpu_only_core_hours_with_margin"]["after"]["exact"]) == Fraction(157463, 450))
+    assert amendment["base_envelope"]["sha256"] == sha(V3 / "budget_envelope.json")
     value = lambda entry: Fraction(entry["exact"])  # noqa: E731
     amended, frozen, F = published["amended"], published["frozen"], Fraction
     # Frozen 66.35 GPU-hours with margin, plus 0.381111 spent by the failed attempt (205 s) and the GPU diagnosis (138 s).

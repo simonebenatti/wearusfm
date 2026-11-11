@@ -103,10 +103,12 @@ def test_cpu_budget_stays_inside_every_stage_cap_and_the_350_core_hours():
     freeze = load("continuation19618_budget_freeze_20261105_v2.json")["readers"]
     table = S.budget_table()
     assert table["within_stage_caps"] is True and table["within_total_cap"] is True and table["cap"] == 350
-    # Five checkouts instead of three, in the same core-hours: the training one at 2 CPUs, four here at 1 CPU.
-    checkout = table["stages"]["checkout"]
-    assert checkout["jobs"] == 5 and checkout["requested_core_hours"] == pytest.approx(0.5)
-    assert checkout["core_hours_with_scheduler_margin"] == pytest.approx(freeze["stages"]["checkout"]["core_hours_with_scheduler_margin"])
+    # Five checkouts at 2 CPUs, as lrd_all_serial allocates them (job 64194074): 8/15 core-hours above the frozen 0.8, amended.
+    checkout, amendment = table["stages"]["checkout"], json.loads((ROOT / S.CHECKOUT_AMENDMENT).read_text())
+    assert checkout["jobs"] == 5 and checkout["requested_core_hours"] == pytest.approx(5 * 2 * 300 / 3600)
+    assert checkout["core_hours_with_scheduler_margin"] == pytest.approx(freeze["stages"]["checkout"]["core_hours_with_scheduler_margin"] + 8 / 15)
+    assert checkout["core_hours_with_scheduler_margin"] == checkout["cap_with_scheduler_margin"] == S.CHECKOUT_STAGE_CAP
+    assert amendment["stage_b_checkout_row_with_margin"]["after"]["exact"] == "4/3" and amendment["within_cpu_only_cap"] is True
     assert "--cpus-per-task=2 --mem=4G --time=00:05:00" in (PACKAGE / "training_submit_lines.txt").read_text()
     for name, row in table["stages"].items():
         if name not in ("checkout", "probe-fit"):
@@ -115,7 +117,7 @@ def test_cpu_budget_stays_inside_every_stage_cap_and_the_350_core_hours():
     worst = S.budget_table(fifteen)
     assert table["stages"]["probe-fit"] == worst["stages"]["probe-fit"]  # the default table shows the 15-shard maximum
     assert worst["stages"]["probe-fit"]["core_hours_with_scheduler_margin"] == pytest.approx(246)
-    assert worst["core_hours_with_scheduler_margin"] == pytest.approx(freeze["budgeted_core_hours_with_scheduler_margin"])
+    assert worst["core_hours_with_scheduler_margin"] == pytest.approx(freeze["budgeted_core_hours_with_scheduler_margin"] + 8 / 15)
     assert worst["within_stage_caps"] and worst["within_total_cap"]
     assert S.budget_table([{"cpus": 8, "seconds": 10800}] * 11)["within_stage_caps"] is False
 
@@ -814,14 +816,34 @@ def test_submission_lines_use_the_common_submitter_the_frozen_code_and_the_publi
         S.stage_lines("compare", CODE, tmp_path / "empty")
 
 
-def test_checkout_lines_publish_a_deploy_reference_and_one_cpu_checkout():
+def test_the_code_checkout_64194074_is_accounted_at_the_two_cpus_the_serial_queue_allocates():
+    """Regression of 11/11/2026: the checkout asked 1 CPU, lrd_all_serial gave a whole core (2 threads) and the collection refused
+    it. The published checkout is now the one Slurm allocates; the amendment is rebuilt identical from the readings."""
+    folder = ROOT / S.CHECKOUT_AMENDMENT.rsplit("/", 1)[0]
+    raw, job = (folder / "sacct_64194074.txt").read_text(), S.checkout_job("code")
+    assert (job["cpus"], job["seconds"], job["gpus"]) == (2, 300, 0) and all(S.checkout_job(n)["cpus"] == 2 for n in ("training", *S.CHECKOUTS))
+    record = S.accounting(raw, "64194074", job["cpus"], job["seconds"], job["gpus"], need_rss=False)
+    assert (record["AllocCPUS"], record["ElapsedRaw"]) == (2, 34) and record["core_hours"] == pytest.approx(2 * 34 / 3600)
+    with pytest.raises(ValueError, match="allocated CPUs or elapsed time outside the published job"):
+        S.accounting(raw, "64194074", 1, job["seconds"], job["gpus"], need_rss=False)
+    spec = importlib.util.spec_from_file_location("make_amendment", folder / "make_amendment.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    assert module.build() == (folder / "budget_amendment.json").read_bytes()
+    amendment = json.loads(module.build())
+    assert amendment["cause"]["requested_cpus"] == 1 and amendment["cause"]["allocated_cpus"] == 2
+    assert amendment["base_envelope"]["sha256"] == hashlib.sha256((ROOT / amendment["base_envelope"]["path"]).read_bytes()).hexdigest()
+    assert amendment["cpu_only_core_hours_with_margin"]["after"]["exact"] == "157463/450" and amendment["margin_to_cap"]["exact"] == "37/450"
+
+
+def test_checkout_lines_publish_a_deploy_reference_and_a_two_cpu_checkout():
     for name, campaign in S.CHECKOUTS.items():
         push, submit = S.checkout_lines(name, CODE)
         assert shlex.split(push) == ["git", "-C", S.MAC, "push", "leonardo", f"{CODE}:refs/heads/deploy/{campaign}"]
         program, options, sbatch = parse(submit)
         assert options["--id"] == f"SCALING-19618-{name}-checkout-20261106" and options["--gpu-ore"] == "0"
         assert options["--script-stdin"] == S.MAC + "/scripts/slurm/campaign_checkout.sbatch"
-        assert sbatch == ["--cpus-per-task=1", "--mem=4G", "--time=00:05:00",
+        assert sbatch == ["--cpus-per-task=2", "--mem=4G", "--time=00:05:00",
                           f"--export=ALL,CAMPAIGN={campaign},CAMPAIGN_SHA={CODE},EXPECTED_SHA={CODE}", "/dev/stdin"]
         assert "main" not in push and "--force" not in push and "+" not in push
     assert len(set(S.CHECKOUTS.values())) == 4 and all("19618" in c and c.endswith("_v1") for c in S.CHECKOUTS.values())

@@ -7061,3 +7061,23 @@ estensione scientifica, nuovi training, retry o pollingAI.
   e le tre righe. Stop al primo cancello fallito o esito diverso da `sottomesso`.
 - Rinfresco firmato dello scratch del 12/11: con job della linea 1 in esecuzione va fatto escludendo i file pinnati
   (`evaluation_chain_plan.md` §6). Lo coordina Simone.
+
+### 11/11/2026 — Claude, linea 1: stadio B fermo alla raccolta del checkout `code`; proposta dei checkout a 2 CPU
+
+- Cancello `checkout-code` alle 17:57 (verbale `evidence/gates/checkout-code_20261111T165753Z.json`): 9 controlli su 9, con
+  `--sha df2de35` e `--reviewed 44d3adf`. Riferimento `deploy/scaling_300m_evaluation19618_20261106_v1` pubblicato a `df2de35`.
+  Checkout `SCALING-19618-code-checkout-20261106` = job 64194074, `COMPLETED 0:0`, 34 s, su `login13`.
+- `collect checkout-code` rifiutato: «allocated CPUs or elapsed time outside the published job». Il job ha chiesto 1 CPU e Slurm
+  ne ha assegnate 2: `lrd_all_serial` da' core interi, `ThreadsPerCore=2`. Il freeze v2 scrive 2 CPU per checkout; il codice dello
+  stadio B ne pubblicava 1 per far stare cinque checkout negli 0,8 core-ore congelati. Errore mio, non coperto dai test, che
+  usavano contabilita' finte a 1 CPU. La raccolta non ha scritto nulla; lo stadio B e' fermo prima delle estrazioni.
+- Correzione proposta, non distribuita: `results/infra/scaling_300m_20261104/continuation19618_20261111_checkout_cpus/` (README,
+  emendamento con `make_amendment.py`, letture di `sacct` e del nodo). Checkout a 2 CPU; tetto della riga dei checkout 4/3;
+  regola `rereview_check` per una review fatta dopo un checkout, limitata a cio' che nessun job del cluster legge.
+  `release_check` invariato.
+- Budget: +8/15 = 0,533333 core-ore con margine; solo CPU da 349,384444 a 349,917778 su 350; GPU-ore invariate, 66,731111.
+  Speso finora nello stadio B: 2 CPU x 34 s = 0,018889 core-ore.
+- Test: pacchetto 19.618 e recupero, 630 passati (629 nel giro del pacchetto, piu' il test dell'inviluppo v3 corretto e
+  rieseguito con il suo file, 5 su 5). Solo questi tre file importano lo script. Suite completa avviata alle 18:43: esito
+  nella prossima voce.
+- Serve la decisione di Simone su correzione ed emendamento, con o senza review di GPT. Nessun invio fino ad allora.

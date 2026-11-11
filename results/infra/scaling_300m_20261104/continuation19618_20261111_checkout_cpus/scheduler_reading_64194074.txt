@@ -1,0 +1,11 @@
+## date -u
+2026-11-11T17:08:11Z
+## sacct -X -P -j 64194074 --format=JobIDRaw,JobName%45,ReqCPUS,AllocCPUS,Partition,NodeList
+JobIDRaw|JobName|ReqCPUS|AllocCPUS|Partition|NodeList
+64194074|SCALING-19618-code-checkout-20261106|1|2|lrd_all_serial|login13
+## scontrol show node login13 (campi della topologia)
+NodeName=login13
+CoresPerSocket=32
+CPUTot=128
+Sockets=2
+ThreadsPerCore=2

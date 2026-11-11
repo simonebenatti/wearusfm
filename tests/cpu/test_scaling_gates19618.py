@@ -430,7 +430,7 @@ def test_later_checkouts_only_add_documents_to_the_reviewed_package(chain):
 def test_checkout_gate_before_the_deploy_of_a_document_commit(chain):
     repo, ledger, reviewed, code, documents = chain
     job = S.checkout_job("plans")
-    assert (job["cpus"], job["memory"], job["seconds"], job["out"]) == (1, "4G", 300, S.checkout("plans"))
+    assert (job["cpus"], job["memory"], job["seconds"], job["out"]) == (2, "4G", 300, S.checkout("plans"))
 
     def run(deploy=None, **changes):
         reading = live({}, {}, [job], **changes)
@@ -464,6 +464,47 @@ def test_checkout_gate_before_the_deploy_of_a_document_commit(chain):
     with pytest.raises(ValueError, match="after the review: M\tscripts/reader.py"):
         S.checkout_gate("budgets", commit(repo, {"scripts/reader.py": b"x\n"}, "code"), reviewed,
                         live({}, {}, [S.checkout_job("budgets")]), None, repo, ledger)
+
+
+def test_a_review_after_the_code_checkout_covers_only_the_mac_side(chain):
+    """11/11/2026: the fix of the checkout CPUs changes the Mac-side tool after the code checkout. A later review covers the
+    changes since that checkout only if no job on the cluster reads them; afterwards only documents and evidence, as before."""
+    repo, ledger, reviewed, code, _ = chain
+    job, package = S.checkout_job("plans"), S.PACKAGE + "/"
+    reader_plans = {package + S.DOCUMENTS["pose_plan"][1]: S.dumps(plans.new_pose_plan()),
+                    package + S.DOCUMENTS["probe_plan"][1]: S.dumps(plans.new_probe_plan()),
+                    package + "evidence/extractions/collection.json": b"{}\n",
+                    package + "evidence/checkout-code/code/accounting.json": accounting_bytes(700)}
+
+    def after(fix, branch):
+        git(repo, "checkout", "-q", "-B", branch, code)
+        fixed = commit(repo, fix, branch)
+        return fixed, commit(repo, reader_plans, branch + " reader plans")
+
+    def gate(documents, review):
+        return S.checkout_gate("plans", documents, review, live({}, {}, [job]), None, repo, ledger)
+
+    tool = {"scripts/scaling_plans19618.py": b"CHECKOUT = 2\n", "tests/cpu/test_scaling_plans19618.py": b"two = 2\n",
+            "docs/decisioni.md": b"emendamento\n", S.CHECKOUT_AMENDMENT: b"{}\n"}
+    fixed, documents = after(tool, "fix")
+    checks, facts = gate(documents, fixed)
+    assert all(ok for _, ok in checks) and facts["reviewed_after_checkouts"] == ["code"]
+    assert S.rereview_check(code, fixed, repo) == 4
+    with pytest.raises(ValueError, match="change outside the documents of the chain after the review: A\t"):  # the old one does not cover it
+        gate(documents, reviewed)
+    for change, message in (({"scripts/reader.py": b"x\n"}, "M\tscripts/reader.py"),
+                            ({package + S.DOCUMENTS["extraction_plan"][1]: b"{}\n"}, "M\t" + package),
+                            ({S.SHARED["splits"]: b"{}\n"}, "M\tsplits/v1/splits_v1.json")):
+        bad, documents = after({**tool, **change}, "bad")
+        with pytest.raises(ValueError, match="change on the cluster side after an earlier checkout: " + message):
+            gate(documents, bad)
+    with pytest.raises(ValueError, match="does not descend from the earlier checkout"):
+        S.rereview_check(fixed, code, repo)
+    # Without a later review nothing changes: an earlier checkout is the base of every later one.
+    git(repo, "checkout", "-q", "-B", "plain", code)
+    plain = commit(repo, reader_plans, "plain reader plans")
+    checks, facts = gate(plain, reviewed)
+    assert all(ok for _, ok in checks) and facts["reviewed_after_checkouts"] == []
 
 
 def test_gate_before_a_tranche_reads_checkouts_documents_outputs_queue_and_space(chain):

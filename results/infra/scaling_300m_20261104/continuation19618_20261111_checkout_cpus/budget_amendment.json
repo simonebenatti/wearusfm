@@ -1,0 +1,101 @@
+{
+ "base_envelope": {
+  "path": "results/infra/scaling_300m_20261104/continuation19618_20261109_v3/budget_envelope.json",
+  "sha256": "7ecc130e46c541f75f2343c87952013ef1feb24c535f0e53fdd915910aabceae"
+ },
+ "cause": {
+  "allocated_core_hours": {
+   "exact": "17/900",
+   "value": 0.018889
+  },
+  "allocated_cpus": 2,
+  "elapsed_seconds": 34,
+  "job_slurm": "64194074",
+  "logical_id": "SCALING-19618-code-checkout-20261106",
+  "node": "login13",
+  "partition": "lrd_all_serial",
+  "requested_cpus": 1,
+  "sacct": {
+   "path": "results/infra/scaling_300m_20261104/continuation19618_20261111_checkout_cpus/sacct_64194074.txt",
+   "sha256": "f64edc1ccfe86a27c2435df5e7bae241baad183a153e96775598ecc6ac85f7e2"
+  },
+  "scheduler_reading": {
+   "path": "results/infra/scaling_300m_20261104/continuation19618_20261111_checkout_cpus/scheduler_reading_64194074.txt",
+   "sha256": "7bbdae739f37bde97b4331fbbc25db870976dc1d596724417c5a72b06383d28b"
+  },
+  "threads_per_core": 2
+ },
+ "change": {
+  "checkouts": [
+   "code",
+   "plans",
+   "budgets",
+   "inputs"
+  ],
+  "cpus_after": 2,
+  "cpus_before": 1,
+  "scheduler_overtime_seconds": 180,
+  "seconds_each": 300
+ },
+ "cpu_only_core_hours_cap": 350,
+ "cpu_only_core_hours_with_margin": {
+  "after": {
+   "exact": "157463/450",
+   "value": 349.917778
+  },
+  "before": {
+   "exact": "157223/450",
+   "value": 349.384444
+  }
+ },
+ "delta_core_hours_with_margin": {
+  "exact": "8/15",
+  "value": 0.533333
+ },
+ "envelope_checkout_stage_with_margin": {
+  "after": {
+   "exact": "28/15",
+   "value": 1.866667
+  },
+  "before": {
+   "exact": "4/3",
+   "value": 1.333333
+  }
+ },
+ "freeze": {
+  "checkout": {
+   "core_hours_with_scheduler_margin": 0.8,
+   "cpus": 2,
+   "jobs": 3,
+   "memory_gib": 4,
+   "seconds_each": 300
+  },
+  "path": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json",
+  "sha256": "32e0a33e76da1ee58a853c0229414ee66e1bdddf280da3dfbe21040831e771b8"
+ },
+ "gpu_hours_with_margin": {
+  "unchanged": {
+   "exact": "30029/450",
+   "value": 66.731111
+  }
+ },
+ "margin_to_cap": {
+  "exact": "37/450",
+  "value": 0.082222
+ },
+ "not_included": "no new job, no retry: the code checkout 64194074 is kept; the other three checkouts are asked at 2 CPUs",
+ "protocol": "scaling-19618-checkout-cpus-amendment-20261111-v1",
+ "stage_b_checkout_row_with_margin": {
+  "after": {
+   "exact": "4/3",
+   "value": 1.333333
+  },
+  "before": {
+   "exact": "4/5",
+   "value": 0.8
+  },
+  "jobs": 5
+ },
+ "status": "proposed: requires Simone's decision (checkout stage above the amended envelope, total within the 350 cap)",
+ "within_cpu_only_cap": true
+}

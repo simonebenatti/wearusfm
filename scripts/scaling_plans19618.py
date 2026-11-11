@@ -56,7 +56,14 @@ FREEZE = INFRA + "/continuation19618_budget_freeze_20261105_v2.json"
 CAMPAIGN = "scaling-300m-20261104"
 CHECKOUTS = {"code": "scaling_300m_evaluation19618_20261106_v1", "plans": "scaling_300m_plans19618_20261106_v1",
              "budgets": "scaling_300m_budgets19618_20261106_v1", "inputs": "scaling_300m_inputs19618_20261106_v1"}
-CHECKOUT = {"cpus": 1, "memory_gib": 4, "seconds": 300}  # four checkouts here plus the training one: stage cap of the freeze
+# Four checkouts here plus the training one. lrd_all_serial allocates whole cores (two threads): a 1-CPU request gets 2 CPUs
+# (job 64194074, 11/11/2026), as the freeze writes (readers.stages.checkout.cpus = 2) and the training checkouts ask. The five
+# checkouts at 2 CPUs take 4/3 core-hours with margin instead of the frozen 0.8: amendment CHECKOUT_AMENDMENT (Simone decides).
+CHECKOUT = {"cpus": 2, "memory_gib": 4, "seconds": 300}
+CHECKOUT_AMENDMENT = INFRA + "/continuation19618_20261111_checkout_cpus/budget_amendment.json"
+CHECKOUT_STAGE_CAP = 4 / 3  # core-hours with scheduler margin of the five checkouts of the table, as amended
+# A review after an earlier checkout may change only what no job on the cluster reads (rereview_check).
+MAC_SIDE = ("scripts/scaling_plans19618.py",)
 EXTRACT_ROOT = SCRATCH + "/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/" + ARM
 CPU_ROOT = WORK + "/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu"
 SHARED = {"splits": "splits/v1/splits_v1.json", "training_source_contract": INFRA + "/training_source_contract.json",
@@ -791,7 +798,7 @@ def budget_table(shards=None):
                       "cap_with_scheduler_margin": cap}
 
     stages = limits["stages"]
-    row("checkout", [checkout_job(name) for name in ("training", *CHECKOUTS)], stages["checkout"]["core_hours_with_scheduler_margin"])
+    row("checkout", [checkout_job(name) for name in ("training", *CHECKOUTS)], CHECKOUT_STAGE_CAP)  # frozen 0.8, amended 11/11
     for stage in ("pose-validate", "pose-benchmark", "probe-benchmark", "pose-ridge", "probe-aggregate", "compare"):
         table = jobs(stage, {"protocol": C.RESOURCE_PROTOCOL, "shards": []}) if stage == "probe-aggregate" else jobs(stage)
         row(stage, table, stages[stage.replace("-", "_")]["core_hours_with_scheduler_margin"])
@@ -1019,6 +1026,27 @@ def release_check(reviewed, commit, root=ROOT, since="the review"):
     return len(changed.stdout.splitlines())
 
 
+def _is_ancestor(ancestor, descendant, root=ROOT):
+    return subprocess.run(["git", "-C", str(root), "merge-base", "--is-ancestor", ancestor, descendant],
+                          capture_output=True, text=True).returncode == 0
+
+
+def rereview_check(previous, reviewed, root=ROOT):
+    """A review made after an earlier checkout covers the changes since that checkout only if the cluster side stays as it was:
+    the Mac-side operator tool and the CPU tests, documentation, and files added under the campaign folder. A document already
+    deployed is never rewritten, and code read by the jobs never changes after the checkout that carries it."""
+    require(ST.digest(previous, 40) and ST.digest(reviewed, 40), "full commit SHAs required")
+    require(_is_ancestor(previous, reviewed, root), "the review does not descend from the earlier checkout")
+    changed = subprocess.run(["git", "-C", str(root), "diff", "--name-status", "--no-renames", previous, reviewed],
+                             capture_output=True, text=True)
+    require(changed.returncode == 0, "cannot compare the review with the earlier checkout")
+    for line in changed.stdout.splitlines():
+        status, path = line.split("\t", 1)
+        require(path in MAC_SIDE or path.startswith(("tests/cpu/", "docs/")) or (status == "A" and path.startswith(INFRA + "/")),
+                "change on the cluster side after an earlier checkout: " + line)
+    return len(changed.stdout.splitlines())
+
+
 def gate_request(stage, root=ROOT, ledger=LEDGER):
     """What the gate of a job stage reads: its checkouts, its published documents, its outputs, queue and quota."""
     table = stage_table(stage, root)
@@ -1092,8 +1120,13 @@ def checkout_gate(name, commit, reviewed, reading, deploy_ref, root=ROOT, ledger
     changed, order = release_check(reviewed, commit, root), list(CHECKOUTS)
     earlier = {c: checkout_commit(c, ledger) for c in order if c != name and (Path(ledger) / checkout_job(c)["id"]).exists()}
     require(set(earlier) == set(order[:order.index(name)]), "checkouts of the chain are created in order, each one once")
-    for previous in earlier.values():
-        release_check(previous, commit, root, "an earlier checkout")
+    reviewed_after = []
+    for earlier_name, previous in earlier.items():
+        if previous != reviewed and _is_ancestor(previous, reviewed, root):
+            rereview_check(previous, reviewed, root)  # what follows the review is the release_check(reviewed, commit) above
+            reviewed_after.append(earlier_name)
+        else:
+            release_check(previous, commit, root, "an earlier checkout")
     commits = {**earlier, name: commit}
     own = [d for d, (where, _) in DOCUMENTS.items() if where == name]
     blobs = {d: _blob_sha256(commit, f"{PACKAGE}/{DOCUMENTS[d][1]}", root) for d in own}
@@ -1109,7 +1142,7 @@ def checkout_gate(name, commit, reviewed, reading, deploy_ref, root=ROOT, ledger
               ("one free place in the serial queue", state["serial_room"] >= 1),
               ("line limit %d leaves a place for this checkout" % line_limit, state["line_jobs"] < line_limit),
               ("free space on $WORK at least %d GiB" % WORK_FREE_GIB, state["work_free_gib"] >= WORK_FREE_GIB)]
-    return checks, {**state, "line_limit": line_limit, "tranche": [job["id"]]}
+    return checks, {**state, "line_limit": line_limit, "tranche": [job["id"]], "reviewed_after_checkouts": reviewed_after}
 
 
 # ---------------------------------------------------------------------------------------------

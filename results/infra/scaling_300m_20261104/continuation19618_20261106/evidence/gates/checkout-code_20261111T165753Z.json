@@ -1,0 +1,57 @@
+{
+  "protocol": "scaling-gate-19618-20261106-v1",
+  "stage": "checkout-code",
+  "read_at_utc": "2026-11-11T16:57:53Z",
+  "passed": true,
+  "checks": [
+    [
+      "commit adds only documents and evidence to the reviewed package (16 paths)",
+      true
+    ],
+    [
+      "documents of this checkout are in the commit with the published bytes",
+      true
+    ],
+    [
+      "files pinned inside the checkouts are in their commits (3)",
+      true
+    ],
+    [
+      "deploy reference absent or already at this commit",
+      true
+    ],
+    [
+      "checkout folder absent",
+      true
+    ],
+    [
+      "logical ID never used in the ledger",
+      true
+    ],
+    [
+      "one free place in the serial queue",
+      true
+    ],
+    [
+      "line limit 4 leaves a place for this checkout",
+      true
+    ],
+    [
+      "free space on $WORK at least 5 GiB",
+      true
+    ]
+  ],
+  "facts": {
+    "serial_jobs": 0,
+    "serial_room": 10,
+    "line_jobs": 0,
+    "work_free_gib": 93.28125381469727,
+    "line_limit": 4,
+    "tranche": [
+      "SCALING-19618-code-checkout-20261106"
+    ]
+  },
+  "commit": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+  "reviewed": "44d3adf22b2c3e6b520e753d33fb1627013685bd",
+  "deploy_reference": null
+}

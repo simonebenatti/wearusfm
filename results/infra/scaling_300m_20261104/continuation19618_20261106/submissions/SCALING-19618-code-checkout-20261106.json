@@ -1,0 +1,45 @@
+{
+ "id": "SCALING-19618-code-checkout-20261106",
+ "creato": "2026-11-11T17:58:50+01:00",
+ "agente": "claude",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-19618-code-checkout-20261106",
+  "--comment=wearusfm:SCALING-19618-code-checkout-20261106",
+  "--cpus-per-task=1",
+  "--mem=4G",
+  "--time=00:05:00",
+  "--export=ALL,CAMPAIGN=scaling_300m_evaluation19618_20261106_v1,CAMPAIGN_SHA=df2de35c05381e7a5a69edde409171b210a3b5d8,EXPECTED_SHA=df2de35c05381e7a5a69edde409171b210a3b5d8",
+  "/dev/stdin"
+ ],
+ "dopo": null,
+ "script_stdin": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/campaign_checkout.sbatch",
+ "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-11T17:58:50+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-11T17:58:50+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-11T17:58:53+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 64194074,
+   "uscita": 0,
+   "stdout": "64194074\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 64194074,
+ "uscita": 0,
+ "stdout": "64194074\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}
