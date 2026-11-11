@@ -8657,6 +8657,12 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   `TEMPONET-E2P-smoke-20261110` = 64097115 in afterok (dbg, checkout `temponet-emg2pose-27d53b0`). Training e valutazione si inviano dopo la
   lettura del collaudo.
 
+### 2026-11-11 | Claude | TEMPONet su emg2pose: rilancio del passo 0 approvato, in attesa del certificato
+
+- Simone: «Approvo», alla domanda «Approvi il rilancio del passo 0 (≤ 2 core-ore, passo 0 a ≤ 5,7)?». Voce in `docs/decisioni.md`.
+- Codice 0c19c4b, checkout `temponet-emg2pose-0c19c4b` (64120902) gia' pronto. Il certificato ssh e' scaduto alle 07:31 dell'11/11: il
+  rilancio e il collaudo in afterok si inviano dopo il rinnovo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B

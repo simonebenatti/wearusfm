@@ -7993,3 +7993,10 @@ finestra. Restano invariati il cancello, la grandezza principale, le letture e l
 - **Rilancio proposto:** 2 CPU, limite 1 h (≤ 2 core-ore), cartella nuova. Porterebbe il passo 0 a ≤ 5,7 core-ore, oltre le 4 previste, quindi
   **serve una decisione di Simone**: superare il budget di un passo richiede una decisione registrata. Il tetto dell'attivita', 10 core-ore,
   regge: circa 5,8 in tutto.
+
+### 2026-11-11 — TEMPONet su emg2pose: rilancio del passo 0 APPROVATO da Simone (Claude)
+
+Alla domanda «Approvi il rilancio del passo 0 (≤ 2 core-ore, passo 0 a ≤ 5,7)?» Simone risponde «Approvo». Il budget del passo 0 sale da 4 a
+**5,7 core-ore**: 3,67 spese nel tentativo 64096497 piu' al massimo 2 del rilancio, con limite di 1 h su 2 CPU. Il tetto dell'attivita' resta
+10 core-ore e 5 GPU-ore. Il rilancio usa il codice 0c19c4b (checkout `temponet-emg2pose-0c19c4b`, job 64120902) e una cartella nuova; il
+collaudo segue in afterok sullo stesso checkout. Nessun'altra regola cambia.
