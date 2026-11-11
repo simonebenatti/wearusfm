@@ -8665,6 +8665,20 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Dopo il rinnovo del certificato (11:20, valido fino alle 23:20): rilancio `TEMPONET-E2P-targets-20261111` = 64165740 (CPU, limite 1 h) e
   collaudo `TEMPONET-E2P-smoke-20261111` = 64165743 in afterok (dbg, 30 min), entrambi dal checkout `temponet-emg2pose-0c19c4b`.
 
+### 2026-11-11 | Claude | TEMPONet su emg2pose: passo 0 (64165740) e collaudo (64165743) conclusi; training (64169771) e valutazione (64169772) inviati | Codice 0c19c4b
+
+- Passo 0: `COMPLETED 0:0` in 25 min 31 s; 8.117 registrazioni su 8.117, nessun problema, 137,6 GiB letti dal tar (indice in 477 s, poi circa
+  110 MB/s). Finestre ufficiali: validazione 12.468; test 48.299 (utenti nuovi 15.346, fasi nuove 29.146, utenti e fasi nuovi 3.807).
+  Scala: mediana delle deviazioni dei canali 13,15 unita' native, k = 0.
+- Allineamento: sui blocchi validi dell'ingest delle pose, lo scarto fra angolo esatto e media del blocco ha mediana 0,0018 rad (40
+  registrazioni, 318.000 istanti). Il massimo del manifest (2,06 rad) viene dai blocchi dentro il margine di 280 campioni (0,10% degli istanti),
+  che hanno media 0 o parziale. La valutazione usa gli angoli esatti.
+- Collaudo: `COMPLETED 0:0` in 7 min 13 s. Controllo eager/graph con differenza 0; 1,089 ms per passo a regime, quindi passo di training a 8
+  blocchi (regola meccanica, soglia 1,6 ms); 3,4 GB di memoria sul sottoinsieme. La valutazione sulla sola validazione funziona (12.468
+  finestre); il cancello col modello del collaudo e' 0,908, atteso e senza valore.
+- Inviati: training `TEMPONET-E2P-train-20261111` = 64169771 (3 h 30) e valutazione `TEMPONET-E2P-eval-20261111` = 64169772 in afterok
+  (45 min). Consumo finora: 4,58 core-ore su 10 (passo 0: 4,52 su 5,7) e 0,12 GPU-ore su 5.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
