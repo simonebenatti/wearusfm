@@ -5641,3 +5641,42 @@ queste viste, lettori e dose; svantaggio di B confermato. Nessun esito autorizza
 Nessuna nuova soglia. Proposte per GPT in `docs/psd3_risultati_20261030.md` §13, nessun lancio. Nota operativa: memoria per shard da 30 G a
 ~8 G nelle prossime campagne seriali; confronto accodato o avviso di fine blocco sottoscritto. Consegna: `docs/psd3_risultati_20261030.md`,
 `results/infra/psd3_20261029/`.
+
+### 2026-11-12 — Rinfresco di `$SCRATCH` del 12/11 (D9): job 64280872 `COMPLETED 0:0`, 240.476 file, 0 problemi; prossimo giro 03/12 (Claude)
+
+**Autorizzazione.** Giro del calendario firmato D9 (decisione 9 di `docs/fogli_firma_d9_d10.md`; il giro del 22/10 era stato
+sostituito da quello del 15/10, job 60643323). Alla domanda «Invio il rinfresco di $SCRATCH previsto per oggi, 12/11 (regola
+D9)?», con job, script, perimetro, risorse e costo, Simone ha scelto «Sì, invia (Recommended)» (risposta letta alle 15:19).
+Vale per questo job.
+
+**Perimetro (letture di sola lettura, 10:18-10:29).** Quello predefinito di `scripts/slurm/refresh_scratch.sbatch` (`data/raw`,
+`data/processed`, `wearusfm_runs`, `external`), non esteso: contiene gia' le voci arrivate dopo il 15/10, cioe' le feature di
+ottobre in `wearusfm_runs/results/passo6` (raggiunte da link in `$WORK`), `data/raw/neurorvq_checkpoint` e
+`data/raw/epn612/EMG-EPN612_Dataset.zip` (06/11), la LONG_ROOT `wearusfm_runs/results/consolidation_long_20261105`,
+`wearusfm_runs/temponet_emg2pose` e `data/processed/emg2pose_pose` (27/10). Nessun link dentro il perimetro (i 53 link di
+`$SCRATCH` stanno fuori), quindi `find -L` non ne esce. Fuori dal perimetro, e non toccati: cartelle di un altro progetto,
+`tmp` con le cartelle di prova del 06-07/11, tre `.mat` sciolti nella radice con data 2016 (nomi in formato CapgMyo; nel codice
+compaiono solo come nomi finti nei test). Impronte fra stadi (lette nel codice): i piani congelati, per esempio
+`extraction_plan.json` della linea 1 (`df2de35`), fissano sha256 e byte, che il `touch` non cambia; i confronti su
+`mtime`/`ctime` (`file_state`, `_signature`) avvengono dentro un solo job. Prima dell'invio nessun job dell'utente in coda.
+
+**Job.** `refresh_scratch_20261112` = **64280872**, inviato alle 15:19:59 con `scripts/submit_job.py --script-stdin
+scripts/slurm/refresh_scratch.sbatch` (sha256 `5ad03da2…`, commit `543edc6`, identico al giro del 15/10): `lrd_all_serial`,
+1 nodo, 2 CPU (il 15/10 `sacct` segnava 2 CPU allocate su 1 chiesta), 2 GB, limite 2 h, `--no-requeue`. Richiesta provata
+prima con `sbatch --test-only`.
+
+**Esito.** `COMPLETED 0:0` in 32 min 36 s (15:20:33-15:53:09, `login08`; TotalCPU 2 min 50 s, MaxRSS 0,31 GiB). 47 voci,
+**240.476 file** (151.833 il 15/10; la differenza viene soprattutto da `emg2pose_pose`, 75.760, e `temponet_emg2pose`, 11.068),
+nessun file piu' vecchio di 30 giorni prima del giro (data piu' vecchia: 15/10), **0 cartelle con problemi, nessun file piu'
+vecchio di un giorno dopo**. Controllo a campione dal login alle 15:55: undici file (checkpoint 19.618 della linea 1,
+riferimenti `pilot_posa/B19618_20261028`, `pose_stats.json`, zip di EPN612, NeuroRVQ, sintesi della valutazione lunga,
+bersagli di emg2pose, un file per cartella di `passo6`) con data 12/11; sha256 di `pose_stats.json` uguale al pin della
+linea 1; i quattro link di `$WORK` verso `passo6` risolvono. Prove in `results/infra/scratch_refresh_20261112/`.
+
+**Costo.** 2 CPU x 32 min 36 s = **1,087 core-ore** (billing 2: 1,087 ore locali), **0 GPU-ore**; preventivo ~0,8 core-ore
+(25 minuti stimati), tetto 4,1.
+
+**Calendario.** I file del perimetro scadrebbero ora dal 22/12 (40 giorni). **Prossimo giro: 03/12/2026**, poi 24/12, ciascuno
+col via di Simone al momento; la manutenzione del 23-25/11 non riguarda piu' i file rinfrescati oggi. Per il prossimo giro: la
+durata cresce col numero di file (32 minuti per 240 mila) e il limite di 2 h resta largo; durante il giro conviene non lanciare
+job che leggono file del perimetro, perche' i loro controlli interni su `mtime`/`ctime` li fermerebbero.

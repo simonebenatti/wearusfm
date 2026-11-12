@@ -8176,6 +8176,18 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Verifiche nel codice del checkout comune: `fit_candidate` (dose = epoche x ceil(n/8), `max_updates` solo tetto, warmup min(100, dose//10), coseno, permutazione per epoca dallo stesso generatore, ultimo batch parziale, validation per epoca con `predict`, pareggio alla prima epoca); `build_classifier` scratch senza pesi del teacher; testa LN+Linear su `pool_p1p2` medio dei due crop = `x_pool` 768 della cache; `role_indices` ed `encode_labels`; lettore lungo `fit_fold` (scaler solo train, 6 C, lbfgs, balanced, max_iter 12.000, tol 1e-4, pareggio al C minore, refit solo train, held una volta); ruoli `fold_roles` (4 fold, seme 20261015, val 10 %) comuni a EPN15 e al lungo. Ricevute: 16 candidati EPN15 (elapsed 37.992-38.532 s, 15 letture ai multipli di 3.957/3.975), consuntivo EPN15 (85,0 core-ore allocate per fit), `sacct` dei fit CPU del lungo su EPN612.
 - Prompt per GPT consolidamento consegnato a Simone in chat.
 
+### 2026-11-12 | Claude | Rinfresco di `$SCRATCH` del 12/11 (D9) eseguito: job 64280872 `COMPLETED 0:0`, 240.476 file, 0 problemi; prossimo giro 03/12
+- Sessione affiancata, avviata dalla chat TEMPONet/emg2pose per il solo giro del calendario firmato D9. Via di Simone su questo
+  job: alla domanda «Invio il rinfresco di $SCRATCH previsto per oggi, 12/11 (regola D9)?» ha scelto «Sì, invia (Recommended)».
+- Perimetro predefinito di `refresh_scratch.sbatch` (`data/raw`, `data/processed`, `wearusfm_runs`, `external`), non esteso:
+  contiene gia' le voci arrivate dopo il 15/10 (feature di `passo6`, NeuroRVQ e zip di EPN612, LONG_ROOT, bersagli di emg2pose,
+  `emg2pose_pose`); nessun link nel perimetro. Script di main invariato (sha256 `5ad03da2…`, come il 15/10).
+- `refresh_scratch_20261112` = 64280872: `lrd_all_serial`, 2 CPU, 2 GB, limite 2 h; 15:20:33-15:53:09 su `login08`. 47 voci,
+  240.476 file, data piu' vecchia prima del giro 15/10, 0 cartelle con problemi; 1,087 core-ore, 0 GPU-ore.
+- Controllo a campione alle 15:55: undici file letti dai piani congelati con data 12/11, sha256 di `pose_stats.json` uguale al
+  pin della linea 1 (`df2de35`), link di `$WORK` verso `passo6` funzionanti.
+- Prove in `results/infra/scratch_refresh_20261112/`, voce in `docs/decisioni.md`. Prossimo giro 03/12, poi 24/12.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11056,3 +11068,12 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - M-5 Il «5 %» sempre con i due conteggi (11 train; 35 train+validation su 235, 14,89 %).
 - M-6 Nessuna misura separata del costo di una lettura di validation: il benchmark deve separarla e includere il subset minimo.
 - Limiti miei: nessun job; costi proiettati dagli elapsed EPN15; uguaglianza della config della continuazione con T100-G da provare nei test; regola di pareggio fra candidati di EPN15 da citare nel ponte.
+
+### 2026-11-12 | Claude | Rinfresco di `$SCRATCH`: nessun problema nel giro; tre note (per GPT e coordinamento)
+- N-1 Durante un giro (33 minuti il 12/11) un job che legge file del perimetro puo' fermarsi sui controlli che confrontano
+  `mtime`/`ctime` dentro lo stesso job («input changed while hashing», «cache changed during reading»): conviene tenere i lanci
+  fuori dalla finestra del giro del 03/12. I pin fra stadi (sha256 e byte) non cambiano.
+- N-2 `lrd_all_serial` assegna 2 CPU anche quando se ne chiede 1: il giro del 15/10 risulta in `sacct` con 2 CPU allocate, cioe'
+  0,505 core-ore, non «15 minuti di un core» come scritto in `docs/decisioni.md`. Dal 12/11 il giro chiede 2 CPU.
+- N-3 Osservazione, non premessa: tre `.mat` nella radice di `$SCRATCH` (fuori dal perimetro) con mtime 14/08/2016, ctime e atime
+  23/09/2026 esistono ancora il 12/11. Il criterio della cancellazione a 40 giorni resta non verificato; la regola D9 non cambia.

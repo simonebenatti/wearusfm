@@ -1,0 +1,57 @@
+2026-11-12 15:21:13  attesa avviata: job 64280872; modo any; ogni 120 s
+2026-11-12 15:21:57  64280872  RUNNING        00:01:24  exit 0:0   None                     refresh_scratch_20261112
+2026-11-12 15:24:57  sacct non risponde (1/5): ', 'BatchMode=yes', '-o', 'ProxyCommand=none', '-o', 'ControlMaster=no', 'leonardo', 'sacct -X -n -P -j 64280872 --format=JobID,JobName%80,State,Elapsed,ExitCode,Reason']' timed out after 60.0 seconds
+2026-11-12 15:36:36  sacct non risponde (1/5): ', 'BatchMode=yes', '-o', 'ProxyCommand=none', '-o', 'ControlMaster=no', 'leonardo', 'sacct -X -n -P -j 64280872 --format=JobID,JobName%80,State,Elapsed,ExitCode,Reason']' timed out after 60.0 seconds
+2026-11-12 15:39:36  sacct non risponde (2/5): ', 'BatchMode=yes', '-o', 'ProxyCommand=none', '-o', 'ControlMaster=no', 'leonardo', 'sacct -X -n -P -j 64280872 --format=JobID,JobName%80,State,Elapsed,ExitCode,Reason']' timed out after 60.0 seconds
+2026-11-12 15:54:05  64280872  COMPLETED      00:32:36  exit 0:0   None                     refresh_scratch_20261112
+### ultime 50 righe di /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/refresh_scratch_64280872.out (job 64280872)
+data/raw/ninapro: file=419 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/raw/kaifosh_discrete_gestures: file=2 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/raw/camargo2021: file=5 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/raw/grabmyo: file=30716 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/raw/epn612: file=1 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-11-06 ancora_vecchi_dopo=0
+data/raw/capgmyo: file=1458 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/raw/neurorvq_checkpoint: file=2 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-11-06 ancora_vecchi_dopo=0
+data/raw/putemg: file=298 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/raw/camargo2021_emg_only: file=3147 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/raw/emg2pose: file=1 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/raw/emg2qwerty: file=1 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/raw/hyser: file=57501 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/ninapro_db7: file=66 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/ninapro_db6: file=300 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/ninapro_db2: file=120 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/hyser: file=565 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/emg2pose_pose: file=75760 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-27 ancora_vecchi_dopo=0
+data/processed/zhang2026: file=858 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/emg2pose: file=51082 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/ninapro_db4: file=35 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/ninapro_db10: file=135 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/ninapro_db3: file=34 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/emg2qwerty: file=4554 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/kaifosh: file=200 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+data/processed/ninapro_db8: file=45 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+wearusfm_runs/readout_canale_20261023: file=20 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-23 ancora_vecchi_dopo=0
+wearusfm_runs/diag: file=26 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-11-08 ancora_vecchi_dopo=0
+wearusfm_runs/emg2pose_mini: file=31 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+wearusfm_runs/pilot_posa_20261026: file=14 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-27 ancora_vecchi_dopo=0
+wearusfm_runs/p1_sanity_0410: file=4 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+wearusfm_runs/w1arm: file=40 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-22 ancora_vecchi_dopo=0
+wearusfm_runs/p2_sanity_0410: file=3 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+wearusfm_runs/w1sel_1610: file=6 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-16 ancora_vecchi_dopo=0
+wearusfm_runs/results: file=972 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-28 ancora_vecchi_dopo=0
+wearusfm_runs/temponet_emg2pose: file=11068 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-11-10 ancora_vecchi_dopo=0
+wearusfm_runs/pilot_obiettivi_20261024: file=40 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-25 ancora_vecchi_dopo=0
+wearusfm_runs/emg2pose_reference: file=48 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+wearusfm_runs/runs: file=462 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+wearusfm_runs/anchor_candidates: file=4 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+wearusfm_runs/baseline_td_20261023: file=11 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-23 ancora_vecchi_dopo=0
+wearusfm_runs/step3: file=14 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+wearusfm_runs/temponet_db8: file=257 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-11-09 ancora_vecchi_dopo=0
+wearusfm_runs/rami_diagnostica_20261021: file=33 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-21 ancora_vecchi_dopo=0
+wearusfm_runs/w1cal: file=21 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-19 ancora_vecchi_dopo=0
+wearusfm_runs/step1_probe_sanity_0410_0810: file=1 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+wearusfm_runs/q_sample: file=0 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima= ancora_vecchi_dopo=0
+external/NeuroRVQ_926e770: file=96 piu_vecchi_di_30_giorni_prima=0 data_piu_vecchia_prima=2026-10-15 ancora_vecchi_dopo=0
+=== fine: cartelle con problemi = 0 ===
+
+2026-11-12 15:54:06  condizione raggiunta: 64280872 COMPLETED
