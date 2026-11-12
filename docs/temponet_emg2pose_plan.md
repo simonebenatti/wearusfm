@@ -5,7 +5,7 @@ Claude, 10/11/2026. Alla domanda «Preparo la proposta per TEMPONet su emg2pose?
 `docs/decisioni.md` committata prima del primo job.
 **Stato, 11/11 pomeriggio:** approvata («Approvo», un seme), passi 0-3 eseguiti, cancello superato, test letto una volta: TEMPONet fra NeuroPose
 e SensingDynamics in tutte e tre le condizioni. Il passo 4 non e' approvato. Vedi «Esito».
-**12/11:** conclusioni scritte per la firma di Simone («Sì, scrivile»), non ancora firmate. Vedi «Conclusioni».
+**12/11:** conclusioni FIRMATE da Simone («Sì, firmo»); attivita' chiusa. Vedi «Conclusioni».
 
 ## Scopo
 
@@ -245,9 +245,10 @@ Conservazione:
 
 Il passo 4 (semi 1 e 2) resta non approvato. Una scelta presa adesso verrebbe dopo aver guardato il test.
 
-## Conclusioni (12/11/2026, da firmare)
+## Conclusioni (12/11/2026, firmate da Simone)
 
-Proposta di Claude. Alla domanda «Scrivo le conclusioni col solo seme 0?» Simone ha risposto «Sì, scrivile». **Non ancora firmate.**
+Proposta di Claude (255fc8e), scritta su «Sì, scrivile» alla domanda «Scrivo le conclusioni col solo seme 0?». Alla domanda «Firmi queste
+conclusioni?» Simone ha risposto «Sì, firmo» (voce in `docs/decisioni.md`). Il testo sotto e' quello firmato.
 
 **In sintesi.** Il compito e' la regressione di emg2pose: stimare la posa della mano senza conoscere quella iniziale, con il protocollo di
 valutazione ufficiale. Su questo compito la TEMPONet di [Z21], allenata da zero col seme 0, fa:

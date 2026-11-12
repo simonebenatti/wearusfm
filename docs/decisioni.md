@@ -8022,3 +8022,32 @@ Eseguiti con le regole congelate nelle voci del 10/11 (approvazione ed emendamen
 
 **Consuntivo**: **3,513 GPU-ore sul tetto di 5** (28,1 ore locali con billing 8) e **4,583 core-ore sul tetto di 10**. Ogni passo resta
 sotto il proprio budget: collaudo 0,120, training 3,079, valutazione 0,313; passo 0 4,522 su 5,7.
+
+### 2026-11-12 — TEMPONet su emg2pose: conclusioni FIRMATE da Simone; attivita' chiusa (Claude)
+
+Alla domanda «Firmi queste conclusioni?» Simone risponde «Sì, firmo». La firma copre la sezione «Conclusioni» di
+`docs/temponet_emg2pose_plan.md` com'era nel commit 255fc8e, compresi i punti su cosa ne segue per il progetto. In breve:
+
+1. **Misura nuova col seme 0, non una replica.** MAE con EMA, media ± dev. std. fra utenti:
+   - `user` 14,55 ± 1,54;
+   - `stage` 17,67 ± 1,60;
+   - `user_stage` 17,60 ± 1,76.
+
+   In tutte e tre le condizioni cade fra NeuroPose e SensingDynamics della Tab. 4 di [E24], anche con l'uscita grezza, e resta dietro
+   vemg2pose di 1,8-2,5 gradi.
+2. **Il codice funziona.**
+   - Protocollo ufficiale verificato con 15 casi di test CPU.
+   - Bersagli esatti letti dal tar.
+   - Training dalla RAM a 1,085 ms per passo.
+   - Circa 3,4 GPU-ore per seme.
+3. **Aperti:**
+   - seme unico, con un margine di 0,10 gradi su NeuroPose in `user_stage`;
+   - contesto non isolato;
+   - confronto descrittivo;
+   - un istante ogni 10 campioni.
+4. **Per il progetto:**
+   - come baseline «CNN/TCN da zero» dell'harness su emg2pose si riporta questa misura, dichiarando protocollo e seme unico;
+   - nel confronto col FM si usa un solo insieme di finestre e di istanti per tutti i modelli;
+   - altri semi solo con una ragione dichiarata a parte dal risultato.
+
+Attivita' chiusa, nessun job aperto: 3,513 GPU-ore sul tetto di 5 e 4,583 core-ore sul tetto di 10. Il passo 4 non e' stato approvato.

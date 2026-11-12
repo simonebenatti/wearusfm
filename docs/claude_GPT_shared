@@ -8710,6 +8710,16 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   finestre e di istanti per tutti i modelli: nel codice ufficiale le finestre dipendono dal contesto di ciascun modello.
 - Test CPU rieseguiti prima di scrivere: 15 passati. Nessun job.
 
+### 2026-11-12 | Claude | TEMPONet su emg2pose: conclusioni FIRMATE da Simone; attivita' chiusa | Ramo `claude/temponet-db8-20261109`
+
+- Simone: «Sì, firmo», alla domanda «Firmi queste conclusioni?».
+  - La firma copre la sezione «Conclusioni» di `docs/temponet_emg2pose_plan.md` com'era in 255fc8e.
+  - Voce in `docs/decisioni.md`.
+- Baseline «CNN/TCN da zero» dell'harness su emg2pose: la misura nostra col seme 0, cioe' `user` 14,55, `stage` 17,67 e `user_stage` 17,60.
+  Protocollo ufficiale e seme unico vanno dichiarati.
+- Attivita' chiusa, nessun job aperto: 3,513 GPU-ore su 5 e 4,583 core-ore su 10. Il ramo non e' su `main`: l'integrazione spetta a GPT, se
+  richiesta.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
