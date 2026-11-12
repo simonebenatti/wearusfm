@@ -5,6 +5,7 @@ Claude, 10/11/2026. Alla domanda «Preparo la proposta per TEMPONet su emg2pose?
 `docs/decisioni.md` committata prima del primo job.
 **Stato, 11/11 pomeriggio:** approvata («Approvo», un seme), passi 0-3 eseguiti, cancello superato, test letto una volta: TEMPONet fra NeuroPose
 e SensingDynamics in tutte e tre le condizioni. Il passo 4 non e' approvato. Vedi «Esito».
+**12/11:** conclusioni scritte per la firma di Simone («Sì, scrivile»), non ancora firmate. Vedi «Conclusioni».
 
 ## Scopo
 
@@ -243,3 +244,66 @@ Conservazione:
 - Bersagli del passo 0 su `$SCRATCH`, rigenerabili e soggetti alla cancellazione a 40 giorni.
 
 Il passo 4 (semi 1 e 2) resta non approvato. Una scelta presa adesso verrebbe dopo aver guardato il test.
+
+## Conclusioni (12/11/2026, da firmare)
+
+Proposta di Claude. Alla domanda «Scrivo le conclusioni col solo seme 0?» Simone ha risposto «Sì, scrivile». **Non ancora firmate.**
+
+**In sintesi.** Il compito e' la regressione di emg2pose: stimare la posa della mano senza conoscere quella iniziale, con il protocollo di
+valutazione ufficiale. Su questo compito la TEMPONet di [Z21], allenata da zero col seme 0, fa:
+- **14,55 ± 1,54** gradi sugli utenti nuovi;
+- **17,67 ± 1,60** sulle fasi nuove;
+- **17,60 ± 1,76** su utenti e fasi nuovi.
+
+E' un solo modello da 71.412 parametri per i 158 utenti di training, con 128 ms di segnale in ingresso. In tutte e tre le condizioni cade fra
+NeuroPose e SensingDynamics della Tab. 4 di [E24], dietro vemg2pose di 1,8-2,5 gradi. E' una misura nuova, non una replica: la ricerca del
+10/11 non ha trovato risultati pubblicati di TEMPONet su emg2pose.
+
+**Fatti misurati** (regole congelate prima di ogni job):
+1. **Il modello va oltre la posa media.** In validazione fa 15,12 gradi contro 18,19 del predittore costante: rapporto 0,831, sotto la soglia di
+   0,9. Sul test i rapporti sono 0,831, 0,896 e 0,899.
+2. **Posizione rispetto alle baseline pubblicate** (lettura descrittiva).
+   - Con l'uscita grezza (14,86, 18,06 e 17,97) le categorie restano le stesse. E' il confronto piu' diretto, perche' le baseline di [E24] non
+     usano l'EMA.
+   - In `user_stage` TEMPONet supera NeuroPose di soli 0,10 gradi.
+3. **Il codice funziona.** E' la condizione posta da Simone il 09/11: «Poi una volta che abbiamo l codice funzionante vediamo».
+   - Il protocollo ufficiale e' ripreso dal codice di emg2pose. Lo verificano 15 casi di test CPU, fra cui reimplementazioni letterali di
+     `get_contiguous_ones` e `WindowedEmgDataset`.
+   - I bersagli esatti di validazione e test sono letti dal tar originale e confrontati con l'ingest delle pose.
+   - Il training legge dalla RAM del nodo (62 GiB) a 1,085 ms per passo. L'esecuzione col CUDA graph e' identica a quella normale.
+   - Costo per seme: circa 3,4 GPU-ore, cioe' 3,08 di training e 0,31 di valutazione.
+
+| Condizione | TEMPONet con EMA | grezza | costante | vemg2pose | NeuroPose | SensingDynamics | Lettura |
+|---|---|---|---|---|---|---|---|
+| utenti nuovi | **14,55 ± 1,54** | 14,86 | 17,51 | 12,2 | 13,2 | 15,5 | fra NeuroPose e SensingDynamics |
+| fasi nuove | **17,67 ± 1,60** | 18,06 | 19,73 | 15,2 | 17,2 | 18,8 | fra NeuroPose e SensingDynamics |
+| utenti e fasi nuovi | **17,60 ± 1,76** | 17,97 | 19,58 | 15,8 | 17,5 | 18,7 | fra NeuroPose e SensingDynamics |
+
+**Letture dopo il test** (interpretazioni; nessuna scelta ne dipende):
+- **Fasi nuove.** Il modello toglie solo il 10% dell'errore della posa media, contro il 17% sugli utenti nuovi. Il salto fra le due condizioni
+  (+3,13 gradi) e' simile a quello delle baseline (+3,0, +4,0 e +3,3): le fasi nuove sono difficili per tutti.
+- **Contesto corto.** Era il limite atteso, ma questi numeri non lo isolano.
+
+**Aperto:**
+- **Un solo seme.** Su DB8 i semi differivano di 0,07-0,15 gradi, quanto il margine su NeuroPose in `user_stage`: in quella condizione la
+  categoria e' fragile.
+- **Contesto non isolato.** Servirebbe una TEMPONet con piu' contesto, che e' un altro modello.
+- **Confronto descrittivo.**
+  - Il training e' diverso, e vemg2pose lavora su finestre di 11.790 campioni (5,9 s) contro i 256 di TEMPONet.
+  - Nel codice ufficiale la finestra di valutazione comprende il contesto di ciascun modello. Quindi modelli con contesti diversi sono valutati su
+    insiemi di finestre in parte diversi.
+- **Istanti.** Si valuta un istante ogni 10 campioni (200 Hz), non tutti i 10.000 della finestra: e' un sottocampionamento regolare, fissato
+  nel piano.
+- **Fuori dal perimetro:** QAT int8, tracking con la posa iniziale nota, landmark.
+- **[H26]** dichiara un nuovo stato dell'arte fra i modelli in streaming, ma i suoi numeri non sono verificati.
+
+**Cosa ne segue per il progetto** (lettura di Claude):
+- **Baseline dell'harness.** Come baseline «CNN/TCN da zero» su emg2pose si riporta questa misura, col seme 0 e con l'EMA, con la grezza accanto.
+  Protocollo ufficiale e seme unico vanno dichiarati.
+- **Modello conservato.** Il modello finale e' su `$WORK` (sha256 `d2d4bed9...3582`) e si puo' rivalutare senza riallenarlo.
+- **Confronto col FM.** Conviene fissare un solo insieme di finestre e di istanti per tutti i modelli, per esempio quello del contesto piu'
+  lungo, oppure dichiarare la differenza.
+- **Altri semi.** Restano possibili per un confronto stretto, a circa 3,4 GPU-ore l'uno. Il test e' gia' stato visto, quindi la ragione per
+  farli va dichiarata a parte dal risultato.
+
+**Costi dell'attivita':** 3,513 GPU-ore sul tetto di 5 (28,1 ore locali con billing 8) e 4,583 core-ore sul tetto di 10.

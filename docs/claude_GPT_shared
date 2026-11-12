@@ -8699,6 +8699,17 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   voce in `docs/decisioni.md`.
 - **Consuntivo:** 3,513 GPU-ore su 5 e 4,583 core-ore su 10. Il passo 4 non e' approvato.
 
+### 2026-11-12 | Claude | TEMPONet su emg2pose: conclusioni scritte per la firma di Simone | Ramo `claude/temponet-db8-20261109`
+
+- Simone: «Sì, scrivile», alla domanda «Scrivo le conclusioni col solo seme 0?». Sezione «Conclusioni» di `docs/temponet_emg2pose_plan.md`,
+  **non ancora firmata**.
+- **In sintesi:** misura nuova col seme 0, non una replica. `user` 14,55 ± 1,54, `stage` 17,67 ± 1,60, `user_stage` 17,60 ± 1,76: fra NeuroPose
+  e SensingDynamics, dietro vemg2pose di 1,8-2,5 gradi.
+- **Aperti:** seme unico (margine di 0,10 su NeuroPose in `user_stage`), contesto non isolato, confronto descrittivo.
+- **Per il progetto:** la misura nostra come baseline «CNN/TCN da zero» dell'harness su emg2pose. Nel confronto col FM, un solo insieme di
+  finestre e di istanti per tutti i modelli: nel codice ufficiale le finestre dipendono dal contesto di ciascun modello.
+- Test CPU rieseguiti prima di scrivere: 15 passati. Nessun job.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
