@@ -8720,6 +8720,27 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Attivita' chiusa, nessun job aperto: 3,513 GPU-ore su 5 e 4,583 core-ore su 10. Il ramo non e' su `main`: l'integrazione spetta a GPT, se
   richiesta.
 
+### 2026-11-16 | Claude | TEMPONet su DB8 ed emg2pose: grafici con stima, EMG grezzo e angoli del dataset per Simone (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Simone: «mi fai vedere un output della classificazione, con la stima degli angoli, il segnale emg raw e gli angoli del dataset, prendi una
+  parte in cui ci sono 4 0 5 ripetizioni di unsoggetto». Letta come la regressione di TEMPONet; poi «Su emg2pose» per lo stesso grafico li'.
+- **DB8.** Soggetto S3, mediano fra i normodotati, sul test (A3); modello `full`, seme 0, del run di conferma 64010753, con le predizioni
+  salvate dal run.
+  - Controlli: bersagli uguali alle DoA della cache (differenza 0); l'EMA ricalcolata ridà la MAE registrata (7,618).
+  - Tratti: 59-128,5 s (mov. 3-5) 5,68 gradi con EMA; 171-244 s (mov. 7-9, prese) 9,55, scelto dopo aver visto gli errori.
+- **emg2pose.** La valutazione 64169772 non salva le predizioni. Le ho ricalcolate sul Mac in float32 da `model_final.pt` (sha256
+  d2d4bed9...3582) con il codice 0c19c4b.
+  - Utente 0219627c14: mai visto in training, 11° di 20 in `user`; 88 registrazioni, 470 finestre ufficiali.
+  - Controllo contro `eval.json`, MAE dell'utente: con EMA 14,207819 sia sul Mac sia registrata (differenza 1,8e-7 gradi); grezza 1,4e-7;
+    costante 1e-14.
+- Tre tratti con 5 ripetizioni, numerate dalla salita di un giunto con una regola fissa nello script:
+  1. prese pollice-dita, 7,5-34 s: 13,58 gradi;
+  2. rotazioni del pollice, 44-46,8 s: 18,27 gradi;
+  3. flessioni delle dita, 30,2-36,6 s: 9,27 gradi. Scelto DOPO aver guardato le stime: viene dal secondo dei 167 tratti di 20 s per
+     correlazione fra stima e angolo.
+- Dati, script e immagini in `~/wearusfm_local/plots/` (`temponet_db8_S3_A3_20261116/`, `temponet_emg2pose_20261116/`), fuori dal repo
+  perche' sono dati da wearable. Nessun job; sul ramo cambia solo questo registro.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12757,3 +12778,19 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
 - Il contesto corto (128 ms contro 5,9 s di vemg2pose) era il limite atteso, ma questi numeri non lo isolano.
 - Efficienza: circa 28 minuti del training sono andati negli indici delle finestre (lettura delle pose di 19.086 registrazioni). Il dato e'
   dedotto dalle date dei file. Per altri semi l'indice si potrebbe salvare una volta.
+
+### 2026-11-16 | Claude | TEMPONet su emg2pose: dentro un tratto la stima segue poco il movimento, e il pollice non lo segue
+
+- **Test intero dell'utente 0219627c14** (`user`, 470 finestre), correlazione per giunto fra stima con EMA e angolo: da 0,12 (pollice, IP) a
+  0,68 (anulare, MCP), mediana 0,51. Il rapporto fra le ampiezze (deviazioni standard) va da 0,08 a 0,69, mediana 0,42.
+  - Migliori: le flessioni MCP e PIP delle dita.
+  - Peggiori: il pollice e le abdu-adduzioni.
+- **Dentro un tratto la correlazione scende.** Nei 167 tratti di 20 s senza interruzioni, sui 6 giunti che si muovono di piu', la mediana e' 0,16.
+  - Interpretazione, non verificata: buona parte della correlazione globale verrebbe dalle differenze lente di posa fra registrazioni e fasi.
+  - Prese pollice-dita e rotazioni del pollice: stima quasi piatta. Correlazione da -0,2 a 0,36, ampiezza dal 5 al 57%. Eppure la MAE del
+    tratto delle prese (13,58) e' vicina a quella dell'utente (14,21).
+  - Dove segue (flessioni MCP delle dita insieme): correlazione 0,94-0,97, ampiezza dal 44 al 66%.
+- **Proposta, non decisa:** la MAE da sola nasconde questa differenza. Nel confronto col FM varrebbe la pena aggiungere una misura di
+  inseguimento, per esempio la correlazione per tratto.
+- Rotazioni del pollice, polso sinistro: i canali 3 e 4 sono dominati da una sinusoide a 60,0 Hz, verosimilmente la rete (80-83% della potenza
+  fra 55 e 65 Hz). E' nei dati, non nel modello.
