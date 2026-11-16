@@ -7217,3 +7217,9 @@ estensione scientifica, nuovi training, retry o pollingAI.
   - budget;
   - alternative.
 - Suite completa sul commit `7c5c886`: in corso alle 16:17 (96%, nessun fallimento fin li'); esito finale nel registro e in `docs/decisioni.md`.
+
+### 16/11/2026 — Claude, linea 1: suite completa sul commit del rilancio `7c5c886`
+
+- `tests/cpu` sul worktree a `7c5c886`, finita alle 16:22: 3555 passati, 0 falliti, 1 avviso preesistente
+  (`test_pose_objective.py`), 1 h 33 min (rallentata dalla verifica in parallelo). Il giro precedente, su `2e79815`, ne aveva 3553:
+  i due in piu' sono i test nuovi del rilancio. Log: `~/wearusfm_local/logs/line1_relaunch_full_suite_20261116.txt`. Nessun job.
