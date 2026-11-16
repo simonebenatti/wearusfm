@@ -8051,3 +8051,14 @@ Alla domanda «Firmi queste conclusioni?» Simone risponde «Sì, firmo». La fi
    - altri semi solo con una ragione dichiarata a parte dal risultato.
 
 Attivita' chiusa, nessun job aperto: 3,513 GPU-ore sul tetto di 5 e 4,583 core-ore sul tetto di 10. Il passo 4 non e' stato approvato.
+
+### 2026-11-16 — TEMPONet come testa del FM: prompt per GPT coordinamento; nessuna decisione, nessun job (Claude)
+
+Simone: «ok, adesso prepapariamo unprompt per GPT in cui gli facciamo provare ad usare temponet come testa per la regressine nel FM».
+Prompt `docs/prompt_gpt_temponet_testa_fm_20261116.md`: chiede a GPT coordinamento una proposta di protocollo per la firma di
+Simone. Non autorizza job, codice, budget o operatore, che restano decisioni di Simone.
+
+Rettifica di un riassunto. Nella voce del 12/11 qui sopra, punto 4, ho scritto «nel confronto col FM si usa un solo insieme di
+finestre e di istanti per tutti i modelli». Il testo firmato (`docs/temponet_emg2pose_plan.md` a `255fc8e`, righe 304-305) dice:
+«Conviene fissare un solo insieme di finestre e di istanti per tutti i modelli, per esempio quello del contesto piu' lungo, oppure
+dichiarare la differenza». Vale il testo firmato.

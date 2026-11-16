@@ -8741,6 +8741,21 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Dati, script e immagini in `~/wearusfm_local/plots/` (`temponet_db8_S3_A3_20261116/`, `temponet_emg2pose_20261116/`), fuori dal repo
   perche' sono dati da wearable. Nessun job; sul ramo cambia solo questo registro.
 
+### 2026-11-16 | Claude | TEMPONet come testa del FM: prompt per GPT coordinamento (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Simone: «ok, adesso prepapariamo unprompt per GPT in cui gli facciamo provare ad usare temponet come testa per la regressine nel
+  FM». E' la sua domanda del 06/11, rimasta ferma su «Dopo la lunga».
+- Prompt `docs/prompt_gpt_temponet_testa_fm_20261116.md`. Parte dalla sintesi di GPT coordinamento `8eba5e4` («La TEMPONet sui
+  latenti è ancora una domanda aperta»). Chiede una proposta di protocollo per la firma di Simone: livello A a encoder congelato,
+  livello B nel pretraining a parte. Affidamento del codice, operatore e budget restano a Simone. Nessun job, nessuna autorizzazione.
+- Fatti raccolti da sei lettori e controllati in due giri di verifica: 47 e 20 rilievi, nessuno bloccante. Applicati tutti, salvo
+  due tagli facoltativi. Fra i fatti messi nel prompt:
+  - il train delle cache del lungo e' lo stesso pannello alle tre dosi: 40 utenti, 200 registrazioni, 1.907 finestre;
+  - i 15 utenti val del FM sono lo split `val` ufficiale, gli stessi di TEMPONet raw;
+  - TEMPONet sui latenti cosi' com'e': T ≥ 38, campo ricettivo 9,45 s sulla griglia di 25 ms, primo blocco a 16 canali (meno dei 20
+    angoli), 76.788-105.460 parametri;
+  - ultimo saldo committato: 09/11, residuo 691.863 ore locali (`fccf88d`), da rileggere.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12794,3 +12809,12 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   inseguimento, per esempio la correlazione per tratto.
 - Rotazioni del pollice, polso sinistro: i canali 3 e 4 sono dominati da una sinusoide a 60,0 Hz, verosimilmente la rete (80-83% della potenza
   fra 55 e 65 Hz). E' nei dati, non nel modello.
+
+### 2026-11-16 | Claude | Rettifica: il riassunto in decisioni.md delle conclusioni emg2pose irrigidisce la frase sul supporto comune
+
+- Nella voce del 12/11 di `docs/decisioni.md`, punto 4, ho scritto: «nel confronto col FM si usa un solo insieme di finestre e di
+  istanti per tutti i modelli».
+- Il testo firmato (`docs/temponet_emg2pose_plan.md` a `255fc8e`, righe 304-305) dice invece: «Conviene fissare un solo insieme di
+  finestre e di istanti per tutti i modelli, per esempio quello del contesto piu' lungo, oppure dichiarare la differenza».
+- Vale il testo firmato. La voce del 12/11 resta com'e'; la rettifica e' in `docs/decisioni.md`, voce del 16/11. Trovato dai
+  revisori del prompt per GPT.
