@@ -1,0 +1,115 @@
+{
+  "protocol": "contrastive-preflight-20261116-v2",
+  "status": "REVIEW_REQUIRED",
+  "submission_authorized_after_convergence": true,
+  "training_authorized": false,
+  "source_sha256": null,
+  "review": null,
+  "input_sha256": {
+    "manifest": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+    "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+    "pose_stats": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+  },
+  "resources": {
+    "gpu_cells": 7,
+    "gpus_per_cell": 4,
+    "cpu_per_gpu_cell": 32,
+    "memory_gib_per_gpu_cell": 240,
+    "seconds_per_gpu_cell": 1800,
+    "gpu_hours_cap": 14,
+    "cpu_audit": {
+      "cpus": 8,
+      "memory_gib": 32,
+      "seconds": 3600
+    },
+    "cpu_readout": {
+      "cpus": 8,
+      "memory_gib": 32,
+      "seconds": 3600
+    },
+    "checkouts": {
+      "count": 4,
+      "cpus": 4,
+      "seconds_each": 300
+    },
+    "total_core_hours_cap": 129.33333333333334
+  },
+  "cells": [
+    {
+      "id": "CONTRAST-AUDIT-v2-20261116",
+      "mode": "audit",
+      "depends": []
+    },
+    {
+      "id": "CONTRAST-CUDA-v2-20261116",
+      "mode": "cuda",
+      "depends": [
+        "calibration_accepted"
+      ]
+    },
+    {
+      "id": "CONTRAST-CALIB-v2-20261116",
+      "mode": "calibration",
+      "depends": [
+        "audit"
+      ]
+    },
+    {
+      "id": "CONTRAST-BENCH-C0-v2-20261116",
+      "mode": "full",
+      "arm": "C0",
+      "depends": [
+        "calibration_accepted",
+        "cuda"
+      ]
+    },
+    {
+      "id": "CONTRAST-BENCH-CN-v2-20261116",
+      "mode": "full",
+      "arm": "CN",
+      "depends": [
+        "calibration_accepted",
+        "cuda"
+      ]
+    },
+    {
+      "id": "CONTRAST-BENCH-CR-v2-20261116",
+      "mode": "full",
+      "arm": "CR",
+      "depends": [
+        "calibration_accepted",
+        "cuda"
+      ]
+    },
+    {
+      "id": "CONTRAST-RESUME-CN-v2-20261116",
+      "mode": "split",
+      "arm": "CN",
+      "depends": [
+        "calibration_accepted",
+        "cuda"
+      ]
+    },
+    {
+      "id": "CONTRAST-RESUME-CR-v2-20261116",
+      "mode": "split",
+      "arm": "CR",
+      "depends": [
+        "calibration_accepted",
+        "cuda"
+      ]
+    },
+    {
+      "id": "CONTRAST-READOUT-v2-20261116",
+      "mode": "readout",
+      "depends": [
+        "all_five_benchmarks"
+      ]
+    }
+  ],
+  "review_gate": "Claude reviews corrected source and thresholds before first job; publish separate release and verify SHA. Do not mutate scientific plan after calibration.",
+  "failure_policy": "Any failed/incomplete stage stops dependent stages; archive logs and receipts, diagnose; no automatic retry, new lambda, new selection, higher walltime or partial-cohort promotion.",
+  "fresh_outputs": "WORK/wearusfm_runs/results/contrastive_preflight_20261116_v2/<cell>",
+  "execution": "Frozen reviewed per-cell job JSON via scripts/slurm/contrastive_preflight_{cpu,gpu}.sbatch and shared scripts/submit_job.py ledger. No sbatch outside submitter."
+}

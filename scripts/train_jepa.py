@@ -78,8 +78,6 @@ def build_parser() -> argparse.ArgumentParser:
                          "scripts/ingest_emg2pose_pose.py (con pose_stats.json); accende la testa di posa e il suo termine; default nessuno")
     ap.add_argument("--pose-weight", type=float, default=None,
                     help="peso del termine di posa; default 1,0 con --pose-root (firma del 26/10), non ammesso senza")
-    ap.add_argument("--contrastive-config", type=Path, default=None,
-                    help="JSON esplicito C0/CN/CR: obiettivi globali e coda; nessun default attivo, richiede --pose-root e accumulo 1")
     ap.add_argument("--pose-unprompted", choices=["on", "off"], default="on",
                     help="registrazioni di emg2pose a mano non sollecitata nel termine di posa: on (firma del 26/10) o off (mascherate)")
     ap.add_argument("--mask-shares", default=None,
@@ -260,17 +258,6 @@ def build_config(args, error=None) -> "R.RunConfig":
                                        freeze_encoder=args.freeze_encoder, calibration_batches=args.branch_calibration_batches)
     elif args.wavelet_learnable or args.freeze_encoder or args.branch_weight != 0:
         fail("--branch-weight, --wavelet-learnable e --freeze-encoder valgono con --spectral-branches")
-    contrast_path = getattr(args, "contrastive_config", None)
-    if contrast_path is not None:
-        from wearusfm.training.contrastive_objectives import ContrastiveConfig
-        from dataclasses import asdict
-        try:
-            cc = ContrastiveConfig(**json.loads(contrast_path.read_text()))
-        except (OSError, TypeError, ValueError) as exc:
-            fail(f"--contrastive-config: {exc}")
-        if cfg.accum_steps != 1 or not cfg.loader.pose_root or cfg.jepa.pose_weight <= 0:
-            fail("--contrastive-config richiede posa e accumulo 1")
-        cfg = replace(cfg, model=replace(cfg.model, contrastive_projection=True), contrastive=asdict(cc))
     return cfg
 
 

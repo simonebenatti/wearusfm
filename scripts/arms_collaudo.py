@@ -27,8 +27,8 @@ PROTOCOL = "w1arm-collaudo-v1"
 ARM_WEIGHTS = {"JEPA-only": (1.0, 0.0), "ancore-only": (0.0, 0.2),  # (jepa_weight, anchor_weight), firma dei bracci del 16/10
                "A": (1.0, 0.2),  # obiettivo A: i bracci del pilot degli obiettivi (R0, R1, R2, R5) ne tengono i pesi (24/10/2026)
                "R3": (0.0, 0.2),  # seconda ondata (firma del 26/10/2026): ancore + testa di posa, senza JEPA
-               "R3-lungo": (0.0, 0.2)}  # collaudo lungo (B) di R3: la ricetta ESATTA di R3 fermata a 5.000 passi (28/10/2026)
-ARM_POSE_WEIGHT = {"R3": 1.0, "R3-lungo": 1.0}  # peso del termine di posa (docs/pilot_posa_v1.md §2 (iii)); 0 per gli altri bracci
+               "R3-lungo": (0.0, 0.2), "C0": (0.0, 0.2), "CN": (0.0, 0.2), "CR": (0.0, 0.2)}
+ARM_POSE_WEIGHT = {"R3": 1.0, "R3-lungo": 1.0, "C0": 1.0, "CN": 1.0, "CR": 1.0}
 # cancello congelato del collaudo dbg di R3 (docs/pilot_posa_v1.md §2 (iii) e decisioni.md del 26/10/2026), letto da metrics.jsonl sui soli
 # passi con conteggio di posa > 0; posa pesata = pose_weight x pose, ancore pesate = anchor_weight x somma delle ancore
 POSE_GATE = {"start_steps": (1, 100), "start_min_ratio": 0.1,  # scala all'avvio: media 1-100, posa pesata >= 0,1 x ancore pesate
@@ -43,7 +43,7 @@ PANEL_GATE = {"step_from": 0, "step_to": 5000, "every": 500, "factor": 0.9, "ci_
               "users": 32, "recordings_per_user": 2, "windows_per_recording": 4}
 B_PROTOCOL = "r3-long-collaudo-v1"
 B_POSE_STATS_SHA = "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
-ARM_CHECKPOINTS = {"R3-lungo": ("checkpoint.pt",)}  # fermato a 5.000 di 49.046: ne' predecay ne' postdecay, resta il checkpoint di ripresa
+ARM_CHECKPOINTS = {arm: ("checkpoint.pt",) for arm in ("R3-lungo", "C0", "CN", "CR")}
 ANCHORS = ("log_rms", "band_shape", "log_env", "ms_fast", "ms_slow")  # le ancore attuali (`training/jepa.py`, anchor_losses)
 WORLD, BATCH_PER_PROCESS, WINDOWS = 4, 8, 32
 REL_TOL = 1e-6  # il totale del contratto e' la somma pesata delle componenti in float64 (`run._accumulate_terms`)
@@ -422,6 +422,7 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
         crit[name] = {"ok": bool(ok), "detail": detail}
 
     is_long = arm == "R3-lungo"
+    is_contrastive = arm in ("C0", "CN", "CR")
     input_errors = []
     manifest, panel = {}, []
     if is_long:
@@ -493,6 +494,27 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
     if contrastive_config is not None:
         from wearusfm.training.contrastive_objectives import ContrastiveConfig
         contrastive_config = ContrastiveConfig(**contrastive_config)
+    if is_contrastive:
+        cc = contrastive_config
+        put("contrasto_configurato", cc is not None and cc.arm == arm,
+            {"arm_atteso": arm, "arm_config": None if cc is None else cc.arm})
+        if cc is not None:
+            calibration = cc.calibration_only
+            expected_grads = [r["step"] for r in recs if cc.wants_gradients(r["step"] - 1)]
+            actual_grads = [r["step"] for r in recs if all(_finite_number(r.get("contrast_global_grad_" + k))
+                                                        for k in ("base", "nce", "rnc"))]
+            weight_errors = [r["step"] for r in recs if tuple(r.get("contrast_" + k + "_weight") for k in ("nce", "rnc"))
+                             != cc.weights(r["step"] - 1)]
+            calibrated = (summary.get("contrastive") or {})
+            phase_ok = (arm == "C0" and calibrated.get("optimizer_updates") == 0 and
+                        calibrated.get("initial_sha256") is not None and
+                        calibrated.get("initial_sha256") == calibrated.get("final_student_sha256") == calibrated.get("final_teacher_sha256")) \
+                       if calibration else calibrated.get("optimizer_updates") == steps
+            put("contrasto_fase", phase_ok and all(r.get("contrastive_calibration_only") is calibration for r in recs),
+                {"fase": "calibration" if calibration else "benchmark_or_training", "optimizer_updates": calibrated.get("optimizer_updates")})
+            put("contrasto_pesi_e_diagnostica", not weight_errors and expected_grads == actual_grads and
+                all(_finite_number(r.get("contrast_projector_grad_norm")) for r in recs),
+                {"pesi_errati": weight_errors[:5], "gradienti_attesi": expected_grads, "gradienti_presenti": actual_grads})
     for r in recs:
         keys = ("total", "jepa") + ANCHORS + (("pose",) if wp > 0 else ())
         if contrastive_config is not None:
@@ -511,7 +533,7 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
                     + (" + scheduled_nce_weight x contrast_nce + scheduled_rnc_weight x contrast_rnc" if contrastive_config else ""),
          "tolleranza_relativa": REL_TOL, "passi_senza_componenti_finite": missing[:5], "passi_fuori_tolleranza": off[:5]})
     training_descent = None
-    if wp > 0:
+    if wp > 0 and not is_contrastive:
         for name, ok, detail in pose_gate(recs, wp, wa, steps, POSE_GATE_LONG if is_long else POSE_GATE):
             if is_long and name == "posa_discesa":
                 training_descent = detail  # descriptive: no second 10% requirement after warmup
@@ -532,7 +554,7 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
     first = statistics.fmean(totals[:EDGE]) if len(totals) >= 2 * EDGE else None
     last = statistics.fmean(totals[-EDGE:]) if len(totals) >= 2 * EDGE else None
     total_trend = {"termine_allenato": "total", "media_primi": first, "media_ultimi": last, "record_mediati": EDGE}
-    if not is_long:
+    if not is_long and not is_contrastive:
         put("apprendimento", first is not None and last < first, total_trend)
 
     diags = [r for r in recs if "student_collapse_ratio" in r]
@@ -545,7 +567,8 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
     wanted = ARM_CHECKPOINTS.get(arm, CHECKPOINTS)
     put("checkpoint", all(sizes.get(n, 0) > 0 for n in wanted), {n: sizes.get(n) for n in wanted})
 
-    later = [r for r in recs if r.get("step", 0) > EDGE]
+    later = [r for r in recs if r.get("step", 0) > EDGE and
+             (not is_contrastive or "contrast_global_grad_base" not in r)]
     t_step = [r["t_step_s"] for r in later if isinstance(r.get("t_step_s"), (int, float))]
     t_data = [r["t_data_s"] for r in later if isinstance(r.get("t_data_s"), (int, float))]
 

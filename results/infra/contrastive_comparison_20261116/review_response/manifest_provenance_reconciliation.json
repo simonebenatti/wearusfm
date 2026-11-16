@@ -1,0 +1,29 @@
+{
+  "schema": "contrastive-manifest-provenance-reconciliation-v1",
+  "historical_local": {
+    "path": "/Users/simonebenatti/wearusfm_local/manifests_derived_20261015/derived_final/manifest_v1_1_nested_1.json.gz",
+    "sha256": "12a445d97a542b995ec3aca5830b26744c2280ca4801589036105e7511173a64",
+    "code_commit": "56cea75ba736f1dccfef925838f434419478fd07"
+  },
+  "execution_copy": {
+    "path": "/private/tmp/wearusfm-contrast-review-20261116/manifest_actual.json.gz",
+    "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "code_commit": "11f868b8ad8a949381a5cbb8519733e7dbc538bf"
+  },
+  "changed_top_level_keys": [
+    "code_commit"
+  ],
+  "canonical_json_excluding_code_commit_sha256": "492875b9473910b80ea042b74463f6c05e5f96148726b5805281ad3e286f5b9a",
+  "equal_excluding_code_commit": true,
+  "columns_equal": true,
+  "rows_equal": true,
+  "params_equal": true,
+  "row_count": 27560,
+  "window_seconds_sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+  "recomputed_execution_quota_map_exactly_equals_approved": true,
+  "exempt_datasets": [
+    "capgmyo"
+  ],
+  "numerical_policy_change": false,
+  "verification_scope": "Decoded full JSON equality except producer code_commit; quotas independently recomputed from exact execution manifest. Previous full coverage/bootstrap was not rerun: every field consumed by those calculations is byte-equivalent under canonical JSON and unchanged."
+}

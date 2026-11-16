@@ -10,7 +10,7 @@ import torch.multiprocessing as mp
 
 from wearusfm.training.contrastive_memory import (
     CandidateQueue, WindowIdentity, admissible_mask, gather_objects,
-    gather_variable, identities_from_batch,
+    gather_variable, identities_from_batch, candidate_diagnostics,
 )
 
 
@@ -48,6 +48,48 @@ def test_negative_filters_same_subject_and_boundary_in_seconds():
     assert admissible_mask([], candidates).shape == (0, 9)
     assert admissible_mask([q], []).shape == (1, 0)
     assert not admissible_mask([q], [replace(q, start=400, stop=1200)], gap_seconds=0).item()
+
+
+@pytest.mark.parametrize("fs", [200., 1000., 2000., 2048.])
+def test_exact_four_second_boundary_is_symmetric_for_large_sample_indices(fs):
+    for start in (17, 123456, 2 ** 40):
+        q = replace(ident(fs=fs), start=start, stop=start + int(fs))
+        boundary = q.stop + int(4 * fs)
+        exact = replace(q, start=boundary, stop=boundary + int(fs))
+        too_close = replace(exact, start=boundary - 1)
+        assert admissible_mask([q], [exact]).item()
+        assert admissible_mask([exact], [q]).item()
+        assert not admissible_mask([q], [too_close]).item()
+        assert not admissible_mask([too_close], [q]).item()
+
+
+def test_negative_diagnostics_are_pair_counts_and_snapshot_dedup_counts():
+    queue = CandidateQueue(8, 256)
+    a, b, c = ident(), ident(1), ident(2, subject="other")
+    queue.commit(torch.ones(2, 3), [a, b], step=0)
+    snapshot = queue.snapshot(1, torch.ones(3, 3), [a, a, c])
+    mask = admissible_mask([a], snapshot.identities)
+    metrics = candidate_diagnostics([a], snapshot, mask, 1)
+    assert metrics["contrast_nce_negative_count"] == 2
+    assert metrics["contrast_nce_negative_age_sum"] == 1
+    assert metrics["contrast_nce_negative_current"] == 1
+    assert metrics["contrast_nce_negative_same_subject"] == 1
+    assert metrics["contrast_nce_negative_same_recording"] == 1
+    assert metrics["contrast_nce_negative_age_0"] == metrics["contrast_nce_negative_age_1_32"] == 1
+    assert metrics["contrast_nce_duplicate_current_discarded"] == 1
+    assert metrics["contrast_nce_previous_keys_replaced"] == 1
+    assert metrics["contrast_nce_negative_count__A"] == 2
+
+
+def test_commit_physically_expires_old_keys_and_retains_age_boundary():
+    # Review gap: snapshot-only expiration would otherwise pass the older test.
+    queue = CandidateQueue(8, 2)
+    queue.commit(torch.ones(1, 3), [ident()], step=0)
+    for step in (1, 2):
+        queue.commit(torch.empty(0, 3), [], step=step)
+    assert len(queue.state_dict()["entries"]) == 1
+    queue.commit(torch.empty(0, 3), [], step=3)
+    assert queue.state_dict()["entries"] == []
 
 
 def test_snapshot_readonly_current_preferred_and_lowest_index_tie():
@@ -128,6 +170,19 @@ def test_single_process_gather_preserves_grad_only_when_requested():
     assert gather_variable(x, with_grad=True) is x
     assert not gather_variable(x).requires_grad
     assert gather_objects([ident(0), ident(1)]) == [ident(0), ident(1)]
+
+
+@pytest.mark.parametrize("field", [4, 5])
+def test_asymmetric_gather_gradient_participation_fails_before_tensor_collective(monkeypatch, field):
+    from wearusfm.training import contrastive_memory as memory
+    monkeypatch.setattr(memory, "_distributed", lambda: True)
+    def different_flags(meta):
+        other = list(meta[0])
+        other[field] = not other[field]
+        return [meta[0], tuple(other)]
+    monkeypatch.setattr(memory, "gather_objects", different_flags)
+    with pytest.raises(ValueError, match="gradient participation"):
+        memory.gather_variable(torch.ones(2, 3, requires_grad=True), with_grad=True)
 
 
 def _gather_worker(rank, world, store, output, all_empty):

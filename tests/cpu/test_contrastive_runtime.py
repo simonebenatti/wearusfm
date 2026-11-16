@@ -20,7 +20,7 @@ from test_pose_training import _pose_setup, _r3_config
 from wearusfm.data import pretraining_loader as L
 from wearusfm.model.fm import WearUsFM
 from wearusfm.training import run as R
-from wearusfm.training.contrastive_objectives import ContrastiveConfig, ContrastiveRuntime, physical_pair_mask
+from wearusfm.training.contrastive_objectives import ContrastiveConfig, ContrastiveRuntime, physical_pair_mask, attach_contrastive_head
 from wearusfm.training.contrastive_memory import WindowIdentity
 from wearusfm.training.jepa import make_teacher, ema_update
 from wearusfm.model.rank_contrast import rank_contrast_pairs
@@ -28,10 +28,10 @@ from wearusfm.model.rank_contrast import rank_contrast_pairs
 
 def _config(pose_root, arm="C0", *, calibration=False):
     base = _r3_config(pose_root, total=4, keep=())
-    contrast = ContrastiveConfig(arm=arm, capacity_per_dataset=8, min_negatives=1, gap_seconds=.001,
+    contrast = ContrastiveConfig(arm=arm, nce_weight=.1, rnc_weight=.1, capacity_per_dataset=8, min_negatives=1, gap_seconds=.001,
                                 fill_steps=0, ramp_steps=1, rnc_stride=2, calibration_only=calibration)
     return replace(base, max_steps=4, batch_size=4, fixed_eval_every=0,
-                   model=replace(base.model, contrastive_projection=True, muscle_dropout=0.),
+                   model=replace(base.model, muscle_dropout=0.),
                    loader=replace(base.loader, min_window_s=1., max_window_s=1.),
                    contrastive=asdict(contrast), datasets=("emg2pose",))
 
@@ -82,8 +82,11 @@ def test_all_three_arms_complete_real_training_and_advance_memory(trained):
         assert all(np.isfinite(r["total"]) and np.isfinite(r["contrast_rnc"]) and np.isfinite(r["contrast_nce"]) for r in recs)
         assert any(r["contrast_rnc_windows"] > 0 for r in recs)
         assert any(r["contrast_nce_eligible"] > 0 for r in recs)
-        assert all(r["contrast_nce_weight"] == pytest.approx(configs[arm].contrastive["nce_weight"] if arm == "CN" else 0.) for r in recs)
-        assert all(r["contrast_rnc_weight"] == pytest.approx(configs[arm].contrastive["rnc_weight"] if arm == "CR" else 0.) for r in recs)
+        assert all(r["contrast_nce_weight"] == (configs[arm].contrastive["nce_weight"] if arm == "CN" else 0.) for r in recs)
+        assert all(r["contrast_rnc_weight"] == (configs[arm].contrastive["rnc_weight"] if arm == "CR" else 0.) for r in recs)
+        assert not any("contrast_rnc_cross_window_rank_correlation" in r for r in recs)
+        assert any(r["contrast_projector_grad_norm"] > 0 for r in recs) if arm == "CN" else all(
+            r["contrast_projector_grad_norm"] == 0 for r in recs)
     control = _load(tmp / "C0")["student"]
     for arm in ("CN", "CR"):
         candidate = _load(tmp / arm)["student"]
@@ -93,7 +96,7 @@ def test_all_three_arms_complete_real_training_and_advance_memory(trained):
 def test_zero_weight_control_preserves_base_training_updates(trained):
     tmp, root, manifest, _, configs, _ = trained
     cfg = configs["C0"]
-    baseline = replace(cfg, contrastive=None, model=replace(cfg.model, contrastive_projection=False))
+    baseline = replace(cfg, contrastive=None)
     R.train(baseline, manifest, [root], tmp / "base", log=lambda _: None)
     old, control = _load(tmp / "base"), _load(tmp / "C0")
     for part in ("student", "teacher"):
@@ -121,7 +124,7 @@ def test_calibration_advances_only_queue_and_measures_global_gradients(trained):
     tmp, root, manifest, pose_root, _, _ = trained
     cfg = _config(pose_root, "CN", calibration=True)
     torch.manual_seed(cfg.seed)
-    init = WearUsFM(cfg.model).state_dict()
+    init = attach_contrastive_head(WearUsFM(cfg.model)).state_dict()
     summary = R.train(cfg, manifest, [root], tmp / "calibration", log=lambda _: None)
     ckpt = _load(tmp / "calibration")
     assert summary["contrastive"]["optimizer_updates"] == 0
@@ -135,13 +138,15 @@ def test_calibration_advances_only_queue_and_measures_global_gradients(trained):
     assert all(r["contrast_global_grad_base"] > 0 and r["contrast_global_grad_rnc"] > 0 for r in recs)
     assert any(r["contrast_global_grad_nce"] > 0 for r in recs)
     assert all(r["contrastive_calibration_only"] for r in recs)
+    assert all(np.isfinite(r["contrast_rnc_cross_window_rank_correlation"]) and
+               r["contrast_rnc_cross_window_rank_valid"] in (0., 1.) for r in recs)
     with pytest.raises(ValueError, match="start fresh"):
         R.train(cfg, manifest, [root], tmp / "calibration", log=lambda _: None)
 
 
 @pytest.mark.parametrize("change,match", [
     ({"accum_steps": 2}, "accum_steps=1"),
-    ({"contrastive": None}, "explicit matched"),
+    ({"freeze_encoder": True}, "freeze_encoder"),
 ])
 def test_invalid_runtime_contract_is_rejected_before_training(trained, change, match):
     tmp, root, manifest, _, configs, _ = trained
@@ -150,7 +155,7 @@ def test_invalid_runtime_contract_is_rejected_before_training(trained, change, m
 
 
 def _global_update(cfg, init, batch, ctx):
-    student = WearUsFM(cfg.model).double()
+    student = attach_contrastive_head(WearUsFM(cfg.model)).double()
     student.load_state_dict(init)
     teacher = make_teacher(student)
     wrapped = R._ddp_wrap(student, cfg, ctx, "cpu") if ctx.active else None
@@ -204,18 +209,20 @@ def _spawn_bounded(world, store, cfg, init, batch, output):
 def test_global_full_model_gradients_match_ddp_with_rank_without_pose(tmp_path, arm, world):
     root, manifest, pose_root = _pose_setup(tmp_path)
     cfg = _config(pose_root, arm)
-    cfg = replace(cfg, contrastive={**cfg.contrastive, "grad_every": 1})
+    cfg = replace(cfg, contrastive={**cfg.contrastive, "grad_every": 1},
+                  loader=replace(cfg.loader, min_window_s=1., max_window_s=4.))
     # Full population of physical windows, with some valid pose labels removed
     # to force a whole rank to contribute only as an unlabelled/zero-pose rank.
     loader = L.PretrainLoader(R.load_index(manifest, [root], cfg.datasets, cfg.nested), cfg.loader, {}, None)
     batch = loader.batch(4, np.random.default_rng(3))
+    assert len({signal.shape[-1] for signal in batch.signals}) > 1
     for i in range(2):
         batch.pose[i] = None
     assert any(item is not None for item in batch.pose[2:])
     # Distinct synthetic sessions avoid relying on a lucky temporal gap for NCE.
     batch.rows = [{**row, "session": f"synthetic_session_{i}"} for i, row in enumerate(batch.rows)]
     torch.manual_seed(0)
-    init = WearUsFM(cfg.model).double().state_dict()
+    init = attach_contrastive_head(WearUsFM(cfg.model)).double().state_dict()
     reference = _global_update(cfg, init, batch, R.DistContext())
     output = tmp_path / "ddp"
     output.mkdir()
@@ -223,7 +230,12 @@ def test_global_full_model_gradients_match_ddp_with_rank_without_pose(tmp_path, 
     values = [torch.load(output / f"rank{rank}.pt", weights_only=False) for rank in range(world)]
     for got in values:
         assert set(got["grads"]) == set(reference["grads"])
-        for key in ("total", "contrast_nce", "contrast_rnc"):
+        # Base pose reductions run in float32, even for this float64 fixture.
+        assert got["metrics"]["pose"] == pytest.approx(reference["metrics"]["pose"], rel=2e-7, abs=1e-6)
+        got_nonpose = got["metrics"]["total"] - cfg.jepa.pose_weight * got["metrics"]["pose"]
+        ref_nonpose = reference["metrics"]["total"] - cfg.jepa.pose_weight * reference["metrics"]["pose"]
+        assert got_nonpose == pytest.approx(ref_nonpose, rel=1e-9, abs=1e-10)
+        for key in ("contrast_nce", "contrast_rnc"):
             assert got["metrics"][key] == pytest.approx(reference["metrics"][key], rel=1e-9, abs=1e-10)
         for key in ("contrast_global_grad_base", "contrast_global_grad_nce", "contrast_global_grad_rnc"):
             assert got["metrics"][key] == pytest.approx(reference["metrics"][key], rel=2e-6, abs=1e-8)
@@ -255,3 +267,108 @@ def test_physical_pair_mask_excludes_duplicate_instants_in_both_roles():
     grad, = torch.autograd.grad((num / chance.clamp(min=1)).sum(), logits)
     assert (grad[~allowed] == 0).all()
     assert torch.isfinite(grad).all()
+
+
+def test_coverage_failure_stops_before_optimizer_teacher_or_queue_mutation(trained):
+    tmp, root, manifest, _, configs, _ = trained
+    cfg = replace(configs["CN"], ckpt_every=1,
+                  contrastive={**configs["CN"].contrastive, "coverage_block": 4})
+    output = tmp / "coverage_stop"
+    summary = R.train(cfg, manifest, [root], output, log=lambda _: None)
+    checkpoint = _load(output)
+    records = [json.loads(line) for line in (output / "metrics.jsonl").read_text().splitlines()]
+    assert summary["steps"] == checkpoint["step"] == len(records) == 3
+    assert summary["contrastive"]["optimizer_updates"] == 3
+    assert summary["contrastive"]["queue_last_step"] == checkpoint["contrastive_state"]["queue"]["last_step"] == 2
+    assert summary["contrastive"]["coverage_failed_block"]["updates"] == 4
+    assert summary["contrastive"]["coverage_partial_block"]["updates"] == 3
+    from wearusfm.training.pairing import state_sha256
+    for part in ("student", "teacher"):
+        assert summary["contrastive"][f"final_{part}_sha256"] == state_sha256(checkpoint[part])
+    assert "coverage gate failed" in (output / "STOP").read_text()
+
+
+@pytest.mark.parametrize("arm", ["C0", "CN", "CR"])
+@pytest.mark.parametrize("source", ["student", "signal", "pose_anchor"])
+def test_nonfinite_contrastive_inputs_write_coordinated_stop(trained, monkeypatch, arm, source):
+    tmp, root, manifest, _, configs, _ = trained
+    original = ContrastiveRuntime.attach
+    original_prepare = R._prepare
+    def broken_prepare(*args, **kwargs):
+        micro = original_prepare(*args, **kwargs)
+        if source == "signal":
+            micro.inp.signals[0].fill_(float("nan"))
+        return micro
+    def broken_attach(self, terms, student, teacher, micro, enc, enc_t):
+        with torch.no_grad():
+            if source == "student":
+                enc.z[0, 0, 0, 0] = float("nan")
+            elif source == "pose_anchor":
+                micro.pose[0][0, self.cfg.rnc_stride // 2, 0] = float("nan")
+                micro.pose[1][0, self.cfg.rnc_stride // 2, 0] = True
+        return original(self, terms, student, teacher, micro, enc, enc_t)
+    monkeypatch.setattr(R, "_prepare", broken_prepare)
+    monkeypatch.setattr(ContrastiveRuntime, "attach", broken_attach)
+    output = tmp / f"nonfinite_{arm}_{source}"
+    summary = R.train(configs[arm], manifest, [root], output, log=lambda _: None)
+    assert summary["steps"] == 0 and summary["contrastive"]["queue_last_step"] == -1
+    assert "contrastive numerical failure" in summary["stopped"]
+    assert "nonfinite valid pose target" in summary["stopped"] if source == "pose_anchor" else "representation" in summary["stopped"]
+    assert (output / "STOP").read_text().strip() == summary["stopped"]
+    assert (output / "metrics.jsonl").read_text() == ""
+    assert not (output / "checkpoint.pt").exists()
+
+
+def test_explicit_weights_and_configured_diagnostic_schedule():
+    with pytest.raises(TypeError):
+        ContrastiveConfig()
+    for value in (0., 1e-9, 1.01, float("nan"), True):
+        with pytest.raises(ValueError):
+            ContrastiveConfig(nce_weight=value, rnc_weight=.1)
+    cfg = ContrastiveConfig(nce_weight=.1, rnc_weight=.2, grad_every=100,
+                            grad_steps=(256, 512), grad_dense_start=513, grad_dense_end=576)
+    assert [s for s in range(490, 580) if cfg.wants_gradients(s - 1)] == [500, *range(512, 577)]
+    assert cfg.weights(255) == (0., 0.)
+    assert replace(cfg, arm="CN").weights(256) == (.1 / 256, 0.)
+    assert replace(cfg, arm="CR").weights(511) == (0., .2)
+
+
+def test_rarity_exemption_is_quota_bound_and_never_removes_global_queries():
+    cfg = ContrastiveConfig(nce_weight=.1, rnc_weight=.1, coverage_quotas={"rare": .001, "common": .999},
+                            coverage_exempt_datasets=("rare",))
+    engine = ContrastiveRuntime(asdict(cfg))
+    engine.expected_datasets = ("common", "rare")
+    engine.coverage = {"updates": 32, "rnc_active": 29, "datasets": {"common": [900, 900], "rare": [100, 0]}}
+    report = engine.coverage_report()
+    assert report["passed"] and report["nce_fraction"] == .9
+    assert report["datasets"]["rare"] == {"queries": 100, "eligible": 0, "fraction": 0., "exempt": True}
+    engine.coverage["datasets"]["rare"][0] += 1
+    assert not engine.coverage_report()["passed"]
+    with pytest.raises(ValueError, match="frozen quota rule"):
+        replace(cfg, coverage_exempt_datasets=("common", "rare"))
+    with pytest.raises(ValueError, match="pinned sampling quotas"):
+        ContrastiveConfig(nce_weight=.1, rnc_weight=.1, coverage_exempt_datasets=("rare",))
+
+
+def test_base_config_schema_is_unchanged_and_projector_is_opt_in():
+    cfg = R.small_config()
+    assert "contrastive" not in R.config_to_dict(cfg)
+    assert "contrastive_projection" not in R.config_to_dict(cfg)["model"]
+    assert not hasattr(WearUsFM(cfg.model), "contrastive_head")
+    model = WearUsFM(cfg.model)
+    rng, state = torch.get_rng_state(), {k: v.clone() for k, v in model.state_dict().items()}
+    attach_contrastive_head(model)
+    assert torch.equal(rng, torch.get_rng_state())
+    assert all(torch.equal(value, model.state_dict()[key]) for key, value in state.items())
+    with pytest.raises(ValueError, match="already attached"):
+        attach_contrastive_head(model)
+
+
+def test_initial_state_and_resume_provenance_assertions_fail_before_updates(trained):
+    tmp, root, manifest, _, configs, _ = trained
+    output = tmp / "wrong_initial"
+    with pytest.raises(ValueError, match="initial state differs"):
+        R.train(configs["CN"], manifest, [root], output, expected_contrastive_initial_sha256="0" * 64, log=lambda _: None)
+    assert not (output / "metrics.jsonl").exists() and not (output / "checkpoint.pt").exists()
+    with pytest.raises(ValueError, match="provenance changed"):
+        R.train(configs["CN"], manifest, [root], tmp / "CN", contrastive_provenance={"source_sha256": "different"}, log=lambda _: None)

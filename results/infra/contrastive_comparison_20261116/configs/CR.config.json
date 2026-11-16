@@ -24,8 +24,7 @@
     "pose_head": true,
     "tokenizer_activation": "gelu",
     "tokenizer_logsquare": false,
-    "tokenizer_logsquare_eps": 0.001,
-    "contrastive_projection": true
+    "tokenizer_logsquare_eps": 0.001
   },
   "jepa": {
     "target": "b",
@@ -173,9 +172,9 @@
   "prefetch_audit": false,
   "nested": "1",
   "contrastive": {
-    "arm": "CR",
     "nce_weight": null,
     "rnc_weight": null,
+    "arm": "CR",
     "nce_temperature": 0.2,
     "rnc_temperature": 0.1,
     "rnc_stride": 8,
@@ -186,9 +185,45 @@
     "gap_seconds": 4.0,
     "fill_steps": 256,
     "ramp_steps": 256,
-    "grad_every": 500,
+    "grad_every": 100,
+    "grad_steps": [
+      256,
+      512,
+      1962,
+      5000,
+      19618
+    ],
+    "grad_dense_start": 513,
+    "grad_dense_end": 576,
     "calibration_only": false,
     "coverage_block": 1024,
-    "enforce_coverage": true
+    "enforce_coverage": true,
+    "coverage_min_queries": 32,
+    "coverage_dataset_fraction": 0.8,
+    "coverage_nce_fraction": 0.9,
+    "coverage_rnc_fraction": 0.9,
+    "coverage_quotas": {
+      "camargo2021": 0.03442090877923247,
+      "capgmyo": 0.0028543868474759163,
+      "csl_hdemg": 0.022266032822690757,
+      "emg2pose": 0.23915890022728797,
+      "emg2qwerty": 0.244385666820943,
+      "grabmyo": 0.05427090782371972,
+      "hyser": 0.05186791335093826,
+      "ninapro_db10": 0.09309970233153658,
+      "ninapro_db2": 0.039898146559794796,
+      "ninapro_db3": 0.01261529967940154,
+      "ninapro_db4": 0.017458292398431052,
+      "ninapro_db5": 0.020261549338847138,
+      "ninapro_db6": 0.0329335435867361,
+      "ninapro_db7": 0.030381940692308724,
+      "ninapro_db8": 0.019509832779750533,
+      "putemg": 0.03921819812464841,
+      "zhang2026": 0.045398777836257134
+    },
+    "coverage_global_batch_size": 32,
+    "coverage_exempt_datasets": [
+      "capgmyo"
+    ]
   }
 }

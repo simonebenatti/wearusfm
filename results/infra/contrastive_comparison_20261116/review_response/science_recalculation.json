@@ -1,0 +1,3400 @@
+{
+  "status": "SCIENTIFIC_PROPOSAL_NOT_AUTHORIZATION",
+  "provenance": {
+    "manifest": {
+      "path": "/Users/simonebenatti/wearusfm_local/manifests_derived_20261015/derived_final/manifest_v1_1_nested_1.json.gz",
+      "sha256": "12a445d97a542b995ec3aca5830b26744c2280ca4801589036105e7511173a64"
+    },
+    "window_seconds": {
+      "path": "/Users/simonebenatti/wearusfm_local/manifests_derived_20261015/window_seconds_59425316.json",
+      "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+    },
+    "metrics": {
+      "path": "/Users/simonebenatti/wearusfm_local/logs/review6_remote/control30m/metrics.jsonl",
+      "sha256": "b114f60017bb292094dd25225657554658ca8d0406e32c60e1e955afa22bbe39"
+    },
+    "classification": {
+      "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/results/infra/logsquare_evaluation_20261107/final/classification/report.json.gz",
+      "sha256": "b42a1796e1ffd445495b4e86c0459e3a438f6c8915d3d99fd91e03b1b16a1c04"
+    }
+  },
+  "D1": {
+    "rule": "quota_window * batch_global * max_age < min_negatives + 1",
+    "quota_definition": "sum(weight / frozen_window_seconds), normalized over pretraining rows; time_weighted loader",
+    "quota_window": {
+      "camargo2021": 0.03442090877923247,
+      "capgmyo": 0.0028543868474759163,
+      "csl_hdemg": 0.022266032822690757,
+      "emg2pose": 0.23915890022728797,
+      "emg2qwerty": 0.244385666820943,
+      "grabmyo": 0.05427090782371972,
+      "hyser": 0.05186791335093826,
+      "ninapro_db10": 0.09309970233153658,
+      "ninapro_db2": 0.039898146559794796,
+      "ninapro_db3": 0.01261529967940154,
+      "ninapro_db4": 0.017458292398431052,
+      "ninapro_db5": 0.020261549338847138,
+      "ninapro_db6": 0.0329335435867361,
+      "ninapro_db7": 0.030381940692308724,
+      "ninapro_db8": 0.019509832779750533,
+      "putemg": 0.03921819812464841,
+      "zhang2026": 0.045398777836257134
+    },
+    "manifest_time_weight": {
+      "camargo2021": 0.03462073151676001,
+      "capgmyo": 0.000756598821097653,
+      "csl_hdemg": 0.01175024990551123,
+      "emg2pose": 0.2460256702128597,
+      "emg2qwerty": 0.2584668412086895,
+      "grabmyo": 0.04099819861822913,
+      "hyser": 0.03749315127339112,
+      "ninapro_db10": 0.0974553182809675,
+      "ninapro_db2": 0.042247137091153346,
+      "ninapro_db3": 0.013357867027371552,
+      "ninapro_db4": 0.018487380392534638,
+      "ninapro_db5": 0.02145942249581266,
+      "ninapro_db6": 0.034862055662105304,
+      "ninapro_db7": 0.03217950188273705,
+      "ninapro_db8": 0.020665755061223853,
+      "putemg": 0.04141371998863729,
+      "zhang2026": 0.047760400560919285
+    },
+    "expected_windows_per_max_age": {
+      "camargo2021": 281.9760847194724,
+      "capgmyo": 23.383137054522706,
+      "csl_hdemg": 182.40334088348268,
+      "emg2pose": 1959.189710661943,
+      "emg2qwerty": 2002.0073825971651,
+      "grabmyo": 444.5872768919119,
+      "hyser": 424.9019461708862,
+      "ninapro_db10": 762.6727614999477,
+      "ninapro_db2": 326.84561661783897,
+      "ninapro_db3": 103.34453497365742,
+      "ninapro_db4": 143.01833132794718,
+      "ninapro_db5": 165.98261218383576,
+      "ninapro_db6": 269.79158906254213,
+      "ninapro_db7": 248.88885815139307,
+      "ninapro_db8": 159.82455013171636,
+      "putemg": 321.2754790371198,
+      "zhang2026": 371.90678803461844
+    },
+    "exempt_only_from_per_dataset_gates": [
+      "capgmyo"
+    ],
+    "overall_includes_exempt": true,
+    "calibration_panel": {
+      "start_batch_inclusive": 256,
+      "stop_batch_exclusive": 512,
+      "total_queries": 8192,
+      "eligible_duration4": 8179,
+      "eligible_duration1": 8179,
+      "nce_fraction_duration4": 0.9984130859375,
+      "pose_active_fraction_proxy": 1.0,
+      "datasets": {
+        "camargo2021": [
+          233,
+          233,
+          233
+        ],
+        "capgmyo": [
+          13,
+          0,
+          0
+        ],
+        "csl_hdemg": [
+          236,
+          236,
+          236
+        ],
+        "emg2pose": [
+          2105,
+          2105,
+          2105
+        ],
+        "emg2qwerty": [
+          1909,
+          1909,
+          1909
+        ],
+        "grabmyo": [
+          457,
+          457,
+          457
+        ],
+        "hyser": [
+          445,
+          445,
+          445
+        ],
+        "ninapro_db10": [
+          700,
+          700,
+          700
+        ],
+        "ninapro_db2": [
+          296,
+          296,
+          296
+        ],
+        "ninapro_db3": [
+          58,
+          58,
+          58
+        ],
+        "ninapro_db4": [
+          119,
+          119,
+          119
+        ],
+        "ninapro_db5": [
+          170,
+          170,
+          170
+        ],
+        "ninapro_db6": [
+          289,
+          289,
+          289
+        ],
+        "ninapro_db7": [
+          256,
+          256,
+          256
+        ],
+        "ninapro_db8": [
+          151,
+          151,
+          151
+        ],
+        "putemg": [
+          393,
+          393,
+          393
+        ],
+        "zhang2026": [
+          362,
+          362,
+          362
+        ]
+      },
+      "failed_original": [
+        "capgmyo"
+      ],
+      "passed_after_manifest_exemption": true
+    },
+    "audit_panel": {
+      "start_batch_inclusive": 256,
+      "stop_batch_exclusive": 1024,
+      "total_queries": 24576,
+      "eligible_duration4": 24527,
+      "eligible_duration1": 24528,
+      "nce_fraction_duration4": 0.9980061848958334,
+      "pose_active_fraction_proxy": 1.0,
+      "datasets": {
+        "camargo2021": [
+          876,
+          876,
+          876
+        ],
+        "capgmyo": [
+          45,
+          0,
+          0
+        ],
+        "csl_hdemg": [
+          551,
+          551,
+          551
+        ],
+        "emg2pose": [
+          6049,
+          6049,
+          6049
+        ],
+        "emg2qwerty": [
+          5991,
+          5991,
+          5991
+        ],
+        "grabmyo": [
+          1422,
+          1422,
+          1422
+        ],
+        "hyser": [
+          1310,
+          1310,
+          1310
+        ],
+        "ninapro_db10": [
+          2103,
+          2103,
+          2103
+        ],
+        "ninapro_db2": [
+          995,
+          995,
+          995
+        ],
+        "ninapro_db3": [
+          237,
+          233,
+          234
+        ],
+        "ninapro_db4": [
+          490,
+          490,
+          490
+        ],
+        "ninapro_db5": [
+          513,
+          513,
+          513
+        ],
+        "ninapro_db6": [
+          716,
+          716,
+          716
+        ],
+        "ninapro_db7": [
+          717,
+          717,
+          717
+        ],
+        "ninapro_db8": [
+          484,
+          484,
+          484
+        ],
+        "putemg": [
+          1012,
+          1012,
+          1012
+        ],
+        "zhang2026": [
+          1065,
+          1065,
+          1065
+        ]
+      },
+      "failed_original": [
+        "capgmyo"
+      ],
+      "passed_after_manifest_exemption": true
+    },
+    "full_postfill": {
+      "start_batch_inclusive": 256,
+      "stop_batch_exclusive": 19618,
+      "total_queries": 619584,
+      "eligible_duration4": 618119,
+      "eligible_duration1": 618120,
+      "nce_fraction_duration4": 0.9976355102778639,
+      "pose_active_fraction_proxy": 0.9987604586303068,
+      "datasets": {
+        "camargo2021": [
+          21538,
+          21538,
+          21538
+        ],
+        "capgmyo": [
+          1461,
+          0,
+          0
+        ],
+        "csl_hdemg": [
+          13901,
+          13901,
+          13901
+        ],
+        "emg2pose": [
+          149659,
+          149659,
+          149659
+        ],
+        "emg2qwerty": [
+          150789,
+          150789,
+          150789
+        ],
+        "grabmyo": [
+          33154,
+          33154,
+          33154
+        ],
+        "hyser": [
+          32441,
+          32441,
+          32441
+        ],
+        "ninapro_db10": [
+          55912,
+          55912,
+          55912
+        ],
+        "ninapro_db2": [
+          25090,
+          25090,
+          25090
+        ],
+        "ninapro_db3": [
+          7745,
+          7741,
+          7742
+        ],
+        "ninapro_db4": [
+          10809,
+          10809,
+          10809
+        ],
+        "ninapro_db5": [
+          13089,
+          13089,
+          13089
+        ],
+        "ninapro_db6": [
+          20188,
+          20188,
+          20188
+        ],
+        "ninapro_db7": [
+          18877,
+          18877,
+          18877
+        ],
+        "ninapro_db8": [
+          12433,
+          12433,
+          12433
+        ],
+        "putemg": [
+          24259,
+          24259,
+          24259
+        ],
+        "zhang2026": [
+          28239,
+          28239,
+          28239
+        ]
+      },
+      "failed_original": [
+        "capgmyo"
+      ],
+      "passed_after_manifest_exemption": true
+    },
+    "complete_blocks": [
+      {
+        "start_batch_inclusive": 256,
+        "stop_batch_exclusive": 1280,
+        "total_queries": 32768,
+        "eligible_duration4": 32719,
+        "eligible_duration1": 32720,
+        "nce_fraction_duration4": 0.998504638671875,
+        "pose_active_fraction_proxy": 1.0,
+        "datasets": {
+          "camargo2021": [
+            1097,
+            1097,
+            1097
+          ],
+          "capgmyo": [
+            45,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            679,
+            679,
+            679
+          ],
+          "emg2pose": [
+            7892,
+            7892,
+            7892
+          ],
+          "emg2qwerty": [
+            7856,
+            7856,
+            7856
+          ],
+          "grabmyo": [
+            1919,
+            1919,
+            1919
+          ],
+          "hyser": [
+            1767,
+            1767,
+            1767
+          ],
+          "ninapro_db10": [
+            2975,
+            2975,
+            2975
+          ],
+          "ninapro_db2": [
+            1357,
+            1357,
+            1357
+          ],
+          "ninapro_db3": [
+            344,
+            340,
+            341
+          ],
+          "ninapro_db4": [
+            638,
+            638,
+            638
+          ],
+          "ninapro_db5": [
+            697,
+            697,
+            697
+          ],
+          "ninapro_db6": [
+            956,
+            956,
+            956
+          ],
+          "ninapro_db7": [
+            1046,
+            1046,
+            1046
+          ],
+          "ninapro_db8": [
+            626,
+            626,
+            626
+          ],
+          "putemg": [
+            1313,
+            1313,
+            1313
+          ],
+          "zhang2026": [
+            1561,
+            1561,
+            1561
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 1280,
+        "stop_batch_exclusive": 2304,
+        "total_queries": 32768,
+        "eligible_duration4": 32696,
+        "eligible_duration1": 32696,
+        "nce_fraction_duration4": 0.997802734375,
+        "pose_active_fraction_proxy": 0.99609375,
+        "datasets": {
+          "camargo2021": [
+            1158,
+            1158,
+            1158
+          ],
+          "capgmyo": [
+            72,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            747,
+            747,
+            747
+          ],
+          "emg2pose": [
+            7765,
+            7765,
+            7765
+          ],
+          "emg2qwerty": [
+            7929,
+            7929,
+            7929
+          ],
+          "grabmyo": [
+            1826,
+            1826,
+            1826
+          ],
+          "hyser": [
+            1799,
+            1799,
+            1799
+          ],
+          "ninapro_db10": [
+            3112,
+            3112,
+            3112
+          ],
+          "ninapro_db2": [
+            1442,
+            1442,
+            1442
+          ],
+          "ninapro_db3": [
+            362,
+            362,
+            362
+          ],
+          "ninapro_db4": [
+            570,
+            570,
+            570
+          ],
+          "ninapro_db5": [
+            677,
+            677,
+            677
+          ],
+          "ninapro_db6": [
+            1036,
+            1036,
+            1036
+          ],
+          "ninapro_db7": [
+            892,
+            892,
+            892
+          ],
+          "ninapro_db8": [
+            615,
+            615,
+            615
+          ],
+          "putemg": [
+            1189,
+            1189,
+            1189
+          ],
+          "zhang2026": [
+            1577,
+            1577,
+            1577
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 2304,
+        "stop_batch_exclusive": 3328,
+        "total_queries": 32768,
+        "eligible_duration4": 32686,
+        "eligible_duration1": 32686,
+        "nce_fraction_duration4": 0.99749755859375,
+        "pose_active_fraction_proxy": 0.9990234375,
+        "datasets": {
+          "camargo2021": [
+            1204,
+            1204,
+            1204
+          ],
+          "capgmyo": [
+            82,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            700,
+            700,
+            700
+          ],
+          "emg2pose": [
+            8228,
+            8228,
+            8228
+          ],
+          "emg2qwerty": [
+            7989,
+            7989,
+            7989
+          ],
+          "grabmyo": [
+            1623,
+            1623,
+            1623
+          ],
+          "hyser": [
+            1724,
+            1724,
+            1724
+          ],
+          "ninapro_db10": [
+            2734,
+            2734,
+            2734
+          ],
+          "ninapro_db2": [
+            1297,
+            1297,
+            1297
+          ],
+          "ninapro_db3": [
+            396,
+            396,
+            396
+          ],
+          "ninapro_db4": [
+            568,
+            568,
+            568
+          ],
+          "ninapro_db5": [
+            645,
+            645,
+            645
+          ],
+          "ninapro_db6": [
+            960,
+            960,
+            960
+          ],
+          "ninapro_db7": [
+            1040,
+            1040,
+            1040
+          ],
+          "ninapro_db8": [
+            688,
+            688,
+            688
+          ],
+          "putemg": [
+            1384,
+            1384,
+            1384
+          ],
+          "zhang2026": [
+            1506,
+            1506,
+            1506
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 3328,
+        "stop_batch_exclusive": 4352,
+        "total_queries": 32768,
+        "eligible_duration4": 32684,
+        "eligible_duration1": 32684,
+        "nce_fraction_duration4": 0.9974365234375,
+        "pose_active_fraction_proxy": 0.9990234375,
+        "datasets": {
+          "camargo2021": [
+            1180,
+            1180,
+            1180
+          ],
+          "capgmyo": [
+            84,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            781,
+            781,
+            781
+          ],
+          "emg2pose": [
+            7942,
+            7942,
+            7942
+          ],
+          "emg2qwerty": [
+            7899,
+            7899,
+            7899
+          ],
+          "grabmyo": [
+            1875,
+            1875,
+            1875
+          ],
+          "hyser": [
+            1569,
+            1569,
+            1569
+          ],
+          "ninapro_db10": [
+            2751,
+            2751,
+            2751
+          ],
+          "ninapro_db2": [
+            1264,
+            1264,
+            1264
+          ],
+          "ninapro_db3": [
+            446,
+            446,
+            446
+          ],
+          "ninapro_db4": [
+            566,
+            566,
+            566
+          ],
+          "ninapro_db5": [
+            752,
+            752,
+            752
+          ],
+          "ninapro_db6": [
+            1178,
+            1178,
+            1178
+          ],
+          "ninapro_db7": [
+            1064,
+            1064,
+            1064
+          ],
+          "ninapro_db8": [
+            591,
+            591,
+            591
+          ],
+          "putemg": [
+            1323,
+            1323,
+            1323
+          ],
+          "zhang2026": [
+            1503,
+            1503,
+            1503
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 4352,
+        "stop_batch_exclusive": 5376,
+        "total_queries": 32768,
+        "eligible_duration4": 32681,
+        "eligible_duration1": 32681,
+        "nce_fraction_duration4": 0.997344970703125,
+        "pose_active_fraction_proxy": 0.9970703125,
+        "datasets": {
+          "camargo2021": [
+            1260,
+            1260,
+            1260
+          ],
+          "capgmyo": [
+            87,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            660,
+            660,
+            660
+          ],
+          "emg2pose": [
+            7560,
+            7560,
+            7560
+          ],
+          "emg2qwerty": [
+            8205,
+            8205,
+            8205
+          ],
+          "grabmyo": [
+            1573,
+            1573,
+            1573
+          ],
+          "hyser": [
+            1900,
+            1900,
+            1900
+          ],
+          "ninapro_db10": [
+            2935,
+            2935,
+            2935
+          ],
+          "ninapro_db2": [
+            1374,
+            1374,
+            1374
+          ],
+          "ninapro_db3": [
+            443,
+            443,
+            443
+          ],
+          "ninapro_db4": [
+            541,
+            541,
+            541
+          ],
+          "ninapro_db5": [
+            750,
+            750,
+            750
+          ],
+          "ninapro_db6": [
+            1010,
+            1010,
+            1010
+          ],
+          "ninapro_db7": [
+            941,
+            941,
+            941
+          ],
+          "ninapro_db8": [
+            683,
+            683,
+            683
+          ],
+          "putemg": [
+            1399,
+            1399,
+            1399
+          ],
+          "zhang2026": [
+            1447,
+            1447,
+            1447
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 5376,
+        "stop_batch_exclusive": 6400,
+        "total_queries": 32768,
+        "eligible_duration4": 32720,
+        "eligible_duration1": 32720,
+        "nce_fraction_duration4": 0.99853515625,
+        "pose_active_fraction_proxy": 0.998046875,
+        "datasets": {
+          "camargo2021": [
+            1221,
+            1221,
+            1221
+          ],
+          "capgmyo": [
+            48,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            586,
+            586,
+            586
+          ],
+          "emg2pose": [
+            8080,
+            8080,
+            8080
+          ],
+          "emg2qwerty": [
+            7569,
+            7569,
+            7569
+          ],
+          "grabmyo": [
+            1933,
+            1933,
+            1933
+          ],
+          "hyser": [
+            1801,
+            1801,
+            1801
+          ],
+          "ninapro_db10": [
+            3009,
+            3009,
+            3009
+          ],
+          "ninapro_db2": [
+            1159,
+            1159,
+            1159
+          ],
+          "ninapro_db3": [
+            495,
+            495,
+            495
+          ],
+          "ninapro_db4": [
+            593,
+            593,
+            593
+          ],
+          "ninapro_db5": [
+            621,
+            621,
+            621
+          ],
+          "ninapro_db6": [
+            964,
+            964,
+            964
+          ],
+          "ninapro_db7": [
+            1081,
+            1081,
+            1081
+          ],
+          "ninapro_db8": [
+            697,
+            697,
+            697
+          ],
+          "putemg": [
+            1358,
+            1358,
+            1358
+          ],
+          "zhang2026": [
+            1553,
+            1553,
+            1553
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 6400,
+        "stop_batch_exclusive": 7424,
+        "total_queries": 32768,
+        "eligible_duration4": 32715,
+        "eligible_duration1": 32715,
+        "nce_fraction_duration4": 0.998382568359375,
+        "pose_active_fraction_proxy": 0.998046875,
+        "datasets": {
+          "camargo2021": [
+            1204,
+            1204,
+            1204
+          ],
+          "capgmyo": [
+            53,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            897,
+            897,
+            897
+          ],
+          "emg2pose": [
+            8068,
+            8068,
+            8068
+          ],
+          "emg2qwerty": [
+            7560,
+            7560,
+            7560
+          ],
+          "grabmyo": [
+            2001,
+            2001,
+            2001
+          ],
+          "hyser": [
+            1754,
+            1754,
+            1754
+          ],
+          "ninapro_db10": [
+            3007,
+            3007,
+            3007
+          ],
+          "ninapro_db2": [
+            1316,
+            1316,
+            1316
+          ],
+          "ninapro_db3": [
+            416,
+            416,
+            416
+          ],
+          "ninapro_db4": [
+            572,
+            572,
+            572
+          ],
+          "ninapro_db5": [
+            728,
+            728,
+            728
+          ],
+          "ninapro_db6": [
+            1052,
+            1052,
+            1052
+          ],
+          "ninapro_db7": [
+            884,
+            884,
+            884
+          ],
+          "ninapro_db8": [
+            650,
+            650,
+            650
+          ],
+          "putemg": [
+            1177,
+            1177,
+            1177
+          ],
+          "zhang2026": [
+            1429,
+            1429,
+            1429
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 7424,
+        "stop_batch_exclusive": 8448,
+        "total_queries": 32768,
+        "eligible_duration4": 32691,
+        "eligible_duration1": 32691,
+        "nce_fraction_duration4": 0.997650146484375,
+        "pose_active_fraction_proxy": 0.9990234375,
+        "datasets": {
+          "camargo2021": [
+            1077,
+            1077,
+            1077
+          ],
+          "capgmyo": [
+            77,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            768,
+            768,
+            768
+          ],
+          "emg2pose": [
+            7913,
+            7913,
+            7913
+          ],
+          "emg2qwerty": [
+            7964,
+            7964,
+            7964
+          ],
+          "grabmyo": [
+            1681,
+            1681,
+            1681
+          ],
+          "hyser": [
+            1697,
+            1697,
+            1697
+          ],
+          "ninapro_db10": [
+            3064,
+            3064,
+            3064
+          ],
+          "ninapro_db2": [
+            1223,
+            1223,
+            1223
+          ],
+          "ninapro_db3": [
+            360,
+            360,
+            360
+          ],
+          "ninapro_db4": [
+            583,
+            583,
+            583
+          ],
+          "ninapro_db5": [
+            740,
+            740,
+            740
+          ],
+          "ninapro_db6": [
+            1002,
+            1002,
+            1002
+          ],
+          "ninapro_db7": [
+            1153,
+            1153,
+            1153
+          ],
+          "ninapro_db8": [
+            742,
+            742,
+            742
+          ],
+          "putemg": [
+            1134,
+            1134,
+            1134
+          ],
+          "zhang2026": [
+            1590,
+            1590,
+            1590
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 8448,
+        "stop_batch_exclusive": 9472,
+        "total_queries": 32768,
+        "eligible_duration4": 32701,
+        "eligible_duration1": 32701,
+        "nce_fraction_duration4": 0.997955322265625,
+        "pose_active_fraction_proxy": 0.9970703125,
+        "datasets": {
+          "camargo2021": [
+            1060,
+            1060,
+            1060
+          ],
+          "capgmyo": [
+            67,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            712,
+            712,
+            712
+          ],
+          "emg2pose": [
+            7889,
+            7889,
+            7889
+          ],
+          "emg2qwerty": [
+            7783,
+            7783,
+            7783
+          ],
+          "grabmyo": [
+            1832,
+            1832,
+            1832
+          ],
+          "hyser": [
+            1831,
+            1831,
+            1831
+          ],
+          "ninapro_db10": [
+            3105,
+            3105,
+            3105
+          ],
+          "ninapro_db2": [
+            1343,
+            1343,
+            1343
+          ],
+          "ninapro_db3": [
+            387,
+            387,
+            387
+          ],
+          "ninapro_db4": [
+            605,
+            605,
+            605
+          ],
+          "ninapro_db5": [
+            735,
+            735,
+            735
+          ],
+          "ninapro_db6": [
+            1102,
+            1102,
+            1102
+          ],
+          "ninapro_db7": [
+            818,
+            818,
+            818
+          ],
+          "ninapro_db8": [
+            747,
+            747,
+            747
+          ],
+          "putemg": [
+            1252,
+            1252,
+            1252
+          ],
+          "zhang2026": [
+            1500,
+            1500,
+            1500
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 9472,
+        "stop_batch_exclusive": 10496,
+        "total_queries": 32768,
+        "eligible_duration4": 32687,
+        "eligible_duration1": 32687,
+        "nce_fraction_duration4": 0.997528076171875,
+        "pose_active_fraction_proxy": 1.0,
+        "datasets": {
+          "camargo2021": [
+            1154,
+            1154,
+            1154
+          ],
+          "capgmyo": [
+            81,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            827,
+            827,
+            827
+          ],
+          "emg2pose": [
+            7873,
+            7873,
+            7873
+          ],
+          "emg2qwerty": [
+            7963,
+            7963,
+            7963
+          ],
+          "grabmyo": [
+            1775,
+            1775,
+            1775
+          ],
+          "hyser": [
+            1698,
+            1698,
+            1698
+          ],
+          "ninapro_db10": [
+            2829,
+            2829,
+            2829
+          ],
+          "ninapro_db2": [
+            1431,
+            1431,
+            1431
+          ],
+          "ninapro_db3": [
+            444,
+            444,
+            444
+          ],
+          "ninapro_db4": [
+            612,
+            612,
+            612
+          ],
+          "ninapro_db5": [
+            758,
+            758,
+            758
+          ],
+          "ninapro_db6": [
+            1016,
+            1016,
+            1016
+          ],
+          "ninapro_db7": [
+            975,
+            975,
+            975
+          ],
+          "ninapro_db8": [
+            527,
+            527,
+            527
+          ],
+          "putemg": [
+            1368,
+            1368,
+            1368
+          ],
+          "zhang2026": [
+            1437,
+            1437,
+            1437
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 10496,
+        "stop_batch_exclusive": 11520,
+        "total_queries": 32768,
+        "eligible_duration4": 32704,
+        "eligible_duration1": 32704,
+        "nce_fraction_duration4": 0.998046875,
+        "pose_active_fraction_proxy": 0.9990234375,
+        "datasets": {
+          "camargo2021": [
+            1271,
+            1271,
+            1271
+          ],
+          "capgmyo": [
+            64,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            759,
+            759,
+            759
+          ],
+          "emg2pose": [
+            7997,
+            7997,
+            7997
+          ],
+          "emg2qwerty": [
+            7767,
+            7767,
+            7767
+          ],
+          "grabmyo": [
+            1729,
+            1729,
+            1729
+          ],
+          "hyser": [
+            1497,
+            1497,
+            1497
+          ],
+          "ninapro_db10": [
+            2865,
+            2865,
+            2865
+          ],
+          "ninapro_db2": [
+            1446,
+            1446,
+            1446
+          ],
+          "ninapro_db3": [
+            420,
+            420,
+            420
+          ],
+          "ninapro_db4": [
+            506,
+            506,
+            506
+          ],
+          "ninapro_db5": [
+            802,
+            802,
+            802
+          ],
+          "ninapro_db6": [
+            1103,
+            1103,
+            1103
+          ],
+          "ninapro_db7": [
+            1032,
+            1032,
+            1032
+          ],
+          "ninapro_db8": [
+            558,
+            558,
+            558
+          ],
+          "putemg": [
+            1508,
+            1508,
+            1508
+          ],
+          "zhang2026": [
+            1444,
+            1444,
+            1444
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 11520,
+        "stop_batch_exclusive": 12544,
+        "total_queries": 32768,
+        "eligible_duration4": 32704,
+        "eligible_duration1": 32704,
+        "nce_fraction_duration4": 0.998046875,
+        "pose_active_fraction_proxy": 0.9990234375,
+        "datasets": {
+          "camargo2021": [
+            1028,
+            1028,
+            1028
+          ],
+          "capgmyo": [
+            64,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            621,
+            621,
+            621
+          ],
+          "emg2pose": [
+            8029,
+            8029,
+            8029
+          ],
+          "emg2qwerty": [
+            8468,
+            8468,
+            8468
+          ],
+          "grabmyo": [
+            1635,
+            1635,
+            1635
+          ],
+          "hyser": [
+            1550,
+            1550,
+            1550
+          ],
+          "ninapro_db10": [
+            2674,
+            2674,
+            2674
+          ],
+          "ninapro_db2": [
+            1374,
+            1374,
+            1374
+          ],
+          "ninapro_db3": [
+            434,
+            434,
+            434
+          ],
+          "ninapro_db4": [
+            520,
+            520,
+            520
+          ],
+          "ninapro_db5": [
+            654,
+            654,
+            654
+          ],
+          "ninapro_db6": [
+            1077,
+            1077,
+            1077
+          ],
+          "ninapro_db7": [
+            1099,
+            1099,
+            1099
+          ],
+          "ninapro_db8": [
+            644,
+            644,
+            644
+          ],
+          "putemg": [
+            1266,
+            1266,
+            1266
+          ],
+          "zhang2026": [
+            1631,
+            1631,
+            1631
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 12544,
+        "stop_batch_exclusive": 13568,
+        "total_queries": 32768,
+        "eligible_duration4": 32669,
+        "eligible_duration1": 32669,
+        "nce_fraction_duration4": 0.996978759765625,
+        "pose_active_fraction_proxy": 0.9990234375,
+        "datasets": {
+          "camargo2021": [
+            1036,
+            1036,
+            1036
+          ],
+          "capgmyo": [
+            99,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            694,
+            694,
+            694
+          ],
+          "emg2pose": [
+            7764,
+            7764,
+            7764
+          ],
+          "emg2qwerty": [
+            8008,
+            8008,
+            8008
+          ],
+          "grabmyo": [
+            1711,
+            1711,
+            1711
+          ],
+          "hyser": [
+            1955,
+            1955,
+            1955
+          ],
+          "ninapro_db10": [
+            3004,
+            3004,
+            3004
+          ],
+          "ninapro_db2": [
+            1395,
+            1395,
+            1395
+          ],
+          "ninapro_db3": [
+            366,
+            366,
+            366
+          ],
+          "ninapro_db4": [
+            579,
+            579,
+            579
+          ],
+          "ninapro_db5": [
+            585,
+            585,
+            585
+          ],
+          "ninapro_db6": [
+            1078,
+            1078,
+            1078
+          ],
+          "ninapro_db7": [
+            1083,
+            1083,
+            1083
+          ],
+          "ninapro_db8": [
+            600,
+            600,
+            600
+          ],
+          "putemg": [
+            1341,
+            1341,
+            1341
+          ],
+          "zhang2026": [
+            1470,
+            1470,
+            1470
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 13568,
+        "stop_batch_exclusive": 14592,
+        "total_queries": 32768,
+        "eligible_duration4": 32690,
+        "eligible_duration1": 32690,
+        "nce_fraction_duration4": 0.99761962890625,
+        "pose_active_fraction_proxy": 1.0,
+        "datasets": {
+          "camargo2021": [
+            989,
+            989,
+            989
+          ],
+          "capgmyo": [
+            78,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            717,
+            717,
+            717
+          ],
+          "emg2pose": [
+            8076,
+            8076,
+            8076
+          ],
+          "emg2qwerty": [
+            7924,
+            7924,
+            7924
+          ],
+          "grabmyo": [
+            1699,
+            1699,
+            1699
+          ],
+          "hyser": [
+            1671,
+            1671,
+            1671
+          ],
+          "ninapro_db10": [
+            2939,
+            2939,
+            2939
+          ],
+          "ninapro_db2": [
+            1273,
+            1273,
+            1273
+          ],
+          "ninapro_db3": [
+            356,
+            356,
+            356
+          ],
+          "ninapro_db4": [
+            650,
+            650,
+            650
+          ],
+          "ninapro_db5": [
+            778,
+            778,
+            778
+          ],
+          "ninapro_db6": [
+            1126,
+            1126,
+            1126
+          ],
+          "ninapro_db7": [
+            1107,
+            1107,
+            1107
+          ],
+          "ninapro_db8": [
+            727,
+            727,
+            727
+          ],
+          "putemg": [
+            1248,
+            1248,
+            1248
+          ],
+          "zhang2026": [
+            1410,
+            1410,
+            1410
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 14592,
+        "stop_batch_exclusive": 15616,
+        "total_queries": 32768,
+        "eligible_duration4": 32694,
+        "eligible_duration1": 32694,
+        "nce_fraction_duration4": 0.99774169921875,
+        "pose_active_fraction_proxy": 0.998046875,
+        "datasets": {
+          "camargo2021": [
+            985,
+            985,
+            985
+          ],
+          "capgmyo": [
+            74,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            793,
+            793,
+            793
+          ],
+          "emg2pose": [
+            7623,
+            7623,
+            7623
+          ],
+          "emg2qwerty": [
+            8315,
+            8315,
+            8315
+          ],
+          "grabmyo": [
+            1903,
+            1903,
+            1903
+          ],
+          "hyser": [
+            1710,
+            1710,
+            1710
+          ],
+          "ninapro_db10": [
+            2778,
+            2778,
+            2778
+          ],
+          "ninapro_db2": [
+            1415,
+            1415,
+            1415
+          ],
+          "ninapro_db3": [
+            446,
+            446,
+            446
+          ],
+          "ninapro_db4": [
+            604,
+            604,
+            604
+          ],
+          "ninapro_db5": [
+            620,
+            620,
+            620
+          ],
+          "ninapro_db6": [
+            1058,
+            1058,
+            1058
+          ],
+          "ninapro_db7": [
+            1036,
+            1036,
+            1036
+          ],
+          "ninapro_db8": [
+            665,
+            665,
+            665
+          ],
+          "putemg": [
+            1298,
+            1298,
+            1298
+          ],
+          "zhang2026": [
+            1445,
+            1445,
+            1445
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 15616,
+        "stop_batch_exclusive": 16640,
+        "total_queries": 32768,
+        "eligible_duration4": 32690,
+        "eligible_duration1": 32690,
+        "nce_fraction_duration4": 0.99761962890625,
+        "pose_active_fraction_proxy": 1.0,
+        "datasets": {
+          "camargo2021": [
+            1252,
+            1252,
+            1252
+          ],
+          "capgmyo": [
+            78,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            809,
+            809,
+            809
+          ],
+          "emg2pose": [
+            7827,
+            7827,
+            7827
+          ],
+          "emg2qwerty": [
+            7907,
+            7907,
+            7907
+          ],
+          "grabmyo": [
+            1492,
+            1492,
+            1492
+          ],
+          "hyser": [
+            1624,
+            1624,
+            1624
+          ],
+          "ninapro_db10": [
+            3404,
+            3404,
+            3404
+          ],
+          "ninapro_db2": [
+            1276,
+            1276,
+            1276
+          ],
+          "ninapro_db3": [
+            380,
+            380,
+            380
+          ],
+          "ninapro_db4": [
+            525,
+            525,
+            525
+          ],
+          "ninapro_db5": [
+            701,
+            701,
+            701
+          ],
+          "ninapro_db6": [
+            1193,
+            1193,
+            1193
+          ],
+          "ninapro_db7": [
+            1030,
+            1030,
+            1030
+          ],
+          "ninapro_db8": [
+            706,
+            706,
+            706
+          ],
+          "putemg": [
+            1218,
+            1218,
+            1218
+          ],
+          "zhang2026": [
+            1346,
+            1346,
+            1346
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 16640,
+        "stop_batch_exclusive": 17664,
+        "total_queries": 32768,
+        "eligible_duration4": 32651,
+        "eligible_duration1": 32651,
+        "nce_fraction_duration4": 0.996429443359375,
+        "pose_active_fraction_proxy": 1.0,
+        "datasets": {
+          "camargo2021": [
+            1123,
+            1123,
+            1123
+          ],
+          "capgmyo": [
+            117,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            753,
+            753,
+            753
+          ],
+          "emg2pose": [
+            8181,
+            8181,
+            8181
+          ],
+          "emg2qwerty": [
+            7594,
+            7594,
+            7594
+          ],
+          "grabmyo": [
+            1782,
+            1782,
+            1782
+          ],
+          "hyser": [
+            1587,
+            1587,
+            1587
+          ],
+          "ninapro_db10": [
+            2961,
+            2961,
+            2961
+          ],
+          "ninapro_db2": [
+            1163,
+            1163,
+            1163
+          ],
+          "ninapro_db3": [
+            448,
+            448,
+            448
+          ],
+          "ninapro_db4": [
+            656,
+            656,
+            656
+          ],
+          "ninapro_db5": [
+            677,
+            677,
+            677
+          ],
+          "ninapro_db6": [
+            1329,
+            1329,
+            1329
+          ],
+          "ninapro_db7": [
+            891,
+            891,
+            891
+          ],
+          "ninapro_db8": [
+            694,
+            694,
+            694
+          ],
+          "putemg": [
+            1301,
+            1301,
+            1301
+          ],
+          "zhang2026": [
+            1511,
+            1511,
+            1511
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      },
+      {
+        "start_batch_inclusive": 17664,
+        "stop_batch_exclusive": 18688,
+        "total_queries": 32768,
+        "eligible_duration4": 32692,
+        "eligible_duration1": 32692,
+        "nce_fraction_duration4": 0.9976806640625,
+        "pose_active_fraction_proxy": 0.998046875,
+        "datasets": {
+          "camargo2021": [
+            1042,
+            1042,
+            1042
+          ],
+          "capgmyo": [
+            76,
+            0,
+            0
+          ],
+          "csl_hdemg": [
+            808,
+            808,
+            808
+          ],
+          "emg2pose": [
+            7895,
+            7895,
+            7895
+          ],
+          "emg2qwerty": [
+            8452,
+            8452,
+            8452
+          ],
+          "grabmyo": [
+            1599,
+            1599,
+            1599
+          ],
+          "hyser": [
+            1765,
+            1765,
+            1765
+          ],
+          "ninapro_db10": [
+            3058,
+            3058,
+            3058
+          ],
+          "ninapro_db2": [
+            1287,
+            1287,
+            1287
+          ],
+          "ninapro_db3": [
+            452,
+            452,
+            452
+          ],
+          "ninapro_db4": [
+            485,
+            485,
+            485
+          ],
+          "ninapro_db5": [
+            673,
+            673,
+            673
+          ],
+          "ninapro_db6": [
+            980,
+            980,
+            980
+          ],
+          "ninapro_db7": [
+            915,
+            915,
+            915
+          ],
+          "ninapro_db8": [
+            588,
+            588,
+            588
+          ],
+          "putemg": [
+            1059,
+            1059,
+            1059
+          ],
+          "zhang2026": [
+            1634,
+            1634,
+            1634
+          ]
+        },
+        "failed_original": [
+          "capgmyo"
+        ],
+        "passed_after_manifest_exemption": true
+      }
+    ],
+    "blocks_pass_original": 0,
+    "blocks_pass_exemption": 18,
+    "capgmyo_negative_histogram_duration4": {
+      "0": 69,
+      "1": 249,
+      "2": 390,
+      "3": 329,
+      "4": 205,
+      "5": 130,
+      "6": 51,
+      "7": 28,
+      "8": 10
+    },
+    "capgmyo_negative_median": 3.0,
+    "limits": [
+      "All candidates assumed QC/visibility valid; therefore an optimistic structural replay, not a real-loader audit.",
+      "Pose activity uses historical pose_windows >= 1, not actual RnC anchor validity.",
+      "Durations approximated as 1 or 4 seconds; new-run stream identity remains to verify.",
+      "Expected number of windows is not a count of distinct admissible keys; exemption is an a priori feasibility screen, not a guarantee."
+    ]
+  },
+  "D3": {
+    "updates": 19618,
+    "baseline_first8_mean": 29.790894018271878,
+    "options": {
+      "original": {
+        "reference_base_norm": 29.790894018271878,
+        "multiplicative_factor": 1.0,
+        "calibration_fraction": 0.1,
+        "proxy_rho": {
+          "first_full_513_1024": {
+            "mean_of_ratios": 0.4862676425761119,
+            "ratio_of_means": 0.44479241451455437,
+            "median": 0.46735451667545136
+          },
+          "active_513_19618": {
+            "mean_of_ratios": 0.9630190001862319,
+            "ratio_of_means": 0.8477707827670873,
+            "median": 0.9537587752581798
+          },
+          "last100_19519_19618": {
+            "mean_of_ratios": 1.232516608120393,
+            "ratio_of_means": 1.1253164138209784,
+            "median": 1.2388657999214754
+          }
+        },
+        "ramp257_512_mean_proxy_rho": 0.2400444230571787
+      },
+      "option1_end_ramp_updates257_512": {
+        "reference_base_norm": 6.739723678135468,
+        "multiplicative_factor": 0.22623435449777848,
+        "calibration_fraction": 0.022623435449777848,
+        "proxy_rho": {
+          "first_full_513_1024": {
+            "mean_of_ratios": 0.11001044623136312,
+            "ratio_of_means": 0.10062732478320852,
+            "median": 0.10573164740169198
+          },
+          "active_513_19618": {
+            "mean_of_ratios": 0.2178679818762282,
+            "ratio_of_means": 0.19179487580138835,
+            "median": 0.21577300086712609
+          },
+          "last100_19519_19618": {
+            "mean_of_ratios": 0.27883759924590856,
+            "ratio_of_means": 0.25458523248654397,
+            "median": 0.28027400455460894
+          }
+        },
+        "ramp257_512_mean_proxy_rho": 0.05430629510113247
+      },
+      "option2_active_updates513_19618": {
+        "reference_base_norm": 3.5140269780276796,
+        "multiplicative_factor": 0.1179564123141922,
+        "calibration_fraction": 0.011795641231419221,
+        "proxy_rho": {
+          "first_full_513_1024": {
+            "mean_of_ratios": 0.057358386542758086,
+            "ratio_of_means": 0.05246611744070386,
+            "median": 0.05512746206586956
+          },
+          "active_513_19618": {
+            "mean_of_ratios": 0.11359426625236832,
+            "ratio_of_means": 0.10000000000000002,
+            "median": 0.11250196334263284
+          },
+          "last100_19519_19618": {
+            "mean_of_ratios": 0.14538323721153876,
+            "ratio_of_means": 0.13273828689259545,
+            "median": 0.1461321650974891
+          }
+        },
+        "ramp257_512_mean_proxy_rho": 0.028314778939854957
+      }
+    },
+    "clipped_if_threshold1": 19616,
+    "recommended_default": "option2_active_updates513_19618",
+    "recommendation_rationale": "Small auxiliary contribution over the full active run, using only preexisting data; option1 targets the ramp boundary and implies approximately twice the mean proxy ratio.",
+    "limits": [
+      "Historical grad_norm covers all parameters; calibration uses only shared parameters.",
+      "Every rho here assumes constant contrastive gradient norm relative to calibration and historical base trajectory.",
+      "These are scale scenarios, not measured contrastive norms or predictions of AdamW update ratios.",
+      "Arithmetic active mean gives ratio-of-means 0.1, but mean-of-ratios 0.11359; no exact time-average 10% guarantee."
+    ]
+  },
+  "D2": {
+    "replicates": 100000,
+    "seed": 20261116,
+    "family_size_for_width_comparison": 9,
+    "method": "Independent paired subject bootstrap from sufficient counts; pooled macro recall, all draws retained; no imports from comparator or reviewer.",
+    "datasets": {
+      "epn612": {
+        "subjects": 314,
+        "windows": 47100,
+        "balanced_accuracy_percent": {
+          "T25-L": 81.6008492569002,
+          "T100-L": 81.10191082802548,
+          "T100-G": 82.57749469214436,
+          "T100-LQ": 82.63269639065818
+        },
+        "published_max_abs_difference": 0.0
+      },
+      "ninapro_db2": {
+        "subjects": 32,
+        "windows": 38544,
+        "balanced_accuracy_percent": {
+          "T25-L": 18.559469260050275,
+          "T100-L": 18.679100003580217,
+          "T100-G": 18.223724514473194,
+          "T100-LQ": 18.63056046730969
+        },
+        "published_max_abs_difference": 0.0
+      },
+      "ninapro_db3": {
+        "subjects": 8,
+        "windows": 9834,
+        "balanced_accuracy_percent": {
+          "T25-L": 3.152489726781337,
+          "T100-L": 2.8328138793194597,
+          "T100-G": 3.3797019271144966,
+          "T100-LQ": 2.4276620177399573
+        },
+        "published_max_abs_difference": 0.0
+      },
+      "ninapro_db6": {
+        "subjects": 8,
+        "windows": 33961,
+        "balanced_accuracy_percent": {
+          "T25-L": 34.81604587530007,
+          "T100-L": 34.13602182239849,
+          "T100-G": 33.748369099413786,
+          "T100-LQ": 33.199325580627324
+        },
+        "published_max_abs_difference": 0.0
+      },
+      "uci_emg": {
+        "subjects": 19,
+        "windows": 364,
+        "balanced_accuracy_percent": {
+          "T25-L": 77.43834891506461,
+          "T100-L": 76.3418431831422,
+          "T100-G": 78.45741857996761,
+          "T100-LQ": 76.88224221312457
+        },
+        "published_max_abs_difference": 0.0
+      }
+    },
+    "summary": {
+      "P1": {
+        "ordered_contrasts": 12,
+        "ni_margin1_count": 10,
+        "useful_gain_count": 0,
+        "half_width_range_pp": [
+          0.6921047785848824,
+          0.8101893397246565
+        ],
+        "ni_counts_if_margin_changed": {
+          "1.0": 10,
+          "2.0": 12,
+          "3.0": 12
+        }
+      },
+      "P2": {
+        "ordered_contrasts": 12,
+        "ni_margin1_count": 1,
+        "useful_gain_count": 0,
+        "half_width_range_pp": [
+          1.7884075456202986,
+          2.9718421416266825
+        ],
+        "ni_counts_if_margin_changed": {
+          "1.0": 1,
+          "2.0": 4,
+          "3.0": 7
+        }
+      },
+      "epn612": {
+        "ordered_contrasts": 12,
+        "ni_margin1_count": 7,
+        "useful_gain_count": 4,
+        "half_width_range_pp": [
+          0.7165605095541385,
+          0.9171974522292805
+        ],
+        "ni_counts_if_margin_changed": {
+          "1.0": 7,
+          "2.0": 10,
+          "3.0": 12
+        }
+      },
+      "uci_emg": {
+        "ordered_contrasts": 12,
+        "ni_margin1_count": 0,
+        "useful_gain_count": 0,
+        "half_width_range_pp": [
+          3.524207523182872,
+          5.896471608042741
+        ],
+        "ni_counts_if_margin_changed": {
+          "1.0": 0,
+          "2.0": 0,
+          "3.0": 0
+        }
+      }
+    },
+    "contrasts": {
+      "P1": [
+        {
+          "pair": [
+            "T25-L",
+            "T100-L"
+          ],
+          "difference_pp": 0.10477151538071106,
+          "ci95_pp": [
+            -0.45045067257789917,
+            0.6742389920886287
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.6801974114829479,
+            0.9086703036865006
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.7944338575847243,
+          "positive_estimate_needed_for_ni1_pp": -0.21503107313634107
+        },
+        {
+          "pair": [
+            "T25-L",
+            "T100-G"
+          ],
+          "difference_pp": 0.3184365319530563,
+          "ci95_pp": [
+            -0.17899217323508287,
+            0.7999144271232869
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.39658114016361373,
+            0.987628417006151
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.6921047785848824,
+          "positive_estimate_needed_for_ni1_pp": -0.2849823278833299
+        },
+        {
+          "pair": [
+            "T25-L",
+            "T100-LQ"
+          ],
+          "difference_pp": 0.3722456967995613,
+          "ci95_pp": [
+            -0.21150864607550776,
+            0.9244018426404521
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.4656769105228729,
+            1.1319454716035426
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.7988111910632077,
+          "positive_estimate_needed_for_ni1_pp": -0.16207739267756582
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T25-L"
+          ],
+          "difference_pp": -0.10477151538071106,
+          "ci95_pp": [
+            -0.6742389920886289,
+            0.450450672577899
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.9086703036864984,
+            0.6801974114829503
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.7944338575847243,
+          "positive_estimate_needed_for_ni1_pp": -0.19610121169421268
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T100-G"
+          ],
+          "difference_pp": 0.21366501657234527,
+          "ci95_pp": [
+            -0.3257590907129709,
+            0.7487891083396887
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.5528113945025541,
+            0.964959362881339
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.7588853786919465,
+          "positive_estimate_needed_for_ni1_pp": -0.2335235889251006
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T100-LQ"
+          ],
+          "difference_pp": 0.26747418141885027,
+          "ci95_pp": [
+            -0.30429066743029803,
+            0.8544081516671503
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.5268872977451274,
+            1.0934913817041856
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.8101893397246565,
+          "positive_estimate_needed_for_ni1_pp": -0.2056385208360223
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T25-L"
+          ],
+          "difference_pp": -0.3184365319530563,
+          "ci95_pp": [
+            -0.7999144271232869,
+            0.17899217323508246
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.9876284170061509,
+            0.39658114016361484
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.6921047785848828,
+          "positive_estimate_needed_for_ni1_pp": -0.33080811494690543
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T100-L"
+          ],
+          "difference_pp": -0.21366501657234527,
+          "ci95_pp": [
+            -0.7487891083396889,
+            0.32575909071297077
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.9649593628813379,
+            0.5528113945025557
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.7588853786919467,
+          "positive_estimate_needed_for_ni1_pp": -0.2487056536910074
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T100-LQ"
+          ],
+          "difference_pp": 0.053809164846505,
+          "ci95_pp": [
+            -0.50615780824882,
+            0.6489570059192865
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.709760174605242,
+            0.909250544066026
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.8095053593356341,
+          "positive_estimate_needed_for_ni1_pp": -0.236430660548253
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T25-L"
+          ],
+          "difference_pp": -0.3722456967995613,
+          "ci95_pp": [
+            -0.9244018426404526,
+            0.21150864607550746
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -1.1319454716035364,
+            0.46567691052287397
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.7988111910632052,
+          "positive_estimate_needed_for_ni1_pp": -0.2403002251960249
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T100-L"
+          ],
+          "difference_pp": -0.26747418141885027,
+          "ci95_pp": [
+            -0.8544081516671514,
+            0.30429066743029753
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -1.0934913817041796,
+            0.5268872977451284
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.810189339724654,
+          "positive_estimate_needed_for_ni1_pp": -0.17398279971467068
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T100-G"
+          ],
+          "difference_pp": -0.053809164846505,
+          "ci95_pp": [
+            -0.648957005919287,
+            0.5061578082488197
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.9092505440660252,
+            0.7097601746052454
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.8095053593356354,
+          "positive_estimate_needed_for_ni1_pp": -0.14455862078047976
+        }
+      ],
+      "P2": [
+        {
+          "pair": [
+            "T25-L",
+            "T100-L"
+          ],
+          "difference_pp": 0.7977220803985663,
+          "ci95_pp": [
+            -1.0359825585989775,
+            2.4492341319409476
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -1.812270531406584,
+            3.1011787113841898
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 2.456724621395387,
+          "positive_estimate_needed_for_ni1_pp": 1.6099926118051502
+        },
+        {
+          "pair": [
+            "T25-L",
+            "T100-G"
+          ],
+          "difference_pp": -0.9978575500735776,
+          "ci95_pp": [
+            -3.027831482333124,
+            1.0722862521933862
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -3.93106005237053,
+            2.012624230882835
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 2.9718421416266825,
+          "positive_estimate_needed_for_ni1_pp": 1.9332025022969526
+        },
+        {
+          "pair": [
+            "T25-L",
+            "T100-LQ"
+          ],
+          "difference_pp": -0.23787021590897517,
+          "ci95_pp": [
+            -1.5643904663436685,
+            0.896067321960164
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -2.2285841427942117,
+            1.3482309484463852
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 1.7884075456202986,
+          "positive_estimate_needed_for_ni1_pp": 0.9907139268852365
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T25-L"
+          ],
+          "difference_pp": -0.7977220803985663,
+          "ci95_pp": [
+            -2.4492341319409476,
+            1.0359825585989761
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -3.101178711384189,
+            1.812270531406587
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 2.456724621395388,
+          "positive_estimate_needed_for_ni1_pp": 1.3034566309856226
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T100-G"
+          ],
+          "difference_pp": -1.7955796304721439,
+          "ci95_pp": [
+            -3.618887364835154,
+            0.2566994552069691
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -4.320558041656327,
+            1.1312906468449306
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 2.725924344250629,
+          "positive_estimate_needed_for_ni1_pp": 1.5249784111841835
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T100-LQ"
+          ],
+          "difference_pp": -1.0355922963075415,
+          "ci95_pp": [
+            -2.51638418281208,
+            0.36750730968537654
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -3.1702629282802812,
+            0.8971144568964959
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 2.0336886925883886,
+          "positive_estimate_needed_for_ni1_pp": 1.1346706319727398
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T25-L"
+          ],
+          "difference_pp": 0.9978575500735776,
+          "ci95_pp": [
+            -1.0722862521933862,
+            3.027831482333124
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -2.012624230882831,
+            3.931060052370533
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 2.9718421416266816,
+          "positive_estimate_needed_for_ni1_pp": 2.0104817809564084
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T100-L"
+          ],
+          "difference_pp": 1.7955796304721439,
+          "ci95_pp": [
+            -0.2566994552069695,
+            3.618887364835154
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -1.1312906468449295,
+            4.320558041656328
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 2.725924344250629,
+          "positive_estimate_needed_for_ni1_pp": 1.9268702773170734
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T100-LQ"
+          ],
+          "difference_pp": 0.7599873341646024,
+          "ci95_pp": [
+            -1.2806277540265911,
+            2.5669162484305734
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -2.2062549335582218,
+            3.2572555035058515
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 2.7317552185320366,
+          "positive_estimate_needed_for_ni1_pp": 1.9662422677228242
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T25-L"
+          ],
+          "difference_pp": 0.23787021590897517,
+          "ci95_pp": [
+            -0.8960673219601649,
+            1.5643904663436674
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -1.348230948446382,
+            2.228584142794216
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 1.788407545620299,
+          "positive_estimate_needed_for_ni1_pp": 0.5861011643553571
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T100-L"
+          ],
+          "difference_pp": 1.0355922963075415,
+          "ci95_pp": [
+            -0.36750730968537754,
+            2.5163841828120783
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.8971144568964945,
+            3.170262928280285
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 2.03368869258839,
+          "positive_estimate_needed_for_ni1_pp": 0.9327067532040361
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T100-G"
+          ],
+          "difference_pp": -0.7599873341646024,
+          "ci95_pp": [
+            -2.566916248430574,
+            1.2806277540265898
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -3.2572555035058506,
+            2.2062549335582293
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 2.73175521853204,
+          "positive_estimate_needed_for_ni1_pp": 1.4972681693412482
+        }
+      ],
+      "epn612": [
+        {
+          "pair": [
+            "T25-L",
+            "T100-L"
+          ],
+          "difference_pp": 0.49893842887472895,
+          "ci95_pp": [
+            -0.09766454352440057,
+            1.089171974522296
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.3503184713375851,
+            1.3333333333333555
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.8418259023354703,
+          "positive_estimate_needed_for_ni1_pp": -0.15074309978768596
+        },
+        {
+          "pair": [
+            "T25-L",
+            "T100-G"
+          ],
+          "difference_pp": -0.97664543524415,
+          "ci95_pp": [
+            -1.5562632696390688,
+            -0.3991507430997965
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -1.7902866242038284,
+            -0.15923566878980083
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.8155254777070138,
+          "positive_estimate_needed_for_ni1_pp": -0.1863588110403216
+        },
+        {
+          "pair": [
+            "T25-L",
+            "T100-LQ"
+          ],
+          "difference_pp": -1.0318471337579793,
+          "ci95_pp": [
+            -1.585987261146482,
+            -0.48826963906580856
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -1.8216560509554138,
+            -0.2547770700636942
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.7834394904458598,
+          "positive_estimate_needed_for_ni1_pp": -0.2101910828025655
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T25-L"
+          ],
+          "difference_pp": -0.49893842887472895,
+          "ci95_pp": [
+            -1.089171974522296,
+            0.09766454352440057
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -1.3333333333333555,
+            0.3503184713375851
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.8418259023354703,
+          "positive_estimate_needed_for_ni1_pp": -0.16560509554137348
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T100-G"
+          ],
+          "difference_pp": -1.475583864118879,
+          "ci95_pp": [
+            -2.1316348195329127,
+            -0.8280254777070173
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -2.4033970276008314,
+            -0.5690021231422704
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.9171974522292805,
+          "positive_estimate_needed_for_ni1_pp": -0.07218683651804758
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T100-LQ"
+          ],
+          "difference_pp": -1.5307855626327083,
+          "ci95_pp": [
+            -2.040339702760075,
+            -1.0254777070063725
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -2.250530785562646,
+            -0.8174097664543689
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.7165605095541385,
+          "positive_estimate_needed_for_ni1_pp": -0.2802547770700623
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T25-L"
+          ],
+          "difference_pp": 0.97664543524415,
+          "ci95_pp": [
+            0.3991507430997965,
+            1.5562632696390688
+          ],
+          "ci_simultaneous_nominal_pp": [
+            0.15923566878980083,
+            1.7902866242038409
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": true,
+          "half_width_pp": 0.81552547770702,
+          "positive_estimate_needed_for_ni1_pp": -0.18259023354565085
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T100-L"
+          ],
+          "difference_pp": 1.475583864118879,
+          "ci95_pp": [
+            0.8280254777070173,
+            2.1316348195329127
+          ],
+          "ci_simultaneous_nominal_pp": [
+            0.5690021231422704,
+            2.4033970276008314
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": true,
+          "half_width_pp": 0.9171974522292805,
+          "positive_estimate_needed_for_ni1_pp": -0.0934182590233914
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T100-LQ"
+          ],
+          "difference_pp": -0.05520169851382928,
+          "ci95_pp": [
+            -0.6157112526539166,
+            0.5074309978768565
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.8428874734607208,
+            0.7515923566878913
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.797239915074306,
+          "positive_estimate_needed_for_ni1_pp": -0.21231422505310849
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T25-L"
+          ],
+          "difference_pp": 1.0318471337579793,
+          "ci95_pp": [
+            0.48826963906579696,
+            1.585987261146482
+          ],
+          "ci_simultaneous_nominal_pp": [
+            0.2547770700636942,
+            1.8216560509554138
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": true,
+          "half_width_pp": 0.7834394904458598,
+          "positive_estimate_needed_for_ni1_pp": -0.2229299363057149
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T100-L"
+          ],
+          "difference_pp": 1.5307855626327083,
+          "ci95_pp": [
+            1.0254777070063725,
+            2.040339702760075
+          ],
+          "ci_simultaneous_nominal_pp": [
+            0.8174097664543689,
+            2.250530785562646
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": true,
+          "half_width_pp": 0.7165605095541385,
+          "positive_estimate_needed_for_ni1_pp": -0.28662420382166065
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T100-G"
+          ],
+          "difference_pp": 0.05520169851382928,
+          "ci95_pp": [
+            -0.5074309978768565,
+            0.6157112526539166
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -0.7515923566878913,
+            0.8428874734607209
+          ],
+          "ni_margin1_pp": true,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 0.7972399150743061,
+          "positive_estimate_needed_for_ni1_pp": -0.19320594479827946
+        }
+      ],
+      "uci_emg": [
+        {
+          "pair": [
+            "T25-L",
+            "T100-L"
+          ],
+          "difference_pp": 1.0965057319224036,
+          "ci95_pp": [
+            -2.515026630585152,
+            4.336580937190548
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -4.0843725943027875,
+            5.625147029875377
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 4.854759812089082,
+          "positive_estimate_needed_for_ni1_pp": 4.180878326225191
+        },
+        {
+          "pair": [
+            "T25-L",
+            "T100-G"
+          ],
+          "difference_pp": -1.019069664903005,
+          "ci95_pp": [
+            -5.031531504784612,
+            3.1000477784392997
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -6.834094612996527,
+            4.9588486030889545
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 5.896471608042741,
+          "positive_estimate_needed_for_ni1_pp": 4.815024948093521
+        },
+        {
+          "pair": [
+            "T25-L",
+            "T100-LQ"
+          ],
+          "difference_pp": 0.556106701940029,
+          "ci95_pp": [
+            -2.0363505684577103,
+            2.7514465840012274
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -3.3809539108084703,
+            3.6674611355572733
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 3.524207523182872,
+          "positive_estimate_needed_for_ni1_pp": 2.9370606127484993
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T25-L"
+          ],
+          "difference_pp": -1.0965057319224036,
+          "ci95_pp": [
+            -4.336580937190549,
+            2.515026630585152
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -5.6251470298753485,
+            4.084372594302793
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 4.854759812089071,
+          "positive_estimate_needed_for_ni1_pp": 3.5286412979529445
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T100-G"
+          ],
+          "difference_pp": -2.1155753968254087,
+          "ci95_pp": [
+            -5.68896305646283,
+            1.934750409259409
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -7.04030875943352,
+            3.626130198141107
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 5.3332194787873135,
+          "positive_estimate_needed_for_ni1_pp": 3.9247333626081113
+        },
+        {
+          "pair": [
+            "T100-L",
+            "T100-LQ"
+          ],
+          "difference_pp": -0.5403990299823747,
+          "ci95_pp": [
+            -3.4549556549844245,
+            2.2135439593264463
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -4.7366495177547785,
+            3.251631014008409
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 3.994140265881594,
+          "positive_estimate_needed_for_ni1_pp": 3.196250487772404
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T25-L"
+          ],
+          "difference_pp": 1.019069664903005,
+          "ci95_pp": [
+            -3.1000477784393006,
+            5.031531504784612
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -4.95884860308893,
+            6.834094612996531
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 5.896471608042731,
+          "positive_estimate_needed_for_ni1_pp": 4.977918267991935
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T100-L"
+          ],
+          "difference_pp": 2.1155753968254087,
+          "ci95_pp": [
+            -1.9347504092594132,
+            5.688963056462829
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -3.626130198141081,
+            7.040308759433527
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 5.333219478787305,
+          "positive_estimate_needed_for_ni1_pp": 4.74170559496649
+        },
+        {
+          "pair": [
+            "T100-G",
+            "T100-LQ"
+          ],
+          "difference_pp": 1.575176366843034,
+          "ci95_pp": [
+            -2.4560851703702884,
+            5.138397718712417
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -4.342083929484626,
+            6.505503190266824
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 5.423793559875724,
+          "positive_estimate_needed_for_ni1_pp": 4.91726029632766
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T25-L"
+          ],
+          "difference_pp": -0.556106701940029,
+          "ci95_pp": [
+            -2.751446584001228,
+            2.0363505684577103
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -3.6674611355572724,
+            3.3809539108084827
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 3.5242075231828776,
+          "positive_estimate_needed_for_ni1_pp": 2.1113544336172434
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T100-L"
+          ],
+          "difference_pp": 0.5403990299823747,
+          "ci95_pp": [
+            -2.213543959326447,
+            3.454955654984424
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -3.251631014008389,
+            4.736649517754792
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 3.9941402658815903,
+          "positive_estimate_needed_for_ni1_pp": 2.7920300439907635
+        },
+        {
+          "pair": [
+            "T100-LQ",
+            "T100-G"
+          ],
+          "difference_pp": -1.575176366843034,
+          "ci95_pp": [
+            -5.138397718712419,
+            2.456085170370288
+          ],
+          "ci_simultaneous_nominal_pp": [
+            -6.505503190266822,
+            4.342083929484667
+          ],
+          "ni_margin1_pp": false,
+          "useful_gain_half_pp": false,
+          "half_width_pp": 5.423793559875744,
+          "positive_estimate_needed_for_ni1_pp": 3.930326823423788
+        }
+      ]
+    },
+    "p2_variance": [
+      {
+        "pair": [
+          "T25-L",
+          "T100-L"
+        ],
+        "uci_variance_fraction_independent_datasets": 0.9711109282635453
+      },
+      {
+        "pair": [
+          "T25-L",
+          "T100-G"
+        ],
+        "uci_variance_fraction_independent_datasets": 0.9799294818135563
+      },
+      {
+        "pair": [
+          "T25-L",
+          "T100-LQ"
+        ],
+        "uci_variance_fraction_independent_datasets": 0.9495148741452852
+      },
+      {
+        "pair": [
+          "T100-L",
+          "T100-G"
+        ],
+        "uci_variance_fraction_independent_datasets": 0.9719838508380765
+      },
+      {
+        "pair": [
+          "T100-L",
+          "T100-LQ"
+        ],
+        "uci_variance_fraction_independent_datasets": 0.969573016207515
+      },
+      {
+        "pair": [
+          "T100-G",
+          "T100-LQ"
+        ],
+        "uci_variance_fraction_independent_datasets": 0.9785316096145075
+      }
+    ],
+    "recommendation": {
+      "retain_historical_P2": "0.5 EPN612 + 0.5 UCI, name and composition unchanged; report descriptively.",
+      "decision_endpoints": [
+        "E_dyn",
+        "P1",
+        "EPN612"
+      ],
+      "uci": "descriptive endpoint, cannot claim broad classification noninferiority from EPN612 alone",
+      "margins": "Keep original endpoint-appropriate gain/NI margins; do not widen to match sampling error.",
+      "profiles": "Endpoint-specific benefits, material harm, bounded-small-effect, unresolved, and tradeoff; head-to-head recipe evidence, never a universal winner."
+    },
+    "limits": [
+      "Existing historic outcomes informed this amendment, which precedes all new-arm data; exploratory development selection must be disclosed.",
+      "Subject bootstrap is conditional on one trained model per arm and does not measure pretraining-seed variance.",
+      "Nominal Bonferroni percentile intervals do not guarantee actual 95% joint coverage.",
+      "No resimulation of review's power probabilities or pose triplet results; only classification widths/counts independently recomputed."
+    ]
+  },
+  "execution_manifest_reconciliation": {
+    "path": "results/infra/contrastive_comparison_20261116/review_response/manifest_provenance_reconciliation.json",
+    "sha256": "3a8ea5c0e13caa2ac658673654fe61c9b383037bf704e79841f13874cc2250aa"
+  }
+}

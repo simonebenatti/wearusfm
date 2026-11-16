@@ -171,8 +171,7 @@ class RunConfig:
 # campi aggiunti dopo i primi checkpoint, coi valori che avevano implicitamente: un checkpoint di prima equivale a uno nuovo con questi valori
 _LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False, "fixed_eval_every": 0, "fixed_eval_batches": 8,
                    "pose_grad_every": 0, "pose_panel_every": 0, "pose_panel_users": 32, "pose_panel_recordings": 2, "pose_panel_windows": 4,
-                   "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False,
-                   "contrastive": None}
+                   "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False}
 BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5,
                        "branch_objective": "readout", "branch_freeze_output": False,  # pilot dei rami del 20/10
                        "window_ms": None}  # finestra del kernel: assente = patch storica
@@ -193,7 +192,7 @@ def _config_with_defaults(d: dict) -> dict:
     out = {**_LATER_DEFAULTS, **d}
     if isinstance(out.get("model"), dict):
         out["model"] = {**BRANCH_MODEL_FIELDS, "tokenizer_activation": "identity",
-                        "tokenizer_logsquare": False, "tokenizer_logsquare_eps": 1e-3, "contrastive_projection": False, **out["model"]}
+                        "tokenizer_logsquare": False, "tokenizer_logsquare_eps": 1e-3, **out["model"]}
     if isinstance(out.get("jepa"), dict):
         # region_target: R2, 24/10; pose_weight: R3, 26/10 (la posa e' spenta nei config precedenti)
         out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, "region_target": False, "pose_weight": 0.0,
@@ -285,7 +284,10 @@ def with_spectral_branches(cfg: RunConfig, kinds: tuple[str, ...], *, weight: fl
 
 
 def config_to_dict(cfg: RunConfig) -> dict:
-    return json.loads(json.dumps(asdict(cfg), default=list))
+    value = asdict(cfg)
+    if value["contrastive"] is None:
+        del value["contrastive"]
+    return json.loads(json.dumps(value, default=list))
 
 
 # --- dati ----------------------------------------------------------------------------------------------------------------------------
@@ -761,7 +763,7 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
             if flags[0]:
                 return "conteggi del forward diversi da quelli precalcolati", {}
             if flags[1]:
-                return "perdita non finita", {}
+                return (contrastive.failure_reason if contrastive is not None and contrastive.failure_reason else "perdita non finita"), {}
             if flags[2] or flags[3] != h or -flags[4] != h:
                 return "diagnostiche delle loss con chiavi diverse fra micro-batch o processi", {}
             if grad_diag and last and "pose" in terms.num:  # E4: gradiente locale del micro-batch finale, prima del backward del passo
@@ -770,9 +772,7 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
                          "anchors": sum(terms.weight[k] * terms.num[k] * ws / global_den[k].clamp(min=1) for k in terms.num
                                         if k not in ("pose", "jepa", "keep", "keep_branches", "contrast_nce", "contrast_rnc"))}
                 grad_stats = _shared_grad_stats(comps, _shared_params(student))
-            if contrastive is not None and ((contrastive.cfg.calibration_only and contrastive.step >= contrastive.cfg.fill_steps) or
-                    (contrastive.cfg.grad_every and ((contrastive.step + 1) % contrastive.cfg.grad_every == 0 or
-                                                     contrastive.step + 1 in (256, 512, 1962, 5000, 19618)))):
+            if contrastive is not None and contrastive.cfg.wants_gradients(contrastive.step):
                 grad_stats.update(contrastive.global_gradients(terms, global_den, _shared_params(student)))
             loss.backward()
         weight = terms.weight
@@ -1211,7 +1211,8 @@ def _load_frozen_encoder(student: WearUsFM, cfg: RunConfig, init_from: Path | No
 def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, scales: dict | None = None, device: str = "cpu",
           num_workers: int = 0, time_limit_s: float | None = None, log=print, window_s: dict | None = None,
           init_from: Path | None = None, dist: DistContext | None = None, branch_from: Path | None = None,
-          branch_state_from: Path | None = None) -> dict:
+          branch_state_from: Path | None = None, expected_contrastive_initial_sha256: str | None = None,
+          contrastive_provenance: dict | None = None) -> dict:
     """Allena fino a `max_steps`, al limite di tempo o a un allarme; riprende da `out_dir/checkpoint.pt` se c'e'. Scrive `metrics.jsonl`,
     `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo). Uno stop numerico preserva l'ultimo checkpoint gia' salvato;
     il passo difettoso non aggiorna optimizer/EMA e non viene contato.
@@ -1280,15 +1281,13 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     contrastive = None
     if cfg.contrastive is not None:
         from wearusfm.training.contrastive_objectives import ContrastiveRuntime
-        if cfg.accum_steps != 1 or cfg.freeze_encoder or cfg.model.spectral_branches or not cfg.model.contrastive_projection:
-            raise ValueError("contrastive requires projection, accum_steps=1 and unfrozen plain encoder")
+        if cfg.accum_steps != 1 or cfg.freeze_encoder or cfg.model.spectral_branches:
+            raise ValueError("contrastive requires accum_steps=1 and unfrozen plain encoder")
         if not cfg.loader.pose_root or not cfg.model.pose_head or cfg.jepa.pose_weight <= 0:
             raise ValueError("matched contrastive experiment requires base pose supervision in all arms")
         if init_from is not None or branch_from is not None or branch_state_from is not None:
             raise ValueError("contrastive experiment starts fresh or resumes its own run; no warm-start/branch")
         contrastive = ContrastiveRuntime(cfg.contrastive)
-    elif cfg.model.contrastive_projection:
-        raise ValueError("training with contrastive projector requires an explicit matched experiment config")
     use_terms = ctx.active or cfg.accum_steps > 1 or contrastive is not None
     ckpt = out_dir / "checkpoint.pt"
     if cfg.pairing_audit and (out_dir.exists() or init_from is not None):
@@ -1362,12 +1361,28 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     index = load_index(manifest, roots, cfg.datasets, cfg.nested)
     if cfg.nested is not None:
         check_derived_binding(index.params, cfg, window_s)
-    student = WearUsFM(cfg.model).to(device)
+    student = WearUsFM(cfg.model)
+    if contrastive is not None:
+        from wearusfm.training.contrastive_objectives import attach_contrastive_head
+        attach_contrastive_head(student)
+    student.to(device)
     contrastive_initial_sha = None
     if contrastive is not None:
         from wearusfm.training.pairing import state_sha256
         contrastive.expected_datasets = tuple(sorted({r["dataset"] for r, w in zip(index.rows, index.weights) if w > 0}))
         contrastive_initial_sha = state_sha256(student.state_dict())
+        if expected_contrastive_initial_sha256 is not None and contrastive_initial_sha != expected_contrastive_initial_sha256:
+            raise ValueError("contrastive initial state differs from pinned calibration")
+        if contrastive.cfg.coverage_quotas is not None:
+            probs = L.time_weighted_probs(index, window_s or {}) if cfg.loader.time_weighted else index.weights
+            quotas = {}
+            for row, probability in zip(index.rows, probs):
+                if probability > 0:
+                    quotas[row["dataset"]] = quotas.get(row["dataset"], 0.) + float(probability)
+            pinned = contrastive.cfg.coverage_quotas
+            if cfg.batch_size != contrastive.cfg.coverage_global_batch_size or set(quotas) != set(pinned) or any(
+                    not math.isclose(q, pinned[d], rel_tol=1e-9, abs_tol=1e-12) for d, q in quotas.items()):
+                raise ValueError("contrastive coverage quotas differ from manifest/window sampling")
     frozen_init = branch_calibration = None
     if cfg.freeze_encoder and resume_state is None:
         frozen_init = _load_frozen_encoder(student, cfg, init_from)
@@ -1401,6 +1416,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 raise ValueError("checkpoint missing contrastive queue state")
             if state.get("contrastive_initial_sha256") != contrastive_initial_sha:
                 raise ValueError("contrastive initial reference changed on resume")
+            if state.get("contrastive_provenance") != contrastive_provenance:
+                raise ValueError("contrastive calibration/source/cohort provenance changed on resume")
             contrastive.load_state_dict(state["contrastive_state"], step)
         monitor.low_collapse, monitor.low_rank = state["alarm_counts"]
         if ctx.active:  # il generatore di questo processo
@@ -1441,7 +1458,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg),
                 "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
                 "stream": stream, "data_signature": data_signature, "pose_stats_sha256": pose_sha,
-                **({"contrastive_state": contrastive.state_dict(), "contrastive_initial_sha256": contrastive_initial_sha}
+                **({"contrastive_state": contrastive.state_dict(), "contrastive_initial_sha256": contrastive_initial_sha,
+                    "contrastive_provenance": contrastive_provenance}
                    if contrastive is not None else {}), **extra}
 
     init_sha = None
@@ -1645,6 +1663,17 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                     losses[k] = losses["total"].new_tensor(v)
             losses["total"].backward()
             loss_values = {k: float(v.detach()) for k, v in losses.items()}
+        if contrastive is not None:
+            # Pre-clipping gradient of the projector, including the actual arm weight.
+            loss_values["contrast_projector_grad_norm"] = math.sqrt(sum(
+                float(torch.linalg.vector_norm(p.grad.detach(), dtype=torch.float64)) ** 2
+                for p in student.contrastive_head.parameters() if p.grad is not None))
+            contrastive_failure = contrastive.before_update()
+            if contrastive_failure is not None:
+                reason = contrastive_failure
+                numerical_failure = True
+                opt.zero_grad(set_to_none=True)
+                break
         gnorm = torch.nn.utils.clip_grad_norm_(student.parameters(), cfg.grad_clip)  # uguale su tutti i processi dopo la riduzione
         # Loss finita non implica gradienti finiti. Gestione esplicita per registrare lo STOP anche senza un'eccezione del clipping.
         if not torch.isfinite(gnorm):
@@ -1666,9 +1695,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 ema_update(getattr(teacher, name), getattr(student, name), cfg.jepa.ema_momentum)
         else:
             ema_update(teacher, student, cfg.jepa.ema_momentum)
-        contrastive_failure = None
         if contrastive is not None:
-            contrastive_failure = contrastive.commit()  # pre-update teacher keys, once after successful step
+            contrastive.commit()  # pre-update teacher keys, once after successful step
         if cfg.prefetch_audit:  # gli ingressi del passo, a fine passo, uguali bit per bit a quelli preparati di nuovo dal batch sulla CPU
             differ, = _any_flag(ctx, device, _micro_digest(micros) != _micro_digest(_stage(batch, cfg.accum_steps, "cpu")))
             if differ:  # su tutti i processi; come un errore numerico: nessun checkpoint e STOP per la catena
@@ -1677,10 +1705,6 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 break
             audited += 1
         step += 1
-        if contrastive_failure is not None:
-            reason = contrastive_failure
-            numerical_failure = True  # stop chain, preserve prior valid checkpoint; no retry with altered coverage
-            break
         rec = {"step": step, "lr": _lr_at(step - 1, cfg), "grad_norm": float(gnorm), "t_data_s": t_data, "t_step_s": time.time() - t0,
                "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions}
         if contrastive is not None:
@@ -1792,10 +1816,12 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                   "rnc_reduction": "replicated global loss, differentiable SUM gather plus DDP mean",
                                   "optimizer_updates": 0 if contrastive.cfg.calibration_only else step,
                                   "initial_sha256": contrastive_initial_sha,
+                                  "provenance": contrastive_provenance,
                                   "final_student_sha256": state_sha256(student.state_dict()),
                                   "final_teacher_sha256": state_sha256(teacher.state_dict()),
                                   "coverage_completed_blocks": contrastive.coverage_reports,
-                                  "coverage_partial_block": contrastive.coverage_report()}
+                                  "coverage_partial_block": contrastive.coverage_report(),
+                                  "coverage_failed_block": contrastive.failed_coverage_report}
     if cfg.model.spectral_branches:
         prov = out_dir / "spectral_branches.json"
         summary["spectral_branches"] = {"kinds": list(cfg.model.spectral_branches), "freeze_encoder": cfg.freeze_encoder,

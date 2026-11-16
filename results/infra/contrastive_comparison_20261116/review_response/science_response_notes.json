@@ -1,0 +1,82 @@
+{
+  "schema": "contrastive-science-response-v1",
+  "status": "D1_A_D3_OPTION2_D2_EPN_DECISION_APPROVED_BY_SIMONE_REPORTED_BY_PARENT",
+  "recalculation": {
+    "path": "results/infra/contrastive_comparison_20261116/review_response/science_recalculation.json",
+    "sha256": "ce214c902655752ba9a43b252338e18439c817bf0a2e075df330dd209693af70",
+    "independent_code": "results/infra/contrastive_comparison_20261116/review_response/science_recalculate.py",
+    "threads": 1,
+    "n_boot": 100000
+  },
+  "D1": {
+    "decision": "Exempt only manifest-infeasible datasets from both per-dataset coverage gates; retain them in complete global denominators and reports.",
+    "quota_rule": "Normalized sum of manifest weight / frozen window_seconds over pretraining sessions, because loader.time_weighted=true.",
+    "exemption_formula": "quota_window * 32 * 256 < 32 + 1",
+    "only_exempt_dataset": "capgmyo",
+    "capgmyo_window_quota": 0.0028543868474759163,
+    "capgmyo_expected_windows": 23.383137054522706,
+    "interpretation": "An a priori capacity screen; repeated identities and same-recording exclusions further reduce admissible negatives. It does not assert the other datasets are guaranteed to pass.",
+    "new_stream_validation": "Real-loader identity/QC audit, calibration panel 256..511, global coverage and all non-exempt per-dataset gates remain mandatory and identical in C0/CN/CR.",
+    "explicit_limitation": "CapgMyo contributes no InfoNCE in historical replay. It remains in pretraining; no data-mix change or manufactured support.",
+    "replay_result": "0/1461 CapgMyo eligible; median3 maximum8 negatives; panel13/8192 queries. Original0/18 complete blocks pass, exemption18/18.",
+    "review_refinement": "Duration1s sensitivity gives618120 eligible versus618119 at4s, one extra NinaProDB3 query; both give the same pass/fail and exemption decision.",
+    "execution_manifest_reconciliation": {
+      "path": "results/infra/contrastive_comparison_20261116/review_response/manifest_provenance_reconciliation.json",
+      "sha256": "3a8ea5c0e13caa2ac658673654fe61c9b383037bf704e79841f13874cc2250aa"
+    }
+  },
+  "D3": {
+    "decision": "Use active-period attenuation option2, preserving original train-only frozen-initial calibration.",
+    "formula": "lambda_c = 0.1 * (mean historical G[513:19618] / mean historical G[1:8]) * median_b(norm(shared_g_base,b)/norm(shared_g_c,b))",
+    "multiplier": 0.1179564123141922,
+    "effective_initial_fraction": 0.01179564123141922,
+    "proxy_rho_constant_contrastive_norm": {
+      "513_1024_mean": 0.057358386542758086,
+      "513_19618_mean": 0.11359426625236832,
+      "last100_mean": 0.14538323721153876
+    },
+    "not_a_prediction": "Historic G covers all parameters, calibration uses shared parameters, contrastive norms and base trajectory will evolve. These ratios are conditional scenarios, not actual contrastive measurements and not AdamW step ratios.",
+    "lambda_policy_recommendation": "If either independently calibrated lambda is nonfinite or outside [1e-4,1], withhold all three-arm benchmark/training release. Publish both values and request reviewed amendment; never clamp, drop an arm, or automatically recollect/retune.",
+    "diagnostic_requirement": "Record global shared base/NCE/RnC norms and cosines every update513..576; compute active rho_c=lambda_c*norm(g_c)/norm(g_base). Report median,p05,p95,max and raw batch sequence.",
+    "reading_thresholds_proposed_not_yet_user_ratified": {
+      "benchmark_gates_from_parent": {
+        "median_active_rho_inclusive": [
+          0.005,
+          0.5
+        ],
+        "p95_active_rho_maximum_inclusive": 1.0,
+        "CN_CR_median_active_rho_ratio_inclusive": [
+          0.25,
+          4.0
+        ]
+      },
+      "review": "Engineering minimum intervention and non-dominance bounds, not empirical laws. Lower bound can flag legitimately shrinking RnC;4x ratio allowance is not matched-dose equivalence. Publish all64full-weight513..576 diagnostics; p95 reflects only~3tail batches. Reject nonfinite or nonpositive base norms. Any failure holds cohort pending review, no automatic retuning."
+    }
+  },
+  "D2": {
+    "decision": "Decision endpoints E_dyn,P1,EPN612; historical P2=0.5EPN612+0.5UCI retained with unchanged definition and UCI separately descriptive.",
+    "margins": "E_dyn useful2% / NI2%; P1 and EPN612 useful0.5pp / NI1pp.",
+    "reason": "Independent100k bootstrap: P2 halfwidth1.7884..2.9718pp,NI1/12; EPN612 halfwidth0.7166..0.9172pp; UCI contributes94.95%..97.99% of independent-dataset P2 contrast variance.",
+    "scope": "Cannot claim broad classification NI from EPN612 alone. No increased margin solely to accommodate noise. New-arm outcomes not yet observed, but historical development outcomes informed this amendment.",
+    "not_rerun": "No independent reproduction of historical pose power simulations or24triplet outcomes; classification sufficient-statistic bootstrap and widths were rerun fully.",
+    "family": "9 primary pair-endpoint comparisons,100000 replicas,seed20261116; reverse CN/CR is same head-to-head comparison. Bonferroni percentile confidence nominal99.4444%, no finite-sample family-coverage guarantee."
+  },
+  "D10_and_I9": {
+    "implemented_files": [
+      "scripts/contrastive_compare.py",
+      "tests/cpu/test_contrastive_compare.py"
+    ],
+    "dual_direction": "Both direct recipes meeting useful+NI implies bidirectional_benefit_tradeoff_no_winner; no if/elif bias.",
+    "label_guard": "Numeric int/float arrays compatible; numeric/string target/prediction mismatch rejected before pooled accuracy.",
+    "relative_pose_guard": "Explicit per-replica relative reductions and nonlinear reverse direction tests.",
+    "monte_carlo": "For each simultaneous decision limit, Binomial(n,p)16th/84th percentile order-statistic half-range estimates oneSE. Within3SE of threshold=>boundary; affected decision flag withheld. No extra random seeds or data-dependent replica increase.",
+    "profiles": "Per-pair endpoint benefits, demonstrated harm(CI upper<-NI), NI unresolved, practical equivalence(full CI in[-NI,+gain]); aggregate common benefit without direct difference, tradeoff, endpoint-scoped confirmation. No practical-advantage conclusion only when all primary endpoints practically equivalent.",
+    "verification": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ~/.venvs/wearusfm-tok/bin/python -m pytest -q -p no:cacheprovider tests/cpu/test_contrastive_compare.py",
+      "passed": 32,
+      "elapsed_s": 1.94,
+      "diff_check": "passed"
+    }
+  },
+  "authorization": "No job, deployment, commit, push or external message was executed by this subagent."
+}

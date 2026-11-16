@@ -73,7 +73,8 @@ def admissible_mask(queries, candidates, *, gap_seconds: float = 4.0, device=Non
     Same subject alone is NOT excluded. Different trials within a recording lack a
     common coordinate axis and are conservatively excluded; explicit trial=None
     denotes a valid continuous coordinate axis. A gap exactly equal to the margin
-    is admissible. Interval comparisons use seconds, including differing fs values.
+    is admissible. Equal sampling rates use integer sample gaps, avoiding loss of
+    precision when subtracting large absolute timestamps. Different rates use seconds.
     """
     if not isinstance(gap_seconds, Real) or isinstance(gap_seconds, bool) or not math.isfinite(gap_seconds) or gap_seconds < 0:
         raise ValueError("negative exclusion margin must be finite and nonnegative")
@@ -88,9 +89,12 @@ def admissible_mask(queries, candidates, *, gap_seconds: float = 4.0, device=Non
                 if q.trial != c.trial:
                     keep = False
                 else:
-                    gap = max(q.start / q.fs, c.start / c.fs) - min(q.stop / q.fs, c.stop / c.fs)
-                    # Overlap is always excluded, even when the optional gap is zero.
-                    keep = gap >= gap_seconds
+                    if q.fs == c.fs:
+                        gap_samples = max(q.start, c.start) - min(q.stop, c.stop)
+                        keep = gap_samples >= gap_seconds * q.fs
+                    else:
+                        gap = max(q.start / q.fs, c.start / c.fs) - min(q.stop / q.fs, c.stop / c.fs)
+                        keep = gap >= gap_seconds
             row.append(keep)
         rows.append(row)
     return torch.tensor(rows, dtype=torch.bool, device=device).reshape(len(queries), len(candidates))
@@ -103,6 +107,53 @@ class CandidateSnapshot:
     steps: tuple[int, ...]
     from_current: tuple[bool, ...]
     global_indices: tuple[int, ...]
+    duplicate_current: tuple[str, ...] = ()
+    replaced_previous: tuple[str, ...] = ()
+
+
+def candidate_diagnostics(queries, snapshot, negative_mask, step, *, datasets=()):
+    """Additive counts by query dataset; no labels, tensor gradients or mutation.
+
+    Age/current/subject/recording counts refer to admissible negative pairs, even
+    for a query below min_negatives. Snapshot duplicate counts are GLOBAL and must
+    be averaged (not summed) over ranks by callers.
+    """
+    names = ("negative_count", "negative_age_sum", "negative_current", "negative_same_subject",
+             "negative_same_recording", "negative_age_0", "negative_age_1_32", "negative_age_33_128",
+             "negative_age_129_256", "negative_age_257_plus", "excluded_overlap")
+    datasets = sorted(set(datasets) | {i.dataset for i in (*queries, *snapshot.identities)})
+    totals = {name: 0 for name in names}
+    by_dataset = {d: dict(totals) for d in datasets}
+    mask = negative_mask.detach().cpu().tolist()
+    for query, row in zip(queries, mask):
+        values = by_dataset[query.dataset]
+        for keep, candidate, written, current in zip(row, snapshot.identities, snapshot.steps, snapshot.from_current):
+            if not keep:
+                if query.recording == candidate.recording and query.trial == candidate.trial:
+                    overlap = (max(query.start, candidate.start) < min(query.stop, candidate.stop) if query.fs == candidate.fs
+                               else max(query.start / query.fs, candidate.start / candidate.fs) < min(query.stop / query.fs, candidate.stop / candidate.fs))
+                    values["excluded_overlap"] += int(overlap)
+                continue
+            age = step - written
+            values["negative_count"] += 1
+            values["negative_age_sum"] += age
+            values["negative_current"] += int(current)
+            values["negative_same_subject"] += int(query.subject == candidate.subject)
+            values["negative_same_recording"] += int(query.recording == candidate.recording)
+            bucket = "0" if age == 0 else "1_32" if age <= 32 else "33_128" if age <= 128 else "129_256" if age <= 256 else "257_plus"
+            values["negative_age_" + bucket] += 1
+    result = {}
+    for dataset, values in by_dataset.items():
+        for name, value in values.items():
+            totals[name] += value
+            result[f"contrast_nce_{name}__{dataset}"] = value
+    result.update({f"contrast_nce_{name}": value for name, value in totals.items()})
+    for name, duplicate_datasets in (("duplicate_current_discarded", snapshot.duplicate_current),
+                                      ("previous_keys_replaced", snapshot.replaced_previous)):
+        result[f"contrast_nce_{name}"] = len(duplicate_datasets)
+        for dataset in datasets:
+            result[f"contrast_nce_{name}__{dataset}"] = duplicate_datasets.count(dataset)
+    return result
 
 
 def _integer(value, name, minimum=0):
@@ -167,8 +218,17 @@ class CandidateQueue:
         previous = [e for e in self._entries if step - e[2] <= self.max_age and e[0] not in current_ids_set]
         entries = previous + current
         keys = torch.stack([e[1] for e in entries]).to(current_keys) if entries else current_keys.detach().new_empty((0, current_keys.shape[1]))
+        seen, duplicates = set(), []
+        valid_rows = [True] * len(current_ids) if current_valid is None else current_valid.detach().cpu().tolist()
+        for ident, keep in zip(current_ids, valid_rows):
+            if keep and ident in seen:
+                duplicates.append(ident.dataset)
+            if keep:
+                seen.add(ident)
+        replaced = tuple(e[0].dataset for e in self._entries if step - e[2] <= self.max_age and e[0] in current_ids_set)
         return CandidateSnapshot(keys.detach(), tuple(e[0] for e in entries), tuple(e[2] for e in entries),
-                                 tuple([False] * len(previous) + [True] * len(current)), tuple(e[3] for e in entries))
+                                 tuple([False] * len(previous) + [True] * len(current)), tuple(e[3] for e in entries),
+                                 tuple(duplicates), replaced)
 
     def commit(self, keys, identities, valid=None, step=None) -> None:
         if step is None:
@@ -255,15 +315,16 @@ def gather_objects(local_items):
     return [item for part in parts for item in part]
 
 
-def _gather_layout(value):
+def _gather_layout(value, with_grad=False):
     if value.ndim < 1:
         raise ValueError("variable gather needs a leading candidate dimension")
     if not _distributed():
         return [value.shape[0]]
-    meta = [(value.shape[0], tuple(value.shape[1:]), str(value.dtype), value.device.type)]
+    meta = [(value.shape[0], tuple(value.shape[1:]), str(value.dtype), value.device.type,
+             bool(with_grad), bool(value.requires_grad) if with_grad else False)]
     rows = gather_objects(meta)
     if any(row[1:] != rows[0][1:] for row in rows):
-        raise ValueError("distributed candidate shapes/dtypes/devices differ")
+        raise ValueError("distributed candidate shapes/dtypes/devices/gradient participation differ")
     return [row[0] for row in rows]
 
 
@@ -303,7 +364,7 @@ def gather_variable(value: torch.Tensor, *, with_grad: bool = False) -> torch.Te
     do not multiply that loss by world_size a second time. Detached keys are the
     default for NCE. This helper does not mutate queue state.
     """
-    sizes = _gather_layout(value)
+    sizes = _gather_layout(value, with_grad)
     if not _distributed():
         return value if with_grad else value.detach()
     if with_grad:

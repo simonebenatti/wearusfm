@@ -23,6 +23,13 @@ E = 23150  # passi per epoca di esempio
 SHA = "a" * 40
 
 
+def test_unreleased_contrastive_cli_cannot_bypass_campaign_entrypoint():
+    parser = W._trainer_parser()
+    with pytest.raises(ValueError, match="sconosciuta"):
+        W.free_arg_dests("--contrastive-config /tmp/unreviewed.json", parser)
+    assert "contrastive_config" not in {action.dest for action in parser._actions}
+
+
 def _plan(**over):
     plan = {"campaign": "esempio", "agent": "claude", "code_dir": "/C", "expected_sha": SHA, "manifest": "/M", "scales": "/S",
             "window_seconds": "/W", "run_root": "/R", "slurm": {"qos": "normal", "time": "24:00:00"}, "margin_min": 40, "startup_min": 15,

@@ -1,0 +1,32 @@
+{
+  "schema": "contrastive-historical-gradient-reference-v1",
+  "status": "APPROVED_BY_SIMONE",
+  "reference_updates": [
+    513,
+    19618
+  ],
+  "initial_updates": [
+    1,
+    8
+  ],
+  "reference_mean": 3.5140269780276796,
+  "initial_mean": 29.790894018271878,
+  "multiplier": 0.1179564123141922,
+  "source": {
+    "path": "/Users/simonebenatti/wearusfm_local/logs/review6_remote/control30m/metrics.jsonl",
+    "sha256": "b114f60017bb292094dd25225657554658ca8d0406e32c60e1e955afa22bbe39",
+    "metric": "grad_norm",
+    "scope": "all parameters, pre-clipping",
+    "updates": 19618
+  },
+  "alternative_end_ramp": {
+    "updates": [
+      257,
+      512
+    ],
+    "reference_mean": 6.739723678135468,
+    "multiplier": 0.22623435449777848
+  },
+  "meaning": "Multiply initial shared-gradient calibration fraction 0.1 by multiplier; historical all-parameter norm is a proxy, not a guarantee of actual shared-gradient ratio.",
+  "decision": "Explicit user reply 16/11/2026 to three scientific choices; review of resulting code still required"
+}

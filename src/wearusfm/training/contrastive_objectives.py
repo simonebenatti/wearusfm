@@ -8,22 +8,25 @@ the full-batch gradient with each rank evaluating the same scalar.
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
+from collections import Counter
+import copy
 import math
 import torch
 import torch.nn.functional as F
 
-from wearusfm.model.contrastive import window_readout, normalize_projection, info_nce
+from wearusfm.model.contrastive import ProjectionHead, window_readout, normalize_projection, info_nce
+from wearusfm.data.pose_targets import N_JOINTS
 from wearusfm.model.rank_contrast import pose_rank_contrast, anchor_support
 from wearusfm.training.contrastive_memory import (
-    CandidateQueue, identities_from_batch, admissible_mask, gather_variable, gather_objects,
+    CandidateQueue, identities_from_batch, admissible_mask, gather_variable, gather_objects, candidate_diagnostics,
 )
 
 
 @dataclass(frozen=True)
 class ContrastiveConfig:
+    nce_weight: float
+    rnc_weight: float
     arm: str = "C0"
-    nce_weight: float = 0.1  # placeholders permitted for technical tests; release requires calibration pin
-    rnc_weight: float = 0.1
     nce_temperature: float = 0.2
     rnc_temperature: float = 0.1
     rnc_stride: int = 8
@@ -35,9 +38,19 @@ class ContrastiveConfig:
     fill_steps: int = 256
     ramp_steps: int = 256
     grad_every: int = 500
+    grad_steps: tuple[int, ...] = (256, 512, 1962, 5000, 19618)
+    grad_dense_start: int = 0  # inclusive, 1-based; 0/0 disables the dense panel
+    grad_dense_end: int = 0
     calibration_only: bool = False
     coverage_block: int = 1024
     enforce_coverage: bool = True
+    coverage_min_queries: int = 32
+    coverage_dataset_fraction: float = .8
+    coverage_nce_fraction: float = .9
+    coverage_rnc_fraction: float = .9
+    coverage_quotas: dict[str, float] | None = None
+    coverage_global_batch_size: int = 32
+    coverage_exempt_datasets: tuple[str, ...] = ()
 
     def __post_init__(self):
         if self.arm not in ("C0", "CN", "CR"):
@@ -46,21 +59,66 @@ class ContrastiveConfig:
             v = getattr(self, k)
             if type(v) not in (int, float) or not math.isfinite(v) or v <= 0:
                 raise ValueError(f"invalid contrastive {k}")
-        for k in ("rnc_stride", "capacity_per_dataset", "max_age", "min_negatives", "ramp_steps", "coverage_block"):
+        if not all(1e-4 <= getattr(self, k) <= 1. for k in ("nce_weight", "rnc_weight")):
+            raise ValueError("contrastive weights must be explicit and in [1e-4, 1]")
+        for k in ("rnc_stride", "capacity_per_dataset", "max_age", "min_negatives", "ramp_steps", "coverage_block",
+                  "coverage_min_queries", "coverage_global_batch_size"):
             if type(getattr(self, k)) is not int or getattr(self, k) < 1:
                 raise ValueError(f"invalid contrastive {k}")
-        for k in ("fill_steps", "grad_every"):
+        for k in ("fill_steps", "grad_every", "grad_dense_start", "grad_dense_end"):
             if type(getattr(self, k)) is not int or getattr(self, k) < 0:
                 raise ValueError(f"invalid contrastive {k}")
+        if not isinstance(self.grad_steps, (tuple, list)) or any(type(v) is not int or v < 1 for v in self.grad_steps):
+            raise ValueError("grad_steps must contain positive integer update numbers")
+        object.__setattr__(self, "grad_steps", tuple(self.grad_steps))
+        if not (self.grad_dense_start == self.grad_dense_end == 0 or 1 <= self.grad_dense_start <= self.grad_dense_end):
+            raise ValueError("invalid dense gradient diagnostic interval")
         if type(self.rnc_resolution) not in (int, float) or not math.isfinite(self.rnc_resolution) or self.rnc_resolution < 0:
             raise ValueError("invalid contrastive resolution")
         if type(self.calibration_only) is not bool or type(self.enforce_coverage) is not bool:
             raise ValueError("calibration_only/enforce_coverage must be boolean")
+        for name in ("coverage_dataset_fraction", "coverage_nce_fraction", "coverage_rnc_fraction"):
+            value = getattr(self, name)
+            if type(value) not in (float, int) or not math.isfinite(value) or not 0 < value <= 1:
+                raise ValueError("invalid " + name)
+        if not isinstance(self.coverage_exempt_datasets, (tuple, list)) or any(
+                not isinstance(d, str) or not d for d in self.coverage_exempt_datasets):
+            raise ValueError("invalid coverage_exempt_datasets")
+        object.__setattr__(self, "coverage_exempt_datasets", tuple(self.coverage_exempt_datasets))
+        if self.coverage_quotas is None:
+            if self.coverage_exempt_datasets:
+                raise ValueError("coverage exemptions require pinned sampling quotas")
+        else:
+            quotas = self.coverage_quotas
+            if not isinstance(quotas, dict) or not quotas or any(
+                    not isinstance(d, str) or not d or type(q) not in (float, int) or not math.isfinite(q) or not 0 < q <= 1
+                    for d, q in quotas.items()) or not math.isclose(sum(quotas.values()), 1., abs_tol=1e-9):
+                raise ValueError("invalid normalized coverage_quotas")
+            exempt = tuple(sorted(d for d, q in quotas.items()
+                                  if q * self.coverage_global_batch_size * self.max_age < self.min_negatives + 1))
+            if self.coverage_exempt_datasets != exempt:
+                raise ValueError("coverage exemptions differ from frozen quota rule")
 
     def weights(self, step):
         factor = min(1., max(0., (step + 1 - self.fill_steps) / self.ramp_steps))
         return (self.nce_weight * factor if self.arm == "CN" else 0.,
                 self.rnc_weight * factor if self.arm == "CR" else 0.)
+
+    def wants_gradients(self, step):
+        update = step + 1
+        return ((self.calibration_only and step >= self.fill_steps) or
+                (self.grad_every > 0 and update % self.grad_every == 0) or update in self.grad_steps or
+                (0 < self.grad_dense_start <= update <= self.grad_dense_end))
+
+
+def attach_contrastive_head(model):
+    """Attach the training-only projector without changing the base model schema/RNG."""
+    if hasattr(model, "contrastive_head"):
+        raise ValueError("contrastive projector already attached")
+    # The tokenizer owns float64 filter parameters even in the float32 model.
+    reference = next(model.backbone.parameters())
+    model.contrastive_head = ProjectionHead(model.cfg.dim).to(device=reference.device, dtype=reference.dtype)
+    return model
 
 
 def _collective_error(error):
@@ -107,6 +165,9 @@ class ContrastiveRuntime:
         self.expected_datasets = ()
         self.coverage = self._empty_coverage()
         self.coverage_reports = []
+        self.failure_reason = None
+        self._next_coverage = None
+        self.failed_coverage_report = None
 
     @staticmethod
     def _empty_coverage():
@@ -133,6 +194,8 @@ class ContrastiveRuntime:
             raise ValueError("invalid contrastive coverage checkpoint")
 
     def prepare(self, batch, step):
+        self.failure_reason = None
+        self._next_coverage = None
         error = None
         try:
             ids = identities_from_batch(batch)
@@ -149,6 +212,18 @@ class ContrastiveRuntime:
         return {"contrast_nce": torch.tensor(len(self.ids), device=device, dtype=torch.int64),
                 "contrast_rnc": torch.ones((), device=device, dtype=torch.int64)}
 
+    def _numerical_stop(self, terms, device, error):
+        """All ranks return matching nonfinite terms to the trainer's STOP path."""
+        errors = gather_objects([error])
+        if not any(errors):
+            return False
+        self.failure_reason = "contrastive numerical failure: " + " | ".join(str(e) for e in errors if e)
+        terms.num.update({key: torch.full((), float("nan"), device=device) for key in self.counts(device)})
+        terms.den.update(self.counts(device))
+        wn, wr = self.cfg.weights(self.step)
+        terms.weight.update(contrast_nce=wn, contrast_rnc=wr)
+        return True
+
     def attach(self, terms, student, teacher, micro, enc, enc_t):
         """Called by trainer after base loss, inside the DDP objective forward."""
         from wearusfm.training.jepa import pose_time_valid
@@ -163,23 +238,32 @@ class ContrastiveRuntime:
         k_read, k_ok = window_readout(enc_t.z, physical)
         error = None
         try:
+            if not bool(torch.isfinite(enc.z).all()) or not bool(torch.isfinite(enc_t.z).all()):
+                raise ValueError("nonfinite student/teacher representation")
+            if micro.pose is not None and not bool(torch.isfinite(micro.pose[0][micro.pose[1]]).all()):
+                raise ValueError("nonfinite valid pose target")
             q_raw = student.contrastive_head(q_read)
             with torch.no_grad():
                 k_raw = teacher.contrastive_head(k_read)
             # Invalid windows carry finite differentiable zeros, not NaN norms.
             q = normalize_projection(q_raw, valid=q_ok)
             k = normalize_projection(k_raw, valid=k_ok)
-            if not bool(torch.isfinite(enc.z).all()):
-                raise ValueError("nonfinite student representation")
-        except Exception as exc:
+        except ValueError as exc:
             error = f"{type(exc).__name__}: {exc}"
-        _collective_error(error)
+        if self._numerical_stop(terms, enc.z.device, error):
+            return terms
         all_k = gather_variable(k.detach())
         all_valid = gather_variable(k_ok)
         snapshot = self.queue.snapshot(self.step, all_k, self.global_ids, all_valid)
         neg = admissible_mask(self.ids, snapshot.identities, gap_seconds=self.cfg.gap_seconds, device=q.device)
-        per_query, eligible, _ = info_nce(q, k.detach(), snapshot.keys, neg,
-                                          temperature=self.cfg.nce_temperature, min_negatives=self.cfg.min_negatives)
+        error = None
+        try:
+            per_query, eligible, _ = info_nce(q, k.detach(), snapshot.keys, neg,
+                                              temperature=self.cfg.nce_temperature, min_negatives=self.cfg.min_negatives)
+        except ValueError as exc:
+            error = str(exc)
+        if self._numerical_stop(terms, enc.z.device, error):
+            return terms
         eligible = eligible & q_ok & k_ok
         nce_num = torch.where(eligible, per_query, torch.zeros_like(per_query)).sum()
         # All branches update the identical queue policy once, even when loss weight is zero.
@@ -189,7 +273,7 @@ class ContrastiveRuntime:
         width = _global_width(zm)
         z_global = gather_variable(_pad_time(zm, width), with_grad=True)
         if micro.pose is None:
-            y = zm.new_zeros((*zm.shape[:2], 20))
+            y = zm.new_zeros((*zm.shape[:2], N_JOINTS))
             valid = torch.zeros_like(y, dtype=torch.bool)
         else:
             y, valid = micro.pose[:2]
@@ -199,9 +283,15 @@ class ContrastiveRuntime:
         # Exclude duplicated physical instants, regardless of montage, in BOTH roles.
         si, pi, *_ = anchor_support(valid_global & tv_global[..., None], self.cfg.rnc_stride, "all")
         allowed, point_ids = physical_pair_mask(self.global_ids, si, pi, student.cfg.patch_ms, zm.device)
-        rnc, _, windows, rlog = pose_rank_contrast(z_global, (target_global, valid_global), tv_global,
-            temperature=self.cfg.rnc_temperature, stride=self.cfg.rnc_stride, positives="all", per_window=True,
-            resolution=self.cfg.rnc_resolution, pair_allowed=allowed)
+        error = None
+        try:
+            rnc, _, windows, rlog = pose_rank_contrast(z_global, (target_global, valid_global), tv_global,
+                temperature=self.cfg.rnc_temperature, stride=self.cfg.rnc_stride, positives="all", per_window=True,
+                resolution=self.cfg.rnc_resolution, pair_allowed=allowed)
+        except ValueError as exc:
+            error = str(exc)
+        if self._numerical_stop(terms, enc.z.device, error):
+            return terms
         wn, wr = self.cfg.weights(self.step)
         counts = self.counts(zm.device)
         terms.num.update(contrast_nce=nce_num, contrast_rnc=rnc)
@@ -209,7 +299,26 @@ class ContrastiveRuntime:
         terms.weight.update(contrast_nce=wn, contrast_rnc=wr)
         terms.log_sum["contrast_nce_eligible"] = eligible.sum().detach()
         terms.log_sum["contrast_windows"] = counts["contrast_nce"]
-        terms.log_sum["contrast_nce_negative_count"] = neg.sum().detach()
+        diagnostics = candidate_diagnostics(self.ids, snapshot, neg, self.step,
+                                            datasets={i.dataset for i in self.global_ids})
+        def record_diagnostic(key, value):
+            # Snapshot-level deduplication is the same on every rank.
+            if "duplicate_current_discarded" in key or "previous_keys_replaced" in key:
+                terms.log_num[key] = zm.new_tensor(float(value), dtype=torch.float64)
+                terms.log_den[key] = zm.new_ones((), dtype=torch.float64)
+            else:
+                terms.log_sum[key] = counts["contrast_nce"].new_tensor(value)
+        for key, value in diagnostics.items():
+            if "__" not in key:
+                record_diagnostic(key, value)
+        for suffix in ("", *("__" + d for d in sorted({i.dataset for i in self.global_ids}))):
+            denominator = diagnostics["contrast_nce_negative_count" + suffix]
+            for numerator, metric in (("negative_age_sum", "negative_age_mean"), ("negative_current", "negative_current_fraction"),
+                                      ("negative_same_subject", "negative_same_subject_fraction"),
+                                      ("negative_same_recording", "negative_same_recording_fraction")):
+                key = "contrast_nce_" + metric + suffix
+                terms.log_num[key] = zm.new_tensor(float(diagnostics["contrast_nce_" + numerator + suffix]), dtype=torch.float64)
+                terms.log_den[key] = zm.new_tensor(float(denominator), dtype=torch.float64)
         self.pending_stats = {"rnc_active": bool(windows > 0), "datasets": {}}
         for dataset in sorted({i.dataset for i in self.global_ids}):
             idx = torch.tensor([i.dataset == dataset for i in self.ids], device=zm.device)
@@ -217,50 +326,91 @@ class ContrastiveRuntime:
             self.pending_stats["datasets"][dataset] = [queries, good]
             terms.log_sum[f"contrast_nce_queries__{dataset}"] = counts["contrast_nce"].new_tensor(queries)
             terms.log_sum[f"contrast_nce_eligible__{dataset}"] = counts["contrast_nce"].new_tensor(good)
+            loss_sum = torch.where(idx & eligible, per_query.detach(), 0.).sum()
+            terms.log_sum[f"contrast_nce_loss_sum__{dataset}"] = loss_sum
+            terms.log_num[f"contrast_nce_loss__{dataset}"] = loss_sum
+            terms.log_den[f"contrast_nce_loss__{dataset}"] = zm.new_tensor(float(queries))
+            for key, value in diagnostics.items():
+                if key.endswith("__" + dataset):
+                    record_diagnostic(key, value)
         for key, value in (("contrast_rnc_windows", windows), ("contrast_rnc_anchors", rlog["anchors"]),
+                           ("contrast_rnc_candidate_anchors", len(point_ids)), ("contrast_rnc_pairs", rlog["pairs"]),
                            ("contrast_rnc_duplicate_instants", len(point_ids) - len(set(point_ids))),
+                           ("contrast_rnc_max_instant_multiplicity", max(Counter(point_ids).values(), default=0)),
+                           ("contrast_rnc_pairs_excluded_same_instant", int((~allowed).sum()) - len(point_ids)),
                            ("contrast_rnc_recordings", len({self.global_ids[s].recording for s in si.tolist()})),
                            ("contrast_rnc_subjects", len({(self.global_ids[s].dataset, self.global_ids[s].subject) for s in si.tolist()})),
                            ("contrast_nce_weight", wn), ("contrast_rnc_weight", wr)):
-            terms.log_num[key] = zm.new_tensor(float(value))
-            terms.log_den[key] = zm.new_ones(())
+            dtype = torch.float64 if key in ("contrast_nce_weight", "contrast_rnc_weight") else zm.dtype
+            terms.log_num[key] = zm.new_tensor(float(value), dtype=dtype)
+            terms.log_den[key] = zm.new_ones((), dtype=dtype)
+        if self.cfg.wants_gradients(self.step):
+            from wearusfm.training.contrastive_diagnostics import cross_window_rank_alignment
+            alignment = cross_window_rank_alignment(z_global, target_global, valid_global, tv_global,
+                                                     self.cfg.rnc_stride, allowed)
+            for key, value in alignment.items():
+                terms.log_num[key] = zm.new_tensor(value, dtype=torch.float64)
+                terms.log_den[key] = zm.new_ones((), dtype=torch.float64)
         return terms
 
-    def commit(self):
+    def before_update(self):
+        """Evaluate prospective coverage without mutating queue or completed-update state."""
         if self.pending is None:
             raise RuntimeError("missing contrastive pending keys")
+        if self._next_coverage is not None:
+            return None
+        records = gather_objects([self.pending_stats])
+        coverage = copy.deepcopy(self.coverage)
+        if self.step >= self.cfg.fill_steps:
+            coverage["updates"] += 1
+            coverage["rnc_active"] += int(records[0]["rnc_active"])
+            for record in records:
+                for dataset, (total, eligible) in record["datasets"].items():
+                    row = coverage["datasets"].setdefault(dataset, [0, 0])
+                    row[0] += total
+                    row[1] += eligible
+            if coverage["updates"] == self.cfg.coverage_block:
+                report = self.coverage_report(coverage)
+                if self.cfg.enforce_coverage and not report["passed"]:
+                    self.failed_coverage_report = report
+                    return "contrastive coverage gate failed: " + str(report)
+        self._next_coverage = coverage
+        return None
+
+    def commit(self):
+        failure = self.before_update()
+        if failure is not None:
+            raise RuntimeError(failure)
         keys, ids, valid = self.pending
         self.queue.commit(keys, ids, valid, step=self.step)
         self.pending = None
-        records = gather_objects([self.pending_stats])
-        if self.step >= self.cfg.fill_steps:
-            self.coverage["updates"] += 1
-            self.coverage["rnc_active"] += int(records[0]["rnc_active"])
-            for record in records:
-                for dataset, (total, eligible) in record["datasets"].items():
-                    row = self.coverage["datasets"].setdefault(dataset, [0, 0])
-                    row[0] += total
-                    row[1] += eligible
-            if self.coverage["updates"] == self.cfg.coverage_block:
-                report = self.coverage_report()
-                self.coverage_reports.append(report)
-                self.coverage = self._empty_coverage()
-                if self.cfg.enforce_coverage and not report["passed"]:
-                    return "contrastive coverage gate failed: " + str(report)
-        return None
+        self.coverage = self._next_coverage
+        self._next_coverage = None
+        if self.coverage["updates"] == self.cfg.coverage_block:
+            self.coverage_reports.append(self.coverage_report())
+            self.coverage = self._empty_coverage()
 
-    def coverage_report(self):
-        total = sum(r[0] for r in self.coverage["datasets"].values())
-        good = sum(r[1] for r in self.coverage["datasets"].values())
+    def coverage_report(self, coverage=None):
+        through_step = self.queue.last_step if coverage is None else self.step
+        coverage = self.coverage if coverage is None else coverage
+        total = sum(r[0] for r in coverage["datasets"].values())
+        good = sum(r[1] for r in coverage["datasets"].values())
         datasets = {d: {"queries": r[0], "eligible": r[1], "fraction": r[1] / max(r[0], 1)}
-                    for d, r in self.coverage["datasets"].items()}
+                    for d, r in coverage["datasets"].items()}
         for d in self.expected_datasets:
             datasets.setdefault(d, {"queries": 0, "eligible": 0, "fraction": 0.})
         nce = good / max(total, 1)
-        rnc = self.coverage["rnc_active"] / max(self.coverage["updates"], 1)
-        passed = total > 0 and nce >= .9 and rnc >= .9 and all(r["queries"] >= 32 and r["fraction"] >= .8 for r in datasets.values())
-        return {"through_step": self.step, "updates": self.coverage["updates"], "nce_fraction": nce,
-                "rnc_active_fraction": rnc, "datasets": datasets, "passed": passed}
+        rnc = coverage["rnc_active"] / max(coverage["updates"], 1)
+        for d, row in datasets.items():
+            row["exempt"] = d in self.cfg.coverage_exempt_datasets
+        passed = (total > 0 and nce >= self.cfg.coverage_nce_fraction and rnc >= self.cfg.coverage_rnc_fraction and
+                  all(r["exempt"] or (r["queries"] >= self.cfg.coverage_min_queries and
+                                      r["fraction"] >= self.cfg.coverage_dataset_fraction) for r in datasets.values()))
+        return {"through_step": through_step, "updates": coverage["updates"], "nce_fraction": nce,
+                "rnc_active_fraction": rnc, "datasets": datasets, "passed": passed,
+                "exempt_datasets": list(self.cfg.coverage_exempt_datasets),
+                "policy": {k: getattr(self.cfg, k) for k in ("coverage_min_queries", "coverage_dataset_fraction",
+                           "coverage_nce_fraction", "coverage_rnc_fraction", "coverage_global_batch_size", "coverage_quotas")}}
 
     def global_gradients(self, terms, global_den, shared):
         """Train-only norms of complete global gradients, before clipping.
@@ -281,8 +431,9 @@ class ContrastiveRuntime:
                 torch.distributed.all_reduce(v)
                 v.div_(ws)
             flat[name] = v
-        out = {f"contrast_global_grad_{k}": float(v.norm()) for k, v in flat.items()}
+        norms = {k: torch.linalg.vector_norm(v, dtype=torch.float64) for k, v in flat.items()}
+        out = {f"contrast_global_grad_{k}": float(n) for k, n in norms.items()}
         for k in ("nce", "rnc"):
-            den = float(flat["base"].norm() * flat[k].norm())
-            out[f"contrast_global_cos_{k}_base"] = float(torch.dot(flat[k], flat["base"])) / den if den else 0.
+            den = float(norms["base"] * norms[k])
+            out[f"contrast_global_cos_{k}_base"] = float(torch.dot(flat[k].double(), flat["base"].double())) / den if den else 0.
         return out

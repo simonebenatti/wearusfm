@@ -16,12 +16,13 @@ from pathlib import Path
 import sys
 
 import numpy as np
+from scipy.stats import binom
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from wearusfm.harness import downstream_ab as DA
 
-PROTOCOL = "contrastive-comparison-20261116-v1"
+PROTOCOL = "contrastive-comparison-20261116-v2"
 ARMS = ("C0", "CN", "CR")
 PAIRS = (("CN", "C0"), ("CR", "C0"), ("CN", "CR"))
 TASKS = {"p1": ("ninapro_db2", "ninapro_db3", "ninapro_db6"), "p2": ("epn612", "uci_emg")}
@@ -31,8 +32,11 @@ C_GRID = (.001, .01, .1, 1., 10., 100.)
 N_BOOT, SEED = 100_000, 20261116
 FAMILY_SIZE, ALPHA = 9, .05
 SIMULTANEOUS_LEVEL = 1 - ALPHA / FAMILY_SIZE
-MARGINS = {"p1": {"gain": .5, "ni": 1.}, "p2": {"gain": .5, "ni": 1.},
+PRIMARY_ENDPOINTS = ("E_dyn", "p1", "epn612")
+DESCRIPTIVE_ENDPOINTS = ("p2", "uci_emg")
+MARGINS = {"p1": {"gain": .5, "ni": 1.}, "epn612": {"gain": .5, "ni": 1.},
            "E_dyn": {"gain": 2., "ni": 2.}}
+MC_BOUNDARY_SE = 3.0
 
 
 def require(ok, message):
@@ -56,6 +60,10 @@ def validate_oof(a):
             and (row >= 0).all(), "duplicate/invalid OOF rows")
     for k in ("y", "pred", "s"):
         require(len(_labels(a[k], k)) == len(row), "OOF length mismatch")
+    # Int/float label arrays are compatible; numeric/string arrays are not.
+    # Comparing 1 with "1" would silently report every prediction as wrong.
+    family = lambda x: "numeric" if x.dtype.kind in "biuf" else x.dtype.kind
+    require(family(a["y"]) == family(a["pred"]), "OOF target/prediction label families differ")
     fold = a["fold"]
     require(fold.shape == row.shape and fold.dtype.kind in "iu" and np.isin(fold, range(4)).all(), "invalid OOF folds")
     for subject in np.unique(a["s"]):
@@ -65,10 +73,23 @@ def validate_oof(a):
 
 
 def intervals(samples):
-    require(np.isfinite(samples).all(), "nonfinite bootstrap draws; none discarded")
+    samples = np.asarray(samples, dtype=np.float64)
+    require(samples.ndim == 1 and len(samples) >= 100 and np.isfinite(samples).all(),
+            "invalid/nonfinite bootstrap draws; none discarded")
     q = ALPHA / (2 * FAMILY_SIZE)
+    ordered = np.sort(samples)
+    def tail_error(p):
+        # Conditional Monte Carlo error of a percentile, from Binomial(n,p)
+        # order-statistic uncertainty. No extra bootstrap or random seed.
+        ranks = np.clip(binom.ppf([.15865525393145707, .8413447460685429], len(samples), p).astype(int), 0, len(samples)-1)
+        one_sigma = ordered[ranks]
+        return {"mcse": float((one_sigma[1]-one_sigma[0])/2),
+                "one_sigma_order_statistic_range": one_sigma.tolist(), "ranks_zero_based": ranks.tolist()}
     return {"ci95": np.quantile(samples, [.025, .975]).tolist(),
-            "ci_simultaneous": np.quantile(samples, [q, 1-q]).tolist()}
+            "ci_simultaneous": np.quantile(samples, [q, 1-q]).tolist(),
+            "monte_carlo": {"method": "Binomial order-statistic one-sigma half-range; conditional on bootstrap distribution",
+                            "boundary_standard_errors": MC_BOUNDARY_SE,
+                            "lower": tail_error(q), "upper": tail_error(1-q)}}
 
 
 def classification_statistics(cells, n_boot, seed):
@@ -105,9 +126,13 @@ def classification_statistics(cells, n_boot, seed):
                        "paired_counts": dict(zip(ARMS, stats)), "draws_sha256": DA.fingerprint(draws),
                        "replicates_missing_classes": missing, "single_class_replicates": single,
                        "missing_class_rule": "macro recall over target classes present in each draw; all draws retained",
-                       "role": "descriptive_dataset_not_an_additional_primary"}
+                       "role": "decision_endpoint" if ds == "epn612" else "descriptive_dataset"}
     task_points = {t: sum(w*points[d] for w, d in zip(WEIGHTS[t], TASKS[t])) for t in TASKS}
     task_samples = {t: sum(w*samples[d] for w, d in zip(WEIGHTS[t], TASKS[t])) for t in TASKS}
+    # P2 remains the historical 50/50 aggregate. EPN612 has its own identity and
+    # replaces P2 only in the three-endpoint decision family.
+    for ds in ("epn612", "uci_emg"):
+        task_points[ds], task_samples[ds] = points[ds], samples[ds]
     return task_points, task_samples, reports
 
 
@@ -169,7 +194,7 @@ def verify_audits(records):
 def summarize_pair(candidate, control, points, samples):
     i, j = ARMS.index(candidate), ARMS.index(control)
     out = {}
-    for endpoint in ("E_dyn", "p1", "p2"):
+    for endpoint in PRIMARY_ENDPOINTS:
         if endpoint == "E_dyn":
             point = 100*(1-points[endpoint][i]/points[endpoint][j])
             draw = 100*(1-samples[endpoint][:, i]/samples[endpoint][:, j])
@@ -179,12 +204,77 @@ def summarize_pair(candidate, control, points, samples):
             draw = 100*(samples[endpoint][:, i]-samples[endpoint][:, j])
             unit = "percentage_points"
         ci = intervals(draw)
+        lo, hi = ci["ci_simultaneous"]
+        gain, ni = MARGINS[endpoint]["gain"], MARGINS[endpoint]["ni"]
+        lower_error, upper_error = ci["monte_carlo"]["lower"]["mcse"], ci["monte_carlo"]["upper"]["mcse"]
+        boundaries = {"superiority_zero": abs(lo) <= MC_BOUNDARY_SE*lower_error,
+                      "noninferiority": abs(lo+ni) <= MC_BOUNDARY_SE*lower_error,
+                      "material_harm": abs(hi+ni) <= MC_BOUNDARY_SE*upper_error,
+                      "equivalence_upper": abs(hi-gain) <= MC_BOUNDARY_SE*upper_error}
         out[endpoint] = {"benefit": float(point), "unit": unit, **ci,
-                         "useful_superiority": bool(point >= MARGINS[endpoint]["gain"] and ci["ci_simultaneous"][0] > 0),
-                         "noninferiority": bool(ci["ci_simultaneous"][0] > -MARGINS[endpoint]["ni"])}
+                         "boundary": boundaries,
+                         "useful_superiority": bool(point >= gain and lo > 0 and not boundaries["superiority_zero"]),
+                         "noninferiority": bool(lo > -ni and not boundaries["noninferiority"]),
+                         "demonstrated_material_harm": bool(hi < -ni and not boundaries["material_harm"]),
+                         "practical_equivalence": bool(lo > -ni and hi < gain and not boundaries["noninferiority"] and not boundaries["equivalence_upper"])}
     out["useful_without_material_loss"] = bool(any(out[e]["useful_superiority"] for e in MARGINS)
                                                  and all(out[e]["noninferiority"] for e in MARGINS))
+    out["descriptive"] = {
+        e: {"benefit": float(100*(points[e][i]-points[e][j])), "unit": "percentage_points",
+            "ci95": np.quantile(100*(samples[e][:,i]-samples[e][:,j]), [.025,.975]).tolist(),
+            "role": "descriptive_only_not_in_decision_family"} for e in DESCRIPTIVE_ENDPOINTS
+    }
+    out["profile"] = pair_profile(out)
     return out
+
+
+def pair_profile(pair):
+    benefits = [e for e in PRIMARY_ENDPOINTS if pair[e]["useful_superiority"]]
+    harms = [e for e in PRIMARY_ENDPOINTS if pair[e]["demonstrated_material_harm"]]
+    unresolved_ni = [e for e in PRIMARY_ENDPOINTS if not pair[e]["noninferiority"] and e not in harms]
+    equivalent = all(pair[e]["practical_equivalence"] for e in PRIMARY_ENDPOINTS)
+    if benefits and harms:
+        label = "tradeoff_benefit_and_demonstrated_material_harm"
+    elif harms:
+        label = "demonstrated_material_harm"
+    elif benefits and unresolved_ni:
+        label = "benefit_with_unresolved_noninferiority"
+    elif benefits:
+        label = "benefit_without_material_loss_on_decision_endpoints"
+    elif equivalent:
+        label = "practically_equivalent_on_decision_endpoints"
+    else:
+        label = "unresolved"
+    return {"label": label, "useful_endpoints": benefits, "material_harm_endpoints": harms,
+            "unresolved_noninferiority_endpoints": unresolved_ni,
+            "all_endpoints_practically_equivalent": equivalent,
+            "no_practical_advantage_supported": equivalent}
+
+
+def scientific_reading(contrasts, reverse):
+    cn = contrasts["CN_minus_C0"]["useful_without_material_loss"]
+    cr = contrasts["CR_minus_C0"]["useful_without_material_loss"]
+    cn_direct = contrasts["CN_minus_CR"]["useful_without_material_loss"]
+    cr_direct = reverse["useful_without_material_loss"]
+    # Both directions can meet gain + NI on different classification endpoints.
+    # Evaluate both before selecting any recipe for a confirmation proposal.
+    if cn_direct and cr_direct:
+        return "bidirectional_benefit_tradeoff_no_winner"
+    if cn and cn_direct:
+        return "CN_supported_for_confirmation"
+    if cr and cr_direct:
+        return "CR_supported_for_confirmation"
+    profiles = [p["profile"] for p in [*contrasts.values(), reverse]]
+    if any(p["material_harm_endpoints"] and p["useful_endpoints"] for p in profiles):
+        return "tradeoff_with_demonstrated_material_harm"
+    if cn and cr:
+        direct_profiles = [contrasts["CN_minus_CR"]["profile"], reverse["profile"]]
+        if not any(p["useful_endpoints"] or p["material_harm_endpoints"] for p in direct_profiles):
+            return "common_benefit_without_resolved_recipe_difference"
+        return "common_benefit_with_unresolved_recipe_preference"
+    if all(p["all_endpoints_practically_equivalent"] for p in profiles):
+        return "practically_equivalent_on_decision_endpoints"
+    return "unresolved_or_tradeoff"
 
 
 def compare(classification, pose, *, audit_records=None, n_boot=N_BOOT, seed=SEED, step=19618):
@@ -207,27 +297,28 @@ def compare(classification, pose, *, audit_records=None, n_boot=N_BOOT, seed=SEE
     reverse = summarize_pair("CR", "CN", points, samples)
     # Reverse intervals are monotone transformations of the same head-to-head
     # comparison, not three extra hypotheses. No weighted score or forced winner.
-    winner = "unresolved_or_tradeoff"
-    if valid:
-        if contrasts["CN_minus_CR"]["useful_without_material_loss"] and contrasts["CN_minus_C0"]["useful_without_material_loss"]:
-            winner = "CN_supported_for_confirmation"
-        elif reverse["useful_without_material_loss"] and contrasts["CR_minus_C0"]["useful_without_material_loss"]:
-            winner = "CR_supported_for_confirmation"
+    reading = scientific_reading(contrasts, reverse) if valid else "interpretation_withheld"
     if not valid:
-        winner = "interpretation_withheld"
         for pair in [*contrasts.values(), reverse]:
             pair["useful_without_material_loss"] = None
+            pair["profile"] = {"label": "interpretation_withheld"}
             for endpoint in MARGINS:
                 pair[endpoint]["useful_superiority"] = pair[endpoint]["noninferiority"] = None
+                pair[endpoint]["demonstrated_material_harm"] = pair[endpoint]["practical_equivalence"] = None
     return {"protocol": PROTOCOL, "complete": True, "checkpoint_step": step, "which": "teacher",
             "arms": list(ARMS), "datasets": datasets, "pose": pose_report, "contrasts": contrasts,
-            "reverse_head_to_head": reverse, "decision_valid": valid, "reading": winner,
+            "reverse_head_to_head": reverse, "decision_valid": valid, "reading": reading,
+            "decision_endpoints": list(PRIMARY_ENDPOINTS), "descriptive_endpoints": list(DESCRIPTIVE_ENDPOINTS),
+            "historical_P2": {"definition": "0.5 EPN612 + 0.5 UCI", "role": "descriptive; unchanged historical name and composition"},
+            "practical_equivalence_ranges": {e: [-MARGINS[e]["ni"], MARGINS[e]["gain"]] for e in PRIMARY_ENDPOINTS},
             "fit_audit": audits, "ridge_selection_resolved": ridge_ok,
             "bootstrap": {"replicates": n_boot, "seed": seed, "family_size": FAMILY_SIZE,
                           "family_alpha": ALPHA, "nominal_simultaneous_confidence": SIMULTANEOUS_LEVEL,
+                          "coverage_caveat": "Nominal Bonferroni-adjusted percentile intervals; finite-sample joint coverage is not guaranteed or measured here.",
+                          "monte_carlo_boundary_rule": "A limit within three estimated Monte Carlo standard errors of its threshold is at_boundary and does not support that decision flag.",
                           "unit": "paired subjects within dataset; paired pose users", "all_draws_retained": True},
             "uncertainty": "Conditional subject bootstrap, one pretraining seed per arm, development data already observed. Does not estimate between-training variance or prove general FM utility.",
-            "scope": "Screening for a confirmation proposal only; no automatic adoption, extension, or submission."}
+            "scope": "Endpoint-scoped recipe screening for a confirmation proposal only; no universal winner and no automatic adoption, extension, or submission. Descriptive P2/UCI cannot establish broad classification noninferiority."}
 
 
 def read_pin(pin, base):

@@ -51,6 +51,37 @@ def test_a_clean_run_passes(tmp_path, arm):
     assert [r["step"] for r in res["descriptive"]["non_collasso"]] == [500, 1000, 1300]
 
 
+@pytest.mark.parametrize("arm,calibration,steps", [("C0", True, 512), ("C0", False, 576), ("CN", False, 576), ("CR", False, 576)])
+def test_contrastive_names_and_phase_checks(tmp_path, arm, calibration, steps):
+    from dataclasses import asdict
+    from wearusfm.training.contrastive_objectives import ContrastiveConfig
+    cc = ContrastiveConfig(nce_weight=.13, rnc_weight=.27, arm=arm, calibration_only=calibration,
+                            grad_every=100, grad_dense_start=513, grad_dense_end=576)
+    def configure(cfg):
+        return {**cfg, "contrastive": asdict(cc)}
+    def records(recs):
+        for rec in recs:
+            wn, wr = cc.weights(rec["step"] - 1)
+            rec.update(contrast_nce=2., contrast_rnc=3., contrast_nce_weight=wn, contrast_rnc_weight=wr,
+                       contrastive_calibration_only=calibration, contrast_projector_grad_norm=0. if arm != "CN" else .3)
+            rec["total"] += wn * 2. + wr * 3.
+            if cc.wants_gradients(rec["step"] - 1):
+                rec.update({"contrast_global_grad_" + k: 1. for k in ("base", "nce", "rnc")})
+        return recs
+    output = _run_r3(tmp_path, steps=steps, cfg_edit=configure, edit=records)
+    summary = json.loads((output / "summary.json").read_text())
+    summary["contrastive"] = {"optimizer_updates": 0 if calibration else steps,
+                              "initial_sha256": "a" * 64, "final_student_sha256": "a" * 64, "final_teacher_sha256": "a" * 64}
+    (output / "summary.json").write_text(json.dumps(summary))
+    result = AC.check(output, arm, steps, SHA, LISTING)
+    assert result["passed"], {k: v for k, v in result["criteria"].items() if not v["ok"]}
+    assert "posa_discesa" not in result["criteria"] and "apprendimento" not in result["criteria"]
+    recs = [json.loads(line) for line in (output / "metrics.jsonl").read_text().splitlines()]
+    recs[-1]["contrast_rnc_weight"] += 1e-6
+    (output / "metrics.jsonl").write_text("".join(json.dumps(rec) + "\n" for rec in recs))
+    assert not AC.check(output, arm, steps, SHA, LISTING)["criteria"]["contrasto_pesi_e_diagnostica"]["ok"]
+
+
 def test_listing_parser_reads_sizes_and_names():
     assert AC.listing_sizes(LISTING) == {"checkpoint_postdecay.pt": 454073464, "checkpoint_predecay.pt": 454073464,
                                          "checkpoint.pt": 454073464, "config.json": 2677}

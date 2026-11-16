@@ -135,3 +135,16 @@ def test_bad_nce_temperature_is_rejected(temperature):
     q, kp, kn, mask = _nce_data()
     with pytest.raises(ValueError, match="temperature"):
         info_nce(q, kp, kn, mask, temperature=temperature)
+
+
+def test_nce_protocol_threshold_31_vs_32_and_temperature():
+    # Independent regression from Claude 0ab9d98, prop_nce_killers.py.
+    generator = torch.Generator().manual_seed(3)
+    q, kp = [normalize_projection(torch.randn(3, 16, generator=generator)) for _ in range(2)]
+    kn = normalize_projection(torch.randn(40, 16, generator=generator))
+    mask = torch.arange(40)[None, :] < torch.tensor([31, 32, 40])[:, None]
+    value, eligible, _ = info_nce(q, kp, kn, mask)
+    assert eligible.tolist() == [False, True, True] and value[0] == 0
+    explicit = info_nce(q, kp, kn, mask, temperature=.2, min_negatives=32)[0]
+    changed = info_nce(q, kp, kn, mask, temperature=.1, min_negatives=32)[0]
+    assert torch.equal(value, explicit) and not torch.allclose(value[1:], changed[1:])

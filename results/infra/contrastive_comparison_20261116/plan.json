@@ -1,5 +1,5 @@
 {
-  "protocol": "contrastive-comparison-20261116-v1",
+  "protocol": "contrastive-comparison-20261116-v2",
   "status": "REVIEW_REQUIRED",
   "executable": false,
   "training_authorized_by_this_file": false,
@@ -55,13 +55,17 @@
     "initialization": "shared untrained, projection isolated RNG",
     "num_workers_per_rank": 6,
     "global_gradient_diagnostics": {
-      "every": 500,
+      "every": 100,
       "also_at": [
         256,
         512,
         1962,
         5000,
         19618
+      ],
+      "dense_inclusive": [
+        513,
+        576
       ]
     }
   },
@@ -109,7 +113,7 @@
     "required_jointly_informative_batches": 32,
     "selection": "first 32 jointly informative, no extension beyond 511",
     "base_gradient_fraction": 0.1,
-    "lambda_formula": "0.1 * median(norm(global g_base) / norm(global g_term))",
+    "lambda_formula": "0.1 * 0.1179564123141922 * median(norm(global g_base) / norm(global g_term))",
     "allowed_lambda": [
       0.0001,
       1.0
@@ -125,6 +129,26 @@
     "frozen_weights": {
       "CN": null,
       "CR": null
+    },
+    "historical_reference": {
+      "path": "results/infra/contrastive_comparison_20261116/review_response/gradient_reference.json",
+      "sha256": "ed4e5b5c4662b0212e242c0433248d27063ffbff92866f2fc7e46331960e3a93"
+    },
+    "out_of_range_policy": "If either lambda outside[1e-4,1], entire cohort stops; no clamping, no surviving-arm benchmark, no retry or rule change without new review and calibration",
+    "benchmark_ratio_rule": {
+      "panel": [
+        513,
+        576
+      ],
+      "median_min": 0.005,
+      "median_max": 0.5,
+      "p95_max": 1.0,
+      "active_ratio_between_CN_CR": [
+        0.25,
+        4.0
+      ],
+      "outside_rule": "Stop cohort for diagnosis/review; no automatic lambda adjustment",
+      "training_reading": "Ratios descriptive in predefined step blocks; >0.5 substantial/>1 dominant relative norm, not proof of causal effect or step allocation"
     }
   },
   "activation": {
@@ -139,7 +163,12 @@
     "rnc_min_global_batch_active_fraction": 0.9,
     "report_blocks_updates": 1024,
     "failure": "diagnosis and reviewed amendment, no automatic change",
-    "runtime_gate": "completed 1024-update blocks after fill; partial block descriptive; calibration 256-batch block must pass"
+    "runtime_gate": "completed 1024-update blocks after fill; partial block descriptive; calibration 256-batch block must pass",
+    "manifest_reference": {
+      "path": "results/infra/contrastive_comparison_20261116/review_response/coverage_manifest_reference.json",
+      "sha256": "b0d964430a25acd56563c636d4cc20643e3c41b613aa63f6131e9f5a3ae0ba49"
+    },
+    "exemption_scope": "Only minimum observations and eligible fraction per dataset; all queries remain in global counts/gate; same policy all3arms"
   },
   "evaluation": {
     "which": "teacher",
@@ -154,7 +183,7 @@
     "primary_endpoints": [
       "E_dyn",
       "p1",
-      "p2"
+      "epn612"
     ],
     "pairs": [
       [
@@ -202,11 +231,20 @@
       "p2": {
         "useful_gain_pp": 0.5,
         "noninferiority_loss_pp": 1.0
+      },
+      "epn612": {
+        "useful_gain_pp": 0.5,
+        "noninferiority_loss_pp": 1.0
       }
     },
-    "reading": "useful simultaneous-CI benefit on at least one endpoint plus NI on all, against C0 and head-to-head; otherwise tradeoff/unresolved; no scalar winner",
+    "reading": "Promising only for three named primary tasks: useful benefit plus NI againstC0 anddirect; bidirectional improvement=tradeoff without winner; distinguish harm, unresolvedNI, commonbenefit, practical equivalence. UCI/P2 cannot support universal-transfer claim",
     "expected_classification_fits": 420,
-    "comparator": "scripts/contrastive_compare.py"
+    "comparator": "scripts/contrastive_compare.py",
+    "descriptive_endpoints": [
+      "p2",
+      "uci_emg"
+    ],
+    "monte_carlo_boundary_rule": "Binomial order-statistic tail SE; within3SE of threshold -> at_boundary and suspend that inference"
   },
   "resources": {
     "historical_reference_gpu_hours_per_arm": 16.944444444444443,
@@ -225,5 +263,18 @@
     "conditional subject bootstrap not between-training variance",
     "pose already supervised in base",
     "comparison of objective recipes using different units/candidate construction, not only a distance swap"
-  ]
+  ],
+  "scientific_decisions": {
+    "status": "APPROVED_BY_SIMONE",
+    "D1": "A_manifest_rarity_exemption",
+    "D3": "2_historical_active_period_mean",
+    "D2": "E_dyn_P1_EPN612_primary_P2_UCI_descriptive",
+    "authorization": "Simone authorizes launches after convergence; this file is not a deployment release"
+  },
+  "input_sha256": {
+    "manifest": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+    "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+    "pose_stats": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+  }
 }

@@ -1,0 +1,64 @@
+{
+  "schema": "contrastive-coverage-manifest-reference-v1",
+  "status": "APPROVED_BY_SIMONE",
+  "source_manifest": {
+    "path": "/private/tmp/wearusfm-contrast-review-20261116/manifest_actual.json.gz",
+    "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+  },
+  "source_window_seconds": {
+    "path": "/Users/simonebenatti/wearusfm_local/manifests_derived_20261015/window_seconds_59425316.json",
+    "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+  },
+  "quota_definition": "normalize sum(weight / window_seconds) over pretraining sessions; null durations give zero",
+  "quota_window": {
+    "camargo2021": 0.03442090877923247,
+    "capgmyo": 0.0028543868474759163,
+    "csl_hdemg": 0.022266032822690757,
+    "emg2pose": 0.23915890022728797,
+    "emg2qwerty": 0.244385666820943,
+    "grabmyo": 0.05427090782371972,
+    "hyser": 0.05186791335093826,
+    "ninapro_db10": 0.09309970233153658,
+    "ninapro_db2": 0.039898146559794796,
+    "ninapro_db3": 0.01261529967940154,
+    "ninapro_db4": 0.017458292398431052,
+    "ninapro_db5": 0.020261549338847138,
+    "ninapro_db6": 0.0329335435867361,
+    "ninapro_db7": 0.030381940692308724,
+    "ninapro_db8": 0.019509832779750533,
+    "putemg": 0.03921819812464841,
+    "zhang2026": 0.045398777836257134
+  },
+  "batch_global": 32,
+  "max_age": 256,
+  "min_negatives": 32,
+  "exemption_rule": "quota_window * batch_global * max_age < min_negatives + 1",
+  "exempt_datasets": [
+    "capgmyo"
+  ],
+  "expected_windows_per_max_age": {
+    "camargo2021": 281.9760847194724,
+    "capgmyo": 23.383137054522706,
+    "csl_hdemg": 182.40334088348268,
+    "emg2pose": 1959.189710661943,
+    "emg2qwerty": 2002.0073825971651,
+    "grabmyo": 444.5872768919119,
+    "hyser": 424.9019461708862,
+    "ninapro_db10": 762.6727614999477,
+    "ninapro_db2": 326.84561661783897,
+    "ninapro_db3": 103.34453497365742,
+    "ninapro_db4": 143.01833132794718,
+    "ninapro_db5": 165.98261218383576,
+    "ninapro_db6": 269.79158906254213,
+    "ninapro_db7": 248.88885815139307,
+    "ninapro_db8": 159.82455013171636,
+    "putemg": 321.2754790371198,
+    "zhang2026": 371.90678803461844
+  },
+  "overall_includes_exempt": true,
+  "decision": "Explicit user reply 16/11/2026 to three scientific choices; review of resulting code still required",
+  "source_manifest_reconciliation": {
+    "path": "results/infra/contrastive_comparison_20261116/review_response/manifest_provenance_reconciliation.json",
+    "sha256": "3a8ea5c0e13caa2ac658673654fe61c9b383037bf704e79841f13874cc2250aa"
+  }
+}

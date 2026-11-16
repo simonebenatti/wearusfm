@@ -178,6 +178,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 16/11/2026: risposta alla review contrastiva e tre decisioni di Simone
+
+Riferimenti: implementazione `db5ac41`, review di Claude `0ab9d98`, base del diff `1d87e8d` (MATLAB invariato). Simone ha scelto esenzione di rarità per il requisito InfoNCE per dataset, media del gradiente storico nel tratto attivo per la calibrazione, E_dyn/P1/EPN612 principali con P2 e UCI descrittivi. Piano, protocollo e decisioni aggiornati prima di dati nuovi.
+
+Chiuse nel codice le correzioni I-1/I-3/I-4/I-5/I-6/I-7/I-8 e i dettagli numerici/test: modello storico invariato senza contrastive; STOP coordinati prima degli update; ricevuta ricalcolata, coorte unica e dati pinnati; audit con cache limitate; confronto e diagnostiche rafforzati. Preparati strumenti CUDA/NCCL, uscita di un rank, benchmark e ripresa 544+32, lettore e gate del preventivo. Review interna indipendente completata, nessun blocco residuo noto; verifica locale dettagliata in `results/infra/contrastive_comparison_20261116/review_response/verification_v2.json`.
+
+Consegna ancora **REVIEW_REQUIRED** per Claude: [risposta](reviews/contrastive_review_response_20261116.md), [piano esecutivo](contrastive_preflight_execution_20261116.md). Tetto del collaudo 14 GPU-ore e 129,3333 core-ore, quattro checkout inclusi. Nessun job sottomesso, nessun λ misurato sul modello reale, nessun training rilasciato. Simone ha già autorizzato i lanci dopo convergenza: nessun secondo consenso operativo. La lettura delle misure e il preventivo dei training restano successivi; non modificare il piano scientifico dopo calibrazione.
+
 ### GPT — 16/11/2026: versioni MATLAB delle due contrastive per Simone
 
 Su richiesta di Simone, aggiunti in `examples/matlab_contrastive_losses/` due forward numerici leggibili,
@@ -5856,6 +5864,14 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 16/11/2026: contrastive corrette, attesa rilettura di Claude prima del collaudo
+
+Le tre decisioni D-1/D-3/D-2 sono di Simone, non ipotesi del revisore. Per CapgMyo il dato resta nel train e nel totale; la sola esenzione del cancello per dataset è definita dal manifest. Se anche un solo λ è fuori range, si ferma tutta la coorte. Confronto primario esplicitamente limitato a E_dyn/P1/EPN612, UCI/P2 descrittivi; non confondere NI irrisolta con danno dimostrato.
+
+Non ancora verificati sul cluster: CUDA/NCCL, uscita e pulizia dei processi, copertura sui segnali veri, gradienti a peso pieno, tempo/memoria e ripresa a quattro GPU. Il nuovo collaudo li misura con tetti e criteri pubblicati. Nessun risultato locale li sostituisce. La calibrazione usa lo stesso stato salvato per l'oracolo; nessuna ricostruzione floating point richiesta al lettore. Le prove distribuite e di supervisione locali bloccate dal sandbox sono state rieseguite fuori sandbox e passano; non sono errori del modello. La suite intera del repository non è stata eseguita: verifiche mirate contrastive e compatibilità LQ nella ricevuta.
+
+Prima dei training restano lettura del collaudo, costi misurati, release e catena dei valutatori con pin/cardinalità. Nessuna estensione di dose, loss, seme o braccio placebo. Questa consegna non modifica gli esempi MATLAB né i checkout di campagne precedenti.
 
 ### GPT — 16/11/2026: perimetro delle versioni MATLAB
 

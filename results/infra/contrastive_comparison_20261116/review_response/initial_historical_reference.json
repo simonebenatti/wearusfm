@@ -1,0 +1,91 @@
+{
+  "schema": "contrastive-initial-calibration-historical-reference-v1",
+  "source": {
+    "path": "/Users/simonebenatti/wearusfm_local/logs/review6_remote/control30m/metrics.jsonl",
+    "sha256": "b114f60017bb292094dd25225657554658ca8d0406e32c60e1e955afa22bbe39"
+  },
+  "historical_completed_updates": [
+    1,
+    8
+  ],
+  "reference_fields": [
+    "grad_norm",
+    "log_rms",
+    "log_env",
+    "band_shape",
+    "ms_fast",
+    "ms_slow"
+  ],
+  "historical_first8": {
+    "grad_norm": [
+      27.793772145938465,
+      28.174824980768925,
+      32.31263458649311,
+      30.937553589999755,
+      31.926485045732075,
+      29.75179022075256,
+      28.008148795680583,
+      29.421942780809545
+    ],
+    "log_rms": [
+      1.0392302721738815,
+      0.9400287568569183,
+      1.3192795515060425,
+      1.0996505618095398,
+      1.1259793043136597,
+      1.1513454765081406,
+      1.228180468082428,
+      1.2584487795829773
+    ],
+    "log_env": [
+      2.406065583229065,
+      1.8179876506328583,
+      2.767396479845047,
+      2.1459103524684906,
+      1.8723037838935852,
+      1.9422940909862518,
+      2.4936715960502625,
+      2.073406994342804
+    ],
+    "band_shape": [
+      5.586148023605347,
+      5.500351071357727,
+      6.321504831314087,
+      6.180536270141602,
+      6.582298755645752,
+      6.5972349643707275,
+      5.875417470932007,
+      5.582279443740845
+    ],
+    "ms_fast": [
+      6.329767465591431,
+      5.925407409667969,
+      6.774702191352844,
+      6.597526431083679,
+      6.550422430038452,
+      7.641970157623291,
+      7.3925580978393555,
+      6.094585418701172
+    ],
+    "ms_slow": [
+      13.039160251617432,
+      13.5892813205719,
+      13.78410792350769,
+      14.990324974060059,
+      14.186389923095703,
+      16.54049825668335,
+      14.747918844223022,
+      12.49223279953003
+    ]
+  },
+  "historical_means": {
+    "grad_norm": 29.790894018271878,
+    "log_rms": 1.1452678963541985,
+    "log_env": 2.1898795664310455,
+    "band_shape": 6.028221353888512,
+    "ms_fast": 6.663367450237274,
+    "ms_slow": 14.171239286661148
+  },
+  "role": "descriptive_initialization_and_stream_sanity_only_no_pass_fail_threshold",
+  "limits": "Only update1 can potentially match exactly. Historical weights update after each batch; calibration weights remain fixed. Historic grad_norm covers all parameters, unlike shared contrastive calibration norms."
+}
