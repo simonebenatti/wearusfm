@@ -7177,3 +7177,29 @@ estensione scientifica, nuovi training, retry o pollingAI.
   = 16 ore locali. Ricevuta in `continuation19618_20261106/submissions/`.
 - Seguito: sorvegliante ogni 5 minuti. A fine job `COMPLETED 0:0`: `collect extractions`, `reader-plans`, commit,
   `gate checkout-plans --reviewed 7c5c886c7bc1058bfa889f45f1031408291376c0`. Altrimenti: stop, nessun altro rilancio.
+
+### 16/11/2026 — Claude, linea 1: rilancio di p1 64596915 `FAILED` allo stesso controllo, su un altro file; catena ferma
+
+- Esito (sorvegliante, 16:06): 64596915 `FAILED 1:0` dopo 29 min 53 s, su lrdn0707. L'estrazione era finita («estrazione
+  finita in 1723 s»). Il controllo d'identita' delle uscite si e' fermato su `ninapro_db3.npz`, scritto 12 min 16 s prima del
+  controllo; `ninapro_db2` e' passato. Prove e tempi in `continuation19618_20261106/evidence/failure-p1-r1-64596915/`.
+- La lettura di stamattina, una corsa con lo scarico del file appena scritto, non regge.
+  - Osservazione: i due fallimenti cadono 7-12 s dopo la scrittura di db6, 2,19 GB in 1-2 s. Tre controlli nella stessa
+    finestra sono passati; al 5.000 nessuno era fallito.
+  - Interpretazione, non verificata: sul nodo che ha appena scritto molti dati, gli attributi riportati da Lustre (mtime o
+    ctime, a un secondo) cambiano per qualche secondo. Il confronto di `file_identity` non distingue questo da un cambiamento
+    del contenuto. Un rilancio identico ripete gli stessi tempi.
+- Stop: il rilancio unico approvato e' consumato e nessun altro invio parte. pose e p2 restano validi, non raccolti.
+- Consumo:
+  - rilancio: 0,498056 GPU-ore e 3,984444 core-ore;
+  - stadio, fin qui: 4,714444 GPU-ore su 7 e 37,715556 core-ore su 56;
+  - riga p1, fin qui: 1,020833 GPU-ore.
+- Proposta a Simone (opzione B della diagnosi, da decidere): correggere il controllo e rilanciare p1 da un checkout nuovo.
+  1. Un job diagnostico su un nodo Booster, al massimo 30 min (0,5 GPU-ore). Riproduce la scrittura e il controllo, con e senza
+     `os.sync()`, e rilegge piu' volte le cache vecchie. Dice se il problema tocca anche i lettori.
+  2. Il controllo d'identita' corretto: `os.sync()` dopo l'estrazione; se gli attributi cambiano, una seconda lettura completa,
+     accettata solo stabile e con lo stesso sha256; entrambe registrate. Test e checkout nuovo del codice di valutazione.
+  3. Il rilancio di p1 da quel checkout, con ID e cartella nuovi, al massimo 2 GPU-ore: lo stadio arriverebbe a 6,764444 su 7.
+  Serve anche un emendamento CPU: il sesto checkout porta il totale solo CPU a 350,184444 su 350.
+  La review la sceglie Simone: GPT, oppure la sua sola approvazione.
+- Suite completa sul commit `7c5c886`: in corso, esito nella prossima voce.
