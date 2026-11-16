@@ -7312,6 +7312,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - `gate extractions` 9 su 9; inviate una alla volta pose = 64571999, p1 = 64572000, p2 = 64572001, 1 GPU ciascuna, tetto dello
   stadio 7 GPU-ore. Voci in `docs/decisioni.md`. Prossimo passo a fine estrazioni: raccolta, piani dei lettori, checkout `plans`.
 
+### 2026-11-16 | Claude | Linea 1: estrazioni a 19.618, pose e p2 `COMPLETED 0:0`, p1 `FAILED`; catena ferma
+
+- pose 64571999 `COMPLETED 0:0` (2:02:10), p2 64572001 `COMPLETED 0:0` (1:39:27), p1 64572000 `FAILED 1:0` (31:22), a estrazione
+  finita, nel controllo d'identita' delle uscite (sezione 2). Consuntivo: 4,216389 GPU-ore sul tetto dello stadio di 7.
+- Stop secondo `evaluation_chain_plan.md` §7: nessun rilancio, nessuna raccolta parziale. Diagnosi e due recuperi possibili in
+  `continuation19618_20261106/failure_64572000_diagnosis_20261116/` (commit `90ce085`, ramo `claude/scaling-300m-exec-20261106`);
+  voce in `docs/decisioni.md`. Il rilancio e' fuori dal pacchetto rivisto: decide Simone.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -9998,3 +10006,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Correzione proposta in `2e79815`: checkout a 2 CPU; tetto 4/3 per la riga dei checkout; `rereview_check`, cioe' una review
   fatta dopo un checkout copre solo lo strumento del Mac, i test CPU, `docs/` e i file nuovi della campagna. `release_check` non
   cambia. Emendamento +8/15 core-ore con margine: solo CPU 349,917778 su 350; GPU-ore invariate. Da decidere, nessun job inviato.
+
+### 2026-11-16 | Claude | Linea 1: l'estrazione p1 a 19.618 si ferma al controllo d'identita' di una cache appena scritta
+
+- `file_identity` confronta inode, dimensione, mtime e ctime prima e dopo lo sha256. Su `ninapro_db6.npz` (2,19 GB, scritto in ~2 s
+  e controllato ~9 s dopo, a sottoprocesso d'estrazione gia' uscito con codice 0): «input changed while hashing». `ninapro_db2` e
+  `ninapro_db3`, scritti 13-16 minuti prima, sono passati; `epn612` di p2 (1,69 GB, ~25 s) e' passato.
+- Lettura, non verificata: corsa fra lo scarico differito di Lustre dei dati appena scritti e il controllo, non un cambiamento
+  dei dati. La stessa cache a 5.000 (T100-G-300M, ~8 s) era passata: non sistematica. Campo cambiato e contenuto di db6 non noti.
+- Recuperi: A, rilancio unico della sola p1 dallo stesso checkout `df2de35` con ID e cartella nuovi (resta il rischio di una
+  nuova corsa); B, scarico del file prima del controllo in un nuovo checkout del codice di valutazione. Da decidere, nessun job
+  inviato.
