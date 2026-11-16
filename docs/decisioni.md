@@ -7081,3 +7081,17 @@ estensione scientifica, nuovi training, retry o pollingAI.
   rieseguito con il suo file, 5 su 5). Solo questi tre file importano lo script. Suite completa avviata alle 18:43: esito
   nella prossima voce.
 - Serve la decisione di Simone su correzione ed emendamento, con o senza review di GPT. Nessun invio fino ad allora.
+
+### 16/11/2026 — Claude, linea 1: correzione dei checkout a 2 CPU approvata da Simone; checkout `code` raccolto
+
+- Simone, 16/11 verso le 09:46, alla domanda «Approvi la correzione dei checkout senza review di GPT?»: «Sì, approvo».
+  Approvati senza review di GPT il commit `2e79815` (checkout a 2 CPU, tetto 4/3 della riga dei checkout, `rereview_check`) e
+  l'emendamento `continuation19618_20261111_checkout_cpus/budget_amendment.json`: +8/15 core-ore con margine, solo CPU
+  349,917778 su 350, GPU-ore invariate a 66,731111. Il file dell'emendamento non si riscrive: la decisione e' registrata qui.
+  Base della review per i checkout successivi: `2e79815cfa9b27c7b8f1658edccb5ac37ea964be`.
+- Suite completa su `2e79815`, 11/11 dalle 18:43: 3553 passati, 0 falliti, 1 avviso preesistente, 34 min 12 s.
+- Rilettura del 16/11 alle 09:45: dall'11/11 sulla linea 1 solo 63979977 e 64194074, coda vuota. Il rinfresco dello scratch del
+  12/11 ha cambiato la data del checkpoint a 19.618, non il contenuto, pinnato per sha256: nessun effetto sui lettori.
+- `collect checkout-code`, 09:47: job 64194074 `COMPLETED 0:0`, 34 s, 2 CPU, 0,018889 core-ore; prove in
+  `continuation19618_20261106/evidence/checkout-code/`.
+- Seguito: `gate extractions` e le tre righe delle estrazioni, una alla volta.
