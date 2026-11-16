@@ -7158,3 +7158,22 @@ estensione scientifica, nuovi training, retry o pollingAI.
   Simone sopra. Non vale piu' `2e79815`: la diagnosi e lo strumento sono cambiati dopo. SHA nel registro e nella prossima voce.
 - Seguito: push, `gate extractions`, la riga di p1-r1 (al massimo 2 GPU-ore = 16 ore locali), sorvegliante; a fine job raccolta
   delle tre estrazioni e piani dei lettori.
+
+### 16/11/2026 — Claude, linea 1: rilancio di p1 inviato (job 64596915)
+
+- Base della review per i checkout successivi: `7c5c886c7bc1058bfa889f45f1031408291376c0`, il commit del rilancio, con push
+  verificato. `rereview_check(df2de35, 7c5c886)` ammette i 28 cambiamenti; `release_check(2e79815, 7c5c886)` rifiuta, come
+  previsto.
+- Mutanti dei controlli nuovi, su una copia temporanea: sei su sei uccisi dai test. Riguardano lo stato del job sostituito, le
+  core-ore, la lettura `sacct` del job sostituito, le GPU mancanti in `AllocTRES`, la cartella fallita e la cartella della
+  ricevuta.
+- `gate extractions` alle 15:29:57, verbale `evidence/gates/extractions_20261116T142957Z.json`: 14 controlli su 14, tranche
+  `[SCALING-300M-eval19618-p1-r1-20261116]`.
+  - 64572000 `FAILED 1:0`, con la cartella come da diagnosi;
+  - stadio al limite: 6,266389 GPU-ore su 7, 50,131111 core-ore su 56;
+  - `$WORK`: 91,21 GiB liberi.
+- La riga emessa e' quella del job sostituito, salvo la cartella (`p1` → `p1-r1`). Inviata alle 15:31:
+  `SCALING-300M-eval19618-p1-r1-20261116` = 64596915, `PENDING` (Priority). Risorse: 1 GPU, 8 CPU, 2:00:00, al massimo 2 GPU-ore
+  = 16 ore locali. Ricevuta in `continuation19618_20261106/submissions/`.
+- Seguito: sorvegliante ogni 5 minuti. A fine job `COMPLETED 0:0`: `collect extractions`, `reader-plans`, commit,
+  `gate checkout-plans --reviewed 7c5c886c7bc1058bfa889f45f1031408291376c0`. Altrimenti: stop, nessun altro rilancio.
