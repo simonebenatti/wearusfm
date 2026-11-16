@@ -1,0 +1,45 @@
+{
+ "id": "SCALING-300M-eval19618-p1-r2-20261116",
+ "creato": "2026-11-16T22:21:46+01:00",
+ "agente": "gpt",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 2.05,
+ "codice_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-300M-eval19618-p1-r2-20261116",
+  "--comment=wearusfm:SCALING-300M-eval19618-p1-r2-20261116",
+  "--dependency=afterok:64620427",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_p1_recovery_20261116_v1,EXPECTED_SHA=e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+  "/dev/stdin",
+  "results/infra/scaling_300m_20261104/p1_recovery_release_20261116/recovery_manifest.json",
+  "1a2104c59e55f5f3c46e03a984bdcda163ef26634c69cc1431ce3319bf878ee3"
+ ],
+ "dopo": "SCALING-P1-recovery-checkout-20261116",
+ "script_stdin": "scripts/slurm/scaling_p1_recovery.sbatch",
+ "script_stdin_sha256": "4d85131eb42c6e340590e0ec70e5b93775d295464f00f0dc9fd7fe3e83443bad",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-16T22:21:46+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-16T22:21:46+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-16T22:21:47+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 64620434,
+   "uscita": 0,
+   "stdout": "64620434\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  }
+ ],
+ "job_slurm": 64620434,
+ "uscita": 0,
+ "stdout": "64620434\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}

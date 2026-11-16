@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-16T21:23:02.642270+00:00",
+  "code_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+  "receipts_match_plan": true,
+  "jobs": {
+    "checkout": 64620427,
+    "p1": 64620434
+  },
+  "sacct": "64620427|COMPLETED|0:0|34|2|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|login08|2026-11-16T22:21:53|2026-11-16T22:22:27|00:05:00\n64620427.batch|COMPLETED|0:0|34|2|cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|login08|2026-11-16T22:21:53|2026-11-16T22:22:27|\n64620427.extern|COMPLETED|0:0|36|2|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1|login08|2026-11-16T22:21:53|2026-11-16T22:22:29|\n64620434|PENDING|0:0|0|0||None assigned|Unknown|Unknown|02:00:00\n",
+  "squeue": "64620434|SCALING-300M-eval19618-p1-r2-20261116|PENDING|normal|(Priority)\n",
+  "final_acceptance": false
+}
