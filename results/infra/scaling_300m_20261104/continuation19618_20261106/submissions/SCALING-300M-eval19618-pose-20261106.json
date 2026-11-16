@@ -1,0 +1,48 @@
+{
+ "id": "SCALING-300M-eval19618-pose-20261106",
+ "creato": "2026-11-16T09:49:26+01:00",
+ "agente": "claude",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 2.5,
+ "codice_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-300M-eval19618-pose-20261106",
+  "--comment=wearusfm:SCALING-300M-eval19618-pose-20261106",
+  "--time=02:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1,EXPECTED_SHA=df2de35c05381e7a5a69edde409171b210a3b5d8",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/slurm/scaling_evaluation19618.sbatch",
+  "results/infra/scaling_300m_20261104/continuation19618_20261106/evaluation/extraction_plan.json",
+  "T100-G-300M",
+  "extract-pose",
+  "none",
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-16T09:49:26+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-16T09:49:26+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-16T09:49:27+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 64571999,
+   "uscita": 0,
+   "stdout": "64571999\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 64571999,
+ "uscita": 0,
+ "stdout": "64571999\n",
+ "stderr": ""
+}

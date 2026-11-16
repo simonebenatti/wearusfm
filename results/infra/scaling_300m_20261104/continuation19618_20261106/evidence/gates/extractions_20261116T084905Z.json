@@ -1,0 +1,73 @@
+{
+  "protocol": "scaling-gate-19618-20261106-v1",
+  "stage": "extractions",
+  "read_at_utc": "2026-11-16T08:49:05Z",
+  "passed": true,
+  "checks": [
+    [
+      "checkout code: expected HEAD and clean tree",
+      true
+    ],
+    [
+      "document extraction_plan: remote bytes equal to the published ones",
+      true
+    ],
+    [
+      "files pinned inside the checkouts are in their commits (3)",
+      true
+    ],
+    [
+      "outputs of the jobs still to submit are absent",
+      true
+    ],
+    [
+      "jobs already in the ledger were submitted by this line",
+      true
+    ],
+    [
+      "jobs already submitted are COMPLETED 0:0 (0)",
+      true
+    ],
+    [
+      "checkouts used were collected COMPLETED 0:0 (1)",
+      true
+    ],
+    [
+      "free space on $WORK at least 5 GiB",
+      true
+    ],
+    [
+      "a tranche of at least one job is admitted (3 of 3 to submit)",
+      true
+    ]
+  ],
+  "facts": {
+    "serial_jobs": 0,
+    "serial_room": 10,
+    "line_jobs": 0,
+    "work_free_gib": 91.30865478515625,
+    "to_submit": [
+      "SCALING-300M-eval19618-pose-20261106",
+      "SCALING-300M-eval19618-p1-20261106",
+      "SCALING-300M-eval19618-p2-20261106"
+    ],
+    "line_limit": 4,
+    "submittable_now": 3,
+    "tranche": [
+      "SCALING-300M-eval19618-pose-20261106",
+      "SCALING-300M-eval19618-p1-20261106",
+      "SCALING-300M-eval19618-p2-20261106"
+    ]
+  },
+  "commits": {
+    "code": "df2de35c05381e7a5a69edde409171b210a3b5d8"
+  },
+  "documents": {
+    "extraction_plan": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/evaluation/extraction_plan.json",
+      "sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+      "bytes": 5595
+    }
+  },
+  "submitted": {}
+}

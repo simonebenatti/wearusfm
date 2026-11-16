@@ -7095,3 +7095,11 @@ estensione scientifica, nuovi training, retry o pollingAI.
 - `collect checkout-code`, 09:47: job 64194074 `COMPLETED 0:0`, 34 s, 2 CPU, 0,018889 core-ore; prove in
   `continuation19618_20261106/evidence/checkout-code/`.
 - Seguito: `gate extractions` e le tre righe delle estrazioni, una alla volta.
+
+### 16/11/2026 — Claude, linea 1: tre estrazioni a 19.618 inviate
+
+- `gate extractions` alle 09:49 (verbale `evidence/gates/extractions_20261116T084905Z.json`): 9 controlli su 9, tranche di 3.
+- Inviate una alla volta dal checkout `code` a `df2de35`, 1 GPU ciascuna su `boost_usr_prod`: pose = 64571999 (2:30:00, al
+  massimo 2,5 GPU-ore), p1 = 64572000 (2:00:00, al massimo 2), p2 = 64572001 (2:30:00, al massimo 2,5). Tetto dello stadio:
+  7 GPU-ore, cioe' 56 ore locali. Alle 09:51 tutte `PENDING` (Priority). Ricevute in `continuation19618_20261106/submissions/`.
+- Alla fine delle tre: `collect extractions`, `reader-plans`, commit, checkout `plans` con `--reviewed 2e79815`.
