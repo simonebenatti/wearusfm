@@ -1,0 +1,25 @@
+{
+  "matlabVersion": "26.2.0.3433840 (R2026b) Update 1",
+  "nceCasesPassed": 5,
+  "rncCasesPassed": 6,
+  "maximumAbsoluteError": 9.094947017729282e-13,
+  "tolerance": 5e-10,
+  "demoPassed": 1,
+  "reference": "Python runtime from db5ac41, unchanged at parent 77b7003",
+  "scope": "Numerical forward only; no gradients, DDP, GPU or training",
+  "demo": {
+    "nceAligned": 0.013385901721449045,
+    "nceMisaligned": 5.013385901721449,
+    "nceUniform": 1.09861228866811,
+    "rncOrdered": 0.456208831106522,
+    "rncShuffled": 1.2613043908242583,
+    "rncUniform": 1.0
+  },
+  "files": {
+    "demo_contrastive_losses.m": "d04d8033cabfff61d47d3ccb7814ee0db2fe57fda5a6b2cf0c502afa5089e3db",
+    "verify_matlab_losses.m": "63194225b6ac9885768e15d0cd0661f467be5bc1b20e887213f155f2e419a20b",
+    "wearusfm_info_nce.m": "93ce20b48755e07b91c69134671b352101b60f540c15a4a741dc2b0e49a07604",
+    "wearusfm_rank_contrast.m": "0ec1a20ad1b059412b2b79307c542e1f51f4c238c52e827e781827f71aa34ea5"
+  },
+  "python_reference_sha256": "c84c36b0c3128372706188e69a55a8961379e5f7a61ec3653761f0c3149d9f3a"
+}

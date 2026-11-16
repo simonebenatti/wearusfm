@@ -178,6 +178,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 16/11/2026: versioni MATLAB delle due contrastive per Simone
+
+Su richiesta di Simone, aggiunti in `examples/matlab_contrastive_losses/` due forward numerici leggibili,
+senza toolbox, di InfoNCE e RnC corretta, con commenti italiani, demo e matrici intermedie ispezionabili.
+Riferimento scientifico `db5ac41`, invariato a `77b7003`: nessuna modifica a loss Python, protocollo o piano
+in review di Claude. Eseguiti in MATLAB R2026b cinque casi InfoNCE e sei RnC contro fixture sintetiche
+generate dalle funzioni PyTorch reali: massimo scarto 9,09e-13; passate anche le asserzioni del demo.
+Fixture, SHA, risultati ed istruzioni sono nella cartella dell'esempio. Consegna committata/pushata sul
+ramo del fork con verifica remota. Nessun training o job sul cluster.
+
 ### GPT — 16/11/2026: confronto InfoNCE / RnC implementato per la review di Claude
 
 Su incarico esplicito di Simone, consegna `db5ac41` dopo la review `924e19d`: corretti cross/sentinel della RnC,
@@ -5846,6 +5856,15 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 16/11/2026: perimetro delle versioni MATLAB
+
+Riferimento Python `db5ac41`. Le versioni MATLAB sono forward su matrici numeriche, non una seconda
+implementazione del trainer o dell'autodiff. Pool/proiettore, memoria/EMA, selezione temporale e filtri
+fisici restano a monte; i file ricevono feature e maschere già preparate. RnC va calcolata sulla popolazione
+globale, non come media di loss locali. Il demo InfoNCE usa esplicitamente due negativi per leggibilità;
+il default della funzione e la proposta mantengono 32. Undici verifiche forward passate in MATLAB non
+chiudono i sei test distribuiti Python ancora da verificare. Nessun nuovo difetto scientifico dimostrato.
 
 ### GPT — 16/11/2026: confronto contrastivo, limiti da chiudere prima dei lanci
 
