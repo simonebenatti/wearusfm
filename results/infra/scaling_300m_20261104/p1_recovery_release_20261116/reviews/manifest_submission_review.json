@@ -1,0 +1,393 @@
+{
+  "verdict": "APPROVATO pacchetto e due comandi concreti checkout/P1-r2; nessun blocco residuo",
+  "all_checks_passed": true,
+  "checks": [
+    {
+      "name": "manifest_sha",
+      "passed": true
+    },
+    {
+      "name": "extraction_plan_newcheckout",
+      "passed": true
+    },
+    {
+      "name": "extraction_plan_bytes_digest",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_report_newcheckout",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_report_bytes_digest",
+      "passed": true
+    },
+    {
+      "name": "cpu_tests_newcheckout",
+      "passed": true
+    },
+    {
+      "name": "cpu_tests_bytes_digest",
+      "passed": true
+    },
+    {
+      "name": "original_plan_pin",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_pin",
+      "passed": true
+    },
+    {
+      "name": "real_manifest_gate",
+      "passed": true
+    },
+    {
+      "name": "plan_single_endpoint",
+      "passed": true
+    },
+    {
+      "name": "plan_same_original_bytes",
+      "passed": true
+    },
+    {
+      "name": "load_manifest_with_local_path_translation",
+      "passed": true
+    },
+    {
+      "name": "changed_report_byte_rejected",
+      "passed": true
+    },
+    {
+      "name": "cpu_source_scripts/scaling_output_identity.py",
+      "passed": true
+    },
+    {
+      "name": "cpu_source_scripts/scaling_p1_recovery.py",
+      "passed": true
+    },
+    {
+      "name": "cpu_source_scripts/scaling_p1_recovery_launch.py",
+      "passed": true
+    },
+    {
+      "name": "cpu_source_scripts/scaling_p1_recovery_plans.py",
+      "passed": true
+    },
+    {
+      "name": "cpu_source_scripts/slurm/scaling_p1_recovery.sbatch",
+      "passed": true
+    },
+    {
+      "name": "cpu_source_tests/cpu/test_scaling_output_identity.py",
+      "passed": true
+    },
+    {
+      "name": "cpu_source_tests/cpu/test_scaling_p1_recovery.py",
+      "passed": true
+    },
+    {
+      "name": "cpu_source_tests/cpu/test_scaling_p1_recovery_launch.py",
+      "passed": true
+    },
+    {
+      "name": "cpu_source_tests/cpu/test_scaling_p1_recovery_plans.py",
+      "passed": true
+    },
+    {
+      "name": "cpu_163",
+      "passed": true
+    },
+    {
+      "name": "cpu_artifact_pins",
+      "passed": true
+    },
+    {
+      "name": "cpu_junit_independent",
+      "passed": true
+    },
+    {
+      "name": "103_science_unchanged",
+      "passed": true
+    },
+    {
+      "name": "helper_frozen",
+      "passed": true
+    },
+    {
+      "name": "approval_scope",
+      "passed": true
+    },
+    {
+      "name": "approval_report",
+      "passed": true
+    },
+    {
+      "name": "budget_approval_pin",
+      "passed": true
+    },
+    {
+      "name": "preflight_all_reads",
+      "passed": true
+    },
+    {
+      "name": "new_paths_absent",
+      "passed": true
+    },
+    {
+      "name": "logical_ids_unused",
+      "passed": true
+    },
+    {
+      "name": "new_deploy_ref_absent",
+      "passed": true
+    },
+    {
+      "name": "old_checkout_unchanged",
+      "passed": true
+    },
+    {
+      "name": "scheduler_margin",
+      "passed": true
+    },
+    {
+      "name": "failed_receipts_absent",
+      "passed": true
+    },
+    {
+      "name": "preserved_pose_val",
+      "passed": true
+    },
+    {
+      "name": "preserved_p2_epn",
+      "passed": true
+    },
+    {
+      "name": "sacct_raw_matches_capture",
+      "passed": true
+    },
+    {
+      "name": "historical_states",
+      "passed": true
+    },
+    {
+      "name": "budget_stage",
+      "passed": true
+    },
+    {
+      "name": "budget_p1",
+      "passed": true
+    },
+    {
+      "name": "budget_cpu_attached",
+      "passed": true
+    },
+    {
+      "name": "budget_checkout",
+      "passed": true
+    },
+    {
+      "name": "budget_cpu_only",
+      "passed": true
+    },
+    {
+      "name": "twohour_allocation",
+      "passed": true
+    },
+    {
+      "name": "budget.json_exists",
+      "passed": true
+    },
+    {
+      "name": "criterion_amendment.json_exists",
+      "passed": true
+    },
+    {
+      "name": "release_plan.md_exists",
+      "passed": true
+    },
+    {
+      "name": "recovery_manifest.json_exists",
+      "passed": true
+    },
+    {
+      "name": "cpu_tests.json_exists",
+      "passed": true
+    },
+    {
+      "name": "final_runtime_sha",
+      "passed": true
+    },
+    {
+      "name": "exact_two_lines",
+      "passed": true
+    },
+    {
+      "name": "one_new_p1",
+      "passed": true
+    },
+    {
+      "name": "final_manifest_pin",
+      "passed": true
+    },
+    {
+      "name": "final_budget_approval_pins",
+      "passed": true
+    },
+    {
+      "name": "checkout_script_pin",
+      "passed": true
+    },
+    {
+      "name": "checkout_submitter_identity",
+      "passed": true
+    },
+    {
+      "name": "checkout_logical_id",
+      "passed": true
+    },
+    {
+      "name": "checkout_stdin_position",
+      "passed": true
+    },
+    {
+      "name": "p1_script_pin",
+      "passed": true
+    },
+    {
+      "name": "p1_submitter_identity",
+      "passed": true
+    },
+    {
+      "name": "p1_logical_id",
+      "passed": true
+    },
+    {
+      "name": "p1_stdin_position",
+      "passed": true
+    },
+    {
+      "name": "afterok_via_ledger",
+      "passed": true
+    },
+    {
+      "name": "checkout_resources",
+      "passed": true
+    },
+    {
+      "name": "p1_budget_argument",
+      "passed": true
+    },
+    {
+      "name": "checkout_export",
+      "passed": true
+    },
+    {
+      "name": "p1_export",
+      "passed": true
+    },
+    {
+      "name": "p1_final_arguments",
+      "passed": true
+    },
+    {
+      "name": "fixed_checkout_and_ref",
+      "passed": true
+    },
+    {
+      "name": "committed_recovery_manifest.json",
+      "passed": true
+    },
+    {
+      "name": "committed_cpu_tests.json",
+      "passed": true
+    },
+    {
+      "name": "committed_criterion_amendment.json",
+      "passed": true
+    },
+    {
+      "name": "committed_budget.json",
+      "passed": true
+    },
+    {
+      "name": "committed_release_plan.md",
+      "passed": true
+    },
+    {
+      "name": "committed_evidence_extraction_plan",
+      "passed": true
+    },
+    {
+      "name": "committed_evidence_diagnostic_report",
+      "passed": true
+    },
+    {
+      "name": "committed_evidence_cpu_tests",
+      "passed": true
+    },
+    {
+      "name": "committed_reviewed_source_scripts/scaling_p1_recovery.py",
+      "passed": true
+    },
+    {
+      "name": "committed_reviewed_source_scripts/scaling_p1_recovery_plans.py",
+      "passed": true
+    },
+    {
+      "name": "committed_reviewed_source_scripts/scaling_p1_recovery_launch.py",
+      "passed": true
+    },
+    {
+      "name": "committed_reviewed_source_scripts/slurm/scaling_p1_recovery.sbatch",
+      "passed": true
+    },
+    {
+      "name": "committed_reviewed_source_scripts/scaling_output_identity.py",
+      "passed": true
+    },
+    {
+      "name": "committed_reviewed_source_tests/cpu/test_scaling_p1_recovery.py",
+      "passed": true
+    },
+    {
+      "name": "committed_reviewed_source_tests/cpu/test_scaling_p1_recovery_plans.py",
+      "passed": true
+    },
+    {
+      "name": "committed_reviewed_source_tests/cpu/test_scaling_p1_recovery_launch.py",
+      "passed": true
+    },
+    {
+      "name": "committed_reviewed_source_tests/cpu/test_scaling_output_identity.py",
+      "passed": true
+    }
+  ],
+  "artifact_sha256": {
+    "recovery_manifest.json": "1a2104c59e55f5f3c46e03a984bdcda163ef26634c69cc1431ce3319bf878ee3",
+    "release_plan.md": "115c51e4086c1987a7ad9fb49824c8f3a9ad0d103ed815b31ea7a71783379f4f",
+    "criterion_amendment.json": "13246e97be4afe08e17d7b07e09173a4052c874521d43d8d184d94bcd02310d8",
+    "cpu_tests.json": "d25493b0cf619668cfc13ef2ed5633936ad10edf698de7557e6cb129843e8718",
+    "budget.json": "f4080dcb274a586ae3bd11289386d97b22482cd01b45530a5c4b66577374b8d0",
+    "submission_plan.json": "2e6c33f5cf17b46b8335234e879fbcdc97e363e6d2db5cadb16dc49d52a0cf6e",
+    "submit_lines.txt": "05ad827525bbb2b2fa456f22c90115fa7e099cd7f777a5e92be3fc9b1acb19e2"
+  },
+  "source_hashes_match_code_review": true,
+  "test_count": 163,
+  "scientific_sources_unchanged": 103,
+  "manifest_loading": "Caricamento eseguibile verificato localmente traducendo soltanto i tre prefissi di percorso del checkout remoto a file locali byte-identici; report alterato rifiutato. Nessun execute/inferenza.",
+  "accounting_recomputed": {
+    "stage_gpu_hours_max": 7.035833333333333,
+    "p1_gpu_hours_max": 3.070833333333333,
+    "attached_core_hours_max": 56.28666666666666,
+    "cpu_only_max": 350.2072224444444
+  },
+  "preflight_timestamp": "2026-11-16T21:11:45.209230+00:00",
+  "limits": [
+    "Nessun SSH o invio da questo revisore; stato remoto e ID inutilizzati riferiti al preflight raccolto dal parent",
+    "Il submitter comune deve risolvere afterok dal ledger del checkout effettivamente sottomesso; stop al primo esito diverso da sottomesso",
+    "La verifica runtime checkpoint/dati avviene nei cancelli originali del job"
+  ],
+  "checked_at_utc": "2026-11-16T21:19:30.336036+00:00",
+  "runtime_commit": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a"
+}
