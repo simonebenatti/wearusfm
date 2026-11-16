@@ -7320,6 +7320,22 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `continuation19618_20261106/failure_64572000_diagnosis_20261116/` (commit `90ce085`, ramo `claude/scaling-300m-exec-20261106`);
   voce in `docs/decisioni.md`. Il rilancio e' fuori dal pacchetto rivisto: decide Simone.
 
+### 2026-11-16 | Claude | Linea 1: rilancio unico di p1 approvato da Simone, strumento adattato, job 64596915 inviato
+
+- Simone, 16/11, alla domanda «Approvi il rilancio unico di p1 senza review di GPT?»: «Sì, approvo». E' l'opzione A della diagnosi:
+  stessa sottomissione del job sostituito 64572000, con ID `SCALING-300M-eval19618-p1-r1-20261116` e cartella `.../p1-r1` nuovi.
+  Restano lo stesso checkout `df2de35` e lo stesso piano d'estrazione; la cartella fallita resta com'e'.
+- Modifica solo lato Mac, in `scripts/scaling_plans19618.py` con i test CPU (commit `7c5c886`, ramo
+  `claude/scaling-300m-exec-20261106`). `RELAUNCH` e' la sorgente unica dell'identita'. Il cancello ha cinque controlli in piu':
+  fallimento diagnosticato, cartella intatta, riga uguale salvo la cartella, unico job da inviare, tetti dello stadio. Le righe
+  ammesse riverificano il ledger; i piani dei lettori si legano ai job della tabella. `7c5c886` e' la base della review per i
+  checkout plans, budgets e inputs.
+- Verifica: quattro revisori `critico` con scettici, nessun falso passaggio; rilievi corretti; sei mutanti su sei uccisi.
+  Test dei tre file dello stadio B: 200 passati.
+- Budget: stadio al massimo 6,266389 su 7 GPU-ore, compreso il margine. La riga p1 del congelamento puo' arrivare al massimo a
+  2,572778 GPU-ore, solo se il rilancio supera 5.318 s; e' registrata in `docs/decisioni.md`.
+- `gate extractions` 14 su 14; riga inviata alle 15:31: 64596915 `PENDING` (commit `ca18841`). Se fallisce, stop.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
