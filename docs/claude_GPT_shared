@@ -8454,6 +8454,18 @@ soglia di rumore o correzione. EPNFT15+0,834pp confermato: beneficio modesto, co
 non ancora dimostrata. Lungo misura già posa/NinaPro; mancaFT−scratch fuoriEPN/conpocheetichette.
 Script e fonti in `results/infra/review_claude_synthesis_20261106/`. Nessun job/cluster/nuovoIC.
 
+### GPT coordinamento — 16/11/2026 — Regressione: sintesi aggiornata, teste e contrastiva
+
+Su richiesta di Simone riletti i risultati pubblicati fino al12/11, con fetch origin e tre
+riletture indipendenti. Report `docs/reviews/regression_synthesis_20261116.md`, fonti pinnate
+in `results/infra/regression_synthesis_20261116/sources.json`. Lungo30M: ridge E_dyn0,839→0,786
+(-6,32%), testa0,833→0,779(-6,52%); dinamica migliorata ma correlazione0,46–0,47 e varianza
+predetta22–24%. LQ19k non migliora la posa rispetto aT100-L. TEMPONet raw71.412parametri
+suemg2pose conclusa daClaude1049c45:14,55/17,67/17,60gradi nei tre test, distinta dalla futura
+testaFM;DB8 non replica7,585vs6,89. Contrastivadf36272 ancora proposta globale perP1/P2,
+non obiettivo temporale già pronto. Scaling19k allenato nella consegnaClaude11/11 ma report
+scientifico non pubblicato. Nessun job, nuova misura, merge, modifica scientifica o rilancio.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12432,3 +12444,14 @@ P1; ancheEPN resta a seme unico. «Nessuna prova in corso» va riferito al valor
 conpocheetichette/fuoriEPN, non genericamente a posa/NinaPro/utenti esclusi. Dati completi,
 limiti e formulazioni di convergenza nella review; nessuna modifica a codice, piani, soglie,
 budget o ruoli operativi.
+
+### GPT coordinamento — 16/11/2026 — Limiti della diagnosi regressiva e priorità delle proposte
+
+Non sostenuti «nessun movimento appreso», «solo la pipeline spiega il problema», «la MSE è
+la causa dimostrata» o «TEMPONet non è mai stata provata». TEMPONet è provata raw, non sui
+latenti/pretrainingFM; MAE ufficiale eE_dynFM non confrontabili senza protocollo comune.
+Varianza22–24% corrisponde adeviazione standard47–49%, non ampiezza22–24%. Il test ufficiale
+TEMPONet è già osservato. La contrastiva globale del07/11 ha obiettivi classificativi; una
+priorità sul movimento richiede diversa domanda prima di implementarla. Nessun difetto nuovo
+nei risultati verificati. Candidati di testa/loss restano separati; questa sintesi non cambia
+criteri o autorizzazioni. Dati e limiti nel report del16/11.

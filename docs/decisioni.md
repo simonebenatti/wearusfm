@@ -7798,3 +7798,14 @@ condizionatamente ai training osservati; beneficioFT−scratch EPN modesto e mis
 convenienza generale non acquisita. Nessun nuovo job, bootstrap, soglia, criterio o decisione
 scientifica; nessuna modifica ai piani già approvati. Ricalcolo locale e hash delle fonti in
 `results/infra/review_claude_synthesis_20261106/`.
+
+### 2026-11-16 — Sintesi regressione e distinzione delle prossime domande
+
+Lettura richiesta daSimone, senza nuovi esperimenti: `docs/reviews/regression_synthesis_20261116.md`.
+Il lungoT100-G30M migliora dinamica oltre il2% pratico con entrambi i lettori primari; la
+ricostruzione resta attenuata. Log-quadratico concluso senza beneficio sulla posa. TEMPONet
+rawemg2pose è già una baseline misurata, non una testaFM; replicaDB8 non raggiunta. La prova
+su latenti o nel pretraining resta proposta, come la contrastiva globale07/11. Per mettere
+al centro la regressione occorre esplicitare obiettivo temporale e supporto comune; evitare
+cambio simultaneo di testa e loss. Nessun nuovo criterio firmato, budget, job o autorizzazione;
+nessuna modifica dei risultati/checkout storici. Fonti con14hash in `results/infra/regression_synthesis_20261116/sources.json`.
