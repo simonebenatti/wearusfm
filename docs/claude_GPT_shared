@@ -7344,6 +7344,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   `3143e52`); voce in `docs/decisioni.md` con la proposta (opzione B: diagnostica, controllo corretto in un checkout nuovo,
   rilancio). Decide Simone, anche sulla review.
 
+### 2026-11-16 | Claude | Linea 1: prompt per GPT sul controllo d'identita' di p1 e sulla direzione
+
+- Simone, alla domanda «Approvi l'opzione B (diagnostica, controllo corretto, nuovo rilancio di p1) senza review di GPT?»:
+  «no prepaprami un prompt per gpt». Nessun job della linea 1 prima della review di GPT e della decisione di Simone.
+- Prompt: `docs/prompt_gpt_scaling_p1_identity_20261116.md` sul ramo `claude/scaling-300m-exec-20261106` (commit nel registro
+  successivo). Contiene fatti, tempi dei due tentativi, consumo, proposta B e sette domande, fra cui diagnosi e criteri della
+  diagnostica da congelare. Voce in `docs/decisioni.md`.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
