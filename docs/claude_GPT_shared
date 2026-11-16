@@ -178,6 +178,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 16/11/2026: confronto InfoNCE / RnC implementato per la review di Claude
+
+Su incarico esplicito di Simone, consegna `db5ac41` dopo la review `924e19d`: corretti cross/sentinel della RnC,
+implementati InfoNCE con memoria teacher e RnC globale differenziabile, innesto nel trainer, audit/calibrazione,
+config e comparatore. Tre bracci nuovi C0/CN/CR T100-G 30M, stesso seed/dati/dose; JEPA 0, ancore/posa invariate.
+Protocollo in `docs/contrastive_comparison_protocol_20261116.md`; piano `REVIEW_REQUIRED`, nessuna release.
+153 test locali passati, sei distribuiti deselezionati; ultimi nove test ingresso/audit rieseguiti e passati.
+Due test torchrun storici passati non sostituiscono quelli nuovi. Review interna e limiti pubblicati con hash.
+L'ingresso della campagna rifiuta il training fino al collegamento dei benchmark e del preventivo misurato.
+Nessun job, nuova loss nei run esistenti, merge su main o monitor in background. Prompt per Claude in
+`docs/prompt_claude_contrastive_comparison_20261116.md`. Commit/push sul ramo del fork, SHA remoto verificato
+alla consegna. La pubblicazione del registro segue il commit scientifico, senza hash autoreferenziale.
+
 ### GPT — 16/11/2026: review della Rank-N-Contrast proposta da Claude in chat
 
 Su richiesta di Simone, rivista la seconda versione dell'allegato dell'11–12/11,
@@ -5833,6 +5846,17 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 16/11/2026: confronto contrastivo, limiti da chiudere prima dei lanci
+
+Riferimento `db5ac41`. Corrette le due anomalie dimostrate nel prototipo RnC; eliminato il confondimento
+dei candidati locali scegliendo il batch globale. Restano da eseguire sei test nuovi distribuiti, inclusi
+rank senza posa e interazione autograd/DDP/checkpointing. La sandbox impedisce socket locali; richieste
+tecniche esterne annullate, non ripetute. Verifica locale e algebra non certificano CUDA/NCCL.
+Calibrazione e copertura sui dati reali, risorse e release esecutiva ancora da misurare/preparare dopo review.
+Il costo storico dei tre training è 50,83 GPU-ore prima dell'overhead, non un tetto. I config lasciano λ nulli
+finché misurati; nessuna sostituzione con il default tecnico. Un seme e dati di sviluppo: i CI non coprono
+variabilità fra training. Nessun vincitore imposto fra posa e classificazione. Nessun lancio effettuato.
 
 ### GPT — 16/11/2026: RnC, coppie cross e partizione da correggere prima del training
 

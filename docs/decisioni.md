@@ -6439,3 +6439,23 @@ La proposta InfoNCE del 07/11 risponde a una domanda diversa e non è sostituita
 implicitamente. T100-G resta la base consigliata per un eventuale confronto appaiato
 ancore+posa contro ancore+posa+RnC; nessun peso, criterio o training approvato qui.
 Nessuna modifica al runtime, nessun job, deploy o monitor.
+
+### 16/11/2026 — Preparati entrambi gli approcci contrastivi su richiesta di Simone
+
+Consegna `db5ac41`, base `924e19d`: Simone autorizza design e implementazione del confronto InfoNCE/RnC,
+con review di Claude prima dei lanci. La richiesta successiva supera il precedente perimetro di sola review.
+Implementati loss, memoria e raccolta globale, trainer, calibrazione/audit, ricette e comparatore.
+Base T100-G 30M; tre nuovi bracci C0/CN/CR, ancore 0,2 + posa 1 e JEPA 0, identici dati e dose.
+Entrambi i termini vengono calcolati in tutti i bracci; solo il peso attivo cambia. Pesi fissati dal train
+con regola comune, nessuna griglia sulle sonde. Nove contrasti prespecificati su E_dyn/P1/P2, con intervalli
+simultanei, utilità pratica e non inferiorità; nessuna scelta obbligata se i risultati sono irrisolti.
+
+153 test locali passati, sei test distribuiti ancora da verificare; ultimi nove test di ingresso/audit
+rieseguiti dopo le modifiche finali. C0/storico verificati entro arrotondamento FP32; ripresa CN bit-identica
+in CPU. Nessuna estrapolazione a NCCL/CUDA. Il piano resta REVIEW_REQUIRED; l'ingresso di campagna rifiuta
+il training finché benchmark dei tre bracci e validatore dei preventivi non saranno collegati e rivisti.
+Il trainer scientifico è completo; release, misure e valutazioni pinnate seguono la review. Costo storico
+50,83 GPU-ore prima dell'overhead, non preventivo operativo. Nessun job o monitor. Protocollo, verifica e
+prompt in `docs/contrastive_comparison_protocol_20261116.md`,
+`results/infra/contrastive_comparison_20261116/verification.json` e
+`docs/prompt_claude_contrastive_comparison_20261116.md`.
