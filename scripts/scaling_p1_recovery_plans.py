@@ -20,9 +20,11 @@ require = R.require
 
 
 def make_recovery_manifest(extraction_plan, diagnostic_pin, diagnostic, cpu_test_pin, tests, sources):
+    require(isinstance(diagnostic, dict), "complete diagnostic report required")
     result = {"protocol": R.PROTOCOL, "arm": R.ARM, "step": R.STEP, "task": R.TASK,
               "logical_job_id": R.LOGICAL_ID, "out": R.OUTPUT, "failed_attempts": copy.deepcopy(R.FAILED_ATTEMPTS),
               "allocation": dict(R.ALLOCATION), "budget": dict(R.BUDGET), "output_barrier": "none",
+              "release_criterion": R.RELEASE_CRITERION, "diagnostic_outcome": diagnostic.get("outcome"),
               "source_sha256": dict(sources), "diagnostic_protocol": R.DIAGNOSTIC_PROTOCOL,
               "diagnostic_source_sha256": copy.deepcopy(diagnostic.get("source_sha256")),
               "extraction_plan": copy.deepcopy(extraction_plan), "diagnostic_report": copy.deepcopy(diagnostic_pin),
@@ -80,9 +82,18 @@ attempt, manufactures a receipt, reads a cache or submits a job.
         if task == "p1":
             for key, value in {"recovery_protocol": R.PROTOCOL, "recovery_manifest_sha256": recovery_manifest_sha256,
                                "recovery_source_sha256": recovery_sources, "output_barrier": "none",
+                               "release_criterion": R.RELEASE_CRITERION,
                                "logical_job_id": R.LOGICAL_ID, "slurm_job_id": job["job_id"],
                                "failed_attempts_preserved": R.FAILED_ATTEMPTS}.items():
                 require(receipt.get(key) == value, "P1 recovery receipt differs: " + key)
+            require(receipt.get("diagnostic_outcome") in ("METADATA_ONLY_REPRODUCED", "NOT_REPRODUCED"),
+                    "P1 recovery diagnostic outcome missing")
+            diagnostic_pin = receipt.get("diagnostic_report")
+            require(isinstance(diagnostic_pin, dict) and set(diagnostic_pin) == {"path", "sha256", "bytes"} and
+                    Path(diagnostic_pin["path"]).is_absolute(), "P1 recovery diagnostic report pin missing")
+            S.ST.pin_schema(diagnostic_pin)
+            require(diagnostic_pin["sha256"] == R.RELEASE_DIAGNOSTIC_SHA256,
+                    "P1 recovery used another diagnostic report")
             require(str(Path(pin["path"]).parent) == R.OUTPUT, "P1 recovery receipt outside new output")
         receipts[task] = receipt
         lineage[task] = {"job_id": job["job_id"], "code_sha": expected_code,
@@ -110,7 +121,8 @@ attempt, manufactures a receipt, reads a cache or submits a job.
             for key in ("protocol", "arm", "which", "checkpoint_step", "checkpoint_sha256", "code_sha", "plan_sha256"):
                 require(prov.get(key) == receipt.get(key), "provenance extraction identity mismatch: " + key)
             if task == "p1":
-                for key in ("recovery_protocol", "recovery_manifest_sha256", "recovery_source_sha256", "output_barrier"):
+                for key in ("recovery_protocol", "recovery_manifest_sha256", "recovery_source_sha256", "output_barrier",
+                            "release_criterion", "diagnostic_outcome", "diagnostic_report"):
                     require(prov.get(key) == receipt[key], "P1 recovery provenance mismatch: " + key)
                 audit = prov.get("output_identity_audit")
                 require(isinstance(audit, dict) and audit == out.get("output_identity_audit") and
@@ -130,6 +142,8 @@ attempt, manufactures a receipt, reads a cache or submits a job.
                 "cache outside original receipt folder")
     mixed = {"protocol": PROTOCOL, "checkpoint": copy.deepcopy(checkpoint), "tasks": lineage,
              "recovery_manifest_sha256": recovery_manifest_sha256, "recovery_source_sha256": dict(recovery_sources),
+             "release_criterion": R.RELEASE_CRITERION, "diagnostic_outcome": receipts["p1"]["diagnostic_outcome"],
+             "diagnostic_report": copy.deepcopy(receipts["p1"]["diagnostic_report"]),
              "training_source_contract_sha256": contract_sha, "scientific_source_contract_unchanged": True,
              "historical_failed_attempts": copy.deepcopy(R.FAILED_ATTEMPTS)}
     return pose, {ds: caches[ds] for ds in S.DATASETS}, mixed

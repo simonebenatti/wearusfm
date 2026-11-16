@@ -1,0 +1,40 @@
+{
+  "protocol": "scaling-p1-recovery-release-budget-20261116-v2",
+  "approved": true,
+  "criterion_amendment_sha256": "13246e97be4afe08e17d7b07e09173a4052c874521d43d8d184d94bcd02310d8",
+  "accounting": {
+    "path": "results/infra/scaling_300m_20261104/p1_recovery_20261116/evidence/run_final/accounting.json",
+    "sha256": "c58fd2f13e9cc75bf934bc1e09498af3c88339dcfee56b4049ba8d4fd8d3f165"
+  },
+  "stage_gpu_hours_consumed": 4.985833333333333,
+  "p1_r2": {
+    "gpus": 1,
+    "cpus": 8,
+    "memory_gib": 100,
+    "seconds": 7200,
+    "margin_seconds": 180,
+    "max_gpu_hours": 2.05,
+    "max_core_hours": 16.4
+  },
+  "one_remaining_checkout": {
+    "cpus": 2,
+    "memory_gib": 4,
+    "seconds": 300,
+    "margin_seconds": 180,
+    "max_core_hours": 0.26666666666666666
+  },
+  "stage_gpu_hours_max": 7.035833333333333,
+  "stage_gpu_hours_cap": 7.3,
+  "stage_attached_core_hours_max": 56.28666666666666,
+  "stage_attached_core_hours_cap": 58.4,
+  "p1_cumulative_gpu_hours_max": 3.070833333333333,
+  "p1_cumulative_gpu_hours_cap": 3.1,
+  "p1_cumulative_core_hours_max": 24.566666666666663,
+  "p1_cumulative_core_hours_cap": 24.8,
+  "cpu_only_prior_envelope": 349.917778,
+  "completed_diagnostic_checkout_core_hours": 0.02277777777777778,
+  "cpu_only_envelope_max": 350.2072224444444,
+  "cpu_only_cap": 351,
+  "no_new_diagnostic": true,
+  "no_retry": true
+}

@@ -7274,3 +7274,20 @@ riproduzione richiede un emendamento esplicito del criterio: non e' stata
 eseguita e il cancello attuale resta intatto. Autorizzazioni operative
 gia' date invariate; nessun monitor o invio automatico in background.
 
+
+### 16/11/2026 — GPT: Simone approva l'emendamento e un solo P1-r2
+
+Simone: «ok, approvo la modifica del criterio. Procedi con un solo P1 con la nuova guardia e i log completi, mantenendo i controlli di integrità. Lancialo tu senza chiedermi di nuovo il consenso».
+La deroga e' limitata al report reale del diagnostico 64610181, SHA
+c2e32e9cfab36a76c79b05913e350b9ec7f15484f73e2a271552c06f6e980908:
+NOT_REPRODUCED completo con READERS_CLEAR_IN_TEST ammette ora un solo
+P1-r2 con la finalizzazione difensiva gia' verificata. La causa rimane aperta.
+GPT esegue direttamente preparazione, deploy, checkout e invio tramite
+submitter/ledger comuni; nessun nuovo consenso per questa sequenza.
+Invariati controlli sui byte/oggetto, input, checkpoint, sorgenti scientifici,
+ricetta e dose; nessun retry; pose/P2 e cartelle fallite conservati.
+Nuova consegna: `results/infra/scaling_300m_20261104/p1_recovery_release_20261116/`.
+Un checkout residuo (2 CPU/4G/5 min) e un P1 (1 GPU/8 CPU/100G/2 h).
+Massimo stadio 7,035833 GPUh su 7,30, P1 cumulativo 3,070833 su 3,10;
+CPU-only 350,207222 coreh su 351. Nessun ampliamento del budget.
+

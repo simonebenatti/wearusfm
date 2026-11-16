@@ -13,7 +13,7 @@
 #SBATCH -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_p1_recovery_%j.out
 
 # Conditional single P1-r2 only. Two hours +180s scheduler grace =2.05GPUh.
-# No retries. The frozen wrapper checks the positive diagnostic and all pins.
+# No retries. The wrapper checks the explicitly approved diagnostic criterion and all pins.
 set -euo pipefail
 if [ "$#" -ne 2 ]; then
   echo 'usage: <relative recovery manifest> <manifest sha256>' >&2

@@ -24,6 +24,8 @@ import scaling_output_identity as O
 PROTOCOL = "scaling-p1-recovery-20261116-v1"
 CPU_TEST_PROTOCOL = "scaling-p1-recovery-cpu-tests-20261116-v1"
 DIAGNOSTIC_PROTOCOL = "SCALING-P1-IDENTITY-DIAG-v1"
+RELEASE_CRITERION = "scaling-p1-single-recovery-after-clean-diagnostic-v2"
+RELEASE_DIAGNOSTIC_SHA256 = "c2e32e9cfab36a76c79b05913e350b9ec7f15484f73e2a271552c06f6e980908"
 ARM, STEP, TASK = "T100-G-300M", 19618, "p1"
 LOGICAL_ID = "SCALING-300M-eval19618-p1-r2-20261116"
 FAILED_ATTEMPTS = [{"job_id": "64572000", "state": "FAILED", "exit_code": "1:0"},
@@ -64,16 +66,39 @@ def _load_pin(pin):
 
 
 def validate_manifest(manifest, diagnostic, tests, sources):
-    """Pure gate: neither a null diagnostic nor a changed policy permits inference."""
+    """One approved recovery after a complete clean diagnostic, without a causal claim."""
     expected = {"protocol": PROTOCOL, "arm": ARM, "step": STEP, "task": TASK,
                 "logical_job_id": LOGICAL_ID, "out": OUTPUT, "failed_attempts": FAILED_ATTEMPTS,
-                "allocation": ALLOCATION, "budget": BUDGET, "output_barrier": "none"}
+                "allocation": ALLOCATION, "budget": BUDGET, "output_barrier": "none",
+                "release_criterion": RELEASE_CRITERION}
     for key, value in expected.items():
         require(manifest.get(key) == value and type(manifest.get(key)) is type(value), "recovery manifest differs: " + key)
+    require(isinstance(manifest.get("diagnostic_report"), dict) and
+            manifest["diagnostic_report"].get("sha256") == RELEASE_DIAGNOSTIC_SHA256,
+            "criterion v2 applies only to the approved diagnostic report")
     require(manifest.get("source_sha256") == sources and set(sources) == set(SOURCE_PATHS), "recovery source pins differ")
     require(all(_sha(v) for v in sources.values()), "invalid recovery source hash")
-    require(diagnostic.get("complete") is True and diagnostic.get("outcome") == "METADATA_ONLY_REPRODUCED" and
-            diagnostic.get("readers_status") == "READERS_CLEAR_IN_TEST", "diagnostic does not release P1 recovery")
+    require(isinstance(diagnostic, dict), "complete diagnostic report required")
+    require(diagnostic.get("complete") is True and
+            diagnostic.get("outcome") in ("METADATA_ONLY_REPRODUCED", "NOT_REPRODUCED") and
+            diagnostic.get("readers_status") == "READERS_CLEAR_IN_TEST" and diagnostic.get("errors") == [] and
+            diagnostic.get("candidate_accepts_all_benign_cases") is True,
+            "diagnostic does not release P1 recovery")
+    require(manifest.get("diagnostic_outcome") == diagnostic["outcome"], "diagnostic outcome differs from report")
+    cycles = [("fresh", "A"), ("fresh", "F"), ("fresh", "S"), ("aged", "S"), ("aged", "F"), ("aged", "A")]
+    require(diagnostic.get("cycles_completed") == [{"age": age, "mode": mode} for age, mode in cycles],
+            "complete six-cycle diagnostic required")
+    fixtures = diagnostic.get("fixture_results")
+    require(isinstance(fixtures, list) and all(isinstance(v, dict) for v in fixtures) and [v.get("id") for v in fixtures] ==
+            [f"{age}_{mode}_{ds}" for age, mode in cycles for ds in ("db2", "db3", "db6")],
+            "complete eighteen-fixture diagnostic required")
+    rounds = diagnostic.get("reader_rounds")
+    ids = ["p1_db6_failed", "p1r1_db3_failed", "p1r1_db2_completed", "pose_val", "p2_epn", "control30m_db3"]
+    require(isinstance(rounds, list) and all(isinstance(r, dict) for r in rounds) and
+            [r.get("phase") for r in rounds] == ["before", "after"] and
+            all(isinstance(r.get("inputs"), list) and all(isinstance(v, dict) for v in r["inputs"]) and
+                [v.get("id") for v in r["inputs"]] == ids for r in rounds),
+            "complete twelve-record reader diagnostic required")
     require(manifest.get("diagnostic_protocol") == DIAGNOSTIC_PROTOCOL and
             diagnostic.get("protocol") == DIAGNOSTIC_PROTOCOL, "diagnostic protocol mismatch")
     declared = manifest.get("diagnostic_source_sha256")
@@ -122,7 +147,9 @@ def execute(manifest_path, manifest_sha256, expected_code_sha, device="cuda"):
               "model_config": guard["model_config"], "stats_sha256": states["pose_stats"]["sha256"],
               "training_source_contract_sha256": states["training_source_contract"]["sha256"],
               "recovery_protocol": PROTOCOL, "recovery_manifest_sha256": manifest_sha256,
-              "recovery_source_sha256": manifest["source_sha256"], "output_barrier": "none"}
+              "recovery_source_sha256": manifest["source_sha256"], "output_barrier": "none",
+              "release_criterion": RELEASE_CRITERION, "diagnostic_outcome": manifest["diagnostic_outcome"],
+              "diagnostic_report": manifest["diagnostic_report"]}
     out.mkdir(parents=True, exist_ok=False)
     commands = V.extraction_commands("extract-classification", plan, checkpoint, out, TASK, device)
     require(list(commands) == [TASK], "exactly one unchanged P1 extraction command required")

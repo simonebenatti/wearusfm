@@ -1,0 +1,46 @@
+{
+  "verdict": "APPROVATO tecnico criterio v2 e wrapper/launcher; nessun blocco residuo",
+  "review_base_commit": "6ebfaf4c06f589fca8975dfaff7079ece729938f",
+  "scope_sha256": {
+    "scripts/scaling_p1_recovery.py": "85e161f95d1260afc37834e002a8ff89cb54594e25f61d09b6b6237c9cad5b2e",
+    "scripts/scaling_p1_recovery_plans.py": "83bd62a11c007ef82c48b39b45f1e888e7f387fab4c9b2bd72411287e133fb00",
+    "scripts/scaling_p1_recovery_launch.py": "5e2ed3a33833ed3df51d39225e7aa6841d1b82f5fdde4e07d2d0bab862dd43ae",
+    "scripts/slurm/scaling_p1_recovery.sbatch": "4d85131eb42c6e340590e0ec70e5b93775d295464f00f0dc9fd7fe3e83443bad",
+    "scripts/scaling_output_identity.py": "717362c25cb99151ab058b4f212cc73611a36899f67251952ca613a71058e656",
+    "tests/cpu/test_scaling_p1_recovery.py": "0897b3de556b03d33c5c89b45d52023431819c9e44d2b7857f483ff7baeaeaeb",
+    "tests/cpu/test_scaling_p1_recovery_plans.py": "3a23ac4ad03e3f787b683fa7dfda93169331b2b2aead4dc577b3edfafe9c7593",
+    "tests/cpu/test_scaling_p1_recovery_launch.py": "7b7b56bf4abe89093b0c1f6b297673d6bbc7c7a74329e8dc2c528e507104a7bc",
+    "tests/cpu/test_scaling_output_identity.py": "34039caa71f8e90b3cecaf29dceb5c3883100fa7fc44408fe993a50dd330227f"
+  },
+  "approved_diagnostic_report_sha256": "c2e32e9cfab36a76c79b05913e350b9ec7f15484f73e2a271552c06f6e980908",
+  "release_criterion": "scaling-p1-single-recovery-after-clean-diagnostic-v2",
+  "checks": [
+    "Deroga vincolata al solo report reale approvato con SHA completo; load_manifest ne controlla byte/digest prima di inferenza",
+    "Complete/readersclear/errori vuoti/matrice di18fixture e12record lettori richiesti; outcome del manifest coerente al report",
+    "Criterio/outcome/pin diagnostico conservati in sidecar,receipt e bridge misto; non si attribuisce causa a Lustre",
+    "Helper output identity invariato; guardie immutabili input e sorgenti numeriche byteidentiche",
+    "Un solo producer subprocess senza retry, destinazione canonica nuova p1-r2; tentativi falliti conservati",
+    "Launcher separato controlla allocazione1GPU8CPU100GiB7200s e una GPU visibile; numerica nel subprocess congelato e ordine import invariato",
+    "Commento sbatch aggiornato al criterio approvato, nessun cambiamento esecutivo"
+  ],
+  "source_contract_checks": {
+    "scientific_pins": 103,
+    "mismatches": [],
+    "diagnostic_frozen_sources": 228,
+    "frozen_mismatches": [
+      "scripts/scaling_plans19618.py"
+    ],
+    "exception": "scaling_plans19618.py contiene modifiche Mac-side ereditate prima di HEAD6ebfaf4 (checkout CPU/rilancioP1-r1); byte identici alla baseline della review v2, non modificato ora."
+  },
+  "tests": {
+    "passed": 163,
+    "seconds": 6.46,
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src ~/.venvs/wearusfm-tok/bin/python -B -m pytest -q -p no:cacheprovider tests/cpu/test_scaling_p1_recovery.py tests/cpu/test_scaling_p1_recovery_plans.py tests/cpu/test_scaling_p1_recovery_launch.py tests/cpu/test_scaling_output_identity.py"
+  },
+  "limits": [
+    "Manifest operativo, risorse remote, ledger e righe di invio finali ancora da verificare separatamente",
+    "Nessun SSH, deploy, invio, modifica del codice o commit eseguito da questo revisore",
+    "La causa storica resta aperta; il rilancio deriva dalla nuova decisione esplicita di Simone, non da riproduzione del difetto"
+  ],
+  "observed_at_utc": "2026-11-16T21:13:25.469636+00:00"
+}

@@ -22,6 +22,8 @@ def case(tmp_path):
     output = tmp_path / 'scratch/T100-G-300M/p1-r2'
     manifest = copy.deepcopy(L.EXPECTED)
     manifest['out'] = str(output)
+    manifest['diagnostic_outcome'] = 'NOT_REPRODUCED'
+    manifest['diagnostic_report'] = {'path': '/evidence/report.json', 'sha256': L.RELEASE_DIAGNOSTIC_SHA256, 'bytes': 123}
     args = {'code': code, 'manifest': 'recovery.json', 'job': '123', 'work': work,
             'expected_output': output,
             'job_info': 'JobId=123 JobName=' + L.LOGICAL_ID + ' JobState=RUNNING NumNodes=1 NumCPUs=8 '
@@ -62,6 +64,8 @@ def test_actual_allocation_or_job_identity_mismatch(case, old, new):
     ('protocol', 'other'), ('arm', 'T100-G-30M'), ('step', 5000), ('step', 19618.0),
     ('task', 'p2'), ('logical_job_id', 'another-p1'), ('output_barrier', 'sync'),
     ('diagnostic_protocol', 'other'), ('failed_attempts', []),
+    ('release_criterion', None), ('release_criterion', 'v1'), ('diagnostic_outcome', 'ERROR'),
+    ('diagnostic_outcome', None), ('diagnostic_report', {'sha256': '0' * 64}),
     ('allocation', {'nodes': True, 'gpus': 1, 'cpus': 8, 'memory_gib': 100, 'walltime_seconds': 7200}),
     ('budget', {'p1_cumulative_gpu_hours_cap': 3.10, 'extractions_gpu_hours_cap': 7.30,
                 'p1_max_attempts': 3, 'retry_authorized': True}),

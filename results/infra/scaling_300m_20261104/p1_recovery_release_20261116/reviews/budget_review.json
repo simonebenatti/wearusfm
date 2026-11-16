@@ -1,0 +1,330 @@
+{
+  "verdict": "APPROVATO",
+  "scope": "Independent local read-only accounting and operational preflight review; no SSH or submissions",
+  "at_utc": "2026-11-16T21:16:49.168739+00:00",
+  "snapshot_at": "2026-11-16T21:11:45.209230+00:00",
+  "checks": [
+    {
+      "name": "accounting pinned",
+      "passed": true
+    },
+    {
+      "name": "amendment pinned",
+      "passed": true
+    },
+    {
+      "name": "explicit single extraction amendment",
+      "passed": true
+    },
+    {
+      "name": "actual diagnostic outcome retained",
+      "passed": true
+    },
+    {
+      "name": "command succeeded squeue",
+      "passed": true
+    },
+    {
+      "name": "raw stdout retained squeue",
+      "passed": true
+    },
+    {
+      "name": "command succeeded sacct",
+      "passed": true
+    },
+    {
+      "name": "raw stdout retained sacct",
+      "passed": true
+    },
+    {
+      "name": "command succeeded config",
+      "passed": true
+    },
+    {
+      "name": "raw stdout retained config",
+      "passed": true
+    },
+    {
+      "name": "command succeeded quota",
+      "passed": true
+    },
+    {
+      "name": "raw stdout retained quota",
+      "passed": true
+    },
+    {
+      "name": "command succeeded old_code_head",
+      "passed": true
+    },
+    {
+      "name": "raw stdout retained old_code_head",
+      "passed": true
+    },
+    {
+      "name": "command succeeded old_code_status",
+      "passed": true
+    },
+    {
+      "name": "raw stdout retained old_code_status",
+      "passed": true
+    },
+    {
+      "name": "command succeeded deploy_ref",
+      "passed": true
+    },
+    {
+      "name": "raw stdout retained deploy_ref",
+      "passed": true
+    },
+    {
+      "name": "command succeeded deploy_configuration",
+      "passed": true
+    },
+    {
+      "name": "raw stdout retained deploy_configuration",
+      "passed": true
+    },
+    {
+      "name": "empty queue is successful observation",
+      "passed": true
+    },
+    {
+      "name": "old checkout unchanged",
+      "passed": true
+    },
+    {
+      "name": "new ref absent",
+      "passed": true
+    },
+    {
+      "name": "scheduler overtime allowance",
+      "passed": true
+    },
+    {
+      "name": "WORK quota room",
+      "passed": true
+    },
+    {
+      "name": "new path absent /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2",
+      "passed": true
+    },
+    {
+      "name": "new path absent /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_p1_recovery_20261116_v1",
+      "passed": true
+    },
+    {
+      "name": "no failed receipt adoption p1",
+      "passed": true
+    },
+    {
+      "name": "no failed receipt adoption p1-r1",
+      "passed": true
+    },
+    {
+      "name": "unique accounting parent 64571999",
+      "passed": true
+    },
+    {
+      "name": "unique accounting parent 64572000",
+      "passed": true
+    },
+    {
+      "name": "unique accounting parent 64572001",
+      "passed": true
+    },
+    {
+      "name": "unique accounting parent 64596915",
+      "passed": true
+    },
+    {
+      "name": "unique accounting parent 64610004",
+      "passed": true
+    },
+    {
+      "name": "unique accounting parent 64610181",
+      "passed": true
+    },
+    {
+      "name": "six exact historical allocation records",
+      "passed": true
+    },
+    {
+      "name": "stage actual GPU",
+      "passed": true
+    },
+    {
+      "name": "previous accounting GPU",
+      "passed": true
+    },
+    {
+      "name": "previous accounting attached core",
+      "passed": true
+    },
+    {
+      "name": "new P1 ceiling",
+      "passed": true
+    },
+    {
+      "name": "new P1 attached core ceiling",
+      "passed": true
+    },
+    {
+      "name": "stage ceiling",
+      "passed": true
+    },
+    {
+      "name": "stage attached core ceiling",
+      "passed": true
+    },
+    {
+      "name": "P1 cumulative ceiling",
+      "passed": true
+    },
+    {
+      "name": "P1 attached core ceiling",
+      "passed": true
+    },
+    {
+      "name": "GPU and attached CPU caps",
+      "passed": true
+    },
+    {
+      "name": "one remaining checkout ceiling",
+      "passed": true
+    },
+    {
+      "name": "actual diagnostic checkout cost",
+      "passed": true
+    },
+    {
+      "name": "CPU-only envelope",
+      "passed": true
+    },
+    {
+      "name": "CPU cap",
+      "passed": true
+    },
+    {
+      "name": "collected file bytes and SHA /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/receipt.json",
+      "passed": true
+    },
+    {
+      "name": "preserved accepted receipt /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/receipt.json",
+      "passed": true
+    },
+    {
+      "name": "collected file bytes and SHA /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/receipt.json",
+      "passed": true
+    },
+    {
+      "name": "preserved accepted receipt /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/receipt.json",
+      "passed": true
+    },
+    {
+      "name": "collected file bytes and SHA /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/diag/scaling_p1_identity_20261116_v1/report.json",
+      "passed": true
+    },
+    {
+      "name": "diagnostic exact archived pin",
+      "passed": true
+    },
+    {
+      "name": "snapshot unused ID SCALING-P1-recovery-checkout-20261116",
+      "passed": true
+    },
+    {
+      "name": "current local ID directory absent SCALING-P1-recovery-checkout-20261116",
+      "passed": true
+    },
+    {
+      "name": "current local ledger lacks ID SCALING-P1-recovery-checkout-20261116",
+      "passed": true
+    },
+    {
+      "name": "snapshot unused ID SCALING-300M-eval19618-p1-r2-20261116",
+      "passed": true
+    },
+    {
+      "name": "current local ID directory absent SCALING-300M-eval19618-p1-r2-20261116",
+      "passed": true
+    },
+    {
+      "name": "current local ledger lacks ID SCALING-300M-eval19618-p1-r2-20261116",
+      "passed": true
+    },
+    {
+      "name": "CPU complete test receipt",
+      "passed": true
+    },
+    {
+      "name": "CPU log SHA",
+      "passed": true
+    },
+    {
+      "name": "CPU junit SHA",
+      "passed": true
+    },
+    {
+      "name": "CPU junit counts",
+      "passed": true
+    },
+    {
+      "name": "CPU source pin scripts/scaling_output_identity.py",
+      "passed": true
+    },
+    {
+      "name": "CPU source pin scripts/scaling_p1_recovery.py",
+      "passed": true
+    },
+    {
+      "name": "CPU source pin scripts/scaling_p1_recovery_launch.py",
+      "passed": true
+    },
+    {
+      "name": "CPU source pin scripts/scaling_p1_recovery_plans.py",
+      "passed": true
+    },
+    {
+      "name": "CPU source pin scripts/slurm/scaling_p1_recovery.sbatch",
+      "passed": true
+    },
+    {
+      "name": "CPU source pin tests/cpu/test_scaling_output_identity.py",
+      "passed": true
+    },
+    {
+      "name": "CPU source pin tests/cpu/test_scaling_p1_recovery.py",
+      "passed": true
+    },
+    {
+      "name": "CPU source pin tests/cpu/test_scaling_p1_recovery_launch.py",
+      "passed": true
+    },
+    {
+      "name": "CPU source pin tests/cpu/test_scaling_p1_recovery_plans.py",
+      "passed": true
+    }
+  ],
+  "passed": 75,
+  "failed": 0,
+  "computed": {
+    "stage_gpu_actual": 4.985833333333333,
+    "stage_gpu_max": 7.035833333333333,
+    "stage_attached_core_max": 56.28666666666666,
+    "p1_gpu_max": 3.070833333333333,
+    "p1_core_max": 24.566666666666663,
+    "cpu_only_max": 350.2072224444444
+  },
+  "evidence_sha256": {
+    "results/infra/scaling_300m_20261104/p1_recovery_release_20261116/budget.json": "f4080dcb274a586ae3bd11289386d97b22482cd01b45530a5c4b66577374b8d0",
+    "results/infra/scaling_300m_20261104/p1_recovery_release_20261116/criterion_amendment.json": "13246e97be4afe08e17d7b07e09173a4052c874521d43d8d184d94bcd02310d8",
+    "results/infra/scaling_300m_20261104/p1_recovery_release_20261116/cpu_tests.json": "d25493b0cf619668cfc13ef2ed5633936ad10edf698de7557e6cb129843e8718",
+    "results/infra/scaling_300m_20261104/p1_recovery_release_20261116/evidence/preflight/remote.json": "26b1361ae8d3dfb9c59fe06b6a410d9d152d1c22bd48e409d6bba0894ea419b0",
+    "results/infra/scaling_300m_20261104/p1_recovery_release_20261116/evidence/preflight/sacct.txt": "87bc7aac4b7fab870ca26b0a8dff5314cc21a4ca6d4645703c1f2274c19e9c7e"
+  },
+  "limitations": [
+    "Snapshot establishes state only at collection; final submitter reservation remains authoritative.",
+    "Checkpoint file stat recorded in preflight; original wrapper must perform its full runtime checkpoint SHA/identity guard.",
+    "No review of submission plan or manifest in this accounting/preflight artifact."
+  ]
+}

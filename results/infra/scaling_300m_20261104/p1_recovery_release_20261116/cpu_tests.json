@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "-B",
+    "-c",
+    "import sys;sys.path.insert(0,'src');import pytest;raise SystemExit(pytest.main(sys.argv[1:]))",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-p1-recovery/results/infra/scaling_300m_20261104/p1_recovery_release_20261116/cpu_tests.junit.xml",
+    "tests/cpu/test_scaling_p1_recovery.py",
+    "tests/cpu/test_scaling_p1_recovery_plans.py",
+    "tests/cpu/test_scaling_p1_recovery_launch.py",
+    "tests/cpu/test_scaling_output_identity.py"
+  ],
+  "complete": true,
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "passed": 163,
+    "skipped": 0,
+    "tests": 163
+  },
+  "exit": 0,
+  "failed": 0,
+  "junit_sha256": "2e082bbdd42b75412e7a7891e097472b4072c54756b321f284d4f7aac97b1033",
+  "log_sha256": "5076a885bcb8ccd69fb72d4e4af8665479b6df19f6bb15d6dd6c8173a2617c83",
+  "passed": true,
+  "protocol": "scaling-p1-recovery-cpu-tests-20261116-v1",
+  "source_sha256": {
+    "scripts/scaling_output_identity.py": "717362c25cb99151ab058b4f212cc73611a36899f67251952ca613a71058e656",
+    "scripts/scaling_p1_recovery.py": "85e161f95d1260afc37834e002a8ff89cb54594e25f61d09b6b6237c9cad5b2e",
+    "scripts/scaling_p1_recovery_launch.py": "5e2ed3a33833ed3df51d39225e7aa6841d1b82f5fdde4e07d2d0bab862dd43ae",
+    "scripts/scaling_p1_recovery_plans.py": "83bd62a11c007ef82c48b39b45f1e888e7f387fab4c9b2bd72411287e133fb00",
+    "scripts/slurm/scaling_p1_recovery.sbatch": "4d85131eb42c6e340590e0ec70e5b93775d295464f00f0dc9fd7fe3e83443bad",
+    "tests/cpu/test_scaling_output_identity.py": "34039caa71f8e90b3cecaf29dceb5c3883100fa7fc44408fe993a50dd330227f",
+    "tests/cpu/test_scaling_p1_recovery.py": "0897b3de556b03d33c5c89b45d52023431819c9e44d2b7857f483ff7baeaeaeb",
+    "tests/cpu/test_scaling_p1_recovery_launch.py": "7b7b56bf4abe89093b0c1f6b297673d6bbc7c7a74329e8dc2c528e507104a7bc",
+    "tests/cpu/test_scaling_p1_recovery_plans.py": "3a23ac4ad03e3f787b683fa7dfda93169331b2b2aead4dc577b3edfafe9c7593"
+  },
+  "threads": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  }
+}

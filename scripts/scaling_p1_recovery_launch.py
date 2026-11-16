@@ -11,11 +11,14 @@ import re
 
 WORK = Path('/leonardo_work/IscrB_WearUsFM')
 PROTOCOL = 'scaling-p1-recovery-20261116-v1'
+RELEASE_CRITERION = 'scaling-p1-single-recovery-after-clean-diagnostic-v2'
+RELEASE_DIAGNOSTIC_SHA256 = 'c2e32e9cfab36a76c79b05913e350b9ec7f15484f73e2a271552c06f6e980908'
 LOGICAL_ID = 'SCALING-300M-eval19618-p1-r2-20261116'
 OUTPUT = Path('/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2')
 EXPECTED = {
     'protocol': PROTOCOL, 'arm': 'T100-G-300M', 'step': 19618, 'task': 'p1',
     'logical_job_id': LOGICAL_ID, 'out': str(OUTPUT), 'output_barrier': 'none',
+    'release_criterion': RELEASE_CRITERION,
     'diagnostic_protocol': 'SCALING-P1-IDENTITY-DIAG-v1',
     'allocation': {'nodes': 1, 'gpus': 1, 'cpus': 8, 'memory_gib': 100, 'walltime_seconds': 7200},
     'budget': {'p1_cumulative_gpu_hours_cap': 3.10, 'extractions_gpu_hours_cap': 7.30,
@@ -57,6 +60,11 @@ def validate(code, manifest, manifest_sha256, job, job_info, *, work=WORK, expec
     for key, wanted in expected.items():
         if not _exact(value.get(key), wanted):
             raise ValueError('fixed P1 recovery manifest differs: ' + key)
+    if value.get('diagnostic_outcome') not in ('METADATA_ONLY_REPRODUCED', 'NOT_REPRODUCED'):
+        raise ValueError('complete clean diagnostic outcome required')
+    if (not isinstance(value.get('diagnostic_report'), dict) or
+            value['diagnostic_report'].get('sha256') != RELEASE_DIAGNOSTIC_SHA256):
+        raise ValueError('criterion v2 applies only to the approved diagnostic report')
     out = Path(value['out'])
     if not out.is_absolute() or out.resolve() != out or out.exists() or out.is_symlink():
         raise ValueError('new canonical P1-r2 output required')

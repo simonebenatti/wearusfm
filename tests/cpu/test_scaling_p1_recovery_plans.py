@@ -25,7 +25,10 @@ def inputs():
     pins = {"pose": pose_pin, **class_pins}
     prov = {"pose": pose_prov, **{task: {ds: class_prov[ds] for ds in datasets} for task, datasets in M.S.TASKS.items()}}
     recovery = {"recovery_protocol": M.R.PROTOCOL, "recovery_manifest_sha256": release_sha,
-                "recovery_source_sha256": sources, "output_barrier": "none"}
+                "recovery_source_sha256": sources, "output_barrier": "none",
+                "release_criterion": M.R.RELEASE_CRITERION, "diagnostic_outcome": "NOT_REPRODUCED",
+                "diagnostic_report": {"path": "/evidence/diagnostic/report.json",
+                                      "sha256": M.R.RELEASE_DIAGNOSTIC_SHA256, "bytes": 123}}
     audit = {"policy": M.R.O.POLICY, "complete": True, "extra_reads": 0, "observations": [{}, {}]}
     for task in ("pose", "p1", "p2"):
         code = new_code if task == "p1" else M.HISTORICAL_CODE_SHA
@@ -67,6 +70,9 @@ def test_mixed_plan_keeps_each_actual_producer_and_is_accepted_by_existing_reade
     assert lineage["tasks"]["p1"]["job_id"] == "64600000"
     assert lineage["tasks"]["pose"]["job_id"] == "64571999"
     assert lineage["tasks"]["p2"]["job_id"] == "64572001"
+    assert lineage["release_criterion"] == M.R.RELEASE_CRITERION
+    assert lineage["diagnostic_outcome"] == "NOT_REPRODUCED"
+    assert lineage["diagnostic_report"]["sha256"] == M.R.RELEASE_DIAGNOSTIC_SHA256
     control = M.S.control_probe_caches(F.inventory("probe"), F.control_provenances(), F.TRAINING["control"]["checkpoint"])
     plan = M.S.probe_plan(F.load("cpu_readers_20261105/probe_plan.json"), control, candidate)
     assert plan["caches"][M.R.ARM] == candidate
@@ -96,6 +102,10 @@ def mutate_receipt(inputs, task, change):
     lambda a: mutate_receipt(a, "p1", lambda r: r.update(code_sha=M.HISTORICAL_CODE_SHA)),
     lambda a: mutate_receipt(a, "p1", lambda r: r.update(recovery_manifest_sha256="a" * 64)),
     lambda a: mutate_receipt(a, "p1", lambda r: r.update(recovery_source_sha256={})),
+    lambda a: mutate_receipt(a, "p1", lambda r: r.pop("release_criterion")),
+    lambda a: mutate_receipt(a, "p1", lambda r: r.update(diagnostic_outcome="ERROR")),
+    lambda a: mutate_receipt(a, "p1", lambda r: r.update(diagnostic_report={})),
+    lambda a: mutate_receipt(a, "p1", lambda r: r["diagnostic_report"].update(sha256="a" * 64)),
     lambda a: mutate_receipt(a, "p1", lambda r: r.update(slurm_job_id="64572000")),
     lambda a: mutate_receipt(a, "pose", lambda r: r.update(training_source_contract_sha256="a" * 64)),
     lambda a: mutate_receipt(a, "p2", lambda r: r.update(model_config={"dim": 384})),

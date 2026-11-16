@@ -10,6 +10,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 import scaling_p1_recovery as R
+DIAGNOSTIC = ROOT / "results/infra/scaling_300m_20261104/p1_recovery_20261116/evidence/run_final/report.json"
 
 
 def save(path, value):
@@ -21,16 +22,17 @@ def save(path, value):
 def release(tmp_path, monkeypatch):
     monkeypatch.setattr(R, "OUTPUT", str(tmp_path / "p1-r2"))
     sources = {k: R.digest(ROOT / k) for k in R.SOURCE_PATHS}
-    diagnostic = {"protocol": R.DIAGNOSTIC_PROTOCOL, "complete": True,
-                  "outcome": "METADATA_ONLY_REPRODUCED", "readers_status": "READERS_CLEAR_IN_TEST",
-                  "source_sha256": {"scripts/scaling_output_identity.py": sources["scripts/scaling_output_identity.py"],
-                                    "scripts/scaling_p1_identity_diagnostic.py": "d" * 64}}
+    diagnostic = json.loads(DIAGNOSTIC.read_bytes())
+    diagnostic_path = tmp_path / "diagnostic.json"
+    diagnostic_path.write_bytes(DIAGNOSTIC.read_bytes())
+    diagnostic_pin = {"path": str(diagnostic_path), "sha256": R.digest(diagnostic_path),
+                      "bytes": diagnostic_path.stat().st_size}
     tests = {"protocol": R.CPU_TEST_PROTOCOL, "complete": True, "passed": True, "failed": 0,
              "counts": {"passed": 40}, "source_sha256": sources}
     from scaling_p1_recovery_plans import make_recovery_manifest
     extraction = {"protocol": R.V.PROTOCOL, "step": R.STEP, "checkpoints": {R.ARM: {"path": "/checkpoint.pt"}}}
     manifest = make_recovery_manifest(save(tmp_path / "extraction.json", extraction),
-        save(tmp_path / "diagnostic.json", diagnostic), diagnostic, save(tmp_path / "tests.json", tests), tests, sources)
+        diagnostic_pin, diagnostic, save(tmp_path / "tests.json", tests), tests, sources)
     pin = save(tmp_path / "recovery.json", manifest)
     return {"manifest": manifest, "pin": pin, "diagnostic": diagnostic, "tests": tests, "sources": sources}
 
@@ -42,11 +44,27 @@ def test_manifest_requires_actual_pinned_diagnostic_and_full_test_sources(releas
                            *("recovery_source_" + name for name in R.SOURCE_PATHS)}
 
 
+def test_changed_actual_diagnostic_bytes_fail_before_inference(release):
+    path = Path(release["manifest"]["diagnostic_report"]["path"])
+    path.write_bytes(path.read_bytes() + b"\n")
+    with pytest.raises(ValueError, match="recovery evidence pin mismatch"):
+        R.load_manifest(release["pin"]["path"], release["pin"]["sha256"])
+
+
 @pytest.mark.parametrize("record,key,value", [
     ("diagnostic", "complete", False), ("diagnostic", "complete", 1),
-    ("diagnostic", "outcome", "NOT_REPRODUCED"), ("diagnostic", "outcome", "INCOMPLETE"),
+    ("diagnostic", "outcome", None), ("diagnostic", "outcome", "NULL"),
+    ("diagnostic", "outcome", "ERROR"), ("diagnostic", "outcome", "INCOMPLETE"),
     ("diagnostic", "outcome", "INTEGRITY_FAIL"), ("diagnostic", "readers_status", "READERS_AFFECTED"),
     ("diagnostic", "readers_status", "INCOMPLETE"), ("diagnostic", "protocol", "other"),
+    ("diagnostic", "errors", [{"message": "I/O failure"}]), ("diagnostic", "errors", None),
+    ("diagnostic", "candidate_accepts_all_benign_cases", False),
+    ("diagnostic", "candidate_accepts_all_benign_cases", 1),
+    ("diagnostic", "cycles_completed", []), ("diagnostic", "fixture_results", []),
+    ("diagnostic", "reader_rounds", []), ("manifest", "release_criterion", None),
+    ("manifest", "release_criterion", "previous-criterion"),
+    ("manifest", "diagnostic_outcome", "METADATA_ONLY_REPRODUCED"),
+    ("manifest", "diagnostic_report", {"sha256": "0" * 64}),
     ("tests", "complete", False), ("tests", "passed", False), ("tests", "passed", 40),
     ("tests", "failed", 1), ("tests", "failed", False), ("tests", "counts", {"passed": 0}),
     ("tests", "source_sha256", {}), ("manifest", "source_sha256", {}),
@@ -66,6 +84,33 @@ def test_changed_output_policy_since_diagnostic_rejected_even_if_recovery_tests_
     release["diagnostic"]["source_sha256"]["scripts/scaling_output_identity.py"] = "f" * 64
     with pytest.raises(ValueError, match="changed after diagnostic"):
         R.validate_manifest(release["manifest"], release["diagnostic"], release["tests"], release["sources"])
+
+
+def test_actual_complete_null_report_is_explicitly_admitted_by_v2(release):
+    assert R.digest(DIAGNOSTIC) == R.RELEASE_DIAGNOSTIC_SHA256
+    assert release["diagnostic"]["outcome"] == "NOT_REPRODUCED"
+    assert release["manifest"]["release_criterion"] == R.RELEASE_CRITERION
+    assert R.validate_manifest(release["manifest"], release["diagnostic"], release["tests"], release["sources"])
+
+
+def test_pure_gate_outcome_enum_keeps_metadata_only_valid(release):
+    # Outcome-branch unit test only: actual file loading still requires the fixed
+    # bytes of the approved NOT_REPRODUCED report, tested separately above.
+    release["diagnostic"]["outcome"] = "METADATA_ONLY_REPRODUCED"
+    release["manifest"]["diagnostic_outcome"] = "METADATA_ONLY_REPRODUCED"
+    assert R.validate_manifest(release["manifest"], release["diagnostic"], release["tests"], release["sources"])
+
+
+@pytest.mark.parametrize("field", ["release_criterion", "diagnostic_outcome", "diagnostic_report"])
+def test_new_criterion_fields_cannot_be_omitted(release, field):
+    release["manifest"].pop(field)
+    with pytest.raises(ValueError):
+        R.validate_manifest(release["manifest"], release["diagnostic"], release["tests"], release["sources"])
+
+
+def test_null_report_is_not_a_valid_null_result(release):
+    with pytest.raises(ValueError, match="complete diagnostic report"):
+        R.validate_manifest(release["manifest"], None, release["tests"], release["sources"])
 
 
 @pytest.fixture
@@ -123,7 +168,13 @@ def test_one_new_producer_three_cache_finalizations_and_original_final_guards(ex
     assert receipt["recovery_manifest_sha256"] == release["pin"]["sha256"]
     assert receipt["failed_attempts_preserved"] == R.FAILED_ATTEMPTS
     assert receipt["output_barrier"] == "none"
+    assert receipt["release_criterion"] == R.RELEASE_CRITERION
+    assert receipt["diagnostic_outcome"] == "NOT_REPRODUCED"
+    assert receipt["diagnostic_report"] == release["manifest"]["diagnostic_report"]
     for out in result.values():
+        provenance = json.loads(Path(out["provenance_path"]).read_text())
+        for key in ("release_criterion", "diagnostic_outcome", "diagnostic_report"):
+            assert provenance[key] == receipt[key]
         assert out["output_identity_audit"]["complete"] is True
         assert out["output_identity_audit"]["extra_reads"] == 0
         assert len(out["output_identity_audit"]["observations"]) == 2

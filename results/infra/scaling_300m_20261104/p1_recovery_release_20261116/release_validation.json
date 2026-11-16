@@ -1,0 +1,53 @@
+{
+  "approved": true,
+  "tests": 163,
+  "sources_covered": 9,
+  "remote_checks": {
+    "all_reads_succeeded": true,
+    "new_paths_absent": true,
+    "new_deploy_ref_absent": true,
+    "old_code_head_exact": true,
+    "old_code_clean": true,
+    "scheduler_margin_180s": true,
+    "no_failed_receipt_adoption": true,
+    "logical_ids_unused": true,
+    "preserved_pose_receipt": true,
+    "preserved_p2_receipt": true,
+    "diagnostic_pin": true
+  },
+  "historical_accounting_exact": {
+    "64571999": [
+      "COMPLETED",
+      "0:0"
+    ],
+    "64572000": [
+      "FAILED",
+      "1:0"
+    ],
+    "64572001": [
+      "COMPLETED",
+      "0:0"
+    ],
+    "64596915": [
+      "FAILED",
+      "1:0"
+    ],
+    "64610004": [
+      "COMPLETED",
+      "0:0"
+    ],
+    "64610181": [
+      "COMPLETED",
+      "0:0"
+    ]
+  },
+  "queue_empty": true,
+  "manifest": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_p1_recovery_20261116_v1/results/infra/scaling_300m_20261104/p1_recovery_release_20261116/recovery_manifest.json",
+    "sha256": "1a2104c59e55f5f3c46e03a984bdcda163ef26634c69cc1431ce3319bf878ee3",
+    "bytes": 2895
+  },
+  "cause_established": false,
+  "max_new_p1_jobs": 1,
+  "no_retry": true
+}
