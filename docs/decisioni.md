@@ -7203,3 +7203,17 @@ estensione scientifica, nuovi training, retry o pollingAI.
   Serve anche un emendamento CPU: il sesto checkout porta il totale solo CPU a 350,184444 su 350.
   La review la sceglie Simone: GPT, oppure la sua sola approvazione.
 - Suite completa sul commit `7c5c886`: in corso, esito nella prossima voce.
+
+### 16/11/2026 — Claude, linea 1: opzione B non approvata senza GPT; prompt per GPT
+
+- Simone, 16/11, alla domanda «Approvi l'opzione B (diagnostica, controllo corretto, nuovo rilancio di p1) senza review di GPT?»:
+  «no prepaprami un prompt per gpt». Nessun job della linea 1 parte prima della review di GPT e della decisione di Simone.
+- Prompt in `docs/prompt_gpt_scaling_p1_identity_20261116.md`. Contiene fatti, tempi, consumo, proposta B e sette domande:
+  - diagnosi e cause alternative;
+  - criteri della diagnostica da congelare;
+  - criterio e collocazione della correzione;
+  - commit d'estrazione misti o riestrazione;
+  - lettori;
+  - budget;
+  - alternative.
+- Suite completa sul commit `7c5c886`: in corso alle 16:17 (96%, nessun fallimento fin li'); esito finale nel registro e in `docs/decisioni.md`.
