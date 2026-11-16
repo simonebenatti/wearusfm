@@ -1,0 +1,83 @@
+{
+  "review_date": "2026-11-16",
+  "reviewed_commit": "c2ae7ee02b3df5bdc3310b90d6608e211753dd07",
+  "later_test_status_document_commit": "01f853e93e0e5fabf54b187ad7be937e63215ceb",
+  "reviewed_registry_branch_head": "22c9c7f661e9f626f62f14a5462257206e325036",
+  "files": {
+    "README.md": {
+      "bytes": 3253,
+      "sha256": "4625c9cc9dc28e7238f6d058e1e40aec628b5189e4c8fb75571c4d3e788e5590"
+    },
+    "critic.txt": {
+      "bytes": 1210,
+      "sha256": "9575496fc730c32cb3588f597e421d338535b031435889415480f1a823e05f9c"
+    },
+    "p1-evidence-budget-20261116.json": {
+      "bytes": 11011,
+      "sha256": "99ef20364e6db88ea5efed8e9a18c048b336d62ef32636e260f562fe9e9a5786"
+    },
+    "p1-evidence-budget-20261116.md": {
+      "bytes": 5745,
+      "sha256": "5cf112bd606f32acd62e6b23315303849dcb4696e195c06a9dbf7c6ec0ec69b4"
+    },
+    "p1-evidence-budget-20261116.py": {
+      "bytes": 7495,
+      "sha256": "e36d55a0751ca4f638bd77469d5fd7dbacb337b3061b767e49e09f996718d898"
+    },
+    "p1-identity-code-20261116.json": {
+      "bytes": 2787,
+      "sha256": "4c324168e07da14b49b2a2ccf58c8c6393f2abcf52b0a92fbe246de12a3f0993"
+    },
+    "p1-identity-code-20261116.md": {
+      "bytes": 9977,
+      "sha256": "a45fdb531edd16996ff403167239e6a640d771e6e674aea2c8dce8d9def82b66"
+    },
+    "p1-identity-code-20261116.py": {
+      "bytes": 3892,
+      "sha256": "167df8014c347816d14120112298364090523c37e2357ac5dac334259372965d"
+    },
+    "p1-identity-npz-determinism-20261116.json": {
+      "bytes": 1411,
+      "sha256": "1c1293d48720fc26e19d50020ee8b0a1f7f8c90d5655e0d9d1103c5ab0e47bd6"
+    },
+    "p1-mixed-review-20261116.json": {
+      "bytes": 1142,
+      "sha256": "f93cc855ed21397536da939935a4d6f501a4975593b39e5f4b986992f11380f2"
+    },
+    "p1-mixed-review-20261116.md": {
+      "bytes": 10689,
+      "sha256": "8187b224f2a3f28458e01e40d80d1b2022f81e234f30c287b57c856375101ba0"
+    },
+    "p1-mixed-review-20261116.py": {
+      "bytes": 3181,
+      "sha256": "b8d1722162ed33687c915a3043493494b69de3340d8b1b6c6bc683f13ccadecc"
+    }
+  },
+  "documents": {
+    "docs/reviews/gpt_review_scaling_p1_identity_20261116.md": "88a2c90b5a7fc397945ca42c156d57b64678c45a1c0e02f6ae4a7838ec6a0d23",
+    "docs/reviews/scaling_p1_identity_diagnostic_protocol_20261116.md": "70a6a9d87efa6eb7952538f0d4d7e759b68e12e9ed1a1eeda0fa336267107e39"
+  },
+  "independent_checks": 46,
+  "root_rerun_json_identical": true,
+  "remote_operations": false,
+  "verdict": "B con modifiche; diagnostica e budget proposti, decisione Simone prima di qualunque job",
+  "diagnostic_proposal": {
+    "nominal_seconds": 1620,
+    "scheduler_margin_seconds": 180,
+    "gpus": 1,
+    "cpus": 8,
+    "gpu_hours_inclusive": 0.5,
+    "allocated_core_hours_inclusive": 4,
+    "approved": false
+  },
+  "proposed_envelope_inclusive": {
+    "stage_gpu_hours": 7.3,
+    "stage_gpu_attached_core_hours": 58.4,
+    "p1_cumulative_gpu_hours": 3.1,
+    "p1_cumulative_gpu_attached_core_hours": 24.8,
+    "p1_attempts_total_max": 3,
+    "CPU_only_core_hours": 351,
+    "additional_checkouts_max": 2,
+    "approved": false
+  }
+}

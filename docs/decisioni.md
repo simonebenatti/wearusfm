@@ -7223,3 +7223,19 @@ estensione scientifica, nuovi training, retry o pollingAI.
 - `tests/cpu` sul worktree a `7c5c886`, finita alle 16:22: 3555 passati, 0 falliti, 1 avviso preesistente
   (`test_pose_objective.py`), 1 h 33 min (rallentata dalla verifica in parallelo). Il giro precedente, su `2e79815`, ne aveva 3553:
   i due in piu' sono i test nuovi del rilancio. Log: `~/wearusfm_local/logs/line1_relaunch_full_suite_20261116.txt`. Nessun job.
+
+
+### 16/11/2026 — GPT: recupero P1 approvato, operativita diretta per questo pacchetto
+
+Simone: «approvo tutto, correggi e prepara tutto e lancia tu se non hai altre cose da correggere».
+Recepita la review GPT `ceb107f`: B con modifiche, diagnostica prima di P1, conservazione pose/P2;
+GPT implementa, prepara e invia direttamente questo recupero, eccezione esplicita al ruolo ordinario
+di revisore della linea 1. Nessun doppio operatore: Claude non deve inviare la stessa catena.
+Ramo `codex/scaling-p1-recovery-20261116`, base Claude `01f853e`. Submitter e ledger comuni.
+Approvati i tetti: estrazioni inclusive di diagnostica 7,30 GPUh / 58,40 coreh; P1 cumulativo
+3,10 GPUh / 24,80 coreh, massimo tre tentativi inclusi i due falliti; CPU-only 351 coreh,
+al massimo due checkout aggiuntivi. Un diagnostico (27 min richiesti, margine 3 min), nessun retry.
+Un nuovo P1 solo con METADATA_ONLY_REPRODUCED e READERS_CLEAR_IN_TEST; altrimenti stop.
+La nuova autorizzazione supera la dicitura «proposta/non autorizzazione» dei documenti della review,
+conservati testualmente; non modifica i criteri e non autorizza altri esperimenti.
+

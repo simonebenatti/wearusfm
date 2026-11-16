@@ -1,0 +1,20 @@
+16/11/2026. Tre verifiche indipendenti, sola lettura locale.
+
+p1_identity_code_review: B con modifiche, 9 controlli. Nessun blocco nella
+review/protocollo finali. F post-close/openRO/fsync coerente con il wrapper.
+Recepita l'unica precisazione: durante validazione NPZ si rifiutano cambi
+dei byte, oggetto o campi non ammessi; timestamp-only segue la politica
+esplicita, con una sola rilettura aggiuntiva. Helper congelato invariato.
+
+p1_mixed_provenance_review: 8 controlli. Bridge per task sufficiente in
+principio; lettori supportano commit per cache, builder da emendare.
+Riletti criteri diagnostici: dichiarata interferenza os.sync sulle fixture
+aged, separati pin reali e baseline dei falliti, deadline fra chunk/fasi,
+report incrementale e gate separato dei lettori. Nessuna prova causale di
+sync o adozione retroattiva delle cache FAILED.
+
+p1_evidence_budget_review: 29 controlli. Riletto paragrafo budget finale:
+7,264444 GPUh /58,115556 coreh sotto proposta7,30/58,40; P1 cumulativa
+3,070833/24,566667 sotto3,10/24,80, max3tentativi; CPU-only con2checkout
+350,451111 sotto351. Diagnostica27+3min=.5GPUh. Nessuna autorizzazione
+implicita: decisioneSimone richiesta, inconclusivo non abilita rilancio.

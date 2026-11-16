@@ -178,6 +178,21 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 16/11/2026 — GPT: recupero P1 approvato, operativita diretta per questo pacchetto
+
+Simone: «approvo tutto, correggi e prepara tutto e lancia tu se non hai altre cose da correggere».
+Recepita la review GPT `ceb107f`: B con modifiche, diagnostica prima di P1, conservazione pose/P2;
+GPT implementa, prepara e invia direttamente questo recupero, eccezione esplicita al ruolo ordinario
+di revisore della linea 1. Nessun doppio operatore: Claude non deve inviare la stessa catena.
+Ramo `codex/scaling-p1-recovery-20261116`, base Claude `01f853e`. Submitter e ledger comuni.
+Approvati i tetti: estrazioni inclusive di diagnostica 7,30 GPUh / 58,40 coreh; P1 cumulativo
+3,10 GPUh / 24,80 coreh, massimo tre tentativi inclusi i due falliti; CPU-only 351 coreh,
+al massimo due checkout aggiuntivi. Un diagnostico (27 min richiesti, margine 3 min), nessun retry.
+Un nuovo P1 solo con METADATA_ONLY_REPRODUCED e READERS_CLEAR_IN_TEST; altrimenti stop.
+La nuova autorizzazione supera la dicitura «proposta/non autorizzazione» dei documenti della review,
+conservati testualmente; non modifica i criteri e non autorizza altri esperimenti.
+
+
 ### 06/11/2026 — GPT scaling: ReviewClaude9 recepita, tutti i fit accodati
 
 Acquisiti review b66a3e6 e due script di verifica come blob originali; conservate
@@ -6065,6 +6080,21 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 16/11/2026 — GPT: recupero P1 approvato, operativita diretta per questo pacchetto
+
+Simone: «approvo tutto, correggi e prepara tutto e lancia tu se non hai altre cose da correggere».
+Recepita la review GPT `ceb107f`: B con modifiche, diagnostica prima di P1, conservazione pose/P2;
+GPT implementa, prepara e invia direttamente questo recupero, eccezione esplicita al ruolo ordinario
+di revisore della linea 1. Nessun doppio operatore: Claude non deve inviare la stessa catena.
+Ramo `codex/scaling-p1-recovery-20261116`, base Claude `01f853e`. Submitter e ledger comuni.
+Approvati i tetti: estrazioni inclusive di diagnostica 7,30 GPUh / 58,40 coreh; P1 cumulativo
+3,10 GPUh / 24,80 coreh, massimo tre tentativi inclusi i due falliti; CPU-only 351 coreh,
+al massimo due checkout aggiuntivi. Un diagnostico (27 min richiesti, margine 3 min), nessun retry.
+Un nuovo P1 solo con METADATA_ONLY_REPRODUCED e READERS_CLEAR_IN_TEST; altrimenti stop.
+La nuova autorizzazione supera la dicitura «proposta/non autorizzazione» dei documenti della review,
+conservati testualmente; non modifica i criteri e non autorizza altri esperimenti.
+
 
 ### 06/11/2026 — GPT scaling: N-4/N-5/N-6 e coordinamento della seriale
 
