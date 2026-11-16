@@ -7118,3 +7118,43 @@ estensione scientifica, nuovi training, retry o pollingAI.
 - Stop secondo `evaluation_chain_plan.md` §7: nessun rilancio, nessuna raccolta parziale; la cartella p1 resta com'e'.
   Proposta a Simone: rilancio unico della sola p1 dallo stesso checkout `df2de35`, ID e cartella nuovi (opzione A del README),
   oppure correzione del controllo in un nuovo checkout (opzione B). Decide Simone.
+
+### 16/11/2026 — Claude, linea 1: rilancio unico di p1 approvato da Simone; strumento della catena adattato
+
+- Simone, 16/11 (risposta letta alle 14:16), alla domanda «Approvi il rilancio unico di p1 senza review di GPT?»: «Sì, approvo».
+  E' l'opzione A della diagnosi `continuation19618_20261106/failure_64572000_diagnosis_20261116/`: la sottomissione del job
+  sostituito 64572000, con l'ID nuovo `SCALING-300M-eval19618-p1-r1-20261116` e la cartella nuova `.../T100-G-300M/p1-r1`;
+  stesso checkout congelato `df2de35`, stesso piano d'estrazione (sha256 `3cb94b05...`), stessi flag e risorse. La cartella
+  fallita resta com'e'. Un solo rilancio: se fallisce per qualunque causa, stop e decisione nuova di Simone.
+- Modifica solo lato Mac, in `scripts/scaling_plans19618.py` piu' i test CPU, senza codice sul cluster. `RELAUNCH` e' la sorgente
+  unica dell'identita'. Il cancello delle estrazioni ha cinque controlli in piu':
+  - job sostituito `FAILED 1:0` nel ledger e in `sacct`;
+  - cartella come da diagnosi;
+  - sottomissione uguale salvo la cartella;
+  - unico job da inviare;
+  - tetti dello stadio.
+  Le righe ammesse si rifiutano se il job sostituito cambia nel ledger dopo il cancello. I piani dei lettori vogliono l'evidenza
+  dei job della tabella e le cache nella cartella della loro ricevuta. Record con i pin:
+  `continuation19618_20261116_p1_relaunch/README.md`.
+- Budget, a consumo:
+  - fin qui 4,216389 GPU-ore e 33,731111 core-ore;
+  - con il rilancio al massimo 6,216389 GPU-ore (6,266389 col margine) su 7, e 49,731111 core-ore (50,131111) su 56;
+  - residuo al massimo 0,783611 GPU-ore.
+  La riga p1 del congelamento (2 GPU-ore, 16 core-ore, un job) passa a due job. Arriva al massimo a 2,522778 GPU-ore e
+  20,182222 core-ore (2,572778 e 20,582222 col margine), solo se il rilancio supera 5.318 s. E' il caso peggiore dei numeri
+  approvati («stadio al massimo 6,216389 su 7»): nessun emendamento, decisione registrata qui.
+- Verifica prima del commit: quattro revisori indipendenti (subagent `critico`) su logica del cancello, continuita' della catena,
+  regole e budget, test, piu' uno scettico per ogni rilievo serio. Esiti:
+  - nessun falso passaggio, nessun rifiuto sbagliato nello stato reale del 16/11;
+  - i rilievi sui documenti (decisione non ancora registrata, conti della riga p1, opzioni del submitter, pin abbreviati)
+    corretti;
+  - tre mutanti sopravvissuti (stato del job sostituito, tetto in core-ore, lettura `sacct` del job sostituito) ora coperti
+    da test;
+  - un `AllocTRES` senza GPU non conta piu' zero ma rifiuta.
+  Test dei tre file dello stadio B: 200 passati. Erano 198: due test nuovi e uno riscritto. Il test che leggeva il ledger reale
+  falliva su questo Mac dal 16/11 alle 09:49 ed e' ora indipendente dall'ambiente. Suite completa avviata, esito nella prossima
+  voce.
+- Base della review per i checkout successivi (plans, budgets, inputs): il commit che porta questa voce, per l'approvazione di
+  Simone sopra. Non vale piu' `2e79815`: la diagnosi e lo strumento sono cambiati dopo. SHA nel registro e nella prossima voce.
+- Seguito: push, `gate extractions`, la riga di p1-r1 (al massimo 2 GPU-ore = 16 ore locali), sorvegliante; a fine job raccolta
+  delle tre estrazioni e piani dei lettori.

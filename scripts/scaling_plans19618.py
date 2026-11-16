@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import base64
 import calendar
+from fractions import Fraction
 import functools
 import gzip
 import hashlib
@@ -65,6 +66,16 @@ CHECKOUT_STAGE_CAP = 4 / 3  # core-hours with scheduler margin of the five check
 # A review after an earlier checkout may change only what no job on the cluster reads (rereview_check).
 MAC_SIDE = ("scripts/scaling_plans19618.py",)
 EXTRACT_ROOT = SCRATCH + "/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/" + ARM
+# Single relaunch of the extraction p1, approved by Simone on 16/11/2026 («Sì, approvo» to «Approvi il rilancio unico di p1
+# senza review di GPT?»): the submission of the replaced job with a new logical ID and a new output folder, nothing else (same
+# frozen code checkout, plan, flags and allocation). The replaced job ended FAILED 1:0 at the identity check of ninapro_db6.npz,
+# after the extraction itself had ended (PACKAGE/failure_64572000_diagnosis_20261116/); its folder stays as diagnosed. The single
+# source of the identity of the relaunch: the extraction table, its gate and the reader plans take it from here.
+RELAUNCH = {"task": "p1", "id": "SCALING-300M-eval19618-p1-r1-20261116", "out": EXTRACT_ROOT + "/p1-r1",
+            "replaces": {"id": "SCALING-300M-eval19618-p1-20261106", "job_slurm": "64572000", "state": "FAILED", "exit": "1:0",
+                         "folder": EXTRACT_ROOT + "/p1",
+                         "listing": ["ninapro_db2.npz", "ninapro_db2.npz.provenance.json", "ninapro_db3.npz",
+                                     "ninapro_db3.npz.provenance.json", "ninapro_db6.npz", "p1.log"]}}
 CPU_ROOT = WORK + "/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu"
 SHARED = {"splits": "splits/v1/splits_v1.json", "training_source_contract": INFRA + "/training_source_contract.json",
           "projection": INFRA + "/projection_s5/manifest.json"}
@@ -651,10 +662,12 @@ def jobs(stage, resources=None):
         for row in json.loads((ROOT / FREEZE).read_text())["extractions"]["jobs"]:
             task = row["task"] or "pose"
             names = ("train_subset", "val") if task == "pose" else TASKS[task]
-            out = f"{EXTRACT_ROOT}/{task}"
+            relaunch = task == RELAUNCH["task"]  # same row of the freeze, new ID and folder; `local` stays the task
+            out = RELAUNCH["out"] if relaunch else f"{EXTRACT_ROOT}/{task}"
             files = {"receipt.json": out + "/receipt.json",
                      **{f"{n}.npz.provenance.json": f"{out}/{n}.npz.provenance.json" for n in names}}
-            table.append(_job(stage, f"SCALING-300M-eval19618-{task}-20261106", row["cpus"], row["walltime_seconds"], out, task,
+            job_id = RELAUNCH["id"] if relaunch else f"SCALING-300M-eval19618-{task}-20261106"
+            table.append(_job(stage, job_id, row["cpus"], row["walltime_seconds"], out, task,
                               [row["arm"], row["stage"], row["task"] or "none"], files, row["gpus"], row["memory"],
                               log="scaling_evaluation19618"))
         return table
@@ -755,6 +768,14 @@ def recovery_lines(commit, root=ROOT):
                     [export, code + "/scripts/slurm/scaling_continue.sbatch", RECOVERY["plan"], training["out"]])]
 
 
+def extraction_sbatch(job, code_sha):
+    """sbatch arguments of an extraction of the table, run from the frozen code checkout (the submitter adds its own)."""
+    code = checkout("code")
+    return [f"--time={clock(job['seconds'])}", f"--export=ALL,CODE_DIR={code},EXPECTED_SHA={code_sha}",
+            code + "/scripts/slurm/scaling_evaluation19618.sbatch", f"{PACKAGE}/{DOCUMENTS['extraction_plan'][1]}",
+            *job["flags"], job["out"]]
+
+
 def stage_lines(stage, code_sha, root=ROOT, only=None):
     """Exact submission lines of a stage (or of the jobs `only`), from the published documents. CPU jobs sent together
     form one afterok chain, so the first failure stops the rest; the three extractions are independent."""
@@ -767,8 +788,7 @@ def stage_lines(stage, code_sha, root=ROOT, only=None):
         if only is not None and job["id"] not in only:
             continue
         if stage == "extractions":
-            sbatch = [f"--time={clock(job['seconds'])}", export, code + "/scripts/slurm/scaling_evaluation19618.sbatch",
-                      f"{PACKAGE}/{DOCUMENTS['extraction_plan'][1]}", *job["flags"], job["out"]]
+            sbatch = extraction_sbatch(job, code_sha)
         else:
             name = "comparison_inputs" if stage == "compare" else stage.split("-")[0] + "_plan"
             plan, extra = document(name, root), []
@@ -1056,6 +1076,8 @@ def gate_request(stage, root=ROOT, ledger=LEDGER):
     for name in commits:
         commands["head:" + name], commands["status:" + name] = (_git(checkout(name), *arguments) for arguments in GIT_READS)
     request = {"hashed": [p["path"] for p in documents.values()], "exists": [job["out"] for job in table], "commands": commands}
+    if any(job["id"] == RELAUNCH["id"] for job in table):
+        request["listings"] = [RELAUNCH["replaces"]["folder"]]  # the folder of the replaced extraction, as diagnosed
     submitted = {}
     for job in table:
         try:
@@ -1069,6 +1091,74 @@ def _completed(answer, slurm):
     lines = answer["stdout"].strip().splitlines() if answer["exit"] == 0 else []
     rows = [dict(zip(lines[0].split("|"), line.split("|"))) for line in lines[1:]]
     return any(r.get("JobIDRaw") == slurm and r.get("State") == "COMPLETED" and r.get("ExitCode") == "0:0" for r in rows)
+
+
+def _sacct_parent(answer, slurm):
+    """The one parent accounting row of a job in a `sacct -P` answer, or None."""
+    lines = answer["stdout"].strip().splitlines() if answer and answer.get("exit") == 0 else []
+    rows = [dict(zip(lines[0].split("|"), line.split("|"))) for line in lines[1:]] if lines else []
+    parents = [r for r in rows if r.get("JobIDRaw") == slurm]
+    return parents[0] if len(parents) == 1 else None
+
+
+def _used_seconds(parent):
+    """(GPU-seconds, core-seconds) used by a GPU job, from its parent accounting row; None if the row is not readable or does
+    not name its GPUs (`gres/gpu=N`): an extraction counted without its GPUs would be a count too low, so no count."""
+    try:
+        tres = dict(x.split("=", 1) for x in parent["AllocTRES"].split(",") if "=" in x)
+        elapsed = int(parent["ElapsedRaw"])
+        return elapsed * int(tres["gres/gpu"]), elapsed * int(parent["AllocCPUS"])
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def replaced_extraction(ledger=LEDGER):
+    """The replaced extraction in the common ledger, as a job of this line: (Slurm ID, sbatch arguments), or (None, None)."""
+    job_id = RELAUNCH["replaces"]["id"]
+    try:
+        slurm = ledger_job(job_id, ledger)
+        return slurm, json.loads((Path(ledger) / job_id / "state.json").read_text()).get("sbatch")
+    except (ValueError, OSError):
+        return None, None
+
+
+def relaunch_checks(reading, table, todo, submitted, code_sha, ledger=LEDGER):
+    """Checks of the single relaunch of p1, before it is sent: the replaced job is the diagnosed failure and its folder is as
+    diagnosed; its submission was the relaunch line but for the output folder (same checkout, plan, flags and allocation);
+    the relaunch is the only extraction left, the other two being in the ledger; with the relaunch at its time limit plus the
+    scheduler margin, the stage stays within the caps of the freeze. (checks, facts)."""
+    old, frozen = RELAUNCH["replaces"], json.loads((ROOT / FREEZE).read_text())["extractions"]
+    job = next(j for j in table if j["id"] == RELAUNCH["id"])
+    slurm, sent = replaced_extraction(ledger)
+    parent = _sacct_parent(reading["sacct"].get(old["job_slurm"]), old["job_slurm"])
+    listing = reading["listings"].get(old["folder"])
+    expected = ["sbatch", "--parsable", "--job-name=" + old["id"], "--comment=wearusfm:" + old["id"],
+                *extraction_sbatch(job, code_sha)[:-1], old["folder"]]
+    used = [_used_seconds(_sacct_parent(reading["sacct"].get(s), s)) for s in [*submitted.values(), old["job_slurm"]]]
+    limit = job["seconds"] + frozen["scheduler_margin"]["seconds_each"]
+    gpu = core = None
+    if used and all(u is not None for u in used):
+        gpu, core = sum(u[0] for u in used) + limit * job["gpus"], sum(u[1] for u in used) + limit * job["cpus"]
+    caps = (Fraction(str(frozen["gpu_hours_cap"])) * 3600, Fraction(str(frozen["allocated_cpu_core_hours_cap"])) * 3600)
+    checks = [("the replaced extraction %s is the diagnosed failure %s %s %s" % (old["id"], old["job_slurm"], old["state"], old["exit"]),
+               slurm == old["job_slurm"] and parent is not None and parent.get("State") == old["state"] and
+               parent.get("ExitCode") == old["exit"]),
+              ("the folder of the replaced extraction is as diagnosed (%d entries, no receipt)" % len(old["listing"]),
+               listing == old["listing"]),
+              ("the replaced submission is the relaunch line but for the output folder", sent == expected),
+              ("the relaunch is the only extraction to submit, the other two are in the ledger",
+               [j["id"] for j in todo] == [RELAUNCH["id"]] and set(submitted) == {j["id"] for j in table} - {RELAUNCH["id"]}),
+              ("the extraction stage stays within the caps of the freeze with the relaunch at its limit (%g GPU-hours, %g core-hours)"
+               % (frozen["gpu_hours_cap"], frozen["allocated_cpu_core_hours_cap"]),
+               gpu is not None and gpu <= caps[0] and core <= caps[1])]
+    facts = {"id": RELAUNCH["id"], "out": RELAUNCH["out"], "replaces": old["id"], "replaced_job_slurm": slurm,
+             "replaced_state": None if parent is None else [parent.get("State"), parent.get("ExitCode")],
+             "replaced_listing": listing, "relaunch_limit_seconds": limit,
+             "stage_gpu_seconds_at_limit": gpu, "stage_core_seconds_at_limit": core,
+             "stage_gpu_hours_at_limit": None if gpu is None else round(gpu / 3600, 6),
+             "stage_core_hours_at_limit": None if core is None else round(core / 3600, 6),
+             "caps_seconds": {"gpu": int(caps[0]), "core": int(caps[1])}}
+    return checks, facts
 
 
 def _collected_checkout(name, ledger, root):
@@ -1107,12 +1197,19 @@ def gate(reading, commits, documents, table, submitted, root=ROOT, ledger=LEDGER
                ("checkouts used were collected COMPLETED 0:0 (%d)" % len(commits),
                 all(_collected_checkout(name, ledger, root) for name in commits)),
                ("free space on $WORK at least %d GiB" % WORK_FREE_GIB, state["work_free_gib"] >= WORK_FREE_GIB)]
+    relaunch = None
+    if any(job["id"] == RELAUNCH["id"] for job in table):  # the extraction stage: the single relaunch of p1
+        more, relaunch = relaunch_checks(reading, table, todo, submitted, commits["code"], ledger)
+        checks += more
     serial = all(job["gpus"] == 0 for job in table)
     room = max(0, min(len(todo), state["serial_room"], line_limit - state["line_jobs"])) if serial else len(todo)
     tranche = [job["id"] for job in todo[:room]]
     checks.append(("a tranche of at least one job is admitted (%d of %d to submit)" % (len(tranche), len(todo)), len(tranche) >= 1))
-    return checks, {**state, "to_submit": [job["id"] for job in todo], "line_limit": line_limit, "submittable_now": room,
-                    "tranche": tranche}
+    facts = {**state, "to_submit": [job["id"] for job in todo], "line_limit": line_limit, "submittable_now": room,
+             "tranche": tranche}
+    if relaunch is not None:
+        facts["relaunch"] = relaunch
+    return checks, facts
 
 
 def checkout_gate(name, commit, reviewed, reading, deploy_ref, root=ROOT, ledger=LEDGER, line_limit=LINE_SERIAL_LIMIT):
@@ -1181,7 +1278,9 @@ def build_extraction_plan(root=ROOT):
 
 
 def build_reader_plans(code_sha, root=ROOT):
-    files, _ = evidence("extractions", root)
+    files, manifest = evidence("extractions", root)
+    require(list(manifest["jobs"]) == [job["id"] for job in jobs("extractions")],
+            "the collected extractions are not the jobs of the table")  # the relaunch of p1, never the replaced job
     checkpoint, plan_sha = _extraction(root)
     extraction = {"checkpoint": checkpoint, "code_sha": code_sha, "plan_sha256": plan_sha}
     pose = candidate_pose_caches(json.loads(files["pose/receipt.json"][0]), files["pose/receipt.json"][1],
@@ -1191,6 +1290,10 @@ def build_reader_plans(code_sha, root=ROOT):
     probe = candidate_probe_caches({t: json.loads(files[t + "/receipt.json"][0]) for t in TASKS},
                                    {t: files[t + "/receipt.json"][1] for t in TASKS},
                                    {ds: files[f"{task_of[ds]}/{ds}.npz.provenance.json"][0] for ds in DATASETS}, extraction)
+    for cache in [*pose.values(), *probe.values()]:  # each cache and provenance where its receipt is, in a job folder
+        folder = str(Path(cache["receipt_path"]).parent)
+        require(str(Path(cache["path"]).parent) == folder == str(Path(cache["provenance_path"]).parent),
+                "cache outside the folder of its receipt: " + cache["path"])
     control_dir = Path(root) / PACKAGE / "control19618_identity"
     control = control_probe_caches(_load("results/infra/tokenizer_evaluation_20261103/probe_plan_19618.json", root),
                                    {ds: (control_dir / f"{ds}.npz.provenance.json").read_bytes() for ds in DATASETS},
@@ -1307,7 +1410,8 @@ def _gate_reading(stage, commit, reviewed, root, ledger, line_limit):
     request, commits, documents, table, submitted = gate_request(stage, root, ledger)
     if stage == "probe-aggregate":
         fits = build_fit_state(commits["code"], root)
-    reading = remote_read(slurm_jobs=submitted.values(), **request)
+    replaced = [RELAUNCH["replaces"]["job_slurm"]] if any(job["id"] == RELAUNCH["id"] for job in table) else []
+    reading = remote_read(slurm_jobs=[*submitted.values(), *replaced], **request)
     checks, facts = gate(reading, commits, documents, table, submitted, root, ledger, line_limit)
     if stage == "probe-aggregate":
         facts["fits"] = fits
@@ -1348,6 +1452,9 @@ def admitted_lines(stage, sha=None, limit=None, root=ROOT, ledger=LEDGER, now=No
     submitted = {job["id"]: ledger_job(job["id"], ledger) for job in table if (Path(ledger) / job["id"]).exists()}
     require(submitted == record["submitted"] and not any(job_id in submitted for job_id in tranche),
             "the ledger of %s changed after the gate: run the gate again" % stage)
+    require(RELAUNCH["id"] not in tranche or (replaced_extraction(ledger)[0] == RELAUNCH["replaces"]["job_slurm"] ==
+                                             record["facts"].get("relaunch", {}).get("replaced_job_slurm")),
+            "the replaced extraction changed in the ledger after the gate: run the gate again")
     code = checkout_commit("code", ledger)
     require(code == record["commits"]["code"], "the code checkout changed after the gate")
     require(limit is None or (type(limit) is int and 1 <= limit <= len(tranche)),
@@ -1366,7 +1473,8 @@ def main(argv=None):
         command = sub.add_parser(name)
         command.add_argument("stage", help="a job stage, or checkout-<code|plans|budgets|inputs>")
         command.add_argument("--sha", help="checkout stages: commit to deploy")
-    sub.choices["gate"].add_argument("--reviewed", help="checkout stages: commit of the package reviewed by GPT")
+    sub.choices["gate"].add_argument("--reviewed", help="checkout stages: commit of the reviewed package (review of GPT, or "
+                                                        "approval of Simone recorded in docs/decisioni.md)")
     sub.choices["gate"].add_argument("--line-limit", type=int, default=LINE_SERIAL_LIMIT,
                                      help="jobs of this line submitted together in the serial queue (default %d)" % LINE_SERIAL_LIMIT)
     sub.choices["lines"].add_argument("--max", type=int, help="job stages: a shorter prefix of the admitted tranche")

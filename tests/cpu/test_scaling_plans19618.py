@@ -14,6 +14,7 @@ import itertools
 import json
 import shutil
 from pathlib import Path
+import re
 import shlex
 import stat
 import sys
@@ -122,6 +123,55 @@ def test_cpu_budget_stays_inside_every_stage_cap_and_the_350_core_hours():
     assert S.budget_table([{"cpus": 8, "seconds": 10800}] * 11)["within_stage_caps"] is False
 
 
+def diagnosed_listing():
+    """Entries of the folder of the replaced p1, as `ls -la` read them on Leonardo on 16/11/2026 (diagnosis in the package)."""
+    lines = (PACKAGE / "failure_64572000_diagnosis_20261116/readings/stat_p1_19618.txt").read_text().splitlines()
+    start = lines.index(S.RELAUNCH["replaces"]["folder"] + ":") + 2  # the folder, then its "total" line
+    entries = list(itertools.takewhile(lambda line: line.strip(), lines[start:]))
+    return sorted(name for name in (line.split()[-1] for line in entries) if name not in (".", ".."))
+
+
+def test_the_relaunch_of_p1_is_its_failed_submission_with_a_new_id_and_folder_only(tmp_path):
+    """16/11/2026: p1 = 64572000 ended FAILED 1:0 at the identity check of a cache it had just written. Simone approved its single
+    relaunch: the same row of the freeze and the same submission, a new logical ID and output folder. The real submission, the
+    folder and the accounting read for the diagnosis pass the checks of the relaunch, with the stage within the caps of the freeze."""
+    old, table = S.RELAUNCH["replaces"], S.jobs("extractions")
+    assert [(j["id"], j["out"], j["local"]) for j in table] == [
+        ("SCALING-300M-eval19618-pose-20261106", S.EXTRACT_ROOT + "/pose", "pose"),
+        ("SCALING-300M-eval19618-p1-r1-20261116", S.EXTRACT_ROOT + "/p1-r1", "p1"),
+        ("SCALING-300M-eval19618-p2-20261106", S.EXTRACT_ROOT + "/p2", "p2")]
+    assert old["folder"] == S.EXTRACT_ROOT + "/p1" and old["id"] not in [j["id"] for j in table]
+    receipts = {i: json.loads((PACKAGE / "submissions" / (i + ".json")).read_text())
+                for i in ("SCALING-300M-eval19618-pose-20261106", old["id"], "SCALING-300M-eval19618-p2-20261106")}
+    sent = receipts[old["id"]]
+    assert str(sent["job_slurm"]) == old["job_slurm"] and sent["stato"] == "sottomesso" and sent["agente"] == "claude"
+    job = table[1]
+    line = shlex.split(S.stage_lines("extractions", sent["codice_sha"], only=[job["id"]])[0])
+    sbatch = line[line.index("--") + 1:]
+    assert sent["sbatch"][:4] == ["sbatch", "--parsable", "--job-name=" + old["id"], "--comment=wearusfm:" + old["id"]]
+    assert sbatch[:-1] == sent["sbatch"][4:-1] and sent["sbatch"][-1] == old["folder"] and sbatch[-1] == S.RELAUNCH["out"]
+    assert line[line.index("--id") + 1] == S.RELAUNCH["id"] and line[line.index("--gpu-ore") + 1] == "2" and "--dopo" not in line
+    assert diagnosed_listing() == old["listing"] and "receipt.json" not in old["listing"]
+    # The checks of the relaunch on the real ledger entries and on the accounting of the diagnosis (sacct of 16/11 at 12:2x).
+    ledger = tmp_path / "ledger"
+    for job_id, receipt in receipts.items():
+        (ledger / job_id).mkdir(parents=True)
+        (ledger / job_id / "state.json").write_text(json.dumps(receipt))
+    submitted = {i: S.ledger_job(i, ledger) for i in receipts if i != old["id"]}
+    raw = (PACKAGE / "failure_64572000_diagnosis_20261116/readings/sacct_extractions_19618.txt").read_text()
+    reading = {"sacct": {s: {"exit": 0, "stdout": raw, "stderr": ""} for s in ["64571999", "64572001", old["job_slurm"]]},
+               "listings": {old["folder"]: diagnosed_listing()}}
+    checks, facts = S.relaunch_checks(reading, table, [job], submitted, sent["codice_sha"], ledger)
+    assert all(ok for _, ok in checks), checks
+    assert facts["replaced_job_slurm"] == "64572000" and facts["replaced_state"] == ["FAILED", "1:0"]
+    assert facts["relaunch_limit_seconds"] == 7200 + 180  # walltime of the p1 row and scheduler margin of the freeze
+    assert facts["stage_gpu_seconds_at_limit"] == 7330 + 5967 + 1882 + 7380 == 22559 and facts["stage_gpu_hours_at_limit"] == 6.266389
+    assert facts["stage_core_seconds_at_limit"] == 8 * 22559 and facts["stage_core_hours_at_limit"] == 50.131111
+    assert facts["caps_seconds"] == {"gpu": 7 * 3600, "core": 56 * 3600}
+    # Consumption so far: 4.216389 GPU-hours (pose 2.036111, p1 0.522778, p2 1.6575) and 33.731111 core-hours.
+    assert (7330 + 5967 + 1882) / 3600 == pytest.approx(4.216389, abs=1e-6) and 8 * 15179 / 3600 == pytest.approx(33.731111, abs=1e-6)
+
+
 def test_logical_ids_and_outputs_are_unique_new_and_outside_the_code():
     resources = {"protocol": S.C.RESOURCE_PROTOCOL, "shards": [
         {"cell": c, "task": t, "datasets": list(d), "folds": [0, 1, 2, 3], "cpus": 8, "memory_gib": 30, "walltime_seconds": 3600 + 60 * n,
@@ -129,10 +179,15 @@ def test_logical_ids_and_outputs_are_unique_new_and_outside_the_code():
     table = [j for stage in STATIC for j in S.jobs(stage)] + S.jobs("probe-fit", resources) + S.jobs("probe-aggregate", resources)
     ids, outs = [j["id"] for j in table], [j["out"] for j in table]
     assert len(set(ids)) == len(ids) == 3 + 1 + 3 + 15 + 1 + 1 + 6 + 6 and len(set(outs)) == len(outs)
-    assert all(i.endswith("-20261106") and "19618" in i for i in ids)
+    assert all((i.endswith("-20261106") or i == S.RELAUNCH["id"]) and "19618" in i for i in ids)
+    assert S.RELAUNCH["id"].endswith("-20261116") and S.RELAUNCH["replaces"]["id"] not in ids
     known = (Path.home() / "wearusfm_local/jobs/ledger.tsv")
-    if known.exists():  # no logical ID of this chain is already reserved in the common ledger
-        assert not [i for i in ids if i in known.read_text()]
+    if known.exists():  # a logical ID of this chain is in the common ledger only once sent, with its receipt in the package
+        sent = {p.stem: json.loads(p.read_text()) for p in (PACKAGE / "submissions").glob("*.json")}
+        assert not [i for i in ids if i in known.read_text() and i not in sent]
+        for i in (i for i in ids if i in sent and (known.parent / i / "state.json").exists()):  # and it is the same submission
+            state = json.loads((known.parent / i / "state.json").read_text())
+            assert (state["job_slurm"], state["sbatch"], state["agente"]) == (sent[i]["job_slurm"], sent[i]["sbatch"], "claude"), i
     for j in table:
         root = S.EXTRACT_ROOT if j["stage"] == "extractions" else S.CPU_ROOT
         assert j["out"].startswith(root + "/") and j["folder"].startswith(str(Path(j["out"]).parent))
@@ -475,18 +530,29 @@ def relabel(text, old_plan_sha, plan_sha):
     return text
 
 
-def new_candidates(plan_sha="7" * 64):
-    """Receipts and provenance as the three 19618 extractions will write them, with consistent hashes."""
+def new_candidates(plan_sha="7" * 64, relaunch=True):
+    """Receipts and provenance as the three 19618 extractions will write them, with consistent hashes: each in the folder of
+    its job of the table, p1 in the one of its single relaunch (relaunch=False: in the folder of the replaced job)."""
     extraction = {"checkpoint": new_extraction_plan()["checkpoints"][ARM], "code_sha": CODE, "plan_sha256": plan_sha}
     old_sha = old_extraction()["plan_sha256"]
     receipts, _, provenances = old_classification(ARM)
-    provenances = {ds: relabel(data.decode(), old_sha, plan_sha).encode() for ds, data in provenances.items()}
+    folders = {job["local"]: job["out"] for job in S.jobs("extractions")}
+    if not relaunch:
+        folders["p1"] = S.RELAUNCH["replaces"]["folder"]
+    task_of = {ds: task for task, names in S.TASKS.items() for ds in names}
+
+    def move(text, task):  # the folder of the task, once relabelled, becomes the folder of its 19618 job
+        moved = re.sub(re.escape(f"{S.EXTRACT_ROOT}/{task}") + r'(?=["/\s])', folders[task], text)
+        assert re.search(re.escape(f"{S.EXTRACT_ROOT}/{task}") + r'(?![-\w])', moved) is None or folders[task].endswith("/" + task)
+        return moved
+
+    provenances = {ds: move(relabel(data.decode(), old_sha, plan_sha), task_of[ds]).encode() for ds, data in provenances.items()}
     new_receipts, pins = {}, {}
     for task, receipt in receipts.items():
-        receipt = json.loads(relabel(json.dumps(receipt), old_sha, plan_sha))
+        receipt = json.loads(move(relabel(json.dumps(receipt), old_sha, plan_sha), task))
         for ds in S.TASKS[task]:
             receipt["outputs"][ds]["provenance_sha256"] = sha(provenances[ds])
-        new_receipts[task], pins[task] = receipt, S.pin(f"{S.EXTRACT_ROOT}/{task}/receipt.json", body(receipt))
+        new_receipts[task], pins[task] = receipt, S.pin(f"{folders[task]}/receipt.json", body(receipt))
     pose_receipt, _, pose_provenances = old_pose()
     pose_provenances = {s: relabel(data.decode(), old_sha, plan_sha).encode() for s, data in pose_provenances.items()}
     pose_receipt = json.loads(relabel(json.dumps(pose_receipt), old_sha, plan_sha))
@@ -917,6 +983,35 @@ def test_documents_are_built_once_from_collected_evidence_on_disk(tmp_path, monk
     assert pose == new_pose_plan() | {"caches": pose["caches"]} and probe["datasets"] == new_probe_plan()["datasets"]
     assert {p["receipt_path"] for p in pose["caches"][ARM].values()} == {S.EXTRACT_ROOT + "/pose/receipt.json"}
     assert {p["extraction_plan_sha256"] for p in probe["caches"][ARM].values()} == {sha(plan)}
+    # The single relaunch of p1: its caches come from its own folder; the folder of the replaced job appears nowhere.
+    assert {probe["caches"][ARM][ds]["receipt_path"] for ds in S.TASKS["p1"]} == {S.RELAUNCH["out"] + "/receipt.json"}
+    assert all(probe["caches"][ARM][ds]["path"] == f"{S.RELAUNCH['out']}/{ds}.npz" for ds in S.TASKS["p1"])
+    assert S.RELAUNCH["replaces"]["folder"] + "/" not in json.dumps(pose) + json.dumps(probe)
+    manifest = json.loads((S.evidence_dir("extractions", tmp_path) / "collection.json").read_text())
+    assert list(manifest["jobs"]) == [j["id"] for j in table] and S.RELAUNCH["id"] in manifest["jobs"]
+    for name, change in (("replaced", lambda m: m.update(jobs={S.RELAUNCH["replaces"]["id"] if k == S.RELAUNCH["id"] else k: v
+                                                                 for k, v in m["jobs"].items()})),
+                         ("missing", lambda m: m["jobs"].pop(S.RELAUNCH["id"]))):
+        other = tmp_path / name
+        shutil.copytree(S.evidence_dir("extractions", tmp_path), S.evidence_dir("extractions", other))
+        rewritten = json.loads((S.evidence_dir("extractions", other) / "collection.json").read_text())
+        change(rewritten)
+        (S.evidence_dir("extractions", other) / "collection.json").write_text(json.dumps(rewritten))
+        with pytest.raises(ValueError, match="the collected extractions are not the jobs of the table"):
+            S.build_reader_plans(CODE, other)
+    # A receipt of the relaunch naming caches in another folder (here: the replaced one) is refused.
+    stray = tmp_path / "stray"
+    (stray / S.PACKAGE / S.DOCUMENTS["extraction_plan"][1]).parent.mkdir(parents=True)
+    (stray / S.PACKAGE / S.DOCUMENTS["extraction_plan"][1]).write_bytes(plan.read_bytes())
+    _, (receipts, _, provenances), _ = new_candidates(sha(plan), relaunch=False)
+    for job in table:
+        for local, path in job["files"].items():
+            key = local.replace(".npz.provenance.json", "")
+            if job["local"] == "p1":
+                texts[path] = body(receipts["p1"]) if local == "receipt.json" else provenances[key]
+    S.collect("extractions", table, slurm, reading_for(table, slurm, texts), S.evidence_dir("extractions", stray))
+    with pytest.raises(ValueError, match="cache outside the folder of its receipt: " + S.RELAUNCH["replaces"]["folder"] + "/"):
+        S.build_reader_plans(CODE, stray)
     assert S.document("probe_plan", tmp_path)["path"].startswith(S.checkout("plans") + "/")
     lines = S.stage_lines("pose-validate", CODE, tmp_path)
     assert sha(tmp_path / S.PACKAGE / S.DOCUMENTS["pose_plan"][1]) in lines[0]

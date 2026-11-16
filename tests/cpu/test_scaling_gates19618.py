@@ -14,6 +14,7 @@ import importlib.util
 import itertools
 import json
 from pathlib import Path
+import shlex
 import shutil
 import stat
 import subprocess
@@ -566,20 +567,156 @@ def test_gate_before_a_tranche_reads_checkouts_documents_outputs_queue_and_space
     assert failed(run(sacct=done)) == ["jobs already in the ledger were submitted by this line"]
 
 
-def test_gate_of_the_extractions_reads_the_plan_in_the_code_checkout(chain):
+SENT = {"pose": 64571999, "p2": 64572001}  # the two extractions of 16/11/2026 that ended COMPLETED 0:0
+
+
+def relaunch_ledger(ledger, code_sha):
+    """The ledger after the three extractions of 16/11/2026: pose and p2 sent, p1 sent with the line of its later relaunch
+    but for the output folder, then replaced."""
+    old = S.RELAUNCH["replaces"]
+    for job in S.jobs("extractions"):
+        if job["id"] == S.RELAUNCH["id"]:
+            ledger_entry(ledger, old["id"], int(old["job_slurm"]), ["sbatch", "--parsable", "--job-name=" + old["id"],
+                         "--comment=wearusfm:" + old["id"], *S.extraction_sbatch(job, code_sha)[:-1], old["folder"]])
+        else:
+            ledger_entry(ledger, job["id"], SENT[job["local"]], ["sbatch", *S.extraction_sbatch(job, code_sha)])
+
+
+def extraction_sacct(slurm, elapsed, state="COMPLETED", exit_code="0:0"):
+    row = "%s|%s|%s|%d|8||lrdn0001|boost_usr_prod|a|b|02:00:00|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1" % (
+        slurm, state, exit_code, elapsed)
+    return {"exit": 0, "stderr": "", "stdout": plans.HEADER + "\n" + row + "\n"}
+
+
+def relaunch_reading(commits, published, table, **changes):
+    """Answer of the read-only request of the extraction gate on 16/11/2026: pose and p2 COMPLETED 0:0, p1 FAILED 1:0 with
+    its folder as diagnosed, the output of the relaunch absent."""
+    old = S.RELAUNCH["replaces"]
+    sacct = {"64571999": extraction_sacct("64571999", 7330), "64572001": extraction_sacct("64572001", 5967),
+             old["job_slurm"]: extraction_sacct(old["job_slurm"], 1882, "FAILED", "1:0")}
+    return live(commits, published, table, **{"sacct": sacct, "listings": {old["folder"]: list(old["listing"])}, **changes})
+
+
+def test_gate_of_the_extractions_admits_only_the_single_relaunch_of_p1(chain):
     repo, ledger, _, code, _ = chain
+    relaunch_ledger(ledger, code)
+    old = S.RELAUNCH["replaces"]
     request, commits, published, table, submitted = S.gate_request("extractions", repo, ledger)
     assert commits == {"code": code} and request["hashed"] == [f"{S.checkout('code')}/{S.PACKAGE}/evaluation/extraction_plan.json"]
-    checks, facts = S.gate(live(commits, published, table), commits, published, table, submitted, repo, ledger)
+    assert request["listings"] == [old["folder"]] and request["exists"] == [j["out"] for j in table]
+    assert submitted == {"SCALING-300M-eval19618-pose-20261106": "64571999", "SCALING-300M-eval19618-p2-20261106": "64572001"}
+
+    def run(reading=None, **changes):
+        reading = reading or relaunch_reading(commits, published, table, **changes)
+        return S.gate(reading, commits, published, table, submitted, repo, ledger)
+
+    failed = lambda result: [name for name, ok in result[0] if not ok]  # noqa: E731
+    checks, facts = run()
     assert all(ok for _, ok in checks), checks
-    assert facts["submittable_now"] == 3 and facts["tranche"] == [j["id"] for j in table]  # GPU partition: not limited by the serial queue
-    full = "\n".join("%d|SCALING-19618-x-%d|PENDING|8|Priority" % (n, n) for n in range(10)) + "\n"
-    checks, facts = S.gate(live(commits, published, table, commands__squeue={"stdout": full}), commits, published, table, submitted, repo, ledger)
-    assert all(ok for _, ok in checks) and facts["tranche"] == [j["id"] for j in table] and facts["serial_room"] == 0
-    # Relative pins of the extraction plan (contract, comparison, splits) are read in the commit of the code checkout.
+    assert facts["to_submit"] == facts["tranche"] == [S.RELAUNCH["id"]] and facts["submittable_now"] == 1
+    assert [name for name, _ in checks][-6:] == [
+        "the replaced extraction SCALING-300M-eval19618-p1-20261106 is the diagnosed failure 64572000 FAILED 1:0",
+        "the folder of the replaced extraction is as diagnosed (6 entries, no receipt)",
+        "the replaced submission is the relaunch line but for the output folder",
+        "the relaunch is the only extraction to submit, the other two are in the ledger",
+        "the extraction stage stays within the caps of the freeze with the relaunch at its limit (7 GPU-hours, 56 core-hours)",
+        "a tranche of at least one job is admitted (1 of 1 to submit)"]
     assert [name for name, _ in checks][2] == "files pinned inside the checkouts are in their commits (3)"
+    assert facts["relaunch"]["stage_gpu_seconds_at_limit"] == 22559 and facts["relaunch"]["replaced_job_slurm"] == "64572000"
+    full = "\n".join("%d|SCALING-19618-x-%d|PENDING|8|Priority" % (n, n) for n in range(10)) + "\n"
+    checks, facts = run(commands__squeue={"stdout": full})  # GPU partition: not limited by the serial queue
+    assert all(ok for _, ok in checks) and facts["tranche"] == [S.RELAUNCH["id"]] and facts["serial_room"] == 0
+
+    diagnosed = "the replaced extraction SCALING-300M-eval19618-p1-20261106 is the diagnosed failure 64572000 FAILED 1:0"
+    caps = "the extraction stage stays within the caps of the freeze with the relaunch at its limit (7 GPU-hours, 56 core-hours)"
+    for state, code_ in (("COMPLETED", "0:0"), ("RUNNING", "0:0"), ("TIMEOUT", "0:0"), ("FAILED", "2:0"), ("CANCELLED", "0:0"),
+                         ("NODE_FAIL", "1:0"), ("CANCELLED", "1:0"), ("OUT_OF_MEMORY", "1:0")):  # the state alone, then the exit code
+        reading = relaunch_reading(commits, published, table)
+        reading["sacct"][old["job_slurm"]] = extraction_sacct(old["job_slurm"], 1882, state, code_)
+        assert failed(run(reading)) == [diagnosed], state
+    reading = relaunch_reading(commits, published, table)
+    reading["sacct"][old["job_slurm"]] = {"exit": 1, "stdout": "", "stderr": "x"}  # unreadable accounting: no count, no relaunch
+    assert failed(run(reading)) == [diagnosed, caps]
+    folder = "the folder of the replaced extraction is as diagnosed (6 entries, no receipt)"
+    for listing in ([*old["listing"], "receipt.json"], old["listing"][:-1], None, []):
+        assert failed(run(listings={old["folder"]: listing})) == [folder]
+    assert failed(run(exists={**{j["out"]: False for j in table}, S.RELAUNCH["out"]: True})) == [
+        "outputs of the jobs still to submit are absent"]
+    over = relaunch_reading(commits, published, table)  # pose and p2 at their walltimes, p1 at its own: 7 GPU-hours already
+    over["sacct"].update({"64571999": extraction_sacct("64571999", 9000), "64572001": extraction_sacct("64572001", 9000),
+                          old["job_slurm"]: extraction_sacct(old["job_slurm"], 7200, "FAILED", "1:0")})
+    assert failed(run(over)) == [caps]
+    wide = relaunch_reading(commits, published, table)  # within the GPU-hours, beyond the core-hours: pose on 32 CPUs
+    wide["sacct"]["64571999"] = {**wide["sacct"]["64571999"], "stdout": wide["sacct"]["64571999"]["stdout"].replace(
+        "|7330|8|", "|7330|32|").replace("cpu=8,", "cpu=32,")}
+    checks, facts = run(wide)
+    assert [name for name, ok in checks if not ok] == [caps] and facts["relaunch"]["stage_gpu_seconds_at_limit"] == 22559
+    assert facts["relaunch"]["stage_core_seconds_at_limit"] == 32 * 7330 + 8 * (5967 + 1882 + 7380) > 56 * 3600
+    blind = relaunch_reading(commits, published, table)  # an accounting row without its GPUs is no count, not zero GPUs
+    blind["sacct"]["64572001"] = {**blind["sacct"]["64572001"], "stdout": blind["sacct"]["64572001"]["stdout"].replace(
+        "gres/gpu=1,", "")}
+    assert failed(run(blind)) == [caps]
+    bad = relaunch_reading(commits, published, table)
+    bad["sacct"]["64571999"] = extraction_sacct("64571999", 7330, "FAILED", "1:0")
+    assert failed(run(bad)) == ["jobs already submitted are COMPLETED 0:0 (2)"]
+
+    # The ledger: the replaced entry with another Slurm job, another line, or missing; pose never sent; the relaunch already sent.
+    entry = ledger / old["id"] / "state.json"
+    original = entry.read_text()
+    entry.write_text(json.dumps({**json.loads(original), "job_slurm": 64572999}))
+    assert failed(run()) == [diagnosed]
+    line = json.loads(original)["sbatch"]
+    for changed in ([*line[:4], "--time=02:30:00", *line[5:]], [*line[:5], line[5].replace(code, "e" * 40), *line[6:]],
+                    [*line[:-1], S.RELAUNCH["out"]], line[:-1]):
+        entry.write_text(json.dumps({**json.loads(original), "sbatch": changed}))
+        assert failed(run()) == ["the replaced submission is the relaunch line but for the output folder"]
+    entry.unlink()
+    assert failed(run()) == [diagnosed, "the replaced submission is the relaunch line but for the output folder"]
+    entry.write_text(original)
+    shutil.rmtree(ledger / "SCALING-300M-eval19618-pose-20261106")
+    request, commits, published, table, alone = S.gate_request("extractions", repo, ledger)
+    checks, facts = S.gate(relaunch_reading(commits, published, table), commits, published, table, alone, repo, ledger)
+    assert [name for name, ok in checks if not ok] == ["the relaunch is the only extraction to submit, the other two are in the ledger"]
+    ledger_entry(ledger, "SCALING-300M-eval19618-pose-20261106", SENT["pose"], ["sbatch"])
+    ledger_entry(ledger, S.RELAUNCH["id"], 64600000, ["sbatch"])  # a second relaunch is never admitted
+    request, commits, published, table, submitted = S.gate_request("extractions", repo, ledger)
+    reading = relaunch_reading(commits, published, table)
+    reading["sacct"]["64600000"] = extraction_sacct("64600000", 600, "RUNNING")
+    assert failed(S.gate(reading, commits, published, table, submitted, repo, ledger)) == [
+        "jobs already submitted are COMPLETED 0:0 (3)", "the relaunch is the only extraction to submit, the other two are in the ledger",
+        "a tranche of at least one job is admitted (0 of 0 to submit)"]
     with pytest.raises(OSError):  # no stage starts before its checkouts exist in the ledger
         S.gate_request("pose-validate", repo, ledger)
+
+
+def test_lines_of_the_extractions_are_the_single_relaunch_of_p1(chain, monkeypatch, capsys):
+    """The passed gate admits one line, the relaunch; it is the replaced submission with the new ID and folder, and a change of
+    the replaced entry in the ledger after the gate asks for a new gate."""
+    repo, ledger, _, code, _ = chain
+    relaunch_ledger(ledger, code)
+    _, commits, published, table, _ = S.gate_request("extractions", repo, ledger)
+    answers, requests = [relaunch_reading(commits, published, table)], []
+    monkeypatch.setattr(S, "remote_read", lambda **request: (requests.append(request), answers.pop(0))[1])
+    monkeypatch.setattr(S, "ROOT", repo)
+    monkeypatch.setattr(S, "LEDGER", ledger)
+    monkeypatch.setattr(S, "_now", lambda: calendar.timegm((2026, 11, 8, 10, 5, 0)))
+    assert S.main(["gate", "extractions"]) == 0
+    # The one remote request reads the accounting of the replaced job and the listing of its folder, besides the usual.
+    assert list(requests[0]["slurm_jobs"]) == ["64571999", "64572001", S.RELAUNCH["replaces"]["job_slurm"]]
+    assert requests[0]["listings"] == [S.RELAUNCH["replaces"]["folder"]] and S.RELAUNCH["out"] in requests[0]["exists"]
+    record = S.latest_gate("extractions", repo)
+    assert record["facts"]["tranche"] == [S.RELAUNCH["id"]] and record["facts"]["relaunch"]["replaced_job_slurm"] == "64572000"
+    capsys.readouterr()
+    assert S.main(["lines", "extractions"]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out == S.stage_lines("extractions", code, repo, only=[S.RELAUNCH["id"]]) and len(out) == 1
+    words = shlex.split(out[0])
+    old = json.loads((ledger / S.RELAUNCH["replaces"]["id"] / "state.json").read_text())["sbatch"]
+    assert words[words.index("--id") + 1] == S.RELAUNCH["id"] and words[words.index("--") + 1:] == [*old[4:-1], S.RELAUNCH["out"]]
+    entry = ledger / S.RELAUNCH["replaces"]["id"] / "state.json"
+    entry.write_text(json.dumps({**json.loads(entry.read_text()), "job_slurm": 64572999}))
+    assert S.main(["lines", "extractions"]) == 1
+    assert "the replaced extraction changed in the ledger after the gate" in capsys.readouterr().err
 
 
 # ---------------------------------------------------------------------------------------------
