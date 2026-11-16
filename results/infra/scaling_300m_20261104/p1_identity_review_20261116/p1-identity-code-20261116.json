@@ -1,0 +1,68 @@
+{
+  "commit": "c2ae7ee02b3df5bdc3310b90d6608e211753dd07",
+  "checks": [
+    {
+      "name": "same metadata and bytes",
+      "result": "pass",
+      "expected": "pass"
+    },
+    {
+      "name": "st_ctime_ns drift, same bytes",
+      "result": "reject",
+      "expected": "reject"
+    },
+    {
+      "name": "st_mtime_ns drift, same bytes",
+      "result": "reject",
+      "expected": "reject"
+    },
+    {
+      "name": "st_ino drift, same bytes",
+      "result": "reject",
+      "expected": "reject"
+    },
+    {
+      "name": "st_size drift, same bytes",
+      "result": "reject",
+      "expected": "reject"
+    },
+    {
+      "name": "atime only drift is ignored",
+      "result": "pass",
+      "expected": "pass"
+    },
+    {
+      "name": "device only drift is not tracked",
+      "result": "pass",
+      "expected": "pass"
+    },
+    {
+      "name": "verbal fallback accepts same-content inode replacement",
+      "result": "accepted counterexample",
+      "expected": "must reject identity replacement"
+    },
+    {
+      "name": "shared helper pinned in accepted scientific training source contract",
+      "result": "confirmed"
+    }
+  ],
+  "source_sha256": {
+    "scripts/tokenizer_preflight.py": "3bdd90d0a30c1089953345c0b63415f8c40974939af6dd05da63f11d59affe69",
+    "scripts/scaling_evaluation19618.py": "ab3c175746e448b46ede9258b4eea785dc89ed1b8180fbb844a8e1ab1e7253e2",
+    "scripts/scaling_train.py": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac",
+    "scripts/scaling_plans19618.py": "8544e28e44aeb63867ab44ef6e57cb5ef0b832659da444f812faea7bfae01882",
+    "scripts/scaling_derive19618.py": "08157fd14a647c77590efaeafb01271e089119b5d75bb060be2f1436521aad64",
+    "scripts/scaling_probe19618.py": "72a621753a8e792f262ddaa31e95cfb9830c63418aab9be043fc938d088febbb",
+    "scripts/scaling_pose_readout19618.py": "3b3927c03b8e4b5672bb6d07ce2eeca218cdca5d2862d3ae30b35c49f4228206",
+    "scripts/tokenizer_pose_readout.py": "18a15436e48045447661d3aaab6a8770819527b4ff97a2837d9be3930bad7fb3",
+    "scripts/pose_temporal_readout.py": "b0adaaacde63151519f6a50aaf9d60aa9a2acabc13b59c8b37582dadb292a815",
+    "scripts/channel_readout.py": "746e2ce9d81da27bc089d1ec8b62f270d8b70c9f5c42a2420370f4b7f113c20a",
+    "results/infra/scaling_300m_20261104/training_source_contract.json": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1"
+  },
+  "limits": [
+    "Synthetic controlled stat sequences, not a reproduction of Lustre.",
+    "No actual historical before/after stat pair is available in failure logs.",
+    "No cluster or filesystem performance tests performed."
+  ],
+  "verdict": "Do not weaken shared frozen helper. Measure changed fields; change only output-finalization path after diagnosis, with explicit identity and hash invariants."
+}

@@ -1,0 +1,359 @@
+{
+  "reviewed_commit": "c2ae7ee02b3df5bdc3310b90d6608e211753dd07",
+  "checks": [
+    {
+      "label": "review commit",
+      "pass": true
+    },
+    {
+      "label": "four allocations, no batch or extern double count",
+      "pass": true
+    },
+    {
+      "label": "allocation 64571999",
+      "pass": true
+    },
+    {
+      "label": "resources 64571999",
+      "pass": true
+    },
+    {
+      "label": "elapsed independently 64571999",
+      "pass": true
+    },
+    {
+      "label": "allocation 64572000",
+      "pass": true
+    },
+    {
+      "label": "resources 64572000",
+      "pass": true
+    },
+    {
+      "label": "elapsed independently 64572000",
+      "pass": true
+    },
+    {
+      "label": "allocation 64572001",
+      "pass": true
+    },
+    {
+      "label": "resources 64572001",
+      "pass": true
+    },
+    {
+      "label": "elapsed independently 64572001",
+      "pass": true
+    },
+    {
+      "label": "allocation 64596915",
+      "pass": true
+    },
+    {
+      "label": "resources 64596915",
+      "pass": true
+    },
+    {
+      "label": "elapsed independently 64596915",
+      "pass": true
+    },
+    {
+      "label": "stage elapsed16972",
+      "pass": true
+    },
+    {
+      "label": "P1 elapsed3675",
+      "pass": true
+    },
+    {
+      "label": "failure before first output identity ninapro_db6.npz",
+      "pass": true
+    },
+    {
+      "label": "same runtime code ninapro_db6.npz",
+      "pass": true
+    },
+    {
+      "label": "failure before first output identity ninapro_db3.npz",
+      "pass": true
+    },
+    {
+      "label": "same runtime code ninapro_db3.npz",
+      "pass": true
+    },
+    {
+      "label": "seven successes nine reached ten planned",
+      "pass": true
+    },
+    {
+      "label": "frozen stage7GPU56core",
+      "pass": true
+    },
+    {
+      "label": "frozen P1 onejob2GPU16core",
+      "pass": true
+    },
+    {
+      "label": "amendment freeze identity",
+      "pass": true
+    },
+    {
+      "label": "amendment base envelope identity",
+      "pass": true
+    },
+    {
+      "label": "CPU prior349.917778 exact",
+      "pass": true
+    },
+    {
+      "label": "CPU next350.184444 exact",
+      "pass": true
+    },
+    {
+      "label": "proposed6.764444 omits diagnostics",
+      "pass": true
+    },
+    {
+      "label": "including diagnostics exceeds stage even0.5",
+      "pass": true
+    }
+  ],
+  "n_checks": 29,
+  "allocations": [
+    {
+      "JobIDRaw": "64571999",
+      "JobName": "SCALING-300M-eval19618-pose-20261106",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "7330",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=100G,node=1",
+      "Partition": "boost_usr_prod",
+      "Timelimit": "02:30:00",
+      "Start": "2026-11-16T09:51:50",
+      "End": "2026-11-16T11:54:00",
+      "NodeList": "lrdn2203",
+      "Comment": "wearusfm:SCALING-300M-eval19618-pose-20261106"
+    },
+    {
+      "JobIDRaw": "64572000",
+      "JobName": "SCALING-300M-eval19618-p1-20261106",
+      "State": "FAILED",
+      "ExitCode": "1:0",
+      "ElapsedRaw": "1882",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=100G,node=1",
+      "Partition": "boost_usr_prod",
+      "Timelimit": "02:00:00",
+      "Start": "2026-11-16T09:49:49",
+      "End": "2026-11-16T10:21:11",
+      "NodeList": "lrdn0248",
+      "Comment": "wearusfm:SCALING-300M-eval19618-p1-20261106"
+    },
+    {
+      "JobIDRaw": "64572001",
+      "JobName": "SCALING-300M-eval19618-p2-20261106",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": "5967",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=100G,node=1",
+      "Partition": "boost_usr_prod",
+      "Timelimit": "02:30:00",
+      "Start": "2026-11-16T09:51:50",
+      "End": "2026-11-16T11:31:17",
+      "NodeList": "lrdn2858",
+      "Comment": "wearusfm:SCALING-300M-eval19618-p2-20261106"
+    },
+    {
+      "JobIDRaw": "64596915",
+      "State": "FAILED",
+      "ExitCode": "1:0",
+      "ElapsedRaw": "1793",
+      "AllocCPUS": "8",
+      "AllocTRES": "billing=8,cpu=8,gres/gpu=1,mem=100G,node=1",
+      "Start": "2026-11-16T15:31:46",
+      "End": "2026-11-16T16:01:39",
+      "NodeList": "lrdn0707",
+      "Timelimit": "02:00:00"
+    }
+  ],
+  "spent": {
+    "gpu_hours": {
+      "exact": "4243/900",
+      "value": 4.714444444444444
+    },
+    "allocated_cpu_hours": {
+      "exact": "8486/225",
+      "value": 37.715555555555554
+    },
+    "p1_gpu_hours": {
+      "exact": "49/48",
+      "value": 1.0208333333333333
+    },
+    "p1_allocated_cpu_hours": {
+      "exact": "49/6",
+      "value": 8.166666666666666
+    }
+  },
+  "cache_checks": {
+    "pose": {
+      "pass": 2,
+      "fail": 0,
+      "not_reached": 0
+    },
+    "p2": {
+      "pass": 2,
+      "fail": 0,
+      "not_reached": 0
+    },
+    "p1_original": {
+      "pass": 2,
+      "fail": 1,
+      "not_reached": 0
+    },
+    "p1_r1": {
+      "pass": 1,
+      "fail": 1,
+      "not_reached": 1
+    }
+  },
+  "interpretation_of7of9": "First output-identity outcomes by cache, not independent trials and not every hash call. Each accepted cache is hashed again after validation. One later cache was not reached.",
+  "timing_limit": "Times reconstructed from birth/mtime/provenance and end-job, integer-second fields. Not instrumented before/after hash timestamps, not measured flush/durability times.",
+  "metadata_limit": "No before/after stat tuple or failed digest persisted. Post-job stat cannot identify which field changed during the failed call.",
+  "budget": {
+    "third_p1_nominal_gpu_hours": {
+      "exact": "2",
+      "value": 2.0
+    },
+    "third_p1_with180s_margin": {
+      "exact": "41/20",
+      "value": 2.05
+    },
+    "stage_plus_p1_without_diagnostic": {
+      "exact": "1522/225",
+      "value": 6.764444444444444
+    },
+    "p1_cumulative_plus_retry_margin": {
+      "exact": "737/240",
+      "value": 3.0708333333333333
+    },
+    "diagnostic_30min_nominal_gpu_hours": {
+      "exact": "1/2",
+      "value": 0.5
+    },
+    "diagnostic_30min_plus180s_margin_gpu_hours": {
+      "exact": "11/20",
+      "value": 0.55
+    },
+    "diagnostic27min_plus180s_margin_gpu_hours": {
+      "exact": "1/2",
+      "value": 0.5
+    },
+    "stage_with_diagnostic_strict0_5_plus_p1": {
+      "gpu": {
+        "exact": "3269/450",
+        "value": 7.264444444444444
+      },
+      "allocated_cpu": {
+        "exact": "13076/225",
+        "value": 58.11555555555555
+      }
+    },
+    "stage_with_diagnostic30min_plus_margin_plus_p1": {
+      "gpu": {
+        "exact": "6583/900",
+        "value": 7.314444444444445
+      },
+      "allocated_cpu": {
+        "exact": "13166/225",
+        "value": 58.51555555555556
+      }
+    },
+    "CPU_only_envelope_before": {
+      "exact": "157463/450",
+      "value": 349.91777777777776
+    },
+    "one_additional_checkout": {
+      "exact": "4/15",
+      "value": 0.26666666666666666
+    },
+    "CPU_only_envelope_after_one_checkout": {
+      "exact": "157583/450",
+      "value": 350.18444444444447
+    },
+    "CPU_over_cap": {
+      "exact": "83/450",
+      "value": 0.18444444444444444
+    },
+    "full_reextract3_nominal7_plus_margin0_15_with_diag30min_margin": {
+      "exact": "11173/900",
+      "value": 12.414444444444445
+    }
+  },
+  "salvage_limits": [
+    "No receipt in either failed P1 directory; some per-cache provenance only.",
+    "Embedded metadata may support checkpoint/code/input/fold checks, but original raw_before, final checkpoint/source guards and full runtime were not serialized because execute failed before receipt.",
+    "A later verification cannot honestly reconstruct contemporaneous historical evidence; fresh recovery attestation in separate output would require explicit protocol amendment and accepted reduced historical guarantee.",
+    "Do not write into failed folders or label old jobs COMPLETED. Existing policy forbids adopting their caches."
+  ],
+  "source_pins": {
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/failure_64572000_diagnosis_20261116/readings/sacct_extractions_19618.txt": {
+      "bytes": 786,
+      "sha256": "f6a9c95be8e2b29f80873ca5fb3154b6cdc6fdcd10b0177a8e90a00275c1c279"
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/failure-p1-r1-64596915/reading_20261116_1606.txt": {
+      "bytes": 4979,
+      "sha256": "77f096edafd04eaab439e4e035ad0ca2044264f2e3bcaca7b3c883d5b489eaf4"
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/failure_64572000_diagnosis_20261116/slurm_logs/scaling_evaluation19618_64572000.txt": {
+      "bytes": 3809,
+      "sha256": "5ef8c99dc8da07a7337252614efb8033f2ef55cf549f9828c11e2986d3565201"
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/failure-p1-r1-64596915/slurm_log_64596915.txt": {
+      "bytes": 3812,
+      "sha256": "a632b7eee1f5d01c3a2d6d04835b57e124bbb848a69aa17c1804395fd906f248"
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/failure_64572000_diagnosis_20261116/readings/stat_p1_19618.txt": {
+      "bytes": 3465,
+      "sha256": "b36ed5d08a601f97f2e742839ab70343278b3112ea8ff039f7c4d6483c0864be"
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/failure_64572000_diagnosis_20261116/readings/stat_pose_p2_19618.txt": {
+      "bytes": 3620,
+      "sha256": "cb2cf2204dc48205bf6a45804df54371b1d8750b35ad47b540c8d8e939504607"
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/failure_64572000_diagnosis_20261116/README.md": {
+      "bytes": 4753,
+      "sha256": "6d85702b4758e268f653ee1962b27590e7934f16f3ed71708cc9c6cc66669159"
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/failure-p1-r1-64596915/README.md": {
+      "bytes": 4260,
+      "sha256": "0139ea575b71e96259df4bf29872b48f5fcb7654f6614bf1bb2a637f813533cc"
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261116_p1_relaunch/README.md": {
+      "bytes": 4722,
+      "sha256": "5d15139d833e07767a7266e0614db9a98ae7771c361ddecaca42c897e6e0c719"
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json": {
+      "bytes": 15375,
+      "sha256": "32e0a33e76da1ee58a853c0229414ee66e1bdddf280da3dfbe21040831e771b8"
+    },
+    "results/infra/scaling_300m_20261104/continuation19618_20261111_checkout_cpus/budget_amendment.json": {
+      "bytes": 2610,
+      "sha256": "4ee5e406dfdc3116918ca54d4dd80a0329c18147031d72f903b301ca161e3f92"
+    },
+    "scripts/scaling_evaluation19618.py": {
+      "bytes": 27970,
+      "sha256": "ab3c175746e448b46ede9258b4eea785dc89ed1b8180fbb844a8e1ab1e7253e2"
+    },
+    "scripts/tokenizer_preflight.py": {
+      "bytes": 33007,
+      "sha256": "3bdd90d0a30c1089953345c0b63415f8c40974939af6dd05da63f11d59affe69"
+    },
+    "scripts/channel_readout.py": {
+      "bytes": 37172,
+      "sha256": "746e2ce9d81da27bc089d1ec8b62f270d8b70c9f5c42a2420370f4b7f113c20a"
+    }
+  },
+  "remote_operations": false
+}

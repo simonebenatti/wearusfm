@@ -1,0 +1,43 @@
+{
+  "commit": "c2ae7ee02b3df5bdc3310b90d6608e211753dd07",
+  "checks": [
+    {
+      "name": "reviewed exact commit",
+      "passed": true
+    },
+    {
+      "name": "current pure builder rejects mixed extraction code",
+      "passed": true
+    },
+    {
+      "name": "reader validates mixed-code cache schema",
+      "passed": true
+    },
+    {
+      "name": "same checkpoint retained for all candidate caches",
+      "passed": true
+    },
+    {
+      "name": "shared helper is in frozen training contract",
+      "passed": true
+    },
+    {
+      "name": "helper matches frozen pin",
+      "passed": true
+    },
+    {
+      "name": "classification load validates code per cache",
+      "passed": true
+    },
+    {
+      "name": "pose has independent long-run stat guard",
+      "passed": true
+    }
+  ],
+  "n_checks": 8,
+  "limitations": [
+    "Mixed schema check uses synthetic receipt/cache pin metadata derived from 5k fixtures, not new19k remote payloads.",
+    "load_cache per-cache enforcement additionally inspected in source; no actual cache payloads opened.",
+    "No SSH, jobs, deploy, collection or edits to reviewed repo."
+  ]
+}

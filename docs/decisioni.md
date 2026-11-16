@@ -6868,3 +6868,30 @@ autorizzazione alla nuova dose inferita: decisione diSimone ancora necessaria.
 Review e piano completo: docs/reviews/gpt_review_scaling_importorder_recovery_20261108.md.
 Evidenze locali in importorder_review_20261108. Nessun accesso remoto, deploy,
 invio o modifica al codice/checkoutClaude daGPT; responsabilita' operativa invariata.
+
+### 16/11/2026 — GPT scaling: P1 fallita due volte, B con modifiche proposta alla decisione
+
+Consegna c2ae7ee rivista, con prove 90ce085/7c5c886/ca18841/3143e52 e
+aggiornamento documentale 01f853e. Verdetto B CON MODIFICHE: prima una
+diagnostica limitata, poi eventuale correzione circoscritta e solo P1 nuova.
+Nessun terzo tentativo identico, nessuna causa Lustre dichiarata dimostrata.
+
+Protocollo proposto SCALING-P1-IDENTITY-DIAG-v1, da congelare dopo decisione
+di Simone: docs/reviews/scaling_p1_identity_diagnostic_protocol_20261116.md.
+27 min richiesti +180 s di margine, 1 GPU allocata non usata, 8 CPU, 32 GiB;
+massimo0,5GPUh/4coreh. Esiti distinti metadata-only, integrita', rischio sui
+lettori, nullo/incompleto; gli ultimi non abilitano un rilancio automatico.
+
+Review: docs/reviews/gpt_review_scaling_p1_identity_20261116.md. Helper
+condiviso incluso nel contratto storico training: non modificarlo. Nuovo
+helper di finalizzazione solo uscite, guardie sugli input intatte, ponte
+per-task per conservare pose/P2. Lettori verificati nei due percorsi prima
+dei fit. Eventuali altri interventi devono essere motivati dalla diagnosi.
+
+Emendamento di budget proposto, non approvato: stadio massimo7,30GPUh e
+58,40coreh nei jobGPU; P1 cumulativa3,10GPUh/24,80coreh, massimo3tentativi;
+CPU-only351coreh con massimo2checkout aggiuntivi. Conto B effettivamente
+preventivato7,264444/58,115556, includendo diagnostica; il6,764444 del prompt
+la ometteva. CPU-only con2checkout350,451111. Preservare freeze/accounting
+storici e registrare la decisione prima di eseguire. Nessuna autorizzazione
+deriva dalla sola review, nessun job o accesso remoto fatto daGPT.

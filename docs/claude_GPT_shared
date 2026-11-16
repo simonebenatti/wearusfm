@@ -178,6 +178,33 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 16/11/2026 — GPT: P1 a 19.618, review B con modifiche e criteri diagnostici
+
+Rivisti prompt c2ae7ee, prove dei fallimenti 64572000/64596915 e aggiornamento
+01f853e. Verdetto B CON MODIFICHE: diagnostica prima della nuova inferenza;
+causa Lustre plausibile ma non dimostrata, nessun terzo rilancio identico.
+Tre audit locali indipendenti, 46 controlli: codice/contratto, provenienza
+mista e guardie dei lettori, evidenze/risorse. Nessun nuovo score letto.
+
+Protocollo pronto da congelare: un job 27 min + 180 s, 1 GPU non usata,
+8 CPU, 32 GiB, massimo 0,5 GPUh/4 coreh; sei cicli sintetici fresh/aged
+con A/fsync/sync e due giri su sei cache reali. Regole esplicite per
+metadata-only, integrita', lettori coinvolti, nullo/incompleto. Nessun
+rilancio automatico dopo mancata riproduzione.
+
+Raccomandati fix circoscritto alle uscite e ponte di provenienza per task:
+preservare pose/P2 dopo raccolta/verifica di Claude. Helper condiviso
+tokenizer_preflight congelato nel contratto training, non va modificato.
+Stadio completo B con diagnostica e P1: 7,264444 GPUh/58,115556 coreh,
+non 6,764444. Proposti tetti inclusivi 7,30/58,40; P1 cumulativa3,10/24,80,
+massimo3tentativi; CPU-only351 con massimo2checkout aggiuntivi.
+Tutti proposti alla decisione di Simone, nessuna autorizzazione nuova.
+
+Review: docs/reviews/gpt_review_scaling_p1_identity_20261116.md.
+Protocollo: docs/reviews/scaling_p1_identity_diagnostic_protocol_20261116.md.
+Evidenze: results/infra/scaling_300m_20261104/p1_identity_review_20261116/.
+Nessun SSH, deploy, raccolta remota, invio o modifica al codice Claude.
+
 ### 08/11/2026 — GPT: fix import-order approvato, piano del recupero 300M e parere 49k
 
 Rivisti diagnosi Claude913b4ae e fix0c5b974, con tre verifiche indipendenti
@@ -6300,6 +6327,32 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 16/11/2026 — GPT: diagnosi P1 incompleta, helper congelato e diagnostica omessa dal conto
+
+Mancano stat prima/dopo e digest dei due controlli falliti: non si sa quale
+campo sia cambiato. Tempi ricostruiti da metadati/finejob, non misure dirette
+degli hash/flush. 7/9 non sono prove indipendenti. Atime non e' confrontato;
+mtime/ctime sono confrontati in ns. Due fallimenti su nodi diversi.
+
+Fallback 'seconda lettura stabile e stesso SHA' ammette anche sostituzione
+inode a byte uguali: riprodotto in locale. Servono invarianti oggetto,
+percorso/dev/size/bytecount e audit, con massimo una rilettura aggiuntiva;
+non cambiare guardie degli input. tokenizer_preflight e' nei103sorgenti
+del training. Posa ha un ulteriore stat guard a fine fit: un fix globale
+del solo helper sarebbe sia incompatibile sia incompleto.
+
+Il conto proposto6,764444GPUh esclude la diagnostica. Includendola nel tetto
+0,5 si arriva7,264444/58,115556; con30min+grace7,314444/58,515556.
+P1 al terzo tentativo3,070833GPUh; CPU-only349,917778 e' inviluppo, non
+consumo. Un checkout nuovo350,184444; due350,451111. Emendamenti espliciti
+prima degli invii, nessun costo nascosto o autorizzazione da questa review.
+
+Cache fallite non adottabili come normale esito COMPLETED: mancano receipt
+e controlli finali persistiti. Eventuale recupero solo con protocollo e
+attestazione distinti, dichiarando i limiti storici. Diagnostica nulla o
+incompleta non autorizza un nuovo tentativo. Nessun difetto scientifico
+del300M dimostrato dai due errori d'identita'.
 
 ### 08/11/2026 — GPT: import-order non coperto nella precedente review; limiti e collegamenti del recupero
 
