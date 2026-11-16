@@ -7103,3 +7103,18 @@ estensione scientifica, nuovi training, retry o pollingAI.
   massimo 2,5 GPU-ore), p1 = 64572000 (2:00:00, al massimo 2), p2 = 64572001 (2:30:00, al massimo 2,5). Tetto dello stadio:
   7 GPU-ore, cioe' 56 ore locali. Alle 09:51 tutte `PENDING` (Priority). Ricevute in `continuation19618_20261106/submissions/`.
 - Alla fine delle tre: `collect extractions`, `reader-plans`, commit, checkout `plans` con `--reviewed 2e79815`.
+
+### 16/11/2026 — Claude, linea 1: estrazione p1 `FAILED` al controllo d'identita' delle uscite; catena ferma
+
+- Esiti (sorvegliante, 12:01): pose 64571999 `COMPLETED 0:0` (2:02:10), p2 64572001 `COMPLETED 0:0` (1:39:27), p1 64572000
+  `FAILED 1:0` dopo 31 min 22 s. L'estrazione p1 era finita (tre cache scritte, «estrazione finita in 1743 s»); il job si e'
+  fermato nel controllo d'identita' delle uscite: «input changed while hashing» su `ninapro_db6.npz`, controllato circa 9 s
+  dopo la sua scrittura. `ninapro_db2` e `ninapro_db3` hanno superato controllo e verifica.
+- Lettura (interpretazione, non verificata): corsa fra lo scarico differito di Lustre del file appena scritto (2,19 GB in circa
+  2 s) e il controllo d'identita', non un cambiamento dei dati. La stessa cache a 5.000, controllata ~8 s dopo, era passata.
+  Prove e tempi in `continuation19618_20261106/failure_64572000_diagnosis_20261116/`.
+- Consuntivo delle tre estrazioni: 4,216389 GPU-ore (pose 2,036111; p1 0,522778; p2 1,6575) e 33,731111 core-ore, sul tetto
+  dello stadio di 7 GPU-ore.
+- Stop secondo `evaluation_chain_plan.md` §7: nessun rilancio, nessuna raccolta parziale; la cartella p1 resta com'e'.
+  Proposta a Simone: rilancio unico della sola p1 dallo stesso checkout `df2de35`, ID e cartella nuovi (opzione A del README),
+  oppure correzione del controllo in un nuovo checkout (opzione B). Decide Simone.

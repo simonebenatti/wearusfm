@@ -1,0 +1,31 @@
+[09:52:07] modello /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt (teacher, sha256 d7ebe9d87a08), dataset ['ninapro_db2', 'ninapro_db3', 'ninapro_db6']
+[10:05:15]   ninapro_db2: 32 soggetti, 38544 finestre, 12 canali x 896 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1/ninapro_db2.npz
+[10:08:33]   ninapro_db3: 8 soggetti, 9834 finestre, 12 canali x 896 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1/ninapro_db3.npz
+[10:20:59]   ninapro_db6: 8 soggetti, 33961 finestre, 16 canali x 896 -> /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1/ninapro_db6.npz
+[10:20:59] estrazione finita in 1743 s
+
+== pose
+total 5719776
+drwxr-xr-x. 2 sbenatti interactive       4096 2026-11-16 11:53:59.000000000 +0100 .
+drwxr-xr-x. 5 sbenatti interactive       4096 2026-11-16 09:52:33.000000000 +0100 ..
+-rw-r--r--. 1 sbenatti interactive    3774840 2026-11-16 11:54:00.000000000 +0100 receipt.json
+-rw-r--r--. 1 sbenatti interactive      19743 2026-11-16 10:06:24.000000000 +0100 train.log
+-rw-r--r--. 1 sbenatti interactive  547620367 2026-11-16 10:06:24.000000000 +0100 train_subset.npz
+-rw-r--r--. 1 sbenatti interactive       2597 2026-11-16 10:06:41.000000000 +0100 train_subset.npz.provenance.json
+-rw-r--r--. 1 sbenatti interactive     190956 2026-11-16 11:52:52.000000000 +0100 val.log
+-rw-r--r--. 1 sbenatti interactive 5305413139 2026-11-16 11:52:52.000000000 +0100 val.npz
+-rw-r--r--. 1 sbenatti interactive       2587 2026-11-16 11:53:49.000000000 +0100 val.npz.provenance.json
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/train_subset.npz birth=2026-11-16 10:06:05.000000000 +0100 mod=2026-11-16 10:06:24.000000000 +0100 chg=2026-11-16 10:06:24.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/val.npz birth=2026-11-16 11:49:52.000000000 +0100 mod=2026-11-16 11:52:52.000000000 +0100 chg=2026-11-16 11:52:52.000000000 +0100
+== p2
+total 1666944
+drwxr-xr-x. 2 sbenatti interactive       4096 2026-11-16 11:31:17.000000000 +0100 .
+drwxr-xr-x. 5 sbenatti interactive       4096 2026-11-16 09:52:33.000000000 +0100 ..
+-rw-r--r--. 1 sbenatti interactive 1693610834 2026-11-16 11:30:35.000000000 +0100 epn612.npz
+-rw-r--r--. 1 sbenatti interactive       2713 2026-11-16 11:31:07.000000000 +0100 epn612.npz.provenance.json
+-rw-r--r--. 1 sbenatti interactive        775 2026-11-16 11:31:00.000000000 +0100 p2.log
+-rw-r--r--. 1 sbenatti interactive     249297 2026-11-16 11:31:17.000000000 +0100 receipt.json
+-rw-r--r--. 1 sbenatti interactive   13061178 2026-11-16 11:31:00.000000000 +0100 uci_emg.npz
+-rw-r--r--. 1 sbenatti interactive       2708 2026-11-16 11:31:07.000000000 +0100 uci_emg.npz.provenance.json
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/epn612.npz birth=2026-11-16 11:30:34.000000000 +0100 mod=2026-11-16 11:30:35.000000000 +0100 chg=2026-11-16 11:30:35.000000000 +0100
+/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/uci_emg.npz birth=2026-11-16 11:31:00.000000000 +0100 mod=2026-11-16 11:31:00.000000000 +0100 chg=2026-11-16 11:31:00.000000000 +0100
