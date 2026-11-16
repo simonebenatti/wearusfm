@@ -1,0 +1,10 @@
+Lettura di Claude su Leonardo, sola lettura, 16/11/2026 (nodo di login login05). Comando:
+  ssh leonardo 'hostname; ulimit -Sn; ulimit -Hn; scontrol show config | grep -i PropagateResourceLimits'
+Uscita:
+  host: login05.leonardo.local
+  soft nofile: 65536
+  hard nofile: 65536
+  PropagateResourceLimits = CORE
+  PropagateResourceLimitsExcept = (null)
+Lettura: SLURM propaga dal nodo di login il solo limite CORE; il limite dei file aperti dentro un job e' quello del nodo di calcolo,
+che non e' stato letto (servirebbe un job).

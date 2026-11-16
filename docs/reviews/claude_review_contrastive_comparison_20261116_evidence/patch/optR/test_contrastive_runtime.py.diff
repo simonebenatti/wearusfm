@@ -1,0 +1,20 @@
+34c34
+<                    model=replace(base.model, contrastive_projection=True, muscle_dropout=0.),
+---
+>                    model=replace(base.model, muscle_dropout=0.),
+96c96
+<     baseline = replace(cfg, contrastive=None, model=replace(cfg.model, contrastive_projection=False))
+---
+>     baseline = replace(cfg, contrastive=None)
+124c124
+<     init = WearUsFM(cfg.model).state_dict()
+---
+>     init = R.build_student(cfg).state_dict()
+153c153
+<     student = WearUsFM(cfg.model).double()
+---
+>     student = R.build_student(cfg).double()
+218c218
+<     init = WearUsFM(cfg.model).double().state_dict()
+---
+>     init = R.build_student(cfg).double().state_dict()

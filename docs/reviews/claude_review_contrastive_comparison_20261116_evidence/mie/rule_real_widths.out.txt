@@ -1,0 +1,26 @@
+epn612       soggetti 314 | balanced accuracy ricalcolata [81.601 81.102 82.577 82.633] | pubblicata [81.601 81.102 82.577 82.633]
+ninapro_db2  soggetti  32 | balanced accuracy ricalcolata [18.559 18.679 18.224 18.631] | pubblicata [18.559 18.679 18.224 18.631]
+ninapro_db3  soggetti   8 | balanced accuracy ricalcolata [3.152 2.833 3.38  2.428] | pubblicata [3.152 2.833 3.38  2.428]
+ninapro_db6  soggetti   8 | balanced accuracy ricalcolata [34.816 34.136 33.748 33.199] | pubblicata [34.816 34.136 33.748 33.199]
+uci_emg      soggetti  19 | balanced accuracy ricalcolata [77.438 76.342 78.457 76.882] | pubblicata [77.438 76.342 78.457 76.882]
+
+repliche 100000, seme 20261116, livello simultaneo 0.994444, margini {'p1': {'gain': 0.5, 'ni': 1.0}, 'p2': {'gain': 0.5, 'ni': 1.0}, 'E_dyn': {'gain': 2.0, 'ni': 2.0}}
+p2 T25-L    meno T100-L  : +0.798 punti | IC95 [-1.036; +2.449] | IC simultaneo [-1.812; +3.101] | non inferiorita' no | guadagno utile no
+p2 T25-L    meno T100-G  : -0.998 punti | IC95 [-3.028; +1.072] | IC simultaneo [-3.931; +2.013] | non inferiorita' no | guadagno utile no
+p2 T25-L    meno T100-LQ : -0.238 punti | IC95 [-1.564; +0.896] | IC simultaneo [-2.229; +1.348] | non inferiorita' no | guadagno utile no
+p2 T100-L   meno T25-L   : -0.798 punti | IC95 [-2.449; +1.036] | IC simultaneo [-3.101; +1.812] | non inferiorita' no | guadagno utile no
+p2 T100-L   meno T100-G  : -1.796 punti | IC95 [-3.619; +0.257] | IC simultaneo [-4.321; +1.131] | non inferiorita' no | guadagno utile no
+p2 T100-L   meno T100-LQ : -1.036 punti | IC95 [-2.516; +0.368] | IC simultaneo [-3.170; +0.897] | non inferiorita' no | guadagno utile no
+p2 T100-G   meno T25-L   : +0.998 punti | IC95 [-1.072; +3.028] | IC simultaneo [-2.013; +3.931] | non inferiorita' no | guadagno utile no
+p1 T100-G   meno T100-L  : -0.214 punti | IC95 [-0.749; +0.326] | IC simultaneo [-0.965; +0.553] | non inferiorita' SI | guadagno utile no
+p2 T100-G   meno T100-L  : +1.796 punti | IC95 [-0.257; +3.619] | IC simultaneo [-1.131; +4.321] | non inferiorita' no | guadagno utile no
+p2 T100-G   meno T100-LQ : +0.760 punti | IC95 [-1.281; +2.567] | IC simultaneo [-2.206; +3.257] | non inferiorita' no | guadagno utile no
+p2 T100-LQ  meno T25-L   : +0.238 punti | IC95 [-0.896; +1.564] | IC simultaneo [-1.348; +2.229] | non inferiorita' no | guadagno utile no
+p2 T100-LQ  meno T100-L  : +1.036 punti | IC95 [-0.368; +2.516] | IC simultaneo [-0.897; +3.170] | non inferiorita' SI | guadagno utile no
+p2 T100-LQ  meno T100-G  : -0.760 punti | IC95 [-2.567; +1.281] | IC simultaneo [-3.257; +2.206] | non inferiorita' no | guadagno utile no
+
+p1: semiampiezza dell'IC simultaneo da 0.692 a 0.810 punti; non inferiorita' sostenuta in 10 contrasti ordinati su 12; guadagno utile in 0 su 12
+   stima minima per sostenere la non inferiorita': da -0.308 a -0.190 punti (semiampiezza meno margine)
+
+p2: semiampiezza dell'IC simultaneo da 1.788 a 2.972 punti; non inferiorita' sostenuta in 1 contrasti ordinati su 12; guadagno utile in 0 su 12
+   stima minima per sostenere la non inferiorita': da +0.788 a +1.972 punti (semiampiezza meno margine)

@@ -1,0 +1,68 @@
+Mon Nov 16 11:45:09 CET 2026
+============================= test session starts ==============================
+platform darwin -- Python 3.11.14, pytest-8.4.2, pluggy-1.5.0
+rootdir: <albero_db5ac41>
+configfile: pyproject.toml
+plugins: anyio-4.10.0
+collected 37 items / 31 deselected / 6 selected
+
+tests/cpu/test_contrastive_memory.py ...                                 [ 50%]
+tests/cpu/test_contrastive_runtime.py ..F                                [100%]
+
+=================================== FAILURES ===================================
+___ test_global_full_model_gradients_match_ddp_with_rank_without_pose[CR-4] ____
+
+tmp_path = PosixPath('<tmp>')
+arm = 'CR', world = 4
+
+    @pytest.mark.parametrize("arm,world", [("CN", 2), ("CR", 2), ("CR", 4)])
+    def test_global_full_model_gradients_match_ddp_with_rank_without_pose(tmp_path, arm, world):
+        root, manifest, pose_root = _pose_setup(tmp_path)
+        cfg = _config(pose_root, arm)
+        cfg = replace(cfg, contrastive={**cfg.contrastive, "grad_every": 1})
+        # Full population of physical windows, with some valid pose labels removed
+        # to force a whole rank to contribute only as an unlabelled/zero-pose rank.
+        loader = L.PretrainLoader(R.load_index(manifest, [root], cfg.datasets, cfg.nested), cfg.loader, {}, None)
+        batch = loader.batch(4, np.random.default_rng(3))
+        for i in range(2):
+            batch.pose[i] = None
+        assert any(item is not None for item in batch.pose[2:])
+        # Distinct synthetic sessions avoid relying on a lucky temporal gap for NCE.
+        batch.rows = [{**row, "session": f"synthetic_session_{i}"} for i, row in enumerate(batch.rows)]
+        torch.manual_seed(0)
+        init = WearUsFM(cfg.model).double().state_dict()
+        reference = _global_update(cfg, init, batch, R.DistContext())
+        output = tmp_path / "ddp"
+        output.mkdir()
+        _spawn_bounded(world, str(tmp_path / "store"), cfg, init, batch, str(output))
+        values = [torch.load(output / f"rank{rank}.pt", weights_only=False) for rank in range(world)]
+        for got in values:
+            assert set(got["grads"]) == set(reference["grads"])
+            for key in ("total", "contrast_nce", "contrast_rnc"):
+>               assert got["metrics"][key] == pytest.approx(reference["metrics"][key], rel=1e-9, abs=1e-10)
+E               assert 4237.721287929475 == 4237.721409999787 ± 4.2e-06
+E                 
+E                 comparison failed
+E                 Obtained: 4237.721287929475
+E                 Expected: 4237.721409999787 ± 4.2e-06
+
+tests/cpu/test_contrastive_runtime.py:227: AssertionError
+----------------------------- Captured stdout call -----------------------------
+[11:45:27] capgmyo: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[11:45:27] emg2pose: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[11:45:27] ninapro_db2: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+============================== slowest durations ===============================
+7.69s call     tests/cpu/test_contrastive_runtime.py::test_global_full_model_gradients_match_ddp_with_rank_without_pose[CR-4]
+5.55s call     tests/cpu/test_contrastive_runtime.py::test_global_full_model_gradients_match_ddp_with_rank_without_pose[CN-2]
+4.73s call     tests/cpu/test_contrastive_runtime.py::test_global_full_model_gradients_match_ddp_with_rank_without_pose[CR-2]
+2.10s call     tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[2-False]
+1.87s call     tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[4-False]
+1.55s call     tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[2-True]
+0.01s setup    tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[2-False]
+
+(11 durations < 0.005s hidden.  Use -vv to show these durations.)
+=========================== short test summary info ============================
+FAILED tests/cpu/test_contrastive_runtime.py::test_global_full_model_gradients_match_ddp_with_rank_without_pose[CR-4]
+================= 1 failed, 5 passed, 31 deselected in 25.23s ==================
+EXIT 1
+Mon Nov 16 11:45:36 CET 2026

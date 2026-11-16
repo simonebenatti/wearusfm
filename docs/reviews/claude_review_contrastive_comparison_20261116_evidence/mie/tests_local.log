@@ -1,0 +1,14 @@
+Mon Nov 16 11:45:09 CET 2026
+........................................................................ [ 47%]
+........................................................................ [ 94%]
+.........                                                                [100%]
+=============================== warnings summary ===============================
+tests/cpu/test_pose_objective.py::test_loader_batch_counts_match_the_terms_and_the_total_is_the_weighted_sum
+  <albero_db5ac41>/tests/cpu/test_pose_objective.py:100: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+    assert abs(float(losses["pose"]) - float(np.mean(expected))) < 1e-4 * max(1.0, float(np.mean(expected)))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+153 passed, 6 deselected, 1 warning in 129.09s (0:02:09)
+EXIT 0
+Mon Nov 16 11:47:19 CET 2026

@@ -1,0 +1,4 @@
+Eseguito da Claude il 16/11/2026 sul codice consegnato db5ac41 (script_agenti/w_trainer_stop.py, trainer vero su fixture sintetica)
+A_fallisce_enforce_true {"errore": null, "stopped": "contrastive coverage gate failed: {'through_step': 3, 'updat...", "steps": 4, "record_metriche": [1, 2, 3], "STOP": "contrastive coverage gate failed: {'through_step': 3, 'updat...", "checkpoint_step": 3}
+B_fallisce_enforce_false {"errore": null, "stopped": "max_steps", "steps": 12, "record_metriche": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "STOP": null, "checkpoint_step": 12}
+C_passa_enforce_true {"errore": null, "stopped": "max_steps", "steps": 12, "record_metriche": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "STOP": null, "checkpoint_step": 12}

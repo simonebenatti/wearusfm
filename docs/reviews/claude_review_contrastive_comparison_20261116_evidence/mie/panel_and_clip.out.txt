@@ -1,0 +1,8 @@
+passi 19618 finestre 627776
+pannello calibrazione 256..511: finestre 8192; i tre dataset piu' piccoli: [('capgmyo', 13), ('ninapro_db3', 58), ('ninapro_db4', 119)]; dataset sotto 32: ['capgmyo']
+audit 256..1023: finestre 24576; i tre dataset piu' piccoli: [('capgmyo', 45), ('ninapro_db3', 237), ('ninapro_db8', 484)]; dataset sotto 32: []
+primo blocco 256..1279: finestre 32768; i tre dataset piu' piccoli: [('capgmyo', 45), ('ninapro_db3', 344), ('ninapro_db8', 626)]; dataset sotto 32: []
+quota capgmyo sul flusso: 1480 su 627776 = 0.2358%
+update con norma prima del clipping <= 1 (update a base 1, norma): [(14778, 0.848), (14974, 0.542)] ; quindi clipping attivo in 19616 su 19618
+float32, n in 1..64 con fl(0,2/n) != fl(0,2*fl(1/n)): [5, 7, 10, 11, 13, 14, 15, 20, 22, 26, 28, 30, 40, 44, 49, 52, 56, 60, 61, 63]
+n = 32 uguale: True ; n = 4 uguale: True ; n = 8 uguale: True

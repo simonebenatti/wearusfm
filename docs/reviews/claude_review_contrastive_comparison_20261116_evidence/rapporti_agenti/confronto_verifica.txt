@@ -1,0 +1,126 @@
+Rapporto dell'agente: dimensione «confronto», ruolo «verifica avversaria». Review Claude del pacchetto db5ac41, 16/11/2026.
+Testo dell'agente, non rivisto riga per riga: vale la review per cio' che ne ho tratto. Percorsi: <archivio> = cartella di lavoro
+conservata fuori dal repository; <albero_db5ac41> e <albero_924e19d> = `git archive` dei due commit.
+
+SOMMARIO
+Verifica avversaria della dimensione «comparatore e regola di lettura». Esito: 9 rilievi CONFERMATI, 1 PARZIALE (confronto-5), 0 rifiutati. Nessuna voce di verified_ok è caduta. 3 rilievi nuovi, nessuno bloccante.
+
+ESEGUITO DA ME (codice mio in <archivio>/agents/verifica-confronto, CPU, nessun job, nessuna scrittura negli alberi condivisi):
+1) Reimplementazione esatta, replica per replica, con dati diversi da quelli del revisore (righe permutate in modo diverso per braccio, id con buchi, etichette di larghezza diversa, 10.290 repliche a classe unica, fino a 33.898 con classi assenti): 4 scenari, 48 contrasti×endpoint compreso il verso inverso, scarto massimo 4,8e-14, bandiere (14 utili vere, 26 non inferiorità false), letture (CN, CR, irrisolto) e impronte delle estrazioni uguali.
+2) Stesso controllo con numpy 1.26.4, la versione delle sonde sul cluster: 240 numeri del comparatore identici bit per bit a quelli con numpy 2.3.5; impronte delle estrazioni identiche anche con 2.1.3. Chiude un punto che il revisore non aveva potuto verificare.
+3) Ampiezze vere con un bootstrap mio (pesi multinomiali, altro seme) e col comparatore vero su ingressi ricostruiti dai soli conteggi: uguali a quelle del revisore (P2: semiampiezza simultanea 1,80-2,99 pp contro un margine di 1 pp).
+4) Potere della regola con un metodo diverso dal double bootstrap (ipotesi nulla per randomizzazione delle etichette dei bracci, intervallo ricalcolato a ogni replica, 3.000 × 20.000, tre stampi) e con il caso più favorevole (ampiezze della coppia a ricetta uguale): stessa conclusione. Non inferiorità su P2 con effetto nullo: 6-15% per contrasto. «Promettente»: CN con EPN612 +1,5 pp 0,5-1,8%; CR con solo E_dyn +6,3% 0,9-4,6%; CN con +1 pp sul solo P1 1,2-4,6%; CN con P2 +1,8 8-36%; serve P2 +3 con P1 +0,5 per il 59-97%.
+5) 78 mutanti miei: 25 uccisi dai test consegnati (32%; il revisore 44 su 132). Con i 53 test proposti dal revisore 76 su 78: ne sopravvive uno non equivalente (verifica-confronto-1).
+6) Manomissioni coerenti su manifest miei, CLI da sottoprocesso, precisione Monte Carlo delle code con 8 semi, costo (0,29 GiB di picco), copertura a verità nota.
+
+LETTO: protocollo par. 5-6, plan.json, comparatore, test, controllo interno di GPT, proposta del 07/11, voce del 16/11 in docs/decisioni.md al commit 77b7003, aggregatore storico delle sonde, file del revisore (i numeri che riporta coincidono con i suoi artefatti).
+
+PER I TRE VERDETTI. Implementazione: comparatore conforme al protocollo; restano i difetti minori 3 e 6 e i test deboli (4). Disegno: confronto-1 è una decisione da prendere prima del rilascio del training, non del collaudo; confronto-2 va chiuso insieme. Prerequisiti del collaudo: il comparatore non ne pone; ho però constatato che la voce del 16/11 in docs/decisioni.md non contiene nemmeno le soglie di calibrazione e copertura, che il collaudo usa: per la regola del progetto vanno trascritte prima del collaudo (da passare alle dimensioni calibrazione e copertura).
+
+DATO NUOVO SU confronto-8: la copertura congiunta dei nove intervalli «simultanei» è 87,0-87,6% (±0,6), non 95%.
+
+NON VERIFICATO: ampiezze dei bracci nuovi (non esistono); variabilità fra training; somme in virgola mobile su architettura x86 del cluster (le estrazioni sono identiche, i risultati possono differire all'ultima cifra); punta del ramo di GPT oltre il riferimento locale 77b7003 (rete vietata); le singole manomissioni del revisore su file in formato vero (le ho rifatte su dati sintetici miei); i 132 mutanti del revisore (ho riletto i conteggi nel suo JSON, non li ho rieseguiti).
+
+NOTA OPERATIVA: la prima esecuzione interrotta aveva lasciato 1,7 GB nella mia cartella; li ho tolti, ora sono 13 MB. Ho usato in sola lettura l'interprete ~/anaconda3/envs/appTF/bin/python per numpy 1.26.4.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-1
+[verdict] CONFERMATO
+[severity] BLOCCANTE
+[evidence] ESEGUITO con codice e metodi miei. (1) Bootstrap a pesi multinomiali, seme 4242, 100.000 repliche, conteggi veri: semiampiezze IC95 / simultaneo E_dyn 0,23-0,39 / 0,32-0,54; P1 0,49-0,58 / 0,69-0,82; P2 1,22-2,05 / 1,80-2,99; EPN612 0,50-0,65 / 0,71-0,92; UCI 2,39-4,06 / 3,50-5,90; quota UCI della varianza di P2 94,9-98,0%. Stima minima per la non inferiorità su P2 +0,60...+2,04 pp; guadagno utile minimo E_dyn 2,0%, P1 0,67-0,86 pp, P2 1,60-3,04 pp. Sui 12 contrasti ordinati: non inferiorità vera 11 su E_dyn, 10 su P1, 1 su P2; guadagno utile 0; 5 stime positive di P2 (da +0,24 a +1,80) falliscono la non inferiorità. (2) Comparatore vero su ingressi ricostruiti dai soli conteggi: T100-G meno T100-L P2 +1,796 [-1,131; +4,321]; T25-L meno B19618 P2 -0,093 [-2,012; +1,539]: identici al revisore, non inferiorità falsa. (3) Coppia a ricetta uguale, per dataset: su UCI i due training differiscono per al più 2 finestre nette per soggetto (14 in valore assoluto su 364) e la semiampiezza simultanea è 3,46 pp (P2 1,78); 1 pp di P2 vale circa 7 finestre di UCI. (4) Ipotesi nulla per randomizzazione, 3.000 × 20.000: non inferiorità su P2 con effetto nullo 6,0-7,1% (stampo A), 9,8-10,5% (B), 15,3% (coppia a ricetta uguale). «Promettente»: nessun effetto 0,13%; CN EPN612 +1,5 pp 0,5-1,5%; CN P2 +1,8 7,8-14,4%; CN P2 +3 e P1 +0,5 59-81%; CR E_dyn +2% 0,3-1,2%; CR E_dyn +6,3% 0,9-3,2%; CR E_dyn +6,3, P1 +0,5, P2 +1 17-31%; CR +10/+1/+3 91-99%; beneficio comune E_dyn +3%: irrisolto 99,4-99,6%; CN con +1 pp sul solo P1 1,2-2,6%. (5) Caso più favorevole (ampiezze della coppia a ricetta uguale per tutti i contrasti, approssimazione gaussiana, correlazione 0,5): CN EPN612 +1,5 pp 1,8%; CR solo E_dyn +6,3% 4,6%; CN P1 +1 4,6%; CN P2 +1,8 36%; non inferiorità su P2 in entrambi i contrasti con effetto nullo 5,1%. (6) I numeri del revisore coincidono con i suoi file power_double_A/B e options.json. LETTO: né il protocollo né il controllo interno di GPT dichiarano effetti minimi rilevabili; nella proposta del 07/11 la non inferiorità usava l'IC95 e solo sull'altro aggregato: il requisito attuale è più severo. Fra i bracci esistenti EPN612 da solo mostra +1,48 pp [0,56; 2,40] (G meno L): la regola non lo riconosce su P2.
+[correction] Gravità confermata con portata precisa: blocca il rilascio del training, non il collaudo tecnico. Non è un limite dichiarato da GPT. Tre precisazioni. (a) Le probabilità delle opzioni dipendono dallo stampo: col mio metodo gli scenari CR danno 5-20 punti in meno (margine P2 a 2 pp: 10-20% contro 16-32%; a 3 pp: 34-52% contro 44-63%; margini P1 1,5 e P2 3: 54-79% contro 70-92%); con le ampiezze più strette osservate CN con P2 +1,8 sale al 36%. L'ordine delle opzioni non cambia. Variante «P2 = solo EPN612» rifatta da me: nessun effetto 0,07%; CN EPN612 +1,5 pp 61% (revisore 70%); CR solo E_dyn +6,3% 37% (revisore 42%). (b) «Non neutra fra i due approcci» va letto così: entrambi i bracci sono fermati da P2, CR sulla non inferiorità e CN sul guadagno; anche un +1 pp sul solo P1 non basta. (c) Il double bootstrap del revisore ha intervalli interni più stretti del 3-5% rispetto a quelli veri: le sue probabilità sono, semmai, leggermente ottimistiche. Contesto utile per la decisione: P1 vale 17,1-17,5% (1 pp = 5,8% relativo), P2 78,7-80,5% (1 pp = 1,25% relativo).
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-2
+[verdict] CONFERMATO
+[severity] MINORE
+[evidence] LETTO: protocollo riga 101 (quattro profili senza criteri) e comparatore righe 210-217 (una sola etichetta unresolved_or_tradeoff oltre a CN, CR e sospensione). ESEGUITO (ipotesi nulla per randomizzazione, stampi A e B): con beneficio comune E_dyn +3% l'esito è irrisolto nel 99,4-99,6% dei casi; ciascun braccio è promettente contro C0 solo nel 4,5-8,4% (revisore 4,9-14,5%). Con una definizione naturale di «beneficio comune» (entrambi promettenti contro C0, nessun verso nel confronto diretto) il profilo scatterebbe nello 0,5-1,3% dei casi, benché il guadagno utile su E_dyn sia rilevato in entrambi i bracci nel 100% dei casi.
+[correction] Va chiuso insieme a confronto-1: se la regola resta com'è, l'esito atteso cade proprio nel ramo senza definizione e la lettura vera sarebbe scritta dopo i dati. Definizioni dei profili che passano dalla non inferiorità su P2 non distinguerebbero comunque nulla.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-3
+[verdict] CONFERMATO
+[severity] MINORE
+[evidence] ESEGUITO con dati miei a varianza bootstrap non nulla (120 soggetti per dataset, 500 finestre per classe, rumore di ±2 finestre, 100.000 repliche, audit completo). CN meglio su P1 di 0,607 pp [0,553; 0,660], CR meglio su P2 di 0,551 pp [0,500; 0,602], entrambi -5% di E_dyn contro C0: le quattro bandiere useful_without_material_loss sono vere, decision_valid vero, lettura CN_supported_for_confirmation. A ruoli scambiati (CR +0,594 su P1, CN +0,585 su P2) la lettura resta CN. Derivazione mia: servono due endpoint di classificazione con l'intervallo del confronto diretto dentro (-1; 0) e stima ≤ -0,5, cioè scostamenti sotto 0,5 pp; E_dyn non può entrarci perché guadagno e margine coincidono (2%). Frequenza nei miei 6.000 campioni per 15 scenari: 0.
+[correction] NOTA sarebbe difendibile: il caso è irraggiungibile con le ampiezze vere e anche con le varianti di confronto-1 (solo EPN612 0,83 pp; P1 0,69-0,82 pp). Resta MINORE perché contraddice «nessun vincitore forzato», la correzione è di poche righe e il comparatore è il giudice finale.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-4
+[verdict] CONFERMATO
+[severity] MINORE
+[evidence] ESEGUITO: 78 mutanti miei di una copia del comparatore, una sostituzione ciascuno; baseline 25 passati. Uccisi 25 (32%), sopravvissuti 53. Per area: costanti e intervalli 2/13; OOF e classificazione 1/11; posa 5/8; audit 1/7; regola 5/12; validità e lettura 6/17; manifest e schema 5/10. Sopravvivono fra gli altri: pesi P1 uniformi e P2 0,75/0,25; 10.000 repliche; seme diverso; soglie e margini; coda alfa/9; simultaneo uguale all'IC95; ordine non alfabetico dei dataset; E_dyn come media dei rapporti per utente; bandiere con IC95 o con la sola stima; ramo CR irraggiungibile o etichettato CN; ridge al bordo ignorata; fit non convergenti e audit assente che non sospendono. Sette mutanti rieseguiti oggi a campione: stesso esito. Riletto il JSON del revisore: 44 uccisi su 132, conteggi per area uguali a quelli dichiarati. LETTO: la riga 133 del test usa n_boot=100, che da solo sospende il verdetto.
+[correction] I 53 test proposti non bastano da soli. Contro i miei 78 mutanti ne uccidono 76: sopravvive un mutante non equivalente (repliche di E_dyn in differenza assoluta, vedi verifica-confronto-1) e una guardia minore (fold con valore 4 ammesso). «I 5 residui sono guardie ridondanti» vale per i 132 mutanti del revisore, che non contengono quel caso. Aggiungere anche i 2 test in <archivio>/agents/verifica-confronto/extra_tests/test_contrastive_compare_vc.py. Da fare prima della valutazione, non del collaudo.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-5
+[verdict] PARZIALE
+[severity] MINORE
+[evidence] ESEGUITO su manifest miei (dati sintetici, 100.000 repliche). Accettati con decision_valid vero: UCI con un soggetto in meno nei tre bracci; EPN612 con metà dei soggetti; posa con 3 utenti su 40; CN copia di C0 con lo stesso checkpoint; OOF di P1 scambiati fra CN e CR; lo stesso file OOF pinnato per CN e per CR (contrasto 0 con IC [0; 0]); stesso checkpoint dichiarato nei tre bracci; refit con C diverso dal candidato selezionato; anomalous_stop e reached_limit veri su tutti i fit. Rifiutati: soggetto tolto da un solo braccio («OOF pairing differs»); record di audit con braccio sbagliato; cella di posa con braccio sbagliato. Sospesi: un avviso di convergenza, ridge al bordo, campo assente. LETTO: protocollo riga 103 (limite dichiarato); scripts/tokenizer_probe.py righe 380-430: nella catena storica l'aggregatore per braccio controlla già righe attese, bersagli, soggetti, ruoli, parametri del solver, identità di cache, checkpoint e piano, e che il refit usi il C scelto.
+[correction] I fatti sono veri, la categoria no: è un limite dichiarato da GPT, non un difetto dimostrato. Il revisore non dice che i controlli per braccio esistono già a monte nell'aggregatore storico: se i nuovi valutatori lo riusano, righe troncate e C del refit sono coperti lì. Ignorare anomalous_stop è voluto: il comparatore ricalcola la convergenza da n_iter e avvisi, non dai booleani. Resta scoperto solo ciò che nessun controllo per braccio può vedere: legame fra braccio e file nel manifest, file e checkpoint distinti fra bracci, cardinalità attese. Per le cardinalità esiste un controllo senza codice (verifica-confronto-2). Prerequisito della valutazione, non del collaudo; si sovrappone a confronto-10.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-6
+[verdict] CONFERMATO
+[severity] MINORE
+[evidence] ESEGUITO su dati miei: pred come stringhe e y interi, solo UCI di CN: manifest accettato, decision_valid vero, P2 di CN-C0 -29,8 pp (accuratezza di UCI a zero). Stesso esito con pred float spostati di 1e-9. Provato anche con numpy 1.26.4, la versione delle sonde sul cluster: il confronto dà tutto falso senza errore e senza avvisi, come con 2.3.5. LETTO: negli OOF veri y e pred hanno lo stesso tipo (int64 oppure <U9): la catena storica non attiva il caso.
+[correction] Gravità invariata. Da aggiungere al rilievo: vale anche su numpy 1.26.4 e per float quasi uguali agli interi; oggi non è attivabile dai file veri.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-7
+[verdict] CONFERMATO
+[severity] MINORE
+[evidence] LETTO con git show 77b7003:docs/decisioni.md, righe 6443-6461, e il diff del registro nello stesso commit: la voce del 16/11 non contiene alcun numero di soglia. Mancano 2%, 0,5 pp, 1 pp, 99,4444%, 100.000 repliche, seme 20261116 e pesi; mancano anche 0,10, [1e-4; 1], 32 batch, 90% e 80%. Voci precedenti dello stesso file riportano soglie numeriche (04/11, T100-LQ): la prassi esiste. ESEGUITO: SHA256 di protocollo, plan.json, comparatore e test uguali ai pin di verification.json; costanti del comparatore uguali a plan.json. 77b7003 è la punta del ramo nel riferimento locale; il remoto non l'ho potuto interrogare.
+[correction] Non è ancora una violazione, perché nulla è stato lanciato: è un prerequisito. Per le soglie della lettura basta trascriverle prima del rilascio del training, dopo aver chiuso confronto-1. Diverso il caso delle soglie di calibrazione e copertura: le usa il collaudo stesso, quindi per la regola del progetto vanno scritte in docs/decisioni.md prima del collaudo. Questo punto esce dal mio perimetro: va passato alle dimensioni calibrazione e copertura.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-8
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO. Simulazione mia a verità nota con processi diversi da quelli del revisore (differenza di balanced accuracy tipo UCI; riduzione relativa di E_dyn). Copertura dell'intervallo nominale 99,4444%: 8 soggetti 96,1%; 19 soggetti 98,7%; 32 soggetti 98,6%; 314 soggetti 99,7%; E_dyn con 15 utenti 97,5%. Nominale 95%: 88,2%; 92,2%; 92,8%; 95,8%; 91,2%. Ipotesi nulla per randomizzazione sui dati veri: copertura dello zero E_dyn 97,3-97,8%; P1 98,8-99,1%; P2 98,0-98,9%. DATO NUOVO: copertura congiunta dei nove intervalli 87,0% ± 0,6 (stampo A) e 87,6% ± 0,6 (stampo B), contro il 95% nominale. Limite inferiore sopra zero a effetto nullo su E_dyn nell'1,2-1,5% dei casi per contrasto (nominale 0,28%). Almeno una bandiera di guadagno utile a effetto nullo: 3,2%.
+[correction] Aggiungere il dato congiunto: l'alfa di famiglia 0,05 scritto nel report vale circa 0,13 per gli intervalli. La regola resta protetta dalle soglie pratiche e dalle congiunzioni (falso «promettente» 0,13% nei miei calcoli). «Nominale» nel protocollo basta per la regola; non basta se un IC simultaneo sopra zero viene citato da solo come protezione di famiglia.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-9
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO col codice del comparatore su ingressi miei: T25-L meno B19618 P1 +0,510 pp, IC95 [0,074; 0,929], simultaneo [-0,116; 1,085]; T100-G meno T100-L E_dyn +0,525% [0,020; 0,976]. Identici al revisore. LETTO: comparability_review.json: stessa ricetta nominale, seme 0, checkout diversi, stato PASS_WITH_DECLARED_LIMITS; il report della coppia dichiara di non stimare la variabilità fra training. Fra i due training il C scelto dalle sonde cambia in 12 fold su 20.
+[correction] Limite dichiarato: la dichiarazione basta per una lettura di screening. Da notare che l'IC95 condizionato esclude lo zero fra due training della stessa ricetta: conferma che questi intervalli non misurano l'incertezza fra ricette. L'opzione C0 contro T100-G storico ha senso solo se dichiarata prima dei dati e letta come limite inferiore del rumore (stesso seme).
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-10
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO (ricerca nell'albero a db5ac41): contrastive_compare è citato solo dal suo test, dal protocollo, da plan.json e da verification.json; nessun codice legge la sezione evaluation di plan.json; non esiste un costruttore del manifest. LETTO: comparatore riga 192 (solo 19.618); logsquare_probe.py righe 19-21 e 40 (solo il braccio T100-LQ); protocollo par. 7 e 8 (limite dichiarato). In più: il comparatore riporta la balanced accuracy per dataset ma non i contrasti per dataset con intervallo, quindi una lettura del solo EPN612 oggi non ha strumento.
+[correction] Limite dichiarato, la dichiarazione basta per il collaudo. Si sovrappone alla parte residua di confronto-5: conviene trattarli come un solo prerequisito della valutazione.
+
+====================================================================================================
+VOCI «VERIFICATO CORRETTO» CONTESTATE
+(nessuna)
+
+RILIEVI NUOVI
+-   [id] verifica-confronto-1
+  [title] La scala relativa delle repliche di E_dyn non è protetta da alcun test, nemmeno dai 53 proposti dal revisore
+  [category] difetto_dimostrato
+  [severity] MINORE
+  [where] scripts/contrastive_compare.py riga 175; tests/cpu/test_contrastive_compare.py (nessun caso con varianza su E_dyn); test proposti dal revisore in <archivio>/agents/confronto/extra_tests/test_contrastive_compare_extra.py, funzione crafted (il braccio di controllo vale 1,0)
+  [claim] Un mutante che calcola le repliche del contrasto di E_dyn come differenza assoluta per 100, lasciando la stima in scala relativa, cambia gli intervalli: con E_dyn circa 0,84 si stringono del 16% e il margine di non inferiorità passa di fatto da 2% a 2,38%. Sopravvive ai 25 test consegnati e ai 25 + 53 del revisore. Nei test del revisore il controllo vale 1,0, dove le due scale coincidono. Riguarda la forza dei test, non il codice consegnato, che è corretto.
+  [evidence] ESEGUITO. Mutante: draw = 100*(samples[endpoint][:, j]-samples[endpoint][:, i]) al posto della riga 175. Test consegnati: 25 passati. Consegnati più i 53 del revisore: 78 passati, 2 xfailed. Con i miei 2 test: 2 falliti sul mutante, 2 passati sul codice consegnato. Il revisore aveva un mutante analogo solo per la stima puntuale (r05, ucciso), non per le repliche.
+  [suggested_fix] Aggiungere i 2 test pronti in <archivio>/agents/verifica-confronto/extra_tests/test_contrastive_compare_vc.py (controllo lontano da 1, varianza non nulla, confronto col quantile della riduzione relativa; verso inverso come trasformazione monotona).
+  [reproduce] V=<archivio>/agents/verifica-confronto; T=<albero_db5ac41>; mutanti e runner in $V/code/vc_mutate.py (argomenti: cartella di lavoro, parte k/n, eventuali file di test aggiuntivi); esiti in $V/mut/run.log e $V/mut/run_extra_1.log (k41 survived).
+-   [id] verifica-confronto-2
+  [title] Estrazioni identiche fra numpy 1.26.4, 2.1.3 e 2.3.5; le sei impronte attese possono fare da controllo di cardinalità senza codice
+  [category] preferenza
+  [severity] NOTA
+  [where] scripts/contrastive_compare.py righe 87 e 135 (estrazioni), 105 e 141 (draws_sha256); punto non verificato n. 4 del revisore; mitigazione per confronto-5
+  [claim] Il flusso di default_rng(20261116).integers è lo stesso nelle tre versioni di numpy presenti su questo Mac, compresa la 1.26.4 usata dalle sonde sul cluster. Le impronte draws_sha256 dipendono solo da seme, numero di repliche e numero di soggetti nell'ordine alfabetico dei dataset: per la coorte attesa (314, 32, 8, 8, 19 soggetti e 15 utenti di posa) sono note prima dei dati. Un valore diverso nel report finale segnala una coorte di cardinalità diversa o un flusso diverso. Non rileva soggetti diversi a parità di numero.
+  [evidence] ESEGUITO. Impronte calcolate dal solo RNG con numpy 2.3.5, 2.1.3 e 1.26.4: identiche. Uguali a quelle emesse dal comparatore nei miei giri sulle dimensioni vere e nel giro CLI del revisore su file in formato vero. Comparatore intero eseguito con numpy 1.26.4 e 2.3.5 sugli stessi 4 scenari a 100.000 repliche: 240 numeri identici, scarto 0. Valori in <archivio>/agents/verifica-confronto/exact/expected_draws_np1264.json (epn612 a8659719..., ninapro_db2 75cdbe60..., ninapro_db3 76f679fc..., ninapro_db6 4287c38b..., uci_emg f3c11119..., posa 96ff4842...).
+  [suggested_fix] Opzione a costo nullo: scrivere le sei impronte attese accanto alle soglie in docs/decisioni.md, oppure farle controllare al futuro costruttore del manifest. Decisione a GPT.
+  [reproduce] V=<archivio>/agents/verifica-confronto; T=<albero_db5ac41>; PYTHONDONTWRITEBYTECODE=1 ~/.venvs/wearusfm-tok/bin/python $V/code/vc_expected_draws.py; lo stesso con ~/anaconda3/envs/appTF/bin/python (numpy 1.26.4); PYTHONPATH=$T/src:$T/scripts:$V/code <python> $V/code/vc_exact.py <uscita.json> 100000; esiti in $V/exact/.
+-   [id] verifica-confronto-3
+  [title] C della logistica al bordo della griglia in 3-10 fold su 20 e instabile fra training uguali: il comparatore sospende per la ridge al bordo, non per la logistica, e non lo riporta
+  [category] dubbio_scientifico
+  [severity] NOTA
+  [where] scripts/contrastive_compare.py righe 156-157 (per il refit accetta qualunque C della griglia) e 204 (sospensione solo per la ridge); protocollo par. 5 riga 75 e par. 6 righe 103 e 105; dati in results/infra/tokenizer_evaluation_20261103/probe_cpu_19618/completed_aggregates, t25_b_repeatability_20261104/comparability_review.json, logsquare_evaluation_20261107/final/aggregate-p1 e aggregate-p2
+  [claim] Limite dichiarato in forma generale (ricette storiche dei lettori; IC condizionati ai checkpoint e ai lettori), senza numeri. Nei lettori storici il C scelto cade al bordo della griglia (0,001 o 100) in molti fold e cambia fra due training della stessa ricetta. È rumore del lettore che il bootstrap sui soggetti non copre, concentrato su UCI, DB3 e DB6: rafforza confronto-1 e confronto-9. Non è un difetto del comparatore; è un'asimmetria rispetto alla posa, dove il bordo irrisolto sospende il verdetto.
+  [evidence] LETTO e contato sui file pubblicati. Fold con C al bordo: T100-G 3 su 20; T100-L 6 su 20; T100-LQ 8 su 20; T25-L 9 su 20; B19618 10 su 20. Fra T25-L e B19618 il C scelto cambia in 12 fold su 20 (campo selected_C_changes). Su UCI il C scelto va da 0,001 a 100 nello stesso braccio (T25-L: 0,001; 100; 0,001; 0,001). ESEGUITO: un refit con C al bordo o diverso dal selezionato è accettato con decision_valid vero.
+  [suggested_fix] Opzione: far riportare al comparatore, come descrittivo, il numero di refit con C al bordo per braccio e dataset (il dato è già nei 420 record). Se trattarlo come la ridge è una decisione di GPT, da prendere prima dei dati.

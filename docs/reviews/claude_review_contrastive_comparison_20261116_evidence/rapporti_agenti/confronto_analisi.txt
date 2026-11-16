@@ -1,0 +1,164 @@
+Rapporto dell'agente: dimensione «confronto», ruolo «analisi». Review Claude del pacchetto db5ac41, 16/11/2026.
+Testo dell'agente, non rivisto riga per riga: vale la review per cio' che ne ho tratto. Percorsi: <archivio> = cartella di lavoro
+conservata fuori dal repository; <albero_db5ac41> e <albero_924e19d> = `git archive` dei due commit.
+
+SOMMARIO
+Dimensione: comparatore e regola di lettura (protocollo par. 5 e 6). Tutto eseguito in locale, CPU, senza job.
+
+IMPLEMENTAZIONE. scripts/contrastive_compare.py è conforme al protocollo. Reimplementazione indipendente (matrici di molteplicità, quantile scritto a mano): differenza massima 6,5e-14 su 72 contrasti×endpoint in 6 scenari sintetici a 100.000 repliche e seme 20261116; bandiere e letture tutte uguali (CN, CR, irrisolto); conteggi delle repliche con classi assenti identici. Sui dati veri della campagna log-quadratica le stime del comparatore coincidono con i valori pubblicati (scarto 0 sulle balanced accuracy, 1,1e-16 su E_dyn). Il CLI gira da capo a fondo su file in formato vero (420 fit, decisione valida, rifiuto della sovrascrittura). Difetti minori dimostrati: tradeoff simmetrico letto come vittoria di CN per ordine del codice; pred e y di tipo diverso accettati con accuratezza zero; ingressi troncati o scambiati ma coerenti accettati. Test deboli: 44 mutanti uccisi su 132.
+
+DISEGNO (regola di lettura). Una decisione bloccante da prendere prima dei dati (confronto-1), non un difetto del codice. Con le ampiezze vere l'esito più probabile è «irrisolto» per costruzione. Semiampiezza dell'IC simultaneo su P2: 1,79-2,97 pp contro un margine di non inferiorità di 1 pp. La non inferiorità su P2 si ottiene solo con una stima positiva di almeno +0,59...+2,01 pp. Con effetto vero nullo su P2 passa nel 5,7-17,6% dei casi per contrasto. Due training della stessa ricetta (T25-L e B19618) non risultano non inferiori l'uno all'altro su P2 (-0,09 pp, IC simultaneo [-2,01; +1,54]). Probabilità di «promettente per conferma» (double bootstrap sui dati veri): CN con +1,5 pp solo su EPN612 1,1-2,9%; CR con -6,3% di E_dyn e classificazione invariata 1,4-1,9%; serve circa P2 +3 pp con P1 +0,5 pp per arrivare al 51-81%. Il 95-98% della varianza del contrasto P2 viene da UCI (19 soggetti, 364 finestre). Ho calcolato le stesse probabilità per cinque varianti della regola, come opzioni: la scelta è di GPT e di Simone.
+
+PREREQUISITI. Per il collaudo tecnico il comparatore non pone condizioni (il collaudo non lo usa). Prima del rilascio del training: chiudere confronto-1 e scrivere le soglie numeriche in docs/decisioni.md (al commit 77b7003 c'è solo una frase qualitativa e il rimando al protocollo). Prima della valutazione: valutatori e manifest pinnati per C0/CN/CR, che la consegna non contiene, e test rinforzati (ho preparato 53 test aggiuntivi: 127 mutanti uccisi su 132).
+
+Nota operativa: negli alberi condivisi tree e tree924 ci sono 86 file .pyc scritti fra le 12:04 e le 12:07 da altri processi; nessuno riguarda i moduli che importo io (downstream_ab, contrastive_compare). Io ho sempre usato PYTHONDONTWRITEBYTECODE=1 e scritto solo nella mia cartella.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-1
+[title] Regola di lettura: con le ampiezze vere l'esito è «irrisolto» per costruzione; la non inferiorità su P2 a 1 pp non è sostenibile nemmeno da un braccio invariato
+[category] dubbio_scientifico
+[severity] BLOCCANTE
+[where] docs/contrastive_comparison_protocol_20261116.md par. 5 riga 83 (P2 = 1/2 EPN612 + 1/2 UCI) e par. 6 righe 89-99 (IC simultaneo, tabella delle soglie, regola); scripts/contrastive_compare.py righe 34-35 (MARGINS), 183-186 (bandiere), 204-217 (lettura); plan.json evaluation.margins
+[claim] Non è un difetto del codice: è una proprietà della regola con le ampiezze vere. Va deciso prima dei dati (prima del rilascio del training, non del collaudo tecnico). La regola chiede la non inferiorità su tre endpoint in due contrasti, con l'IC simultaneo 99,4444%. Su P2 il margine di 1 pp è 0,34-0,56 volte la semiampiezza dell'intervallo: la non inferiorità su P2 è ottenibile solo con una stima positiva di almeno +0,59...+2,01 pp. Il rapporto margine/semiampiezza è 3,7-6,2 su E_dyn e 1,23-1,45 su P1: la regola non è neutra fra i due approcci. Un braccio che migliora solo la posa (ipotesi di CR) è escluso in partenza; un braccio che migliora EPN612 di 1,5 pp non viene riconosciuto. L'esito più probabile per effetti plausibili è «unresolved_or_tradeoff».
+[evidence] ESEGUITO. (1) Codice di bootstrap del comparatore, 100.000 repliche, seme 20261116, 12 contrasti ordinati fra i 4 bracci esistenti (T25-L, T100-L, T100-G, T100-LQ). Semiampiezza IC95 / IC simultaneo: E_dyn 0,23-0,39 / 0,32-0,54 % relativo; P1 0,49-0,58 / 0,69-0,81 pp; P2 1,23-2,05 / 1,79-2,97 pp. Solo EPN612 (314 soggetti) 0,51-0,65 / 0,72-0,92 pp; solo UCI (19 soggetti, 364 finestre) 2,39-4,07 / 3,52-5,90 pp. UCI porta il 95,0-98,0% della varianza del contrasto P2. (2) Effetto minimo dichiarabile come guadagno utile: E_dyn 2,0% (decide la soglia pratica); P1 0,67-0,86 pp (decide l'intervallo: la soglia di 0,5 pp non opera mai); P2 1,59-3,01 pp. Stima minima per la non inferiorità: E_dyn -1,69...-1,46%; P1 -0,33...-0,15 pp; P2 +0,59...+2,01 pp. (3) CLI vero su file in formato vero, stampo C0=T100-L, CN=T100-G, CR=T100-LQ: P2 di CN-C0 +1,796 pp, IC simultaneo [-1,131; +4,321], noninferiority=false; lettura unresolved_or_tradeoff. (4) Due training della stessa ricetta e dello stesso seme (T25-L e B19618): P2 -0,093 pp, IC simultaneo [-2,012; +1,539], non inferiorità NON sostenuta. (5) La regola sulle 24 terne ordinate dei bracci esistenti: 24 irrisolte su 24. Sui 12 contrasti ordinati: non inferiorità vera 11 su E_dyn, 10 su P1, 1 su P2; guadagno utile 0 su tutti; 5 contrasti con stima P2 positiva (da +0,24 a +1,80 pp) falliscono la non inferiorità su P2. (6) Double bootstrap sui dati veri, 1.500 campioni esterni x 20.000 repliche interne, due stampi (A: T100-L/T100-G/T100-LQ; B: T25-L/T100-L/T100-LQ). Probabilità che la non inferiorità passi con effetto vero nullo: P2 5,7-17,6% per contrasto; P1 74-86%. Probabilità di «promettente per conferma»: nessun effetto 0,3%; CN con +1,5 pp solo su EPN612 (P2 +0,75) 1,1-2,9%; CN con P2 +1,8 (la differenza G-L già vista) 8,3-18,0%; CN con P2 +3 e P1 +0,5 50,9-80,7%; CR con E_dyn +2% 0,5-0,6%; CR con E_dyn +6,3% (quanto la dose 19.618->49.046) e classificazione invariata 1,4-1,9%; CR con E_dyn +6,3%, P1 +0,5, P2 +1 25,4-44,1%; CR con E_dyn +10%, P1 +1, P2 +3 95,5-99,6%; beneficio comune E_dyn +3% su entrambi: irrisolto 98,8-99,1%. L'approssimazione a intervallo di forma fissa su 4 stampi concorda (0,1-0,6%; 3,6-12%; 44-76%; 0,5-1,8%). Limiti del calcolo: ampiezze prese da contrasti fra tokenizer diversi allo stesso seme; solo variabilità dei soggetti; la coppia più simile disponibile (stessa ricetta) ha comunque semiampiezza simultanea 1,78 pp su P2.
+[suggested_fix] Decisione di GPT e Simone prima dei dati, poi scritta in docs/decisioni.md. Opzioni con i numeri calcolati (double bootstrap, stampi A/B; falso positivo sotto ipotesi nulla <=0,5% salvo dove indicato): (a) tenere la regola e dichiarare nel protocollo gli effetti minimi rilevabili e che l'esito atteso è «irrisolto» salvo P2 >= circa +3 pp con P1 >= +0,5 pp; (b) non inferiorità con IC95 e guadagno con IC simultaneo: CR con solo E_dyn +6,3% 9,7-13,9%, scenario E_dyn +6,3/P1 +0,5/P2 +1 57,7-78,7%; (c) margine P2 a 2 pp: 16,2-31,7% per CR con solo E_dyn +6,3%; a 3 pp: 44,2-63,3% (e 91,8-97,7% nello scenario misto); (d) endpoint P2 = solo EPN612, UCI descrittivo (stampo A): CN con EPN612 +1,5 pp 70,0%, CR con solo E_dyn +6,3% 41,9%, nessun effetto 0,07%; (e) margini P1 1,5 pp e P2 3 pp: 69,5-92,1% per CR con solo E_dyn +6,3%; (f) tutto con IC95 senza Bonferroni: più potere (CN P2 +1,8: 32-48%) ma falso positivo circa 2,4%. Io non scelgo.
+[reproduce] A=<archivio>/agents/confronto; T=<albero_db5ac41>; cd $A; export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$T/src:$T/scripts:$A/code; P=~/.venvs/wearusfm-tok/bin/python; $P code/real_widths.py $A/real_widths.json $A/real_samples.npz; $P code/real_triples.py $A/real_samples.npz $A/real_widths.json $A/real_triples.json; $P code/replicate_pair.py $A/replicate_pair.json; $P code/power_fixed.py $A/real_samples.npz $A/power_fixed.json; $P code/power_double.py 1 250 20000 $A/dboot/A_1.npz T100-L,T100-G,T100-LQ (semi 1-6; stampo B semi 21-24 con T25-L,T100-L,T100-LQ; variante EPN semi 11-14 con argomento finale epn_only); $P code/power_double_read.py "$A/dboot/A_*.npz" $A/power_double_A.json; $P code/options.py $A/dboot $A/options.json
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-2
+[title] I quattro profili dell'esito non favorevole non hanno definizione operativa; il comparatore emette una sola etichetta
+[category] dubbio_scientifico
+[severity] MINORE
+[where] docs/contrastive_comparison_protocol_20261116.md par. 6 riga 101; scripts/contrastive_compare.py riga 210 (winner = "unresolved_or_tradeoff")
+[claim] Il protocollo elenca «tradeoff, risultato irrisolto, beneficio comune senza differenza diretta, o nessun vantaggio», senza criteri. Il comparatore restituisce una sola etichetta per tutti. «Nessun vantaggio» non può seguire da un intervallo che contiene lo zero: serve un enunciato di equivalenza. Dato confronto-1, questo è l'esito atteso: la lettura vera verrebbe fatta dopo i dati, senza regola scritta.
+[evidence] LETTO il codice: un solo ramo else. ESEGUITO: nello scenario «beneficio comune» (E_dyn +3% per entrambi) il double bootstrap dà irrisolto nel 98,8-99,1% dei casi, e ciascun braccio risulta promettente contro C0 solo nel 4,9-14,5% dei casi: l'etichetta non distingue il profilo che il protocollo nomina.
+[suggested_fix] Definire prima dei dati, nel protocollo e nel comparatore, le etichette a partire dalle bandiere dei nove contrasti. Esempio di forma, soglie da decidere a GPT e Simone: beneficio comune = promettente contro C0 per entrambi e nessun verso del confronto diretto; tradeoff = guadagni utili di segno opposto nel confronto diretto; nessun vantaggio = entrambi i limiti simultanei dentro un margine di equivalenza dichiarato; altrimenti irrisolto. Aggiungere i test.
+[reproduce] Vedi power_double_A.json e power_double_B.json, scenario S9, nella cartella degli artefatti.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-3
+[title] Tradeoff simmetrico letto come vittoria di CN per ordine dei rami if/elif
+[category] difetto_dimostrato
+[severity] MINORE
+[where] scripts/contrastive_compare.py righe 210-215
+[claim] Se la regola è soddisfatta nei due versi (CN promettente contro C0 e contro CR, CR promettente contro C0 e contro CN) il comparatore risponde CN_supported_for_confirmation, perché controlla CN per primo. Contraddice «nessun vincitore forzato».
+[evidence] ESEGUITO (varianza bootstrap nulla per costruzione, 100.000 repliche, audit completo). CN meglio di CR di 0,6 pp su P1; CR meglio di CN di 0,6 pp su P2; entrambi -5% di E_dyn contro C0. Le quattro bandiere useful_without_material_loss (CN-C0, CR-C0, CN-CR, CR-CN) sono tutte vere; decision_valid=true; lettura CN_supported_for_confirmation. Scambiando i ruoli (CR meglio su P1, CN su P2) la lettura resta CN. Raggiungibile solo con semiampiezze simultanee sotto circa 0,5 pp su due endpoint di classificazione nel confronto diretto: con le ampiezze vere (P1 0,69-0,81; P2 1,79-2,97) la frequenza nel double bootstrap è 0 in tutti gli scenari. Per questo MINORE.
+[suggested_fix] Se entrambi i versi soddisfano la regola, etichetta senza vincitore (per esempio tradeoff). Aggiungere il test: ne ho preparato uno marcato xfail(strict), extra_tests/test_contrastive_compare_tradeoff_xfail.py (2 casi, oggi xfailed).
+[reproduce] Con le variabili di confronto-1: $P code/tradeoff_demo.py $A/tradeoff_demo.json
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-4
+[title] Test del comparatore deboli: 44 mutanti uccisi su 132; pesi, soglie, quantili e sospensioni del verdetto non sono protetti
+[category] difetto_dimostrato
+[severity] MINORE
+[where] tests/cpu/test_contrastive_compare.py righe 16-36 (inputs: soggetti, utenti e dataset identici fra loro, quindi varianza bootstrap nulla e pesi mai esercitati) e riga 133 (il test dei fit irrisolti usa n_boot=100, che da solo sospende il verdetto)
+[claim] Il codice oggi è corretto (verificato con la reimplementazione indipendente), ma i test non lo proteggono da regressioni. Conta perché il comparatore è il giudice finale e confronto-1 può portare a cambiare soglie o endpoint.
+[evidence] ESEGUITO: 132 mutanti di una copia di contrastive_compare.py, una sostituzione ciascuno; baseline 25 passati. Uccisi 44 (33%), sopravvissuti 88. Per area (uccisi/totale): costanti 4/17, intervalli 0/5, OOF 3/13, classificazione 4/9, posa 8/21, audit 2/12, regola 10/18, lettura 6/11, validità 4/13, manifest 3/13. Sopravvivono fra gli altri: pesi P1 uniformi o permutati e P2 0,6/0,4 (c01-c04); 10.000 repliche e seme diverso (c05, c06); soglie di guadagno e margini (c09-c14); coda alfa/9, nessun Bonferroni, IC95 al 90%, estremi scambiati (i01-i04); ordine non alfabetico dei dataset (o01); task senza pesi (o18, o19); E_dyn come media dei rapporti per utente (p15, p16); bandiere con IC95, con la sola stima o col limite superiore (r06-r13); ramo CR mai raggiunto o etichettato CN (r25-r27); ridge al bordo ignorata (v01, v02); seme diverso che non sospende (v04); fit non convergenti o audit assente che non sospendono (a10, v05, v06). Nessun test contiene un intervallo di ampiezza non nulla né un caso in cui vince CR.
+[suggested_fix] Aggiungere test con varianza bootstrap non nulla, dataset diversi fra loro, un oracolo indipendente, il confronto delle costanti con plan.json, le sospensioni a 100.000 repliche e il caso CR. File pronto: extra_tests/test_contrastive_compare_extra.py, 53 test, tutti passati sulla consegna (78 passati e 2 xfailed insieme ai 25 originali). Con questi i mutanti uccisi salgono a 127 su 132; i 5 residui sono guardie ridondanti (a02, p18, p19, m09, m13).
+[reproduce] Con le variabili di confronto-1: $P code/mutate.py $A (solo test consegnati, scrive mutation_results.json); $P code/mutate.py $A extra (con i test aggiuntivi, circa 40 minuti in sequenza; io l'ho diviso in 6 parti con gli argomenti finali «k 6»).
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-5
+[title] Il comparatore accetta ingressi troncati o scambiati purché coerenti: nessuna cardinalità attesa e nessun legame fra OOF, braccio e checkpoint
+[category] difetto_dimostrato
+[severity] MINORE
+[where] scripts/contrastive_compare.py: from_manifest righe 242-269, classification_statistics righe 78-85, pose_statistics righe 116-130, verify_audits righe 146-166; limite dichiarato nel protocollo par. 6 riga 103
+[claim] Limite dichiarato («il comparatore non sostituisce i controlli di provenienza»). La dichiarazione basta per il collaudo. Non basta per la lettura finale finché non esiste chi produce e controlla il manifest: la consegna non lo contiene, e decision_valid resta true su ingressi incompleti.
+[evidence] ESEGUITO su file in formato vero, pin rifatti a ogni prova. Accettati con decision_valid=true: UCI con 18 soggetti su 19 nei tre bracci; EPN612 con 157 soggetti su 314; posa con 14 utenti su 15 e con 2 su 15 (E_dyn di C0 da 0,8434 a 0,8652); support_sha256 cambiato allo stesso modo nei tre bracci; CN copia di C0 con lo stesso checkpoint_sha256; OOF di P1 di CN e CR scambiati fra loro; refit con C=0,001 al posto del selezionato 1,0; anomalous_stop=true; fold rinumerati. Rifiutati correttamente: soggetto tolto da un solo braccio («OOF pairing differs»); audit con un altro checkpoint; hash diverso dal pin. Sospesi correttamente: ridge al bordo irrisolta; un avviso di convergenza.
+[suggested_fix] Prima della valutazione, non del collaudo: nel manifest valori attesi e pinnati (soggetti per dataset 314/32/8/8/19, 15 utenti di posa, hash di supporto e bersagli, checkpoint distinti per braccio) e un legame OOF-audit-checkpoint (per esempio il pin del report aggregato con oof_sha256 e audit_sha256, oppure la balanced accuracy per fold ricalcolata dall'OOF e confrontata col report). Controllare che il C del refit sia il massimo di val_bacc con pareggio al C minore, come fa lo script indipendente di GPT della campagna log-quadratica.
+[reproduce] Con le variabili di confronto-1: $P code/e2e_real.py $A/e2e $A/e2e_real.json
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-6
+[title] pred e y di tipo diverso: accuratezza zero in silenzio, con decisione valida
+[category] difetto_dimostrato
+[severity] MINORE
+[where] scripts/contrastive_compare.py righe 43-48 (_labels) e 57-58 (validate_oof); src/wearusfm/harness/downstream_ab.py righe 30-31 (pred == y)
+[claim] validate_oof accetta per pred qualunque tipo numerico o stringa, senza confrontarlo con y. Con numpy 2.3.5 il confronto fra interi e stringhe dà tutto falso senza errore.
+[evidence] ESEGUITO: UCI, pred di CN salvato come stringhe e y interi. Manifest accettato, decision_valid=true, P2 di CN-C0 = -37,43 pp.
+[suggested_fix] Richiedere lo stesso tipo (dtype.kind) per y e pred, ed eventualmente che i valori di pred siano fra le classi viste; aggiungere un test.
+[reproduce] Prova t13 in code/e2e_real.py; esito in e2e_real.json.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-7
+[title] Le soglie della lettura non sono scritte in docs/decisioni.md
+[category] difetto_dimostrato
+[severity] MINORE
+[where] docs/decisioni.md al commit 77b7003, righe 6443-6461 (voce del 16/11); regola del progetto in CLAUDE.md («le soglie si congelano prima di guardare»)
+[claim] La regola del progetto chiede che ogni soglia sperimentale sia scritta e committata in docs/decisioni.md prima del lancio dell'esperimento che la usa. Nulla è stato lanciato, quindi la regola non è ancora violata: è un prerequisito del rilascio del training.
+[evidence] LETTO con git show 77b7003:docs/decisioni.md e con il diff del commit. La voce dice solo «Nove contrasti prespecificati su E_dyn/P1/P2, con intervalli simultanei, utilità pratica e non inferiorità» e rimanda al protocollo. Mancano 2%, 0,5 pp, 1 pp, 99,4444%, 100.000 repliche, seme 20261116, pesi 8/13, 3/13, 2/13 e 1/2, 1/2. Nemmeno la voce del registro li riporta. I numeri stanno nel protocollo (SHA256 d656297e..., pinnato in verification.json), in plan.json (evaluation) e nelle costanti del comparatore; ho verificato che i tre coincidono. Il protocollo è in stato REVIEW_REQUIRED. La voce non contiene alcuna soglia numerica, quindi lo stesso vale per le soglie di calibrazione e copertura usate dal collaudo: da confermare a chi rivede quelle dimensioni.
+[suggested_fix] Dopo aver chiuso confronto-1, trascrivere in docs/decisioni.md le soglie numeriche della lettura (oppure gli SHA256 di protocollo e plan.json insieme ai numeri) e committare prima del rilascio del training.
+[reproduce] git -C ~/dev/wearusfm/.claude/worktrees/claude-training-engine show 77b7003:docs/decisioni.md | sed -n 6443,6461p
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-8
+[title] IC «simultaneo 99,4444%» nominale: copertura effettiva 96,5-98,5% con 15 utenti e 8-19 soggetti
+[category] dubbio_scientifico
+[severity] NOTA
+[where] docs/contrastive_comparison_protocol_20261116.md par. 6 righe 89-91; scripts/contrastive_compare.py righe 67-71 (intervals: percentile, interpolazione lineare)
+[claim] Il bootstrap percentile con pochi gruppi copre meno del nominale. Il protocollo scrive «nominale»: la dichiarazione basta per la regola, che resta molto conservativa (falso positivo 0,3% sotto ipotesi nulla); non basta se gli intervalli vengono presentati come protezione di famiglia al 95%.
+[evidence] ESEGUITO. Double bootstrap sui dati veri (1.500 x 20.000, tre serie): copertura dell'intervallo nominale 99,4444%: E_dyn 96,5-97,9%; P1 98,5-99,3%; P2 97,3-98,5%. Intervallo nominale 95%: E_dyn 89,9-92,0%; P1 91,5-94,2%; P2 91,7-93,3%. Simulazione a verità nota (popolazione normale, media di n unità): n=8 95,6% e 88,2%; n=15 98,3% e 92,8%; n=19 98,3% e 92,8%; n=32 99,1% e 94,2%; n=314 99,4% e 95,2%.
+[suggested_fix] Opzioni: dichiarare nel report la copertura effettiva attesa; oppure intervalli studentizzati o BCa. Scelta a GPT.
+[reproduce] Con le variabili di confronto-1: $P code/coverage_sim.py $A/coverage_sim.json; coperture del double bootstrap in power_double_A.json, power_double_B.json, power_double_E_epn_only.json.
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-9
+[title] Un solo seme: su P1 due training della stessa ricetta differiscono di 0,51 pp, quanto la soglia di guadagno
+[category] dubbio_scientifico
+[severity] NOTA
+[where] docs/contrastive_comparison_protocol_20261116.md par. 6 riga 105 (limite dichiarato); results/infra/tokenizer_evaluation_20261103/t25_b_repeatability_20261104/paired_report.json
+[claim] Limite dichiarato (un seme, IC condizionati ai checkpoint). La dichiarazione basta finché la lettura resta «promettente per conferma» e il guadagno usa l'IC simultaneo. Diventa un rischio se per chiudere confronto-1 si passa all'IC95 anche per il guadagno.
+[evidence] ESEGUITO col codice del comparatore sui conteggi pubblicati. T25-L meno B19618 (stessa ricetta nominale, seme 0, comparabilità PASS_WITH_DECLARED_LIMITS): P1 +0,510 pp, IC95 [0,074; 0,929], IC simultaneo [-0,116; 1,085]. Con l'IC95 sarebbe «guadagno utile»; con il simultaneo no. Su E_dyn la semiampiezza simultanea è 0,32-0,54%: differenze di 0,5% risultano significative rispetto agli utenti (T100-G meno T100-L +0,525%, IC simultaneo [0,020; 0,976]) mentre la variabilità fra training non è mai stata misurata; l'unica protezione è la soglia pratica del 2%.
+[suggested_fix] Opzione a costo di training nullo: aggiungere come lettura descrittiva dichiarata prima dei dati il confronto fra C0 e il T100-G storico a 19.618 (stessa ricetta e seme, percorso di calcolo nuovo) con lo stesso bootstrap. Dà un limite inferiore del rumore fra training su E_dyn, P1 e P2.
+[reproduce] Con le variabili di confronto-1: $P code/replicate_pair.py $A/replicate_pair.json
+
+----------------------------------------------------------------------------------------------------
+[id] confronto-10
+[title] Catena di valutazione non consegnata: nessun produttore del manifest, lettori legati ai nomi dei bracci storici, nessuno strumento per le letture descrittive
+[category] preferenza
+[severity] NOTA
+[where] scripts/contrastive_compare.py riga 192 (solo 19.618); scripts/logsquare_probe.py righe 20-22 e 40 (solo T100-LQ); plan.json evaluation; protocollo par. 7 e 8 (dichiarato)
+[claim] Limite dichiarato da GPT (valutatori pinnati dopo la review). La dichiarazione basta per il collaudo. Lo riporto perché decide quali verifiche restano prima della valutazione.
+[evidence] LETTO e cercato con grep: la sezione evaluation di plan.json non è letta da alcun codice né test della consegna; il comparatore rifiuta dosi diverse da 19.618, quindi la lettura descrittiva di posa a 5.000 e i descrittivi a 19.618 (gruppi tutti/statici, IC per dataset) non hanno uno strumento in questa consegna; le sonde esistenti accettano solo i nomi dei bracci storici. ESEGUITO: i formati dei lettori esistenti sono compatibili col comparatore (OOF npz, audit jsonl, cella di posa: giro completo del CLI con uscita 0 e 420 fit verificati).
+[suggested_fix] Prima della valutazione: sonde ed estrattori per C0/CN/CR, costruttore del manifest con i controlli di confronto-5, strumento dichiarato per le letture descrittive, e un test che confronti plan.json con le costanti del comparatore (incluso nei miei test aggiuntivi).
+
+====================================================================================================
+VERIFICATO CORRETTO
+-   [what] Statistiche del comparatore uguali a una reimplementazione indipendente: stime, IC95, IC simultaneo, bandiere di guadagno utile e non inferiorità, lettura finale, lettura inversa del confronto diretto.
+  [how] Eseguito. code/indep_stats.py (nessun import dal progetto; matrici di molteplicità; quantile scritto a mano) contro C.compare a 100.000 repliche e seme 20261116 su 6 scenari sintetici con varianza non nulla, dimensioni vere dei dataset, etichette intere e stringhe, righe permutate: 72 contrasti×endpoint, differenza massima 6,5e-14, bandiere e letture tutte uguali (unresolved, CN_supported, CR_supported).
+-   [what] Metodo dell'intervallo: percentile con interpolazione lineare, code 0,2778% e 99,7222% per il simultaneo (alfa 0,05 / 18) e 2,5% / 97,5% per l'IC95.
+  [how] Eseguito: il mio quantile a mano e np.quantile sugli stessi campioni coincidono entro 6,5e-14; test su vettore noto di 100.001 valori.
+-   [what] Classi assenti in un'estrazione: macro-recall sulle classi presenti, tutte le repliche conservate.
+  [how] Eseguito: scenari con una classe presente in un solo soggetto; conteggi delle repliche con classi assenti identici fra comparatore e reimplementazione (34.227, 35.888, 24.831, 33.298 e 769 su 100.000) e valori uguali.
+-   [what] Estimandi sui dati veri: balanced accuracy dai conteggi aggregati per classe, P1 con pesi 8/13, 3/13, 2/13, P2 con 1/2, 1/2, E_dyn come somma degli errori centrati su somma della variabilità del bersaglio.
+  [how] Eseguito: per i 4 bracci della campagna log-quadratica il comparatore riproduce i valori pubblicati (scarto massimo 0 sui 5 dataset, su P1 e su P2; 1,1e-16 su E_dyn). Repliche bootstrap del comparatore uguali alle mie entro 7,8e-16.
+-   [what] Struttura del bootstrap: un solo generatore, dataset in ordine alfabetico, stesse estrazioni per i tre bracci, soggetti entro dataset, utenti per la posa.
+  [how] Eseguito (uguaglianza replica per replica con la reimplementazione) e letto. La posa usa un generatore nuovo con lo stesso seme: il flusso coincide con l'inizio di quello di EPN612, ma nessuna statistica combina posa e classificazione per indice di replica e Bonferroni vale sotto qualunque dipendenza: innocuo. Il protocollo non specifica il generatore; il report pubblica draws_sha256.
+-   [what] Costanti del comparatore uguali al protocollo e a plan.json: tre coppie, tre endpoint, pesi, soglie di guadagno (2%, 0,5 pp, 0,5 pp), margini (2%, 1 pp, 1 pp), 100.000 repliche, seme 20261116, famiglia 9, alfa 0,05, 420 fit.
+  [how] Letto e verificato con un test (test_constants_match_protocol_and_plan). SHA256 di scripts/contrastive_compare.py e del suo test uguali ai pin di verification.json.
+-   [what] Sospensione del verdetto: fit irrisolti, avvisi di convergenza, ridge al bordo irrisolta o campo assente, seme o numero di repliche diversi, audit assente. Le stime restano, le bandiere diventano null.
+  [how] Eseguito a 100.000 repliche con i miei test (6 casi) e su file in formato vero (ridge al bordo e avviso di convergenza). Il codice è corretto; il test consegnato non lo dimostra perché usa n_boot=100.
+-   [what] Controllo dei 420 record dei fit e identità del checkpoint fra posa e classificazione.
+  [how] Eseguito: record mancante, in più, griglia dei C sbagliata, C del refit fuori griglia, eccezione, max_iter diverso, n_iter nullo o stringa, avvisi negativi, flag incoerente: tutti rifiutati. Audit con un altro checkpoint: rifiutato.
+-   [what] CLI da capo a fondo su file in formato vero (OOF npz, audit jsonl veri, celle di posa vere).
+  [how] Eseguito da sottoprocesso con stampo C0=T100-L, CN=T100-G, CR=T100-LQ: uscita 0, 420 fit, decision_valid=true, 100.000 repliche, file di uscita 681.714 byte; seconda esecuzione sulla stessa uscita rifiutata («refuse to overwrite»). Non è una lettura scientifica di quei bracci.
+-   [what] 100.000 repliche bastano per le code allo 0,2778%.
+  [how] Eseguito: stessi dati veri, 6 semi. Deviazione standard del limite inferiore simultaneo 0,001-0,026 (0,3-0,9% della semiampiezza).
+-   [what] Costo del comparatore.
+  [how] Eseguito sul Mac a un thread: compare() a 100.000 repliche sulle dimensioni vere in 26,7 s, memoria di picco 0,31 GiB.
+-   [what] Molteplicità: nove contrasti con Bonferroni; la lettura inversa usa gli stessi intervalli.
+  [how] Letto e misurato: sotto ipotesi nulla la regola dà «promettente» nello 0,3% dei casi nel double bootstrap (0,02% con l'approssimazione a forma fissa). La regola è molto più conservativa del 5% dichiarato, per via delle congiunzioni.
+-   [what] I 25 test consegnati passano.
+  [how] Eseguito: 25 passati in 0,9 s con -p no:cacheprovider e PYTHONDONTWRITEBYTECODE=1.
+-   [what] L'uscita del comparatore dichiara i limiti: un seme per braccio, dati di sviluppo già osservati, nessuna variabilità fra training, solo screening per una proposta di conferma.
+  [how] Letto (campi uncertainty e scope, righe 229-230) e visto nel file prodotto dal CLI.
+
+NON VERIFICATO
+- Ampiezze degli intervalli per i tre bracci nuovi C0/CN/CR: non esistono ancora. Le probabilità di confronto-1 usano come stampo i contrasti fra bracci esistenti (tokenizer diversi, stesso seme) e coprono solo la variabilità dei soggetti.
+- Variabilità fra training (semi diversi) su E_dyn, P1 e P2: mai misurata; esiste una sola coppia a ricetta uguale, e solo per la classificazione.
+- Compatibilità del comparatore con le uscite dei futuri estrattori, sonde e lettori di posa per C0/CN/CR e con il futuro costruttore del manifest: non sono nella consegna. Ho verificato solo i formati dei lettori esistenti.
+- Riproducibilità bit per bit delle estrazioni su Leonardo: ho usato numpy 2.3.5 sul Mac; le sonde storiche sul cluster usavano numpy 1.26.4. Non ho verificato che default_rng(seed).integers dia lo stesso flusso nelle due versioni; draws_sha256 nel report permette il controllo.
+- Lettura descrittiva di posa a 5.000 passi e descrittivi a 19.618 (gruppi tutti/statici, IC per dataset): nessuno strumento nella consegna, quindi nulla da eseguire.
+- Soglie di calibrazione e copertura del collaudo (fuori dal mio perimetro): ho solo constatato che la voce del 16/11 in docs/decisioni.md non contiene alcun numero.
+- Double bootstrap: 20.000 repliche interne invece di 100.000 e 1.500 campioni esterni per serie; le probabilità hanno un errore Monte Carlo di circa 1 punto percentuale attorno al 50% e di circa 0,3 punti attorno all'1%.
+- Non ho eseguito l'intera tests/cpu (vietato) né nulla su GPU o sul cluster.

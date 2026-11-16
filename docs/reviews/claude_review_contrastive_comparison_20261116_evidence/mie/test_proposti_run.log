@@ -1,0 +1,34 @@
+Corsa finale dei 13 file di test proposti sul codice consegnato db5ac41, eseguita da Claude il 16/11/2026 (Mac, CPU, torch 2.14.0).
+In coda: numero di test raccolti per file.
+
+18:05:23
+..........................................s............................. [ 70%]
+.......................xx..................................              [100%]
+=============================== warnings summary ===============================
+prop_rnc_strong_v.py::test_value_counts_and_logs_against_numpy_oracle_with_uncounted_anchors[True-plain-0]
+  <prove>/test_proposti/prop_rnc_strong_v.py:109: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+    assert float(loss) == pytest.approx(ref["loss"], rel=1e-11, abs=1e-12)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] prop_compare_extra.py:122: plan.json non presente in questo albero
+200 passed, 1 skipped, 2 xfailed, 1 warning in 177.83s (0:02:57)
+prop_calibration_4rank_ckpt.py: 3 tests collected in 1.38s
+prop_calibration_adversarial.py: 5 tests collected in 1.74s
+prop_calibration_reader_extra.py: 14 tests collected in 1.35s
+prop_compare_extra.py: 53 tests collected in 0.07s
+prop_compare_tradeoff_xfail.py: 2 tests collected in 0.04s
+prop_compare_vc.py: 2 tests collected in 0.06s
+prop_distributed_independent.py: 10 tests collected in 2.12s
+prop_nce_killers.py: 23 tests collected in 0.73s
+prop_nce_killers_v.py: 7 tests collected in 0.69s
+prop_rnc_attach_oracle.py: 4 tests collected in 1.57s
+prop_rnc_callsite_v.py: 13 tests collected in 0.59s
+prop_rnc_extra.py: 9 tests collected in 0.70s
+prop_rnc_strong_v.py: 58 tests collected in 0.73s
+       0
+       0
+18:08:42
+
+[exited with code 0]

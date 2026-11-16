@@ -1,0 +1,4 @@
+273c273
+<         cfg = replace(cfg, model=replace(cfg.model, contrastive_projection=True), contrastive=asdict(cc))
+---
+>         cfg = replace(cfg, contrastive=asdict(cc))

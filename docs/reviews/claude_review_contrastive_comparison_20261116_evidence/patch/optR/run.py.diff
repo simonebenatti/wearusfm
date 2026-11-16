@@ -1,0 +1,39 @@
+174,175c174
+<                    "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False,
+<                    "contrastive": None}
+---
+>                    "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False}
+196c195
+<                         "tokenizer_logsquare": False, "tokenizer_logsquare_eps": 1e-3, "contrastive_projection": False, **out["model"]}
+---
+>                         "tokenizer_logsquare": False, "tokenizer_logsquare_eps": 1e-3, **out["model"]}
+288c287,300
+<     return json.loads(json.dumps(asdict(cfg), default=list))
+---
+>     out = json.loads(json.dumps(asdict(cfg), default=list))
+>     if out.get("contrastive") is None:  # PROVA DEL REVISORE (opzione R): spento = nessuna traccia, il dizionario di sempre
+>         out.pop("contrastive", None)
+>     return out
+> 
+> 
+> def build_student(cfg: RunConfig) -> WearUsFM:
+>     """PROVA DEL REVISORE (opzione R): il proiettore contrastive non e' un campo di FMConfig; lo aggiunge il trainer quando la ricetta
+>     contrastive c'e'. Stesso punto e stesso stato del generatore della consegna (fine della costruzione del modello, generatore isolato)."""
+>     student = WearUsFM(cfg.model)
+>     if cfg.contrastive is not None:
+>         from wearusfm.model.contrastive import ProjectionHead
+>         student.contrastive_head = ProjectionHead(cfg.model.dim)
+>     return student
+1283,1284c1295,1296
+<         if cfg.accum_steps != 1 or cfg.freeze_encoder or cfg.model.spectral_branches or not cfg.model.contrastive_projection:
+<             raise ValueError("contrastive requires projection, accum_steps=1 and unfrozen plain encoder")
+---
+>         if cfg.accum_steps != 1 or cfg.freeze_encoder or cfg.model.spectral_branches:
+>             raise ValueError("contrastive requires accum_steps=1 and unfrozen plain encoder")
+1290,1291d1301
+<     elif cfg.model.contrastive_projection:
+<         raise ValueError("training with contrastive projector requires an explicit matched experiment config")
+1365c1375
+<     student = WearUsFM(cfg.model).to(device)
+---
+>     student = build_student(cfg).to(device)

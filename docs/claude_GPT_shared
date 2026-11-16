@@ -8206,6 +8206,31 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Prove degli agenti fuori dal repository: `~/wearusfm_local/reviews/rnc_review_20261116/` (100 MB, nessun dato wearable).
 - Prompt per GPT in coda alla review.
 
+### 2026-11-16 | Claude | Review del pacchetto contrastivo di GPT `db5ac41` (InfoNCE / RnC): disegno, implementazione, collaudo
+- Richiesta di Simone in chat il 16/11: «Ti chiedo una review prima dei lanci, senza sottomettere job.» e «Distingui approvazione
+  del disegno, implementazione e prerequisiti del collaudo.» Seguito il prompt di GPT `77b7003`. Nessun job, nessun file della
+  linea 3 modificato, nessun cambio di ricetta.
+- Review `docs/reviews/claude_review_contrastive_comparison_20261116.md`; prove nella cartella
+  `docs/reviews/claude_review_contrastive_comparison_20261116_evidence/` (LEGGIMI.md, miei script e uscite, test proposti, patch
+  provate, i venti rapporti degli agenti).
+- Verdetti. Disegno: schema approvato, tre regole DA RIVEDERE prima dei dati (D-1 copertura, D-3 pesi, D-2 lettura).
+  Implementazione: APPROVATA CON CORREZIONI, nessun errore di calcolo trovato. Prerequisiti del collaudo: non soddisfatti.
+- Di persona: 153 test locali di GPT passati; i sei test distribuiti girano sul Mac: 5 passati, [CR-4] fallito per la tolleranza
+  del test su `total` (metrica `pose` float32, identica alla base); gradienti e termini contrastivi coincidono.
+- Di persona, sui soli indici del flusso vero (19.618 update del controllo 30M): copertura InfoNCE 618.119 query ammissibili su
+  619.584; capgmyo 0 su 1.461 e 13 finestre nel pannello di calibrazione; norma del gradiente 29,79 -> 6,70 -> 2,65.
+- Di persona: regola di lettura sui quattro bracci storici col bootstrap congelato; suite completa sui due alberi (12 falliti alla
+  base, 23 nella consegna); 203 test proposti dagli agenti eseguiti sul codice consegnato (200 passati, 1 saltato, 2 xfail).
+- Venti agenti in dieci dimensioni, ogni rilievo con verifica avversaria indipendente: 90 rilievi, 75 confermati, 14 confermati
+  in parte, 1 rifiutato; 25 rilievi nuovi dei verificatori.
+  Infine quattro lettori indipendenti hanno riletto la bozza contro le fonti: 8 errori e 71 imprecisioni corretti prima di
+  pubblicare (fra gli errori: due valori di `total` scambiati, un costo attribuito male, due log vuoti nella cartella di prove).
+- Leonardo: una sola lettura (`ulimit -n` e `scontrol show config` sul nodo di login). Nessuna scrittura.
+- Punta del ramo di GPT riletta alle 18:58: `1d87e8d` (16:58, soli esempi MATLAB e due voci di registro); il codice e'
+  identico a `db5ac41`. Gli esempi MATLAB sono fuori dal perimetro: non letti ne' eseguiti.
+- Cartelle di lavoro degli agenti fuori dal repository: `~/wearusfm_local/reviews/contrastive_review_20261116/` (nessun dato
+  wearable). Prompt per GPT in coda alla review.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11118,3 +11143,32 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   nel pacchetto `db5ac41`: da trattare li', se Simone conferma.
 - Limiti miei: nessuna GPU, nessun DDP a 4 processi, modello vero solo su segnali sintetici, letteratura letta con strumenti
   automatici (da verificare), valori veri della posa nei batch non letti.
+
+### 2026-11-16 | Claude | Pacchetto contrastivo `db5ac41`: tre decisioni prima dei dati, undici gruppi di rilievi (per GPT)
+- D-1, blocca calibrazione e collaudo: il cancello di copertura non e' superabile da capgmyo. 0 query ammissibili su 1.461, 0
+  blocchi su 18, 13 finestre nel pannello 256-511 contro 32: la calibrazione finisce in FAILED_REQUIRES_REVIEW. Non e' un errore
+  del codice. Opzioni: esenzione con regola scritta prima (18 blocchi su 18) oppure memoria 2.048 e soglia 8 (tre cambi).
+- D-3, prima della calibrazione: il 10% dei pesi e' riferito al massimo transitorio della base. A norma del termine costante il
+  rapporto vale 0,44-0,49 a peso pieno, 0,96 in media, 1,1-1,2 a fine corsa; clipping attivo in 19.616 update su 19.618. Sul 30M
+  con segnali sintetici lambda cade a cavallo del limite 1 (InfoNCE 0,62-4,44; RnC 0,90-4,35): scrivere prima che cosa succede.
+- D-2, prima del rilascio dei training: con le ampiezze dei bracci storici la non inferiorita' su P2 e' sostenuta in 1 contrasto
+  su 12 e il guadagno utile in 0 su 12; 24 terne storiche su 24 irrisolte. Il passaggio da IC95 (07/11) a 99,4444% non e' dichiarato.
+- I-1, blocco di processo, da chiudere prima del collaudo: su ogni run senza contrastive scattano le guardie delle campagne
+  chiuse (10 test log-quadratici, `canonical_config` rifiuta 15 config registrati) per due chiavi nuove nel config e un campo in
+  `FMConfig`. Ricetta invariata (9.471 tensori, 0 diversi). Correzione provata, da unire agli adattamenti di `main` `3263ee9`.
+- I-2: [CR-4] e' un difetto del test. I-3: NaN -> eccezione senza STOP ne' summary nei tre bracci (la catena si ferma, `afterok`).
+- I-4: all'arresto del cancello l'update e' applicato e contato ma non registrato; ramo mai eseguito da test e strumenti
+  consegnati: su GPU la prima esecuzione sarebbe l'update 1.280 dei training. Eseguito qui su CPU: fa cio' che e' progettato.
+- I-5: `--contrastive-config` e' un secondo ingresso senza cancelli (`{}` -> C0 con pesi 0,1). I-6: ricevuta creduta sulla parola.
+- I-7: strumenti del collaudo incompleti (prova a secco che non legge la release, `arms_collaudo` rifiuta C0/CN/CR, nessun
+  criterio di superamento, audit con oltre 1.024 file aperti). I-8: diagnostiche promesse dal protocollo e non scritte.
+- I-9: comparatore (pareggio letto come CN, tipi diversi -> accuratezza zero, scala di E_dyn non protetta). I-10: dettagli.
+  I-11: la parita' con lo storico a un processo e' esatta solo per certe taglie del batch; nessun effetto sulla campagna (n = 32).
+- Test: secondo l'area i test consegnati rilevano dal 6% al 68% dei mutanti provati (tutti e 4 quelli dei fattori distribuiti);
+  le soglie del cancello (32, 80%, 90%) non sono protette. Proposti 203 test in 13 file, eseguiti da me sul codice consegnato.
+- Prerequisiti: soglie in `docs/decisioni.md` prima del primo job; piano e criteri del collaudo; budget da decidere (l'estensione
+  del 03/11 «copre questo confronto, non nuove loss»: interpretazione mia, serve una decisione di Simone).
+- Tre correzioni dei verificatori cambiano il senso di affermazioni che altrimenti avrei riportato: C0 = storico bit per bit;
+  catena che riparte dopo un'eccezione; esito favorevole «irraggiungibile». Una mia nota («clippato a ogni passo») era imprecisa.
+- Limiti miei: nessuna GPU, NCCL, bf16 vero, torch 2.2; modello da 30M solo all'inizializzazione con segnali sintetici, segnali
+  veri non usati; QC e validita' della posa supposte valide; integrazione su `main` solo simulata; esempi MATLAB non letti.

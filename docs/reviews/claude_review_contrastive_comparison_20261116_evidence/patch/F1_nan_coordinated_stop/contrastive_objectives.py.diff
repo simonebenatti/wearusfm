@@ -1,0 +1,20 @@
+--- a/src/wearusfm/training/contrastive_objectives.py
++++ b/src/wearusfm/training/contrastive_objectives.py
+@@ -173,7 +173,16 @@
+                 raise ValueError("nonfinite student representation")
+         except Exception as exc:
+             error = f"{type(exc).__name__}: {exc}"
+-        _collective_error(error)
++        bad = [e for e in gather_objects([error]) if e is not None]
++        if bad:
++            # PROPOSTA (review Claude, distribuito-5): tutti i rank sono qui, nessun'altra collettiva. Numeratori non finiti: l'arresto
++            # numerico coordinato del trainer («perdita non finita», STOP, checkpoint precedente intatto) prende il posto dell'eccezione.
++            nan = enc.z.sum() * float("nan")
++            terms.num.update(contrast_nce=nan, contrast_rnc=nan)
++            terms.den.update(self.counts(enc.z.device))
++            terms.weight.update(contrast_nce=0., contrast_rnc=0.)
++            self.failure = "contrastive: " + " | ".join(map(str, bad))
++            return terms
+         all_k = gather_variable(k.detach())
+         all_valid = gather_variable(k_ok)
+         snapshot = self.queue.snapshot(self.step, all_k, self.global_ids, all_valid)

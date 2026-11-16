@@ -1,0 +1,10 @@
+75d74
+<     contrastive_projection: bool = False  # opt-in matched C0/CN/CR; excluded from downstream readouts
+78,79d76
+<         if type(self.contrastive_projection) is not bool:
+<             raise ValueError("contrastive_projection must be boolean")
+203,206d199
+<         self.contrastive_head = None
+<         if cfg.contrastive_projection:
+<             from wearusfm.model.contrastive import ProjectionHead
+<             self.contrastive_head = ProjectionHead(cfg.dim)

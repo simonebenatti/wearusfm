@@ -1,0 +1,26 @@
+durata assunta della finestra 4.0 s; passi 19618; update dopo il riempimento 19362; blocchi completi 18
+InfoNCE, quota complessiva di query ammissibili: 0.9976 (618119 su 619584); RnC, update con almeno una finestra di posa valida: 0.9988
+dataset          quota finestre    query  ammissibili  negativi: mediana    min    max
+emg2qwerty              24.337%   150789      100.00%               1030   1016   1044
+emg2pose                24.155%   149659      100.00%               1030   1015   1043
+ninapro_db10             9.024%    55912      100.00%                722    540    956
+grabmyo                  5.351%    33154      100.00%                380    255    510
+hyser                    5.236%    32441      100.00%                303    176    454
+zhang2026                4.558%    28239      100.00%                372    220    498
+ninapro_db2              4.049%    25090      100.00%                324    216    463
+putemg                   3.915%    24259      100.00%                314    188    454
+camargo2021              3.476%    21538      100.00%                274    140    404
+ninapro_db6              3.258%    20188      100.00%                265    149    380
+ninapro_db7              3.047%    18877      100.00%                248    127    396
+csl_hdemg                2.244%    13901      100.00%                133     50    214
+ninapro_db5              2.113%    13089      100.00%                169     87    276
+ninapro_db8              2.007%    12433      100.00%                163     65    258
+ninapro_db4              1.745%    10809      100.00%                140     60    243
+ninapro_db3              1.250%     7745       99.95%                101     27    175
+capgmyo                  0.236%     1461        0.00%                  3      0      8
+blocchi superati: 0 su 18
+  blocco fino al passo 1279: nce 0.9985 rnc 1.0000 dataset sotto soglia ['capgmyo'] superato False
+  blocco fino al passo 2303: nce 0.9978 rnc 0.9961 dataset sotto soglia ['capgmyo'] superato False
+  blocco fino al passo 3327: nce 0.9975 rnc 0.9990 dataset sotto soglia ['capgmyo'] superato False
+  blocco fino al passo 18687: nce 0.9977 rnc 0.9980 dataset sotto soglia ['capgmyo'] superato False
+dataset sotto soglia (numero di blocchi su 18 ): {'capgmyo': 18}

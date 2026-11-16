@@ -1,0 +1,17 @@
+--- a/tests/cpu/test_contrastive_runtime.py
++++ b/tests/cpu/test_contrastive_runtime.py
+@@ -223,8 +223,13 @@
+     values = [torch.load(output / f"rank{rank}.pt", weights_only=False) for rank in range(world)]
+     for got in values:
+         assert set(got["grads"]) == set(reference["grads"])
+-        for key in ("total", "contrast_nce", "contrast_rnc"):
++        for key in ("contrast_nce", "contrast_rnc"):
+             assert got["metrics"][key] == pytest.approx(reference["metrics"][key], rel=1e-9, abs=1e-10)
++        # `pose` e' ridotta in float32 dentro jepa.pose_terms (anche col modello float64): un processo arrotonda a float32 la somma delle
++        # medie per finestra, i rank sommano in float64 numeratori float32. Tolleranza float32 per pose; 1e-9 per il resto del totale.
++        assert got["metrics"]["pose"] == pytest.approx(reference["metrics"]["pose"], rel=1e-6)
++        rest = lambda m: m["total"] - cfg.jepa.pose_weight * m["pose"]  # noqa: E731
++        assert rest(got["metrics"]) == pytest.approx(rest(reference["metrics"]), rel=1e-9, abs=1e-10)
+         for key in ("contrast_global_grad_base", "contrast_global_grad_nce", "contrast_global_grad_rnc"):
+             assert got["metrics"][key] == pytest.approx(reference["metrics"][key], rel=2e-6, abs=1e-8)
+         for part in ("grads", "student", "teacher"):
