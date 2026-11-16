@@ -1,0 +1,75 @@
+Review Claude del prototipo Rank-N-Contrast, 16/11/2026: uscite dei controlli fatti di persona
+Ambiente: Mac, Python 3.11.14 torch 2.14.0, CPU, 1 thread. Nessun job, nessun ssh.
+
+Ricetta degli alberi (dal worktree del registro, sola lettura di git):
+  T=<cartella vuota>; git archive e114a78 src | tar -x -C "$T"
+  git show 924e19d:results/infra/rnc_review_20261116/rank_contrast.py > "$T/src/wearusfm/model/rank_contrast.py"   # prototipo, sha256 8883c510...
+  mkdir -p "$T/tests/cpu"; git show 924e19d:results/infra/rnc_review_20261116/test_supplied.py > "$T/tests/cpu/test_rank_contrast.py"   # test dell autore, sha256 8abac7f0...
+  U=<cartella vuota>; git archive db5ac41 src tests/cpu/test_rank_contrast.py | tar -x -C "$U"   # consegna GPT
+  sha256 prototipo: 8883c510f505534bcce1483ef6891cb2630d94fac4d73f8006f6eb1c502b8cc4
+  sha256 test:      8abac7f0f50a70a6884371d12fa541609ad58f472fa0579396a31e8690379dad
+  sha256 modulo db5ac41: 0cf7db711b470f17ad75b4e98b67e25d7337390c381591cc30b226d1853fee1b
+
+== [A] 12 test dell'autore sul prototipo
+12 passed, 1 warning in 1.69s
+
+== [B] claude_review_rnc_prototype_20261116_grad_partition.py <T>
+seed 0 cross per_window=True  res=0.0: loss 1.298482674389 ref 1.298482674389 | max|dg| 1.301e-17 su max|g| 2.035e-02
+seed 0 cross per_window=True  res=0.5: loss 1.289179734862 ref 1.289179734862 | max|dg| 9.324e-18 su max|g| 1.588e-02
+seed 0 cross per_window=False res=0.0: loss 1.296436943362 ref 1.296436943362 | max|dg| 1.388e-17 su max|g| 1.959e-02
+seed 0 cross per_window=False res=0.5: loss 1.289058182248 ref 1.289058182248 | max|dg| 1.041e-17 su max|g| 1.508e-02
+seed 0 all   per_window=True  res=0.0: loss 1.309487454420 ref 1.309487454420 | max|dg| 2.082e-17 su max|g| 2.130e-02
+seed 0 all   per_window=True  res=0.5: loss 1.299264995735 ref 1.299264995735 | max|dg| 9.541e-18 su max|g| 1.642e-02
+seed 0 all   per_window=False res=0.0: loss 1.307892560084 ref 1.307892560084 | max|dg| 1.041e-17 su max|g| 2.021e-02
+seed 0 all   per_window=False res=0.5: loss 1.297477317322 ref 1.297477317322 | max|dg| 1.084e-17 su max|g| 1.561e-02
+seed 1 cross per_window=True  res=0.0: loss 1.334717010621 ref 1.334717010621 | max|dg| 1.995e-17 su max|g| 1.751e-02
+seed 1 cross per_window=True  res=0.5: loss 1.278109800647 ref 1.278109800647 | max|dg| 1.041e-17 su max|g| 1.216e-02
+seed 1 cross per_window=False res=0.0: loss 1.326341860554 ref 1.326341860554 | max|dg| 1.388e-17 su max|g| 1.925e-02
+seed 1 cross per_window=False res=0.5: loss 1.272339297689 ref 1.272339297689 | max|dg| 1.214e-17 su max|g| 1.322e-02
+seed 1 all   per_window=True  res=0.0: loss 1.344149251503 ref 1.344149251503 | max|dg| 1.778e-17 su max|g| 1.639e-02
+seed 1 all   per_window=True  res=0.5: loss 1.290310595353 ref 1.290310595353 | max|dg| 7.888e-18 su max|g| 1.143e-02
+seed 1 all   per_window=False res=0.0: loss 1.339144836062 ref 1.339144836062 | max|dg| 1.561e-17 su max|g| 1.810e-02
+seed 1 all   per_window=False res=0.5: loss 1.287894485216 ref 1.287894485216 | max|dg| 9.107e-18 su max|g| 1.251e-02
+seed 2 cross per_window=True  res=0.0: loss 1.267966229756 ref 1.267966229756 | max|dg| 1.128e-17 su max|g| 1.633e-02
+seed 2 cross per_window=True  res=0.5: loss 1.244397024422 ref 1.244397024422 | max|dg| 9.975e-18 su max|g| 1.571e-02
+seed 2 cross per_window=False res=0.0: loss 1.267058316552 ref 1.267058316552 | max|dg| 1.735e-17 su max|g| 1.543e-02
+seed 2 cross per_window=False res=0.5: loss 1.244158975104 ref 1.244158975104 | max|dg| 2.255e-17 su max|g| 1.440e-02
+seed 2 all   per_window=True  res=0.0: loss 1.261700574825 ref 1.261700574825 | max|dg| 1.041e-17 su max|g| 1.792e-02
+seed 2 all   per_window=True  res=0.5: loss 1.241314403203 ref 1.241314403203 | max|dg| 2.082e-17 su max|g| 1.686e-02
+seed 2 all   per_window=False res=0.0: loss 1.258918590075 ref 1.258918590075 | max|dg| 1.648e-17 su max|g| 1.642e-02
+seed 2 all   per_window=False res=0.5: loss 1.239621084435 ref 1.239621084435 | max|dg| 1.214e-17 su max|g| 1.526e-02
+errore relativo massimo del gradiente: 1.566e-15
+cross per_window=True : intero 1.889877 (conteggio 3, ancore 15) | due meta 2.322421 (conteggio 2) | quattro quarti 0.000000 (conteggio 0)
+cross per_window=False: intero 1.889877 (conteggio 15, ancore 15) | due meta 2.322421 (conteggio 10) | quattro quarti 0.000000 (conteggio 0)
+all   per_window=True : intero 1.726708 (conteggio 3, ancore 15) | due meta 1.744976 (conteggio 3) | quattro quarti 1.719271 (conteggio 3)
+all   per_window=False: intero 1.726708 (conteggio 15, ancore 15) | due meta 1.744976 (conteggio 15) | quattro quarti 1.719271 (conteggio 15)
+
+== [C] claude_review_rnc_prototype_20261116_r1.py <T>/src
+cross derivate della perdita dell'ancora 0 sui logit verso [se', stessa finestra, altra, altra]: [0.0, 0.303413, -0.151707, -0.151707]
+all derivate della perdita dell'ancora 0 sui logit verso [se', stessa finestra, altra, altra]: [0.0, 0.0, 0.0, 0.0]
+
+== [D] claude_review_rnc_prototype_20261116_recount_real.py (log e manifest fuori dal repository)
+passi 19618, micro-batch 78472, finestre emg2pose 151455 (0.2413), media per micro-batch 1.930
+P(m=0,1,2,>=3) per micro-batch: [0.1659, 0.2616, 0.2545, 0.318] | P(m<=1) = 0.4275
+registrazioni di posa distinte per micro-batch: >=2 0.4992, >=3 0.2030
+finestre di posa sole nel micro-batch: 0.1355
+passi con cross nullo su tutti e 4 i processi: 700 (0.0357); attivo su uno solo: 0.1760
+finestre emg2pose nel batch globale (0,1,2,>=3): [0.0008, 0.0055, 0.0164, 0.9774]
+passi con pose_windows (posa valida, dal log) <= 1: 166 (0.0085)
+candidati globali, all: quota media dei positivi nella propria finestra 0.1498 (mediana 0.1195); passi con una sola finestra emg2pose 0.0055
+candidati del micro-batch, all: quota media per finestra 0.4228
+
+== [E] 23 test di db5ac41 per rank_contrast
+.......................                                                  [100%]
+23 passed in 3.15s
+
+== [F] claude_review_rnc_prototype_20261116_check_corrected.py <U>/src
+(1) definizione coppia per coppia: 96 casi; scarto relativo massimo valore 5.100e-16, gradiente 2.990e-15
+(2) R1, pose identiche: derivate sui logit della riga 0 = [0.0, 0.0, 0.0, 0.0]
+(3) tau 1e-05: modulo 18184.973811452 definizione 18184.973811452 scarto rel valore 2.00e-16 gradiente 8.15e-12 finito True
+(3) tau 5e-05: modulo 3636.994762807 definizione 3636.994762807 scarto rel valore 0.00e+00 gradiente 1.92e-12 finito True
+(3) tau 0.0001: modulo 1818.497429480 definizione 1818.497429480 scarto rel valore 0.00e+00 gradiente 7.25e-13 finito True
+(3) tau 0.001: modulo 181.852132293 definizione 181.852132293 scarto rel valore 0.00e+00 gradiente 2.68e-14 finito True
+(4) cross rifiutato: rank_contrast: only symmetric 'all' positives are supported; cross is 
+(5) 2 parti: somma numeratori/somma conteggi = 1.870961 (conteggio 3) contro intero 1.803166 (conteggio 3)
+(5) 4 parti: somma numeratori/somma conteggi = 1.895197 (conteggio 3) contro intero 1.803166 (conteggio 3)

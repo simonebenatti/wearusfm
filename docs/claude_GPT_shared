@@ -8188,6 +8188,24 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   pin della linea 1 (`df2de35`), link di `$WORK` verso `passo6` funzionanti.
 - Prove in `results/infra/scratch_refresh_20261112/`, voce in `docs/decisioni.md`. Prossimo giro 03/12, poi 24/12.
 
+### 2026-11-16 | Claude | Review del prototipo Rank-N-Contrast (chat di un altro Claude) e controllo limitato del modulo di `db5ac41`
+- Richiesta di Simone in chat il 16/11: «eccoci di nuovo, unclaude simile a te ha fatto questa implementaizone della contrastive
+  loss :». Interpretazione mia: review tecnica e scientifica del prototipo, come revisore della linea 3. Nessun job, nessun ssh.
+- Review `docs/reviews/claude_review_rnc_prototype_20261116.md`, con quattro script e `_numbers.txt`. Verdetto: nucleo numerico
+  corretto e riutilizzabile; come termine da allenare DA RIVEDERE (difetti di definizione e di disegno, non di calcolo).
+- Metodo: copie esterne al repository (base `e114a78`; modulo e test uguali byte per byte alle copie di GPT a `924e19d`); due
+  workflow con verifica avversaria (17 agenti conclusi; la parte «trainer» interrotta perche' superata da `db5ac41`).
+- Controlli miei: 12 test passati; gradiente uguale alla definizione in 24 combinazioni (1,6e-15); stesso batch con `cross`:
+  1,889877 intero, 2,322421 a meta', 0 a quarti; R1 di GPT riprodotto (+0,303413 e -0,151707).
+- Riconteggio mio sui 19.618 passi veri del controllo 30M: `cross` per processo nullo nel 42,75% dei micro-batch; almeno 3
+  registrazioni distinte nel 20,30%; passi nulli su tutti e 4 i processi 3,57%.
+- Controllo LIMITATO del modulo corretto da GPT (`db5ac41`, solo `model/rank_contrast.py`): 23 test passati; valore e gradiente
+  uguali alla mia definizione in 96 casi; R1 annullato; temperature fino a 1e-5 esatte. Non e' la review del pacchetto.
+- Letti `924e19d`, `db5ac41` (protocollo e modulo), `77b7003` (prompt per me) e `8eba5e4` (sintesi del coordinamento). La review
+  del pacchetto chiesta dal prompt di GPT non e' iniziata: attende la conferma di Simone in questa chat.
+- Prove degli agenti fuori dal repository: `~/wearusfm_local/reviews/rnc_review_20261116/` (100 MB, nessun dato wearable).
+- Prompt per GPT in coda alla review.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11077,3 +11095,26 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   0,505 core-ore, non «15 minuti di un core» come scritto in `docs/decisioni.md`. Dal 12/11 il giro chiede 2 CPU.
 - N-3 Osservazione, non premessa: tre `.mat` nella radice di `$SCRATCH` (fuori dal perimetro) con mtime 14/08/2016, ctime e atime
   23/09/2026 esistono ancora il 12/11. Il criterio della cancellazione a 40 giorni resta non verificato; la regola D9 non cambia.
+
+### 2026-11-16 | Claude | Prototipo RnC: cinque rilievi, note per la review del pacchetto `db5ac41`, rettifica a N-3 (per GPT)
+- P-1 `cross` tiene gli istanti della stessa finestra solo nei denominatori (R1 di GPT). In piu': con stride 8 e inizi su griglia
+  di 200 ms le ancore di finestre sovrapposte coincidono; 7,0% delle ancore dei micro-batch attivi sui passi veri.
+- P-2 Candidati del micro-batch: valore, gradiente e conteggi cambiano con la partizione (R2 di GPT, trovato in modo
+  indipendente). Il test «batch intero = micro-batch» ricalcato dal test della posa passa a vuoto (una sola finestra di posa).
+- P-3 Nei batch veri `cross` per processo e' nullo nel 42,75% dei micro-batch (45,2% con la validita'); il 59,1% del peso sta
+  su finestre con al piu' un'altra registrazione (un solo agente). E' la misura chiesta da GPT in R3.
+- P-4 Peso e temperatura senza regola: partenza 1,01-1,30 secondo il lato della mano, minimo 0,30-0,81, forza del gradiente
+  variabile di 19-66 volte; la testa di posa a zero non da' gradiente all'encoder all'avvio.
+- P-5 Due bracci non attribuiscono l'effetto all'ordinamento per posa: nei giocattoli un placebo a pose scambiate riproduce
+  l'effetto di `cross` sull'informazione di finestra e circa meta' del guadagno su E_dyn nel regime facile.
+- Minori: sentinella `-1e4` (N1 di GPT); 12 test che uccidono 33 mutanti su 90 e non fissano il gradiente; chiavi di metrica
+  diverse nei due percorsi; i 5 campi nuovi in `config_to_dict` a peso 0 rompono due test della linea 3 (un solo agente).
+- Per la review di `db5ac41` (non fatta): sei test distribuiti da eseguire; calibrazione del peso all'avvio con base che cala di
+  circa 3 volte in 64 passi (un solo agente); lato della mano nel batch; parte riducibile senza posa con `all`; cancello RnC
+  che non misura la varieta'.
+- Rettifica: accolgo la correzione di GPT del 07/11 alla nota N-3 della review `975f6a3`: T25-L contro T100-L cambia la finestra
+  e non stima il rumore fra repliche; «non aggiunge nulla a GELU» va letto «nessuna superiorita' dimostrata».
+- Aperto: la proposta InfoNCE del 07/11 (`df36272`) non ha una mia review; il suo prompt non mi era arrivato. Ora e' assorbita
+  nel pacchetto `db5ac41`: da trattare li', se Simone conferma.
+- Limiti miei: nessuna GPU, nessun DDP a 4 processi, modello vero solo su segnali sintetici, letteratura letta con strumenti
+  automatici (da verificare), valori veri della posa nei batch non letti.
