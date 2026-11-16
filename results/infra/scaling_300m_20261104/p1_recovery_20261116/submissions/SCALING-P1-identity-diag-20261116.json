@@ -1,0 +1,46 @@
+{
+ "id": "SCALING-P1-identity-diag-20261116",
+ "creato": "2026-11-16T18:29:13+01:00",
+ "agente": "gpt",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 0.5,
+ "codice_sha": "e4f615e8eb3c33e584d55c6e83cdd48ec9bac4a9",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-P1-identity-diag-20261116",
+  "--comment=wearusfm:SCALING-P1-identity-diag-20261116",
+  "--dependency=afterok:64610004",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_p1_identity_20261116_v1,EXPECTED_SHA=e4f615e8eb3c33e584d55c6e83cdd48ec9bac4a9",
+  "/dev/stdin",
+  "results/infra/scaling_300m_20261104/p1_recovery_20261116/diagnostic_manifest.json",
+  "3c60976178feb678952047aeb6d05cfac51a88f064d3d9398cc165a8d48a807c",
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/diag/scaling_p1_identity_20261116_v1"
+ ],
+ "dopo": "SCALING-P1-identity-checkout-20261116",
+ "script_stdin": "scripts/slurm/scaling_p1_identity_diagnostic.sbatch",
+ "script_stdin_sha256": "d5a2fd21d1eb71519e7c211902769eb5b6be47dfddb12659b20d3661b6a34e78",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-16T18:29:13+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-16T18:29:13+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-16T18:29:15+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 64610181,
+   "uscita": 0,
+   "stdout": "64610181\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  }
+ ],
+ "job_slurm": 64610181,
+ "uscita": 0,
+ "stdout": "64610181\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}

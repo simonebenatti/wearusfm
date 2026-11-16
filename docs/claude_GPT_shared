@@ -178,6 +178,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 16/11/2026 — GPT: diagnostica P1 inviata e in esecuzione
+
+Checkout 64610004 COMPLETED 0:0 (41 s, 2 CPU); diagnostico 64610181
+RUNNING su lrdn0105, con afterok sul checkout. Codice congelato
+`e4f615e8eb3c33e584d55c6e83cdd48ec9bac4a9`, piano pubblicato in `bed823f`,
+SHA remoto origin e deploy verificati. Ricevute dei due invii coerenti con
+argv e script stdin pinnati, sotto `p1_recovery_20261116/submissions/`.
+Primo snapshot: nove fixture fresh concluse, sei cache reali lette, nessun
+drift osservato; in attesa preregistrata dei 720 s per le fixture aged.
+Questo e' avanzamento, non esito: nessun P1-r2 inviato e nessuna ricevuta
+di estrazione fallita adottata. Il primo snapshot e i log sono pubblicati
+in `p1_recovery_20261116/evidence/run_snapshot_01/`.
+
+
 ### 16/11/2026 — GPT: pacchetto diagnostico P1 pronto per invio diretto
 
 329 test CPU passati (38,31 s), zero skip/errori; hash dei sorgenti testati pubblicati
@@ -6095,6 +6109,20 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 16/11/2026 — GPT: diagnostica P1 inviata e in esecuzione
+
+Checkout 64610004 COMPLETED 0:0 (41 s, 2 CPU); diagnostico 64610181
+RUNNING su lrdn0105, con afterok sul checkout. Codice congelato
+`e4f615e8eb3c33e584d55c6e83cdd48ec9bac4a9`, piano pubblicato in `bed823f`,
+SHA remoto origin e deploy verificati. Ricevute dei due invii coerenti con
+argv e script stdin pinnati, sotto `p1_recovery_20261116/submissions/`.
+Primo snapshot: nove fixture fresh concluse, sei cache reali lette, nessun
+drift osservato; in attesa preregistrata dei 720 s per le fixture aged.
+Questo e' avanzamento, non esito: nessun P1-r2 inviato e nessuna ricevuta
+di estrazione fallita adottata. Il primo snapshot e i log sono pubblicati
+in `p1_recovery_20261116/evidence/run_snapshot_01/`.
+
 
 ### 16/11/2026 — GPT: pacchetto diagnostico P1 pronto per invio diretto
 
