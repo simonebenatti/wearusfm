@@ -1,0 +1,59 @@
+{
+  "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "-B",
+    "-c",
+    "import sys;sys.path.insert(0,'src');import pytest;raise SystemExit(pytest.main(sys.argv[1:]))",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-p1-recovery/results/infra/scaling_300m_20261104/p1_recovery_20261116/cpu_tests.junit.xml",
+    "tests/cpu/test_scaling_p1_diagnostic_launch.py",
+    "tests/cpu/test_scaling_p1_diagnostic_plan.py",
+    "tests/cpu/test_scaling_p1_identity_diagnostic.py",
+    "tests/cpu/test_scaling_p1_recovery.py",
+    "tests/cpu/test_scaling_p1_recovery_plans.py",
+    "tests/cpu/test_scaling_output_identity.py",
+    "tests/cpu/test_scaling_evaluation19618.py",
+    "tests/cpu/test_scaling_pose_readout19618.py",
+    "tests/cpu/test_scaling_probe19618.py"
+  ],
+  "complete": true,
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "passed": 329,
+    "skipped": 0,
+    "tests": 329
+  },
+  "exit": 0,
+  "failed": 0,
+  "junit_sha256": "7bc706014673d25918dbc1a461c9e0be1b3f22de4910d5a812b4ce6ccb731d6b",
+  "log_sha256": "2adefeadddd896bf2f934248c0842c66166856ce7845c85a1ac010168142fab5",
+  "passed": true,
+  "protocol": "scaling-p1-recovery-cpu-tests-20261116-v1",
+  "source_sha256": {
+    "scripts/scaling_output_identity.py": "717362c25cb99151ab058b4f212cc73611a36899f67251952ca613a71058e656",
+    "scripts/scaling_p1_collect_metadata.py": "3ca9e8c9fc56e5c4375f945aa19c69fcffc79124f1074f108b753bb83ad36a95",
+    "scripts/scaling_p1_diagnostic_launch.py": "1f2c4b9351d1cfc96e637f7895ae9c0689d5c93f84bc70db7660d79336fd2e4b",
+    "scripts/scaling_p1_diagnostic_plan.py": "4f098280f6eb8ef59a8616267f0b3a6806a7fc98f807b5c4b9dff12ee3511d6d",
+    "scripts/scaling_p1_identity_diagnostic.py": "88c70d6a2cc36695e401964c9d92e39902dea37a009a66690c931c03e1288a65",
+    "scripts/scaling_p1_recovery.py": "5317e9a4611dc10f3b85e9e0a0ceed25b9897c1b2fefbd1491dda57c4837abcb",
+    "scripts/scaling_p1_recovery_plans.py": "26b1156168604f886e769671c22ee0644ffcf3fa55afa3b14a2e95d8ca3329ee",
+    "scripts/slurm/scaling_p1_identity_diagnostic.sbatch": "d5a2fd21d1eb71519e7c211902769eb5b6be47dfddb12659b20d3661b6a34e78",
+    "tests/cpu/test_scaling_evaluation19618.py": "b3c40903fe04360460b63fa3c52775431ccf855d80fffdd1a0200807e4a167ed",
+    "tests/cpu/test_scaling_output_identity.py": "34039caa71f8e90b3cecaf29dceb5c3883100fa7fc44408fe993a50dd330227f",
+    "tests/cpu/test_scaling_p1_diagnostic_launch.py": "8b50b123b84610643bd5e6231ea9a8a19b37db7a2c311dc323887ccb8dc9e1a5",
+    "tests/cpu/test_scaling_p1_diagnostic_plan.py": "895848951039615ea8dcadfcf31e3538f87606ef14a50f0f193584fff88c7ce7",
+    "tests/cpu/test_scaling_p1_identity_diagnostic.py": "113da3dd84af915e73fca075b3a1cde67c0aea903a122c37af1cc1cb1a2a7f92",
+    "tests/cpu/test_scaling_p1_recovery.py": "c8d4e00528548c438aaf731adbe246a870651ec293a9ac1429d49511d0056030",
+    "tests/cpu/test_scaling_p1_recovery_plans.py": "8dd831a5a3c63242389ba8862bb85dfd337746ec7060692b79efa2a0498fe2ea",
+    "tests/cpu/test_scaling_pose_readout19618.py": "c499fd4d01c9428cd85096e41aba29b1ab80239f75b98b32c027c4429bc90491",
+    "tests/cpu/test_scaling_probe19618.py": "6eb0bc7b8beccf9de3e7c98f6f057ac823fdf8f248e6072ffb93ae997cd99c7d"
+  },
+  "threads": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  }
+}

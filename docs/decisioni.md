@@ -7239,3 +7239,18 @@ Un nuovo P1 solo con METADATA_ONLY_REPRODUCED e READERS_CLEAR_IN_TEST; altriment
 La nuova autorizzazione supera la dicitura «proposta/non autorizzazione» dei documenti della review,
 conservati testualmente; non modifica i criteri e non autorizza altri esperimenti.
 
+
+### 16/11/2026 — GPT: pacchetto diagnostico P1 pronto per invio diretto
+
+329 test CPU passati (38,31 s), zero skip/errori; hash dei sorgenti testati pubblicati
+in `results/infra/scaling_300m_20261104/p1_recovery_20261116/cpu_tests.json`.
+Review interne indipendenti favorevoli del diagnostico/launcher e del recupero/bridge,
+con note sotto `reviews/`; 103 sorgenti scientifici congelati invariati e 228 sorgenti
+del vecchio checkout verificati. Posa 64571999 e P2 64572001 COMPLETED 0:0, ricevute
+raccolte e coerenti: i payload grandi saranno riverificati sul compute node.
+Le due correzioni emerse in review (deadline distinta da errore I/O, ponte fra
+seconda lettura e guardie reali) sono coperte da regressioni. Il launcher usa
+l'ambiente dei lettori (thread=8). Nessun nuovo job ancora inviato in questa voce.
+Il piano operativo, i sei input e il budget sono pubblicati nel pacchetto.
+Primo invio: checkout e diagnostico; solo esito favorevole completo rilascia P1-r2.
+

@@ -1,0 +1,46 @@
+{
+  "verdict": "APPROVATO tecnico del diagnostico; nessun blocco residuo individuato",
+  "scope": [
+    "scripts/scaling_p1_identity_diagnostic.py",
+    "scripts/scaling_p1_diagnostic_launch.py",
+    "scripts/slurm/scaling_p1_identity_diagnostic.sbatch",
+    "tests/cpu/test_scaling_p1_identity_diagnostic.py",
+    "tests/cpu/test_scaling_p1_diagnostic_launch.py",
+    "scripts/scaling_output_identity.py",
+    "tests/cpu/test_scaling_output_identity.py"
+  ],
+  "sha256": {
+    "scripts/scaling_p1_identity_diagnostic.py": "88c70d6a2cc36695e401964c9d92e39902dea37a009a66690c931c03e1288a65",
+    "scripts/scaling_p1_diagnostic_launch.py": "1f2c4b9351d1cfc96e637f7895ae9c0689d5c93f84bc70db7660d79336fd2e4b",
+    "scripts/slurm/scaling_p1_identity_diagnostic.sbatch": "d5a2fd21d1eb71519e7c211902769eb5b6be47dfddb12659b20d3661b6a34e78",
+    "tests/cpu/test_scaling_p1_identity_diagnostic.py": "113da3dd84af915e73fca075b3a1cde67c0aea903a122c37af1cc1cb1a2a7f92",
+    "tests/cpu/test_scaling_p1_diagnostic_launch.py": "8b50b123b84610643bd5e6231ea9a8a19b37db7a2c311dc323887ccb8dc9e1a5",
+    "scripts/scaling_output_identity.py": "717362c25cb99151ab058b4f212cc73611a36899f67251952ca613a71058e656",
+    "tests/cpu/test_scaling_output_identity.py": "34039caa71f8e90b3cecaf29dceb5c3883100fa7fc44408fe993a50dd330227f"
+  },
+  "tests": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src ~/.venvs/wearusfm-tok/bin/python -B -m pytest -q -p no:cacheprovider tests/cpu/test_scaling_output_identity.py tests/cpu/test_scaling_p1_identity_diagnostic.py tests/cpu/test_scaling_p1_diagnostic_launch.py",
+    "passed": 96,
+    "seconds": 4.86
+  },
+  "findings_closed": [
+    "TimeoutError propaga dalle guardie congelate ed esce come INCOMPLETE, prima di OSError",
+    "Confronto path/canonical_path obbligatorio; codici hard IdentityError diventano INTEGRITY_FAIL; solo SECOND_INSTABILITY è rifiuto candidato inconclusivo",
+    "Ambiente module/venv e thread attivato prima del validator Python del launcher",
+    "P.file_identity viene confrontata con SHA e size attesi; gli stati classification e pose sono legati al descriptor precedente senza altri hash: timestamp drift READERS_AFFECTED, cambio oggetto o SHA INTEGRITY_FAIL",
+    "Thread OMP/OPENBLAS/MKL del launcher allineati a 8 come nel dispatcher congelato"
+  ],
+  "checks": [
+    "Matrice fresh A/F/S e aged S/F/A; aged DB2/DB3 almeno 720 secondi; 18 fixture con oracolo seekable indipendente",
+    "Primo stat/hash/stat storico non preceduto da probe extra; secondo hash descriptor dopo pausa e validazione NPZ, come chiarimento approvato dal root",
+    "Sei guardie reali prima e dopo con moduli di checkout congelato; pin storico separato dalla baseline diagnostica",
+    "Deadline 1500 secondi, launcher 27 minuti e risorse 1 GPU/8 CPU/32 GiB; nessun retry automatico",
+    "Attestazione CPU candidata legata a hash del helper; nessuna modifica ai helper congelati"
+  ],
+  "limitations": [
+    "Nessuna verifica sul cluster, manifest concreto, deployment, coda o dati remoti in questa review",
+    "Nessun risultato diagnostico né promessa di riproduzione o affidabilità per 43 ore",
+    "Il protocollo permette solo la diagnosi; un risultato inconclusivo non rilascia una terza inferenza"
+  ],
+  "observed_utc": "2026-11-16T16:35:18.355014+00:00"
+}

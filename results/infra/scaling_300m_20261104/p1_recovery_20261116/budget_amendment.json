@@ -1,0 +1,55 @@
+{
+  "accounting_sha256": "5e2afc8c3c6e2e242537f0af8f665355df5f7e781bfbae9f94255ca22fa7d5c4",
+  "accounting_source": "evidence/preparation/sacct.txt",
+  "approval_commit": "81f1f76",
+  "approval_quote": "approvo tutto, correggi e prepara tutto e lancia tu se non hai altre cose da correggere",
+  "approved": true,
+  "checkout_each": {
+    "core_hours_max": 0.26666666666666666,
+    "cpus": 2,
+    "requested_seconds": 300,
+    "scheduler_margin_seconds": 180
+  },
+  "computed_p1_gpu_hours_max": 3.0708333333333333,
+  "computed_stage_attached_core_hours_max": 58.11555555555555,
+  "computed_stage_gpu_hours_max": 7.264444444444444,
+  "conditional_p1": {
+    "core_hours_cap": 16.4,
+    "cpus": 8,
+    "gpu_hours_cap": 2.05,
+    "gpus": 1,
+    "memory_gib": 100,
+    "requested_seconds": 7200,
+    "scheduler_margin_seconds": 180
+  },
+  "cpu_only_cap": 351,
+  "cpu_only_consumed_plus_future_max": 350.45111133333336,
+  "cpu_only_prior_consumed_plus_future_max": 349.917778,
+  "diagnostic": {
+    "core_hours_cap": 4,
+    "cpus": 8,
+    "gpu_hours_cap": 0.5,
+    "gpus": 1,
+    "memory_gib": 32,
+    "requested_seconds": 1620,
+    "scheduler_margin_seconds": 180
+  },
+  "extra_checkouts_max": 2,
+  "historical_attached_core_hours": 37.715555555555554,
+  "historical_gpu_hours": 4.714444444444444,
+  "p1_attached_core_hours_cap": 24.8,
+  "p1_gpu_hours_cap": 3.1,
+  "p1_max_attempts": 3,
+  "prior_checkout_amendment": {
+    "bytes": 2610,
+    "path": "results/infra/scaling_300m_20261104/continuation19618_20261111_checkout_cpus/budget_amendment.json",
+    "sha256": "4ee5e406dfdc3116918ca54d4dd80a0329c18147031d72f903b301ca161e3f92"
+  },
+  "protocol": "scaling-p1-budget-amendment-20261116-v1",
+  "retry_authorized": false,
+  "source_freeze": "results/infra/scaling_300m_20261104/continuation19618_budget_freeze_20261105_v2.json",
+  "source_freeze_bytes": 15375,
+  "source_freeze_sha256": "32e0a33e76da1ee58a853c0229414ee66e1bdddf280da3dfbe21040831e771b8",
+  "stage_attached_core_hours_cap": 58.4,
+  "stage_gpu_hours_cap": 7.3
+}
