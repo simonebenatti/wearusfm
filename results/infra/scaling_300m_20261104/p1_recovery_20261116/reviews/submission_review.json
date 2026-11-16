@@ -1,0 +1,17 @@
+{
+  "verdict": "APPROVATO",
+  "reviewer": "independent subagent p1_mixed_provenance_review",
+  "code_sha": "e4f615e8eb3c33e584d55c6e83cdd48ec9bac4a9",
+  "submission_plan_sha256": "a04b5438d5d249c239d5e8b70d19b7b63b0fc0ad6855097041bc3ab02049e290",
+  "submit_lines_sha256": "bbebcec8c5784ad37dac77cd55fb0f8b98ee5160eebb8f82d2cc74ca34129ce2",
+  "checks": [
+    "Both scripts supplied on stdin; /dev/stdin before script arguments",
+    "Diagnostic afterok on checkout logical ID",
+    "329 test report/log/JUnit pins consistent with frozen sources",
+    "Six real inputs and metadata lineage accepted",
+    "Resource caps and 180s scheduler margin reproduced",
+    "No duplicate ID or retry in plan"
+  ],
+  "closed_finding": "Diagnostic script is not read from a remote checkout that does not yet exist; pinned stdin permits queueing the dependency safely",
+  "scope": "submission plan, manifest, budget and operational collection; no claim of diagnostic result"
+}
