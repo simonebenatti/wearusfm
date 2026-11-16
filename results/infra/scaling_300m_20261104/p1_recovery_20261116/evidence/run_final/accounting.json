@@ -1,0 +1,37 @@
+{
+  "source": "sacct.txt",
+  "source_sha256": "b557578bb6fca730224544c7bae6476b2ce8159e9593c3e6a90fe9ad505b49ee",
+  "jobs": {
+    "64610004": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 41,
+      "cpus": 2,
+      "gpus": 0,
+      "gpu_hours": 0.0,
+      "core_hours": 0.02277777777777778,
+      "alloc_tres": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1"
+    },
+    "64610181": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 977,
+      "cpus": 8,
+      "gpus": 1,
+      "gpu_hours": 0.2713888888888889,
+      "core_hours": 2.171111111111111,
+      "alloc_tres": "billing=8,cpu=8,gres/gpu=1,mem=32G,node=1"
+    }
+  },
+  "parent_allocation_accounting": true,
+  "diagnostic_stage_gpu_hours": 0.2713888888888889,
+  "diagnostic_attached_core_hours": 2.171111111111111,
+  "checkout_core_hours": 0.02277777777777778,
+  "extractions_plus_diagnostic_gpu_hours": 4.985833333333333,
+  "extractions_plus_diagnostic_attached_core_hours": 39.88666666666666,
+  "future_p1_not_authorized_by_outcome": {
+    "gpu_hours_cap": 2.05,
+    "would_total_stage_gpu_hours": 7.035833333333333,
+    "approved_stage_cap": 7.3
+  }
+}

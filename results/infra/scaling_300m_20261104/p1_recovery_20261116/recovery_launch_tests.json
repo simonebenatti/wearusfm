@@ -1,0 +1,18 @@
+{
+  "complete": true,
+  "passed": true,
+  "counts": {
+    "passed": 34,
+    "failed": 0
+  },
+  "seconds": 0.08,
+  "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 ~/.venvs/wearusfm-tok/bin/python -B -c \"import sys;sys.path.insert(0,'src');import pytest;raise SystemExit(pytest.main(['-q','-p','no:cacheprovider','tests/cpu/test_scaling_p1_recovery_launch.py']))\"",
+  "source_sha256": {
+    "scripts/scaling_p1_recovery_launch.py": "63f7e9734b41cca86167aa6bea0eca42f5ac3d6f7b82021cb8d1229f63400187",
+    "scripts/slurm/scaling_p1_recovery.sbatch": "d49ea0a8324dca575fa22e0d487bb9413a6f7f28ce603276ba36a1e483914800",
+    "tests/cpu/test_scaling_p1_recovery_launch.py": "7b4409dec8e51ee1a00a070050fc2f19e44dcdb5081dd8ca01c5cabfdda6e92f"
+  },
+  "not_deployed": true,
+  "not_submitted": true,
+  "note": "Additional launcher only; diagnostic runtime and six recovery source pins unchanged."
+}

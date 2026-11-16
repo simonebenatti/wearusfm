@@ -1,0 +1,16 @@
+{
+  "p1_released": false,
+  "reason": "diagnostic does not release P1 recovery",
+  "diagnostic_report_sha256": "c2e32e9cfab36a76c79b05913e350b9ec7f15484f73e2a271552c06f6e980908",
+  "outcome": "NOT_REPRODUCED",
+  "job_submission_attempted": false,
+  "gate": "scaling_p1_recovery.validate_manifest",
+  "source_sha256": {
+    "scripts/scaling_p1_recovery.py": "5317e9a4611dc10f3b85e9e0a0ceed25b9897c1b2fefbd1491dda57c4837abcb",
+    "scripts/scaling_p1_recovery_plans.py": "26b1156168604f886e769671c22ee0644ffcf3fa55afa3b14a2e95d8ca3329ee",
+    "scripts/scaling_output_identity.py": "717362c25cb99151ab058b4f212cc73611a36899f67251952ca613a71058e656",
+    "tests/cpu/test_scaling_p1_recovery.py": "c8d4e00528548c438aaf731adbe246a870651ec293a9ac1429d49511d0056030",
+    "tests/cpu/test_scaling_p1_recovery_plans.py": "8dd831a5a3c63242389ba8862bb85dfd337746ec7060692b79efa2a0498fe2ea",
+    "tests/cpu/test_scaling_output_identity.py": "34039caa71f8e90b3cecaf29dceb5c3883100fa7fc44408fe993a50dd330227f"
+  }
+}

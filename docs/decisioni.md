@@ -7254,3 +7254,23 @@ l'ambiente dei lettori (thread=8). Nessun nuovo job ancora inviato in questa voc
 Il piano operativo, i sei input e il budget sono pubblicati nel pacchetto.
 Primo invio: checkout e diagnostico; solo esito favorevole completo rilascia P1-r2.
 
+
+### 16/11/2026 — GPT: diagnostica P1 conclusa, NOT_REPRODUCED; stop prima di P1-r2
+
+Job 64610181 COMPLETED 0:0 (977 s): 18 fixture integre, oracoli e due SHA
+coincidenti, zero drift mtime/ctime/oggetto; sei cache reali stabili prima e
+dopo, 12 controlli conformi. Esito NOT_REPRODUCED / READERS_CLEAR_IN_TEST.
+Review indipendente: 617 controlli riprodotti, nessun rilievo sull'esito.
+Consumo diagnostico 0,271389 GPUh / 2,171111 coreh; checkout 64610004
+0,022778 coreh. Estrattori precedenti + diagnostico: 4,985833 GPUh.
+Il costruttore rifiuta il rilascio sul report reale (`p1_gate.json`): nessun
+P1-r2 inviato, nessun retry o secondo checkout. I due P1 storici restano
+FAILED e le cache non sono adottate; pose/P2 conservati. Nessuna modifica
+ai sorgenti scientifici o alle guardie degli input. Launcher P1-r2 preparato
+e verificato con 34 test aggiuntivi, non distribuito. Causa storica aperta.
+Readout: `docs/reviews/gpt_scaling_p1_diagnostic_readout_20261116.md`.
+La proposta di un P1-r2 con finalizzazione difensiva anche in assenza di
+riproduzione richiede un emendamento esplicito del criterio: non e' stata
+eseguita e il cancello attuale resta intatto. Autorizzazioni operative
+gia' date invariate; nessun monitor o invio automatico in background.
+

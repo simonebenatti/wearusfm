@@ -1,0 +1,2655 @@
+{
+  "verdict": "ESITO TECNICO CONFORME; diagnosi NOT_REPRODUCED, READERS_CLEAR_IN_TEST",
+  "all_checks_passed": true,
+  "checks": [
+    {
+      "name": "collected_bytes_report.json",
+      "passed": true
+    },
+    {
+      "name": "collected_bytes_events.jsonl",
+      "passed": true
+    },
+    {
+      "name": "collected_bytes_campaign_checkout_64610004.out",
+      "passed": true
+    },
+    {
+      "name": "collected_bytes_scaling_p1_identity_diag_64610181.out",
+      "passed": true
+    },
+    {
+      "name": "events_pin",
+      "passed": true
+    },
+    {
+      "name": "sacct_capture",
+      "passed": true
+    },
+    {
+      "name": "squeue_empty",
+      "passed": true
+    },
+    {
+      "name": "events_sequence",
+      "passed": true
+    },
+    {
+      "name": "events_monotonic",
+      "passed": true
+    },
+    {
+      "name": "final_event",
+      "passed": true
+    },
+    {
+      "name": "successful_null",
+      "passed": true
+    },
+    {
+      "name": "protocol",
+      "passed": true
+    },
+    {
+      "name": "code_commit",
+      "passed": true
+    },
+    {
+      "name": "manifest_immutable",
+      "passed": true
+    },
+    {
+      "name": "executed_source_scripts/scaling_output_identity.py",
+      "passed": true
+    },
+    {
+      "name": "executed_source_scripts/scaling_p1_identity_diagnostic.py",
+      "passed": true
+    },
+    {
+      "name": "reviewed_helper_runner",
+      "passed": true
+    },
+    {
+      "name": "launcher_pin",
+      "passed": true
+    },
+    {
+      "name": "frozen_pinset",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/account_node_usage.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/analyze_step1_gradients.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/anchor_candidates.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/arms_collaudo.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/arms_compare.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/arms_plan.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/audit_training_stability.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/branch_mask_leak.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/branch_pilot.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/build_manifest.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/build_nested_manifests.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/build_pose_b19618_eval_payloads.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/build_pose_b19618_preflight_payload.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/build_pose_b19618_report_payload.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/build_pose_dynamics_payload.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/build_pose_e3_b_payloads.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/calibration_plan.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/calibration_probe.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/calibration_select.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/channel_readout.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/check_capgmyo_grid.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/check_checkpoint.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/check_long_mask_positions.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/check_perceiver_cuda.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/check_processed_layout.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/check_quotes.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/check_step1_cuda.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/classical_baseline.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/compare_step2_closed_reports.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/corpus_inventory.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/dataverse_download.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ddp_equivalence.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/diagnose_initial_state.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/eval_wavelet_vs_gabor.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/evaluation_chain.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/export_metadata_schema.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/finestra1_calendario.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/fix_capgmyo_grid.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/gate_d8.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_camargo.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_capgmyo.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_csl_hdemg.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_emg2pose_pose.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_grabmyo.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_hyser.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_kaifosh.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_meta_bracelet.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_ninapro_db10.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_ninapro_db5.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_ninapro_db6.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_ninapro_db8.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_ninapro_std.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_putemg.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/ingest_zhang2026.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/inspect_mat.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/inspect_zhang_csv.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/leonardo_feed.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/leonardo_watch.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/make_splits_draft.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/manifest_table.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/measure_loader.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/nested_manifest_d9_weights.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/nested_manifest_report.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pca_existing_oof_compare.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_audit.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_b19618_eval_guard.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_b19618_preflight.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_b19618_report.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_dynamics.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_e3_b.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_e3_b_extract.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_eval.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_head_synthetic.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_slot_extract.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_slot_features.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_slot_plan.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_slot_readout.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/pose_temporal_readout.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/precompute_rvq_codes.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/probe_memory.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/probe_p1.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/probe_p2.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/psd3_readout.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/qc_relative_check.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/random_checkpoint.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/replicate_neurorvq.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/rvq_branch_confirm.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/rvq_branch_probe.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/s3_bucket_download.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_compare.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_compare19618.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_continue.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_derive19618.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_evaluation.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_evaluation19618.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_plans19618.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_pose_readout.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_pose_readout19618.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_preflight.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_probe.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_probe19618.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_production_memory.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_projection.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_reading.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_reading19618.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/scaling_train.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/select_emg2pose_reference.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/spectral_diagnostic.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/spectral_step1.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step1_ab.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step1_downstream.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step1_random_downstream.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step1bis_continuous_features.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step1bis_cpu_vs_gpu.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step1bis_feature_stability.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step1bis_margins.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step1bis_run.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step1bis_scale_sweep.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step1bis_v3_extras.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step2a.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/step2c.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/submit_job.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/tokenizer_evaluation.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/tokenizer_pose_readout.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/tokenizer_preflight.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/tokenizer_probe.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/tokenizer_train.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/train_jepa.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/window_seconds.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_scripts/wsd_chain.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/collate.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/consumer.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/manifest.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/masking.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/pipeline.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/pose_targets.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/pretraining_loader.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/pretraining_manifest.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/processed.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/rvq_codes.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/shards.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/synthetic.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/transforms.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/data/virtual_montage.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/gate/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/gate/consistency.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/anchor_candidates.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/baselines.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/benchmarks.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/channel_readout.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/downstream_ab.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/feature_sets.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/features_hudgins.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/fm_features.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/normalization.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/p1_cross_subject.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/pose_eval.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/probe.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/protocol.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/psd3_compare.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/psd3_inputs.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/psd3_readers.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/random_encoder.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/spectral_ab.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/spectral_probe.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/splits.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/training_stability.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/harness/traps.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/camargo.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/capgmyo.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/common.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/csl_hdemg.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/emg2pose.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/emg2pose_pose.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/emg2qwerty.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/grabmyo.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/hyser.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/kaifosh.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/ninapro_db10.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/ninapro_db5.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/ninapro_db6.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/ninapro_db8.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/ninapro_std.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/putemg.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/ingest/zhang2026.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/metadata/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/metadata/schema.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/metadata/taxonomy.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/anchor_targets.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/anchors.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/backbone.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/branch_masking.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/channel_codes.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/channel_identity.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/fm.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/frontend.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/geometry.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/local_encoder.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/patch_tokens.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/perceiver.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/pose_head.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/proxy.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/query_decoder.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/spectral_branches.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/spectral_step1.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/model/spectral_targets.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/preprocessing/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/preprocessing/canonical_view.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/tokenizer_checks/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/tokenizer_checks/branch_probe.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/tokenizer_checks/continuous_features.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/tokenizer_checks/emg2pose.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/tokenizer_checks/metrics.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/tokenizer_checks/neurorvq.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/tokenizer_checks/pipeline.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/tokenizer_checks/run_io.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/tokenizer_checks/sessions.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/training/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/training/jepa.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/training/masking.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/training/pairing.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/training/run.py",
+      "passed": true
+    },
+    {
+      "name": "frozen_source_src/wearusfm/training/spectral_calibration.py",
+      "passed": true
+    },
+    {
+      "name": "cpu_attestation",
+      "passed": true
+    },
+    {
+      "name": "matrix",
+      "passed": true
+    },
+    {
+      "name": "18_unique_fixtures",
+      "passed": true
+    },
+    {
+      "name": "fixed_file_order",
+      "passed": true
+    },
+    {
+      "name": "fixture_events",
+      "passed": true
+    },
+    {
+      "name": "tiny_oracle_qualified",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_hashes",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_descriptor",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_size",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_candidate",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_npz",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_write_closed",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db2_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_hashes",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_descriptor",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_size",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_candidate",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_npz",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_write_closed",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db3_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_hashes",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_descriptor",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_size",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_candidate",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_npz",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_write_closed",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "fresh_A_db6_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_hashes",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_descriptor",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_size",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_candidate",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_npz",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_write_closed",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db2_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_hashes",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_descriptor",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_size",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_candidate",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_npz",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_write_closed",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db3_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_hashes",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_descriptor",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_size",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_candidate",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_npz",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_write_closed",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "fresh_F_db6_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_hashes",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_descriptor",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_size",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_candidate",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_npz",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_write_closed",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db2_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_hashes",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_descriptor",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_size",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_candidate",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_npz",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_write_closed",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db3_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_hashes",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_descriptor",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_size",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_candidate",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_npz",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_write_closed",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "fresh_S_db6_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_hashes",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_descriptor",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_size",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_candidate",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_npz",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_write_closed",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_aged_720",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db2_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_hashes",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_descriptor",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_size",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_candidate",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_npz",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_write_closed",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_aged_720",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db3_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_hashes",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_descriptor",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_size",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_candidate",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_npz",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_write_closed",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "aged_S_db6_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_hashes",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_descriptor",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_size",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_candidate",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_npz",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_write_closed",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_aged_720",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db2_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_hashes",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_descriptor",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_size",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_candidate",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_npz",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_write_closed",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_aged_720",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db3_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_hashes",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_descriptor",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_size",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_candidate",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_npz",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_write_closed",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "aged_F_db6_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_hashes",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_descriptor",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_size",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_candidate",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_npz",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_write_closed",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_aged_720",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db2_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_hashes",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_descriptor",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_size",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_candidate",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_npz",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_write_closed",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_aged_720",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db3_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_hashes",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_descriptor",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_size",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_size_tolerance",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_candidate",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_npz",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_write_closed",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_age_consistency",
+      "passed": true
+    },
+    {
+      "name": "aged_A_db6_validation_boundary",
+      "passed": true
+    },
+    {
+      "name": "aged_count",
+      "passed": true
+    },
+    {
+      "name": "fixture_cap",
+      "passed": true
+    },
+    {
+      "name": "deadline",
+      "passed": true
+    },
+    {
+      "name": "sync_exposure",
+      "passed": true
+    },
+    {
+      "name": "two_reader_rounds",
+      "passed": true
+    },
+    {
+      "name": "12_reader_events",
+      "passed": true
+    },
+    {
+      "name": "reader_order_0",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1_db6_failed_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1_db6_failed_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1_db6_failed_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1_db6_failed_size",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1_db6_failed_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1_db6_failed_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1_db6_failed_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1_db6_failed_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1_db6_failed_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1_db6_failed_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db3_failed_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db3_failed_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db3_failed_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db3_failed_size",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db3_failed_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db3_failed_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db3_failed_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db3_failed_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db3_failed_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db3_failed_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db2_completed_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db2_completed_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db2_completed_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db2_completed_size",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db2_completed_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db2_completed_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db2_completed_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db2_completed_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db2_completed_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p1r1_db2_completed_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_0_pose_val_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_0_pose_val_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_0_pose_val_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_0_pose_val_size",
+      "passed": true
+    },
+    {
+      "name": "reader_0_pose_val_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_0_pose_val_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_0_pose_val_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_0_pose_val_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_0_pose_val_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_0_pose_val_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p2_epn_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p2_epn_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p2_epn_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p2_epn_size",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p2_epn_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p2_epn_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p2_epn_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p2_epn_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p2_epn_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_0_p2_epn_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_0_control30m_db3_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_0_control30m_db3_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_0_control30m_db3_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_0_control30m_db3_size",
+      "passed": true
+    },
+    {
+      "name": "reader_0_control30m_db3_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_0_control30m_db3_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_0_control30m_db3_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_0_control30m_db3_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_0_control30m_db3_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_0_control30m_db3_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_order_1",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1_db6_failed_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1_db6_failed_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1_db6_failed_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1_db6_failed_size",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1_db6_failed_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1_db6_failed_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1_db6_failed_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1_db6_failed_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1_db6_failed_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1_db6_failed_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1_db6_failed_cross_round",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db3_failed_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db3_failed_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db3_failed_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db3_failed_size",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db3_failed_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db3_failed_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db3_failed_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db3_failed_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db3_failed_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db3_failed_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db3_failed_cross_round",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db2_completed_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db2_completed_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db2_completed_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db2_completed_size",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db2_completed_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db2_completed_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db2_completed_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db2_completed_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db2_completed_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db2_completed_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p1r1_db2_completed_cross_round",
+      "passed": true
+    },
+    {
+      "name": "reader_1_pose_val_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_1_pose_val_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_1_pose_val_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_1_pose_val_size",
+      "passed": true
+    },
+    {
+      "name": "reader_1_pose_val_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_1_pose_val_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_1_pose_val_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_1_pose_val_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_1_pose_val_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_pose_val_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_pose_val_cross_round",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p2_epn_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p2_epn_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p2_epn_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p2_epn_size",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p2_epn_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p2_epn_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p2_epn_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p2_epn_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p2_epn_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p2_epn_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_p2_epn_cross_round",
+      "passed": true
+    },
+    {
+      "name": "reader_1_control30m_db3_hashes",
+      "passed": true
+    },
+    {
+      "name": "reader_1_control30m_db3_descriptor",
+      "passed": true
+    },
+    {
+      "name": "reader_1_control30m_db3_integer_stats",
+      "passed": true
+    },
+    {
+      "name": "reader_1_control30m_db3_size",
+      "passed": true
+    },
+    {
+      "name": "reader_1_control30m_db3_hard_and_mctime_stable",
+      "passed": true
+    },
+    {
+      "name": "reader_1_control30m_db3_two_second_pause",
+      "passed": true
+    },
+    {
+      "name": "reader_1_control30m_db3_guard_ok",
+      "passed": true
+    },
+    {
+      "name": "reader_1_control30m_db3_classification_pin",
+      "passed": true
+    },
+    {
+      "name": "reader_1_control30m_db3_classification_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_control30m_db3_pose_bridge",
+      "passed": true
+    },
+    {
+      "name": "reader_1_control30m_db3_cross_round",
+      "passed": true
+    },
+    {
+      "name": "completed_64610004",
+      "passed": true
+    },
+    {
+      "name": "completed_64610181",
+      "passed": true
+    },
+    {
+      "name": "allocation",
+      "passed": true
+    },
+    {
+      "name": "application_within_slurm",
+      "passed": true
+    },
+    {
+      "name": "batch_completed",
+      "passed": true
+    },
+    {
+      "name": "logged_code",
+      "passed": true
+    },
+    {
+      "name": "thread_env",
+      "passed": true
+    },
+    {
+      "name": "node_identity",
+      "passed": true
+    }
+  ],
+  "source_report_sha256": "c2e32e9cfab36a76c79b05913e350b9ec7f15484f73e2a271552c06f6e980908",
+  "source_events_sha256": "035a5333ac9cb69b38ae8cd77b1bcf807085f02881ed3161b9fae8569fcd44e5",
+  "source_sacct_sha256": "b557578bb6fca730224544c7bae6476b2ce8159e9593c3e6a90fe9ad505b49ee",
+  "fixture_count": 18,
+  "cycles": [
+    [
+      "fresh",
+      "A"
+    ],
+    [
+      "fresh",
+      "F"
+    ],
+    [
+      "fresh",
+      "S"
+    ],
+    [
+      "aged",
+      "S"
+    ],
+    [
+      "aged",
+      "F"
+    ],
+    [
+      "aged",
+      "A"
+    ]
+  ],
+  "fixture_bytes": 27719878320,
+  "aged_6_min_max_seconds": [
+    729.6421601353213,
+    774.0736974952742
+  ],
+  "write_seconds_min_max": [
+    0.317731661722064,
+    3.253393274731934
+  ],
+  "write_seconds_by_mode": {
+    "fresh_A": [
+      1.4395763278007507,
+      0.32481163553893566,
+      1.6421824153512716
+    ],
+    "fresh_F": [
+      1.4217068692669272,
+      0.4153850544244051,
+      1.5459180334582925
+    ],
+    "fresh_S": [
+      1.4815183728933334,
+      0.35900078620761633,
+      1.5510222222656012
+    ],
+    "aged_S": [
+      1.288504559546709,
+      0.32486000563949347,
+      3.253393274731934
+    ],
+    "aged_F": [
+      1.31911232881248,
+      0.31808032281696796,
+      1.450823649764061
+    ],
+    "aged_A": [
+      1.6879274314269423,
+      0.317731661722064,
+      1.508929611183703
+    ]
+  },
+  "atime_state_differences_observed": 150,
+  "mtime_ctime_or_hard_drift_observed": 0,
+  "readers": [
+    {
+      "phase": "before",
+      "id": "p1_db6_failed",
+      "sha256": "20311227941b67db3e688d4363f31d42299e41a82f7d8a9dbbacb1df9b43fd6a",
+      "historical_pin": false,
+      "pin_kind": "diagnostic"
+    },
+    {
+      "phase": "before",
+      "id": "p1r1_db3_failed",
+      "sha256": "0ac3a99f25e5d4aed2273eba80e816c29236c7e19e9726f2b8404a13e06ea982",
+      "historical_pin": false,
+      "pin_kind": "diagnostic"
+    },
+    {
+      "phase": "before",
+      "id": "p1r1_db2_completed",
+      "sha256": "217ad6cc6eb18c2a24cecbd490216f524d7e1092fe5b65b37e6c6dad71613af7",
+      "historical_pin": true,
+      "pin_kind": "diagnostic"
+    },
+    {
+      "phase": "before",
+      "id": "pose_val",
+      "sha256": "384d8aee5f6209f2e01e668c0439118170c7c3ea9bb8296d6e5a0a171df68185",
+      "historical_pin": true,
+      "pin_kind": "accepted"
+    },
+    {
+      "phase": "before",
+      "id": "p2_epn",
+      "sha256": "92e27900a89d41783a756e7bce54831cc05d036de40324f573fb6c7e474c1912",
+      "historical_pin": true,
+      "pin_kind": "accepted"
+    },
+    {
+      "phase": "before",
+      "id": "control30m_db3",
+      "sha256": "e853c11cccb007ba7dae8e1c011f55a599421cd3a1cc386601dcca76836f895e",
+      "historical_pin": true,
+      "pin_kind": "accepted"
+    },
+    {
+      "phase": "after",
+      "id": "p1_db6_failed",
+      "sha256": "20311227941b67db3e688d4363f31d42299e41a82f7d8a9dbbacb1df9b43fd6a",
+      "historical_pin": false,
+      "pin_kind": "diagnostic"
+    },
+    {
+      "phase": "after",
+      "id": "p1r1_db3_failed",
+      "sha256": "0ac3a99f25e5d4aed2273eba80e816c29236c7e19e9726f2b8404a13e06ea982",
+      "historical_pin": false,
+      "pin_kind": "diagnostic"
+    },
+    {
+      "phase": "after",
+      "id": "p1r1_db2_completed",
+      "sha256": "217ad6cc6eb18c2a24cecbd490216f524d7e1092fe5b65b37e6c6dad71613af7",
+      "historical_pin": true,
+      "pin_kind": "diagnostic"
+    },
+    {
+      "phase": "after",
+      "id": "pose_val",
+      "sha256": "384d8aee5f6209f2e01e668c0439118170c7c3ea9bb8296d6e5a0a171df68185",
+      "historical_pin": true,
+      "pin_kind": "accepted"
+    },
+    {
+      "phase": "after",
+      "id": "p2_epn",
+      "sha256": "92e27900a89d41783a756e7bce54831cc05d036de40324f573fb6c7e474c1912",
+      "historical_pin": true,
+      "pin_kind": "accepted"
+    },
+    {
+      "phase": "after",
+      "id": "control30m_db3",
+      "sha256": "e853c11cccb007ba7dae8e1c011f55a599421cd3a1cc386601dcca76836f895e",
+      "historical_pin": true,
+      "pin_kind": "accepted"
+    }
+  ],
+  "frozen_source_pin_count": 228,
+  "event_count": 408,
+  "accounting": {
+    "diagnostic_elapsed_seconds": 977,
+    "diagnostic_gpu_hours": 0.2713888888888889,
+    "diagnostic_core_hours": 2.171111111111111,
+    "checkout_elapsed_seconds": 41,
+    "checkout_core_hours": 0.02277777777777778,
+    "total_core_hours": 2.193888888888889,
+    "maxrss_batch_gib": 14.234710693359375
+  },
+  "interpretation": [
+    "Zero reproductions in 18 correlated synthetic fixtures. This neither proves a Lustre cause nor proves that barriers cure it.",
+    "All 12 sampled real-cache guard rounds match their available pins and each other; this does not guarantee 43-hour reader stability.",
+    "Two failed caches had no historical digest pin; their values are diagnostic baselines, not accepted scientific artifacts.",
+    "No third P1 inference or reader release follows automatically from this null diagnostic. The failure cause remains open."
+  ],
+  "limitations": [
+    "Review of collected small records only; no SSH, no read of large remote NPZs, no independent rerun of their hashes.",
+    "Byte-oracle and schema results independently cross-checked in the report/events, not recomputed from large fixtures."
+  ],
+  "reviewed_at_utc": "2026-11-16T17:49:12.565959+00:00"
+}

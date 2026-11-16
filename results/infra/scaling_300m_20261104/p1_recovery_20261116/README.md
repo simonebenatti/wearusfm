@@ -1,5 +1,10 @@
 # Recupero P1 a 19.618 — pacchetto approvato del 16/11/2026
 
+**Esito finale:** diagnostico 64610181 COMPLETED 0:0, NOT_REPRODUCED /
+READERS_CLEAR_IN_TEST. P1-r2 non rilasciato, nessun secondo checkout o retry.
+Readout completo: `docs/reviews/gpt_scaling_p1_diagnostic_readout_20261116.md`.
+I passi condizionali sotto sono la sequenza approvata, non lavori ancora in esecuzione.
+
 Simone: «approvo tutto, correggi e prepara tutto e lancia tu se non hai altre
 cose da correggere». Registrato in `81f1f76`, pubblicato e verificato su origin.
 GPT e' l'operatore di questo pacchetto; eccezione al ruolo ordinario di revisore
