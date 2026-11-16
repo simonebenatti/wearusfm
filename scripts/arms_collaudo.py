@@ -489,16 +489,26 @@ def check(run_dir: Path, arm: str, steps: int, expected_sha: str, listing: str) 
          "passi_non_finiti": non_finite[:5]})
 
     missing, off = [], []
+    contrastive_config = cfg.get("contrastive")
+    if contrastive_config is not None:
+        from wearusfm.training.contrastive_objectives import ContrastiveConfig
+        contrastive_config = ContrastiveConfig(**contrastive_config)
     for r in recs:
         keys = ("total", "jepa") + ANCHORS + (("pose",) if wp > 0 else ())
+        if contrastive_config is not None:
+            keys += ("contrast_nce", "contrast_rnc")
         if any(not isinstance(r.get(k), (int, float)) or not math.isfinite(r[k]) for k in keys):  # total infinito: tolleranza infinita
             missing.append(r.get("step"))
             continue
         expected = wj * r["jepa"] + wa * sum(r[a] for a in ANCHORS) + (wp * r["pose"] if wp > 0 else 0.0)
+        if contrastive_config is not None:
+            wn, wr = contrastive_config.weights(r["step"] - 1)
+            expected += wn * r["contrast_nce"] + wr * r["contrast_rnc"]
         if abs(r["total"] - expected) > REL_TOL * max(1.0, abs(r["total"])):
             off.append(r.get("step"))
     put("composizione_della_loss", bool(recs) and not missing and not off,
-        {"formula": f"total = {wj:g} x jepa + {wa:g} x somma delle ancore {list(ANCHORS)}" + (f" + {wp:g} x pose" if wp > 0 else ""),
+        {"formula": f"total = {wj:g} x jepa + {wa:g} x somma delle ancore {list(ANCHORS)}" + (f" + {wp:g} x pose" if wp > 0 else "")
+                    + (" + scheduled_nce_weight x contrast_nce + scheduled_rnc_weight x contrast_rnc" if contrastive_config else ""),
          "tolleranza_relativa": REL_TOL, "passi_senza_componenti_finite": missing[:5], "passi_fuori_tolleranza": off[:5]})
     training_descent = None
     if wp > 0:

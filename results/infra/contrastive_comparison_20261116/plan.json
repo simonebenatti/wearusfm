@@ -1,0 +1,229 @@
+{
+  "protocol": "contrastive-comparison-20261116-v1",
+  "status": "REVIEW_REQUIRED",
+  "executable": false,
+  "training_authorized_by_this_file": false,
+  "scope": "Design and implementation for Claude review, no submissions",
+  "reference_recipe": {
+    "path": "results/infra/tokenizer_execution_20261103/19618/T100-G/config.json",
+    "sha256": "f9d0318462fd30a5592087ef72c63d3036a88ff1d07fc0dad8624e36253c2cfa",
+    "checkpoint_reuse": false
+  },
+  "arms": {
+    "C0": {
+      "nce_weight": 0.0,
+      "rnc_weight": 0.0
+    },
+    "CN": {
+      "nce_weight": "train_calibration_lambda_n",
+      "rnc_weight": 0.0
+    },
+    "CR": {
+      "nce_weight": 0.0,
+      "rnc_weight": "train_calibration_lambda_r"
+    }
+  },
+  "common": {
+    "base": "T100-G",
+    "seed": 0,
+    "model_family": "30M",
+    "window_ms": 100.0,
+    "hop_ms": 25.0,
+    "activation": "gelu",
+    "jepa_weight": 0.0,
+    "anchor_weight": 0.2,
+    "pose_weight": 1.0,
+    "batch_global": 32,
+    "world_size": 4,
+    "accum_steps": 1,
+    "lr": 0.0001,
+    "grad_clip": 1.0,
+    "weight_decay": 0.05,
+    "ema": 0.996,
+    "schedule": {
+      "kind": "wsd",
+      "total_steps": 49046,
+      "warmup_steps": 1962,
+      "decay_fraction": 0.2,
+      "endpoints": [
+        5000,
+        19618
+      ]
+    },
+    "all_arms_compute_both_terms_and_memory": true,
+    "same_projection_all_arms": true,
+    "initialization": "shared untrained, projection isolated RNG",
+    "num_workers_per_rank": 6,
+    "global_gradient_diagnostics": {
+      "every": 500,
+      "also_at": [
+        256,
+        512,
+        1962,
+        5000,
+        19618
+      ]
+    }
+  },
+  "nce": {
+    "temperature": 0.2,
+    "readout": "backbone mean slots then physical QC-valid time",
+    "projection": [
+      384,
+      384,
+      128
+    ],
+    "positive": "same physical window/montage, masked student and unmasked EMA teacher",
+    "minimum_negatives": 32,
+    "queue_per_dataset": 1024,
+    "maximum_age_updates": 256,
+    "exclude_temporal_gap_below_s": 4.0,
+    "denominator": "all 32 global windows, ineligible contributions zero",
+    "teacher_detached": true,
+    "candidate_scope": "same dataset, global current batch and previous FIFO"
+  },
+  "rnc": {
+    "temperature": 0.1,
+    "stride_patches": 8,
+    "phase_patches": 4,
+    "resolution": 0.0,
+    "positives": "all",
+    "readout": "student mean_K per physical time, pose-valid support including masked patches",
+    "target_distance": "RMS standardized jointly-valid angles",
+    "similarity": "cosine after affine-free LayerNorm",
+    "normalization": "uniform-similarity reference per anchor; per-window then windows",
+    "candidate_scope": "global batch, differentiable gather both sides",
+    "minimum_positive_pairs_per_anchor": 2,
+    "asymmetric_cross_forbidden": true,
+    "collective_gradient": "replicated global loss; gather SUM backward followed by DDP mean",
+    "physical_duplicate_policy": "exclude identical physical-instant pairs from both roles; replicas remain in population against other points",
+    "physical_instant_index": "start+ceil((patch+0.5)*patch_ms*fs/1000-1e-9)"
+  },
+  "calibration": {
+    "scope": "train only, initial model/teacher frozen, no optimizer steps",
+    "prefill_global_batches": 256,
+    "candidate_batch_indices_inclusive": [
+      256,
+      511
+    ],
+    "required_jointly_informative_batches": 32,
+    "selection": "first 32 jointly informative, no extension beyond 511",
+    "base_gradient_fraction": 0.1,
+    "lambda_formula": "0.1 * median(norm(global g_base) / norm(global g_term))",
+    "allowed_lambda": [
+      0.0001,
+      1.0
+    ],
+    "shared_prefixes": [
+      "tokenizer",
+      "identity",
+      "local",
+      "pool",
+      "backbone"
+    ],
+    "reset_all_before_training": true,
+    "frozen_weights": {
+      "CN": null,
+      "CR": null
+    }
+  },
+  "activation": {
+    "zero_weight_updates": 256,
+    "linear_ramp_updates": 256,
+    "fixed_after_completed_update": 512
+  },
+  "coverage": {
+    "nce_min_overall_fraction": 0.9,
+    "nce_min_per_dataset_fraction": 0.8,
+    "nce_min_observed_queries_per_dataset": 32,
+    "rnc_min_global_batch_active_fraction": 0.9,
+    "report_blocks_updates": 1024,
+    "failure": "diagnosis and reviewed amendment, no automatic change",
+    "runtime_gate": "completed 1024-update blocks after fill; partial block descriptive; calibration 256-batch block must pass"
+  },
+  "evaluation": {
+    "which": "teacher",
+    "read_before_projection": true,
+    "pose_steps": [
+      5000,
+      19618
+    ],
+    "classification_steps": [
+      19618
+    ],
+    "primary_endpoints": [
+      "E_dyn",
+      "p1",
+      "p2"
+    ],
+    "pairs": [
+      [
+        "CN",
+        "C0"
+      ],
+      [
+        "CR",
+        "C0"
+      ],
+      [
+        "CN",
+        "CR"
+      ]
+    ],
+    "weights": {
+      "p1": {
+        "ninapro_db2": 0.6153846153846154,
+        "ninapro_db3": 0.23076923076923078,
+        "ninapro_db6": 0.15384615384615385
+      },
+      "p2": {
+        "epn612": 0.5,
+        "uci_emg": 0.5
+      }
+    },
+    "bootstrap": {
+      "replicates": 100000,
+      "seed": 20261116,
+      "family_size": 9,
+      "family_alpha": 0.05,
+      "nominal_simultaneous_confidence": 0.9944444444444445,
+      "paired": true,
+      "missing_class_rule": "macro recall on classes present in each draw; retain all draws"
+    },
+    "margins": {
+      "E_dyn": {
+        "useful_reduction_percent": 2.0,
+        "noninferiority_increase_percent": 2.0
+      },
+      "p1": {
+        "useful_gain_pp": 0.5,
+        "noninferiority_loss_pp": 1.0
+      },
+      "p2": {
+        "useful_gain_pp": 0.5,
+        "noninferiority_loss_pp": 1.0
+      }
+    },
+    "reading": "useful simultaneous-CI benefit on at least one endpoint plus NI on all, against C0 and head-to-head; otherwise tradeoff/unresolved; no scalar winner",
+    "expected_classification_fits": 420,
+    "comparator": "scripts/contrastive_compare.py"
+  },
+  "resources": {
+    "historical_reference_gpu_hours_per_arm": 16.944444444444443,
+    "historical_three_arm_reference_before_overhead_gpu_hours": 50.83333333333333,
+    "measured_new_runtime": null,
+    "allocated_caps": null,
+    "extraction_cells": 12,
+    "pose_reader_cells": 6,
+    "probe_task_aggregates": 6,
+    "requires_measured_benchmark_before_training_release": true
+  },
+  "release": null,
+  "limitations": [
+    "one pretraining seed per arm",
+    "development data already inspected",
+    "conditional subject bootstrap not between-training variance",
+    "pose already supervised in base",
+    "comparison of objective recipes using different units/candidate construction, not only a distance swap"
+  ]
+}

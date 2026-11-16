@@ -1,0 +1,195 @@
+{
+  "status": "IMPLEMENTED_FOR_CLAUDE_REVIEW_NOT_RELEASED",
+  "base_commit": "924e19d1ae0145f88ffdbbaa66e9381ce244faa5",
+  "environment": {
+    "python": "3.11.14",
+    "torch": "2.14.0",
+    "platform": "macOS-26.7-arm64-arm-64bit",
+    "device": "CPU",
+    "threads": "OMP/OPENBLAS/MKL=1"
+  },
+  "main_suite": {
+    "files": [
+      "test_rank_contrast.py",
+      "test_contrastive_core.py",
+      "test_contrastive_memory.py",
+      "test_contrastive_runtime.py",
+      "test_contrastive_prepare.py",
+      "test_contrastive_audit.py",
+      "test_contrastive_run.py",
+      "test_contrastive_compare.py",
+      "test_pose_objective.py",
+      "test_training_run.py",
+      "test_training_wsd.py"
+    ],
+    "selector": "not ddp and not distributed",
+    "passed": 153,
+    "deselected": 6,
+    "warnings": 1,
+    "elapsed_s": 150.08,
+    "warning": "Existing test_pose_objective scalar conversion of requires_grad tensor"
+  },
+  "latest_targeted_recheck": {
+    "files": [
+      "test_contrastive_run.py",
+      "test_contrastive_audit.py"
+    ],
+    "passed": 9,
+    "elapsed_s": 2.3,
+    "note": "Subset, not nine additional unique tests; after execution-gate and input-pin changes"
+  },
+  "historical_distributed_regression": {
+    "file": "test_objective_arms.py",
+    "selector": "torchrun",
+    "passed": 2,
+    "deselected": 21,
+    "elapsed_s": 12.1,
+    "scope": "Historical objective path only, does not verify the new distributed contrastive path"
+  },
+  "new_distributed_tests": {
+    "status": "NOT_EXECUTED_SUCCESSFULLY",
+    "count": 6,
+    "files": [
+      "test_contrastive_memory.py",
+      "test_contrastive_runtime.py"
+    ],
+    "reason": "Sandbox denies loopback/process facilities; escalation requests were cancelled. No renewed request or workaround.",
+    "required_before_release": true
+  },
+  "limitations": [
+    "No CUDA/NCCL execution",
+    "No real training stream audit or calibration values",
+    "No measured contrastive compute/memory budget",
+    "No checkpoint extraction/probe scientific results",
+    "CPU baseline compatibility is tolerance-based, not bit-exact; CPU resumed CN run was bit-exact"
+  ],
+  "review_configs_match_builder": true,
+  "jobs_submitted": 0,
+  "runtime_source_sha256": "092a23d59a8c82138d8b2c9dc711e5e25c70cbc63d102b0b984f5346db94375b",
+  "file_pins": {
+    "docs/contrastive_comparison_protocol_20261116.md": {
+      "sha256": "d656297e1649039d6e4c96127e4c8090d99e10613571bdd9aee0b172505b0b2a",
+      "bytes": 19350
+    },
+    "results/infra/contrastive_comparison_20261116/configs/C0.config.json": {
+      "sha256": "5354801afa786a8ed403fe10bc474cf327b9790244603e207b94c2ed64edcab7",
+      "bytes": 4155
+    },
+    "results/infra/contrastive_comparison_20261116/configs/CN.config.json": {
+      "sha256": "876b2bb9bb367458b725a18a848bd1d3780beb9651cf552822ec560042d9a8aa",
+      "bytes": 4155
+    },
+    "results/infra/contrastive_comparison_20261116/configs/CR.config.json": {
+      "sha256": "d682d8c6c8b59ebc023ed49811fae67301207ef9b0dfd681cb74383a99aa2006",
+      "bytes": 4155
+    },
+    "results/infra/contrastive_comparison_20261116/configs/calibration.config.json": {
+      "sha256": "c47f601d82f03cc963b834612d83204188da37606d4530047117166425220cf2",
+      "bytes": 4150
+    },
+    "results/infra/contrastive_comparison_20261116/configs/preparation.json": {
+      "sha256": "5afa8e15ba3b67d0217e39dcbf379836153f926af5c5ae5b44d9ceac910600d1",
+      "bytes": 1446
+    },
+    "results/infra/contrastive_comparison_20261116/plan.json": {
+      "sha256": "19f9f05eacd1201c5b2cf22705bc5efa6b215d959460d0cce65888c06139859c",
+      "bytes": 6657
+    },
+    "scripts/arms_collaudo.py": {
+      "sha256": "91d3ad5deb1b017c982af563553af2a3e6995085f22c2966ec3c4d4a51c540f3",
+      "bytes": 39098
+    },
+    "scripts/contrastive_audit.py": {
+      "sha256": "0c4f93bf885418a2a6235476ad384bef3a026abb71fef23b49e5fd5d96c4bc7f",
+      "bytes": 7213
+    },
+    "scripts/contrastive_compare.py": {
+      "sha256": "2182297f873ac0f9353b0dcb3bcaa639b45ffae2061b00b9922c71518cc459ae",
+      "bytes": 16287
+    },
+    "scripts/contrastive_prepare.py": {
+      "sha256": "ce1d283d412df170fa57dd7e654f387aef0d84fa20e8f9864045f0ddf63956c8",
+      "bytes": 14936
+    },
+    "scripts/contrastive_run.py": {
+      "sha256": "4fc73f63bc4267a966fa7a1faf05473f0d0a3539ac0c2952f5293a54e504b346",
+      "bytes": 7106
+    },
+    "scripts/train_jepa.py": {
+      "sha256": "08b61f27549fc966995cf5cdf2c85e7652d30cc24309309ebb0d7890c2cf6530",
+      "bytes": 23531
+    },
+    "src/wearusfm/model/contrastive.py": {
+      "sha256": "cfb668a2a187cd8970c5e8d3b8aad34aa2d84d9411740e0aed8b8b6d01085c9f",
+      "bytes": 6529
+    },
+    "src/wearusfm/model/fm.py": {
+      "sha256": "9b04c2c54479f844021b4387223272aa4458414455a6d90fd70a749a35588fc9",
+      "bytes": 14957
+    },
+    "src/wearusfm/model/rank_contrast.py": {
+      "sha256": "0cf7db711b470f17ad75b4e98b67e25d7337390c381591cc30b226d1853fee1b",
+      "bytes": 9719
+    },
+    "src/wearusfm/training/contrastive_memory.py": {
+      "sha256": "aba7a15b70601a581de73880d3002e440a9e0a4ff25772c433b9ba1fef4c19a9",
+      "bytes": 15821
+    },
+    "src/wearusfm/training/contrastive_objectives.py": {
+      "sha256": "8aa016549f53114a235798a35f53b86208615a1ee7c2b0feb1cd90c4eba1be0c",
+      "bytes": 15199
+    },
+    "src/wearusfm/training/jepa.py": {
+      "sha256": "423f49ae0d982ed66631fa0b8832454b64fa2b2502e501da49351bf98cea6170",
+      "bytes": 41202
+    },
+    "src/wearusfm/training/run.py": {
+      "sha256": "b5748cd060448c8b557a2cda4d7e33fcd9c895a42697f50e67b2e138cf70ac2a",
+      "bytes": 122438
+    },
+    "tests/cpu/test_contrastive_audit.py": {
+      "sha256": "479deafadd0976cd0dc708d6a7886a9847b429c3291f9220ed0eab280c9f543f",
+      "bytes": 2360
+    },
+    "tests/cpu/test_contrastive_compare.py": {
+      "sha256": "d25090d9aec33721e1245bbfb9eb66ae23e9fd0f6da795db2378cc9fce40d41b",
+      "bytes": 9841
+    },
+    "tests/cpu/test_contrastive_core.py": {
+      "sha256": "bec44641054b7e229265140f0594c6cb379f1190da6fecb5a7ffdafb688a582c",
+      "bytes": 6434
+    },
+    "tests/cpu/test_contrastive_memory.py": {
+      "sha256": "0cc5ac6b248213e5d23f9cbe966a5317780c86d675e1efcd8bef2bc914af37c9",
+      "bytes": 8572
+    },
+    "tests/cpu/test_contrastive_prepare.py": {
+      "sha256": "8ebed9af3fe030cb2ad6b519d4221cd777fc95200a7e030c158bea5fee51c7f7",
+      "bytes": 6797
+    },
+    "tests/cpu/test_contrastive_run.py": {
+      "sha256": "8011159ff08f3f2ba977be1822686de6192c4d3bf2ce9765a731066906263faa",
+      "bytes": 3448
+    },
+    "tests/cpu/test_contrastive_runtime.py": {
+      "sha256": "79fad68762103901d44a284329f3946fc718d157c7d298dcddad12855f65c97c",
+      "bytes": 13278
+    },
+    "tests/cpu/test_pose_objective.py": {
+      "sha256": "d830c4336ee9bccd9ea196bc17d87e177de6a822acb25a1731a9a52b4874c0a1",
+      "bytes": 12247
+    },
+    "tests/cpu/test_rank_contrast.py": {
+      "sha256": "b4cdefb4e81f9395dccacb9a19703f292bdf9912bd50433fad13bc15b0166095",
+      "bytes": 8101
+    },
+    "tests/cpu/test_training_run.py": {
+      "sha256": "fc92b14c1ea291e893915401b2019632a4d09600b4c56e07e01e8751a6006a29",
+      "bytes": 15215
+    },
+    "tests/cpu/test_training_wsd.py": {
+      "sha256": "37a87e2b21b7813d913137def9833641035fba08bb68efff59b640be59e2342a",
+      "bytes": 8027
+    }
+  }
+}

@@ -72,8 +72,11 @@ class FMConfig:
     tokenizer_activation: str = "identity"
     tokenizer_logsquare: bool = False
     tokenizer_logsquare_eps: float = 1e-3
+    contrastive_projection: bool = False  # opt-in matched C0/CN/CR; excluded from downstream readouts
 
     def __post_init__(self) -> None:
+        if type(self.contrastive_projection) is not bool:
+            raise ValueError("contrastive_projection must be boolean")
         if not isinstance(self.tokenizer_activation, str) or self.tokenizer_activation not in ("identity", "gelu"):
             raise ValueError("tokenizer_activation deve essere identity o gelu")
         validate_logsquare(self.tokenizer_logsquare, self.tokenizer_logsquare_eps, self.tokenizer_activation)
@@ -197,6 +200,10 @@ class WearUsFM(nn.Module):
                     self.branch_predictors = make_predictors(cfg.spectral_branches, cfg.branch_hidden, seed=None)
         for m in (self.local, self.backbone, self.decoder):
             m.grad_checkpoint = cfg.grad_checkpoint
+        self.contrastive_head = None
+        if cfg.contrastive_projection:
+            from wearusfm.model.contrastive import ProjectionHead
+            self.contrastive_head = ProjectionHead(cfg.dim)
 
     def n_patches(self, inp: ModelInputs) -> int:
         return max(int(math.floor(x.shape[-1] / f / self.tokenizer.patch_s + 1e-9)) for x, f in zip(inp.signals, inp.fs))

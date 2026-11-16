@@ -165,12 +165,14 @@ class RunConfig:
     # (`scripts/build_nested_manifests.py`: soggetti del sottoinsieme firmato in `splits/v1/splits_v1.json`, base sulle ore campionabili,
     # D9 sul sottoinsieme; '1' = il derivato al 100%); None = un manifest non derivato (v1.1). Guardia in due sensi nel loader
     nested: str | None = None
+    contrastive: dict | None = None  # global C0/CN/CR objectives, queue policy and train-only calibration
 
 
 # campi aggiunti dopo i primi checkpoint, coi valori che avevano implicitamente: un checkpoint di prima equivale a uno nuovo con questi valori
 _LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False, "fixed_eval_every": 0, "fixed_eval_batches": 8,
                    "pose_grad_every": 0, "pose_panel_every": 0, "pose_panel_users": 32, "pose_panel_recordings": 2, "pose_panel_windows": 4,
-                   "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False}
+                   "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False,
+                   "contrastive": None}
 BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5,
                        "branch_objective": "readout", "branch_freeze_output": False,  # pilot dei rami del 20/10
                        "window_ms": None}  # finestra del kernel: assente = patch storica
@@ -191,7 +193,7 @@ def _config_with_defaults(d: dict) -> dict:
     out = {**_LATER_DEFAULTS, **d}
     if isinstance(out.get("model"), dict):
         out["model"] = {**BRANCH_MODEL_FIELDS, "tokenizer_activation": "identity",
-                        "tokenizer_logsquare": False, "tokenizer_logsquare_eps": 1e-3, **out["model"]}
+                        "tokenizer_logsquare": False, "tokenizer_logsquare_eps": 1e-3, "contrastive_projection": False, **out["model"]}
     if isinstance(out.get("jepa"), dict):
         # region_target: R2, 24/10; pose_weight: R3, 26/10 (la posa e' spenta nei config precedenti)
         out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, "region_target": False, "pose_weight": 0.0,
@@ -702,7 +704,8 @@ def _shared_grad_stats(components: dict, shared: list) -> dict:
     return out
 
 
-def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunConfig, ctx: DistContext, device, amp, grad_diag: bool = False):
+def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunConfig, ctx: DistContext, device, amp,
+                      grad_diag: bool = False, contrastive=None):
     """Forward e backward di un aggiornamento col contratto delle loss distribuite (DDP e/o accumulo; `docs/contratto_loss_distribuite.md`,
     consegna di GPT del 12/10/2026). Prima di ogni backward: conteggi `loss_counts` di tutti i micro-batch, sommati e ridotti fra i processi
     (denominatori globali D_c). Per micro-batch: forward (`no_sync` su tutti tranne l'ultimo), confronto dei conteggi del forward coi
@@ -713,6 +716,10 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
     pre = [loss_counts(m.inp, m.visible, cfg.jepa, m.anchor_targets, m.rvq_on, m.rvq_codes, model_cfg=student.cfg,
                        keep_target_active=keep_active, regions=m.regions, pose_valid=m.pose[1] if m.pose is not None else None)
            for m in micros]
+    if contrastive is not None:
+        if len(micros) != 1:
+            raise ValueError("global contrastive objectives require accum_steps=1")
+        pre[0].update(contrastive.counts(device))
     keys = sorted(pre[0])
     if any(sorted(p) != keys for p in pre):
         raise RuntimeError(f"componenti delle loss diverse fra i micro-batch: {[sorted(p) for p in pre]}")
@@ -731,8 +738,11 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
         with nullcontext() if model is None or last else model.no_sync():
 
             def compute(s, m=m):
-                return jepa_loss_terms(s, teacher, m.inp, m.visible, cfg.jepa, anchor_targets=m.anchor_targets, rvq_on=m.rvq_on,
-                                       rvq_codes=m.rvq_codes, kinds=m.kinds, regions=m.regions, pose=m.pose)
+                encoded = []
+                terms = jepa_loss_terms(s, teacher, m.inp, m.visible, cfg.jepa, anchor_targets=m.anchor_targets, rvq_on=m.rvq_on,
+                                       rvq_codes=m.rvq_codes, kinds=m.kinds, regions=m.regions, pose=m.pose,
+                                       capture_encoded=(lambda a, b: encoded.extend((a, b))) if contrastive is not None else None)
+                return contrastive.attach(terms, s, teacher, m, *encoded) if contrastive is not None else terms
 
             with amp:
                 terms = model(compute) if model is not None else compute(student)
@@ -758,8 +768,12 @@ def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunCon
                 ws = ctx.world_size
                 comps = {"pose": terms.weight["pose"] * terms.num["pose"] * ws / global_den["pose"].clamp(min=1),
                          "anchors": sum(terms.weight[k] * terms.num[k] * ws / global_den[k].clamp(min=1) for k in terms.num
-                                        if k not in ("pose", "jepa", "keep", "keep_branches"))}
+                                        if k not in ("pose", "jepa", "keep", "keep_branches", "contrast_nce", "contrast_rnc"))}
                 grad_stats = _shared_grad_stats(comps, _shared_params(student))
+            if contrastive is not None and ((contrastive.cfg.calibration_only and contrastive.step >= contrastive.cfg.fill_steps) or
+                    (contrastive.cfg.grad_every and ((contrastive.step + 1) % contrastive.cfg.grad_every == 0 or
+                                                     contrastive.step + 1 in (256, 512, 1962, 5000, 19618)))):
+                grad_stats.update(contrastive.global_gradients(terms, global_den, _shared_params(student)))
             loss.backward()
         weight = terms.weight
         for group, d in (("num", terms.num), ("log_num", terms.log_num), ("log_den", terms.log_den), ("log_sum", terms.log_sum)):
@@ -1263,13 +1277,27 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError(f"accumulo: {per_process} finestre per processo non divisibili in {cfg.accum_steps} micro-batch")
     if cfg.accum_steps > 1 and (cfg.pairing_audit or cfg.keep_grad_every):
         raise NotImplementedError("accumulo: pairing_audit e keep_grad_every non supportati")
-    use_terms = ctx.active or cfg.accum_steps > 1  # il contratto delle loss; altrimenti il percorso di sempre, bit per bit
+    contrastive = None
+    if cfg.contrastive is not None:
+        from wearusfm.training.contrastive_objectives import ContrastiveRuntime
+        if cfg.accum_steps != 1 or cfg.freeze_encoder or cfg.model.spectral_branches or not cfg.model.contrastive_projection:
+            raise ValueError("contrastive requires projection, accum_steps=1 and unfrozen plain encoder")
+        if not cfg.loader.pose_root or not cfg.model.pose_head or cfg.jepa.pose_weight <= 0:
+            raise ValueError("matched contrastive experiment requires base pose supervision in all arms")
+        if init_from is not None or branch_from is not None or branch_state_from is not None:
+            raise ValueError("contrastive experiment starts fresh or resumes its own run; no warm-start/branch")
+        contrastive = ContrastiveRuntime(cfg.contrastive)
+    elif cfg.model.contrastive_projection:
+        raise ValueError("training with contrastive projector requires an explicit matched experiment config")
+    use_terms = ctx.active or cfg.accum_steps > 1 or contrastive is not None
     ckpt = out_dir / "checkpoint.pt"
     if cfg.pairing_audit and (out_dir.exists() or init_from is not None):
         raise ValueError("pairing audit requires a NEW uninterrupted run (no resume/warm-start)")
     if cfg.schedule.kind == "wsd":
         _check_wsd(cfg)
     resume_state = torch.load(ckpt, map_location="cpu", weights_only=False) if ckpt.exists() else None
+    if contrastive is not None and contrastive.cfg.calibration_only and resume_state is not None:
+        raise ValueError("train-only calibration must start fresh; never resume a calibration as training")
     default_schedule = json.loads(json.dumps(asdict(Schedule()), default=list))  # i checkpoint di prima del WSD: schedule costante
     if resume_state is not None and resume_state.get("config", {}).get("schedule", default_schedule) != config_to_dict(cfg)["schedule"]:
         raise ValueError("ripresa con uno schedule diverso da quello del checkpoint: per cambiarlo si fa un ramo in una cartella nuova "
@@ -1335,6 +1363,11 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if cfg.nested is not None:
         check_derived_binding(index.params, cfg, window_s)
     student = WearUsFM(cfg.model).to(device)
+    contrastive_initial_sha = None
+    if contrastive is not None:
+        from wearusfm.training.pairing import state_sha256
+        contrastive.expected_datasets = tuple(sorted({r["dataset"] for r, w in zip(index.rows, index.weights) if w > 0}))
+        contrastive_initial_sha = state_sha256(student.state_dict())
     frozen_init = branch_calibration = None
     if cfg.freeze_encoder and resume_state is None:
         frozen_init = _load_frozen_encoder(student, cfg, init_from)
@@ -1363,6 +1396,12 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         teacher.load_state_dict(state["teacher"])
         opt.load_state_dict(state["optimizer"])
         step = int(state["step"])
+        if contrastive is not None:
+            if "contrastive_state" not in state:
+                raise ValueError("checkpoint missing contrastive queue state")
+            if state.get("contrastive_initial_sha256") != contrastive_initial_sha:
+                raise ValueError("contrastive initial reference changed on resume")
+            contrastive.load_state_dict(state["contrastive_state"], step)
         monitor.low_collapse, monitor.low_rank = state["alarm_counts"]
         if ctx.active:  # il generatore di questo processo
             mine = state["rank_rng"][ctx.rank]
@@ -1401,7 +1440,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         return {"student": student.state_dict(), "teacher": teacher.state_dict(), "optimizer": opt.state_dict(), "step": step,
                 "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg),
                 "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
-                "stream": stream, "data_signature": data_signature, "pose_stats_sha256": pose_sha, **extra}
+                "stream": stream, "data_signature": data_signature, "pose_stats_sha256": pose_sha,
+                **({"contrastive_state": contrastive.state_dict(), "contrastive_initial_sha256": contrastive_initial_sha}
+                   if contrastive is not None else {}), **extra}
 
     init_sha = None
     if cfg.freeze_encoder and resume_state is None:  # un processo solo (controllato sopra)
@@ -1478,7 +1519,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                                                for m in BRANCH_MONITORS])
 
     def fixed_eval(at_step: int) -> None:
-        fixed_log.write(json.dumps({"step": at_step, **_fixed_eval_losses(student, teacher, fixed, cfg, device, amp)}) + "\n")
+        fixed_log.write(json.dumps({"step": at_step, **_fixed_eval_losses(student, teacher, fixed, cfg, device, amp),
+                                    **({"objective_scope": "base_only_no_contrastive_no_memory_update"} if contrastive is not None else {})}) + "\n")
         fixed_log.flush()
 
     if fixed is not None and resume_state is None:  # il punto di partenza della curva
@@ -1542,9 +1584,12 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         opt.zero_grad(set_to_none=True)
         if micros is None:
             micros = _stage(batch, cfg.accum_steps, device)
+        if contrastive is not None:
+            contrastive.prepare(batch, step)
         if use_terms:  # DDP e/o accumulo: il contratto delle loss distribuite
             failure, loss_values = _accumulate_terms(model, student, teacher, micros, cfg, ctx, device, amp,
-                                                      grad_diag=bool(cfg.pose_grad_every and cfg.jepa.pose_weight > 0 and (step + 1) % cfg.pose_grad_every == 0))
+                                                      grad_diag=bool(cfg.pose_grad_every and cfg.jepa.pose_weight > 0 and (step + 1) % cfg.pose_grad_every == 0),
+                                                      contrastive=contrastive)
             if failure is not None:  # deciso insieme da tutti i processi, prima del backward che l'avrebbe usato
                 reason = f"{failure} al passo {step}"
                 numerical_failure = True
@@ -1607,8 +1652,12 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
             numerical_failure = True
             opt.zero_grad(set_to_none=True)
             break  # niente optimizer, EMA, incremento del passo o metriche di un aggiornamento non eseguito
-        opt.step()
-        if cfg.freeze_encoder and (cfg.model.branch_freeze_output or cfg.model.branch_objective != "readout"):
+        calibration_only = contrastive is not None and contrastive.cfg.calibration_only
+        if not calibration_only:
+            opt.step()
+        if calibration_only:
+            pass  # fixed initial student AND teacher; only the training-data queue advances
+        elif cfg.freeze_encoder and (cfg.model.branch_freeze_output or cfg.model.branch_objective != "readout"):
             # pilot dei rami: EMA sui soli parametri allenati, gli strati fissi restano uguali al passo 0 bit per bit anche nel teacher
             for name in ("spectral_branches", "branch_heads"):
                 _ema_trainable(getattr(teacher, name), getattr(student, name), cfg.jepa.ema_momentum)
@@ -1617,6 +1666,9 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 ema_update(getattr(teacher, name), getattr(student, name), cfg.jepa.ema_momentum)
         else:
             ema_update(teacher, student, cfg.jepa.ema_momentum)
+        contrastive_failure = None
+        if contrastive is not None:
+            contrastive_failure = contrastive.commit()  # pre-update teacher keys, once after successful step
         if cfg.prefetch_audit:  # gli ingressi del passo, a fine passo, uguali bit per bit a quelli preparati di nuovo dal batch sulla CPU
             differ, = _any_flag(ctx, device, _micro_digest(micros) != _micro_digest(_stage(batch, cfg.accum_steps, "cpu")))
             if differ:  # su tutti i processi; come un errore numerico: nessun checkpoint e STOP per la catena
@@ -1625,8 +1677,15 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
                 break
             audited += 1
         step += 1
+        if contrastive_failure is not None:
+            reason = contrastive_failure
+            numerical_failure = True  # stop chain, preserve prior valid checkpoint; no retry with altered coverage
+            break
         rec = {"step": step, "lr": _lr_at(step - 1, cfg), "grad_norm": float(gnorm), "t_data_s": t_data, "t_step_s": time.time() - t0,
                "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions}
+        if contrastive is not None:
+            rec["contrastive_calibration_only"] = calibration_only
+            rec["grad_clip_factor"] = min(1., cfg.grad_clip / max(float(gnorm), 1e-12))
         if not ctx.active:
             rec.update(loss_values)  # un processo solo: il record di sempre, stesso ordine dei campi
         if masked_metrics is not None:  # pilot dei rami: perdite per ramo e scala, normalizzate, copertura, monitor
@@ -1714,6 +1773,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         gpu_mem = float(t.item())
     summary = {"stopped": reason, "steps": step, "elapsed_s": time.time() - t_start, "parameters": sum(p.numel() for p in student.parameters()),
                "device": device, "gpu_max_memory_gib": gpu_mem,
+               "workers_per_rank": num_workers,
                # provenienza del codice, dai launcher (scripts/slurm/lib_code_dir.sh, 09/10/2026); None se il run non e' partito da un launcher
                "code": {"dir": os.environ.get("WEARUSFM_CODE_DIR"), "sha": os.environ.get("WEARUSFM_CODE_SHA")},
                # ambiente (docs/pilot_posa_v1.md §3 (d)): versioni e il `pip freeze` che il launcher scrive nella cartella del run
@@ -1725,6 +1785,17 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     if use_terms:
         summary.update({"accum_steps": cfg.accum_steps, "micro_batch": per_process // cfg.accum_steps,
                         "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch"})
+    if contrastive is not None:
+        from wearusfm.training.pairing import state_sha256
+        summary["contrastive"] = {"config": cfg.contrastive, "queue_last_step": contrastive.queue.last_step,
+                                  "expected_datasets": list(contrastive.expected_datasets),
+                                  "rnc_reduction": "replicated global loss, differentiable SUM gather plus DDP mean",
+                                  "optimizer_updates": 0 if contrastive.cfg.calibration_only else step,
+                                  "initial_sha256": contrastive_initial_sha,
+                                  "final_student_sha256": state_sha256(student.state_dict()),
+                                  "final_teacher_sha256": state_sha256(teacher.state_dict()),
+                                  "coverage_completed_blocks": contrastive.coverage_reports,
+                                  "coverage_partial_block": contrastive.coverage_report()}
     if cfg.model.spectral_branches:
         prov = out_dir / "spectral_branches.json"
         summary["spectral_branches"] = {"kinds": list(cfg.model.spectral_branches), "freeze_encoder": cfg.freeze_encoder,

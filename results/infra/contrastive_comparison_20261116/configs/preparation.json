@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "status": "REVIEW_REQUIRED",
+  "training_approved": false,
+  "baseline": {
+    "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json",
+    "bytes": 3594,
+    "sha256": "f9d0318462fd30a5592087ef72c63d3036a88ff1d07fc0dad8624e36253c2cfa"
+  },
+  "world_size": 4,
+  "workers_per_rank": 6,
+  "training_weights": "null until calibration review and dedicated release",
+  "calibration_weights": "inert placeholders, C0 and calibration_only, no optimizer/EMA updates",
+  "configs": {
+    "C0": {
+      "path": "results/infra/contrastive_comparison_20261116/configs/C0.config.json",
+      "bytes": 4155,
+      "sha256": "5354801afa786a8ed403fe10bc474cf327b9790244603e207b94c2ed64edcab7"
+    },
+    "CN": {
+      "path": "results/infra/contrastive_comparison_20261116/configs/CN.config.json",
+      "bytes": 4155,
+      "sha256": "876b2bb9bb367458b725a18a848bd1d3780beb9651cf552822ec560042d9a8aa"
+    },
+    "CR": {
+      "path": "results/infra/contrastive_comparison_20261116/configs/CR.config.json",
+      "bytes": 4155,
+      "sha256": "d682d8c6c8b59ebc023ed49811fae67301207ef9b0dfd681cb74383a99aa2006"
+    },
+    "calibration": {
+      "path": "results/infra/contrastive_comparison_20261116/configs/calibration.config.json",
+      "bytes": 4150,
+      "sha256": "c47f601d82f03cc963b834612d83204188da37606d4530047117166425220cf2"
+    }
+  }
+}

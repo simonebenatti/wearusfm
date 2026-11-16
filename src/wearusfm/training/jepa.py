@@ -398,12 +398,13 @@ def jepa_loss_terms(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visi
                     anchor_targets: list[AnchorTargets] | None = None, rvq_on: torch.Tensor | None = None,
                     rvq_codes: Callable | None = None, generator: torch.Generator | None = None,
                     kinds: torch.Tensor | None = None, regions: torch.Tensor | None = None,
-                    pose: tuple | None = None, pose_std: torch.Tensor | None = None, pose_std_log: bool = False) -> LossTerms:
+                    pose: tuple | None = None, pose_std: torch.Tensor | None = None, pose_std_log: bool = False,
+                    capture_encoded: Callable | None = None) -> LossTerms:
     """`pose`: (target, maschera[, deviazioni per finestra]) del micro-batch (R3). `pose_std_log`: logga l'errore assoluto di posa per giunto,
     standardizzato e nell'unita' degli angoli (con le deviazioni per finestra del batch, o `pose_std` (J,) se date): solo il pannello fisso."""
     terms = LossTerms()
     _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets, rvq_on, rvq_codes, generator, kinds, terms, regions, pose=pose,
-                  pose_std=pose_std, pose_std_log=pose_std_log)
+                  pose_std=pose_std, pose_std_log=pose_std_log, capture_encoded=capture_encoded)
     return terms
 
 
@@ -417,7 +418,8 @@ def jepa_losses(student: WearUsFM, teacher: WearUsFM, inp: ModelInputs, visible:
 
 
 def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_on=None, rvq_codes=None, generator=None, kinds=None,
-                  terms: LossTerms | None = None, regions: torch.Tensor | None = None, pose=None, pose_std=None, pose_std_log=False):
+                  terms: LossTerms | None = None, regions: torch.Tensor | None = None, pose=None, pose_std=None, pose_std_log=False,
+                  capture_encoded=None):
     """visible: (C_tot, P) True = visto dallo studente. rvq_on: (C_tot,) canali con l'ancora RVQ accesa; rvq_codes(canale, finestra) -> codici
     del tokenizer congelato (livello 0 del ramo 0) per quelle finestre. kinds: (C_tot, P) tipo di maschera (`training.masking`): se c'e', la perdita
     JEPA si registra anche per tipo di maschera e per topologia (`jepa_<tipo>`, `jepa_topo_<topologia>`; solo per il log, v10 §6.4).
@@ -436,6 +438,8 @@ def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_
         enc_t = teacher.encode(inp, None)
         raw = enc_t.local[q_ch, q_t] if cfg.target == "a" else teacher.decode(enc_t, q_ch, q_t, q_off)
         tgt = F.layer_norm(raw, raw.shape[-1:])
+    if capture_encoded is not None:
+        capture_encoded(enc, enc_t)  # reuse existing forwards; base loss performs no collective/state mutation
     s_q = None
     if cfg.loss_per_window:
         s_q = torch.searchsorted(q_off, torch.arange(q_ch.numel(), device=q_ch.device), right=True) - 1  # campione di ogni query
