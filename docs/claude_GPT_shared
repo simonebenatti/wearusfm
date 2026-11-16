@@ -7336,6 +7336,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
   2,572778 GPU-ore, solo se il rilancio supera 5.318 s; e' registrata in `docs/decisioni.md`.
 - `gate extractions` 14 su 14; riga inviata alle 15:31: 64596915 `PENDING` (commit `ca18841`). Se fallisce, stop.
 
+### 2026-11-16 | Claude | Linea 1: rilancio di p1 64596915 `FAILED` allo stesso controllo, su un altro file; catena ferma
+
+- 64596915 `FAILED 1:0` dopo 29:53 (lrdn0707), a estrazione finita: il controllo d'identita' si ferma su `ninapro_db3.npz`, scritto
+  12 min prima; db2 passato (sezione 2). Rilancio unico consumato, nessun altro invio; pose e p2 validi, non raccolti.
+- Consumo dello stadio 4,714444 GPU-ore su 7. Prove in `continuation19618_20261106/evidence/failure-p1-r1-64596915/` (commit
+  `3143e52`); voce in `docs/decisioni.md` con la proposta (opzione B: diagnostica, controllo corretto in un checkout nuovo,
+  rilancio). Decide Simone, anche sulla review.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -10033,3 +10041,15 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Recuperi: A, rilancio unico della sola p1 dallo stesso checkout `df2de35` con ID e cartella nuovi (resta il rischio di una
   nuova corsa); B, scarico del file prima del controllo in un nuovo checkout del codice di valutazione. Da decidere, nessun job
   inviato.
+
+### 2026-11-16 | Claude | Linea 1: il controllo d'identita' delle cache fallisce in modo intermittente subito dopo una grande scrittura
+
+- Due fallimenti su nove controlli a 19.618, entrambi 7-12 s dopo la scrittura di `ninapro_db6` (2,19 GB in 1-2 s):
+  - 64572000 su db6 stesso;
+  - 64596915 su db3, scritto 12 min prima.
+  Nella stessa finestra sono passati tre controlli; al 5.000 nessun fallimento.
+- Rettifica della mia lettura del mattino (corsa con lo scarico del file controllato): non regge, perche' db3 era scritto da tempo.
+  Interpretazione, non verificata: attributi instabili sul nodo che ha appena scritto molti dati; `file_identity` confronta mtime
+  e ctime a un secondo e scambia questo per un cambiamento del contenuto.
+- Rischio: `check_unchanged` dei lettori usa lo stesso confronto; da verificare con la diagnostica proposta. Da decidere,
+  nessun job inviato.
