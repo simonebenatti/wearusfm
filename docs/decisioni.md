@@ -6421,3 +6421,21 @@ rivedere la consegna prima dell'implementazione. Nessun job, deploy o monitor.
 Review LQ 975f6a3 letta: N-1 contestualizzata, N-2 già chiusa per gli archivi in
 8c3a4fa, N-3 mantenuta con precisazione che cambiare finestra non è una replica.
 Conservazione dei checkpoint/cache oltre la purga SCRATCH non decisa qui.
+
+### 16/11/2026 — Review della proposta RnC di Claude, nessun cambio della ricetta
+
+Simone chiede una review della consegna in chat dell'11–12/11; valutata la seconda
+versione del modulo e gli innesti suggeriti nel trainer. Riferimento repo df36272,
+modulo estratto SHA256 8883c510f505534bcce1483ef6891cb2630d94fac4d73f8006f6eb1c502b8cc4.
+Review in docs/reviews/rnc_claude_review_20261116.md, evidenze riproducibili in
+results/infra/rnc_review_20261116. Dodici test forniti e 21 indipendenti passati,
+una regressione xfail esplicita per temperature estreme, nessun test CUDA/DDP.
+
+Raccomandazione GPT: RnC interessante come candidata supervisionata per la posa;
+prima correggere cross (pressione dimostrata a separare pose identiche della stessa
+finestra), scegliere candidati locali/globali e verificare copertura/integrabilità.
+L'aggregazione di loss locali non equivale a ricostruire le coppie del batch globale.
+La proposta InfoNCE del 07/11 risponde a una domanda diversa e non è sostituita
+implicitamente. T100-G resta la base consigliata per un eventuale confronto appaiato
+ancore+posa contro ancore+posa+RnC; nessun peso, criterio o training approvato qui.
+Nessuna modifica al runtime, nessun job, deploy o monitor.

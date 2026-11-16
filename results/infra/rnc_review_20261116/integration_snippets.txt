@@ -1,0 +1,86 @@
+training/jepa.py (quattro punti)
+
+python
+# --- JEPAConfig: campi nuovi, dopo `masked_loss_radius` ---
+    # contrastivo a ranghi sulla posa (`model/rank_contrast.py`; PROPOSTA NON FIRMATA, 12/11/2026). Peso 0 = nessun
+    # termine (default: stesso grafo di sempre). Col peso > 0 temperatura, passo delle ancore e positivi vanno
+    # dichiarati: nessun default. Legge i target di posa del batch, non la testa: `FMConfig.pose_head` non serve
+    rnc_weight: float = 0.0
+    rnc_temperature: float | None = None
+    rnc_stride: int | None = None  # un'ancora ogni `rnc_stride` patch
+    rnc_positives: str | None = None  # "cross" = solo fra finestre diverse del micro-batch; "all" = anche dentro
+    rnc_resolution: float = 0.0  # passo delle distanze fra pose (deviazioni standard); 0 = ordine esatto
+
+# --- JEPAConfig.__post_init__ ---
+        for name in ("jepa_weight", "anchor_weight", "pose_weight", "rnc_weight"):  # + rnc_weight
+            ...
+        if self.jepa_weight == 0 and self.anchor_weight == 0 and self.keep_weight == 0 and self.branch_weight == 0 \
+                and self.pose_weight == 0 and self.rnc_weight == 0:  # + rnc_weight
+            raise ValueError(...)
+        if self.rnc_weight > 0:
+            t, s = self.rnc_temperature, self.rnc_stride
+            if type(t) not in (int, float) or not math.isfinite(t) or t <= 0 or type(s) is not int or s < 1 \
+                    or self.rnc_positives not in ("cross", "all"):
+                raise ValueError("rnc_weight > 0: servono rnc_temperature > 0, rnc_stride >= 1 e rnc_positives "
+                                 "'cross' o 'all'")
+        if type(self.rnc_resolution) not in (int, float) or not math.isfinite(self.rnc_resolution) \
+                or self.rnc_resolution < 0:
+            raise ValueError("rnc_resolution finita e non negativa")
+
+# --- loss_counts: dopo il blocco `if cfg.pose_weight > 0:` ---
+    if cfg.rnc_weight > 0:  # le stesse ancore di `pose_rank_contrast`, dalla sola maschera dei target
+        from wearusfm.model.rank_contrast import rank_contrast_count
+        if pose_valid is None:
+            out["rnc"] = visible.new_zeros((), dtype=torch.int64)
+        else:
+            tv = pose_time_valid(patch_valid, inp.counts)
+            if pose_valid.shape[:2] != tv.shape:
+                raise ValueError(f"pose_valid {tuple(pose_valid.shape)} contro la geometria {tuple(tv.shape)}")
+            out["rnc"] = rank_contrast_count(pose_valid & tv[..., None], stride=cfg.rnc_stride,
+                                             positives=cfg.rnc_positives, per_window=cfg.loss_per_window)
+
+# --- _jepa_compute: nella guardia «nessuna perdita da allenare» aggiungere `and cfg.rnc_weight == 0`;
+#     poi, dopo il blocco `if cfg.pose_weight > 0:` ---
+    if cfg.rnc_weight > 0:  # stesso readout per istante e stesso supporto del termine di posa; nessun parametro
+        from wearusfm.model.pose_head import latent_mean
+        from wearusfm.model.rank_contrast import pose_rank_contrast
+        r_loss, r_num, r_den, r_log = pose_rank_contrast(
+            latent_mean(enc.z), pose, pose_time_valid(enc.patch_valid, inp.counts), temperature=cfg.rnc_temperature,
+            stride=cfg.rnc_stride, positives=cfg.rnc_positives, per_window=cfg.loss_per_window,
+            resolution=cfg.rnc_resolution)
+        losses["rnc"] = r_loss
+        losses["rnc_anchors"] = r_log["anchors"].to(r_loss.dtype)
+        losses["rnc_raw"] = r_log["raw"] / r_log["anchors"].clamp(min=1)
+        losses["total"] = losses["total"] + cfg.rnc_weight * r_loss
+        if terms is not None:
+            terms.num["rnc"], terms.den["rnc"], terms.weight["rnc"] = r_num, r_den, cfg.rnc_weight
+            terms.log_sum["rnc_anchors"], terms.log_sum["rnc_pairs"] = r_log["anchors"], r_log["pairs"]
+            for name in ("raw", "chance"):
+                terms.log_num["rnc_" + name], terms.log_den["rnc_" + name] = r_log[name], r_log["anchors"]
+training/run.py (quattro punti)
+
+python
+# --- _config_with_defaults: i checkpoint di prima si riprendono con la stessa ricetta ---
+        out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, "region_target": False, "pose_weight": 0.0,
+                       "masked_loss_radius": None, "rnc_weight": 0.0, "rnc_temperature": None, "rnc_stride": None,
+                       "rnc_positives": None, "rnc_resolution": 0.0, **out["jepa"]}
+
+# --- train(): fra i controlli iniziali ---
+    if cfg.jepa.rnc_weight > 0 and not cfg.loader.pose_root:
+        raise ValueError("rnc_weight > 0: servono i target di posa nel batch (loader.pose_root)")
+
+# --- _accumulate_terms, diagnostica E4: il contrastivo non e' un'ancora ---
+                comps = {"pose": terms.weight["pose"] * terms.num["pose"] * ws / global_den["pose"].clamp(min=1),
+                         "anchors": sum(terms.weight[k] * terms.num[k] * ws / global_den[k].clamp(min=1)
+                                        for k in terms.num if k not in ("pose", "jepa", "keep", "keep_branches", "rnc"))}
+                if "rnc" in terms.num:
+                    comps["rnc"] = terms.weight["rnc"] * terms.num["rnc"] * ws / global_den["rnc"].clamp(min=1)
+
+# --- train(), E4 a un processo ---
+                comps = {"pose": pose_c, "anchors": losses["total"] - pose_c - jepa_c}
+                if cfg.jepa.rnc_weight > 0:
+                    comps["rnc"] = cfg.jepa.rnc_weight * losses["rnc"]
+                    comps["anchors"] = comps["anchors"] - comps["rnc"]
+                for k, v in _shared_grad_stats(comps, _shared_params(student)).items():
+                    losses[k] = losses["total"].new_tensor(v)
+tests/cpu/test_rank_contrast.py (sostituisce quello di ieri)

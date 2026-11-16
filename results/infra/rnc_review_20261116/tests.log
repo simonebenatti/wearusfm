@@ -1,0 +1,9 @@
+.................................x                                       [100%]
+=============================== warnings summary ===============================
+results/infra/rnc_review_20261116/test_supplied.py::test_no_pose_or_single_window_gives_zero_count_and_null_gradient
+  /Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/results/infra/rnc_review_20261116/test_supplied.py:86: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+    assert float(loss) == 0.0 and int(count) == 0 and int(log["anchors"]) == 0
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+33 passed, 1 xfailed, 1 warning in 2.21s

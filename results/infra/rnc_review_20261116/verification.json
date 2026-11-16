@@ -1,0 +1,46 @@
+{
+  "tests": {
+    "exit_code": 0,
+    "command": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/results/infra/rnc_review_20261116/test_supplied.py",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/results/infra/rnc_review_20261116/test_independent.py"
+    ]
+  },
+  "cross_semantics": {
+    "exit_code": 0,
+    "command": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/results/infra/rnc_review_20261116/review_cross_semantics.py"
+    ]
+  },
+  "partition": {
+    "exit_code": 0,
+    "command": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/results/infra/rnc_review_20261116/check_partition.py"
+    ]
+  },
+  "environment": {
+    "exit_code": 0,
+    "command": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "-c",
+      "import torch,sys; print(sys.version); print(torch.__version__); print(torch.cuda.is_available())"
+    ]
+  },
+  "scope": "Isolated proposed module; no runtime changes, trainer/DDP/CUDA or Leonardo jobs.",
+  "source_hashes": {
+    "rank_contrast.py": "8883c510f505534bcce1483ef6891cb2630d94fac4d73f8006f6eb1c502b8cc4",
+    "test_supplied.py": "8abac7f0f50a70a6884371d12fa541609ad58f472fa0579396a31e8690379dad",
+    "test_independent.py": "0db14a1dbe13baf5379ad6df25ad4d281f204aef470ad13626be4bbe8441c5ae",
+    "integration_snippets.txt": "838cb6b2993323e764c964c0b00c5e47471d4dc911b526327dc697db878c9e95",
+    "review_cross_semantics.py": "d516105f22395c8898ad2bc951d5c5abbd538f2f62b760516afb2658323c6c1e",
+    "check_partition.py": "7926f8825b8f16c05ff1151cef7ee357f2cccad2dbae1d712a293737093453b3"
+  }
+}

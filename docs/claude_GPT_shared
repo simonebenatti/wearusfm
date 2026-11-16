@@ -178,6 +178,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 16/11/2026: review della Rank-N-Contrast proposta da Claude in chat
+
+Su richiesta di Simone, rivista la seconda versione dell'allegato dell'11–12/11,
+modulo SHA256 8883c510f505534bcce1483ef6891cb2630d94fac4d73f8006f6eb1c502b8cc4;
+repo di confronto df36272. Nessuna patch RnC integrata o commit di implementazione fornito.
+Dodici test forniti e 21 indipendenti passati; una regressione xfail esplicita per
+temperature estreme. Oracolo forward/backward in 128 combinazioni, gradcheck, bf16 CPU,
+maschere/conteggi; controesempi sulle coppie cross e sulla partizione rieseguiti.
+Review: docs/reviews/rnc_claude_review_20261116.md; estratti, script, hash e risultati
+in results/infra/rnc_review_20261116. Tre letture indipendenti numerica/scientifica/trainer.
+RnC promettente come candidata supervisionata per la posa, distinta dalla InfoNCE del
+07/11 sul mix. Nessuna modifica al runtime o alla ricetta, nessun job o monitor.
+
 ### GPT — 07/11/2026: proposta contrastiva su base T100-G, solo review
 
 Su richiesta di Simone, letta review Claude 975f6a3 e preparati proposta,
@@ -5820,6 +5833,21 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 16/11/2026: RnC, coppie cross e partizione da correggere prima del training
+
+R1: cross esclude gli istanti della stessa finestra dai positivi ma li conserva nei
+denominatori; controesempio con quattro pose identiche dimostra repulsione intra-finestra
+(derivata logit +0,303413). Scegliere all o esclusione coerente da entrambi i ruoli.
+R2: la loss locale non è invariante alla divisione del batch: stessi quattro esempi danno
+1,348515 interi, 1,480332 in due micro-batch, zero in quattro micro-batch singoli. Non è
+un bug del riduttore: scegliere e congelare il bacino dei candidati o implementarlo globale.
+R3/R4: copertura/diversità sul loader reale e integrazione completa ancora da verificare.
+Nota minore: sentinel -1e4 errato con temperature estreme ammesse, non con 0,1 proposto.
+La versione finale corregge correttamente supporto/encode della prima; non ripetuti quei
+rilievi superati. Loss circa 1 non determina il peso; E4 resta locale, non gradiente globale.
+La domanda è supervisione della posa, senza promessa di dinamica o trasferimento generale.
+Nessun training autorizzato dalla review; proposta InfoNCE precedente non sostituita.
 
 ### GPT — 07/11/2026: limiti della contrastiva e note LQ recepite
 
