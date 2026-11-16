@@ -7303,6 +7303,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - `collect checkout-code` rifiutato (sezione 2). Correzione proposta e non distribuita nel commit `2e79815`; nessun invio
   dopo il checkout, nessuna GPU usata dopo il training. Voce in `docs/decisioni.md`.
 
+### 2026-11-16 | Claude | Linea 1: correzione dei checkout approvata da Simone; checkout `code` raccolto; tre estrazioni inviate
+
+- Simone, 16/11, alla domanda «Approvi la correzione dei checkout senza review di GPT?»: «Sì, approvo». Approvati `2e79815`
+  (checkout a 2 CPU, tetto 4/3, `rereview_check`) e l'emendamento: +8/15 core-ore con margine, solo CPU 349,917778 su 350, GPU-ore
+  invariate. Suite completa su `2e79815`: 3553 passati, 0 falliti.
+- `collect checkout-code`: 64194074 `COMPLETED 0:0`, 34 s, 2 CPU (commit `f2c3500`, ramo `claude/scaling-300m-exec-20261106`).
+- `gate extractions` 9 su 9; inviate una alla volta pose = 64571999, p1 = 64572000, p2 = 64572001, 1 GPU ciascuna, tetto dello
+  stadio 7 GPU-ore. Voci in `docs/decisioni.md`. Prossimo passo a fine estrazioni: raccolta, piani dei lettori, checkout `plans`.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
