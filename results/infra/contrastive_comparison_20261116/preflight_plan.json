@@ -39,11 +39,16 @@
       "initial_completed_seconds": 30,
       "correction_seconds": 240,
       "subsequent_count": 3,
-      "subsequent_seconds_each": 300,
-      "combined_core_hours_max": 1.3,
-      "original_core_hours_cap": 1.3333333333333333
+      "subsequent_seconds_each": 240,
+      "combined_core_hours_max": 0.8455555555555555,
+      "original_core_hours_cap": 1.3333333333333333,
+      "completed_seconds": [
+        30,
+        11
+      ]
     },
-    "total_core_hours_cap": 129.33333333333334
+    "total_core_hours_cap": 129.33333333333334,
+    "actual_plus_remaining_max_core_hours": 129.26111111111112
   },
   "cells": [
     {
@@ -119,7 +124,7 @@
     }
   ],
   "review_gate": "GPT operational release under Simone 2026-11-17 authorization. Preserve every evidence/coverage/resource gate. Publish release and verify remote SHA before submission.",
-  "failure_policy": "Any failed/incomplete stage stops dependent stages; archive logs and receipts, diagnose; no automatic retry, new lambda, new selection, higher walltime or partial-cohort promotion.",
+  "failure_policy": "Any failed/incomplete stage stops dependent stages; sole exception: exact audit64652559 report accepted by pinned audit_recovery under Simone explicit 2026-11-17 authorization. Preserve TIMEOUT and overspend. No automatic retry, new lambda, new selection, higher walltime or partial-cohort promotion.",
   "fresh_outputs": "WORK/wearusfm_runs/results/contrastive_preflight_20261116_v2/<cell>",
   "execution": "Frozen reviewed per-cell job JSON via scripts/slurm/contrastive_preflight_{cpu,gpu}.sbatch and shared scripts/submit_job.py ledger. No sbatch outside submitter.",
   "approval_authority": "Simone explicit instruction 2026-11-17; GPT readiness decision, no new Claude rereview required for this preflight",
@@ -127,5 +132,10 @@
     "cause": "sbatch rejected 32GiB above QoS30800MiB, no audit job created",
     "action": "30GiB; new frozen checkout and explicit after-rejection submission",
     "scientific_changes": false
+  },
+  "audit_recovery": {
+    "path": "results/infra/contrastive_comparison_20261116/releases/audit_recovery_20261117.json",
+    "bytes": 1837,
+    "sha256": "4f87019a9fcd24379fd554ad6f7758dda124088f4a25401a051274df857ed8e8"
   }
 }

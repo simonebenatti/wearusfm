@@ -6505,3 +6505,17 @@ completo tramite rettifica operativa specifica, nessun rerun identico; riduzione
 a 240 secondi per massimo totale 129,261111 core-ore entro 129,333333. Nessuna modifica a ricetta, soglie,
 λ, selezione, sorgenti o allocazioni GPU. Il via operativo di Simone persiste ma non cancella i gate;
 nessun nuovo job finché la rettifica non è registrata. Evidenze archiviate, nessun monitor.
+
+### 17/11/2026 — Recupero audit e calibrazione: via esplicito di Simone
+
+Simone: «fai la rettifica operativa per recuperare il rapporto dell'audit e lancia la calibrazione GPU,
+senza rifare l'audit. Hai già la mia autorizzazione». Si recupera il solo rapporto completo 64652559,
+SHA 5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b; TIMEOUT e costo reale invariati.
+La proposta della voce precedente è applicata: tre checkout residui da 240 s; massimo totale con consuntivo
+129,261111 core-ore entro 129,333333. Gate scientifici, sorgenti, dati e piano scientifico invariati.
+
+Rilasciata solo calibrazione: 512 batch senza aggiornamenti dei pesi, 4 GPU, 32 CPU, 240 GiB, 30 minuti,
+limite interno 1.770 s. Tetto 2 GPU-ore / 16 core-ore, checkout 0,266667 core-ore. Validazione concreta
+con input pinnati e review indipendente favorevole. Nuovo checkout pubblicato, submitter e ledger comuni;
+nessuna dipendenza afterok dall'audit TIMEOUT. I training non sono rilasciati da questa decisione.
+Riferimento: docs/reviews/contrastive_calibration_release_20261117.md e releases/audit_recovery_20261117.json.

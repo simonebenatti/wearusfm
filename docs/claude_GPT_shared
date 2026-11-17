@@ -5905,6 +5905,19 @@ CRC e uguaglianza byte per byte dei file estratti; hash .m e riferimento coerent
 R2026b gia' verificati. Nessuna nuova esecuzione MATLAB in questa consegna. Nessuna modifica delle loss
 o azione sulla campagna cluster.
 
+
+### 2026-11-17 | GPT | Rettifica audit e release della calibrazione autorizzate da Simone | Base 5357780
+
+Simone chiede esplicitamente recupero del rapporto e lancio della calibrazione, senza rifare l'audit.
+Rettifica limitata al job 64652559 e SHA 5c720fad…: contenuto completo validato, TIMEOUT e costo conservati.
+Release concreta APPROVED_FOR_PREPARATION/calibration, 512 batch senza update, 4 GPU / 32 CPU / 240 GiB /
+30 minuti (2 GPU-ore), checkout 4 CPU / 240 s. Tre checkout residui ridotti a 240 s: massimo complessivo
+129,261111 core-ore entro 129,333333; GPU 14 invariato. Pin e validatori reali verificati sulle copie locali
+degli input congelati; review indipendente audit_timeout_review favorevole, nessuna nuova review Claude.
+Sorgenti ab2d6460…, dati, plan.json, ricetta e soglie invariati. Release e job in releases/calibration.*.json,
+rettifica in releases/audit_recovery_20261117.json, piano umano in docs/reviews/contrastive_calibration_release_20261117.md.
+Pubblicazione e nuovo checkout precedono l'invio; ricevute successive attestano gli ID effettivi.
+
 ## 2) Problemi trovati
 
 ### GPT — 17/11/2026: audit avviato come catena, esito ancora da leggere
@@ -8757,3 +8770,10 @@ invece di 300, massimo totale 129,261111. Nessuna nuova sottomissione in attesa 
 Lo ZIP contiene forward numerici e dati sintetici, non autodiff o training. Lo script opzionale
 generate_reference.py richiede il repository Python completo ed e' escluso: le fixture sono gia' incluse.
 Verifica del pacchetto e degli hash, nessun nuovo test di compatibilita' con altre versioni MATLAB.
+
+### 2026-11-17 | GPT | Deroga audit puntuale, nessuna rimozione dei gate scientifici | Base 5357780
+
+Il via esplicito successivo di Simone chiude il solo impedimento operativo dell'audit 64652559. Il costo
+oltre i 60 minuti resta registrato; nessuna accettazione generale di TIMEOUT. I λ non sono ancora misurati
+e i training restano non rilasciati. Calibrazione incompleta o un λ fuori [1e-4, 1] fermano l'intera coorte,
+senza clamp, riselezione o retry automatico. Il nuovo tetto checkout non usa la tolleranza SLURM come margine.

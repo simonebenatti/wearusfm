@@ -1,0 +1,43 @@
+{
+  "status": "APPROVED_EXACT_AUDIT_RECOVERY",
+  "authorized_by": "Simone, explicit instruction in chat 2026-11-17",
+  "review": {
+    "path": "docs/reviews/contrastive_calibration_release_20261117.md",
+    "bytes": 4250,
+    "sha256": "63eb0d98c1a1f9dbb919f69c91c697ba8049b95b930d5dfaa381a8380a0606e9"
+  },
+  "job_id": "64652559",
+  "slurm_state": "TIMEOUT",
+  "exit_code": "0:0",
+  "batch_state": "COMPLETED",
+  "batch_exit_code": "0:0",
+  "elapsed_seconds": 3787,
+  "requested_seconds": 3600,
+  "audit": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/audit.json",
+    "bytes": 20275571,
+    "sha256": "5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b"
+  },
+  "verification": {
+    "path": "results/infra/contrastive_comparison_20261116/audit_completed_20261117/verification.json",
+    "bytes": 3339,
+    "sha256": "27e54dd6c44d3e0d263465a73ddb4bd766156ab15d0b5a2fab8ec7fc152a2566"
+  },
+  "accounting": {
+    "path": "results/infra/contrastive_comparison_20261116/audit_completed_20261117/accounting_and_integrity.txt",
+    "bytes": 1001,
+    "sha256": "dff6c9e58d491c8db79a57e3871b51c3067ee95b1950e1b279ec4a814b2a5bd0"
+  },
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "exception_scope": "Accept this exact complete audit as coverage prerequisite only; preserve TIMEOUT and overspend; no rerun, no general exception for future failed jobs.",
+  "resources": {
+    "audit_actual_core_hours": 8.415555555555555,
+    "completed_checkouts_actual_core_hours": 0.04555555555555556,
+    "remaining_checkouts": 3,
+    "remaining_checkout_cpus": 4,
+    "remaining_checkout_seconds": 240,
+    "gpu_hours_cap": 14,
+    "total_core_hours_cap": 129.33333333333334,
+    "actual_plus_remaining_max_core_hours": 129.26111111111112
+  }
+}

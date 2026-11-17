@@ -1,0 +1,28 @@
+{
+  "status": "PASSED_FOR_CALIBRATION_RELEASE",
+  "validation": [
+    "validate_recipe(calibration)",
+    "validate_release(calibration), real local copies of all four pinned metadata inputs and exact uncompressed audit",
+    "checked_file(review, config, release, recovery)",
+    "unchanged execution sources, scientific plan and configs",
+    "no existing remote output or checkout; no calibration ID in shared ledger"
+  ],
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "audit_sha256": "5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b",
+  "inputs": {
+    "manifest": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+    "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+    "pose_stats": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+  },
+  "release_sha256": "2aab6e2012768b0b321f4b91e4be12190a57214bb5868e62135ce3665587fc5d",
+  "job_sha256": "4d00d636ca443daea04a59a28a0d30786dc3a6afe2a6cbe06109a175aedcec0a",
+  "resource_total_max_core_hours": 129.26111111111112,
+  "gpu_cell_cap_hours": 2,
+  "gpu_campaign_cap_hours": 14,
+  "independent_review": {
+    "agent": "audit_timeout_review",
+    "verdict": "APPROVED, no blockers; concrete pins, recipe, scope and resource arithmetic checked"
+  },
+  "scope": "Offline release validation; not a CUDA execution or new training approval"
+}

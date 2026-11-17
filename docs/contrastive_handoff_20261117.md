@@ -8,13 +8,15 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
-**Aggiornamento finale:** audit **64652559 TIMEOUT**, 63:07 su 60 min; `.batch` COMPLETED 0:0.
-Rapporto completo e ricalcolato: 1.024 batch, `passed=true`, pannello 256–511 valido; pin tutti corretti.
-SHA rapporto `5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b`.
-Gate di contenuto superato, gate operativo no. **Calibrazione non sottomessa.**
-Leggere `docs/reviews/contrastive_audit_results_20261117.md` prima di qualsiasi seguito.
-La proposta di recupero del rapporto mediante rettifica operativa è documentata ma **non applicata**.
-Consuntivo audit più checkout: 8,461111 core-ore, zero GPU. Nessun retry o monitor.
+**Rettifica autorizzata da Simone il 17/11:** usare il rapporto completo dell'audit 64652559 senza rifarlo
+e lanciare la calibrazione GPU. La deroga riguarda esclusivamente il rapporto SHA
+`5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b`. Lo stato TIMEOUT e il costo
+8,415556 core-ore restano nel consuntivo. Release concreta verificata e review indipendente favorevole
+in `docs/reviews/contrastive_calibration_release_20261117.md`; nessuna nuova review attribuita a Claude.
+Calibrazione pronta per sottomissione: 512 batch senza update, 4 GPU, 32 CPU, 240 GiB, 30 minuti.
+ID logico `CONTRAST-CALIB-v2-20261116`. Nuovo checkout `contrastive-v2-20261117-calibration`, 4 CPU / 240 s.
+I tre checkout residui hanno tetto 240 s: totale massimo aggiornato 129,261111 core-ore entro 129,333333;
+14 GPU-ore invariato. Nessun training scientifico rilasciato, nessun audit duplicato o monitor.
 
 Cronologia dei lanci:
 
@@ -38,13 +40,11 @@ Output atteso:
 
 Ricevute del submitter, rifiuti, diagnosi QoS/dipendenza e consuntivi dei checkout sono in `results/infra/contrastive_comparison_20261116/submission_20261117/`. Il ledger comune rimane l'autorità contro gli invii duplicati. I due checkout hanno consumato insieme **0,045556 core-ore**; nessuna GPU. Tetti globali invariati, 14 GPU-ore e 129,3333 core-ore.
 
-## Seguito: fermo al gate operativo, nessun nuovo invio in questa consegna
+## Seguito già autorizzato: recupero puntuale e calibrazione
 
-Non eseguire automaticamente il punto 2: il punto 1 ha fallito sullo stato SLURM, pur avendo prodotto
-evidenze di copertura valide. Prima serve chiudere la rettifica operativa proposta nella lettura finale.
-La procedura seguente conserva i requisiti originali e non rappresenta una deroga al timeout.
-
-1. Leggere l'esito dell'audit. Richiedere COMPLETED 0:0, file completo, `passed=true`, pannello 256–511 valido, pin di dati/config/sorgenti e geometria 4 rank × 6 worker coerenti. Raccogliere report, hash, log e risorse nel repo. Se fallisce fermare la fase e diagnosticare, senza retry cieco.
+1. Il prerequisito audit è soddisfatto dalla rettifica esplicita di Simone, dal rapporto completo verificato
+e da `releases/audit_recovery_20261117.json`. Non pretendere di nuovo COMPLETED per questo esatto job,
+non rifare l'audit e non estendere la deroga a fasi successive. La lettura precedente resta agli atti.
 2. Solo dopo il gate: preparare release di calibrazione `APPROVED_FOR_PREPARATION` con SHA dell'audit, del config e dei quattro input, 4 rank, 6 worker/rank, `time_limit_s=1770`. Job wrapper `APPROVED_FOR_PREFLIGHT`, modalità `calibration`, allocazione 4 GPU, 32 CPU, 240 GiB, 30 min. Pin della presente autorità nel file di release; nessun obbligo di far approvare nuovamente a Simone la stessa fase.
 3. Pubblicare release e piano dei comandi, verificare SHA remoto, checkout congelato nuovo. Nessuna modifica ai sorgenti e al piano scientifico. Se il checkout è già COMPLETED ed è scaduto dal controller, verificare sacct e integrità e non usare un afterok inesistente; i gate del launcher restano obbligatori.
 4. Calibrazione completata: copiare metadati, ricalcolare ricevuta e coorte con `contrastive_prepare.py`, pubblicarle. Se uno dei λ è fuori range fermare tutta la coorte. Il checkpoint fisso di calibrazione serve al test CUDA: conservarlo.
