@@ -1,0 +1,53 @@
+{
+  "claude_files_modified": false,
+  "head_commit": "8917e2a911287d8939e44d210adf566e4c8e8561",
+  "identity_checks": {
+    "scripts/temponet_emg2pose.py": {
+      "bytes": 31196,
+      "identical": true,
+      "sha256": "8d7f9dbee1db29ca29e707e27fb771655f2f7ad2150ee543a41e68b12d955690"
+    },
+    "src/wearusfm/model/temponet.py": {
+      "bytes": 8519,
+      "identical": true,
+      "sha256": "9d5a03e23d4d4ef2f4ba57e46740702b21b74a1538c97a12b63f8d9b8949d0cc"
+    }
+  },
+  "merge_performed": false,
+  "model_introduced_commit": "60b35bd06d51bd51405728c21392a5f30cfb4614",
+  "results/temponet_emg2pose/eval_20261111/eval.json": {
+    "code_sha": "0c19c4bc32a96e3b72d15a09770d204a747fa13b",
+    "top_level_keys": [
+      "kind",
+      "args",
+      "code_sha",
+      "slurm_job_id",
+      "checkpoint",
+      "train_status",
+      "k",
+      "val",
+      "alpha",
+      "alpha_grid_mae_deg_min",
+      "gate",
+      "test"
+    ]
+  },
+  "results/temponet_emg2pose/train_20261111/run.json": {
+    "code_sha": "0c19c4bc32a96e3b72d15a09770d204a747fa13b",
+    "top_level_keys": [
+      "kind",
+      "args",
+      "code_dir",
+      "code_sha",
+      "slurm_job_id",
+      "python",
+      "torch",
+      "cuda",
+      "started",
+      "scale_exponent_k",
+      "targets_manifest",
+      "n_train_recordings"
+    ]
+  },
+  "runtime_commit": "0c19c4bc32a96e3b72d15a09770d204a747fa13b"
+}

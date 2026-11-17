@@ -1,0 +1,15 @@
+Review locali della proposta — 17/11/2026
+Scope: disegno e sorgenti esistenti, nessun runtime nuovo implementato/fittato.
+
+Architettura (/root/temponet_arch_review): nessun errore bloccante.
+Confermati L0 8.468, TCN 65.204, MLP 65.300, L13 100.628; MLP/TCN stessi64.128 pesi nelle trasformazioni, RF13,crop6; codice TEMPONet invariato, adattamento esplicitamente distinto. Zero di uscita implica gradienti interni nulli al primo backward: test da prevedere dopo avvio.
+
+Metriche (/root/temponet_metrics_review): disegno coerente.
+Cinque teste,20CV+15rifit,LRcostante50max,mediaSSEtra3semi,cinqueIC99%,pre/postdescrittivo.
+Precisazioni accolte: RNG shuffle indipendente da init/dropout; secondari per-seme e media dei valori distinta da correlazione dai momenti medi; successo E_dyn limitato alla dinamica centrata, non adozione automatica se MAE/livello peggiorano. Conservati target/crop/soglia storici; raw allineato richiede media sui campioni nativi, non pochi endpoint puntuali.
+
+Risorse (/root/temponet_resources_review): PASS come tetto condizionato, non stima misurata.
+35fit,4GPUh,12CPU-only,44corehtotali;15predizioni3,3166GiB;cache4,7203GiB.
+Precisazioni accolte: RAM host GPU distinta da VRAM da misurare;24GiB CPU/32GiBhostGPU;NPZ decompresso una volta per vista, cast a lotti;fattore2ancheinferenza. Saldo/quota restano storici e da aggiornare dall'operatore prima dell'esecuzione. Claude unico operatore proposto, non nuovo invio autorizzato.
+
+Le letture preliminari non costituiscono firma scientifica di Simone o review finale di Claude. Sorgenti src/,scripts/ e test runtime invariati.

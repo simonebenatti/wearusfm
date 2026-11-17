@@ -1,0 +1,262 @@
+{
+  "caches": {
+    "train": {
+      "bytes": 474412856,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train/train.npz",
+      "sha256": "30c0b50d09fa55e39085e547e923593378e490e86f1b70c1e1ffe8bfdd1eec7e",
+      "users": 40,
+      "windows": 1907
+    },
+    "val": {
+      "bytes": 4593977338,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/pose/val/val.npz",
+      "sha256": "36bab32e5a53cf73640f3ee567404a5a70aa8ecbcb27ce843f24666e4804ce4f",
+      "users": 15,
+      "windows": 18548
+    }
+  },
+  "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+  "checkpoint_step": 49046,
+  "evaluation": {
+    "bootstrap_replicates": 2000,
+    "bootstrap_seed": 20261102,
+    "bootstrap_unit": "user",
+    "ci": "percentile99 per contrast; five Bonferroni intervals for nominal simultaneous95, exploratory approximation",
+    "confirmation": "none independent; development only; official test excluded",
+    "confirmatory_family": [
+      "TCN_post vs L0",
+      "TCN_post vs MLP",
+      "TCN_post vs L13",
+      "TCN_post vs historical_post_ridge",
+      "TCN_post vs historical_trained_head"
+    ],
+    "descriptive": "TCN_post vs TCN_pre and all/static/per-joint metrics, no pass/fail",
+    "practical_improvement_percent": 2,
+    "practical_readout_recommendation": "candidate for better centered-dynamics reader only if primary and both historical-reference contrasts pass; no automatic operational adoption; inspect MAE/level trade-offs first, no implied noninferiority",
+    "primary": "TCN_post vs L0, relative E_dyn improvement on dynamic windows",
+    "readout_failures": "if upper adjusted CI <2%, useful-sized benefit not supported by this interval; if >=2% remains possible, inconclusive; no automatic search",
+    "secondary_seed_aggregation": "report correlation, variance ratio, level and MAE per seed plus arithmetic mean of seed metrics; never correlation of averaged moments presented as mean correlation",
+    "seed_aggregation": "mean per-user seed-specific moment/SSE accumulators; never average predictions; then metric and bootstrap",
+    "val_reads": "one final locked evaluation batch for all frozen selected models; no tuning/retraining on15users"
+  },
+  "executable": false,
+  "fit": {
+    "batch_windows": 32,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "clip_norm": 1.0,
+    "cv_folds": "alternating sorted train users, exactly two disjoint 20-user folds",
+    "cv_seed": 0,
+    "drop_last": false,
+    "eps": 1e-08,
+    "learning_rates": [
+      0.0001,
+      0.001
+    ],
+    "loss": "standardized MSE: mean valid elements within window, then mean supported windows; crop6 all groups",
+    "max_epochs": 50,
+    "new_cv_fits": 20,
+    "new_refits": 15,
+    "new_total_fits": 35,
+    "optimizer": "AdamW",
+    "precision": "FP32, autocast off, TF32 off",
+    "refit": "full40 users from fresh initialization at chosen fixed LR and epoch, no early stopping",
+    "refit_seeds": [
+      0,
+      1,
+      2
+    ],
+    "schedule": "constant; no warmup",
+    "selection": "minimum pooled internal held per-window MSE across both folds for (LR,epoch); ties earliest epoch then lowest LR",
+    "shuffle_each_epoch": true,
+    "shuffle_rng": "dedicated generator per fold/seed, independent from initialization/dropout; identical minibatch ordering across heads for same fold/seed",
+    "weight_decay": 0.01,
+    "weight_decay_applies_to": "matrix/kernel weights only; no bias or LN"
+  },
+  "heads": {
+    "L0": {
+      "layers": "LayerNorm384 -> Linear384,20",
+      "params": 8468,
+      "view": "lat"
+    },
+    "L13": {
+      "layers": "LayerNorm384 -> Conv1d384,20,k13,padding6",
+      "params": 100628,
+      "view": "lat"
+    },
+    "MLP": {
+      "params": 65300,
+      "view": "lat",
+      "widths": [
+        384,
+        96,
+        96,
+        96,
+        64,
+        32,
+        20
+      ]
+    },
+    "TCN_post": {
+      "dilations": [
+        1,
+        1,
+        2,
+        3,
+        1,
+        1
+      ],
+      "kernels": [
+        1,
+        3,
+        3,
+        3,
+        1,
+        1
+      ],
+      "params": 65204,
+      "view": "lat",
+      "widths": [
+        384,
+        64,
+        64,
+        64,
+        64,
+        32,
+        20
+      ]
+    },
+    "TCN_pre": {
+      "params": 65204,
+      "same_as": "TCN_post",
+      "view": "pre"
+    }
+  },
+  "jobs_authorized": false,
+  "level": "A: readout on frozen teacher mean-slot cache; not joint pretraining",
+  "model": "T100-G 30M",
+  "new_head_common": {
+    "bias": true,
+    "dropout_MLP_TCN": {
+      "after_hidden_layers": [
+        4,
+        5
+      ],
+      "p": 0.1
+    },
+    "hidden_activation": "ReLU",
+    "input_layernorm_affine": true,
+    "other_weights_initialization": "torch defaults under seed; pin torch version before runtime",
+    "output_layer_initialization": "zeros",
+    "pooling": false,
+    "receptive_field_TCN_L13_center_offsets_ms": [
+      -150,
+      150
+    ],
+    "receptive_field_TCN_L13_patches": 13,
+    "stride": 1,
+    "temporal_layernorm_or_batchnorm": false
+  },
+  "not_in_this_proposal": [
+    "protocol A label efficiency jobs",
+    "new encoder extraction",
+    "random encoder",
+    "raw TCN training",
+    "raw TEMPONet reevaluation",
+    "300M",
+    "other checkpoint doses",
+    "pretraining levelB",
+    "loss changes",
+    "lead-time search",
+    "official test",
+    "main merge"
+  ],
+  "outputs": {
+    "collect_to_git": "reports, receipts, manifests, scientific readout only; NPZ/PT persist WORK",
+    "input_duplication": false,
+    "persistent_cap_gib": 8,
+    "proposed_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117",
+    "temporary_expanded_cache": "decompress required NPZ views once within phase host-RAM cap (24GiB CPU,32GiB GPU job); cast batches; no mmap assumption or persistent duplication"
+  },
+  "protocol": "pose-temponet-frozen-head-20261117-v1-proposal",
+  "references": {
+    "post_ridge_coefficients": {
+      "bytes": 59367,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/post_ridge.coefficients.npz",
+      "sha256": "fc9a9fd1683ad75277d4e61a0c40e14ed34069c705d8d39dee0b2f950c9060ba",
+      "source_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/post_ridge.coefficients.npz"
+    },
+    "post_ridge_predictions": {
+      "bytes": 418440754,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/post_ridge.predictions.npz",
+      "sha256": "36fb5f9b00de385447ed0dd8e14ffcdc854fee086ca75e9951ae4ebac4fb556f",
+      "source_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/post_ridge.predictions.npz"
+    },
+    "trained_head_predictions": {
+      "bytes": 234048726,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/trained_head.predictions.npz",
+      "sha256": "9dbd52a0cf05c37e5ea989175d055f33bdd8482426438f028c17f29c8701c0d3",
+      "source_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/trained_head.predictions.npz"
+    }
+  },
+  "resource_proposal": {
+    "benchmark_gpu_hours_cap": 0.25,
+    "cpu_only_core_hours_cap": 12,
+    "cpu_ram_gib": 24,
+    "fit_phase_gpu_hours_cap": 3,
+    "gate": "2x projected full selection+max50epoch refits including validation,I/O,startup <=3GPUh; 2x inference projection including I/O <=0.5GPUh; CPU/storage caps must also pass; no partial launch",
+    "gpu_attached_cpus": 8,
+    "gpu_hours_cap": 4,
+    "gpu_job_host_ram_gib": 32,
+    "inference_gpu_hours_cap": 0.5,
+    "local_hours_conditional_cap": 44,
+    "measured_estimate": null,
+    "operator_preflight_required": [
+      "current quota",
+      "current balance",
+      "actual AllocTRES/billing",
+      "input hashes",
+      "source pins",
+      "full matrix cost gate"
+    ],
+    "reserve_gpu_hours": 0.25,
+    "total_allocated_core_hours_cap": 44,
+    "vram_requirement_gib": null,
+    "vram_status": "to be measured at train-only benchmark"
+  },
+  "roles_proposed": {
+    "final_decision": "Simone",
+    "no_change_to_other_lines": true,
+    "review_and_only_operator": "Claude",
+    "scientific_owner_and_code": "GPT consolidamento"
+  },
+  "runtime_implemented": false,
+  "source_provenance": {
+    "base_commit": "cfa6462f261fa7e70afb9dc13684d4436756ad65",
+    "historical_fit_receipt_commit": "2930d7d6feb6a054ae0ce9fded98ac5ac1b12abe",
+    "historical_fit_receipt_path": "results/infra/consolidation_long_20261105/execution/receipts/LONG-FIT-G49046-pose-20261105.json",
+    "historical_fit_receipt_sha256": "b08e6e321f3803318991b934ff89ddef70493a422f7f3884abd9daa1d5037c14",
+    "instruction_attachment_sha256": "917aab786a1975aaf587473af92065ca52235651cf84064233868b35578321a6",
+    "raw_runtime_identity_evidence": "results/infra/pose_temponet_proposal_20261117/raw_source_identity.json",
+    "temponet_commit": "8917e2a911287d8939e44d210adf566e4c8e8561",
+    "temponet_path": "src/wearusfm/model/temponet.py",
+    "temponet_sha256": "9d5a03e23d4d4ef2f4ba57e46740702b21b74a1538c97a12b63f8d9b8949d0cc"
+  },
+  "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "status": "REVIEW_REQUIRED",
+  "support": {
+    "centers": "6 <= t and t+6 < n_patches",
+    "crop": 6,
+    "dim": 384,
+    "dynamic_selection": "original cached full-window pose_var",
+    "dynamic_threshold": 0.2574231028556824,
+    "max_patches": 160,
+    "mean_over_slots": 64,
+    "normalization": "FP16 cache cast FP32, learned-affine LayerNorm384 eps1e-5; cached target mean/std from train158 unchanged",
+    "patch_ms": 25,
+    "target_mask": "original central joint mask; no neighbor-target mask in feature path"
+  },
+  "which": "teacher"
+}

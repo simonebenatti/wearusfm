@@ -178,6 +178,36 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-17 | GPT consolidamento | TEMPONet sui latenti: proposta dopo il lungo, REVIEW_REQUIRED
+
+Simone ha chiesto di anteporre al protocollo A di efficienza delle etichette una prova delle teste di regressione TEMPONet,
+e ha consegnato il prompt con i riferimenti del ramo Claude. Letti senza merge `8917e2a` e il modello introdotto da
+`60b35bd`; verificati modello e script emg2pose identici al code_sha raw `0c19c4b` (report train/eval).
+Nessuna modifica ai file di Claude, a `src/`, ai config o alle campagne congelate; nessun job, deploy o lettura operativa del cluster.
+
+Consegnati [protocollo](pose_temponet_frozen_protocol_20261117.md),
+[prompt per Claude](prompt_claude_pose_temponet_review_20261117.md) e materiali
+`results/infra/pose_temponet_proposal_20261117/` sul ramo `codex/pose-temponet-proposal-20261117`.
+Stato **REVIEW_REQUIRED**, non eseguibile, runtime non implementato. Questo «livello A» significa lettore su encoder congelato,
+non il precedente protocollo A EPN, che resta accantonato per questa prova.
+
+Scelta proposta: teacher T100-G 30M 49.046, cache WORK già disponibili, 40 utenti train e 15 val di sviluppo.
+TCN compatta ispirata a TEMPONet, RF13 patch (±150 ms tra centri), uscita per patch, stride1 senza pooling,
+LN affine, circa65k parametri. Non replica raw o riuso dei suoi pesi. Controlli nuovi: PoseHead L0 rifittata8.468,
+MLP istantanea65.300 quasi a pari capacità, L13 lineare temporale100.628, TCN-post65.204 e TCN-pre identica descrittiva.
+Due riferimenti storici riusati: ridge post e testa già allenata del teacher.
+
+Stessa MSE media per finestra, crop6/target/statistiche originali, LRcostante{1e-4,1e-3},50epochemax,
+2fold utenti per selezione,3semi rifit, shuffle indipendente da init/dropout:20CV+15rifit=35fit di teste.
+Primario TCN-post/L0 su E_dyn dinamiche; famiglia fissa5contrasti conIC99% Bonferroni e margine pratico2%.
+Una lettura finale val dopo pesi/scelte congelati, nessun nuovo test ufficiale. Migliore dinamica non equivale a migliore
+posa assoluta: MAE/livello affiancati e nessuna adozione automatica. Tre letture critiche locali recepite, da rivedere da Claude.
+
+Tetto proposto, non autorizzato o misurato: **4GPUh +12coreh CPU-only,44coreh totali**,8GiBoutputWORK.
+Benchmark train-only e gate2×su matrice completa a50epoche prima dei fit; se non rientra si ferma, senza ridurre i bracci.
+GPT autore del codice e Claude revisore/unico operatore proposti per continuità della linea2, da affidare per la nuova prova.
+Raw/random,300M,altre dosi,nuove loss e livelloB non inclusi. Nessuna suite della testa futura dichiarata passata.
+
 ### 2026-11-07 | GPT consolidamento | Conservazione completa verificata; protocollo A preparato per review
 
 Simone ha affidato la preparazione di A a GPT («A GPT») e autorizzato la copia
@@ -5942,6 +5972,26 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-17 | GPT consolidamento | Limiti e correzioni della proposta TEMPONet
+
+La TEMPONet raw non si innesta invariata sui latenti: produce un'uscita per finestra, downsampling/flatten e BN
+cambiano la domanda. Il RF378 del helper è per elemento convoluzionale; aT160 il flatten unisce nominalmente442passi.
+La proposta è dichiaratamente una TCN adattata, non replica del paper o riuso dei pesi raw.
+
+La ridge storica pesa gli elementi validi, il training della PoseHead le finestre: il controllo architetturale primario
+è quindi una PoseHead nuova rifittata alla pari. La testa storica ha visto158utenti e student mascherato/EMA; nuove teste40utenti
+su teacher non mascherato. La vista pre non è encoder random; nessuna prova di trasferimento a una regressione nuova.
+
+Precisazioni accolte dal critico: shuffle separato dai consumi RNG dell'architettura; E_dyn medio dei semi da accumulatori,
+correlazione/secondari pubblicati per-seme e con media dei valori; vantaggio dinamico non implica MAE/livello non inferiori.
+15 utenti già usati come sviluppo, seme unico di pretraining,3semi solo della testa,bootstrap esplorativo con pochi utenti/coda.
+Nessun esito nullo viene presentato come equivalenza o assenza di informazione.
+
+Benchmark non ancora eseguito:4GPUh è un tetto proposto con gate globale, non una stima. RAM CPU24GiB,hostGPU32GiB,
+VRAM da misurare;NPZ decompresso una volta per vista e cast a lotti, non mmap immaginario. Quota/saldo del prompt sono storici.
+Raw sul supporto FM richiederebbe aggregazione sui campioni nativi dei medesimi blocchi, non cinque predizioni puntuali equivalenti.
+Nessuna modifica alle linee parallele, guardie, config, checkout di Claude o protocolli chiusi.
 
 ### 2026-11-07 | GPT consolidamento | Conservazione T100-G chiusa; limiti e costo della proposta A
 

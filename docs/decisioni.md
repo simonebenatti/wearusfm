@@ -6708,3 +6708,31 @@ con parità dimostrata; altrimenti matrice e preventivo tornano in proposta, sen
 aggiungere fit. La validation di 24 soggetti è inclusa nel budget etichette dichiarato.
 Segue review del disegno da parte di Claude, poi scelta concreta della ricetta e del
 budget da parte di Simone. Nessun nuovo job, benchmark o modifica runtime di GPT.
+
+
+## 17/11/2026 — Proposta TEMPONet come testa di lettura della posa, dopo il lungo
+
+**REVIEW_REQUIRED, nessuna nuova decisione di lancio o budget.** Simone ha chiesto di mettere da parte per ora la curva EPN
+(protocollo A) e valutare una TEMPONet come testa di regressione del FM, a partire dall'implementazione esistente e dal prompt
+trasmesso. Questa voce registra le regole proposte, pronte per la review e la firma, non le presenta come già approvate.
+
+[Protocollo completo](pose_temponet_frozen_protocol_20261117.md). Proposta: solo livello congelato su T100-G 30M teacher49.046,
+cacheWORK,40utenti train,15valdi sviluppo già consultati. Cinque teste: PoseHead rifittata,MLP istantanea a capacità comparabile,
+lineare con contesto13patch,TCNpost eTCNpre descrittiva. Nessun encoder/random/raw nuovo,altre dosi,300M,loss o pretraining.
+TCN adattata da principi e codice TEMPONet, non replica invariata:65.204parametri,13patch,±150ms fra centri,uscita perpatch,
+LayerNorm affine,stride1 senza pooling. ControlloMLP65.300parametri; L0/L13 8.468/100.628.
+
+Criteri proposti: stessa MSE standardizzata media per finestra,crop6,target/mask/statistiche originari;2LRcostanti,
+50epochemax,2fold utenti,3semi di rifit scelti prima.20fitCV+15rifit. Scelta di LR/epoca sui soli40train,nessuna selezione sul15val.
+Primario riduzione relativa E_dyn dinamiche TCNpost−L0; famiglia5contrasti post controL0,MLP,L13,ridge storica,testa storica;
+IC99%percentile ciascuno,Bonferroni nominale95%,2.000bootstrap utenti,seed20261102. Beneficio pratico: stima≥2% eICinferiore>0;
+deterioramento simmetrico; seICsuperiore<2% beneficio della grandezza richiesta non sostenuto dall'intervallo,altrimenti
+inconclusivo. Nessuna equivalenza dedotta da mancata significatività. TCNpre descrittiva,nessun vincitore scelto posthoc.
+Tre semi riassunti come media della prestazione,nonensemble; correlazioni e altri secondari per seme. Un vantaggio dinamico
+non autorizza a sostituire la testa se MAE/livello peggiorano,né a lanciare il livelloB.
+
+Tetto proposto4GPUh,12coreh CPU-only,44coreh totali,8GiBoutput persistenteWORK; misure train-only e gate2×dell'intera matrice
+prima del primo fit. Risorse e saldo attuali da leggere dall'operatore nel piano eseguibile. Nessun costo nuovo sostenuto.
+Ruoli proposti:GPT codice,Claude review e unico operatore,dopo affidamento della nuova attività. Nessun merge del ramo raw
+8917e2a; verificate identità dei sorgenti con0c19c4b e del modello con60b35bd. Review di Claude e decisioni di Simone precedono
+codice/benchmark/esecuzione secondo la consegna. Nessun file runtime modificato o job diGPT.
