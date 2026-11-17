@@ -1,0 +1,44 @@
+{
+ "id": "CONTRAST-CHECKOUT-AUDIT-M30-20261117",
+ "creato": "2026-11-17T08:03:12+01:00",
+ "agente": "gpt",
+ "campagna": "CONTRASTIVE-v2-20261116",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "f09bf857eee24f02aff25fa743853d60fcab7f03",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONTRAST-CHECKOUT-AUDIT-M30-20261117",
+  "--comment=wearusfm:CONTRAST-CHECKOUT-AUDIT-M30-20261117",
+  "--cpus-per-task=4",
+  "--time=00:04:00",
+  "--mem=2G",
+  "--export=ALL,CAMPAIGN=contrastive-v2-20261117-audit-mem30,CAMPAIGN_SHA=f09bf857eee24f02aff25fa743853d60fcab7f03,EXPECTED_SHA=f09bf857eee24f02aff25fa743853d60fcab7f03"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/campaign_checkout.sbatch",
+ "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-17T08:03:12+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-17T08:03:12+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-17T08:03:13+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 64652383,
+   "uscita": 0,
+   "stdout": "64652383\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 64652383,
+ "uscita": 0,
+ "stdout": "64652383\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

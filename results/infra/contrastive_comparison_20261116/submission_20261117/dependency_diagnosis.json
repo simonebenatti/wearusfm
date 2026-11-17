@@ -1,0 +1,13 @@
+{
+  "error": "Job dependency problem",
+  "audit_job_created": false,
+  "scheduler_MinJobAge_seconds": 30,
+  "scheduler_DependencyParameters": "kill_invalid_depend",
+  "prerequisite": {
+    "job_id": 64652383,
+    "sacct_state": "COMPLETED",
+    "exit_code": "0:0",
+    "scontrol": "Invalid job id specified: completed record expired from controller"
+  },
+  "action": "Do not rerun completed checkout. Submit audit without expired afterok dependency, after explicit sacct completion and frozen checkout integrity verification; runtime code_dir_setup repeats SHA, clean-tree and read-only checks."
+}

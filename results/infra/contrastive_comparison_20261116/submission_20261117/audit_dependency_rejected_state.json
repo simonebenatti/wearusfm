@@ -1,0 +1,60 @@
+{
+ "id": "CONTRAST-AUDIT-v2-20261116",
+ "creato": "2026-11-17T07:58:01+01:00",
+ "agente": "gpt",
+ "campagna": "CONTRASTIVE-v2-20261116",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "f09bf857eee24f02aff25fa743853d60fcab7f03",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONTRAST-AUDIT-v2-20261116",
+  "--comment=wearusfm:CONTRAST-AUDIT-v2-20261116",
+  "--dependency=afterok:64652383",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-audit-mem30,EXPECTED_SHA=f09bf857eee24f02aff25fa743853d60fcab7f03",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-audit-mem30/scripts/slurm/contrastive_preflight_cpu.sbatch",
+  "results/infra/contrastive_comparison_20261116/releases/audit.job.json"
+ ],
+ "dopo": "CONTRAST-CHECKOUT-AUDIT-M30-20261117",
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "rifiutato",
+ "storia": [
+  {
+   "quando": "2026-11-17T07:58:01+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-17T07:58:01+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-17T07:58:02+01:00",
+   "stato": "rifiutato",
+   "job_slurm": null,
+   "uscita": 1,
+   "stdout": "",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: error: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: error: QOSMaxMemoryPerUser\nsbatch: error: Batch job submission failed: Job violates accounting/QOS policy (job submit limit, user's size and/or time limits)\n"
+  },
+  {
+   "quando": "2026-11-17T08:04:42+01:00",
+   "stato": "prenotato_di_nuovo"
+  },
+  {
+   "quando": "2026-11-17T08:04:42+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-17T08:04:44+01:00",
+   "stato": "rifiutato",
+   "job_slurm": null,
+   "uscita": 1,
+   "stdout": "",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: error: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: error: Batch job submission failed: Job dependency problem\n"
+  }
+ ],
+ "job_slurm": null,
+ "uscita": 1,
+ "stdout": "",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: error: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: error: Batch job submission failed: Job dependency problem\n"
+}

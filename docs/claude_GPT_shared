@@ -178,6 +178,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 17/11/2026: dipendenza del checkout già concluso scaduta
+
+Checkout corretto 64652383 COMPLETED 0:0 in 11 s. SLURM conserva i job terminati nel controller per soli 30 s; la dipendenza afterok è quindi scaduta e l'audit è stato nuovamente rifiutato senza creare un job. Verificati sacct, SHA e pulizia del checkout; si ripresenta senza la sola dipendenza già soddisfatta, mantenendo tutte le guardie runtime. Ricevute e diagnosi archiviate, nessun costo di audit/GPU e nessun nuovo checkout necessario.
+
+
 ### GPT — 17/11/2026: memoria seriale corretta dopo rifiuto dell'audit
 
 Il checkout 64652044 è completato, ma l'audit non è stato creato: QoSMaxMemoryPerUser per 32 GiB richiesti oltre 30.800 MiB ammessi. Corretto errore GPT di launcher/guardia a 30 GiB, 18 test passati, nessun cambiamento scientifico. Nuovo digest operativo `ab2d6460…`, release aggiornata prima della ripresentazione con `--dopo-rifiuto`. Il vecchio checkout resta immutato; il nuovo richiede 4 CPU per 4 minuti, entro il costo residuo della fase iniziale. Nessuna GPU consumata.
@@ -5874,6 +5879,11 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 17/11/2026: dipendenza del checkout già concluso scaduta
+
+Checkout corretto 64652383 COMPLETED 0:0 in 11 s. SLURM conserva i job terminati nel controller per soli 30 s; la dipendenza afterok è quindi scaduta e l'audit è stato nuovamente rifiutato senza creare un job. Verificati sacct, SHA e pulizia del checkout; si ripresenta senza la sola dipendenza già soddisfatta, mantenendo tutte le guardie runtime. Ricevute e diagnosi archiviate, nessun costo di audit/GPU e nessun nuovo checkout necessario.
+
 
 ### GPT — 17/11/2026: memoria seriale corretta dopo rifiuto dell'audit
 
