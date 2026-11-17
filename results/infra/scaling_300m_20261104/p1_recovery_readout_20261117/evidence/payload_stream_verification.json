@@ -1,0 +1,225 @@
+{
+  "protocol": "scaling-p1-full-payload-readback-20261117-v1",
+  "hash_computed_on": "Mac",
+  "remote_operation": "read-only file transfer plus descriptor/path stat",
+  "cache_copies_retained": false,
+  "started_utc": "2026-11-17T07:00:28.079111+00:00",
+  "complete": true,
+  "records": [
+    {
+      "dataset": "ninapro_db2",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db2.npz",
+      "bytes": 1934763898,
+      "sha256": "6fd9b33473cff76848166b6ce089cb8521331c77775cc4b9db25d11efa988d6b",
+      "exit": 0,
+      "elapsed_seconds": 166.001345125,
+      "observations": [
+        {
+          "event": "before",
+          "value": {
+            "path": {
+              "dev": 2267999710,
+              "ino": 4161333275530407964,
+              "size": 1934763898,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794865963000000000,
+              "mtime_ns": 1794865041000000000,
+              "ctime_ns": 1794865041000000000
+            },
+            "descriptor": {
+              "dev": 2267999710,
+              "ino": 4161333275530407964,
+              "size": 1934763898,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794865963000000000,
+              "mtime_ns": 1794865041000000000,
+              "ctime_ns": 1794865041000000000
+            }
+          }
+        },
+        {
+          "event": "after",
+          "value": {
+            "path": {
+              "dev": 2267999710,
+              "ino": 4161333275530407964,
+              "size": 1934763898,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794898993000000000,
+              "mtime_ns": 1794865041000000000,
+              "ctime_ns": 1794865041000000000
+            },
+            "descriptor": {
+              "dev": 2267999710,
+              "ino": 4161333275530407964,
+              "size": 1934763898,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794898993000000000,
+              "mtime_ns": 1794865041000000000,
+              "ctime_ns": 1794865041000000000
+            },
+            "bytes": 1934763898
+          }
+        }
+      ],
+      "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\r\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\r\n** The server may need to be upgraded. See https://openssh.com/pq.html\r\nP1_TRANSFER {\"event\": \"before\", \"value\": {\"path\": {\"dev\": 2267999710, \"ino\": 4161333275530407964, \"size\": 1934763898, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794865963000000000, \"mtime_ns\": 1794865041000000000, \"ctime_ns\": 1794865041000000000}, \"descriptor\": {\"dev\": 2267999710, \"ino\": 4161333275530407964, \"size\": 1934763898, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794865963000000000, \"mtime_ns\": 1794865041000000000, \"ctime_ns\": 1794865041000000000}}}\nP1_TRANSFER {\"event\": \"after\", \"value\": {\"path\": {\"dev\": 2267999710, \"ino\": 4161333275530407964, \"size\": 1934763898, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794898993000000000, \"mtime_ns\": 1794865041000000000, \"ctime_ns\": 1794865041000000000}, \"descriptor\": {\"dev\": 2267999710, \"ino\": 4161333275530407964, \"size\": 1934763898, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794898993000000000, \"mtime_ns\": 1794865041000000000, \"ctime_ns\": 1794865041000000000}, \"bytes\": 1934763898}}\n",
+      "accepted": true
+    },
+    {
+      "dataset": "ninapro_db3",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db3.npz",
+      "bytes": 493636450,
+      "sha256": "e69bc54dccaec1d1913f28df39f90f266944dc4c304eb9f83a9334bcf4c96db6",
+      "exit": 0,
+      "elapsed_seconds": 42.877670583000025,
+      "observations": [
+        {
+          "event": "before",
+          "value": {
+            "path": {
+              "dev": 2267999710,
+              "ino": 4161333275530407965,
+              "size": 493636450,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794865967000000000,
+              "mtime_ns": 1794865237000000000,
+              "ctime_ns": 1794865237000000000
+            },
+            "descriptor": {
+              "dev": 2267999710,
+              "ino": 4161333275530407965,
+              "size": 493636450,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794865967000000000,
+              "mtime_ns": 1794865237000000000,
+              "ctime_ns": 1794865237000000000
+            }
+          }
+        },
+        {
+          "event": "after",
+          "value": {
+            "path": {
+              "dev": 2267999710,
+              "ino": 4161333275530407965,
+              "size": 493636450,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794899036000000000,
+              "mtime_ns": 1794865237000000000,
+              "ctime_ns": 1794865237000000000
+            },
+            "descriptor": {
+              "dev": 2267999710,
+              "ino": 4161333275530407965,
+              "size": 493636450,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794899036000000000,
+              "mtime_ns": 1794865237000000000,
+              "ctime_ns": 1794865237000000000
+            },
+            "bytes": 493636450
+          }
+        }
+      ],
+      "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\r\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\r\n** The server may need to be upgraded. See https://openssh.com/pq.html\r\nP1_TRANSFER {\"event\": \"before\", \"value\": {\"path\": {\"dev\": 2267999710, \"ino\": 4161333275530407965, \"size\": 493636450, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794865967000000000, \"mtime_ns\": 1794865237000000000, \"ctime_ns\": 1794865237000000000}, \"descriptor\": {\"dev\": 2267999710, \"ino\": 4161333275530407965, \"size\": 493636450, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794865967000000000, \"mtime_ns\": 1794865237000000000, \"ctime_ns\": 1794865237000000000}}}\nP1_TRANSFER {\"event\": \"after\", \"value\": {\"path\": {\"dev\": 2267999710, \"ino\": 4161333275530407965, \"size\": 493636450, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794899036000000000, \"mtime_ns\": 1794865237000000000, \"ctime_ns\": 1794865237000000000}, \"descriptor\": {\"dev\": 2267999710, \"ino\": 4161333275530407965, \"size\": 493636450, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794899036000000000, \"mtime_ns\": 1794865237000000000, \"ctime_ns\": 1794865237000000000}, \"bytes\": 493636450}}\n",
+      "accepted": true
+    },
+    {
+      "dataset": "ninapro_db6",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db6.npz",
+      "bytes": 2191580650,
+      "sha256": "fd8656bc18131fb77ed55db685440c7f0eddbd0452e14b11c0b8e4b8e9622847",
+      "exit": 0,
+      "elapsed_seconds": 188.20981658399998,
+      "observations": [
+        {
+          "event": "before",
+          "value": {
+            "path": {
+              "dev": 2267999710,
+              "ino": 4161333275530407966,
+              "size": 2191580650,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794865971000000000,
+              "mtime_ns": 1794865960000000000,
+              "ctime_ns": 1794865960000000000
+            },
+            "descriptor": {
+              "dev": 2267999710,
+              "ino": 4161333275530407966,
+              "size": 2191580650,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794865971000000000,
+              "mtime_ns": 1794865960000000000,
+              "ctime_ns": 1794865960000000000
+            }
+          }
+        },
+        {
+          "event": "after",
+          "value": {
+            "path": {
+              "dev": 2267999710,
+              "ino": 4161333275530407966,
+              "size": 2191580650,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794899225000000000,
+              "mtime_ns": 1794865960000000000,
+              "ctime_ns": 1794865960000000000
+            },
+            "descriptor": {
+              "dev": 2267999710,
+              "ino": 4161333275530407966,
+              "size": 2191580650,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1794899225000000000,
+              "mtime_ns": 1794865960000000000,
+              "ctime_ns": 1794865960000000000
+            },
+            "bytes": 2191580650
+          }
+        }
+      ],
+      "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\r\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\r\n** The server may need to be upgraded. See https://openssh.com/pq.html\r\nP1_TRANSFER {\"event\": \"before\", \"value\": {\"path\": {\"dev\": 2267999710, \"ino\": 4161333275530407966, \"size\": 2191580650, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794865971000000000, \"mtime_ns\": 1794865960000000000, \"ctime_ns\": 1794865960000000000}, \"descriptor\": {\"dev\": 2267999710, \"ino\": 4161333275530407966, \"size\": 2191580650, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794865971000000000, \"mtime_ns\": 1794865960000000000, \"ctime_ns\": 1794865960000000000}}}\nP1_TRANSFER {\"event\": \"after\", \"value\": {\"path\": {\"dev\": 2267999710, \"ino\": 4161333275530407966, \"size\": 2191580650, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794899225000000000, \"mtime_ns\": 1794865960000000000, \"ctime_ns\": 1794865960000000000}, \"descriptor\": {\"dev\": 2267999710, \"ino\": 4161333275530407966, \"size\": 2191580650, \"mode\": 33188, \"uid\": 127686, \"gid\": 25200, \"nlink\": 1, \"atime_ns\": 1794899225000000000, \"mtime_ns\": 1794865960000000000, \"ctime_ns\": 1794865960000000000}, \"bytes\": 2191580650}}\n",
+      "accepted": true
+    }
+  ],
+  "finished_utc": "2026-11-17T07:07:05.169471+00:00",
+  "total_bytes": 4619980998
+}

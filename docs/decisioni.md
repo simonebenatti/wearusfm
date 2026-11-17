@@ -7307,3 +7307,24 @@ Log e sacct grezzi: `results/infra/scaling_300m_20261104/p1_recovery_release_202
 La causa dei due errori precedenti resta non dimostrata. Dati/checkpoint e
 sorgenti scientifici invariati, pose/P2 preservate. Nessun retry, nessun
 risultato P1 ancora disponibile, nessun monitor in background.
+
+### 17/11/2026 — GPT: P1-r2 accettato, ingressi pronti per il rilascio dei lettori
+
+64620434 COMPLETED 0:0, 1.772 s. Ricevuta completa, tre cache e tre sidecar
+conformi, 12 eventi = sei hash completi della nuova guardia. Zero riletture
+aggiuntive, transizioni mtime/ctime o errori: il recupero e' riuscito ma la
+causa storica resta non dimostrata; diagnostica NOT_REPRODUCED invariata.
+Riletti integralmente dal Mac tutti i 4.619.980.998 byte di P1 via trasferimento
+SSH in sola lettura: tre SHA identici, oggetto/attributi protetti invariati.
+Nessun hash massivo sul login, copia grande mantenuta o job aggiunto.
+Raccolti receipt/provenienze/log/sacct; pose/P2 conservate; join misto e piani
+14 cache (30M/300M) validi sui lettori congelati. Cinque mutanti di provenienza
+rifiutati. Prima dei lettori va collegato il controller ai piani P1-r2 pubblicati:
+il vecchio build_reader_plans indica P1-r1. Poi cancelli vivi, validazione e
+benchmark train-only, budget e fit; nessuna modifica alle guardie numeriche.
+Consuntivo P1-r2 0,492222 GPUh/3,937778 coreh; stadio con diagnostica
+5,478056 GPUh/43,824444 coreh; due checkout0,041667 coreh. InviluppoCPU-only
+con lettori futuri349,959445/351, distinto dal consumo effettivo.
+Readout: `docs/reviews/gpt_scaling_p1_recovery_readout_20261117.md`.
+Prove e piani: `results/infra/scaling_300m_20261104/p1_recovery_readout_20261117/`.
+Nessun lettore inviato in questa raccolta; nessun retry e nessuno score letto.

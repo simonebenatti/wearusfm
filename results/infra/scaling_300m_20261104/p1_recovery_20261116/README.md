@@ -1,5 +1,11 @@
 # Recupero P1 a 19.618 — pacchetto approvato del 16/11/2026
 
+> Aggiornamento 17/11: dopo l'emendamento esplicito di Simone, il singolo
+> P1-r2 64620434 e' COMPLETED 0:0. Raccolta, verifica e prosecuzione documentate
+> in `../p1_recovery_readout_20261117/` e
+> `docs/reviews/gpt_scaling_p1_recovery_readout_20261117.md`.
+> La frase «Esito finale» sotto descrive la sola diagnostica, prima dell'emendamento.
+
 **Esito finale:** diagnostico 64610181 COMPLETED 0:0, NOT_REPRODUCED /
 READERS_CLEAR_IN_TEST. P1-r2 non rilasciato, nessun secondo checkout o retry.
 Readout completo: `docs/reviews/gpt_scaling_p1_diagnostic_readout_20261116.md`.

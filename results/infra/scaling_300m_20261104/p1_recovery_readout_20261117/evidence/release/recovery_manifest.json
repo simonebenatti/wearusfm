@@ -1,0 +1,64 @@
+{
+  "allocation": {
+    "cpus": 8,
+    "gpus": 1,
+    "memory_gib": 100,
+    "nodes": 1,
+    "walltime_seconds": 7200
+  },
+  "arm": "T100-G-300M",
+  "budget": {
+    "extractions_gpu_hours_cap": 7.3,
+    "p1_cumulative_gpu_hours_cap": 3.1,
+    "p1_max_attempts": 3,
+    "retry_authorized": false
+  },
+  "cpu_tests": {
+    "bytes": 2177,
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_p1_recovery_20261116_v1/results/infra/scaling_300m_20261104/p1_recovery_release_20261116/cpu_tests.json",
+    "sha256": "d25493b0cf619668cfc13ef2ed5633936ad10edf698de7557e6cb129843e8718"
+  },
+  "diagnostic_outcome": "NOT_REPRODUCED",
+  "diagnostic_protocol": "SCALING-P1-IDENTITY-DIAG-v1",
+  "diagnostic_report": {
+    "bytes": 267340,
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_p1_recovery_20261116_v1/results/infra/scaling_300m_20261104/p1_recovery_20261116/evidence/run_final/report.json",
+    "sha256": "c2e32e9cfab36a76c79b05913e350b9ec7f15484f73e2a271552c06f6e980908"
+  },
+  "diagnostic_source_sha256": {
+    "scripts/scaling_output_identity.py": "717362c25cb99151ab058b4f212cc73611a36899f67251952ca613a71058e656",
+    "scripts/scaling_p1_identity_diagnostic.py": "88c70d6a2cc36695e401964c9d92e39902dea37a009a66690c931c03e1288a65"
+  },
+  "extraction_plan": {
+    "bytes": 5595,
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_p1_recovery_20261116_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/evaluation/extraction_plan.json",
+    "sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556"
+  },
+  "failed_attempts": [
+    {
+      "exit_code": "1:0",
+      "job_id": "64572000",
+      "state": "FAILED"
+    },
+    {
+      "exit_code": "1:0",
+      "job_id": "64596915",
+      "state": "FAILED"
+    }
+  ],
+  "logical_job_id": "SCALING-300M-eval19618-p1-r2-20261116",
+  "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2",
+  "output_barrier": "none",
+  "protocol": "scaling-p1-recovery-20261116-v1",
+  "release_criterion": "scaling-p1-single-recovery-after-clean-diagnostic-v2",
+  "source_sha256": {
+    "scripts/scaling_output_identity.py": "717362c25cb99151ab058b4f212cc73611a36899f67251952ca613a71058e656",
+    "scripts/scaling_p1_recovery.py": "85e161f95d1260afc37834e002a8ff89cb54594e25f61d09b6b6237c9cad5b2e",
+    "scripts/scaling_p1_recovery_plans.py": "83bd62a11c007ef82c48b39b45f1e888e7f387fab4c9b2bd72411287e133fb00",
+    "tests/cpu/test_scaling_output_identity.py": "34039caa71f8e90b3cecaf29dceb5c3883100fa7fc44408fe993a50dd330227f",
+    "tests/cpu/test_scaling_p1_recovery.py": "0897b3de556b03d33c5c89b45d52023431819c9e44d2b7857f483ff7baeaeaeb",
+    "tests/cpu/test_scaling_p1_recovery_plans.py": "3a23ac4ad03e3f787b683fa7dfda93169331b2b2aead4dc577b3edfafe9c7593"
+  },
+  "step": 19618,
+  "task": "p1"
+}

@@ -1,0 +1,2173 @@
+{
+  "candidate_pose_plan": {
+    "caches": {
+      "T100-G-300M": {
+        "train": {
+          "bytes": 547620367,
+          "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+          "extraction_code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/train_subset.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/train_subset.npz.provenance.json",
+          "provenance_sha256": "5e9e81dda9fd1efe5774137f2ca20e885913cadbcfd4d81c99cb112593d53cba",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/receipt.json",
+          "receipt_sha256": "332d1327d08d0f47af02701048c8b6b0dc06b0f8efed89a3043edccca63b9781",
+          "sha256": "7fb9a3eab1eff092578da762e37fe5f6c1f645b73d382a3156fc3b4333b50d01"
+        },
+        "val": {
+          "bytes": 5305413139,
+          "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+          "extraction_code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/val.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/val.npz.provenance.json",
+          "provenance_sha256": "1de9b8d1c4776a42e6a1c0909637e5972d7769f1f9482cb1fdd9047b2a5d377b",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/receipt.json",
+          "receipt_sha256": "332d1327d08d0f47af02701048c8b6b0dc06b0f8efed89a3043edccca63b9781",
+          "sha256": "384d8aee5f6209f2e01e668c0439118170c7c3ea9bb8296d6e5a0a171df68185"
+        }
+      },
+      "T100-G-30M": {
+        "train": {
+          "bytes": 257737302,
+          "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+          "extraction_code_sha": "453ce6c496745f2d73aa3007406721586e6dd767",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/pose/train_subset.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/pose/train_subset.npz.provenance.json",
+          "provenance_sha256": "33b619b567dd35e905db14a89b179b3ee5cde5a8daf9b050fe65be5737869b2a",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/pose/receipt.json",
+          "receipt_sha256": "bc02048ba49c575860209860712d3488152c70a4bee81dddc1935341bde83057",
+          "sha256": "951198bd5c62e02e9ba224f698bb3cbeb2b9eac9d144a653e809010d85e37cab"
+        },
+        "val": {
+          "bytes": 2485853898,
+          "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+          "extraction_code_sha": "453ce6c496745f2d73aa3007406721586e6dd767",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/pose/val.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/pose/val.npz.provenance.json",
+          "provenance_sha256": "c1bb472068d25720182d43a21d3929d25d05b08093b52d44403ed77ae2549435",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/pose/receipt.json",
+          "receipt_sha256": "bc02048ba49c575860209860712d3488152c70a4bee81dddc1935341bde83057",
+          "sha256": "af0810f0f5c181d88e57861ff92d927ad4b0527de666f64157e5136f94457152"
+        }
+      }
+    },
+    "fold_users": [
+      [
+        "03d49b393e",
+        "06d17ebbe4",
+        "1223558697",
+        "323f919c83",
+        "32cbfe3221",
+        "3589743749",
+        "3f79dccf7a",
+        "5ef3a0537e",
+        "65228c03b3",
+        "76bfc2d385",
+        "82f6fe243f",
+        "8bd1c0ff16",
+        "915e7ab7da",
+        "9261f6ab56",
+        "bd64911c18",
+        "c2991a87f6",
+        "d8b3b209f4",
+        "e5ffa40c92",
+        "eab042e9de",
+        "ef59709d32"
+      ],
+      [
+        "055bb1b487",
+        "1066cc94fc",
+        "2cc385c3cd",
+        "32473f0e96",
+        "342248118e",
+        "3669295621",
+        "47c605ad6f",
+        "60e5a2b0a4",
+        "70ad60b9a1",
+        "79d6b65fef",
+        "84a77feea6",
+        "8db8aaea3b",
+        "91e58c0561",
+        "9fcad1a5cc",
+        "bd84652be9",
+        "ce52651f99",
+        "e03cea741b",
+        "e666e9de6e",
+        "ec7f7bbbcd",
+        "fba9f08c33"
+      ]
+    ],
+    "projection": {
+      "bytes": 1452,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/results/infra/scaling_300m_20261104/projection_s5/manifest.json",
+      "sha256": "74d1a0f2453592cb134ab104247d05a9a43b2960e43417bc23c31426fa1b9b3d"
+    },
+    "protocol": "scaling-pose-readout-19618-20261106-v1",
+    "recipe": {
+      "alpha_exponents": [
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "batch_windows": 64,
+      "bootstrap": {
+        "replicates": 2000,
+        "seed": 20261102,
+        "unit": "user"
+      },
+      "cached_features": "mean_K64_fp16",
+      "cells": {
+        "T100-G-300M-matched": [
+          "T100-G-300M",
+          "matched"
+        ],
+        "T100-G-300M-natural": [
+          "T100-G-300M",
+          "natural"
+        ],
+        "T100-G-30M-natural": [
+          "T100-G-30M",
+          "natural"
+        ]
+      },
+      "common_centers": "6 <= t and t+6 < n_patches",
+      "cv": "alternating sorted train users; two folds; pooled masked standardized SSE",
+      "dimensions": {
+        "T100-G-300M": 896,
+        "T100-G-30M": 384
+      },
+      "dynamic_selection": "original full-window pose_var",
+      "dynamic_threshold": 0.2574231028556824,
+      "fit_precision": "float64",
+      "intercept": "unpenalized",
+      "matched": {
+        "control": "30M natural reused without transformation or refit",
+        "input_dim": 896,
+        "order": "FP16 cache to FP32; fixed backbone projection; stateless LayerNorm FP32",
+        "output_dim": 384,
+        "projection": {
+          "algorithm": {
+            "data_independent": true,
+            "distribution": "standard_normal_float64",
+            "generator": "numpy.Generator(PCG64)",
+            "pool_block_order": [
+              "backbone",
+              "local"
+            ],
+            "qr": "numpy.linalg.qr(mode=reduced)",
+            "rescaling": null,
+            "shape": [
+              896,
+              384
+            ],
+            "sign": "positive diagonal of R; matching column signs in Q",
+            "storage": "C-contiguous little-endian float32"
+          },
+          "protocol": "scaling-projection-20261104-v1",
+          "seeds": {
+            "backbone": 2026110401,
+            "local": 2026110402
+          }
+        }
+      },
+      "max_extensions_per_side": 3,
+      "min_centered_points": 2,
+      "normalization": "stateless LayerNorm FP32",
+      "normalization_eps": 1e-05,
+      "offset": 6,
+      "target_support": "central target mask only",
+      "tie_break": "smallest alpha",
+      "which": "teacher"
+    },
+    "references": {
+      "train": {
+        "bytes": 257675076,
+        "n_recordings": 200,
+        "n_users": 40,
+        "n_windows": 1907,
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz",
+        "sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23"
+      },
+      "val": {
+        "bytes": 2485295825,
+        "n_recordings": 1950,
+        "n_users": 15,
+        "n_windows": 18548,
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz",
+        "sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904"
+      }
+    },
+    "sources": {
+      "scripts/pose_dynamics.py": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8",
+      "scripts/pose_e3_b.py": "859dc19b7867a9597fe7fe868cde8833471a1db7da018113809e6a6fda831782",
+      "scripts/pose_temporal_readout.py": "b0adaaacde63151519f6a50aaf9d60aa9a2acabc13b59c8b37582dadb292a815",
+      "scripts/scaling_evaluation19618.py": "ab3c175746e448b46ede9258b4eea785dc89ed1b8180fbb844a8e1ab1e7253e2",
+      "scripts/scaling_pose_readout19618.py": "3b3927c03b8e4b5672bb6d07ce2eeca218cdca5d2862d3ae30b35c49f4228206",
+      "scripts/scaling_projection.py": "a8c0f7880095df02186e465a1ce86030b8b2fe5ee1beb8a965b349ff205ee88d",
+      "scripts/scaling_train.py": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac",
+      "scripts/tokenizer_pose_readout.py": "18a15436e48045447661d3aaab6a8770819527b4ff97a2837d9be3930bad7fb3"
+    },
+    "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+    "step": 19618,
+    "training_source_contract": {
+      "bytes": 13685,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/results/infra/scaling_300m_20261104/training_source_contract.json",
+      "sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1"
+    }
+  },
+  "candidate_probe_plan": {
+    "caches": {
+      "T100-G-300M": {
+        "epn612": {
+          "bytes": 1693610834,
+          "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+          "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+          "extraction_code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+          "extraction_plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+          "extraction_recipe": {
+            "base": {
+              "encoder": "teacher",
+              "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+              "feature_set": "model",
+              "input_audit": "downstream_ab.fingerprint-v1",
+              "window_s": null
+            },
+            "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+            "crop_s": 4.0,
+            "dtype": "float16 per canale, float32 pool",
+            "edge_guard_s": 0.1,
+            "encoder": "teacher",
+            "extractor": "harness.channel_readout.extract_channel_readouts",
+            "k_neighbors": 8,
+            "layers": [
+              "pool",
+              "local",
+              "dec"
+            ]
+          },
+          "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/epn612.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/epn612.npz.provenance.json",
+          "provenance_sha256": "0ed38fdac32cfd4f367ab02e7260d55da2d739ff77cf604a30523ece60a36683",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/receipt.json",
+          "receipt_sha256": "5d20e219dc6bf81cd01a049c1b2fe102e2c20b890a40d4cf4f13385b4674b5d0",
+          "sha256": "92e27900a89d41783a756e7bce54831cc05d036de40324f573fb6c7e474c1912",
+          "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+        },
+        "ninapro_db2": {
+          "bytes": 1934763898,
+          "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+          "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+          "extraction_code_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+          "extraction_plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+          "extraction_recipe": {
+            "base": {
+              "encoder": "teacher",
+              "extractor": "probe_p1.dataset_features",
+              "feature_set": "model",
+              "input_audit": "downstream_ab.fingerprint-v1",
+              "window_s": 1.0
+            },
+            "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+            "crop_s": 4.0,
+            "dtype": "float16 per canale, float32 pool",
+            "edge_guard_s": 0.1,
+            "encoder": "teacher",
+            "extractor": "harness.channel_readout.extract_channel_readouts",
+            "k_neighbors": 8,
+            "layers": [
+              "pool",
+              "local",
+              "dec"
+            ]
+          },
+          "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db2.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db2.npz.provenance.json",
+          "provenance_sha256": "43ea79cdb0b042f412aa821378ebd0145b3a14f82f5c4d80505e1e02b37134a6",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/receipt.json",
+          "receipt_sha256": "f5bc05c3ce8e45ffe9d07c432286c2dae3ca788cf1566698a550e97676546b88",
+          "sha256": "6fd9b33473cff76848166b6ce089cb8521331c77775cc4b9db25d11efa988d6b",
+          "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+        },
+        "ninapro_db3": {
+          "bytes": 493636450,
+          "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+          "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+          "extraction_code_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+          "extraction_plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+          "extraction_recipe": {
+            "base": {
+              "encoder": "teacher",
+              "extractor": "probe_p1.dataset_features",
+              "feature_set": "model",
+              "input_audit": "downstream_ab.fingerprint-v1",
+              "window_s": 1.0
+            },
+            "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+            "crop_s": 4.0,
+            "dtype": "float16 per canale, float32 pool",
+            "edge_guard_s": 0.1,
+            "encoder": "teacher",
+            "extractor": "harness.channel_readout.extract_channel_readouts",
+            "k_neighbors": 8,
+            "layers": [
+              "pool",
+              "local",
+              "dec"
+            ]
+          },
+          "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db3.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db3.npz.provenance.json",
+          "provenance_sha256": "827efe4b67df0282909ab98249ab0d5d61edee4ea5c137f043de333f2cc41af6",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/receipt.json",
+          "receipt_sha256": "f5bc05c3ce8e45ffe9d07c432286c2dae3ca788cf1566698a550e97676546b88",
+          "sha256": "e69bc54dccaec1d1913f28df39f90f266944dc4c304eb9f83a9334bcf4c96db6",
+          "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+        },
+        "ninapro_db6": {
+          "bytes": 2191580650,
+          "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+          "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+          "extraction_code_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+          "extraction_plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+          "extraction_recipe": {
+            "base": {
+              "encoder": "teacher",
+              "extractor": "probe_p1.dataset_features",
+              "feature_set": "model",
+              "input_audit": "downstream_ab.fingerprint-v1",
+              "window_s": 1.0
+            },
+            "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+            "crop_s": 4.0,
+            "dtype": "float16 per canale, float32 pool",
+            "edge_guard_s": 0.1,
+            "encoder": "teacher",
+            "extractor": "harness.channel_readout.extract_channel_readouts",
+            "k_neighbors": 8,
+            "layers": [
+              "pool",
+              "local",
+              "dec"
+            ]
+          },
+          "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db6.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db6.npz.provenance.json",
+          "provenance_sha256": "0b8d2e1cdae5fd76646b83b76c1518888ca0f1a327d29f8a204aa53f0d52b186",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/receipt.json",
+          "receipt_sha256": "f5bc05c3ce8e45ffe9d07c432286c2dae3ca788cf1566698a550e97676546b88",
+          "sha256": "fd8656bc18131fb77ed55db685440c7f0eddbd0452e14b11c0b8e4b8e9622847",
+          "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+        },
+        "uci_emg": {
+          "bytes": 13061178,
+          "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+          "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+          "extraction_code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+          "extraction_plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+          "extraction_recipe": {
+            "base": {
+              "encoder": "teacher",
+              "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+              "feature_set": "model",
+              "input_audit": "downstream_ab.fingerprint-v1",
+              "window_s": null
+            },
+            "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+            "crop_s": 4.0,
+            "dtype": "float16 per canale, float32 pool",
+            "edge_guard_s": 0.1,
+            "encoder": "teacher",
+            "extractor": "harness.channel_readout.extract_channel_readouts",
+            "k_neighbors": 8,
+            "layers": [
+              "pool",
+              "local",
+              "dec"
+            ]
+          },
+          "input_sha256": "4d38164cd44da8942ee07e3863da1dc34b7f725ce54df40220f624a490c8f617",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/uci_emg.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/uci_emg.npz.provenance.json",
+          "provenance_sha256": "160a524ade5097efe3e65f2f99801f8c1d788868a2846f2c5109922ab3ab4a17",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/receipt.json",
+          "receipt_sha256": "5d20e219dc6bf81cd01a049c1b2fe102e2c20b890a40d4cf4f13385b4674b5d0",
+          "sha256": "0b947859bac2241c807bfdf8b1da13946a3ed857dcd86f98842f50d3e9383740",
+          "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+        }
+      },
+      "T100-G-30M": {
+        "epn612": {
+          "bytes": 729002730,
+          "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
+          "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+          "extraction_code_sha": "453ce6c496745f2d73aa3007406721586e6dd767",
+          "extraction_plan_sha256": "a01799f892d473769a8770beefafd96d0a46896968bee98d2c5de3376eb9e660",
+          "extraction_recipe": {
+            "base": {
+              "encoder": "teacher",
+              "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+              "feature_set": "model",
+              "input_audit": "downstream_ab.fingerprint-v1",
+              "window_s": null
+            },
+            "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+            "crop_s": 4,
+            "dtype": "float16 per canale, float32 pool",
+            "edge_guard_s": 0.1,
+            "encoder": "teacher",
+            "extractor": "harness.channel_readout.extract_channel_readouts",
+            "k_neighbors": 8,
+            "layers": [
+              "pool",
+              "local",
+              "dec"
+            ]
+          },
+          "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p2/epn612.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p2/epn612.npz.provenance.json",
+          "provenance_sha256": "7eadcfcc10ba1b34d8c554c9ac0b768fd5a337371cedbbc1b15cea7e1aa1fff8",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p2/receipt.json",
+          "receipt_sha256": "1bcca82e3a232a1442e6cce02b46c5d833c4157371015fa7780ece9c1da6b315",
+          "sha256": "ea9cb4289982d3d536e590c75b8e9638a703bfe25ef63d50b744ef30bb66e699",
+          "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+        },
+        "ninapro_db2": {
+          "bytes": 829630226,
+          "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
+          "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+          "extraction_code_sha": "453ce6c496745f2d73aa3007406721586e6dd767",
+          "extraction_plan_sha256": "a01799f892d473769a8770beefafd96d0a46896968bee98d2c5de3376eb9e660",
+          "extraction_recipe": {
+            "base": {
+              "encoder": "teacher",
+              "extractor": "probe_p1.dataset_features",
+              "feature_set": "model",
+              "input_audit": "downstream_ab.fingerprint-v1",
+              "window_s": 1
+            },
+            "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+            "crop_s": 4,
+            "dtype": "float16 per canale, float32 pool",
+            "edge_guard_s": 0.1,
+            "encoder": "teacher",
+            "extractor": "harness.channel_readout.extract_channel_readouts",
+            "k_neighbors": 8,
+            "layers": [
+              "pool",
+              "local",
+              "dec"
+            ]
+          },
+          "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db2.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db2.npz.provenance.json",
+          "provenance_sha256": "9b31c642b31a47e2f47eb2c221c0efd8de507ae075397bbe05d919acdec92691",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/receipt.json",
+          "receipt_sha256": "9fb776049e9fe0c7c065c56ffad2d6078e792c4c4438497090dbb82328f21631",
+          "sha256": "d9ef65ccfbdc4fcdd381ca60a052f4e66d0206de181e89e70532853499e32c57",
+          "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+        },
+        "ninapro_db3": {
+          "bytes": 211675898,
+          "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
+          "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+          "extraction_code_sha": "453ce6c496745f2d73aa3007406721586e6dd767",
+          "extraction_plan_sha256": "a01799f892d473769a8770beefafd96d0a46896968bee98d2c5de3376eb9e660",
+          "extraction_recipe": {
+            "base": {
+              "encoder": "teacher",
+              "extractor": "probe_p1.dataset_features",
+              "feature_set": "model",
+              "input_audit": "downstream_ab.fingerprint-v1",
+              "window_s": 1
+            },
+            "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+            "crop_s": 4,
+            "dtype": "float16 per canale, float32 pool",
+            "edge_guard_s": 0.1,
+            "encoder": "teacher",
+            "extractor": "harness.channel_readout.extract_channel_readouts",
+            "k_neighbors": 8,
+            "layers": [
+              "pool",
+              "local",
+              "dec"
+            ]
+          },
+          "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db3.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db3.npz.provenance.json",
+          "provenance_sha256": "3259e083fa97f639e1924df1769161eb36f48f7149cedb15f322af530c5840b1",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/receipt.json",
+          "receipt_sha256": "9fb776049e9fe0c7c065c56ffad2d6078e792c4c4438497090dbb82328f21631",
+          "sha256": "e853c11cccb007ba7dae8e1c011f55a599421cd3a1cc386601dcca76836f895e",
+          "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+        },
+        "ninapro_db6": {
+          "bytes": 939641974,
+          "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
+          "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+          "extraction_code_sha": "453ce6c496745f2d73aa3007406721586e6dd767",
+          "extraction_plan_sha256": "a01799f892d473769a8770beefafd96d0a46896968bee98d2c5de3376eb9e660",
+          "extraction_recipe": {
+            "base": {
+              "encoder": "teacher",
+              "extractor": "probe_p1.dataset_features",
+              "feature_set": "model",
+              "input_audit": "downstream_ab.fingerprint-v1",
+              "window_s": 1
+            },
+            "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+            "crop_s": 4,
+            "dtype": "float16 per canale, float32 pool",
+            "edge_guard_s": 0.1,
+            "encoder": "teacher",
+            "extractor": "harness.channel_readout.extract_channel_readouts",
+            "k_neighbors": 8,
+            "layers": [
+              "pool",
+              "local",
+              "dec"
+            ]
+          },
+          "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db6.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/ninapro_db6.npz.provenance.json",
+          "provenance_sha256": "e1a0e23f167a48922259d129b8427b89aaef6913d71dd54d4f4e23e4776a4d83",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p1/receipt.json",
+          "receipt_sha256": "9fb776049e9fe0c7c065c56ffad2d6078e792c4c4438497090dbb82328f21631",
+          "sha256": "6d8524e99d91c7da292ffbc31f0f5faf3fd9e511cf7a4ce02a1d0ac93f47be52",
+          "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+        },
+        "uci_emg": {
+          "bytes": 5606354,
+          "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
+          "checkpoint_sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+          "extraction_code_sha": "453ce6c496745f2d73aa3007406721586e6dd767",
+          "extraction_plan_sha256": "a01799f892d473769a8770beefafd96d0a46896968bee98d2c5de3376eb9e660",
+          "extraction_recipe": {
+            "base": {
+              "encoder": "teacher",
+              "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+              "feature_set": "model",
+              "input_audit": "downstream_ab.fingerprint-v1",
+              "window_s": null
+            },
+            "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+            "crop_s": 4,
+            "dtype": "float16 per canale, float32 pool",
+            "edge_guard_s": 0.1,
+            "encoder": "teacher",
+            "extractor": "harness.channel_readout.extract_channel_readouts",
+            "k_neighbors": 8,
+            "layers": [
+              "pool",
+              "local",
+              "dec"
+            ]
+          },
+          "input_sha256": "4d38164cd44da8942ee07e3863da1dc34b7f725ce54df40220f624a490c8f617",
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p2/uci_emg.npz",
+          "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p2/uci_emg.npz.provenance.json",
+          "provenance_sha256": "de913e25633006e759a38e62c9aae9b379bc7866343eb61b77ca651e5d543f98",
+          "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/tokenizer_evaluation_20261103/19618/T100-G/p2/receipt.json",
+          "receipt_sha256": "1bcca82e3a232a1442e6cce02b46c5d833c4157371015fa7780ece9c1da6b315",
+          "sha256": "97ac45717cf75991d631c243c12db7cf12428dcb1f5141d90376370ca20c8a46",
+          "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+        }
+      }
+    },
+    "datasets": {
+      "epn612": {
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": null
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+        "roles_sha256": "63108bb75ddd4a026a72a7db3e2f90a567cab8fd47a1ab9f155b7afd4ffd6c36",
+        "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631",
+        "subjects": [
+          "testingJSON/user1",
+          "testingJSON/user102",
+          "testingJSON/user103",
+          "testingJSON/user104",
+          "testingJSON/user106",
+          "testingJSON/user107",
+          "testingJSON/user108",
+          "testingJSON/user110",
+          "testingJSON/user111",
+          "testingJSON/user112",
+          "testingJSON/user114",
+          "testingJSON/user115",
+          "testingJSON/user116",
+          "testingJSON/user117",
+          "testingJSON/user12",
+          "testingJSON/user121",
+          "testingJSON/user122",
+          "testingJSON/user123",
+          "testingJSON/user124",
+          "testingJSON/user127",
+          "testingJSON/user128",
+          "testingJSON/user130",
+          "testingJSON/user131",
+          "testingJSON/user134",
+          "testingJSON/user137",
+          "testingJSON/user14",
+          "testingJSON/user141",
+          "testingJSON/user142",
+          "testingJSON/user146",
+          "testingJSON/user147",
+          "testingJSON/user148",
+          "testingJSON/user149",
+          "testingJSON/user15",
+          "testingJSON/user152",
+          "testingJSON/user154",
+          "testingJSON/user156",
+          "testingJSON/user158",
+          "testingJSON/user16",
+          "testingJSON/user161",
+          "testingJSON/user162",
+          "testingJSON/user163",
+          "testingJSON/user166",
+          "testingJSON/user169",
+          "testingJSON/user170",
+          "testingJSON/user171",
+          "testingJSON/user172",
+          "testingJSON/user173",
+          "testingJSON/user175",
+          "testingJSON/user177",
+          "testingJSON/user18",
+          "testingJSON/user180",
+          "testingJSON/user182",
+          "testingJSON/user183",
+          "testingJSON/user187",
+          "testingJSON/user188",
+          "testingJSON/user190",
+          "testingJSON/user192",
+          "testingJSON/user195",
+          "testingJSON/user196",
+          "testingJSON/user2",
+          "testingJSON/user201",
+          "testingJSON/user203",
+          "testingJSON/user204",
+          "testingJSON/user206",
+          "testingJSON/user207",
+          "testingJSON/user21",
+          "testingJSON/user210",
+          "testingJSON/user212",
+          "testingJSON/user213",
+          "testingJSON/user214",
+          "testingJSON/user216",
+          "testingJSON/user221",
+          "testingJSON/user222",
+          "testingJSON/user223",
+          "testingJSON/user224",
+          "testingJSON/user225",
+          "testingJSON/user226",
+          "testingJSON/user227",
+          "testingJSON/user23",
+          "testingJSON/user231",
+          "testingJSON/user232",
+          "testingJSON/user233",
+          "testingJSON/user234",
+          "testingJSON/user235",
+          "testingJSON/user237",
+          "testingJSON/user239",
+          "testingJSON/user240",
+          "testingJSON/user242",
+          "testingJSON/user244",
+          "testingJSON/user246",
+          "testingJSON/user248",
+          "testingJSON/user249",
+          "testingJSON/user25",
+          "testingJSON/user251",
+          "testingJSON/user253",
+          "testingJSON/user255",
+          "testingJSON/user257",
+          "testingJSON/user259",
+          "testingJSON/user26",
+          "testingJSON/user262",
+          "testingJSON/user263",
+          "testingJSON/user264",
+          "testingJSON/user266",
+          "testingJSON/user267",
+          "testingJSON/user27",
+          "testingJSON/user272",
+          "testingJSON/user276",
+          "testingJSON/user278",
+          "testingJSON/user279",
+          "testingJSON/user28",
+          "testingJSON/user282",
+          "testingJSON/user283",
+          "testingJSON/user285",
+          "testingJSON/user288",
+          "testingJSON/user289",
+          "testingJSON/user290",
+          "testingJSON/user3",
+          "testingJSON/user30",
+          "testingJSON/user302",
+          "testingJSON/user303",
+          "testingJSON/user305",
+          "testingJSON/user31",
+          "testingJSON/user32",
+          "testingJSON/user34",
+          "testingJSON/user35",
+          "testingJSON/user37",
+          "testingJSON/user38",
+          "testingJSON/user40",
+          "testingJSON/user41",
+          "testingJSON/user42",
+          "testingJSON/user43",
+          "testingJSON/user44",
+          "testingJSON/user46",
+          "testingJSON/user48",
+          "testingJSON/user49",
+          "testingJSON/user5",
+          "testingJSON/user51",
+          "testingJSON/user52",
+          "testingJSON/user57",
+          "testingJSON/user58",
+          "testingJSON/user59",
+          "testingJSON/user60",
+          "testingJSON/user61",
+          "testingJSON/user66",
+          "testingJSON/user67",
+          "testingJSON/user68",
+          "testingJSON/user69",
+          "testingJSON/user7",
+          "testingJSON/user73",
+          "testingJSON/user77",
+          "testingJSON/user79",
+          "testingJSON/user80",
+          "testingJSON/user85",
+          "testingJSON/user88",
+          "testingJSON/user89",
+          "testingJSON/user91",
+          "testingJSON/user93",
+          "testingJSON/user94",
+          "testingJSON/user97",
+          "testingJSON/user98",
+          "trainingJSON/user100",
+          "trainingJSON/user102",
+          "trainingJSON/user103",
+          "trainingJSON/user11",
+          "trainingJSON/user111",
+          "trainingJSON/user115",
+          "trainingJSON/user12",
+          "trainingJSON/user120",
+          "trainingJSON/user121",
+          "trainingJSON/user123",
+          "trainingJSON/user124",
+          "trainingJSON/user126",
+          "trainingJSON/user127",
+          "trainingJSON/user13",
+          "trainingJSON/user132",
+          "trainingJSON/user141",
+          "trainingJSON/user143",
+          "trainingJSON/user146",
+          "trainingJSON/user147",
+          "trainingJSON/user148",
+          "trainingJSON/user149",
+          "trainingJSON/user15",
+          "trainingJSON/user150",
+          "trainingJSON/user153",
+          "trainingJSON/user154",
+          "trainingJSON/user155",
+          "trainingJSON/user156",
+          "trainingJSON/user157",
+          "trainingJSON/user160",
+          "trainingJSON/user162",
+          "trainingJSON/user164",
+          "trainingJSON/user165",
+          "trainingJSON/user166",
+          "trainingJSON/user167",
+          "trainingJSON/user168",
+          "trainingJSON/user169",
+          "trainingJSON/user170",
+          "trainingJSON/user172",
+          "trainingJSON/user173",
+          "trainingJSON/user174",
+          "trainingJSON/user176",
+          "trainingJSON/user179",
+          "trainingJSON/user18",
+          "trainingJSON/user180",
+          "trainingJSON/user181",
+          "trainingJSON/user183",
+          "trainingJSON/user184",
+          "trainingJSON/user185",
+          "trainingJSON/user188",
+          "trainingJSON/user189",
+          "trainingJSON/user19",
+          "trainingJSON/user190",
+          "trainingJSON/user193",
+          "trainingJSON/user194",
+          "trainingJSON/user195",
+          "trainingJSON/user198",
+          "trainingJSON/user199",
+          "trainingJSON/user20",
+          "trainingJSON/user203",
+          "trainingJSON/user204",
+          "trainingJSON/user205",
+          "trainingJSON/user215",
+          "trainingJSON/user216",
+          "trainingJSON/user217",
+          "trainingJSON/user218",
+          "trainingJSON/user219",
+          "trainingJSON/user22",
+          "trainingJSON/user222",
+          "trainingJSON/user225",
+          "trainingJSON/user228",
+          "trainingJSON/user229",
+          "trainingJSON/user23",
+          "trainingJSON/user230",
+          "trainingJSON/user231",
+          "trainingJSON/user232",
+          "trainingJSON/user235",
+          "trainingJSON/user239",
+          "trainingJSON/user24",
+          "trainingJSON/user240",
+          "trainingJSON/user241",
+          "trainingJSON/user245",
+          "trainingJSON/user247",
+          "trainingJSON/user248",
+          "trainingJSON/user249",
+          "trainingJSON/user25",
+          "trainingJSON/user250",
+          "trainingJSON/user255",
+          "trainingJSON/user258",
+          "trainingJSON/user26",
+          "trainingJSON/user260",
+          "trainingJSON/user261",
+          "trainingJSON/user263",
+          "trainingJSON/user264",
+          "trainingJSON/user266",
+          "trainingJSON/user268",
+          "trainingJSON/user269",
+          "trainingJSON/user274",
+          "trainingJSON/user275",
+          "trainingJSON/user276",
+          "trainingJSON/user277",
+          "trainingJSON/user279",
+          "trainingJSON/user28",
+          "trainingJSON/user280",
+          "trainingJSON/user282",
+          "trainingJSON/user284",
+          "trainingJSON/user286",
+          "trainingJSON/user287",
+          "trainingJSON/user289",
+          "trainingJSON/user29",
+          "trainingJSON/user291",
+          "trainingJSON/user292",
+          "trainingJSON/user294",
+          "trainingJSON/user297",
+          "trainingJSON/user298",
+          "trainingJSON/user299",
+          "trainingJSON/user30",
+          "trainingJSON/user300",
+          "trainingJSON/user304",
+          "trainingJSON/user305",
+          "trainingJSON/user32",
+          "trainingJSON/user36",
+          "trainingJSON/user38",
+          "trainingJSON/user41",
+          "trainingJSON/user42",
+          "trainingJSON/user43",
+          "trainingJSON/user45",
+          "trainingJSON/user48",
+          "trainingJSON/user49",
+          "trainingJSON/user50",
+          "trainingJSON/user51",
+          "trainingJSON/user52",
+          "trainingJSON/user54",
+          "trainingJSON/user55",
+          "trainingJSON/user56",
+          "trainingJSON/user59",
+          "trainingJSON/user60",
+          "trainingJSON/user64",
+          "trainingJSON/user66",
+          "trainingJSON/user67",
+          "trainingJSON/user69",
+          "trainingJSON/user7",
+          "trainingJSON/user72",
+          "trainingJSON/user73",
+          "trainingJSON/user74",
+          "trainingJSON/user76",
+          "trainingJSON/user77",
+          "trainingJSON/user80",
+          "trainingJSON/user81",
+          "trainingJSON/user85",
+          "trainingJSON/user91",
+          "trainingJSON/user94",
+          "trainingJSON/user96",
+          "trainingJSON/user98",
+          "trainingJSON/user99"
+        ],
+        "task": "p2"
+      },
+      "ninapro_db2": {
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "probe_p1.dataset_features",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": 1
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+        "roles_sha256": "ec7fe35963cffc681fc7718e9c8dc9c9f912081e194f455c8fb3e2e3e6cfd946",
+        "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+        "subjects": [
+          "s01",
+          "s02",
+          "s03",
+          "s04",
+          "s05",
+          "s06",
+          "s07",
+          "s08",
+          "s10",
+          "s11",
+          "s14",
+          "s17",
+          "s18",
+          "s19",
+          "s20",
+          "s22",
+          "s23",
+          "s24",
+          "s25",
+          "s26",
+          "s27",
+          "s28",
+          "s29",
+          "s30",
+          "s31",
+          "s32",
+          "s34",
+          "s35",
+          "s36",
+          "s37",
+          "s38",
+          "s39"
+        ],
+        "task": "p1"
+      },
+      "ninapro_db3": {
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "probe_p1.dataset_features",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": 1
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+        "roles_sha256": "a156014d0e846a6d733d517c0d7f947289b0d3c47e0d0f1bac5cc7968e541a24",
+        "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+        "subjects": [
+          "s01",
+          "s02",
+          "s03",
+          "s04",
+          "s05",
+          "s06",
+          "s10",
+          "s11"
+        ],
+        "task": "p1"
+      },
+      "ninapro_db6": {
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "probe_p1.dataset_features",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": 1
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+        "roles_sha256": "9d9dee6d4a265a731c7c27301cc1436e1883f644c8261f49aa9d94fe78b341b5",
+        "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+        "subjects": [
+          "s01",
+          "s02",
+          "s03",
+          "s06",
+          "s07",
+          "s08",
+          "s09",
+          "s10"
+        ],
+        "task": "p1"
+      },
+      "uci_emg": {
+        "extraction_recipe": {
+          "base": {
+            "encoder": "teacher",
+            "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+            "feature_set": "model",
+            "input_audit": "downstream_ab.fingerprint-v1",
+            "window_s": null
+          },
+          "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+          "crop_s": 4,
+          "dtype": "float16 per canale, float32 pool",
+          "edge_guard_s": 0.1,
+          "encoder": "teacher",
+          "extractor": "harness.channel_readout.extract_channel_readouts",
+          "k_neighbors": 8,
+          "layers": [
+            "pool",
+            "local",
+            "dec"
+          ]
+        },
+        "input_sha256": "4d38164cd44da8942ee07e3863da1dc34b7f725ce54df40220f624a490c8f617",
+        "roles_sha256": "479b7b7c92187e8c6728f858b9117f6d74a67172aea28c4d1376d64890da88f9",
+        "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631",
+        "subjects": [
+          "01",
+          "03",
+          "04",
+          "07",
+          "08",
+          "10",
+          "11",
+          "12",
+          "13",
+          "15",
+          "17",
+          "18",
+          "21",
+          "24",
+          "26",
+          "27",
+          "29",
+          "35",
+          "36"
+        ],
+        "task": "p2"
+      }
+    },
+    "projection": {
+      "bytes": 1452,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/results/infra/scaling_300m_20261104/projection_s5/manifest.json",
+      "sha256": "74d1a0f2453592cb134ab104247d05a9a43b2960e43417bc23c31426fa1b9b3d"
+    },
+    "protocol": "scaling-probe-19618-20261106-v1",
+    "recipe": {
+      "C_grid": [
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0,
+        100.0
+      ],
+      "aliases": {
+        "T100-G-30M-matched": "T100-G-30M-natural"
+      },
+      "bootstrap": {
+        "missing_classes": "macro recall over present target classes; no discarded draws",
+        "replicates": 2000,
+        "seed": 20261102,
+        "unit": "subject within dataset"
+      },
+      "cells": {
+        "T100-G-300M-matched": {
+          "arm": "T100-G-300M",
+          "readout": "matched"
+        },
+        "T100-G-300M-natural": {
+          "arm": "T100-G-300M",
+          "readout": "natural"
+        },
+        "T100-G-30M-natural": {
+          "arm": "T100-G-30M",
+          "readout": "natural"
+        }
+      },
+      "checkpoint_step": 19618,
+      "class_weight": "balanced",
+      "encoder": "teacher",
+      "features_dtype": "float32",
+      "fold_seed": 20261015,
+      "k_folds": 4,
+      "layer": "pool",
+      "max_iter": 12000,
+      "pca": false,
+      "penalty": "l2",
+      "primary": "natural",
+      "scaler": "StandardScaler fitted only on fold train",
+      "secondary": "fixed independent backbone/local QR projections before train-only StandardScaler",
+      "seed": 0,
+      "selection": "max validation balanced accuracy; ties smallest C; refit train only",
+      "solver": "lbfgs",
+      "tol": 0.0001,
+      "val_frac": 0.1,
+      "widths": {
+        "T100-G-300M-matched": 768,
+        "T100-G-300M-natural": 1792,
+        "T100-G-30M-natural": 768
+      }
+    },
+    "references": {
+      "epn612": {
+        "bytes": 729002818,
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/epn612.npz",
+        "sha256": "88cf51fc46cb489724905f041cd67c22090af16eab769ac14cbd0b7056b92dc4"
+      },
+      "ninapro_db2": {
+        "bytes": 829630314,
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db2.npz",
+        "sha256": "b17eb149a56ebc31a650c5f5b39fbb92d6867baecb43fc959d1c1069e3e52098"
+      },
+      "ninapro_db3": {
+        "bytes": 211675986,
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db3.npz",
+        "sha256": "3c846fda2edd31e57b7216831985710de70524f595f45e1fd8c40b2e47b6cd6b"
+      },
+      "ninapro_db6": {
+        "bytes": 939642062,
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db6.npz",
+        "sha256": "b8c05d7a88e2b05dad87eeb08bf199faedabf62dd3631630e98e1e6b3caa1cfd"
+      },
+      "uci_emg": {
+        "bytes": 5606442,
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/uci_emg.npz",
+        "sha256": "8ba7500155f706695ea2fb35cdfa57f41a5c38d96c2511e446426169358323fb"
+      }
+    },
+    "sources": {
+      "scripts/calibration_probe.py": "197d19d061aa188a5a6c87305e60087f25b346e1966ad949c1a6ab7f8522aac3",
+      "scripts/channel_readout.py": "746e2ce9d81da27bc089d1ec8b62f270d8b70c9f5c42a2420370f4b7f113c20a",
+      "scripts/scaling_evaluation19618.py": "ab3c175746e448b46ede9258b4eea785dc89ed1b8180fbb844a8e1ab1e7253e2",
+      "scripts/scaling_preflight.py": "0a3224190957986425cd17e24001a3b8bcc7ba98fa1c190d45bbcc1e48531e04",
+      "scripts/scaling_probe19618.py": "72a621753a8e792f262ddaa31e95cfb9830c63418aab9be043fc938d088febbb",
+      "scripts/scaling_projection.py": "a8c0f7880095df02186e465a1ce86030b8b2fe5ee1beb8a965b349ff205ee88d",
+      "scripts/scaling_train.py": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac",
+      "scripts/tokenizer_evaluation.py": "00d5f42583bc3203df5041558486647dd05f66f59df8adf3ae7728cf3e6c127b",
+      "scripts/tokenizer_pose_readout.py": "18a15436e48045447661d3aaab6a8770819527b4ff97a2837d9be3930bad7fb3",
+      "scripts/tokenizer_probe.py": "0bdf7ab248fb7a5b48bffd2e3dc805259e9b5282d0907de0f00718fe4fc0f0fd",
+      "src/wearusfm/harness/downstream_ab.py": "ea3b91423fe6c12743acb9679e4a3e9e214d84e4135769aeb4bbd82ed97b3164",
+      "src/wearusfm/harness/p1_cross_subject.py": "7045b947920d314e7b25e85dc41e42de6bc5dc42aef0812c485b247bda31c4ce",
+      "src/wearusfm/harness/psd3_inputs.py": "c50c94bc9bd5c40fcc2ebe36abd2576c85591476de885e3d182d4f90248e159d"
+    },
+    "splits": {
+      "bytes": 291942,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/splits/v1/splits_v1.json",
+      "sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    },
+    "step": 19618,
+    "training_source_contract": {
+      "bytes": 13685,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/results/infra/scaling_300m_20261104/training_source_contract.json",
+      "sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1"
+    }
+  },
+  "checks": [
+    {
+      "details": null,
+      "name": "remote command sacct",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "remote command squeue",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "remote command code_head",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "remote command code_status",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "remote command old_code_head",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "remote command old_code_status",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "actual new code checkout",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "actual historical code checkout",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes release/recovery_manifest.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "deployed recovery manifest equals published release",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes release/extraction_plan.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "original extraction plan preserved",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes release/training_source_contract.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "scientific source contract preserved",
+      "passed": true
+    },
+    {
+      "details": 101,
+      "name": "frozen numerical Python source bytes",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "recovery source pins in deployed checkout",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "unchanged output guard since diagnostic",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "accepted scheduler job pose",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "accepted scheduler job p1",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "accepted scheduler job p2",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "historical failed attempts remain failed",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes pose/receipt.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes pose/train_subset.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "live cache canonical size pose/train",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/train/protocol",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/train/arm",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/train/which",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/train/checkpoint_step",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/train/checkpoint_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/train/code_sha",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/train/plan_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/train/training_source_contract_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/train/model_config",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes pose/val.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "live cache canonical size pose/val",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/val/protocol",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/val/arm",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/val/which",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/val/checkpoint_step",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/val/checkpoint_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/val/code_sha",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/val/plan_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/val/training_source_contract_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity pose/val/model_config",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes p1/receipt.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes p1/ninapro_db2.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "live cache canonical size p1/ninapro_db2",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db2/protocol",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db2/arm",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db2/which",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db2/checkpoint_step",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db2/checkpoint_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db2/code_sha",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db2/plan_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db2/training_source_contract_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db2/model_config",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes p1/ninapro_db3.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "live cache canonical size p1/ninapro_db3",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db3/protocol",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db3/arm",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db3/which",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db3/checkpoint_step",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db3/checkpoint_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db3/code_sha",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db3/plan_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db3/training_source_contract_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db3/model_config",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes p1/ninapro_db6.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "live cache canonical size p1/ninapro_db6",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db6/protocol",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db6/arm",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db6/which",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db6/checkpoint_step",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db6/checkpoint_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db6/code_sha",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db6/plan_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db6/training_source_contract_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p1/ninapro_db6/model_config",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes p2/receipt.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes p2/epn612.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "live cache canonical size p2/epn612",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/epn612/protocol",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/epn612/arm",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/epn612/which",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/epn612/checkpoint_step",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/epn612/checkpoint_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/epn612/code_sha",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/epn612/plan_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/epn612/training_source_contract_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/epn612/model_config",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "collected bytes p2/uci_emg.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "live cache canonical size p2/uci_emg",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/uci_emg/protocol",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/uci_emg/arm",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/uci_emg/which",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/uci_emg/checkpoint_step",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/uci_emg/checkpoint_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/uci_emg/code_sha",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/uci_emg/plan_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/uci_emg/training_source_contract_sha256",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "sidecar identity p2/uci_emg/model_config",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "mixed builder accepts actual 3 receipts and 7 provenance files",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "P1 uses actual new producer and P2 uses historical producer",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "pose keeps historical producer",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "new criterion does not claim reproduction",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "frozen reader plan validators accept mixed provenance",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "30M pose control byte-for-byte metadata preserved",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "30M classification anchor ninapro_db2",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "30M classification anchor ninapro_db3",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "30M classification anchor ninapro_db6",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "30M classification anchor epn612",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "30M classification anchor uci_emg",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "classification recipe, references, folds remain registered",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "pose reference support and folds remain registered",
+      "passed": true
+    },
+    {
+      "details": 17,
+      "name": "all frozen reader source bytes unchanged",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "single-producer historical builder correctly refuses mixed evidence df2de35c",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "single-producer historical builder correctly refuses mixed evidence e4ebdbfa",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "mixed provenance mutant rejected failed_p1_adoption",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "mixed provenance mutant rejected wrong_p1_code",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "mixed provenance mutant rejected wrong_checkpoint",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "mixed provenance mutant rejected missing_criterion",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "mixed provenance mutant rejected wrong_diagnostic",
+      "passed": true
+    }
+  ],
+  "evidence_sha256": "f2a595fd93d81bac87df2a4cb6d5b41ca54e41b6a3f09f969a0dc31f982120b9",
+  "lineage": {
+    "checkpoint": {
+      "bytes": 4673783740,
+      "config_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v3/config.json",
+      "config_sha256": "12259a2fce64227727e73a4a5d59c9c89976f34c3b3f1854395b74f4dfcf5f8e",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+      "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v3/receipt.json",
+      "receipt_sha256": "beabf80a770089521dc2d676df15f3043ad412957f16f209db4a465ea57615a6",
+      "sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+      "summary_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v3/summary.json",
+      "summary_sha256": "254c382b244fe42f1767fa3e92c6f9d48d9abc501498338a0eae256eb41360c3"
+    },
+    "diagnostic_outcome": "NOT_REPRODUCED",
+    "diagnostic_report": {
+      "bytes": 267340,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_p1_recovery_20261116_v1/results/infra/scaling_300m_20261104/p1_recovery_20261116/evidence/run_final/report.json",
+      "sha256": "c2e32e9cfab36a76c79b05913e350b9ec7f15484f73e2a271552c06f6e980908"
+    },
+    "historical_failed_attempts": [
+      {
+        "exit_code": "1:0",
+        "job_id": "64572000",
+        "state": "FAILED"
+      },
+      {
+        "exit_code": "1:0",
+        "job_id": "64596915",
+        "state": "FAILED"
+      }
+    ],
+    "protocol": "scaling-p1-mixed-extractions-20261116-v1",
+    "recovery_manifest_sha256": "1a2104c59e55f5f3c46e03a984bdcda163ef26634c69cc1431ce3319bf878ee3",
+    "recovery_source_sha256": {
+      "scripts/scaling_output_identity.py": "717362c25cb99151ab058b4f212cc73611a36899f67251952ca613a71058e656",
+      "scripts/scaling_p1_recovery.py": "85e161f95d1260afc37834e002a8ff89cb54594e25f61d09b6b6237c9cad5b2e",
+      "scripts/scaling_p1_recovery_plans.py": "83bd62a11c007ef82c48b39b45f1e888e7f387fab4c9b2bd72411287e133fb00",
+      "tests/cpu/test_scaling_output_identity.py": "34039caa71f8e90b3cecaf29dceb5c3883100fa7fc44408fe993a50dd330227f",
+      "tests/cpu/test_scaling_p1_recovery.py": "0897b3de556b03d33c5c89b45d52023431819c9e44d2b7857f483ff7baeaeaeb",
+      "tests/cpu/test_scaling_p1_recovery_plans.py": "3a23ac4ad03e3f787b683fa7dfda93169331b2b2aead4dc577b3edfafe9c7593"
+    },
+    "release_criterion": "scaling-p1-single-recovery-after-clean-diagnostic-v2",
+    "scientific_source_contract_unchanged": true,
+    "tasks": {
+      "p1": {
+        "code_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+        "job_id": "64620434",
+        "plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+        "receipt": {
+          "bytes": 180860,
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/receipt.json",
+          "sha256": "f5bc05c3ce8e45ffe9d07c432286c2dae3ca788cf1566698a550e97676546b88"
+        }
+      },
+      "p2": {
+        "code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+        "job_id": "64572001",
+        "plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+        "receipt": {
+          "bytes": 249297,
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/receipt.json",
+          "sha256": "5d20e219dc6bf81cd01a049c1b2fe102e2c20b890a40d4cf4f13385b4674b5d0"
+        }
+      },
+      "pose": {
+        "code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+        "job_id": "64571999",
+        "plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+        "receipt": {
+          "bytes": 3774840,
+          "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/receipt.json",
+          "sha256": "332d1327d08d0f47af02701048c8b6b0dc06b0f8efed89a3043edccca63b9781"
+        }
+      }
+    },
+    "training_source_contract_sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1"
+  },
+  "mutations": [
+    {
+      "mutation": "failed_p1_adoption",
+      "rejected": true
+    },
+    {
+      "mutation": "wrong_p1_code",
+      "rejected": true
+    },
+    {
+      "mutation": "wrong_checkpoint",
+      "rejected": true
+    },
+    {
+      "mutation": "missing_criterion",
+      "rejected": true
+    },
+    {
+      "mutation": "wrong_diagnostic",
+      "rejected": true
+    }
+  ],
+  "old_controller_p1_job": "SCALING-300M-eval19618-p1-r1-20261116",
+  "old_single_producer_rejections": [
+    {
+      "claimed_code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+      "reason": "extraction receipt differs: code_sha"
+    },
+    {
+      "claimed_code_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+      "reason": "extraction receipt differs: code_sha"
+    }
+  ],
+  "passed": true,
+  "payload_hash_verification": "Not rerun here: producer receipts contain full hashes; collection checks live canonical metadata/size only. Reader validation will rehash payloads on compute.",
+  "pose_cache_pins": {
+    "train": {
+      "bytes": 547620367,
+      "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+      "extraction_code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/train_subset.npz",
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/train_subset.npz.provenance.json",
+      "provenance_sha256": "5e9e81dda9fd1efe5774137f2ca20e885913cadbcfd4d81c99cb112593d53cba",
+      "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/receipt.json",
+      "receipt_sha256": "332d1327d08d0f47af02701048c8b6b0dc06b0f8efed89a3043edccca63b9781",
+      "sha256": "7fb9a3eab1eff092578da762e37fe5f6c1f645b73d382a3156fc3b4333b50d01"
+    },
+    "val": {
+      "bytes": 5305413139,
+      "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+      "extraction_code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/val.npz",
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/val.npz.provenance.json",
+      "provenance_sha256": "1de9b8d1c4776a42e6a1c0909637e5972d7769f1f9482cb1fdd9047b2a5d377b",
+      "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/receipt.json",
+      "receipt_sha256": "332d1327d08d0f47af02701048c8b6b0dc06b0f8efed89a3043edccca63b9781",
+      "sha256": "384d8aee5f6209f2e01e668c0439118170c7c3ea9bb8296d6e5a0a171df68185"
+    }
+  },
+  "probe_cache_pins": {
+    "epn612": {
+      "bytes": 1693610834,
+      "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+      "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+      "extraction_code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+      "extraction_plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+      "extraction_recipe": {
+        "base": {
+          "encoder": "teacher",
+          "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+          "feature_set": "model",
+          "input_audit": "downstream_ab.fingerprint-v1",
+          "window_s": null
+        },
+        "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+        "crop_s": 4.0,
+        "dtype": "float16 per canale, float32 pool",
+        "edge_guard_s": 0.1,
+        "encoder": "teacher",
+        "extractor": "harness.channel_readout.extract_channel_readouts",
+        "k_neighbors": 8,
+        "layers": [
+          "pool",
+          "local",
+          "dec"
+        ]
+      },
+      "input_sha256": "ef0090cb748e9eb4b9e9f474f084b8dbbbb6a9ca5f6594d91ceaf216204ee0c0",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/epn612.npz",
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/epn612.npz.provenance.json",
+      "provenance_sha256": "0ed38fdac32cfd4f367ab02e7260d55da2d739ff77cf604a30523ece60a36683",
+      "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/receipt.json",
+      "receipt_sha256": "5d20e219dc6bf81cd01a049c1b2fe102e2c20b890a40d4cf4f13385b4674b5d0",
+      "sha256": "92e27900a89d41783a756e7bce54831cc05d036de40324f573fb6c7e474c1912",
+      "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+    },
+    "ninapro_db2": {
+      "bytes": 1934763898,
+      "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+      "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+      "extraction_code_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+      "extraction_plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+      "extraction_recipe": {
+        "base": {
+          "encoder": "teacher",
+          "extractor": "probe_p1.dataset_features",
+          "feature_set": "model",
+          "input_audit": "downstream_ab.fingerprint-v1",
+          "window_s": 1.0
+        },
+        "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+        "crop_s": 4.0,
+        "dtype": "float16 per canale, float32 pool",
+        "edge_guard_s": 0.1,
+        "encoder": "teacher",
+        "extractor": "harness.channel_readout.extract_channel_readouts",
+        "k_neighbors": 8,
+        "layers": [
+          "pool",
+          "local",
+          "dec"
+        ]
+      },
+      "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db2.npz",
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db2.npz.provenance.json",
+      "provenance_sha256": "43ea79cdb0b042f412aa821378ebd0145b3a14f82f5c4d80505e1e02b37134a6",
+      "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/receipt.json",
+      "receipt_sha256": "f5bc05c3ce8e45ffe9d07c432286c2dae3ca788cf1566698a550e97676546b88",
+      "sha256": "6fd9b33473cff76848166b6ce089cb8521331c77775cc4b9db25d11efa988d6b",
+      "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    },
+    "ninapro_db3": {
+      "bytes": 493636450,
+      "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+      "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+      "extraction_code_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+      "extraction_plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+      "extraction_recipe": {
+        "base": {
+          "encoder": "teacher",
+          "extractor": "probe_p1.dataset_features",
+          "feature_set": "model",
+          "input_audit": "downstream_ab.fingerprint-v1",
+          "window_s": 1.0
+        },
+        "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+        "crop_s": 4.0,
+        "dtype": "float16 per canale, float32 pool",
+        "edge_guard_s": 0.1,
+        "encoder": "teacher",
+        "extractor": "harness.channel_readout.extract_channel_readouts",
+        "k_neighbors": 8,
+        "layers": [
+          "pool",
+          "local",
+          "dec"
+        ]
+      },
+      "input_sha256": "2f3502005c240a8ff2d5d6f4acd65eaa761294205a2efcb6cbd06cfdf5e7ade5",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db3.npz",
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db3.npz.provenance.json",
+      "provenance_sha256": "827efe4b67df0282909ab98249ab0d5d61edee4ea5c137f043de333f2cc41af6",
+      "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/receipt.json",
+      "receipt_sha256": "f5bc05c3ce8e45ffe9d07c432286c2dae3ca788cf1566698a550e97676546b88",
+      "sha256": "e69bc54dccaec1d1913f28df39f90f266944dc4c304eb9f83a9334bcf4c96db6",
+      "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    },
+    "ninapro_db6": {
+      "bytes": 2191580650,
+      "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+      "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+      "extraction_code_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+      "extraction_plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+      "extraction_recipe": {
+        "base": {
+          "encoder": "teacher",
+          "extractor": "probe_p1.dataset_features",
+          "feature_set": "model",
+          "input_audit": "downstream_ab.fingerprint-v1",
+          "window_s": 1.0
+        },
+        "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+        "crop_s": 4.0,
+        "dtype": "float16 per canale, float32 pool",
+        "edge_guard_s": 0.1,
+        "encoder": "teacher",
+        "extractor": "harness.channel_readout.extract_channel_readouts",
+        "k_neighbors": 8,
+        "layers": [
+          "pool",
+          "local",
+          "dec"
+        ]
+      },
+      "input_sha256": "a255f6e4e4017ca11b9905a450367f0b321c59479249b75b240c9456d4f7f6fa",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db6.npz",
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/ninapro_db6.npz.provenance.json",
+      "provenance_sha256": "0b8d2e1cdae5fd76646b83b76c1518888ca0f1a327d29f8a204aa53f0d52b186",
+      "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/receipt.json",
+      "receipt_sha256": "f5bc05c3ce8e45ffe9d07c432286c2dae3ca788cf1566698a550e97676546b88",
+      "sha256": "fd8656bc18131fb77ed55db685440c7f0eddbd0452e14b11c0b8e4b8e9622847",
+      "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7"
+    },
+    "uci_emg": {
+      "bytes": 13061178,
+      "checkpoint_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+      "checkpoint_sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+      "extraction_code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+      "extraction_plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+      "extraction_recipe": {
+        "base": {
+          "encoder": "teacher",
+          "extractor": "benchmarks.load_epn612|load_uci_emg+fm_features.myo8_montage",
+          "feature_set": "model",
+          "input_audit": "downstream_ab.fingerprint-v1",
+          "window_s": null
+        },
+        "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+        "crop_s": 4.0,
+        "dtype": "float16 per canale, float32 pool",
+        "edge_guard_s": 0.1,
+        "encoder": "teacher",
+        "extractor": "harness.channel_readout.extract_channel_readouts",
+        "k_neighbors": 8,
+        "layers": [
+          "pool",
+          "local",
+          "dec"
+        ]
+      },
+      "input_sha256": "4d38164cd44da8942ee07e3863da1dc34b7f725ce54df40220f624a490c8f617",
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/uci_emg.npz",
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/uci_emg.npz.provenance.json",
+      "provenance_sha256": "160a524ade5097efe3e65f2f99801f8c1d788868a2846f2c5109922ab3ab4a17",
+      "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/receipt.json",
+      "receipt_sha256": "5d20e219dc6bf81cd01a049c1b2fe102e2c20b890a40d4cf4f13385b4674b5d0",
+      "sha256": "0b947859bac2241c807bfdf8b1da13946a3ed857dcd86f98842f50d3e9383740",
+      "splits_sha256": "c889b7e05e0925c82847aa8ebb5acb1d225d77687d54aec54764872944749631"
+    }
+  },
+  "protocol": "p1-r2-mixed-provenance-review-20261117-v1",
+  "residual_gates": [
+    "Publish mixed lineage and complete pose/probe plans with actual receipt/cache pins, retaining original 30M anchors.",
+    "Do not call historical build_reader_plans: its table still points to failed p1-r1 and assumes one producer code_sha.",
+    "Freeze/document the mixed orchestration bridge; do not satisfy old release_check/rereview_check by changing historical evidence or source pins.",
+    "Fresh completed checkout, published-pin, output absence, ledger, serial capacity and quota gates before the registered reader stage.",
+    "Run frozen pose validation and train-only pose/probe benchmarks before fitting; rehash actual inputs and retain unchanged final guards.",
+    "Compute and publish runtime/RSS packing against the approved cumulative CPU envelope before any fit; stop on first gate failure/timeout, no retry."
+  ],
+  "reviewer_code_sha": "9629916e56d5d501ae3c1160dbc0296fb68632de",
+  "scientific_readout": "Not performed; no fitting or model-quality conclusions in this audit."
+}

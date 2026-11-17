@@ -1,0 +1,1694 @@
+{
+  "verdict": "P1-r2 guardia e rilettura integrale CONFORMI; tre cache finalizzate senza errori né stabilizzazioni",
+  "all_checks_passed": true,
+  "checks": [
+    {
+      "name": "complete_receipt",
+      "passed": true
+    },
+    {
+      "name": "fixed_release",
+      "passed": true
+    },
+    {
+      "name": "new_output_only",
+      "passed": true
+    },
+    {
+      "name": "criterion_and_null_preserved",
+      "passed": true
+    },
+    {
+      "name": "manifest_pin",
+      "passed": true
+    },
+    {
+      "name": "original_plan_pin",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_pinned",
+      "passed": true
+    },
+    {
+      "name": "checkpoint_endpoint",
+      "passed": true
+    },
+    {
+      "name": "contract_pin",
+      "passed": true
+    },
+    {
+      "name": "helper_pin",
+      "passed": true
+    },
+    {
+      "name": "source_manifest_match",
+      "passed": true
+    },
+    {
+      "name": "reviewed_source_scripts/scaling_output_identity.py",
+      "passed": true
+    },
+    {
+      "name": "source_guard_scripts/scaling_output_identity.py",
+      "passed": true
+    },
+    {
+      "name": "reviewed_source_scripts/scaling_p1_recovery.py",
+      "passed": true
+    },
+    {
+      "name": "source_guard_scripts/scaling_p1_recovery.py",
+      "passed": true
+    },
+    {
+      "name": "reviewed_source_scripts/scaling_p1_recovery_plans.py",
+      "passed": true
+    },
+    {
+      "name": "source_guard_scripts/scaling_p1_recovery_plans.py",
+      "passed": true
+    },
+    {
+      "name": "reviewed_source_tests/cpu/test_scaling_output_identity.py",
+      "passed": true
+    },
+    {
+      "name": "source_guard_tests/cpu/test_scaling_output_identity.py",
+      "passed": true
+    },
+    {
+      "name": "reviewed_source_tests/cpu/test_scaling_p1_recovery.py",
+      "passed": true
+    },
+    {
+      "name": "source_guard_tests/cpu/test_scaling_p1_recovery.py",
+      "passed": true
+    },
+    {
+      "name": "reviewed_source_tests/cpu/test_scaling_p1_recovery_plans.py",
+      "passed": true
+    },
+    {
+      "name": "source_guard_tests/cpu/test_scaling_p1_recovery_plans.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_scripts/slurm/lib_code_dir.sh",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_scripts/slurm/tokenizer_train.sbatch",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_scripts/tokenizer_preflight.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_scripts/tokenizer_preflight.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_scripts/tokenizer_train.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_scripts/tokenizer_train.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_scripts/train_jepa.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_scripts/train_jepa.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/collate.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/collate.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/consumer.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/consumer.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/manifest.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/manifest.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/masking.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/masking.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/pipeline.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/pipeline.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/pose_targets.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/pose_targets.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/pretraining_loader.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/pretraining_loader.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/pretraining_manifest.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/pretraining_manifest.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/processed.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/processed.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/rvq_codes.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/rvq_codes.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/shards.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/shards.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/synthetic.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/synthetic.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/transforms.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/transforms.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/data/virtual_montage.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/data/virtual_montage.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/gate/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/gate/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/gate/consistency.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/gate/consistency.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/anchor_candidates.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/anchor_candidates.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/baselines.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/baselines.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/benchmarks.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/benchmarks.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/channel_readout.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/channel_readout.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/downstream_ab.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/downstream_ab.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/feature_sets.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/feature_sets.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/features_hudgins.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/features_hudgins.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/fm_features.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/fm_features.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/normalization.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/normalization.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/p1_cross_subject.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/p1_cross_subject.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/pose_eval.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/pose_eval.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/probe.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/probe.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/protocol.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/protocol.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/psd3_compare.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/psd3_compare.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/psd3_inputs.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/psd3_inputs.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/psd3_readers.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/psd3_readers.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/random_encoder.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/random_encoder.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/spectral_ab.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/spectral_ab.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/spectral_probe.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/spectral_probe.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/splits.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/splits.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/training_stability.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/training_stability.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/harness/traps.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/harness/traps.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/camargo.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/camargo.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/capgmyo.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/capgmyo.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/common.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/common.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/csl_hdemg.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/csl_hdemg.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/emg2pose.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/emg2pose.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/emg2pose_pose.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/emg2pose_pose.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/emg2qwerty.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/emg2qwerty.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/grabmyo.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/grabmyo.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/hyser.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/hyser.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/kaifosh.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/kaifosh.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/ninapro_db10.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/ninapro_db10.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/ninapro_db5.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/ninapro_db5.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/ninapro_db6.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/ninapro_db6.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/ninapro_db8.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/ninapro_db8.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/ninapro_std.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/ninapro_std.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/putemg.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/putemg.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/ingest/zhang2026.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/ingest/zhang2026.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/metadata/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/metadata/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/metadata/schema.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/metadata/schema.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/metadata/taxonomy.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/metadata/taxonomy.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/anchor_targets.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/anchor_targets.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/anchors.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/anchors.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/backbone.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/backbone.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/branch_masking.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/branch_masking.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/channel_codes.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/channel_codes.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/channel_identity.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/channel_identity.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/fm.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/fm.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/frontend.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/frontend.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/geometry.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/geometry.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/local_encoder.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/local_encoder.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/patch_tokens.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/patch_tokens.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/perceiver.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/perceiver.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/pose_head.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/pose_head.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/proxy.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/proxy.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/query_decoder.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/query_decoder.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/spectral_branches.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/spectral_branches.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/spectral_step1.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/spectral_step1.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/model/spectral_targets.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/model/spectral_targets.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/preprocessing/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/preprocessing/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/preprocessing/canonical_view.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/preprocessing/canonical_view.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/tokenizer_checks/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/tokenizer_checks/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/tokenizer_checks/branch_probe.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/tokenizer_checks/branch_probe.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/tokenizer_checks/continuous_features.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/tokenizer_checks/continuous_features.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/tokenizer_checks/emg2pose.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/tokenizer_checks/emg2pose.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/tokenizer_checks/metrics.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/tokenizer_checks/metrics.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/tokenizer_checks/neurorvq.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/tokenizer_checks/neurorvq.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/tokenizer_checks/pipeline.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/tokenizer_checks/pipeline.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/tokenizer_checks/run_io.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/tokenizer_checks/run_io.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/tokenizer_checks/sessions.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/tokenizer_checks/sessions.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/training/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/training/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/training/jepa.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/training/jepa.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/training/masking.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/training/masking.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/training/pairing.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/training/pairing.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/training/run.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/training/run.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_source_src/wearusfm/training/spectral_calibration.py",
+      "passed": true
+    },
+    {
+      "name": "remote_source_src/wearusfm/training/spectral_calibration.py",
+      "passed": true
+    },
+    {
+      "name": "scientific_count",
+      "passed": true
+    },
+    {
+      "name": "helper_remote",
+      "passed": true
+    },
+    {
+      "name": "wrapper_remote",
+      "passed": true
+    },
+    {
+      "name": "checkout_current_clean",
+      "passed": true
+    },
+    {
+      "name": "commands_success",
+      "passed": true
+    },
+    {
+      "name": "raw_input_guard",
+      "passed": true
+    },
+    {
+      "name": "one_producer_command",
+      "passed": true
+    },
+    {
+      "name": "runtime_same_as_p2",
+      "passed": true
+    },
+    {
+      "name": "model_recipe",
+      "passed": true
+    },
+    {
+      "name": "collected_p1/receipt.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_p1/receipt.json",
+      "passed": true
+    },
+    {
+      "name": "collected_p1/ninapro_db2.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_p1/ninapro_db2.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collected_p1/ninapro_db3.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_p1/ninapro_db3.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collected_p1/ninapro_db6.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_p1/ninapro_db6.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collected_pose/receipt.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_pose/receipt.json",
+      "passed": true
+    },
+    {
+      "name": "collected_pose/train_subset.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_pose/train_subset.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collected_pose/val.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_pose/val.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collected_p2/receipt.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_p2/receipt.json",
+      "passed": true
+    },
+    {
+      "name": "collected_p2/epn612.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_p2/epn612.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collected_p2/uci_emg.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_p2/uci_emg.npz.provenance.json",
+      "passed": true
+    },
+    {
+      "name": "collected_p1/output_identity_events.jsonl",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_p1/output_identity_events.jsonl",
+      "passed": true
+    },
+    {
+      "name": "collected_p1/p1.log",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_p1/p1.log",
+      "passed": true
+    },
+    {
+      "name": "collected_p1/slurm.log",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_p1/slurm.log",
+      "passed": true
+    },
+    {
+      "name": "collected_checkout/slurm.log",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_checkout/slurm.log",
+      "passed": true
+    },
+    {
+      "name": "collected_release/recovery_manifest.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_release/recovery_manifest.json",
+      "passed": true
+    },
+    {
+      "name": "collected_release/extraction_plan.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_release/extraction_plan.json",
+      "passed": true
+    },
+    {
+      "name": "collected_release/training_source_contract.json",
+      "passed": true
+    },
+    {
+      "name": "collection_stability_release/training_source_contract.json",
+      "passed": true
+    },
+    {
+      "name": "event_file_pin",
+      "passed": true
+    },
+    {
+      "name": "datasets_exact",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_audit_sidecar",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_sidecar_pins",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_sidecar_shared",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_cache_schema",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_audit_completed",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_bounded_reads",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_0_identity",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_0_digest",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_0_integer_states",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_0_regular_file",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_0_hard_stable",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_0_duration",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_0_changed_fields",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_1_identity",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_1_digest",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_1_integer_states",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_1_regular_file",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_1_hard_stable",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_1_duration",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_1_changed_fields",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_observation_1_chronological",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_all_digests_identical",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_object_preserved",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_timestamp_flag_matches_evidence",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_last_timestamp_stable",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_no_settling_needed",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_current_metadata_matches",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_audit_sidecar",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_sidecar_pins",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_sidecar_shared",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_cache_schema",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_audit_completed",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_bounded_reads",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_0_identity",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_0_digest",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_0_integer_states",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_0_regular_file",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_0_hard_stable",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_0_duration",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_0_changed_fields",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_1_identity",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_1_digest",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_1_integer_states",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_1_regular_file",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_1_hard_stable",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_1_duration",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_1_changed_fields",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_observation_1_chronological",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_all_digests_identical",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_object_preserved",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_timestamp_flag_matches_evidence",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_last_timestamp_stable",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_no_settling_needed",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_current_metadata_matches",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_audit_sidecar",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_sidecar_pins",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_sidecar_shared",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_cache_schema",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_audit_completed",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_bounded_reads",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_0_identity",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_0_digest",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_0_integer_states",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_0_regular_file",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_0_hard_stable",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_0_duration",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_0_changed_fields",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_1_identity",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_1_digest",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_1_integer_states",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_1_regular_file",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_1_hard_stable",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_1_duration",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_1_changed_fields",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_observation_1_chronological",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_all_digests_identical",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_object_preserved",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_timestamp_flag_matches_evidence",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_last_timestamp_stable",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_no_settling_needed",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_current_metadata_matches",
+      "passed": true
+    },
+    {
+      "name": "event_count_exact",
+      "passed": true
+    },
+    {
+      "name": "event_start_0",
+      "passed": true
+    },
+    {
+      "name": "event_end_0",
+      "passed": true
+    },
+    {
+      "name": "event_start_1",
+      "passed": true
+    },
+    {
+      "name": "event_end_1",
+      "passed": true
+    },
+    {
+      "name": "event_start_2",
+      "passed": true
+    },
+    {
+      "name": "event_end_2",
+      "passed": true
+    },
+    {
+      "name": "event_start_3",
+      "passed": true
+    },
+    {
+      "name": "event_end_3",
+      "passed": true
+    },
+    {
+      "name": "event_start_4",
+      "passed": true
+    },
+    {
+      "name": "event_end_4",
+      "passed": true
+    },
+    {
+      "name": "event_start_5",
+      "passed": true
+    },
+    {
+      "name": "event_end_5",
+      "passed": true
+    },
+    {
+      "name": "six_normal_hashes",
+      "passed": true
+    },
+    {
+      "name": "validator_between_reads_from_frozen_code",
+      "passed": true
+    },
+    {
+      "name": "no_checkpoint_stop",
+      "passed": true
+    },
+    {
+      "name": "checkpoint_metadata_stable",
+      "passed": true
+    },
+    {
+      "name": "sacct_capture",
+      "passed": true
+    },
+    {
+      "name": "job_completed",
+      "passed": true
+    },
+    {
+      "name": "allocation",
+      "passed": true
+    },
+    {
+      "name": "duration",
+      "passed": true
+    },
+    {
+      "name": "checkout_completed",
+      "passed": true
+    },
+    {
+      "name": "extract_log_complete",
+      "passed": true
+    },
+    {
+      "name": "payload_stream_complete",
+      "passed": true
+    },
+    {
+      "name": "payload_three_exact",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_fresh_full_readback_digest",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_fresh_full_readback_raw_events",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_fresh_full_readback_byte_count",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_fresh_full_readback_protected_stats",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db2_fresh_full_readback_regular_file",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_fresh_full_readback_digest",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_fresh_full_readback_raw_events",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_fresh_full_readback_byte_count",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_fresh_full_readback_protected_stats",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db3_fresh_full_readback_regular_file",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_fresh_full_readback_digest",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_fresh_full_readback_raw_events",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_fresh_full_readback_byte_count",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_fresh_full_readback_protected_stats",
+      "passed": true
+    },
+    {
+      "name": "ninapro_db6_fresh_full_readback_regular_file",
+      "passed": true
+    },
+    {
+      "name": "payload_total_bytes",
+      "passed": true
+    }
+  ],
+  "receipt_sha256": "f5bc05c3ce8e45ffe9d07c432286c2dae3ca788cf1566698a550e97676546b88",
+  "events_sha256": "b5b256092eab068b604160162a4b642fcfd9e96897750daf1b7f0956afc691f9",
+  "snapshot_sha256": "f2a595fd93d81bac87df2a4cb6d5b41ca54e41b6a3f09f969a0dc31f982120b9",
+  "sacct_sha256": "ebe63b459c6472a736766d493e7bc435f8fe0b885a7c73be1c838cb64c3b4410",
+  "sources": {
+    "code_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+    "helper_sha256": "717362c25cb99151ab058b4f212cc73611a36899f67251952ca613a71058e656",
+    "scientific_pins": 103
+  },
+  "cache_audits": [
+    {
+      "dataset": "ninapro_db2",
+      "bytes": 1934763898,
+      "sha256": "6fd9b33473cff76848166b6ce089cb8521331c77775cc4b9db25d11efa988d6b",
+      "complete_hash_reads": 2,
+      "extra_reads": 0,
+      "timestamp_transition": false,
+      "validator_complete": true,
+      "windows": 38544,
+      "users": 32,
+      "pool_shape": [
+        38544,
+        1792
+      ],
+      "hash_seconds": [
+        1.7222001203335822,
+        1.7693504625931382
+      ]
+    },
+    {
+      "dataset": "ninapro_db3",
+      "bytes": 493636450,
+      "sha256": "e69bc54dccaec1d1913f28df39f90f266944dc4c304eb9f83a9334bcf4c96db6",
+      "complete_hash_reads": 2,
+      "extra_reads": 0,
+      "timestamp_transition": false,
+      "validator_complete": true,
+      "windows": 9834,
+      "users": 8,
+      "pool_shape": [
+        9834,
+        1792
+      ],
+      "hash_seconds": [
+        0.44638169277459383,
+        0.4595370623283088
+      ]
+    },
+    {
+      "dataset": "ninapro_db6",
+      "bytes": 2191580650,
+      "sha256": "fd8656bc18131fb77ed55db685440c7f0eddbd0452e14b11c0b8e4b8e9622847",
+      "complete_hash_reads": 2,
+      "extra_reads": 0,
+      "timestamp_transition": false,
+      "validator_complete": true,
+      "windows": 33961,
+      "users": 8,
+      "pool_shape": [
+        33961,
+        1792
+      ],
+      "hash_seconds": [
+        1.9372378587722778,
+        2.0141480998136103
+      ]
+    }
+  ],
+  "event_count": 12,
+  "atime_only_changes_in_hash_reads": 6,
+  "total_cache_bytes": 4619980998,
+  "accounting": {
+    "p1_elapsed_seconds": 1772,
+    "p1_gpu_hours": 0.4922222222222222,
+    "p1_core_hours": 3.937777777777778,
+    "checkout_core_hours": 0.01888888888888889,
+    "p1_maxrss_gib": 25.095443725585938
+  },
+  "runtime": {
+    "python": "3.11.6",
+    "numpy": "1.26.4",
+    "torch": "2.2.0a0+git6c8c5ad",
+    "cuda": "12.1",
+    "device": "cuda",
+    "torch_threads": 1,
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "causal_reading": [
+    "Il run è completo e l’integrità richiesta dalla nuova guardia è attestata in receipt, sidecar ed eventi coerenti.",
+    "Nessuna cache ha richiesto la rilettura aggiuntiva o la tolleranza di mtime/ctime: quel ramo della policy non è stato esercitato.",
+    "Questo successo non dimostra che i fallimenti storici fossero causati da Lustre né che la stabilizzazione degli attributi li abbia risolti.",
+    "Atime è variato durante tutte le sei letture, come previsto; la guardia originale già lo escludeva.",
+    "La nuova guardia usa un descriptor e osservazioni diverse dalla vecchia: non si può concludere retrospettivamente che la vecchia avrebbe sicuramente superato questo stesso run."
+  ],
+  "payload_stream_sha256": "0a01dc924e164a72472356141f5ec3af004c2790edd557440f8be548da35ca4a",
+  "payload_full_readback": {
+    "complete": true,
+    "records": 3,
+    "bytes": 4619980998,
+    "hash_computed_on": "Mac",
+    "all_protected_stats_unchanged": true
+  },
+  "reader_readiness": "Tre nuovi payload P1 riletti integralmente via stream, SHA verificati sul Mac e quattro stat protetti stabili rispetto ad audit e snapshot. Provenienze idonee alla composizione con pose/P2; il controller e i cancelli originali di validazione/benchmark dei lettori restano necessari prima dei fit.",
+  "limitations": [
+    "Il parent ha trasferito i payload e calcolato gli hash sul Mac; questo revisore ha ricalcolato i confronti su receipt, report di stream e stat grezzi, senza duplicare il trasferimento.",
+    "Nessun SSH, job, modifica di repository o test di implementazione."
+  ],
+  "reviewed_at_utc": "2026-11-17T07:07:58.433965+00:00"
+}

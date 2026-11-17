@@ -1,0 +1,84 @@
+{
+  "source_sacct_sha256": "ebe63b459c6472a736766d493e7bc435f8fe0b885a7c73be1c838cb64c3b4410",
+  "parents_only": true,
+  "parent_allocations": {
+    "64571999": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 7330,
+      "cpus": 8,
+      "gpus": 1
+    },
+    "64572000": {
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 1882,
+      "cpus": 8,
+      "gpus": 1
+    },
+    "64572001": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 5967,
+      "cpus": 8,
+      "gpus": 1
+    },
+    "64596915": {
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 1793,
+      "cpus": 8,
+      "gpus": 1
+    },
+    "64610004": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 41,
+      "cpus": 2,
+      "gpus": 0
+    },
+    "64610181": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 977,
+      "cpus": 8,
+      "gpus": 1
+    },
+    "64620427": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 34,
+      "cpus": 2,
+      "gpus": 0
+    },
+    "64620434": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 1772,
+      "cpus": 8,
+      "gpus": 1
+    }
+  },
+  "computed": {
+    "p1_r2_gpu_hours": 0.4922222222222222,
+    "p1_r2_attached_core_hours": 3.937777777777778,
+    "p1_cumulative_gpu_hours": 1.5130555555555556,
+    "p1_cumulative_attached_core_hours": 12.104444444444445,
+    "stage_gpu_hours_including_diagnostic": 5.478055555555556,
+    "stage_attached_core_hours_including_diagnostic": 43.824444444444445,
+    "diagnostic_checkout_core_hours": 0.02277777777777778,
+    "recovery_checkout_core_hours": 0.01888888888888889,
+    "two_checkouts_core_hours": 0.041666666666666664,
+    "stage_attached_plus_two_checkouts_core_hours": 43.86611111111111,
+    "cpu_only_prior_spent_plus_future_envelope": 349.917778,
+    "cpu_only_spent_plus_future_envelope_with_actual_checkouts": 349.9594446666667,
+    "cpu_only_approved_cap": 351
+  },
+  "interpretation": [
+    "P1-r2 has completed and consumed 1772 parent-allocation seconds, not its smaller wrapper-only timing.",
+    "All GPU-associated CPU and both CPU-only checkouts remain within their approved separate envelopes.",
+    "The CPU-only value includes the existing future-reader envelope; it is not measured expenditure of all readers.",
+    "The three-attempt P1 scope is exhausted; unused numerical budget does not authorize another attempt.",
+    "No new submissions, reader plans, numerical scores or future launches were reviewed or authorized."
+  ]
+}

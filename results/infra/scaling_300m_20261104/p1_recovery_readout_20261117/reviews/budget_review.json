@@ -1,0 +1,306 @@
+{
+  "verdict": "CONFORME",
+  "at_utc": "2026-11-17T07:02:36.396568+00:00",
+  "snapshot_at": "2026-11-17T06:57:40.168358+00:00",
+  "scope": "Read-only local accounting review of completed P1-r2, prior allocations and CPU-only envelope",
+  "parent_allocations": {
+    "64571999": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 7330,
+      "cpus": 8,
+      "gpus": 1
+    },
+    "64572000": {
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 1882,
+      "cpus": 8,
+      "gpus": 1
+    },
+    "64572001": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 5967,
+      "cpus": 8,
+      "gpus": 1
+    },
+    "64596915": {
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 1793,
+      "cpus": 8,
+      "gpus": 1
+    },
+    "64610004": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 41,
+      "cpus": 2,
+      "gpus": 0
+    },
+    "64610181": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 977,
+      "cpus": 8,
+      "gpus": 1
+    },
+    "64620427": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 34,
+      "cpus": 2,
+      "gpus": 0
+    },
+    "64620434": {
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 1772,
+      "cpus": 8,
+      "gpus": 1
+    }
+  },
+  "ignored_accounting_steps": [
+    "64571999.batch",
+    "64571999.extern",
+    "64572000.batch",
+    "64572000.extern",
+    "64572001.batch",
+    "64572001.extern",
+    "64596915.batch",
+    "64596915.extern",
+    "64610004.batch",
+    "64610004.extern",
+    "64610181.batch",
+    "64610181.extern",
+    "64620427.batch",
+    "64620427.extern",
+    "64620434.batch",
+    "64620434.extern"
+  ],
+  "computed": {
+    "p1_r2_gpu_hours": 0.4922222222222222,
+    "p1_r2_attached_core_hours": 3.937777777777778,
+    "p1_cumulative_gpu_hours": 1.5130555555555556,
+    "p1_cumulative_attached_core_hours": 12.104444444444445,
+    "stage_gpu_hours_including_diagnostic": 5.478055555555556,
+    "stage_attached_core_hours_including_diagnostic": 43.824444444444445,
+    "diagnostic_checkout_core_hours": 0.02277777777777778,
+    "recovery_checkout_core_hours": 0.01888888888888889,
+    "two_checkouts_core_hours": 0.041666666666666664,
+    "stage_attached_plus_two_checkouts_core_hours": 43.86611111111111,
+    "cpu_only_prior_spent_plus_future_envelope": 349.917778,
+    "cpu_only_spent_plus_future_envelope_with_actual_checkouts": 349.9594446666667,
+    "cpu_only_approved_cap": 351
+  },
+  "checks": [
+    {
+      "name": "successful fresh accounting command",
+      "passed": true
+    },
+    {
+      "name": "textual sacct exactly retained",
+      "passed": true
+    },
+    {
+      "name": "one parent record 64571999",
+      "passed": true
+    },
+    {
+      "name": "CPU allocation matches TRES 64571999",
+      "passed": true
+    },
+    {
+      "name": "elapsed agrees with start/end 64571999",
+      "passed": true
+    },
+    {
+      "name": "one parent record 64572000",
+      "passed": true
+    },
+    {
+      "name": "CPU allocation matches TRES 64572000",
+      "passed": true
+    },
+    {
+      "name": "elapsed agrees with start/end 64572000",
+      "passed": true
+    },
+    {
+      "name": "one parent record 64572001",
+      "passed": true
+    },
+    {
+      "name": "CPU allocation matches TRES 64572001",
+      "passed": true
+    },
+    {
+      "name": "elapsed agrees with start/end 64572001",
+      "passed": true
+    },
+    {
+      "name": "one parent record 64596915",
+      "passed": true
+    },
+    {
+      "name": "CPU allocation matches TRES 64596915",
+      "passed": true
+    },
+    {
+      "name": "elapsed agrees with start/end 64596915",
+      "passed": true
+    },
+    {
+      "name": "one parent record 64610004",
+      "passed": true
+    },
+    {
+      "name": "CPU allocation matches TRES 64610004",
+      "passed": true
+    },
+    {
+      "name": "elapsed agrees with start/end 64610004",
+      "passed": true
+    },
+    {
+      "name": "one parent record 64610181",
+      "passed": true
+    },
+    {
+      "name": "CPU allocation matches TRES 64610181",
+      "passed": true
+    },
+    {
+      "name": "elapsed agrees with start/end 64610181",
+      "passed": true
+    },
+    {
+      "name": "one parent record 64620427",
+      "passed": true
+    },
+    {
+      "name": "CPU allocation matches TRES 64620427",
+      "passed": true
+    },
+    {
+      "name": "elapsed agrees with start/end 64620427",
+      "passed": true
+    },
+    {
+      "name": "one parent record 64620434",
+      "passed": true
+    },
+    {
+      "name": "CPU allocation matches TRES 64620434",
+      "passed": true
+    },
+    {
+      "name": "elapsed agrees with start/end 64620434",
+      "passed": true
+    },
+    {
+      "name": "exact eight parent allocations",
+      "passed": true
+    },
+    {
+      "name": "steps excluded rather than double-counted",
+      "passed": true
+    },
+    {
+      "name": "previous baseline reconciles release budget",
+      "passed": true
+    },
+    {
+      "name": "P1 actual inside approved requested duration",
+      "passed": true
+    },
+    {
+      "name": "P1 actual GPU and attached core within maximum",
+      "passed": true
+    },
+    {
+      "name": "one recovery checkout within requested duration",
+      "passed": true
+    },
+    {
+      "name": "one recovery checkout core within maximum",
+      "passed": true
+    },
+    {
+      "name": "stage GPU below release ceiling and approved cap",
+      "passed": true
+    },
+    {
+      "name": "stage attached CPU below release ceiling and approved cap",
+      "passed": true
+    },
+    {
+      "name": "P1 cumulative GPU below ceiling and subcap",
+      "passed": true
+    },
+    {
+      "name": "P1 cumulative attached CPU below ceiling and subcap",
+      "passed": true
+    },
+    {
+      "name": "exactly three total P1 attempts",
+      "passed": true
+    },
+    {
+      "name": "CPU envelope with two actual checkouts within release ceiling",
+      "passed": true
+    },
+    {
+      "name": "CPU future-reader envelope remains within 351",
+      "passed": true
+    },
+    {
+      "name": "diagnostic checkout reconciles previous accounting",
+      "passed": true
+    },
+    {
+      "name": "receipt byte count and SHA match collected evidence",
+      "passed": true
+    },
+    {
+      "name": "receipt belongs to successful recovery allocation",
+      "passed": true
+    },
+    {
+      "name": "receipt timing bounded by billed parent allocation",
+      "passed": true
+    },
+    {
+      "name": "null diagnostic retained without causal assertion",
+      "passed": true
+    },
+    {
+      "name": "failed history preserved",
+      "passed": true
+    },
+    {
+      "name": "receipt code equals collected checkout HEAD",
+      "passed": true
+    },
+    {
+      "name": "old and new checkout clean",
+      "passed": true
+    }
+  ],
+  "passed": 48,
+  "failed": 0,
+  "evidence_sha256": {
+    "results/infra/scaling_300m_20261104/p1_recovery_readout_20261117/evidence/sacct.txt": "ebe63b459c6472a736766d493e7bc435f8fe0b885a7c73be1c838cb64c3b4410",
+    "results/infra/scaling_300m_20261104/p1_recovery_readout_20261117/evidence/snapshot.json": "f2a595fd93d81bac87df2a4cb6d5b41ca54e41b6a3f09f969a0dc31f982120b9",
+    "results/infra/scaling_300m_20261104/p1_recovery_readout_20261117/evidence/p1/receipt.json": "f5bc05c3ce8e45ffe9d07c432286c2dae3ca788cf1566698a550e97676546b88",
+    "results/infra/scaling_300m_20261104/p1_recovery_release_20261116/budget.json": "f4080dcb274a586ae3bd11289386d97b22482cd01b45530a5c4b66577374b8d0"
+  },
+  "interpretation": [
+    "P1-r2 has completed and consumed 1772 parent-allocation seconds, not its smaller wrapper-only timing.",
+    "All GPU-associated CPU and both CPU-only checkouts remain within their approved separate envelopes.",
+    "The CPU-only value includes the existing future-reader envelope; it is not measured expenditure of all readers.",
+    "The three-attempt P1 scope is exhausted; unused numerical budget does not authorize another attempt.",
+    "No new submissions, reader plans, numerical scores or future launches were reviewed or authorized."
+  ]
+}
