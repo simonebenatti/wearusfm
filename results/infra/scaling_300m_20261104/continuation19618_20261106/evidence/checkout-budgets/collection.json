@@ -1,0 +1,37 @@
+{
+  "stage": "checkout-budgets",
+  "remote_time_utc": "2026-11-17T18:30:25Z",
+  "jobs": {
+    "SCALING-19618-budgets-checkout-20261106": {
+      "job_slurm": "64692577",
+      "local": "budgets",
+      "elapsed_seconds": 102,
+      "core_hours": 0.056666666666666664,
+      "gpu_hours": 0.0,
+      "folder": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_budgets19618_20261106_v1",
+      "listing": [
+        ".claude",
+        ".git",
+        ".gitignore",
+        "CLAUDE.md",
+        "bench",
+        "docs",
+        "pyproject.toml",
+        "results",
+        "scripts",
+        "splits",
+        "src",
+        "tests",
+        "third_party"
+      ]
+    }
+  },
+  "files": {
+    "budgets/slurm_log.txt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/campaign_checkout_64692577.out",
+      "sha256": "a2414c0ba3dd4083634c4827e48d1ec20f450a1321689aadd7a94681f3311a0b",
+      "bytes": 4683,
+      "stored": "plain"
+    }
+  }
+}
