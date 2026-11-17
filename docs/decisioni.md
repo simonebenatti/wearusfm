@@ -6485,3 +6485,7 @@ Checkout 64652044 completato 0:0 in 30 secondi. `sbatch` rifiuta l'audit (`job_s
 ### Dipendenza già completata e scaduta nel controller SLURM
 
 Anche il secondo invio dell'audit è stato rifiutato senza job, per `Job dependency problem`: il nuovo checkout 64652383 è COMPLETED 0:0 (11 s), ma `MinJobAge=30 sec` rimuove rapidamente il suo record dal controller; `scontrol` restituisce Invalid job id mentre `sacct` conserva il completamento. Il checkout esiste, SHA e pulizia verificati. Si rimuove solo la dipendenza `afterok` ormai scaduta: il prerequisito è già soddisfatto e il launcher ripete tutte le guardie sul checkout. Nessuna nuova esecuzione del checkout, nessun cambio di codice/criteri/costi; ripresentazione esplicita sullo stesso ID rifiutato. Comando aggiornato pubblicato in `audit_ready_submission_plan_20261117.json`.
+
+### Audit accettato: 64652559
+
+Invio riuscito tramite submitter/ledger comune, codice `f09bf85`, 8 CPU, 30 GiB, 60 minuti, zero GPU. I precedenti invii erano rifiuti espliciti senza job. Ricevuta archiviata e consegna operativa in `docs/contrastive_handoff_20261117.md`. I due checkout hanno consumato 0,045556 core-ore. Nessun risultato dell'audit ancora validato in questa registrazione; calibrazione subordinata a report, pin e copertura validi, senza nuova richiesta di via operativo.

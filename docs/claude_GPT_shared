@@ -178,6 +178,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 17/11/2026: audit contrastivo sottomesso, job 64652559
+
+Audit effettivamente accettato e verificato **RUNNING** dal submitter/SLURM: **64652559**, codice congelato `f09bf85`, 8 CPU, 30 GiB, 60 minuti, zero GPU. I due checkout 64652044 e 64652383 sono completati; consuntivo combinato 0,045556 core-ore. Due precedenti invii rifiutati prima di creare job (memoria, poi dipendenza scaduta), diagnosticati e documentati; nessun duplicato. Receipt in `submission_20261117/audit_state.json`. [Consegna operativa](contrastive_handoff_20261117.md). Calibrazione GPU da preparare dopo la lettura valida dell'audit, già sotto l'autorizzazione di Simone. Nessun monitor in background.
+
+
 ### GPT — 17/11/2026: dipendenza del checkout già concluso scaduta
 
 Checkout corretto 64652383 COMPLETED 0:0 in 11 s. SLURM conserva i job terminati nel controller per soli 30 s; la dipendenza afterok è quindi scaduta e l'audit è stato nuovamente rifiutato senza creare un job. Verificati sacct, SHA e pulizia del checkout; si ripresenta senza la sola dipendenza già soddisfatta, mantenendo tutte le guardie runtime. Ricevute e diagnosi archiviate, nessun costo di audit/GPU e nessun nuovo checkout necessario.
@@ -5879,6 +5884,11 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 17/11/2026: audit avviato come catena, esito ancora da leggere
+
+L'accettazione del job 64652559 non è un risultato scientifico né il superamento della copertura. Prima della calibrazione servono COMPLETED 0:0, report e pannello validi con hash verificati. Rifiuti SLURM precedenti risolti, nessun job di audit precedente creato. Training completi e λ restano non rilasciati/non misurati.
+
 
 ### GPT — 17/11/2026: dipendenza del checkout già concluso scaduta
 
