@@ -1,0 +1,539 @@
+{
+  "protocol": "scaling-gate-19618-20261106-v1",
+  "stage": "checkout-plans",
+  "read_at_utc": "2026-11-17T07:46:53Z",
+  "passed": true,
+  "checks": [
+    [
+      "commit adds only documents and evidence to the reviewed package (3 paths)",
+      true
+    ],
+    [
+      "documents of this checkout are in the commit with the published bytes",
+      true
+    ],
+    [
+      "files pinned inside the checkouts are in their commits (5)",
+      true
+    ],
+    [
+      "deploy reference absent or already at this commit",
+      true
+    ],
+    [
+      "checkout folder absent",
+      true
+    ],
+    [
+      "logical ID never used in the ledger",
+      true
+    ],
+    [
+      "one free place in the serial queue",
+      true
+    ],
+    [
+      "line limit 4 leaves a place for this checkout",
+      true
+    ],
+    [
+      "free space on $WORK at least 5 GiB",
+      true
+    ]
+  ],
+  "facts": {
+    "serial_jobs": 1,
+    "serial_room": 9,
+    "line_jobs": 0,
+    "work_free_gib": 90.5536003112793,
+    "line_limit": 4,
+    "tranche": [
+      "SCALING-19618-plans-checkout-20261106"
+    ],
+    "reviewed_after_checkouts": [],
+    "budget": {
+      "protocol": "scaling-p1-reader-cpu-envelope-20261117-v1",
+      "complete": true,
+      "within_total_cap": true,
+      "within_stage_caps": true,
+      "fixed_prior_reserve": {
+        "exact": "2396389/500000",
+        "core_hours": 4.792778
+      },
+      "baseline_max": {
+        "exact": "524939167/1500000",
+        "core_hours": 349.9594446666667
+      },
+      "remaining_chain": {
+        "exact": "2071/6",
+        "core_hours": 345.1666666666667
+      },
+      "total": {
+        "exact": "524939167/1500000",
+        "core_hours": 349.9594446666667
+      },
+      "cap_core_hours": 351,
+      "margin": {
+        "exact": "1560833/1500000",
+        "core_hours": 1.0405553333333333
+      },
+      "fit_plan_ready": false,
+      "unknown_fit_reserve": {
+        "exact": "246",
+        "core_hours": 246.0
+      },
+      "stages": {
+        "checkout-plans": {
+          "exact": "4/15",
+          "core_hours": 0.26666666666666666
+        },
+        "checkout-budgets": {
+          "exact": "4/15",
+          "core_hours": 0.26666666666666666
+        },
+        "checkout-inputs": {
+          "exact": "4/15",
+          "core_hours": 0.26666666666666666
+        },
+        "pose-validate": {
+          "exact": "11/10",
+          "core_hours": 1.1
+        },
+        "pose-benchmark": {
+          "exact": "26/5",
+          "core_hours": 5.2
+        },
+        "probe-benchmark": {
+          "exact": "230/3",
+          "core_hours": 76.66666666666667
+        },
+        "pose-ridge": {
+          "exact": "42/5",
+          "core_hours": 8.4
+        },
+        "probe-fit": {
+          "exact": "246",
+          "core_hours": 246.0
+        },
+        "probe-aggregate": {
+          "exact": "13/5",
+          "core_hours": 2.6
+        },
+        "compare": {
+          "exact": "22/5",
+          "core_hours": 4.4
+        }
+      },
+      "jobs": {
+        "SCALING-19618-plans-checkout-20261106": {
+          "stage": "checkout-plans",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "4/15",
+            "core_hours": 0.26666666666666666
+          },
+          "reservation": {
+            "exact": "4/15",
+            "core_hours": 0.26666666666666666
+          }
+        },
+        "SCALING-19618-budgets-checkout-20261106": {
+          "stage": "checkout-budgets",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "4/15",
+            "core_hours": 0.26666666666666666
+          },
+          "reservation": {
+            "exact": "4/15",
+            "core_hours": 0.26666666666666666
+          }
+        },
+        "SCALING-19618-inputs-checkout-20261106": {
+          "stage": "checkout-inputs",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "4/15",
+            "core_hours": 0.26666666666666666
+          },
+          "reservation": {
+            "exact": "4/15",
+            "core_hours": 0.26666666666666666
+          }
+        },
+        "SCALING-19618-pose-validate-20261106": {
+          "stage": "pose-validate",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "11/10",
+            "core_hours": 1.1
+          },
+          "reservation": {
+            "exact": "11/10",
+            "core_hours": 1.1
+          }
+        },
+        "SCALING-19618-pose-bench-30m-natural-20261106": {
+          "stage": "pose-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          },
+          "reservation": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          }
+        },
+        "SCALING-19618-pose-bench-300m-natural-20261106": {
+          "stage": "pose-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          },
+          "reservation": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          }
+        },
+        "SCALING-19618-pose-bench-300m-matched-20261106": {
+          "stage": "pose-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          },
+          "reservation": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          }
+        },
+        "SCALING-19618-probe-bench-30m-natural-ninapro-db2-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "32/5",
+            "core_hours": 6.4
+          },
+          "reservation": {
+            "exact": "32/5",
+            "core_hours": 6.4
+          }
+        },
+        "SCALING-19618-probe-bench-30m-natural-ninapro-db3-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "46/15",
+            "core_hours": 3.066666666666667
+          },
+          "reservation": {
+            "exact": "46/15",
+            "core_hours": 3.066666666666667
+          }
+        },
+        "SCALING-19618-probe-bench-30m-natural-ninapro-db6-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "46/15",
+            "core_hours": 3.066666666666667
+          },
+          "reservation": {
+            "exact": "46/15",
+            "core_hours": 3.066666666666667
+          }
+        },
+        "SCALING-19618-probe-bench-30m-natural-epn612-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "22/5",
+            "core_hours": 4.4
+          },
+          "reservation": {
+            "exact": "22/5",
+            "core_hours": 4.4
+          }
+        },
+        "SCALING-19618-probe-bench-30m-natural-uci-emg-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          },
+          "reservation": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          }
+        },
+        "SCALING-19618-probe-bench-300m-natural-ninapro-db2-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "42/5",
+            "core_hours": 8.4
+          },
+          "reservation": {
+            "exact": "42/5",
+            "core_hours": 8.4
+          }
+        },
+        "SCALING-19618-probe-bench-300m-natural-ninapro-db3-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "22/5",
+            "core_hours": 4.4
+          },
+          "reservation": {
+            "exact": "22/5",
+            "core_hours": 4.4
+          }
+        },
+        "SCALING-19618-probe-bench-300m-natural-ninapro-db6-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "42/5",
+            "core_hours": 8.4
+          },
+          "reservation": {
+            "exact": "42/5",
+            "core_hours": 8.4
+          }
+        },
+        "SCALING-19618-probe-bench-300m-natural-epn612-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "82/5",
+            "core_hours": 16.4
+          },
+          "reservation": {
+            "exact": "82/5",
+            "core_hours": 16.4
+          }
+        },
+        "SCALING-19618-probe-bench-300m-natural-uci-emg-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          },
+          "reservation": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          }
+        },
+        "SCALING-19618-probe-bench-300m-matched-ninapro-db2-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "32/5",
+            "core_hours": 6.4
+          },
+          "reservation": {
+            "exact": "32/5",
+            "core_hours": 6.4
+          }
+        },
+        "SCALING-19618-probe-bench-300m-matched-ninapro-db3-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "46/15",
+            "core_hours": 3.066666666666667
+          },
+          "reservation": {
+            "exact": "46/15",
+            "core_hours": 3.066666666666667
+          }
+        },
+        "SCALING-19618-probe-bench-300m-matched-ninapro-db6-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "46/15",
+            "core_hours": 3.066666666666667
+          },
+          "reservation": {
+            "exact": "46/15",
+            "core_hours": 3.066666666666667
+          }
+        },
+        "SCALING-19618-probe-bench-300m-matched-epn612-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "22/5",
+            "core_hours": 4.4
+          },
+          "reservation": {
+            "exact": "22/5",
+            "core_hours": 4.4
+          }
+        },
+        "SCALING-19618-probe-bench-300m-matched-uci-emg-20261106": {
+          "stage": "probe-benchmark",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          },
+          "reservation": {
+            "exact": "26/15",
+            "core_hours": 1.7333333333333334
+          }
+        },
+        "SCALING-19618-pose-ridge-20261106": {
+          "stage": "pose-ridge",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "42/5",
+            "core_hours": 8.4
+          },
+          "reservation": {
+            "exact": "42/5",
+            "core_hours": 8.4
+          }
+        },
+        "SCALING-19618-probe-aggregate-01-20261106": {
+          "stage": "probe-aggregate",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          },
+          "reservation": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          }
+        },
+        "SCALING-19618-probe-aggregate-02-20261106": {
+          "stage": "probe-aggregate",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          },
+          "reservation": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          }
+        },
+        "SCALING-19618-probe-aggregate-03-20261106": {
+          "stage": "probe-aggregate",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          },
+          "reservation": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          }
+        },
+        "SCALING-19618-probe-aggregate-04-20261106": {
+          "stage": "probe-aggregate",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          },
+          "reservation": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          }
+        },
+        "SCALING-19618-probe-aggregate-05-20261106": {
+          "stage": "probe-aggregate",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          },
+          "reservation": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          }
+        },
+        "SCALING-19618-probe-aggregate-06-20261106": {
+          "stage": "probe-aggregate",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          },
+          "reservation": {
+            "exact": "13/30",
+            "core_hours": 0.43333333333333335
+          }
+        },
+        "SCALING-19618-compare-20261106": {
+          "stage": "compare",
+          "status": "reserved",
+          "submitted": false,
+          "charged": {
+            "exact": "22/5",
+            "core_hours": 4.4
+          },
+          "reservation": {
+            "exact": "22/5",
+            "core_hours": 4.4
+          }
+        }
+      },
+      "actual_jobs": 0,
+      "reserved_jobs": 30,
+      "no_new_scope_authorized": true
+    }
+  },
+  "commit": "60389a7157b0e7e7c2cd58c6fd9e0e387c5dd6dc",
+  "reviewed": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+  "deploy_reference": null,
+  "p1_reader_recovery": {
+    "protocol": "scaling-p1-reader-bridge-20261117-v1",
+    "accepted_p1_job": "64620434",
+    "acceptance_sha256": "0b1f538757dc8f39e31425dfc20d6b7ac039820c2bc34c5c65e1351fce46c9ce",
+    "reader_code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+    "p1_producer_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+    "mac_sources": {
+      "scripts/scaling_plans19618.py": "2d71c0b0e606b7f9f8fc79a201c1b59b985491b8078f127ce10e6053fabeabcd",
+      "scripts/scaling_p1_reader_bridge.py": "44256c9d04f03435cfe1a6a43415e74e4796a055faaede4d9ff6392c4b01a242",
+      "scripts/scaling_p1_reader_budget.py": "5842c5c1b397831aed5a5e233ef47cdb76355f8cb0ed53dc0c46239821f05f37"
+    }
+  }
+}
