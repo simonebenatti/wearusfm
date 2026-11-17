@@ -1,0 +1,76 @@
+{
+  "protocol": "scaling-p1-mixed-extractions-20261116-v1",
+  "checkpoint": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+    "sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+    "bytes": 4673783740,
+    "config_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v3/config.json",
+    "config_sha256": "12259a2fce64227727e73a4a5d59c9c89976f34c3b3f1854395b74f4dfcf5f8e",
+    "receipt_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v3/receipt.json",
+    "receipt_sha256": "beabf80a770089521dc2d676df15f3043ad412957f16f209db4a465ea57615a6",
+    "summary_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/continuation19618_v3/summary.json",
+    "summary_sha256": "254c382b244fe42f1767fa3e92c6f9d48d9abc501498338a0eae256eb41360c3"
+  },
+  "tasks": {
+    "pose": {
+      "job_id": "64571999",
+      "code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+      "plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+      "receipt": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/pose/receipt.json",
+        "sha256": "332d1327d08d0f47af02701048c8b6b0dc06b0f8efed89a3043edccca63b9781",
+        "bytes": 3774840
+      }
+    },
+    "p1": {
+      "job_id": "64620434",
+      "code_sha": "e4ebdbfa709c3f83cb5b1b11bdd261d132ccae3a",
+      "plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+      "receipt": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p1-r2/receipt.json",
+        "sha256": "f5bc05c3ce8e45ffe9d07c432286c2dae3ca788cf1566698a550e97676546b88",
+        "bytes": 180860
+      }
+    },
+    "p2": {
+      "job_id": "64572001",
+      "code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+      "plan_sha256": "3cb94b050fa351c01e86184954f542b01b6c939169efc663d869d134e93b4556",
+      "receipt": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/T100-G-300M/p2/receipt.json",
+        "sha256": "5d20e219dc6bf81cd01a049c1b2fe102e2c20b890a40d4cf4f13385b4674b5d0",
+        "bytes": 249297
+      }
+    }
+  },
+  "recovery_manifest_sha256": "1a2104c59e55f5f3c46e03a984bdcda163ef26634c69cc1431ce3319bf878ee3",
+  "recovery_source_sha256": {
+    "scripts/scaling_output_identity.py": "717362c25cb99151ab058b4f212cc73611a36899f67251952ca613a71058e656",
+    "scripts/scaling_p1_recovery.py": "85e161f95d1260afc37834e002a8ff89cb54594e25f61d09b6b6237c9cad5b2e",
+    "scripts/scaling_p1_recovery_plans.py": "83bd62a11c007ef82c48b39b45f1e888e7f387fab4c9b2bd72411287e133fb00",
+    "tests/cpu/test_scaling_output_identity.py": "34039caa71f8e90b3cecaf29dceb5c3883100fa7fc44408fe993a50dd330227f",
+    "tests/cpu/test_scaling_p1_recovery.py": "0897b3de556b03d33c5c89b45d52023431819c9e44d2b7857f483ff7baeaeaeb",
+    "tests/cpu/test_scaling_p1_recovery_plans.py": "3a23ac4ad03e3f787b683fa7dfda93169331b2b2aead4dc577b3edfafe9c7593"
+  },
+  "release_criterion": "scaling-p1-single-recovery-after-clean-diagnostic-v2",
+  "diagnostic_outcome": "NOT_REPRODUCED",
+  "diagnostic_report": {
+    "bytes": 267340,
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_p1_recovery_20261116_v1/results/infra/scaling_300m_20261104/p1_recovery_20261116/evidence/run_final/report.json",
+    "sha256": "c2e32e9cfab36a76c79b05913e350b9ec7f15484f73e2a271552c06f6e980908"
+  },
+  "training_source_contract_sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+  "scientific_source_contract_unchanged": true,
+  "historical_failed_attempts": [
+    {
+      "job_id": "64572000",
+      "state": "FAILED",
+      "exit_code": "1:0"
+    },
+    {
+      "job_id": "64596915",
+      "state": "FAILED",
+      "exit_code": "1:0"
+    }
+  ]
+}
