@@ -1,0 +1,257 @@
+{
+  "protocol": "scaling-probe-resources-19618-20261106-v1",
+  "complete": true,
+  "code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+  "plan_content_sha256": "3f6025bb4780612dd64e6d3d0f479f307c6ad62c2cda85312c116d5d4affb9da",
+  "plan_sha256": "4bbfd06515c2a935b09d8befc3686ce1173b84bc7230a6540844827d7a76acf6",
+  "caps": {
+    "cpus": 8,
+    "memory_gib": 30,
+    "walltime_seconds": 10800,
+    "maximum_shards": 15,
+    "maximum_allocated_core_hours": 240
+  },
+  "benchmarks": {
+    "T100-G-30M-natural": {
+      "ninapro_db2": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-30M-natural-ninapro_db2/ninapro_db2/benchmark.json",
+        "sha256": "732351f09a39ecd14c4a12aba2cd5725846e972664b3cd4009a04a6ea9a51949",
+        "bytes": 18292
+      },
+      "ninapro_db3": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-30M-natural-ninapro_db3/ninapro_db3/benchmark.json",
+        "sha256": "17585b6a1454451a4821dac218533d642d3446c60a8448597ac83bc302e5c663",
+        "bytes": 18258
+      },
+      "ninapro_db6": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-30M-natural-ninapro_db6/ninapro_db6/benchmark.json",
+        "sha256": "1cc507d98100dd28212974b6f2b2ac19934fe24c0226de474d5913d7abe4c96e",
+        "bytes": 12057
+      },
+      "epn612": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-30M-natural-epn612/epn612/benchmark.json",
+        "sha256": "30e164e7c09b09bd9fe7714251b94ea3ab18a0b5c67ddac63e66b24e30845e9d",
+        "bytes": 12111
+      },
+      "uci_emg": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-30M-natural-uci_emg/uci_emg/benchmark.json",
+        "sha256": "90eb6638ad30fc24686957fb97eca7679240ddb2099bcfcaac3be7e5b743917e",
+        "bytes": 11782
+      }
+    },
+    "T100-G-300M-natural": {
+      "ninapro_db2": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-300M-natural-ninapro_db2/ninapro_db2/benchmark.json",
+        "sha256": "e81cf10bc63f1c87d1dbb709d2a3339492d414ab05ffab54b76a89500d9a872e",
+        "bytes": 18317
+      },
+      "ninapro_db3": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-300M-natural-ninapro_db3/ninapro_db3/benchmark.json",
+        "sha256": "4ad75ef003cfaef4b43fc7e261e57cec0c9ba2f54f29865c5f940b9b1206cefd",
+        "bytes": 18280
+      },
+      "ninapro_db6": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-300M-natural-ninapro_db6/ninapro_db6/benchmark.json",
+        "sha256": "2d4b50e7dbe9256d2a3cb0d7736eb8c391e1e5053c2474e58a3999233b79fc59",
+        "bytes": 12081
+      },
+      "epn612": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-300M-natural-epn612/epn612/benchmark.json",
+        "sha256": "d81aa764dce1cb407ccbcbfa80d8f3f01f8b9707911b7c1896ba6b03c2ecc1c0",
+        "bytes": 12132
+      },
+      "uci_emg": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-300M-natural-uci_emg/uci_emg/benchmark.json",
+        "sha256": "1c01b5b209aac878a72b4109b13712d548f49f37f60e3e43b241b1850c0cbcd0",
+        "bytes": 11801
+      }
+    },
+    "T100-G-300M-matched": {
+      "ninapro_db2": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-300M-matched-ninapro_db2/ninapro_db2/benchmark.json",
+        "sha256": "2ec7e8c4a5723a885807016e148ad47cf23f423d64875521f32e3589a70197a8",
+        "bytes": 18309
+      },
+      "ninapro_db3": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-300M-matched-ninapro_db3/ninapro_db3/benchmark.json",
+        "sha256": "0c4fa7e45e5ad3d92c6dc479aa26fceacd78fdea5704350c8d82732448ba84fe",
+        "bytes": 18270
+      },
+      "ninapro_db6": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-300M-matched-ninapro_db6/ninapro_db6/benchmark.json",
+        "sha256": "cb2e45ba053603f386ab5fdb19f44dce3fc1015105a8d09cdf1eae7cf8d6cf47",
+        "bytes": 12074
+      },
+      "epn612": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-300M-matched-epn612/epn612/benchmark.json",
+        "sha256": "be7cef93644bf6382e655e0056f469fcb6ba4f98cea4548a14c11b9e38d589c4",
+        "bytes": 12126
+      },
+      "uci_emg": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_benchmark/T100-G-300M-matched-uci_emg/uci_emg/benchmark.json",
+        "sha256": "a991f5e22a6a78e0e757010294e836869d4038e3abd250105edcad6cfbbf7440",
+        "bytes": 11793
+      }
+    }
+  },
+  "numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+  "shards": [
+    {
+      "datasets": [
+        "ninapro_db2",
+        "ninapro_db3",
+        "ninapro_db6"
+      ],
+      "folds": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "estimated_seconds_with_margin": 10365.581810184796,
+      "walltime_seconds": 10380,
+      "observed_peak_rss_bytes": 1523671040,
+      "cell": "T100-G-30M-natural",
+      "task": "p1",
+      "cpus": 8,
+      "memory_gib": 30,
+      "shard_name": "T100-G-30M-natural-p1-01"
+    },
+    {
+      "datasets": [
+        "epn612",
+        "uci_emg"
+      ],
+      "folds": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "estimated_seconds_with_margin": 3151.9702153075773,
+      "walltime_seconds": 3180,
+      "observed_peak_rss_bytes": 1823387648,
+      "cell": "T100-G-30M-natural",
+      "task": "p2",
+      "cpus": 8,
+      "memory_gib": 30,
+      "shard_name": "T100-G-30M-natural-p2-01"
+    },
+    {
+      "datasets": [
+        "ninapro_db2",
+        "ninapro_db3"
+      ],
+      "folds": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "estimated_seconds_with_margin": 10724.997643116065,
+      "walltime_seconds": 10740,
+      "observed_peak_rss_bytes": 3017842688,
+      "cell": "T100-G-300M-natural",
+      "task": "p1",
+      "cpus": 8,
+      "memory_gib": 30,
+      "shard_name": "T100-G-300M-natural-p1-01"
+    },
+    {
+      "datasets": [
+        "ninapro_db6"
+      ],
+      "folds": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "estimated_seconds_with_margin": 10517.86463395502,
+      "walltime_seconds": 10560,
+      "observed_peak_rss_bytes": 2655559680,
+      "cell": "T100-G-300M-natural",
+      "task": "p1",
+      "cpus": 8,
+      "memory_gib": 30,
+      "shard_name": "T100-G-300M-natural-p1-02"
+    },
+    {
+      "datasets": [
+        "epn612",
+        "uci_emg"
+      ],
+      "folds": [
+        0,
+        1
+      ],
+      "estimated_seconds_with_margin": 7680.095374169759,
+      "walltime_seconds": 7740,
+      "observed_peak_rss_bytes": 3773214720,
+      "cell": "T100-G-300M-natural",
+      "task": "p2",
+      "cpus": 8,
+      "memory_gib": 30,
+      "shard_name": "T100-G-300M-natural-p2-01"
+    },
+    {
+      "datasets": [
+        "epn612",
+        "uci_emg"
+      ],
+      "folds": [
+        2,
+        3
+      ],
+      "estimated_seconds_with_margin": 7716.2471357480645,
+      "walltime_seconds": 7740,
+      "observed_peak_rss_bytes": 3773214720,
+      "cell": "T100-G-300M-natural",
+      "task": "p2",
+      "cpus": 8,
+      "memory_gib": 30,
+      "shard_name": "T100-G-300M-natural-p2-02"
+    },
+    {
+      "datasets": [
+        "ninapro_db2",
+        "ninapro_db3",
+        "ninapro_db6"
+      ],
+      "folds": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "estimated_seconds_with_margin": 9941.724351817342,
+      "walltime_seconds": 9960,
+      "observed_peak_rss_bytes": 1589497856,
+      "cell": "T100-G-300M-matched",
+      "task": "p1",
+      "cpus": 8,
+      "memory_gib": 30,
+      "shard_name": "T100-G-300M-matched-p1-01"
+    },
+    {
+      "datasets": [
+        "epn612",
+        "uci_emg"
+      ],
+      "folds": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "estimated_seconds_with_margin": 2877.130219612594,
+      "walltime_seconds": 2880,
+      "observed_peak_rss_bytes": 1894117376,
+      "cell": "T100-G-300M-matched",
+      "task": "p2",
+      "cpus": 8,
+      "memory_gib": 30,
+      "shard_name": "T100-G-300M-matched-p2-01"
+    }
+  ]
+}

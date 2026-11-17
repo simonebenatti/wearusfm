@@ -1,0 +1,65 @@
+{
+  "protocol": "scaling-probe-packing-audit-19618-20261106-v1",
+  "complete": true,
+  "method": "Exact-cover dynamic programming separately per cell/task; minimum shards, then minimum sum of rounded seconds, then lexicographic rectangle indices",
+  "formula": "120 + 1.5 * sum_dataset((sum(C_times) + max(C_times)) * sum_fold(max(1,n_train_fold/n_train_fold0)))",
+  "allocation_rounding_seconds": 60,
+  "benchmarks_complete": 15,
+  "covered_cells_dataset_folds": 60,
+  "groups": [
+    {
+      "cell": "T100-G-30M-natural",
+      "task": "p1",
+      "candidate_rectangles": 105,
+      "dynamic_program_states": 381,
+      "minimum_shards": 1,
+      "rounded_seconds": 10380
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "task": "p2",
+      "candidate_rectangles": 45,
+      "dynamic_program_states": 43,
+      "minimum_shards": 1,
+      "rounded_seconds": 3180
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "task": "p1",
+      "candidate_rectangles": 94,
+      "dynamic_program_states": 379,
+      "minimum_shards": 2,
+      "rounded_seconds": 21300
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "task": "p2",
+      "candidate_rectangles": 35,
+      "dynamic_program_states": 41,
+      "minimum_shards": 2,
+      "rounded_seconds": 15480
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "task": "p1",
+      "candidate_rectangles": 105,
+      "dynamic_program_states": 381,
+      "minimum_shards": 1,
+      "rounded_seconds": 9960
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "task": "p2",
+      "candidate_rectangles": 45,
+      "dynamic_program_states": 43,
+      "minimum_shards": 1,
+      "rounded_seconds": 2880
+    }
+  ],
+  "minimum_shards": 8,
+  "total_requested_seconds": 63180,
+  "requested_core_hours": 140.4,
+  "core_hours_with_scheduler_allowance": 143.6,
+  "remaining_to_cap_requested_core_hours": 99.6,
+  "no_scientific_scores_computed": true
+}

@@ -1,0 +1,58 @@
+{
+  "protocol": "scaling-pose-resources-19618-20261106-v1",
+  "complete": true,
+  "code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+  "plan_sha256": "70483ba8c3e091a5f620f8d7621f3551e81c5b204647522b70cd93546fc73197",
+  "allocation": {
+    "cpus": 8,
+    "memory_gib": 30,
+    "walltime_seconds": 3600
+  },
+  "validation_report": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/pose_validate/report.json",
+    "sha256": "4af9ce3952823a3691fff3ba0e994b51bcca883d7404c277e178d94c3755e468",
+    "bytes": 18687
+  },
+  "validation_accounting": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_budgets19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/pose-validate/accounting.json",
+    "sha256": "4f6e85ef8a14e6ea5e9ee96dcdf1a3bff9ac25785a3d740e657da0379630cbea",
+    "bytes": 657
+  },
+  "benchmarks": {
+    "T100-G-30M-natural": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/pose_benchmark/T100-G-30M-natural/report.json",
+      "sha256": "44ef2655b1b3d9acabe55482a385e394bcd28cfb55dd9e1a96c43b1537ddddab",
+      "bytes": 12715
+    },
+    "T100-G-300M-natural": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/pose_benchmark/T100-G-300M-natural/report.json",
+      "sha256": "4f72b6e057e1ebb9376068c94e401ea4163bee48b1a8915eff1c60e6698bf669",
+      "bytes": 12753
+    },
+    "T100-G-300M-matched": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/pose_benchmark/T100-G-300M-matched/report.json",
+      "sha256": "de12e70211a7e5e0629f4e78133ae2de48284c3f9fdb0be57265b1c01dc04eeb",
+      "bytes": 12753
+    }
+  },
+  "benchmark_accounting": {
+    "T100-G-30M-natural": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_budgets19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/pose-benchmark/T100-G-30M-natural/accounting.json",
+      "sha256": "f24ec21da496184d8d715592a25c2405056c476859f95706af19eb34924e245f",
+      "bytes": 656
+    },
+    "T100-G-300M-natural": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_budgets19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/pose-benchmark/T100-G-300M-natural/accounting.json",
+      "sha256": "f4afb5f588ddb37c452653f22b3efc92f8ee4f19dec563a6c8fa959d37112d7d",
+      "bytes": 671
+    },
+    "T100-G-300M-matched": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_budgets19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/pose-benchmark/T100-G-300M-matched/accounting.json",
+      "sha256": "36e228682e33e0d9f73a52e31d0530c4f56576741676ba9adf10dcf768897f28",
+      "bytes": 672
+    }
+  },
+  "derived_seconds": 600,
+  "full_live_runtime_gate_pending": true,
+  "release_note": "Measured budget only. The dispatcher repeats every check with the live runtime; no job is submitted by this JSON."
+}
