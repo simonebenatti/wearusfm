@@ -1,0 +1,32 @@
+dynamic_threshold nella ricevuta: 0.2574231028556824
+n utenti: 15
+49046/post_ridge: E_dyn=np.float64(0.7859020004638595) IC95=[0.764135611744122, 0.8062532050171899]  n_windows=8327 n_valid=20119920
+   centered_mse_ratio nella ricevuta: 0.7859020004638595
+49046/trained_head: E_dyn=np.float64(0.7786289843513977) IC95=[0.7573438876212192, 0.7987804832677875]  n_windows=8327 n_valid=20119920
+   centered_mse_ratio nella ricevuta: 0.7786289843513977
+49046/pre_ridge: E_dyn=np.float64(1.0321280032044744) IC95=[1.0218054778097683, 1.042956430853014]  n_windows=8327 n_valid=20119920
+   centered_mse_ratio nella ricevuta: 1.0321280032044746
+dose 49046-19618 post_ridge: rel=6.321188% IC95=[5.871574, 6.830977] sd_boot=0.2441
+dose 49046-19618 trained_head: rel=6.521954% IC95=[5.924359, 7.147961] sd_boot=0.3181
+49046 testa allenata vs ridge post: rel=0.925436% IC95=[0.5489, 1.2067] IC99=[0.4328, 1.2543] sd_boot=0.1688
+draws sha256 (int64 bytes): 3c594096466055c6
+
+Per utente, finestre dinamiche, 49046: n_windows, peso del denominatore, E_dyn ridge, E_dyn testa, miglioramento relativo testa vs ridge (%), dose ridge 49-19 (%)
+  1f6de69ab3 nwin= 677 peso=0.0984 E_ridge=0.8410 E_testa=0.8359 rel_testa_vs_ridge=+0.613 rel_dose_ridge=+5.648
+  2251681168 nwin= 685 peso=0.0811 E_ridge=0.7545 E_testa=0.7466 rel_testa_vs_ridge=+1.043 rel_dose_ridge=+6.821
+  29ddab35d7 nwin= 528 peso=0.0731 E_ridge=0.7615 E_testa=0.7695 rel_testa_vs_ridge=-1.052 rel_dose_ridge=+4.983
+  2af4aec870 nwin= 625 peso=0.0553 E_ridge=0.8282 E_testa=0.8213 rel_testa_vs_ridge=+0.833 rel_dose_ridge=+6.196
+  2d0838950a nwin= 741 peso=0.0986 E_ridge=0.7591 E_testa=0.7486 rel_testa_vs_ridge=+1.382 rel_dose_ridge=+6.622
+  3875521008 nwin= 661 peso=0.0784 E_ridge=0.8056 E_testa=0.7932 rel_testa_vs_ridge=+1.547 rel_dose_ridge=+5.973
+  7016fd5330 nwin= 660 peso=0.0760 E_ridge=0.7277 E_testa=0.7205 rel_testa_vs_ridge=+0.995 rel_dose_ridge=+7.508
+  737fb9d2eb nwin= 492 peso=0.0577 E_ridge=0.7274 E_testa=0.7202 rel_testa_vs_ridge=+0.984 rel_dose_ridge=+6.747
+  9b8c99cdc2 nwin= 514 peso=0.0621 E_ridge=0.7839 E_testa=0.7730 rel_testa_vs_ridge=+1.387 rel_dose_ridge=+7.990
+  a993d16f6e nwin= 392 peso=0.0413 E_ridge=0.7880 E_testa=0.7783 rel_testa_vs_ridge=+1.229 rel_dose_ridge=+6.495
+  ab228f34a5 nwin=   7 peso=0.0003 E_ridge=0.9319 E_testa=0.9298 rel_testa_vs_ridge=+0.220 rel_dose_ridge=+3.372
+  d387095792 nwin= 385 peso=0.0361 E_ridge=0.8194 E_testa=0.8177 rel_testa_vs_ridge=+0.217 rel_dose_ridge=+4.780
+  e51f6d97cf nwin= 680 peso=0.0851 E_ridge=0.7610 E_testa=0.7539 rel_testa_vs_ridge=+0.930 rel_dose_ridge=+7.601
+  e86f1eaf2f nwin= 637 peso=0.0781 E_ridge=0.8027 E_testa=0.7928 rel_testa_vs_ridge=+1.230 rel_dose_ridge=+5.603
+  f3a4630adf nwin= 643 peso=0.0784 E_ridge=0.8504 E_testa=0.8396 rel_testa_vs_ridge=+1.264 rel_dose_ridge=+5.359
+rel testa vs ridge per utente: media semplice 0.855 sd 0.659 min -1.052 max 1.547
+  senza l'utente con 7 finestre: media 0.900 sd 0.659
+rel dose ridge per utente: media 6.113 sd 1.214 min 3.372 max 7.990

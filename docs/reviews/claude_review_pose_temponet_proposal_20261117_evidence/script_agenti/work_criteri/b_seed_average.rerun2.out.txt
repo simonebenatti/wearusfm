@@ -1,0 +1,16 @@
+[TCN] E_dyn per seme = [0.758014, 0.757459, 0.759849]
+   media aritmetica dei tre E_dyn        = 0.758440460651819
+   E_dyn dagli accumulatori mediati      = 0.758440460651819   differenza = 1.11e-16   denominatori identici fra semi: True
+   E_dyn dell'ensemble (media predizioni) = 0.416153603287379   (piu' basso: 45.13% sotto la media delle tre teste)
+   correlazione: per seme [0.58045, 0.58047, 0.57924] media 0.580051; dai momenti mediati 0.580051; differenza -2.16e-08
+   rapporto varianze: media dei semi 0.788736933950; dai momenti mediati 0.788736933950; differenza +1.11e-16
+[L0] E_dyn per seme = [0.863664, 0.86497, 0.865617]
+   media aritmetica dei tre E_dyn        = 0.864750403843431
+   E_dyn dagli accumulatori mediati      = 0.864750403843431   differenza = -1.11e-16   denominatori identici fra semi: True
+   E_dyn dell'ensemble (media predizioni) = 0.522507087061413   (piu' basso: 39.58% sotto la media delle tre teste)
+   correlazione: per seme [0.4987, 0.49801, 0.49754] media 0.498088; dai momenti mediati 0.498088; differenza -1.71e-08
+   rapporto varianze: media dei semi 0.695567121100; dai momenti mediati 0.695567121100; differenza +0.00e+00
+miglioramento relativo TCN vs L0: dagli accumulatori mediati 12.293714%; per seme appaiato [12.2329, 12.4294, 12.2188] (media 12.293702%); media delle 9 coppie 12.293637%
+bootstrap (2000 repliche, seme 20261102): max |E*_mediato - media_s E*_s| = 4.44e-16
+   sd bootstrap di un seme = [0.03232, 0.03284, 0.0327]; sd della media dei tre = 0.03261
+   dispersione fra i tre semi (sd campionaria di E_dyn) = 0.00125: NON entra nel bootstrap sugli utenti

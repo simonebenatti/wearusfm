@@ -1,0 +1,27 @@
+griglia ridge post (MSE interno, +% sull'ottimo):
+  alpha 0.01      mse 0.769725  +17.32%
+  alpha 0.1       mse 0.769715  +17.31%
+  alpha 1         mse 0.769611  +17.30%
+  alpha 10        mse 0.768590  +17.14%
+  alpha 100       mse 0.760278  +15.88%
+  alpha 1000      mse 0.730028  +11.27%
+  alpha 10000     mse 0.691356  +5.37%
+  alpha 100000    mse 0.656115  +0.00%
+  alpha 1e+06     mse 0.670911  +2.26%
+finestre 1907 -> passi/epoca 60 -> 50 epoche 3000 passi
+finestre 954 -> passi/epoca 30 -> 50 epoche 1500 passi
+finestre 953 -> passi/epoca 30 -> 50 epoche 1500 passi
+  lr 0.001, 3000 passi: contrazione 0.9704
+  lr 0.001, 1500 passi: contrazione 0.9851
+  lr 0.0001, 3000 passi: contrazione 0.9970
+  lr 0.0001, 1500 passi: contrazione 0.9985
+esempio controlli-1: L0=0.80 TCN=0.7840: c1 2.000% c4 0.242% c5 -0.690%
+esempio controlli-1: L0=0.81 TCN=0.7938: c1 2.000% c4 -1.005% c5 -1.948%
+esempio controlli-2: L0 .785 L13 .730 MLP .735 TCN .750: c1 4.459 c2 -2.041 c3 -2.740 c4 4.568 c5 3.677
+testa vs ridge 49046: 0.9254%
+TCN pesi con sole prese centrali 39552 prese laterali 24576 somma 64128
+MLP pesi 64128 differenza MLP - TCNcentrale 24576
+endpoint fine-blocco 18548x148x5 = 13725520 ; per campione x50 = 137255200 ; lettura ufficiale 12468x1000 = 12468000 ; rapporti 1.1009 e 11.0086
+quota valida train 4813620/(1907*148*20) = 85.2765%
+65204/28362013 = 0.2299% ; 65204/8468 = 7.700
+Bonferroni 5x1% -> 95% simultaneo; repliche per coda 2000*0.005 = 10

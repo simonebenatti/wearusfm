@@ -1,0 +1,393 @@
+VERIFICA AVVERSARIA - dimensioni «selezione» (dati, supporto e selezione) e «criteri» (metriche, famiglia, regola di decisione)
+Proposta GPT c15aac9 (TEMPONet come testa di regressione nel FM), 17/11/2026
+Verificatore: Claude (subagent di verifica). Nessun file del repository modificato, nessun job, nessuna rete.
+Script e file temporanei: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/work_verifica_selezione-criteri/
+Marcatura delle prove: ESEGUITO (comando o script lanciato da me), CALCOLATO (conto rifatto da me), LETTO (solo lettura).
+
+=== STATO: completo (scritto a pezzi; vedi fine file) ===
+
+PROVE DI PARTENZA (mie)
+- ESEGUITO: ricevute del lungo esportate con git show 2930d7d:results/infra/consolidation_long_20261105/execution/receipts/<nome>-20261105.json
+  nella mia cartella rec/. sha256: LONG-FIT-G49046-pose b08e6e321f3803318991b934ff89ddef70493a422f7f3884abd9daa1d5037c14 (= proposal.json:240);
+  LONG-G49046-pose-train 27297241...1f36; LONG-G49046-pose-val 1321038a...755c; LONG-BENCH-pose 7900c6d7...a0f0.
+- ESEGUITO (v1_receipt_metrics.py, codice mio, non quello dei revisori): dalle somme per utente della ricevuta FIT 49046
+  * E_dyn dinamiche: ridge post 0.7859020005, testa allenata 0.7786289844, ridge pre 1.0321280032 (uguali al campo
+    centered_mse_ratio della ricevuta). 15 utenti, 8.327 finestre supportate su 8.329 selezionate, 20.119.920 elementi.
+  * IC95 bootstrap (estrazione default_rng(20261102).integers(0,15,(2000,15)), come _bootstrap_group): ridge post
+    [0,764136; 0,806253], testa [0,757344; 0,798780].
+  * Contrasto testa contro ridge post: +0,925436%, IC99 [0,4328; 1,2543], deviazione bootstrap 0,1688 (ddof 1).
+  * Quota del livello nella MSE totale (mean_error/total, scomposizione esatta: errore relativo 0,0): dinamiche ridge 54,42%,
+    testa 54,03%; tutte le finestre ridge 65,89%, testa 65,95%; statiche ridge 83,08%, testa 83,52%.
+  * Numero efficace di utenti (pesi = SSE centrata della ridge post) 13,12; finestre dinamiche per utente da 7 a 741.
+
+==================================================================================================================================
+PARTE 1 - GIUDIZI SUI RILIEVI DELLA DIMENSIONE «SELEZIONE»
+==================================================================================================================================
+
+[selezione-7] «4,720 GiB di input» = sole due cache - CONFERMATO, nota
+- CALCOLATO (python): 474.412.856 + 4.593.977.338 = 5.068.390.194 byte = 4,72031 GiB; riferimenti 59.367 + 418.440.754 +
+  234.048.726 = 652.548.847 byte = 0,60773 GiB; totale 5,32804 GiB. Predizioni decompresse 18.548 x 148 x 20 x 8 = 439.216.640 byte
+  ciascuna, 878.433.280 byte in due (0,818 GiB, cioe' 0,88 GB decimali). Rapporti di compressione 0,9527 e 0,5329.
+- LETTO: PROT:55 parla delle cache («Cache del lungo gia' copiate su WORK ... senza duplicare 4,720 GiB di input»): la cifra e'
+  giusta per le cache, la parola «input» e' solo imprecisa. La parte sulla RAM riguarda la dimensione dei costi.
+- Esito: CONFERMATO come nota redazionale.
+
+[selezione-8] Ponte SCRATCH->WORK delle cache e liste dei fold non pinnati in PJ - PARZIALE, nota
+- LETTO (PJ righe 2-17): le cache hanno solo path WORK, sha256, byte, utenti, finestre; i riferimenti hanno anche source_path
+  SCRATCH (righe 185-202). Vero.
+- Pero' tutto e' gia' pinnato in modo transitivo: PJ:240 pinna lo sha256 della ricevuta FIT (b08e6e32...7c14, ESEGUITO), e quella
+  ricevuta contiene i percorsi SCRATCH delle due cache con gli stessi sha256 di PJ, gli sha256 delle ricevute di estrazione
+  (27297241..., 1321038a...; ESEGUITO: coincidono con i file a 2930d7d) e le due liste fold_users (20+20). LETTO con git show
+  424f0ec: copy.sha256, source.sha256 e copy.sizes del manifest riportano per i cinque file gli stessi sha256 e byte di PJ; la
+  ricevuta della copia dice «354 file; byte: 21062138097; sha256 identici».
+- Corrected: niente manca nella catena delle prove; manca solo la comodita' di avere in PJ il rimando esplicito a 424f0ec e le liste
+  dei fold, piu' il controllo d'uguaglianza nel codice futuro.
+
+[selezione-3] Riferimenti «appaiati nel codice ma non pinnati nel contenuto» - PARZIALE, nota (non minore)
+- LETTO: consolidation_long_pose_runtime.py:270-282 salva prediction = held["pred"][:, 6:-6].astype(np.float64) per la testa e
+  predict_reader per la ridge, solo sulle 18.548 finestre val; i file non contengono utente ne' indice di finestra.
+- L'affermazione «non pinnato nel contenuto» non regge: lo sha256 di un file fissa ogni byte, quindi anche dtype, forma e valori.
+  Gli hash di contenuto della ricevuta FIT (prediction_sha256 2cd9a800... e 6eed75d6..., support_sha256 973930475e...) sono pinnati
+  anch'essi in modo transitivo, perche' PJ:240 pinna lo sha256 della ricevuta che li contiene (ESEGUITO).
+- Resta vero e utile solo il controllo meccanico d'appaiamento (ordine delle righe = ordine di val.npz), che PROT:140-141 prevede
+  gia' in termini generali («cinque contrasti, quantili e supporti appaiati», «rifiuto di pin o output incompatibili»). La proposta
+  concreta di riprodurre E_dyn 0,7859020004638595 e 0,7786289843513977 dalle predizioni pinnate e' la stessa di criteri-9: un
+  test d'ingresso consigliato, non una lacuna di pin.
+
+[selezione-9] Tutte le finestre hanno 160 patch; contare le finestre train senza centri - CONFERMATO, nota
+- ESEGUITO (v2_ktv_hash.py, mia reimplementazione di arrays_hash da pose_temporal_readout.py:41-47): un key_time_valid (N,160)
+  tutto True da' 0065b939fb66... per N=1.907 e 04749cb00eda... per N=18.548, uguali alle ricevute di estrazione; una sola finestra
+  da 159 patch, oppure la forma (N,161), cambiano l'hash.
+- LETTO: pose_eval.py:98-110 fixed_windows crea ogni candidata con n_patches = need = round(4,0/0,025) = 160;
+  consolidation_long_pose.py:131-134 impone key_time_valid == arange(P) < lengths. Quindi N_i = 160 per tutte le finestre.
+- Il conteggio delle finestre train senza centri non e' nelle ricevute di estrazione (LETTO: details contiene solo dim,
+  key_time_valid_sha256, n_recordings, n_users, n_windows, targets).
+
+[selezione-10] PoseHead storica allenata su tutte le patch di finestre da 1-4 s; pesi per finestra contro pesi per elemento
+               - CONFERMATO, nota
+- LETTO: jepa.py:173-178 (pose_time_valid: «TUTTE le patch esistenti con target valido»), :182-205 (per_window: media dentro la
+  finestra, poi fra finestre); ricevuta di estrazione train (ESEGUITO, lettura): config.jepa loss_per_window True, pose_weight 1.0,
+  config.loader min_window_s 1.0 e max_window_s 4.0. pose_dynamics.py:134-146 accumula n x momento per coppia finestra/giunto
+  (peso per elemento). PROT:51 dichiara 158 utenti, mascheramento ed EMA, non il supporto della loss storica.
+- Esito: vero e non dichiarato; non cambia il disegno (le teste nuove sono allenate e lette sullo stesso crop6). Nota.
+
+==================================================================================================================================
+PARTE 2 - GIUDIZI SUI RILIEVI DELLA DIMENSIONE «CRITERI»
+==================================================================================================================================
+
+[criteri-1] Le quattro etichette si sovrappongono e la precedenza non e' scritta - PARZIALE, nota (non minore)
+- ESEGUITO (v3_rule_and_seed.py, enumerazione mia su griglia -4...4 a passi di 0,5, 2.601 terne con L <= U): nessuna terna senza
+  etichetta; sovrapposizioni solo (D, NS) in 180 terne, cioe' sempre quando vale D, e (B, NS) in 30 terne; restringendo a
+  L <= stima <= U restano (D, NS) 80, NS 284, I 525, B 80: (B, NS) scompare. Il fatto logico e' quindi confermato.
+- LETTO: practical_assessment (consolidation_long_pose.py:353-361) usa l'IC95 e l'etichetta «small»; i tre esempi di passaggio
+  (1,1,2), (-1,-3,-1), (-3,-3,0) li ho rifatti a mano e sono giusti. Il codice nuovo non puo' riusarla: nota utile per l'implementazione.
+- Perche' declasso: la sovrapposizione D+NS non e' una contraddizione (un deterioramento rende vero anche «un beneficio di almeno 2%
+  non e' sostenuto»), e la conseguenza e' gia' scritta: PROT:100 rende la TCN candidata solo se «passa» il primario e i confronti
+  4-5, quindi D, NS e I chiudono tutti senza promozione; PROT:118 esclude il seguito automatico verso B. Il caso B+NS richiede una
+  stima fuori dal proprio IC percentile, mai osservato nelle 16 x 20.000 simulazioni del revisore. Serve solo una frase d'ordine.
+
+[criteri-2] «Passa» e «servono» non definiti; regola del candidato assente da decisioni.md - CONFERMATO in sostanza, minore
+- LETTO: PROT:95-98 definisce un solo esito positivo («beneficio pratico risolto»); PROT:100 e PJ:35 usano «passa»/«pass» senza
+  legarlo a un'etichetta. Per i contrasti 4-5 l'ambiguita' conta: «passa» potrebbe essere letto come solo «limite inferiore > 0»,
+  una soglia molto piu' bassa del 2% pratico. LETTO (SNAP docs/decisioni.md:6713-6738): la voce del 17/11 non contiene la regola
+  del candidato ne' le condizioni TCN/MLP e TCN/L13.
+- Riserva: la voce di decisioni.md si dichiara proposta («registra le regole proposte ... non le presenta come gia' approvate»),
+  quindi l'assenza oggi e' un promemoria per il congelamento, non un difetto di regole congelate. La lettura «TCNpost−L0» come
+  E_TCN − E_L0 e' forzata: la stessa riga dice «riduzione relativa», che fissa il verso. Il resto del rilievo regge.
+
+[criteri-3] Rumore fra semi fuori dall'IC e nessuna regola per semi discordi - PARZIALE, nota (non minore)
+- CALCOLATO: errore di seme della media su tre semi sigma*sqrt(2/3) (contrasti 1-3) e sigma/sqrt(3) (4-5): giusto. Con L0 e L13 a
+  inizializzazione deterministica (PROT:35, 41, 43, nessun dropout) il loro contributo di seme puo' essere molto minore, e allora il
+  contrasto 1 si avvicina a sigma_TCN/sqrt(3).
+- ESEGUITO (v3_rule_and_seed.py, approssimazione normale, metodo diverso dalla simulazione del revisore): con dev. bootstrap fra
+  utenti 0,17-0,46 punti (i contrasti veri del lungo che ho ricalcolato vanno da 0,151 a 0,318, v4_real_contrasts.py) e sigma_seed
+  0,5%, copertura dell'IC99 0,68-0,95 e P(«non sostenuto» | effetto vero 2%) 0,027-0,161 nei contrasti 1-3; con sigma_seed 1%
+  0,40-0,79 e 0,10-0,30. Stesso ordine di grandezza dei numeri del revisore (0,051-0,126 e 0,133-0,263), che includono anche la
+  sottocopertura del percentile.
+- Perche' declasso: (a) che l'IC non contenga il rumore fra semi e' gia' dichiarato (PROT:91 «Gli IC restano condizionati ai tre fit
+  e a un solo encoder preallenato»); (b) una regola per i semi discordi c'e' gia' ed e' univoca: decide la media dei tre semi dagli
+  accumulatori (PROT:81), i tre esiti separati sono descrittivi. Quindi nessuna lettura post hoc e' necessaria. Resta un
+  miglioramento: riportare la dev. standard fra semi accanto a quella bootstrap e, se Simone vuole proteggere il «no», adottare
+  ora il bootstrap a due livelli o la concordanza. Il nome del rilievo («nessuna regola») non e' esatto.
+
+[criteri-4] Il 2% rispetto al rumore - CONFERMATO, nota
+- LETTO: 0ab9d98 docs/reviews/claude_review_contrastive_comparison_20261116.md:356 (D-4: «E_dyn 0,47-0,90%»); e114a78
+  docs/tokenizer_window_nonlinear_protocol_20261102.md:191 (0,02 «evita di promuovere effetti minuscoli»), :195-197.
+- ESEGUITO (v4_real_contrasts.py, codice mio, 5 contrasti del lungo): dev. bootstrap 0,151-0,318 punti (0,169 testa-ridge a 49.046,
+  0,244 dose ridge, 0,318 dose testa, 0,151 testa-ridge a 19.618; post-pre 1,114), dev. fra utenti 0,51-1,32 punti, semiampiezza
+  dell'IC99 0,38-0,82; dose ridge 6,3212% e dose testa 6,5220%, uguali al pubblicato. Rientrano negli intervalli del revisore
+  (0,114-0,461; 0,47-1,57; 0,30-1,14), che contano anche contrasti dei tokenizer che non ho rifatto.
+
+[criteri-5] Secondari definiti in modo incompleto; schema dei giunti non citato - PARZIALE, nota (non minore)
+- ESEGUITO (sed/grep): src/wearusfm/ingest/emg2pose_pose.py:50-52 (commento e JOINTS, prime quattro colonne THUMB_*) nello snapshot e
+  identico su main e114a78. LETTO: consolidation_long_pose.py:293-298 (_metrics: correlazione dai momenti aggregati, varianza,
+  level_mse in unita' standardizzate al quadrato); tokenizer_pose_readout.py:285-299 (MAE = somma |p−y| x std sugli elementi
+  validi, celle con almeno un punto; i centrati usano min_n = 2).
+- Vero che il protocollo non rimanda a queste funzioni. Ma «secondo nomi dello schema» (PROT:104) indica gia' lo schema esistente, i
+  secondari sono dichiarati senza esito («no pass/fail», PJ:33) e PROT:100 vieta nuove soglie dopo gli esiti e rinvia l'adozione a una
+  discussione. Rischio di scelta selettiva basso. Va scritto prima del congelamento, ma e' una nota.
+
+[criteri-6] Copertura vera dell'IC percentile 99%: circa 97% per contrasto, 85-91% per la famiglia - CONFERMATO, nota
+- CALCOLATO (scipy): P(|t14| < 2,5758 x sqrt(14/15)) = 0,9740; per il 95% 0,9209. Bonferroni con cinque contrasti a 0,97 ciascuno:
+  limite d'indipendenza 0,97^5 = 0,859, piu' alto con contrasti correlati (tutti condividono la TCN): coerente con 0,85-0,91.
+- ESEGUITO (v5_mc_and_coverage.py, simulazione mia, pesi veri = SSE centrata della ridge post per utente, 4.000 insiemi x 2.000
+  repliche): copertura dell'IC99 0,9675 / 0,9722 / 0,9708 con effetti normali e sigma_u 0,7 / 1,5 / 3; 0,9630 / 0,9685 / 0,9692 con
+  code t3; ogni coda manca 0,013-0,020 invece di 0,005 (errore MC circa 0,003). Uguale al revisore (0,9628-0,9709).
+
+[criteri-7] Errore Monte Carlo dei limiti con 2.000 repliche - CONFERMATO, nota
+- CALCOLATO: errore standard del quantile 0,5% di una normale = sqrt(p(1-p)/B)/phi(z) = 0,1091 deviazioni con B = 2.000 e 0,0345 con
+  20.000.
+- ESEGUITO (v5): contrasto testa-ridge a 49.046, seme 20261102: IC99 [0,4328; 1,2543] con 2.000 repliche e [0,4158; 1,2543] con
+  20.000, come il revisore. Con dev. bootstrap 0,169 l'errore MC del limite e' circa 0,018 punti: dentro i suoi 0,01-0,05.
+
+[criteri-8] Appaiamento dei semi nei contrasti 1-3 non scritto - CONFERMATO, nota
+- LETTO: PROT:81 «Pubblicare anche i tre esiti separati» senza dire se seme s contro seme s o contro la media; PROT:66 rende
+  naturale l'appaiamento s con s (stesso ordine dei minibatch). Solo descrittivo, perche' la decisione usa la media (vedi criteri-3).
+
+[criteri-9] Test d'ingresso: riprodurre esattamente i due E_dyn storici - CONFERMATO, nota
+- ESEGUITO (v1_receipt_metrics.py): 0.7859020005 e 0.7786289844 dalle somme per utente, 8.327 finestre, 20.119.920 elementi,
+  IC95 come scientific_readout. Il test proposto e' utile e costa poco; coincide con la parte utile di selezione-3.
+
+[criteri-10] «Se MAE o livello peggiorano» senza definizione - CONFERMATO, nota
+- LETTO: PROT:100 e PJ:35 («inspect MAE/level trade-offs first») non definiscono «peggiorano»; consolidation_long_pose.py:376-388
+  (_clear_regressions: level_mse se il limite inferiore dell'IC95 del delta > 0, correlazione se il superiore < 0, gap di E2) e
+  :391-408 (select_reference, «defer_tradeoff»). La regola esiste ed e' riusabile come segnale descrittivo.
+
+(ripresa della PARTE 1, selezione)
+
+[selezione-4] Rifit a parita' di epoche: circa il doppio dei passi - PARZIALE, nota (non minore)
+- CALCOLATO: ceil(953/32) = 30 passi per epoca nei fold (circa, i fold sono bilanciati per utenti, non per finestre), ceil(1.907/32) =
+  60 nel rifit. ESEGUITO grep: in PROT nessuna occorrenza di passi per epoca (le sole «passi» sono i 49.046 del pretraining e il RF).
+- LETTO (file del revisore rerun_L0.json, rerun_MLP.json, r2_TCN.json): L0 a epoca 14 MSE 0,8472 / E_dyn 0,8032 contro epoca 7
+  0,8337 / 0,8120; MLP a 47: 0,9114 / 0,9500 contro 24: 0,9001 / 0,9567. I suoi +1,6% / +1,3% e −1,1% / −0,7% sono giusti. In piu':
+  per la TCN la regola «stessi passi» (epoca 22) sarebbe peggiore in entrambe le metriche (0,9571 / 0,9902 contro 0,9179 / 0,9714),
+  quindi l'effetto dipende dalla testa, come dice il revisore.
+- Perche' declasso: la regola e' scritta (PROT:69 «numero di epoche fisso», PJ refit «at chosen fixed LR and epoch»), e' prefissata e
+  uguale per tutti; il raddoppio dei passi e' aritmetica. Dichiararlo e' utile, ma non e' una lacuna di regola.
+
+[selezione-5] Valutazione held: modalita' eval, momento della misura, epoca 0 non specificati - CONFERMATO nel fatto, nota
+- ESEGUITO grep su PROT e PJ: nessuna occorrenza di eval(), no_grad, determin*, cudnn, «epoca 0». Vero.
+- Declasso a nota: e' un dettaglio d'implementazione standard (valutare in eval e senza gradiente), che PROT:139 mette gia' fra i test
+  da preparare («scelta LR/epoca sui soli fold train»); l'epoca 0 (uscita costante a zero) non puo' vincere in pratica.
+
+[selezione-6] Semi dello shuffle e determinismo GPU - PARZIALE, nota
+- LETTO: PJ:74 «dedicated generator per fold/seed ... identical minibatch ordering across heads for same fold/seed». L'uguaglianza
+  delle permutazioni fra i due LR e fra tutti i bracci (TCN-pre compresa) e' quindi gia' scritta: il LR non entra in «fold/seed». Manca
+  solo la derivazione numerica dei semi.
+- ESEGUITO grep: nessuna politica di determinismo in PROT/PJ (solo «FP32, autocast off, TF32 off»). LETTO: la misura del 09/11
+  (memoria reference_cudnn_dilated_deterministic.md: 14,6 contro 1,1 ms per passo, TEMPONet raw, torch 2.2 su A100) riguarda la
+  TEMPONet raw, non la nuova testa. La riproducibilita' bit per bit non e' un requisito della proposta (artefatti congelati, nessun
+  rilancio: PROT:71 e 75); l'effetto sul costo appartiene alla dimensione dei costi.
+
+[selezione-11] Il weight decay 0,01 non regolarizza; il regolarizzatore effettivo e' l'arresto - CONFERMATO, nota
+- CALCOLATO: AdamW di torch moltiplica i pesi per (1 − lr x wd) a ogni passo: (1 − 1e-5)^3000 = 0,9704, (1 − 1e-6)^3000 = 0,9970,
+  (1 − 1e-5)^1500 = 0,9851, (1 − 1e-6)^1500 = 0,9985. Ricevuta FIT (ESEGUITO): CV della ridge 0,7697254997 ad alpha 0,01 contro
+  0,6561153689 a 1e5: +17,32%. ESEGUITO nel mio mondo sintetico V (sotto): anche li' L0 a lr 1e-3 ha il minimo all'epoca 1.
+
+[selezione-1, parte di verifica] Segnale all'inizializzazione - il fatto regge, il suo ruolo causale no
+- ESEGUITO (v6_init_signal.py, mio): con ingresso gaussiano normalizzato da LN, all'ultimo strato nascosto (32 unita') varianza
+  dipendente dall'ingresso 2,85e-5 - 6,46e-5, pari allo 0,63-2,12% della parte costante, 28-44% di unita' spente, 0,112-0,114 dopo il
+  primo strato: uguale al revisore. Con un ingresso piu' strutturato (componente fissa forte + variazioni lente) e' ancora minore:
+  1,6e-5 - 3,1e-5, 0,35-0,89%, 31-47% spente.
+- Ma il revisore stesso mostra (synth_tcn_init.py, LETTO) che con un'inizializzazione che conserva il segnale il divario non si chiude,
+  e conclude che «il limite dominante e' la generalizzazione». Il conto «pesi d'uscita fra 2 e 15 contro 0,15-1,5 di spostamento» vale
+  solo per l'ultimo strato a pesi interni fermi: gli strati interni (pesi iniziali di scala 0,03-0,07) si muovono anch'essi di circa lr
+  per passo. Inoltre il limite «al piu' lr per passo» di Adam e' tipico, non stretto: con beta1 0,9 e beta2 0,999 il limite di
+  Kingma e Ba e' lr x (1 − beta1)/sqrt(1 − beta2) = 3,16 lr. Questa parte dell'evidenza va tolta o presentata come contesto.
+
+==================================================================================================================================
+PARTE 3 - AFFERMAZIONI «CHE REGGONO» RICONTROLLATE
+==================================================================================================================================
+Selezione (10 ricontrollate)
+S-a  Cache 1.907/40/200 e 18.548/15/1.950, byte e sha256 = PJ - REGGE. ESEGUITO (v7_folds_params.py, ricevute a 2930d7d): train
+     474412856 / 30c0b50d09fa..., 1907, 40, 200; val 4593977338 / 36bab32e5a53..., 18548, 15, 1950. LETTO (git show 424f0ec): stessi
+     sha256 e byte in copia e in origine.
+S-b  checkpoint_sha256 e stats_sha256 - REGGE. ESEGUITO: entrambe le ricevute di estrazione: checkpoint bfa6141fc2ed..., passo 49046,
+     teacher, checkpoint_pose_stats_sha256 757f2aeebf68... = PJ:18 e PJ:247.
+S-c  Riferimenti e ricevuta FIT pinnati - REGGE. ESEGUITO: sha256 della ricevuta = b08e6e32...7c14 = PJ:240; artefatti 59367/fc9a9fd1...,
+     418440754/36fb5f9b..., 234048726/9dbd52a0... = PJ:185-202 e manifest 424f0ec.
+S-d  Tutte le finestre da 160 patch, 148 centri - REGGE. ESEGUITO (v2_ktv_hash.py) + LETTO pose_eval.py:98-110.
+S-e  8.327 finestre dinamiche supportate - REGGE. ESEGUITO (v1): 8.329 selezionate, 8.327 supportate, 166.540 coppie, 20.119.920
+     elementi; tutte 18.548 selezionate e 16.620 supportate; statiche 8.329 e 8.293.
+S-f  Fold: 20+20 utenti, ID ordinati alternati, disgiunti dai val - REGGE. ESEGUITO (v7): per post_ridge e pre_ridge fold_users[0] =
+     sorted(u)[::2] e fold_users[1] = sorted(u)[1::2], 40 distinti, intersezione con i 15 val = 0. LETTO pose_e3_b.py:208-219.
+S-g  Parametri L0 8.468, MLP 65.300, L13 100.628, TCN 65.204; MLP e TCN 64.128 pesi di trasformazione - REGGE. ESEGUITO (v7, mie
+     istanze dalle specifiche di PROT:33-47): 8468, 65300, 100628, 65204; pesi con ndim >= 2: 64128 per MLP e TCN.
+S-h  Stessa riduzione della loss del pretraining - REGGE nella riduzione (LETTO jepa.py:182-205), con la differenza di supporto di
+     selezione-10.
+S-i  Nessuna fuga dai 15 val nella selezione - REGGE per la proposta com'e'. Unica grandezza derivata dai val: la soglia dinamica,
+     «mediana della varianza della posa per finestra su val» (LETTO pose_eval.py:40), usata solo nella metrica. Attenzione: con il
+     rimedio di selezione-2 (scelta su E_dyn interna) la soglia dei val entrerebbe anche nella selezione del lettore; e' una costante
+     congelata dei soli bersagli (02/11), quindi non e' una fuga di prestazioni, ma va dichiarata se si adotta quel rimedio (il
+     revisore lo dice in g-1).
+S-j  L0 con AdamW a 1e-4 arriva alla ridge entro 50 epoche - REGGE anche nel mio mondo V. ESEGUITO (run_v.py, fold 0 -> fold 1): L0 lr
+     1e-4 minimo MSE held 0,7269 all'epoca 17 (E_dyn 0,7834), lr 1e-3 minimo gia' all'epoca 1 (0,7373); ridge in forma chiusa sulla stessa
+     direzione (ridge_v_dir.py, alpha scelto sul fold letto, quindi ottimista) 0,7370 / 0,7945 ad alpha 1e5. Nessun NaN: tutte le curve
+     finite (summ_v.py).
+
+Criteri (8 ricontrollate)
+C-a  E_dyn come nel lungo, riproduce 0.7859020004638595 e 0.7786289843513977 - REGGE. ESEGUITO (v1), codice mio dalle somme per utente.
+C-b  Media dei tre semi dagli accumulatori = media aritmetica dei tre E_dyn, anche per replica - REGGE. CALCOLATO: con V_u uguale fra
+     semi (stessi bersagli e supporto; il codice del lungo lo impone, consolidation_long_pose.py:305-311),
+     sum_u mean_s C_su / sum_u V_u = mean_s (sum_u C_su / sum_u V_u), e lo stesso con i pesi m_bu di ogni replica. Il contrasto e' un
+     rapporto di medie, non una media di rapporti (dichiarato dal revisore).
+C-c  Soglia 2% e «limite inferiore > 0» come il criterio del 02/11, a livello 99% - REGGE. LETTO e114a78
+     docs/tokenizer_window_nonlinear_protocol_20261102.md:191-197; in ogni replica 1 − E_c/E_r > 0 se e solo se E_c − E_r < 0.
+C-d  Famiglia di cinque contrasti uguale nei tre testi - REGGE. LETTO PROT:83-89, PJ:26-32, SNAP decisioni.md («famiglia5contrasti post
+     controL0,MLP,L13,ridge storica,testa storica»).
+C-e  Regola esaustiva e a due lati - REGGE. ESEGUITO (v3, 2.601 terne): nessuna senza etichetta.
+C-f  Copertura IC99 circa 97% - REGGE. ESEGUITO (v5) e CALCOLATO (t14), vedi criteri-6.
+C-g  Sotto effetto nullo il beneficio non scatta; al 4% quasi sempre - REGGE nell'approssimazione normale: con dev. della stima
+     0,17-0,46 punti P(stima >= 2 | vero 0) < 1e-5 e P(stima >= 2 | vero 4) > 0,9999; con sigma_u 3 (dev. circa 0,85) P(stima >= 2 |
+     vero 0) circa 0,009, dentro lo 0,005-0,011 del revisore (CALCOLATO).
+C-h  Soglia storica a meta' delle finestre con pose_var finita - REGGE. ESEGUITO: 8.329 + 8.329 = 16.658, 18.548 − 16.658 = 1.890 non
+     finite.
+
+==================================================================================================================================
+PARTE 4 - ESPERIMENTO INDIPENDENTE: MONDO SINTETICO V (per selezione-1 e selezione-2)
+==================================================================================================================================
+Scopo: vedere se il meccanismo dei due bloccanti dipende dal mondo sintetico del revisore. Codice tutto mio (gen_v.py, run_v.py,
+calib_v.py, ridge_v_dir.py, summ_v.py), nessun import dagli script dei revisori. SINTETICO: mostra un meccanismo, non i numeri veri.
+Differenze di costruzione rispetto al mondo del revisore:
+- vantaggio temporale fatto di ritardo/anticipo: h_t = tanh(1,5 d_{t-2}) per 4 fattori AR(1) e d_{t+2} per altri 4 (tempi 3-25 patch),
+  non una media mobile; feature = postura + dinamica istantanea + firma d'utente + disturbo di finestra + rumore, in float16, poi LN;
+- livello del bersaglio in parte leggibile (postura) piu' scostamenti d'utente e di finestra non leggibili;
+- calibrazione (ESEGUITO calib_v.py, CV messa in comune sui due fold): ridge CV 0,7555 ad alpha 1e5 (vero 0,6561), forma della curva
+  simile (0,7995 -> 0,7555 -> 0,7864; vero 0,7697 -> 0,6561 -> 0,6709); quota del livello nella MSE della ridge 60,2% su tutte le
+  finestre e 57,5% sulle dinamiche (vero 65,9% e 54,4%); E_dyn della ridge 0,7987 (vero sui val 0,7859).
+- ricetta come PROT:29-35 e 61-69: LN affine, uscita a zero, interni Torch standard, AdamW (0,9; 0,999), eps 1e-8, wd 0,01 solo su
+  matrici/kernel, clip 1, batch 32 con ultimo batch, shuffle da generatore dedicato, LR costante, seme 0, valutazione held in
+  eval/no_grad a fine epoca. Una sola direzione di fold (allena gli utenti [::2], legge [1::2]), 960 finestre per parte, 30 passi
+  per epoca. Teste: L0 8.468 e TCN 65.204 parametri (stampati dal runner).
+
+Risultati (ESEGUITO, held = fold letto; «sel» = minimo della MSE held, cioe' la regola di PROT:68 su una direzione):
+- L0 lr 1e-4: sel epoca 17, MSE 0,7269, E_dyn 0,7834 (minimo E_dyn 0,7821 all'epoca 14). L0 lr 1e-3: minimo gia' all'epoca 1 (0,7373).
+- TCN lr 1e-4: sel epoca 47, MSE 0,8211, E_dyn 0,9318; minimo E_dyn all'ultima epoca (0,9305).
+- TCN lr 1e-3: sel epoca 43, MSE 0,7776, E_dyn 0,8077; minimo E_dyn all'ultima epoca (0,8023); loss train finale 0,598.
+- TCN lr 3e-3 (fuori dalla griglia proposta): sel epoca 41, MSE 0,7899, E_dyn 0,8273; minimo E_dyn all'ultima epoca (0,8169).
+- Riferimenti in forma chiusa sulla stessa direzione (alpha scelto sul fold letto: ottimista): ridge istantanea 0,7370 / 0,7945;
+  ridge con ritardi -6,-4,...,+6 0,7117 / 0,6164 ad alpha 1e5 e 0,7030 / 0,6753 a 1e6; tutti i ritardi -6...+6 0,7001 / 0,6519 a 1e6.
+  Oracolo (bersaglio senza rumore): MSE 0,6504, E_dyn 0,5573.
+- Analogo del contrasto primario alle epoche scelte: 100 x (0,7834 − 0,8077)/0,7834 = −3,1% (CALCOLATO), mentre un lettore lineare con
+  ritardi da' +21,3% (0,6164) e l'oracolo consentirebbe +28,9%. Con la griglia proposta la TCN e' al bordo di epoca in entrambi i LR.
+
+==================================================================================================================================
+PARTE 5 - RILIEVI NUOVI
+==================================================================================================================================
+[selezione-criteri-N1] proposal.json non contiene la regola di beneficio ne' il deterioramento - minore
+- ESEGUITO (grep -i «deterior|worsen|benefit|lower» su PJ): l'unica riga e' PJ:37 «readout_failures»: «if upper adjusted CI <2%,
+  useful-sized benefit not supported by this interval; if >=2% remains possible, inconclusive». PJ:34 ha solo
+  "practical_improvement_percent": 2. Mancano in PJ la condizione «limite inferiore aggiustato > 0» del beneficio (PROT:95) e
+  l'etichetta simmetrica di deterioramento (PROT:96; decisioni.md:6729 «deterioramento simmetrico»).
+- Quindi la frase del revisore dei criteri «Stessa sostanza in proposal.json:37» (criteri-1) non e' esatta: le quattro etichette
+  stanno in PROT e in decisioni.md, non in PJ. Se il codice futuro leggesse la regola da PJ, la implementerebbe incompleta.
+- Correzione: scrivere in PJ le quattro etichette con le stesse parole di PROT:95-98 (piu' l'ordine di criteri-1 e la definizione di
+  «passa» di criteri-2), e congelare in decisioni.md lo stesso testo.
+
+[selezione-criteri-N2] La regola a quattro esiti non distingue «testa non a convergenza» - minore (nella dimensione criteri)
+- ESEGUITO (mondo V, Parte 4): con la ricetta proposta la TCN ha il minimo di E_dyn all'ultima epoca a tutti e tre i LR provati e
+  l'analogo del primario vale −3,1%, mentre un lettore lineare con ritardi sulla stessa direzione da' +21,3%. PROT:96-98 chiamerebbe
+  questo esito «deterioramento pratico» (se l'IC escludesse 0) o «non sostenuto»: un giudizio sulla TCN che in realta' e' sulla ricetta.
+- LETTO: PROT:75 dice soltanto «si riporta» quando il migliore e' all'ultima epoca o al bordo LR; nessuna conseguenza sull'etichetta.
+  Il revisore dei criteri non lo considera; il rimedio (iii) di selezione-1 («non a convergenza: i contrasti non si leggono come
+  negativi») va scritto anche nella regola di §5, prima dei fit.
+
+[selezione-criteri-N3] Soglia implicita della regola del candidato: decide il contrasto 5 - nota
+- CALCOLATO (v7_folds_params.py): beneficio >= 2% contro la ridge storica richiede E_TCN <= 0,7859020 x 0,98 = 0,770184; contro la testa
+  storica E_TCN <= 0,7786290 x 0,98 = 0,763056, cioe' il 2,91% sotto la ridge. Con la regola di PROT:100 la TCN deve quindi battere la
+  testa allenata su 158 utenti di almeno il 2%, oltre a battere L0 del 2%. Utile dirlo a Simone accanto al costo.
+
+(Parte 4, seguito) Variante d'inizializzazione, ESEGUITO: TCN lr 1e-3 con kaiming_normal_ per ReLU sugli strati nascosti, bias nascosti
+a zero, uscita a zero: sel epoca 46, MSE 0,7564, E_dyn 0,7629; minimo E_dyn ancora all'ultima epoca (0,7596). Analogo del primario
++2,6% (CALCOLATO), ma con MSE peggiore di L0 del 4,1% (0,7564 contro 0,7269) e lontano dal +21,3% della ridge con ritardi.
+Nello stesso mondo la sola scelta d'inizializzazione porta il primario da −3,1% a +2,6%: il segno dell'esito dipende dalla ricetta.
+
+==================================================================================================================================
+GIUDIZI SUI DUE BLOCCANTI DELLA DIMENSIONE «SELEZIONE»
+==================================================================================================================================
+[selezione-1] Teste a sei strati lontane dal loro ottimo; manca un controllo di potenza e una regola di convergenza
+              - CONFERMATO, bloccante (con una correzione sull'evidenza)
+- Il meccanismo si riproduce in un mondo costruito in modo diverso (Parte 4): con la ricetta proposta la TCN perde contro L0 (−3,1%)
+  mentre un lettore lineare con ritardi guadagna il 21,3%; il minimo di E_dyn della TCN cade all'ultima epoca a 1e-4, 1e-3 e anche a
+  3e-3; un LR piu' alto non aiuta (3e-3: 0,8169 contro 0,8023). Il revisore aveva lo stesso segno in un mondo dove il guadagno
+  disponibile a un lettore lineare era solo +2,7%; nel mio e' +21%, quindi il problema non e' un caso limite vicino alla soglia.
+- LETTO e CALCOLATO: con due LR ogni scelta e' al bordo della griglia (PROT:75 scatta sempre); il bordo d'epoca 1 non e' previsto; la
+  ridge storica aveva estensioni e blocco (pose_e3_b.py:190-206; tokenizer_pose_readout.py:47 e :256; ricevuta FIT: extensions
+  {lower 0, upper 2}, griglia fino a 1e6, boundary_unresolved False).
+- Correzione all'evidenza: il conto sui pesi d'uscita e il limite «lr per passo» non dimostrano la causa (vedi Parte 1). Nel mondo V
+  l'inizializzazione conta molto (kaiming: +2,6% invece di −3,1%); nel mondo temporale del revisore no (synth_tcn_init.py: 0,9766-0,9857
+  contro L0 0,9413). In entrambi i mondi pero' l'esito dipende dalla ricetta piu' che dal guadagno disponibile: e' questo il punto.
+- Conseguenza per la decisione: senza un controllo positivo sui latenti veri, un «no» di questa prova non distingue «nessun guadagno
+  leggibile» da «ricetta che non converge», e PROT:96-98 lo chiuderebbe come deterioramento o non sostenuto (vedi N2). Il rimedio del
+  revisore (controllo positivo train-only, regola di convergenza scritta prima, regola di lettura «non a convergenza») e' adeguato.
+  Nota sul rimedio (ii): nel mondo V allargare il LR fino a 3e-3 non basta; servono anche estensione delle epoche o una scelta
+  d'inizializzazione/regolarizzazione decisa prima, cioe' il «cambio della specifica» che il revisore stesso prevede se (i) fallisce.
+
+[selezione-2] Selezione sulla MSE totale, dominata dal livello, ferma le teste prima che imparino la dinamica
+              - PARZIALE, minore (non bloccante)
+- Quote del livello: ESEGUITO (v1) 54,42% e 65,89% per la ridge post, 54,03% e 65,95% per la testa (il revisore scrive 66,0% per la
+  testa: 65,95 arrotonda a 65,9; differenza irrilevante). Vero.
+- L13, mondo V (ESEGUITO, lr 1e-4, 30 epoche): MSE held minima all'epoca 5 (0,7107, curva piatta e rumorosa fra 0,7107 e 0,7291 nelle
+  prime dieci epoche), E_dyn minima all'epoca 23 (0,6111). Scegliere sulla MSE costa il 3,66% di E_dyn: il meccanismo si riproduce, piu'
+  piccolo dell'11,9% del revisore (LETTO l13_fold.log del revisore: 0,8901 contro 0,7955, giusto).
+- Ma sul contrasto primario la distorsione e' piccola in tutti i casi che si possono vedere: mondo V L0 +0,17% (0,7834 contro 0,7821) e
+  TCN +0,67% (0,8077 contro 0,8023), netto circa 0,5 punti; nel mondo lineare del revisore L0 +1,2% e TCN +1,4%; nel suo mondo temporale
+  L0 +0,3% e TCN +0,1% (LETTO temporal_L0_TCN.log). Il rischio di rovesciamento e' dimostrato solo per il contrasto 3 (TCN/L13), che e'
+  interpretativo: la regola del candidato (PROT:100) usa 1, 4 e 5. Per questo minore, non bloccante.
+- Il rimedio principale del revisore ha un costo che lui non quantifica: scegliendo su E_dyn, L13 andrebbe all'epoca con MSE peggiore
+  del 4,14% nel mondo V (0,7401 contro 0,7107) e del 12-15% nel suo l13_fold (0,9412-0,9692 alle epoche 20-25 contro 0,8420 all'epoca 1).
+  Testa scelta cosi' peggiora il livello per costruzione e cadrebbe sotto la cautela di PROT:100 e criteri-10. La variante «MSE + regola
+  scritta prima + pubblicazione delle due curve», o un criterio combinato fissato prima, e' preferibile (vedi N4).
+
+(Parte 4, seguito) Piu' epoche, ESEGUITO: TCN inizializzazione standard, lr 1e-3, 150 epoche (stessa traiettoria fino alla 50, E_dyn
+0,8023): epoca 75 MSE 0,7708 / E_dyn 0,7733; 100: 0,7762 / 0,7499; 150: 0,7794 / 0,7385. Minimo MSE all'epoca 93 (0,7689, E_dyn
+0,7548), minimo E_dyn all'epoca 148 (0,7370). Analogo del primario all'epoca scelta sulla MSE +3,65% (CALCOLATO), contro −3,1% col
+tetto di 50 epoche. Nel mondo V il tetto delle 50 epoche, da solo, cambia il segno del primario: sostiene la parte (ii) del rimedio
+di selezione-1 (estensione delle epoche se il migliore cade nelle ultime). Tutte le curve finite.
+
+[selezione-criteri-N4] Il rimedio principale di selezione-2 sposta la distorsione sul livello - nota
+- ESEGUITO (mondo V, L13): all'ottimo di E_dyn (epoca 23) la MSE held e' 0,7401 contro 0,7107 all'ottimo di MSE (epoca 5): +4,14%.
+  LETTO (l13_fold.log del revisore): 0,9412-0,9692 alle epoche 20-25, vicino all'ottimo di E_dyn (0,7955 all'epoca 24), contro 0,8420
+  all'epoca 1: +11,8% / +15,1%.
+- Scegliere LR ed epoca su E_dyn interna produrrebbe lettori con livello peggiore per costruzione, che poi la cautela di PROT:100 («non
+  basta ... se MAE o livello peggiorano») tratterebbe come compromesso sfavorevole. Il rimedio va scelto sapendolo: meglio la variante
+  del revisore (tenere la MSE, scrivere prima la regola per la distanza dall'ottimo dinamico interno e pubblicare le due curve) o un
+  criterio combinato fissato prima dei fit.
+
+==================================================================================================================================
+RIEPILOGO DEI GIUDIZI
+==================================================================================================================================
+Selezione: selezione-1 CONFERMATO bloccante; selezione-2 PARZIALE minore; selezione-3 PARZIALE nota; selezione-4 PARZIALE nota;
+selezione-5 CONFERMATO nota; selezione-6 PARZIALE nota; selezione-7 CONFERMATO nota; selezione-8 PARZIALE nota; selezione-9
+CONFERMATO nota; selezione-10 CONFERMATO nota; selezione-11 CONFERMATO nota.
+Criteri: criteri-1 PARZIALE nota; criteri-2 CONFERMATO minore; criteri-3 PARZIALE nota; criteri-4 CONFERMATO nota; criteri-5 PARZIALE
+nota; criteri-6 CONFERMATO nota; criteri-7 CONFERMATO nota; criteri-8 CONFERMATO nota; criteri-9 CONFERMATO nota; criteri-10
+CONFERMATO nota.
+Nuovi: N1 minore (PJ senza regola di beneficio/deterioramento), N2 minore (nessun esito «non a convergenza»), N3 nota (soglia
+implicita del candidato), N4 nota (costo del rimedio di selezione-2 sul livello).
+Affermazioni «che reggono» ricontrollate: 10 della selezione e 8 dei criteri, tutte reggono; una precisazione su S-i (la soglia dei
+val entrerebbe nella selezione se si adottasse il rimedio di selezione-2) e su criteri-1 (PJ non contiene le quattro etichette, N1).
+
+==================================================================================================================================
+VERDETTO DEL VERIFICATORE
+==================================================================================================================================
+Dimensione «selezione»: DA_RIVEDERE (come il revisore, ma con un solo bloccante). Il bloccante selezione-1 regge in un mondo sintetico
+costruito in modo diverso: con la ricetta proposta il segno del primario dipende dal tetto di 50 epoche e dall'inizializzazione (−3,1%
+a 50 epoche, +3,65% a 150, +2,6% con un'inizializzazione che conserva il segnale) mentre un lettore lineare con ritardi guadagna il
+21%; senza controllo positivo sui latenti veri e senza regola di convergenza e di lettura scritte prima, un «no» non e' interpretabile e
+chiuderebbe la prova. Selezione-2 e' vera soprattutto per L13 (contrasto 3) e scende a minore; il suo rimedio principale ha un costo sul
+livello. Gli altri rilievi sono note, alcune gia' coperte da pin transitivi (ricevuta FIT pinnata in PJ:240).
+
+Dimensione «criteri»: APPROVATO_CON_CORREZIONI (come il revisore). Ho riprodotto con codice mio E_dyn storici, IC, quote, copertura
+(0,963-0,972 per contrasto) ed errore MC: metrica, media dei semi, soglia e famiglia reggono. Le correzioni da fare prima del
+congelamento sono: definire «passa» (criteri-2), allineare proposal.json al protocollo, che oggi non contiene la condizione «limite
+inferiore > 0» ne' il deterioramento (N1), e aggiungere un esito «non a convergenza» che impedisca di leggere un fallimento della
+ricetta come deterioramento (N2). Criteri-1, criteri-3 e criteri-5 sono veri ma scendono a note: la precedenza non cambia la decisione,
+la media dei semi decide gia' in modo univoco e il limite dell'IC sui semi e' dichiarato in PROT:91.
+
+Script del verificatore (cartella work_verifica_selezione-criteri/): v1_receipt_metrics.py, v2_ktv_hash.py, v3_rule_and_seed.py,
+v4_real_contrasts.py, v5_mc_and_coverage.py, v6_init_signal.py, v7_folds_params.py, gen_v.py, calib_v.py, run_v.py, ridge_v_dir.py,
+summ_v.py; ricevute esportate in rec/, curve del mondo V in runs/. Nessun file del repository, dello snapshot o di altri worktree
+modificato; nessun commit, nessuna rete, nessun job, nessun ssh.
+
+=== STATO: completo ===

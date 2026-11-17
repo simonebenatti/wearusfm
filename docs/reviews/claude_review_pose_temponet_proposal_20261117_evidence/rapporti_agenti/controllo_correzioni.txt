@@ -1,0 +1,232 @@
+CONTROLLO DELLE CORREZIONI - review Claude della proposta GPT c15aac9 (17/11/2026)
+Versione controllata: /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-temponet/docs/reviews/claude_review_pose_temponet_proposal_20261117.md (518 righe)
+Elenco dei 72 problemi: rilettura_issues.txt. Righe "N:" = righe della nuova versione.
+(rapporto scritto a pezzi; stato: completo)
+
+====================================================================================================
+PARTE 1 - LE 72 VOCI DI RILETTURA (stato nella nuova versione)
+====================================================================================================
+Esito: tutte e 72 risolte nel punto giusto e, dove ricorrevano, anche nel prompt della sezione 9.
+fedelta-26 (terzo controllo della punta) e' coperta dal segnaposto <ORA_CONTROLLO>, voluto.
+Raggruppate per problema (le voci doppie fra lenti stanno nella stessa riga):
+
+- Mondo V dato come vero: numeri-1, riferimenti-5, fedelta-8 -> N:156-158 e N:489 («tarato per somigliare»). RISOLTO.
+- +21,3% ottimista: numeri-4 (+ riferimenti-5, fedelta-8) -> N:158-159, N:490-491. RISOLTO. Numeri ricontrollati su
+  verify_selezione-criteri.txt Parte 4: 0,6164 -> +21,3%; 0,6753 (alpha 1e6, MSE migliore) -> +13,8%; 0,6519 (tutti i 13) -> +16,8%.
+- Controesempio Kaiming: numeri-5, fedelta-5 -> N:161-165, N:489-490. RISOLTO. Verificato che synth_tcn_init.py usa la stessa
+  inizializzazione (kaiming_normal_, bias nascosti a zero, uscita a zero): «la stessa inizializzazione» e' corretto; -3,8% e -4,7%
+  = 0,9766 e 0,9857 contro L0 0,9413 (review_selezione.txt, punto 4).
+- Init come causa / rapporto di varianze: numeri-6, riferimenti-23, fedelta-6 -> N:166-168 e nota architettura-5 N:369-371. RISOLTO.
+- «Il limite viene dalla ricetta, non dai dati» del revisore: fedelta-4 -> tolta; N:169-170. RISOLTO.
+- «mezzo punto» netto: numeri-2, fedelta-13 -> N:277-279. RISOLTO (0,1-1,4% ciascuna: mondo V 0,17/0,67, revisore 1,2/1,4 e 0,3/0,1).
+- 09:45: numeri-3, riferimenti-20 -> N:64 «09:39-11:34» (startedAt 09:39:36 in w9ksgedop.output). RISOLTO.
+- Menu dei rimedi: numeri-17, riferimenti-1, fedelta-1 -> N:175-188 e N:492-495. RISOLTO.
+- Ramo lineare come alternativa: fedelta-7 -> N:187-188. RISOLTO.
+- R-1 rinviato: riferimenti-2, fedelta-2 -> R-1 spostato nel par. 5 (N:326-340), N:28, titolo par. 6, N:502-505. RISOLTO.
+- controlli-3: riferimenti-16, fedelta-3 -> N:382-386. RISOLTO.
+- MSE e non E_dyn in A-1: numeri-7, riferimenti-18, fedelta-23 -> N:203-206. RISOLTO.
+- 0,77 e 3,2 GPU-ore: numeri-8, numeri-9, riferimenti-6, fedelta-19 -> N:121-123 e N:193-198. RISOLTO (conti rifatti: 315.000 x
+  18,5 ms x 2 = 3,24 h; 3 LR 2,78 h; 4,1 ms 0,72 h; 4,1 ms e' il tempo «senza vincolo» in eager del registro a 8917e2a).
+  Vedi pero' la nuova voce P2-3 sulla cifra «circa 2,8».
+- 4-15% solo L13: numeri-10 -> N:279-281. RISOLTO.
+- «riferimenti» ambiguo in selezione-7: numeri-11 -> N:401-403. RISOLTO.
+- architettura-6 (128 ms): numeri-12, riferimenti-15, fedelta-17 -> N:372-374. RISOLTO.
+- Cautela A-1 nella riga 2 dei verdetti: numeri-13, fedelta-11 -> N:20. RISOLTO.
+- 60 delle 126: numeri-14, fedelta-31 -> N:61-63 e N:66-67. RISOLTO.
+- Riga 163: numeri-15, riferimenti-8, fedelta-22 -> N:346. RISOLTO.
+- ID brevi N1/N2: numeri-16, riferimenti-7, fedelta-16 -> N:143, 200, 298, 306 (nessun «N1»/«N2» nudo rimasto). RISOLTO.
+- Riferimenti di posa su SCRATCH: riferimenti-3, fedelta-9 -> N:136-139, N:443-446, N:506-508. RISOLTO.
+- Citazione della riga 169: riferimenti-4, fedelta-15 -> N:134-139 (citazione letterale di PROT:169). RISOLTO.
+- Conclusione del prompt nel par. 1: riferimenti-9 -> N:50-52. RISOLTO.
+- summarize con modulo: riferimenti-10 -> N:418-419. RISOLTO.
+- Omissione nella citazione: riferimenti-11 -> N:132. RISOLTO.
+- Citazioni non letterali: riferimenti-12 -> N:112, 223, 228 (PROT:95 e PROT:100 letterali). RISOLTO.
+- Riproduzione dalle somme per utente: riferimenti-13 -> N:107-109. RISOLTO.
+- Righe 96-98 e 118: riferimenti-14 -> N:148-150. RISOLTO.
+- Regola L13 in C-2: riferimenti-17, fedelta-12 -> N:240-245. RISOLTO.
+- «intervalli reggono»: riferimenti-19, fedelta-14 -> N:22. RISOLTO (vedi pero' P2-6 su «un po' sotto»).
+- MPS: riferimenti-21, fedelta-20 -> N:70-71, N:468 e LEGGIMI.md riga 4-5. RISOLTO.
+- Percorso _evidence nel prompt: riferimenti-22 -> N:480-481. RISOLTO.
+- criteri-7: riferimenti-24, fedelta-28 -> N:422-424. RISOLTO.
+- Soglia dinamica dei val nei rimedi: fedelta-10 -> N:101, N:190-191, N:284-285. RISOLTO.
+- practical_assessment: fedelta-18 -> N:412-414. RISOLTO.
+- La specifica puo' cambiare: fedelta-21 -> N:28-29. RISOLTO (vedi P2-2 sulla frase «concordati in chat»).
+- criteri-8: fedelta-24 -> N:425-426. RISOLTO.
+- Riga 3 dei verdetti (loss): fedelta-25 -> N:21. RISOLTO.
+- Terzo controllo della punta: fedelta-26 -> N:11-13 con <ORA_CONTROLLO> (voluto). RISOLTO in attesa del riempimento.
+- «come tale»: fedelta-27 -> N:54-55. RISOLTO.
+- Stile di C-1: fedelta-29 -> N:218-221. RISOLTO.
+- consegna-2: fedelta-30 -> N:451-453 (3263ee9 = «Test frozen campaigns against their archived sources after integration»). RISOLTO.
+
+====================================================================================================
+PARTE 2 - PROBLEMI NUOVI O RIMASTI (con prova)
+====================================================================================================
+P2-1 | imprecisione | N:68-69 (e registro_bozza.txt righe 16-17)
+  [citazione] «ha trovato 8 errori, 57 imprecisioni e 7 problemi di forma. Sono corretti in questa versione.»
+  [problema] Sono 72 segnalazioni con doppioni fra le lenti, non 72 problemi distinti. Gli errori distinti sono 6: il menu di
+  S-1 e' contato due volte (riferimenti-1 e fedelta-1), R-1 due volte (riferimenti-2 e fedelta-2). Altri errori ricompaiono come
+  imprecisioni (numeri-17, riferimenti-5, riferimenti-16, riferimenti-20, fedelta-8, fedelta-13).
+  [prova] rilettura_issues.txt, CONTEGGI e citazioni identiche di riferimenti-1/fedelta-1 e riferimenti-2/fedelta-2.
+  [correzione] «ha fatto 72 segnalazioni (8 errori, 57 imprecisioni e 7 problemi di forma), in parte doppie fra le lenti: gli
+  errori distinti sono 6. Sono corretti in questa versione.» Stessa frase nel registro.
+
+P2-2 | imprecisione | N:26-27
+  [citazione] «Livello, bracci e criteri sono quelli concordati in chat e non vanno rifatti.»
+  [problema] Piu' forte delle fonti. Il par. 1 (N:33-35) e la bozza del registro (righe 13-14) descrivono l'accordo in chat solo
+  come livello (prima il lettore a encoder congelato) e confronto con ridge e PoseHead rifittata. MLP, L13, TCN-pre, soglia del 2%,
+  IC 99% e famiglia sono la proposta di GPT delle 08:28, giudicata dai revisori, non un accordo in chat. La frase e' entrata con la
+  correzione proposta da fedelta-21; la bozza diceva solo «Il disegno è quello concordato in chat» (rilettura_fedelta.txt riga 476).
+  [correzione] «Il livello e l'impostazione (TCN accanto a ridge e PoseHead rifittata) sono quelli concordati in chat (sezione 1) e
+  non vanno rifatti; bracci e criteri reggono con le correzioni sotto.»
+
+P2-3 | imprecisione | N:196-197
+  [citazione] «Con tre LR sarebbero circa 2,8; con il tempo non deterministico della stessa replica (4,1 ms per passo in eager) circa 0,7.»
+  [problema] 2,8 e' come il 3,2 un conto dei soli passi (5 teste x 3 LR x 2 fold x 150 x 30 + 15 x 150 x 60 = 270.000 passi;
+  x 18,5 ms x 2 = 2,78 h). Con le valutazioni, nella stessa proporzione del 3,2 -> 4 della frase prima, si va a circa 3,4-3,6:
+  ancora sopra il tetto. Letta cosi', la frase dice che con tre LR si sta nel tetto.
+  [correzione] «Con tre LR i soli passi sarebbero circa 2,8 GPU-ore, che con le valutazioni tornano sopra il tetto di 3; con il
+  tempo non deterministico della stessa replica (4,1 ms per passo in eager) i soli passi sarebbero circa 0,7.»
+
+P2-4 | imprecisione (incoerenza tabella / S-1) | N:23 e N:121
+  [citazione] «I conti tornano e i tetti sono larghi.» (riga 5 dei verdetti); «I tetti dei fit (3 GPU-ore) e dell'inferenza (0,5)
+  sono larghi.» (par. 3)
+  [problema] Vale per la ricetta attuale (75.000 passi). Con le correzioni di S-1, che la review chiede prima dei fit, il conto di
+  Claude in S-1 (N:195-196) da' «già sopra il tetto di fase di 3» e «circa 4» con le valutazioni. Chi legge solo la tabella (Simone,
+  per il budget) non lo vede.
+  [prova] verdict_opinion costo-consegna: «i tetti di fit e inferenza sono larghi anche con cuDNN deterministico (circa 0,77 h su
+  3 h)», cioe' sui 75.000 passi attuali; N:193-198.
+  [correzione] Riga 5: «I conti tornano e, con la ricetta proposta, i tetti sono larghi. Con le correzioni di S-1 il costo dei fit va
+  ricalcolato e puo' superare il tetto di 3 GPU-ore (S-1). Prima del benchmark ...». Par. 3: «... sono larghi per la ricetta
+  proposta; per le correzioni di S-1 vedi il costo in S-1.»
+
+P2-5 | stile | N:169-170
+  [citazione] «In tutti e due i mondi l'esito dipende dalla ricetta più che dal guadagno disponibile, ma nessun rimedio provato
+  funziona dappertutto.»
+  [problema] Il capoverso prima nomina tre mondi (temporale del revisore, V, lineare del revisore): «tutti e due» non dice quali.
+  La frase del verificatore riguarda il mondo V e il mondo temporale del revisore.
+  [prova] verify_selezione-criteri.txt, giudizio su selezione-1: «Nel mondo V l'inizializzazione conta molto [...]; nel mondo
+  temporale del revisore no [...]. In entrambi i mondi pero' l'esito dipende dalla ricetta piu' che dal guadagno disponibile».
+  [correzione] «Nel mondo V e nel mondo temporale del revisore l'esito dipende dalla ricetta più che dal guadagno disponibile, e
+  nessuno dei rimedi provati funziona in tutti i mondi.»
+
+P2-6 | imprecisione | N:22
+  [citazione] «la copertura vera degli intervalli è un po' sotto la nominale (nota criteri-6)»
+  [problema] Per contrasto circa 97% contro 99%, ma per la famiglia 85-91% contro 95%: fino a 10 punti sotto. «Un po'» lo
+  sminuisce; i numeri sono gia' nel par. 3 (N:115-116) e nella nota (N:420).
+  [prova] judgments criteri-6, corrected_statement: «Copertura vera circa 97% per contrasto e 85-91% per la famiglia»; PROT:91
+  (IC 99% per contrasto, copertura simultanea nominale 95%).
+  [correzione] «la copertura vera è circa 97% per contrasto (nominale 99%) e 85-91% per la famiglia (nominale 95%) (nota criteri-6)».
+
+P2-7 | imprecisione | R-2, N:316-324 (e N:503)
+  [citazione] «- decisioni.md non riporta la soglia dinamica 0,2574231028556824, i pareggi della selezione, la regola della candidata e
+  l'arresto su NaN o OOM; [...] - l'IC 95% descrittivo di TCN-post contro TCN-pre e l'arresto su NaN o OOM mancano in entrambi;»
+  e «Correzione. Al congelamento serve una voce completa in decisioni.md [...]»
+  [problema] (a) La correzione chiede solo la voce di decisioni.md; nessun punto (ne' R-2 ne' K-2) chiede di aggiungere a
+  proposal.json l'IC 95% descrittivo e l'arresto, che il verificatore elenca fra le mancanze del JSON. (b) L'arresto su NaN o OOM
+  compare due volte (primo e terzo punto).
+  [prova] judgments consegna-4, corrected_statement: «In proposal.json mancano solo le condizioni di beneficio e deterioramento,
+  l'IC 95% descrittivo e l'arresto; la candidata c'è già»; fix del revisore: «Completare proposal.json con [...] l'IC 95%
+  descrittivo e l'arresto».
+  [correzione] Togliere «e l'arresto su NaN o OOM» dal primo punto. Aggiungere alla correzione: «In proposal.json vanno aggiunti
+  anche l'IC 95% descrittivo e l'arresto su NaN o OOM (le quattro etichette sono K-2).» Nel par. 9: «R-2 (voce di decisioni.md
+  completa, con SHA e sha256; in proposal.json anche IC descrittivo e arresto)». Probabilmente gia' nella bozza: nessuna lente l'ha segnalato.
+
+P2-8 | errore | registro_bozza.txt (bozza delle voci del registro, rifatta alle 12:14:31, dopo la review)
+  [citazione] righe 30-31: «Correzioni proposte, da scegliere da GPT prima dei fit: regola di convergenza, esito «non a convergenza»,
+  controllo positivo sui `lat` di train, ramo lineare (A-1).»; riga 27: «Nel mondo V, tarato sui numeri veri,»; righe 28-29:
+  «+2,6% con un'inizializzazione Kaiming, mentre un lettore lineare con ritardi fa +21,3%»; riga 9: «Tutto sul Mac, su CPU.»;
+  riga 18: «controllata alle 09:37, alle 11:34 e prima del commit: `c15aac9`»
+  [problema] La voce del registro ripete gli errori corretti nella review: il menu dei rimedi (riferimenti-1, fedelta-1), il mondo V
+  «tarato sui numeri veri» (numeri-1), Kaiming senza il controesempio e il +21,3% senza «ottimista» (numeri-4, numeri-5), «su CPU»
+  senza MPS (riferimenti-21). La riga 18 da' gia' l'esito del terzo controllo, senza ora (come fedelta-26). numeri-3 chiedeva di
+  allineare anche questo file.
+  [correzione] Riga 27-31: «In due mondi sintetici indipendenti la TCN perde contro L0 anche quando c'è un guadagno da prendere. Nel
+  mondo V, tarato per somigliare ai numeri veri, il primario vale -3,1%; diventa +3,65% con 150 epoche e +2,6% con
+  un'inizializzazione Kaiming, che nel mondo temporale del revisore non basta; una ridge con ritardi arriva fino a +21,3% (stima
+  ottimista). È un meccanismo, non il numero vero. Servono tutte e tre prima dei fit: controllo positivo sui `lat` di train, regola
+  di convergenza, esito «non a convergenza»; i dettagli li sceglie GPT. Il ramo lineare di A-1 si può aggiungere, non le sostituisce.
+  Il costo va ricalcolato.» Riga 9: «Tutto sul Mac, senza job: su CPU e, per alcuni micro-benchmark del costo, sulla GPU del Mac
+  (MPS).» Riga 18: ora del terzo controllo, come nella review. Righe 7-8: percorso completo della cartella delle prove.
+
+P2-9 | imprecisione | R-3, N:267-268
+  [citazione] «La riga «Bracci» della tabella del §10 però dice solo «TCN-post».»
+  [problema] Alla lettera e' falso: la riga elenca «L0, MLP, L13, TCN-post, TCN-pre; due riferimenti storici riusati». Il punto e' che
+  la testa vi compare solo con la sigla, senza dire che non e' la TEMPONet esistente.
+  [prova] PROT:177. La frase viene dall'evidenza di consegna-5 del revisore; probabilmente era gia' nella bozza.
+  [correzione] «La riga «Bracci» della tabella del §10 però nomina la testa solo come «TCN-post» e «TCN-pre», senza dire che cosa sia.»
+
+P2-10 | imprecisione | C-1, N:227-229
+  [citazione] «Se L0 è peggiore della ridge con deterioramento, i contrasti 1-3 sono confronti a ricetta fissa: [...]. Altrimenti il
+  primario si legge come scritto.»
+  [problema] Manca il terzo caso della correzione confermata dal verificatore («Come scritto dal revisore»): se L0 e' migliore della
+  ridge, va riportato come effetto del rifit. Senza, un vantaggio della TCN sulla ridge (contrasto 4) puo' essere letto tutto come
+  effetto dell'architettura.
+  [prova] findings controlli-1, fix: «se L0 e' migliore, riportarlo come effetto del rifit»; judgments controlli-1: «Come scritto
+  dal revisore». Probabilmente gia' nella bozza.
+  [correzione] Aggiungere: «Se L0 è migliore della ridge, riportarlo come effetto del rifit.»
+
+P2-11 | stile | par. 3, Criteri, N:112-113
+  [citazione] «coincidono con il criterio del 02/11, che la scrive come limite superiore del delta assoluto < 0, al 99% invece che al 95%.»
+  [problema] «al 99% invece che al 95%» sembra riferito al criterio del 02/11, che invece e' al 95% (paired_ci_level 0,95); il 99%
+  e' della proposta nuova.
+  [prova] docs/tokenizer_window_nonlinear_protocol_20261102.md (e114a78), tabella dei criteri: «paired_ci_level | 0,95»; PROT:91.
+  [correzione] «... coincidono con il criterio del 02/11, che la scrive come limite superiore del delta assoluto < 0; qui l'IC è al
+  99% per contrasto (Bonferroni), nel criterio del 02/11 era al 95%.»
+
+P2-12 | stile | S-1, N:190
+  [citazione] «La E_dyn interna usa la soglia dinamica 0,2574231028556824, che è la mediana delle finestre val.»
+  [problema] La soglia non e' la mediana «delle finestre», ma della varianza della posa per finestra sulle finestre val.
+  [prova] gpt_c15aac9/src/wearusfm/harness/pose_eval.py:40 «mediana della varianza della posa per finestra su val»; verify_selezione-
+  criteri.txt S-i.
+  [correzione] «..., che è la mediana della varianza della posa per finestra sulle finestre val.»
+
+P2-13 | stile | S-1, N:163
+  [citazione] «Nel suo mondo lineare né 150 epoche né l'inizializzazione Kaiming bastano alla MLP.»
+  [problema] Non dice a che cosa non bastano (raggiungere L0, che nel mondo lineare e' il lettore giusto).
+  [prova] review_selezione.txt punto 3: MLP 150 epoche minimo 0,9543, Kaiming 0,9377 e 0,9352, contro L0 0,8079 sullo stesso fold.
+  [correzione] «Nel suo mondo lineare, dove basta un lettore lineare, né 150 epoche né l'inizializzazione Kaiming portano la MLP al
+  livello di L0 (0,95 e 0,94 contro 0,81).»
+
+P2-14 | imprecisione (minima) | S-1, N:159
+  [citazione] «con l'alpha migliore per la MSE fa +13,8%»
+  [problema] Il verificatore riporta la ridge con ritardi solo ad alpha 1e5 (MSE 0,7117) e 1e6 (MSE 0,7030); il suo script ne
+  prova cinque (1e3...1e7, ridge_v_dir.py: range(3, 8)). Che 1e6 sia «il migliore per la MSE» non risulta dalle fonti: e' il
+  migliore dei due riportati. Anche questo alpha e' scelto sul fold letto.
+  [prova] verify_selezione-criteri.txt Parte 4; script_agenti/work_verifica_selezione-criteri/ridge_v_dir.py righe 13-17.
+  [correzione] «con alpha 1e6, che dei due riportati ha la MSE più bassa, fa +13,8%».
+
+P2-15 | stile | par. 1, N:49-52
+  [citazione] «dipende da tutti i 160 passi con `causal=False` e dai soli passi 0-123 con il default `causal=True`. La conclusione del
+  prompt («piu' della finestra di 4 s») resta vera, perché anche 378 e 442 superano i 160 passi.»
+  [problema] Subito dopo aver detto che con il default l'uscita vede solo 124 passi su 160, «resta vera» senza qualifica sembra in
+  contraddizione. Il revisore la giustifica con il campo nominale e con causal=False.
+  [prova] verified_ok[6] del revisore dell'architettura: «resta vera (442 > 160; con causal=False l'uscita dipende da tutti i 160
+  passi)»; judgments architettura-7: «uscita da 124 passi su 160» con causal=True.
+  [correzione] «La conclusione del prompt («piu' della finestra di 4 s») resta vera per il campo nominale: 378 e 442 superano i 160
+  passi, e con `causal=False` l'uscita dipende da tutta la finestra.»
+
+====================================================================================================
+PARTE 3 - CORREZIONI DEI RILETTORI CHE CLAUDE HA FATTO BENE A NON SEGUIRE ALLA LETTERA
+====================================================================================================
+- fedelta-6: proponeva «la varianza dovuta all'ingresso e' solo lo 0,6-2,1% di quella dovuta ai bias». Sbagliato: lo 0,6-2,1% e'
+  var_input diviso il QUADRATO DELLA MEDIA (init_signal.py, docstring: «mean_sq: quadrato della media di ogni unita'»), non un
+  rapporto fra due varianze. Claude ha seguito numeri-6 («del quadrato della parte costante dovuta ai bias»): giusto.
+- fedelta-12: proponeva «se L13 e' peggiore di L0 con deterioramento, segnala sovradattamento». Il revisore scrive «segnalerebbe»
+  e «con regolarizzazione debole» (controlli-2). Claude ha usato il condizionale di riferimenti-17 (N:243-245): giusto.
+- fedelta-5: proponeva «il revisore indica come limite principale la regolarizzazione quasi nulla». Il revisore scrive «Il limite
+  dominante e' la generalizzazione da 20 utenti con regolarizzazione quasi nulla» (review_selezione.txt, punto 4). Claude ha
+  riportato la frase intera (N:163-165): piu' fedele.
+
+====================================================================================================
+SINTESI
+====================================================================================================
+- 72 voci su 72 risolte (fedelta-26 con il segnaposto voluto). Nessuna voce non risolta.
+- Conteggi della review ricontrollati sul JSON: 56 giudicati (34/21/1), 8 nuovi, 1 bloccante + 12 minori + 50 note (tutte le 50
+  note presenti nel par. 7, piu' costo-6 rifiutato), 60 riattaccate su 126 (57 reggono, 3 cadono); riferimenti alle righe del
+  protocollo tutti giusti; conti di costo rifatti (0,77; 3,24; 2,78; 0,72).
+- Problemi nuovi: 1 errore (P2-8, la bozza del registro ripete il menu dei rimedi e altri errori gia' corretti nella review),
+  9 imprecisioni (P2-1 conteggio con doppioni; P2-2 «criteri concordati in chat»; P2-3 «2,8» di soli passi; P2-4 tabella «tetti
+  larghi» contro S-1; P2-6 «un po' sotto»; P2-7 R-2 senza proposal.json; P2-9 «dice solo TCN-post»; P2-10 C-1 senza il caso «L0
+  migliore»; P2-14 «alpha migliore per la MSE»), 5 di stile (P2-5, P2-11, P2-12, P2-13, P2-15).
+  P2-7, P2-9 e P2-10 erano probabilmente gia' nella bozza; gli altri vengono dalle correzioni.
+- Stato: completo.

@@ -1,0 +1,908 @@
+####################################################################################################
+REVIEW architettura verdict APPROVATO_CON_CORREZIONI
+SUMMARY: Dimensione 1 (domanda e architettura) della proposta GPT c15aac9, secondo tentativo. Ho rieseguito tutti gli script del primo tentativo che servono al verdetto: le uscite sono identiche. Ho completato la prova sintetica interrotta e aggiunto due controlli.
+
+Regge, con prove eseguite:
+- Codice TEMPONet: la classe accetta solo (B,C,T) a lunghezza fissa e dà una posa per finestra (out_length 2 a T=160). BatchNorm e pooling sono fissi nei blocchi privati.
+- Campo ricettivo: 378 passi per un elemento, 442 nominali dopo il flatten, quindi la correzione di GPT al prompt di Claude è giusta. L'affermazione di Claude era incompleta (mancava «per elemento») ma la conclusione era giusta.
+- Identità dei sorgenti: byte e sha256 ai commit 60b35bd, 0c19c4b e 8917e2a coincidono con quelli dichiarati.
+- Teste: i cinque conteggi (8.468, 65.300, 100.628, 65.204), i 64.128 pesi e i 10.260.480 MAC tornano. Il campo ricettivo è di 13 patch, offset -6..+6 senza buchi; L0 e MLP leggono solo la patch centrale.
+- Crop: i centri 6..153 non dipendono dal padding e coincidono con il crop6 storico. Nelle cache tutte le finestre hanno 160 patch reali (hash delle ricevute).
+- Inizializzazione a zero: al primo backward i gradienti interni sono nulli, dopo un passo di AdamW non più.
+- L0 è letteralmente la PoseHead. La ridge storica ha la stessa classe di funzioni di L0 e cambia solo il fitting.
+- La firma del 49.046 esiste. Il backbone è bidirezionale e la posa è già supervisionata nel FM.
+- Non c'è una ricerca nascosta di architetture.
+
+Due rilievi minori da correggere prima della firma:
+- Il titolo, la voce di decisioni.md e la tabella del §10 dicono «TEMPONet», mentre la testa è una TCN compatta di cui non resta il codice di TEMPONet.
+- Il tipo di dropout non è scritto (per elemento o per canale).
+
+Sei note:
+- I flussi del generatore casuale e l'ordine di creazione dei moduli non sono scritti.
+- Per L0 e L13 i tre semi cambiano solo l'ordine dei minibatch.
+- L'inizializzazione di default lascia gli ultimi strati di MLP e TCN dominati dai bias. Su dati finti è lenta a LR 1e-4 e va bene a 1e-3, ma il minimo cade all'epoca 50 in 7 corse su 8.
+- Il contesto di ±150 ms è motivato solo dal crop6.
+- Manca la dipendenza effettiva della TEMPONet trapiantata a T=160.
+- L'elenco «top_level_keys» di raw_source_identity.json è troncato.
+====================================================================================================
+architettura-1 | minore | Titolo, decisioni.md e tabella del §10 dicono «TEMPONet», ma la testa non lo è
+[claim] Protocollo riga 1 «# TEMPONet come lettore della posa del FM — proposta»; README.md riga 1; docs/decisioni.md dello snapshot riga 6713 «Proposta TEMPONet come testa di lettura della posa» e riga 6722 «TCN adattata da principi e codice TEMPONet»; §10 righe 173-180: la riga «Bracci» non dice che la TCN non è TEMPONet.
+[evidence] LETTO. Simone ha chiesto di «provare ad usare temponet come testa» (prompt di Claude riga 3) e decide sulla tabella del §10. Il corpo (§2 riga 25, «Non la chiameremo replica TEMPONet») è chiaro.
+
+Di TEMPONet restano solo lo schema «k3 dilatate + coda 64-32» e i due punti del dropout (temponet.py righe 11-14, 45-86, 131-144).
+
+Spariscono:
+- BatchNorm, stride k5, pooling, larghezze 16/32;
+- dilatazioni 2/4/8 a coppie: con tre k3 a 2/4/8 resterebbero 14 buchi su 29 offset (ESEGUITO c_heads_checks.py);
+- flatten e uscita per finestra, dropout 0,5, EMG grezzo, loss L1.
+
+Nessun blocco di temponet.py è riusabile (§2 riga 25), quindi «codice TEMPONet» sopravvaluta il legame.
+[how] LETTO
+[fix] Titolo, per esempio: «TCN compatta ispirata a TEMPONet come lettore della posa del FM».
+
+Nel §10 aggiungere una riga: «Testa: TCN compatta ispirata a TEMPONet, non la TEMPONet di [Z21]». Va spiegato in una frase perché (uscita per patch su 384 feature a 40 Hz; BatchNorm, stride e pooling incompatibili). Va detto anche che una TEMPONet in senso stretto richiederebbe un'altra proposta.
+
+In decisioni.md scrivere «adattata dai principi di TEMPONet».
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] Non è vero che la tabella del §10 dica «TEMPONet»: non la nomina affatto. La voce di decisioni.md (riga 6722) dice già «non replica invariata», come il §2 alla riga 25. Restano ambigui solo i titoli. «Del codice di temponet.py non resta nulla» è una previsione sul modulo futuro, non una prova: il §2 alla riga 25 prevede di adattare il codice con attribuzione.
+  [v.evidence] ESEGUITO grep -n «TEMPONet» sul protocollo: righe 1, 5, 15, 17, 25, 108, 112, 130 e 165, nessuna nelle righe 173-180 della tabella. LETTO decisioni.md dello snapshot, riga 6722 («TCN adattata da principi e codice TEMPONet, non replica invariata»); §2 riga 25. CALCOLATO (v03_heads.py): tre k3 con dilatazioni 2/4/8 raggiungono 15 offset su 29 (14 buchi), il conto è giusto.
+  [v.corrected_statement] «TEMPONet» senza qualificazione compare nel titolo del protocollo, nel titolo del README e nell'intestazione della voce di decisioni.md (riga 6713). La tabella del §10, il corpo e la riga 6722 non inducono in errore. Basta un titolo più preciso («TCN compatta ispirata a TEMPONet»): è una nota di chiarezza, non una correzione da fare prima della firma.
+====================================================================================================
+architettura-2 | minore | Tipo di dropout non specificato
+[claim] §3 riga 33 «Dropout0.1»; riga 47 «dropout 0,1 dopo i hidden da 64 e 32»; proposal.json righe 142-148. Non dice se per elemento o per canale, né che in valutazione è spento.
+[evidence] ESEGUITO de_spec_ambiguities.py:
+- nn.Dropout(0,1) su (2,64,160) azzera il 10,4% degli elementi e nessun canale intero;
+- nn.Dropout1d(0,1), lo «spatial dropout» frequente nelle TCN, azzera 10 canali interi su 128 lungo tutte le 160 patch;
+- nn.Dropout1d sulla MLP disposta (B,T,C) azzererebbe 25 patch intere su 320.
+
+Sono tre regolarizzatori diversi e cambiano i fit. TEMPONet usa nn.Dropout per elemento, solo negli strati densi (temponet.py righe 75-86).
+[how] ESEGUITO
+[fix] Nel §3 e in proposal.json scrivere: «nn.Dropout(p=0,1) per elemento (non Dropout1d), negli stessi due punti per MLP e TCN, attivo solo in training; held interni e inferenza val in modo eval».
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] È vero che il tipo di dropout non è scritto. La catena della riga 33 però usa la notazione dei moduli PyTorch, in cui «Dropout» è nn.Dropout per elemento, e lo spegnimento in eval è il comportamento normale di model.eval(). Il codice lo rivede Claude prima del deploy. Non cambia né il disegno né i criteri da firmare.
+  [v.evidence] LETTO: §3 righe 33 e 47; proposal.json righe 142-148 (solo after_hidden_layers [4,5] e p 0.1).
+  [v.corrected_statement] Il tipo di dropout non è scritto; nella notazione della riga 33 la lettura naturale è nn.Dropout per elemento, attivo solo in training. Va scritto in una riga: nota, non minore.
+====================================================================================================
+architettura-3 | nota | Flussi del generatore casuale e ordine di creazione dei moduli non scritti
+[claim] §3 riga 35 «interni con inizializzazione Torch standard e versioni pinnate», ultimo strato a zero «come PoseHead»; §4 riga 66 generatore dedicato per lo shuffle; proposal.json riga 151.
+[evidence] ESEGUITO de_spec_ambiguities.py:
+- Con lo stesso seme, creare lo strato d'uscita per primo cambia il 100% dei pesi del primo strato 384->64 (differenza massima 0,101).
+- La LayerNorm non consuma il generatore.
+- nn.Linear(384,64) e nn.Conv1d(384,64,1) dallo stesso seme danno pesi identici.
+- La PoseHead crea l'uscita sotto fork_rng (pose_head.py righe 24-27) e non sposta il generatore (0,882269 con e senza). Una nn.Linear poi azzerata lo sposta (0,922752).
+- TCN: primo numero casuale dopo la costruzione 0,627687 con l'uscita creata normalmente, 0,106142 sotto fork_rng; cambiano le maschere di dropout.
+
+Non sono scritti né il generatore del dropout né la regola dei semi dello shuffle. Non cambia il disegno, ma cambiano i numeri esatti e gli hash dei pesi iniziali.
+[how] ESEGUITO
+[fix] Scrivere nella specifica:
+- ordine di creazione (dall'ingresso all'uscita);
+- se l'ultimo strato si crea sotto fork_rng come la PoseHead;
+- il generatore del dropout;
+- la regola dei semi dello shuffle.
+
+In alternativa dichiarare che li fissa il codice rivisto, con gli hash dei pesi iniziali per seme registrati nel manifest prima del primo fit.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] I fatti tornano: l'ordine di creazione e il fork_rng cambiano i numeri esatti, non la distribuzione né il disegno.
+  [v.evidence] ESEGUITO v06_init.py: nn.Linear(384,64) e nn.Conv1d(384,64,1) creati con lo stesso seme hanno pesi e bias identici; nn.LayerNorm non consuma il generatore. LETTO pose_head.py righe 24-30: l'uscita nasce sotto torch.random.fork_rng e viene azzerata. proposal.json riga 151 dice solo «torch defaults under seed».
+  [v.corrected_statement] Come scritto dal revisore.
+====================================================================================================
+architettura-4 | nota | Per L0 e L13 i tre semi cambiano solo l'ordine dei minibatch
+[claim] §4 riga 67 «Seme 0 per ogni fit di selezione, pesi iniziali nuovi»; riga 69 rifit con semi 0, 1, 2; §5 riga 81 «Pubblicare anche i tre esiti separati».
+[evidence] ESEGUITO de_spec_ambiguities.py: i parametri iniziali di L0 e L13 sono identici con i semi 0, 1 e 2 (LN 1/0 e unico strato a zero), e le due teste non hanno dropout. Quelli di MLP e TCN cambiano.
+
+Quindi la dispersione fra i tre esiti separati misura cose diverse nei bracci. Gli IC non ne sono toccati: sono già condizionati ai tre fit (§5 riga 91).
+[how] ESEGUITO
+[fix] Aggiungere una frase nel §4: «per L0 e L13 l'inizializzazione è deterministica e non c'è dropout: i tre semi cambiano solo l'ordine dei minibatch».
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Per L0 e L13 l'inizializzazione è deterministica e non c'è dropout. «Pesi iniziali nuovi» (riga 67) per queste due teste non vuol dire niente. Gli IC non ne sono toccati.
+  [v.evidence] ESEGUITO v03_heads.py, teste costruite da me: parametri iniziali identici fra i semi 0, 1 e 2 per L0 e L13 (True), diversi per MLP e TCN (False); in L0 e L13 nessun modulo Dropout.
+  [v.corrected_statement] Come scritto dal revisore.
+====================================================================================================
+architettura-5 | nota | Inizializzazione di default: ultimi strati dominati dai bias, selezione all'epoca 50 probabile
+[claim] §3 riga 35 e proposal.json riga 151: interni con inizializzazione Torch standard.
+[evidence] ESEGUITO i_init_recursion.py. Il default di torch 2.14 dà pesi e bias uniformi in ±1/sqrt(fan_in), cioè varianza 1/(3 fan_in), un sesto di He.
+
+CALCOLATO: nel quinto hidden il bias spiega il 90% (TCN) e l'85% (MLP) della varianza della pre-attivazione. Misura su 20 semi: 33,0% e 33,3% di unità mai accese, 39,2% e 37,3% sempre accese.
+
+ESEGUITO j_synthetic_init_completion.py su dati finti (non del progetto), con la ricetta del §4. MSE minima tenuta fuori, senza / con componente comune:
+- TCN default: 0,5569 / 0,6442 a LR 1e-4; 0,3546 / 0,3448 a 1e-3;
+- TCN He: 0,4494 / 0,4381 a 1e-4; 0,3568 / 0,3424 a 1e-3;
+- MLP default: 0,7072 / 0,7834 a 1e-4; 0,5740 / 0,5667 a 1e-3;
+- MLP He: 0,6253 / 0,5993 a 1e-4; 0,5879 / 0,5506 a 1e-3.
+
+Il minimo delle corse di default cade all'epoca 50 in 7 corse su 8 (l'ottava all'epoca 49). Sui dati finti le teste si separano come atteso (TCN circa 0,35, L0 circa 0,80). È un indizio, non una misura sui latenti.
+[how] ESEGUITO
+[fix] Nessuna correzione obbligatoria.
+
+Suggerimenti:
+- nominare il default esatto (kaiming_uniform_ con a=sqrt(5), bias in ±1/sqrt(fan_in)) accanto alla versione di torch;
+- dire a Simone che una selezione all'epoca 50 o a LR 1e-3 è attesa e verrà solo riportata (§4 riga 75);
+- se GPT preferisce l'inizializzazione He, deciderlo ora, prima di qualunque fit.
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] La parte sull'inizializzazione regge: ho rifatto la ricorsione e il Monte Carlo. Due affermazioni invece non reggono. (1) Il minimo all'epoca 50 non dipende dall'init di default: lo ha anche L0, che non ha strati interni. (2) «Il disegno sa vedere una struttura temporale non lineare quando c'è» vale nel mondo sintetico del revisore e nel mio, ma non nel mondo temporale della dimensione Selezione.
+  [v.evidence] ESEGUITO v06_init.py (torch 2.14.0): max|w| 0,05103 = 1/sqrt(384); quota del bias nel quinto hidden 0,896 (TCN) e 0,846 (MLP); unità mai accese 31,2-38,0% e sempre accese 35,9-43,8%, con due distribuzioni d'ingresso diverse. ESEGUITO v08_synth_train.py, con un generatore mio diverso da quello del revisore: minimo all'epoca 46-50 in tutte e 6 le corse, compreso L0 (46 a lr 1e-4, 50 a lr 1e-3); a lr 1e-3 TCN 0,1402 < MLP 0,1872 < L0 0,6883. LETTO review_selezione.txt [e-4]: nel mondo temporale la TCN fa -5,2% rispetto a L0, con un tetto possibile di +8,7%.
+  [v.corrected_statement] Con l'init di default la pre-attivazione del quinto hidden è dominata dai bias (85-90% della varianza) e circa un terzo delle unità non si accende mai. Sui dati sintetici il minimo cade all'epoca 46-50 anche per L0, quindi dipende dal tetto di 50 epoche e dai dati, non solo dall'init. Se la ricetta faccia vedere una struttura temporale presente dipende dal mondo sintetico. Nominare l'init esatto e, se si vuole He, deciderlo prima dei fit insieme alla ricetta.
+====================================================================================================
+architettura-6 | nota | Contesto di ±150 ms motivato solo dal crop6
+[claim] §3 riga 37: RF di 13 patch, ±150 ms, compatibile con il crop6; §4 riga 66: nessuna ricerca di RF.
+[evidence] LETTO: il crop6 storico protegge i bordi dal supporto di circa 300 ms del tokenizer T100 (docs/tokenizer_window_nonlinear_protocol_20261102.md righe 67-68 e 158-159), non è una scelta di contesto. Un grep nel protocollo su «100 ms», «0,49», «ec5b309» e «pose_temporal» non trova nulla.
+
+Il protocollo non cita:
+- i 128 ms di TEMPONet raw (CALCOLATO: 5,12 patch, solo passato);
+- il lettore lineare con ritardi -4/0/+4 (results/infra/pose_temporal_20261102/summary.json, braccio B): E_dyn dinamiche 0,85951 -> 0,85532, delta -0,00419 [-0,00633; -0,00194], cioè -0,49% relativo (CALCOLATO 0,488%); R3c -2,54%.
+
+È comunque una scelta unica fissata prima, non una ricerca.
+[how] LETTO
+[fix] Aggiungere una frase al §3: «RF 13 = massimo contesto simmetrico che non tocca il padding con il crop6 storico; contiene i 128 ms raw e il ±100 ms del lettore lineare del 02/11 (-0,49% relativo per B)».
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] È vero che il RF13 è motivato solo dall'equivalenza col crop6. È falsa invece l'evidenza «il protocollo non cita i 128 ms di TEMPONet raw»: li cita due volte (il grep del revisore non cercava «128»). Il lettore lineare con ritardi di ±100 ms è stato provato su B student con crop4, non sul T100-G teacher: è contesto, non una prova su questo checkpoint.
+  [v.evidence] ESEGUITO grep «128» sul protocollo: riga 21 («I suoi 128 ms su EMG a 2 kHz non corrispondono a 256 latenti a 40 Hz») e riga 23 («il significato temporale dei 128 ms raw»). LETTO prompt di Claude riga 85 («B student, crop4», commit ec5b309); tokenizer_window_nonlinear_protocol_20261102.md righe 67-68 e 158-159.
+  [v.corrected_statement] Nel testo il RF13 è giustificato solo dall'equivalenza col crop6. I 128 ms di TEMPONet raw sono citati alle righe 21 e 23, ma non come motivo del RF; il lettore lineare con ritardi del 02/11 (B student, crop4) non è citato. Aggiungere la frase è facoltativo.
+====================================================================================================
+architettura-7 | nota | Dipendenza effettiva della TEMPONet trapiantata a T=160 non detta; prompt di Claude incompleto
+[claim] §2 riga 23: unione nominale di 442, «prima dei limiti dell'input e del padding». Prompt di Claude, riga 109: «Campo ricettivo 378 passi [...] più della finestra di 4 s».
+[evidence] ESEGUITO a_temponet_rf.py:
+- 378 passi contigui per elemento, elementi spostati di 64, unione 442.
+- A T=160 e 384 canali, con causal=True (default) l'uscita dipende dai passi 0-123 (124 su 160; perturbazioni: 124 su 160). Con causal=False (configurazione emg2pose, scripts/temponet_emg2pose.py riga 189) dipende da tutti i 160.
+
+CALCOLATO: 378 x 25 ms = 9,45 s. Claude non aveva scritto «per elemento», ma la conclusione «più della finestra» era giusta (378 e 442 sono entrambi maggiori di 160). La correzione di GPT è corretta.
+[how] ESEGUITO
+[fix] Facoltativo, una frase nel §2: «a T=160 l'uscita dipende da tutti i 160 passi con causal=False e dai soli passi 0-123 con il default causal=True». Claude può registrare la precisazione.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] I numeri tornano. La riga 23 dice già «unione nominale di 442, prima dei limiti dell'input e del padding», quindi la frase in più è facoltativa.
+  [v.evidence] ESEGUITO v02_temponet_rf.py (propagazione simbolica degli insiemi di dipendenza, senza pesi, più controprova autograd su 5 semi). T=160 con causal=True: elemento 0 dai passi 0-59, elemento 1 dai passi 0-123, uscita da 124 passi su 160, 124 anche con autograd in 5 semi su 5; con causal=False 160 su 160. A T=4096: 378 passi contigui, salto di 64, unione 442. output_length coincide con il conto simbolico per T = 37, 38, 101, 102, 160 e 256.
+  [v.corrected_statement] Come scritto dal revisore.
+====================================================================================================
+architettura-8 | nota | Elenco «top_level_keys» troncato in raw_source_identity.json
+[claim] raw_source_identity.json righe 18-51: «top_level_keys» con 12 chiavi per eval.json e 12 per run.json.
+[evidence] ESEGUITO lettura JSON: eval.json ha 13 chiavi (manca «seconds») e run.json 28. Entrambi hanno una sola versione nel repository (12feb8b), quindi è un troncamento. Nessun effetto sull'identità dei sorgenti.
+[how] ESEGUITO
+[fix] Rinominare il campo in «first_top_level_keys» oppure elencare tutte le chiavi.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] È un troncamento senza effetto sull'identità dei sorgenti.
+  [v.evidence] ESEGUITO git show 8917e2a: eval.json ha 13 chiavi (manca «seconds»), run.json 28; le prime 12 di ciascuno coincidono con l'elenco del JSON; git log --all trova un solo commit (12feb8b) per entrambi i file.
+  [v.corrected_statement] Come scritto dal revisore.
+####################################################################################################
+REVIEW controlli verdict APPROVATO_CON_CORREZIONI
+SUMMARY: Dimensione 2 (controlli e attribuzione). Per la domanda circoscritta i bracci bastano: L0, MLP, L13, TCN-post, TCN-pre e i due riferimenti storici; non manca nessun braccio da allenare. Le affermazioni di fatto del paragrafo 3 reggono: le ho ricontrollate nel codice e con prove eseguite su dati sintetici (riduzioni della loss, 158 utenti, EMA, 40 utenti, viste pre e post medie sui 64 slot). Nuovo: L0 e ridge storica hanno la stessa classe di funzioni e gli stessi dati. Il rinvio di encoder random, TCN da zero e TEMPONet raw e' coerente con una conclusione ristretta al lettore su encoder fissato; confermo che la proposta non pretende un vantaggio del pretraining rispetto a random o raw. Nessun bloccante. Quattro rilievi minori, nessuno con fit in piu': (1) manca un controllo di sanita' della ricetta comune (L0 rifittata contro ridge e testa storiche, con lettura scritta prima); su questi latenti la ridge ha avuto bisogno di alpha 1e5, mentre il weight decay di AdamW e' trascurabile; (2) la regola «candidata» da' solo condizioni necessarie e non copre i casi in cui MLP o L13 battono la TCN; mancano i descrittivi MLP-L0 e L13-L0 (L13 contiene L0); (3) il testo sul futuro confronto raw indica come esatto un metodo che non lo e' (TEMPONet raw e' allenata sulla media del blocco a 10j+9) e stima dieci volte gli endpoint invece di circa 1,1 volte; l'EMA e' stata tarata sugli stessi 15 utenti; (4) la tabella del paragrafo 10 e decisioni.md non dicono che cosa un esito positivo autorizza. Quattro note. Nello snapshot e' comparso un __pycache__ (09:43) che non viene dai miei script.
+====================================================================================================
+controlli-1 | minore | Manca il controllo di sanita' della ricetta comune: L0 rifittata contro ridge e testa storiche, con lettura scritta prima
+[claim] PROT:83-89 definisce cinque contrasti, tutti TCN-post meno riferimento. PROT:100: TCN candidata solo se passa 1, 4 e 5, ma «Se batte L0 ma non i riferimenti gia' disponibili, l'architettura e' promettente nel confronto controllato». PROT:118: «Se la TCN migliora il lettore» si puo' passare al pretraining. PROT:65-69: AdamW, weight decay 0,01, 2 LR, al piu' 50 epoche.
+[evidence] LETTO: nessun contrasto L0 contro ridge o testa storica e' definito (PROT:83-89, 102-104; PJ righe 26-33). ESEGUITO (check_l0_ridge_class.py): PoseHead e ridge storica hanno la stessa classe di funzioni (scarto 3,4e-6 su ampiezza 9,85). ESEGUITO (check_pins.py): sono fittate sugli stessi dati (stesso train.npz 30c0b50d09fa..., 40 utenti). Quindi L0 contro ridge isola la sola ricetta. ESEGUITO (extract_ric.py su RIC): la griglia della ridge mostra forte sensibilita' alla regolarizzazione. MSE interno: alpha 1e4 +5,37%, 1e6 +2,26%, 1e2 +15,88%, 0,01 +17,32% sull'ottimo 0,656115 ad alpha 1e5. CALCOLATO: contrazione cumulata del weight decay in 3.000 passi 0,9704 (LR 1e-3) e 0,9970 (LR 1e-4). CALCOLATO (esempio): con L0 rifittata a 0,81, una TCN a 0,7938 passa il primario pur essendo -1,00% sulla ridge (0,785902) e -1,95% sulla testa (0,778629). La regola 4 e 5 ferma l'etichetta, ma non «architettura promettente» ne' l'aggancio al livello B.
+[how] ESEGUITO
+[fix] Dichiarare ora, fuori dalla famiglia e senza verdetto, i descrittivi «L0 rifittata contro ridge storica» e «L0 rifittata contro testa storica» (bootstrap appaiato, IC 95%, zero fit). Scrivere prima la lettura, per esempio riusando la regola a due lati: se L0 e' peggiore della ridge con deterioramento, i contrasti 1-3 sono confronti a ricetta fissa, niente «architettura promettente» e niente motivazione per B; altrimenti il primario si legge come scritto; se L0 e' migliore, riportarlo come effetto del rifit. In PROT:118 legare «migliora il lettore» all'esito completo di PROT:100.
+--> VERIFICA CONFERMATO -> minore
+  [v.reasoning] L0 e la ridge hanno la stessa classe di funzioni (affine nelle feature LN) e gli stessi dati, quindi il loro scarto misura solo la ricetta. La regolarizzazione esplicita di L0 è trascurabile, mentre la ridge è molto sensibile ad alpha. Il protocollo non dice come leggere il primario se L0 rifittata resta sotto la ridge. Per questo la gravità minore resta: tocca l'attribuzione del primario e la frase «architettura promettente».
+  [v.evidence] ESEGUITO v04_conti.py sulla ricevuta estratta da me con git show 2930d7d (sha256 b08e6e32...5037c14, uguale a proposal.json). MSE interno della ridge: alpha 0,01 0,769725 (+17,32%), 1e4 0,691356 (+5,37%), 1e5 0,656115 (scelto, due estensioni verso l'alto), 1e6 0,670911 (+2,26%). CALCOLATO: weight decay (1-lr·0,01)^3000 = 0,9704 a lr 1e-3 e 0,9970 a lr 1e-4 (nei fold 0,9851 e 0,9985). ESEGUITO v05_pins.py: stesso train.npz (30c0b50d..., 474.412.856 byte), 40 utenti, fold ad alternanza degli ID ordinati. CALCOLATO l'esempio L0 0,81 / TCN 0,7938: contrasti 1, 4 e 5 = +2,000%, -1,005%, -1,948%.
+  [v.corrected_statement] Come scritto dal revisore.
+====================================================================================================
+controlli-2 | minore | Regola «candidata» con sole condizioni necessarie; casi con MLP o L13 migliori non coperti; domande della tabella senza contrasto; L13 senza controllo di sanita'
+[claim] PROT:100 e PJ riga 35: TCN candidata a migliore lettore «solo se» passa 1, 4 e 5; attribuzione al contesto con TCN/MLP, alla non linearita' con TCN/L13. Tabella PROT:42-43: «Quanto basta aumentare la capacita' non lineare per istante?» (MLP), «Quanto basta una lettura lineare con lo stesso contesto?» (L13). PROT:49: L13 riguarda «questa ricetta».
+[evidence] LETTO: «solo se» non dice se 1, 4 e 5 bastino, ne' che cosa si conclude se 2 o 3 mostrano deterioramento. CALCOLATO (numeri d'esempio): L0 0,785, L13 0,730, TCN 0,750 danno contrasti 1, 4 e 5 = 4,46%, 4,57%, 3,68% e contrasto 3 = -2,74%. Allo stesso modo MLP 0,735 da' contrasto 2 = -2,04%. La TCN risulterebbe candidata mentre un controllo e' migliore. LETTO: MLP contro L0 e L13 contro L0 non sono definiti in nessun punto. ESEGUITO (check_heads.py): L13 ha 99.840 pesi, 13 volte quelli di L0, e contiene esattamente L0 (prese laterali a zero). Con regolarizzazione debole, un L13 peggiore di L0 segnalerebbe sovradattamento: il contrasto 3 misurerebbe quello, non la non linearita'.
+[how] CALCOLATO
+[fix] Completare la regola come necessaria e sufficiente: candidata se passano 1, 4 e 5 e ne' 2 ne' 3 mostrano deterioramento; altrimenti esito negativo per l'ipotesi temporale non lineare. Scrivere le letture miste (1, 4 e 5 si', 2 o 3 non risolti). Dichiarare come descrittivi, IC 95% senza cancello, «MLP contro L0» e «L13 contro L0». Il secondo vale anche come controllo di sanita': se L13 e' peggiore di L0 con deterioramento, il 3 non si attribuisce alla non linearita'. Riformulare le domande della tabella come letture di questi descrittivi.
+--> VERIFICA CONFERMATO -> minore
+  [v.reasoning] «solo se» e «only if» danno solo condizioni necessarie. Se il contrasto 2 o il 3 va nel verso opposto, la TCN prenderebbe l'etichetta «migliore lettore» anche con un controllo migliore di lei. La riga 100 dice che cosa serve per attribuire il guadagno al contesto o alla non linearità, non che cosa succede all'etichetta in quel caso.
+  [v.evidence] CALCOLATO v04_conti.py con L0 0,785, L13 0,730, MLP 0,735, TCN 0,750: c1 4,459%, c2 -2,041%, c3 -2,740%, c4 4,568% e c5 3,677%. LETTO riga 100 e proposal.json riga 35. ESEGUITO v03_heads.py: L13 ha 99.840 pesi, 13 volte i 7.680 di L0, e con le prese laterali a zero coincide con L0.
+  [v.corrected_statement] Come scritto dal revisore.
+====================================================================================================
+controlli-3 | minore | Paragrafo 6: il metodo chiamato «esatto» per il confronto raw non lo e', «circa dieci volte gli endpoint» e' sbagliato, l'EMA e' ambigua
+[claim] PROT:112: per i target FM occorre prevedere sui campioni nativi e mediare ogni blocco; «Cinque predizioni puntuali a 200 Hz per patch sono un'approssimazione dichiarata, non lo stesso bersaglio temporale». PROT:114: «L'inferenza esatta richiede circa dieci volte gli endpoint della lettura ufficiale». Stesso concetto in REG riga 5993 e design_review.txt riga 9. «Senza ritarare EMA o lag».
+[evidence] LETTO: corretta la parte su window_pose (pose_targets.py:148-180) e sui blocchi (emg2pose_pose.py:130-139). Ma TEMPONet raw e' allenata con la finestra che finisce in 10j+9 e con bersaglio la media del blocco j, dallo stesso pose_200hz_f16.npy (WT emg2pose_regression.py:96-108; temponet_emg2pose.py:102-119). Un endpoint a fine blocco da' quindi esattamente il bersaglio del FM. ESEGUITO (check_raw_grid.py): fini di training tutte congrue a 9 modulo 10; istanti ufficiali con fase qualunque (5, 9, 2). CALCOLATO: mediare le 10 uscite del blocco stima una media triangolare su 19 campioni, spostata di 4,5 campioni. CALCOLATO: 18.548 x 148 x 5 = 13.725.520 endpoint contro 12.468.000 della lettura ufficiale (1,10 volte; il metodo per campione da' 11,0 volte). ESEGUITO: scarto mediano fra media del blocco e angolo puntuale 0,000359 rad. ESEGUITO (check_raw_support.py): il passato raw resta dentro la finestra (almeno 49 campioni), quindi la frase sui 150 ms e' corretta. ESEGUITO: i 15 utenti su cui e' stato scelto l'alpha dell'EMA sono gli stessi 15 utenti val della cache FM.
+[how] ESEGUITO
+[fix] Riscrivere PROT:112-114, REG riga 5993 e design_review.txt riga 9: un endpoint per blocco valido, con la finestra che finisce in 10j+9 come nel training raw, poi stessa media per patch, standardizzazione e crop6; circa 13,7 milioni di endpoint per i 15 val, lo stesso ordine della lettura ufficiale, non dieci volte; gli istanti ufficiali non sono riusabili; si riporta l'uscita grezza senza EMA, perche' l'alpha e' stato scelto sugli stessi 15 utenti. Nessun effetto sul livello A.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] La sostanza è giusta. Un endpoint a fine blocco dà lo stesso bersaglio del FM; il metodo che GPT chiama esatto stima invece una media triangolare spostata di 4,5 campioni (2,25 ms). Gli endpoint sono 1,10 volte quelli della lettura ufficiale: il «dieci volte» è coerente con il metodo di GPT, quindi l'errore è nel metodo, non nel conto. L'alpha dell'EMA è stato tarato sui 15 val. Però il §6 descrive una prova futura esplicitamente esclusa dalla proposta e non tocca nulla del livello A: nota.
+  [v.evidence] LETTO WT emg2pose_regression.py righe 96-108 (finestra che finisce in 10j+9, bersaglio = media del blocco) e righe 66-81 (istanti ufficiali o+255+10m, fase qualunque); temponet_emg2pose.py righe 102-119 e 497-499 (tune_alpha_windows sulla val); SNAP pose_targets.py righe 148-180. CALCOLATO: 18.548 x 148 x 5 = 13.725.520 endpoint = 1,1009 x 12.468.000; con il metodo per campione 137.255.200 = 11,0086 x. ESEGUITO: gli utenti di val.ema.per_user_deg in eval.json coincidono con quelli della ricevuta (True); scarto mediano fra blocco e angolo puntuale 0,000359 rad (0,0205°) su 7.493 registrazioni. proposal.json elenca «raw TEMPONet reevaluation» fra not_in_this_proposal.
+  [v.corrected_statement] Il §6 chiama esatto un metodo (prevedere su tutti i campioni nativi, poi mediare) che stima una media triangolare spostata di 4,5 campioni. Il metodo esatto è un endpoint a fine blocco: circa 13,7 milioni di endpoint, 1,1 volte la lettura ufficiale. L'alpha dell'EMA è stato scelto sui 15 val, quindi va riportata l'uscita grezza. Da correggere nel testo, ma è una prova futura esclusa: nota.
+====================================================================================================
+controlli-4 | minore | La tabella del paragrafo 10 e la voce di decisioni.md non dicono che cosa un esito positivo autorizza e che cosa no
+[claim] PROT:173-180: la tabella delle decisioni elenca livello, checkpoint, bracci, ricetta e lettura («cinque IC aggiustati»), budget e ruoli. DEC righe 6713-6738 e' il testo da congelare. PJ riga 26: «confirmatory_family».
+[evidence] LETTO: i limiti sono sparsi nel testo (PROT:11, 73, 100, 108, 118; REG riga 5989) e assenti dalla tabella. DEC righe 6731-6732: «non autorizza a sostituire la testa se MAE/livello peggiorano». La frase lascia aperta un'adozione se non peggiorano, mentre PROT:100 esclude ogni non inferiorita' implicita: DEC e' piu' debole del protocollo. DEC riga 6721 elenca i bracci esclusi, non il perimetro della conclusione. ESEGUITO (diff): le baseline non negoziabili del v10 (righe 1129-1137) sono identiche su main e114a78 e nello snapshot. LETTO: PJ riga 25 dice «confirmation: none independent» e PROT:91 parla di «approssimazione esplorativa», contro il nome «confirmatory_family».
+[how] LETTO
+[fix] Aggiungere alla tabella una riga «Che cosa autorizza l'esito». Esito positivo = TCN candidata a lettore della dinamica centrata migliore degli esistenti su questo checkpoint. Non autorizza: la sostituzione della testa (decisione distinta dopo MAE e livello), il livello B, affermazioni sul pretraining rispetto a random o rete da zero (baseline v10 paragrafo 8 ancora dovute), una conferma su dati mai visti. Esito nullo: chiude la prova, non dimostra un limite dell'encoder. Ripetere il perimetro in decisioni.md, togliere l'ambiguita' su MAE e livello, rinominare la chiave in «contrast_family».
+--> VERIFICA PARZIALE -> minore
+  [v.reasoning] È vero che la tabella non riporta il perimetro della conclusione e che decisioni.md, il testo da congelare, omette «nessuna adozione automatica» e «nessuna non-inferiorità implicita». Non è vero invece che decisioni.md sia più debole sulla clausola «se MAE/livello peggiorano»: è la stessa della riga 100 del protocollo. Inoltre decisioni.md esclude già il livello B e la tabella rimanda alle sezioni 3-5.
+  [v.evidence] LETTO protocollo riga 100 («se MAE o livello peggiorano. Quel compromesso va discusso prima dell'adozione; nessuna non-inferiorità del livello è implicita») e righe 173-180. LETTO decisioni.md righe 6731-6732 («né a lanciare il livelloB»); ESEGUITO grep sulle righe 6713-6738: nessun «adozione» né «automatic». LETTO proposal.json riga 35 («no automatic operational adoption [...] no implied noninferiority») e righe 25-26 («confirmation: none independent» contro la chiave «confirmatory_family»).
+  [v.corrected_statement] La tabella del §10 non riporta il perimetro della conclusione. decisioni.md esclude già il livello B e la sostituzione della testa se MAE o livello peggiorano. Omette però la non-adozione automatica e la non-inferiorità non implicita, presenti in proposal.json riga 35 e nella riga 100, e non dice che la conclusione non riguarda il valore del pretraining. La chiave «confirmatory_family» va rinominata.
+====================================================================================================
+controlli-5 | nota | Contrasto 4: la ridge storica non e' «la miglior lettura lineare disponibile»
+[claim] PROT:88: «Ridge post storica: utilita' rispetto alla miglior lettura lineare disponibile».
+[evidence] ESEGUITO (extract_ric.py) + LETTO: la testa storica e' anch'essa lineare (pose_head.py:20-34) e sullo stesso supporto e' migliore. A 49.046: E_dyn 0,778629 contro 0,785902, cioe' 0,925%; a 19.618: 0,713%; a 39.237: 0,582% (scientific_readout.json). Anche la MAE e' migliore: 0,276754 contro 0,280019 rad.
+[how] ESEGUITO
+[fix] Scrivere «utilita' rispetto alla ridge lineare in forma chiusa fittata sugli stessi 40 utenti».
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Anche la testa storica è lineare (LayerNorm seguita da Linear) ed è migliore della ridge a tutte e tre le dosi.
+  [v.evidence] ESEGUITO sulla ricevuta: E_dyn della ridge 0,7859020004638595 contro 0,7786289843513977 della testa (0,9254%); MAE 0,280019 contro 0,276754 rad; stesso support_sha256 per le tre celle. ESEGUITO su scientific_readout.json: la testa è migliore dello 0,7127% a 19.618 e dello 0,5823% a 39.237.
+  [v.corrected_statement] Come scritto dal revisore.
+====================================================================================================
+controlli-6 | nota | TCN contro MLP: stessi pesi e profondita', larghezze diverse; scrivere la lettura nei due versi
+[claim] PROT:47: MLP e TCN hanno 64.128 pesi, il che «rende il controllo di capacita' preciso». PROT:86: il contrasto 2 misura l'informazione temporale utile a capacita' comparabile.
+[evidence] ESEGUITO (check_heads.py): MLP 65.300 e TCN 65.204 parametri, 64.128 pesi ciascuna, 10.260.480 MAC, sei trasformazioni, cinque ReLU, dropout negli stessi punti. CALCOLATO: la TCN con le sole prese centrali ha 39.552 pesi; le prese laterali valgono 24.576 pesi, che la MLP spende in larghezza (96 invece di 64). Una vittoria della TCN sostiene il contesto. Il pareggio e' gia' coperto dalla regola contro l'equivalenza (PROT:97, REG riga 5989). Una vittoria della MLP direbbe «a pari pesi la larghezza rende piu' di questo contesto», non «il contesto nuoce».
+[how] CALCOLATO
+[fix] Una frase in PROT:47 o PROT:86 con la lettura nei due versi. Nessun braccio in piu'.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Il conto torna: la TCN spende 24.576 pesi in contesto, la MLP li spende in larghezza.
+  [v.evidence] CALCOLATO: la TCN con le sole prese centrali ha 39.552 pesi, le prese laterali 3x2x64x64 = 24.576, totale 64.128 come la MLP. ESEGUITO v03_heads.py: 64.128 pesi ciascuna; bias 404 e 308; 6 trasformazioni, 5 ReLU e 2 Dropout per entrambe.
+  [v.corrected_statement] Come scritto dal revisore.
+====================================================================================================
+controlli-7 | nota | TCN-pre: descrizione corretta; mancano l'ancora della ridge pre storica e una lettura descrittiva scritta prima
+[claim] PROT:45 e PROT:102: TCN-pre e' descrittiva; le viste hanno contesto diverso gia' incorporato; il contrasto misura l'accessibilita' dopo il backbone, non il valore del pretraining.
+[evidence] LETTO: pre = uscita del Perceiver presa con un hook, post = enc.z dopo il backbone e la sua LayerNorm, entrambe medie sui K = 64 slot (backbone_depth.py:24, 34; fm.py:169, 210, 213; backbone.py:88, 103; consolidation_long_pose.py:76-86, 105-111). ESEGUITO (check_views.py): pre e post coincidono con il ricalcolo a mano, scarto 0,0. ESEGUITO (check_views2.py): una perturbazione in una patch cambia pre in 13 patch (da -6 a +6) e post in tutte le 160. CALCOLATO: TCN-pre vede al piu' 25 patch di segnale. ESEGUITO: la ridge pre storica esiste gia' (E_dyn 1,032128, correlazione 0,078662, predizioni pinnate) e non e' citata. LETTO: manca la regola backbone/testa chiesta dal prompt di Claude (riga 231). CALCOLATO: c'e' un effetto di bordo su 12 centri su 148.
+[how] ESEGUITO
+[fix] Affiancare la ridge pre storica come ancora descrittiva, senza fit. Scrivere prima la lettura descrittiva di TCN-post contro TCN-pre con le categorie di PROT:95-98: se il beneficio e' risolto, la vista post serve anche a una testa temporale; se il beneficio di almeno 2% non e' sostenuto, e' un segnale da discutere prima del livello B; mai conclusioni sul pretraining. Dichiarare l'effetto di bordo.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] L'ancora lineare sulla vista pre esiste già, con le predizioni pinnate, e il protocollo non la usa. I conti sul contesto e sull'effetto di bordo tornano. Il supporto di ±6 patch di pre l'ho solo letto, non rieseguito.
+  [v.evidence] ESEGUITO sulla ricevuta: ridge pre con E_dyn 1,0321280032044746, correlazione 0,0786621, rapporto delle varianze 0,0752988 e predizioni con sha256 832593f9.... LETTO backbone_depth.py righe 23-34 e fm.py righe 210 e 213: pre = uscita di pool catturata con un hook, post = enc.z, entrambe medie su dim 2; config k_latents 64. CALCOLATO: la TCN-pre legge segnale da t-12 a t+12 (25 patch, 625 ms); 12 centri su 148 hanno un supporto che esce dalla finestra.
+  [v.corrected_statement] Come scritto dal revisore.
+====================================================================================================
+controlli-8 | nota | Ridge e testa storiche: dire su quali dati sono fittate ed elencare tutte le differenze di ricetta
+[claim] PROT:51: la ridge storica minimizza la SSE aggregata, la PoseHead la MSE media per finestra; non usare la ridge da sola per attribuire il guadagno all'architettura.
+[evidence] ESEGUITO (check_pins.py): la ridge usa gli stessi 40 utenti e le stesse 1.907 finestre (stesso train.npz), ma nel protocollo il fatto e' solo implicito. LETTO: oltre alla pesatura cambiano la LN senza parametri, il fit in forma chiusa in float64, l'intercetta libera e alpha 1e5 scelto su griglia (tokenizer_pose_readout.py:41-51). CALCOLATO: e' valido l'85,28% degli elementi del crop6 nel train. LETTO: le predizioni della testa storica vengono da latenti FP32 (pose_eval.py:171-172), le teste nuove leggono la cache FP16 (riga 177); per il 49.046 lo scarto non e' verificato.
+[how] ESEGUITO
+[fix] Una frase in PROT:51: ridge fittata sugli stessi 40 utenti e 1.907 finestre, stessa classe di funzioni di L0; differisce per obiettivo, forma chiusa con alpha 1e5, LN senza parametri e float64; la testa storica predice da latenti FP32, le nuove teste dalla cache FP16.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] I fatti tornano. Altre differenze della testa storica (loss su tutte le patch e non sul crop6, finestre da 1-4 s) le ha già segnalate la dimensione Selezione.
+  [v.evidence] ESEGUITO v05_pins.py: 20 pin su 20 uguali fra proposal.json e ricevuta. CALCOLATO 4.813.620/(1.907x148x20) = 85,2765% di elementi validi. LETTO pose_eval.py righe 170-180: la testa predice da latenti FP32, la cache tiene lat in FP16. LETTO review_selezione.txt righe 144-150.
+  [v.corrected_statement] Come scritto dal revisore.
+####################################################################################################
+NEW FINDINGS block architettura-controlli
+====================================================================================================
+architettura-controlli-N1 | nota | Il link di provenienza del §2 non è quello verificato nel codice
+[claim] Protocollo riga 17: «Provenienza: Zanghieri et al., COINS 2021 (https://iris.polito.it/handle/11583/2978570)».
+[evidence] temponet.py righe 4-5 e docs/temponet_db8_replication.md riga 20 (worktree di Claude) citano [Z21] con DOI 10.1109/COINS51742.2021.9524188 e postprint https://hdl.handle.net/11585/841320, letti il 09/11. Un grep nel worktree e nello snapshot trova l'handle 11583/2978570 solo alla riga 17 del protocollo. Senza rete non posso dire se sia sbagliato: è un riferimento diverso e non verificato accanto a quello verificato.
+[how] LETTO
+[fix] Usare lo stesso riferimento del codice (DOI e postprint) oppure verificare il nuovo link prima della firma.
+====================================================================================================
+architettura-controlli-N2 | minore | Bracci non annidati: solo L13 contiene L0, TCN e MLP no
+[claim] Riga 35: «nessun ... residuale». Righe 33 e 42: in TCN e MLP ogni cammino verso l'uscita passa per 5 ReLU. La riga 49 limita la lettura a «questa ricetta e la sua parametrizzazione» solo per TCN/L13. La riga 85 chiama L0 il «primario architetturale». La cautela della riga 11 vale solo per un esito nullo, non per un deterioramento (righe 96-98).
+[evidence] CALCOLATO: L13 con le prese laterali a zero è esattamente L0, cioè lo contiene. TCN e MLP non hanno un cammino lineare: possono imitare L0 solo con bias grandi che tengono accese le ReLU, e all'init il quinto hidden è dominato dai bias (85-90%). ESEGUITO v09_linear_world.py, in un mio mondo sintetico con bersaglio lineare (640/320 finestre da 28 patch, ricetta del §4). MSE minima tenuta fuori: L0 0,2500 (lr 1e-4, epoca 42) e 0,2512 (lr 1e-3, epoca 4); TCN della specifica 0,5030 (epoca 50) e 0,3205 (epoca 44); stessa TCN con un ramo lineare 384->20 a zero 0,2495 (epoca 48) e 0,2512 (epoca 4). CALCOLATO: la TCN perde il 28,2% contro L0, mentre con il ramo lineare torna al livello di L0 (+0,2%). Sono MSE su dati finti: mostrano il meccanismo, non l'esito vero. LETTO review_selezione.txt [e-4]: stesso verso nel mondo temporale, ma senza la questione dell'annidamento.
+[how] ESEGUITO
+[fix] Prima della firma e senza fit: (i) estendere la cautela della riga 49 al primario e a MLP/L0, cioè «classi non annidate con questa ricetta: un deterioramento o un esito nullo non dimostra che una lettura temporale non lineare sia peggiore o inutile». (ii) Decidere ora, non dopo i fit, se dare a TCN e MLP un ramo lineare con uscita a zero (+7.700 parametri per testa), così che il primario misuri il beneficio aggiunto. Il punto (ii) cambia la specifica e lo scelgono GPT e Simone.
+####################################################################################################
+VERDICT OPINION block architettura-controlli
+Domanda e architettura: APPROVATO_CON_CORREZIONI. Ho rifatto con metodi miei tutti i fatti su cui poggia la specifica, e tornano: conteggi, parità MLP/TCN, RF13 senza buchi, crop6 indipendente dal padding, 160 patch reali in tutte le cache, uscita a zero, L0 = PoseHead, i numeri di TEMPONet (378, 442, 124/160) e l'identità dei sorgenti. I due rilievi minori del revisore scendono a note: la tabella del §10 non nomina TEMPONet e decisioni.md (riga 6722) dice già «non replica invariata»; quanto al dropout, nella notazione PyTorch «Dropout» è per elemento. Resta però la correzione N2. TCN e MLP non contengono L0: nel mio mondo lineare la TCN perde il 28,2% contro L0 e con un ramo lineare lo pareggia. Prima della firma va almeno scritta la cautela, oppure deciso il ramo lineare. Controlli e attribuzione: APPROVATO_CON_CORREZIONI. I bracci bastano per la domanda circoscritta e la proposta non pretende un vantaggio del pretraining: baseline v10 invariate, 20 pin su 20, numeri e supporti storici identici. Vanno corretti prima della firma: controlli-1 (L0 contro ridge, stessa classe e stessi dati), controlli-2 (regola «candidata» completa), controlli-4 in parte (decisioni.md omette la non-adozione automatica) e la cautela di N2. controlli-3 è solo una nota sul §6, che riguarda una prova futura. Un esito negativo resta leggibile solo dopo il controllo positivo chiesto dalla dimensione Selezione ([e-4]).
+####################################################################################################
+ATTACKED block architettura-controlli
+- holds=True | [architettura] Parametri: L0 8.468, MLP 65.300, L13 100.628, TCN 65.204
+   ev: ESEGUITO v03_heads.py, con le teste costruite da zero dal testo del protocollo e L0 dalla classe PoseHead dello snapshot. (totale, pesi, bias, LN): L0 (8468, 7680, 20, 768), MLP (65300, 64128, 404, 768), L13 (100628, 99840, 20, 768), TCN (65204, 64128, 308, 768).
+- holds=True | [architettura] MLP e TCN: 64.128 pesi ciascuna, 6 trasformazioni, 5 ReLU, 10.260.480 MAC per finestra
+   ev: ESEGUITO v03_heads.py: 6 trasformazioni, 5 ReLU e 2 Dropout per entrambe; MAC per finestra = pesi x 160 = 10.260.480 (L0 1.228.800, L13 15.974.400).
+- holds=True | [architettura] RF di 13 patch senza buchi, offset da -6 a +6; L0 e MLP leggono solo la patch centrale
+   ev: ESEGUITO v03_heads.py: cammini per offset con dilatazioni 1/2/3 = 1,1,2,2,3,3,3,3,3,2,2,1,1 (27 in tutto, zero buchi). Gradiente rispetto all'ingresso ai centri 6, 80 e 153: TCN e L13 dagli offset -6..+6 (13), MLP e L0 solo dall'offset 0.
+- holds=True | [architettura] I centri 6..153 non dipendono dal padding (equivalenza col crop6)
+   ev: ESEGUITO v07_crop_bn.py in float64, contro una convoluzione «valida» senza padding: scarto massimo 7,8e-16 (TCN) e 1,9e-14 (L13) con padding a zeri, replicate, reflect e circular; i bordi 0-5 invece cambiano. Con 100 patch reali, il primo centro che dipende dal riempimento è il 94.
+- holds=True | [architettura] Nelle cache del lungo tutte le finestre hanno 160 patch reali
+   ev: ESEGUITO v01_ktv_hash.py, con la funzione di hash riscritta da me: le sei ricevute (dosi 19.618, 39.237 e 49.046, train e val) hanno key_time_valid_sha256 uguale all'hash di una matrice (n,160) tutta vera, con n = 1.907 e 18.548. Basta una patch falsa perché l'hash non coincida più.
+- holds=True | [architettura] Con l'ultimo strato a zero i gradienti interni sono nulli al primo backward e non nulli dopo un passo di AdamW
+   ev: ESEGUITO v03_heads.py con la ricetta del §4 a lr 1e-3. Primo backward: 0 gradienti non nulli fra gli interni (768, 64.640, 768 e 64.544 parametri), tutti finiti. Secondo backward: L0 768/768, MLP 61.796/64.640, L13 768/768, TCN 62.284/64.544.
+- holds=True | [architettura] L0 è la stessa PoseHead (LN affine con eps 1e-5, uscita a zero)
+   ev: LETTO pose_head.py righe 20-34. ESEGUITO v03_heads.py: 8.468 parametri e inizializzazione identica fra i semi.
+- holds=True | [architettura] TEMPONet: 378 passi per elemento, unione nominale 442, uscita per finestra, BatchNorm che lega i campioni del batch
+   ev: ESEGUITO v02_temponet_rf.py (simbolico più autograd): 378 passi contigui, salto di 64, unione 442; ingressi (2,384,159), (2,160,384) e (2,384,161) rifiutati; 80.884 parametri. ESEGUITO v07_crop_bn.py: gradiente dell'uscita del campione 0 rispetto all'ingresso del campione 1 = 1754 in train e 0 in eval.
+- holds=True | [architettura] Identità byte per byte e sha256 dei sorgenti fra 60b35bd, 0c19c4b e 8917e2a
+   ev: ESEGUITO git show | wc -c | shasum -a 256: temponet.py 8519 byte (9d5a03e2...) a tutti e tre i commit; temponet_emg2pose.py 31196 byte (8d7f9dbe...) a 0c19c4b e 8917e2a, assente a 60b35bd. merge-base: 60b35bd < 0c19c4b < 8917e2a. code_sha 0c19c4b in eval.json e in run.json.
+- holds=True | [architettura] Il 49.046 è il riferimento esplorativo per la posa firmato da Simone
+   ev: ESEGUITO git log -1 8382801 (07/11 alle 14:54:02) e git show 8382801 -- docs/decisioni.md: «Sì, firmo» e «(2) per la posa 49.046 come riferimento esplorativo, con ridge post e testa allenata affiancati».
+- holds=True | [architettura] Il backbone è bidirezionale e la posa è già supervisionata nel FM
+   ev: LETTO backbone.py righe 47-63 (sola maschera delle chiavi, nessun is_causal) e riga 103 (LayerNorm finale). LETTO ricevuta LONG-G49046-pose-train: pose_head True, pose_weight 1.0, loss_per_window True, which teacher, dim 384, k_latents 64.
+- holds=False | [architettura, rapporto del revisore, d-4] Sui dati finti il disegno sa vedere una struttura temporale non lineare quando c'è
+   ev: Dipende dal mondo sintetico. Vale nel mondo del revisore e nel mio (ESEGUITO v08: TCN 0,1402 < MLP 0,1872 < L0 0,6883). Non vale nel mondo temporale della dimensione Selezione (LETTO review_selezione.txt [e-4]: TCN -5,2% rispetto a L0 con +8,7% possibile). Nel mio mondo lineare (v09) la TCN perde il 28,2% contro L0.
+- holds=True | [controlli] La ridge storica minimizza la SSE aggregata; la PoseHead del training la MSE media per finestra
+   ev: LETTO jepa.py righe 182-209 e 548-556 e run.py righe 254-260 (with_window1_rules imposta loss_per_window=True). ESEGUITO grep su launch.json del 49.046: --window1-rules e --pose-weight compaiono una volta ciascuno. Ricevuta: «pooled masked standardized SSE / valid elements».
+- holds=True | [controlli] La testa storica ha visto 158 utenti, lo studente mascherato e l'EMA; le teste nuove vedono 40 utenti e il teacher non mascherato
+   ev: LETTO jepa.py righe 121-126 (EMA di tutti i parametri) e riga 426 (enc = student.encode(inp, visible, generator)); config T100-G con EMA 0,996 e maschera 0,5; emendamento_pilot_posa_v1.md righe 22-24; consolidation_long_pose.py riga 47 (n_users=40) e riga 77 (mask None, senza gradiente).
+- holds=True | [controlli] pre = uscita del Perceiver, post = dopo il backbone e la sua LayerNorm finale, entrambe medie sui 64 slot
+   ev: LETTO backbone_depth.py righe 23-34, fm.py righe 210 e 213, backbone.py riga 103; config k_latents 64. Il supporto locale di 13 patch della vista pre l'ho solo letto nel documento del tokenizer, non rieseguito.
+- holds=True | [controlli] I pin di proposal.json coincidono con la ricevuta storica
+   ev: ESEGUITO v05_pins.py sulla ricevuta estratta da me (sha256 b08e6e32..., uguale a proposal.json): 20 confronti su 20 uguali (checkpoint, cache train e val con sha256, byte e nome, tre riferimenti con sha256, byte e percorso, 40 e 15 utenti, soglia). Fold = alternanza degli ID ordinati: True.
+- holds=True | [controlli] Valori storici a 49.046 sulle finestre dinamiche: ridge post 0,785902, testa 0,778629, ridge pre 1,032128
+   ev: ESEGUITO sulla ricevuta: 0,7859020004638595, 0,7786289843513977 e 1,0321280032044746; stesso support_sha256 per le tre celle; 8.327 finestre (8.329 selezionate), 15 utenti, 20.119.920 elementi.
+- holds=True | [controlli] I 15 utenti val sono quelli della lettura val di TEMPONet raw, su cui è stato scelto l'alpha dell'EMA
+   ev: ESEGUITO: le chiavi di val.ema.per_user_deg in eval.json coincidono con gli utenti della ricevuta (True). LETTO temponet_emg2pose.py righe 497-499 (tune_alpha_windows sulla val).
+- holds=True | [controlli] Le baseline del v10 §8 sono invariate e la proposta non pretende un vantaggio del pretraining
+   ev: ESEGUITO diff delle righe 1125-1140 di fm_emg_reference_v10.md fra e114a78 e lo snapshot: identiche. LETTO protocollo righe 11 e 108; proposal.json not_in_this_proposal («random encoder», «raw TCN training», «raw TEMPONet reevaluation»).
+- holds=True | [controlli] Il passato raw [q-255,q] rientra nel margine di 150 ms per i centri ammessi
+   ev: CALCOLATO: la patch 6 inizia a s0+300; il primo blocco con il centro dentro la patch ha 10j >= s0+295 e finisce a >= s0+304, quindi il passato parte da >= s0+49 con endpoint a fine blocco e da >= s0+40 con endpoint per campione. Coincide con il revisore.
+- holds=True | [controlli] Il supporto comune coincide con la maschera centrale storica
+   ev: LETTO tokenizer_pose_readout.py riga 30 (OFFSET 6), consolidation_long_pose.py riga 26 e righe 131-134, central_mask in pose_temporal_readout.py righe 195-199 (offset passato come parametro).
+- holds=True | [controlli] Per la domanda circoscritta non manca nessun braccio da allenare
+   ev: Regge per i bracci. Però un esito negativo o nullo è leggibile solo se le teste a sei strati arrivano al loro ottimo e se i bracci sono annidati. ESEGUITO v09: nel mondo lineare la TCN perde il 28,2% contro L0 e con un ramo lineare lo pareggia. Vedi N2 e Selezione [e-4].
+####################################################################################################
+REVIEW selezione verdict DA_RIVEDERE
+SUMMARY: Dimensione 3 (dati, supporto e selezione): DA RIVEDERE. Ho controllato contro le ricevute, il manifest e il codice queste parti, e reggono: identità di cache e riferimenti (conteggi, byte, sha256), campi della cache, supporto identico allo storico, assenza di fughe dai 15 utenti val, fold, loss e statistiche di posa. Tutte le finestre hanno 160 patch (148 centri), le 8.327 finestre dinamiche supportate si ritrovano, e le predizioni storiche sono salvate per finestra e per patch sul crop6 dei val.
+
+Le correzioni bloccanti sono due, entrambe nella ricetta di selezione.
+(1) Mancano un controllo di potenza e una regola di convergenza. Con 2 soli LR, 50 epoche, inizializzazione standard, uscita a zero e regolarizzazione quasi nulla, le teste a sei strati possono restare lontane dal loro ottimo. Nel sintetico la TCN perde il 5,2% contro L0 proprio dove potrebbe guadagnare fino all'8,7%; sullo stesso fold una ridge con ritardi guadagna il 2,7%. La proposta leggerebbe questo esito come negativo e chiuderebbe la prova.
+(2) La scelta di LR ed epoca sulla MSE totale, dominata dal livello (54-66% della MSE), ferma le teste ad alta capacità prima che imparino la dinamica. Nel sintetico L13 verrebbe scelto all'epoca 1 con E_dyn 0,8901, contro il suo ottimo di 0,7955 (+11,9%, risultato che ho riprodotto).
+
+Restano 4 correzioni minori e 5 note. I numeri del sintetico mostrano un meccanismo, non i valori veri: per questo il primo rimedio è un controllo sui latenti veri del solo train.
+====================================================================================================
+selezione-1 | bloccante | Teste a sei strati lontane dal loro ottimo: mancano un controllo di potenza della ricetta e una regola di convergenza
+[claim] PROT:35 (strati interni con inizializzazione Torch standard, uscita a zero), PROT:65-66 (AdamW, weight decay 0,01, LR {1e-4,1e-3} costante, 50 epoche, batch 32), PROT:75 «Se il migliore è all'ultima epoca o al bordo LR si riporta; non si estende automaticamente la ricerca», PROT:96-98 e 118: un esito negativo o inconclusivo chiude la prova e il livello B richiederebbe una motivazione nuova.
+[evidence] Con due soli LR ogni scelta cade al bordo: la clausola di PROT:75 scatta sempre e il bordo inferiore (epoca 1) non è previsto. La ridge storica (riferimento del contrasto 4) aveva invece un'estensione della griglia e un blocco (pose_e3_b.py:190-206; tokenizer_pose_readout.py:47 e :256), e nel lungo ha usato 2 estensioni (ricevuta FIT). ESEGUITO (init_signal.py): all'ultimo strato nascosto di MLP e TCN la varianza che dipende dall'ingresso è 2,9e-5-6,1e-5, cioè lo 0,6-2,1% della parte costante, con il 25-44% delle unità spente. CALCOLATO: servirebbero pesi d'uscita fra circa 2 e circa 15, mentre AdamW sposta un peso di al più 0,15 (lr 1e-4) o 1,5 (lr 1e-3) in 1.500 passi. Sintetico, mondo lineare (L0 e MLP ESEGUITO, TCN LETTO dal tentativo precedente): E_dyn sui val dopo il rifit L0 0,8032, MLP 0,9500, TCN 0,9714 (oracolo della TCN all'epoca 50); la MLP allenata 150 epoche resta a 0,9565. Mondo temporale (bersaglio non lineare su ±3 patch), ESEGUITO: L0 0,9357, TCN 0,9848, cioè -5,2%; il tetto teorico è 0,8539 (+8,7% possibile). Sullo stesso fold una ridge con ritardi fa +2,7% su L0, mentre la TCN con un'inizializzazione che conserva il segnale fa 0,9766-0,9857. Il limite viene dalla ricetta, non dai dati. È un meccanismo, non i numeri veri.
+[how] ESEGUITO
+[fix] Prima del congelamento, tutto sul solo train e uguale per tutte le teste. (i) Controllo positivo sui latenti veri: un bersaglio sintetico costruito con una funzione temporale non lineare nota dei lat (rumore fissato prima, per esempio per avere la MSE CV della ridge vera, 0,6561), con fold e ricetta identici. La ricetta è ammessa solo se la TCN batte L0 di almeno il 2% su E_dyn interna. (ii) Regola di convergenza scritta prima, simmetrica a quella della ridge: almeno 3 LR (per esempio 1e-4, 3e-4, 1e-3, 3e-3) con un'estensione al bordo, un'estensione unica delle epoche se il migliore cade nelle ultime cinque, l'epoca 1 riportata come bordo inferiore. (iii) Regola di lettura: una testa ancora al bordo, o che non supera (i), è «non a convergenza» e i suoi contrasti non si leggono come negativi. Se (i) fallisce, regolarizzazione o taglia delle teste vanno riviste prima del lancio (verdetto 1). Il costo va ricalcolato.
+--> VERIFICA CONFERMATO -> bloccante
+  [v.reasoning] Ho costruito con codice mio un secondo mondo sintetico (mondo V), diverso da quello del revisore: il vantaggio temporale viene da un ritardo o anticipo (tanh(1,5 d_{t-2}), d_{t+2}), ed e' calibrato sui numeri veri (ridge CV 0,7555, quota del livello 60,2% e 57,5%). Il meccanismo si riproduce, e con un guadagno disponibile molto piu' grande: con la ricetta proposta la TCN perde contro L0, mentre un lettore lineare con ritardi guadagna il 21%. Tre controlli mostrano che conta la ricetta: con 150 epoche lo stesso fit passa a +3,65%; con un'inizializzazione che conserva il segnale va a +2,6%; un LR di 3e-3 non aiuta. La parte dell'evidenza su pesi d'uscita e passo di Adam non dimostra la causa: il limite di Kingma e Ba con beta1 0,9 e beta2 0,999 e' 3,16 lr, e gli strati interni si muovono anch'essi.
+  [v.evidence] ESEGUITO run_v.py, fold 0 -> fold 1. L0 lr 1e-4: scelta all'epoca 17, MSE 0,7269, E_dyn 0,7834. TCN lr 1e-3: scelta all'epoca 43, MSE 0,7776, E_dyn 0,8077, con il minimo di E_dyn all'ultima epoca a 1e-4, 1e-3 e 3e-3. Ridge con ritardi -6..6 (ridge_v_dir.py): E_dyn 0,6164; oracolo 0,5573. TCN a 150 epoche: scelta all'epoca 93, E_dyn 0,7548 (+3,65%). TCN con inizializzazione kaiming: scelta all'epoca 46, E_dyn 0,7629 (+2,6%), MSE +4,1% rispetto a L0. ESEGUITO v6_init_signal.py: all'ultimo strato nascosto varianza 2,85e-5 - 6,46e-5, pari allo 0,63-2,12% della parte costante, con il 28-44% delle unita' spente. LETTO pose_e3_b.py:190-206, tokenizer_pose_readout.py:47 e :256, PROT:75.
+  [v.corrected_statement] Con la ricetta proposta (due LR, tetto di 50 epoche, inizializzazione standard, uscita a zero, regolarizzazione quasi nulla) il segno del contrasto primario puo' dipendere dalla ricetta piu' che dal guadagno leggibile. Nel mondo V vale -3,1% a 50 epoche, +3,65% a 150 epoche e +2,6% con un'inizializzazione che conserva il segnale, mentre un lettore lineare con ritardi da' +21%. Servono un controllo positivo sui latenti veri del solo train e regole di convergenza e di lettura scritte prima dei fit. Il conto sui pesi d'uscita e' contesto, non prova della causa.
+====================================================================================================
+selezione-2 | bloccante | La selezione sulla MSE totale, dominata dal livello, ferma le teste prima che imparino la dinamica
+[claim] PROT:61 e 68: LR ed epoca scelti sul minimo della MSE per finestra, calcolata su tutte le finestre; il primario è E_dyn centrata sulle sole dinamiche (PROT:79-81).
+[evidence] ESEGUITO (medie della ricevuta FIT sui val): il livello è il 54,4% della MSE della ridge post sulle dinamiche e il 65,9% su tutte le finestre (testa storica: 54,0% e 66,0%). Nel sintetico l'epoca ottima per la MSE viene prima di quella ottima per E_dyn: L0 epoca 14 contro 23 (+1,2%), TCN +1,4%, MLP +0,2%. L13 (LETTO dal processo del tentativo precedente; riprodotto da me su un fold, ESEGUITO): la MSE held è minima all'epoca 1 (0,8420) e poi sale, con E_dyn 0,8901 in quel punto, mentre E_dyn scende fino a 0,7955 all'epoca 24. Lo scarto è +11,9%, e al suo ottimo L13 batterebbe L0 (0,8079). La distorsione dipende dalla testa e può rovesciare i contrasti 1-3, in particolare TCN/L13.
+[how] ESEGUITO
+[fix] Scegliere (LR, epoca) sulla E_dyn interna, messa in comune sulle finestre dinamiche dei due fold (soglia congelata, somme come PROT:81). MSE, livello e MAE restano secondari, e la regola di PROT:100 continua a proteggere il livello. In alternativa, se si tiene la MSE, scrivere prima una regola per i casi in cui l'epoca scelta è lontana dall'ottimo dinamico interno (per esempio: contrasto non interpretabile per quella testa) e pubblicare le due curve. In entrambi i casi la regola va in docs/decisioni.md prima dei fit.
+--> VERIFICA PARZIALE -> minore
+  [v.reasoning] Le quote del livello sono giuste, e il meccanismo per L13 si riproduce nel mondo V, piu' piccolo: scegliendo sulla MSE L13 perde il 3,66% di E_dyn, contro l'11,9% del revisore. Sul contrasto primario la distorsione e' invece piccola in tutti i casi osservabili: netto circa 0,5 punti nel mondo V; nei mondi del revisore L0 +1,2% e TCN +1,4%, oppure +0,3% e +0,1%. Il rovesciamento e' dimostrato solo per il contrasto 3, che e' interpretativo: la regola del candidato usa i contrasti 1, 4 e 5. Inoltre il rimedio principale (scelta su E_dyn) ha un costo sul livello che il revisore non quantifica.
+  [v.evidence] ESEGUITO v1_receipt_metrics.py: quota del livello 54,42% e 65,89% per la ridge, 54,03% e 65,95% per la testa (il revisore scrive 66,0%). ESEGUITO mondo V, L13 lr 1e-4: minimo MSE all'epoca 5 (0,7107, E_dyn 0,6335); minimo E_dyn all'epoca 23 (0,6111), dove la MSE e' 0,7401 (+4,14%). Mondo V: L0 0,7834 contro 0,7821 (+0,17%); TCN 0,8077 contro 0,8023 (+0,67%). LETTO l13_fold.log del revisore: MSE 0,9412-0,9692 alle epoche 20-25 contro 0,8420 all'epoca 1. LETTO temporal_L0_TCN.log del revisore.
+  [v.corrected_statement] La scelta sulla MSE ferma presto le teste che sovradattano il livello, e la distorsione dipende dalla testa: e' grande per L13 (3,7-12%), piccola per TCN e L0 (netto 0,5 punti o meno). Il rischio pratico riguarda il contrasto 3 (TCN/L13), non la regola del candidato. Scegliere su E_dyn interna peggiora per costruzione il livello (MSE +4% nel mondo V, +12-15% nel mondo del revisore). Meglio tenere la MSE, scrivere prima una regola e pubblicare entrambe le curve, oppure fissare prima un criterio combinato.
+====================================================================================================
+selezione-3 | minore | Riferimenti storici: appaiamento corretto nel codice ma non pinnato nel contenuto
+[claim] PROT:51 «predizioni pinnate sullo stesso supporto»; PJ references pinna solo sha256 e byte dei file.
+[evidence] LETTO (consolidation_long_pose_runtime.py:270-282, tokenizer_pose_readout.py:263-271): le predizioni sono float64 di forma (18.548, 148, 20) sul crop6 dei soli val, senza indice di utente né di finestra (vale l'ordine di val.npz); l'aggregazione impone già l'appaiamento (consolidation_long_pose.py:301-311). La ricevuta FIT pinna support_sha256 973930475e..., targets c907b85b.../960c8328... e prediction_sha256 2cd9a800... e 6eed75d6...: PJ non li riporta. CALCOLATO: i rapporti di compressione (95,3% e 53,3%) sono coerenti con float64 pieno e con float32 convertito in float64.
+[how] LETTO
+[fix] Aggiungere a PJ gli hash di contenuto e la forma attesa. Prima dei contrasti 4-5, ricalcolare il supporto da val.npz e riprodurre gli accumulatori per utente della ricevuta FIT (E_dyn 0,7859020004638595 e 0,7786289843513977, già pubblicati).
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] Dire che i riferimenti non sono pinnati nel contenuto e' sbagliato: lo sha256 del file fissa ogni byte, quindi anche dtype, forma e valori. Anche gli hash di contenuto sono pinnati in modo transitivo, perche' PJ:240 pinna la ricevuta FIT che li contiene. Resta utile solo un test meccanico d'appaiamento, che PROT:140-141 prevede gia' in termini generali.
+  [v.evidence] ESEGUITO: sha256 della ricevuta FIT b08e6e32...7c14 = PJ:240; la ricevuta contiene prediction_sha256 2cd9a800... e 6eed75d6... e support_sha256 973930475e.... LETTO consolidation_long_pose_runtime.py:270-282 e PROT:140-141.
+  [v.corrected_statement] Il contenuto e' gia' fissato dagli sha256 dei file in PJ e, in modo transitivo, dalla ricevuta FIT pinnata. Si consiglia solo un test d'ingresso che riproduca 0,7859020004638595 e 0,7786289843513977 dalle predizioni pinnate e dall'ordine di val.npz.
+====================================================================================================
+selezione-4 | minore | Rifit a parità di epoche: circa il doppio dei passi, non dichiarato
+[claim] PROT:69 «numero di epoche fisso ... il rifit riproduce il prefisso della ricetta».
+[evidence] CALCOLATO: circa 953 finestre per fold danno 30 passi per epoca; le 1.907 del rifit ne danno 60. PROT non lo dice (grep). Sintetico ESEGUITO: per L0, all'epoca scelta MSE 0,8472 ed E_dyn 0,8032, contro 0,8337 e 0,8120 a parità di passi; per la MLP 0,9114 e 0,9500 contro 0,9001 e 0,9567. La MSE peggiora dell'1,3-1,6% ed E_dyn migliora dello 0,7-1,1%: la direzione dell'errore dipende dalla metrica.
+[how] CALCOLATO
+[fix] Dichiarare in PROT §4 la regola, la sua conseguenza (60 passi per epoca contro circa 30) e la motivazione; non cambiarla dopo i fit.
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] La regola e' scritta (numero di epoche fisso), e' fissata prima ed e' uguale per tutte le teste; il raddoppio dei passi e' aritmetica. I numeri sintetici del revisore sono giusti. In piu', per la TCN la regola alternativa a parita' di passi sarebbe peggiore in entrambe le metriche: l'effetto cambia segno fra le teste, ma non c'e' una lacuna di regola.
+  [v.evidence] CALCOLATO: ceil(953/32) = 30 e ceil(1907/32) = 60 passi per epoca. ESEGUITO grep: PROT non parla mai di passi per epoca. LETTO rerun_L0.json, rerun_MLP.json e r2_TCN.json del revisore: L0 0,8472/0,8032 contro 0,8337/0,8120; MLP 0,9114/0,9500 contro 0,9001/0,9567; TCN 0,9179/0,9714 contro 0,9571/0,9902.
+  [v.corrected_statement] Il rifit a parita' di epoche fa circa il doppio dei passi (60 contro 30 per epoca). Conviene dichiararlo con la motivazione, ma la regola esiste gia' (PROT:69) e non va cambiata dopo i fit.
+====================================================================================================
+selezione-5 | minore | Valutazione held interna: modalità eval, momento della misura ed epoca 0 non specificati
+[claim] PROT:68 e PJ fit.selection.
+[evidence] LETTO: né PROT né PJ dicono se la valutazione si fa con dropout spento e senza gradiente, alla fine di ogni epoca 1-50, né se l'epoca 0 è candidata. MLP e TCN hanno dropout 0,1 (PROT:33 e 47): una valutazione in modalità train renderebbe rumorosa e gonfiata la curva di selezione.
+[how] LETTO
+[fix] Specificare: valutazione con model.eval(), no_grad e FP32 alla fine di ogni epoca 1-50; epoca 0 esclusa; curve salvate nel manifest di selezione prima del rifit.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] E' vero che eval/no_grad, il momento della misura e l'epoca 0 non sono specificati. Pero' e' un dettaglio d'implementazione standard, che PROT:139 mette gia' fra i test; l'epoca 0, con uscita costante a zero, non puo' vincere in pratica.
+  [v.evidence] ESEGUITO grep su PROT e PJ: nessuna occorrenza di eval(), no_grad, determin*, cudnn o «epoca 0». LETTO PROT:139.
+  [v.corrected_statement] Specificare la valutazione held in eval e no_grad a fine epoca, con epoca 0 esclusa: e' una precisazione redazionale, non una correzione di disegno.
+====================================================================================================
+selezione-6 | minore | Semi dello shuffle e politica di determinismo su GPU da fissare prima del benchmark
+[claim] PROT:66-67; PJ shuffle_rng, cv_seed 0, refit_seeds [0,1,2], precision FP32/TF32 off.
+[evidence] LETTO: non sono scritte la derivazione numerica dei semi dello shuffle (fold 0/1, rifit 0/1/2) né l'uguaglianza delle permutazioni fra i due LR. ESEGUITO: su CPU i miei rilanci sono identici cifra per cifra. LETTO (nota del 09/11 su A100): con cudnn.deterministic=True le Conv1d dilatate della TEMPONet raw sono circa 13 volte più lente (14,6 contro 1,1 ms per passo); PROT e PJ non dicono quale politica si adotta.
+[how] LETTO
+[fix] Scrivere come si derivano i semi, usare le stesse permutazioni per entrambi i LR e per tutti i bracci (TCN-pre compresa), e fissare la politica di determinismo prima del gate di PROT:165: costo misurato nel benchmark, oppure non determinismo dichiarato con gli artefatti congelati come unico riferimento.
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] L'uguaglianza delle permutazioni fra i due LR e fra tutti i bracci e' gia' scritta: PJ:74 dice «identical minibatch ordering across heads for same fold/seed», e il LR non entra nella chiave. Mancano solo la derivazione numerica dei semi e la politica di determinismo. Il determinismo bit per bit non e' un requisito, perche' gli artefatti si congelano e non sono previsti rilanci; il suo costo riguarda la dimensione dei costi.
+  [v.evidence] LETTO PJ:74, PROT:71 e PROT:75. ESEGUITO grep: nessuna politica di determinismo, solo «FP32, autocast off, TF32 off». LETTO memoria reference_cudnn_dilated_deterministic.md: 14,6 contro 1,1 ms per passo, misurati sulla sola TEMPONet raw.
+  [v.corrected_statement] Da fissare: la derivazione numerica dei semi dello shuffle e una politica di determinismo dichiarata. L'appaiamento degli ordini fra LR e bracci e' gia' nella proposta.
+====================================================================================================
+selezione-7 | nota | I «4,720 GiB di input» sono le sole due cache, senza i riferimenti
+[claim] PROT:55 «senza duplicare 4,720 GiB di input»; AC frozen_cache_total_bytes 5068390194.
+[evidence] CALCOLATO: 474.412.856 + 4.593.977.338 = 5.068.390.194 byte = 4,7203 GiB. I tre riferimenti pesano 652.548.847 byte (0,6077 GiB), per un totale di 5,3280 GiB. Decompresse, le due predizioni float64 occupano 2 x 439.216.640 byte.
+[how] CALCOLATO
+[fix] Scrivere 4,720 GiB di cache + 0,608 GiB di riferimenti = 5,328 GiB, e contare circa 0,88 GB in più nella RAM della fase di metriche.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] L'aritmetica e' giusta. La frase di PROT:55 parla delle cache, quindi e' solo imprecisa nella parola «input». La parte sulla RAM appartiene alla dimensione dei costi.
+  [v.evidence] CALCOLATO: 5.068.390.194 byte = 4,72031 GiB; riferimenti 652.548.847 byte = 0,60773 GiB; totale 5,32804 GiB. Predizioni decompresse 2 x 439.216.640 byte = 0,818 GiB; rapporti di compressione 0,9527 e 0,5329.
+  [v.corrected_statement] Scrivere 4,720 GiB di cache + 0,608 GiB di riferimenti = 5,328 GiB riusati in loco.
+====================================================================================================
+selezione-8 | nota | Ponte SCRATCH->WORK delle cache e liste dei fold non pinnati in PJ
+[claim] PROT:130 «bridge esplicito SCRATCH->WORK»; PROT:67 fold «come nella ridge storica».
+[evidence] LETTO: in PJ i riferimenti hanno il source_path SCRATCH, le cache no. Mancano gli sha256 delle ricevute di estrazione (27297241..., 1321038a...) e il rimando al manifest della copia 424f0ec. I fold sono descritti come regola; le liste di 20+20 utenti stanno solo nella ricevuta FIT (ESEGUITO: sono gli ID ordinati alternati).
+[how] LETTO
+[fix] Aggiungere a PJ source_path, sha256 delle ricevute, commit del manifest e le due liste di utenti, con un controllo d'uguaglianza nel codice come nel lungo.
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] PJ non riporta il source_path delle cache, le ricevute ne' le liste dei fold, ma la catena delle prove e' completa per via transitiva. La ricevuta FIT pinnata contiene i percorsi SCRATCH delle cache con gli stessi sha256, gli sha256 delle ricevute di estrazione e le liste fold_users; il manifest 424f0ec conferma la copia.
+  [v.evidence] ESEGUITO: sha256 delle ricevute 27297241... e 1321038a... a 2930d7d, citati nella ricevuta FIT. LETTO git show 424f0ec: copy.sha256, source.sha256 e copy.sizes uguali a PJ per i cinque file; ricevuta della copia «354 file; byte: 21062138097; sha256 identici».
+  [v.corrected_statement] Nulla manca nella catena delle prove. Aggiungere a PJ il rimando a 424f0ec e le liste dei fold e' una comodita', insieme a un controllo d'uguaglianza nel codice.
+====================================================================================================
+selezione-9 | nota | Tutte le finestre hanno 160 patch: dichiararlo; contare le finestre train senza centri prima dei fit
+[claim] PROT:59 e 137 (lunghezze variabili; finestre senza centri da dichiarare).
+[evidence] ESEGUITO: l'hash di un key_time_valid tutto True (N,160) coincide con quello delle ricevute (1.907 e 18.548 finestre), e una sola finestra da 159 patch lo cambierebbe. LETTO: pose_eval.py:98-110 costruisce sempre finestre da 160 patch. Sul val 1.928 finestre non hanno supporto centrato (ricevuta FIT); per il train il conteggio non c'è (CALCOLATO: l'85,3% delle posizioni centrali è valido).
+[how] ESEGUITO
+[fix] Dichiarare N_i = 160 (supporto = mask[:, 6:154]) e testare il ramo a lunghezze variabili solo con fixture. Nel benchmark train-only, prima della selezione, contare per fold le finestre senza centri e i passi per epoca.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Ho reimplementato arrays_hash: un key_time_valid (N,160) tutto True riproduce gli hash delle ricevute. Il conteggio delle finestre train senza centri non e' nelle ricevute.
+  [v.evidence] ESEGUITO v2_ktv_hash.py: 0065b939fb66... (N=1.907) e 04749cb00eda... (N=18.548) coincidono; una finestra da 159 patch, oppure la forma (N,161), cambiano l'hash. LETTO pose_eval.py:98-110 e consolidation_long_pose.py:131-134.
+  [v.corrected_statement] Tutte le finestre hanno 160 patch, quindi il supporto e' mask[:, 6:154]; prima della selezione vanno contate le finestre train senza centri.
+====================================================================================================
+selezione-10 | nota | La PoseHead storica è stata allenata su tutte le patch di finestre da 1-4 s, le teste nuove sul crop6
+[claim] PROT:51 e 61 (stessa riduzione per finestra).
+[evidence] LETTO (jepa.py:173-205; config del checkpoint con loss_per_window true e finestre da 1 a 4 s): la riduzione è la stessa (prima per finestra, poi fra finestre), ma il supporto della testa storica erano tutte le patch esistenti; le nuove teste usano i 148 centri di finestre da 4 s. Inoltre la loss pesa le finestre, E_dyn pesa gli elementi (pose_dynamics.py:134-146).
+[how] LETTO
+[fix] Dichiarare in PROT:51 e §4 la differenza di supporto e di pesi.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] La loss storica valeva su tutte le patch esistenti, con finestre da 1 a 4 s; E_dyn pesa gli elementi. PROT:51 dichiara 158 utenti, mascheramento ed EMA, ma non questa differenza di supporto. Il disegno non cambia.
+  [v.evidence] LETTO jepa.py:173-178 e 182-205, pose_dynamics.py:134-146. ESEGUITO (ricevuta train): loss_per_window True, min_window_s 1.0, max_window_s 4.0.
+  [v.corrected_statement] Dichiarare in PROT:51 il supporto della PoseHead storica: tutte le patch valide di finestre da 1 a 4 s.
+====================================================================================================
+selezione-11 | nota | Il weight decay 0,01 non regolarizza: il regolarizzatore effettivo è l'arresto, a granularità di un'epoca
+[claim] PROT:65 (weight decay 0,01) come risposta alla domanda 4 del prompt di Claude sull'overfitting; PROT:75 cita come bordi solo l'ultima epoca e il bordo LR.
+[evidence] CALCOLATO: il fattore AdamW per passo è (1 - lr x 0,01); dopo 3.000 passi resta 0,970 (lr 1e-3) e 0,997 (lr 1e-4), dopo 1.500 passi 0,985 e 0,9985. La ridge non regolarizzata ha CV 0,7697 contro 0,6561 all'ottimo (+17,3%, ricevuta FIT). ESEGUITO: nel sintetico L0 a lr 1e-3 ha l'ottimo all'epoca 1 in entrambi i mondi.
+[how] CALCOLATO
+[fix] Dichiarare che il regolarizzatore effettivo è l'arresto e aggiungere l'epoca 1 ai bordi da riportare (vedi selezione-1).
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Il fattore AdamW per passo e il confronto con la ridge sono giusti; anche nel mondo V, L0 a lr 1e-3 ha l'ottimo all'epoca 1.
+  [v.evidence] CALCOLATO: (1-1e-5)^3000 = 0,9704, (1-1e-6)^3000 = 0,9970, (1-1e-5)^1500 = 0,9851, (1-1e-6)^1500 = 0,9985. ESEGUITO (ricevuta FIT): CV 0,7697255 ad alpha 0,01 contro 0,6561154 ad alpha 1e5, +17,32%. ESEGUITO mondo V: L0 lr 1e-3, minimo all'epoca 1 (0,7373).
+  [v.corrected_statement] Il weight decay 0,01 e' quasi inerte: il regolarizzatore effettivo e' l'arresto, a granularita' di un'epoca, e l'epoca 1 va aggiunta ai bordi da riportare.
+####################################################################################################
+REVIEW criteri verdict APPROVATO_CON_CORREZIONI
+SUMMARY: Dimensione 4 (metriche, famiglia, regola di decisione, paragrafo 5 del protocollo c15aac9): APPROVATO CON CORREZIONI, nessun rilievo bloccante. Reggono: la definizione di E_dyn, identica a quella del lungo (riprodotti 0.7859020004638595 e 0.7786289843513977 dalle somme per utente della ricevuta pinnata, ESEGUITO); la media dei tre semi dagli accumulatori, che e' esattamente la media aritmetica dei tre E_dyn anche replica per replica e non e' un ensemble; la soglia del 2% e la condizione sull'IC, uguali al criterio del 02/11 e al lungo ma al 99%; la famiglia di cinque contrasti, fissata prima e uguale nei tre testi; la regola, esaustiva e a due lati, che sotto effetto nullo non scatta. Simulazione con ipotesi dichiarate, pesi veri dei 15 utenti e 20.000 insiemi per scenario. Con eterogeneita' fra utenti realistica e rumore di seme fino a 0,5% il beneficio scatta al piu' nello 0,06% dei casi con effetto vero 0%, nel 42-50% con il 2% e nel 94-100% con il 4%. La decisione positiva e' quindi in pratica "stima >= 2%". La copertura vera dell'IC percentile 99% e' 96,0-97,3% per contrasto e 85-91% per la famiglia (nominale 95%). L'errore Monte Carlo dei limiti con 2.000 repliche e' di circa 0,01-0,05 punti. Quattro correzioni minori prima della firma. Prima, e piu' importante: una regola scritta prima per i semi discordi, perche' l'IC non contiene il rumore fra semi; se questo vale 0,5-1%, il "no" con un effetto vero del 2% e' sbagliato nel 5-26% dei casi simulati. Poi: la precedenza delle etichette, perche' "deterioramento" e' sempre anche "non sostenuto"; la definizione di "passa" e la regola del candidato, oggi assenti da decisioni.md; le definizioni dei secondari, con lo schema dei giunti emg2pose_pose.JOINTS che esiste ma non e' citato. Sei note di miglioramento.
+====================================================================================================
+criteri-3 | minore | Il rumore fra semi non entra nell'IC e non c'e' una regola per tre semi discordi
+[claim] Protocollo riga 81: media dei tre semi dagli accumulatori e pubblicazione dei tre esiti separati; riga 91: IC condizionati ai tre fit; righe 95-98: le etichette usano solo la stima media e l'IC bootstrap sugli utenti. Nessuna regola dice come leggere semi che danno etichette diverse.
+[evidence] CALCOLATO: errore di seme della stima media = sigma_seed*sqrt(2/3) per i contrasti 1-3 e sigma_seed/sqrt(3) per i contrasti 4-5. Con sigma_seed 0,5% valgono 0,41 e 0,29 punti, quanto o piu' della deviazione bootstrap dei contrasti storici fra lettori (0,114-0,461%). ESEGUITO c6_seed_bootstrap.py, R=20.000, riferimento rifittato, sigma_u 0,7 e 1,5. Copertura dell'IC99 del protocollo: 0,9664-0,9702 senza rumore di seme, 0,9000-0,9545 con sigma_seed 0,25%, 0,7305-0,9000 con 0,5%, 0,4647-0,7325 con 1%. 'Non sostenuto' sbagliato con effetto vero 2%: 0,016-0,017, 0,025-0,047, 0,051-0,126 e 0,133-0,263. Beneficio sbagliato con effetto vero 1%: 0,117-0,136 con sigma_seed 1%. Con il bootstrap a due livelli (utenti e semi) il 'no' sbagliato scende a 0,016-0,048. Con la concordanza dei tre semi il beneficio sbagliato a 1% scende a 0,000-0,034, il 'no' sbagliato a 2% a 0,011-0,073; la potenza al 3% e' 0,58 con sigma_seed 1%. c4, riferimento storico: 'no' sbagliato a 2% 0,084-0,195 con sigma_seed 1%. Nel progetto nessuno ha misurato sigma_seed per queste teste.
+[how] ESEGUITO
+[fix] Prima della firma, senza cambiare fit, semi o dati: (1) riportare per braccio e per contrasto la deviazione standard fra i tre semi accanto a quella bootstrap; (2) 'beneficio' e 'non sostenuto' valgono solo se i tre semi della TCN, ciascuno contro la media dei semi del riferimento o contro il riferimento storico, danno la stessa etichetta; altrimenti 'inconclusivo, sensibile al seme', che chiude come l'inconclusivo. Alternativa per il 'no': IC dal bootstrap a due livelli. E' indispensabile scrivere prima una regola; quale delle due la sceglie GPT.
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] I conti sono giusti, e la mia approssimazione normale da' lo stesso ordine di grandezza. Ma che l'IC non contenga il rumore fra semi e' dichiarato in PROT:91 («condizionati ai tre fit»). Una regola per i semi discordi esiste gia' ed e' univoca: decide la media dagli accumulatori (PROT:81), mentre i tre esiti separati sono descrittivi. Non serve quindi nessuna lettura post hoc; il rimedio proposto e' un miglioramento, non una lacuna.
+  [v.evidence] ESEGUITO v3_rule_and_seed.py: con deviazione bootstrap 0,17-0,46 e sigma_seed 0,5%, copertura IC99 0,68-0,95 e P(non sostenuto | vero 2%) 0,027-0,161; con sigma_seed 1% 0,40-0,79 e 0,10-0,30. ESEGUITO v4_real_contrasts.py: deviazioni bootstrap vere 0,151-0,318. CALCOLATO: errore di seme sigma*sqrt(2/3) e sigma/sqrt(3).
+  [v.corrected_statement] Il limite e' dichiarato e la decisione e' univoca (media dei tre semi). Conviene riportare la deviazione standard fra semi accanto a quella bootstrap; se Simone vuole proteggere il «no», adottare ora il bootstrap a due livelli o la concordanza dei semi.
+====================================================================================================
+criteri-1 | minore | Le quattro etichette si sovrappongono e la precedenza non e' scritta
+[claim] Protocollo righe 95-98, proposal.json:37, decisioni.md:6728-6730: beneficio (stima >= 2% e L > 0), deterioramento (stima <= -2% e U < 0), beneficio >= 2% non sostenuto (U < 2), inconclusivo (U >= 2 senza beneficio). Nessun ordine; la chiusura senza promozione e' scritta solo per l'inconclusivo (riga 98).
+[evidence] ESEGUITO d_rule_enumeration.py. Griglia {-3,...,3} per stima, L e U con L <= U: 196 combinazioni, nessuna senza etichetta (regola esaustiva). Non esclusiva: deterioramento e non sostenuto valgono insieme in tutte le 7 combinazioni coerenti di deterioramento, per esempio (-3,-3,-1), perche' U<0 implica U<2. Beneficio e non sostenuto valgono insieme solo con la stima sopra U; d2_estimate_outside_ci.py la trova fuori dall'IC99 in 0 casi su 20.000 in ciascuno dei 16 scenari, quindi il caso e' solo teorico. La regola differisce da practical_assessment del lungo (consolidation_long_pose.py:353-361): (1,1,2) passa da small a inconclusivo, (-1,-3,-1) da small a non sostenuto, (-3,-3,0) da inconclusive a non sostenuto.
+[how] ESEGUITO
+[fix] Scrivere l'ordine, la prima condizione vera decide: beneficio, deterioramento, non sostenuto, inconclusivo. Per stima >= 2% con U < 2: 'inconclusivo'. Scrivere che anche 'non sostenuto' e 'deterioramento' chiudono la prova senza promozione. Dichiarare che la regola e' nuova rispetto a practical_assessment e non va implementata riusandolo.
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] La sovrapposizione e' confermata. Pero' D+NS non e' una contraddizione, e la conseguenza e' gia' scritta: PROT:100 rende la TCN candidata solo se passa, quindi D, NS e I chiudono tutti senza promozione, e PROT:118 esclude il seguito automatico. Il caso B+NS richiede una stima fuori dal proprio IC. Una sola correzione: la frase «Stessa sostanza in proposal.json:37» e' falsa (vedi N1).
+  [v.evidence] ESEGUITO v3_rule_and_seed.py su 2.601 terne: nessuna senza etichetta; (D,NS) in 180 terne, cioe' sempre con D; (B,NS) in 30 terne, che scompaiono con L <= stima <= U. CALCOLATO a mano i tre passaggi da practical_assessment (consolidation_long_pose.py:353-361). ESEGUITO grep: PJ:37 contiene solo NS e I.
+  [v.corrected_statement] Basta una frase d'ordine (prima condizione vera: B, D, NS, I) e la nota che practical_assessment non si riusa. La decisione non cambia.
+====================================================================================================
+criteri-2 | minore | 'Passa' e 'servono' non sono definiti; regola del candidato assente da decisioni.md
+[claim] Riga 100: la TCN e' candidata a migliore lettore della dinamica centrata solo se passa il primario e i confronti 4 e 5; per il contesto servono anche TCN/MLP, per la ricetta non lineare temporale TCN/L13. proposal.json:35: 'only if primary and both historical-reference contrasts pass'.
+[evidence] LETTO: l'unico esito positivo definito e' 'beneficio pratico risolto' (riga 95); 'passa' e 'servono' non sono legati a un'etichetta. docs/decisioni.md:6713-6738 non contiene la regola del candidato ne' le condizioni su TCN/MLP e TCN/L13. decisioni.md:6727 scrive 'riduzione relativa E_dyn dinamiche TCNpost-L0', che si legge come E_TCN - E_L0 (negativa se la TCN e' migliore); il protocollo (riga 83) usa invece 100*(E_ref-E_TCN)/E_ref. CALCOLATO: richiedere tre contrasti positivi e' un test di intersezione-unione; Bonferroni lo rende piu' conservativo, non sbagliato.
+[how] LETTO
+[fix] Scrivere: 'passa' = beneficio pratico risolto nei contrasti 1, 4 e 5, tutti e tre; 'servono anche TCN/MLP' = beneficio pratico risolto nel contrasto 2; 'TCN/L13' = beneficio pratico risolto nel contrasto 3. Stesse parole in protocollo, proposal.json e nella voce di decisioni.md da congelare, con la formula 100*(E_ref-E_TCN)/E_ref.
+--> VERIFICA CONFERMATO -> minore
+  [v.reasoning] «Passa» non e' legato a un'etichetta, e per i contrasti 4-5 potrebbe essere letto come solo L>0, una soglia molto piu' bassa del 2%. La regola del candidato manca da decisioni.md. Riserve: la voce di decisioni.md si dichiara proposta, e la lettura di «TCNpost−L0» come E_TCN−E_L0 e' forzata, perche' la riga dice «riduzione relativa».
+  [v.evidence] LETTO PROT:95-100, PJ:35 e SNAP docs/decisioni.md:6713-6738 (nessuna regola del candidato).
+  [v.corrected_statement] Definire «passa» = beneficio pratico risolto nei contrasti 1, 4 e 5, e congelare la regola del candidato con le stesse parole in protocollo, PJ e decisioni.md.
+====================================================================================================
+criteri-5 | minore | Secondari definiti in modo incompleto; lo schema dei giunti esiste ma non e' citato
+[claim] Riga 104: correlazione centrata, rapporto delle varianze, errore del livello, MAE in radianti e gradi; per giunto e pollice secondo nomi dello schema.
+[evidence] LETTO: il lungo definisce gia' correlazione = somma cov/sqrt(somma varp*somma vary), rapporto delle varianze e level_mse, errore del livello al quadrato in unita' standardizzate (consolidation_long_pose.py:293-298). Definisce anche la MAE in radianti su tutte le celle valide, comprese quelle con un solo punto (tokenizer_pose_readout.py:285-299). Il protocollo non rimanda a queste funzioni e lascia aperte tre scelte: l'unita' dell'errore del livello, il supporto della MAE e l'aggregazione per giunto e pollice. ESEGUITO grep: lo schema c'e' in src/wearusfm/ingest/emg2pose_pose.py:51-52 (JOINTS: le prime quattro colonne sono THUMB_CMC_FE, THUMB_CMC_AA, THUMB_MCP_FE, THUMB_IP_FE), sia nello snapshot sia su main e114a78. Il protocollo non lo cita. Riga 100: MAE e livello entrano nella discussione dell'adozione.
+[how] LETTO
+[fix] Rimandare a consolidation_long_pose._metrics (correlazione, rapporto delle varianze, level_mse) e a tokenizer_pose_readout.summarize (MAE, celle con almeno un punto); gradi = radianti*180/pi; gruppi tutte, dinamiche e statiche con la stessa soglia. Per giunto: stesse metriche per colonna, nell'ordine emg2pose_pose.JOINTS. Pollice: aggregato delle quattro colonne THUMB_* come rapporto fra somme, piu' i quattro valori singoli. Per seme e media aritmetica.
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] I fatti sono veri. Ma «secondo nomi dello schema» indica gia' lo schema esistente, i secondari sono senza esito («no pass/fail»), e PROT:100 vieta nuove soglie dopo gli esiti. Il rischio di una scelta selettiva e' basso.
+  [v.evidence] ESEGUITO sed/grep: emg2pose_pose.py:50-52 (JOINTS, con le colonne THUMB_* per prime), identico su e114a78. LETTO consolidation_long_pose.py:293-298, tokenizer_pose_readout.py:285-299 e PJ:33.
+  [v.corrected_statement] Prima del congelamento rimandare a _metrics e a summarize e citare JOINTS: e' una precisazione redazionale.
+====================================================================================================
+criteri-6 | nota | Copertura vera dell'IC percentile 99%: circa 97% per contrasto, 85-91% per la famiglia
+[claim] Riga 91: IC percentile 99% per contrasto, Bonferroni per una copertura simultanea nominale 95%, approssimazione esplorativa con circa dieci repliche per coda.
+[evidence] CALCOLATO: 2000*0,005 = 10 repliche per coda; 1-5*0,01 = 0,95. Teoria con pesi uguali: P(|t14| < 2,5758*sqrt(14/15)) = 0,974. ESEGUITO c1_coverage.py: copertura dell'IC99 0,9628-0,9709 con i pesi veri (code normali o t3), 0,9682-0,9728 con pesi uguali, 0,9598-0,9608 con pesi sbilanciati; ogni coda manca 0,013-0,021 invece di 0,005. ESEGUITO c3_family.py: copertura simultanea dei cinque 0,8547-0,9100. ESEGUITO c2_alternatives.py: con 20.000 repliche 0,9645-0,9730 (non ripara); percentile nominale 99,8% 0,9855-0,9891; t-jackknife con 14 gradi di liberta' 0,9773-0,9908; BCa 0,9402-0,9707. Effetto sulla decisione quasi nullo: con effetto vero 2% e senza rumore di seme il 'no' e' sbagliato nel 0,015-0,016 dei casi (c4).
+[how] ESEGUITO
+[fix] Non indispensabile. Scrivere accanto a 'nominale 95%' la copertura attesa con 15 utenti: circa 97% per contrasto e 85-91% per la famiglia. Se si vuole la copertura nominale, fissare ora il percentile al 99,8% o la t-jackknife, prima dei dati.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] La teoria e una simulazione mia, indipendente, danno la stessa copertura del revisore.
+  [v.evidence] CALCOLATO: P(|t14| < 2,5758 x sqrt(14/15)) = 0,9740 e 0,97^5 = 0,859. ESEGUITO v5_mc_and_coverage.py (4.000 insiemi x 2.000 repliche, pesi veri): copertura 0,9630-0,9722, code 0,013-0,020.
+  [v.corrected_statement] Copertura vera circa 97% per contrasto e 85-91% per la famiglia, come scritto dal revisore.
+====================================================================================================
+criteri-7 | nota | Errore Monte Carlo dei limiti con 2.000 repliche
+[claim] Riga 91: 2.000 repliche, seme 20261102.
+[evidence] ESEGUITO c5_mc_error.py, 400 semi indipendenti per ciascun B. Testa allenata contro ridge a 49.046, dati veri: deviazione Monte Carlo del limite inferiore 0,027 punti con 2.000 repliche (0,16 deviazioni bootstrap) e 0,009 con 20.000. Col seme del protocollo il limite inferiore vale 0,4328 con 2.000 repliche e 0,4158 con 20.000. Dose della ridge: 0,022-0,026 punti contro 0,008. Insieme sintetico al 2%: 0,035-0,045 contro 0,011-0,014. Teoria: 0,109 contro 0,034 deviazioni bootstrap. Un'etichetta cambia solo se un limite cade entro circa 0,1 punti da 0 o da 2.
+[how] ESEGUITO
+[fix] Non indispensabile. Fissare ora 20.000 repliche (costo di secondi), oppure tenere 2.000 e scrivere ora che un limite entro 0,1 punti dalla soglia si riporta come 'al bordo' senza cambiare etichetta.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] La teoria e il ricalcolo con il seme del protocollo coincidono con il revisore.
+  [v.evidence] CALCOLATO: errore del quantile 0,1091 deviazioni con B=2.000 e 0,0345 con B=20.000. ESEGUITO v5: IC99 testa-ridge [0,4328; 1,2543] con 2.000 repliche e [0,4158; 1,2543] con 20.000.
+  [v.corrected_statement] Errore MC dei limiti circa 0,02 punti con 2.000 repliche: conta solo per un limite vicino a 0 o a 2.
+====================================================================================================
+criteri-4 | nota | Il 2% rispetto al rumore: largo per il campionamento degli utenti, ignoto per i semi
+[claim] Righe 91 e 95; il 2% viene dal protocollo del 02/11 (riga 191) come argine contro effetti minuscoli.
+[evidence] LETTO D-4 (0ab9d98, claude_review_contrastive_comparison_20261116.md:356): E_dyn 0,47-0,90% fra bracci storici, un metro grezzo. ESEGUITO a_real_heterogeneity.py su 12 contrasti appaiati gia' pubblicati sugli stessi 15 utenti: deviazione bootstrap del miglioramento relativo 0,114-0,461%, deviazione fra utenti 0,47-1,57 punti, numero efficace di utenti 13,1, semiampiezza dell'IC99 0,30-1,14 punti. CALCOLATO: il 2% vale da 2,2 a 4,3 volte lo scarto D-4 e da 4,3 a 17,5 volte la deviazione bootstrap. Il rumore fra semi della testa non e' misurato. Per L0 e L13 l'inizializzazione e' deterministica (righe 35, 41, 43): i loro semi cambiano solo l'ordine dei minibatch.
+[how] ESEGUITO
+[fix] Nessuna correzione alla soglia. Scrivere come grandezza da riportare la deviazione standard fra i tre semi, per braccio e per contrasto (vedi criteri-3).
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Le fonti citate sono giuste. I miei ricalcoli su cinque contrasti del lungo rientrano negli intervalli del revisore.
+  [v.evidence] LETTO 0ab9d98 claude_review_contrastive_comparison_20261116.md:356 ed e114a78 tokenizer_window_nonlinear_protocol_20261102.md:191-197. ESEGUITO v4_real_contrasts.py: deviazioni bootstrap 0,151-0,318, deviazioni fra utenti 0,51-1,32, semiampiezze IC99 0,38-0,82; dosi 6,3212% e 6,5220%.
+  [v.corrected_statement] Il 2% e' largo rispetto al campionamento degli utenti; il rumore fra semi non e' misurato.
+====================================================================================================
+criteri-8 | nota | 'Tre esiti separati': come si appaiano i semi nei contrasti 1-3
+[claim] Riga 81: pubblicare i tre esiti separati; riga 66: ordine dei minibatch identico fra bracci a parita' di fold e seme.
+[evidence] LETTO: nei contrasti 4-5 l'esito per seme e' univoco. Nei contrasti 1-3 restano possibili due letture: seme s contro seme s, con lo stesso ordine dei minibatch, oppure ciascun seme contro la media del riferimento. ESEGUITO b_seed_average.py: rapporto delle medie 12,293714% contro media dei rapporti appaiati 12,293702%, differenza del secondo ordine.
+[how] LETTO
+[fix] Scrivere ora una lettura: seme s contro seme s, con i nove incroci solo descrittivi. Serve anche alla regola di concordanza di criteri-3.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Non e' scritto come si appaiano i semi nei contrasti 1-3. La cosa e' solo descrittiva, perche' decide la media.
+  [v.evidence] LETTO PROT:66 e PROT:81.
+  [v.corrected_statement] Scrivere seme s contro seme s per i tre esiti separati.
+====================================================================================================
+criteri-9 | nota | Test d'ingresso: riprodurre esattamente i due E_dyn storici
+[claim] Riga 140: metriche confrontate con un oracolo semplice.
+[evidence] ESEGUITO a_reproduce.py sulla ricevuta LONG-FIT-G49046 (sha256 b08e6e32...5c14 = proposal.json:240). Risultati: 0.7859020004638595 e 0.7786289843513977, 8.327 finestre dinamiche, 20.119.920 elementi, IC95 identici a scientific_readout.json. Le predizioni storiche pinnate sono gia' ritagliate al crop6 in float64 (consolidation_long_pose_runtime.py:274-282).
+[how] ESEGUITO
+[fix] Prima della lettura val, ricalcolare col codice nuovo gli E_dyn dei due riferimenti storici dalle predizioni pinnate e dai target. Richiedere l'uguaglianza entro circa 1e-12 e i conteggi 8.327 / 20.119.920; se il test fallisce ci si ferma.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Ho riprodotto con codice mio i due E_dyn storici e i conteggi dalle somme per utente.
+  [v.evidence] ESEGUITO v1_receipt_metrics.py: 0.7859020005 e 0.7786289844; 8.327 finestre; 20.119.920 elementi; IC95 [0,764136; 0,806253] e [0,757344; 0,798780].
+  [v.corrected_statement] Test d'ingresso utile e poco costoso, che coincide con la parte valida di selezione-3.
+====================================================================================================
+criteri-10 | nota | 'Se MAE o livello peggiorano' senza definizione di peggioramento
+[claim] Riga 100: un vantaggio dinamico non basta se MAE o livello peggiorano; il compromesso va discusso prima dell'adozione e nessuna nuova soglia si sceglie dopo gli esiti. proposal.json:35.
+[evidence] LETTO: 'peggiorano' non e' definito. Il lungo ha gia' una regola descrittiva pronta, _clear_regressions (consolidation_long_pose.py:376-388): segnala il livello se il limite inferiore dell'IC95 del delta di level_mse e' > 0 e la correlazione se il limite superiore e' < 0; select_reference (righe 391-408) la usa per 'defer_tradeoff'. L'etichetta del candidato non cambia, ma la frase del rapporto sul peggioramento, scritta dopo i numeri, sarebbe post hoc.
+[how] LETTO
+[fix] Scrivere ora: 'peggiorano' = segnale di _clear_regressions su level_mse e correlazione, eventualmente anche sul delta della MAE, con IC95 sugli utenti. E' solo un segnale che rinvia l'adozione a Simone; nessuna soglia di non inferiorita' nuova.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] «Peggiorano» non e' definito, e una regola descrittiva riusabile esiste gia' nel codice del lungo.
+  [v.evidence] LETTO PROT:100, PJ:35 e consolidation_long_pose.py:376-388 (_clear_regressions) e :391-408 (select_reference).
+  [v.corrected_statement] Definire ora «peggiorano» con _clear_regressions (IC95 sugli utenti) come solo segnale descrittivo.
+####################################################################################################
+NEW FINDINGS block selezione-criteri
+====================================================================================================
+selezione-criteri-N1 | minore | proposal.json non contiene la regola di beneficio ne' il deterioramento
+[claim] La regola a quattro esiti sta in PROT:95-98 e in decisioni.md, ma non in proposal.json, che e' il testo macchina da cui partira' il codice. In PJ mancano la condizione «limite inferiore aggiustato > 0» del beneficio e l'etichetta simmetrica di deterioramento. La frase del revisore dei criteri «Stessa sostanza in proposal.json:37» non e' esatta.
+[evidence] grep -i «deterior|worsen|benefit|lower» su PJ: l'unica riga e' PJ:37 «readout_failures», che contiene solo NS e I. PJ:34 ha solo practical_improvement_percent 2. decisioni.md:6729 scrive «deterioramento simmetrico».
+[how] ESEGUITO
+[fix] Scrivere in PJ le quattro etichette con le stesse parole di PROT:95-98, piu' l'ordine di criteri-1 e la definizione di «passa» di criteri-2, e congelare lo stesso testo in decisioni.md.
+====================================================================================================
+selezione-criteri-N2 | minore | Nessun esito «testa non a convergenza» nella regola di decisione
+[claim] PROT:75 dice soltanto «si riporta» quando il migliore e' all'ultima epoca o al bordo LR, senza conseguenze sull'etichetta. Un fallimento della ricetta verrebbe quindi chiamato «deterioramento pratico» o «non sostenuto» della TCN. Il revisore dei criteri non lo considera.
+[evidence] Mondo V (run_v.py): con la ricetta proposta la TCN ha il minimo di E_dyn all'ultima epoca a 1e-4, 1e-3 e 3e-3, e l'analogo del primario vale -3,1%, mentre una ridge con ritardi sulla stessa direzione da' +21,3%. Con 150 epoche lo stesso fit da' +3,65%.
+[how] ESEGUITO
+[fix] Aggiungere al §5, prima dei fit, l'esito «non a convergenza» definito dal rimedio (iii) di selezione-1: una testa al bordo dopo le estensioni, o che non supera il controllo positivo, non produce un'etichetta negativa.
+====================================================================================================
+selezione-criteri-N3 | nota | Soglia implicita della regola del candidato: decide il contrasto 5
+[claim] Per essere candidata, la TCN deve avere E_dyn <= 0,763056, cioe' il 2% sotto la testa allenata su 158 utenti e il 2,91% sotto la ridge storica, oltre a battere L0 del 2%.
+[evidence] 0,7859020 x 0,98 = 0,770184 e 0,7786290 x 0,98 = 0,763056; il secondo e' il 2,907% sotto la ridge (v7_folds_params.py).
+[how] CALCOLATO
+[fix] Dirlo a Simone accanto al costo, nella sintesi della decisione.
+====================================================================================================
+selezione-criteri-N4 | nota | Il rimedio principale di selezione-2 sposta la distorsione sul livello
+[claim] Scegliere LR ed epoca su E_dyn interna produce lettori con livello e MSE peggiori per costruzione, che poi la cautela di PROT:100 tratterebbe come compromesso sfavorevole.
+[evidence] ESEGUITO, mondo V, L13: all'ottimo di E_dyn (epoca 23) MSE held 0,7401, contro 0,7107 all'ottimo di MSE (epoca 5): +4,14%. LETTO l13_fold.log del revisore: MSE 0,9412-0,9692 alle epoche 20-25 contro 0,8420 all'epoca 1, cioe' +11,8% / +15,1%.
+[how] ESEGUITO
+[fix] Preferire la variante del revisore (tenere la MSE, scrivere prima una regola sulla distanza dall'ottimo dinamico interno, pubblicare entrambe le curve) oppure un criterio combinato fissato prima dei fit.
+####################################################################################################
+VERDICT OPINION block selezione-criteri
+Selezione: DA_RIVEDERE. Resta un solo bloccante. selezione-1 si riproduce in un mondo sintetico costruito in modo indipendente: con la ricetta proposta il primario vale -3,1% a 50 epoche, +3,65% a 150 epoche e +2,6% con un'inizializzazione che conserva il segnale, mentre un lettore lineare con ritardi guadagna il 21%. Senza controllo positivo sui latenti veri e senza regole di convergenza e di lettura scritte prima, un «no» non e' interpretabile e chiuderebbe la prova. selezione-2 scende a minore: e' reale soprattutto per L13 (contrasto 3), e il suo rimedio principale costa sul livello. Gli altri rilievi sono note, in parte gia' coperte da pin transitivi (la ricevuta FIT e' pinnata in PJ:240).
+
+Criteri: APPROVATO_CON_CORREZIONI. Con codice mio ho riprodotto E_dyn storici, IC, quote del livello, copertura (0,963-0,972 per contrasto) ed errore Monte Carlo: metrica, media dei semi, soglia e famiglia reggono. Prima del congelamento vanno corretti tre punti: definire «passa» (criteri-2), allineare proposal.json al protocollo (N1) e aggiungere l'esito «non a convergenza» (N2). criteri-1, criteri-3 e criteri-5 sono veri ma scendono a note: la precedenza non cambia la decisione, la media dei semi decide gia' in modo univoco e il limite dell'IC sui semi e' dichiarato in PROT:91.
+####################################################################################################
+ATTACKED block selezione-criteri
+- holds=True | Cache 1.907/40/200 e 18.548/15/1.950, byte e sha256 di train.npz e val.npz come in PJ
+   ev: ESEGUITO v7_folds_params.py sulle ricevute a 2930d7d: train 474412856 / 30c0b50d09fa..., val 4593977338 / 36bab32e5a53...; finestre, utenti e registrazioni come in PJ. LETTO git show 424f0ec: stessi sha256 e byte in origine e in copia.
+- holds=True | checkpoint_sha256 e stats_sha256 della proposta
+   ev: ESEGUITO: in entrambe le ricevute di estrazione checkpoint bfa6141fc2ed..., passo 49046, teacher, pose_stats 757f2aeebf68..., uguali a PJ:18 e PJ:247.
+- holds=True | Riferimenti e ricevuta FIT pinnati correttamente
+   ev: ESEGUITO: sha256 della ricevuta = b08e6e32...7c14 = PJ:240; artefatti 59367/fc9a9fd1..., 418440754/36fb5f9b... e 234048726/9dbd52a0..., uguali a PJ:185-202 e al manifest 424f0ec.
+- holds=True | Tutte le finestre hanno 160 patch; 148 centri
+   ev: ESEGUITO v2_ktv_hash.py con arrays_hash reimplementata: gli hash di (N,160) tutto True coincidono con le ricevute; una sola finestra da 159 patch, oppure la forma (N,161), cambiano l'hash.
+- holds=True | 8.327 finestre dinamiche supportate
+   ev: ESEGUITO v1: 8.329 selezionate, 8.327 supportate, 166.540 coppie finestra/giunto, 20.119.920 elementi; per tutte le finestre 18.548 selezionate e 16.620 supportate.
+- holds=True | Due fold da 20 utenti con ID ordinati alternati, disgiunti dai 15 val
+   ev: ESEGUITO v7: fold_users = [sorted(u)[::2], sorted(u)[1::2]] per post_ridge e pre_ridge, 40 utenti distinti, intersezione con i val = 0.
+- holds=True | Parametri L0 8.468, MLP 65.300, L13 100.628, TCN 65.204 (MLP e TCN 64.128 pesi di trasformazione)
+   ev: ESEGUITO v7 con istanze mie costruite dalle specifiche di PROT:33-47: 8468, 65300, 100628, 65204; pesi con ndim >= 2: 64128 per MLP e per TCN.
+- holds=True | Nessun dato dei 15 val entra nella selezione
+   ev: LETTO pose_eval.py:40: la soglia dinamica e' la mediana dei val, ma serve solo alla metrica. Precisazione: con il rimedio di selezione-2 la soglia entrerebbe anche nella selezione; e' una costante congelata dei soli bersagli, da dichiarare.
+- holds=True | L0 con AdamW a 1e-4 arriva alla ridge entro 50 epoche
+   ev: ESEGUITO nel mio mondo V: L0 lr 1e-4 MSE held 0,7269 all'epoca 17, contro la ridge in forma chiusa 0,7370 (alpha scelto sul fold letto); a lr 1e-3 il minimo e' gia' all'epoca 1.
+- holds=True | Clipping, LR costante e ultimo batch conservato non danno instabilita'
+   ev: ESEGUITO summ_v.py: tutte le curve di 8 fit del mondo V (fino a 150 epoche e LR 3e-3) sono finite.
+- holds=True | E_dyn come nel lungo, riproduce 0.7859020004638595 e 0.7786289843513977
+   ev: ESEGUITO v1_receipt_metrics.py, codice mio: 0.7859020005 e 0.7786289844, IC95 uguali a scientific_readout.
+- holds=True | La media degli accumulatori fra i tre semi e' la media aritmetica dei tre E_dyn, anche in ogni replica
+   ev: CALCOLATO: con V_u uguale fra semi (imposto da consolidation_long_pose.py:305-311), sum_u mean_s C_su / sum_u V_u = mean_s E_s, e lo stesso con i pesi m_bu di ogni replica.
+- holds=True | Soglia del 2% e limite inferiore > 0 come nel criterio del 02/11, a livello 99%
+   ev: LETTO e114a78 tokenizer_window_nonlinear_protocol_20261102.md:191-197. CALCOLATO: in ogni replica 1 - E_c/E_r > 0 se e solo se E_c - E_r < 0.
+- holds=True | Famiglia di cinque contrasti uguale nei tre testi
+   ev: LETTO PROT:83-89, PJ:26-32 e decisioni.md («famiglia5contrasti...»). La regola di decisione invece non e' uguale nei tre testi (N1).
+- holds=True | Regola esaustiva e a due lati
+   ev: ESEGUITO v3_rule_and_seed.py: nessuna delle 2.601 terne resta senza etichetta.
+- holds=True | Copertura dell'IC99 circa 97%
+   ev: ESEGUITO v5 (simulazione mia): 0,9630-0,9722; CALCOLATO con t14: 0,9740.
+- holds=True | Sotto effetto nullo il beneficio non scatta; al 4% scatta quasi sempre
+   ev: CALCOLATO con l'approssimazione normale: con deviazione della stima 0,17-0,46 P(stima >= 2 | vero 0) < 1e-5 e P(stima >= 2 | vero 4) > 0,9999; con sigma_u 3 circa 0,009.
+- holds=True | La soglia storica divide a meta' le finestre val con pose_var finita
+   ev: ESEGUITO: 8.329 + 8.329 = 16.658 finestre con pose_var finita; 1.890 non finite.
+- holds=True | Coerenza con la domanda 6 del prompt (anche il «no» scritto prima)
+   ev: LETTO PROT:95-98, 100 e 118. Regge nella forma, ma manca un esito «non a convergenza»: un fallimento della ricetta verrebbe letto come deterioramento o non sostenuto (N2).
+####################################################################################################
+REVIEW costo verdict APPROVATO_CON_CORREZIONI
+SUMMARY: Dimensione 5, costo e fattibilità, proposta GPT c15aac9. I conti del paragrafo 9 tornano tutti: 4 GPU-ore, 12 core-ore solo CPU, 44 core-ore allocate e 44 ore locali con il billing che risulta dagli AllocTRES del progetto (8 per un job da 1 GPU e 8 CPU, numero di CPU sui job seriali, a parità di memoria). I tetti sono plausibili e larghi. Sui fit, i micro-benchmark sintetici sul Mac (MPS e CPU, macchina carica) danno una matrice raddoppiata da 0,27 a 0,69 h, cioè un margine da 4 a 11 volte sotto le 3 ore. Sull'inferenza il margine è di 28 volte, perché domina la decompressione. Stimo il costo atteso fra 3,5 e 8,3 ore locali su 44: è una stima grossolana mia. Le 44 ore sono lo 0,00636% del residuo committato del 09/11. Gli NPZ sono compressi con np.savez_compressed. Una vista della validazione pesa 2,12 GiB e il picco storico per caricare tutto è stato di 8,86 GiB, quindi 24 e 32 GiB bastano. Le 15 predizioni pesano 3,3166 GiB e il tetto di 8 GiB basta. Le regole operative sono rispettate e i numeri coincidono in tutti i documenti. Due rilievi minori da chiudere prima della firma e del piano eseguibile. Primo: il gate non è ancora meccanico, perché mancano formula, numero di job e --time, regola della memoria con la parte fissa, modo cuDNN e flag admitted. Secondo: a Simone mancano la stima attesa, il residuo con la frazione e le ore locali per fase. Seguono otto note. Nessun rilievo bloccante.
+====================================================================================================
+costo-1 | minore | Il gate di costo è ben intenzionato ma non ancora meccanico
+[claim] Protocollo riga 165: raddoppiare la proiezione dell'intera matrice con 50 epoche per tutti i fit, includendo validazione, I/O e avvii, entro le 3 GPUh della fase. L'inferenza raddoppiata deve stare entro 0,5 GPUh, con «CPU e memoria nei rispettivi tetti»; se il gate fallisce ci si ferma. proposal.json riga 209 dice invece «CPU/storage caps must also pass».
+[evidence] LETTO: sono fissati il fattore 2, le 50 epoche, i 35 fit, la scala 18.548 x 15, le soglie 3 e 0,5 e lo stop senza riduzioni. Non c'è nessuna formula, né nel protocollo né nel JSON, e nessun codice. Mancano: le misure nominate e la statistica; il numero di job e il --time di ciascuno; la regola di scala dell'I/O (per byte 9,684, per finestre 9,726) e le due viste; una regola di memoria che nomini insieme RAM, VRAM e disco (la VRAM ha requisito null alle righe 226-227); l'obbligo di usare nel benchmark lo stesso modo cuDNN, gli stessi thread e la stessa posizione dei dati dei fit. Il grep di determin|cudnn|graph|thread su protocollo e JSON non trova niente; nella replica TEMPONet il modo deterministico rendeva le convoluzioni dilatate 13 volte più lente (docs/temponet_db8_replication.md:116 a 8917e2a). Mancano anche il punto di congelamento e chi può autorizzare un'ottimizzazione del codice dopo un gate fallito. CALCOLATO, su un job diverso e solo come esempio: con le ricevute GPU della lunga a 2930d7d (RSS 3.097.219.072 byte sul train e 20.192.440.320 sulla val) la regola «RSS del train x 18.548/1.907» darebbe 28,06 GiB contro 18,81 misurati. Supererebbe 0,85 x 32 = 27,2 GiB: la parte fissa CUDA, circa 1,06 GiB, non scala. Esiste già un modello meccanico: BENCHMARK_POLICY e project_benchmark in scripts/consolidation_long_pose_runtime.py, righe 26-36 e 145-163, con il rifiuto alla riga 244.
+[how] LETTO
+[fix] Prima del benchmark, scrivere in decisioni.md e nel codice, con test CPU, una funzione di proiezione sul modello di project_benchmark. Deve contenere: misure nominate e statistica; numero di job e --time, con somma di (--time + 180 s) entro il tetto di fase; regola di scala dell'I/O; memoria come parte fissa più parte proporzionale alle finestre, oppure misurata su un surrogato della dimensione della val; soglie per RAM, VRAM e disco; modo cuDNN e thread identici ai fit; flag admitted controllato dal launcher dei fit. Allineare protocollo e JSON sulle grandezze controllate.
+--> VERIFICA PARZIALE -> minore
+  [v.reasoning] Il gate fissa già più cose di quanto dica il revisore. La riga 163 del protocollo nomina le misure: caricamento, epoca per architettura e per dimensione fold/full, valutazione interna, salvataggio, RSS/VRAM, warmup incluso nel costo. Fissa anche il fattore 2, le 50 epoche, i 35 fit e le soglie. Mancano davvero tre cose: la statistica delle epoche, una regola di memoria con una parte fissa e l'obbligo che il benchmark usi le stesse impostazioni numeriche dei fit. Due punti sono irrilevanti: la scala dell'I/O (per byte o per finestre, 0,44% di differenza) e la VRAM. L'esempio di memoria del revisore usa i job di estrazione GPU, non l'analogo giusto. Anche con cuDNN deterministico il tetto non è a rischio. Il rilievo va chiuso prima del benchmark, non prima della firma.
+  [v.evidence] ESEGUITO: grep -i -E «determin|cudnn|graph|thread» su protocollo e proposal.json: nessuna riga (exit 1). LETTO: protocollo righe 163-165; proposal.json righe 209 e 226-227; SNAP/scripts/consolidation_long_pose_runtime.py righe 27-36 (BENCHMARK_POLICY), 145-163 (project_benchmark) e 244. CALCOLATO sulle ricevute a 2930d7d: picco del LONG-BENCH-pose 1.383.280.640 byte × 9,7263 = 12,53 GiB, contro 9.513.836.544 byte (8,86 GiB) misurati nel LONG-FIT-G49046: sovrastima di 1,41 volte, ma ammesso. VRAM riservata dall'estrazione del FM intero: 3.932.160.000 byte su 68.099.571.712. Analogo peggiore del progetto (TEMPONet raw deterministica, 18,5 ms per passo, 8917e2a docs/claude_GPT_shared:8492): 75.000 × 18,5 ms × 2 = 0,77 h, contro 3 h. Rapporto di scala 9,6835 contro 9,7263.
+  [v.corrected_statement] Il gate fissa già grandezze misurate, fattore 2, 50 epoche, 35 fit, scala e soglie. Prima del benchmark vanno scritti, nel piano eseguibile e nel codice rivisto, tre elementi: la statistica delle epoche; una regola di memoria con una parte fissa o con un surrogato della val, che è l'unico punto capace di produrre un arresto spurio seguito da una regola post hoc; l'obbligo di usare nel benchmark le stesse impostazioni numeriche dei fit (cuDNN, thread, posizione dei dati). Numero di job e --time appartengono al piano eseguibile.
+====================================================================================================
+costo-4 | minore | Simone riceve il tetto, ma non la stima attesa, il residuo né le ore locali per fase
+[claim] Righe 147 e 169: il tetto è di 4 GPUh, 12 coreh solo CPU e 44 ore locali ed «è un tetto, non una misura»; saldo e quota sono storici. proposal.json riga 215: measured_estimate null. Riga 179: la decisione sul budget spetta a Simone.
+[evidence] LETTO: CLAUDE.md chiede che ogni richiesta di conferma per un job dichiari il costo stimato in ore locali e in GPU-ora e quanto resta del budget. Per CLAUDE.md del 28/10 l'approvazione della proposta comprende sottomissione ed esecuzione, e la riga 182 fa seguire alla decisione l'esecuzione «entro il tetto concordato». Lettura mia: la firma sul tetto fa da conferma dei job. Anche il prompt di Claude (riga 254) chiedeva «con il residuo». Mancano la stima attesa, il residuo con la frazione, le ore locali per fase e la voce di budget. CALCOLATO: l'ultimo saldo committato, del 09/11 (fccf88d), dà 2.000.000 - 1.308.137 = 691.863 ore locali di residuo, e 44 ore sono lo 0,00636%. Ore locali per fase: 0,5 / 2 / 2 / 24 / 4 / 8 / 0,5, più la riserva 2 + 1. Stima grossolana mia: GPU fra 0,25 e 0,6 GPUh, CPU fra 1,5 e 3,5 core-ore, in tutto fra 3,5 e 8,3 ore locali.
+[how] LETTO
+[fix] Aggiungere al paragrafo 9 o al 10: le ore locali per fase; una stima a priori dichiarata come tale, da sostituire con la misura del benchmark; il residuo committato del 09/11 con fonte e frazione; la voce di budget proposta. Il residuo aggiornato resta da leggere all'operatore.
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] I fatti reggono: manca una stima attesa e il residuo non è dato in cifre. Il rilievo però non è un difetto da correggere prima della firma. Il tetto è già espresso nelle due unità che CLAUDE.md chiede (4 GPUh e 44 ore locali). «Quanto resta del budget del passo» non si applica, perché il budget del passo non esiste ancora: è la decisione chiesta alla riga 179. Il residuo del 09/11 è dichiarato vecchio alla riga 169. Con 44 ore su circa 690.000 nessuna di queste cifre cambia la decisione.
+  [v.evidence] ESEGUITO: fccf88d, remote_listing.txt riga 190: «IscrB_WearUsFM 20260107 20270107 2000000 1308137 ...». CALCOLATO: residuo 691.863 ore locali; 44 ore ne sono lo 0,00636%. LETTO: proposal.json riga 215 (measured_estimate null); prompt di Claude a 8917e2a riga 254 («con il residuo») e righe 173-175: dopo il 09/11 hanno consumato almeno il training 300M e le estrazioni del 16/11.
+  [v.corrected_statement] Aggiungere una stima a priori, dichiarata come tale, e la riga del residuo del 09/11 con la data è utile e costa poco. È un miglioramento per Simone, non una violazione della regola: il tetto è già dato in GPU-ore e in ore locali.
+====================================================================================================
+costo-2 | nota | Lo sforamento di un job oltre il suo limite non è contato nei tetti di fase
+[claim] Tabella delle righe 149-159, «Limite cumulativo» per fase; riga 147, ore locali massime 44.
+[evidence] LETTO: il job 63593508 aveva un limite di 1:30:00 ed è stato chiuso in TIMEOUT a 1:33:04 (e114a78:results/infra/coordinamento_claude/letture_leonardo/leonardo_stato_20261105_2209_job.txt:82). La review della linea 1 indica di calcolare i casi peggiori come CPU x (walltime + 180 s) (e114a78:docs/claude_GPT_shared:11161-11162). CALCOLATO: un job GPU in TIMEOUT costa 0,051 GPUh in più. Con tre job GPU in TIMEOUT sono +0,153 GPUh, contro una riserva di 0,25; con quattro job CPU da 2+8+8+2 CPU sono +1,022 core-ore, contro una riserva di 1; con sette job GPU sono +0,358 GPUh.
+[how] CALCOLATO
+[fix] Nel piano eseguibile scegliere i --time in modo che la somma di (--time + 180 s) stia nel tetto di fase, oppure assegnare esplicitamente lo sforamento alla riserva.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Il fatto regge: un job in TIMEOUT dura circa 3 minuti oltre il limite, e i tetti di fase non lo contano. Un TIMEOUT però ferma la fase (riga 75), quindi più sforamenti insieme non sono realistici. Il tetto totale resta coperto dalla riserva, come riconosce lo stesso revisore. Va bene come nota.
+  [v.evidence] ESEGUITO (git show e114a78): leonardo_stato_20261105_2209_job.txt riga 82: 63593508 TIMEOUT, 01:33:04 su 01:30:00, cioè 184 s. docs/claude_GPT_shared righe 11161-11162: «OverTimeLimit = 3 min ... CPU x (walltime + 180 s)». CALCOLATO: 184 s = 0,0511 GPUh; tre job GPU fanno 0,153 GPUh su 0,25 di riserva; i quattro job CPU (20 CPU) fanno 1,022 core-ore su 1.
+  [v.corrected_statement] Invariato. Nel piano eseguibile la somma di (--time + 180 s) deve stare nel tetto di fase, oppure lo sforamento va assegnato alla riserva.
+====================================================================================================
+costo-3 | nota | proposal.json non riporta i tetti CPU per fase né i limiti di tempo
+[claim] proposal.json righe 204-228: per fase riporta solo le GPU-ore (0.25, 3, 0.5, riserva 0.25) e il totale CPU 12.
+[evidence] LETTO: le core-ore per fase (0,5 / 2 / 8 / 0,5), la riserva CPU di 1, i limiti di tempo e il numero di CPU per fase stanno solo nella tabella del protocollo (righe 151-158). Il gate del JSON parla di «CPU/storage», il protocollo di «CPU e memoria» (riga 165).
+[how] LETTO
+[fix] Aggiungere al JSON un elenco di fasi con CPU, GPU, RAM, limite di tempo, GPUh, core-ore e ore locali. Nel piano eseguibile indicare anche il numero di job e il tempo massimo per job, come nella tabella «Risorse concrete» di docs/consolidation_long_execution_20261105.md, righe 108-118.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Il JSON riporta per fase solo le GPU-ore e il totale delle core-ore CPU. Le CPU per fase, le core-ore per fase e i limiti di tempo stanno solo nella tabella del protocollo.
+  [v.evidence] LETTO proposal.json righe 204-228: benchmark_gpu_hours_cap, fit_phase_gpu_hours_cap, inference_gpu_hours_cap, reserve_gpu_hours, cpu_only_core_hours_cap 12 e i totali. Il protocollo, righe 151-158, ha la tabella completa. La riga 209 del JSON dice «CPU/storage», la riga 165 del protocollo «CPU e memoria».
+  [v.corrected_statement] Invariato.
+====================================================================================================
+costo-5 | nota | Non è scritto a che cosa serve il benchmark CPU
+[claim] Riga 152: benchmark CPU train-only con 8 CPU, 15 min e 2 coreh. La riga 163 descrive un benchmark unico.
+[evidence] LETTO: nessuna riga dice quale grandezza del gate venga dal benchmark CPU. ESEGUITO, sintetico su CPU del Mac a 8 thread con macchina carica: la matrice dei fit su CPU richiederebbe 2,69 h, cioè 5,39 h raddoppiata, oltre le 4 h di un job seriale. I fit su CPU quindi non sono un'alternativa.
+[how] LETTO
+[fix] Scrivere che il benchmark CPU misura la fase delle metriche (lettura, accumulatori, bootstrap, con un surrogato del train) e indicarne la soglia (8 core-ore, 24 GiB); altrimenti toglierlo.
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] È vero che lo scopo del benchmark CPU non è scritto. Si ricava però dalla riga 165 («CPU e memoria nei rispettivi tetti»): serve a proiettare le fasi CPU. La prova eseguita dal revisore (fit su CPU, 2,69 h) non c'entra, perché nessuno propone di fare i fit su CPU.
+  [v.evidence] LETTO: protocollo riga 152 (8 CPU, 15 min, 2 core-ore), riga 163 (benchmark unico) e riga 165.
+  [v.corrected_statement] Lo scopo si deduce dal gate (proiezione delle fasi CPU), ma non è scritto quali misure lo alimentano. Va precisato nel piano eseguibile.
+====================================================================================================
+costo-6 | nota | Il tetto di 8 GiB regge solo se non si salvano le predizioni held di ogni epoca
+[claim] Riga 167: si conservano pesi dei rifit, curve e selezione del train, supporti, predizioni, ricevute e manifest.
+[evidence] CALCOLATO: il contenuto previsto pesa circa 3,4-3,5 GiB (3,317 GiB di predizioni e 3,49 MiB di pesi). Le predizioni held di ogni epoca dei 20 fit di selezione (20 x 50 x circa 953 finestre x 160 x 20 x 4 byte) sarebbero invece circa 11,4 GiB, sopra il tetto. Il testo non le esclude.
+[how] CALCOLATO
+[fix] Precisare che per la selezione si salvano le perdite per epoca o gli accumulatori, non le predizioni held di ogni epoca.
+--> VERIFICA RIFIUTATO -> nessuna
+  [v.reasoning] Il conto è giusto, ma descrive un'implementazione che la proposta non propone. La riga 167 elenca che cosa si conserva, e la selezione della riga 68 usa somme di perdite per finestra, non predizioni. Il limite di 8 GiB è un vincolo esplicito per il codice, che verrà rivisto. Un difetto della proposta non è dimostrato.
+  [v.evidence] CALCOLATO: 10 coppie testa/LR × 1.907 finestre × 50 epoche × 12.800 byte = 12.204.800.000 byte = 11,37 GiB. LETTO: protocollo riga 68 («somma delle perdite per finestra divisa per il numero complessivo di finestre supportate») e riga 167 («massimo 8 GiB persistenti»).
+  [v.corrected_statement] Nessun difetto. Il tetto di 8 GiB vincola già l'implementazione, che non prevede di salvare le predizioni held di ogni epoca.
+====================================================================================================
+costo-7 | nota | Mancano il calendario e il limite della corsia seriale condivisa
+[claim] Riga 169: il fermo del 23/11 08:00 - 25/11 08:00 è da ricontrollare e non si promette di finire prima. Il prompt di Claude (riga 256) chiedeva «Calendario, con la manutenzione».
+[evidence] LETTO: la proposta non dà un calendario. La QoS lrd_all_serial ammette 8 CPU in esecuzione per utente, cioè un job da 8 CPU alla volta, e 10 job sottomessi (e114a78:docs/claude_GPT_shared:9110-9111 e 11156). Tutte le linee inviano con lo stesso utente, quindi le fasi CPU da 8 CPU si accodano dietro gli altri job seriali. Un --time che attraversa le 08:00 del 23/11 fa restare il job in attesa fino al 25/11.
+[how] LETTO
+[fix] Nel piano eseguibile indicare la sequenza e la durata attesa delle fasi e la finestra rispetto al fermo, evitare --time che attraversino il fermo e controllare l'occupazione della corsia seriale prima di ogni fase CPU.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Il prompt chiedeva un calendario e la proposta non lo dà. Il limite di 8 CPU in esecuzione per utente sulla corsia seriale è documentato e si vede nei sacct.
+  [v.evidence] ESEGUITO (git show e114a78:docs/claude_GPT_shared): righe 9110-9111 («8 CPU per utente in esecuzione (QOSMaxCpuPerUserLimit): job da 8 CPU uno alla volta») e riga 11156. ESEGUITO (2930d7d sacct_fit.tsv): i job seriali da 8 CPU partono uno dopo l'altro (17:25:26, 17:29:17, 17:32:30), mentre in sacct_extract.tsv quattro job GPU partono insieme alle 22:25:48. LETTO: prompt di Claude riga 256; protocollo riga 169.
+  [v.corrected_statement] Invariato.
+====================================================================================================
+costo-8 | nota | Il file delle statistiche della posa sta su $SCRATCH
+[claim] proposal.json riga 247 riporta stats_sha256 757f2aee...; la riga 169 dice che i payload stanno su WORK e non dipendono dal rinfresco di SCRATCH.
+[evidence] LETTO: il file con quell'hash è /leonardo_scratch/.../emg2pose_pose/pose_stats.json (results/infra/pose_slots_20261102/execution/R3c/receipt.json:250-258). La lunga lo apriva per controllarlo (consolidation_long_pose_runtime.py:117). Le cache contengono già std e l'hash delle statistiche nella configurazione (righe 99-103).
+[how] LETTO
+[fix] Scrivere che il codice nuovo confronta l'hash nella configurazione della cache senza aprire il file su SCRATCH. Se invece lo apre, dichiarare che dipende dal rinfresco del 03/12, perché i file rinfrescati il 12/11 scadono dal 22/12.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Il file delle statistiche con quell'hash sta su SCRATCH e non è nella copia su WORK. La prova citata dal revisore (riga 117) è nella fase di estrazione. La prova più forte è load_context, che apre e verifica tutti gli input storici in ogni fase della lunga. Il rilievo va allargato ai riferimenti della posa (costo-consegna-N1).
+  [v.evidence] LETTO: SNAP/results/infra/pose_slots_20261102/execution/R3c/receipt.json righe 250-258 (pose_stats.json su /leonardo_scratch/..., sha256 757f2aee...); SNAP/scripts/consolidation_long_common.py righe 119-121; runtime righe 99-100: confronto con la configurazione della cache senza aprire il file. ESEGUITO: il file non è nell'inventario della conservazione (352 voci).
+  [v.corrected_statement] Invariato, con una precisazione: la lunga apriva il file in ogni fase attraverso load_context, non solo nell'estrazione. Oltre alle statistiche stanno su SCRATCH anche i riferimenti storici della posa (N1).
+====================================================================================================
+costo-9 | nota | Il preflight dell'operatore va completato
+[claim] proposal.json righe 216-223: current quota, current balance, actual AllocTRES/billing, input hashes, source pins, full matrix cost gate.
+[evidence] LETTO: nell'elenco mancano le prenotazioni di manutenzione (scontrol show reservation), che il testo cita ma l'elenco no, e l'occupazione della corsia seriale dell'utente. Manca anche una soglia per la quota. La lunga ne aveva una: quota_r1b_20261105.json, con base_headroom_bytes 8.589.934.592 e required_free_bytes confrontati con free_bytes. Gli sha256 dei cinque input non sono stati ricalcolati oggi; sono stati controllati solo i byte.
+[how] LETTO
+[fix] Aggiungere all'elenco del JSON le prenotazioni, l'occupazione della seriale e una soglia di spazio libero scritta prima dell'invio (8 GiB più un margine). Rileggere l'AllocTRES del primo job.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] L'elenco del preflight ha sei voci. Mancano le prenotazioni di manutenzione, l'occupazione della corsia seriale e una soglia di spazio, che la lunga invece aveva.
+  [v.evidence] LETTO: proposal.json righe 216-223. SNAP/results/infra/consolidation_long_20261105/quota_r1b_20261105.json: base_headroom_bytes 8.589.934.592, free_bytes e required_free_bytes_including_ft15.
+  [v.corrected_statement] Invariato.
+====================================================================================================
+costo-10 | nota | La riserva è coerente con «nessun retry cieco», ma il suo uso non è definito
+[claim] Riga 158: riserva entro il totale, 0,25 GPUh e 1 coreh. Riga 165: la riserva non autorizza retry automatici. Riga 75: un fallimento ferma la fase.
+[evidence] LETTO: la riserva è coerente con la regola di CLAUDE.md contro i retry ciechi. Non è però scritto a che cosa serva. L'unico consumo tecnico prevedibile è lo sforamento oltre il limite (0,051 GPUh per job GPU), e la parola «automatici» lascia aperto se un rilancio dopo diagnosi possa usare la riserva.
+[how] LETTO
+[fix] Scrivere che la riserva copre sforamenti e avvii. Un rilancio dopo diagnosi richiede una decisione registrata e, se approvato, si conta nel tetto della sua fase.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] La riserva è definita solo in negativo («non autorizza retry automatici»). Non è scritto che cosa copre.
+  [v.evidence] LETTO: protocollo righe 75, 158 e 165.
+  [v.corrected_statement] Invariato.
+####################################################################################################
+REVIEW consegna verdict APPROVATO_CON_CORREZIONI
+SUMMARY: Dimensione 6 (consegna, ruoli e seguito) della proposta TEMPONet di GPT consolidamento, commit c15aac9: APPROVATO CON CORREZIONI. Nessun rilievo bloccante: cinque minori e quattro note.
+
+Regge:
+- La consegna è solo documentale: 9 file, 652 righe aggiunte e 0 cancellate. Nessuna modifica a src, scripts o tests (ESEGUITO).
+- Il ramo non contiene commit dei rami di Claude né della linea 3 (ESEGUITO).
+- La provenienza TEMPONet e i pin degli input coincidono con le prove archiviate (ESEGUITO).
+- I ruoli proposti riproducono la riga della linea 2 della tabella e lasciano la decisione a Simone.
+- La logica fra A e B non promette ciò che A non può dire.
+- I conti del par. 7 sono giusti: 65.204 parametri, 0,2299% del 30M, 7,70 volte PoseHead, 2×16,94 GPUh.
+
+Da correggere prima della firma:
+1. Dire che cosa autorizza la firma. Il tetto di 4 GPUh sta sotto la soglia di autonomia di 5 GPU-ore e vale la regola «l'approvazione comprende l'esecuzione». Vanno riscritte tre frasi che danno per decisi affidamento e operatore: «catene già approvate», «linea 2», «Claude verificherà».
+2. Indicare la base del ramo del codice. Sulla base cfa6462 un file nuovo al primo livello di scripts/ cambia il digest della valutazione lunga e fa fallire la sua guardia (ESEGUITO). Quella guardia è già rossa a cfa6462 per un'altra asserzione; main l'ha corretta con 3263ee9.
+3. Aggiungere un cancello che, prima dei contrasti, riproduca 0,7859020004638595 e 0,7786289843513977 e l'allineamento del ritaglio. Una demo ha mostrato che un crop sfasato supera i controlli del supporto e cambia E_dyn del 27% (ESEGUITO).
+4. Completare decisioni.md e proposal.json e pinnarli, così da poterli congelare così come sono.
+5. Aggiungere tre decisioni esplicite alla tabella del par. 10: TCN ispirata invece di TEMPONet, controlli rinviati, seguito.
+
+Note:
+- la continuità con la linea 2 va completata con il precedente di A1 e con il fatto che il prompt era indirizzato a GPT coordinamento;
+- il costo di B è di circa 84 GPUh a 49.046 invece di 33,88;
+- serve un ramo di esecuzione per le ricevute;
+- l'ID del protocollo è ambiguo («frozen»).
+
+Integrità delle prove: lo snapshot è identico a c15aac9 nei file citati. Contiene però scripts/__pycache__/pose_dynamics.cpython-311.pyc creato alle 09:43:04 da un processo che non è mio: i miei script sono partiti dopo e hanno girato su export propri con -B.
+====================================================================================================
+consegna-1 | minore | Che cosa autorizza la firma, e tre frasi che danno per decisi affidamento e operatore
+[claim] Protocollo par. 8, riga 128: «L'affidamento della nuova attività e il budget li conferma Simone; non viene chiesto di nuovo il consenso per catene già approvate». Riga 182: «Nessun esperimento della linea 2 viene avviato da GPT con questa consegna» e «poi esecuzione da Claude secondo il piano concreto». Riga 169: «Prima dell'invio Claude verificherà quota attuale e saldo». Prompt di GPT, riga 24: «niente nuovo consenso per le campagne già chiuse». La tabella del par. 10 (righe 173-180) non dice che cosa autorizza la firma.
+[evidence] LETTO, CLAUDE.md di main e114a78. L'attività non è nella tabella delle linee (righe 86-91). Claude è operatore «Solo per EPN15 e valutazione lunga della linea 2» (riga 35), ma la riga 182 chiama l'attività «linea 2». Per questa attività non esiste nessuna catena approvata: alla lettera, la riga 128 si può intendere come estensione di approvazioni di altre campagne, per esempio «Sì, approvo» del 06/11 (SNAP/docs/decisioni.md:6660). Il tetto di 4 GPUh sta sotto la soglia di autonomia di 5 GPU-ore (CLAUDE.md:104), e «l'approvazione della proposta comprende sottomissione ed esecuzione» (CLAUDE.md:22-23 e 110-111). Firmare le righe Budget e Autore/operatore potrebbe quindi bastare a lanciare tutto dopo la review del codice; il testo non lo dice.
+[how] LETTO
+[fix] Aggiungere al par. 10 due righe. (1) «Collocazione dell'attività»: voce nuova della tabella oppure estensione della linea 2, decisa da Simone. (2) «Che cosa autorizza la firma»: per esempio i job inclusi partono dopo i criteri congelati in decisioni.md, la review reciproca del codice e del pacchetto e il gate misurato, senza un nuovo consenso; ogni variazione torna a Simone. In alternativa un secondo via dopo il benchmark. Riscrivere la riga 128 e la riga 24 del prompt: «nessun secondo consenso per i job inclusi nel piano approvato; nessuna approvazione di altre campagne si estende a questa attività». Riga 182: «di questa attività». Righe 169 e 182: «l'operatore (Claude, se Simone lo conferma)».
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] La frase «non viene chiesto di nuovo il consenso per catene già approvate» è la formula abituale di GPT per la regola di CLAUDE.md: approvata la catena, non serve un secondo consenso. Non si presta a leggerla come estensione di altre approvazioni. Insieme alla riga 182 (codice, test, review reciproca, benchmark, gate, esecuzione) dice già che cosa autorizza la firma. Affidamento, operatore e budget sono lasciati esplicitamente a Simone in più punti. La riga 24 del prompt dice che la proposta non riapre campagne chiuse. Resta solo un problema di chiarezza: la formula «della linea 2» alla riga 182 e una riga esplicita nella tabella.
+  [v.evidence] ESEGUITO (grep sullo snapshot): SNAP/docs/claude_GPT_shared riga 12 «Nessun nuovo consenso per piani gia' approvati», riga 468 «nessun secondo consenso per attività già approvate», riga 746 «per le prove già approvate»; decisioni.md riga 6410 «Nessun nuovo consenso per la catena» e righe 6650-6651 «senza nuovo consenso per la medesima catena entro ricetta e tetto approvati». LETTO: protocollo righe 128, 180 e 182; decisioni.md riga 6736 «dopo affidamento della nuova attività»; registro riga 208 «da affidare per la nuova prova»; CLAUDE.md e114a78 righe 22-23, 35, 86-91, 104 e 110-111.
+  [v.corrected_statement] La proposta lascia già affidamento, operatore e budget a Simone. Usa la formula consueta per dire che, dopo l'approvazione, non serve un secondo consenso. È utile scriverlo in chiaro nella tabella del par. 10, oppure prevedere un secondo via dopo il benchmark se Simone lo preferisce, e sostituire «della linea 2» con «di questa attività» alla riga 182.
+====================================================================================================
+consegna-2 | minore | File nuovi sotto scripts/ senza base del ramo: la guardia della valutazione lunga diventa rossa
+[claim] Par. 8, riga 130: «nuovi file di esperimento sotto scripts/ [...] su ramo distinto dalla linea 3 [...] I digest delle release altrui restano quelli dei loro checkout». Riga 141, fra i test: «piano sorgenti invariati». Par. 2, riga 25: «modulo sperimentale separato». Il ramo deriva da cfa6462 e la base del ramo del codice non è indicata.
+[evidence] LETTO: scripts/consolidation_long_common.py:78-81. source_identity() fa l'hash di src/**/*.py e di tutti i scripts/*.py del primo livello; il test test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned lo confronta col piano alla riga 123.
+
+ESEGUITO sugli export:
+- a c15aac9 il digest coincide col piano (1ca7aead…);
+- aggiungendo scripts/pose_temponet_heads.py diventa 532c4fc0… e il test fallisce alla riga 123;
+- con scripts/pose_temponet/heads.py, in sottocartella, resta 1ca7aead…;
+- con src/wearusfm/model/temponet_latent.py diventa 7651e895…;
+- già oggi, a c15aac9, il test fallisce alla riga 126 («DID NOT RAISE»): il piano ha review converged (166fb86) e il test è più vecchio (9d195e7).
+
+Main e114a78 ha corretto entrambe le cose con 3263ee9 (tests/cpu/frozen_campaign_support.py:34-43, digest dal commit 166fb86 via git), e 3263ee9 non è antenato di c15aac9.
+
+Le guardie della linea 3 (I-1, review 0ab9d98, righe 381-384; logsquare_evaluation.py:34-42) non vedono file nuovi sotto scripts/: la scelta di non toccare src e config è coerente con I-1 per A. I par. 2 e 8 sono coerenti solo se il modulo sta sotto scripts/.
+[how] ESEGUITO
+[fix] Indicare la base del ramo del codice: main con 3263ee9 (e114a78 o successivo), oppure cfa6462 con una sottocartella di scripts/ non coperta da source_identity(). Elencare le guardie delle campagne chiuse che devono restare verdi e dichiarare i rossi già presenti, con il numero di test prima e dopo. Nel par. 2 scrivere «modulo sotto scripts/, nessun file nuovo in src/wearusfm». Definire «piano sorgenti invariati» sul commit pinnato, non sull'albero di lavoro.
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] I fatti reggono: con una base cfa6462, un file nuovo al primo livello di scripts/ cambia il digest della lunga e fa fallire l'asserzione della riga 123. Su quella base però il test fallisce già alla riga 126. Il file nuovo cambia quindi la riga che fallisce, non il numero dei test falliti. I digest delle release congelate non cambiano, perché i checkout sono fissati per SHA. L'effetto riguarda solo la suite CPU del ramo nuovo, si vede subito e si corregge scegliendo la base nel piano del codice. Non serve correggerlo prima della firma.
+  [v.evidence] ESEGUITO con il mio script source_digest_git.py, che ricalcola il digest dagli oggetti git senza importare il progetto. A c15aac9, cfa6462 e 166fb86 il digest è 1ca7aead5cd4..., uguale a plan.json. Con scripts/pose_temponet_heads.py il digest cambia; con il file in una sottocartella di scripts/ o in tests/ no; con un file nuovo in src/wearusfm sì. ESEGUITO pytest sul mio export di c15aac9: il test fallisce già alla riga 126 («DID NOT RAISE»). Con il file nuovo fallisce alla riga 123 con digest 7d7db5e8..., uguale al mio calcolo indipendente. LETTO: e114a78 tests/cpu/frozen_campaign_support.py righe 34-43 e test righe 124-126. LETTO: solo scripts/consolidation_long_common.py:79 include tutti gli scripts/*.py.
+  [v.corrected_statement] Nel piano del codice va indicata la base del ramo: main con 3263ee9, oppure una sottocartella di scripts/. Su cfa6462 il test della lunga è già rosso: un file nuovo al primo livello cambia la riga che fallisce, non lo stato della suite né le release congelate.
+====================================================================================================
+consegna-3 | minore | Fra i test manca il cancello che riproduce i riferimenti pubblicati prima dei contrasti; mancano anche i test di shuffle, gate ed etichette d'esito
+[claim] Par. 3, riga 51: riferimenti storici «con predizioni pinnate sullo stesso supporto». Nel par. 8 (righe 134-141) le voci più vicine sono «metriche [...] confrontate con un oracolo semplice; cinque contrasti, quantili e supporti appaiati» e «rifiuto di pin o output incompatibili».
+[evidence] LETTO: nessun test ricalcola i valori pubblicati. In SNAP/results/infra/consolidation_long_20261105/gpt_review_20261107/pose_verification.json: 49046/post_ridge dinamiche E_dyn 0,7859020004638595; trained_head 0,7786289843513977; supporto di 8.327 finestre, 20.119.920 elementi, support_sha256 973930475e94….
+
+I riferimenti sono salvati già ritagliati a 148 patch in float64 (consolidation_long_pose_runtime.py:272-282; tokenizer_pose_readout.predict), mentre le teste nuove escono a 160 patch (riga 167).
+
+ESEGUITO (demo sintetica con summarize() storico): un ritaglio sbagliato pred[:,0:148] o pred[:,12:160] al posto di [6:154] porta E_dyn da 0,428010 a 0,545842 e a 0,545911. Forma, support_sha256, 162 finestre e 479.520 elementi restano identici: «supporti appaiati» non vede l'allineamento.
+
+Nessun test copre lo shuffle identico fra bracci e indipendente da init e dropout (riga 66), il gate di costo (riga 165), né le quattro etichette d'esito e la regola della candidata (righe 93-100).
+[how] ESEGUITO
+[fix] Aggiungere al par. 8 un cancello prima dei contrasti: dai file pinnati, con il codice nuovo, ricalcolare 0,7859020004638595 e 0,7786289843513977 con scarto al più 1e-12, insieme ai conteggi del supporto. Passare la pred a 160 patch della cache val nel ritaglio delle teste nuove e riottenere l'array di trained_head.predictions.npz. Aggiungere test per: ordine dei minibatch identico fra le cinque teste e invariato al cambiare di architettura o dropout; arresto del gate prima del primo fit; etichette d'esito e candidata su intervalli sintetici.
+--> VERIFICA CONFERMATO -> minore
+  [v.reasoning] Il cancello che riproduce i riferimenti pubblicati non c'è. Il supporto dipende solo da maschere e bersagli, quindi un ritaglio sfasato con la stessa forma passa tutti i controlli citati. Il cancello proposto è concreto e protegge proprio i contrasti 4 e 5, da cui dipende la regola della candidata. I tre test aggiuntivi (shuffle, gate, etichette) sono utili ma pesano meno.
+  [v.evidence] LETTO: SNAP/.../gpt_review_20261107/pose_verification.json: E_dyn dinamiche 0,7859020004638595 (ridge post) e 0,7786289843513977 (testa storica); 8.327 finestre, 20.119.920 elementi; support_sha256 973930475e94... uguale a targets_sha256.central_mask. Runtime riga 275: la testa storica è held['pred'][:, 6:-6] in float64. consolidation_long_pose.py righe 264-272: summarize controlla solo la forma. ESEGUITO crop_demo.py, script mio con un E_dyn scritto dal par. 5 e dati sintetici diversi da quelli del revisore: E_dyn 0,268825 col ritaglio [6:154], 2,293579 con [0:148], 2,292767 con [12:160]; hash del supporto, conteggi e forma identici nei tre casi.
+  [v.corrected_statement] Invariato. Prima dei contrasti va aggiunto un cancello: ricalcolare 0,7859... e 0,7786... dai file pinnati, e verificare che la pred della cache a 160 patch, passata nel ritaglio del codice nuovo, ridia l'array delle predizioni della testa storica. Test di shuffle, gate ed etichette come complemento.
+====================================================================================================
+consegna-4 | minore | La voce di decisioni.md e proposal.json non si possono congelare così come sono
+[claim] SNAP/docs/decisioni.md:6715-6717: proposta REVIEW_REQUIRED con «regole proposte, pronte per la review e la firma». Riga 6719: collegamento relativo al protocollo. proposal.json, blocco «evaluation» (righe 20-41).
+[evidence] LETTO. È chiaramente una proposta, e i numeri coincidono nei quattro documenti: nessuno discorde.
+
+Mancano però regole del protocollo:
+(a) in decisioni.md: la soglia dinamica 0,2574231028556824 (protocollo riga 79), la selezione aggregata con i pareggi (riga 68), la regola della candidata, cioè primario più contrasti 4 e 5 (riga 100), l'arresto su NaN o OOM (riga 75);
+(b) in proposal.json: la condizione di beneficio «stima ≥2% e limite inferiore >0» (riga 95) e quella di deterioramento «stima ≤−2% e limite superiore <0» (riga 96); ci sono solo practical_improvement_percent e readout_failures (riga 37). Manca anche l'IC 95% descrittivo pre/post (riga 102);
+(c) il collegamento è senza commit né sha256.
+
+La regola del progetto vuole le soglie in decisioni.md e committate prima del lancio (CLAUDE.md:224-225).
+[how] LETTO
+[fix] Completare proposal.json con le quattro etichette d'esito in forma eseguibile, la candidata, l'IC 95% descrittivo e l'arresto. Nella voce di congelamento citare protocollo e proposal.json con SHA del commit e sha256, e riportare per esteso soglia dinamica, etichette e candidata. I numeri restano invariati.
+--> VERIFICA PARZIALE -> minore
+  [v.reasoning] Le lacune reggono quasi tutte, ma ciascuno dei due documenti ha ciò che manca all'altro. Il fix contiene un errore: chiede di aggiungere a proposal.json la regola della candidata, che c'è già alla riga 35.
+  [v.evidence] ESEGUITO (grep sulla voce di decisioni.md, righe 6713-6738, e su proposal.json). Soglia dinamica 0,2574231028556824: JSON riga 254 sì, decisioni no. Pareggi: JSON riga 72 sì, decisioni no. Candidata: JSON riga 35 sì, decisioni no. Arresto su NaN/OOM: assente in entrambi. Beneficio e deterioramento: decisioni righe 6728-6729 sì, JSON no (solo righe 34 e 37). IC 95% descrittivo: assente in entrambi (JSON riga 33 «no pass/fail»).
+  [v.corrected_statement] Per il congelamento serve una voce completa in decisioni.md, che citi protocollo e proposal.json con SHA del commit e sha256 e riporti per esteso soglia dinamica, pareggi, quattro etichette, candidata, IC 95% descrittivo e arresto. In proposal.json mancano solo le condizioni di beneficio e deterioramento, l'IC 95% descrittivo e l'arresto; la candidata c'è già.
+====================================================================================================
+consegna-5 | minore | Tabella delle decisioni del par. 10: mancano tre scelte esplicite per Simone
+[claim] Par. 10, righe 173-180: Livello, Checkpoint, Bracci, Ricetta e lettura, Budget, Autore/revisore/operatore.
+[evidence] LETTO. Le sei voci chieste dal prompt di Claude (par. 5, righe 270-271) ci sono. Mancano tre scelte che la proposta fa.
+(a) La testa non è TEMPONet ma «una TCN compatta ispirata a TEMPONet» (riga 25): sei convoluzioni (tre k3 con dilatazioni 1/2/3), nessuna BatchNorm, nessun pooling né stride. La richiesta di Simone era «provare ad usare temponet come testa per la regressine nel FM» (prompt di Claude, riga 3), e la riga «Bracci» dice solo «TCN-post».
+(b) Il rinvio di random, raw da zero e TEMPONet raw (par. 6, righe 108-114), sebbene il v10 §8 voglia quelle baseline (prompt di Claude, righe 164-165). Che basti una conclusione «più ristretta» invece di una deroga lo giudica Simone.
+(c) Il seguito: candidata e nessuna adozione automatica (riga 100), B separato (riga 118), chiusura senza promozione (riga 98). Non è scritto chi prepara la lettura finale per la firma; nella linea 2 l'ha preparata GPT e l'ha firmata Simone (SNAP/docs/decisioni.md:6656-6658 e 6686-6687).
+[how] LETTO
+[fix] Aggiungere tre righe alla tabella: «Oggetto: TCN ispirata a TEMPONet, non TEMPONet né i suoi pesi»; «Controlli rinviati: random, raw da zero, TEMPONet raw; conclusione limitata al lettore su questo encoder»; «Seguito: nessuna adozione né livello B automatici; lettura finale di GPT, review di Claude, firma di Simone».
+--> VERIFICA PARZIALE -> minore
+  [v.reasoning] Il punto (a) regge. I titoli dicono «TEMPONet» e la riga 3 riporta la richiesta di Simone di usare «l'implementazione che abbiamo già» (citazione riferita da GPT). La tabella che Simone firma dice solo «TCN-post»: l'oggetto della prova (una TCN nuova ispirata a TEMPONet, non la classe esistente) va scritto lì. I punti (b) e (c) sono già scritti in chiaro nel corpo. Le «Baseline non negoziabili» del v10 §8 riguardano il confronto del FM con altri modelli, non la scelta del lettore su un encoder fissato. Le sei voci chieste dal prompt ci sono tutte.
+  [v.evidence] LETTO: protocollo riga 1 e README riga 1 (titoli); protocollo riga 3, riga 25 («Non la chiameremo replica TEMPONet»), riga 108 e righe 98-100 e 118; decisioni.md riga 6722; proposal.json righe 162-175 (not_in_this_proposal); docs/fm_emg_reference_v10.md righe 1129-1137; prompt di Claude a 8917e2a righe 116-117 (adattamento già annunciato) e righe 270-271 (sei voci).
+  [v.corrected_statement] Prima della firma va aggiunta alla tabella del par. 10 solo la riga sull'oggetto: «TCN ispirata a TEMPONet, non la classe esistente né i suoi pesi». Controlli rinviati e seguito sono già scritti nel corpo e la loro aggiunta alla tabella è una nota.
+====================================================================================================
+consegna-6 | nota | Continuità con la linea 2: regge per la tabella; mancano due fatti utili a Simone
+[claim] Par. 8, riga 128: «Proposta di continuità: GPT consolidamento autore del protocollo e del codice; Claude revisore e unico operatore». Riga 3: «Risponde al prompt consegnato da Simone».
+[evidence] LETTO: CLAUDE.md:89 dà il codice della linea 2 a GPT consolidamento e le operazioni a Claude; la proposta lo riproduce. Nella linea 2, però, l'implementazione di A1 è stata delegata a Claude («questo meglio se lo fa claude, risparmiamo un passaggio, ok ?», SNAP/docs/decisioni.md:6647-6649, voce di GPT): il precedente contiene entrambe le configurazioni. ESEGUITO: il prompt di Claude è indirizzato a «GPT coordinamento» (8917e2a, righe 1 e 11), e l'instruction_attachment_sha256 di proposal.json (917aab78…) è lo sha256 di quel file senza il newline finale (24.097 contro 24.098 byte). Ha risposto GPT consolidamento, e la proposta non lo dice.
+[how] ESEGUITO
+[fix] Nel par. 8 scrivere che il prompt era indirizzato a GPT coordinamento e che Simone l'ha consegnato a GPT consolidamento, e che l'affidamento copre anche l'autore del protocollo. Citare come informazione, senza preferenza, il precedente di A1.
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] I due fatti sono esatti: il prompt era indirizzato a GPT coordinamento ed esiste il precedente di A1. Ma «la proposta non dice che ha risposto GPT consolidamento» è vero solo a metà: la voce del registro è firmata GPT consolidamento e il protocollo dice «derivato dalla consegna consolidamento». Manca soltanto che il prompt era indirizzato a GPT coordinamento.
+  [v.evidence] LETTO: prompt di Claude a 8917e2a, righe 1 e 11; SNAP/docs/claude_GPT_shared riga 181 («GPT consolidamento»); protocollo riga 3; decisioni.md righe 6647-6649 (A1 delegato a Claude). ESEGUITO: lo sha256 dell'allegato è quello del prompt senza il newline finale.
+  [v.corrected_statement] La proposta dice già che l'autore è GPT consolidamento e che il prompt è stato consegnato da Simone. Si può aggiungere, come informazione, che il prompt era indirizzato a GPT coordinamento e che nella linea 2 c'è il precedente di A1.
+====================================================================================================
+consegna-7 | nota | Livello B: il costo citato vale solo a 19.618; manca il piano del codice rispetto a I-1
+[claim] Par. 7, riga 122: «Ordine di grandezza storico 2×16,94 = 33,88 GPUh [...] non preventivo né budget di B». Le regole su src e FMConfig del par. 8 riguardano il livello A.
+[evidence] CALCOLATO (conti_v2.py, ESEGUITO). (3916+11334) s × 4 / 3600 = 16,9444 GPUh a 19.618 (db5ac41:docs/tokenizer_endpoint_execution_20261104.md:26); due training fanno 33,889. Il livello A legge il 49.046: le ricevute della continuazione (elapsed_s 7.955,65 + 7.145,29 + 7.536,23, world_size 4) danno 25,152 GPUh. Un training a 49.046 costa così circa 42,10 GPUh, due circa 84,19, cioè 2,5 volte. Verifica indipendente: R3c a 49.046 passi, 40,4 GPU-ora (SNAP/docs/decisioni.md:4588). La domanda 8 del prompt chiede anche come evitare le guardie I-1 e i digest: una testa nel pretraining tocca trainer o FMConfig (review 0ab9d98, righe 385-388), e il par. 7 non ne parla.
+[how] CALCOLATO
+[fix] Aggiungere nel par. 7: «33,88 GPUh per due training a 19.618, più la lettura A a quella dose; a 49.046 circa 81-84 GPUh prima dell'overhead»; «B richiede un proprio piano del codice per trainer, FMConfig e digest delle release (I-1)».
+--> VERIFICA PARZIALE -> nota
+  [v.reasoning] I conti sono giusti. Il protocollo però lega già il numero a 19.618: la riga 122 comincia con «Se B fosse a 19.618», il C0 della linea 3 è a quella dose e la cifra è dichiarata «non preventivo né budget di B». La cifra a 49.046 è un'informazione in più, non la correzione di un errore. È vero invece che la domanda 8 del prompt sul codice di B rispetto a I-1 resta senza risposta.
+  [v.evidence] CALCOLATO: (3916 + 11334) × 4 / 3600 = 16,9444 GPUh (db5ac41 docs/tokenizer_endpoint_execution_20261104.md riga 26: «16,944444»). Continuazione da 19.618 a 49.046: elapsed_s 7.955,65 + 7.145,29 + 7.536,23 con 4 GPU = 25,1524 GPUh; un training a 49.046 costa circa 42,10 GPUh, due circa 84,19. LETTO: decisioni.md riga 4588 (R3c, 40,4 GPU-ora); protocollo righe 122 e 124.
+  [v.corrected_statement] 33,88 GPUh vale per due training a 19.618, come la proposta già condiziona. A 49.046 sarebbero circa 81-84 GPUh prima dell'overhead. Per B manca un piano del codice rispetto a I-1.
+====================================================================================================
+consegna-8 | nota | Raccolta degli esiti: non è fissato il ramo su cui l'operatore committa ricevute e report
+[claim] Par. 9, riga 167: «Report e manifest sul Mac e in Git, NPZ/PT fuori Git».
+[evidence] LETTO: il ramo non è indicato. Nella linea 2 Claude ha usato un ramo di esecuzione suo, claude/consolidation-long-exec-20261105 con punta 2930d7d (git branch -a --contains, ESEGUITO), con cartelle distinte da quelle di GPT (plan.json contro execution/receipts). Vale «un writer per checkout» (CLAUDE.md:99).
+[how] LETTO
+[fix] Una frase nel par. 8: ricevute, manifest e report sul ramo di esecuzione di Claude, in una sottocartella execution/ separata; GPT non li modifica.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] Il ramo su cui raccogliere ricevute e report non è indicato. Il precedente della linea 2 esiste ed è coerente con «un writer per checkout».
+  [v.evidence] ESEGUITO: git branch -a --contains 2930d7d = claude/consolidation-long-exec-20261105, locale e su origin. LETTO: protocollo riga 167; CLAUDE.md riga 99.
+  [v.corrected_statement] Invariato.
+====================================================================================================
+consegna-9 | nota | L'ID del protocollo usa «frozen» in due sensi ambigui
+[claim] File docs/pose_temponet_frozen_protocol_20261117.md; proposal.json riga 183: «pose-temponet-frozen-head-20261117-v1-proposal».
+[evidence] LETTO: «frozen» indica l'encoder congelato (riga 5). Però «frozen_protocol» si legge come protocollo congelato mentre lo stato è REVIEW_REQUIRED, e «frozen-head» come testa congelata mentre le teste si allenano. Nella linea 2 l'ID del protocollo è una costante verificata dal codice (consolidation_long_common.py:92) e finisce in piani e ricevute.
+[how] LETTO
+[fix] Fissare al congelamento un ID non ambiguo, per esempio «pose-temponet-frozen-encoder-readout-20261117-v1», e dire nel titolo che «frozen» si riferisce all'encoder.
+--> VERIFICA CONFERMATO -> nota
+  [v.reasoning] «frozen» si legge in due sensi: encoder congelato da una parte, «protocollo congelato» o «testa congelata» dall'altra. È cosmetico, perché lo stato REVIEW_REQUIRED è chiaro alla riga 3. Va sistemato al congelamento.
+  [v.evidence] LETTO: proposal.json riga 183 «pose-temponet-frozen-head-20261117-v1-proposal»; nome del file del protocollo; protocollo righe 3 e 5.
+  [v.corrected_statement] Invariato.
+####################################################################################################
+NEW FINDINGS block costo-consegna
+====================================================================================================
+costo-consegna-N1 | nota | Anche i riferimenti storici della posa usati per validare le cache stanno solo su SCRATCH
+[claim] La riga 169 dice che i payload A stanno su WORK e non dipendono dal rinfresco di SCRATCH del 03/12. I revisori l'hanno accettata: con il solo file delle statistiche come eccezione (costo-8) o senza eccezioni (V-16). Il percorso di lettura della lunga, scritto da GPT e naturale da riusare, apre però anche i riferimenti storici della posa, che esistono solo su SCRATCH.
+[evidence] LETTO: SNAP/scripts/consolidation_long_pose_runtime.py righe 81-87: _reference apre i pose_references con C.pinned. Righe 90-93: _read li passa a read_cache, anche nella fase fit (righe 256 e 268). SNAP/scripts/consolidation_long_common.py righe 119-121: load_context apre e verifica tutti gli input storici, compreso pose_stats. ESEGUITO (python su SNAP/results/infra/tokenizer_evaluation_20261103/extraction_plan_19618.json): train_subset.npz, 257.675.076 byte, sha256 c7bc296e7019..., e val.npz, 2.485.295.825 byte, sha256 2e1a9d5977c3..., sotto /leonardo_scratch/.../results/pilot_posa/B19618_20261028/B/pose/. ESEGUITO: nessuno dei due è nell'inventario della conservazione (352 voci); con git grep su cinque punte compaiono solo con percorso SCRATCH, mai WORK. LETTO: consolidation_long_pose.py righe 151-153 e 167: read_cache(path, reference=None) è ammesso.
+[how] ESEGUITO
+[fix] Scrivere nel protocollo che il codice nuovo verifica le cache con i pin su WORK e con la configurazione incorporata (runtime righe 99-100), senza aprire statistiche e riferimenti su SCRATCH. In alternativa: copiarli su WORK con verifica sha256 (circa 2,74 GB) prima dell'esecuzione, oppure dichiarare la dipendenza dal rinfresco del 03/12 (i file rinfrescati il 12/11 scadono dal 22/12).
+====================================================================================================
+costo-consegna-N2 | nota | Non è scritto chi prepara il piano eseguibile e chi lo rivede una volta prima dei lanci
+[claim] La riga 182 dice «poi esecuzione da Claude secondo il piano concreto». decisioni.md riga 6735: «Risorse e saldo attuali da leggere dall'operatore nel piano eseguibile». Nessuna riga dice chi scrive il piano (job, --time, gate meccanico di costo-1, preflight di costo-9) né chi lo rivede.
+[evidence] LETTO: protocollo righe 128, 180 e 182; prompt di GPT riga 22; decisioni.md riga 6735. I precedenti sono due e diversi. Nella linea 2 GPT consolidamento «prepara la consegna operativa» (CLAUDE.md di e114a78, riga 37). Nella linea 1 Claude prepara e GPT fa «una review del pacchetto operativo pubblicato» (CLAUDE.md riga 74). Il gate di costo è la protezione contro le riduzioni post hoc, quindi autore e controllo vanno nominati prima del benchmark.
+[how] LETTO
+[fix] Aggiungere una riga alla tabella del par. 10: chi scrive il piano eseguibile con il gate meccanico, e una sola review del pacchetto operativo prima dei lanci inclusi, sul modello della linea 1.
+####################################################################################################
+VERDICT OPINION block costo-consegna
+Costo e fattibilità: APPROVATO_CON_CORREZIONI. I conti tornano tutti (4 GPUh, 12 e 44 core-ore, 44 ore locali col billing registrato) e i tetti di fit e inferenza sono larghi anche con cuDNN deterministico (circa 0,77 h su 3 h). Prima del benchmark vanno scritte la regola di memoria e l'identità delle impostazioni numeriche fra benchmark e fit (costo-1, ristretto), e va corretta la frase sull'indipendenza da SCRATCH: oltre alle statistiche, anche i riferimenti storici della posa stanno solo su SCRATCH (costo-8 e N1). costo-4 scende a nota e costo-6 è rifiutato.
+
+Consegna, ruoli e seguito: APPROVATO_CON_CORREZIONI. La consegna è solo documentale, senza merge, e provenienza e pin sono verificati. I ruoli sono proposti e lasciati a Simone, e «nessun nuovo consenso per catene già approvate» è la formula abituale di GPT, non un'estensione di altre approvazioni: consegna-1 scende a nota, e così consegna-2, perché su quella base il test è già rosso. Restano tre minori prima della firma e del congelamento: il cancello che riproduce i riferimenti e l'allineamento del ritaglio prima dei contrasti (consegna-3), la voce di congelamento completa e pinnata (consegna-4, con la candidata già presente nel JSON) e l'oggetto della prova (TCN ispirata, non la TEMPONet esistente) scritto nella tabella che Simone firma (consegna-5, punto a).
+####################################################################################################
+ATTACKED block costo-consegna
+- holds=True | Costo: tetti di 4 GPUh, 12 core-ore solo CPU, 44 core-ore allocate e 44 ore locali, con il billing registrato
+   ev: CALCOLATO: 0,25+3+0,5+0,25 = 4; 0,5+2+8+0,5+1 = 12; 8×4+12 = 44. ESEGUITO (git grep degli AllocTRES): billing=8 per 1 GPU e 8 CPU, con mem=60G o 100G; billing=2 per 2 CPU con mem=30G (63591791). Dei conteggi del revisore riproduco 146 e 46, non 719 e 673: io trovo 713 righe (766 occorrenze) e 612 righe (681 occorrenze). Sono comunque somme su quattro punte che si sovrappongono e la conclusione non cambia.
+- holds=True | Costo: il tetto di 3 GPUh basta per i 35 fit
+   ev: ESEGUITO (heads_check.py, CPU del Mac a 4 thread): per passo L0 6,1 ms, MLP 9,9 ms, L13 204 ms, TCN 91 ms; i soli passi della matrice costano 1,68 h su questa CPU. CALCOLATO con l'analogo peggiore del progetto (TEMPONet raw deterministica in eager, 18,5 ms): 75.000 × 18,5 ms × 2 = 0,77 h, valutazioni escluse, contro 3 h.
+- holds=True | Costo: il tetto dell'inferenza (0,5 GPUh) basta
+   ev: LETTO, ricevuta LONG-BENCH-pose a 2930d7d: read_validate del train 5,94 s, che per 9,7263 fanno 57,8 s per la val. Il fit storico che leggeva tutto è durato 199 s in sacct (sacct_fit.tsv).
+- holds=True | Costo: 24 GiB (CPU) e 32 GiB (host GPU) bastano
+   ev: LETTO: read_cache (consolidation_long_pose.py riga 170) decomprime tutti i membri, pre e lat insieme. CALCOLATO anche in quel caso: val circa 4,8 GiB + 15 predizioni 3,32 GiB + due riferimenti 0,82 GiB, circa 9 GiB. Picco storico 8,86 GiB. 24 GiB = 24.576 MiB, sotto i 30.800 MiB (e114a78 registro righe 281, 6907 e 8869).
+- holds=True | Costo: 15 predizioni = 3,3166 GiB e il tetto di 8 GiB basta
+   ev: CALCOLATO: 18.548×160×20×4 = 237.414.400 byte; per 15 fanno 3.561.216.000 byte = 3,316641 GiB.
+- holds=False | Costo: i payload non dipendono dal rinfresco di SCRATCH, con il solo file delle statistiche come eccezione possibile
+   ev: ESEGUITO: il piano storico extraction_plan_19618.json mette su SCRATCH anche i riferimenti pose_references (train_subset.npz 257.675.076 byte e val.npz 2.485.295.825 byte). La lunga li apriva in _read → _reference (runtime righe 81-93), anche nella fase fit, e non sono nell'inventario della conservazione. Vedi costo-consegna-N1.
+- holds=True | Costo: byte e hash degli input coincidono con la ricevuta storica pinnata
+   ev: ESEGUITO: la ricevuta 2930d7d LONG-FIT-G49046 ha sha256 b08e6e32... e contiene gli stessi byte e sha256 dei cinque input di proposal.json; i cinque sono nell'inventario della conservazione con byte uguali.
+- holds=True | Costo: la quota di $WORK basta per 8 GiB (dato storico)
+   ev: ESEGUITO: git show e4ebdbf:.../preflight/quota.txt riporta «933.1G 1T 0k». CALCOLATO: circa 90,9 GiB sotto la quota morbida. Dato del 16/11, dichiarato storico.
+- holds=True | Costo: i numeri di costo coincidono in tutti i documenti
+   ev: LETTO: decisioni.md riga 6734; registro righe 206-207 e 5991-5992; README riga 12; design_review.txt righe 11-13; prompt di GPT riga 21; proposal.json righe 204-228.
+- holds=True | Consegna: la consegna è solo documentale (9 file, 652 righe aggiunte, 0 tolte)
+   ev: ESEGUITO: git diff --shortstat cfa6462 c15aac9 = 9 file, 652 inserimenti; numstat 0 cancellazioni; diff su src, scripts e tests vuoto; genitore cfa6462.
+- holds=True | Consegna: nessun merge del ramo TEMPONet né della linea 3
+   ev: ESEGUITO: git merge-base --is-ancestor: 8917e2a, 60b35bd, 0c19c4b, db5ac41, 0ab9d98, e114a78 e 3263ee9 non sono antenati di c15aac9.
+- holds=True | Consegna: modello e script TEMPONet identici; l'hash dell'allegato è quello del prompt
+   ev: ESEGUITO: temponet.py sha256 9d5a03e2... con 8.519 byte a 60b35bd, 0c19c4b e 8917e2a; temponet_emg2pose.py sha256 8d7f9dbe... a 0c19c4b e 8917e2a. Lo sha256 del prompt senza il newline finale (24.097 byte) è 917aab78...
+- holds=True | Consegna: i pin degli input vengono dalle prove archiviate
+   ev: ESEGUITO: nella ricevuta storica e nell'inventario (352 voci) i cinque file hanno sha256 e byte uguali a proposal.json; checkpoint bfa6141f...
+- holds=True | Consegna: i ruoli sono una proposta e la decisione spetta a Simone
+   ev: LETTO: righe 128, 180 e 182; decisioni.md riga 6736; registro riga 208. ESEGUITO grep: «nessun nuovo consenso per ... già approvat...» è la formula abituale di GPT (registro righe 12, 468 e 746).
+- holds=True | Consegna: il piano del codice del livello A è compatibile con I-1
+   ev: ESEGUITO grep nel mio export: solo scripts/consolidation_long_common.py:79 include tutti gli scripts/*.py; logsquare_evaluation.py (righe 34-42) e le altre guardie usano src/ e liste chiuse. LETTO: review 0ab9d98 righe 376-388.
+- holds=True | Consegna: conteggi di parametri, campo ricettivo e rapporti dei par. 3 e 7
+   ev: ESEGUITO (heads_check.py, moduli costruiti dal testo): 8.468 / 65.300 / 100.628 / 65.204; 64.128 pesi per MLP e TCN; uscita 80 dipende dagli istanti 74-86, uscita 6 da 0-12; 0,2299% del 30M (28.362.013, ricevuta 49046); 7,70 volte PoseHead; 10.260.480 MAC.
+- holds=True | Consegna: la PoseHead nasce sotto fork_rng
+   ev: LETTO: SNAP/src/wearusfm/model/pose_head.py righe 24-30.
+- holds=True | Consegna: le voci del registro stanno nelle due sezioni giuste
+   ev: LETTO: SNAP/docs/claude_GPT_shared righe 179/181 («Cosa ho fatto») e 5974/5976 («Problemi trovati»).
+- holds=False | Consegna: il fermo del 23-25/11 è giusto e i payload A non dipendono dal rinfresco di SCRATCH
+   ev: Il fermo coincide con CLAUDE.md riga 195. L'indipendenza da SCRATCH non regge per intero: il file delle statistiche (costo-8, R3c receipt righe 250-258) e i riferimenti storici della posa (N1) stanno solo su SCRATCH, e la lunga li apriva leggendo le cache.

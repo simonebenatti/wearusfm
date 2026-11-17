@@ -1,0 +1,64 @@
+== a) tabella del par. 9 ==
+  checkout/manifest/hash/supporti    GPUh= 0.00 coreh= 0.50 (CPU-only)
+  benchmark CPU                      GPUh= 0.00 coreh= 2.00 (CPU-only)
+  benchmark GPU                      GPUh= 0.25 coreh= 2.00 (CPU del job GPU)
+  selezione + rifit                  GPUh= 3.00 coreh=24.00 (CPU del job GPU)
+  inferenza val                      GPUh= 0.50 coreh= 4.00 (CPU del job GPU)
+  riferimenti/metriche/bootstrap     GPUh= 0.00 coreh= 8.00 (CPU-only)
+  raccolta/conservazione             GPUh= 0.00 coreh= 0.50 (CPU-only)
+  riserva: GPUh 0.25 coreh CPU-only 1.0 coreh dei job GPU 2.0
+  GPUh totali = 4.0 | coreh CPU-only = 12.0 | coreh dei job GPU = 32.0 | coreh allocate totali = 44.0
+  ore locali con billing=cpu (8 per job 1 GPU+8 CPU; cpu per job seriale): 44.0
+  somma dei limiti di tempo delle fasi (ore): 5.5
+  quota sul residuo del 09/11 (691.863 ore locali): 0.00636%
+== c) byte ==
+  una predizione val FP32: 237414400 byte; 15: 3561216000 byte = 3.316640853881836 GiB
+  a 148 centri (crop6): 219608320 byte; 15: 3.0678927898406982 GiB
+  cache train+val: 5068390194 byte = 4.720306204631925 GiB; riferimenti: 652548847 byte = 0.607733472250402 GiB; tutti gli input pinnati: 5720939041 byte = 5.328039676882327 GiB
+  val: non compresso (senza meta/config) = 5097064592 byte = 4.7470 GiB; su disco 4593977338 byte; rapporto 0.9013
+      pre FP16            2279178240 byte = 2.1227 GiB
+      lat FP16            2279178240 byte = 2.1227 GiB
+      key_time_valid         2967680 byte = 0.0028 GiB
+      pred FP32            237414400 byte = 0.2211 GiB
+      target FP32          237414400 byte = 0.2211 GiB
+      mask bool             59353600 byte = 0.0553 GiB
+      std FP32               1483840 byte = 0.0014 GiB
+      pose_var FP32            74192 byte = 0.0001 GiB
+      una vista in FP32: 4558356480 byte = 4.2453 GiB
+  train: non compresso (senza meta/config) = 524051228 byte = 0.4881 GiB; su disco 474412856 byte; rapporto 0.9053
+      pre FP16             234332160 byte = 0.2182 GiB
+      lat FP16             234332160 byte = 0.2182 GiB
+      key_time_valid          305120 byte = 0.0003 GiB
+      pred FP32             24409600 byte = 0.0227 GiB
+      target FP32           24409600 byte = 0.0227 GiB
+      mask bool              6102400 byte = 0.0057 GiB
+      std FP32                152560 byte = 0.0001 GiB
+      pose_var FP32             7628 byte = 0.0000 GiB
+      una vista in FP32: 468664320 byte = 0.4365 GiB
+  24 GiB in MiB: 24576 <= 30800: True
+  pesi dei 15 rifit FP32: 3657648 byte
+  quota 16/11: 1 TiB - 933,1 GiB = 90.89999999999998 GiB liberi; dopo 8 GiB: 82.89999999999998
+== b) matrice dei fit ==
+  passi per epoca: fold ~ 30 (circa meta' finestre), full 60
+  passi totali a 50 epoche: selezione 30000 + rifit 45000 = 75000
+  per testa: epoche-equivalenti di train (1.907 finestre) = 250.0 ; di valutazione interna = 100.0
+  budget per passo se i 3 GPUh fossero tutti passi: 144.0 ms; col fattore 2: 72.0 ms
+  [MPS Apple M3 Pro, sintetico, NON A100] device=mps threads=1 eval_batch=256
+      L0       epoca train 0.264-0.280 s; epoca eval 0.120-0.121 s; matrice (250 train + 100 eval, valori massimi)     82.0 s
+      MLP      epoca train 0.305-0.376 s; epoca eval 0.137-0.137 s; matrice (250 train + 100 eval, valori massimi)    107.8 s
+      L13      epoca train 0.362-0.378 s; epoca eval 0.138-0.141 s; matrice (250 train + 100 eval, valori massimi)    108.5 s
+      TCN-post epoca train 0.326-0.334 s; epoca eval 0.108-0.110 s; matrice (250 train + 100 eval, valori massimi)     94.4 s
+      TCN-pre  epoca train 0.326-0.334 s; epoca eval 0.108-0.110 s; matrice (250 train + 100 eval, valori massimi)     94.4 s
+      totale fit 487 s = 0.135 h; raddoppiato 0.271 h; tetto 3 h / proiezione = 22.2x; / raddoppiata = 11.1x
+      inferenza 15 modelli x 18.548 finestre (solo calcolo) 18 s = 0.0050 h; raddoppiata 0.0100 h; tetto 0,5 h / raddoppiata = 49.9x
+  [CPU Mac 8 thread, sintetico, senza oneDNN] device=cpu threads=8 eval_batch=32
+      L0       epoca train 0.286-0.311 s; epoca eval 0.147-0.166 s; matrice (250 train + 100 eval, valori massimi)     94.5 s
+      MLP      epoca train 0.880-1.421 s; epoca eval 0.361-0.364 s; matrice (250 train + 100 eval, valori massimi)    391.8 s
+      L13      epoca train 10.255-11.999 s; epoca eval 8.379-8.391 s; matrice (250 train + 100 eval, valori massimi)   3839.0 s
+      TCN-post epoca train 4.896-5.241 s; epoca eval 4.031-4.153 s; matrice (250 train + 100 eval, valori massimi)   1725.5 s
+      TCN-pre  epoca train 4.896-5.241 s; epoca eval 4.031-4.153 s; matrice (250 train + 100 eval, valori massimi)   1725.5 s
+      totale fit 7776 s = 2.160 h; raddoppiato 4.320 h; tetto 3 h / proiezione = 1.4x; / raddoppiata = 0.7x
+      inferenza 15 modelli x 18.548 finestre (solo calcolo) 503 s = 0.1396 h; raddoppiata 0.2793 h; tetto 0,5 h / raddoppiata = 1.8x
+  [CPU Mac 1 thread, sintetico, eval batch 256] totale fit 13613 s = 3.78 h
+== storico (ricevuta LONG-FIT-G49046-pose, 8 CPU, 30 GiB) ==
+  elapsed 184.98795948270708 s; peak RSS 9513836544 byte = 8.860450744628906 GiB; coreh = 0.41108435440601576

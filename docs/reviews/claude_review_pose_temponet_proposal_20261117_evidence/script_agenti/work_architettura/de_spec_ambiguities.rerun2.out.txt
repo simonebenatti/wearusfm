@@ -1,0 +1,40 @@
+/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/work_architettura/de_spec_ambiguities.py:29: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+  print("  max |PoseHead(x) - L0(x)| a pari pesi =", float((ph(x) - l0(x)).abs().max()))
+pose_head importato da: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/gpt_c15aac9/src/wearusfm/model/pose_head.py
+
+== (e) L0 contro PoseHead dello snapshot ==
+PoseHead: norm = LayerNorm((384,), eps=1e-05, elementwise_affine=True, bias=True) | out = Linear(in_features=384, out_features=20, bias=True)
+  eps = 1e-05 | elementwise_affine = True | gamma tutta 1: True | beta tutta 0: True
+  pesi out tutti zero: True | bias out tutti zero: True
+  parametri PoseHead = 8468 | parametri L0 = 8468
+  stesse chiavi/forme dello state_dict: True
+  max |PoseHead(x) - L0(x)| a pari pesi = 0.0
+  primo numero casuale dopo il seme 42: senza testa 0.882269; dopo PoseHead 0.882269 (uguale=True); dopo L0 costruita con nn.Linear normale 0.922752 (uguale=False)
+
+== (e) normalizzazione della ridge storica: LN senza stato, eps 1e-5 ==
+  LN affine all'inizializzazione (gamma=1, beta=0) contro LN senza stato: max diff = 0.0
+  LN di una patch tutta zero: senza stato -> 0.0 ; affine con beta=0.3 -> 0.30000001192092896
+
+== (d1) dropout per elemento o per canale ==
+  nn.Dropout   su (B,C,T): elementi azzerati 0.104; canali azzerati per intero su tutte le 160 patch: 0 su 128
+  nn.Dropout1d su (B,C,T): elementi azzerati 0.078; canali azzerati per intero su tutte le 160 patch: 10 su 128
+  nn.Dropout1d su (B,T,C) (MLP con Linear): azzera intere PATCH (asse 1 trattato come canali): patch azzerate per intero 25 su 320
+
+== (d2) ordine di creazione dei moduli a pari seme ==
+  seme 0, primo strato 384->64: max |diff| fra i due ordini = 0.10132323205471039 | frazione di pesi diversi = 1.0
+  seme 0, nn.Linear(384,64) contro nn.Conv1d(384,64,1): pesi identici = True | bias identici = True
+  LN creata prima dello strato: pesi invariati = True
+
+== (d3) che cosa cambia il seme in L0 e L13 ==
+  L0   parametri iniziali identici nei semi 0,1,2: True; ha dropout: False
+  L13  parametri iniziali identici nei semi 0,1,2: True; ha dropout: False
+  MLP  parametri iniziali identici nei semi 0,1,2: False; ha dropout: True
+  TCN  parametri iniziali identici nei semi 0,1,2: False; ha dropout: True
+
+== (d4) LN applicata nel posto sbagliato fallisce, non cambia in silenzio ==
+  LayerNorm(384) su (B,384,160): errore -> Given normalized_shape=[384], expected input with shape [*, 384], but got input of size[2, 384, 160]
+  GroupNorm(1,384) su (B,384,160) NON e' per patch: deviazione standard per patch dopo la norma, min 0.923 max 1.079 (per patch sarebbe 1.000)
+
+== (d5) lo stato del generatore dopo la costruzione dipende da come si azzera l'ultimo strato ==
+  primo numero casuale dopo TCN() normale: 0.627687; dopo TCN con ultimo strato sotto fork_rng (come PoseHead): 0.106142

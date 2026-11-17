@@ -1,0 +1,13 @@
+lettore lineare con contesto vs istantaneo, B: rel=+0.488%  sd_boot=0.132  IC95=[0.224, 0.735] IC99=[0.138, 0.811]  sd_fra_utenti=0.528 (n=14) min=-0.30 max=+1.33  n_eff=13.10
+lettore lineare con contesto vs istantaneo, R3c: rel=+2.541%  sd_boot=0.195  IC95=[2.196, 2.963] IC99=[2.111, 3.104]  sd_fra_utenti=0.691 (n=14) min=+1.63 max=+4.14  n_eff=13.16
+tokenizer 19618: T100-L vs T25-L: rel=+1.011%  sd_boot=0.114  IC95=[0.794, 1.241] IC99=[0.73, 1.329]  sd_fra_utenti=0.468 (n=14) min=+0.27 max=+2.08  n_eff=13.11
+tokenizer 19618: T100-G vs T100-L: rel=+0.525%  sd_boot=0.176  IC95=[0.174, 0.863] IC99=[0.068, 0.991]  sd_fra_utenti=0.669 (n=14) min=-0.66 max=+1.52  n_eff=13.10
+tokenizer 19618: T100-G vs T25-L: rel=+1.531%  sd_boot=0.194  IC95=[1.147, 1.89] IC99=[1.043, 1.999]  sd_fra_utenti=0.715 (n=14) min=+0.23 max=+2.60  n_eff=13.11
+tokenizer 5000: T100-L vs T25-L: rel=+1.177%  sd_boot=0.241  IC95=[0.738, 1.676] IC99=[0.602, 1.816]  sd_fra_utenti=0.874 (n=14) min=-0.15 max=+2.84  n_eff=13.11
+tokenizer 5000: T100-G vs T100-L: rel=+1.186%  sd_boot=0.338  IC95=[0.601, 1.905] IC99=[0.461, 2.16]  sd_fra_utenti=1.078 (n=14) min=-0.25 max=+3.99  n_eff=13.09
+tokenizer 5000: T100-G vs T25-L: rel=+2.349%  sd_boot=0.461  IC95=[1.492, 3.273] IC99=[1.254, 3.543]  sd_fra_utenti=1.574 (n=14) min=-0.41 max=+5.28  n_eff=13.11
+lungo 19618: testa allenata vs ridge post: rel=+0.713%  sd_boot=0.151  IC95=[0.436, 1.016] IC99=[0.36, 1.129]  sd_fra_utenti=0.513 (n=14) min=-0.03 max=+1.77  n_eff=13.12
+lungo 49046: testa allenata vs ridge post: rel=+0.925%  sd_boot=0.169  IC95=[0.549, 1.207] IC99=[0.433, 1.254]  sd_fra_utenti=0.659 (n=14) min=-1.05 max=+1.55  n_eff=13.12
+lungo dose 49046 vs 19618, post_ridge: rel=+6.321%  sd_boot=0.244  IC95=[5.872, 6.831] IC99=[5.712, 6.943]  sd_fra_utenti=0.984 (n=14) min=+4.78 max=+7.99  n_eff=13.12
+lungo dose 49046 vs 19618, trained_head: rel=+6.522%  sd_boot=0.318  IC95=[5.924, 7.148] IC99=[5.71, 7.346]  sd_fra_utenti=1.317 (n=14) min=+3.97 max=+8.89  n_eff=13.13
+lungo 49046: ridge post vs ridge pre: rel=+23.856%  sd_boot=1.114  IC95=[21.826, 26.172] IC99=[21.293, 26.8]  sd_fra_utenti=4.024 (n=14) min=+17.89 max=+32.24  n_eff=13.19

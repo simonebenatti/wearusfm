@@ -1,0 +1,420 @@
+REVIEW INDIPENDENTE - DIMENSIONE 6: CONSEGNA, RUOLI E SEGUITO
+Proposta di GPT consolidamento: TCN ispirata a TEMPONet come lettore di posa, stato REVIEW_REQUIRED
+Commit esaminato: c15aac9 (ramo codex/pose-temponet-proposal-20261117), snapshot in sola lettura
+Data: 17/11/2026. Seconda esecuzione (ripresa del tentativo interrotto alle 09:26).
+Legenda delle prove: ESEGUITO = comando o script lanciato in questa esecuzione; CALCOLATO = conto rifatto;
+LETTO = solo letto; «tentativo precedente» = preso dal primo tentativo senza rieseguirlo.
+
+(Il rapporto si scrive a pezzi: ogni voce si aggiunge appena e' pronta.)
+
+Riferimenti usati (sola lettura): SNAP = copia dell'albero di GPT a c15aac9; CLAUDE.md di main e114a78 (identico al CLAUDE.md
+della checkout canonica, confronto con cmp ESEGUITO); worktree di Claude a 8917e2a; export con git archive di c15aac9, cfa6462,
+2930d7d ed e114a78 nella cartella work_consegna/v2 (ESEGUITO in questa esecuzione; gli export del tentativo precedente non sono
+stati riusati). Script nuovi di questa esecuzione: work_consegna/v2/source_guard_v2.py, run_pin_test_v2.py, conti_v2.py;
+demo_allineamento_v2.py e crosscheck_pins_v2.py sono copie rilette degli script del tentativo precedente, rieseguite.
+
+======================================================================================================================
+PARTE 1 - RILIEVI
+======================================================================================================================
+
+consegna-1 [minore] Che cosa autorizza la firma, e tre frasi che danno per decisi affidamento e operatore
+[claim]
+- Protocollo par. 8, riga 128: «L'affidamento della nuova attività e il budget li conferma Simone; non viene chiesto di nuovo il
+  consenso per catene già approvate.»
+- Protocollo par. 10, riga 182: «Nessun esperimento della linea 2 viene avviato da GPT con questa consegna.»
+- Protocollo par. 9, riga 169: «Prima dell'invio Claude verificherà quota attuale e saldo»; riga 182: «poi esecuzione da Claude
+  secondo il piano concreto».
+- Prompt di GPT per Claude, riga 24: «niente nuovo consenso per le campagne già chiuse».
+- La tabella del par. 10 (righe 173-180) elenca le decisioni ma non dice che cosa autorizza la firma.
+[evidence] (LETTO, con riga del CLAUDE.md di main e114a78)
+- L'attività non è nella tabella delle linee (CLAUDE.md:86-91). L'eccezione che fa di Claude l'operatore vale «Solo per EPN15 e
+  valutazione lunga della linea 2» (CLAUDE.md:35). La riga 182 chiama però l'attività «linea 2»: è una classificazione che Simone
+  non ha ancora fatto, e che porterebbe con sé l'operatore della linea 2.
+- Per questa attività non esiste nessuna «catena già approvata». Le uniche catene approvate a cui la frase può riferirsi sono di
+  altre campagne, per esempio la valutazione lunga approvata il 06/11 («Sì, approvo», SNAP/docs/decisioni.md:6660). Lette alla
+  lettera, la riga 128 e la riga 24 del prompt si possono intendere come estensione di quelle approvazioni. Probabilmente GPT
+  voleva dire il contrario, cioè «dopo l'approvazione nessun secondo consenso per i job inclusi»: va scritto così.
+- Il tetto proposto, 4 GPUh in tutto, sta sotto la soglia di autonomia di 5 GPU-ore (CLAUDE.md:104, «per attivita' pertinenti
+  al lavoro affidato»). Inoltre «l'approvazione della proposta comprende sottomissione ed esecuzione» (CLAUDE.md:22-23 e
+  110-111). Firmare la tabella del par. 10 con le righe «Budget» e «Autore / revisore / operatore» potrebbe quindi bastare, per le
+  regole del progetto, a lanciare tutto dopo la review del codice, senza un altro passaggio da Simone. Forse GPT lo intende; il
+  testo non lo dice. Simone deve sapere se firma il disegno, il disegno con il budget, oppure anche il lancio dei job inclusi,
+  dopo la review del codice e il gate.
+- Le righe 169 e 182 sono coerenti con la proposta di ruoli e la riga 182 premette «Queste sono proposte da approvare». La
+  gravità sta nella combinazione con le righe 128 e 182, non nelle singole frasi.
+[fix]
+- Aggiungere alla tabella del par. 10 due righe. (1) «Collocazione dell'attività: voce nuova della tabella delle linee, oppure
+  estensione della linea 2 decisa da Simone». (2) «Che cosa autorizza la firma»: per esempio «disegno, criteri e tetto; i job
+  inclusi (benchmark, fit, inferenza, metriche) partono dopo (a) i criteri congelati in decisioni.md con commit, (b) la review
+  reciproca del codice e del pacchetto operativo, (c) il gate misurato, senza un nuovo consenso; ogni variazione di matrice o di
+  tetto torna a Simone». In alternativa: un secondo via esplicito dopo il benchmark. Sceglie Simone.
+- Riscrivere la riga 128: «Dopo l'approvazione di Simone non si chiede un secondo consenso per i job inclusi nel piano
+  approvato; nessuna approvazione di altre campagne si estende a questa attività». Correggere allo stesso modo la riga 24 del
+  prompt.
+- Riga 182: «Nessun esperimento di questa attività viene avviato da GPT»; righe 169 e 182: «l'operatore (Claude, se Simone lo
+  conferma)».
+
+consegna-2 [minore] File nuovi «sotto scripts/»: senza la base del ramo, la guardia della valutazione lunga diventa rossa
+[claim]
+- Par. 8, riga 130: «Implementazione futura in nuovi file di esperimento sotto `scripts/` e relativi test CPU, su ramo distinto
+  dalla linea 3 [...] nessun cambiamento a `src/wearusfm` [...] I digest delle release altrui restano quelli dei loro checkout.»
+- Par. 8, riga 141, fra i test: «cache/encoder invariati, parametri originali e piano sorgenti invariati».
+- Par. 2, riga 25: «si adatta il codice in un modulo sperimentale separato, con attribuzione e test».
+- Il ramo della proposta deriva da cfa6462 (riga 3); la base del ramo del codice non è indicata.
+[evidence]
+- LETTO: scripts/consolidation_long_common.py:78-81. source_identity() fa l'hash di tutti i file src/**/*.py, di tutti i file
+  scripts/*.py del primo livello e di due file di slurm. Il test
+  tests/cpu/test_consolidation_long_common.py::test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned controlla,
+  alla riga 123 di c15aac9, che plan['source_sha256'] sia uguale a source_identity() calcolato sull'albero di lavoro.
+- ESEGUITO (source_guard_v2.py sugli export). A c15aac9 e a cfa6462 il digest coincide col piano (1ca7aead5cd48a1f…, 100 file
+  in src e 125 in scripts). Ho poi simulato tre posizioni del file nuovo su copie dell'export di c15aac9.
+  (1) scripts/pose_temponet_heads.py: il digest diventa 532c4fc0f8589cce… e il test fallisce alla riga 123 con AssertionError.
+  (2) scripts/pose_temponet/heads.py, in una sottocartella: il digest resta 1ca7aead…, perché glob('*.py') non è ricorsivo.
+  (3) src/wearusfm/model/temponet_latent.py: il digest diventa 7651e8953a3e89c4…
+- ESEGUITO (run_pin_test_v2.py): già oggi, a c15aac9 senza file nuovi, lo stesso test FALLISCE alla riga 126 («Failed: DID NOT
+  RAISE <class 'ValueError'>»). Il piano ha review.status = 'claude_review_converged' (modificato in 166fb86), mentre il test
+  (ultima modifica 9d195e7) si aspetta ancora un piano senza review. È un rosso che c'era già nella base cfa6462, non un
+  difetto della proposta. Va però saputo prima di scrivere i test nuovi su quella base.
+- ESEGUITO (git): main e114a78 ha già corretto entrambe le cose con 3263ee9 («Test frozen campaigns against their archived
+  sources after integration»). tests/cpu/frozen_campaign_support.py:34-43 calcola il digest dal commit 166fb86 via git, e il test
+  di main (righe 124-131) controlla che l'albero integrato NON coincida con la campagna. 3263ee9 non è antenato di c15aac9.
+  Su un export senza .git il test di main fallisce per l'assenza di git: è il limite già noto delle copie fatte con
+  git archive.
+- LETTO: altre guardie di main enumerano src/**/*.py: scripts/consolidation_finetune.py:54, consolidation_finetune15.py:71,
+  pose_slot_plan.py:41, logsquare_evaluation.py:42. Le guardie della linea 3 citate in I-1 (review 0ab9d98, righe 381-384)
+  controllano config e sorgenti di src e un elenco chiuso di script (logsquare_evaluation.py:34-38). I file nuovi sotto scripts/
+  non le toccano. La scelta «niente src, FMConfig, PoseHead, config» è quindi coerente con I-1 per il livello A.
+- Par. 2 e par. 8 sono coerenti solo se il «modulo sperimentale» sta sotto scripts/. Letto da solo, il par. 2 si può intendere
+  come un modulo accanto a temponet.py in src/wearusfm/model, che è il caso (3).
+[fix]
+- Nel par. 8 indicare la base del ramo del codice: main a un commit che contenga 3263ee9 (per esempio e114a78 o successivo),
+  oppure cfa6462 con una sottocartella di scripts/ non coperta da source_identity().
+- Elencare le guardie delle campagne chiuse che devono restare verdi. Dichiarare prima di scrivere i test i rossi già presenti
+  nella base, con il numero di test passati e falliti prima e dopo.
+- Nel par. 2 scrivere «modulo sotto scripts/ (par. 8), nessun file nuovo in src/wearusfm».
+- Il test «piano sorgenti invariati» va definito sul commit pinnato (come fa 3263ee9), non sull'albero di lavoro.
+
+consegna-3 [minore] Fra i test manca il cancello che riproduce i riferimenti pubblicati prima dei contrasti
+[claim]
+- Par. 3, riga 51: «Due riferimenti storici, senza nuovo fitting: ridge post 49k e testa già allenata del teacher, con predizioni
+  pinnate sullo stesso supporto.»
+- Par. 8, righe 134-141: otto voci di test. Le più vicine sono «metriche e media fra semi da accumulatori confrontate con un
+  oracolo semplice; cinque contrasti, quantili e supporti appaiati» (riga 140) e «rifiuto di pin o output incompatibili»
+  (riga 141).
+[evidence]
+- LETTO: nessuna voce del par. 8 ricalcola dai file pinnati i valori pubblicati. Questi valori, nel file della review GPT
+  SNAP/results/infra/consolidation_long_20261105/gpt_review_20261107/pose_verification.json, sono: cells «49046/post_ridge»
+  dynamic E_dyn 0,7859020004638595; «49046/trained_head» 0,7786289843513977. Il supporto dinamico è di 8.327 finestre con
+  supporto (8.329 selezionate), 15 utenti, 166.540 coppie finestra-giunto e 20.119.920 elementi validi; support_sha256
+  973930475e9405c1….
+- LETTO: le predizioni dei riferimenti sono salvate già ritagliate a 148 patch in float64. La testa allenata è
+  held["pred"][:, OFFSET:-OFFSET] con OFFSET 6, la ridge viene da predict_reader (scripts/consolidation_long_pose_runtime.py:
+  272-282). Le teste nuove escono invece a 160 patch (par. 9, riga 167). Il codice nuovo deve quindi ritagliare [6:154] in modo
+  da allinearsi ai riferimenti.
+- ESEGUITO (demo_allineamento_v2.py, dati sintetici, codice storico summarize() di tokenizer_pose_readout.py a c15aac9). Con il
+  ritaglio sbagliato pred[:, 0:148] o pred[:, 12:160], al posto di pred[:, 6:154], E_dyn dinamiche passa da 0,428010 a 0,545842
+  e a 0,545911. Forma (240, 148, 20), support_sha256 (4f88018aceee), finestre (162) ed elementi (479.520) restano identici.
+  Il confronto storico dei supporti (paired_comparison, tokenizer_pose_readout.py:311) guarda solo maschera e target, non
+  l'allineamento delle predizioni. «Supporti appaiati» non basta quindi a provare che metrica e allineamento siano gli stessi.
+- LETTO: mancano anche tre test per regole che il protocollo fissa. (a) Lo shuffle «indipendente da inizializzazione/dropout e
+  identico fra bracci» (riga 66): «semi fissati» (riga 139) non lo verifica. (b) Il gate di costo (riga 165), cioè proiezione
+  doppia con 50 epoche per tutti i rifit e arresto senza fit parziali. (c) La regola di lettura a quattro esiti e la regola
+  della candidata, cioè primario più contrasti 4 e 5 (righe 93-100).
+  Sono coperti: disgiunzione dei fold e leakage (riga 136), val chiusa fino al manifest dei modelli (riga 139), stesso
+  input/target/statistiche/riduzione (riga 137).
+[fix]
+Aggiungere al par. 8, prima di qualunque contrasto:
+- un cancello «riferimenti riprodotti». Con il codice nuovo delle metriche si ricalcolano dai file pinnati E_dyn dinamiche
+  0,7859020004638595 e 0,7786289843513977, con scarto al più 1e-12, e i conteggi del supporto (8.327 finestre, 20.119.920
+  elementi, support_sha256 973930475e94…). Se il cancello fallisce, ci si ferma prima dei contrasti.
+- Lo stesso cancello sul percorso delle teste nuove: si passa la `pred` a 160 patch della cache val nel ritaglio delle teste
+  nuove e si riottiene byte per byte l'array di trained_head.predictions.npz. Così si prova l'allineamento con i riferimenti.
+- Tre test unitari: ordine dei minibatch identico fra le cinque teste e invariato al cambiare di architettura o dropout; gate di
+  costo che si ferma prima del primo fit; etichette dei quattro esiti e della candidata su intervalli sintetici.
+
+consegna-4 [minore] Così come sono, la voce di decisioni.md e proposal.json non si possono congelare: mancano regole del protocollo
+[claim]
+- SNAP/docs/decisioni.md:6715-6717: «REVIEW_REQUIRED, nessuna nuova decisione di lancio o budget [...] Questa voce registra le
+  regole proposte, pronte per la review e la firma, non le presenta come già approvate.»
+- Riga 6719: collegamento «[Protocollo completo](pose_temponet_frozen_protocol_20261117.md)».
+- proposal.json, blocco «evaluation» (righe 20-41).
+[evidence] (LETTO, confronto riga per riga dei quattro documenti)
+- È chiaramente una proposta e non un congelamento: righe 6715 e 6717; proposal.json «status»: «REVIEW_REQUIRED»,
+  «executable»: false, «jobs_authorized»: false. Va bene.
+- I numeri coincidono nei quattro documenti (protocollo, decisioni.md:6719-6738, registro righe 181-209 e 5976-5994,
+  proposal.json): checkpoint 49.046; 40/15 utenti; 1.907/18.548 finestre; parametri 8.468/65.300/100.628/65.204; RF 13 e ±150 ms;
+  LR {1e-4, 1e-3}; 50 epoche; 2 fold; semi 0, 1, 2; 20+15=35 fit; primario TCN-post/L0; cinque contrasti; IC 99% Bonferroni;
+  2.000 repliche, seme 20261102; soglia pratica 2%; tetti 4 GPUh, 12 coreh, 44 coreh, 8 GiB. Non ho trovato numeri discordi.
+- Mancano invece alcune regole del protocollo.
+  (a) Nella voce di decisioni.md: la soglia delle finestre dinamiche pose_var ≥ 0,2574231028556824 (protocollo riga 79;
+      proposal.json riga 254); il criterio di selezione aggregato sulle finestre e i pareggi, prima l'epoca precedente e poi il
+      LR minore (riga 68); la regola della candidata, cioè primario più contrasti 4 e 5 (riga 100); l'arresto su NaN, OOM o fit
+      incompleto senza rimpiazzi (riga 75).
+  (b) In proposal.json: la condizione di beneficio («stima ≥2% e limite inferiore aggiustato >0», protocollo riga 95) e quella
+      di deterioramento («stima ≤−2% e limite superiore aggiustato <0», riga 96). Il blocco «evaluation» ha soltanto
+      «practical_improvement_percent»: 2 e «readout_failures» (riga 37). Mancano anche l'IC 95% del confronto descrittivo
+      pre/post (protocollo riga 102; proposal.json riga 33 dice solo «no pass/fail») e la regola di arresto della riga 75.
+  (c) Il collegamento della riga 6719 è un percorso relativo, senza commit né sha256. Dopo la firma, un congelamento «così
+      com'è» rimanderebbe a un file che può ancora cambiare.
+- La regola del progetto chiede che le soglie si scrivano in docs/decisioni.md e si committino prima del lancio (CLAUDE.md:
+  224-225). Con (a)-(c) il congelamento richiederebbe una riscrittura; la riscrittura dopo la firma è esattamente il passaggio
+  in cui si introducono differenze.
+[fix]
+- Completare il blocco «evaluation» di proposal.json con le quattro etichette d'esito in forma eseguibile, la regola della
+  candidata, l'IC 95% descrittivo e la regola di arresto.
+- Nella voce di congelamento, dopo la firma, citare protocollo e proposal.json con SHA del commit e sha256 dei file, e riportare
+  per esteso la soglia dinamica, le quattro etichette e la regola della candidata, in modo che la voce basti da sola. I numeri
+  restano invariati.
+
+consegna-5 [minore] Tabella delle decisioni (par. 10): mancano tre scelte che Simone dovrebbe fare in modo esplicito
+[claim]
+- Par. 10, righe 173-180: sei righe (Livello, Checkpoint, Bracci, Ricetta e lettura, Budget, Autore / revisore / operatore).
+- Il prompt di Claude, par. 5 (8917e2a, righe 270-271), chiedeva «l'elenco delle decisioni per Simone: livello, checkpoint,
+  bracci, budget, affidamento del codice, operatore».
+[evidence] (LETTO)
+- Le sei voci richieste ci sono tutte; affidamento del codice e operatore stanno in una riga sola. Mancano però tre scelte che
+  la proposta fa e che cambiano che cosa Simone riceve.
+  (a) La testa provata non è TEMPONet, ma «una TCN compatta ispirata a TEMPONet [...] Non la chiameremo replica TEMPONet» (riga
+      25): sei convoluzioni (tre temporali k3 con dilatazioni 1/2/3 e tre puntuali), nessuna BatchNorm, nessun pooling né
+      stride, 65.204 parametri; la TEMPONet di temponet.py ha tre blocchi con dilatazioni 2/4/8, stride, AvgPool, BatchNorm e
+      FC (prompt di Claude, righe 90-92). La richiesta di
+      Simone, citata nel prompt di Claude (riga 3), era «provare ad usare temponet come testa per la regressine nel FM».
+      L'adattamento è motivato bene (righe 21-25) e i due agenti concordano che un adattamento serve (prompt di Claude, righe
+      116-117). Resta una sostituzione dell'oggetto della prova, che va accettata da chi ha fatto la domanda. Nella tabella,
+      la riga «Bracci» scrive «TCN-post» senza dirlo.
+  (b) Il rinvio di encoder random, TCN raw da zero e confronto con la TEMPONet raw (par. 6, righe 108-114). Il v10 §8 vuole
+      quelle baseline (prompt di Claude, righe 164-165). GPT scrive «Non si introduce una deroga silenziosa alle baseline v10:
+      la conclusione qui è più ristretta» (riga 108). Che basti restringere la conclusione invece di firmare una deroga è un
+      giudizio che spetta a Simone. Per lui, poi, il confronto con la TEMPONet raw che conosce è probabilmente la parte più
+      intuitiva della domanda.
+  (c) Il seguito. Dopo un esito positivo: «candidata a migliore lettore della dinamica centrata», nessuna adozione automatica,
+      compromesso su MAE e livello da discutere (riga 100), livello B come decisione separata (riga 118). Dopo un esito nullo o
+      inconclusivo: chiusura senza promozione (riga 98). Non è scritto chi prepara la lettura finale per la firma. Nella linea
+      2 la lettura l'ha preparata GPT e l'ha firmata Simone (SNAP/docs/decisioni.md:6656-6658 e 6686-6687).
+- Il quarto punto mancante, che cosa autorizza la firma, è in consegna-1.
+[fix]
+- Aggiungere tre righe alla tabella del par. 10:
+  «Oggetto: TCN ispirata a TEMPONet, non TEMPONet né i suoi pesi (Simone accetta la sostituzione)»;
+  «Controlli rinviati: random, raw da zero e TEMPONet raw; conclusione limitata al lettore su questo encoder, nessuna
+  affermazione sul valore del pretraining»;
+  «Seguito: nessuna adozione né livello B automatici; lettura finale di GPT, review di Claude, firma di Simone».
+
+consegna-6 [nota] Ruoli: la «continuità con la linea 2» regge per la tabella; due fatti utili a Simone
+[claim]
+- Par. 8, riga 128: «Proposta di continuità: GPT consolidamento autore del protocollo e del codice; Claude revisore e unico
+  operatore».
+- Par. 1, riga 3: «Risponde al prompt consegnato da Simone».
+[evidence]
+- LETTO: la riga della linea 2 nella tabella (CLAUDE.md:89) dà codice e responsabilità scientifica a GPT consolidamento e le
+  operazioni a Claude. La proposta la riproduce fedelmente. Regge.
+- LETTO: nella stessa linea 2, l'ultima modifica del codice (emendamento A1) l'ha implementata Claude su delega di Simone: «Simone
+  ha gia' delegato anche l'implementazione aClaude («questo meglio se lo fa claude, risparmiamo un passaggio, ok ?» nel contesto
+  dell'emendamento)» (SNAP/docs/decisioni.md:6647-6649, voce di GPT). Il precedente della linea 2 contiene quindi entrambe le
+  configurazioni. Il revisore non esprime preferenze: decide Simone. È solo un'informazione completa per la sua scelta.
+- ESEGUITO: il prompt di Claude è indirizzato a «GPT coordinamento» (8917e2a, riga 1 e riga 11). L'hash che proposal.json
+  dichiara per l'allegato delle istruzioni (instruction_attachment_sha256 917aab786a1975aa…) è lo sha256 di quel file senza il
+  newline finale: 24.097 byte, contro i 24.098 byte del file a 8917e2a, che ha sha256 e01c056603c4d115…. Il testo ricevuto è
+  quindi quello del prompt. Ha risposto GPT consolidamento, non GPT coordinamento, e la proposta non lo dice.
+[fix]
+Nel par. 8 scrivere che il prompt era indirizzato a GPT coordinamento, che Simone l'ha consegnato a GPT consolidamento (fatto
+riferito da GPT) e che la conferma dell'affidamento copre anche l'autore del protocollo. Si può aggiungere, come informazione, il
+precedente di A1.
+
+consegna-7 [nota] Livello B: il costo citato vale solo a 19.618; manca come evitare le guardie I-1 dentro il pretraining
+[claim]
+- Par. 7, riga 122: «Ordine di grandezza storico 2×16,94 = 33,88 GPUh, più estrazioni/letture/overhead; non preventivo né
+  budget di B.»
+- Par. 7, riga 124 e par. 8, riga 130: le regole su ramo e guardie riguardano il codice del livello A.
+[evidence]
+- CALCOLATO (conti_v2.py, ESEGUITO). (3916 + 11334) s × 4 GPU / 3600 = 16,9444 GPUh per un T100-G da 0 a 19.618
+  (db5ac41:docs/tokenizer_endpoint_execution_20261104.md:26 e contrastive_proposal_20261107.md:114). Due training fanno 33,889
+  GPUh: «33,88» è il prodotto di 16,94 arrotondato, mentre db5ac41 scrive «circa 33,89». La differenza non conta.
+- CALCOLATO: questo vale solo se B è a 19.618, che è anche la dose del C0 della linea 3. Il livello A però legge il 49.046. Le
+  ricevute della continuazione (SNAP/results/infra/consolidation_long_20261105/continuation/{30000,39237,49046}/receipt.json,
+  summary.elapsed_s 7.955,65 + 7.145,29 + 7.536,23 s, world_size 4) danno 25,152 GPUh da 19.618 a 49.046. Un training a 49.046
+  costa quindi, come ordine di grandezza, circa 42,10 GPUh, e due circa 84,19 GPUh, cioè 2,5 volte i 33,88, prima
+  dell'overhead. Il conto somma i secondi di job dei primi 19.618 passi con il tempo interno al trainer della continuazione.
+  Un controllo indipendente:
+  il tronco R3c a 49.046 passi è costato 40,4 GPU-ora (SNAP/docs/decisioni.md:4588, LETTO).
+- LETTO: la domanda 8 del prompt di Claude chiede anche «come si evita di interferire con la linea 3 (ramo, guardie I-1,
+  digest)». Il par. 7 risponde per il C0 (riga 122: «senza cambiare i suoi nove contrasti o checkpoint»), non per il codice. Una
+  testa nel pretraining tocca trainer o FMConfig, che sono le cause (1) e (2) di I-1 (review 0ab9d98, righe 385-388).
+  La regola «nessun cambiamento a src/wearusfm, FMConfig» del par. 8 vale per A e non può valere per B.
+- La logica fra A e B non promette ciò che A non può dire. Riga 118: «può verificare se»; riga 120: «il livello A, teacher non
+  mascherato, non misura questo cambiamento del compito»; riga 124: «la percentuale piccola non dimostra che non assorba il
+  compito». È coerente con la sintesi 8eba5e4, riga 59: «Un esito negativo a encoder congelato non esclude un beneficio
+  dell'addestramento congiunto».
+[fix]
+Due frasi nel par. 7: «33,88 GPUh per due training a 19.618 più la lettura A a quella dose; a 49.046 circa 81-84 GPUh prima
+dell'overhead»; «B richiede un proprio piano del codice per trainer e FMConfig e per i digest delle release (I-1)».
+
+consegna-8 [nota] Raccolta degli esiti: un solo writer anche per ricevute e report
+[claim] Par. 9, riga 167: «Report e manifest sul Mac e in Git, NPZ/PT fuori Git.»
+[evidence] LETTO: non è detto su quale ramo l'operatore committa ricevute, manifest e report. Nella linea 2 Claude ha usato un ramo
+di esecuzione suo, claude/consolidation-long-exec-20261105, con punta 2930d7d (git branch -a --contains 2930d7d, ESEGUITO).
+GPT ha scritto piano e codice sul proprio ramo, in cartelle distinte (results/infra/consolidation_long_20261105/plan.json contro
+execution/receipts/...). Con «un writer per checkout» (CLAUDE.md:99) conviene fissarlo subito.
+[fix] Una frase nel par. 8: «ricevute, manifest e report dell'esecuzione sul ramo di esecuzione di Claude, in una sottocartella
+execution/ separata dai file di GPT; GPT non li modifica».
+
+consegna-9 [nota] Il nome del protocollo dice «frozen» due volte, in due sensi
+[claim] File docs/pose_temponet_frozen_protocol_20261117.md; proposal.json riga 183: «protocol»:
+«pose-temponet-frozen-head-20261117-v1-proposal».
+[evidence] LETTO: «frozen» si riferisce all'encoder congelato (riga 5), ma «frozen_protocol» si legge come «protocollo congelato»
+mentre lo stato è REVIEW_REQUIRED, e «frozen-head» come «testa congelata», mentre le teste si allenano. Nella linea 2 l'ID del
+protocollo è una costante verificata dal codice (consolidation_long_common.py: PROTOCOL e validate_plan, riga 92). Un ID ambiguo
+finirebbe nei piani e nelle ricevute.
+[fix] Fissare l'ID definitivo al congelamento, per esempio «pose-temponet-frozen-encoder-readout-20261117-v1», e dire nel titolo
+che «frozen» indica l'encoder.
+
+======================================================================================================================
+PARTE 2 - COMPLETEZZA RISPETTO AL PROMPT DI CLAUDE (punto g)
+======================================================================================================================
+Prompt di Claude a 8917e2a, par. 3 (righe 207-256) e par. 5 (righe 266-274). Righe del protocollo di GPT. Tutto LETTO.
+
+Q1 Domanda e livello: SÌ. Par. 1, righe 9-13 (livello A sul 49.046, testa temporale compatta, lettura non sovrainterpretata);
+   par. 2, riga 25.
+Q2 Bracci e controlli: SÌ. Tabella del par. 3 (righe 39-45), con taglie; MLP a capacità pari (riga 47); cella lineare con
+   contesto L13 al posto della ridge con lag, motivata (riga 49); vista pre descrittiva (riga 102); random, TCN raw da zero e
+   TEMPONet raw rinviati con motivo (par. 6, righe 108-114).
+Q3 Architettura: SÌ. Righe 29-37: uscita per patch, padding simmetrico, crop6 indipendente dal padding, RF di 13 patch e ±150 ms,
+   simmetrica e non causale (riga 13), stride 1, nessun pooling, dilatazioni 1/2/3, canali 64, primo strato 384→64 senza collo a
+   16 (riga 21), LayerNorm affine, dropout 0,1, 65.204 parametri.
+Q4 Dati e selezione: SÌ. 40 utenti per tutte le teste nuove; 158 dichiarati per FM e testa storica (righe 51 e 73); 158 per i
+   modelli da zero rinviati come confronto distinto (riga 110); weight decay, dropout ed epoca scelta sui fold (righe 65-69);
+   stima ottimista dichiarata (riga 73); una sola lettura della val (riga 71); nessuna conferma indipendente (riga 73); nessuna
+   estrazione nuova (riga 110).
+Q5 Checkpoint: SÌ. 49.046 e 300M fuori (riga 9). La condizione «finché la linea 1 non pubblica la sua lettura» non è ripresa;
+   è un dettaglio senza conseguenze per A.
+Q6 Metriche e criteri: SÌ nel contenuto (par. 5, righe 79-104): primario, soglia del 2%, IC, entrambi i riferimenti, famiglia
+   fissa con Bonferroni, regola a due lati con l'esito negativo scritto prima, nessuna attribuzione al backbone (riga 102),
+   misura per tratto rinviata (riga 104). IN PARTE il congelamento in decisioni.md «così com'è» (consegna-4).
+Q7 Confronto con TEMPONet raw: SÌ nel metodo (righe 112-114: medie sui campioni nativi degli stessi blocchi, non cinque punti a
+   200 Hz; passato [q−255, q] entro il margine). L'esecuzione è rinviata.
+Q8 Livello B: IN PARTE. Il par. 7 (righe 116-124) risponde su quando, che cosa resta fisso, come si legge, controllo appaiato
+   (C0 solo con identità dimostrata; T100-G storico insufficiente), deroga v10 §6.5. Mancano il costo a 49.046 e il piano del
+   codice di B rispetto a I-1 (consegna-7).
+Q9 Codice e operatore: SÌ. Par. 2, riga 25 e par. 8, righe 128-143: modulo nuovo, ramo distinto, nessun merge, test CPU, autore
+   e operatore proposti. Precisazioni in consegna-2 e consegna-3.
+Q10 Preventivo: IN PARTE. Par. 9, righe 147-169: limiti per fase, GPUh, coreh, ore locali 44, uscite su WORK, conservazione
+   (input e uscite su WORK, indipendenti dal rinfresco del 03/12), fermo 23-25/11. Non c'è il residuo in cifre: è dichiarato
+   storico e da rileggere, ed è accettabile. Non c'è un calendario delle fasi, solo «nessuna promessa di completamento prima
+   del fermo».
+Par. 5 «Come rispondere»:
+   - protocollo in docs/ in REVIEW_REQUIRED con registro: SÌ; push e SHA remoto: SÌ (punta remota c15aac9, verificata oggi da
+     Claude);
+   - criteri congelabili così come sono: IN PARTE (consegna-4);
+   - elenco delle decisioni con le sei voci: SÌ, ma mancano tre scelte esplicite (consegna-5) e il senso della firma
+     (consegna-1);
+   - disaccordo motivato con la lettura di Claude: SÌ (riga 11; «Correzione tecnica al prompt», riga 23; L13 al posto della
+     ridge con lag, riga 49; par. 6);
+   - revisione reciproca del codice dopo la firma: SÌ (riga 182).
+
+======================================================================================================================
+PARTE 3 - AFFERMAZIONI CONTROLLATE CHE REGGONO
+======================================================================================================================
+V-1 La consegna è solo documentale. c15aac9, con genitore cfa6462, cambia 9 file: 652 righe aggiunte e 0 cancellate (registro
+    +50, decisioni +28, protocollo, prompt e cinque file in results/infra/pose_temponet_proposal_20261117/).
+    git diff --stat cfa6462 c15aac9 -- src scripts tests è vuoto. Anche diff -rq degli export è vuoto, su src, scripts, piano
+    della valutazione lunga e tests/cpu/test_consolidation_long_common.py. ESEGUITO.
+V-2 Nessun merge del ramo TEMPONet né della linea 3: 8917e2a, 60b35bd, 0c19c4b, db5ac41, 0ab9d98 ed e114a78 non sono antenati
+    di c15aac9 (git merge-base --is-ancestor). Modello, test e launcher TEMPONet (src/wearusfm/model/temponet.py,
+    tests/cpu/test_temponet.py, test_temponet_emg2pose.py, scripts/slurm/temponet_emg2pose.sbatch) esistono a 8917e2a, non a
+    c15aac9 né a main. ESEGUITO.
+V-3 Provenienza TEMPONet. temponet.py (8.519 byte, sha256 9d5a03e23d4d4ef2…) è identico a 60b35bd, 0c19c4b e 8917e2a;
+    scripts/temponet_emg2pose.py (31.196 byte, sha256 8d7f9dbee1db29ca…) è identico a 0c19c4b e 8917e2a. I valori coincidono con
+    raw_source_identity.json e con proposal.json (temponet_sha256). 8917e2a è la punta di origin/claude/temponet-db8-20261109
+    nel repository locale. ESEGUITO.
+V-4 L'hash dell'allegato delle istruzioni (917aab78…) è quello del prompt di Claude a 8917e2a senza il newline finale. GPT ha
+    quindi risposto al testo esatto del prompt. ESEGUITO.
+V-5 La ricevuta storica del fit, 2930d7d:results/infra/consolidation_long_20261105/execution/receipts/
+    LONG-FIT-G49046-pose-20261105.json, ha sha256 b08e6e321f380331…, uguale a proposal.json. ESEGUITO.
+V-6 I pin dei cinque input (train, val, coefficienti ridge, predizioni ridge, predizioni della testa) coincidono per sha256 e
+    byte con l'inventario della conservazione archiviato da GPT (352 voci) (crosscheck_pins_v2.py, ESEGUITO). Checkpoint
+    bfa6141f… e statistiche di posa 757f2aee… coincidono con la ricevuta continuation/49046/receipt.json (LETTO). I pin sono
+    quelli d'origine, non riscritti, come promette la riga 130.
+V-7 Ruoli. La proposta riproduce la riga della linea 2 della tabella (CLAUDE.md:89): GPT consolidamento al codice, Claude
+    operatore. Lascia la decisione a Simone in tutti i documenti: protocollo, righe 128, 180 e 182; proposal.json
+    «roles_proposed», «final_decision»: «Simone»; decisioni.md:6736; registro, riga 208; prompt, riga 22; design_review.txt,
+    riga 13. Un solo operatore, submitter e ledger comuni, «senza duplicazioni», nessun esperimento avviato da GPT: coerente
+    con CLAUDE.md:242 e 91. LETTO.
+V-8 Piano del codice del livello A coerente con I-1. Niente src/wearusfm, FMConfig, PoseHead o config storici (riga 130). Le
+    guardie della linea 3 (config_to_dict e l'elenco EVALUATOR_SCRIPTS di logsquare_evaluation.py:34-38, più
+    src/wearusfm/**/*.py) non vedono file nuovi sotto scripts/ (LETTO). L'unica guardia che li vede è quella della valutazione
+    lunga (consegna-2, ESEGUITO).
+V-9 Conti del par. 7 e della tabella del par. 3 (conti_v2.py, ESEGUITO, moduli torch costruiti come nel par. 3):
+    - parametri: L0 8.468, MLP 65.300, L13 100.628, TCN 65.204; MLP e TCN hanno ciascuno 64.128 pesi delle trasformazioni;
+    - campo ricettivo: l'uscita al centro 80 dipende dagli istanti 74…86, cioè 13 patch;
+    - TCN/30M = 0,2299% («circa 0,23%»); TCN/PoseHead = 7,70 («quasi otto volte»);
+    - 30M = 28.362.013 parametri: docs/piano_scientifico_20261102.md:141 a e114a78 e «parameters»: 28362013 nella ricevuta
+      49046;
+    - 2 × 16,9444 = 33,889 GPUh.
+V-10 Tabella delle risorse (par. 9) (CALCOLATO): CPU-only 0,5 + 2 + 8 + 0,5 + 1 = 12 coreh; GPU 0,25 + 3 + 0,5 + 0,25 = 4 GPUh;
+     coreh allocate 12 + 8 × 4 = 44; fit 5 × 2 × 2 + 5 × 3 = 35. Coincide in protocollo, proposal.json, decisioni.md e registro.
+V-11 Condizioni del livello B coerenti con la domanda 8 del prompt e con la sintesi 8eba5e4, riga 59 (LETTO): inizializzazione,
+     dati, ordine, maschere, loss, dose e schedule fissi; testa sotto fork_rng. La PoseHead attuale nasce davvero sotto
+     torch.random.fork_rng (src/wearusfm/model/pose_head.py:24-30, identico fra c15aac9 e main). Le letture sono fatte con
+     teste proprie e lettori comuni rifittati; il controllo è appaiato; il C0 si riusa solo con identità dimostrata e senza
+     toccare i nove contrasti; il T100-G storico non basta; il v10 §6.5 è affrontato.
+     La proposta non usa lo scarto 0,47-0,90% come limite del rumore: grep sul protocollo senza risultati, ESEGUITO.
+V-12 La logica fra A e B non promette ciò che A non può dire (righe 11, 118, 120 e 124), in linea con l'impostazione già
+     concordata in chat: un esito nullo non dimostra un limite dell'encoder; la testa capace è un rischio, non una certezza.
+     LETTO.
+V-13 La voce di decisioni.md è chiaramente una proposta (righe 6715 e 6717). Numeri e regole presenti coincidono con protocollo,
+     registro e proposal.json; nessun numero discorde. LETTO.
+V-14 Registro. Le voci del 17/11 stanno nelle due sezioni giuste e in testa a ciascuna, come voci più recenti: «## 1) Cosa ho
+     fatto» alla riga 179 con la voce alla riga 181; «## 2) Problemi trovati» alla riga 5974 con la voce alla riga 5976. Il
+     contenuto non aggiunge impegni assenti dal protocollo. «Precisazioni accolte dal critico» (riga 5986) indica i lettori
+     locali di GPT, secondo una consuetudine già usata da GPT nel registro (per esempio righe 318, 536 e 555), non il
+     subagent critico di Claude. LETTO.
+V-15 Nessun contatto con le altre linee e con le campagne chiuse. Le conclusioni firmate del lungo non cambiano (riga 5). Il
+     300M e le altre dosi sono fuori (riga 9). I nove contrasti e i checkpoint della linea 3 non sono toccati (riga 122). Gli
+     input si riusano in sola lettura, l'uscita va in una cartella nuova (riga 167) e non ci sono copie della cache. LETTO.
+V-16 Il fermo del 23/11 08:00 – 25/11 08:00 coincide con il CLAUDE.md di main (riga 195). I payload del livello A sono su WORK e
+     non dipendono dal rinfresco SCRATCH del 03/12 (riga 169); la presenza dei file l'ha verificata oggi Claude. LETTO.
+
+======================================================================================================================
+PARTE 4 - NON VERIFICABILE DA QUI
+======================================================================================================================
+N-1 Le citazioni di Simone nella chat GPT: «leggilo e dimmi come impostare il confronto con la testa attuale usando
+    l'implementazione che abbiamo già» (protocollo, riga 3), e la richiesta di mettere da parte per ora la curva EPN, cioè il
+    protocollo A (riga 5; decisioni.md:6715-6716; il registro, riga 183, scrive «anteporre»). Vengono dalla chat di GPT.
+N-2 Che sia stato Simone a consegnare il prompt a GPT consolidamento invece che a GPT coordinamento. Lo dice GPT (riga 3);
+    l'hash dimostra solo che il testo è quello di 8917e2a.
+N-3 Lo stato attuale dei cinque input su WORK. Gli sha256 non sono stati ricalcolati oggi. I byte li ha controllati Claude
+    con ls -l, non io (niente ssh).
+N-4 «Nessuna lettura operativa del cluster eseguita da GPT» (riga 169) e l'assenza di job di GPT per questa attività. Andrebbero
+    letti nel ledger e in sacct, che da qui non leggo.
+N-5 Il contenuto delle tre review locali di GPT (design_review.txt, percorsi /root/temponet_*_review): ci sono solo i riassunti.
+N-6 Quota, saldo, AllocTRES e billing reali di oggi e il calendario dello scheduler: sono letture operative escluse da questo
+    compito.
+N-7 La punta remota del ramo di GPT (c15aac9…df40df). L'ha verificata oggi Claude; io non ho fatto fetch.
+N-8 Che il codice futuro rispetti i test e i cancelli proposti: il runtime non esiste ancora.
+
+======================================================================================================================
+PARTE 5 - VERDETTO DELLA DIMENSIONE 6
+======================================================================================================================
+APPROVATO CON CORREZIONI. Nessun rilievo bloccante; cinque minori (consegna-1 … consegna-5) e quattro note (consegna-6 …
+consegna-9).
+I ruoli proposti sono coerenti con la riga della linea 2 e lasciati a Simone. La consegna non tocca codice, rami di Claude,
+linea 3 o campagne chiuse (ESEGUITO). La logica fra A e B non promette ciò che A non può dire. I conti del par. 7 reggono, salvo
+la dipendenza dalla dose del costo di B.
+Prima della firma vanno corretti cinque punti:
+(1) che cosa autorizza la firma e tre frasi che danno per decisi affidamento e operatore («catene già approvate», «linea 2»);
+(2) base del ramo e posizione dei file nuovi: sulla base cfa6462 un file nuovo al primo livello di scripts/ fa fallire la
+    guardia della valutazione lunga, che a cfa6462 è già rossa per un'altra asserzione; main l'ha corretta con 3263ee9;
+(3) un cancello che riproduca 0,7859020004638595 e 0,7786289843513977 e l'allineamento del ritaglio prima dei contrasti, più
+    tre test (shuffle, gate di costo, etichette d'esito);
+(4) voce di decisioni.md e proposal.json completi e pinnati per il congelamento;
+(5) tre decisioni esplicite in più nella tabella del par. 10: TCN ispirata invece di TEMPONet, controlli rinviati, seguito.
+
+======================================================================================================================
+NOTA SULLA PROVA (integrità dello snapshot)
+======================================================================================================================
+ESEGUITO: i file dello snapshot che ho citato sono identici a c15aac9. Ho confrontato con git show e cmp il protocollo, il
+prompt, decisioni.md, il registro, proposal.json, analytic_checks.json e CLAUDE.md, e con diff -rq tutto src/ e scripts/,
+escluso __pycache__. Nello snapshot esiste però un file SNAP/scripts/__pycache__/pose_dynamics.cpython-311.pyc creato alle
+09:43:04. Non l'ho creato io: la mia prima esecuzione di Python è successiva, con source_guard_v2.py scritto alle 09:43:18, e
+tutti i miei script hanno girato sugli export di work_consegna/v2 con -B e PYTHONDONTWRITEBYTECODE=1. Probabilmente viene dal
+revisore di un'altra dimensione che ha importato dallo snapshot. Non cambia nessun sorgente; lo segnalo perché lo snapshot
+dovrebbe restare in sola lettura.

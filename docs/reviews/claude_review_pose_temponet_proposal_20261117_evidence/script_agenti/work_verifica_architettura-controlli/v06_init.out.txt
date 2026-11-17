@@ -1,0 +1,23 @@
+/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/work_verifica_architettura-controlli/v06_init.py:15: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+  print("max|w| %.5f (1/sqrt(384)=%.5f), var*3*fan_in=%.3f, max|b| %.5f" % (l.weight.abs().max(), 1 / math.sqrt(384), l.weight.var().item() * 3 * 384, l.bias.abs().max()))
+torch 2.14.0
+Linear vs Conv1d(k1) stesso seme: pesi uguali True bias uguali True
+LayerNorm non consuma il generatore: True
+max|w| 0.05103 (1/sqrt(384)=0.05103), var*3*fan_in=0.999, max|b| 0.05091
+TCN (fan_in per strato 384,192,192,192,64):
+   fan_in 384 Var(z)=0.334201 quota bias=0.003
+   fan_in 192 Var(z)=0.057436 quota bias=0.030
+   fan_in 192 Var(z)=0.011309 quota bias=0.154
+   fan_in 192 Var(z)=0.003621 quota bias=0.479
+   fan_in  64 Var(z)=0.005812 quota bias=0.896
+MLP (fan_in 384,96,96,96,64):
+   fan_in 384 Var(z)=0.334201 quota bias=0.003
+   fan_in  96 Var(z)=0.059172 quota bias=0.059
+   fan_in  96 Var(z)=0.013334 quota bias=0.260
+   fan_in  96 Var(z)=0.005695 quota bias=0.610
+   fan_in  64 Var(z)=0.006157 quota bias=0.846
+  iid                  TCN: quinto hidden mai acceso 31.2%, sempre acceso 37.5%
+  iid                  MLP: quinto hidden mai acceso 32.3%, sempre acceso 35.9%
+  comune+basso_rango   TCN: quinto hidden mai acceso 36.7%, sempre acceso 43.4%
+  comune+basso_rango   MLP: quinto hidden mai acceso 38.0%, sempre acceso 43.8%

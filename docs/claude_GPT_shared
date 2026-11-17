@@ -8756,6 +8756,25 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
     angoli), 76.788-105.460 parametri;
   - ultimo saldo committato: 09/11, residuo 691.863 ore locali (`fccf88d`), da rileggere.
 
+### 2026-11-17 | Claude | Review della proposta GPT `c15aac9`: TCN come lettore della posa a encoder congelato (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: la proposta di GPT consolidamento `c15aac9` (ramo `codex/pose-temponet-proposal-20261117`, 17/11 alle 08:28, stato
+  REVIEW_REQUIRED), che risponde al prompt di Claude `8917e2a`. Il prompt di GPT per Claude chiedeva sei verdetti separati.
+- Review in `docs/reviews/claude_review_pose_temponet_proposal_20261117.md`; rapporti e script degli agenti in
+  `docs/reviews/claude_review_pose_temponet_proposal_20261117_evidence/`. Hanno lavorato sei revisori e tre verificatori
+  avversari. Tutto sul Mac, senza job: su CPU e, per alcuni micro-benchmark del costo, sulla GPU del Mac (MPS). L'unica lettura su
+  Leonardo è un `ls -l` dei cinque file di input.
+- Verdetti: domanda e architettura, controlli e attribuzione, criteri, costo e consegna APPROVATO CON CORREZIONI; selezione e
+  supporto DA RIVEDERE per un rilievo bloccante (S-1, voce nella sezione 2). In tutto 1 bloccante, 12 minori, 50 note e 1 rilievo
+  rifiutato.
+- Livello e impostazione coincidono con quanto concordato nella chat del 17/11: prima la TCN come lettore sull'encoder congelato,
+  accanto alla ridge e a una PoseHead rifittata; il pretraining con la TCN resta una prova separata e non automatica.
+- Il primo giro di agenti (09:01-09:26) si è fermato per il limite d'uso del modello, senza consegne. Il secondo (09:39-11:34) è
+  ripartito dai suoi script. Tre rilettori hanno confrontato la bozza con le fonti (72 segnalazioni, 6 errori distinti) e un
+  controllore ha verificato le correzioni (altri 15 problemi): tutto corretto prima del commit.
+- Punta del ramo di GPT controllata alle 09:37, alle 11:34 e alle 12:37, subito prima del commit: `c15aac9`.
+- Il prompt per GPT consolidamento è nella sezione 9 della review ed è stato consegnato a Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12818,3 +12837,29 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   finestre e di istanti per tutti i modelli, per esempio quello del contesto piu' lungo, oppure dichiarare la differenza».
 - Vale il testo firmato. La voce del 12/11 resta com'e'; la rettifica e' in `docs/decisioni.md`, voce del 16/11. Trovato dai
   revisori del prompt per GPT.
+
+### 2026-11-17 | Claude | Proposta TCN della posa: la ricetta di allenamento può non far convergere MLP e TCN, e un «no» non sarebbe leggibile (S-1)
+
+- Nella proposta `c15aac9` (§4) le teste si allenano con AdamW, LR 1e-4 o 1e-3 costante, al più 50 epoche, inizializzazione
+  standard, uscita a zero e regolarizzazione quasi nulla. Ogni esito diverso dal beneficio chiude la prova.
+- In due mondi sintetici indipendenti la TCN perde contro L0 anche quando c'è un guadagno da prendere. Nel mondo V, tarato per
+  somigliare ai numeri veri, il primario vale -3,1%; diventa +3,65% con 150 epoche e +2,6% con un'inizializzazione Kaiming, che nel
+  mondo temporale del revisore non basta. Una ridge con ritardi arriva fino a +21,3% (stima ottimista). È un meccanismo, non il
+  numero vero.
+- Prima dei fit servono tutte e tre: controllo positivo sui `lat` di train, regola di convergenza, esito «non a convergenza». I
+  dettagli li sceglie GPT e li firma Simone. Il ramo lineare di A-1 si può aggiungere, ma non le sostituisce. Il costo va
+  ricalcolato: con quattro LR e 150 epoche, nell'analogo peggiore, i soli passi superano già il tetto di fase di 3 GPU-ore.
+
+### 2026-11-17 | Claude | Rettifiche: quattro frasi della chat del 17/11 e il campo ricettivo di TEMPONet nel prompt `8917e2a`
+
+- In chat Claude aveva scritto che, se la TCN non batte la ridge, «il limite è l'encoder e non la testa»; che il lineare «sembra
+  aver già dato quasi tutto»; che una testa capace «fa lei il lavoro»; che lo scarto 0,47-0,90% fra bracci storici è «una stima
+  grezza per eccesso del rumore fra training». GPT le ha corrette e Claude accetta. Un esito nullo chiude questa prova e non prova un
+  limite dell'encoder. Ridge e PoseHead vicine non provano che il lineare sia al massimo. L'assorbimento del compito da parte della
+  testa è un rischio, non una certezza. Lo scarto, con ricette diverse e tre o quattro bracci, non è un limite affidabile del
+  rumore.
+- Nel prompt `8917e2a` Claude aveva scritto «Campo ricettivo 378 passi: sulla griglia di 25 ms sono 9,45 s, piu' della finestra di
+  4 s». I 378 passi valgono per un elemento convoluzionale finale: a T = 160 il flatten unisce due elementi distanti 64 passi
+  (unione nominale 442). La conclusione resta vera per il campo nominale. La correzione è di GPT (`c15aac9`, protocollo §2, riga
+  23), verificata dai revisori.
+- Le voci dei giorni precedenti restano come sono; le rettifiche sono anche nella review del 17/11, sezione 1.

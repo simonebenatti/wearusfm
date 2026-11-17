@@ -1,0 +1,33 @@
+/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/work_architettura/i_init_recursion.py:13: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+  print("nn.Linear(384,64): max|w| = %.5f (1/sqrt(384) = %.5f), var(w)*3*fan_in = %.3f; max|b| = %.5f" % (float(lin.weight.abs().max()), 1 / math.sqrt(384), float(lin.weight.var()) * 3 * 384, float(lin.bias.abs().max())))
+nn.Linear(384,64): max|w| = 0.05103 (1/sqrt(384) = 0.05103), var(w)*3*fan_in = 0.999; max|b| = 0.05091
+nn.Conv1d(64,64,3): max|w| = 0.07217 (1/sqrt(192) = 0.07217), var(w)*3*fan_in = 0.990; max|b| = 0.07119
+
+TCN: previsione del conto (fan_in, rms dopo la ReLU, quota della varianza della pre-attivazione dovuta al solo bias)
+  hidden 1: fan_in 384, rms previsto 0.4088, quota del bias 0.00
+  hidden 2: fan_in 192, rms previsto 0.1695, quota del bias 0.03
+  hidden 3: fan_in 192, rms previsto 0.0752, quota del bias 0.15
+  hidden 4: fan_in 192, rms previsto 0.0425, quota del bias 0.48
+  hidden 5: fan_in  64, rms previsto 0.0539, quota del bias 0.90
+
+MLP: previsione del conto (fan_in, rms dopo la ReLU, quota della varianza della pre-attivazione dovuta al solo bias)
+  hidden 1: fan_in 384, rms previsto 0.4088, quota del bias 0.00
+  hidden 2: fan_in  96, rms previsto 0.1720, quota del bias 0.06
+  hidden 3: fan_in  96, rms previsto 0.0817, quota del bias 0.26
+  hidden 4: fan_in  96, rms previsto 0.0534, quota del bias 0.61
+  hidden 5: fan_in  64, rms previsto 0.0555, quota del bias 0.85
+
+misura (media su 20 semi, ingresso gaussiano 8x160x384, eval):
+  TCN hidden 1: rms 0.4086, unita' mai accese 0.000, sempre accese 0.000
+  TCN hidden 2: rms 0.1713, unita' mai accese 0.000, sempre accese 0.000
+  TCN hidden 3: rms 0.0757, unita' mai accese 0.004, sempre accese 0.002
+  TCN hidden 4: rms 0.0443, unita' mai accese 0.063, sempre accese 0.065
+  TCN hidden 5: rms 0.0561, unita' mai accese 0.330, sempre accese 0.392
+  MLP hidden 1: rms 0.4082, unita' mai accese 0.000, sempre accese 0.000
+  MLP hidden 2: rms 0.1748, unita' mai accese 0.000, sempre accese 0.000
+  MLP hidden 3: rms 0.0828, unita' mai accese 0.006, sempre accese 0.010
+  MLP hidden 4: rms 0.0532, unita' mai accese 0.125, sempre accese 0.127
+  MLP hidden 5: rms 0.0563, unita' mai accese 0.333, sempre accese 0.373
+
+LN per patch: max |LN(3x) - LN(x)| = 1.62e-05 ; max |LN(x + 2) - LN(x)| = 4.77e-07 ; media dei quadrati per patch dopo la LN: min 0.999989 max 0.999991

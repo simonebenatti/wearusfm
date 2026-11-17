@@ -1,0 +1,43 @@
+file: /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-temponet/src/wearusfm/model/temponet.py
+receptive_field() = 378
+output_length(37) = 0
+output_length(38) = 1
+output_length(101) = 1
+output_length(102) = 2
+output_length(159) = 2
+output_length(160) = 2
+output_length(256) = 4
+jump finale = 64 -> unione nominale di 2 elementi = 442
+
+=== causal=True, in_channels=384, window=160, out_dim=20 ===
+parametri: 80884  out_length: 2
+uscita del terzo blocco: (1, 64, 2)
+  elemento 0 del terzo blocco dipende dagli ingressi (primo, ultimo, quanti, contigui): (0, 59, 60, True)
+  elemento 1 del terzo blocco dipende dagli ingressi (primo, ultimo, quanti, contigui): (0, 123, 124, True)
+uscita della rete: (1, 20)
+  uscita finale (somma dei 20 angoli) dipende dagli ingressi: (0, 123, 124, True)
+  perturbazione (pesi di default, eval): passi che cambiano l'uscita: 124 su 160; primo 0 ultimo 123
+
+=== causal=False, in_channels=384, window=160, out_dim=20 ===
+parametri: 80884  out_length: 2
+uscita del terzo blocco: (1, 64, 2)
+  elemento 0 del terzo blocco dipende dagli ingressi (primo, ultimo, quanti, contigui): (0, 159, 160, True)
+  elemento 1 del terzo blocco dipende dagli ingressi (primo, ultimo, quanti, contigui): (0, 159, 160, True)
+uscita della rete: (1, 20)
+  uscita finale (somma dei 20 angoli) dipende dagli ingressi: (0, 159, 160, True)
+  perturbazione (pesi di default, eval): passi che cambiano l'uscita: 160 su 160; primo 0 ultimo 159
+
+=== campo ricettivo di un elemento lontano dai bordi (T=2048, 16 canali) ===
+causal=True: L=32; elemento 16: (706, 1083, 378, True); elemento 17: (770, 1147, 378, True); spostamento = 64; unione dei due = 442
+causal=False: L=32; elemento 16: (854, 1231, 378, True); elemento 17: (918, 1295, 378, True); spostamento = 64; unione dei due = 442
+(2, 384, 159) rifiutato: ingresso atteso (batch, 384, 160), ricevuto (2, 384, 159)
+(2, 160, 384) rifiutato: ingresso atteso (batch, 384, 160), ricevuto (2, 160, 384)
+(2, 384, 161) rifiutato: ingresso atteso (batch, 384, 160), ricevuto (2, 384, 161)
+modo train: |grad| dell'uscita del campione 0 rispetto all'ingresso del campione 1 = 1680.7410888671875
+modo eval: |grad| dell'uscita del campione 0 rispetto all'ingresso del campione 1 = 0.0
+parametri d=384, T=38, out=20: 76788
+parametri d=384, T=101, out=20: 76788
+parametri d=384, T=160, out=20: 80884
+parametri d=896, T=160, out=20: 105460
+parametri d=16, T=256, out=5: 70917
+TEMPONet emg2pose (16x256, 20 uscite): 71412

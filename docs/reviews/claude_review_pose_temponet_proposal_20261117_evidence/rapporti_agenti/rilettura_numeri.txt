@@ -1,0 +1,346 @@
+RILETTURA DELLA BOZZA - LENTE «NUMERI»
+Bozza: /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-temponet/docs/reviews/claude_review_pose_temponet_proposal_20261117.md
+(462 righe; Verdetti e sezioni 1-9, prompt per GPT compreso). Data: 17/11/2026.
+
+Regole rispettate: nessun file modificato fuori da
+/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/rilettura_numeri/
+e da questo rapporto; git solo in lettura (git show, git log, git merge-base); niente ssh, rete, job o subagent.
+
+==================================================================================================================================
+0. METODO E FONTI
+==================================================================================================================================
+- Esito del workflow (tasks/w9ksgedop.output, chiave result) riscritto in testo leggibile, un file per blocco, con
+  rilettura_numeri/dump.py: rilettura_numeri/architettura-controlli.txt, selezione-criteri.txt, costo-consegna.txt.
+  Per ogni rilievo si e' usata la versione dopo la verifica (severity_after, corrected_statement), come chiesto.
+- Rapporti completi letti dove il JSON era troppo sintetico: verify_selezione-criteri.txt (Parte 4, mondo V, righe 245-360),
+  review_selezione.txt (righe 375-425), verify_costo-consegna.txt e review_costo.txt, verify_architettura-controlli.txt.
+- Proposta di GPT (copia di c15aac9): protocollo docs/pose_temponet_frozen_protocol_20261117.md letto per intero con i numeri di
+  riga (le «righe N» della bozza); proposal.json righe 1-80; voce di decisioni.md (righe 6713-6738); prompt di GPT per Claude.
+- Git in sola lettura: data di c15aac9 (17/11 08:28:09); byte e sha256 di temponet.py (8.519, 9d5a03e2...) a 60b35bd, 0c19c4b,
+  8917e2a e di scripts/temponet_emg2pose.py (31.196, 8d7f9dbe...) a 0c19c4b e 8917e2a; sha256 della ricevuta LONG-FIT-G49046
+  a 2930d7d = b08e6e32...d5037c14; D-4 di 0ab9d98 (0,47-0,90%); riga 109 del prompt di Claude (378 passi, 9,45 s); tempi della
+  replica TEMPONet nel registro a 8917e2a (righe 8492-8495: 18,5 / 14,6 / 4,1 / 1,1 ms per passo); 3263ee9 antenato di main.
+- Orari dei due giri: workflowProgress di tasks/whh2m6l9i.output (primo giro) e tasks/w9ksgedop.output (secondo giro).
+- Tutti i conti derivati rifatti in rilettura_numeri/conti.py (uscita in rilettura_numeri/conti.out.txt).
+- Controllo meccanico (rilettura_numeri/numcheck.py): tutti i 148 numeri distinti della bozza (orari esclusi) compaiono in almeno
+  una fonte. La presenza non basta: l'attribuzione di ciascun numero e' stata controllata a mano. Orari controllati a parte:
+  08:28 (git), 09:01 e 09:26 (workflowProgress del primo giro) tornano; 09:37 e 11:34 sono controlli di Claude, non verificabili
+  da qui (11:34 coincide con la fine del workflow, 11:34:07); 09:45 e' contraddetto (numeri-3) e compare solo in registro_bozza.txt.
+
+==================================================================================================================================
+1. PROBLEMI TROVATI (dal piu' grave; 17 in tutto: 3 errori, 13 imprecisioni, 1 di stile)
+==================================================================================================================================
+
+numeri-1 | ERRORE | sezione 4, S-1, secondo punto (righe 143-144); anche sezione 9 (riga 435)
+Frase: «nel mondo V del verificatore, tarato sui numeri veri (ridge CV 0,7555, quota del livello 60,2% e 57,5%)»
+Problema: i tre numeri fra parentesi sono quelli del mondo sintetico V, non i numeri veri. Chi legge li prende per i valori reali,
+  e la bozza stessa in S-2 da' come reali quote diverse (54,4% sulle dinamiche e 65,9% su tutte).
+Prova: verify_selezione-criteri.txt righe 255-257: «ridge CV 0,7555 ad alpha 1e5 (vero 0,6561) [...] quota del livello nella MSE
+  della ridge 60,2% su tutte le finestre e 57,5% sulle dinamiche (vero 65,9% e 54,4%)». Il JSON (judgments selezione-1, reasoning)
+  ha la stessa formula ambigua della bozza; il rapporto completo la scioglie. La ridge CV del mondo V e' il 15,2% sopra la vera.
+Correzione: «nel mondo V del verificatore, tarato per somigliare ai numeri veri (ridge CV 0,7555 contro 0,6561 vera; quota del
+  livello nella MSE della ridge 60,2% su tutte le finestre e 57,5% sulle dinamiche, contro 65,9% e 54,4% veri)». Nella sezione 9:
+  «Nel mondo V, tarato in modo approssimato sui numeri veri, ...».
+
+numeri-2 | ERRORE | sezione 4, S-2 (righe 243-244)
+Frase: «Per L13 la perdita di E_dyn è grande (3,7-12% nei mondi sintetici), per TCN e L0 è piccola (mezzo punto o meno).»
+Problema: il «mezzo punto o meno» del verificatore e' l'effetto NETTO sul contrasto primario (perdita della TCN meno perdita di L0),
+  non la perdita di ciascuna testa. Prese una per una, TCN e L0 perdono fino all'1,4% e all'1,2%.
+Prova: JSON, judgments selezione-2, reasoning: «netto circa 0,5 punti nel mondo V; nei mondi del revisore L0 +1,2% e TCN +1,4%,
+  oppure +0,3% e +0,1%»; verify_selezione-criteri.txt righe 333-336 (mondo V: L0 +0,17%, TCN +0,67%, «netto circa 0,5 punti»);
+  corrected_statement: «piccola per TCN e L0 (netto 0,5 punti o meno)». La bozza ha perso la parola «netto».
+Correzione: «Per L13 la perdita di E_dyn è grande (3,7-12% nei mondi sintetici). Per TCN e L0 è più piccola (0,1-1,4% ciascuna)
+  e sul contrasto primario in parte si compensa: l'effetto netto è di mezzo punto o meno.»
+
+numeri-3 | ERRORE | sezione 2, terzo punto (righe 60-61)
+Frase: «Il secondo (09:45-11:34) è ripartito dagli script del primo»
+Problema: il secondo giro e' partito alle 09:39:36, non alle 09:45. L'orario 09:45 non compare in nessuna fonte, solo nella bozza
+  del registro di Claude (registro_bozza.txt riga 15).
+Prova: tasks/w9ksgedop.output, workflowProgress: queuedAt e startedAt dei sei revisori = 1794904776147 / 1794904776391 ms, cioe'
+  09:39:36 ora italiana; fine dell'ultimo verificatore 11:34:07 (coincide con l'ora del file). Primo giro: 09:01:01-09:26:24
+  (tasks/whh2m6l9i.output), quindi «09:01-09:26» e' giusto.
+Correzione: «Il secondo (09:40-11:34)». Stessa correzione in registro_bozza.txt, se finisce nel registro.
+
+numeri-4 | IMPRECISIONE | sezione 4, S-1, secondo punto (righe 144-145); sezione 9 (righe 435-436)
+Frase: «mentre un lettore lineare con ritardi da -6 a +6 patch fa +21,3%»
+Problema: il +21,3% e' la versione piu' ottimista del riferimento. I ritardi sono -6, -4, ..., +6 (passo 2, sette ritardi), non tutti
+  i tredici da -6 a +6; l'alpha (1e5) e' scelto sul fold letto, e non e' nemmeno quello con la MSE migliore. Il messaggio («c'e'
+  un guadagno grande da prendere») regge, ma GPT riceve una cifra presentata come piu' solida di quanto sia.
+Prova: verify_selezione-criteri.txt righe 268-272: «alpha scelto sul fold letto: ottimista [...] ridge con ritardi -6,-4,...,+6
+  0,7117 / 0,6164 ad alpha 1e5 e 0,7030 / 0,6753 a 1e6; tutti i ritardi -6...+6 0,7001 / 0,6519 a 1e6»;
+  work_verifica_selezione-criteri/ridge_v_dir.py riga 10 (range(-6, 7, 2) e range(-6, 7)). Ricalcolo (conti.py), contro L0 0,7834:
+  0,6164 -> +21,3%; 0,6753 (alpha migliore per MSE) -> +13,8%; tutti i 13 ritardi 0,6519 -> +16,8%; oracolo 0,5573 -> +28,9%.
+Correzione (S-1): «mentre una ridge con ritardi -6, -4, …, +6 patch arriva fino a +21,3%, con l'alpha scelto sul fold letto e
+  quindi in modo ottimista (+13,8% con l'alpha migliore per MSE, +16,8% con tutti i 13 ritardi)». Sezione 9: «e una ridge con
+  ritardi arriva fino a +21,3% (stima ottimista)».
+
+numeri-5 | IMPRECISIONE | sezione 4, S-1, terzo punto (righe 146-147); sezione 9 (righe 435-436)
+Frase: «Nel mondo V lo stesso fit passa a +3,65% con 150 epoche e a +2,6% con un'inizializzazione che conserva il segnale
+  (Kaiming). Un LR più alto (3e-3) non aiuta. Il limite viene dalla ricetta, non dai dati.»
+Problema: i numeri del mondo V sono giusti, ma manca il dato contrario dell'altro mondo, che conta per la scelta dei rimedi. Nel
+  mondo temporale del revisore la stessa inizializzazione non chiude il divario, e nel suo mondo lineare 150 epoche non bastano
+  alla MLP. Letta cosi', la bozza (e il prompt per GPT) suggerisce che basti l'inizializzazione Kaiming o allungare le epoche.
+Prova: verify_selezione-criteri.txt righe 317-319: «Nel mondo V l'inizializzazione conta molto (kaiming: +2,6% invece di −3,1%);
+  nel mondo temporale del revisore no (synth_tcn_init.py: 0,9766-0,9857 contro L0 0,9413)». review_selezione.txt righe 401-404
+  (MLP a 150 epoche 0,9565 contro L0 0,8079 sullo stesso fold; l'inizializzazione Kaiming «accelera [...] ma non colma il
+  divario») e righe 417-421 («Il limite dominante e' la generalizzazione da 20 utenti con regolarizzazione quasi nulla»).
+  Ricalcolo: 0,9766 e 0,9857 contro 0,9413 = -3,8% e -4,7%.
+Correzione (S-1, dopo «(Kaiming)»): «Nel mondo temporale del revisore, invece, la stessa inizializzazione lascia la TCN sotto L0
+  (-3,8% e -4,7%); nel suo mondo lineare né 150 epoche né l'inizializzazione Kaiming bastano alla MLP. In tutti e due i mondi
+  l'esito dipende dalla ricetta più che dal guadagno disponibile, ma nessun rimedio provato funziona dappertutto.» Sezione 9, dopo
+  «Kaiming»: «(nel mondo del revisore l'inizializzazione da sola non basta)».
+  Nota: nel mondo del revisore le 150 epoche sono state provate solo sulla MLP, non sulla TCN.
+
+numeri-6 | IMPRECISIONE | sezione 4, S-1, primo punto (righe 138-139)
+Frase: «nell'ultimo strato nascosto di MLP e TCN la parte che dipende dall'ingresso vale solo lo 0,6-2,1% della parte costante,
+  e il 25-44% delle unità è spento (ESEGUITO)»
+Problema: 0,6-2,1% e' un rapporto fra VARIANZE (varianza fra campioni diviso per il quadrato della media, dopo la ReLU). Scritto
+  cosi' si legge come rapporto di ampiezze, che in realta' vale circa l'8-15%. In piu' sembra in contrasto con la nota
+  architettura-5 della sezione 7 (bias = 85-90% della varianza), che e' misurata sulla pre-attivazione. Il verificatore conferma il
+  fatto ma non il suo ruolo di causa.
+Prova: work_selezione/init_signal.py, docstring: «var_input: varianza fra finestre e istanti di ogni unita' [...] mean_sq:
+  quadrato della media di ogni unita' (parte costante, dominata dai bias)», misurate dopo ogni ReLU; review_selezione.txt righe
+  385-388 («la varianza che dipende dall'ingresso [...] cioe' lo 0,6%-2,1% della parte costante dovuta ai bias»);
+  verify_selezione-criteri.txt righe 187-197 («Segnale all'inizializzazione - il fatto regge, il suo ruolo causale no»; 28-44% di
+  unita' spente nella sua misura). Ricalcolo: radice di 0,0063-0,0212 = 7,9-14,6%.
+Correzione: «Con l'inizializzazione standard, nell'ultimo strato nascosto di MLP e TCN, dopo la ReLU, la varianza della parte che
+  dipende dall'ingresso è solo lo 0,6-2,1% del quadrato della parte costante dovuta ai bias (in ampiezza circa l'8-15%), e il
+  25-44% delle unità è spento (ESEGUITO). Il verificatore conferma il fatto, non che sia la causa del divario.»
+
+numeri-7 | IMPRECISIONE | sezione 4, A-1 (righe 172-174)
+Frase: «In un mondo sintetico con bersaglio lineare, con la ricetta del §4, la TCN perde il 28,2% contro L0; con un ramo lineare
+  384→20 a zero torna al livello di L0 (+0,2%).»
+Problema: le due percentuali sono sulla MSE tenuta fuori, non su E_dyn. Nel resto della sezione (S-1, C-1, C-2) le percentuali
+  sono tutte di E_dyn, quindi GPT le leggerebbe come E_dyn.
+Prova: JSON, new_findings architettura-controlli-N2, evidence: «MSE minima tenuta fuori: L0 0,2500 [...] TCN della specifica 0,5030
+  (epoca 50) e 0,3205 (epoca 44); stessa TCN con un ramo lineare 384->20 a zero 0,2495 [...] la TCN perde il 28,2% contro L0
+  [...] Sono MSE su dati finti». Ricalcolo: (0,2500-0,3205)/0,2500 = -28,2%; (0,2500-0,2495)/0,2500 = +0,2%.
+Correzione: «In un mondo sintetico con bersaglio lineare, con la ricetta del §4, la MSE tenuta fuori della TCN è peggiore del
+  28,2% di quella di L0 (0,3205 contro 0,2500); con un ramo lineare 384→20 a zero torna al livello di L0 (0,2495, +0,2%). Sono
+  MSE su dati finti, non E_dyn.»
+
+numeri-8 | IMPRECISIONE | sezione 4, S-1, ultimo capoverso (righe 165-167)
+Frase: «Come ordine di grandezza, con un conto di Claude sull'analogo del verificatore: con 150 epoche e quattro LR la matrice
+  raddoppiata arriverebbe intorno a 3,2 GPU-ore, poco sopra il tetto di fase di 3.»
+Il conto regge (dettaglio nella sezione 2 di questo rapporto): 5 teste x 4 LR x 2 fold x 30 passi x 150 epoche = 180.000 passi di
+  selezione, piu' 15 rifit x 60 passi x 150 epoche = 135.000; in tutto 315.000 passi (4,2 volte i 75.000 del verificatore);
+  315.000 x 18,5 ms x 2 = 3,24 GPU-ore. E' dichiarato come conto di Claude e come ordine di grandezza.
+Problema: non sono dette le ipotesi da cui dipende «poco sopra il tetto»:
+  (a) 18,5 ms per passo e' l'«analogo peggiore del progetto» (TEMPONet raw, cuDNN deterministico, eager), non una misura delle
+      nuove teste: con i tempi non deterministici della stessa replica (4,1 ms eager) il conto da' 0,72 GPU-ore, col CUDA graph
+      deterministico (14,6 ms) 2,56;
+  (b) anche i 15 rifit fanno 150 epoche;
+  (c) valutazioni interne, I/O e avvii sono esclusi, come nello 0,77 del verificatore, mentre il gate della riga 165 li include:
+      rispetto al gate il conto e' per difetto. Per lo 0,77 il verificatore scrive «con le valutazioni resta sotto 1 h», cioe' al
+      piu' 0,23 h per 1.000 valutazioni del fold held (5 teste x 2 LR x 2 fold x 50 epoche); nello scenario di Claude sono 6.000
+      (5 x 4 x 2 x 150), quindi con le valutazioni il caso peggiore arriva fino a circa 4,6 GPU-ore (mio conto, limite superiore);
+  (d) con il minimo raccomandato in S-1 («almeno tre LR») sarebbero 2,78 GPU-ore, sotto il tetto.
+Prova: JSON, verified_ok_attacked costo-consegna#2: «analogo peggiore del progetto (TEMPONet raw deterministica in eager, 18,5 ms):
+  75.000 × 18,5 ms × 2 = 0,77 h, valutazioni escluse, contro 3 h»; verify_costo-consegna.txt righe 233-236 («valutazioni escluse;
+  con le valutazioni resta sotto 1 h»); registro a 8917e2a righe 8492-8495 (18,5 ms eager e 14,6 col
+  graph deterministici; 4,1 e 1,1 non deterministici); protocollo riga 165 («includendo 20 selezioni, 15 rifit, validation, I/O
+  e avvii»); conti.py.
+Correzione: «Il costo va ricalcolato. Come ordine di grandezza, con un conto di Claude sull'analogo peggiore usato dal verificatore
+  (18,5 ms per passo, cioè TEMPONet raw con cuDNN deterministico in eager; esclusi valutazioni interne, I/O e avvii, che il gate
+  invece conta): con quattro LR e 150 epoche in tutti i fit, rifit compresi, i passi salgono da 75.000 a 315.000 e la matrice
+  raddoppiata arriverebbe a circa 3,2 GPU-ore, poco sopra il tetto di fase di 3 già senza le valutazioni. Con tre LR sarebbero
+  circa 2,8; con i tempi non deterministici della stessa replica circa 0,7. Non è una misura delle nuove teste: la cifra vera viene
+  dal benchmark. Estendere le epoche solo dove serve costa meno.»
+
+numeri-9 | IMPRECISIONE | sezione 3, Costo, secondo punto (righe 112-113)
+Frase: «Per analogia con TEMPONet raw in modo deterministico, la matrice dei fit raddoppiata sta intorno a 0,77 GPU-ore.»
+Problema: «sta intorno a» la fa sembrare una stima centrale. Per il verificatore e' il caso peggiore, con le valutazioni escluse
+  («con le valutazioni resta sotto 1 h»); le stime sintetiche del revisore sono piu' basse. Su questa cifra poggia anche il conto di
+  numeri-8.
+Prova: verified_ok_attacked costo-consegna#2 (citato sopra); review costo, summary: «i micro-benchmark sintetici sul Mac (MPS e
+  CPU, macchina carica) danno una matrice raddoppiata da 0,27 a 0,69 h»; verdict_opinion: «larghi anche con cuDNN deterministico
+  (circa 0,77 h su 3 h)».
+Correzione: «Anche con l'analogo peggiore del progetto (TEMPONet raw con cuDNN deterministico in eager, 18,5 ms per passo), i soli
+  passi della matrice dei fit raddoppiata fanno circa 0,77 GPU-ore, valutazioni escluse (con le valutazioni meno di un'ora), contro
+  un tetto di 3. I micro-benchmark sintetici del revisore danno 0,27-0,69 ore.»
+
+numeri-10 | IMPRECISIONE | sezione 4, S-2 (righe 245-246)
+Frase: «Scegliere direttamente su E_dyn interna peggiora invece il livello per costruzione: la MSE sale del 4-15% (nota
+  selezione-criteri-N4).»
+Problema: il 4-15% e' misurato solo su L13, la testa con la distorsione piu' grande. Detto senza soggetto, sembra valere per tutte
+  le teste.
+Prova: JSON, new_findings selezione-criteri-N4, evidence: «ESEGUITO, mondo V, L13: [...] MSE held 0,7401, contro 0,7107 [...]
+  +4,14%. LETTO l13_fold.log del revisore: [...] +11,8% / +15,1%»; verify_selezione-criteri.txt righe 337-338 e 349-351.
+Correzione: «Scegliere direttamente su E_dyn interna peggiora invece il livello per costruzione: per L13 la MSE sale del 4-15%
+  (4,1% nel mondo V, 12-15% nel mondo del revisore; nota selezione-criteri-N4).»
+
+numeri-11 | IMPRECISIONE | sezione 7, Selezione, quinto punto (riga 358)
+Frase: «I «4,720 GiB di input» sono le sole cache: con i riferimenti si arriva a 5,328 GiB (selezione-7).»
+Problema: qui «riferimenti» sono i tre file pinnati in proposal.json (coefficienti e predizioni della ridge, predizioni della
+  testa), 0,608 GiB. Nella stessa sezione 7 (Costo, ultimo punto) e nella sezione 3 «riferimenti storici di posa» indica invece i
+  due file su SCRATCH della nota costo-consegna-N1 (2,74 GB). Con la stessa parola, chi legge puo' sommare la cifra sbagliata:
+  cache piu' riferimenti di posa farebbero 7,28 GiB, non 5,328.
+Prova: JSON, selezione-7: «I tre riferimenti pesano 652.548.847 byte (0,6077 GiB), per un totale di 5,3280 GiB»; byte dei tre
+  file in selezione#2 (59.367, 418.440.754, 234.048.726); costo-consegna-N1: train_subset.npz 257.675.076 e val.npz 2.485.295.825
+  byte. Ricalcolo: 5.068.390.194 + 652.548.847 byte = 5,328 GiB; 2.742.970.901 byte = 2,74 GB = 2,55 GiB.
+Correzione: «I «4,720 GiB di input» sono le sole due cache: con i tre file di riferimento pinnati in proposal.json (coefficienti
+  e predizioni della ridge, predizioni della testa: 0,608 GiB) si arriva a 5,328 GiB (selezione-7). Sono altra cosa dai
+  riferimenti di posa su SCRATCH della nota costo-consegna-N1.»
+
+numeri-12 | IMPRECISIONE | sezione 7, Architettura, sesto punto (righe 332-333)
+Frase: «Il campo di 13 patch è motivato solo dal crop6. È facoltativo citare i 128 ms di TEMPONet raw e il lettore lineare con
+  ritardi del 02/11 (architettura-6).»
+Problema: «citare i 128 ms» fa pensare che il protocollo non li nomini. E' proprio la parte che il verificatore ha corretto: i
+  128 ms sono gia' alle righe 21 e 23, solo non come motivo del campo di 13 patch. Inoltre il lettore del 02/11 era su un altro
+  checkpoint.
+Prova: JSON, judgments architettura-6, reasoning: «È falsa invece l'evidenza «il protocollo non cita i 128 ms di TEMPONet raw»:
+  li cita due volte»; corrected_statement: «I 128 ms di TEMPONet raw sono citati alle righe 21 e 23, ma non come motivo del RF; il
+  lettore lineare con ritardi del 02/11 (B student, crop4) non è citato». Protocollo righe 21 e 23 (riletto).
+Correzione: «Il campo di 13 patch è motivato solo dal crop6. I 128 ms di TEMPONet raw sono già nominati alle righe 21 e 23, ma non
+  come motivo del campo: è facoltativo aggiungerli come motivo, insieme al lettore lineare con ritardi del 02/11, provato su B
+  student con crop4 e non su questo checkpoint (architettura-6).»
+
+numeri-13 | IMPRECISIONE | Verdetti, riga 2 della tabella (riga 19)
+Frase: «Tre correzioni: controllo di sanità della ricetta comune (C-1), regola della candidata completa (C-2), perimetro dell'esito
+  nel §10 e in decisioni.md (C-3)»
+Problema: per il verificatore le correzioni da fare prima della firma su questo verdetto sono quattro: anche la cautela di N2 (A-1)
+  riguarda l'attribuzione del primario. Il totale dei minori (12) non cambia; cambia il conteggio per verdetto.
+Prova: JSON, verification architettura-controlli, verdict_opinion: «Controlli e attribuzione: [...] Vanno corretti prima della
+  firma: controlli-1 [...], controlli-2 [...], controlli-4 in parte [...] e la cautela di N2.»
+Correzione: «Tre correzioni: [...] (C-3). Il verificatore chiede qui anche la cautela di A-1 sul primario.»
+
+numeri-14 | IMPRECISIONE | sezione 2, secondo e quarto punto (righe 58-59 e 62-63)
+Frase: «Ogni verificatore [...] ha riattaccato le affermazioni che i revisori davano per buone» e «Sono state riattaccate 60
+  affermazioni: 57 reggono e 3 cadono»
+Problema: i revisori davano per buone 126 affermazioni; i verificatori ne hanno riattaccate 60, meno della meta'. La prima frase
+  dice «le affermazioni», cioe' tutte; la seconda non dice «su quante». Conta per leggere la sezione 3, dove compaiono anche
+  affermazioni controllate solo dal revisore.
+Prova: JSON, reviews[*].verified_ok: 27 (architettura) + 25 (controlli) + 19 (selezione) + 12 (criteri) + 27 (costo) + 16
+  (consegna) = 126; verification[*].verified_ok_attacked: 22 + 19 + 19 = 60, di cui 1 + 0 + 2 = 3 con holds=False.
+Correzione: «ha riattaccato una parte delle affermazioni che i revisori davano per buone» e «Sono state riattaccate 60 delle 126
+  affermazioni date per buone dai revisori: 57 reggono e 3 cadono (sezione 3).»
+
+numeri-15 | IMPRECISIONE | sezione 6, P-1 (riga 294)
+Frase: «Il gate (riga 165) fissa già le misure, il fattore 2, le 50 epoche, i 35 fit e le soglie.»
+Problema: le misure sono nominate alla riga 163, non alla 165; la 165 contiene fattore 2, 50 epoche, 35 fit e soglie.
+Prova: protocollo riga 163 («Misura caricamento, epoca forward/backward [...] valutazione interna, salvataggio, RSS/VRAM») e riga
+  165; JSON, judgments costo-1, reasoning: «La riga 163 del protocollo nomina le misure».
+Correzione: «Il gate (righe 163-165) fissa già le misure, il fattore 2, le 50 epoche, i 35 fit e le soglie.»
+
+numeri-16 | STILE | intestazioni di A-1 (riga 169), K-2 (riga 262) e K-3 (riga 270)
+Frase: «(minore; verificatore, N2)», «(minore; verificatore, N1)», «(minore; verificatore, N2)»
+Problema: nei rapporti ci sono tre N1 e tre N2 (uno per verificatore). A-1 e K-3 portano entrambi «N2» ma sono rilievi diversi,
+  e GPT deve trovarli nei rapporti. La sezione 7 usa invece gli ID completi.
+Prova: dettaglio_rilievi.txt righe 26, 31, 60, 65, 128 e 133 (architettura-controlli-N1/N2, selezione-criteri-N1/N2,
+  costo-consegna-N1/N2); LEGGIMI.md delle prove: «Gli ID dei rilievi (per esempio [...] architettura-controlli-N2) sono quelli
+  citati nella review».
+Correzione: A-1 «(minore; architettura-controlli-N2)»; K-2 «(minore; selezione-criteri-N1)»; K-3 «(minore; selezione-criteri-N2)».
+
+numeri-17 | IMPRECISIONE (ai margini della lente: conta dei rimedi richiesti) | sezione 9, prompt per GPT (righe 437-440); sezione 4,
+  S-1, punto 3 (riga 160)
+Frase: «serve prima dei fit una scelta tua fra: regola di convergenza [...]; esito «non a convergenza»; controllo positivo sui lat
+  di train con bersaglio sintetico noto (raccomandato); ramo lineare di A-1» e, in S-1, «3. Controllo positivo sui latenti veri
+  (raccomandato)».
+Problema: per il verificatore i rimedi necessari sono tre insieme, non uno a scelta fra quattro: controllo positivo, regola di
+  convergenza e regola di lettura «non a convergenza». La regola di lettura e' anche il minore K-3, quindi non e' opzionale. Nel
+  prompt «una scelta tua fra» si legge come «basta uno», e «raccomandato» e' piu' debole di «servono».
+Prova: JSON, judgments selezione-1, corrected_statement: «Servono un controllo positivo sui latenti veri del solo train e regole di
+  convergenza e di lettura scritte prima dei fit»; verdict_opinion del blocco selezione-criteri: «Senza controllo positivo sui
+  latenti veri e senza regole di convergenza e di lettura scritte prima, un «no» non e' interpretabile»; verify_selezione-criteri.txt
+  riga 320 e seguenti («Il rimedio del revisore (controllo positivo train-only, regola di convergenza scritta prima, regola di lettura
+  «non a convergenza») e' adeguato»).
+Correzione: S-1 punto 3: «Controllo positivo sui latenti veri (richiesto dal verificatore insieme ai punti 1 e 2).» Prompt: «serve
+  prima dei fit, tutto insieme: una regola di convergenza (...), l'esito «non a convergenza» (K-3) e un controllo positivo sui lat
+  di train con bersaglio sintetico noto. Puoi aggiungere il ramo lineare di A-1. Il dettaglio dei parametri lo scegli tu.»
+
+==================================================================================================================================
+2. IL CONTO DEI «3,2 GPU-ORE» RIFATTO (richiesta esplicita del compito)
+==================================================================================================================================
+Base del verificatore (verified_ok_attacked costo-consegna#2; verify_costo-consegna.txt righe 233-236):
+  passi a 50 epoche = 20 fit di selezione x 30 passi x 50 + 15 rifit x 60 passi x 50 = 30.000 + 45.000 = 75.000
+  (30 = ceil(953/32) nei fold, 60 = ceil(1907/32) nel rifit: selezione-4, judgments).
+  75.000 x 18,5 ms = 1.387,5 s; x 2 (fattore del gate) = 2.775 s = 0,771 GPU-ore. Valutazioni escluse; «con le valutazioni resta
+  sotto 1 h». 18,5 ms = TEMPONet raw, cuDNN deterministico, eager (registro a 8917e2a, riga 8492): l'analogo PEGGIORE.
+Scenario di Claude (150 epoche, quattro LR):
+  selezione: 5 teste x 4 LR x 2 fold = 40 fit x 30 passi x 150 epoche = 180.000 passi
+  rifit:     15 fit (5 teste x 3 semi; non dipendono dal numero di LR) x 60 passi x 150 epoche = 135.000 passi
+  totale 315.000 passi = 4,2 volte 75.000; 315.000 x 18,5 ms x 2 = 11.655 s = 3,24 GPU-ore (0,77 x 4,2 = 3,23).
+  => «intorno a 3,2 GPU-ore, poco sopra il tetto di fase di 3» REGGE con queste ipotesi. Il conto ingenuo 0,77 x 3 x 2 = 4,6
+     (che moltiplicherebbe anche i rifit per i LR) sarebbe sbagliato: Claude non l'ha fatto.
+  E' dichiarato come stima? In parte: «Come ordine di grandezza, con un conto di Claude sull'analogo del verificatore». Mancano le
+  ipotesi (vedi numeri-8). Sensibilita' (conti.py):
+    3 LR, 150 epoche, 18,5 ms .......... 270.000 passi -> 2,78 GPU-ore (sotto il tetto)
+    4 LR, 150 epoche, 14,6 ms (graph) .. 2,56 GPU-ore
+    4 LR, 150 epoche, 4,1 ms (non det.) . 0,72 GPU-ore
+    4 LR, 150 epoche, MPS sintetico del revisore (0,693 x 4,2) ... 2,91 GPU-ore
+    valutazioni: 1.000 valutazioni held nella matrice proposta, 6.000 nello scenario; se costano al piu' 0,23 h ogni 1.000 (dal
+    «sotto 1 h» del verificatore), il caso peggiore con valutazioni arriva a circa 4,6 GPU-ore (limite superiore, mio conto).
+  Conclusione: il numero e' giusto per lo scenario «caso peggiore, solo passi»; il confronto «poco sopra il tetto» vale solo li'.
+
+==================================================================================================================================
+3. AFFERMAZIONI CONTROLLATE CHE REGGONO (179; con le 13 che compaiono solo fra i problemi fanno 192 affermazioni controllate)
+==================================================================================================================================
+Intestazione (4): c15aac9 il 17/11 alle 08:28 (git log: 08:28:09); SHA completo; il prompt di GPT chiede sei verdetti (righe 15-22
+  di docs/prompt_claude_pose_temponet_review_20261117.md); 8917e2a = prompt di Claude. Non verificabili da qui: controlli della punta
+  alle 09:37 e alle 11:34 (azioni di Claude).
+Verdetti (15): i sei esiti coincidono con i verdict_opinion; per verdetto: v1 una correzione (A-1); v3 un bloccante (S-1) e un minore
+  (S-2); v4 tre (criteri-2, selezione-criteri-N1 e N2); v5 P-1 piu' la frase su SCRATCH (costo-8, costo-consegna-N1); v6 tre
+  (consegna-3, -4, -5). Totali dopo la verifica ricontati sui severity_after: 1 bloccante (selezione-1), 12 minori (controlli-1, -2,
+  -4, architettura-controlli-N2, selezione-2, criteri-2, selezione-criteri-N1, -N2, costo-1, consegna-3, -4, -5), 50 note, 1 rifiutato
+  (costo-6). Somma 64 = 56 + 8. (v2 «tre correzioni»: numeri-13.)
+Sezione 1 (7): E_dyn 0,786 e 0,779 (arrotondamenti di 0,78590 e 0,77863); 0,47-0,90% = D-4 di 0ab9d98 (riga 356); «Correzione
+  tecnica» alla riga 23; citazione del prompt 8917e2a riga 109 e 378 x 25 ms = 9,45 s; 64 passi e unione 442 = 378 + 64; dipendenza
+  da 160 passi (causal=False) e da 0-123, cioe' 124 su 160 (causal=True); 128 ms.
+Sezione 2 (10): primo giro 09:01:01-09:26:24, senza consegne (sei «failed» per limite d'uso); 6 revisori + 3 verificatori
+  (agentCount 9); 56 giudicati = 8+8+11+10+10+9; 34 CONFERMATO, 21 PARZIALE, 1 RIFIUTATO; 8 nuovi = 2+4+2; 60 attaccate = 22+19+19;
+  3 cadute = 1+0+2, quindi 57 reggono; cinque file di input. (09:45: numeri-3; «le affermazioni»: numeri-14.)
+Sezione 3 (31): byte e sha256 di temponet.py a 60b35bd/0c19c4b/8917e2a e dello script a 0c19c4b/8917e2a (rifatti con git show);
+  ricevuta b08e6e32...d5037c14 (rifatta); L0 8.468 = 768 + 7.700; MLP 65.300; L13 100.628; TCN 65.204; 64.128 pesi in entrambe
+  (rifatto: 384x96+96x96+96x96+96x64+64x32+32x20 e 384x64+3x(3x64x64)+64x32+32x20); 10.260.480 = 64.128 x 160; 13 patch, offset
+  -6..+6; centri 6-153 = crop6; 160 patch reali; LN affine eps 1e-5 e uscita a zero; gradienti nulli al primo backward; 1.907/40 e
+  18.548/15; 8.327 finestre dinamiche; 158 utenti delle statistiche; fold ad ID alterni; 0,7859020004638595 e 0,7786289843513977;
+  media degli accumulatori = media dei tre E_dyn; soglia 2%, limite inferiore > 0, 99% invece di 95%; copertura 96-97% e 85-91%;
+  4 GPU-ore = 0,25+3+0,5+0,25; 12 core-ore = 0,5+2+8+0,5+1; 44 = 8x4+12; 44 ore locali; tetti 3 e 0,5; 15 x 237.414.400 byte =
+  3,3166 GiB (a 160 patch; a 148 sarebbero 3,07); riga 169. (0,77: numeri-9.)
+Sezione 4, S-1 (21): righe 63-75; weight decay 0,01, LR {1e-4, 1e-3} costanti, 50 epoche, batch 32 (riga 66); 30 e 60 passi;
+  riga 35; citazione esatta della riga 75; righe 96-98 e 118; 25-44% di unita' spente (revisore; 28-44% nella misura del
+  verificatore); mondo temporale del revisore -5,2% (0,9357 contro 0,9848) e tetto +8,7% (0,8539); mondo V -3,1% (0,7834 contro
+  0,8077); minimo di E_dyn all'ultima epoca a 1e-4, 1e-3 e 3e-3; +3,65% (0,7548); +2,6% (0,7629); 3e-3 non aiuta (0,8273);
+  due estensioni della griglia alpha a 49.046; elenco dei LR d'esempio; 2% su E_dyn interna; 3,2 GPU-ore (rifatto, sezione 2).
+  (0,7555/60,2/57,5: numeri-1; +21,3%: numeri-4; Kaiming: numeri-5; 0,6-2,1%: numeri-6; ipotesi del 3,2: numeri-8; «raccomandato»:
+  numeri-17.)
+A-1 (4): righe 33, 35, 42 e cinque ReLU per cammino; -28,2% (0,3205 contro 0,2500); +0,2% (0,2495); 7.700 = 384 x 20 + 20.
+  (metrica: numeri-7; ID: numeri-16.)
+C-1 (9): stesso train.npz e 40 utenti; +5,37% (0,691356/0,656115); +17,32% (0,769725/0,656115); ottimo ad alpha 1e5;
+  (1-1e-5)^3000 = 0,9704; esempio: +2,000%, -1,005%, -1,948% (bozza: +2,0, -1,0, -1,95); riga 118.
+C-2 (7): riga 100; esempio: +4,459, +4,568, +3,677, -2,740 (contrasti 1, 4, 5, 3); MLP 0,735: -2,041. Numerazione dei contrasti
+  (1 L0, 2 MLP, 3 L13, 4 ridge, 5 testa) come alle righe 85-89.
+C-3 (3): righe 173-180; decisioni.md esclude gia' B e la sostituzione se MAE o livello peggiorano (riga 6732 riletta);
+  chiave confirmatory_family (proposal.json riga 26).
+R-3 (2): riga 25; sei convoluzioni, tre k3 con dilatazioni 1/2/3, niente BatchNorm, pooling o stride (righe 33-35).
+S-2 (4): righe 61 e 68; 54,4% e 65,9% (54,42 e 65,89 nel verificatore); 3,7-12% per L13 (3,66% e 11,9%).
+  (mezzo punto: numeri-2; 4-15%: numeri-10.)
+K-1, K-2, K-3, R-2 (7): riga 95; formula 100·(E_ref − E_TCN)/E_ref (riga 83); righe 95-98; chiavi practical_improvement_percent e
+  readout_failures (proposal.json righe 34 e 37); riga 75 «si riporta»; soglia 0,2574231028556824 (riga 79); elenco delle mancanze
+  come nel corrected_statement di consegna-4.
+P-1 e R-1 (7): fattore 2, 50 epoche, 35 fit (riga 165); «13 volte» (docs/temponet_db8_replication.md a 8917e2a, punto 13);
+  BENCHMARK_POLICY e project_benchmark; 148 contro 160 patch; ritagli [0:148], [12:160], [6:154]; scarto 1e-12; 8.327 finestre e
+  20.119.920 elementi. (riga 165 per le misure: numeri-15.)
+Sezione 7 (40): Dropout p=0,1; 85-90% e un terzo (pre-attivazione); 160 passi e 0-123; top_level_keys; handle 11583/2978570, DOI
+  10.1109/COINS51742.2021.9524188, hdl 11585/841320 (temponet.py righe 4-5 rilette); 10j+9; 13,7 milioni = 18.548 x 148 x 5 =
+  13.725.520, 1,10 volte 12.468.000; ridge pre 1,032128; FP32 contro FP16; 60 contro 30 passi; epoche 1-50, epoca 0 esclusa;
+  4,720 GiB = 5.068.390.194 byte e 5,328 GiB con 652.548.847 byte; 424f0ec; 160 patch; finestre da 1-4 s; weight decay 0,01;
+  ordine B, D, NS, I; 2% e semi; 97%, 85-91%, 99,8% e t-jackknife; 20.000 repliche e 0,1 punti; nove incroci = 3 x 3; 0,763056 =
+  0,98 x 0,7786290 e 2,907% sotto la ridge; --time + 180 s; residuo del 09/11 (691.863 ore locali); fermo 23-25/11; 03/12, 12/11 e
+  22/12; 257.675.076 e 2.485.295.825 byte = 2,74 GB; riga 182; 3263ee9 antenato di main (e114a78) e non di c15aac9; 33,88 =
+  2 x 16,944 a 19.618; 81-84 a 49.046 (2 x 42,10 = 84,19; R3c 2 x 40,4 = 80,8); ID consegna-9; costo-6 rifiutato.
+  (riferimenti: numeri-11; 128 ms: numeri-12.)
+Sezione 9 (8): 56 e 8; esiti dei verdetti; -3,1, +3,65, +2,6; 7.700; i due E_dyn; 50 note; 0,47-0,90%; i 12 minori elencati
+  (A-1, C-1, C-2, C-3, R-3, S-2, K-1, K-2, K-3, R-2, P-1, R-1). (problemi riportati: numeri-1, -4, -5, -17.)
+
+==================================================================================================================================
+4. SINTESI
+==================================================================================================================================
+- I conteggi dei rilievi (56 / 34 / 21 / 1, 8 nuovi, 60 / 57 / 3, 1 bloccante, 12 minori, 50 note) sono tutti giusti; anche gli
+  esempi di C-1 e C-2, i 7.700 parametri, i GiB, i byte, le GPU-ore del costo e il livello B tornano.
+- Tre errori da correggere: i numeri del mondo V presentati come veri (numeri-1), il «mezzo punto» netto riferito alla perdita di
+  ogni testa (numeri-2), l'orario 09:45 del secondo giro (numeri-3).
+- Le imprecisioni che contano di piu' per GPT riguardano S-1, cioe' il rilievo bloccante: +21,3% ottimista (numeri-4), Kaiming che
+  aiuta solo nel mondo V (numeri-5), rapporto di varianze letto come ampiezza (numeri-6), rimedi richiesti presentati come scelta
+  (numeri-17), ipotesi non dette del 3,2 GPU-ore (numeri-8; il numero in se' regge). Seguono: MSE letta come E_dyn in A-1 (numeri-7),
+  il 4-15% che vale solo per L13 (numeri-10) e la parola «riferimenti» usata per due insiemi di file diversi (numeri-11).

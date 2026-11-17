@@ -1,0 +1,514 @@
+REVIEW DELLA PROPOSTA «TEMPONet come lettore della posa del FM» (GPT consolidamento, commit c15aac9)
+DIMENSIONE 2 - CONTROLLI E ATTRIBUZIONE (paragrafo 3: bracci e «Due riferimenti storici»; paragrafo 6; verdetto 2 chiesto da GPT)
+17/11/2026. Revisore indipendente, sola lettura. Nessun job, nessun ssh, nessuna rete, nessuna modifica a repository, snapshot o worktree.
+Seconda stesura: riprende il tentativo interrotto alle 09:26 (review_controlli.tentativo1.txt). Ho riletto gli script del tentativo
+precedente prima di riusarli e ho rieseguito tutti quelli che decidono il verdetto; ho aggiunto tre controlli nuovi (extract_ric.py,
+check_pins.py, check_l0_ridge_class.py) e un file di conti (conti_controlli.py). Ho corretto alcune affermazioni del primo rapporto
+(vedi la sezione 6 in fondo). Rapporto scritto a pezzi: le voci gia' scritte valgono anche se il resto manca.
+
+Sigle dei percorsi
+  SNAP = /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/gpt_c15aac9
+  WT   = /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-temponet   (ramo claude/temponet-db8-20261109, 8917e2a)
+  PROT = SNAP/docs/pose_temponet_frozen_protocol_20261117.md   (182 righe; «PROT:100» vuol dire riga 100)
+  PJ   = SNAP/results/infra/pose_temponet_proposal_20261117/proposal.json
+  REG  = SNAP/docs/claude_GPT_shared            DEC = SNAP/docs/decisioni.md
+  RIC  = ricevuta storica del fit di posa a 49.046, estratta da git in sola lettura:
+         git show 2930d7d:results/infra/consolidation_long_20261105/execution/receipts/LONG-FIT-G49046-pose-20261105.json
+         (copia di lettura in WORK/RIC_49046_rerun.json; sha256 ricalcolato oggi b08e6e321f3803318991b934ff89ddef70493a422f7f3884abd9daa1d5037c14,
+         uguale a quello scritto in PJ)
+  WORK = /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/work_controlli
+Marche delle prove: ESEGUITO (ho lanciato io, oggi, uno script o un comando), CALCOLATO (conto rifatto da numeri letti), LETTO (solo
+lettura di file o di codice). Cio' che riprendo dal tentativo precedente senza rieseguirlo e' marcato «LETTO, tentativo precedente».
+Gli script girano con PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ~/.venvs/wearusfm-tok/bin/python.
+
+======================================================================================================================
+0. VERDETTO DELLA DIMENSIONE: APPROVATO CON CORREZIONI
+======================================================================================================================
+Per la domanda circoscritta («una testa temporale non lineare legge meglio la dinamica della posa da questo encoder fissato?») i bracci
+scelti bastano: L0, MLP, L13, TCN-post, TCN-pre e i due riferimenti storici. Non manca nessun braccio da allenare. Le affermazioni di fatto
+del paragrafo 3 sul codice (riduzioni della loss, 158 utenti, EMA, 40 utenti, viste pre e post) reggono: le ho ricontrollate nel codice e
+con prove eseguite su dati sintetici. Il rinvio di encoder random, TCN da zero e TEMPONet raw e' coerente con una conclusione ristretta al
+lettore su encoder fissato, e confermo che la proposta non pretende un vantaggio del pretraining rispetto a random o raw (PROT:11, PROT:108).
+
+Nessun rilievo bloccante. Quattro rilievi minori, da sistemare prima della firma; nessuno richiede fit in piu':
+  controlli-1  manca un controllo di sanita' della ricetta comune sui lettori lineari, con la lettura scritta prima
+               (L0 rifittata contro ridge e testa storiche);
+  controlli-2  la regola «candidata a migliore lettore» da' solo condizioni necessarie e non dice che cosa si conclude se MLP o L13 fanno
+               uguale o meglio della TCN; le domande della tabella dei bracci per MLP e L13 non hanno un contrasto; L13 non ha un controllo
+               di sanita' (contiene L0);
+  controlli-3  il testo sul futuro confronto raw (paragrafo 6) indica come «esatto» un metodo che non lo e' e stima dieci volte gli
+               endpoint necessari; la scelta dell'EMA resta ambigua;
+  controlli-4  la tabella del paragrafo 10 e la voce di decisioni.md non dicono che cosa un esito positivo autorizza e che cosa no.
+Quattro note (controlli-5 ... controlli-8).
+
+======================================================================================================================
+1. RILIEVI
+======================================================================================================================
+
+----------------------------------------------------------------------------------------------------------------------
+controlli-1 [MINORE] Manca il controllo di sanita' della ricetta comune: L0 rifittata contro ridge storica e testa storica,
+                     con la lettura scritta prima (punto c del compito)
+----------------------------------------------------------------------------------------------------------------------
+[claim]
+  PROT:83-89: famiglia fissa di cinque contrasti, «sempre TCN-post meno il riferimento». PROT:100: la TCN e' «candidata a migliore lettore
+  [...] solo se passa il primario e i due confronti storici (4 e 5)»; «Se batte L0 ma non i riferimenti gia' disponibili, l'architettura e'
+  promettente nel confronto controllato ma non offre ancora un miglior lettore operativo». PROT:118: «Se la TCN migliora il lettore, il passo
+  successivo puo' verificare se usarla durante il pretraining». PROT:51: la ridge storica non va usata «da sola per attribuire il guadagno
+  all'architettura», per la diversa riduzione della loss. PROT:65-69: ricetta unica, AdamW, weight decay 0,01 sulle sole matrici,
+  LR {1e-4, 1e-3} costante, al piu' 50 epoche, scelta di LR ed epoca sui due fold.
+[evidence]
+  - LETTO. Nessun contrasto fra L0 rifittata e i due riferimenti storici e' definito: non nella famiglia (PROT:83-89; PJ righe 26-32) ne' fra
+    i descrittivi (PROT:102-104; PJ riga 33: «TCN_post vs TCN_pre and all/static/per-joint metrics»).
+  - ESEGUITO (WORK/check_l0_ridge_class.py, codice dello snapshot). L0 (PoseHead: LN affine -> Linear) e la ridge storica (LN senza parametri,
+    eps 1e-5 -> mappa affine; SNAP/scripts/pose_temporal_readout.py:202-209) hanno la stessa classe di funzioni: una PoseHead con gamma, beta,
+    W, b casuali si riscrive esattamente come LN senza parametri seguita da una mappa affine (scarto massimo 3,4e-6 su uscite di ampiezza tipica
+    9,85, dovuto alla LN in FP32 della ridge). E le due sono fittate sugli stessi dati: RIC, caches.train.cache sha256 30c0b50d09fa... e
+    474.412.856 byte, uguali a PJ; fit.n_users 40 (ESEGUITO, WORK/check_pins.py). Quindi «L0 rifittata meno ridge storica» isola la sola
+    ricetta di fit (pesatura dell'obiettivo, regolarizzazione, ottimizzatore): e' proprio la misura che dice se la ricetta comune da' un
+    controllo lineare adeguato.
+  - ESEGUITO (WORK/extract_ric.py su RIC). Il lettore lineare su questi latenti e' molto sensibile alla regolarizzazione. Griglia della ridge
+    storica (MSE standardizzato per elemento valido sui due fold interni dei 40 utenti train; non e' E_dyn e non sono i 15 val):
+    alpha 0,01 -> 0,769725 (+17,32% sull'ottimo); 1 -> 0,769611 (+17,30%); 100 -> 0,760278 (+15,88%); 1.000 -> 0,730028 (+11,27%);
+    10.000 -> 0,691356 (+5,37%); 100.000 -> 0,656115 (scelto); 1.000.000 -> 0,670911 (+2,26%). L'ottimo e' arrivato dopo due estensioni
+    verso l'alto della griglia (extensions upper = 2). Una decade dall'ottimo cambia gia' l'MSE interno del 2,3-5,4%, lo stesso ordine della
+    soglia pratica del 2%. Quanto di questa sensibilita' passi a E_dyn, che toglie il livello, da qui non si sa.
+  - LETTO + CALCOLATO. Nella ricetta nuova L0 non ha una penalita' ridge. Il weight decay di AdamW e' disaccoppiato e piccolo: con 0,01 la
+    contrazione cumulata in 3.000 passi (ceil(1.907/32) = 60 passi per epoca x 50) e' 0,9704 a LR 1e-3 e 0,9970 a LR 1e-4
+    (WORK/conti_controlli.py). La regolarizzazione di L0 e' quindi in pratica l'avvio da zero con la scelta dell'epoca sui fold. Che arrivi al
+    livello della ridge non e' misurato (non verificabile senza i fit). PROT:49 riconosce l'effetto della ricetta per L13 («LN apprendibile e
+    AdamW cambiano il fitting»), non per L0.
+  - CALCOLATO (esempio, non una previsione). Riferimenti sulle 8.327 finestre dinamiche dei 15 val (RIC): ridge 0,785902, testa 0,778629.
+    Il primario passa con stima >= 2%, cioe' E_TCN <= 0,98 x E_L0. Se L0 rifittata finisse a 0,80, una TCN a 0,7840 passerebbe il primario
+    pur essendo solo +0,24% sulla ridge e -0,69% sulla testa; con L0 a 0,81, una TCN a 0,7938 passerebbe con -1,00% sulla ridge e -1,95%
+    sulla testa. La regola dei contrasti 4 e 5 fermerebbe l'etichetta «candidata», ma non la frase «architettura promettente nel confronto
+    controllato» (PROT:100) ne' l'aggancio al livello B di PROT:118, che non dice quali contrasti definiscano «migliora il lettore».
+[fix]
+  - Dichiarare ora, fuori dalla famiglia dei cinque e senza verdetto, due contrasti descrittivi con lo stesso bootstrap appaiato e IC 95%:
+    «L0 rifittata contro ridge storica» e «L0 rifittata contro testa storica». Nessun fit in piu': le predizioni storiche sono gia' pinnate.
+  - Scrivere la lettura prima dei fit. Una possibilita', che riusa la regola a due lati di PROT:95-96 e non introduce numeri nuovi:
+    (a) se L0 rifittata e' peggiore della ridge storica secondo la regola di deterioramento (stima <= -2% e limite superiore < 0), la ricetta
+        comune non riproduce il lettore lineare gia' ottenuto in forma chiusa sugli stessi dati: i contrasti 1-3 si riportano come confronti
+        a ricetta fissa, «architettura promettente» non si usa e l'esito non motiva il livello B;
+    (b) altrimenti L0 e' un controllo adeguato e il primario si legge come e' scritto;
+    (c) se L0 rifittata e' migliore della ridge o della testa storica secondo la regola di beneficio, lo si riporta come esito a se': una parte
+        del vantaggio della TCN sui riferimenti storici viene dal rifit, non dall'architettura.
+    In nessun caso si estende la ricerca. La regola esatta la scelgono GPT e Simone; conta che sia scritta prima.
+  - In PROT:118 sostituire «Se la TCN migliora il lettore» con l'esito completo di PROT:100 (passano 1, 4 e 5) piu' il controllo di sanita'.
+
+----------------------------------------------------------------------------------------------------------------------
+controlli-2 [MINORE] La regola «candidata a migliore lettore» da' solo condizioni necessarie e non copre i casi in cui MLP o L13 fanno
+                     uguale o meglio; le domande della tabella per MLP e L13 non hanno un contrasto; L13 non ha un controllo di sanita'
+                     (punto a del compito)
+----------------------------------------------------------------------------------------------------------------------
+[claim]
+  PROT:42-43 (tabella): MLP «Quanto basta aumentare la capacita' non lineare per istante?»; L13 «Quanto basta una lettura lineare con lo
+  stesso contesto?». PROT:83: contrasti «sempre TCN-post meno il riferimento». PROT:100: TCN «candidata a migliore lettore della dinamica
+  centrata di questo checkpoint solo se passa il primario e i due confronti storici (4 e 5)»; «Per attribuire utilita' specifica al contesto
+  servono anche TCN/MLP; per sostenere il vantaggio della ricetta non lineare temporale sul controllo lineare, TCN/L13». PJ riga 35: «candidate
+  for better centered-dynamics reader only if primary and both historical-reference contrasts pass». PROT:49: L13 «Non e' a capacita' pari ne'
+  una ridge chiusa [...] un confronto TCN/L13 riguarda questa ricetta e la sua parametrizzazione».
+[evidence]
+  - LETTO. «solo se» e «only if» danno condizioni necessarie. Il protocollo non dice se 1, 4 e 5 bastano, ne' che cosa si conclude se passano
+    mentre il contrasto 2 o il 3 mostrano «deterioramento pratico» (MLP o L13 migliori della TCN). Le due frasi sull'attribuzione dicono che
+    cosa serve per un'attribuzione positiva, non che cosa comporta un 2 o un 3 negativo per l'etichetta «candidata».
+  - CALCOLATO (numeri inventati, solo per mostrare la logica; WORK/conti_controlli.py). L0 0,785, L13 0,730, TCN 0,750: contrasto 1 = 4,46%,
+    contrasto 4 = 4,57% (su 0,785902), contrasto 5 = 3,68% (su 0,778629), tutti oltre il 2%; contrasto 3 = -2,74%. Con IC stretti la TCN passa
+    1, 4 e 5 e puo' essere chiamata «candidata a migliore lettore» mentre il controllo lineare con lo stesso contesto e' migliore del 2,7%.
+    Lo stesso con MLP 0,735: contrasto 2 = -2,04%. L'etichetta sarebbe falsa e la correzione arriverebbe dopo aver visto i dati (post hoc).
+  - LETTO. Le due domande della tabella («Quanto basta...») chiedono quanto arrivano MLP e L13 rispetto a L0, cioe' MLP contro L0 e L13 contro
+    L0. Questi contrasti non sono definiti in nessun punto (PROT:83-89 e 102-104; PJ righe 26-33). Si possono dedurre a occhio dai contrasti
+    1-3, ma senza un IC proprio; una loro lettura fatta dopo i risultati sarebbe post hoc.
+  - ESEGUITO (WORK/check_heads.py) + CALCOLATO. L13 contiene esattamente L0: con le prese laterali a zero la Conv k13 e' la mappa lineare
+    della PoseHead. L13 ha 99.840 pesi, 13 volte i 7.680 di L0 e della ridge e 1,56 volte i 64.128 della TCN, con la stessa debole
+    regolarizzazione esplicita di controlli-1; su questi latenti gia' la mappa lineare istantanea ha avuto bisogno di alpha 1e5 (controlli-1).
+    Se L13 finisse peggiore di L0, vorrebbe dire che la ricetta non la regolarizza abbastanza, e il contrasto 3 misurerebbe il sovradattamento
+    di L13, non il valore della non linearita'. PROT:49 limita gia' il contrasto 3 a «questa ricetta», ma non dice come riconoscere questo
+    caso; la domanda della tabella per L13 e' piu' larga di PROT:49.
+[fix]
+  (i)  Completare la regola di PROT:100 e PJ riga 35 come condizione necessaria e sufficiente, per esempio: «candidata a lettore della
+       dinamica centrata migliore di quelli esistenti (L0 rifittata, ridge storica, testa storica) su questo checkpoint se passano 1, 4 e 5 e
+       ne' il contrasto 2 ne' il 3 mostrano deterioramento pratico». Se il 2 o il 3 mostrano deterioramento, e' un esito negativo per l'ipotesi
+       «temporale non lineare» e si riporta come tale; la scelta fra la TCN e il controllo migliore non la decide questa prova (proposta distinta).
+  (ii) Scrivere le letture miste: passano 1, 4 e 5 ma il beneficio del 2 non e' risolto -> una testa non lineare migliora la lettura, il
+       contributo del contesto temporale non e' dimostrato; lo stesso per il 3 e la non linearita'.
+  (iii) Dichiarare come descrittivi, IC 95% senza cancello (come TCN-post/TCN-pre): «MLP contro L0» e «L13 contro L0». Il secondo fa anche da
+       controllo di sanita' di L13, con la lettura scritta prima: se L13 e' peggiore di L0 secondo la regola di deterioramento, il contrasto 3
+       non si attribuisce alla non linearita'. Nessun fit in piu'.
+  (iv) Riformulare le domande della tabella per MLP e L13 come letture di questi descrittivi, per esempio per L13: «Quanto ottiene, con questa
+       ricetta, una lettura lineare con lo stesso contesto?».
+
+----------------------------------------------------------------------------------------------------------------------
+controlli-3 [MINORE] Paragrafo 6, futuro confronto raw: il metodo chiamato «esatto» non lo e', «circa dieci volte gli endpoint» e'
+                     sbagliato, l'EMA resta ambigua. Non tocca il disegno ne' il costo del livello A (punto e del compito)
+----------------------------------------------------------------------------------------------------------------------
+[claim]
+  PROT:112: «Per confrontare esattamente i target FM, `window_pose` assegna alle patch i blocchi da dieci campioni a 2 kHz secondo i loro
+  centri e ne media gli angoli. Occorre produrre le previsioni raw sui medesimi campioni nativi, mediare ogni blocco, poi usare gli stessi
+  blocchi validi e la stessa media per patch, standardizzazione e crop6. Cinque predizioni puntuali a 200 Hz per patch sono un'approssimazione
+  dichiarata, non lo stesso bersaglio temporale.» PROT:114: «L'inferenza esatta richiede circa dieci volte gli endpoint della lettura
+  ufficiale a 200 Hz». Lo stesso concetto in REG riga 5993 («aggregazione sui campioni nativi dei medesimi blocchi, non cinque predizioni
+  puntuali equivalenti») e in SNAP/results/infra/pose_temponet_proposal_20261117/design_review.txt riga 9. PROT:112: riferimento raw
+  «senza ritarare EMA o lag». PROT:114: «Il passato raw [q-255,q] rientra nel margine di 150 ms per i centri ammessi».
+[evidence]
+  - LETTO. La prima parte e' corretta: il bersaglio del FM per patch e' la media dei blocchi validi il cui centro (10 j + 5) cade nella patch
+    (SNAP/src/wearusfm/data/pose_targets.py:148-180; centri alla riga 167, media alle righe 175-178); ogni blocco e' la media di 10 campioni
+    nativi a 2 kHz, valido solo se lo sono tutti e 10 (SNAP/src/wearusfm/ingest/emg2pose_pose.py:130-139).
+  - LETTO. TEMPONet raw pero' e' stata allenata proprio sulla media del blocco, con la finestra che finisce all'ultimo campione del blocco:
+    fine 10 j + 9, bersaglio blocks[j] letto da pose_200hz_f16.npy, lo stesso file che usa window_pose (pose_targets.py:33;
+    WT/src/wearusfm/harness/emg2pose_regression.py:96-108; WT/scripts/temponet_emg2pose.py:102-119). La sua uscita all'endpoint 10 j + 9 e'
+    quindi la stima della media del blocco j, cioe' proprio la quantita' che window_pose media per patch. Cinque endpoint per patch, alla fine
+    dei cinque blocchi, danno lo stesso bersaglio temporale del FM, non un'approssimazione. Solo la lettura ufficiale usa bersagli puntuali
+    (WT/scripts/emg2pose_eval_targets.py:134, targets = angles[inst]) su istanti con fase qualunque rispetto ai blocchi.
+  - ESEGUITO (WORK/check_raw_grid.py, codice del worktree di Claude). Fini delle finestre di training tutte congrue a 9 modulo 10 (prime fini
+    329, 409, 489; j multipli di 8); istanti ufficiali = inizio + 255 + 10 m, con resto modulo 10 pari a 5, 9 o 2 per gli inizi 1230, 1234, 1237.
+  - CALCOLATO. Il metodo che PROT:112 chiama esatto (prevedere a tutti i 10 campioni nativi del blocco e mediare) non stima la media del
+    blocco: ogni uscita stima la media dei 10 campioni che finiscono al suo endpoint, quindi la media delle 10 uscite del blocco j stima una
+    media a pesi triangolari sui 19 campioni da 10 j - 9 a 10 j + 9, centrata 4,5 campioni (2,25 ms) prima del centro del blocco. E' una
+    variante lisciata e spostata del bersaglio, non quella esatta.
+  - CALCOLATO (WORK/conti_controlli.py). Endpoint per i 15 val sul supporto del FM: 18.548 finestre x 148 patch centrali x 5 blocchi =
+    13.725.520 a fine blocco (tetto, con tutti i blocchi validi), contro 137.255.200 con un endpoint per campione nativo. La lettura ufficiale
+    in val ne ha 12.468 x 1.000 = 12.468.000 (WT/results/temponet_emg2pose/eval_20261111/eval.json: val.windows 12468; 10.000 campioni
+    predetti ogni 10, WT/src/wearusfm/harness/emg2pose_regression.py:30-32). L'inferenza esatta richiede quindi circa 1,1 volte gli endpoint
+    ufficiali, non «circa dieci volte» (che corrisponde al metodo per campione: 11,0 volte).
+  - ESEGUITO (ricalcolo sul manifest). La differenza fra media del blocco e angolo puntuale e' comunque minima: la mediana, su 7.493
+    registrazioni, dello scarto assoluto mediano e' 0,000359 rad = 0,0205 gradi (WT/results/temponet_emg2pose/eval_targets_20261111/manifest.json,
+    campo block_diff_median_rad). L'errore sta nel testo, non in una conseguenza pratica per il livello A.
+  - ESEGUITO (WORK/check_raw_support.py: window_pose dello snapshot su indici sintetici, 400 sfasamenti dell'inizio finestra). Ogni patch
+    centrale riceve esattamente 5 blocchi, e i bersagli coincidono con un ricalcolo indipendente; con endpoint a fine blocco il primo campione
+    raw usato sta almeno 49 campioni dopo l'inizio della finestra (40 con un endpoint per campione), l'ultimo endpoint 296 campioni prima della
+    fine. Margine del crop6: 300 campioni = 150 ms; passato di TEMPONet: 255 campioni = 127,5 ms. La frase di PROT:114 sul passato e' quindi
+    corretta, anche per i blocchi a cavallo del bordo della patch. (L'ultima parte di check_raw_support.py, che importa emg2pose_regression dal
+    percorso dello snapshot, si ferma con ImportError perche' quel modulo sta solo nel worktree: valgono le righe stampate prima dell'errore;
+    la griglia degli endpoint viene da check_raw_grid.py, che carica il file del worktree.)
+  - ESEGUITO (confronto degli ID utente). L'alpha dell'EMA di TEMPONet raw (uno per giunto, fra 0,89 e 0,97) e' stato scelto con
+    R.tune_alpha_windows sulla lettura val (WT/scripts/temponet_emg2pose.py:497-499), e i suoi 15 utenti sono esattamente i 15 utenti val della
+    cache del FM (insiemi identici fra RIC, per_user, ed eval.json, val.ema.per_user_deg). Per questo il prompt di Claude chiedeva l'uscita
+    grezza (WT/docs/prompt_gpt_temponet_testa_fm_20261116.md:197-199). «Senza ritarare EMA» lascia aperto l'uso dell'alpha gia' tarato sugli
+    stessi utenti.
+[fix]
+  Riscrivere PROT:112-114, e allo stesso modo REG riga 5993 e design_review.txt riga 9: «Per lo stesso bersaglio del FM basta un endpoint per
+  blocco valido, con la finestra che finisce all'ultimo campione del blocco (10 j + 9), come nel training di TEMPONet raw; poi stessa media per
+  patch, standardizzazione e crop6. Sono al piu' cinque endpoint per patch, circa 13,7 milioni per i 15 val: lo stesso ordine della lettura
+  ufficiale (12,5 milioni), non dieci volte. Gli istanti della lettura ufficiale non sono riusabili cosi' come sono (altra fase, altre
+  finestre). Si riporta l'uscita grezza, senza EMA, perche' l'alpha e' stato scelto su questi 15 utenti.» Nessun effetto sul livello A.
+
+----------------------------------------------------------------------------------------------------------------------
+controlli-4 [MINORE] La tabella del paragrafo 10 e la voce di decisioni.md non dicono che cosa un esito positivo autorizza e che cosa no
+                     (punti e ed f del compito)
+----------------------------------------------------------------------------------------------------------------------
+[claim]
+  PROT:173-180: sei righe (Livello, Checkpoint, Bracci, Ricetta e lettura, Budget, Autore/revisore/operatore). «Ricetta e lettura» =
+  «Sezioni 3-5: RF13, stessi 40 utenti, MSE per finestra, 2 LR, 50 epoche max, 3 semi, cinque IC aggiustati». PROT:182: «Queste sono
+  proposte da approvare, non istruzioni di lancio». DEC righe 6713-6738: il testo che verrebbe congelato. PJ riga 26: «confirmatory_family».
+[evidence]
+  - LETTO. I limiti della lettura sono sparsi nel testo: nessuna adozione se MAE o livello peggiorano e nessuna non inferiorita' implicita
+    (PROT:100); nessuna conferma indipendente (PROT:73); nessuna affermazione sul pretraining rispetto a random o raw (PROT:11, PROT:108);
+    livello B non automatico (PROT:118); esito nullo che non dimostra assenza di informazione (PROT:11; REG riga 5989). Nessuno compare nella
+    tabella: chi legge solo la tabella approva «cinque IC aggiustati» senza vedere a che cosa porta un esito positivo.
+  - LETTO. DEC righe 6731-6732: «Un vantaggio dinamico non autorizza a sostituire la testa se MAE/livello peggiorano, ne' a lanciare il
+    livelloB». DEC riga 6721: «Nessun encoder/random/raw nuovo», che e' l'elenco dei bracci esclusi, non il perimetro della conclusione.
+    La voce non dice che la conclusione non riguarda il valore del pretraining, ne' che le baseline del v10 paragrafo 8 restano dovute prima di
+    presentare FM + TCN come risultato di regressione. Inoltre «se MAE/livello peggiorano» lascia aperta un'adozione quando non peggiorano,
+    mentre PROT:100 dice che il compromesso «va discusso prima dell'adozione» e che nessuna non inferiorita' e' implicita: il testo da
+    congelare e' piu' debole del protocollo.
+  - ESEGUITO (diff fra git show e114a78:docs/fm_emg_reference_v10.md e lo snapshot, righe 1129-1137: identiche). Fra le «Baseline non
+    negoziabili» ci sono «CNN/TCN allenata da zero sul dataset target» e «Lo stesso modello con encoder random, non pre-allenato, stessa testa».
+  - LETTO. PJ riga 26 chiama la famiglia «confirmatory_family», mentre PJ riga 25 dice «confirmation»: «none independent; development only;
+    official test excluded» e PROT:91 parla di «approssimazione esplorativa». Il nome della chiave dice piu' di quanto il disegno sostiene.
+[fix]
+  Aggiungere alla tabella una riga «Che cosa autorizza l'esito». Esito positivo (1, 4 e 5, con la regola completata in controlli-2) = TCN
+  candidata a lettore della dinamica centrata migliore di quelli esistenti su questo checkpoint. Non autorizza: la sostituzione della testa
+  (serve una decisione distinta dopo la discussione di MAE e livello, PROT:100); il livello B; affermazioni sul valore del pretraining rispetto a
+  encoder random o rete da zero (le baseline del v10 paragrafo 8 restano dovute prima di presentare FM + TCN come risultato di regressione del
+  FM); una conferma su dati mai visti. Esito nullo: chiude questa prova e non dimostra che il limite sia nell'encoder. Ripetere la stessa frase
+  sul perimetro nella voce di decisioni.md e togliere l'ambiguita' di «se MAE/livello peggiorano». Rinominare la chiave in «contrast_family»
+  (o «fixed_family»). Il seguito operativo di un «si'» sulla tabella (codice, review, benchmark, esecuzione) lo lascio alla dimensione Consegna.
+
+----------------------------------------------------------------------------------------------------------------------
+controlli-5 [NOTA] Contrasto 4: la ridge storica non e' «la miglior lettura lineare disponibile»
+----------------------------------------------------------------------------------------------------------------------
+[claim]    PROT:88: «Ridge post storica: utilita' rispetto alla miglior lettura lineare disponibile».
+[evidence] ESEGUITO (WORK/extract_ric.py) + LETTO. Sullo stesso supporto (RIC: support_sha256 973930475e94..., 8.327 finestre dinamiche,
+           15 utenti) la testa storica, che e' anch'essa lineare (SNAP/src/wearusfm/model/pose_head.py:20-34: LayerNorm -> Linear), ha E_dyn
+           0,778629 contro 0,785902 della ridge: 0,925% meglio. Stesso segno a 19.618 (0,832954 contro 0,838933: 0,713%) e a 39.237 (0,805007
+           contro 0,809722: 0,582%) (SNAP/results/infra/consolidation_long_20261105/gpt_review_20261107/scientific_readout.json). Anche la MAE
+           sulle dinamiche e' minore per la testa: 0,276754 rad contro 0,280019 (RIC). L'etichetta contraddice anche la precisazione di GPT in
+           chat: ridge e PoseHead vicine non dimostrano che il lettore lineare sia al massimo.
+[fix]      Scrivere «utilita' rispetto alla ridge lineare in forma chiusa fittata sugli stessi 40 utenti».
+
+----------------------------------------------------------------------------------------------------------------------
+controlli-6 [NOTA] TCN contro MLP: stessi pesi e stessa profondita', larghezze diverse; il contrasto va letto nei due versi
+----------------------------------------------------------------------------------------------------------------------
+[claim]    PROT:47: «MLP e TCN hanno entrambi 64.128 pesi [...]. Questo rende il controllo di capacita' preciso senza una ricerca di larghezze».
+           PROT:86: contrasto 2 = «informazione utile nella lettura temporale rispetto alla non linearita' per istante a capacita' comparabile».
+[evidence] ESEGUITO (WORK/check_heads.py, moduli costruiti dalla specifica di PROT:33 e 42): MLP 65.300 parametri (pesi 64.128, bias 404,
+           LN 768), TCN 65.204 (pesi 64.128, bias 308, LN 768), 10.260.480 MAC per finestra ciascuna, sei trasformazioni e cinque ReLU, dropout
+           negli stessi punti: i conti di GPT tornano. CALCOLATO (WORK/conti_controlli.py): la TCN con le sole prese centrali dei tre kernel e'
+           una MLP 384-64-64-64-64-32-20 da 39.552 pesi; le prese laterali sono 3 x 2 x 64 x 64 = 24.576 pesi. La MLP di controllo spende gli
+           stessi 24.576 pesi in larghezza (96 invece di 64). Il contrasto confronta quindi «24.576 pesi in contesto» con «24.576 pesi in
+           larghezza». Se vince la TCN, il contesto serve (lettura prudente: la sua rete per istante e' piu' stretta). Se pareggia, la regola
+           contro l'equivalenza (PROT:97; REG riga 5989) impedisce gia' di dire che il contesto non serve. Se vince la MLP con deterioramento, la
+           lettura e' «a pari pesi, con questa ricetta, la larghezza rende piu' di questo contesto», non «il contesto nuoce».
+[fix]      Una frase in PROT:47 o PROT:86 con questa lettura nei due versi. Nessun braccio in piu'.
+
+----------------------------------------------------------------------------------------------------------------------
+controlli-7 [NOTA] TCN-pre: descrizione corretta; mancano l'ancora lineare sulla vista pre e una lettura descrittiva scritta prima
+                   (punto d del compito)
+----------------------------------------------------------------------------------------------------------------------
+[claim]    PROT:45 (tabella): «Controllo descrittivo dell'utilita' della vista dopo il backbone». PROT:102: «le due viste hanno diverso contesto
+           gia' incorporato: misura accessibilita' dopo il backbone, non valore del pretraining o origine dell'informazione. Nessun sesto
+           verdetto automatico».
+[evidence] - LETTO. pre = uscita del Perceiver presa con un hook su model.pool; post = enc.z dopo il backbone e la sua LayerNorm finale;
+             entrambe medie sui K slot (SNAP/src/wearusfm/harness/backbone_depth.py:24, 34; SNAP/src/wearusfm/model/fm.py:169, 210, 213;
+             SNAP/src/wearusfm/model/backbone.py:88, 103). K = 64 in T100-G (k_latents 64 in
+             SNAP/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json). Nella cache: lat = latent_mean(enc.z) in float16
+             (SNAP/src/wearusfm/harness/pose_eval.py:171, 177); pre dallo stesso forward non mascherato del teacher, in float16, con il
+             controllo di uguaglianza post == lat storico (SNAP/scripts/consolidation_long_pose.py:76-86, 105-111).
+           - ESEGUITO (WORK/check_views.py: modello piccolo a pesi casuali, tokenizer T100 con GELU, stesso codice): pre e post coincidono
+             esattamente (scarto 0,0) con la media sugli slot delle uscite del Perceiver e del backbone ricalcolate a mano.
+             ESEGUITO (WORK/check_views2.py): perturbando ModelInputs nella sola patch 80, pre cambia solo nelle patch da -6 a +6 (13 patch, a
+             200 Hz e a 2 kHz; sopra 1e-3 del massimo solo -2..+2 a 2 kHz), post in tutte le 160. La descrizione di PROT:102 e' corretta e
+             basta per un contrasto descrittivo.
+           - CALCOLATO. TCN-pre vede al piu' 13 + 12 = 25 patch di segnale (625 ms), TCN-post l'intera finestra di 4 s: i due bracci
+             differiscono anche per il contesto di segnale, come PROT:102 dice («diverso contesto gia' incorporato»).
+           - ESEGUITO (WORK/extract_ric.py). Il riferimento lineare sulla vista pre esiste gia' e non e' citato: ridge pre a 49.046, E_dyn
+             1,032128 (peggio della costante per finestra), correlazione 0,078662, rapporto delle varianze 0,075299, predizioni pinnate (RIC,
+             artifacts.pre_ridge_predictions, sha256 832593f9c58f...). La sintesi di GPT coordinamento scrive su questo punto «non abbiamo
+             dimostrato che prima del backbone sia assente per qualsiasi decoder» (git show 8eba5e4:docs/reviews/regression_synthesis_20261116.md,
+             riga 30): TCN-pre e' proprio la prova di un decoder temporale non lineare sulla vista pre. Senza l'ancora lineare, il numero di
+             TCN-pre si legge solo contro TCN-post.
+           - LETTO. Il prompt di Claude chiedeva una regola per dire quando un guadagno va al backbone e quando alla testa
+             (WT/docs/prompt_gpt_temponet_testa_fm_20261116.md:231). GPT ha scelto di non darla: scelta difendibile per il livello A, ma TCN-pre
+             e' l'unico braccio del livello A che informa il rischio «la testa fa il lavoro del backbone», che conta per il livello B, e ogni
+             lettura fatta dopo sarebbe post hoc.
+           - CALCOLATO (effetto di secondo ordine). Per i centri 6-11 e 148-153 (12 su 148) la TCN-pre legge patch pre il cui supporto di
+             segnale esce dalla finestra (il centro t legge pre da t-6 a t+6, e ciascuna dipende dal segnale da t-12 a t+12); la ridge pre
+             storica, che legge solo il centro, non ha questo effetto di bordo.
+[fix]      (i) Affiancare la ridge pre storica come ancora descrittiva, senza nuovi fit. (ii) Scrivere prima dei fit le letture descrittive di
+           TCN-post contro TCN-pre con le categorie di PROT:95-98, senza soglie nuove: beneficio risolto -> la vista dopo il backbone serve anche
+           a una testa temporale; beneficio di almeno 2% non sostenuto -> una testa temporale sulla vista pre arriva vicino a quella sulla
+           vista post, segnale da discutere prima del livello B; in nessun caso affermazioni sul valore del pretraining. (iii) Dichiarare in una
+           riga l'effetto di bordo.
+
+----------------------------------------------------------------------------------------------------------------------
+controlli-8 [NOTA] Ridge e testa storiche: dire per esteso su quali dati sono fittate ed elencare tutte le differenze di ricetta
+                   (punti b ed f del compito)
+----------------------------------------------------------------------------------------------------------------------
+[claim]    PROT:51: «La ridge storica minimizza SSE aggregata sugli elementi validi, la PoseHead del training MSE media per finestra: non usare la
+           ridge da sola per attribuire il guadagno all'architettura».
+[evidence] - LETTO + ESEGUITO. La frase e' vera (sezione 3, V7 e V8), ma la pesatura non e' l'unica differenza fra ridge e L0 rifittata: la
+             ridge usa LayerNorm senza parametri in FP32, fit in forma chiusa in float64, intercetta non penalizzata, alpha scelto su griglia con
+             estensioni (SNAP/scripts/tokenizer_pose_readout.py:41-51; alpha 1e5 in RIC), cioe' forte restringimento; L0 usa LN apprendibile,
+             AdamW con weight decay trascurabile e arresto (controlli-1). Poiche' la classe di funzioni e' la stessa (WORK/check_l0_ridge_class.py),
+             sono queste differenze di ricetta a separarle.
+           - ESEGUITO (WORK/check_pins.py). La ridge e' fittata sugli stessi 40 utenti e sulle stesse 1.907 finestre (stesso train.npz: sha256
+             30c0b50d09fa..., 474.412.856 byte, uguali a PJ; fit.n_users 40, fold 20 + 20). Nel protocollo questo e' solo implicito («con
+             predizioni pinnate sullo stesso supporto» riguarda la valutazione; «come nella ridge storica» a PROT:67 riguarda i fold).
+           - CALCOLATO. Nel train e' valido l'85,28% degli elementi del crop6 (4.813.620 su 1.907 x 148 x 20 = 5.644.720;
+             SNAP/results/infra/consolidation_long_20261105/execution/receipts/LONG-BENCH-pose-20261105.json, valid_fit_elements). Tutte le
+             finestre hanno 148 patch centrali: le due pesature differiscono solo per la quota di elementi validi di ciascuna finestra. Quanto pesi
+             sui dati veri non e' verificabile da qui.
+           - LETTO. Le predizioni della testa storica sono calcolate nel forward da latenti FP32 (SNAP/src/wearusfm/harness/pose_eval.py:171-172),
+             mentre la cache da cui leggono le teste nuove e la ridge li tiene in FP16 (pose_eval.py:177). E' una differenza minuscola; per il
+             vecchio pilot un controllo (M2) limitava la ricostruzione della testa dalla cache FP16 a 0,005 di scarto massimo e 0,0005 di RMSE in
+             unita' standardizzate (SNAP/scripts/pose_e3_b.py:22, 92-106); per il 49.046 da qui non e' verificato.
+[fix]      Una frase in PROT:51: «La ridge storica e' fittata sugli stessi 40 utenti e sulle stesse 1.907 finestre (stesso train.npz) e ha la stessa
+           classe di funzioni di L0; differisce per obiettivo (SSE aggregata), forma chiusa con alpha 10^5 scelto sui fold, LayerNorm senza
+           parametri e float64. La testa storica ha predizioni calcolate da latenti FP32, le teste nuove leggono la cache FP16.»
+
+======================================================================================================================
+2. RISPOSTE AI PUNTI DEL COMPITO
+======================================================================================================================
+a) Ogni contrasto dice cio' che il protocollo gli fa dire?
+   - TCN-post contro L0: si', come confronto «di architettura» in blocco (capacita', non linearita', contesto, profondita' e dropout
+     insieme); il protocollo lo dichiara e rimanda ai contrasti 2 e 3 per scomporlo. Vale se L0 rifittata e' un controllo lineare adeguato:
+     L0 e ridge storica hanno la stessa classe di funzioni e gli stessi dati, quindi il loro scarto misura proprio la ricetta (controlli-1).
+   - Contro MLP: stessi 64.128 pesi, stessa profondita', dropout negli stessi punti (ESEGUITO); larghezze 96 contro 64. Isola «contesto
+     contro larghezza a pari pesi»; un esito positivo sostiene il contesto, uno nullo no, uno negativo dice altro (controlli-6).
+   - Contro L13: 99.840 pesi lineari (1,56 volte quelli della TCN; 100.628 parametri, ESEGUITO). Il protocollo dichiara gia' che non e' a
+     capacita' pari ne' una ridge chiusa e limita la lettura a questa ricetta (PROT:49). Manca il modo di riconoscere il caso in cui L13 e'
+     sovradattata: L13 contiene L0, quindi «L13 contro L0» e' il controllo di sanita' naturale (controlli-2).
+   - Contro ridge e testa storiche: dichiarati come confronti pratici con ricette e dati diversi (PROT:51). L'etichetta del contrasto 4 va
+     corretta (controlli-5); i dati della ridge vanno detti per esteso (controlli-8).
+   - Letture consentite e non sostenute dai controlli: «architettura promettente» e l'aggancio al livello B col solo contrasto 1, senza sapere
+     se L0 rifittata e' adeguata (controlli-1); «candidata a migliore lettore» quando MLP o L13 fanno uguale o meglio (controlli-2); «miglior
+     lettura lineare disponibile» (controlli-5).
+   - Controllo indispensabile mancante per la domanda circoscritta: nessun braccio nuovo. Servono contrasti descrittivi dichiarati prima, che
+     non richiedono fit: L0 contro ridge e testa storiche; MLP contro L0; L13 contro L0; e, come ancora, la ridge pre storica accanto a TCN-pre.
+     Una ridge con lag in forma chiusa sarebbe un controllo lineare temporale piu' forte di L13 e costerebbe poco, ma e' un fit in piu' e una
+     ricetta diversa: non la ritengo indispensabile se si aggiunge il controllo «L13 contro L0».
+b) Le due frasi sul codice sono vere: vedi sezione 3, voci V7-V10. In piu': la PoseHead del 49.046 e' stata allenata con la media per
+   finestra perche' il comando della continuazione contiene --window1-rules, che imposta loss_per_window=True (LETTO); la ridge storica e L0
+   hanno la stessa classe di funzioni (ESEGUITO).
+c) La regola «candidata solo se passa il primario e i due storici» protegge l'etichetta finale, non la lettura del solo primario («architettura
+   promettente»), non i contrasti 2 e 3 (tutti a ricetta fissa) e non l'aggancio al livello B di PROT:118. Non basta: serve il controllo di
+   sanita' descrittivo L0 rifittata contro ridge e testa storiche, con la lettura scritta prima (controlli-1). Non propongo soglie nuove: la
+   lettura puo' riusare la regola a due lati del 2% gia' nel protocollo.
+d) pre = uscita del Perceiver prima del backbone, lat = dopo il backbone (compresa la LayerNorm finale), entrambe medie sui 64 slot:
+   confermato nel codice e con due prove eseguite. La descrizione di PROT:102 e' corretta e basta per un contrasto descrittivo; la renderei
+   piu' utile con l'ancora della ridge pre storica e una lettura scritta prima (controlli-7).
+e) Il rinvio di encoder random, TCN da zero e TEMPONet raw e' coerente con una conclusione ristretta al lettore su encoder fissato: il v10
+   paragrafo 8 vuole quelle baseline per le affermazioni sul modello, e la proposta dichiara di non derogare (PROT:108). Frasi dove la
+   conclusione rischia di allargarsi: PROT:88 («miglior lettura lineare disponibile»); PROT:100 («migliore lettore»; «architettura
+   promettente»); PROT:118 («Se la TCN migliora il lettore»); le domande della tabella a PROT:42-43; la chiave «confirmatory_family» di PJ;
+   la voce di decisioni.md, che non riporta il perimetro e ha la clausola «se MAE/livello peggiorano» (controlli-4). Nel registro non ho
+   trovato frasi piu' larghe del protocollo. Il testo sul confronto raw e' corretto su window_pose, sui blocchi e sul margine di 150 ms; non lo
+   e' su quale metodo sia esatto e sul fattore dieci (controlli-3).
+f) La parita' di finestre, etichette, supporti e loss fra i bracci nuovi e' dichiarata (PROT:57, 59, 61) e il supporto «lunghezze/key_time_valid»
+   coincide con la maschera centrale storica (consolidation_long_pose.py:131-134 impone key_time_valid uguale a t < lunghezza). La diversita'
+   di etichette e di ingressi della testa storica (158 utenti, studente mascherato, EMA) e' dichiarata (PROT:51, 73, 110). Per la ridge storica
+   gli stessi 40 utenti e lo stesso train.npz sono solo impliciti (controlli-8). La tabella del paragrafo 10 da sola non fa capire che cosa
+   autorizza un esito positivo; il paragrafo 5 lo dice in parte, decisioni.md in modo piu' debole (controlli-4).
+g) Aggiunte di Claude (WT/docs/prompt_gpt_temponet_testa_fm_20261116.md:189-205) e risposta di GPT:
+   - Accolte: partenza dal 49.046 con le cache su WORK (PROT:9, 55); MLP per istante di taglia simile (PROT:42, 47); TCN in stile TEMPONet
+     sui latenti, adattata e dichiarata come tale (PROT:25, 33); stessa TCN sulla vista pre (PROT:45, 102); loss fissa MSE sugli angoli
+     standardizzati (PROT:61); E_dyn primaria con correlazione, varianza, livello e MAE, per giunto e pollice (PROT:79, 104); avvertenza sulle
+     maschere nel livello B (PROT:120); bracci a parita' di supporto, loss e dati (PROT:57-61).
+   - Cambiate: (1) la ridge istantanea resta come riferimento storico e il controllo primario diventa L0 rifittata con la stessa ricetta. La
+     ragione (riduzioni diverse della loss) regge ed e' verificata nel codice; GPT ha anche corretto, a ragione, la frase di Claude «come la
+     ridge e il pretraining» (prompt riga 200): le due riduzioni non sono la stessa (ESEGUITO, check_losses.py). Il cambio pero' apre il
+     bisogno del controllo di sanita' di controlli-1, perche' la differenza piu' grande fra ridge e L0 e' probabilmente la regolarizzazione, non
+     la pesatura. (2) La «ridge con lag sullo stesso campo ricettivo, scelta come la ridge istantanea» diventa L13 allenata con AdamW. La
+     ragione implicita (una ricetta unica per le teste nuove) regge; il prezzo e' che manca un lineare con contesto regolarizzato in modo
+     ottimale, mentre la griglia della ridge mostra che la regolarizzazione conta molto su questi latenti. Il protocollo limita gia' la lettura
+     del contrasto 3 (PROT:49); basta aggiungere il descrittivo «L13 contro L0» (controlli-2). L'osservazione di Claude sul rango (primo blocco a
+     16 canali) e' rispettata: L13 non ha colli di bottiglia e la TCN parte da 384 -> 64 (PROT:21, 49).
+   - Rinviate con ragioni: encoder random, TCN da zero su sEMG, TEMPONet raw descrittiva (PROT:108-114). Le ragioni reggono per la domanda
+     circoscritta. Della TEMPONet raw non e' stata accolta in modo esplicito l'uscita grezza senza EMA (controlli-3).
+   - Lasciata cadere: la regola su quando un guadagno va al backbone e quando alla testa (prompt riga 231). Difendibile per il livello A
+     perche' TCN-pre e' descrittivo, ma conviene scrivere prima la lettura descrittiva (controlli-7).
+   - Contesto utile: il lettore lineare con t-100 ms, t, t+100 ms sul vecchio B aveva dato E_dyn 0,859512 -> 0,855321, cioe' 0,49% (LETTO in
+     git show 8eba5e4:docs/reviews/regression_synthesis_20261116.md, riga 12; CALCOLATO 0,4876%): un contesto lineare ha aggiunto poco, quindi
+     L13 e' il controllo giusto contro il semplice lisciamento, purche' sia regolarizzato abbastanza.
+
+======================================================================================================================
+3. AFFERMAZIONI DELLA PROPOSTA CONTROLLATE E CHE REGGONO
+======================================================================================================================
+V1  Parametri: L0 8.468, MLP 65.300, L13 100.628, TCN 65.204 (PROT:41-44; PJ heads; analytic_checks.json). ESEGUITO (WORK/check_heads.py,
+    moduli costruiti dalla specifica di PROT:33, 41-43). Per L0 anche ESEGUITO WORK/check_posehead.py sulla PoseHead dello snapshot:
+    8.468 parametri, LN affine, eps 1e-05, gamma 1, beta 0, pesi e bias a zero, uscita iniziale tutta zero (PROT:29, 35).
+V2  MLP e TCN: 64.128 pesi ciascuna nelle trasformazioni, bias 404 contro 308 (differenza 96), LN 768, 10.260.480 MAC per finestra da 160
+    patch, sei trasformazioni e cinque ReLU, dropout 0,1 negli stessi punti (PROT:47). ESEGUITO (check_heads.py) + LETTO (PROT:33, 42).
+V3  Campo ricettivo: TCN e L13 dipendono esattamente dagli offset -6..+6 (13 patch contigue, «nessun buco»), L0 e MLP solo dal centro
+    (PROT:37). ESEGUITO (check_heads.py, gradiente rispetto all'ingresso con pesi casuali).
+V4  Crop6: i centri 6..153 non dipendono dal padding (PROT:37). ESEGUITO (WORK/check_crop64.py, float64): scarto massimo fra rete con padding
+    e rete senza padding 2,3e-14 per L13 e 2,8e-13 per la TCN.
+V5  L13 e' a rango non limitato da un collo di bottiglia (PROT:49): Conv diretta 384 -> 20 con 99.840 pesi. LETTO + ESEGUITO (check_heads.py).
+V6  L0 «usa la stessa PoseHead» (PROT:29) e, in piu', ha la stessa classe di funzioni della ridge storica. ESEGUITO
+    (WORK/check_l0_ridge_class.py: PoseHead con parametri casuali riscritta come LN senza parametri + mappa affine, scarto massimo 3,4e-6 su
+    ampiezza tipica 9,85; eps 1e-5 in entrambe).
+V7  «La ridge storica minimizza SSE aggregata sugli elementi validi» (PROT:51). LETTO (SNAP/scripts/pose_e3_b.py:117-128 statistiche
+    sufficienti per giunto sulle righe valide, 151-172 soluzione con penalita' alpha e intercetta non penalizzata, 175-187 SSE, 208-219 due fold
+    alternati con SSE / elementi; SNAP/scripts/tokenizer_pose_readout.py:232-260). ESEGUITO su dati sintetici (WORK/check_losses.py, codice
+    dello snapshot non modificato): nella soluzione del solver il gradiente di «SSE aggregata + alpha ||w||^2» e' 4,07e-13, quello dell'obiettivo
+    «media per finestra» e' 1,73 (quel punto non e' un suo minimo); E.score da' la stessa SSE del conto diretto (83,6014 su 373 elementi).
+V8  «La PoseHead del training [minimizza la] MSE media per finestra» (PROT:51). LETTO (SNAP/src/wearusfm/training/jepa.py:182-209, ramo per
+    finestra alle righe 197-204; righe 552-553 con cfg.loss_per_window; SNAP/src/wearusfm/training/run.py:254-259, with_window1_rules imposta
+    loss_per_window=True; il comando della continuazione a 49.046 contiene --window1-rules e --pose-weight 1.0,
+    SNAP/results/infra/consolidation_long_20261105/continuation/49046/launch.json; scripts/train_jepa.py:148-149). ESEGUITO su dati sintetici
+    (check_losses.py): con per_window=True la funzione restituisce 2,13643, uguale alla media delle medie delle 5 finestre con elementi validi;
+    con per_window=False 1,92843 = SSE diviso 400 elementi.
+V9  «La testa storica ha visto 158 utenti nel pretraining mascherato, con aggiornamenti EMA» (PROT:51). LETTO: la testa legge l'encoding
+    mascherato dello studente (jepa.py:426 e 552); il teacher e' l'EMA di tutto il modello, testa compresa (jepa.py:121-126; run.py:1618;
+    ema_momentum 0,996 e maschera 0,5 nel config T100-G a 19.618); 158 utenti dello split train (SNAP/docs/pilot_posa_v1.md:78;
+    SNAP/docs/emendamento_pilot_posa_v1.md:24); le predizioni storiche sono della testa del teacher senza aggiornamenti supervisionati
+    (RIC: cells.trained_head.which = teacher, fit.supervised_updates = 0; ESEGUITO extract_ric.py).
+V10 «Le nuove teste vedono 40 utenti e latenti teacher non mascherati» (PROT:51). LETTO (SNAP/scripts/consolidation_long_pose.py:34
+    estrazione con un forward non mascherato in FP32, 44-49 40 utenti e 200 registrazioni per il train, 77 maschera None e niente gradiente).
+    ESEGUITO (check_pins.py, extract_ric.py): fit.n_users 40, fold 20 + 20, cache train con lo sha256 e i byte di PJ.
+V11 Viste della cache: pre = uscita del Perceiver, lat = dopo il backbone e la sua LayerNorm finale, medie sui 64 slot (PROT:29, 45, 102).
+    LETTO (backbone_depth.py:24, 34; fm.py:169, 210, 213; backbone.py:88, 103; pose_eval.py:171, 177; consolidation_long_pose.py:76-86,
+    105-111; k_latents 64) + ESEGUITO (check_views.py: scarto 0,0 dal ricalcolo a mano).
+V12 «Le due viste hanno diverso contesto gia' incorporato»; TCN-pre «misura accessibilita' dopo il backbone, non valore del pretraining o
+    origine dell'informazione» (PROT:102). ESEGUITO (check_views2.py: pre locale, 13 patch; post globale, 160 patch) + LETTO (tokenizer,
+    encoder locale e Perceiver sono moduli pre-allenati: pre non e' un controllo «senza pretraining», come dicono PROT:108 e REG riga 5984).
+V13 Supporto comune: «6 <= t e t+6 < N_i, con patch di contesto realmente esistenti secondo lunghezze/key_time_valid» (PROT:59) coincide con
+    la maschera centrale storica: l'estrazione impone key_time_valid uguale a «t < lunghezza» (consolidation_long_pose.py:131-134) e la
+    maschera centrale usa le lunghezze (pose_temporal_readout.py:195-199). LETTO.
+V14 window_pose assegna alle patch i blocchi da dieci campioni secondo i centri e ne media gli angoli; 5 blocchi per patch da 25 ms a 2 kHz
+    (PROT:112). LETTO (pose_targets.py:148-180; emg2pose_pose.py:130-139) + ESEGUITO (check_raw_support.py, 400 sfasamenti).
+V15 Il passato raw [q-255, q] rientra nel margine di 150 ms per i centri ammessi, anche coi blocchi a cavallo del bordo (PROT:114). ESEGUITO
+    (check_raw_support.py: almeno 49 campioni dentro la finestra con endpoint a fine blocco, 40 con endpoint per campione).
+V16 I pin storici di PJ coincidono con la ricevuta storica: sha256 della ricevuta, checkpoint bfa6141fc2ed..., sha256, byte e nome dei file
+    delle cache train e val, sha256, byte e percorso d'origine dei tre riferimenti, 40 utenti train, 15 utenti val, soglia dinamica.
+    ESEGUITO (shasum della ricevuta estratta da git; WORK/check_pins.py: 12 confronti su 12 uguali).
+V17 Ridge post e testa storica sono valutate sullo stesso supporto e sugli stessi bersagli: support_sha256 973930475e94..., targets
+    c907b85bca26..., 8.327 finestre dinamiche (8.329 selezionate), 15 utenti, 20.119.920 elementi validi. ESEGUITO (extract_ric.py).
+V18 Numeri storici a 49.046 sulle dinamiche: ridge post 0,785902, testa 0,778629, ridge pre 1,032128; uguali in RIC e in
+    scientific_readout.json. ESEGUITO (extract_ric.py e lettura di scientific_readout.json).
+V19 Statistiche della posa dal train158 (PROT:57): stats_sha256 di PJ = STATS_SHA di SNAP/scripts/pose_e3_b.py:18 = pose_stats_sha256 della
+    ricevuta della continuazione a 49.046 (757f2aee...). LETTO.
+V20 I bracci nuovi condividono finestre, etichette, supporto e loss; anche L0 e MLP si allenano sul crop6 (PROT:57-61; PJ fit.loss
+    «crop6 all groups»). LETTO.
+V21 I 15 val sono sviluppo gia' consultato (PROT:73): sono gli stessi 15 utenti della lettura val di TEMPONet raw, su cui e' stato scelto
+    l'alpha dell'EMA. ESEGUITO (confronto degli insiemi di ID utente fra RIC ed eval.json; anche il manifest dei bersagli ha 15 utenti val
+    uguali).
+V22 Il v10 paragrafo 8 elenca fra le baseline non negoziabili la CNN/TCN da zero e l'encoder random con la stessa testa; la proposta non le
+    deroga e restringe la conclusione (PROT:11, 108; REG righe 209 e 5984). ESEGUITO (diff delle righe 1129-1137 fra main e114a78 e snapshot)
+    + LETTO.
+V23 Verdetto 2 chiesto da GPT: la proposta non pretende un vantaggio del pretraining rispetto a encoder random o raw. LETTO (PROT:11, 108;
+    REG righe 209 e 5984; PJ righe 162-175 «not_in_this_proposal»): confermo.
+V24 La correzione di GPT al prompt di Claude sulla loss («come la ridge e il pretraining») e' giusta: ridge e PoseHead hanno riduzioni
+    diverse. ESEGUITO (check_losses.py).
+V25 Un esito nullo non viene presentato come equivalenza o assenza di informazione (PROT:11, 97; REG riga 5989; DEC riga 6730). LETTO.
+
+======================================================================================================================
+4. NON VERIFICABILE DA QUI
+======================================================================================================================
+N1  Se L0 rifittata con AdamW arrivi al livello della ridge, e se L13 con la stessa ricetta resti almeno al livello di L0, sui latenti veri:
+    servono i fit, che vengono dopo la decisione. Non ho cercato ne' aperto le cache: fittare prima di congelare i criteri sarebbe guardare i dati.
+N2  Contenuto delle cache su $WORK (pre, lat, pred, maschere) e loro sha256 di oggi: niente ssh. Ho solo le ricevute in Git (i byte li ha
+    verificati Claude oggi, secondo il compito).
+N3  Quanto differiscano, sui dati veri, la pesatura per finestra e quella per elemento: conosco solo la quota complessiva di elementi validi
+    del train (85,28%), non la sua distribuzione per finestra.
+N4  Quanto della sensibilita' alla regolarizzazione vista nell'MSE dei fold (griglia della ridge) passi a E_dyn sulle dinamiche.
+N5  Il supporto temporale della vista pre nel checkpoint vero T100-G 30M: l'ho misurato in modo strutturale su un modello piccolo a pesi
+    casuali, con lo stesso codice e la stessa configurazione del tokenizer; le ampiezze vere non le conosco. Inoltre il caricatore di posa
+    filtra il segnale prima del modello: con il caricatore di classificazione (PreparedWindows, check_views.py) una perturbazione di una
+    patch cambia pre in tutte le 160 patch; quello di posa non l'ho provato.
+N6  Lo scarto fra le predizioni della testa storica (latenti FP32) e la stessa testa applicata alla cache FP16 del 49.046.
+N7  Le tre «letture critiche locali» di GPT (/root/temponet_*_review): nello snapshot c'e' solo il riassunto in design_review.txt.
+N8  Forma e convenzione di supporto dei file delle predizioni storiche (ridge e testa): le ricevute riportano lo stesso support_sha256, i file
+    non li ho letti.
+
+======================================================================================================================
+5. SCRIPT E FILE DEI CONTROLLI (tutti in WORK)
+======================================================================================================================
+check_heads.py           parametri, pesi, MAC e campo ricettivo delle quattro architetture, costruite dalla specifica di PROT:33 e 41-43
+                         (tentativo precedente; riletto e rieseguito oggi)
+check_crop64.py          equivalenza crop6 / rete senza padding in float64 (riletto e rieseguito; importa check_heads, che ristampa le sue righe)
+check_posehead.py        PoseHead dello snapshot: 8.468 parametri, LN affine, zero iniziale (riletto e rieseguito)
+check_losses.py          pose_terms (jepa.py) e solver della ridge (pose_e3_b.py) dello snapshot, su dati sintetici (riletto e rieseguito)
+check_views.py           viste pre/post di depth_readouts su un modello piccolo; perturbazione prima del caricatore (riletto e rieseguito)
+check_views2.py          contesto temporale di pre e post con perturbazione dentro ModelInputs, a 200 Hz e 2 kHz (riletto e rieseguito)
+check_raw_support.py     window_pose dello snapshot: blocchi per patch e passato raw dentro il margine del crop6 (riletto e rieseguito;
+                         l'ultima parte si ferma con ImportError, vedi controlli-3)
+check_raw_grid.py        griglia degli endpoint di training e della lettura ufficiale di TEMPONet raw (worktree di Claude; riletto e rieseguito)
+extract_ric.py           NUOVO: griglie delle ridge, E_dyn, supporti e identita' della testa dalla ricevuta storica
+check_pins.py            NUOVO: pin di PJ contro la ricevuta storica, campo per campo
+check_l0_ridge_class.py  NUOVO: stessa classe di funzioni per PoseHead e ridge storica
+conti_controlli.py       NUOVO: conti del rapporto (contrasti d'esempio, passi, weight decay, pesi, endpoint, quota valida)
+RIC_49046_rerun.json     ricevuta storica estratta oggi da git (2930d7d), solo per la lettura; LONG-FIT-G49046-pose.json e' la copia del
+                         tentativo precedente, con lo stesso sha256
+Nessun file scritto nello snapshot o nei worktree; nessun comando git di scrittura (git status del worktree di Claude: pulito alla fine).
+Segnalazione: nello snapshot e' comparso SNAP/scripts/__pycache__/pose_dynamics.cpython-311.pyc, creato alle 09:43:04. Non l'ho creato io:
+tutti i miei import dallo snapshot sono girati con PYTHONDONTWRITEBYTECODE=1, e i miei script che importano pose_dynamics importano anche
+pose_e3_b o pose_temporal_readout, i cui .pyc non ci sono. Probabilmente viene da un'altra review che lavora sullo stesso snapshot.
+Non l'ho toccato (divieto di modificare lo snapshot); non cambia nessun file sorgente.
+
+======================================================================================================================
+6. CORREZIONI RISPETTO AL TENTATIVO PRECEDENTE
+======================================================================================================================
+- controlli-2: il primo rapporto diceva che la candidatura «richiede solo i contrasti 1, 4 e 5». Piu' esatto: la regola da' solo condizioni
+  necessarie («solo se»), non dice se bastano e non copre il caso in cui un controllo sia migliore della TCN; ho aggiunto l'esempio con L13 e
+  MLP migliori e il controllo di sanita' «L13 contro L0».
+- controlli-3: il primo rapporto attribuiva al registro (riga 5993) la «stessa frase»; nel registro c'e' lo stesso concetto (media sui campioni
+  nativi contro cinque predizioni puntuali), non il «circa dieci volte», che sta solo in PROT:114. Ho segnalato che l'ultima parte di
+  check_raw_support.py si ferma con ImportError (non cambia i numeri citati) e ho verificato, invece di affermarlo, che i 15 utenti dell'EMA
+  sono quelli della cache del FM.
+- controlli-7: il risultato «pre cambia solo in 13 patch» viene da check_views2.py (perturbazione dentro il modello); check_views.py, che
+  perturba prima del caricatore di classificazione, vede pre cambiare in tutte le 160 patch. Il primo rapporto non distingueva i due casi.
+- Aggiunte: stessa classe di funzioni per L0 e ridge (rende «L0 contro ridge» un controllo della sola ricetta); weight decay di AdamW
+  trascurabile (0,9704 e 0,9970); --window1-rules nel comando della continuazione a 49.046 (il primo rapporto citava solo il config a 19.618);
+  identita' del supporto lunghezze/key_time_valid; clausola «se MAE/livello peggiorano» di decisioni.md; differenza FP32/FP16 della testa
+  storica; confronto campo per campo dei pin rifatto con uno script.

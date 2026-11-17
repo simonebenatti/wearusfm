@@ -1,0 +1,316 @@
+VERIFICA AVVERSARIA - dimensioni «Costo e fattibilita» (costo) e «Consegna, ruoli e seguito» (consegna)
+Proposta GPT c15aac9 (TCN come lettore sull'encoder congelato). Data: 17/11/2026.
+Verificatore: subagent di verifica, nessun ssh, nessun job, nessuna modifica al repository.
+Marcatura delle prove: ESEGUITO (comando o script mio), CALCOLATO (conto rifatto), LETTO (lettura di fonti).
+Cartella dei miei script: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/work_verifica_costo-consegna/
+
+Stato: completo (scritto a pezzi; vedi sezione 5).
+
+======================================================================================================
+0) CONTROLLI DI BASE FATTI DA ME (servono a piu' giudizi)
+======================================================================================================
+B-1 ESEGUITO. git diff --shortstat cfa6462 c15aac9 = "9 files changed, 652 insertions(+)"; numstat: 652 aggiunte, 0 tolte;
+    git diff --stat cfa6462 c15aac9 -- src scripts tests = vuoto. Genitore di c15aac9 = cfa6462 (git log).
+B-2 ESEGUITO. git merge-base --is-ancestor: 8917e2a, 60b35bd, 0c19c4b, db5ac41, 0ab9d98, e114a78, 3263ee9 NON sono antenati di
+    c15aac9; 166fb86 e 9d195e7 si'. 3263ee9 e' antenato di e114a78 (main). merge-base(c15aac9, e114a78) = 2df9aff.
+B-3 ESEGUITO. sha256 di src/wearusfm/model/temponet.py a 60b35bd, 0c19c4b, 8917e2a = 9d5a03e23d4d4ef2f4ba... (8.519 byte, uguale nei tre);
+    scripts/temponet_emg2pose.py a 0c19c4b e 8917e2a = 8d7f9dbee1db29ca29e7... (31.196 byte). code_sha di eval.json e run.json a 8917e2a
+    = 0c19c4bc32a96e3b72d15a09770d204a747fa13b.
+B-4 ESEGUITO. Prompt di Claude a 8917e2a: 24.098 byte, sha256 e01c056603c4...; senza il newline finale 24.097 byte, sha256 917aab786a19...
+    = instruction_attachment_sha256 di proposal.json (riga 241). La ricevuta 2930d7d:.../LONG-FIT-G49046-pose-20261105.json ha sha256
+    b08e6e321f38...c14 = proposal.json riga 240.
+B-5 ESEGUITO. Nella ricevuta LONG-FIT-G49046 i pin coincidono con proposal.json: train 474.412.856 / 30c0b50d...; val 4.593.977.338 /
+    36bab32e...; coefficienti ridge 59.367 / fc9a9fd1...; predizioni ridge 418.440.754 / 36fb5f9b...; predizioni testa 234.048.726 /
+    9dbd52a0...; checkpoint bfa6141f.... Gli stessi 5 file sono nell'inventario della conservazione
+    (SNAP/results/infra/consolidation_long_20261105/gpt_review_20261107/preservation_inventory.json, 352 voci, radice LONG_ROOT su
+    SCRATCH) con byte uguali. NOTA: in quell'inventario non c'e' nessun file di statistiche della posa.
+B-6 ESEGUITO (script mio heads_check.py, moduli costruiti dal testo del par. 3, nessun codice del progetto): parametri L0 8.468, MLP
+    65.300, L13 100.628, TCN 65.204; pesi delle trasformazioni MLP 64.128 = TCN 64.128; TCN/28.362.013 = 0,2299%; TCN/L0 = 7,700;
+    MAC TCN a 160 patch 10.260.480. Campo ricettivo misurato col gradiente in float64: uscita 80 dipende dagli ingressi 74...86 (13);
+    uscita 6 dagli ingressi 0...12 (13): il crop6 non tocca il padding. MLP: solo l'istante stesso.
+B-7 ESEGUITO (stesso script, CPU del Mac, 4 thread, carico 4,2-5,6): secondi per passo di training (batch 32, AdamW, clipping):
+    L0 0,0061; MLP 0,0099; L13 0,2041; TCN 0,0914. Con 15.000 passi per testa (selezione 2x2x50x30 = 6.000, rifit 3x50x60 = 9.000)
+    la matrice costerebbe su questa CPU circa 6.043 s = 1,68 h di soli passi (L13 3.062 s, ciascuna TCN 1.371 s). Su A100 e' molto meno.
+
+======================================================================================================
+1) GIUDIZI SUI RILIEVI - DIMENSIONE «COSTO E FATTIBILITA'»
+======================================================================================================
+
+costo-1 (revisore: minore) «Il gate non e' ancora meccanico» -> PARZIALE, gravita' dopo: minore (da chiudere prima del benchmark,
+non prima della firma)
+- Cosa regge. LETTO: nessuna formula, nessun numero di job/--time, nessuna regola di memoria. ESEGUITO: grep -i -E
+  "determin|cudnn|graph|thread" su protocollo e proposal.json non trova nulla (exit 1). proposal.json righe 226-227: vram_requirement_gib
+  null. LETTO: BENCHMARK_POLICY (SNAP/scripts/consolidation_long_pose_runtime.py righe 27-36), project_benchmark (145-163) e il rifiuto
+  se admitted non e' vero (riga 244) esistono come modello meccanico. LETTO a 8917e2a: docs/temponet_db8_replication.md:116 («13 volte
+  piu' lente») e docs/claude_GPT_shared:8492-8495 (18,5 ms eager e 14,6 col graph con deterministic=True; 4,1 e 1,1 senza).
+- Cosa non regge o e' sopravvalutato.
+  (a) Il punto (1) «mancano le misure nominate»: la riga 163 del protocollo le nomina (caricamento, epoca forward/backward per
+      architettura e per dimensione fold/full, valutazione interna, salvataggio, RSS/VRAM, warmup incluso nel costo del job). Manca
+      solo la statistica (media o massimo delle epoche).
+  (b) Il punto (3), scala dell'I/O per byte o per finestre: CALCOLATO 9,6835 contro 9,7263, differenza 0,44%: irrilevante.
+  (c) La VRAM non e' un vincolo reale: LETTO, l'estrazione GPU del FM intero ha riservato 3.932.160.000 byte su 68.099.571.712
+      (ricevute LONG-G49046-pose-train/val a 2930d7d); CALCOLATO, tutta la vista lat+pre del train in FP32 = 0,94 GB.
+  (d) L'esempio di memoria del revisore usa i job di estrazione GPU (FM caricato), non l'analogo giusto. CALCOLATO con l'analogo
+      giusto (benchmark e fit della stessa lunga, ricevute LONG-BENCH-pose e LONG-FIT-G49046-pose a 2930d7d): picco del benchmark
+      1.383.280.640 byte x 9,7263 = 13.454.163.246 byte (12,53 GiB) contro 9.513.836.544 misurati (8,86 GiB): sovrastima 1,41 volte,
+      ammessa (sotto 0,85 x 30 GiB = 25,5 GiB). La regola proporzionale sovrastima, ma su quel job non ha fermato nulla.
+  (e) Il modo cuDNN non mette a rischio il tetto: CALCOLATO, prendendo come analogo il costo deterministico eager della TEMPONet raw
+      (18,5 ms per passo; la TCN nuova ha solo due convoluzioni dilatate e batch 32): 75.000 x 18,5 ms = 1.387,5 s, raddoppiati 2.775 s
+      = 0,77 h; aggiungendo in modo grossolano le valutazioni held (circa un terzo di passo per batch) si resta sotto 1 h, contro 3 h.
+      Il rischio e' una proiezione inesatta, non uno sforamento.
+- Versione corretta: il gate fissa gia' grandezze misurate, fattore 2, 50 epoche, 35 fit, scale e soglie; restano da scrivere prima
+  del benchmark (nel piano eseguibile e nel codice, con review) la statistica, la regola di memoria con una parte fissa o un surrogato
+  della val (l'unico punto che puo' produrre un arresto spurio e quindi una regola scritta dopo la misura) e l'obbligo che il
+  benchmark usi le stesse impostazioni numeriche dei fit. Numero di job e --time sono del piano eseguibile.
+
+costo-2 (revisore: nota) «Lo sforamento oltre il limite non e' contato nei tetti di fase» -> CONFERMATO, nota
+- ESEGUITO (git show e114a78): leonardo_stato_20261105_2209_job.txt riga 82, 63593508 TIMEOUT, 01:33:04 su 01:30:00 = 184 s;
+  docs/claude_GPT_shared righe 11161-11162 («OverTimeLimit = 3 min ... CPU x (walltime + 180 s)»). CALCOLATO: 184 s = 0,0511 GPUh per
+  job GPU; 3 job GPU 0,153 GPUh (riserva 0,25); 4 job CPU (2+8+8+2 CPU) 1,022 core-ore (riserva 1).
+- Attacco: un TIMEOUT ferma la fase (protocollo riga 75), quindi piu' sforamenti insieme non sono realistici e il tetto totale resta
+  protetto dalla riserva. Il revisore lo dice gia'. Resta vero che i tetti di fase non contano lo sforamento: nota giusta.
+
+costo-3 (revisore: nota) «proposal.json non riporta CPU per fase ne' limiti di tempo» -> CONFERMATO, nota
+- LETTO proposal.json righe 204-228: ci sono solo benchmark_gpu_hours_cap, fit_phase_gpu_hours_cap, inference_gpu_hours_cap,
+  reserve_gpu_hours, il totale cpu_only_core_hours_cap 12 e i totali; mancano core-ore per fase, riserva CPU, limiti di tempo e CPU per
+  fase (presenti solo nella tabella del protocollo, righe 151-158). Riga 209 «CPU/storage», protocollo riga 165 «CPU e memoria».
+
+costo-4 (revisore: minore) «A Simone mancano stima attesa, residuo e ore locali per fase» -> PARZIALE, gravita' dopo: nota
+- Cosa regge. LETTO: proposal.json riga 215 measured_estimate null; il prompt di Claude (8917e2a riga 254) chiedeva «con il residuo e
+  un tetto proposto per voce». ESEGUITO: fccf88d, remote_listing.txt riga 190: «IscrB_WearUsFM 20260107 20270107 2000000 1308137 ...»;
+  CALCOLATO 691.863 ore locali di residuo, 44 = 0,00636%. Le ore locali per fase (0,5/2/2/24/4/8/0,5 + riserva 2+1) sono giuste.
+- Cosa non regge. La regola di CLAUDE.md (costo «in ore locali e in GPU-ora») e' soddisfatta nella sostanza da un tetto dato in
+  entrambe le unita' (riga 147: 4 GPUh, 44 ore locali); «quanto resta del budget del passo» non si applica perche' un budget del passo
+  non esiste ancora (lo propone la riga 179); il residuo del 09/11 e' dichiarato vecchio alla riga 169 (dopo quella data hanno
+  consumato almeno il training 300M e le estrazioni del 16/11, prompt di Claude righe 173-175). Con 44 ore su circa 690.000 nessuna
+  di queste cifre cambia la decisione di Simone.
+- Versione corretta: utile e poco costoso aggiungere una stima a priori dichiarata come tale e la riga del residuo del 09/11 con la
+  data; non e' un difetto da correggere prima della firma.
+
+costo-5 (revisore: nota) «Non e' scritto a che cosa serve il benchmark CPU» -> PARZIALE, nota
+- LETTO: riga 152 (8 CPU, 15 min, 2 core-ore); la riga 165 dice «CPU e memoria nei rispettivi tetti», quindi lo scopo si intuisce
+  (proiezione delle fasi CPU), ma non e' scritto quali misure lo alimentano. La prova ESEGUITA dal revisore (fit su CPU 2,69 h) non
+  riguarda il rilievo: nessuno propone i fit su CPU. Nota giusta, prova superflua.
+
+costo-6 (revisore: nota) «Il tetto di 8 GiB regge solo se non si salvano le predizioni held di ogni epoca» -> RIFIUTATO, nessuna
+- CALCOLATO: il conto e' giusto (10 coppie testa/LR x 1.907 finestre x 50 epoche x 12.800 byte = 12.204.800.000 byte = 11,37 GiB).
+- Ma il rilievo descrive un'implementazione che la proposta non propone: la riga 167 elenca cosa si conserva («pesi di tutti i rifit,
+  curve/selezione train, supporti, predizioni/riferimenti...») e la selezione (riga 68) usa somme di perdite per finestra, non
+  predizioni. Il tetto «massimo 8 GiB persistenti» e' un vincolo per il codice, che verra' rivisto. Non e' dimostrato un difetto.
+
+costo-7 (revisore: nota) «Mancano calendario e limite della corsia seriale condivisa» -> CONFERMATO, nota
+- ESEGUITO (git show e114a78:docs/claude_GPT_shared): righe 9110-9111 («8 CPU per utente in esecuzione (QOSMaxCpuPerUserLimit):
+  job da 8 CPU uno alla volta») e 11156. Riscontro indipendente: nei sacct della lunga (2930d7d, sacct_fit.tsv) i job seriali da 8 CPU
+  partono uno dopo l'altro (17:25:26-17:28:42, 17:29:17, 17:32:30), mentre quattro job GPU partono insieme alle 22:25:48
+  (sacct_extract.tsv). Il prompt chiedeva «Calendario, con la manutenzione» (riga 256); il protocollo (riga 169) cita il fermo ma non
+  da' un calendario.
+
+costo-8 (revisore: nota) «Il file delle statistiche della posa sta su $SCRATCH» -> CONFERMATO, nota (e va allargato: vedi
+costo-consegna-N1)
+- LETTO: SNAP/results/infra/pose_slots_20261102/execution/R3c/receipt.json righe 250-258: pose_stats.json con sha256 757f2aee... sotto
+  /leonardo_scratch/.../data/processed/emg2pose_pose/. Non e' nell'inventario della conservazione (B-5).
+- Precisazione sulla prova: la riga 117 del runtime citata dal revisore e' nella fase di estrazione (_extract). La prova piu' forte e'
+  load_context (SNAP/scripts/consolidation_long_common.py righe 119-121), che apre e verifica TUTTI gli input storici, statistiche
+  comprese, in ogni fase della lunga. Il confronto senza aprire il file esiste gia' in _read (runtime righe 99-100).
+
+costo-9 (revisore: nota) «Il preflight dell'operatore va completato» -> CONFERMATO, nota
+- LETTO proposal.json righe 216-223 (sei voci, niente prenotazioni ne' occupazione della seriale ne' soglia di spazio); LETTO
+  SNAP/results/infra/consolidation_long_20261105/quota_r1b_20261105.json: base_headroom_bytes 8.589.934.592, free_bytes,
+  required_free_bytes_including_ft15: il precedente di una soglia esiste.
+
+costo-10 (revisore: nota) «L'uso della riserva non e' definito» -> CONFERMATO, nota
+- LETTO righe 158 e 165: la riserva e' definita solo in negativo («non autorizza retry automatici»). Nota giusta e poco costosa.
+
+======================================================================================================
+2) GIUDIZI SUI RILIEVI - DIMENSIONE «CONSEGNA, RUOLI E SEGUITO»
+======================================================================================================
+
+consegna-1 (revisore: minore) «Che cosa autorizza la firma; tre frasi danno per decisi affidamento e operatore» -> PARZIALE, gravita'
+dopo: nota
+- Cosa regge. LETTO, CLAUDE.md di e114a78 (identico al CLAUDE.md canonico, cmp ESEGUITO): righe 86-91 (l'attivita' non e' nella
+  tabella), 35 (Claude operatore «Solo per EPN15 e valutazione lunga della linea 2»), 104 (soglia di 5 GPU-ore), 22-23 e 110-111
+  (l'approvazione comprende il lancio). Il tetto di 4 GPUh e' sotto la soglia: dopo affidamento, budget e criteri, la firma basta a
+  lanciare i job inclusi. Dirlo in chiaro nella tabella e' utile.
+- Cosa non regge.
+  (a) «catene gia' approvate» (riga 128) non si presta a leggere un'estensione di altre approvazioni: e' la formula abituale di GPT per
+      la regola di CLAUDE.md. ESEGUITO grep: SNAP/docs/claude_GPT_shared riga 12 «Nessun nuovo consenso per piani gia' approvati»,
+      riga 468 «nessun secondo consenso per attivita' gia' approvate», riga 746 «per le prove gia' approvate»; decisioni.md riga 6410
+      «Nessun nuovo consenso per la catena», righe 6650-6651 «senza nuovo consenso per la medesima catena entro ricetta e tetto
+      approvati». Letta cosi', la frase dice proprio che cosa autorizza la firma: la catena approvata parte senza un secondo consenso;
+      la riga 182 da' la sequenza (codice, test, review reciproca, benchmark nel tetto, gate, esecuzione).
+  (b) Il prompt di GPT riga 24 («niente nuovo consenso per le campagne gia' chiuse») dice che la proposta non riapre campagne chiuse;
+      non estende nulla a questa attivita'.
+  (c) Le frasi su Claude operatore (righe 169 e 182) stanno dentro una proposta di ruoli dichiarata tale: riga 128 «Proposta di
+      continuita' ... L'affidamento della nuova attivita' e il budget li conferma Simone», riga 180 (tabella), decisioni.md riga 6736
+      «Ruoli proposti ... dopo affidamento della nuova attivita'», registro riga 208 «da affidare per la nuova prova».
+- Versione corretta: la proposta lascia gia' affidamento, operatore e budget a Simone e usa la formula consueta per «nessun secondo
+  consenso dopo l'approvazione»; e' solo utile scrivere nella tabella del par. 10 che la firma comprende i job inclusi (o chiedere un
+  secondo via dopo il benchmark, se Simone lo preferisce) e sostituire «della linea 2» con «di questa attivita'» alla riga 182.
+
+consegna-2 (revisore: minore) «File nuovi sotto scripts/ senza base del ramo: la guardia della lunga diventa rossa» -> PARZIALE,
+gravita' dopo: nota
+- Cosa regge. ESEGUITO con uno script mio che ricalcola source_identity() dagli oggetti git (source_digest_git.py, nessun import del
+  progetto): c15aac9, cfa6462 e 166fb86 danno 1ca7aead5cd4... = plan.json; con scripts/pose_temponet_heads.py in piu' il digest cambia;
+  in una sottocartella di scripts/ o in tests/ resta uguale; con un file nuovo in src/wearusfm cambia. ESEGUITO pytest sul mio export di
+  c15aac9: il test test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned FALLISCE gia' alla riga 126 («DID NOT RAISE»);
+  con il file nuovo al primo livello di scripts/ fallisce alla riga 123 con digest 7d7db5e8... (uguale al mio calcolo indipendente).
+  LETTO e114a78:tests/cpu/frozen_campaign_support.py righe 34-43 e test riga 124-126: main calcola il digest da 166fb86 via git e
+  controlla che l'albero NON coincida. Le altre guardie (logsquare_evaluation.py righe 34-42, consolidation_finetune.py:54,
+  consolidation_finetune15.py:71, pose_slot_plan.py:41 a e114a78) guardano src/ e liste chiuse di script.
+- Cosa non regge. «La guardia diventa rossa» sopravvaluta l'effetto: su quella base il test e' gia' rosso, quindi un file nuovo sotto
+  scripts/ cambia la riga che fallisce, non il numero dei test falliti. I digest delle release congelate non cambiano (riga 130 del
+  protocollo: vero, i checkout sono fissati per SHA). L'effetto e' sulla suite CPU del ramo nuovo e si vede subito, nella review del
+  codice. Non serve correggere la proposta prima della firma; basta indicare la base nel piano del codice.
+
+consegna-3 (revisore: minore) «Manca il cancello che riproduce i riferimenti pubblicati prima dei contrasti; mancano test di shuffle,
+gate ed etichette» -> CONFERMATO, minore
+- LETTO SNAP/results/infra/consolidation_long_20261105/gpt_review_20261107/pose_verification.json: 49046/post_ridge dynamic E_dyn
+  0,7859020004638595; 49046/trained_head 0,7786289843513977; dinamiche 8.329 selezionate, 8.327 finestre, 15 utenti, 166.540 coppie,
+  20.119.920 elementi; support_sha256 973930475e94... uguale a targets_sha256.central_mask: il supporto dipende solo da maschere e
+  bersagli. LETTO runtime riga 275: la testa storica e' held["pred"][:, 6:-6].astype(float64); summarize (consolidation_long_pose.py
+  righe 264-272) richiede solo la forma a 148 patch: un ritaglio sfasato della stessa forma passa.
+- ESEGUITO (crop_demo.py, mio, dati sintetici diversi e E_dyn scritto da me dal testo del par. 5): ritaglio giusto [6:154] E_dyn
+  0,268825; [0:148] 2,293579; [12:160] 2,292767; forma, hash del supporto e conteggi identici nei tre casi. L'entita' dipende dai dati
+  sintetici; il meccanismo e' confermato.
+- Il cancello proposto (ricalcolo di 0,7859... e 0,7786... dai file pinnati; ritaglio della pred a 160 patch della cache uguale a
+  trained_head.predictions) e' concreto e protegge proprio i contrasti 4 e 5, da cui dipende la regola della candidata (riga 100).
+  I tre test aggiuntivi (shuffle, gate, etichette) sono utili ma di peso minore.
+
+consegna-4 (revisore: minore) «decisioni.md e proposal.json non si possono congelare cosi' come sono» -> PARZIALE, minore
+- ESEGUITO grep sulla voce (decisioni.md righe 6713-6738) e su proposal.json:
+  soglia dinamica 0,2574231028556824: JSON riga 254 si', decisioni no; pareggi: JSON riga 72 si', decisioni no; regola della
+  candidata: JSON riga 35 («candidate ... only if primary and both historical-reference contrasts pass») si', decisioni no;
+  arresto su NaN/OOM: ne' JSON ne' decisioni; beneficio e deterioramento: decisioni righe 6728-6729 si', JSON no (solo riga 34 e 37);
+  IC 95% descrittivo pre/post: ne' JSON (riga 33 «no pass/fail») ne' decisioni.
+- Cosa non regge: il fix chiede di aggiungere a proposal.json «la regola della candidata», che c'e' gia' (riga 35). Il resto e' giusto.
+  Ognuno dei due documenti ha cio' che manca all'altro: il congelamento va fatto con una voce completa che citi i file per SHA.
+
+consegna-5 (revisore: minore) «Mancano tre scelte esplicite nella tabella del par. 10» -> PARZIALE, gravita' dopo: minore solo per
+il punto (a); (b) e (c) sono note
+- Cosa regge, punto (a). LETTO: i titoli dicono «TEMPONet come lettore della posa del FM» (protocollo riga 1) e «Proposta TEMPONet
+  come lettore congelato» (README riga 1); la riga 3 riporta la richiesta di Simone «... usando l'implementazione che abbiamo gia'»
+  (citazione riferita da GPT, non verificabile da qui); la tabella che Simone firma (righe 173-180) dice solo «TCN-post». L'oggetto
+  della prova (una TCN nuova ispirata a TEMPONet, non la classe esistente ne' i suoi pesi, riga 25) va quindi scritto nella tabella.
+- Cosa non regge, punti (b) e (c). Sono gia' scritti in chiaro: (b) riga 108 e proposal.json righe 162-175 («not_in_this_proposal»:
+  random encoder, raw TCN training, raw TEMPONet reevaluation); LETTO v10 §8 (docs/fm_emg_reference_v10.md righe 1129-1137): le
+  «Baseline non negoziabili» riguardano il confronto del FM con altri modelli, non la scelta del lettore su un encoder fissato, e la
+  proposta non fa affermazioni sul FM. (c) righe 98-100 e 118. Anche per (a) il corpo e' chiaro (riga 25, decisioni.md riga 6722,
+  prompt di GPT riga 11) e il prompt di Claude l'aveva anticipato (righe 116-117). Il prompt chiedeva sei voci (righe 270-271): ci sono.
+
+consegna-6 (revisore: nota) «Continuita' con la linea 2: mancano due fatti» -> PARZIALE, nota
+- ESEGUITO/LETTO: prompt di Claude riga 1 «Prompt per GPT coordinamento», riga 11; decisioni.md righe 6647-6649 (precedente A1
+  delegato a Claude): fatti esatti. Ma «ha risposto GPT consolidamento, e la proposta non lo dice» e' vero solo a meta': la voce del
+  registro e' firmata «GPT consolidamento» (riga 181) e il protocollo dice «derivato dalla consegna consolidamento cfa6462» (riga 3).
+  Manca solo che il prompt era indirizzato a GPT coordinamento.
+
+consegna-7 (revisore: nota) «Livello B: il costo citato vale solo a 19.618; manca il piano del codice rispetto a I-1» -> PARZIALE,
+nota
+- CALCOLATO: (3916+11334) x 4 / 3600 = 16,9444 GPUh (db5ac41 docs/tokenizer_endpoint_execution_20261104.md riga 26: «16,944444»);
+  continuazione 19.618->49.046 (SNAP .../continuation/{30000,39237,49046}/receipt.json, elapsed_s 7.955,65 + 7.145,29 + 7.536,23,
+  world_size 4) = 25,1524 GPUh; uno a 49.046 circa 42,10, due circa 84,19 GPUh. LETTO decisioni.md riga 4588: R3c 49.046 passi,
+  40,4 GPU-ora.
+- Cosa non regge: il protocollo condiziona gia' il numero a 19.618 (riga 122: «Se B fosse a 19.618 ...», e il C0 della linea 3 e' a
+  19.618) e lo chiama «non preventivo ne' budget di B». La cifra a 49.046 e' un'informazione in piu', non una correzione. Vero invece
+  che la domanda 8 del prompt sul codice di B rispetto a I-1 non ha risposta: nota.
+
+consegna-8 (revisore: nota) «Non e' fissato il ramo delle ricevute» -> CONFERMATO, nota
+- ESEGUITO: git branch -a --contains 2930d7d = claude/consolidation-long-exec-20261105 (locale e origin). LETTO riga 167: nessun ramo
+  indicato. Nota giusta; e' la prassi gia' seguita.
+
+consegna-9 (revisore: nota) «L'ID del protocollo usa "frozen" in due sensi» -> CONFERMATO, nota
+- LETTO proposal.json riga 183 «pose-temponet-frozen-head-20261117-v1-proposal» e nome del file «..._frozen_protocol_...»; lo stato e'
+  chiaro alla riga 3 (REVIEW_REQUIRED). Cosmetico, da sistemare al congelamento.
+
+======================================================================================================
+3) AFFERMAZIONI «CHE REGGONO» RICONTROLLATE
+======================================================================================================
+Dimensione costo
+OK-C1 Tetti 4 GPUh / 12 core-ore solo CPU / 44 core-ore / 44 ore locali -> REGGE. CALCOLATO: 0,25+3+0,5+0,25 = 4;
+      2x0,25+8x0,25+8x1+2x0,25+1 = 12; 8x4+12 = 44. ESEGUITO git grep degli AllocTRES: billing=8 per 1 GPU + 8 CPU con mem=60G o 100G,
+      billing=2 per 2 CPU con mem=30G (63591791, e114a78 leonardo_audit_sacct_20261105_1503.txt riga 71): la RAM non cambia il billing.
+      Precisazione: i conteggi del revisore (719/146/673/46 righe) sono somme su quattro punte che si sovrappongono, non job distinti;
+      146 e 46 li riproduco, 719 e 673 no (io trovo 713 righe o 766 occorrenze, 612 righe o 681 occorrenze). La conclusione non cambia.
+OK-C2 Il tetto dei fit (3 GPUh) basta -> REGGE. ESEGUITO B-7: sulla CPU del Mac (4 thread) i soli passi della matrice costano 1,68 h;
+      su A100 il passo di teste cosi' piccole e' dominato dagli avvii dei kernel. CALCOLATO con l'analogo peggiore misurato nel progetto
+      (TEMPONet raw deterministica in eager, 18,5 ms per passo, 8917e2a docs/claude_GPT_shared:8492): 75.000 x 18,5 ms x 2 = 0,77 h,
+      valutazioni escluse; con le valutazioni resta sotto 1 h.
+OK-C3 Il tetto dell'inferenza (0,5 GPUh) basta -> REGGE. LETTO LONG-BENCH-pose a 2930d7d: read_validate del train 5,94 s; CALCOLATO
+      x 9,7263 = 57,8 s per leggere la val; il job storico che leggeva tutto e fittava due ridge e' durato 199 s in sacct (sacct_fit.tsv).
+OK-C4 24 GiB (CPU) e 32 GiB (host GPU) bastano -> REGGE. LETTO consolidation_long_pose.py riga 170: read_cache decomprime tutti i
+      membri (pre E lat insieme). CALCOLATO anche in quel caso: val circa 4,8 GiB + 15 predizioni 3,32 GiB + due riferimenti float64
+      0,82 GiB = circa 9 GiB; picco storico misurato 8,86 GiB (ricevuta LONG-FIT-G49046). 24 GiB = 24.576 MiB < 30.800 MiB (limite letto
+      in e114a78:docs/claude_GPT_shared righe 281, 6907, 8869).
+OK-C5 15 predizioni = 3,3166 GiB; tetto 8 GiB sufficiente -> REGGE. CALCOLATO 18.548 x 160 x 20 x 4 = 237.414.400 byte; x15 =
+      3.561.216.000 = 3,316641 GiB; ingressi riusati in loco 5,328 GiB non contati.
+OK-C6 «I payload non dipendono dal rinfresco SCRATCH; unica eccezione possibile il file delle statistiche» -> NON REGGE per intero.
+      Vedi costo-consegna-N1: anche i riferimenti storici della posa usati per validare le cache stanno solo su SCRATCH.
+OK-C7 Byte e hash degli input = ricevuta storica pinnata -> REGGE (B-4, B-5).
+OK-C8 Quota di $WORK sufficiente per 8 GiB (dato storico) -> REGGE. ESEGUITO git show e4ebdbf:.../preflight/quota.txt: «933.1G 1T 0k»;
+      CALCOLATO circa 90,9 GiB sotto la quota morbida (nessun limite rigido impostato). Dato del 16/11, dichiarato storico.
+OK-C9 Numeri coerenti in tutti i documenti -> REGGE. LETTO decisioni.md riga 6734, registro righe 206-207 e 5991-5992, README riga 12,
+      design_review.txt righe 11-13, prompt di GPT riga 21.
+
+Dimensione consegna
+OK-K1 Consegna solo documentale (V-1) -> REGGE (B-1).
+OK-K2 Nessun merge di TEMPONet o linea 3 (V-2) -> REGGE (B-2).
+OK-K3 Provenienza TEMPONet e hash dell'allegato (V-3, V-4) -> REGGE (B-3, B-4).
+OK-K4 Pin degli input dalle prove archiviate (V-6) -> REGGE (B-5).
+OK-K5 Ruoli come proposta, decisione a Simone (V-7) -> REGGE. LETTO righe 128, 180, 182; decisioni.md 6736; registro 208; e la formula
+      «nessun nuovo consenso per ... gia' approvat...» usata da GPT nel registro (righe 12, 468, 746) per la regola di CLAUDE.md.
+OK-K6 Piano del codice A compatibile con I-1 (V-8) -> REGGE. ESEGUITO grep nel mio export di c15aac9: solo
+      scripts/consolidation_long_common.py:79 include tutti gli scripts/*.py; le altre guardie usano src/ e liste chiuse
+      (logsquare_evaluation.py 34-42, consolidation_finetune.py 54, consolidation_finetune15.py 71, pose_slot_plan.py 41). LETTO
+      0ab9d98 review righe 376-388 (cause (1) e (2) di I-1).
+OK-K7 Conteggi del par. 3 e del par. 7 (V-9) -> REGGE (B-6). 28.362.013 parametri del 30M: ricevuta continuation/49046 («parameters»)
+      e e114a78:docs/piano_scientifico_20261102.md riga 141. 2 x 16,9444 = 33,889.
+OK-K8 PoseHead sotto fork_rng (V-11) -> REGGE. LETTO SNAP/src/wearusfm/model/pose_head.py righe 24-30.
+OK-K9 Registro nelle sezioni giuste (V-14) -> REGGE. LETTO SNAP/docs/claude_GPT_shared righe 179/181 e 5974/5976.
+OK-K10 Fermo 23-25/11 e indipendenza dei payload A dal rinfresco SCRATCH (V-16) -> REGGE per il fermo (CLAUDE.md riga 195), NON REGGE
+      per intero per SCRATCH: il revisore della consegna non ha visto ne' il file delle statistiche (costo-8) ne' i riferimenti (N1).
+
+======================================================================================================
+4) RILIEVI NUOVI
+======================================================================================================
+
+costo-consegna-N1 (nota) Anche i riferimenti storici della posa usati per validare le cache stanno solo su SCRATCH
+- Affermazione. Il protocollo (riga 169) dice «I payload A sono su WORK e non dipendono dal rinfresco SCRATCH del 03/12»; il revisore
+  del costo vede come unica eccezione possibile il file delle statistiche (costo-8), quello della consegna nessuna (V-16). Il percorso
+  di lettura della lunga, scritto da GPT e naturale da riusare, apre pero' altri file su SCRATCH.
+- Prove. LETTO SNAP/scripts/consolidation_long_pose_runtime.py righe 81-87 (_reference: P.R.read_targets(C.pinned(pin)) sui
+  «pose_references») e 90-93 (_read passa reference e selection a read_cache, usato anche dalla fase fit, riga 256 e 268);
+  SNAP/scripts/consolidation_long_common.py righe 119-121 (load_context apre e verifica tutti gli input storici, statistiche comprese).
+  ESEGUITO (python sul piano storico SNAP/results/infra/tokenizer_evaluation_20261103/extraction_plan_19618.json): pose_references
+  train = /leonardo_scratch/.../results/pilot_posa/B19618_20261028/B/pose/train_subset.npz, 257.675.076 byte, sha256 c7bc296e7019...;
+  val = .../B/pose/val.npz, 2.485.295.825 byte, sha256 2e1a9d5977c3...; input pose_stats = /leonardo_scratch/.../emg2pose_pose/
+  pose_stats.json. ESEGUITO: nessuno dei tre e' nell'inventario della conservazione (352 voci, radice LONG_ROOT); git grep: nei registri
+  del repository i due riferimenti compaiono solo con percorso SCRATCH (la cartella B19618_20261028 su WORK contiene altri file).
+  LETTO consolidation_long_pose.py righe 151-153 e 167: read_cache(path, reference=None) e' ammesso, quindi la dipendenza si evita.
+- Correzione. Scrivere nel protocollo che il codice nuovo verifica le cache con i pin su WORK e con la configurazione incorporata (righe
+  99-100 del runtime), senza aprire statistiche e riferimenti su SCRATCH; oppure copiarli su WORK con verifica sha256 (circa 2,74 GB)
+  prima dell'esecuzione; oppure dichiarare la dipendenza dal rinfresco del 03/12 (i file rinfrescati il 12/11 scadono dal 22/12).
+
+costo-consegna-N2 (nota) Non e' scritto chi prepara il piano eseguibile e chi lo rivede una volta prima dei lanci
+- Affermazione. Riga 182: «poi esecuzione da Claude secondo il piano concreto»; decisioni.md riga 6735: «Risorse e saldo attuali da
+  leggere dall'operatore nel piano eseguibile»; prompt di GPT riga 22: «decisione di Simone prima del piano eseguibile».
+- Prove. LETTO: nessuna riga nomina l'autore del piano eseguibile (job, --time, gate meccanico di costo-1, preflight di costo-9) ne'
+  chi lo rivede. I due precedenti sono diversi: nella linea 2 GPT consolidamento «prepara la consegna operativa» (CLAUDE.md riga 37);
+  nella linea 1 Claude prepara e GPT fa «una review del pacchetto operativo pubblicato» (CLAUDE.md riga 74). Il gate di costo e' cio' che
+  impedisce riduzioni post hoc: conviene sapere chi lo scrive e chi lo controlla prima del benchmark.
+- Correzione. Una riga nella tabella del par. 10: autore del piano eseguibile e del gate meccanico, e una sola review del pacchetto
+  operativo prima dei lanci inclusi.
+
+======================================================================================================
+5) VERDETTO DOPO LA VERIFICA
+======================================================================================================
+Costo e fattibilita': APPROVATO_CON_CORREZIONI. I conti tornano tutti (4 GPUh, 12 e 44 core-ore, 44 ore locali col billing
+registrato) e i tetti di fit e inferenza sono larghi anche nel caso peggiore misurato nel progetto (cuDNN deterministico: 0,77 h su
+3 h). Da correggere: la regola di memoria e l'identita' delle impostazioni numeriche fra benchmark e fit, prima del benchmark (costo-1,
+ristretto), e la frase sull'indipendenza da SCRATCH (costo-8 e N1). costo-4 scende a nota, costo-6 e' rifiutato.
+
+Consegna, ruoli e seguito: APPROVATO_CON_CORREZIONI. Consegna solo documentale, nessun merge, provenienza e pin verificati; i ruoli
+sono proposti e lasciati a Simone, e la formula «nessun nuovo consenso per catene gia' approvate» e' quella abituale di GPT, non
+un'estensione di altre approvazioni (consegna-1 scende a nota). Restano minori: il cancello che riproduce i riferimenti e l'allineamento
+del ritaglio prima dei contrasti (consegna-3), la voce di congelamento completa e pinnata (consegna-4) e l'oggetto della prova scritto
+nella tabella che Simone firma (consegna-5 punto a). consegna-2 scende a nota: su quella base il test e' gia' rosso.
+
+Stato: COMPLETO.

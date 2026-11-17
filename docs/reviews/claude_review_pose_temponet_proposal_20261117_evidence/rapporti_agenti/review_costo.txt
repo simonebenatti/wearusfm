@@ -1,0 +1,390 @@
+REVIEW DIMENSIONE 5 - COSTO E FATTIBILITA'
+Proposta GPT c15aac9 (ramo codex/pose-temponet-proposal-20261117), protocollo TEMPONet come lettore sull'encoder congelato.
+Revisore: subagent Claude, secondo tentativo (ripresa), 17/11/2026.
+Legenda prove: ESEGUITO = comando/script lanciato in questo tentativo; CALCOLATO = conto rifatto in questo tentativo;
+LETTO = letto in un file (con file:riga); "tentativo precedente" = preso dal primo tentativo senza rieseguire.
+
+Stato: completo (vedi verdetto in fondo).
+
+Fonti principali (SNAP = snapshot c15aac9 in .../tcnreview/gpt_c15aac9):
+- SNAP/docs/pose_temponet_frozen_protocol_20261117.md (paragrafo 9 = righe 145-169; paragrafo 10 = righe 171-182)
+- SNAP/results/infra/pose_temponet_proposal_20261117/proposal.json (resource_proposal righe 204-228; outputs righe 176-182)
+- SNAP/results/infra/pose_temponet_proposal_20261117/analytic_checks.json, design_review.txt, README.md
+- SNAP/docs/decisioni.md righe 6713-6738; SNAP/docs/claude_GPT_shared righe 181-209 e 5976-5994
+- script e uscite di questo tentativo in .../tcnreview/work_costo/: conti2.py -> conti2_output.txt, bench_heads_dev.py -> bench_mps_r2.json e
+  bench_cpu8_r2.json, bench_npz2.py (uscite riportate sotto). Gli script del tentativo precedente (bench_heads.py, bench_heads_dev.py, conti.py,
+  bench_npz.py) li ho riletti; ho rieseguito bench_heads_dev.py (mps e cpu 8 thread), non bench_heads.py (1 thread) ne' bench_npz.py, sostituito da
+  bench_npz2.py che legge in un processo nuovo.
+- Condizioni delle misure: Mac M3 Pro, 11 core, 18 GB. Durante le misure di questo tentativo la macchina era carica (load average 15,9-17,5;
+  cinque altri processi Python al 100% e una VM): i tempi sono gonfiati rispetto a una macchina scarica e valgono solo come ordine di grandezza.
+
+============================================================
+A) CONTI DEL PARAGRAFO 9
+============================================================
+
+[costo-ok-a1] Somma delle GPU-ore
+[claim] Protocollo riga 147: «Tetto proposto del solo livello A: 4 GPUh»; tabella righe 151-159: benchmark GPU 0,25, selezione+rifit 3,
+inferenza 0,5, riserva 0,25, totale 4. proposal.json righe 205, 208, 211, 213, 224: benchmark_gpu_hours_cap 0.25, fit_phase_gpu_hours_cap 3,
+gpu_hours_cap 4, inference_gpu_hours_cap 0.5, reserve_gpu_hours 0.25.
+[evidence] CALCOLATO (conti2.py con Fraction, uscita in conti2_output.txt): 1 GPU x 15 min + 1 x 3 h + 1 x 30 min + riserva 0,25 =
+0,25 + 3 + 0,5 + 0,25 = 4 GPU-ore esatte. Ogni riga GPUh coincide con 1 GPU per il limite cumulativo della riga.
+[fix] Nessuno.
+
+[costo-ok-a2] Core-ore solo CPU
+[claim] Riga 147: «12 coreh CPU-only»; tabella: checkout 0,5, benchmark CPU 2, metriche 8, raccolta 0,5, riserva 1.
+[evidence] CALCOLATO: 2 CPU x 0,25 h = 0,5; 8 x 0,25 = 2; 8 x 1 = 8; 2 x 0,25 = 0,5; riserva 1. Somma 12 esatta.
+[fix] Nessuno.
+
+[costo-ok-a3] Core-ore allocate in tutto
+[claim] Riga 147: «44 coreh allocate totali. Il costo delle CPU dei job GPU e' incluso nelle 44 (8 CPU per GPU), non nelle 12».
+proposal.json riga 225: total_allocated_core_hours_cap 44; riga 210: gpu_attached_cpus 8.
+[evidence] CALCOLATO: CPU dentro i job GPU = 8 x (0,25 + 3 + 0,5 + riserva 0,25) = 8 x 4 = 32 core-ore; 32 + 12 = 44 esatte.
+La convenzione (le core-ore comprendono le CPU dei job GPU) e' quella del consuntivo della valutazione lunga: SNAP/docs/reviews/
+consolidation_long_results_20261107.md righe 44-48, «Estrazioni ... 3,373611 GPUh ... 27,001667 Coreh» (8 x 3,373611 = 26,989; il resto
+e' il checkout da 2 CPU). LETTO.
+[fix] Nessuno.
+
+[costo-ok-a4] Ore locali = 44 con il billing del progetto
+[claim] Riga 147: «Ore locali massime condizionate al billing corrispondente: 44»; proposal.json riga 214: local_hours_conditional_cap 44.
+[evidence]
+- LETTO, regola di conversione del progetto: SNAP/docs/decisioni.md riga 3274 «1 GPU-ora = 8 ore locali sulla Booster, come nei
+  consuntivi»; riga 4116 «le core-ore sono le ore locali del budget CPU»; riga 3589 «tetto 481 core-ora (481 ore locali), 0 GPU-ora».
+- LETTO, AllocTRES registrati (git grep sulle punte e114a78, 2930d7d, c15aac9, 0ab9d98): job GPU «billing=8,cpu=8,gres/gpu=1,mem=100G»
+  (719 righe) e «...mem=60G» (146 righe); job seriali «billing=8,cpu=8,...,mem=30G» (673 righe) e «billing=2,cpu=2,...,mem=30G»
+  (46 righe, per esempio 63591791 in results/infra/coordinamento_claude/letture_leonardo/leonardo_audit_sacct_20261105_1503.txt:71 a e114a78).
+  Quindi sulla seriale il billing e' il numero di CPU anche con 30G di memoria, e sui job GPU resta 8 con 60G o 100G: la RAM proposta
+  (24 GiB e 32 GiB) non cambia il billing. Esempi della valutazione lunga: 2930d7d:results/infra/consolidation_long_20261105/execution/
+  accounting/sacct_fit.tsv righe 3-5 (LONG-FIT-G*-pose, 8 CPU, mem=30G, billing=8) e sacct_extract.tsv (estrazioni 1 GPU, billing=8).
+- CALCOLATO: 8 x 4 GPUh = 32 ore locali dei job GPU; 12 ore locali dei job solo CPU; totale 44. Coincide con le 44 core-ore perche' ogni
+  job GPU ha esattamente 8 CPU per GPU.
+- Il numero 44 regge, alle condizioni dichiarate (1 GPU + 8 CPU per job GPU, billing = CPU sulla seriale). Che `saldo` scali davvero le ore
+  della seriale non si verifica da qui: il progetto le conta sempre come ore locali dell'account, e 44 e' il conto prudente.
+- Per Simone: sul residuo dell'ultimo saldo committato (09/11, 691.863 ore locali, vedi sotto) 44 ore locali sono lo 0,00636%.
+  CALCOLATO.
+[fix] Nessuno sul numero. Vedi costo-2 per lo sforamento oltre il limite e costo-4 per le informazioni che mancano a Simone.
+
+============================================================
+B) FATTIBILITA' DEI TEMPI E GATE
+============================================================
+
+[costo-ok-b1] Dimensione della matrice
+[claim] Protocollo riga 71: «20 fit di selezione + 15 rifit = 35 fit di teste»; righe 66-69: batch 32, LR {1e-4, 1e-3}, al piu' 50 epoche,
+due fold da 20 utenti, rifit su 40 utenti con semi 0, 1, 2. proposal.json righe 60-62.
+[evidence] CALCOLATO: 5 teste x 2 fold x 2 LR = 20; 5 teste x 3 semi = 15. Passi a 50 epoche: selezione 20 x 50 x ceil(953/32)=30 = 30.000;
+rifit 15 x 50 x ceil(1907/32)=60 = 45.000; totale 75.000 passi. Per testa: 250 epoche-equivalenti di train sulle 1.907 finestre
+(4 x 50 x 0,5 + 3 x 50) e 100 valutazioni held equivalenti (4 x 50 x 0,5). Con il tetto di 3 GPUh e il fattore 2 restano 72 ms per passo,
+valutazioni comprese (144 ms senza fattore). conti2_output.txt, sezione b.
+[fix] Nessuno.
+
+[costo-ok-b2] Tetto dei fit (3 GPUh): plausibile e largo
+[claim] Tabella riga 154: «Selezione + rifit delle cinque teste | 1 GPU + 8 CPU | 3 h | 3».
+[evidence]
+- CALCOLATO: MAC per finestra a 160 patch: L0 384x20x160 = 1.228.800; MLP e TCN 64.128 x 160 = 10.260.480 (coincide con riga 47 e con
+  analytic_checks.json riga 2); L13 384x20x13x160 = 15.974.400. Il calcolo della TCN su tutta la matrice (250 epoche-equivalenti x 1.907
+  finestre x 10,26 M MAC x 6 FLOP per MAC fra avanti e indietro, piu' le valutazioni) e' circa 3,3e13 FLOP: secondi su una A100 anche in FP32
+  senza TF32. Il costo reale e' il sovraccarico per passo, non il calcolo.
+- ESEGUITO, micro-benchmark SINTETICO (bench_heads_dev.py, dati casuali con la forma della cache, ricetta del par. 4: AdamW, decadimento sui
+  soli pesi, clipping 1, batch 32, ultimo batch tenuto, perdita MSE per finestra con crop6, uscita a zero; parametri contati dal modulo:
+  8.468 / 65.300 / 100.628 / 65.204, uguali alla proposta). Su MPS del Mac (GPU M3 Pro, NON una A100 e NON CUDA), macchina carica:
+  epoca di train sulle 1.907 finestre (massimo delle epoche 2-4) L0 0,473 s, MLP 0,778 s, L13 0,933 s, TCN 1,185 s; valutazione 0,20-0,25 s.
+  Matrice intera (250 train + 100 valutazioni per testa, TCN-pre come TCN-post): 1.248 s = 0,347 h di solo calcolo; raddoppiata 0,693 h;
+  margine 4,3 volte sul tetto di 3 h. (bench_mps_r2.json; conti2_output.txt.)
+- LETTO, tentativo precedente: stesso script su MPS, macchina meno carica: 0,135 h, raddoppiata 0,271 h (conti_output.txt riga 52).
+- LETTO, riferimento A100 di un modello simile: passo di training della TEMPONet raw senza vincolo deterministico 4,1 ms in eager e 1,1 ms
+  col CUDA graph; con cudnn.deterministic=True 14,6 ms col graph (docs/claude_GPT_shared:8495 e docs/decisioni.md:7810-7811 sul ramo
+  claude/temponet-db8-20261109, 8917e2a). CALCOLATO: 75.000 passi x 4,1 ms = 308 s = 0,085 h; anche a 20 ms per passo sono 0,417 h.
+- Giudizio: tetto plausibile e largo, circa 4-11 volte il fabbisogno raddoppiato secondo le misure sintetiche, di piu' secondo il riferimento
+  A100. Non e' stretto, salvo scelte d'implementazione lente (vedi costo-1). Un tetto largo non costa: si fattura il tempo usato.
+[fix] Nessuno sul valore. Utile dichiarare a Simone anche un ordine di grandezza atteso (vedi costo-4).
+
+[costo-ok-b3] Tetto dell'inferenza (0,5 GPUh): plausibile e largo
+[claim] Riga 155: «Inferenza val bloccata sui 15 modelli | 1 GPU + 8 CPU | 30 min | 0,5»; riga 165: proiezione scalata a 18.548 x 15,
+raddoppiata e con I/O.
+[evidence]
+- ESEGUITO (sintetico, MPS, carico): 15 modelli x 18.548 finestre, solo calcolo = 32 s; raddoppiato 0,0178 h; margine 28 volte.
+- LETTO, I/O reale su Leonardo: il job storico che ha letto per intero train.npz e val.npz, ha fatto due ridge, cinque predizioni e cinque
+  salvataggi e' durato 184,7 s nello script e 199 s in sacct (receipt LONG-FIT-G49046-pose-20261105.json a 2930d7d, sha256 b08e6e32...
+  uguale a proposal.json riga 240, ESEGUITO shasum; sacct_fit.tsv riga 5). Nel benchmark storico la lettura con validazione della cache
+  train ha richiesto 5,94 s (LONG-BENCH-pose-20261105.json): CALCOLATO x 9,7263 = 57,8 s per la val.
+- Giudizio: largo; l'inferenza e' dominata dalla decompressione della val (circa un minuto per vista), non dal calcolo.
+[fix] Nessuno.
+
+[costo-ok-b4] Tetti CPU (metriche 8 coreh, benchmark CPU 2, checkout e raccolta 0,5 ciascuno): plausibili e larghi
+[evidence] LETTO: nella valutazione lunga «Confronti e sintesi | 4 | ... | 0 | 0,261111» core-ore (SNAP/docs/reviews/
+consolidation_long_results_20261107.md riga 47); checkout da 2 CPU in 23-45 s (2930d7d sacct_extract.tsv riga 2, sacct_fit.tsv riga 2,
+sacct_benchmark.tsv riga 2). Il bootstrap di 2.000 repliche su 15 utenti con accumulatori per utente e' aritmetica minima (CALCOLATO: 2.000
+repliche x 15 utenti x 17 insiemi di predizioni, cioe' 15 nuove piu' 2 storiche, = 510.000 somme di accumulatori gia' ridotti). La lettura delle 15 predizioni (3,32 GiB) e dei due riferimenti e' dell'ordine del minuto.
+[fix] Nessuno sui valori; vedi costo-5 sullo scopo del benchmark CPU.
+
+[costo-1] (minore) Il gate e' ben intenzionato ma non ancora meccanico
+[claim] Riga 165: «raddoppiare la proiezione dell'intera matrice usando 50 epoche anche per tutti i rifit, includendo 20 selezioni,
+15 rifit, validation, I/O e avvii; deve rientrare nelle 3 GPUh della fase. Anche la proiezione di inferenza ... deve rientrare in 0,5 GPUh,
+CPU e memoria nei rispettivi tetti. Se un gate fallisce, stop prima dei fit». proposal.json riga 209: «... CPU/storage caps must also
+pass; no partial launch».
+[evidence]
+- Ben definito: fattore 2, 50 epoche per tutti i fit (limite superiore per i rifit), 35 fit, scala 18.548 x 15, soglie 3 e 0,5 GPUh,
+  stop senza riduzioni post hoc. LETTO.
+- Manca, per un'applicazione meccanica (LETTO, nessuna formula nel protocollo ne' nel JSON; nessun codice):
+  (1) la formula con le misure nominate (epoca train per architettura e per dimensione fold/full, valutazione held, caricamento, salvataggio,
+      avvio) e la statistica (media, mediana o massimo delle epoche; esclusione della prima);
+  (2) quanti job compongono la fase dei fit e dell'inferenza e con quale --time ciascuno: il «limite cumulativo» si fa rispettare solo con
+      la somma dei --time (piu' lo sforamento, vedi costo-2);
+  (3) la regola di scala dell'I/O della val dal train (per byte, 4.593.977.338 / 474.412.856 = 9,684, o per finestre, 9,726) e il fatto
+      che servono due viste (lat per 12 modelli, pre per i 3 TCN-pre);
+  (4) la regola della memoria. Il protocollo dice «CPU e memoria», il JSON «CPU/storage»: nessuno dei due nomina insieme RAM, VRAM e disco;
+      VRAM ha requisito null (proposal.json righe 226-227), quindi non ha un tetto da confrontare. Esempio concreto del perche' la regola va
+      scritta, su un job diverso (le estrazioni GPU della lunga, non l'inferenza nuova) e solo per mostrare l'effetto della parte fissa:
+      CALCOLATO sulle ricevute LONG-G49046-pose-train/val a 2930d7d (peak_rss_bytes 3.097.219.072 e 20.192.440.320), la regola
+      «RSS del train x 18.548/1.907» usata nella lunga per i job CPU darebbe 28,06 GiB contro 18,81 GiB misurati (sovrastima 1,49 volte):
+      con 32 GiB e la frazione 0,85 della lunga (27,2 GiB) una regola cosi' fermerebbe un job che invece ci sta. La parte fissa di un processo
+      CUDA (circa 1,06 GiB dalla retta per i due punti) non scala con le finestre;
+  (5) l'obbligo che il benchmark giri con lo stesso codice e le stesse impostazioni dei fit: modo cuDNN (deterministico o no), thread,
+      posizione dei dati (CPU o GPU), batch di valutazione, sincronizzazioni per passo. Nella replica TEMPONet il modo deterministico
+      rendeva le convoluzioni dilatate 13 volte piu' lente (docs/temponet_db8_replication.md:116 a 8917e2a); la proposta non fissa il modo
+      (grep di «determin|cudnn|graph|thread» su protocollo e JSON: nessuna riga);
+  (6) dove si congela la regola (decisioni.md, prima del benchmark) e come la fa rispettare il codice. Il modello c'e' gia' nel progetto:
+      BENCHMARK_POLICY e project_benchmark in SNAP/scripts/consolidation_long_pose_runtime.py righe 26-36 e 145-163 (fattore 2, 120 s
+      fissi, massimo 3.300 s per un job da 3.600, memoria <= 0,85 x 30 GiB, flag «admitted») e il rifiuto alla riga 244 se admitted non
+      e' vero;
+  (7) che cosa succede se il gate fallisce per una scelta d'implementazione (per esempio dati ricopiati a ogni epoca): ottimizzare il codice
+      senza cambiare la numerica non e' una riduzione post hoc della matrice, ma va detto chi lo decide e con quale review.
+[fix] Prima del benchmark, scrivere in decisioni.md e nel codice (con test CPU) una funzione di proiezione come project_benchmark della lunga:
+misure nominate, statistica, numero di job e --time di ciascuno con somma (--time + 180 s) entro il tetto di fase, regola di scala
+per l'I/O, memoria come parte fissa piu' parte proporzionale alle finestre (o misurata su un surrogato di dimensione val fatto ripetendo il
+train), soglie per RAM, VRAM e disco, modo cuDNN e thread uguali ai fit, flag admitted controllato dal launcher dei fit. Allineare il testo
+del protocollo e il JSON sulle grandezze controllate.
+
+============================================================
+C) MEMORIA E I/O
+============================================================
+
+[costo-ok-c1] Gli NPZ sono compressi; la proposta lo sa e non presume mmap
+[claim] Riga 167: «NPZ compressi: decomprimere una volta le sole viste necessarie entro la RAM della fase, poi fare il cast FP16->FP32
+a lotti. Non si presume mmap efficiente dei membri compressi»; proposal.json riga 181.
+[evidence]
+- LETTO: le cache train.npz e val.npz della lunga le scrive save_cache con np.savez_compressed (SNAP/scripts/consolidation_long_pose.py
+  righe 159-164), chiamata da _extract (SNAP/scripts/consolidation_long_pose_runtime.py riga 135, file «<split>.npz»). Membri: pre, lat,
+  key_time_valid, pred, target, mask, std, pose_var, has_head, dim, n_recordings, meta_json, config_json. Geometria controllata in lettura:
+  dim 384, target (160, 20) (stesso file, riga 103).
+- CALCOLATO: membri numerici non compressi della val = 5.097.064.592 byte (4,747 GiB) contro 4.593.977.338 su disco (rapporto 0,901);
+  train 524.051.228 contro 474.412.856 (0,905): coerente con latenti FP16 poco comprimibili.
+- ESEGUITO (sintetico, bench_npz2.py, stessa struttura a scala train, letture in processi nuovi): file 460.485.364 byte (rapporto 0,879);
+  lettura del solo membro lat (234.332.160 byte) in 0,94 s con aumento del picco RSS di 246.071.296 byte (1,05 volte il membro);
+  lettura di tutti i membri in 2,03 s. np.load decomprime un membro alla volta senza duplicarlo: «le sole viste necessarie» regge.
+[fix] Nessuno.
+
+[costo-ok-c2] 24 GiB (CPU) e 32 GiB (job GPU) bastano per le viste necessarie
+[claim] Riga 161: «RAM proposta: 24 GiB CPU seriale (entro i 30.800 MB del limite riportato), 32 GiB per job GPU; VRAM da misurare».
+[evidence]
+- CALCOLATO: una vista val FP16 = 18.548 x 160 x 384 x 2 = 2.279.178.240 byte = 2,123 GiB; due viste 4,245 GiB; una vista intera in FP32
+  4,245 GiB; due viste FP32 8,491 GiB; train: una vista 0,218 GiB. 24 GiB = 24.576 MiB, sotto 30.800 MB.
+- LETTO, misure reali: il fit storico che ha caricato per intero train e val ha avuto picco RSS 9.513.836.544 byte = 8,86 GiB con 8 CPU e
+  30G (receipt LONG-FIT-G49046-pose, measured_resources); le estrazioni GPU hanno avuto picco host 2,88 GiB (train) e 18,81 GiB (val, job che
+  costruiva la cache) con mem=100G. Il limite della seriale (30800M) e' registrato due volte: una richiesta da 40G rifiutata e corretta a
+  30G (e114a78:docs/claude_GPT_shared righe 281 e 8869) e una richiesta da 32G segnalata in review come oltre «mem=30800M, 8 core per job»
+  (stesso file, riga 6907).
+- CALCOLATO: inferenza in un job GPU = parte fissa CUDA (circa 1-3 GiB) + una o due viste FP16 (2,12-4,25 GiB) + predizioni (0,22 GiB
+  ciascuna, 3,32 GiB se tenute tutte) = circa 6-11 GiB, sotto 32 GiB; metriche su CPU = 15 predizioni 3,32 GiB + due riferimenti float64
+  non compressi 2 x 0,409 GiB + target/mask/std della val circa 0,28 GiB: circa 4,5 GiB senza le viste (8,7 GiB se il codice carica
+  anche pre e lat come read_cache della lunga), sotto 24 GiB.
+- Il billing non cambia con la RAM (AllocTRES in costo-ok-a4): i 24 GiB anche sui job da 2 CPU non costano di piu'.
+[fix] Nessuno. Il benchmark misurera' la VRAM, come dichiarato.
+
+[costo-ok-c3] Dimensione delle 15 predizioni
+[claim] Riga 167: «Le 15 predizioni val FP32 non compresse occupano circa 3,32 GiB a 160 patch»; analytic_checks.json righe 4 e 25:
+3.316640853881836 GiB e 237.414.400 byte per testa.
+[evidence] CALCOLATO: 18.548 x 160 x 20 x 4 = 237.414.400 byte; x 15 = 3.561.216.000 byte = 3,316641 GiB. Giusto. (A 148 centri
+sarebbero 3,068 GiB; i riferimenti storici sono float64 a 148 centri: ridge da predict in SNAP/scripts/tokenizer_pose_readout.py
+righe 263-271, testa allenata in SNAP/scripts/consolidation_long_pose_runtime.py riga 275,
+held["pred"][:, P.OFFSET:-P.OFFSET].astype(np.float64), 439.216.640 byte non compressi ciascuno.)
+[fix] Nessuno.
+
+[costo-ok-c4] Tetto di 8 GiB persistenti su $WORK
+[claim] Riga 167: «massimo 8 GiB persistenti, senza copie degli input ... si conservano anche pesi di tutti i rifit, curve/selezione train,
+supporti, predizioni/riferimenti, ambiente, ricevute e manifest»; proposal.json righe 176-182.
+[evidence] CALCOLATO: predizioni 3,317 GiB + pesi FP32 dei 15 rifit 3.657.648 byte (3,49 MiB) + curve, supporti (maschera val 59 MB),
+ricevute e manifest (MB) = circa 3,4-3,5 GiB: il tetto basta con margine circa 2,3 volte. Input riusati in loco: 5.720.939.041 byte
+(5,328 GiB, cache 4,720 + riferimenti 0,608) non contati, giusto.
+[fix] Vedi costo-6 (dire che cosa non si salva).
+
+[costo-6] (nota) Il tetto di 8 GiB tiene solo se non si salvano le predizioni held per epoca
+[claim] Riga 167, elenco di cio' che si conserva («curve/selezione train»).
+[evidence] CALCOLATO: le predizioni held di ogni epoca dei 20 fit di selezione (20 x 50 x circa 953 finestre x 160 x 20 x 4 byte) sarebbero
+circa 11,4 GiB, oltre il tetto. Il testo parla di «curve», quindi presumibilmente di perdite per epoca, ma non lo esclude.
+[fix] Scrivere: per la selezione si conservano le perdite per finestra/epoca (o gli accumulatori), non le predizioni held per epoca; pesi
+dei fit di selezione solo se richiesti (4,6 MiB in tutto, trascurabili).
+
+[costo-2] (nota) Lo sforamento oltre il limite di un job non e' contato nei tetti di fase
+[claim] Tabella righe 149-159: «Limite cumulativo» per fase; riga 147 «Ore locali massime ... 44».
+[evidence] LETTO: un job in TIMEOUT viene chiuso circa 3 minuti dopo il limite: 63593508 con limite 1:30:00 e durata 1:33:04
+(e114a78:results/infra/coordinamento_claude/letture_leonardo/leonardo_stato_20261105_2209_job.txt riga 82); nella review della linea 1 il progetto
+ha gia' scritto «F-2 OverTimeLimit = 3 min ... casi peggiori come CPU x (walltime + 180 s)» (e114a78:docs/claude_GPT_shared righe 11161-11162).
+CALCOLATO: un job da 1 GPU in TIMEOUT costa 0,051 GPUh (0,41 ore locali) in piu'. Con un job per fase la riserva basta (3 job GPU:
++0,153 GPUh su 0,25; job CPU 2+8+8+2 CPU: +1,022 core-ore su 1, cioe' appena oltre); con sette job GPU no (+0,358 GPUh). Un TIMEOUT e'
+comunque un fallimento che ferma la fase, quindi il caso realistico e' uno sforamento solo: entro la riserva.
+[fix] Nel piano eseguibile fissare per ogni job --time tale che la somma di (--time + 180 s) stia nel tetto di fase, oppure contare lo
+sforamento nella riserva in modo esplicito.
+
+[costo-5] (nota) Lo scopo del benchmark CPU non e' scritto
+[claim] Riga 152: «Benchmark CPU train-only | 8 CPU | 15 min | 0 | 2»; riga 163 descrive un benchmark unico (caricamento, epoche per
+architettura, valutazione interna, salvataggio, RSS/VRAM).
+[evidence] LETTO: nessuna riga dice quale grandezza del gate alimenta il benchmark CPU (le soglie del gate sono sulle GPUh dei fit e
+dell'inferenza; per la fase metriche su CPU il gate dice solo «CPU e memoria nei rispettivi tetti»). ESEGUITO (sintetico, CPU del Mac a
+8 thread, macchina carica, bench_cpu8_r2.json): la matrice dei fit su CPU costerebbe 2,69 h di solo calcolo, 5,39 h raddoppiata, oltre le
+4 h di un job seriale: i fit su CPU non sono un'alternativa, coerente con la scelta della GPU.
+[fix] Dire che il benchmark CPU misura la fase metriche (lettura delle predizioni e dei riferimenti con un surrogato train, accumulatori,
+bootstrap) e il caricamento, con la sua soglia (8 core-ore, RAM 24 GiB); oppure toglierlo e risparmiare 2 core-ore.
+
+============================================================
+D) REGOLE OPERATIVE DEL PROGETTO (CLAUDE.md)
+============================================================
+
+[costo-ok-d1] Uscite fuori dal repository: SI'. proposal.json riga 180, «/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/
+pose_temponet_20261117», fuori da $WORK/wearusfm; riga 167: «Report e manifest sul Mac e in Git, NPZ/PT fuori Git» (anche la regola sui
+dati da wearable fuori dai commit). LETTO.
+[costo-ok-d2] Checkout di campagna da job CPU: SI'. Riga 151: «Checkout, manifest/hash e supporti | 2 CPU | 15 min»; l'hash dei 5,33 GiB di
+input avviene nel job, non sul login node. Checkout storici da 2 CPU in 23-45 s. LETTO.
+[costo-ok-d3] Limiti della corsia seriale: SI'. Fasi CPU da 2 o 8 CPU (massimo 8), RAM 24 GiB = 24.576 MiB (sotto 30.800 MB), fase CPU
+piu' lunga 1 h (sotto 4 h). LETTO e CALCOLATO.
+[costo-ok-d4] Nodi senza rete e login node: nessun download, nessun calcolo sul login node; GPT dichiara «Nessuna lettura operativa del
+cluster» (riga 169). Le letture di saldo e quota sono comandi brevi in sola lettura. LETTO.
+[costo-ok-d5] Rinfresco di $SCRATCH: i cinque payload hanno percorsi su /leonardo_work (proposal.json righe 5, 12, 187, 193, 199): copie
+della conservazione del 07/11; nessuna dipendenza dal giro del 03/12 per gli input e per le uscite. LETTO. (Vedi costo-8 per il file delle
+statistiche.)
+[costo-ok-d6] Quota di $WORK: 8 GiB su circa 90,9 GiB liberi al 16/11 (CALCOLATO da 933,1G su 1T in
+e4ebdbf:results/infra/scaling_300m_20261104/p1_recovery_release_20261116/evidence/preflight/quota.txt, LETTO), dichiarato storico
+(riga 169).
+[costo-ok-d7] Manutenzione totale 23/11 08:00 - 25/11 08:00: citata alla riga 169, «nessuna promessa di completamento prima del fermo».
+
+[costo-7] (nota) Calendario e corsia seriale condivisa non trattati
+[claim] Riga 169: «Il fermo 23/11 08:00-25/11 08:00 e' quello riportato nel prompt, da ricontrollare operativamente: nessuna promessa di
+completamento prima del fermo». Il prompt di Claude chiedeva «Calendario, con la manutenzione» (docs/prompt_gpt_temponet_testa_fm_20261116.md
+riga 256, ramo Claude).
+[evidence] LETTO: nessun calendario; nessuna menzione del limite della seriale per utente. La QoS lrd_all_serial ammette 8 CPU per utente
+in esecuzione («job da 8 CPU uno alla volta», e114a78:docs/claude_GPT_shared righe 9110-9111 e 11156) e 10 job sottomessi: le fasi da
+8 CPU (benchmark CPU, metriche) si accodano dietro i job seriali delle altre linee, perche' Claude e GPT inviano con lo stesso utente.
+Un job il cui --time attraversa le 08:00 del 23/11 resta PENDING fino al 25/11 (CLAUDE.md, sezione Leonardo).
+[fix] Nel piano eseguibile: sequenza delle fasi con durata attesa, finestra prima o dopo il fermo, nessun --time che attraversi il 23/11
+alle 08:00 se si vuole finire prima, e controllo dell'occupazione della seriale dell'utente prima di ogni fase CPU.
+
+[costo-8] (nota) Il file delle statistiche della posa sta su $SCRATCH
+[claim] proposal.json riga 247: «stats_sha256»: 757f2aee...; riga 169: «I payload A sono su WORK e non dipendono dal rinfresco SCRATCH».
+[evidence] LETTO: il file con quell'hash e'
+/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json (SNAP/results/infra/pose_slots_20261102/execution/
+R3c/receipt.json righe 250-258); la lunga lo verificava leggendolo (C.pinned in SNAP/scripts/consolidation_long_pose_runtime.py riga 117).
+Le cache contengono gia' std e la configurazione con checkpoint_pose_stats_sha256 (stesso file, righe 99-103), e MAE e livello in radianti
+si ottengono da std senza la media.
+[fix] Scrivere che il codice nuovo confronta l'hash nella configurazione della cache e non apre il file su $SCRATCH; se lo apre, dichiarare
+la dipendenza dal rinfresco del 03/12 (i file rinfrescati il 12/11 scadono dal 22/12).
+
+============================================================
+E) REGOLE DI BUDGET
+============================================================
+
+[costo-ok-e1] Nessun budget preteso e costo CPU contato
+[claim] Riga 147: «Non e' una misura del runtime ne' un budget autorizzato»; riga 128: «L'affidamento della nuova attivita' e il budget li
+conferma Simone»; riga 161: «se CPU/billing/minimi della partizione differiscono, ricalcolare prima di impegnare il tetto».
+[evidence] LETTO: coerente con CLAUDE.md («0 GPU-ora non significa costo nullo»: le 12 core-ore solo CPU e le 44 ore locali sono dichiarate)
+e con il prompt di Claude (righe 173-178: nessun budget registrato; l'autonomia sotto 5 GPU-ore non vale senza affidamento, budget e
+criteri). 4 GPUh e' sotto la soglia di autonomia di 5 GPU-ore, ma la proposta non la invoca e chiede la decisione di Simone. Giusto.
+[fix] Nessuno.
+
+[costo-4] (minore) Per fissare il tetto Simone ha il tetto, ma non la stima attesa ne' il residuo
+[claim] Righe 147 e 169: tetto 4 GPUh / 12 coreh / 44 ore locali, «non e' una misura»; «i 933,1 G/1 T del 16/11 e il residuo del 09/11 sono
+storici e non attestano disponibilita' oggi»; proposal.json riga 215 «measured_estimate»: null. Riga 179: decisione «Budget» per Simone.
+[evidence]
+- LETTO, regola: CLAUDE.md, sezione Progetto FM sEMG: «Ogni richiesta di conferma per un job dichiara il costo stimato in ore locali e in
+  GPU-ora, e quanto resta del budget del passo». Per CLAUDE.md (28/10) «l'approvazione della proposta comprende sottomissione ed
+  esecuzione», e il paragrafo 10 (riga 182) fa seguire alla decisione codice, review, benchmark «entro il tetto concordato» ed esecuzione
+  senza un nuovo passaggio da Simone: lettura mia, la firma su questo tetto fa da conferma dei job, quindi la regola si applica gia' qui.
+  Il prompt di Claude chiedeva anche «con il residuo e un tetto proposto per voce» (riga 254).
+- Manca: (i) una stima attesa accanto al tetto; (ii) il residuo dell'ultimo saldo committato con la frazione; (iii) le ore locali per fase
+  (si ricavano, ma non sono scritte); (iv) la voce di budget su cui imputare la spesa (attivita' nuova senza budget).
+- CALCOLATO, per riempire i buchi: ultimo saldo committato del 09/11 alle 12:21, riga «IscrB_WearUsFM 20260107 20270107 2000000 1308137»
+  (fccf88d, remote_listing.txt), residuo 691.863 ore locali; 44 ore locali = 0,00636%. Ore locali per fase: checkout 0,5; benchmark CPU 2;
+  benchmark GPU 2; fit 24; inferenza 4; metriche 8; raccolta 0,5; riserva 2 (GPU) + 1 (CPU).
+- Stima grossolana mia (non una misura, solo ordine di grandezza): fit 0,1-0,35 GPUh (proiezioni MPS sintetiche 0,135-0,347 h; 75.000
+  passi a 4,1 ms = 0,085 h col riferimento A100 della TEMPONet raw), inferenza circa 0,03-0,05 GPUh (decompressione della val), benchmark
+  GPU sotto 0,25, avvii; GPU in tutto 0,25-0,6 GPUh = 2-4,8 ore locali; CPU 1,5-3,5 core-ore; totale circa 3,5-8,3 ore locali, cioe' il
+  tetto di 44 e' 5-13 volte l'atteso (conti3_output.txt). Il tetto largo e' innocuo (si paga il consumato) e lascia spazio a un modo
+  deterministico o a I/O lenti senza nuova decisione.
+[fix] Aggiungere al paragrafo 9 o alla tabella del paragrafo 10: ore locali per fase, una stima attesa a priori dichiarata come tale (da
+sostituire con la misura del benchmark nel piano eseguibile), il residuo committato del 09/11 con data e fonte e la frazione, la voce di
+budget proposta per l'attivita'. Il residuo aggiornato lo legge l'operatore (gia' previsto).
+
+[costo-9] (nota) Il preflight dell'operatore va completato
+[claim] proposal.json righe 216-223: «current quota», «current balance», «actual AllocTRES/billing», «input hashes», «source pins», «full
+matrix cost gate». Riga 169: fermo «da ricontrollare operativamente».
+[evidence] LETTO: oltre ai sei punti servono (1) le prenotazioni di manutenzione correnti (scontrol show reservation), citate nel testo ma
+non nell'elenco; (2) l'occupazione della corsia seriale dell'utente (8 CPU in esecuzione, 10 sottomessi), condivisa con le altre linee;
+(3) una soglia esplicita per la quota: «current quota» senza soglia non e' un controllo meccanico (la lunga ne aveva uno:
+SNAP/results/infra/consolidation_long_20261105/quota_r1b_20261105.json, con «long_pending_output_bytes», «base_headroom_bytes» 8.589.934.592
+e «required_free_bytes_including_ft15» confrontati con «free_bytes»); (4) gli sha256 dei cinque input: secondo i fatti forniti nel
+compito, oggi Claude ha controllato solo i byte; gli hash non sono stati ricalcolati. Il billing reale va riletto dal primo job (sacct AllocTRES) e confrontato
+con 8 e con il numero di CPU.
+[fix] Aggiungere (1)-(3) all'elenco del JSON, con la soglia di spazio (per esempio 8 GiB piu' un margine scritto prima).
+
+[costo-10] (nota) La riserva e' coerente con «nessun retry cieco», ma il suo uso non e' definito
+[claim] Riga 158: «Riserva entro il totale | stesse risorse | - | 0,25 | 1»; riga 165: «Riserva non autorizza retry automatici»; riga 75:
+«NaN, divergenza, OOM o fit incompleto fermano la fase ... nessun rimpiazzo del braccio, riduzione dei semi o retry cieco».
+[evidence] LETTO: coerente con CLAUDE.md («nessun retry cieco»; con risposta ambigua di sbatch si riconcilia con sacct). Ma non e' scritto a
+che cosa serve la riserva: l'unico consumo tecnico prevedibile e' lo sforamento di un job oltre il limite (costo-2, 0,051 GPUh per un job
+GPU). «Automatici» lascia aperto se un rilancio diagnosticato possa usare la riserva e chi lo decide.
+[fix] Scrivere: la riserva copre sforamenti oltre il limite e avvii; un rilancio dopo diagnosi richiede una decisione registrata e,
+se approvato, si conta nel tetto della sua fase.
+
+============================================================
+F) COERENZA INTERNA DEI NUMERI DI COSTO
+============================================================
+
+[costo-ok-f1] Stessi numeri in tutti i documenti
+[evidence] LETTO, confrontati uno per uno:
+- protocollo riga 147 (4 GPUh, 12 coreh solo CPU, 44 coreh, 44 ore locali), tabella righe 151-159 (somme rifatte in costo-ok-a1/a2),
+  riga 161 (24/32 GiB), riga 165 (3 e 0,5 GPUh, fattore 2), riga 167 (8 GiB, 3,32 GiB), riga 179 (4 + 12, totale 44);
+- proposal.json righe 204-228 (0.25, 12, 24, 3, 8, 4, 32, 0.5, 44, 0.25, 44) e 176-182 (8 GiB, radice WORK);
+- analytic_checks.json righe 4, 6, 25 (3.316640853881836 GiB, 5.068.390.194 byte, 237.414.400 byte), conti rifatti in costo-ok-c3;
+- design_review.txt righe 11-13 («35fit,4GPUh,12CPU-only,44corehtotali;15predizioni3,3166GiB;cache4,7203GiB»; 24/32 GiB);
+- README.md riga 12; prompt per Claude riga 21; decisioni.md riga 6734 («Tetto proposto4GPUh,12coreh CPU-only,44coreh totali,8GiBoutput»);
+  registro (SNAP/docs/claude_GPT_shared) righe 206-207 e 5991-5992.
+- Paragrafo 7 riga 122, «2x16,94 = 33,88 GPUh» per il livello B: CALCOLATO giusto, dichiarato «non preventivo ne' budget di B».
+Nessuna contraddizione numerica.
+
+[costo-3] (nota) Il JSON non contiene i tetti CPU per fase ne' i limiti di tempo
+[claim] proposal.json righe 204-228 riporta per fase solo le GPU-ore (0.25, 3, 0.5, riserva 0.25) e il totale CPU 12.
+[evidence] LETTO: mancano nel JSON le core-ore per fase (0,5 / 2 / 8 / 0,5), la riserva CPU (1), i limiti di tempo (15 min, 15 min, 15 min,
+3 h, 30 min, 1 h, 15 min) e le CPU per fase (2 o 8), presenti solo nella tabella del protocollo (righe 151-158). Il gate del JSON (riga 209)
+dice «CPU/storage», il protocollo «CPU e memoria» (riga 165): vedi costo-1 punto (4).
+[fix] Aggiungere al JSON una lista di fasi con CPU, GPU, RAM, limite di tempo, GPUh, core-ore e ore locali, cosi' che il piano eseguibile
+possa pinnarla e controllarla meccanicamente. Nel piano eseguibile aggiungere anche il numero di job per fase e il tempo massimo per job,
+come nella tabella «Risorse concrete» della lunga (SNAP/docs/consolidation_long_execution_20261105.md righe 108-118: Job, GPU/CPU/RAM per
+job, Tempo massimo, Tetto GPUh/coreh).
+
+
+============================================================
+COSE NON VERIFICABILI DA QUI
+============================================================
+- Saldo, quota di $WORK, prenotazioni di manutenzione e occupazione della coda di oggi: niente ssh in questa review.
+- Gli sha256 attuali dei cinque input su $WORK (oggi controllati solo i byte, secondo i fatti forniti nel compito).
+- I tempi veri delle nuove teste su A100 e la VRAM: il codice non esiste; le misure del Mac sono sintetiche (MPS e CPU, macchina carica).
+- Se `saldo` scala davvero le ore della corsia seriale: si vedono solo gli AllocTRES (billing = CPU); il conto da 44 e' quello prudente.
+- La velocita' reale di decompressione delle cache vere su Lustre: c'e' solo il tempo complessivo dei job storici (185-199 s).
+- Le tre letture locali di GPT citate in design_review.txt (/root/temponet_resources_review e simili) non sono nel repository.
+- Il comportamento del modo cuDNN deterministico sulla TCN nuova (non misurabile sul Mac).
+
+============================================================
+VERDETTO DELLA DIMENSIONE 5: APPROVATO CON CORREZIONI
+============================================================
+I conti sono giusti (4 GPUh, 12 core-ore solo CPU, 44 core-ore e 44 ore locali col billing registrato negli AllocTRES), i tetti sono
+plausibili e larghi (fit e inferenza circa 4-28 volte il fabbisogno raddoppiato nelle misure sintetiche; costo atteso stimato 3,5-8,3 ore
+locali su 44, lo 0,00636% del residuo del 09/11 se si spende tutto il tetto), la memoria basta (val: 2,12 GiB per vista FP16; picco
+storico 8,86 GiB per caricare tutto), le 15 predizioni pesano 3,3166 GiB e gli 8 GiB bastano, le regole operative sono rispettate e i
+numeri sono coerenti in tutti i documenti. Da correggere prima del piano eseguibile e della firma:
+- costo-1 (minore): rendere meccanico il gate (formula, numero di job e --time, scala dell'I/O, regola della memoria con parte fissa,
+  soglie RAM/VRAM/disco, stesso modo cuDNN e stessi thread dei fit, flag admitted controllato dal launcher).
+- costo-4 (minore): dare a Simone la stima attesa, le ore locali per fase, il residuo committato con la frazione e la voce di budget.
+Note: costo-2 (sforamento oltre il limite), costo-3 (fasi nel JSON), costo-5 (scopo del benchmark CPU), costo-6 (niente predizioni held
+per epoca), costo-7 (calendario e corsia seriale condivisa), costo-8 (pose_stats su SCRATCH), costo-9 (preflight dell'operatore),
+costo-10 (uso della riserva).
+Nessun rilievo bloccante: nessun numero sbagliato, nessuna regola del progetto violata, nessun tetto troppo stretto per la matrice dichiarata.
+
+Stato del rapporto: completo (secondo tentativo, 17/11/2026).

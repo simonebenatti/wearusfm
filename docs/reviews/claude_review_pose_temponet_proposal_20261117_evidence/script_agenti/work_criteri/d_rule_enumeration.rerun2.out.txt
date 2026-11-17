@@ -1,0 +1,14 @@
+coerenti: combinazioni=84, senza etichetta=0, con piu' di una etichetta=7
+stima_fuori_IC: combinazioni=112, senza etichetta=0, con piu' di una etichetta=7
+combinazioni senza etichetta: []
+sovrapposizione D+N [coerenti]: 7 combinazioni, esempi (stima, L, U): [(-3.0, -3.0, -3.0), (-3.0, -3.0, -2.0), (-3.0, -3.0, -1.0), (-2.0, -3.0, -2.0)]
+sovrapposizione B+N [stima_fuori_IC]: 2 combinazioni, esempi (stima, L, U): [(2.0, 1.0, 1.0), (3.0, 1.0, 1.0)]
+sovrapposizione D+N [stima_fuori_IC]: 5 combinazioni, esempi (stima, L, U): [(-3.0, -2.0, -2.0), (-3.0, -2.0, -1.0), (-3.0, -1.0, -1.0), (-2.0, -3.0, -3.0)]
+
+Confronto con la regola storica practical_assessment (solo combinazioni coerenti L<=stima<=U):
+  nuova=B    storica=practical_benefit    n=  7 esempio (stima, L, U)=(2.0, 1.0, 2.0)
+  nuova=D+N  storica=practical_worsening  n=  7 esempio (stima, L, U)=(-3.0, -3.0, -3.0)
+  nuova=I    storica=inconclusive         n= 40 esempio (stima, L, U)=(-3.0, -3.0, 2.0)
+  nuova=I    storica=small                n=  2 esempio (stima, L, U)=(1.0, 1.0, 2.0)
+  nuova=N    storica=inconclusive         n= 24 esempio (stima, L, U)=(-3.0, -3.0, 0.0)
+  nuova=N    storica=small                n=  4 esempio (stima, L, U)=(-1.0, -3.0, -1.0)
