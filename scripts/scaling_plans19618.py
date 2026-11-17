@@ -731,22 +731,30 @@ def stage_table(stage, root=ROOT):
     return jobs(stage, resources)
 
 
-def _submit(job_id, gpu_hours, sbatch, stdin=None, after=None):
-    argv = [PYTHON, MAC + "/scripts/submit_job.py", "--agente", "claude", "--campagna", CAMPAIGN, "--timeout", "120",
+def _submit(job_id, gpu_hours, sbatch, stdin=None, after=None, p1_reader_recovery=False, root=ROOT):
+    mac, agent = (str(root), "gpt") if p1_reader_recovery else (MAC, "claude")
+    argv = ["python3" if p1_reader_recovery else PYTHON, mac + "/scripts/submit_job.py", "--agente", agent, "--campagna", CAMPAIGN, "--timeout", "120",
             "--id", job_id, "--gpu-ore", "%g" % gpu_hours]
+    if p1_reader_recovery:
+        argv += ["--ssh", shlex.join(SSH)]
     argv += ["--script-stdin", stdin] if stdin else []
     argv += ["--dopo", after] if after else []
     return shlex.join([*argv, "--", *sbatch])
 
 
-def checkout_lines(name, commit):
+def checkout_lines(name, commit, p1_reader_recovery=False, root=ROOT):
     """Deploy reference (never main, never a checked-out reference) and frozen campaign checkout."""
     require(ST.digest(commit, 40), "full commit SHA required")
+    if p1_reader_recovery:
+        import scaling_p1_reader_bridge as B
+        B.allowed_stage("checkout-" + name)
+    mac = str(root) if p1_reader_recovery else MAC
     campaign, job = CHECKOUTS[name], checkout_job(name)
     flags = [f"--cpus-per-task={job['cpus']}", f"--mem={job['memory']}", f"--time={clock(job['seconds'])}",
              f"--export=ALL,CAMPAIGN={campaign},CAMPAIGN_SHA={commit},EXPECTED_SHA={commit}", "/dev/stdin"]
-    return [shlex.join(["git", "-C", MAC, "push", "leonardo", f"{commit}:refs/heads/deploy/{campaign}"]),
-            _submit(job["id"], 0, flags, stdin=MAC + "/scripts/slurm/campaign_checkout.sbatch")]
+    return [shlex.join(["git", "-C", mac, "push", "leonardo", f"{commit}:refs/heads/deploy/{campaign}"]),
+            _submit(job["id"], 0, flags, stdin=mac + "/scripts/slurm/campaign_checkout.sbatch",
+                    p1_reader_recovery=p1_reader_recovery, root=root)]
 
 
 def recovery_lines(commit, root=ROOT):
@@ -776,10 +784,14 @@ def extraction_sbatch(job, code_sha):
             *job["flags"], job["out"]]
 
 
-def stage_lines(stage, code_sha, root=ROOT, only=None):
+def stage_lines(stage, code_sha, root=ROOT, only=None, p1_reader_recovery=False):
     """Exact submission lines of a stage (or of the jobs `only`), from the published documents. CPU jobs sent together
     form one afterok chain, so the first failure stops the rest; the three extractions are independent."""
     require(ST.digest(code_sha, 40), "full code SHA required")
+    if p1_reader_recovery:
+        import scaling_p1_reader_bridge as B
+        B.allowed_stage(stage)
+        require(code_sha == B.CODE, "P1 reader profile uses only the original frozen reader code")
     code = checkout("code")
     export = f"--export=ALL,CODE_DIR={code},EXPECTED_SHA={code_sha}"
     lines, previous, chain = [], None, stage != "extractions"
@@ -801,7 +813,8 @@ def stage_lines(stage, code_sha, root=ROOT, only=None):
             sbatch = [f"--cpus-per-task={job['cpus']}", f"--mem={job['memory']}", f"--time={clock(job['seconds'])}", export,
                       code + "/scripts/slurm/scaling_readers19618.sbatch", stage, plan["path"], plan["sha256"], job["out"],
                       *job["flags"], *extra]
-        lines.append(_submit(job["id"], job["seconds"] * job["gpus"] / 3600, sbatch, after=previous if chain else None))
+        lines.append(_submit(job["id"], job["seconds"] * job["gpus"] / 3600, sbatch, after=previous if chain else None,
+                             p1_reader_recovery=p1_reader_recovery, root=root))
         previous = job["id"]
     return lines
 
@@ -892,8 +905,10 @@ def remote_read(files=(), slurm_jobs=(), limit=INLINE_LIMIT, ssh=SSH, hashed=(),
 
 def ledger_job(job_id, root=LEDGER):
     state = json.loads((Path(root) / job_id / "state.json").read_text())
+    import scaling_p1_reader_bridge as B
+    operator_ok = state.get("agente") == "claude" or (state.get("agente") == "gpt" and B.cpu_job_id(job_id))
     require(state.get("stato") == "sottomesso" and str(state.get("job_slurm", "")).isdigit() and
-            state.get("agente") == "claude" and state.get("campagna") == CAMPAIGN, "job not submitted by this line: " + job_id)
+            operator_ok and state.get("campagna") == CAMPAIGN, "job not submitted by this line: " + job_id)
     return str(state["job_slurm"])
 
 
@@ -1067,7 +1082,7 @@ def rereview_check(previous, reviewed, root=ROOT):
     return len(changed.stdout.splitlines())
 
 
-def gate_request(stage, root=ROOT, ledger=LEDGER):
+def gate_request(stage, root=ROOT, ledger=LEDGER, p1_reader_recovery=False):
     """What the gate of a job stage reads: its checkouts, its published documents, its outputs, queue and quota."""
     table = stage_table(stage, root)
     documents = {name: document(name, root) for name in STAGE_DOCUMENTS[stage]}
@@ -1076,6 +1091,11 @@ def gate_request(stage, root=ROOT, ledger=LEDGER):
     for name in commits:
         commands["head:" + name], commands["status:" + name] = (_git(checkout(name), *arguments) for arguments in GIT_READS)
     request = {"hashed": [p["path"] for p in documents.values()], "exists": [job["out"] for job in table], "commands": commands}
+    if p1_reader_recovery:
+        import scaling_p1_reader_bridge as B
+        B.allowed_stage(stage)
+        require(commits["code"] == B.CODE, "wrong frozen reader checkout")
+        request["slurm_jobs"] = list(B.dependencies(sys.modules[__name__], stage, root, ledger).values())
     if any(job["id"] == RELAUNCH["id"] for job in table):
         request["listings"] = [RELAUNCH["replaces"]["folder"]]  # the folder of the replaced extraction, as diagnosed
     submitted = {}
@@ -1172,7 +1192,8 @@ def _collected_checkout(name, ledger, root):
         return False
 
 
-def gate(reading, commits, documents, table, submitted, root=ROOT, ledger=LEDGER, line_limit=LINE_SERIAL_LIMIT):
+def gate(reading, commits, documents, table, submitted, root=ROOT, ledger=LEDGER, line_limit=LINE_SERIAL_LIMIT,
+         p1_reader_recovery=False):
     """Mechanical gate before a tranche of a job stage: (checks, facts). Nothing is submitted here.
     submitted: {logical ID: Slurm ID} of the jobs of the stage already sent; they must have completed.
     The admitted tranche (facts["tranche"]) is what `lines` may emit: the jobs still to submit that fit in the free
@@ -1207,6 +1228,12 @@ def gate(reading, commits, documents, table, submitted, root=ROOT, ledger=LEDGER
     checks.append(("a tranche of at least one job is admitted (%d of %d to submit)" % (len(tranche), len(todo)), len(tranche) >= 1))
     facts = {**state, "to_submit": [job["id"] for job in todo], "line_limit": line_limit, "submittable_now": room,
              "tranche": tranche}
+    if p1_reader_recovery:
+        import scaling_p1_reader_bridge as B
+        require(commits["code"] == B.CODE, "wrong frozen reader checkout")
+        more, context = B.checks(sys.modules[__name__], table[0]["stage"], reading, root, ledger)
+        checks += more
+        facts["p1_reader_recovery"] = context
     if relaunch is not None:
         facts["relaunch"] = relaunch
     return checks, facts
@@ -1277,7 +1304,10 @@ def build_extraction_plan(root=ROOT):
     _write(DOCUMENTS["extraction_plan"][1], dumps(plan), root)
 
 
-def build_reader_plans(code_sha, root=ROOT):
+def build_reader_plans(code_sha, root=ROOT, p1_reader_recovery=False):
+    if p1_reader_recovery:
+        import scaling_p1_reader_bridge as B
+        return B.build_reader_plans(sys.modules[__name__], code_sha, root)
     files, manifest = evidence("extractions", root)
     require(list(manifest["jobs"]) == [job["id"] for job in jobs("extractions")],
             "the collected extractions are not the jobs of the table")  # the relaunch of p1, never the replaced job
@@ -1377,11 +1407,12 @@ def gate_record(stage, checks, facts, reading, context):
     return f"evidence/gates/{stage}_{stamp}.json", dumps(record)
 
 
-def run_gate(stage, commit=None, reviewed=None, root=ROOT, ledger=LEDGER, line_limit=LINE_SERIAL_LIMIT):
+def run_gate(stage, commit=None, reviewed=None, root=ROOT, ledger=LEDGER, line_limit=LINE_SERIAL_LIMIT,
+             p1_reader_recovery=False):
     """Reads the live state once (read-only), prints every check and records the outcome among the evidence;
     exit status 1 if any check fails. A refusal raised before the checks leaves its own record and is re-raised."""
     try:
-        reading, checks, facts, context = _gate_reading(stage, commit, reviewed, root, ledger, line_limit)
+        reading, checks, facts, context = _gate_reading(stage, commit, reviewed, root, ledger, line_limit, p1_reader_recovery)
     except Exception as error:
         stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime(_now()))
         _write(f"evidence/gates/{stage}_{stamp}_refused.json", dumps({
@@ -1395,7 +1426,12 @@ def run_gate(stage, commit=None, reviewed=None, root=ROOT, ledger=LEDGER, line_l
     return 0 if all(ok for _, ok in checks) else 1
 
 
-def _gate_reading(stage, commit, reviewed, root, ledger, line_limit):
+def _gate_reading(stage, commit, reviewed, root, ledger, line_limit, p1_reader_recovery=False):
+    profile = None
+    if p1_reader_recovery:
+        import scaling_p1_reader_bridge as B
+        B.allowed_stage(stage)
+        profile = B.attestation(sys.modules[__name__], root)
     if stage.startswith("checkout-"):
         name = stage[len("checkout-"):]
         require(commit is not None and reviewed is not None, "a checkout gate needs --sha and --reviewed")
@@ -1406,16 +1442,25 @@ def _gate_reading(stage, commit, reviewed, root, ledger, line_limit):
         reference = references[0] if references else None
         reading = remote_read(exists=[checkout(name)], commands={"squeue": QUEUE, "quota": QUOTA})
         checks, facts = checkout_gate(name, commit, reviewed, reading, reference, root, ledger, line_limit)
-        return reading, checks, facts, {"commit": commit, "reviewed": reviewed, "deploy_reference": reference}
-    request, commits, documents, table, submitted = gate_request(stage, root, ledger)
+        context = {"commit": commit, "reviewed": reviewed, "deploy_reference": reference}
+        if profile is not None:
+            require(reviewed == B.CODE, "metadata checkout must be reviewed against the frozen reader code")
+            facts["budget"] = B.budget(sys.modules[__name__], root, ledger)
+            context["p1_reader_recovery"] = profile
+        return reading, checks, facts, context
+    request, commits, documents, table, submitted = gate_request(stage, root, ledger, p1_reader_recovery)
     if stage == "probe-aggregate":
         fits = build_fit_state(commits["code"], root)
     replaced = [RELAUNCH["replaces"]["job_slurm"]] if any(job["id"] == RELAUNCH["id"] for job in table) else []
-    reading = remote_read(slurm_jobs=[*submitted.values(), *replaced], **request)
-    checks, facts = gate(reading, commits, documents, table, submitted, root, ledger, line_limit)
+    predecessors = request.pop("slurm_jobs", [])
+    reading = remote_read(slurm_jobs=list(dict.fromkeys([*submitted.values(), *replaced, *predecessors])), **request)
+    checks, facts = gate(reading, commits, documents, table, submitted, root, ledger, line_limit, p1_reader_recovery)
     if stage == "probe-aggregate":
         facts["fits"] = fits
-    return reading, checks, facts, {"commits": commits, "documents": documents, "submitted": submitted}
+    context = {"commits": commits, "documents": documents, "submitted": submitted}
+    if profile is not None:
+        context["p1_reader_recovery"] = facts["p1_reader_recovery"]
+    return reading, checks, facts, context
 
 
 def _now():
@@ -1431,7 +1476,7 @@ def latest_gate(stage, root=ROOT):
     return record
 
 
-def admitted_lines(stage, sha=None, limit=None, root=ROOT, ledger=LEDGER, now=None):
+def admitted_lines(stage, sha=None, limit=None, root=ROOT, ledger=LEDGER, now=None, p1_reader_recovery=False):
     """Submission lines of the tranche admitted by the latest gate of the stage, or a shorter prefix of it (`limit`):
     never a job outside that tranche, never without a passed gate read recently and still matching the ledger."""
     record = latest_gate(stage, root)
@@ -1440,13 +1485,22 @@ def admitted_lines(stage, sha=None, limit=None, root=ROOT, ledger=LEDGER, now=No
     age = (_now() if now is None else now) - read_at
     require(-CLOCK_SKEW_SECONDS <= age <= GATE_MAX_AGE_SECONDS,
             "gate record of %s older than %d seconds: run the gate again" % (stage, GATE_MAX_AGE_SECONDS))
+    if p1_reader_recovery:
+        import scaling_p1_reader_bridge as B
+        B.allowed_stage(stage)
+        expected = (B.attestation(sys.modules[__name__], root) if stage.startswith("checkout-") else
+                    B.context(sys.modules[__name__], stage, root, ledger))
+        require(record.get("p1_reader_recovery") == expected, "P1 reader profile/evidence changed after gate")
+        B.budget(sys.modules[__name__], root, ledger)
+    else:
+        require("p1_reader_recovery" not in record, "this gate requires the explicit P1 reader profile")
     if stage.startswith("checkout-"):
         name = stage[len("checkout-"):]
         require(limit is None, "--max applies to job stages only")
         require(sha is not None, "a checkout needs --sha")
         require(record.get("commit") == sha, "the latest gate of %s was for another commit" % stage)
         require(not (Path(ledger) / checkout_job(name)["id"]).exists(), "checkout already in the ledger: " + name)
-        return checkout_lines(name, sha)
+        return checkout_lines(name, sha, p1_reader_recovery, root)
     require(sha is None, "--sha applies to checkout stages only")
     table, tranche = stage_table(stage, root), list(record["facts"]["tranche"])
     submitted = {job["id"]: ledger_job(job["id"], ledger) for job in table if (Path(ledger) / job["id"]).exists()}
@@ -1457,13 +1511,20 @@ def admitted_lines(stage, sha=None, limit=None, root=ROOT, ledger=LEDGER, now=No
             "the replaced extraction changed in the ledger after the gate: run the gate again")
     code = checkout_commit("code", ledger)
     require(code == record["commits"]["code"], "the code checkout changed after the gate")
+    if p1_reader_recovery:
+        require({name: checkout_commit(name, ledger) for name in record["commits"]} == record["commits"],
+                "a metadata checkout changed after gate")
+        require({name: document(name, root) for name in record["documents"]} == record["documents"],
+                "published document changed after gate")
     require(limit is None or (type(limit) is int and 1 <= limit <= len(tranche)),
             "--max must be between 1 and the admitted tranche (%d)" % len(tranche))
-    return stage_lines(stage, code, root, only=tranche[:limit])
+    return stage_lines(stage, code, root, only=tranche[:limit], p1_reader_recovery=p1_reader_recovery)
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--p1-reader-recovery", action="store_true",
+                        help="Mac-only profile for accepted P1-r2 and the remaining frozen CPU readers")
     sub = parser.add_subparsers(dest="command", required=True)
     for name in ("extraction-plan", "reader-plans", "budgets", "comparison-inputs", "budget-table"):
         sub.add_parser(name)
@@ -1479,10 +1540,16 @@ def main(argv=None):
                                      help="jobs of this line submitted together in the serial queue (default %d)" % LINE_SERIAL_LIMIT)
     sub.choices["lines"].add_argument("--max", type=int, help="job stages: a shorter prefix of the admitted tranche")
     args = parser.parse_args(argv)
+    profile = args.p1_reader_recovery
+    if profile:
+        import scaling_p1_reader_bridge as B
+        require(args.command not in ("extraction-plan", "recovery-lines"), "P1 reader profile cannot release training/extractions")
+        if args.command in ("gate", "lines", "collect"):
+            B.allowed_stage(args.stage)
     if args.command == "extraction-plan":
         build_extraction_plan()
     elif args.command == "reader-plans":
-        build_reader_plans(checkout_commit("code"))
+        build_reader_plans(checkout_commit("code"), p1_reader_recovery=profile)
     elif args.command == "budgets":
         build_budgets(checkout_commit("code"))
     elif args.command == "comparison-inputs":
@@ -1492,16 +1559,16 @@ def main(argv=None):
     elif args.command == "recovery-lines":
         print("\n".join(recovery_lines(args.sha)))
     elif args.command == "gate":
-        return run_gate(args.stage, args.sha, args.reviewed, ROOT, LEDGER, args.line_limit)
+        return run_gate(args.stage, args.sha, args.reviewed, ROOT, LEDGER, args.line_limit, profile)
     elif args.command == "lines":
         try:
-            text = admitted_lines(args.stage, args.sha, args.max, ROOT, LEDGER)
+            text = admitted_lines(args.stage, args.sha, args.max, ROOT, LEDGER, p1_reader_recovery=profile)
         except (ValueError, OSError) as error:
             print("nessuna riga: %s" % error, file=sys.stderr)
             return 1
         print("\n".join(text))
     else:
-        print(json.dumps(budget_table(), indent=1))
+        print(json.dumps(B.budget(sys.modules[__name__], ROOT, LEDGER) if profile else budget_table(), indent=1))
     return 0
 
 

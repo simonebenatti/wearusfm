@@ -1,0 +1,16 @@
+{
+  "observed_at_utc": "2026-11-17T07:30:52.622108+00:00",
+  "source": "successful direct SSH tool observation",
+  "argv": [
+    "sacctmgr",
+    "-n",
+    "-P",
+    "show",
+    "qos",
+    "where",
+    "name=lrd_all_serial",
+    "format=Name,MaxWall,MaxTRESPU,MaxJobsPU,MaxSubmitPU"
+  ],
+  "exit": 0,
+  "stdout": "lrd_all_serial|04:00:00|cpu=8,mem=30800M,node=1|2|10\n"
+}

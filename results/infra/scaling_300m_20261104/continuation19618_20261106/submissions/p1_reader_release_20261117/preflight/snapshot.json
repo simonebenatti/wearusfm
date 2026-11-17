@@ -1,0 +1,258 @@
+{
+  "at": "2026-11-17T07:25:52.442065+00:00",
+  "commands": {
+    "squeue_all": {
+      "argv": [
+        "squeue",
+        "-u",
+        "sbenatti",
+        "-h",
+        "-o",
+        "%i|%j|%T|%q|%P|%R"
+      ],
+      "exit": 0,
+      "stdout": "64652559|CONTRAST-AUDIT-v2-20261116|RUNNING|normal|lrd_all_serial|login08\n",
+      "stderr": ""
+    },
+    "squeue_serial": {
+      "argv": [
+        "squeue",
+        "-u",
+        "sbenatti",
+        "-p",
+        "lrd_all_serial",
+        "-h",
+        "-o",
+        "%i|%j|%T|%q|%R"
+      ],
+      "exit": 0,
+      "stdout": "64652559|CONTRAST-AUDIT-v2-20261116|RUNNING|normal|login08\n",
+      "stderr": ""
+    },
+    "quota": {
+      "argv": [
+        "lfs",
+        "quota",
+        "-p",
+        "20147512",
+        "/leonardo_work/IscrB_WearUsFM"
+      ],
+      "exit": 0,
+      "stdout": "Disk quotas for prj 20147512 (pid 20147512):\n     Filesystem  kbytes   quota   limit   grace   files   quota   limit   grace\n/leonardo_work/IscrB_WearUsFM\n                978788404  1073741824       0       - 1028128       0       0       -\n",
+      "stderr": ""
+    },
+    "scheduler_config": {
+      "argv": [
+        "scontrol",
+        "show",
+        "config"
+      ],
+      "exit": 0,
+      "stdout": "Configuration data as of 2026-11-17T08:25:54\nAccountingStorageBackupHost = (null)\nAccountingStorageEnforce = associations,limits,qos,safe\nAccountingStorageHost   = slurm-slurmdbd.userservices.svc.kube.local\nAccountingStorageExternalHost = (null)\nAccountingStorageParameters = (null)\nAccountingStoragePort   = 6819\nAccountingStorageTRES   = cpu,mem,energy,node,billing,fs/disk,vmem,pages,gres/gpu,gres/gpumem,gres/gpuutil,gres/tmpfs\nAccountingStorageType   = accounting_storage/slurmdbd\nAccountingStorageUser   = N/A\nAccountingStoreFlags    = job_comment,job_script\nAcctGatherEnergyType    = (null)\nAcctGatherFilesystemType = (null)\nAcctGatherInterconnectType = (null)\nAcctGatherNodeFreq      = 25 sec\nAcctGatherProfileType   = (null)\nAllowSpecResourcesUsage = no\nAuthAltTypes            = auth/jwt\nAuthAltParameters       = jwt_key=/opt/SLURM/jwt_hs256.key\nAuthInfo                = (null)\nAuthType                = auth/munge\nBatchStartTimeout       = 10 sec\nBcastExclude            = /lib,/usr/lib,/lib64,/usr/lib64\nBcastParameters         = (null)\nBOOT_TIME               = 2026-11-06T13:41:56\nBurstBufferType         = (null)\nCertgenParameters       = (null)\nCertgenType             = (null)\nCertmgrParameters       = (null)\nCertmgrType             = (null)\nCliFilterPlugins        = (null)\nClusterName             = leonardo\nCommunicationParameters = (null)\nCompleteWait            = 0 sec\nCpuFreqDef              = Unknown\nCpuFreqGovernors        = OnDemand,Performance,UserSpace\nCredType                = cred/munge\nDataParserParameters    = (null)\nDebugFlags              = NO_CONF_HASH\nDefMemPerNode           = UNLIMITED\nDependencyParameters    = kill_invalid_depend\nDisableRootJobs         = no\nEioTimeout              = 60\nEnforcePartLimits       = ANY\nEpilog[0]               = /home/Atos_script_admin/Slurm_tools/epilog.d/*\nEpilogMsgTime           = 2000 usec\nFairShareDampeningFactor = 1\nFederationParameters    = (null)\nFirstJobId              = 1\nGresTypes               = gpu,tmpfs\nGpuFreqDef              = (null)\nGroupUpdateForce        = 1\nGroupUpdateTime         = 600 sec\nHASH_VAL                = Match\nHashPlugin              = hash/k12\nHealthCheckInterval     = 900 sec\nHealthCheckNodeState    = IDLE\nHealthCheckProgram      = /usr/sbin/nhc\nInactiveLimit           = 0 sec\nInteractiveStepOptions  = --interactive --preserve-env --pty $SHELL\nJobAcctGatherFrequency  = 10,energy=1,task=60\nJobAcctGatherType       = jobacct_gather/cgroup\nJobAcctGatherParams     = NoOverMemoryKill\nJobCompHost             = localhost\nJobCompLoc              = (null)\nJobCompParams           = (null)\nJobCompPort             = 0\nJobCompType             = (null)\nJobCompUser             = root\nJobContainerType        = job_container/tmpfs\nJobDefaults             = (null)\nJobFileAppend           = 0\nJobRequeue              = 0\nJobSubmitPlugins        = lua\nKillOnBadExit           = 0\nKillWait                = 180 sec\nLaunchParameters        = enable_nss_slurm,test_exec\nLicenses                = (null)\nLogTimeFormat           = iso8601_ms\nMailDomain              = leonardo.local\nMailProg                = /bin/mail\nMaxArraySize            = 300000\nMaxBatchRequeue         = 5\nMaxDBDMsgs              = 220128\nMaxJobCount             = 100000\nMaxJobId                = 67043328\nMaxMemPerNode           = UNLIMITED\nMaxNodeCount            = 5032\nMaxStepCount            = 40000\nMaxTasksPerNode         = 512\nMCSPlugin               = (null)\nMCSParameters           = (null)\nMessageTimeout          = 60 sec\nMinJobAge               = 30 sec\nMpiDefault              = pmix_v3\nMpiParams               = ports=13000-18000\nNEXT_JOB_ID             = 64654028\nNodeFeaturesPlugins     = (null)\nOverTimeLimit           = 3 min\nPluginDir               = /usr/lib64/slurm\nPlugStackConfig         = (null)\nPreemptMode             = OFF\nPreemptParameters       = (null)\nPreemptType             = (null)\nPreemptExemptTime       = 00:00:00\nPrEpParameters          = (null)\nPrEpPlugins             = prep/script\nPriorityParameters      = (null)\nPrioritySiteFactorParameters = (null)\nPrioritySiteFactorPlugin = (null)\nPriorityDecayHalfLife   = 4-00:00:00\nPriorityCalcPeriod      = 00:05:00\nPriorityFavorSmall      = no\nPriorityFlags           = SMALL_RELATIVE_TO_TIME,DEPTH_OBLIVIOUS,NO_FAIR_TREE,MAX_TRES\nPriorityMaxAge          = 7-00:00:00\nPriorityType            = priority/multifactor\nPriorityUsageResetPeriod = MONTHLY\nPriorityWeightAge       = 20000\nPriorityWeightAssoc     = 0\nPriorityWeightFairShare = 25000\nPriorityWeightJobSize   = 10000000\nPriorityWeightPartition = 0\nPriorityWeightQOS       = 300000\nPriorityWeightTRES      = (null)\nPrivateData             = events,usage\nProctrackType           = proctrack/cgroup\nProlog[0]               = /home/Atos_script_admin/Slurm_tools/prolog.d/*\nPrologEpilogTimeout     = 180\nPrologSlurmctld[0]      = /etc/slurm/prolog_controller.sh\nPrologFlags             = Alloc,Contain,X11\nPropagatePrioProcess    = 0\nPropagateResourceLimits = CORE\nPropagateResourceLimitsExcept = (null)\nRebootProgram           = (null)\nReconfigFlags           = (null)\nRequeueExit             = (null)\nRequeueExitHold         = (null)\nResumeFailProgram       = (null)\nResumeProgram           = (null)\nResumeRate              = 300 nodes/min\nResumeTimeout           = 1800 sec\nResvEpilog              = (null)\nResvOverRun             = 0 min\nResvProlog              = (null)\nReturnToService         = 1\nSchedulerParameters     = spec_cores_first,pack_serial_at_end,sched_min_interval=2000000,max_rpc_cnt=150,bf_continue,bf_interval=30,bf_yield_interval=2000000,bf_yield_sleep=500000,bf_max_job_part=2000,bf_max_job_user_part=20,bf_max_job_test=5000,bf_resolution=300,bf_max_time=150,default_queue_depth=2000,bf_job_part_count_reserve=40,enable_user_top\nSchedulerTimeSlice      = 30 sec\nSchedulerType           = sched/backfill\nScronParameters         = (null)\nSelectType              = select/cons_tres\nSelectTypeParameters    = CR_CORE_MEMORY,CR_CORE_DEFAULT_DIST_BLOCK\nSlurmUser               = slurm(350)\nSlurmctldAddr           = (null)\nSlurmctldDebug          = verbose\nSlurmctldHost[0]        = slurm-controller(10.128.255.221)\nSlurmctldLogFile        = /var/log/slurm/slurmctld.log\nSlurmctldPort           = 6817\nSlurmctldSyslogDebug    = (null)\nSlurmctldPrimaryOffProg = (null)\nSlurmctldPrimaryOnProg  = (null)\nSlurmctldTimeout        = 65535 sec\nSlurmctldParameters     = enable_configless\nSlurmdDebug             = error\nSlurmdLogFile           = /var/log/slurm/slurm.%h.log\nSlurmdParameters        = (null)\nSlurmdPidFile           = /var/run/slurmd.pid\nSlurmdPort              = 6818\nSlurmdSpoolDir          = /var/spool/slurmd\nSlurmdSyslogDebug       = error\nSlurmdTimeout           = 600 sec\nSlurmdUser              = root(0)\nSlurmSchedLogFile       = (null)\nSlurmSchedLogLevel      = 0\nSlurmctldPidFile        = /var/run/slurm/slurmctld.pid\nSLURM_CONF              = /etc/slurm/slurm.conf\nSLURM_VERSION           = 25.05.7-BullSequana.1.2\nSrunEpilog              = (null)\nSrunPortRange           = 60001-63000\nSrunProlog              = (null)\nStateSaveLocation       = /opt/SLURM\nSuspendExcNodes         = (null)\nSuspendExcParts         = (null)\nSuspendExcStates        = (null)\nSuspendProgram          = (null)\nSuspendRate             = 60 nodes/min\nSuspendTime             = INFINITE\nSuspendTimeout          = 30 sec\nSwitchParameters        = (null)\nSwitchType              = (null)\nTaskEpilog              = (null)\nTaskPlugin              = task/cgroup,task/affinity\nTaskPluginParam         = none\nTaskProlog              = /home/Atos_script_admin/Slurm_tools/task_prolog.sh\nTCPTimeout              = 30 sec\nTLSParameters           = (null)\nTLSType                 = tls/none\nTmpFS                   = /tmp\nTopologyParam           = Dragonfly\nTopologyPlugin          = topology/tree\nTrackWCKey              = no\nTreeWidth               = 16\nUsePam                  = no\nUnkillableStepProgram   = (null)\nUnkillableStepTimeout   = 120 sec\nVSizeFactor             = 0 percent\nWaitTime                = 0 sec\nX11Parameters           = (null)\n\nCgroup Support Configuration:\nAllowedRAMSpace         = 100.0%\nAllowedSwapSpace        = 0.0%\nCgroupMountpoint        = /sys/fs/cgroup\nCgroupPlugin            = autodetect\nConstrainCores          = yes\nConstrainDevices        = yes\nConstrainRAMSpace       = yes\nConstrainSwapSpace      = yes\nEnableControllers       = no\nEnableExtraControllers  = (null)\nIgnoreSystemd           = no\nIgnoreSystemdOnFailure  = no\nMaxRAMPercent           = 100.0%\nMaxSwapPercent          = 100.0%\nMemorySwappiness        = (null)\nMinRAMSpace             = 30MB\nSystemdTimeout          = 1000 ms\n\nSlurmctld(primary) at slurm-controller is UP\n",
+      "stderr": ""
+    },
+    "serial_partition": {
+      "argv": [
+        "scontrol",
+        "show",
+        "partition",
+        "lrd_all_serial",
+        "-o"
+      ],
+      "exit": 0,
+      "stdout": "PartitionName=lrd_all_serial AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL AllocNodes=ALL Default=YES QoS=lrd_all_serial DefaultTime=00:30:00 DisableRootJobs=NO ExclusiveUser=NO ExclusiveTopo=NO GraceTime=0 Hidden=NO MaxNodes=UNLIMITED MaxTime=04:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED Nodes=login[08,13] PriorityJobFactor=1 PriorityTier=1 RootOnly=NO ReqResv=NO OverSubscribe=NO OverTimeLimit=NONE PreemptMode=OFF State=UP TotalCPUs=256 TotalNodes=2 SelectTypeParameters=NONE JobDefaults=(null) DefMemPerCPU=3850 MaxMemPerNode=UNLIMITED TRES=cpu=256,mem=1028000M,node=2,billing=256,gres/tmpfs=30786325577728\n",
+      "stderr": ""
+    },
+    "login08": {
+      "argv": [
+        "scontrol",
+        "show",
+        "node",
+        "login08",
+        "-o"
+      ],
+      "exit": 0,
+      "stdout": "NodeName=login08 Arch=x86_64 CoresPerSocket=32  CPUAlloc=80 CPUEfctv=128 CPUTot=128 CPULoad=39.84 AvailableFeatures=(null) ActiveFeatures=(null) Gres=tmpfs:14T NodeAddr=10.128.0.8 NodeHostName=login08 Version=25.05.7-BullSequana.1.2 OS=Linux 4.18.0-477.27.1.el8_8.x86_64 #1 SMP Thu Aug 31 10:29:22 EDT 2023  RealMemory=514000 AllocMem=297680 FreeMem=172734 Sockets=2 Boards=1 MemSpecLimit=10000 State=MIXED ThreadsPerCore=2 TmpDisk=0 Weight=1 Owner=N/A MCS_label=N/A Partitions=lrd_all_serial  BootTime=2026-08-13T11:59:39 SlurmdStartTime=2026-11-03T17:55:30 LastBusyTime=2026-09-30T07:49:57 ResumeAfterTime=None CfgTRES=cpu=128,mem=514000M,billing=128,gres/tmpfs=15393162788864 AllocTRES=cpu=80,mem=297680M,gres/tmpfs=183609851904 CurrentWatts=0 AveWatts=0\n",
+      "stderr": ""
+    },
+    "code_head": {
+      "argv": [
+        "git",
+        "-C",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "df2de35c05381e7a5a69edde409171b210a3b5d8\n",
+      "stderr": ""
+    },
+    "code_status": {
+      "argv": [
+        "git",
+        "-C",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "sacct": {
+      "argv": [
+        "sacct",
+        "-n",
+        "-P",
+        "-j",
+        "64194074,64571999,64572001,64620434",
+        "--format=JobIDRaw,State,ExitCode,ElapsedRaw,AllocCPUS,MaxRSS,NodeList,Partition,Start,End,Timelimit,AllocTRES"
+      ],
+      "exit": 0,
+      "stdout": "64194074|COMPLETED|0:0|34|2||login13|lrd_all_serial|2026-11-11T17:59:18|2026-11-11T17:59:52|00:05:00|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1\n64194074.batch|COMPLETED|0:0|34|2|182104K|login13||2026-11-11T17:59:18|2026-11-11T17:59:52||cpu=2,gres/tmpfs=10737418240,mem=4G,node=1\n64194074.extern|COMPLETED|0:0|34|2||login13||2026-11-11T17:59:18|2026-11-11T17:59:52||billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1\n64571999|COMPLETED|0:0|7330|8||lrdn2203|boost_usr_prod|2026-11-16T09:51:50|2026-11-16T11:54:00|02:30:00|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1\n64571999.batch|COMPLETED|0:0|7330|8|33135792K|lrdn2203||2026-11-16T09:51:50|2026-11-16T11:54:00||cpu=8,gres/gpu=1,mem=100G,node=1\n64571999.extern|COMPLETED|0:0|7330|8||lrdn2203||2026-11-16T09:51:50|2026-11-16T11:54:00||billing=8,cpu=8,gres/gpu=1,mem=100G,node=1\n64572001|COMPLETED|0:0|5967|8||lrdn2858|boost_usr_prod|2026-11-16T09:51:50|2026-11-16T11:31:17|02:30:00|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1\n64572001.batch|COMPLETED|0:0|5967|8|33508620K|lrdn2858||2026-11-16T09:51:50|2026-11-16T11:31:17||cpu=8,gres/gpu=1,mem=100G,node=1\n64572001.extern|COMPLETED|0:0|5968|8||lrdn2858||2026-11-16T09:51:50|2026-11-16T11:31:18||billing=8,cpu=8,gres/gpu=1,mem=100G,node=1\n64620434|COMPLETED|0:0|1772|8||lrdn0111|boost_usr_prod|2026-11-16T22:23:29|2026-11-16T22:53:01|02:00:00|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1\n64620434.batch|COMPLETED|0:0|1772|8|26314480K|lrdn0111||2026-11-16T22:23:29|2026-11-16T22:53:01||cpu=8,gres/gpu=1,mem=100G,node=1\n64620434.extern|COMPLETED|0:0|1772|8||lrdn0111||2026-11-16T22:23:29|2026-11-16T22:53:01||billing=8,cpu=8,gres/gpu=1,mem=100G,node=1\n",
+      "stderr": ""
+    },
+    "deploy_refs": {
+      "argv": [
+        "git",
+        "-C",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm",
+        "for-each-ref",
+        "--format=%(refname)|%(objectname)",
+        "refs/heads/deploy/scaling_300m_plans19618_20261106_v1",
+        "refs/heads/deploy/scaling_300m_budgets19618_20261106_v1",
+        "refs/heads/deploy/scaling_300m_inputs19618_20261106_v1"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "repo_config": {
+      "argv": [
+        "git",
+        "-C",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm",
+        "config",
+        "--local",
+        "--list"
+      ],
+      "exit": 0,
+      "stdout": "core.repositoryformatversion=0\ncore.filemode=true\ncore.bare=false\ncore.logallrefupdates=true\nreceive.denycurrentbranch=updateInstead\n",
+      "stderr": ""
+    }
+  },
+  "paths": {
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_plans19618_20261106_v1": {
+      "exists": false,
+      "symlink": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_budgets19618_20261106_v1": {
+      "exists": false,
+      "symlink": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_inputs19618_20261106_v1": {
+      "exists": false,
+      "symlink": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu": {
+      "exists": false,
+      "listing": []
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm/.git/hooks/pre-receive": {
+      "exists": false,
+      "executable": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm/.git/hooks/post-receive": {
+      "exists": false,
+      "executable": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm/.git/hooks/update": {
+      "exists": false,
+      "executable": false
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm/.git/hooks/post-update": {
+      "exists": false,
+      "executable": false
+    }
+  },
+  "files": {
+    "scripts/slurm/scaling_readers19618.sbatch": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/slurm/scaling_readers19618.sbatch",
+      "sha256": "11907add97eef50f422aa35b7abf3c994b0c0b3b337a1a1c121f2ce2dbe6ea11",
+      "bytes": 18020
+    },
+    "scripts/scaling_pose_readout19618.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/scaling_pose_readout19618.py",
+      "sha256": "3b3927c03b8e4b5672bb6d07ce2eeca218cdca5d2862d3ae30b35c49f4228206",
+      "bytes": 23133
+    },
+    "scripts/scaling_probe19618.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/scaling_probe19618.py",
+      "sha256": "72a621753a8e792f262ddaa31e95cfb9830c63418aab9be043fc938d088febbb",
+      "bytes": 38857
+    },
+    "scripts/scaling_compare19618.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/scaling_compare19618.py",
+      "sha256": "fb4da3be4f7f23ea1cc58018a009589008497146c700cfdf96229bb51b331f84",
+      "bytes": 17432
+    },
+    "scripts/scaling_reading19618.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/scaling_reading19618.py",
+      "sha256": "0fa6a99556a8b48ece0143d2a8bb16977b6ad9f92c194f4a68a9b203442b865a",
+      "bytes": 5147
+    },
+    "scripts/submit_job.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/submit_job.py",
+      "sha256": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+      "bytes": 20050
+    }
+  },
+  "ledger": {
+    "SCALING-19618-code-checkout-20261106": {
+      "id": "SCALING-19618-code-checkout-20261106",
+      "creato": "2026-11-11T17:58:50+01:00",
+      "agente": "claude",
+      "campagna": "scaling-300m-20261104",
+      "gpu_ore_stimate": 0.0,
+      "codice_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+      "sbatch": [
+        "sbatch",
+        "--parsable",
+        "--job-name=SCALING-19618-code-checkout-20261106",
+        "--comment=wearusfm:SCALING-19618-code-checkout-20261106",
+        "--cpus-per-task=1",
+        "--mem=4G",
+        "--time=00:05:00",
+        "--export=ALL,CAMPAIGN=scaling_300m_evaluation19618_20261106_v1,CAMPAIGN_SHA=df2de35c05381e7a5a69edde409171b210a3b5d8,EXPECTED_SHA=df2de35c05381e7a5a69edde409171b210a3b5d8",
+        "/dev/stdin"
+      ],
+      "dopo": null,
+      "script_stdin": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-scaling-exec/scripts/slurm/campaign_checkout.sbatch",
+      "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+      "stato": "sottomesso",
+      "storia": [
+        {
+          "quando": "2026-11-11T17:58:50+01:00",
+          "stato": "prenotato"
+        },
+        {
+          "quando": "2026-11-11T17:58:50+01:00",
+          "stato": "in_sottomissione"
+        },
+        {
+          "quando": "2026-11-11T17:58:53+01:00",
+          "stato": "sottomesso",
+          "job_slurm": 64194074,
+          "uscita": 0,
+          "stdout": "64194074\n",
+          "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+        }
+      ],
+      "job_slurm": 64194074,
+      "uscita": 0,
+      "stdout": "64194074\n",
+      "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+    }
+  }
+}

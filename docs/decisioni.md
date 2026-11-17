@@ -7328,3 +7328,18 @@ con lettori futuri349,959445/351, distinto dal consumo effettivo.
 Readout: `docs/reviews/gpt_scaling_p1_recovery_readout_20261117.md`.
 Prove e piani: `results/infra/scaling_300m_20261104/p1_recovery_readout_20261117/`.
 Nessun lettore inviato in questa raccolta; nessun retry e nessuno score letto.
+
+### 17/11/2026 — GPT: autorizzazione a collegare P1-r2 e proseguire fino ai fit
+
+Simone: «ok, collega il controller a P1-r2 e procedi con validazione e benchmark,
+poi lancia i fit se è tutto a posto. Senza chiedermi di nuovo il consenso,
+comitta e pusha tutto».
+GPT assume l'esecuzione di questa catena CPU con submitter/ledger comuni.
+Codice numerico e launcher rimangono df2de35; controller Mac con profilo
+esplicito per P1-r2 e nuove provenienze, review indipendente prima dell'uso.
+Tre checkout documentali residui da ramo separato discendente da df2de35,
+sole aggiunte di documenti/evidenze: nessun ampliamento delle guardie di rilascio.
+Budget cumulativo CPU-only 351 core-ore, tetti di fase invariati. Validazione,
+18 benchmark, budget e fit solo con cancelli superati; stop al primo errore,
+nessun retry o nuova estrazione, nessun consenso ripetuto per questi passi.
+Piano: `results/infra/scaling_300m_20261104/continuation19618_20261106/submissions/p1_reader_release_20261117/plan.md`.

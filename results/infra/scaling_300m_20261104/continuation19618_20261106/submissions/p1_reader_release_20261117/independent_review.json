@@ -1,0 +1,76 @@
+{
+  "protocol": "independent-p1-reader-controller-review-20261117-v1",
+  "verdict": "APPROVATO",
+  "blocking_findings": [],
+  "scope": "Mac-only explicit P1-r2 reader profile, bridge, cumulative CPU budget and unchanged frozen remote numerical files. No remote inspection, deploy, submission, cancellation or repository mutation.",
+  "test_run_observed": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /Users/simonebenatti/.venvs/wearusfm-tok/bin/python -B -m pytest -q -p no:cacheprovider tests/cpu/test_scaling_p1_reader_bridge.py tests/cpu/test_scaling_p1_reader_budget.py tests/cpu/test_scaling_gates19618.py tests/cpu/test_scaling_plans19618.py",
+    "passed": 277,
+    "failed": 0,
+    "elapsed_seconds": 33.09,
+    "run_separately_before_this_audit": true
+  },
+  "reviewed_files_sha256": {
+    "scripts/scaling_plans19618.py": "2d71c0b0e606b7f9f8fc79a201c1b59b985491b8078f127ce10e6053fabeabcd",
+    "scripts/scaling_p1_reader_bridge.py": "44256c9d04f03435cfe1a6a43415e74e4796a055faaede4d9ff6392c4b01a242",
+    "scripts/scaling_p1_reader_budget.py": "5842c5c1b397831aed5a5e233ef47cdb76355f8cb0ed53dc0c46239821f05f37",
+    "tests/cpu/test_scaling_p1_reader_bridge.py": "8eed21e152c5632dd67b4f5894e8b4965fc75e91570d22f8afe2b7d4e693fac9",
+    "tests/cpu/test_scaling_p1_reader_budget.py": "ce3bb8ef63c95cf5d58020867721602589817f2decf7370a2a41e69442dff7e9",
+    "results/infra/scaling_300m_20261104/continuation19618_20261106/submissions/p1_reader_release_20261117/plan.md": "f3c06d8e4552ad9c4b3d0c876fa888e1dafc87a0a7551ab694d05fdfbadce433"
+  },
+  "scientific_source_contract": {
+    "entries": 103,
+    "all_unchanged": true
+  },
+  "exact_frozen_comparisons": {
+    "scripts/scaling_evaluation19618.py": true,
+    "scripts/scaling_probe19618.py": true,
+    "scripts/scaling_pose_readout19618.py": true,
+    "scripts/scaling_compare19618.py": true,
+    "scripts/slurm/scaling_readers19618.sbatch": true,
+    "scripts/submit_job.py": true
+  },
+  "real_evidence": {
+    "acceptance_sha256": "0b1f538757dc8f39e31425dfc20d6b7ac039820c2bc34c5c65e1351fce46c9ce",
+    "plans_reconstructed_exactly": true,
+    "lineage_sha256": "0e8d260fd8f60545e6acce0ebd0047fdce2cb0beb5bf7233f42a0466d9b7de8f",
+    "predecessors": {
+      "SCALING-300M-eval19618-pose-20261106": "64571999",
+      "SCALING-300M-eval19618-p1-r2-20261116": "64620434",
+      "SCALING-300M-eval19618-p2-20261106": "64572001"
+    }
+  },
+  "budget": {
+    "total": {
+      "exact": "524939167/1500000",
+      "core_hours": 349.9594446666667
+    },
+    "cap_core_hours": 351,
+    "fixed_prior_reserve": {
+      "exact": "2396389/500000",
+      "core_hours": 4.792778
+    },
+    "remaining_chain": {
+      "exact": "2071/6",
+      "core_hours": 345.1666666666667
+    },
+    "fit_plan_ready": false,
+    "actual_jobs": 0,
+    "three_remaining_checkouts_already_included": true
+  },
+  "manual_review": [
+    "Only accepted P1-r2 64620434 may replace failed P1 attempts; pose and P2 keep frozen producer df2de35.",
+    "Validation report and accepted accounting are required before either benchmark stage; all benchmark collections precede fit/ridge release.",
+    "The active tranche follows queue room and line limit, chains afterok, and next tranche waits for previously submitted stage jobs COMPLETED 0:0.",
+    "lines requires a recent passed explicit-profile gate, identical evidence/controller source attestation, documents and all checkout commits; ledger changes invalidate the gate.",
+    "Metadata checkouts descend from df2de35; release_check and rereview_check have no broad exception. Numerical code, dispatcher and submitter are byte-identical.",
+    "Unknown/ambiguous logical CPU IDs stop; absent accounting keeps a full reservation; verified actual cost replaces reservation once.",
+    "Foreground collect/gate/lines/submitter calls suffice; no new autonomous sender or persistent automation is needed."
+  ],
+  "limits": [
+    "A passed gate is a bounded-time snapshot, not an atomic scheduler reservation; a concurrent QoS change may cause a submission refusal, which must stop the chain.",
+    "The legacy ledger reader now recognizes GPT for the registered remaining CPU IDs even without the new flag; default numerical operations and historical commands remain unchanged.",
+    "Review approves the operator code and frozen scope, not future benchmark outcomes. Runtime, memory, budget and convergence gates must still pass.",
+    "The new identity guard was not causally exercised by a timestamp transition in P1-r2; no Lustre root cause is inferred."
+  ]
+}
