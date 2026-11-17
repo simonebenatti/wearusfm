@@ -178,6 +178,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 17/11/2026 — launcher: benchmark conclusi, budget distribuiti, fit avviati
+
+Presa in carico esclusiva della consegna 432d0fa. Riconciliazione ledger/scheduler completata, DB6 64669464 COMPLETED 0:0. Tutti i 15 benchmark classificazione COMPLETED 0:0, raccolti con sacct grezzo, accounting, report e log. Costruttori congelati accettano i risultati e producono otto shard, 143,6 core-ore di prenotazione fit con margine. Inviluppo cumulativo prudenziale prima del checkout budgets 181,279445/351 core-ore, comprese fasi successive riservate. Metadata budgets 1a0ba5c distribuito, checkout 64692577 COMPLETED 0:0 in 102 s e raccolto. Ridge 64701180 e fit 01/02/03 64701397/64701400/64701404 sottomessi dopo gate pubblicati, ricevute su origin in 33d1e56 con SHA verificato. Restano cinque shard da inviare a tranche. Controlli ogni cinque minuti, come richiesto da Simone. Nessun retry di calcolo. Numerica df2de35, criteri e tetto 351 conservati.
+
+
 ### 17/11/2026 — GPT: passaggio esclusivo delle operazioni a 1-30/300 launcher
 
 Simone: «ecco manda tutto alla chat 30/300 launcher, va avanti lei per queste cose», poi titolo e link confermati: **1-30/300 launcher**, thread 01a1e915-4dc5-7d90-bd1e-371ccd3b8560. Questa chat ferma gli invii e consegna i due worktree al launcher, che prosegue il lavoro già autorizzato senza nuovi consensi. Durante il passaggio solo la prima riga della tranche 02 era stata accettata: **64669464**, benchmark 30M NinaPro DB6. L'orchestratore locale è stato interrotto; EPN612 30M, UCI 30M e DB2 300M risultano senza prenotazione in due letture successive del ledger. Nessun runner o monitor attivo, nessuna cancellazione, nessun fit inviato. Non rieseguire per intero le righe storiche: il launcher deve riconciliare ledger/scheduler e usare un gate nuovo per i soli ID mancanti.
@@ -6230,6 +6235,11 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 17/11/2026 — launcher: benchmark conclusi, budget distribuiti, fit avviati
+
+Presa in carico esclusiva della consegna 432d0fa. Riconciliazione ledger/scheduler completata, DB6 64669464 COMPLETED 0:0. Tutti i 15 benchmark classificazione COMPLETED 0:0, raccolti con sacct grezzo, accounting, report e log. Costruttori congelati accettano i risultati e producono otto shard, 143,6 core-ore di prenotazione fit con margine. Inviluppo cumulativo prudenziale prima del checkout budgets 181,279445/351 core-ore, comprese fasi successive riservate. Metadata budgets 1a0ba5c distribuito, checkout 64692577 COMPLETED 0:0 in 102 s e raccolto. Ridge 64701180 e fit 01/02/03 64701397/64701400/64701404 sottomessi dopo gate pubblicati, ricevute su origin in 33d1e56 con SHA verificato. Restano cinque shard da inviare a tranche. Controlli ogni cinque minuti, come richiesto da Simone. Nessun retry di calcolo. Numerica df2de35, criteri e tetto 351 conservati.
+
 
 ### 17/11/2026 — GPT: passaggio esclusivo delle operazioni a 1-30/300 launcher
 
