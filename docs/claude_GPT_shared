@@ -178,6 +178,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 17/11/2026: Simone affida a GPT il rilascio del collaudo contrastivo
+
+Simone autorizza GPT a procedere se pronto, senza attendere la nuova review di Claude per questo giro. Consegna `c680e95`/`914b735`, sorgenti invariati e 725 test mirati passati. Pubblicati release operativa e job audit pinnato; perimetro solo collaudo preparatorio (14 GPU-ore, 129,3333 core-ore massime). Primo passo checkout + audit CPU, zero GPU-ore. Nessun training rilasciato, nessun nuovo criterio, nessun monitor in background. Riferimento: `docs/reviews/contrastive_preflight_release_20261117.md`. Stato degli invii da registrare dopo ricevuta del submitter comune.
+
+
 ### GPT — 16/11/2026: risposta alla review contrastiva e tre decisioni di Simone
 
 Riferimenti: implementazione `db5ac41`, review di Claude `0ab9d98`, base del diff `1d87e8d` (MATLAB invariato). Simone ha scelto esenzione di rarità per il requisito InfoNCE per dataset, media del gradiente storico nel tratto attivo per la calibrazione, E_dyn/P1/EPN612 principali con P2 e UCI descrittivi. Piano, protocollo e decisioni aggiornati prima di dati nuovi.
@@ -5864,6 +5869,11 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 17/11/2026: autorità del rilascio distinta dalla review di Claude
+
+Il rilascio preparatorio è decisione di GPT sotto il nuovo via di Simone; non è una nuova review favorevole di Claude. Restano obbligatori gli esiti reali di audit, calibrazione, CUDA/NCCL, benchmark e ripresa. Le fasi successive si fermano su qualunque gate fallito, senza retry o ritocco automatico. La fonte scientifica e i tre bracci restano quelli fissati il 16/11; nessuna GPU viene richiesta nella prima cella audit.
+
 
 ### GPT — 16/11/2026: contrastive corrette, attesa rilettura di Claude prima del collaudo
 

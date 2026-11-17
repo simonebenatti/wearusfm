@@ -1,5 +1,7 @@
 # Collaudo del confronto contrastivo — revisione del 16/11/2026
 
+**Aggiornamento operativo 17/11:** Simone ha affidato a GPT il rilascio e il lancio di questo giro. La [release operativa](reviews/contrastive_preflight_release_20261117.md) supera l'attesa della nuova review di Claude per il solo collaudo, mantenendo tutti i gate e i tetti. Il testo seguente conserva la proposta del 16/11.
+
 Stato: **REVIEW_REQUIRED**, nessun job sottomesso da questa consegna. Simone ha scelto D-1 A, D-3 opzione 2 e D-2 EPN612 principale; ha autorizzato GPT a sottomettere dopo la convergenza con Claude. La review 0ab9d98 riguarda la versione precedente e non autorizza da sola questa versione corretta. La convergenza sarà registrata in una release distinta, senza chiedere un secondo consenso per lo stesso piano.
 
 La ricetta scientifica è in `contrastive_comparison_protocol_20261116.md` e `../results/infra/contrastive_comparison_20261116/plan.json`. Il piano risorse leggibile dalla macchina è `../results/infra/contrastive_comparison_20261116/preflight_plan.json`. Questo collaudo usa solo il train. Non è uno dei tre training scientifici a 19.618 passi.

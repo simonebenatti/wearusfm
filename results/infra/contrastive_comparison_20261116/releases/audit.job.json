@@ -1,0 +1,38 @@
+{
+  "status": "APPROVED_FOR_PREFLIGHT",
+  "mode": "audit",
+  "source_sha256": "651d3d8291db5afe0fb8d7b3ffc53b5234960bbe0a9236a1f853e6cee7b1eca5",
+  "review": {
+    "path": "docs/reviews/contrastive_preflight_release_20261117.md",
+    "bytes": 3009,
+    "sha256": "18431ebd7a530da29039415e2f4b428803253ba0c32b55ebe1e1ecfd3253060a"
+  },
+  "config": {
+    "path": "results/infra/contrastive_comparison_20261116/configs/calibration.config.json",
+    "bytes": 5213,
+    "sha256": "5e4aaca8e9671020efb0a3cdbb801357fe1082ce0052427f79d2f55cf9f98b13"
+  },
+  "inputs": {
+    "manifest": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+      "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+    },
+    "scales": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+      "sha256": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486"
+    },
+    "window_seconds": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+      "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+    },
+    "pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+    }
+  },
+  "roots": [
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed"
+  ],
+  "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/audit.json"
+}

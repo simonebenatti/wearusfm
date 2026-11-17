@@ -1,10 +1,14 @@
 {
   "protocol": "contrastive-preflight-20261116-v2",
-  "status": "REVIEW_REQUIRED",
+  "status": "APPROVED_FOR_PREFLIGHT",
   "submission_authorized_after_convergence": true,
   "training_authorized": false,
-  "source_sha256": null,
-  "review": null,
+  "source_sha256": "651d3d8291db5afe0fb8d7b3ffc53b5234960bbe0a9236a1f853e6cee7b1eca5",
+  "review": {
+    "path": "docs/reviews/contrastive_preflight_release_20261117.md",
+    "bytes": 3009,
+    "sha256": "18431ebd7a530da29039415e2f4b428803253ba0c32b55ebe1e1ecfd3253060a"
+  },
   "input_sha256": {
     "manifest": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
     "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
@@ -108,8 +112,9 @@
       ]
     }
   ],
-  "review_gate": "Claude reviews corrected source and thresholds before first job; publish separate release and verify SHA. Do not mutate scientific plan after calibration.",
+  "review_gate": "GPT operational release under Simone 2026-11-17 authorization. Preserve every evidence/coverage/resource gate. Publish release and verify remote SHA before submission.",
   "failure_policy": "Any failed/incomplete stage stops dependent stages; archive logs and receipts, diagnose; no automatic retry, new lambda, new selection, higher walltime or partial-cohort promotion.",
   "fresh_outputs": "WORK/wearusfm_runs/results/contrastive_preflight_20261116_v2/<cell>",
-  "execution": "Frozen reviewed per-cell job JSON via scripts/slurm/contrastive_preflight_{cpu,gpu}.sbatch and shared scripts/submit_job.py ledger. No sbatch outside submitter."
+  "execution": "Frozen reviewed per-cell job JSON via scripts/slurm/contrastive_preflight_{cpu,gpu}.sbatch and shared scripts/submit_job.py ledger. No sbatch outside submitter.",
+  "approval_authority": "Simone explicit instruction 2026-11-17; GPT readiness decision, no new Claude rereview required for this preflight"
 }
