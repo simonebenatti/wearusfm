@@ -8,12 +8,22 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**Aggiornamento finale:** audit **64652559 TIMEOUT**, 63:07 su 60 min; `.batch` COMPLETED 0:0.
+Rapporto completo e ricalcolato: 1.024 batch, `passed=true`, pannello 256–511 valido; pin tutti corretti.
+SHA rapporto `5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b`.
+Gate di contenuto superato, gate operativo no. **Calibrazione non sottomessa.**
+Leggere `docs/reviews/contrastive_audit_results_20261117.md` prima di qualsiasi seguito.
+La proposta di recupero del rapporto mediante rettifica operativa è documentata ma **non applicata**.
+Consuntivo audit più checkout: 8,461111 core-ore, zero GPU. Nessun retry o monitor.
+
+Cronologia dei lanci:
+
 - Checkout originario **64652044**, SHA `821f4d7`: COMPLETED 0:0, 30 s, 4 CPU.
 - Audit con richiesta 32 GiB: rifiutato da sbatch, nessun job creato. Massimo QoS seriale 30.800 MiB.
 - Corretti soltanto launcher e guardia CPU a 30 GiB; 18 test mirati passati. Codice scientifico invariato.
 - Checkout corretto **64652383**, SHA `f09bf857eee24f02aff25fa743853d60fcab7f03`: COMPLETED 0:0, 11 s, 4 CPU.
 - Secondo invio audit: rifiutato senza job perché il checkout completato era già sparito dal controller (`MinJobAge=30 sec`). Verificato completamento in sacct e integrità fisica del checkout; rimossa solo la dipendenza ormai soddisfatta.
-- Audit effettivamente sottomesso: **64652559**, ID logico `CONTRAST-AUDIT-v2-20261116`, 8 CPU, 30 GiB, 60 minuti, zero GPU. Ultima verifica: **RUNNING**, log del dispatcher coerente con codice e job pinnati; non duplicarlo.
+- Audit effettivamente sottomesso: **64652559**, ID logico `CONTRAST-AUDIT-v2-20261116`, 8 CPU, 30 GiB, 60 minuti, zero GPU. Stato finale **TIMEOUT**, rapporto completo; non duplicarlo.
 
 Checkout immutabile:
 `/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-audit-mem30`
@@ -28,7 +38,11 @@ Output atteso:
 
 Ricevute del submitter, rifiuti, diagnosi QoS/dipendenza e consuntivi dei checkout sono in `results/infra/contrastive_comparison_20261116/submission_20261117/`. Il ledger comune rimane l'autorità contro gli invii duplicati. I due checkout hanno consumato insieme **0,045556 core-ore**; nessuna GPU. Tetti globali invariati, 14 GPU-ore e 129,3333 core-ore.
 
-## Prossima azione, già autorizzata
+## Seguito: fermo al gate operativo, nessun nuovo invio in questa consegna
+
+Non eseguire automaticamente il punto 2: il punto 1 ha fallito sullo stato SLURM, pur avendo prodotto
+evidenze di copertura valide. Prima serve chiudere la rettifica operativa proposta nella lettura finale.
+La procedura seguente conserva i requisiti originali e non rappresenta una deroga al timeout.
 
 1. Leggere l'esito dell'audit. Richiedere COMPLETED 0:0, file completo, `passed=true`, pannello 256–511 valido, pin di dati/config/sorgenti e geometria 4 rank × 6 worker coerenti. Raccogliere report, hash, log e risorse nel repo. Se fallisce fermare la fase e diagnosticare, senza retry cieco.
 2. Solo dopo il gate: preparare release di calibrazione `APPROVED_FOR_PREPARATION` con SHA dell'audit, del config e dei quattro input, 4 rank, 6 worker/rank, `time_limit_s=1770`. Job wrapper `APPROVED_FOR_PREFLIGHT`, modalità `calibration`, allocazione 4 GPU, 32 CPU, 240 GiB, 30 min. Pin della presente autorità nel file di release; nessun obbligo di far approvare nuovamente a Simone la stessa fase.

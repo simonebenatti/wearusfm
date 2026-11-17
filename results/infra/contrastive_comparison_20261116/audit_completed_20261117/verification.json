@@ -1,0 +1,176 @@
+{
+  "content_gate": "PASSED",
+  "execution_gate": "FAILED_TIME_LIMIT",
+  "calibration_released": false,
+  "report_sha256": "5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b",
+  "report_bytes": 20275571,
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "steps": 1024,
+  "total_windows": 32768,
+  "recomputed": {
+    "calibration_panel": {
+      "queries": 8192,
+      "eligible": 8179,
+      "nce_fraction": 0.9984130859375,
+      "rnc_active_batches": 256,
+      "batches": 256,
+      "datasets": {
+        "camargo2021": [
+          233,
+          233
+        ],
+        "capgmyo": [
+          13,
+          0
+        ],
+        "csl_hdemg": [
+          236,
+          236
+        ],
+        "emg2pose": [
+          2105,
+          2105
+        ],
+        "emg2qwerty": [
+          1909,
+          1909
+        ],
+        "grabmyo": [
+          457,
+          457
+        ],
+        "hyser": [
+          445,
+          445
+        ],
+        "ninapro_db10": [
+          700,
+          700
+        ],
+        "ninapro_db2": [
+          296,
+          296
+        ],
+        "ninapro_db3": [
+          58,
+          58
+        ],
+        "ninapro_db4": [
+          119,
+          119
+        ],
+        "ninapro_db5": [
+          170,
+          170
+        ],
+        "ninapro_db6": [
+          289,
+          289
+        ],
+        "ninapro_db7": [
+          256,
+          256
+        ],
+        "ninapro_db8": [
+          151,
+          151
+        ],
+        "putemg": [
+          393,
+          393
+        ],
+        "zhang2026": [
+          362,
+          362
+        ]
+      },
+      "passed": true
+    },
+    "coverage_partial_block": {
+      "queries": 24576,
+      "eligible": 24527,
+      "nce_fraction": 0.9980061848958334,
+      "rnc_active_batches": 768,
+      "batches": 768,
+      "datasets": {
+        "camargo2021": [
+          876,
+          876
+        ],
+        "capgmyo": [
+          45,
+          0
+        ],
+        "csl_hdemg": [
+          551,
+          551
+        ],
+        "emg2pose": [
+          6049,
+          6049
+        ],
+        "emg2qwerty": [
+          5991,
+          5991
+        ],
+        "grabmyo": [
+          1422,
+          1422
+        ],
+        "hyser": [
+          1310,
+          1310
+        ],
+        "ninapro_db10": [
+          2103,
+          2103
+        ],
+        "ninapro_db2": [
+          995,
+          995
+        ],
+        "ninapro_db3": [
+          237,
+          233
+        ],
+        "ninapro_db4": [
+          490,
+          490
+        ],
+        "ninapro_db5": [
+          513,
+          513
+        ],
+        "ninapro_db6": [
+          716,
+          716
+        ],
+        "ninapro_db7": [
+          717,
+          717
+        ],
+        "ninapro_db8": [
+          484,
+          484
+        ],
+        "putemg": [
+          1012,
+          1012
+        ],
+        "zhang2026": [
+          1065,
+          1065
+        ]
+      },
+      "passed": true
+    }
+  },
+  "runtime_panel_gate": true,
+  "elapsed_seconds": 3787,
+  "allocated_core_hours": 8.415555555555555,
+  "audit_core_hours_cap": 8,
+  "allocated_gpu_hours": 0,
+  "max_rss_gib": 21.510700225830078,
+  "cpu_seconds": 2138.449,
+  "scope": "Recounts reported candidate/support records; does not rerun raw signal processing or waive the timeout."
+}

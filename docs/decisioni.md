@@ -6489,3 +6489,19 @@ Anche il secondo invio dell'audit è stato rifiutato senza job, per `Job depende
 ### Audit accettato: 64652559
 
 Invio riuscito tramite submitter/ledger comune, codice `f09bf85`, 8 CPU, 30 GiB, 60 minuti, zero GPU. I precedenti invii erano rifiuti espliciti senza job. Ricevuta archiviata e consegna operativa in `docs/contrastive_handoff_20261117.md`. I due checkout hanno consumato 0,045556 core-ore. Nessun risultato dell'audit ancora validato in questa registrazione; calibrazione subordinata a report, pin e copertura validi, senza nuova richiesta di via operativo.
+
+### 17/11/2026 — Audit contrastivo: contenuto valido, timeout operativo
+
+Audit 64652559 TIMEOUT, 63:07 contro 60 minuti; sottopasso batch COMPLETED 0:0. Rapporto completo con
+1.024 batch, verifiche di integrità e ricalcolo indipendente superati. Pannello 256–511: InfoNCE 99,8413%,
+RnC attivo 100%, CapgMyo esente dal solo requisito per dataset come prescritto. Gate di contenuto superato,
+gate operativo non superato; nessuna calibrazione sottomessa. Il controllo seriale usa il loader completo
+e non sfrutta otto core in parallelo: preventivo troppo stretto, nessuna evidenza di errore scientifico,
+OOM o eccezione Python. Consuntivo audit 8,415556 core-ore (tetto 8), con checkout 8,461111; zero GPU.
+SLURM OverTimeLimit è 3 minuti; non usarlo come margine garantito per le fasi successive.
+
+Lettura e proposta non applicata in docs/reviews/contrastive_audit_results_20261117.md: recupero del rapporto
+completo tramite rettifica operativa specifica, nessun rerun identico; riduzione dei tre checkout residui
+a 240 secondi per massimo totale 129,261111 core-ore entro 129,333333. Nessuna modifica a ricetta, soglie,
+λ, selezione, sorgenti o allocazioni GPU. Il via operativo di Simone persiste ma non cancella i gate;
+nessun nuovo job finché la rettifica non è registrata. Evidenze archiviate, nessun monitor.

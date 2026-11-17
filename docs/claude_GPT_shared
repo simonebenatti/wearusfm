@@ -5883,6 +5883,19 @@ pari calcolo sono confronti distinti; necessari benchmark e ottimizzazione verif
 Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
+
+### 2026-11-17 | GPT | Audit contrastivo completato nei contenuti, TIMEOUT operativo | Codice f09bf85
+
+Job 64652559: TIMEOUT dopo 3.787 secondi contro 3.600, sottopasso batch COMPLETED 0:0. Rapporto completo
+SHA 5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b, 1.024 batch e 32.768 finestre.
+Pannello 256–511: InfoNCE 8.179 / 8.192 (99,8413%), RnC 256 / 256; CapgMyo 0 / 13 correttamente esente
+dal solo minimo per dataset. Pin di dati/config/sorgenti e conteggi verificati, secondo ricalcolo indipendente
+concorde. Nessuna nuova review Claude attribuita. Copertura valida, gate operativo non superato: calibrazione
+non sottomessa. Audit 8,415556 core-ore, zero GPU; con i checkout 8,461111 core-ore. Rapporto, log, accounting
+e verifica riproducibile archiviati in audit_completed_20261117; lettura in
+docs/reviews/contrastive_audit_results_20261117.md. Proposta di recupero documentata, non applicata.
+Nessun cambio di codice/ricetta/soglie, nessun retry o monitor.
+
 ## 2) Problemi trovati
 
 ### GPT — 17/11/2026: audit avviato come catena, esito ancora da leggere
@@ -8718,3 +8731,14 @@ Un banco energetico strutturato sarebbe più diretto rispetto alla domanda sulla
 potenza, ma non definitivo per ogni architettura o dose. Il4×gradi di libertà
 è soltanto una regola indicativa sotto ipotesi fissate, non universale. Non cambia
 la candidata scelta; nessun errore dei run correnti dedotto dalla discussione.
+
+### 2026-11-17 | GPT | Audit: preventivo troppo stretto e stato SLURM distinto dal contenuto | Codice f09bf85
+
+L'audit riproduce 24 flussi logici in serie col loader completo, non usa otto worker in parallelo e calcola
+anche ancore/codici/vicini inutilizzati dal controllo. Tempo CPU 35:38,449, RAM massima 21,51 GiB su 30;
+nessuna eccezione Python o evidenza OOM. Senza tempi per fase non attribuiamo il ritardo a un componente
+specifico. OverTimeLimit di SLURM è 3 minuti: il rapporto completo è stato scritto appena prima della fine
+a 63:07. TIMEOUT resta tale, anche se il runtime accetterebbe il contenuto. Superamento audit 0,415556
+core-ore; con massimi residui invariati il totale diventerebbe 129,461111 contro 129,333333. Proposta non
+applicata: eccezione operativa documentata per recuperare questo rapporto e tre checkout residui da 240 s
+invece di 300, massimo totale 129,261111. Nessuna nuova sottomissione in attesa della rettifica.
