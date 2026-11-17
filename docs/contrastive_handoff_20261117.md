@@ -13,8 +13,14 @@ e lanciare la calibrazione GPU. La deroga riguarda esclusivamente il rapporto SH
 `5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b`. Lo stato TIMEOUT e il costo
 8,415556 core-ore restano nel consuntivo. Release concreta verificata e review indipendente favorevole
 in `docs/reviews/contrastive_calibration_release_20261117.md`; nessuna nuova review attribuita a Claude.
-Calibrazione pronta per sottomissione: 512 batch senza update, 4 GPU, 32 CPU, 240 GiB, 30 minuti.
-ID logico `CONTRAST-CALIB-v2-20261116`. Nuovo checkout `contrastive-v2-20261117-calibration`, 4 CPU / 240 s.
+Calibrazione **64701482 RUNNING** alle 19:49:20 Europe/Rome: 512 batch senza update, 4 GPU, 32 CPU,
+240 GiB, 30 minuti, nodo lrdn2820. ID logico `CONTRAST-CALIB-v2-20261116`: non duplicarlo.
+Checkout **64701182 COMPLETED 0:0**, 106 s, SHA `4fc515257b1965a7ac1aabad22df3ade6b651b1a`.
+Cartella `/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-calibration`.
+Ricevute, hash verificati sul cluster e snapshot in `calibration_submission_20261117/`.
+Log `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/contrastive_gpu_64701482.out`.
+Output `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/calibration`.
+Consuntivo audit più tre checkout: 8,578889 core-ore; GPU ancora in corso.
 I tre checkout residui hanno tetto 240 s: totale massimo aggiornato 129,261111 core-ore entro 129,333333;
 14 GPU-ore invariato. Nessun training scientifico rilasciato, nessun audit duplicato o monitor.
 
@@ -45,8 +51,8 @@ Ricevute del submitter, rifiuti, diagnosi QoS/dipendenza e consuntivi dei checko
 1. Il prerequisito audit è soddisfatto dalla rettifica esplicita di Simone, dal rapporto completo verificato
 e da `releases/audit_recovery_20261117.json`. Non pretendere di nuovo COMPLETED per questo esatto job,
 non rifare l'audit e non estendere la deroga a fasi successive. La lettura precedente resta agli atti.
-2. Solo dopo il gate: preparare release di calibrazione `APPROVED_FOR_PREPARATION` con SHA dell'audit, del config e dei quattro input, 4 rank, 6 worker/rank, `time_limit_s=1770`. Job wrapper `APPROVED_FOR_PREFLIGHT`, modalità `calibration`, allocazione 4 GPU, 32 CPU, 240 GiB, 30 min. Pin della presente autorità nel file di release; nessun obbligo di far approvare nuovamente a Simone la stessa fase.
-3. Pubblicare release e piano dei comandi, verificare SHA remoto, checkout congelato nuovo. Nessuna modifica ai sorgenti e al piano scientifico. Se il checkout è già COMPLETED ed è scaduto dal controller, verificare sacct e integrità e non usare un afterok inesistente; i gate del launcher restano obbligatori.
+2. **Già eseguito, non ripetere:** preparata release di calibrazione `APPROVED_FOR_PREPARATION` con SHA dell'audit, del config e dei quattro input, 4 rank, 6 worker/rank, `time_limit_s=1770`. Job wrapper `APPROVED_FOR_PREFLIGHT`, modalità `calibration`, allocazione 4 GPU, 32 CPU, 240 GiB, 30 min. Pin della presente autorità nel file di release; nessun obbligo di far approvare nuovamente a Simone la stessa fase.
+3. **Già eseguito:** release e piano pubblicati, SHA remoto verificato, nuovo checkout congelato pronto e job 64701482 sottomesso. Nessuna modifica ai sorgenti e al piano scientifico. Se il checkout è già COMPLETED ed è scaduto dal controller, verificare sacct e integrità e non usare un afterok inesistente; i gate del launcher restano obbligatori.
 4. Calibrazione completata: copiare metadati, ricalcolare ricevuta e coorte con `contrastive_prepare.py`, pubblicarle. Se uno dei λ è fuori range fermare tutta la coorte. Il checkpoint fisso di calibrazione serve al test CUDA: conservarlo.
 5. CUDA/NCCL con prova di uscita di un rank, poi tre benchmark e due riprese, secondo piano. Tutti gli invii tramite `scripts/submit_job.py` e ledger comune. Il budget dei training deve venire dal rapporto misurato, non dai tempi storici.
 

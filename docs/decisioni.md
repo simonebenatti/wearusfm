@@ -6519,3 +6519,13 @@ limite interno 1.770 s. Tetto 2 GPU-ore / 16 core-ore, checkout 0,266667 core-or
 con input pinnati e review indipendente favorevole. Nuovo checkout pubblicato, submitter e ledger comuni;
 nessuna dipendenza afterok dall'audit TIMEOUT. I training non sono rilasciati da questa decisione.
 Riferimento: docs/reviews/contrastive_calibration_release_20261117.md e releases/audit_recovery_20261117.json.
+
+### 17/11/2026 — Calibrazione inviata: 64701482
+
+Checkout 64701182 COMPLETED 0:0 in 106 s, congelato a 4fc515257b1965a7ac1aabad22df3ade6b651b1a;
+release, job, audit e input verificati sul cluster. Calibrazione 64701482 sottomessa tramite submitter
+comune e rilevata RUNNING su lrdn2820 alle 19:49:20 Europe/Rome: 4 GPU, 32 CPU, 240 GiB, 30 minuti,
+2 GPU-ore massime. Nessun afterok verso audit TIMEOUT; recupero puntuale già autorizzato e documentato.
+Audit non ripetuto. Consuntivo audit più tre checkout 8,578889 core-ore; massimo totale residuo incluso
+129,112222 core-ore entro 129,333333. Nessun cambio di sorgenti, piano scientifico, ricetta o soglie;
+training non rilasciati. Ricevute in calibration_submission_20261117, nessun monitor in background.

@@ -5918,6 +5918,18 @@ Sorgenti ab2d6460…, dati, plan.json, ricetta e soglie invariati. Release e job
 rettifica in releases/audit_recovery_20261117.json, piano umano in docs/reviews/contrastive_calibration_release_20261117.md.
 Pubblicazione e nuovo checkout precedono l'invio; ricevute successive attestano gli ID effettivi.
 
+
+### 2026-11-17 | GPT | Calibrazione contrastiva sottomessa e RUNNING | Codice 4fc5152
+
+Checkout 64701182 COMPLETED 0:0 in 106 secondi, SHA 4fc515257b1965a7ac1aabad22df3ade6b651b1a,
+pronto/pulito, pin di job/release/config/audit/quattro input verificati sul cluster. Calibrazione
+64701482, ID CONTRAST-CALIB-v2-20261116, inviata con submitter e ledger comuni; RUNNING su lrdn2820
+alle 19:49:20 Europe/Rome, 4 GPU / 32 CPU / 240 GiB, tetto 30 minuti (2 GPU-ore). Dispatcher sul
+job pinnato 4d00d636… e sorgenti ab2d6460…. Audit non rifatto. Nessuna nuova loss/ricetta/soglia.
+Rettifica e release pubblicate in 4fc5152, piano comandi in a5c8226; ricevute e stato in
+results/infra/contrastive_comparison_20261116/calibration_submission_20261117/. Training non rilasciati,
+calibrazione senza update; lettura di esito e λ resta da fare. Nessun monitor in background.
+
 ## 2) Problemi trovati
 
 ### GPT — 17/11/2026: audit avviato come catena, esito ancora da leggere
@@ -8777,3 +8789,12 @@ Il via esplicito successivo di Simone chiude il solo impedimento operativo dell'
 oltre i 60 minuti resta registrato; nessuna accettazione generale di TIMEOUT. I λ non sono ancora misurati
 e i training restano non rilasciati. Calibrazione incompleta o un λ fuori [1e-4, 1] fermano l'intera coorte,
 senza clamp, riselezione o retry automatico. Il nuovo tetto checkout non usa la tolleranza SLURM come margine.
+
+### 2026-11-17 | GPT | Stato iniziale della calibrazione distinto dal suo esito | Codice 4fc5152
+
+64701482 e' RUNNING, non ancora un risultato di calibrazione. Sono da verificare conclusione regolare,
+512 batch, zero update, ricevuta/coorte e λ. Checkout da 106 s entro 240; audit più tre checkout
+8,578889 core-ore, massimo totale con consuntivi correnti 129,112222 entro 129,333333. Nessun retry
+dell'audit o deroga alle fasi successive. Il primo lettore remoto dei pin usava zoneinfo, assente dal
+Python di sistema del login: corretto solo il comando di raccolta a UTC, nessun job toccato; verifica
+finale riuscita prima dell'invio. Nessun nuovo consenso richiesto per le operazioni già autorizzate.
