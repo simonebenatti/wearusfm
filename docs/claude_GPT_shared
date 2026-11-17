@@ -178,6 +178,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### GPT — 17/11/2026: memoria seriale corretta dopo rifiuto dell'audit
+
+Il checkout 64652044 è completato, ma l'audit non è stato creato: QoSMaxMemoryPerUser per 32 GiB richiesti oltre 30.800 MiB ammessi. Corretto errore GPT di launcher/guardia a 30 GiB, 18 test passati, nessun cambiamento scientifico. Nuovo digest operativo `ab2d6460…`, release aggiornata prima della ripresentazione con `--dopo-rifiuto`. Il vecchio checkout resta immutato; il nuovo richiede 4 CPU per 4 minuti, entro il costo residuo della fase iniziale. Nessuna GPU consumata.
+
+
 ### GPT — 17/11/2026: Simone affida a GPT il rilascio del collaudo contrastivo
 
 Simone autorizza GPT a procedere se pronto, senza attendere la nuova review di Claude per questo giro. Consegna `c680e95`/`914b735`, sorgenti invariati e 725 test mirati passati. Pubblicati release operativa e job audit pinnato; perimetro solo collaudo preparatorio (14 GPU-ore, 129,3333 core-ore massime). Primo passo checkout + audit CPU, zero GPU-ore. Nessun training rilasciato, nessun nuovo criterio, nessun monitor in background. Riferimento: `docs/reviews/contrastive_preflight_release_20261117.md`. Stato degli invii da registrare dopo ricevuta del submitter comune.
@@ -5869,6 +5874,11 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### GPT — 17/11/2026: memoria seriale corretta dopo rifiuto dell'audit
+
+Il checkout 64652044 è completato, ma l'audit non è stato creato: QoSMaxMemoryPerUser per 32 GiB richiesti oltre 30.800 MiB ammessi. Corretto errore GPT di launcher/guardia a 30 GiB, 18 test passati, nessun cambiamento scientifico. Nuovo digest operativo `ab2d6460…`, release aggiornata prima della ripresentazione con `--dopo-rifiuto`. Il vecchio checkout resta immutato; il nuovo richiede 4 CPU per 4 minuti, entro il costo residuo della fase iniziale. Nessuna GPU consumata.
+
 
 ### GPT — 17/11/2026: autorità del rilascio distinta dalla review di Claude
 

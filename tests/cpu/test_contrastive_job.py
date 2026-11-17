@@ -131,6 +131,16 @@ def test_allocation_guard_checks_gpu_cpu_memory_and_nodes(monkeypatch):
     with pytest.raises(ValueError, match="four GPUs"): J.validate_allocation("gpu")
 
 
+def test_cpu_allocation_accepts_30_gib_and_rejects_32_gib(monkeypatch):
+    for key, value in {"SLURM_JOB_NUM_NODES": "1", "SLURM_NTASKS": "1", "SLURM_CPUS_PER_TASK": "8",
+                       "SLURM_MEM_PER_NODE": str(30 * 1024)}.items():
+        monkeypatch.setenv(key, value)
+    J.validate_allocation("cpu")
+    monkeypatch.setenv("SLURM_MEM_PER_NODE", str(32 * 1024))
+    with pytest.raises(ValueError, match="allocation"):
+        J.validate_allocation("cpu")
+
+
 def test_cuda_command_requires_the_same_invocations_rank_exit_receipt(job_env):
     job = job_env[0]("cuda")
     command = J.build_command(job, "gpu", 1800)

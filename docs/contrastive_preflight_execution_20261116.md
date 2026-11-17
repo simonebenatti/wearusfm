@@ -10,12 +10,12 @@ La ricetta scientifica è in `contrastive_comparison_protocol_20261116.md` e `..
 
 | Cella | Lavoro | Dipendenza | Allocazione | Tetto GPU-ore | Tetto core-ore |
 |---|---|---|---|---:|---:|
-| Audit | 1.024 batch del flusso vero, pannello 256–511, maschere e copertura | Review e checkout | 8 CPU, 32 GiB, 60 min | 0 | 8 |
+| Audit | 1.024 batch del flusso vero, pannello 256–511, maschere e copertura | Review e checkout | 8 CPU, 30 GiB, 60 min | 0 | 8 |
 | Calibrazione | 512 batch, nessun update dei pesi, prima selezione di 32 batch informativi nel pannello fissato | Audit valido | Come CUDA | 2 | 16 |
 | CUDA | Oracolo del gradiente a quattro rank, FP32/bf16, rank senza posa; arresti coordinati | Calibrazione valida | 4 GPU, 32 CPU, 240 GiB, 30 min | 2 | 16 |
 | Benchmark completo × 3 | C0, CN, CR, 576 update dalla stessa inizializzazione | Ricevuta unica valida, λ entrambi ammessi e CUDA valido | Come CUDA, ciascuno | 6 | 48 |
 | Ripresa × 2 | CN e CR: 544 update, fine processo, nuovo torchrun per altri 32 | Stessa ricevuta, CUDA valido e stesso insieme di ricette | Come CUDA, ciascuno | 4 | 32 |
-| Lettura | Confronto delle riprese, rapporti dei gradienti, preventivo misurato | Cinque benchmark completi | 8 CPU, 32 GiB, 60 min | 0 | 8 |
+| Lettura | Confronto delle riprese, rapporti dei gradienti, preventivo misurato | Cinque benchmark completi | 8 CPU, 30 GiB, 60 min | 0 | 8 |
 | Checkout × 4 | Preparazione iniziale; release dopo audit; ricette dopo calibrazione; lettura dopo benchmark | Commit pubblicati e verificati | 4 CPU, 5 min ciascuno | 0 | 1,3333 |
 | **Totale massimo** | | | | **14** | **129,3333** |
 
@@ -68,3 +68,5 @@ Se un criterio fallisce, si archiviano evidenze e consuntivo e si richiede una n
 Per ciascun braccio si usa il maggiore fra tempo totale/576 e costo medio degli update ordinari più il sovraccosto diagnostico misurato alla frequenza futura. `t_step_s` include già il caricamento dei dati, quindi non si somma di nuovo `t_data_s`. Margine del 50%, riserva di 300 secondi per fase e arrotondamento a cinque minuti, separatamente per 5.000 e ulteriori 14.618 update. Si riportano stima e tetto in GPU-ore/core-ore, per braccio e fase.
 
 La ricevuta del preventivo è ricalcolata dalle evidenze dal gate dei training. La vecchia proiezione 50,83 GPU-ore complessive per tre bracci è solo un riferimento, non un'autorizzazione quantitativa né un nuovo tempo misurato. Le estrazioni e i fit downstream hanno un preventivo separato da pubblicare prima dei loro invii. Il collaudo riuscito produce `PASSED_FOR_REVIEW`, non una release dei training: si pubblicano lettura, costi e convergenza prima di congelare la release successiva.
+
+Rettifica operativa del 17/11: memoria CPU 30 GiB dopo rifiuto dei 32 GiB da parte della QoS. I quattro stadi di checkout usano al massimo cinque job: primo completato in 30 secondi e correzione con tetto 240 secondi, entro il budget del primo stadio. Dettagli e ricevuta nella release del 17/11.

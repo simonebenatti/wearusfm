@@ -1,0 +1,16 @@
+{
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "old_source_sha256": "651d3d8291db5afe0fb8d7b3ffc53b5234960bbe0a9236a1f853e6cee7b1eca5",
+  "changed_execution_files": [
+    "scripts/contrastive_job.py",
+    "scripts/slurm/contrastive_preflight_cpu.sbatch"
+  ],
+  "tests": "tests/cpu/test_contrastive_job.py",
+  "passed": 18,
+  "seconds": 0.95,
+  "shell_syntax": true,
+  "diff_check": true,
+  "scientific_sources_unchanged": true,
+  "prior_full_verification": "review_response/verification_v2.json",
+  "training_approved": false
+}

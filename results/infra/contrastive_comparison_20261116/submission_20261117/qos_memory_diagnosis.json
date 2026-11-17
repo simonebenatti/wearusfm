@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-17",
+  "audit_job_created": false,
+  "rejection": "QOSMaxMemoryPerUser",
+  "qos": "lrd_all_serial",
+  "max_tres_per_user": "cpu=8,mem=30800M,node=1",
+  "max_tres_per_job": "cpu=8,mem=30800M,node=1",
+  "requested_memory_mib": 32768,
+  "corrected_memory_mib": 30720,
+  "cpu_hours_gpu_hours_unchanged": true,
+  "extra_checkout_budget": {
+    "old_completed_core_hours": 0.03333333333333333,
+    "new_cpus": 4,
+    "new_max_seconds": 240,
+    "combined_max_core_hours": 0.3,
+    "original_first_checkout_core_hours_cap": 0.3333333333333333
+  },
+  "action": "Minimal launcher/allocation guard/test correction, reviewed before explicit --dopo-rifiuto; new frozen checkout. No scientific criterion or data change."
+}

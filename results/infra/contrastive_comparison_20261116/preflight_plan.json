@@ -3,11 +3,11 @@
   "status": "APPROVED_FOR_PREFLIGHT",
   "submission_authorized_after_convergence": true,
   "training_authorized": false,
-  "source_sha256": "651d3d8291db5afe0fb8d7b3ffc53b5234960bbe0a9236a1f853e6cee7b1eca5",
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
   "review": {
     "path": "docs/reviews/contrastive_preflight_release_20261117.md",
-    "bytes": 3009,
-    "sha256": "18431ebd7a530da29039415e2f4b428803253ba0c32b55ebe1e1ecfd3253060a"
+    "bytes": 4318,
+    "sha256": "641a92dfe7f31880c40d478995eaa6d79508c81c075dc6e53cb0111c5de1744c"
   },
   "input_sha256": {
     "manifest": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
@@ -24,18 +24,24 @@
     "gpu_hours_cap": 14,
     "cpu_audit": {
       "cpus": 8,
-      "memory_gib": 32,
+      "memory_gib": 30,
       "seconds": 3600
     },
     "cpu_readout": {
       "cpus": 8,
-      "memory_gib": 32,
+      "memory_gib": 30,
       "seconds": 3600
     },
     "checkouts": {
-      "count": 4,
+      "logical_stages": 4,
+      "maximum_jobs_including_memory_correction": 5,
       "cpus": 4,
-      "seconds_each": 300
+      "initial_completed_seconds": 30,
+      "correction_seconds": 240,
+      "subsequent_count": 3,
+      "subsequent_seconds_each": 300,
+      "combined_core_hours_max": 1.3,
+      "original_core_hours_cap": 1.3333333333333333
     },
     "total_core_hours_cap": 129.33333333333334
   },
@@ -116,5 +122,10 @@
   "failure_policy": "Any failed/incomplete stage stops dependent stages; archive logs and receipts, diagnose; no automatic retry, new lambda, new selection, higher walltime or partial-cohort promotion.",
   "fresh_outputs": "WORK/wearusfm_runs/results/contrastive_preflight_20261116_v2/<cell>",
   "execution": "Frozen reviewed per-cell job JSON via scripts/slurm/contrastive_preflight_{cpu,gpu}.sbatch and shared scripts/submit_job.py ledger. No sbatch outside submitter.",
-  "approval_authority": "Simone explicit instruction 2026-11-17; GPT readiness decision, no new Claude rereview required for this preflight"
+  "approval_authority": "Simone explicit instruction 2026-11-17; GPT readiness decision, no new Claude rereview required for this preflight",
+  "operational_correction": {
+    "cause": "sbatch rejected 32GiB above QoS30800MiB, no audit job created",
+    "action": "30GiB; new frozen checkout and explicit after-rejection submission",
+    "scientific_changes": false
+  }
 }

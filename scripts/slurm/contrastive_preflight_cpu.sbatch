@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH -p lrd_all_serial
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=32G
+#SBATCH --mem=30G
 #SBATCH --time=01:00:00
 #SBATCH -J contrastive_cpu
 #SBATCH -o /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/contrastive_cpu_%j.out

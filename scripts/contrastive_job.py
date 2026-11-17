@@ -138,7 +138,7 @@ def build_command(job, kind, allocated_seconds):
 
 def validate_allocation(kind):
     expected_cpu = 32 if kind == 'gpu' else 8
-    expected_memory = 240 * 1024 if kind == 'gpu' else 32 * 1024
+    expected_memory = 240 * 1024 if kind == 'gpu' else 30 * 1024
     if (int(os.environ.get('SLURM_JOB_NUM_NODES','0')) != 1 or int(os.environ.get('SLURM_NTASKS','0')) != 1 or
             int(os.environ.get('SLURM_CPUS_PER_TASK','0')) != expected_cpu or
             int(os.environ.get('SLURM_MEM_PER_NODE','0')) != expected_memory):
