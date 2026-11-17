@@ -1,0 +1,35 @@
+WearUsFM — InfoNCE e Rank-N-Contrast in MATLAB
+
+1. Estrai lo ZIP.
+2. In MATLAB imposta come Current Folder la cartella matlab_contrastive_losses.
+3. Nella Command Window esegui:
+
+   results = demo_contrastive_losses;
+   report = verify_matlab_losses;
+
+Il primo comando mostra numeri e figure dei due esempi sintetici.
+Il secondo verifica 5 casi InfoNCE e 6 casi Rank-N-Contrast contro i valori
+Python gia' inclusi nel file python_reference.mat.
+
+Per eseguire il demo senza figure:
+   results = demo_contrastive_losses(false);
+
+Per leggere le formule e seguire i passaggi con il debugger:
+   edit wearusfm_info_nce
+   edit wearusfm_rank_contrast
+
+Le matrici intermedie sono in results.nceDetails e results.rncDetails.
+Il README.md spiega ingressi, maschere, normalizzazioni e differenze delle loss.
+
+Requisito: MATLAB base. Python e Deep Learning Toolbox non sono necessari.
+La verifica originale e' stata eseguita con MATLAB R2026b: 11 casi passati,
+scarto massimo dal riferimento Python 9,09e-13. Le altre versioni non sono
+state verificate. I file .m e .mat del pacchetto corrispondono a quelli verificati.
+
+Questi esempi calcolano il valore numerico delle loss su matrici: servono a
+ispezionare e provare le formule. Non includono autodiff o training del FM.
+Tutti i dati sono sintetici.
+
+Lo ZIP include le fixture e le ricevute della verifica. Lo script Python per
+rigenerare le fixture resta nel repository completo; non occorre per provare
+questo pacchetto in MATLAB. package_manifest.json elenca gli hash dei file.

@@ -5896,6 +5896,15 @@ e verifica riproducibile archiviati in audit_completed_20261117; lettura in
 docs/reviews/contrastive_audit_results_20261117.md. Proposta di recupero documentata, non applicata.
 Nessun cambio di codice/ricetta/soglie, nessun retry o monitor.
 
+
+### 2026-11-17 | GPT | Pacchetto ZIP MATLAB richiesto da Simone | Esempi 1d87e8d
+
+Creato deliverables/WearUsFM_MATLAB_InfoNCE_RnC.zip: quattro .m, fixture .mat, README, guida rapida
+LEGGIMI e ricevute/hash. MATLAB base, nessuna dipendenza Python per eseguire demo e verifica. Controllati
+CRC e uguaglianza byte per byte dei file estratti; hash .m e riferimento coerenti con gli 11 casi MATLAB
+R2026b gia' verificati. Nessuna nuova esecuzione MATLAB in questa consegna. Nessuna modifica delle loss
+o azione sulla campagna cluster.
+
 ## 2) Problemi trovati
 
 ### GPT — 17/11/2026: audit avviato come catena, esito ancora da leggere
@@ -8742,3 +8751,9 @@ a 63:07. TIMEOUT resta tale, anche se il runtime accetterebbe il contenuto. Supe
 core-ore; con massimi residui invariati il totale diventerebbe 129,461111 contro 129,333333. Proposta non
 applicata: eccezione operativa documentata per recuperare questo rapporto e tre checkout residui da 240 s
 invece di 300, massimo totale 129,261111. Nessuna nuova sottomissione in attesa della rettifica.
+
+### 2026-11-17 | GPT | Perimetro del pacchetto MATLAB
+
+Lo ZIP contiene forward numerici e dati sintetici, non autodiff o training. Lo script opzionale
+generate_reference.py richiede il repository Python completo ed e' escluso: le fixture sono gia' incluse.
+Verifica del pacchetto e degli hash, nessun nuovo test di compatibilita' con altre versioni MATLAB.
