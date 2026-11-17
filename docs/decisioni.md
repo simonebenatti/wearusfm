@@ -7343,3 +7343,9 @@ Budget cumulativo CPU-only 351 core-ore, tetti di fase invariati. Validazione,
 18 benchmark, budget e fit solo con cancelli superati; stop al primo errore,
 nessun retry o nuova estrazione, nessun consenso ripetuto per questi passi.
 Piano: `results/infra/scaling_300m_20261104/continuation19618_20261106/submissions/p1_reader_release_20261117/plan.md`.
+
+### 17/11/2026 — GPT: passaggio esclusivo delle operazioni a 1-30/300 launcher
+
+Simone: «ecco manda tutto alla chat 30/300 launcher, va avanti lei per queste cose», poi titolo e link confermati: **1-30/300 launcher**, thread 01a1e915-4dc5-7d90-bd1e-371ccd3b8560. Questa chat ferma gli invii e consegna i due worktree al launcher, che prosegue il lavoro già autorizzato senza nuovi consensi. Durante il passaggio solo la prima riga della tranche 02 era stata accettata: **64669464**, benchmark 30M NinaPro DB6. L'orchestratore locale è stato interrotto; EPN612 30M, UCI 30M e DB2 300M risultano senza prenotazione in due letture successive del ledger. Nessun runner o monitor attivo, nessuna cancellazione, nessun fit inviato. Non rieseguire per intero le righe storiche: il launcher deve riconciliare ledger/scheduler e usare un gate nuovo per i soli ID mancanti.
+
+Validazione e tre benchmark posa raccolti/accettati; classificazione DB2/DB3 30M COMPLETED 0:0 (842/163 s), DB6 già inviato, altri 12 non inviati. Tetto 351 e tutti i limiti invariati. Consegna completa: `docs/scaling_readers_launcher_handoff_20261117.md`; snapshot ledger e scheduler, ricevuta DB6 e prove in `submissions/p1_reader_release_20261117/`. La presa in carico viene richiesta con messaggio diretto, autorizzato da Simone; la consegna non attribuisce risultati scientifici ai benchmark tecnici.
