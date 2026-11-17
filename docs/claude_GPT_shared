@@ -8775,6 +8775,33 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Punta del ramo di GPT controllata alle 09:37, alle 11:34 e alle 12:37, subito prima del commit: `c15aac9`.
 - Il prompt per GPT consolidamento è nella sezione 9 della review ed è stato consegnato a Simone.
 
+### 2026-11-17 | Claude | Controproposta di GPT sulla ricetta della TCN (S-1, A-1): accolta, con quattro punti da fissare nella revisione (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: la risposta di GPT consolidamento alla review `32e5452`, incollata in chat da Simone la sera del 17/11. GPT non ha
+  modificato file: il ramo `codex/pose-temponet-proposal-20261117` è ancora a `c15aac9` (controllato alle 19:51).
+- GPT accetta S-1 e propone: Kaiming negli strati nascosti, con bias nascosti e uscita a zero, uguale per MLP e TCN; LR 1e-4, 3e-4,
+  1e-3 e 3e-3, con un'estensione al bordo; 150 epoche e una sola continuazione fino a 300 se il minimo della MSE o dell'errore
+  dinamico interno cade nelle ultime cinque; controlli già nella prima epoca; esito «ottimizzazione non risolta entro il budget».
+  La selezione resta sulla sola MSE, con entrambe le curve pubblicate. Prima dei bersagli veri, due controlli positivi sui soli
+  `lat` di train: un bersaglio lineare noto e uno temporale non lineare noto. Ramo lineare a zero in TCN e MLP, allenato insieme da
+  zero e non dalla testa storica. Convergenza controllata anche per i comparatori. Preventivo da rifare.
+- Claude accoglie l'impianto e due correzioni di GPT alla review (voce nella sezione 2). Restano da fissare nella revisione, prima
+  dei fit:
+  1. controlli positivi: criterio legato al guadagno piantato, rumore tarato sui numeri veri, finestre dinamiche del bersaglio
+     sintetico, criterio anche per il controllo lineare, conseguenza del fallimento;
+  2. la regola di S-2 per l'epoca scelta lontana dall'ottimo dinamico interno, soprattutto per L13, e l'uso della soglia dinamica
+     nel trigger dell'estensione;
+  3. per L0 e L13, che sono lineari, la soluzione in forma chiusa sui fold come riferimento descrittivo della convergenza;
+  4. conseguenza del controllo nella prima epoca, epoche dei rifit dopo un'estensione, ramo lineare in TCN-pre o no, ramo lineare
+     sulla stessa LayerNorm di L0, nuovo oggetto del primario nella tabella del §10 (R-3) e nelle etichette (K-2).
+- Restano dovuti gli altri punti della review: C-1, C-2, C-3, R-1, R-2, P-1, K-1, K-3, le 50 note e la frase sulla dipendenza da
+  SCRATCH.
+- Le prove della review hanno provato un rimedio alla volta: la combinazione proposta da GPT non è stata provata in nessun mondo
+  sintetico. Conto grezzo di Claude dei passi, con tre teste per controllo: circa 531.000 senza estensioni e 1,26 milioni con
+  tutte, contro i 315.000 del conto di S-1. Col fattore 2 del gate sono 1,2-5,5 e 2,9-13 GPU-ore di soli passi, a 4,1 o 18,5 ms per
+  passo. La cifra vera viene dal benchmark.
+- Testo per GPT consegnato a Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12863,3 +12890,19 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   (unione nominale 442). La conclusione resta vera per il campo nominale. La correzione è di GPT (`c15aac9`, protocollo §2, riga
   23), verificata dai revisori.
 - Le voci dei giorni precedenti restano come sono; le rettifiche sono anche nella review del 17/11, sezione 1.
+
+### 2026-11-17 | Claude | Review `32e5452`: tre punti da correggere, due trovati da GPT
+
+- Regola delle epoche (S-1, correzione 2). «un'estensione unica delle epoche se il migliore cade nelle ultime cinque», letta sulla
+  MSE, avrebbe mancato proprio il caso che mostra il problema. Nel mondo V (verificatore, parte 4) la TCN a 1e-3 ha, a 50 epoche, il
+  minimo della MSE all'epoca 43 e quello di E_dyn all'ultima; a 150 epoche il minimo della MSE passa all'epoca 93 e il primario da
+  -3,1% a +3,65%. Il trigger deve guardare anche l'errore dinamico interno. Trovato da GPT, verificato da Claude nelle prove della
+  review.
+- A-1. «TCN e MLP non contengono L0», nel titolo, nella tabella dei verdetti e nel prompt, è sbagliato. Sul dominio limitato dopo la
+  LayerNorm, con bias abbastanza grandi da tenere accese tutte le ReLU (e nella TCN i soli tap centrali), le due reti sono
+  esattamente lineari. Il corpo di A-1 diceva «Possono imitare L0 solo con bias grandi che tengono accese le ReLU». Il punto giusto
+  è che manca un cammino lineare diretto: per questo il ramo lineare serve. Trovato da GPT.
+- Controllo positivo (S-1, correzione 1). L'ammissione «la TCN batte L0 di almeno il 2%» è troppo debole se il guadagno piantato è
+  grande. Nel mondo V la TCN a 150 epoche fa +3,65% e passerebbe, prendendo circa un sesto del guadagno della ridge con ritardi
+  (+21,3%, stima ottimista). Il criterio va legato al guadagno piantato. Trovato da Claude rileggendo la controproposta.
+- La review resta com'è: le correzioni entrano nella revisione di GPT e nella prossima review di Claude.
