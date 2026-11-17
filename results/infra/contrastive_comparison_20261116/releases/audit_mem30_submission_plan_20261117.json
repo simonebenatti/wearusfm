@@ -1,0 +1,62 @@
+{
+  "frozen_commit": "f09bf857eee24f02aff25fa743853d60fcab7f03",
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "campaign_directory": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-audit-mem30",
+  "authority": "docs/reviews/contrastive_preflight_release_20261117.md",
+  "submitter_sha256": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+  "commands": {
+    "CONTRAST-CHECKOUT-AUDIT-M30-20261117": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+      "--id",
+      "CONTRAST-CHECKOUT-AUDIT-M30-20261117",
+      "--agente",
+      "gpt",
+      "--campagna",
+      "CONTRASTIVE-v2-20261116",
+      "--gpu-ore",
+      "0",
+      "--script-stdin",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/scripts/slurm/campaign_checkout.sbatch",
+      "--",
+      "--cpus-per-task=4",
+      "--time=00:04:00",
+      "--mem=2G",
+      "--export=ALL,CAMPAIGN=contrastive-v2-20261117-audit-mem30,CAMPAIGN_SHA=f09bf857eee24f02aff25fa743853d60fcab7f03,EXPECTED_SHA=f09bf857eee24f02aff25fa743853d60fcab7f03"
+    ],
+    "CONTRAST-AUDIT-v2-20261116": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+      "--id",
+      "CONTRAST-AUDIT-v2-20261116",
+      "--agente",
+      "gpt",
+      "--campagna",
+      "CONTRASTIVE-v2-20261116",
+      "--gpu-ore",
+      "0",
+      "--dopo",
+      "CONTRAST-CHECKOUT-AUDIT-M30-20261117",
+      "--dopo-rifiuto",
+      "--",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-audit-mem30,EXPECTED_SHA=f09bf857eee24f02aff25fa743853d60fcab7f03",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-audit-mem30/scripts/slurm/contrastive_preflight_cpu.sbatch",
+      "results/infra/contrastive_comparison_20261116/releases/audit.job.json"
+    ]
+  },
+  "launch_order": [
+    "CONTRAST-CHECKOUT-AUDIT-M30-20261117",
+    "CONTRAST-AUDIT-v2-20261116"
+  ],
+  "audit_condition": "Frozen checkout COMPLETED 0:0 and verified ready; no duplicate logical IDs; afterok dependency retained.",
+  "resources": {
+    "gpu_hours": 0,
+    "core_hours_max": 8.266666666666667,
+    "completed_old_checkout_core_hours": 0.03333333333333333,
+    "combined_max": 8.3,
+    "original_first_phase_cap": 8.333333333333334
+  },
+  "submitted": false,
+  "supersedes": "audit_submission_plan_20261117.json",
+  "reason": "Confirmed Slurm memory rejection before job creation; corrected CPU30GiB, explicit after-rejection. Scientific sources unchanged."
+}
