@@ -6544,3 +6544,18 @@ pubblicazione, tre benchmark a 576 e due riprese 544+32, ciascuno con la stessa 
 Massimo totale con consuntivi 12,86 GPU-ore / 119,992222 core-ore entro 14 / 129,333333. Sorgenti, dati,
 plan.json e ricetta scientifica invariati; training scientifici non rilasciati. Riferimento:
 docs/reviews/contrastive_cuda_benchmark_release_20261117.md. Nessun monitor in background.
+
+### 17/11/2026 — CUDA: errore di compatibilità Path/mmap, benchmark non sottomessi
+
+Checkout 64705989 COMPLETED 0:0 in 67 s, SHA 93f24c962e86551a232bdec90c1598f3d6b53173.
+CUDA 64706211 FAILED 1:0 in 67 s: probe di uscita su quattro rank superato, successivo
+caricamento del checkpoint fermato da PyTorch perché mmap=True richiede un percorso stringa,
+mentre lo script passa Path. Nessun confronto numerico eseguito, nessun cuda.json; nessuno
+dei cinque benchmark sottomesso. La calibrazione resta valida, nessun cambio a λ o ricetta.
+
+Correzione individuata in sei siti di tre script, salvata come patch NON applicata. Tocca
+il digest esecutivo: prima di un rilancio occorre rettifica di compatibilità esplicita con
+evidenze originali intatte e pin verificati; nessun retry cieco o audit automaticamente rifatto.
+Riferimento docs/reviews/contrastive_cuda_failure_20261117.md, archivio cuda_completed_20261117/.
+Costo CUDA 0,074444 GPU-ore / 0,595556 core-ore; checkout 0,074444 core-ore. Totale consumato
+0,934444 GPU-ore / 16,128889 core-ore, incluso audit in timeout. Nessun monitor o training nuovo.

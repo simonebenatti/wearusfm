@@ -8,6 +8,17 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**Aggiornamento CUDA concluso:** 64706211 FAILED 1:0 dopo 67 s, prima dei confronti
+numerici: `torch.load(Path, mmap=True)` non è compatibile con il PyTorch del cluster,
+che richiede una stringa. Probe di uscita dei quattro rank superato, ma `cuda.json`
+assente e gate CUDA NON superato. **Nessuno dei cinque benchmark sottomesso.**
+Calibrazione e λ sotto restano validi. Checkout 64705989 COMPLETED 0:0 in 67 s,
+SHA 93f24c962e86551a232bdec90c1598f3d6b53173. Nessun retry, sorgenti ancora ab2d6460….
+Diagnosi, sei conversioni proposte e impatto sui pin in
+`docs/reviews/contrastive_cuda_failure_20261117.md`; evidenze in `cuda_completed_20261117/`.
+Non riutilizzare gli ID/output del tentativo e non inviare i benchmark prima della
+rettifica tecnica e di un collaudo positivo. La cronologia seguente conserva gli stati precedenti.
+
 **Aggiornamento calibrazione conclusa:** 64701482 COMPLETED 0:0, 774 s, 0,86 GPU-ore / 6,88 core-ore.
 512 batch, zero update, hash iniziale/student/teacher identici. Ricevuta PASSED_FOR_REVIEW, ricalcolo
 indipendente concorde: λ InfoNCE 0,11942686122572264, λ RnC 0,33044627364850215, entrambi ammessi.

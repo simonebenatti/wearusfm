@@ -1,0 +1,42 @@
+{
+  "observed_at_utc": "2026-11-17T21:54:40.034778+00:00",
+  "job_id": 64706211,
+  "frozen_commit": "93f24c962e86551a232bdec90c1598f3d6b53173",
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "slurm_state": "FAILED",
+  "exit_code": "1:0",
+  "elapsed_seconds": 67,
+  "gpu_hours": 0.07444444444444444,
+  "core_hours": 0.5955555555555555,
+  "rank_exit_probe": {
+    "passed": true,
+    "validated_by": "contrastive_rank_exit.validate_receipt",
+    "report_sha256": "2672061462fe8f2f205da31b36fdc728fffb2572d79363e00bdd33b98e426e72",
+    "elapsed_seconds": 12.414796190336347,
+    "workers": 4,
+    "remaining_processes": []
+  },
+  "cuda_report_exists": false,
+  "cuda_numerical_gate": "NOT_RUN",
+  "cuda_overall_gate": "NOT_PASSED",
+  "cause": "PyTorch cluster implementation requires str filename when mmap=True; argparse supplied pathlib.Path",
+  "failure_before_reference_trajectory": true,
+  "calibration_unchanged_and_valid": true,
+  "benchmark_jobs_submitted": false,
+  "not_submitted_logical_ids": [
+    "CONTRAST-BENCH-C0-v2-20261116",
+    "CONTRAST-BENCH-CN-v2-20261116",
+    "CONTRAST-BENCH-CR-v2-20261116",
+    "CONTRAST-RESUME-CN-v2-20261116",
+    "CONTRAST-RESUME-CR-v2-20261116"
+  ],
+  "retry_performed": false,
+  "proposed_fix_applied": false,
+  "budget": {
+    "completed_gpu_hours": 0.9344444444444444,
+    "completed_core_hours": 16.128888888888888,
+    "campaign_gpu_hours_cap": 14,
+    "campaign_core_hours_cap": 129.33333333333334
+  },
+  "source_files_or_scientific_plan_changed": false
+}

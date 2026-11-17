@@ -1,0 +1,24 @@
+{
+  "status": "PROPOSED_NOT_APPLIED_NOT_RELEASED",
+  "files": {
+    "scripts/contrastive_cuda_check.py": {
+      "before_sha256": "3b66109fc82717ff7fd01538b9afbc6fcfff11a50a226c4f5d4f70a2a34a6a82",
+      "proposed_sha256": "e6f08503c477b6fd42a97288f13d8ca795f1fbfffc8f749ac95ac8f6ee9fce33",
+      "conversions": 1
+    },
+    "scripts/contrastive_run.py": {
+      "before_sha256": "9bb2eb22fb892e51dfc92c565bb20ed7cbbee4b16c916a9a830e670171be70ae",
+      "proposed_sha256": "1169dcc6aac0d77fa5e871af9caac7fef022a25d9829d655a47a9a5d6e233d6d",
+      "conversions": 1
+    },
+    "scripts/contrastive_benchmark_readout.py": {
+      "before_sha256": "5f6ab7df4b27528baab4c07be5036682743cb7e1e08ae0eedf1b08d6c4005cee",
+      "proposed_sha256": "d900d66440f226ce4b13880ac9b342a6bfbd755f113d5e72019ef38dbb5bd258",
+      "conversions": 4
+    }
+  },
+  "total_conversions": 6,
+  "recipe_changes": false,
+  "existing_source_digest_must_remain_frozen": true,
+  "requires_explicit_evidence_compatibility_amendment_before_deployment": true
+}

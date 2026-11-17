@@ -5943,7 +5943,27 @@ condizionati al rapporto CUDA/probe positivo letto e pubblicato. Nessun nuovo tr
 nessuna variazione dei sorgenti ab2d6460…, del piano scientifico o dei criteri. Autorità: istruzione di
 Simone di proseguire se passato. Nessuna nuova review attribuita a Claude.
 
+### 2026-11-17 | GPT | CUDA eseguito, evidenze archiviate e benchmark fermi | Codice 93f24c9
+
+Checkout 64705989 COMPLETED 0:0 in 67 s; CUDA 64706211 FAILED 1:0 in 67 s. Probe di uscita
+intenzionale dei quattro rank superato e autenticato, ma il controllo numerico non è iniziato:
+errore Path/mmap al caricamento del checkpoint. Raccolti log, sacct, probe e sorgente PyTorch
+con SHA verificati. Calibrazione e λ invariati; nessuno dei cinque benchmark sottomesso.
+Patch minima di sei conversioni individuata, NON applicata ai sorgenti congelati. Diagnosi
+e seguito tecnico in docs/reviews/contrastive_cuda_failure_20261117.md. Consuntivo cumulativo
+0,934444 GPU-ore / 16,128889 core-ore. Nessun retry o monitor in background.
+
 ## 2) Problemi trovati
+
+### 2026-11-17 | GPT | Compatibilità PyTorch del collaudo: Path con mmap
+
+Difetto degli script GPT: il PyTorch del cluster pretende str come primo argomento di torch.load
+quando mmap=True, mentre CUDA gli passa pathlib.Path. Identici rischi in validate_resume e nel
+lettore finale, sei siti complessivi. Il Mac con PyTorch più recente non aveva intercettato il
+problema. Il probe NCCL passato non sostituisce il collaudo numerico; nessun risultato sulle loss
+si ricava dal fallimento. Una conversione str(path) mantiene il caricamento ma cambia il digest
+di tre file inclusi nelle ricevute: rettifica tecnica da verificare prima di un nuovo checkout,
+senza falsificare i pin storici. Codice, ricetta e piano scientifico non modificati in questa lettura.
 
 ### GPT — 17/11/2026: audit avviato come catena, esito ancora da leggere
 

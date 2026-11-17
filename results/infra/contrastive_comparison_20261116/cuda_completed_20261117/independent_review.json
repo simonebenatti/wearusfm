@@ -1,0 +1,24 @@
+{
+  "reviewer": "audit_timeout_review",
+  "role": "independent subagent, not Claude",
+  "scope": "archived CUDA failure, rank-exit probe, proposed patch",
+  "verdict": "DIAGNOSIS_AND_UNAPPLIED_PATCH_CONFIRMED",
+  "checks": {
+    "validate_receipt": "PASSED",
+    "archive_manifest_bytes_and_sha256": "all match",
+    "remote_file_sha256": "8 files match",
+    "patch_apply_check": "PASSED",
+    "patch_ast_diff": "exactly 6 str conversions in first torch.load argument; remaining arguments unchanged",
+    "proposed_hashes": "all match",
+    "source_digest": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b"
+  },
+  "cuda_gate_passed": false,
+  "benchmark_submission_allowed": false,
+  "patch_deployed": false,
+  "required_before_rerun": [
+    "explicit old/new source compatibility mapping preserving original receipts",
+    "technical review of correction and provenance amendment",
+    "new frozen checkout and new job ID/output",
+    "whole CUDA cell must pass before benchmarks"
+  ]
+}

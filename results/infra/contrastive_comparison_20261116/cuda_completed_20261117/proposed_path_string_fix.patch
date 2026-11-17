@@ -1,0 +1,53 @@
+--- a/scripts/contrastive_cuda_check.py
++++ b/scripts/contrastive_cuda_check.py
+@@ -231,7 +231,7 @@
+     batches = build_batches(configs["CN"], args.manifest, args.root, scales, windows)
+     torch.manual_seed(base.seed)
+     initial_model = attach_contrastive_head(WearUsFM(base.model))
+-    saved = torch.load(args.calibration_checkpoint, map_location="cpu", weights_only=False, mmap=True)
++    saved = torch.load(str(args.calibration_checkpoint), map_location="cpu", weights_only=False, mmap=True)
+     initial = saved["student"]
+     if (saved.get("step") != 512 or saved.get("optimizer", {}).get("state") or
+             state_sha256(initial) != saved.get("contrastive_initial_sha256") or state_sha256(saved["teacher"]) != state_sha256(initial)):
+--- a/scripts/contrastive_run.py
++++ b/scripts/contrastive_run.py
+@@ -217,7 +217,7 @@
+             c.get("provenance", {}).get("calibration_sha256") != cohort["calibration_sha256"] or
+             c.get("config", {}).get("arm") != release["arm"] or (Path(out_dir)/"STOP").exists()):
+         raise ValueError(f"resume requires the successful matching {prior_step}-update split")
+-    state = torch.load(checkpoint, map_location="cpu", weights_only=False, mmap=True)
++    state = torch.load(str(checkpoint), map_location="cpu", weights_only=False, mmap=True)
+     if (type(state.get("step")) is not int or state["step"] != prior_step or state.get("world_size") != 4 or
+             state.get("contrastive_initial_sha256") != cohort["initial_state_sha256"] or
+             state.get("contrastive_provenance") != c.get("provenance") or
+--- a/scripts/contrastive_benchmark_readout.py
++++ b/scripts/contrastive_benchmark_readout.py
+@@ -152,8 +152,8 @@
+ 
+ 
+ def compare_resume(full_path, resumed_path, cfg, initial_sha, initial):
+-    a = torch.load(full_path, map_location='cpu', weights_only=False, mmap=True)
+-    b = torch.load(resumed_path, map_location='cpu', weights_only=False, mmap=True)
++    a = torch.load(str(full_path), map_location='cpu', weights_only=False, mmap=True)
++    b = torch.load(str(resumed_path), map_location='cpu', weights_only=False, mmap=True)
+     if a['step'] != 576 or b['step'] != 576:
+         raise ValueError('resume comparison needs576-update complete checkpoints')
+     if state_sha256(initial) != initial_sha:
+@@ -225,7 +225,7 @@
+         expected = .2*sum(r[k] for k in ANCHORS)+r['pose']+wn*r['contrast_nce']+wr*r['contrast_rnc']
+         if not math.isclose(r['total'], expected, rel_tol=1e-5, abs_tol=1e-6):
+             raise ValueError('weighted objective composition differs')
+-    checkpoint = torch.load(folder/'checkpoint.pt', map_location='cpu', weights_only=False, mmap=True)
++    checkpoint = torch.load(str(folder/'checkpoint.pt'), map_location='cpu', weights_only=False, mmap=True)
+     if (type(checkpoint.get('step')) is not int or checkpoint['step'] != 576 or checkpoint.get('world_size') != 4 or
+             checkpoint.get('config') != cfg or checkpoint.get('contrastive_initial_sha256') != cohort['initial_state_sha256'] or
+             checkpoint.get('contrastive_provenance') != provenance or len(checkpoint.get('rank_rng', [])) != 4 or
+@@ -246,7 +246,7 @@
+ 
+ 
+ def _initial_from_calibration(run_dir, receipt):
+-    saved = torch.load(Path(run_dir)/'checkpoint.pt', map_location='cpu', weights_only=False, mmap=True)
++    saved = torch.load(str(Path(run_dir)/'checkpoint.pt'), map_location='cpu', weights_only=False, mmap=True)
+     if (saved.get('step') != 512 or saved.get('optimizer', {}).get('state') or
+             saved.get('config') != _read(Path(run_dir)/'config.json') or
+             any(state_sha256(saved[part]) != receipt['initial_state_sha256'] for part in ('student', 'teacher'))):
