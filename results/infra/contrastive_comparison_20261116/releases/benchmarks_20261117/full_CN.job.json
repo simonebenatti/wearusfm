@@ -1,0 +1,63 @@
+{
+  "status": "APPROVED_FOR_PREFLIGHT",
+  "mode": "full",
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "review": {
+    "path": "docs/reviews/contrastive_cuda_benchmark_release_20261117.md",
+    "bytes": 5236,
+    "sha256": "105843a29c116b8ab34fba8e9c62de29cd2743e0d6d37c21e42252a3db64c98a"
+  },
+  "config": {
+    "path": "results/infra/contrastive_comparison_20261116/calibrated_cohort_20261117/CN.config.json",
+    "bytes": 5246,
+    "sha256": "eb0e84ae5814608a5670075a3f8a963b10aa9ff74212aee0e71281eae8ea184a"
+  },
+  "inputs": {
+    "manifest": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+      "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+    },
+    "scales": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+      "sha256": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486"
+    },
+    "window_seconds": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+      "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+    },
+    "pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+    }
+  },
+  "roots": [
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed"
+  ],
+  "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/benchmark/CN",
+  "release": {
+    "path": "results/infra/contrastive_comparison_20261116/releases/benchmarks_20261117/full_CN.release.json",
+    "bytes": 1868,
+    "sha256": "dd2fa21e03a69f5262427d33876cdd024e2ab5c9b148ee09bdefebb90c62dbbb"
+  },
+  "audit": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/audit.json",
+    "bytes": 20275571,
+    "sha256": "5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b"
+  },
+  "cohort": {
+    "path": "results/infra/contrastive_comparison_20261116/calibrated_cohort_20261117/cohort.json",
+    "bytes": 868,
+    "sha256": "1548f03ec97da10d49258b1552232a85fe6a10f1ea06e49a99d3519728927dcb"
+  },
+  "calibration_report": {
+    "path": "results/infra/contrastive_comparison_20261116/calibration_completed_20261117/calibration_report.json",
+    "bytes": 123720,
+    "sha256": "f57d8731a1434f592a6360547ad604cdedb517cc47e278c5c3839384df000b5e"
+  },
+  "calibration_summary": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/calibration/summary.json",
+    "bytes": 7497,
+    "sha256": "7a3b9490faf9c51d3012a52fdcfdcc8590853ca1329e3506e6d23de8bce4329f"
+  }
+}

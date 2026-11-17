@@ -1,0 +1,211 @@
+{
+  "status": "PASSED_FOR_REVIEW",
+  "failure_reasons": [],
+  "weights": {
+    "nce": 0.11942686122572264,
+    "rnc": 0.33044627364850215
+  },
+  "selected_steps": [
+    257,
+    258,
+    259,
+    260,
+    261,
+    262,
+    263,
+    264,
+    265,
+    266,
+    267,
+    268,
+    269,
+    270,
+    271,
+    272,
+    273,
+    274,
+    275,
+    276,
+    277,
+    278,
+    279,
+    280,
+    281,
+    282,
+    283,
+    284,
+    285,
+    286,
+    287,
+    288
+  ],
+  "coverage_nce": 0.9984130859375,
+  "coverage_rnc": 1.0,
+  "optimizer_updates": 0,
+  "initial_final_student_teacher_identical": true,
+  "elapsed_allocation_seconds": 774,
+  "gpu_hours": 0.86,
+  "core_hours": 6.88,
+  "checkpoint_sha256": "0756921a0e59c0d93cf5821793a8457f6becee7e55a7b68ea5ab1ec80e17d50a",
+  "first8_descriptive": {
+    "scope": "Descriptive only; historic training changes weights after first update, calibration never updates; no new numerical gate.",
+    "reference": {
+      "path": "/Users/simonebenatti/wearusfm_local/logs/review6_remote/control30m/metrics.jsonl",
+      "sha256": "b114f60017bb292094dd25225657554658ca8d0406e32c60e1e955afa22bbe39",
+      "metric": "grad_norm",
+      "scope": "all parameters, pre-clipping",
+      "updates": 19618
+    },
+    "historical": [
+      {
+        "step": 1,
+        "grad_norm": 27.793772145938465,
+        "log_rms": 1.0392302721738815,
+        "band_shape": 5.586148023605347,
+        "log_env": 2.406065583229065,
+        "ms_fast": 6.329767465591431,
+        "ms_slow": 13.039160251617432
+      },
+      {
+        "step": 2,
+        "grad_norm": 28.174824980768925,
+        "log_rms": 0.9400287568569183,
+        "band_shape": 5.500351071357727,
+        "log_env": 1.8179876506328583,
+        "ms_fast": 5.925407409667969,
+        "ms_slow": 13.5892813205719
+      },
+      {
+        "step": 3,
+        "grad_norm": 32.31263458649311,
+        "log_rms": 1.3192795515060425,
+        "band_shape": 6.321504831314087,
+        "log_env": 2.767396479845047,
+        "ms_fast": 6.774702191352844,
+        "ms_slow": 13.78410792350769
+      },
+      {
+        "step": 4,
+        "grad_norm": 30.937553589999755,
+        "log_rms": 1.0996505618095398,
+        "band_shape": 6.180536270141602,
+        "log_env": 2.1459103524684906,
+        "ms_fast": 6.597526431083679,
+        "ms_slow": 14.990324974060059
+      },
+      {
+        "step": 5,
+        "grad_norm": 31.926485045732075,
+        "log_rms": 1.1259793043136597,
+        "band_shape": 6.582298755645752,
+        "log_env": 1.8723037838935852,
+        "ms_fast": 6.550422430038452,
+        "ms_slow": 14.186389923095703
+      },
+      {
+        "step": 6,
+        "grad_norm": 29.75179022075256,
+        "log_rms": 1.1513454765081406,
+        "band_shape": 6.5972349643707275,
+        "log_env": 1.9422940909862518,
+        "ms_fast": 7.641970157623291,
+        "ms_slow": 16.54049825668335
+      },
+      {
+        "step": 7,
+        "grad_norm": 28.008148795680583,
+        "log_rms": 1.228180468082428,
+        "band_shape": 5.875417470932007,
+        "log_env": 2.4936715960502625,
+        "ms_fast": 7.3925580978393555,
+        "ms_slow": 14.747918844223022
+      },
+      {
+        "step": 8,
+        "grad_norm": 29.421942780809545,
+        "log_rms": 1.2584487795829773,
+        "band_shape": 5.582279443740845,
+        "log_env": 2.073406994342804,
+        "ms_fast": 6.094585418701172,
+        "ms_slow": 12.49223279953003
+      }
+    ],
+    "calibration": [
+      {
+        "step": 1,
+        "grad_norm": 27.793773976287625,
+        "log_rms": 1.0392304062843323,
+        "band_shape": 5.586147964000702,
+        "log_env": 2.4060662984848022,
+        "ms_fast": 6.329768538475037,
+        "ms_slow": 13.03915786743164
+      },
+      {
+        "step": 2,
+        "grad_norm": 28.203245161231205,
+        "log_rms": 0.9405944645404816,
+        "band_shape": 5.505183458328247,
+        "log_env": 1.8221473395824432,
+        "ms_fast": 5.926897406578064,
+        "ms_slow": 13.591007232666016
+      },
+      {
+        "step": 3,
+        "grad_norm": 32.40643749694156,
+        "log_rms": 1.3214207887649536,
+        "band_shape": 6.336478590965271,
+        "log_env": 2.7836904525756836,
+        "ms_fast": 6.779163599014282,
+        "ms_slow": 13.789731502532959
+      },
+      {
+        "step": 4,
+        "grad_norm": 31.114478408814144,
+        "log_rms": 1.1035480946302414,
+        "band_shape": 6.210114419460297,
+        "log_env": 2.173426926136017,
+        "ms_fast": 6.607373356819153,
+        "ms_slow": 15.003077983856201
+      },
+      {
+        "step": 5,
+        "grad_norm": 32.2316096896868,
+        "log_rms": 1.1332559287548065,
+        "band_shape": 6.635265588760376,
+        "log_env": 1.9175336360931396,
+        "ms_fast": 6.565961956977844,
+        "ms_slow": 14.206568479537964
+      },
+      {
+        "step": 6,
+        "grad_norm": 30.131930421864165,
+        "log_rms": 1.1583357751369476,
+        "band_shape": 6.675893187522888,
+        "log_env": 1.9967296719551086,
+        "ms_fast": 7.667569398880005,
+        "ms_slow": 16.57269310951233
+      },
+      {
+        "step": 7,
+        "grad_norm": 28.544905429256744,
+        "log_rms": 1.2372581660747528,
+        "band_shape": 5.972455024719238,
+        "log_env": 2.58672171831131,
+        "ms_fast": 7.424837589263916,
+        "ms_slow": 14.787506103515625
+      },
+      {
+        "step": 8,
+        "grad_norm": 30.247155771532746,
+        "log_rms": 1.2801146060228348,
+        "band_shape": 5.712970495223999,
+        "log_env": 2.1999840140342712,
+        "ms_fast": 6.1293370723724365,
+        "ms_slow": 12.541914701461792
+      }
+    ]
+  },
+  "independent_review": "audit_timeout_review independently recomputed exact lambdas, selection, coverage and provenance; approved for CUDA",
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "training_approved": false
+}

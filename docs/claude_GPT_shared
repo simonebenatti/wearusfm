@@ -5930,6 +5930,19 @@ Rettifica e release pubblicate in 4fc5152, piano comandi in a5c8226; ricevute e 
 results/infra/contrastive_comparison_20261116/calibration_submission_20261117/. Training non rilasciati,
 calibrazione senza update; lettura di esito e λ resta da fare. Nessun monitor in background.
 
+
+### 2026-11-17 | GPT | Calibrazione superata e coorte congelata per CUDA/benchmark | Run 4fc5152
+
+64701482 COMPLETED 0:0: 512 batch, 774 s, 0,86 GPU-ore / 6,88 core-ore. Metadata raccolti con SHA
+verificati; zero update, stato iniziale/student/teacher identico ba8a8657…. Ricevuta PASSED_FOR_REVIEW
+ricalcolata e review indipendente concorde: λN 0,11942686122572264, λR 0,33044627364850215; selezione
+passi registrati 257–288. InfoNCE 99,8413%, RnC attiva 100%; esenzione CapgMyo invariata. Coorte unica
+a 576 e ricette split 544 generate dalla ricevuta autenticata. Confronto descrittivo dei primi otto passi
+con lo storico incluso nel readout. Preparati e validati CUDA + cinque job benchmark; questi ultimi
+condizionati al rapporto CUDA/probe positivo letto e pubblicato. Nessun nuovo training scientifico,
+nessuna variazione dei sorgenti ab2d6460…, del piano scientifico o dei criteri. Autorità: istruzione di
+Simone di proseguire se passato. Nessuna nuova review attribuita a Claude.
+
 ## 2) Problemi trovati
 
 ### GPT — 17/11/2026: audit avviato come catena, esito ancora da leggere
@@ -8798,3 +8811,11 @@ senza clamp, riselezione o retry automatico. Il nuovo tetto checkout non usa la 
 dell'audit o deroga alle fasi successive. Il primo lettore remoto dei pin usava zoneinfo, assente dal
 Python di sistema del login: corretto solo il comando di raccolta a UTC, nessun job toccato; verifica
 finale riuscita prima dell'invio. Nessun nuovo consenso richiesto per le operazioni già autorizzate.
+
+### 2026-11-17 | GPT | Significato dei pesi calibrati e condizione CUDA
+
+I λ misurati bilanciano le norme secondo la regola storica scelta, non dimostrano efficacia downstream.
+La calibrazione lascia fermi tutti i pesi; dopo il primo passo lo storico usato nel confronto descrittivo
+li cambia, quindi non si pretende identità delle loss nei primi otto passi. Nessun benchmark prima del
+collaudo CUDA/NCCL e del probe di uscita di un rank validi. Totale massimo con consuntivo corrente
+12,86 GPU-ore / 119,992222 core-ore, entro i tetti 14 / 129,333333. Nessun monitor in background.

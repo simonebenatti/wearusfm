@@ -8,6 +8,17 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**Aggiornamento calibrazione conclusa:** 64701482 COMPLETED 0:0, 774 s, 0,86 GPU-ore / 6,88 core-ore.
+512 batch, zero update, hash iniziale/student/teacher identici. Ricevuta PASSED_FOR_REVIEW, ricalcolo
+indipendente concorde: λ InfoNCE 0,11942686122572264, λ RnC 0,33044627364850215, entrambi ammessi.
+Evidenze in `calibration_completed_20261117/`, coorte in `calibrated_cohort_20261117/`.
+Release CUDA e cinque benchmark condizionati in `docs/reviews/contrastive_cuda_benchmark_release_20261117.md`
+e `releases/cuda_benchmarks_20261117.json`. Prossimo checkout `contrastive-v2-20261117-benchmarks`.
+Prima sottomettere CUDA (`CONTRAST-CUDA-v2-20261116`); solo dopo rapporto e probe validi, pubblicati,
+sottomettere tre benchmark completi e due riprese. Non sostituire la lettura con il solo afterok.
+Sorgenti e plan.json invariati; nessun nuovo consenso richiesto. La cronologia sotto conserva i vecchi snapshot.
+
+
 **Rettifica autorizzata da Simone il 17/11:** usare il rapporto completo dell'audit 64652559 senza rifarlo
 e lanciare la calibrazione GPU. La deroga riguarda esclusivamente il rapporto SHA
 `5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b`. Lo stato TIMEOUT e il costo

@@ -6529,3 +6529,18 @@ comune e rilevata RUNNING su lrdn2820 alle 19:49:20 Europe/Rome: 4 GPU, 32 CPU, 
 Audit non ripetuto. Consuntivo audit più tre checkout 8,578889 core-ore; massimo totale residuo incluso
 129,112222 core-ore entro 129,333333. Nessun cambio di sorgenti, piano scientifico, ricetta o soglie;
 training non rilasciati. Ricevute in calibration_submission_20261117, nessun monitor in background.
+
+### 17/11/2026 — Calibrazione superata: CUDA rilasciato, benchmark condizionati
+
+Simone chiede di proseguire con i test già autorizzati se la calibrazione passa. 64701482 COMPLETED 0:0,
+512 batch senza update, stato iniziale/finale invariato, pin e copertura corretti. Ricevuta autenticata
+PASSED_FOR_REVIEW e ricalcolo indipendente concordi. λ InfoNCE 0,11942686122572264, λ Rank-N-Contrast
+0,33044627364850215, ottenuti dai primi 32 batch congiuntamente informativi del pannello (passi 257–288).
+Nessuna modifica ai criteri o ai pesi dopo la misura. 0,86 GPU-ore / 6,88 core-ore consumate.
+
+Coorte C0/CN/CR generata dalla stessa ricevuta. Nuovo checkout per CUDA e benchmark, 4 CPU × 240 s.
+Prima CUDA: 4 GPU / 32 CPU / 240 GiB / 30 min; dopo COMPLETED 0:0, validazione di rapporto e probe e
+pubblicazione, tre benchmark a 576 e due riprese 544+32, ciascuno con la stessa allocazione massima.
+Massimo totale con consuntivi 12,86 GPU-ore / 119,992222 core-ore entro 14 / 129,333333. Sorgenti, dati,
+plan.json e ricetta scientifica invariati; training scientifici non rilasciati. Riferimento:
+docs/reviews/contrastive_cuda_benchmark_release_20261117.md. Nessun monitor in background.

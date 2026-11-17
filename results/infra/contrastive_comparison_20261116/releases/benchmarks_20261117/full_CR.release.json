@@ -1,0 +1,40 @@
+{
+  "status": "APPROVED_FOR_PREPARATION",
+  "stage": "benchmark",
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "config_sha256": "cd0f8ec0a1beb46e6bd60f6385a5c6f8629367c756c68d47a2eb1c1808f8cb9c",
+  "world_size": 4,
+  "workers_per_rank": 6,
+  "inputs": {
+    "manifest": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+    "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+    "pose_stats": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+  },
+  "review_pin": {
+    "path": "docs/reviews/contrastive_cuda_benchmark_release_20261117.md",
+    "bytes": 5236,
+    "sha256": "105843a29c116b8ab34fba8e9c62de29cd2743e0d6d37c21e42252a3db64c98a"
+  },
+  "time_limit_s": 1770,
+  "audit_sha256": "5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b",
+  "audit_recovery": {
+    "path": "results/infra/contrastive_comparison_20261116/releases/audit_recovery_20261117.json",
+    "bytes": 1837,
+    "sha256": "4f87019a9fcd24379fd554ad6f7758dda124088f4a25401a051274df857ed8e8"
+  },
+  "training_authorized": false,
+  "phase": "full",
+  "arm": "CR",
+  "cohort_sha256": "1548f03ec97da10d49258b1552232a85fe6a10f1ea06e49a99d3519728927dcb",
+  "calibration_sha256": "f57d8731a1434f592a6360547ad604cdedb517cc47e278c5c3839384df000b5e",
+  "cuda_gate": {
+    "required_before_submission": true,
+    "slurm_state": "COMPLETED",
+    "exit_code": "0:0",
+    "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/cuda.json",
+    "reader": "scripts/contrastive_benchmark_readout.py:_cuda_evidence",
+    "rank_exit_reader": "scripts/contrastive_rank_exit.py:validate_receipt",
+    "operator_must_archive_and_publish_positive_readout": true
+  }
+}

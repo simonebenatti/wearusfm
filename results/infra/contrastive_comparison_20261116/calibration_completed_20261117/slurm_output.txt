@@ -1,0 +1,33 @@
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-calibration @ 4fc515257b1965a7ac1aabad22df3ade6b651b1a
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+{"command": ["/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3", "-m", "torch.distributed.run", "--standalone", "--nproc_per_node=4", "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-calibration/scripts/contrastive_run.py", "--config", "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-calibration/results/infra/contrastive_comparison_20261116/configs/calibration.config.json", "--release", "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-calibration/results/infra/contrastive_comparison_20261116/releases/calibration.release.json", "--stage", "calibration", "--out-dir", "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/calibration", "--time-limit-s", "1770", "--manifest", "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz", "--scales", "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json", "--window-seconds", "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json", "--root", "/leonardo_work/IscrB_WearUsFM/data/processed", "--root", "/leonardo_scratch/large/userexternal/sbenatti/data/processed", "--audit-report", "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/audit.json"], "job_sha256": "4d00d636ca443daea04a59a28a0d30786dc3a6afe2a6cbe06109a175aedcec0a", "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b"}
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+passo 1: totale 6.8635, jepa 0.0258, 4.79 s/passo (dati 3.09 s), memoria GPU max 6.9 GiB
+passo 50: totale 6.5368, jepa 0.0180, 0.77 s/passo (dati 0.00 s), memoria GPU max 10.8 GiB
+passo 100: totale 7.1613, jepa 0.0144, 1.51 s/passo (dati 0.00 s), memoria GPU max 10.8 GiB
+passo 150: totale 7.2465, jepa 0.0115, 0.82 s/passo (dati 0.01 s), memoria GPU max 10.8 GiB
+passo 200: totale 7.4798, jepa 0.0141, 1.55 s/passo (dati 0.01 s), memoria GPU max 10.8 GiB
+passo 250: totale 7.3037, jepa 0.0072, 0.92 s/passo (dati 0.00 s), memoria GPU max 11.1 GiB
+passo 300: totale 7.5547, jepa 0.0069, 2.12 s/passo (dati 0.01 s), memoria GPU max 13.8 GiB
+passo 350: totale 7.5727, jepa 0.0079, 1.76 s/passo (dati 0.01 s), memoria GPU max 13.8 GiB
+passo 400: totale 8.0898, jepa 0.0052, 1.63 s/passo (dati 0.00 s), memoria GPU max 13.8 GiB
+passo 450: totale 7.7601, jepa 0.0032, 1.89 s/passo (dati 0.01 s), memoria GPU max 13.8 GiB
+passo 500: totale 7.5458, jepa 0.0038, 2.52 s/passo (dati 0.00 s), memoria GPU max 13.8 GiB
+fine: max_steps, passo 512

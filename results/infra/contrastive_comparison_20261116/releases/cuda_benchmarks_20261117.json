@@ -1,0 +1,77 @@
+{
+  "status": "CUDA_RELEASED_BENCHMARKS_CONDITIONAL_ON_CUDA",
+  "review": {
+    "path": "docs/reviews/contrastive_cuda_benchmark_release_20261117.md",
+    "bytes": 5236,
+    "sha256": "105843a29c116b8ab34fba8e9c62de29cd2743e0d6d37c21e42252a3db64c98a"
+  },
+  "calibration_report": {
+    "path": "results/infra/contrastive_comparison_20261116/calibration_completed_20261117/calibration_report.json",
+    "bytes": 123720,
+    "sha256": "f57d8731a1434f592a6360547ad604cdedb517cc47e278c5c3839384df000b5e"
+  },
+  "cohort": {
+    "path": "results/infra/contrastive_comparison_20261116/calibrated_cohort_20261117/cohort.json",
+    "bytes": 868,
+    "sha256": "1548f03ec97da10d49258b1552232a85fe6a10f1ea06e49a99d3519728927dcb"
+  },
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "job_files": {
+    "CUDA": {
+      "path": "results/infra/contrastive_comparison_20261116/releases/cuda.job.json",
+      "bytes": 1965,
+      "sha256": "ee56b876c4ea9a11a1b3de42a5ac52b7952d17f50d6c83911def90a60cb0bb7d"
+    },
+    "full_C0": {
+      "path": "results/infra/contrastive_comparison_20261116/releases/benchmarks_20261117/full_C0.job.json",
+      "bytes": 2901,
+      "sha256": "9b7f883e6657da1bf9c5156d1a102d5cf228fa8d63b38f7894ba654d10e9c17c"
+    },
+    "full_CN": {
+      "path": "results/infra/contrastive_comparison_20261116/releases/benchmarks_20261117/full_CN.job.json",
+      "bytes": 2901,
+      "sha256": "1af5e512c36bcb1a5cdc5efc0da892c3483d32b73945017ff9300f38295117ab"
+    },
+    "full_CR": {
+      "path": "results/infra/contrastive_comparison_20261116/releases/benchmarks_20261117/full_CR.job.json",
+      "bytes": 2901,
+      "sha256": "fddc021f849c40901feaf8b4a2943509e0bbb3292cac5e025ec81aea3f74f2e3"
+    },
+    "split_CN": {
+      "path": "results/infra/contrastive_comparison_20261116/releases/benchmarks_20261117/split_CN.job.json",
+      "bytes": 3135,
+      "sha256": "c58c74b947f77faa1ce9aca32faf857beb46f91cd387c7913d58368d214690e0"
+    },
+    "split_CR": {
+      "path": "results/infra/contrastive_comparison_20261116/releases/benchmarks_20261117/split_CR.job.json",
+      "bytes": 3135,
+      "sha256": "63588c48f9f7072ddae873bc53cc14720f8071c0e81c0d336e816ba98b877da7"
+    }
+  },
+  "cuda_gate": {
+    "required_before_submission": true,
+    "slurm_state": "COMPLETED",
+    "exit_code": "0:0",
+    "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/cuda.json",
+    "reader": "scripts/contrastive_benchmark_readout.py:_cuda_evidence",
+    "rank_exit_reader": "scripts/contrastive_rank_exit.py:validate_receipt",
+    "operator_must_archive_and_publish_positive_readout": true
+  },
+  "resources": {
+    "completed_gpu_hours": 0.86,
+    "completed_core_hours": 15.45888888888889,
+    "remaining_gpu_cells": 6,
+    "gpus_per_cell": 4,
+    "cpus_per_gpu_cell": 32,
+    "seconds_per_gpu_cell": 1800,
+    "remaining_checkouts": 2,
+    "checkout_cpus": 4,
+    "checkout_seconds": 240,
+    "final_cpu_readout_core_hours_cap": 8,
+    "actual_plus_remaining_max_gpu_hours": 12.86,
+    "actual_plus_remaining_max_core_hours": 119.99222222222222,
+    "campaign_gpu_hours_cap": 14,
+    "campaign_core_hours_cap": 129.33333333333334
+  },
+  "training_approved": false
+}

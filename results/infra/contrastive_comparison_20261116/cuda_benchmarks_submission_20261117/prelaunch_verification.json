@@ -1,0 +1,21 @@
+{
+  "status": "PASSED_FOR_CUDA_DEPLOYMENT",
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "calibration_authenticated": true,
+  "benchmark_recipes_and_releases_valid": [
+    "results/infra/contrastive_comparison_20261116/releases/benchmarks_20261117/full_C0.job.json",
+    "results/infra/contrastive_comparison_20261116/releases/benchmarks_20261117/full_CN.job.json",
+    "results/infra/contrastive_comparison_20261116/releases/benchmarks_20261117/full_CR.job.json",
+    "results/infra/contrastive_comparison_20261116/releases/benchmarks_20261117/split_CN.job.json",
+    "results/infra/contrastive_comparison_20261116/releases/benchmarks_20261117/split_CR.job.json"
+  ],
+  "paired_resume_policies_valid": true,
+  "benchmark_submission_requires_cuda_pass": true,
+  "training_approved": false,
+  "independent_review": {
+    "agent": "audit_timeout_review",
+    "verdict": "APPROVED, no blockers",
+    "checks": "21 unique pinned files, all six jobs, five recipes/cohort, split policy, source/plan unchanged, exact resource arithmetic",
+    "collection_requirement": "Retain whole rank-exit probe evidence, cross-check probe SHA and calibration checkpoint SHA in addition to _cuda_evidence and validate_receipt"
+  }
+}
