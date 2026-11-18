@@ -123,6 +123,31 @@ def test_calibration_rejects_false_train_only_provenance(tmp_path):
             read_calibration(bad, signature)
 
 
+@pytest.mark.parametrize("corruption", ["version", "loader"])
+def test_probe_rejects_fast100_cache_mislabeled_as_legacy(tmp_path, cli, inputs, corruption):
+    from wearusfm.model.spectral_targets import LEGACY_TARGET_VERSION
+
+    module, _ = cli
+    cache = tmp_path / "cache.npz"
+    module.main(["extract", *inputs["args"], "--checkpoint", str(inputs["checkpoint"]), "--out", str(cache)])
+    with np.load(cache, allow_pickle=False) as data:
+        arrays = {k: data[k].copy() for k in data.files}
+    meta = json.loads(str(arrays["metadata_json"]))
+    assert meta["loader"]["ms_fast_window_ms"] == 100
+    if corruption == "version":
+        meta["target_version"] = LEGACY_TARGET_VERSION
+    else:
+        meta["loader"] = "invalid metadata"
+    arrays["metadata_json"] = np.array(json.dumps(meta))
+    mislabeled = tmp_path / "mislabeled.npz"
+    np.savez(mislabeled, **arrays)
+    report = tmp_path / "must_not_exist.json"
+    with pytest.raises(ValueError, match="stale targets|provenance"):
+        module.main(["probe", "--data", str(mislabeled), "--out", str(report),
+                     "--expected-checkpoint-sha256", sha256_file(inputs["checkpoint"])])
+    assert not report.exists()
+
+
 def test_extract_rejects_checkpoint_replaced_during_load(tmp_path, cli, inputs, monkeypatch):
     module, _ = cli
     original_load = module.load_model

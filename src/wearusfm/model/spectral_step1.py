@@ -9,7 +9,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from wearusfm.model.spectral_targets import EPS, TARGET_VERSION
+from wearusfm.model.spectral_targets import EPS, TARGET_VERSION, LEGACY_TARGET_VERSION
 
 READOUT_VERSION = "p1p2_qc_equal_channel_v1"
 FAMILIES = {"fast_shape": slice(0, 6), "fast_energy": slice(6, 7),
@@ -155,7 +155,7 @@ def keep_objective_terms(student, inp, anchor_targets, *, target_version=TARGET_
 def _keep_objective(student, inp, anchor_targets, *, target_version=TARGET_VERSION, terms=False):
     if any(x.device.type not in ("cpu", "cuda") for x in inp.signals):
         raise ValueError("Step 1 supports CPU/CUDA only (RNG pairing not validated on MPS)")
-    if target_version != TARGET_VERSION or student.spectral_keep is None:
+    if target_version not in (TARGET_VERSION, LEGACY_TARGET_VERSION) or student.spectral_keep is None:
         raise ValueError("incompatible keep target version or missing head")
     y, valid = global_spectral_targets(anchor_targets, inp.counts, inp.qc_valid)
     # Additional dropout must not change the RNG stream of the paired JEPA run.

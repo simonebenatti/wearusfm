@@ -1,6 +1,6 @@
 # WearUsFM
 
-## Target RMS dei prossimi training — Simone, 18/11/2026
+## Target RMS e spettro breve dei prossimi training — Simone, 18/11/2026
 
 Simone: «per i prosismi training voglio che questo venga aumentato. Fallo», riferito al target log RMS.
 **Nuovi training: target RMS su 100 ms, passo 25 ms e overlap 75 ms.** Il parametro
@@ -8,8 +8,13 @@ Simone: «per i prosismi training voglio che questo venga aumentato. Fallo», ri
 Il default del codice e della CLI e' 100 ms. Le riprese e i controlli storici conservano esplicitamente 25 ms
 (`--rms-window-ms 25`); un checkpoint senza il campo e' storico, non diventa un run RMS100.
 La guardia della ripresa rifiuta il cambio. Non modificare checkout, piani congelati o job delle campagne esistenti.
-Le ancore spettrali a 50/200/500 ms, l'inviluppo a 500 ms, la posa e i pesi della loss restano invariati.
-Dettagli e verifiche: `docs/rms_target_100ms_20261118.md`. Nessun lancio implicito in questa modifica.
+Successiva richiesta esplicita: «no dobbiamo almeno raddoppiarla, almeno 100ms anche lei» (ancora spettrale breve).
+**Anche le sei bande del target rapido passano da50a100ms, passo25ms/overlap75ms.**
+Nuovo default `loader.ms_fast_window_ms=100`, versione `step1_psd_power_shape_energy_fast100_v2`.
+Per una ricetta storica completa: `--rms-window-ms 25 --ms-fast-window-ms 50`; la CLI seleziona la versione precedente.
+Campo spettrale assente nei vecchi checkpoint =50ms. Versione, firma dati e guardie impediscono il cambio implicito.
+Restano invariati il target spettrale200ms, la scala lenta500ms, l'inviluppo500ms, la posa e i pesi della loss.
+Dettagli: `docs/rms_target_100ms_20261118.md` e `docs/ms_fast_target_100ms_20261118.md`. Nessun lancio implicito.
 
 ## Architettura di lavoro
 - L'agente gira sul Mac. Leonardo e' remoto, raggiungibile con `ssh leonardo`.

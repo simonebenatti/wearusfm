@@ -1,0 +1,76 @@
+{
+  "date": "2026-11-18",
+  "base_commit": "5333c5c934cfa79bcf59ed2b484205eac8586ef7",
+  "request": "no dobbiamo almeno raddoppiarla, almeno 100ms anche lei",
+  "rms_window_ms": 100,
+  "ms_fast_window_ms": 100,
+  "patch_ms": 25,
+  "target_version": "step1_psd_power_shape_energy_fast100_v2",
+  "legacy_target_version": "step1_psd_power_shape_energy_v1",
+  "cpu_verification": {
+    "unique_cases_verified": 121,
+    "unresolved_failures": 0,
+    "initial_run": {
+      "passed": 116,
+      "failed": 2,
+      "seconds": 84.34
+    },
+    "followups": [
+      {
+        "passed": 1,
+        "seconds": 14.5,
+        "scope": "two-process DDP equivalence; rerun with permission for shared memory"
+      },
+      {
+        "passed": 63,
+        "deselected": 1,
+        "seconds": 34.43,
+        "scope": "four affected spectral test modules, excluding separately verified DDP"
+      },
+      {
+        "passed": 2,
+        "seconds": 2.63,
+        "scope": "final cache-version and malformed-loader guards"
+      }
+    ],
+    "initial_issues": [
+      "Pure-tone gain invariance assertion compared logarithms of nearly empty bands; revised assertion checks the physical power fractions with the unchanged target floor1e-8, preserving the PSD implementation and precision.",
+      "Local shared-memory permission blocked DDP; same test passed after permitted rerun."
+    ],
+    "not_a_second_full_suite": true
+  },
+  "legacy_bitwise": [
+    {
+      "reference_commit": "5333c5c",
+      "rms_window_ms": 100,
+      "ms_fast_window_ms": 50,
+      "cases": 16
+    },
+    {
+      "reference_commit": "e114a78",
+      "rms_window_ms": 25,
+      "ms_fast_window_ms": 50,
+      "cases": 16
+    }
+  ],
+  "legacy_fields_equal": true,
+  "legacy_probe_stats_and_input_frontends_unchanged": true,
+  "jobs_submitted": 0,
+  "source_sha256": {
+    "scripts/train_jepa.py": "9012b049f17901e9eee533ecfb659b7ed65e55ce963be1e84f3ea72047f52308",
+    "scripts/spectral_step1.py": "3e0833c8223ac4c3846802906a5219ed39414a605a0c9da8195e11892107ad9a",
+    "src/wearusfm/data/pretraining_loader.py": "537394f6e6cd8ff2b2c3fd1ca6cbdd9f1bdf02107ee3a3d41c924bf8e40fc2c6",
+    "src/wearusfm/model/anchor_targets.py": "5c400b5f641c09fa8ba93f8b9692d302bcdbad26cbfb04083ef57a5d6b1e2db7",
+    "src/wearusfm/model/spectral_targets.py": "c05c22f4d53ba04f394c5dcb957dc99cb7195fb19478ebc9cead2d646e1dfe98",
+    "src/wearusfm/model/spectral_step1.py": "4d8c34d3c35886fea74b271ceac3192141d9b199ff4596f2af6458c1b8502f00",
+    "src/wearusfm/model/spectral_branches.py": "0dd96c678c2420c2708b0b811ea5c213c0a9e5d134189ab9d0e42e9c6445dac5",
+    "src/wearusfm/harness/fm_features.py": "b40a1926499eff0616cceb56547d4b6236d1fb19f31eeea8ca4a2adcee8e593a",
+    "src/wearusfm/training/run.py": "81e58850e5112bb1165e3e351c94ce0362cb49e667780f7b336e06d0405c599b",
+    "src/wearusfm/training/spectral_calibration.py": "734f1b6105f4b606d5f27feaa423174e99901feb60eb19950ceb2dbfec3cba8e",
+    "tests/cpu/test_ms_fast_target_window.py": "e34cfb1364d8361378f19b8bf9a1b6e446cd1e758773c2e0b55df8c99c6b3731",
+    "tests/cpu/test_anchor_targets.py": "d582bdeaa01c305b5361772f2f0f4e4969ee3b608368ae60ea1634dac2caf0d3",
+    "tests/cpu/test_spectral_step1.py": "e31e1456fd8c2442dd78e2bae65a85d4e4b30d0885af3aaf23e999603c0ba475",
+    "tests/cpu/test_spectral_tools.py": "eb6930ac78817b502217f382f4313418b54d5a855e5bb88935b0111ccd24f379",
+    "tests/cpu/test_spectral_branches.py": "f74c54665239dff3300df059ad2b30c3b66918c52c705ff472f44876e51da74e"
+  }
+}

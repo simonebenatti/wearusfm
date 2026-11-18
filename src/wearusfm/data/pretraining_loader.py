@@ -93,10 +93,12 @@ class LoaderConfig:
     pose_unprompted: bool = True  # tenere le registrazioni a mano non sollecitata nel termine di posa (firma del 26/10/2026); False = mascherate
     # Simone, 18/11/2026: RMS su 100 ms, sempre sulla griglia patch da 25 ms. 25 solo per riprese/controlli storici espliciti.
     rms_window_ms: float = AT.RMS_WINDOW_MS
+    ms_fast_window_ms: float = AT.MS_FAST_WINDOW_MS  # sei bande su 100 ms, passo patch invariato (Simone, 18/11)
 
     def __post_init__(self):
         if not math.isfinite(self.rms_window_ms) or self.rms_window_ms <= 0:
             raise ValueError("rms_window_ms deve essere finito e positivo")
+        AT.target_version_for_fast_window(self.ms_fast_window_ms)
 
 
 def signed_config(filter_band_hz: tuple[float, float] | None = (20.0, 450.0)) -> LoaderConfig:
@@ -637,7 +639,8 @@ class PretrainLoader:
             guard = (max(0, g - (win.start - win.span[0])), max(0, g - (win.span[1] - win.stop))) if g else (0, 0)
             limit = view.band_limit_hz() if vm is None else VM.band_limit_hz(montage, view.fs)
             targets.append(AT.anchor_targets(x, view.fs, limit, patch_ms=self.cfg.patch_ms, guard=guard,
-                                             multiscale=self.cfg.multiscale_anchor, rms_window_ms=self.cfg.rms_window_ms))
+                                             multiscale=self.cfg.multiscale_anchor, rms_window_ms=self.cfg.rms_window_ms,
+                                             ms_fast_window_ms=self.cfg.ms_fast_window_ms))
             limits.append(np.broadcast_to(np.asarray(limit, dtype=np.float64), (layout.n_channels,)).copy())
             guards.append(guard)
             if self.rvq_store is not None:

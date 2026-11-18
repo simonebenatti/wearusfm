@@ -7786,3 +7786,14 @@ assente nei checkpoint=25, guardia contro25→100 durante ripresa/branch. Target
 pesi invariati; l'ancora spettrale breve50ms resta tale, qui solo spiegata. Nessuna modifica a campagne
 congelate o lancio. **74test passati**;16casi di identita' bit-per-bit per il percorso storico.
 Dettagli: `docs/rms_target_100ms_20261118.md`; ricevuta: `results/infra/rms_target_20261118/verification.json`.
+
+### 2026-11-18 — Anche le sei bande del target rapido su100ms (Simone; GPT)
+
+«no dobbiamo almeno raddoppiarla, almeno 100ms anche lei»: il target spettrale breve passa50→100ms,
+passo25ms/overlap75ms. Default `loader.ms_fast_window_ms=100`; versione nuova
+`step1_psd_power_shape_energy_fast100_v2`. RMS100 gia' implementato; altri target e pesi invariati.
+50ms/v1 solo espliciti per ricette storiche; firme dati e guardie di ripresa/cache ne impediscono
+la reinterpretazione.32casi di parita' bit-per-bit contro i codici precedenti;121casi CPU verificati
+complessivamente, compresa equivalenza DDP. Nessun nuovo training o modifica delle campagne esistenti.
+La precedente nota che manteneva l'ancora rapida a50ms e' superata. Contratto e dettagli:
+`docs/ms_fast_target_100ms_20261118.md`, `results/infra/ms_fast_target_20261118/verification.json`.

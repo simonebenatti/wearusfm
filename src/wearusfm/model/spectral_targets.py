@@ -3,8 +3,20 @@
 import numpy as np
 from scipy import fft as sfft
 
-TARGET_VERSION = "step1_psd_power_shape_energy_v1"
+LEGACY_TARGET_VERSION = "step1_psd_power_shape_energy_v1"
+TARGET_VERSION = "step1_psd_power_shape_energy_fast100_v2"
+MS_FAST_WINDOW_MS = 100.0
+LEGACY_MS_FAST_WINDOW_MS = 50.0
 EPS = 1e-8
+
+
+def target_version_for_fast_window(window_ms: float) -> str:
+    """Registered target recipes: 100 ms for new runs, explicit 50 ms for historical reproduction."""
+    if window_ms == MS_FAST_WINDOW_MS:
+        return TARGET_VERSION
+    if window_ms == LEGACY_MS_FAST_WINDOW_MS:
+        return LEGACY_TARGET_VERSION
+    raise ValueError("ms_fast_window_ms deve essere 100 (nuovo default) o 50 (ricetta storica)")
 
 
 def hann_periodogram(segments: np.ndarray, fs: float) -> tuple[np.ndarray, np.ndarray]:

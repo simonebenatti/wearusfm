@@ -8443,6 +8443,23 @@ su25/100; il secondo giro e' interamente verde. Nessuna review esterna dichiarat
 modifica a campagne congelate o file di altri worktree. Regola persistente in CLAUDE.md, spiegazione e
 compatibilita' in `docs/rms_target_100ms_20261118.md`, prove in `results/infra/rms_target_20261118/verification.json`.
 
+
+### 2026-11-18 | GPT — Anche il target spettrale breve passa a100ms
+
+Seguito diretto di Simone: «no dobbiamo almeno raddoppiarla, almeno 100ms anche lei». Base RMS100 `5333c5c`;
+ramo isolato `codex/spectral-target-100ms-20261118`. Implementate le sei log-potenze rapide su100ms, passo25ms
+e overlap75ms; nuovo campo `loader.ms_fast_window_ms` e nuova versione `step1_psd_power_shape_energy_fast100_v2`.
+RMS resta100ms; forma spettrale200ms, inviluppo500ms, scala lenta500ms, posa, pesi e input invariati.
+Supporto/versione serializzati, guardie contro riprese incompatibili; CLI di training e calibrazione/estrazione
+con override50 esplicito per i target storici e controllo coerente delle cache. Il frontend dei vecchi rami
+PSD/wavelet e la baseline stats/mask delle sonde restano50/500: la modifica riguarda i target del pretraining.
+**121casi CPU verificati complessivamente**, inclusa equivalenza DDP a2processi: primo giro116passati/2errori,
+seguito1DDP+63casi nei moduli interessati+2guardie finali (con sovrapposizioni; non121nuovi test). Oracolo
+indipendente FFT/indici a200/1000/2000/2048Hz;32casi bit-per-bit contro le due ricette precedenti.
+Registro delle due anomalie risolte e hash in `results/infra/ms_fast_target_20261118/verification.json`.
+Regola aggiornata in CLAUDE.md; contratto in `docs/ms_fast_target_100ms_20261118.md`. Nessun lancio cluster,
+checkpoint o piano congelato modificato; nessuna review esterna o efficacia scientifica dichiarata.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12410,3 +12427,14 @@ reinterpretati. Gli altri rami in sviluppo devono integrare questa consegna prim
 checkout congelati non cambiano. L'ancora `ms_fast` (sei bande su50ms) e' stata spiegata, NON modificata.
 Nessuna promessa di miglioramento scientifico: qui si verifica l'implementazione, non l'efficacia del target.
 Nessun esperimento o deploy avviato. Consegna e74test in `docs/rms_target_100ms_20261118.md`.
+
+### 2026-11-18 | GPT — Chiusura del seguito sulla finestra spettrale breve
+
+Su richiesta di Simone anche l'ancora rapida passa50→100ms, indipendentemente dall'RMS gia' allargato.
+Versione v2 per i nuovi target; v1 e50ms conservati esplicitamente per le ricette precedenti.
+Primo giro: un confronto sui log di bande quasi vuote di una sinusoide amplificava l'errore float32
+(~5e-5 in log, ~1e-11 in frazione); verifica dell'invarianza spostata sulle frazioni fisiche, con il
+pavimento1e-8 gia' esistente, senza cambiare PSD o precisione. Un test DDP richiedeva il permesso per
+la memoria condivisa: rieseguito identico e passato. Esito combinato121casi, nessun errore irrisolto.
+Gli altri rami devono integrare questa consegna per nuovi training; i job congelati non cambiano.
+Nessun lancio implicito. Contratto e ricevuta in `docs/ms_fast_target_100ms_20261118.md`.

@@ -103,7 +103,7 @@ def test_rvq_windows_ignore_channels_discarded_by_qc():
 
 
 def test_multiscale_anchor_targets_scales_bands_and_masks():
-    """Ancora multi-scala (Simone, 04/10/2026): 6 bande a 50 ms e 24 bande a 500 ms, centrate sulla patch; bande oltre il limite non disponibili."""
+    """Ancora multi-scala aggiornata il18/11: 6 bande a100ms e24 a500ms; bande oltre il limite non disponibili."""
     fs = 2000.0
     t = np.arange(8000) / fs
     x = np.sin(2 * np.pi * 300 * t)[None, :] * np.ones((2, 1))
@@ -131,7 +131,7 @@ def test_multiscale_slow_scale_one_window_every_100_ms():
     limit = np.full(3, 450.0)
     ref, ok, _ = A._band_logpower(x.astype(np.float32), fs, (np.arange(40) * 4 + 2.0) * 0.025, 500.0, 24, limit)
     assert np.allclose(groups[:, :, 0], ref) and np.array_equal(tg.ms_slow_valid[0].reshape(40, 4)[:, 0], ok)
-    fast, _, _ = A._band_logpower(x.astype(np.float32), fs, (np.arange(160) + 0.5) * 0.025, 50.0, 6, limit)
+    fast, _, _ = A._band_logpower(x.astype(np.float32), fs, (np.arange(160) + 0.5) * 0.025, 100.0, 6, limit, round_half_up=True)
     assert np.allclose(tg.ms_fast, fast)
     odd = A.anchor_targets(x[:, :7950], fs, 450.0, multiscale=True)  # 159 patch: l'ultimo gruppo e' incompleto
     assert odd.ms_slow.shape == (3, 159, 24) and odd.ms_slow_valid.shape == (3, 159)

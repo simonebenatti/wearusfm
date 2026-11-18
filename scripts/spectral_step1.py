@@ -18,7 +18,7 @@ from wearusfm.data import pretraining_loader as L
 from wearusfm.harness.fm_features import load_model
 from wearusfm.harness.spectral_probe import spectral_probe, validate_splits
 from wearusfm.model.spectral_step1 import READOUT_VERSION, global_spectral_targets, pool_p1p2
-from wearusfm.model.spectral_targets import TARGET_VERSION
+from wearusfm.model.spectral_targets import target_version_for_fast_window
 from wearusfm.training import run as R
 from wearusfm.training.spectral_calibration import calibration_signature, json_sha256, sha256_file
 
@@ -82,6 +82,10 @@ def main(argv=None):
         p.add_argument("--seed", type=int, default=0)
         p.add_argument("--out", type=Path, required=True)
         if command != "split":
+            p.add_argument("--rms-window-ms", type=float, default=None,
+                           help="default 100; 25 solo per riprodurre una ricetta storica")
+            p.add_argument("--ms-fast-window-ms", type=float, choices=[50, 100], default=None,
+                           help="default 100; 50 solo per i target spettrali storici")
             p.add_argument("--splits", type=Path, required=True)
             p.add_argument("--scales", type=Path, required=True)
             p.add_argument("--window-seconds", type=Path, required=True)
@@ -102,9 +106,11 @@ def main(argv=None):
             x, y, mask, subjects, split = (data[k] for k in ("X", "y", "valid", "subject", "split"))
             meta = json.loads(str(data["metadata_json"].item()))
         required = ("source_commit", "manifest_sha256", "split_sha256", "subset_sha256", "loader", "which")
-        if any(not meta.get(k) for k in required) or meta.get("checkpoint_sha256") != args.expected_checkpoint_sha256:
+        if (any(not meta.get(k) for k in required) or not isinstance(meta.get("loader"), dict)
+                or meta.get("checkpoint_sha256") != args.expected_checkpoint_sha256):
             raise ValueError("missing/incompatible probe provenance")
-        if meta.get("target_version") != TARGET_VERSION or meta.get("readout_version") != READOUT_VERSION:
+        expected_target = target_version_for_fast_window(meta["loader"].get("ms_fast_window_ms", 50.0))
+        if meta.get("target_version") != expected_target or meta.get("readout_version") != READOUT_VERSION:
             raise ValueError("stale targets/features: regenerate cache")
         d = x.shape[1]//2
         if x.ndim != 2 or x.shape[1] != 2*d or d == 0:
@@ -117,6 +123,11 @@ def main(argv=None):
         out.write_text(json.dumps(report, indent=2, allow_nan=False))
         return 0
     cfg = replace(R.with_window1_rules(R.sanity_config()), datasets=None if args.datasets == "all" else tuple(args.datasets.split(",")))
+    if getattr(args, "rms_window_ms", None) is not None:
+        cfg = replace(cfg, loader=replace(cfg.loader, rms_window_ms=args.rms_window_ms))
+    if getattr(args, "ms_fast_window_ms", None) is not None:
+        cfg = replace(cfg, loader=replace(cfg.loader, ms_fast_window_ms=args.ms_fast_window_ms),
+                      target_version=target_version_for_fast_window(args.ms_fast_window_ms))
     index = R.load_index(args.manifest, args.root, cfg.datasets)
     if args.command == "split":
         subjects = sorted({r["dataset"]+"/"+r["subject"] for r in index.rows})

@@ -40,7 +40,7 @@ from wearusfm.data import rvq_codes as RC
 from wearusfm.data import virtual_montage as VM
 from wearusfm.model.anchors import N_RVQ_CODES
 from wearusfm.model.fm import FMConfig, WearUsFM
-from wearusfm.model.spectral_targets import TARGET_VERSION
+from wearusfm.model.spectral_targets import TARGET_VERSION, target_version_for_fast_window
 from wearusfm.model.spectral_step1 import READOUT_VERSION
 from wearusfm.training.spectral_calibration import calibration_signature, read_calibration, sha256_file
 from wearusfm.model.query_decoder import probe_query_collapse
@@ -201,6 +201,7 @@ def _config_with_defaults(d: dict) -> dict:
     if isinstance(out.get("loader"), dict):
         # Campo assente nei checkpoint storici = RMS da 25 ms, NON il nuovo default da 100 ms.
         out["loader"] = {"pose_root": None, "pose_unprompted": True, "rms_window_ms": L.AT.LEGACY_RMS_WINDOW_MS,
+                         "ms_fast_window_ms": L.AT.LEGACY_MS_FAST_WINDOW_MS,
                          **out["loader"]}  # R3, 26/10; RMS, 18/11
     if isinstance(out.get("alarm"), dict):
         out["alarm"] = {"erank_min": None, **out["alarm"]}  # soglia assoluta del rango (firmata il 23/10): assente = regola (16)
@@ -1209,8 +1210,8 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     t_start = time.time()
     ctx = dist or DistContext()
     say = log if ctx.is_main else (lambda m: None)
-    if cfg.target_version != TARGET_VERSION:
-        raise ValueError("target_version incompatible with this code")
+    if cfg.target_version != target_version_for_fast_window(cfg.loader.ms_fast_window_ms):
+        raise ValueError("target_version incompatible with loader.ms_fast_window_ms")
     if cfg.readout_version != READOUT_VERSION:
         raise ValueError("readout_version incompatible with this code")
     masked_query_radius(cfg.jepa, cfg.model)  # valida prima di caricare dati o costruire il modello

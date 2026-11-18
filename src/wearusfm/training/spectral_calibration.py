@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from wearusfm.model.spectral_step1 import READOUT_VERSION
-from wearusfm.model.spectral_targets import TARGET_VERSION
+from wearusfm.model.spectral_targets import LEGACY_MS_FAST_WINDOW_MS, target_version_for_fast_window
 from wearusfm.model.anchor_targets import LEGACY_RMS_WINDOW_MS
 
 
@@ -26,18 +26,23 @@ def json_sha256(value):
 def _loader_signature(loader) -> dict:
     """La configurazione del loader nella firma dei dati; i campi della posa (R3, 26/10/2026) solo se accesi, cosi' i checkpoint di prima
     della posa si riprendono con la stessa firma. RMS da 25 ms conserva la firma storica senza il campo; ogni altro supporto
-    (default nuovo: 100 ms) e' esplicito nella firma, quindi una ripresa non puo' cambiare i target silenziosamente."""
+    (default nuovo: 100 ms) e' esplicito nella firma. Lo stesso vale per la scala spettrale rapida:50ms storici omessi,
+    100ms nuovi espliciti. Una ripresa non puo' cambiare i target silenziosamente."""
     d = json.loads(json.dumps(asdict(loader)))
     if d.get("pose_root") is None:
         d.pop("pose_root", None)
         d.pop("pose_unprompted", None)
     if d.get("rms_window_ms") == LEGACY_RMS_WINDOW_MS:
         d.pop("rms_window_ms")
+    if d.get("ms_fast_window_ms") == LEGACY_MS_FAST_WINDOW_MS:
+        d.pop("ms_fast_window_ms")
     return d
 
 
 def calibration_signature(cfg, manifest, scales, window_s):
-    return {"target_version": TARGET_VERSION, "readout_version": READOUT_VERSION,
+    if cfg.target_version != target_version_for_fast_window(cfg.loader.ms_fast_window_ms):
+        raise ValueError("target_version incompatible with loader.ms_fast_window_ms")
+    return {"target_version": cfg.target_version, "readout_version": READOUT_VERSION,
             "manifest_sha256": sha256_file(manifest), "loader": _loader_signature(cfg.loader),
             "datasets": list(cfg.datasets) if cfg.datasets is not None else None,
             "scales_sha256": json_sha256(scales or {}), "window_seconds_sha256": json_sha256(window_s)}
