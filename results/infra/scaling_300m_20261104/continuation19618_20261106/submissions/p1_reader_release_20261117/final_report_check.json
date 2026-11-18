@@ -1,0 +1,588 @@
+{
+  "complete": true,
+  "independent_integer_count_points_verified": [
+    "epn612",
+    "ninapro_db2",
+    "ninapro_db3",
+    "ninapro_db6",
+    "uci_emg"
+  ],
+  "reading_reproduced": true,
+  "manifest_verified": true,
+  "quality": {
+    "artifact_integrity": true,
+    "paired_support": true,
+    "solver_converged": true
+  },
+  "budget": {
+    "protocol": "scaling-p1-reader-cpu-envelope-20261117-v1",
+    "complete": true,
+    "within_total_cap": true,
+    "within_stage_caps": true,
+    "fixed_prior_reserve": {
+      "exact": "2396389/500000",
+      "core_hours": 4.792778
+    },
+    "baseline_max": {
+      "exact": "524939167/1500000",
+      "core_hours": 349.9594446666667
+    },
+    "remaining_chain": {
+      "exact": "4497/50",
+      "core_hours": 89.94
+    },
+    "total": {
+      "exact": "47366389/500000",
+      "core_hours": 94.732778
+    },
+    "cap_core_hours": 351,
+    "margin": {
+      "exact": "128133611/500000",
+      "core_hours": 256.267222
+    },
+    "fit_plan_ready": true,
+    "unknown_fit_reserve": null,
+    "stages": {
+      "checkout-plans": {
+        "exact": "1/60",
+        "core_hours": 0.016666666666666666
+      },
+      "checkout-budgets": {
+        "exact": "17/300",
+        "core_hours": 0.056666666666666664
+      },
+      "checkout-inputs": {
+        "exact": "41/900",
+        "core_hours": 0.04555555555555556
+      },
+      "pose-validate": {
+        "exact": "7/300",
+        "core_hours": 0.023333333333333334
+      },
+      "pose-benchmark": {
+        "exact": "37/225",
+        "core_hours": 0.16444444444444445
+      },
+      "probe-benchmark": {
+        "exact": "7537/450",
+        "core_hours": 16.74888888888889
+      },
+      "pose-ridge": {
+        "exact": "146/225",
+        "core_hours": 0.6488888888888888
+      },
+      "probe-fit": {
+        "exact": "32263/450",
+        "core_hours": 71.69555555555556
+      },
+      "probe-aggregate": {
+        "exact": "22/225",
+        "core_hours": 0.09777777777777778
+      },
+      "compare": {
+        "exact": "199/450",
+        "core_hours": 0.44222222222222224
+      }
+    },
+    "jobs": {
+      "SCALING-19618-plans-checkout-20261106": {
+        "stage": "checkout-plans",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "1/60",
+          "core_hours": 0.016666666666666666
+        },
+        "reservation": {
+          "exact": "4/15",
+          "core_hours": 0.26666666666666666
+        }
+      },
+      "SCALING-19618-budgets-checkout-20261106": {
+        "stage": "checkout-budgets",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "17/300",
+          "core_hours": 0.056666666666666664
+        },
+        "reservation": {
+          "exact": "4/15",
+          "core_hours": 0.26666666666666666
+        }
+      },
+      "SCALING-19618-inputs-checkout-20261106": {
+        "stage": "checkout-inputs",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "41/900",
+          "core_hours": 0.04555555555555556
+        },
+        "reservation": {
+          "exact": "4/15",
+          "core_hours": 0.26666666666666666
+        }
+      },
+      "SCALING-19618-pose-validate-20261106": {
+        "stage": "pose-validate",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "7/300",
+          "core_hours": 0.023333333333333334
+        },
+        "reservation": {
+          "exact": "11/10",
+          "core_hours": 1.1
+        }
+      },
+      "SCALING-19618-pose-bench-30m-natural-20261106": {
+        "stage": "pose-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "3/50",
+          "core_hours": 0.06
+        },
+        "reservation": {
+          "exact": "26/15",
+          "core_hours": 1.7333333333333334
+        }
+      },
+      "SCALING-19618-pose-bench-300m-natural-20261106": {
+        "stage": "pose-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "4/75",
+          "core_hours": 0.05333333333333334
+        },
+        "reservation": {
+          "exact": "26/15",
+          "core_hours": 1.7333333333333334
+        }
+      },
+      "SCALING-19618-pose-bench-300m-matched-20261106": {
+        "stage": "pose-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "23/450",
+          "core_hours": 0.051111111111111114
+        },
+        "reservation": {
+          "exact": "26/15",
+          "core_hours": 1.7333333333333334
+        }
+      },
+      "SCALING-19618-probe-bench-30m-natural-ninapro-db2-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "421/225",
+          "core_hours": 1.8711111111111112
+        },
+        "reservation": {
+          "exact": "32/5",
+          "core_hours": 6.4
+        }
+      },
+      "SCALING-19618-probe-bench-30m-natural-ninapro-db3-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "163/450",
+          "core_hours": 0.3622222222222222
+        },
+        "reservation": {
+          "exact": "46/15",
+          "core_hours": 3.066666666666667
+        }
+      },
+      "SCALING-19618-probe-bench-30m-natural-ninapro-db6-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "112/225",
+          "core_hours": 0.49777777777777776
+        },
+        "reservation": {
+          "exact": "46/15",
+          "core_hours": 3.066666666666667
+        }
+      },
+      "SCALING-19618-probe-bench-30m-natural-epn612-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "37/45",
+          "core_hours": 0.8222222222222222
+        },
+        "reservation": {
+          "exact": "22/5",
+          "core_hours": 4.4
+        }
+      },
+      "SCALING-19618-probe-bench-30m-natural-uci-emg-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "8/225",
+          "core_hours": 0.035555555555555556
+        },
+        "reservation": {
+          "exact": "26/15",
+          "core_hours": 1.7333333333333334
+        }
+      },
+      "SCALING-19618-probe-bench-300m-natural-ninapro-db2-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "41/18",
+          "core_hours": 2.2777777777777777
+        },
+        "reservation": {
+          "exact": "42/5",
+          "core_hours": 8.4
+        }
+      },
+      "SCALING-19618-probe-bench-300m-natural-ninapro-db3-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "11/15",
+          "core_hours": 0.7333333333333333
+        },
+        "reservation": {
+          "exact": "22/5",
+          "core_hours": 4.4
+        }
+      },
+      "SCALING-19618-probe-bench-300m-natural-ninapro-db6-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "1223/450",
+          "core_hours": 2.7177777777777776
+        },
+        "reservation": {
+          "exact": "42/5",
+          "core_hours": 8.4
+        }
+      },
+      "SCALING-19618-probe-bench-300m-natural-epn612-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "296/75",
+          "core_hours": 3.9466666666666668
+        },
+        "reservation": {
+          "exact": "82/5",
+          "core_hours": 16.4
+        }
+      },
+      "SCALING-19618-probe-bench-300m-natural-uci-emg-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "17/450",
+          "core_hours": 0.03777777777777778
+        },
+        "reservation": {
+          "exact": "26/15",
+          "core_hours": 1.7333333333333334
+        }
+      },
+      "SCALING-19618-probe-bench-300m-matched-ninapro-db2-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "134/75",
+          "core_hours": 1.7866666666666666
+        },
+        "reservation": {
+          "exact": "32/5",
+          "core_hours": 6.4
+        }
+      },
+      "SCALING-19618-probe-bench-300m-matched-ninapro-db3-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "59/150",
+          "core_hours": 0.3933333333333333
+        },
+        "reservation": {
+          "exact": "46/15",
+          "core_hours": 3.066666666666667
+        }
+      },
+      "SCALING-19618-probe-bench-300m-matched-ninapro-db6-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "107/225",
+          "core_hours": 0.47555555555555556
+        },
+        "reservation": {
+          "exact": "46/15",
+          "core_hours": 3.066666666666667
+        }
+      },
+      "SCALING-19618-probe-bench-300m-matched-epn612-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "341/450",
+          "core_hours": 0.7577777777777778
+        },
+        "reservation": {
+          "exact": "22/5",
+          "core_hours": 4.4
+        }
+      },
+      "SCALING-19618-probe-bench-300m-matched-uci-emg-20261106": {
+        "stage": "probe-benchmark",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "1/30",
+          "core_hours": 0.03333333333333333
+        },
+        "reservation": {
+          "exact": "26/15",
+          "core_hours": 1.7333333333333334
+        }
+      },
+      "SCALING-19618-pose-ridge-20261106": {
+        "stage": "pose-ridge",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "146/225",
+          "core_hours": 0.6488888888888888
+        },
+        "reservation": {
+          "exact": "42/5",
+          "core_hours": 8.4
+        }
+      },
+      "SCALING-19618-probe-fit-01-20261106": {
+        "stage": "probe-fit",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "271/75",
+          "core_hours": 3.6133333333333333
+        },
+        "reservation": {
+          "exact": "34/5",
+          "core_hours": 6.8
+        }
+      },
+      "SCALING-19618-probe-fit-02-20261106": {
+        "stage": "probe-fit",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "82/25",
+          "core_hours": 3.28
+        },
+        "reservation": {
+          "exact": "112/15",
+          "core_hours": 7.466666666666667
+        }
+      },
+      "SCALING-19618-probe-fit-03-20261106": {
+        "stage": "probe-fit",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "1993/225",
+          "core_hours": 8.857777777777779
+        },
+        "reservation": {
+          "exact": "88/5",
+          "core_hours": 17.6
+        }
+      },
+      "SCALING-19618-probe-fit-04-20261106": {
+        "stage": "probe-fit",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "81/10",
+          "core_hours": 8.1
+        },
+        "reservation": {
+          "exact": "88/5",
+          "core_hours": 17.6
+        }
+      },
+      "SCALING-19618-probe-fit-05-20261106": {
+        "stage": "probe-fit",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "917/75",
+          "core_hours": 12.226666666666667
+        },
+        "reservation": {
+          "exact": "338/15",
+          "core_hours": 22.533333333333335
+        }
+      },
+      "SCALING-19618-probe-fit-06-20261106": {
+        "stage": "probe-fit",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "2777/225",
+          "core_hours": 12.342222222222222
+        },
+        "reservation": {
+          "exact": "352/15",
+          "core_hours": 23.466666666666665
+        }
+      },
+      "SCALING-19618-probe-fit-07-20261106": {
+        "stage": "probe-fit",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "4723/450",
+          "core_hours": 10.495555555555555
+        },
+        "reservation": {
+          "exact": "358/15",
+          "core_hours": 23.866666666666667
+        }
+      },
+      "SCALING-19618-probe-fit-08-20261106": {
+        "stage": "probe-fit",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "639/50",
+          "core_hours": 12.78
+        },
+        "reservation": {
+          "exact": "364/15",
+          "core_hours": 24.266666666666666
+        }
+      },
+      "SCALING-19618-probe-aggregate-01-20261106": {
+        "stage": "probe-aggregate",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "43/1800",
+          "core_hours": 0.02388888888888889
+        },
+        "reservation": {
+          "exact": "13/30",
+          "core_hours": 0.43333333333333335
+        }
+      },
+      "SCALING-19618-probe-aggregate-02-20261106": {
+        "stage": "probe-aggregate",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "11/900",
+          "core_hours": 0.012222222222222223
+        },
+        "reservation": {
+          "exact": "13/30",
+          "core_hours": 0.43333333333333335
+        }
+      },
+      "SCALING-19618-probe-aggregate-03-20261106": {
+        "stage": "probe-aggregate",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "4/225",
+          "core_hours": 0.017777777777777778
+        },
+        "reservation": {
+          "exact": "13/30",
+          "core_hours": 0.43333333333333335
+        }
+      },
+      "SCALING-19618-probe-aggregate-04-20261106": {
+        "stage": "probe-aggregate",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "19/1800",
+          "core_hours": 0.010555555555555556
+        },
+        "reservation": {
+          "exact": "13/30",
+          "core_hours": 0.43333333333333335
+        }
+      },
+      "SCALING-19618-probe-aggregate-05-20261106": {
+        "stage": "probe-aggregate",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "13/600",
+          "core_hours": 0.021666666666666667
+        },
+        "reservation": {
+          "exact": "13/30",
+          "core_hours": 0.43333333333333335
+        }
+      },
+      "SCALING-19618-probe-aggregate-06-20261106": {
+        "stage": "probe-aggregate",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "7/600",
+          "core_hours": 0.011666666666666667
+        },
+        "reservation": {
+          "exact": "13/30",
+          "core_hours": 0.43333333333333335
+        }
+      },
+      "SCALING-19618-compare-20261106": {
+        "stage": "compare",
+        "status": "actual",
+        "submitted": true,
+        "charged": {
+          "exact": "199/450",
+          "core_hours": 0.44222222222222224
+        },
+        "reservation": {
+          "exact": "22/5",
+          "core_hours": 4.4
+        }
+      }
+    },
+    "actual_jobs": 38,
+    "reserved_jobs": 0,
+    "no_new_scope_authorized": true
+  },
+  "limits": "Point estimates recomputed locally from recorded integer counts. Full arrays, bootstrap and numerical consistency were checked by the frozen comparison job; no independent second execution of that full job."
+}

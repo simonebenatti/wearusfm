@@ -7376,3 +7376,8 @@ Fit 08 64763083 COMPLETED 0:0, 5751 s. Raccolto intero probe-fit (otto shard), o
 
 Esito operativo: pronti per i sei aggregati. Il confronto seguirà dopo aggregati accettati e costruzione/pubblicazione dei relativi ingressi, con gate fresco. Nessun aggregato o confronto inviato in questa consegna. La verifica numerica completa delle predizioni posa e delle statistiche appaiate è prevista nel comparatore congelato. Evidenza riproducibile in submissions/p1_reader_release_20261117/verify_all_readers.py e all_readers_verification.json. Le metriche scientifiche finali saranno lette dopo composizione e validazione del confronto.
 
+
+### 18/11/2026 — launcher: sei aggregati e confronto conclusi
+
+Sei aggregati COMPLETED 0:0 e accettati. Manifest f23137fe pubblicato, metadata b7f01477 distribuito con checkout 64776444 COMPLETED 0:0. Confronto **64785568 COMPLETED 0:0 in 199 s**, report raccolto e validato. Primari EPN +0,4968 pp IC95 [−0,0383; 1,0382] e E_dyn −0,0002389 IC95 [−0,0023281; 0,0017935], entrambi irrisolti. Riduzione posa relativa 0,0285%, nessun segnale pratico del 2%. P1/P2 non inferiorità sostenuta al margine 1 pp. Verifica locale indipendente dei punti dai conteggi interi, manifest e lettura congelata superata. Consuntivo cumulativo CPU-only 94,732778/351 core-ore. Readout docs/reviews/gpt_scaling19618_final_results_20261118.md, risultati ed evidenze completi nel pacchetto. Lanci terminati, nessun monitor rimasto attivo.
+
