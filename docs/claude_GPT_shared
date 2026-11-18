@@ -8843,6 +8843,23 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Job previsti, nessuno inviato: checkout di campagna (CPU), training con limite 4:00, valutazione in afterok di 45 min. Tetto 4,75
   GPU-ore, nessun collaudo.
 
+### 2026-11-18 | Claude | TEMPONet residua su emg2pose: critico APPROVATO; checkout (64775531), training (64775724) e valutazione (64775725) inviati | Codice 4c8bb84
+
+- Critico, riverifica delle correzioni in `4c8bb84`: «VERDETTO: APPROVATO», 87 test passati.
+- Rettifica della voce precedente. Il primo giro del critico non trovava problemi bloccanti nel codice e nella regola: il «DA RIVEDERE»
+  dipendeva solo dalla mancanza della voce. C'erano in piu' quattro minori, due dei quali sulla regola (precisione di Δ) e sullo sbatch
+  (commento e test), tutti corretti.
+- Rettifica di un mio messaggio al critico. I due test dello script spostati in `test_temponet_emg2pose_residual.py` non sono identici a
+  prima: ho tolto un `monkeypatch` inutilizzato, e il test confronta ora l'elenco delle chiavi dello stato invece della sola lunghezza.
+- Deploy: `deploy/temponet-emg2pose-res-20261118` = `4c8bb84` su Leonardo. Checkout `temponet-emg2pose-res-4c8bb84`, job
+  `TEMPONET-E2P-RES-checkout-20261118` = 64775531, `COMPLETED 0:0` in 1 min 11 s.
+- Inviati alle 18:40:
+  - training `TEMPONET-E2P-RES-train-20261118` = 64775724: 1 GPU, 4:00, `ARCH=residual`, `TRAIN_TIME=04:00:00`;
+  - valutazione `TEMPONET-E2P-RES-eval-20261118` = 64775725, in afterok: 45 min, `ARCH=residual`.
+
+  Uscite in `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/residual_20261118/`. Tetto 4,75 GPU-ore.
+- Raccolta e confronto con la L1, secondo la regola congelata, dopo il rinnovo del certificato (scade alle 23:01 del 18/11).
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B

@@ -1,6 +1,7 @@
 # TEMPONet residua su emg2pose: piano di un seme (18/11/2026)
 
-**Stato:** piano e regola di lettura congelati prima del lancio (voce del 18/11 in `docs/decisioni.md`). Nessun risultato.
+**Stato:** piano e regola di lettura congelati prima del lancio (voce del 18/11 in `docs/decisioni.md`). Codice `4c8bb84`, critico
+APPROVATO; training e valutazione inviati il 18/11 alle 18:40. Nessun risultato.
 Ramo `claude/temponet-residual-419618`, partito da `ee118a25` (ramo `claude/temponet-db8-20261109`).
 
 ## Richiesta
@@ -94,9 +95,9 @@ Su DB8 lo stesso seme rifatto differiva di 0,076 gradi per il solo cuDNN; tre se
 
 | ID logico | cosa | risorse |
 |---|---|---|
-| `TEMPONET-E2P-RES-checkout-20261118` | checkout di campagna congelato del commit del piano | CPU, 10 min |
-| `TEMPONET-E2P-RES-train-20261118` | training, `ARCH=residual`, `TRAIN_TIME=04:00:00` | 1 GPU, 4 h, 8 CPU, 120 GB |
-| `TEMPONET-E2P-RES-eval-20261118` | valutazione in afterok, `ARCH=residual` | 1 GPU, 45 min |
+| `TEMPONET-E2P-RES-checkout-20261118` = 64775531 | checkout di campagna `temponet-emg2pose-res-4c8bb84` | CPU, 10 min; `COMPLETED 0:0` |
+| `TEMPONET-E2P-RES-train-20261118` = 64775724 | training, `ARCH=residual`, `TRAIN_TIME=04:00:00` | 1 GPU, 4 h, 8 CPU, 120 GB |
+| `TEMPONET-E2P-RES-eval-20261118` = 64775725 | valutazione in afterok, `ARCH=residual` | 1 GPU, 45 min |
 
 Uscite: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/residual_20261118/{train,eval}`. Ricevute da copiare sul Mac in
 `results/temponet_emg2pose/residual_20261118/`.
