@@ -8,6 +8,13 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**Pacchetto CPU pronto per 3-launcher:** checkout congelato
+`0c3c52936e8b7e9166f351ff8003b40dfe40427e`; comandi concreti e pin in
+`results/infra/contrastive_comparison_20261116/releases/readout_bf16_20261118/submission_plan.json`.
+ID da non duplicare: `CONTRAST-CHECKOUT-readout-20261118`, `CONTRAST-READOUT-bf16-20261118`.
+GPT scientifico non ha sottomesso questi due job. Il lancio e la raccolta operativa
+sono affidati alla chat 3-launcher; nessuna nuova autorizzazione da chiedere a Simone.
+
 **18/11, ore 18:24: tutti i cinque benchmark COMPLETED 0:0.**
 C0 64771457, CN 64771478, CR 64771595, ripresa CN 64771859, ripresa CR 64772690.
 Nuovo operatore dei lanci: **3-launcher**, per istruzione diretta di Simone in questa chat.
