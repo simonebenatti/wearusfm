@@ -21,7 +21,8 @@
 #   valutazione (passo 3): alpha e cancello sulla validazione, poi il test solo se il cancello passa; 45 minuti (al massimo 0,75 GPU-ore)
 #     sbatch --time=00:45:00 --export=ALL,... temponet_emg2pose.sbatch eval <manifest> <uscite> <cartella del training>
 #   variante residua (18/11/2026, docs/temponet_emg2pose_residual_plan_20261118.md): ARCH=plain|residual (default plain, la rete di [Z21]);
-#     la valutazione legge l'architettura da run.json del training e, se ARCH e' data, la controlla. TRAIN_TIME = limite del training, uguale a
+#     la valutazione legge l'architettura da run.json del training e la confronta con ARCH, quindi va inviata con lo stesso ARCH del training
+#     (altrimenti si ferma con un errore). TRAIN_TIME = limite del training, uguale a
 #     --time, fra quelli della tabella sotto (default 03:30:00):
 #     sbatch --time=04:00:00 --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha>,ARCH=residual,TRAIN_TIME=04:00:00 temponet_emg2pose.sbatch train ...
 # Le uscite vanno in una cartella NUOVA fuori dal codice; nessun riavvio automatico, nessun nuovo tentativo.

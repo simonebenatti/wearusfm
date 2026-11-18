@@ -8826,6 +8826,23 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Punta del ramo di GPT controllata alle 10:27, alle 11:46 e alle 15:21, subito prima del commit: `3e007c8`.
 - Il prompt per GPT consolidamento è nella sezione 10 della review ed è stato consegnato a Simone.
 
+### 2026-11-18 | Claude | TEMPONet residua su emg2pose: codice, test, piano e regola congelata prima del lancio; nessun job ancora | Ramo `claude/temponet-residual-419618`
+
+- Richiesta di Simone alla sessione di coordinamento: «apri un tuo fratello e fagli provare una versione della temponet in cui pero
+  inseriamo un residual block per ognuno dei 3 blocchi». A me, sullo schema di [Z20] Fig. 3 col gruppo «x 3» cerchiato: «io i residual li
+  metterei nel x3, in ognio blocco cerchiato».
+- Architettura, mia lettura: un salto attorno a ciascun blocco intero (le due dilatate, la convoluzione con stride, il pooling e la BN),
+  col ReLU dopo la somma. Il salto e' un AvgPool di 2 x stride, poi una 1x1 senza bias e una BN, anche nel blocco 1. 74.452 parametri
+  (+3.040). Col seme 0 i pesi in comune partono uguali alla L1. Il default resta identico bit per bit a `ee118a2`.
+- Codice in `18f2b69`, piu' in questo commit un commento dello sbatch e i test dello script in un file a parte: modello; `--arch`
+  nello script, scritta in `run.json` e riletta in valutazione; `ARCH` e `TRAIN_TIME` nello sbatch. 17 test CPU nuovi, in `test_temponet.py` e nel nuovo `test_temponet_emg2pose_residual.py`: 87 passati nei file di TEMPONet.
+- Piano `docs/temponet_emg2pose_residual_plan_20261118.md` e regola in `docs/decisioni.md`. Per ogni condizione, |Δ| ≤ 0,3 gradi
+  rispetto alla L1 = non distinguibile con un seme; oltre, segnale da confermare con piu' semi.
+- Critico: nessun problema nel codice e nella regola. «DA RIVEDERE» per la mancanza di questa voce e per quattro minori, tutti corretti
+  in questo commit: margine di 200 s e non 184, precisione di Δ, un commento dello sbatch, un test della logica bash.
+- Job previsti, nessuno inviato: checkout di campagna (CPU), training con limite 4:00, valutazione in afterok di 45 min. Tetto 4,75
+  GPU-ore, nessun collaudo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12950,3 +12967,19 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   simulazione, come dice GPT. Il conto di Claude di 1,26 milioni di aggiornamenti (17/11) era già il massimo raggiungibile, perché
   con le regole di GPT si arriva al più a 5 LR: la chiave «superseded» di `analytic_checks.json` è inesatta.
 - Nessun job; le correzioni entrano nella revisione di GPT.
+
+### 2026-11-18 | Claude | TEMPONet residua: quattro punti trovati preparando il lancio | Ramo `claude/temponet-residual-419618`
+
+- Disegno del salto. La proposta di partenza, col salto attorno alle sole due dilatate, e' superata dall'indicazione di Simone sullo
+  schema. Nel blocco 1 l'identita' sommerebbe l'EMG grezzo (deviazione mediana dei canali 13,15 unita' native, k = 0) al ramo normalizzato
+  e romperebbe l'invarianza alla scala dell'ingresso. Per questo c'e' una proiezione con BN anche li'.
+- Tempo. Col limite di 3:30 la variante non ha margine: a 1,27 ms per passo l'epoca 19 partirebbe 200 s prima dei 12.000 s, a 1,30 ms
+  22 s prima. Limite 4:00 senza collaudo, stesso tetto di 4,75 GPU-ore.
+- Merge col ramo delle loss. `0342170a` (gia' su Leonardo come `deploy/temponet-emg2pose-loss-20261118`, checkout 64774804) modifica in
+  modo diverso gli stessi file da `ee118a2`: `--loss`/`LOSS` contro `--arch`/`ARCH`, e una tabella di `TRAIN_TIME` da 04:30 a 06:00
+  contro 04:00.
+  - Ho usato gli stessi nomi: `TRAIN_TIME`, `BUDGET`, 900 s di margine oltre 3:30.
+  - All'integrazione vanno uniti i flag e le tabelle, con la riga 04:00:00 -> 13.500 s.
+  - I miei test dello script stanno in un file a parte, per non toccare `test_temponet_emg2pose.py`.
+- Valutazione. Lo sbatch passa sempre `--arch "$ARCH"`: una valutazione della variante inviata senza `ARCH=residual` si ferma con un
+  errore, senza dare un risultato sbagliato.

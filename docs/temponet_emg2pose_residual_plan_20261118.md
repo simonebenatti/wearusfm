@@ -53,8 +53,9 @@ la valutazione la rilegge e ricarica il checkpoint con la stessa rete); `scripts
 - **Riferimento:** 1,085 ms per passo; 4.040 s di parte fissa (caricamento e indice); 370 s per epoca; 3 h 04 min in tutto.
 - **Il salto costa tempo.** Aggiunge kernel a ogni passo: pooling, 1x1, BN, somma e i loro gradienti. In piu' l'ottimizzatore passa da 35 a
   44 tensori. Stimo il passo il 15-20% piu' lento; la misura arrivera' dal log.
-- **Con 3:30 non basta.** Il limite di 3:30 non fa partire epoche dopo 12.000 s. A 1,27 ms per passo le 19 epoche finirebbero con 184 s di
-  margine, meno della variabilita' del caricamento.
+- **Con 3:30 non basta.** Il limite di 3:30 non fa partire epoche dopo 12.000 s. A 1,27 ms per passo l'epoca 19 partirebbe 200 s prima
+  di quel tempo, a 1,30 ms 22 s prima; la soglia e' 1,304 ms. Conti dalle ricevute dell'11/11: 4.039,7 s fissi, 328.746 passi e 13,6 s di
+  validazione per epoca. Il caricamento e' stato misurato una volta sola (2.190 s), e il passo della variante e' solo stimato.
 - **Training:** limite **4:00**, nessuna epoca nuova dopo 13.500 s (900 s di margine, come nello studio delle loss). Le 19 epoche ci stanno
   fino a circa 1,55 ms per passo.
 - **Nessun collaudo su dbg.** Il controllo eager/graph (tolleranza 1e-5) gira all'inizio del training come l'11/11; se fallisce, il job si
@@ -68,6 +69,9 @@ la valutazione la rilegge e ricarica il checkpoint con la stessa rete); `scripts
 ## Regola di lettura (congelata in `docs/decisioni.md` prima del lancio)
 
 Per ogni condizione di test (`user`, `stage`, `user_stage`) si calcola Δ = MAE residua − MAE L1, con EMA e media fra utenti.
+I valori sono quelli a piena precisione di `test.conditions.<condizione>.ema.mean_over_users_deg` nei due `eval.json`. Per la L1 sono
+14,5475, 17,6747 e 17,6020 (`results/temponet_emg2pose/eval_20261111/eval.json`). La classe si decide sul Δ non arrotondato, che poi si
+riporta con due decimali.
 
 - |Δ| ≤ 0,3 gradi: **non distinguibile con un seme**.
 - Δ < −0,3: **segnale di miglioramento**, da confermare con piu' semi.

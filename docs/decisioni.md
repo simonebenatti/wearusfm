@@ -8081,7 +8081,9 @@ ognio blocco cerchiato». Piano: `docs/temponet_emg2pose_residual_plan_20261118.
    - Il limite sale da 3:30 a 4:00 perche' il salto allunga il passo (stima +15-20%). Con 3:30 le 19 epoche finirebbero con pochi minuti di
      margine.
 4. **Regola di lettura**, per ogni condizione di test (`user`, `stage`, `user_stage`): Δ = MAE residua − MAE L1 (con EMA, media fra
-   utenti; L1 = 14,55 / 17,67 / 17,60).
+   utenti). Si usano i valori a piena precisione di `test.conditions.<condizione>.ema.mean_over_users_deg` nei due `eval.json`; per la L1
+   sono 14,5475, 17,6747 e 17,6020 (`results/temponet_emg2pose/eval_20261111/eval.json`). La classe si decide sul Δ non arrotondato, che
+   poi si riporta con due decimali.
    - |Δ| ≤ 0,3 gradi: non distinguibile con un seme.
    - Δ < −0,3: segnale di miglioramento, da confermare con piu' semi.
    - Δ > +0,3: segnale di peggioramento, da confermare con piu' semi.
