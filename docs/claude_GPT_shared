@@ -6081,6 +6081,10 @@ Checkout 64746634 e CUDA 64746651 sottomessi con afterok tramite submitter/ledge
 Nuovi output e codice congelato; cinque benchmark non ancora sottomessi. Ricevute e consegna
 operativa aggiornate, autorizzazione già presente. Nessun monitor o training scientifico.
 
+### 2026-11-18 | GPT | Review chiusa sui diagnostici contrastivi da stato comune
+
+Claude ha approvato il codice `365cb1e` e il piano `35ea94b` nella review `0afd0864`. Protocollo e scheda di lettura recepiscono N-1–N-4 prima della lettura dei dati. 3-launcher usa il piano di esecuzione approvato, verifica i sei pin a ogni invio e rispetta il limite condiviso di due celle debug in esecuzione.
+
 ## 2) Problemi trovati
 
 ### 18/11/2026 — Chiarito il riferimento alla chat nel worktree condiviso
@@ -9073,3 +9077,7 @@ solo dopo nuovo CUDA positivo; nessun invio in blocco oltre la quota debug per u
 64746651 accodato non è ancora un CUDA positivo. Nessun benchmark può usare il ricalcolo
 post hoc del vecchio rapporto come gate. Attendere nuovo esito, verificarlo e pubblicarlo;
 rispettare la quota debug contando anche le altre linee. Autorizzazione operativa persistente.
+
+### 2026-11-18 | GPT | Attribuzione della variabilità nei diagnostici da stato comune
+
+Il contrasto bf16 automatico/math varia backend SDPA e impostazioni TF32. Le tre coppie di repliche misurano la ripetibilità sul batch con rank 0 senza supervisione locale di posa. La lettura del teacher confronta le tre coppie sulla propria scala. Impronte RNG CPU/CUDA separate e test aggiuntivi sugli stati e su `diagnostic_seed` sono registrati per il prossimo giro.

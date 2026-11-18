@@ -1,27 +1,29 @@
 # Due prove sul confronto contrastivo a quattro GPU
 
-Stato della consegna: **REVIEW_REQUIRED**. Nessun job sottomesso. La review di
-Claude precede checkout, deploy e invii dei diagnostici.
+**Collaudo approvato da Claude** per il codice `365cb1e29bc410013d4ee0494b9c2e92835bc7f1` e il piano `35ea94ba`. Review ed evidenze sul ramo `worktree-claude-training-engine`, commit `0afd0864dd96d474e2a39cb4276c2b990d21c6c0`, documento `docs/reviews/claude_review_contrastive_common_diagnostics_20261118.md`.
+
+Le precisazioni N-1–N-4 sono prospettiche. Il 18 novembre alle 22:26 UTC il ledger comune non riportava prenotazioni o invii per questi quattro ID. La scheda di lettura è in [Lettura dei diagnostici](reviews/contrastive_common_diagnostics_readout_20261118.md).
 
 Il rapporto 64775571 ha rilevato differenze fra run con entrambi i pesi contrastivi a zero e fra i checkpoint finali di due esecuzioni della stessa ricetta. Per InfoNCE e Rank-N-Contrast le traiettorie del precedente test di ripresa si separavano già prima del salvataggio. Queste due prove localizzano la prima differenza riproducibile. I risultati si leggono per braccio e per condizione.
 
 ## Precisione, backend e selezione del braccio
 
-Sul modello a 30M usiamo lo stato iniziale autenticato della calibrazione. Ogni coppia di esecuzioni riceve gli stessi tensori, bersagli, maschere e stato dei generatori per rank. C0 è il controllo, CN seleziona InfoNCE, CR seleziona Rank-N-Contrast. Durante il confronto i due coefficienti sono zero. La replica C0/C0 misura quanto varia il calcolo senza cambiare braccio. Il confronto dei **vettori** di gradiente prima del clipping individua anche differenze di direzione con norme scalarmente uguali.
+Sul modello a 30M usiamo lo stato iniziale autenticato della calibrazione. Ogni coppia di esecuzioni riceve gli stessi tensori, bersagli, maschere e stato dei generatori per rank. C0 è il controllo, CN seleziona InfoNCE, CR seleziona Rank-N-Contrast. Durante il confronto i due coefficienti sono zero. In ciascun profilo, le distanze C0a/C0b, CNa/CNb e CRa/CRb misurano la variabilità a braccio invariato. Si riportano tutte e tre accanto ai confronti tra bracci, sia sul vettore globale sia per il blocco in esame. Con due repliche per braccio sono riferimenti descrittivi. Il confronto dei **vettori** di gradiente prima del clipping individua anche differenze di direzione con norme scalarmente uguali.
 
 Prima di attribuire uno scarto al braccio o alla precisione, verifichiamo per rank le impronte di stato, batch e RNG. Un disaccordo rende il confronto corrispondente inconclusivo e identifica il primo controllo da correggere.
 
 | Osservazione nella prova controllata | Lettura fissata prima dell'esecuzione |
 |---|---|
-| Tutti i bracci coincidono con C0 e le repliche C0 coincidono | Il percorso provato è ripetibile su questa fixture. Resta aperta l'origine della deriva sulle traiettorie lunghe. |
+| Tutti i bracci coincidono con C0 e le tre coppie di repliche coincidono | Il percorso provato è ripetibile su questa fixture. Resta aperta l'origine della deriva sulle traiettorie lunghe. |
 | bf16 e FP32 danno due risultati ripetibili, diversi tra loro, con lo stesso backend | Si misura l'effetto della precisione sul valore del gradiente. Per spiegare la variabilità tra due run bf16 serve anche uno scarto tra repliche bf16. |
-| La replica C0/C0 varia col backend automatico e diventa ripetibile con backend controllato | Il backend o il modo di eseguire le riduzioni contribuisce nella prova. La differenza si quantifica sulle stesse coppie di tensori. |
-| C0/CN o C0/CR differiscono sistematicamente mentre C0/C0 coincide, in particolare nel profilo deterministico | Verificare consumo RNG e primo blocco con gradiente diverso. Si apre un sospetto sul percorso del braccio a peso zero. |
-| Un profilo fallisce per memoria, operatore non supportato o problema distribuito | Registrare profilo, eccezione e ultimo punto completato. Le coppie che richiedono il profilo mancante restano inconclusive. |
+| Le repliche variano in bf16 automatico e coincidono in bf16 math | Il contrasto misura insieme la scelta del backend SDPA e le impostazioni TF32, in particolare il TF32 di cuDNN. Si riportano i flag effettivi per rank. Per isolare il contributo di ciascun fattore servirebbe un contrasto dedicato. |
+| C0/CN o C0/CR differiscono in entrambe le ripetizioni mentre le tre coppie entro braccio coincidono, in particolare nel profilo deterministico | Verificare consumo RNG e primo blocco con gradiente diverso. Si apre un sospetto sul percorso del braccio a peso zero. |
+| Una o più coppie di repliche differiscono anche nel profilo deterministico, a invarianti e consumo RNG verificati | Riportare coppia, ampiezza e primo blocco interessato. La ripetibilità resta irrisolta con i controlli attivi. NCCL e operazioni esterne ai controlli di determinismo sono ipotesi da verificare. |
+| Un profilo fallisce per memoria, operatore non supportato o problema distribuito | Registrare profilo, eccezione e ultimo punto completato. Se manca soltanto il profilo deterministico, restano utilizzabili i confronti completati fra gli altri tre profili che soddisfano gli invarianti. |
 
 Con due misure per braccio e una fixture piccola, l'ampiezza osservata descrive solo i casi misurati. Il profilo FP32 serve da riferimento a parità di backend. Il confronto con i backend automatici dipende anche dal kernel effettivamente scelto. Tutti i profili condividono `CUBLAS_WORKSPACE_CONFIG=:4096:8`.
 
-La cella esegue quattro profili in gruppi di processi nuovi. Prova bf16 con selezione automatica del backend, bf16 con backend SDPA math, FP32 con lo stesso backend math e bf16 math con algoritmi deterministici. Il confronto FP32/bf16 math condivide anche l'impostazione TF32 disattivata. Ciascun profilo misura due backward per braccio in ordine C0, CN, CR, CR, CN, C0. Si usano otto finestre emg2pose su quattro GPU e il dropout muscolare della ricetta (0,4). La portata è quella di questo batch e di un singolo aggiornamento a peso zero. Le misure delle traiettorie storiche rimangono il riferimento per il comportamento nel tempo e sugli altri dataset.
+La cella esegue quattro profili in gruppi di processi nuovi. Prova bf16 con selezione automatica del backend, bf16 con backend SDPA math, FP32 con lo stesso backend math e bf16 math con algoritmi deterministici. Il confronto FP32/bf16 math condivide anche l'impostazione TF32 disattivata. Ciascun profilo misura due backward per braccio in ordine C0, CN, CR, CR, CN, C0. Si usano otto finestre emg2pose su quattro GPU e il dropout muscolare della ricetta (0,4). Il rank 0 riceve due finestre con le etichette di posa rimosse. Quel rank contribuisce al calcolo distribuito senza supervisione locale della posa. La portata è quella di questo batch e di un singolo aggiornamento a peso zero. Le misure delle traiettorie storiche rimangono il riferimento per il comportamento nel tempo e sugli altri dataset.
 
 La prova CUDA ricostruisce il contesto di un update a peso zero (255). Usa i pesi fissi della calibrazione, le chiavi reali della coda con età relative preservate e verifica nelle misure che entrambe le loss abbiano supporto nel batch. Questo disegno misura quanto varia un backward quando si ripristinano i suoi ingressi. Non ricostruisce lo stato storico addestrato al passo 255.
 
@@ -39,6 +41,8 @@ I passi 577–580 producono un unico checkpoint per braccio. Il processo che lo 
 Per ottenere il salvataggio a 580 il driver prepara in una cartella nuova una copia diagnostica dello stato a 576. Aggiunge 580 alla lista dei checkpoint da conservare. Rilegge la copia dal disco, ripristina la lista originale nel confronto in memoria e verifica l'impronta del contenuto completo contro lo stato storico. Il trainer salva il checkpoint intermedio con il proprio metodo ordinario. Le distanze finali dei modelli si leggono rispetto allo spostamento fra 580 e 588 del primo membro della coppia. La soglia storica dell'1% era riferita allo spostamento dall'inizializzazione fino a 576.
 
 Leggere per primi input e RNG al passo 581, poi ai sette passi successivi. Una differenza del batch con lo stesso indice porta a esaminare loader, ricostruzione dello stream e prefetch. Una differenza del RNG prima del primo forward porta a esaminare il ripristino e la costruzione del nuovo processo. Con batch e RNG identici, confrontare le prime divergenze di loss e norma e gli stati finali di student, teacher, optimizer e memoria. Le due repliche ricaricate concordi e lontane dalla prosecuzione in memoria localizzano un effetto del riavvio. Le ipotesi comprendono anche il nuovo gruppo DDP e l'ordine delle riduzioni. Una differenza di ampiezza simile in tutte e tre le coppie lascia aperta l'attribuzione con questa quantità di repliche.
+
+Per ciascun braccio leggere le tre distanze del teacher EMA una accanto all’altra, ciascuna normalizzata per lo spostamento del teacher del primo membro della coppia da 580 a 588. L’EMA si muove su una scala propria. Per lo studente ripetere la stessa lettura separatamente con il suo denominatore.
 
 La misura finale dei modelli include parametri e buffer dello `state_dict`. Nel gate storico la distanza aggregava i parametri e verificava i buffer separatamente per uguaglianza esatta.
 
@@ -65,6 +69,10 @@ eseguirli. Congelare soltanto la versione approvata dalla review. I diagnostici
 mantengono sempre `training_approved=false`: `MEASURED_FOR_REVIEW` e
 `CONTROL_INPUTS_VERIFIED` indicano disponibilità e coerenza delle misure, non
 superamento del gate storico o via libera ai training.
+
+## Prossimo giro
+
+S-1 prevede impronte distinte per RNG CPU e CUDA nelle tracce di ripresa. S-2 prevede test sulla precedenza degli stati restituiti da `orchestrate()` e `run()` e sul rifiuto di una copia con un campo alterato al di fuori di `keep_checkpoints` in `diagnostic_seed`. Entrambi sono sviluppi successivi al collaudo approvato.
 
 ## Verifiche locali della consegna
 

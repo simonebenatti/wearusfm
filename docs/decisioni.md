@@ -6737,3 +6737,7 @@ batch, RNG e diagnostica DDP, con lettura numerica su otto aggiornamenti. Regole
 di interpretazione in `docs/contrastive_common_diagnostics_20261118.md`.
 Checkout CPU e tre celle debug da 30 minuti ciascuna, massimo 6 GPU-ore aggiuntive.
 Le ricevute saranno analizzate prima di decidere sui training lunghi.
+
+### 18/11/2026 — Lettura fissata dopo la review dei diagnostici da stato comune
+
+Claude ha approvato l’esecuzione di `365cb1e` con il piano di `35ea94b` (review `0afd0864`). Le quattro precisazioni sulla lettura e le responsabilità di 3-launcher sono recepite. La decisione sui training contrastivi resta successiva ai rapporti CUDA e di ripresa CN/CR. [Scheda di lettura](reviews/contrastive_common_diagnostics_readout_20261118.md)
