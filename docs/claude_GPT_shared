@@ -6394,801 +6394,6 @@ nessun invio o deploy. Restano i fallimenti bf16/parità/ripresa da risolvere co
 separata; nessuna soglia allentata. Test mirati121verdi; suite completa in corso e ricevuta a seguire.
 Protocollo: docs/contrastive_targets_amendment_20261118.md. TCN e continuazione300M invariati.
 
-## 2) Problemi trovati
-
-### 18/11/2026 — Chiarito il riferimento alla chat nel worktree condiviso
-
-La dicitura «questa chat» in CLAUDE.md poteva attribuire i lanci sia a GPT
-scientifico sia a 3-launcher. La regola ora indica ciascun responsabile per nome.
-
-### 18/11/2026 — GPT: limiti dei diagnostici da sottoporre a review
-
-Il replay CUDA usa una fixture emg2pose a batch globale 8 e pesi iniziali con
-coda calibrata rimappata, non ricostruisce la traiettoria storica al passo 255.
-La ripresa conserva la ricetta aggiungendo solo un punto di salvataggio nella
-copia diagnostica. Le differenze numeriche restano descrittive; invarianti di
-input, RNG, metadata e identità della coda devono essere lette prima dei
-confronti. Nessun emendamento della soglia storica o rilascio dei training.
-
-### 18/11/2026 — GPT, controllo del riavvio e vita del gruppo DDP
-
-Un confronto locale su quattro rank Gloo ha trovato uno scarto di arrotondamento
-fra processo continuo e processo riavviato con gli stessi dati, RNG e stato di
-partenza. Le due repliche ricaricate concordano. Il driver conserva, quando il
-backend li espone, i dati sui gruppi di riduzione DDP per interpretare il confronto
-CUDA. Il risultato sulla fixture sintetica descrive un solo aggiornamento su CPU.
-
-### 18/11/2026 — GPT: parità negativa e confondimento del confronto delle riprese
-
-Il test attuale confronta due training indipendenti fin dall'inizio, uno dei quali
-si interrompe a 544. Le norme differiscono già al passo 1 e superano il limite prima
-dell'attivazione contrastiva; la deriva si amplia prima del riavvio. Il rapporto CPU
-negativo non può attribuire da solo gli scarti alla ripresa. Le origini coincidono,
-ma mancano hash per passo di input/maschere/RNG. Nessuna prova causale del bf16 e
-nessuna tolleranza modificata. Proposto diagnostico CUDA da stato e batch comuni,
-con ripetizioni dello stesso caso e confronto di precisione/backend; ripresa da
-un unico stato salvato. Nessun nuovo lancio, nessun training lungo rilasciato.
-
-### 18/11/2026 — GPT: target 3-launcher non raggiungibile dal tool
-
-Non confondere il pacchetto pronto con una sottomissione: i due ID CPU non sono inviati.
-La chat individuata è ChatGPT e il tool richiede una chat Codex raggiungibile; UI app
-bloccata dalla piattaforma. Serve il target corretto o inoltro del prompt già salvato.
-Nessun nuovo consenso scientifico/operativo richiesto e nessun aggiramento della delega.
-
-### 18/11/2026 — GPT: parità iniziale negativa, riprese ancora da verificare
-
-Metadati: CN 146 e CR 135 norme del gradiente oltre rtol 1e-4 / atol 1e-6 nei primi
-256 update, quando i termini contrastivi sono spenti. Loss totale nei limiti e stream
-identico. Massimi scarti relativi circa 0,725% / 0,314%; nessuna diagnosi causale ancora.
-Rapporti dei gradienti attivi e confronto fra bracci nei limiti. Non cambiare soglie
-né λ: completare il readout CPU su checkpoint e riprese, poi review mirata. Lanci
-successivi solo 3-launcher; nessun training autorizzato dal mero COMPLETED dei job.
-
-### 18/11/2026 — GPT: nessun invio contrastivo residuo
-
-Superata la sola attesa di quota per ripresa CR, ora sottomessa 64772690.
-Non duplicare alcuno dei cinque job. Due COMPLETED non sono ancora un verdetto sul
-collaudo complessivo: gradienti, parità e ripresa vanno letti su tutte le celle con
-il lettore congelato. Nessuna nuova soglia, nessun retry o training lungo automatico.
-
-### 18/11/2026 — GPT: quota per il quinto benchmark
-
-Quattro job debug già inviati: due in esecuzione e due in coda per MaxJobsPU 2.
-MaxSubmitPU 4 impedisce di inviare ora ripresa CR; nessun tentativo di sottomissione
-rifiutato. Attendere un posto e usare l'ID previsto, senza cambiare partizione o risorse.
-Primi log base/InfoNCE regolari; esito complessivo dei benchmark ancora da leggere.
-
-### 18/11/2026 — GPT: gate CUDA bf16 chiuso, limiti della lettura
-
-Nessun blocco tecnico residuo nel collaudo 64746651. Il massimo errore/limite è 0,6124
-sul teacher bf16; il criterio usa il rumore del riferimento e non è una soglia fissa
-all'1%. Test tecnico, nessuna conclusione sull'efficacia delle loss. I precedenti CUDA
-falliti restano tali. Per i cinque invii rispettare MaxJobsPU 2 / MaxSubmitPU 4,
-nessuna duplicazione o monitor in background. Consuntivo include tutti i tentativi.
-
-### 2026-11-17 | GPT | Compatibilità PyTorch del collaudo: Path con mmap
-
-Difetto degli script GPT: il PyTorch del cluster pretende str come primo argomento di torch.load
-quando mmap=True, mentre CUDA gli passa pathlib.Path. Identici rischi in validate_resume e nel
-lettore finale, sei siti complessivi. Il Mac con PyTorch più recente non aveva intercettato il
-problema. Il probe NCCL passato non sostituisce il collaudo numerico; nessun risultato sulle loss
-si ricava dal fallimento. Una conversione str(path) mantiene il caricamento ma cambia il digest
-di tre file inclusi nelle ricevute: rettifica tecnica da verificare prima di un nuovo checkout,
-senza falsificare i pin storici. Codice, ricetta e piano scientifico non modificati in questa lettura.
-
-### GPT — 17/11/2026: audit avviato come catena, esito ancora da leggere
-
-L'accettazione del job 64652559 non è un risultato scientifico né il superamento della copertura. Prima della calibrazione servono COMPLETED 0:0, report e pannello validi con hash verificati. Rifiuti SLURM precedenti risolti, nessun job di audit precedente creato. Training completi e λ restano non rilasciati/non misurati.
-
-
-### GPT — 17/11/2026: dipendenza del checkout già concluso scaduta
-
-Checkout corretto 64652383 COMPLETED 0:0 in 11 s. SLURM conserva i job terminati nel controller per soli 30 s; la dipendenza afterok è quindi scaduta e l'audit è stato nuovamente rifiutato senza creare un job. Verificati sacct, SHA e pulizia del checkout; si ripresenta senza la sola dipendenza già soddisfatta, mantenendo tutte le guardie runtime. Ricevute e diagnosi archiviate, nessun costo di audit/GPU e nessun nuovo checkout necessario.
-
-
-### GPT — 17/11/2026: memoria seriale corretta dopo rifiuto dell'audit
-
-Il checkout 64652044 è completato, ma l'audit non è stato creato: QoSMaxMemoryPerUser per 32 GiB richiesti oltre 30.800 MiB ammessi. Corretto errore GPT di launcher/guardia a 30 GiB, 18 test passati, nessun cambiamento scientifico. Nuovo digest operativo `ab2d6460…`, release aggiornata prima della ripresentazione con `--dopo-rifiuto`. Il vecchio checkout resta immutato; il nuovo richiede 4 CPU per 4 minuti, entro il costo residuo della fase iniziale. Nessuna GPU consumata.
-
-
-### GPT — 17/11/2026: autorità del rilascio distinta dalla review di Claude
-
-Il rilascio preparatorio è decisione di GPT sotto il nuovo via di Simone; non è una nuova review favorevole di Claude. Restano obbligatori gli esiti reali di audit, calibrazione, CUDA/NCCL, benchmark e ripresa. Le fasi successive si fermano su qualunque gate fallito, senza retry o ritocco automatico. La fonte scientifica e i tre bracci restano quelli fissati il 16/11; nessuna GPU viene richiesta nella prima cella audit.
-
-
-### GPT — 16/11/2026: contrastive corrette, attesa rilettura di Claude prima del collaudo
-
-Le tre decisioni D-1/D-3/D-2 sono di Simone, non ipotesi del revisore. Per CapgMyo il dato resta nel train e nel totale; la sola esenzione del cancello per dataset è definita dal manifest. Se anche un solo λ è fuori range, si ferma tutta la coorte. Confronto primario esplicitamente limitato a E_dyn/P1/EPN612, UCI/P2 descrittivi; non confondere NI irrisolta con danno dimostrato.
-
-Non ancora verificati sul cluster: CUDA/NCCL, uscita e pulizia dei processi, copertura sui segnali veri, gradienti a peso pieno, tempo/memoria e ripresa a quattro GPU. Il nuovo collaudo li misura con tetti e criteri pubblicati. Nessun risultato locale li sostituisce. La calibrazione usa lo stesso stato salvato per l'oracolo; nessuna ricostruzione floating point richiesta al lettore. Le prove distribuite e di supervisione locali bloccate dal sandbox sono state rieseguite fuori sandbox e passano; non sono errori del modello. La suite intera del repository non è stata eseguita: verifiche mirate contrastive e compatibilità LQ nella ricevuta.
-
-Prima dei training restano lettura del collaudo, costi misurati, release e catena dei valutatori con pin/cardinalità. Nessuna estensione di dose, loss, seme o braccio placebo. Questa consegna non modifica gli esempi MATLAB né i checkout di campagne precedenti.
-
-### GPT — 16/11/2026: perimetro delle versioni MATLAB
-
-Riferimento Python `db5ac41`. Le versioni MATLAB sono forward su matrici numeriche, non una seconda
-implementazione del trainer o dell'autodiff. Pool/proiettore, memoria/EMA, selezione temporale e filtri
-fisici restano a monte; i file ricevono feature e maschere già preparate. RnC va calcolata sulla popolazione
-globale, non come media di loss locali. Il demo InfoNCE usa esplicitamente due negativi per leggibilità;
-il default della funzione e la proposta mantengono 32. Undici verifiche forward passate in MATLAB non
-chiudono i sei test distribuiti Python ancora da verificare. Nessun nuovo difetto scientifico dimostrato.
-
-### GPT — 16/11/2026: confronto contrastivo, limiti da chiudere prima dei lanci
-
-Riferimento `db5ac41`. Corrette le due anomalie dimostrate nel prototipo RnC; eliminato il confondimento
-dei candidati locali scegliendo il batch globale. Restano da eseguire sei test nuovi distribuiti, inclusi
-rank senza posa e interazione autograd/DDP/checkpointing. La sandbox impedisce socket locali; richieste
-tecniche esterne annullate, non ripetute. Verifica locale e algebra non certificano CUDA/NCCL.
-Calibrazione e copertura sui dati reali, risorse e release esecutiva ancora da misurare/preparare dopo review.
-Il costo storico dei tre training è 50,83 GPU-ore prima dell'overhead, non un tetto. I config lasciano λ nulli
-finché misurati; nessuna sostituzione con il default tecnico. Un seme e dati di sviluppo: i CI non coprono
-variabilità fra training. Nessun vincitore imposto fra posa e classificazione. Nessun lancio effettuato.
-
-### GPT — 16/11/2026: RnC, coppie cross e partizione da correggere prima del training
-
-R1: cross esclude gli istanti della stessa finestra dai positivi ma li conserva nei
-denominatori; controesempio con quattro pose identiche dimostra repulsione intra-finestra
-(derivata logit +0,303413). Scegliere all o esclusione coerente da entrambi i ruoli.
-R2: la loss locale non è invariante alla divisione del batch: stessi quattro esempi danno
-1,348515 interi, 1,480332 in due micro-batch, zero in quattro micro-batch singoli. Non è
-un bug del riduttore: scegliere e congelare il bacino dei candidati o implementarlo globale.
-R3/R4: copertura/diversità sul loader reale e integrazione completa ancora da verificare.
-Nota minore: sentinel -1e4 errato con temperature estreme ammesse, non con 0,1 proposto.
-La versione finale corregge correttamente supporto/encode della prima; non ripetuti quei
-rilievi superati. Loss circa 1 non determina il peso; E4 resta locale, non gradiente globale.
-La domanda è supervisione della posa, senza promessa di dinamica o trasferimento generale.
-Nessun training autorizzato dalla review; proposta InfoNCE precedente non sostituita.
-
-### GPT — 07/11/2026: limiti della contrastiva e note LQ recepite
-
-N-1 Claude: statiche a 5.000 favorevoli a tutti gli altri bracci rispetto a L,
-non segnale specifico LQ; readout precisato senza riscrivere gli originali.
-N-2 archivi finali già pubblicati in 8c3a4fa, con hash uguali a quelli di Claude.
-Cache/checkpoint su SCRATCH non spostati; conservazione oltre la purga separata.
-N-3 un seme e sviluppo riutilizzato mantenuti; T25-L/T100-L cambia finestra e
-non misura rumore di repliche. La proposta contrastiva non garantisce dinamica:
-mean pooling globale, possibili falsi negativi e scorciatoie utente/montaggio.
-Coda e anzianità potrebbero non coprire dataset rari: audit prima del collaudo,
-nessuna esclusione automatica. Peso da gradiente iniziale soprattutto ancore
-perché la testa posa è a zero; non bilanciamento garantito nel training.
-Solo proposta da rivedere; nessuna autorizzazione nuova dedotta dalla review LQ.
-
-
-### GPT — 07/11/2026: LQ non recupera la dinamica, beneficio EPN circoscritto
-
-Nessun blocco operativo o mancata convergenza residua nella matrice conclusa.
-Il ramo log-quadratico è aggiornato (W_log non nullo), ma correlazione, errore
-centrato e MAE di posa restano al livello del lineare; varianza predetta 16,19%
-dei bersagli, non ampiezza 16%. GELU mantiene un piccolo vantaggio dinamico.
-Il risultato EPN non basta per parlare di trasferimento generale; DB3 presenta
-contrasti secondari sfavorevoli, P2 vs GELU ha NI irrisolta. Un solo seme e dati
-di sviluppo riutilizzati: IC condizionati ai checkpoint/fit, non variabilità del
-pretraining. Resta dichiarato il cambiamento del clipping insieme al nuovo ramo.
-Raccomandazione: non privilegiare LQ49k per la posa da questi dati; l'eventuale
-seguito richiede controllo pari dose. Contrastiva ancora da proporre su base
-fissata e revisionare, nessun cambio di loss o nuovo lancio in questa consegna.
-
-
-### GPT — 07/11/2026: nessun errore nei due invii finali
-
-I due confronti sono stati accettati al primo tentativo, senza duplicati o
-variazioni dei tetti. Esito ancora da raccogliere: nessun completamento viene
-presunto. Controlli interrotti su richiesta esplicita di Simone.
-
-### GPT — 07/11/2026: fit integri; dipendenza già soddisfatta
-
-Nessun errore nei due fit posa, nelle risorse o negli hash verificati. I confronti
-usano i rapporti effettivi di fit già COMPLETED 0:0, senza afterok verso job vecchi
-che SLURM può avere già rimosso dalla tabella attiva. Si conservano i pin e tutti
-i gate runtime; nessuna modifica alla scienza, al codice o alla ricetta.
-
-### GPT — 07/11/2026: attesa checkout risolta, gate dei fit rispettati
-
-Checkout B integro e COMPLETED 0:0; nessun errore nei due invii ridge. Non sono
-stati cambiati tetti, sorgenti, criteri o ricetta per anticipare la coda. I due
-confronti richiedono ancora esito 0:0 e SHA effettivi dei rapporti candidati.
-
-### GPT — 07/11/2026: attesa operativa del checkout B
-
-La seriale ha un tetto aggregato di 8 CPU e circa 30 GiB per utente; un fit
-occupa queste risorse e il checkout successivo resta in coda. Non è un errore
-della campagna. Nessun rilancio, aumento di tetto o sottomissione duplicata.
-Le due ridge e i due confronti posa restano da inviare nell'ordine registrato.
-
-### GPT — 07/11/2026: limite di coda CPU gestito, nessun job perso
-
-Aggregato P2 rifiutato da SLURM per QOSMaxSubmitJobPerUserLimit, senza creare job.
-Misurata la QoS lrd_all_serial: 10 invii e 8 CPU complessivi per utente. Dopo tre
-completamenti, invio accettato con --dopo-rifiuto (63775884), poi confronto 63775886.
-Storia del rifiuto conservata; nessuna duplicazione, modifica di tetto o retry
-scientifico. Tutti i gate preparatori posa passano con identità e risorse corrette.
-
-### GPT — 07/11/2026: controlli finali di integrità delle estrazioni LQ
-
-Nessun errore o eccedenza: quattro estrazioni COMPLETED 0:0 entro i tetti,
-8 CPU / 1 GPU / 100G ciascuna. Identità e hash di tutte le nove cache corretti.
-Il controllo delle allocazioni è stato eseguito esplicitamente oltre al generatore
-locale dei piani. Fit posa non ancora rilasciati: devono passare validate/benchmark
-con accounting e rapporto pinnati. I margini storici delle sonde restano un proxy,
-non una garanzia di durata o convergenza; nessun retry automatico.
-
-### GPT — 07/11/2026: ordine dell'interprete CPU corretto prima del primo invio
-
-Guard di percorso precedente all'attivazione del venv: difetto riprodotto con
-interprete iniziale incompatibile e corretto. Non cambia la matematica, non richiede
-nuovo benchmark GPU e non modifica i tre job in corso. La catena CPU resta in attesa
-delle cache complete, con gate e tetti congelati; nessun nuovo consenso necessario.
-
-### GPT — 07/11/2026: invii finali corretti; controllo preventivo dei launcher CPU
-
-Nessun errore nei tre invii o nel checkout. Le estrazioni usano c196323 immutabile.
-Nel controllo preventivo del lettore CPU posa è emerso che il guard dei percorsi
-invoca Python prima del caricamento del modulo/venv, pur richiedendo API moderne.
-Correzione tecnica separata in preparazione con regressione; non riguarda i tre
-estrattori in esecuzione né i sorgenti numerici dei fit.
-
-### GPT — 07/11/2026: attesa di coda terminata, endpoint LQ integro
-
-Nessun errore del training o arresto per tempo: conclusione a 19.618, ricevuta
-completa e checkpoint nominato verificato. squeue non restituisce più il job perché
-è concluso; sacct riporta COMPLETED 0:0. La qualità scientifica resta da valutare
-sulle cache e sui confronti appaiati, non dalla loss stampata nel log.
-
-### GPT — 06/11/2026: PartitionConfig è un motivo generico, causa specifica non provata
-
-SLURM documenta PartitionConfig come motivo generico per un limite della partizione.
-Le letture non identificano quale limite lo abbia prodotto: assenza di nodi idle e
-molti job con lo stesso motivo sono contesto, non una dimostrazione della causa.
-Il training non è iniziato e non ha prodotto un errore di esecuzione.
-
-### GPT — 05/11/2026: nessun errore nell'estrazione LQ; attesa della coda
-
-Estrazione conclusa entro il tetto di 3.000 s, tutti gli hash verificati. Il training
-19.618 non ha ancora iniziato: attesa Priority, senza log di esecuzione. Nessun retry
-o richiesta di consenso. Le metriche scientifiche non sono ancora state calcolate;
-lettura differita per indicazione di Simone, non per un blocco tecnico.
-
-### GPT — 05/11/2026: R-1 della review Claude, nessun impatto sui job
-
-Il test trattava ancora i piani come bozze con pin nulli. Ora distingue REVIEW_REQUIRED
-e APPROVED_FOR_BENCHMARK mantenendo selezione, aggregazione, 0,5 GPU-ore / 8 CPU,
-provenienza del 5.000 e assenza del 19.618. Nessun sorgente di produzione modificato.
-Primo giro dei 12 file: 343 passati e 20 falliti per restrizioni della sandbox
-(socket DDP e /bin/ps); riesecuzione fuori sandbox: 363 passati, nessun fallimento.
-N-2 registrato come nota di processo, senza introdurre una nuova regola o cambiare
-piani e release congelati. N-4: nuove voci scritte con spazi fra parole e numeri.
-
-### GPT — 05/11/2026: limiti del benchmark LQ e test storico chiuso
-
-I rapporti di inferenza sono proxy per la durata completa: posa 1,002825,
-classificazione fino a 1,013405. Le norme W_log non misurano qualità o importanza
-funzionale. La ricevuta completa è stata raccolta senza perdita e verificata per SHA;
-un primo trasferimento testuale era troncato dal limite di output ed è stato
-rifiutato dal controllo hash, poi sostituito da trasferimento compresso verificato.
-Il vecchio test B19618 usava lo schema corrente al posto del runtime storico pinnato:
-corretto dal coordinamento senza modificare il codice di produzione.
-
-### GPT — 05/11/2026: invio benchmark LQ e riferimenti successivi
-
-Nessun duplicato o errore nei due invii. Il piano di inferenza eseguito rimarrà
-immutabile dopo la ricevuta; il piano di estrazione successivo punterà a esso e ai
-tetti misurati, evitando un ciclo di hash. La misura non è un risultato scientifico.
-
-### GPT — 05/11/2026: nessun errore nel 5.000 LQ; inferenza non ancora valutazione
-
-Il training è completo, non fermato dal tempo. Gain iniziale e guard sono quelli
-previsti; nessun STOP. Loss di training da sola non conclude sul beneficio del ramo.
-Il benchmark misura soltanto risorse e non produce uno score o cache per i fit.
-Una lettura metadata iniziale aveva sovrascritto PYTHONPATH del modulo numerico:
-fallita prima di leggere dati, corretta preservando il percorso del modulo; nessun
-job, checkout o sorgente scientifico modificato da quel comando di sola lettura.
-
-### GPT — 05/11/2026: nuova catena LQ inviata senza errori o duplicati
-
-Checkout e due invii accettati al primo tentativo; primo trainingPENDING Priority,
-continuazionePENDING Dependency conafterok corretto. Nessuna diagnosi di training
-possibile prima dell'esecuzione. Se fallisce un gate o la continuazione lascia uno
-stato parziale, fermare e leggere; non riusare i vecchi job63532335/63532370 né fare
-retry ciechi. Questa chat non ha attivato automazioni di completamento.
-
-### GPT — 05/11/2026: nessun blocco residuo al rilascio corretto LQ
-
-La vecchia release del04/11 non certifica il nuovo ingresso per rank: preservata come
-evidenza e sostituita operativamente da nuovi file05/11 con4hashcontroller eguard.
-Audit finale favorevole, nessun sorgente scientifico cambiato. Piani valutativi
-mantengono null i checkpoint futuri; niente estrazioni prima di pin e benchmarkrho_infer.
-
-### GPT — 05/11/2026: blocco d'inizializzazione LQ riprodotto e correzione verificata
-
-Nei contesti odierni preflight ha gain548.6939187567023, trainer/controller548.6939187567021;
-solo1ULP del buffer spiega l'hash diverso. Non è una differenza dei parametri né
-evidenza di apprendimento. Gain dei checkpoint storici coincide col trainer odierno;
-hash iniziale storico completo non registrato. Il guard esatto rimane invariato,
-nuovo hash0b6abc835 osservato ma non adottato come nuovo atteso. Nessun difetto residuo
-nei controlli eseguiti; training richiede nuova release pinnata, non un retry del vecchio job.
-
-### GPT — 05/11/2026: dipendenza checkout già concluso rifiutata, risolta senza duplicati
-
-sbatch ha rifiutato LOGSQ-initdiag-run-20261105 con «Job dependency problem», nessun ID
-creato. sacct attestava checkout63590929 COMPLETED0:0/46s mentre scontrol non lo trovava
-più nella tabella attiva. Ricevuta originaria conservata; verificati codice/output e
-completamento, invio con --dopo-rifiuto senza dipendenza ormai soddisfatta. Accettato
-un solo diagnostico63591184. Non è un retry di calcolo; risorse e protocollo invariati.
-
-### GPT — 05/11/2026: R-TIMEOUT chiuso, limiti residui dichiarati (ff08483)
-
-Le due regressioni originarie passano senza modifiche. Supervisione interna/esterna
-unificata e pulizia limitata nel tempo. Restano limiti della lettura periodica di ps:
-discendente separato e orfano prima di una osservazione, riuso identificatori fra
-snapshot/segnali. Polling0,5/0,1s nominale, non finestra cieca massima garantita.
-Senza tabella il fallback segnala il solo gruppo radice vivo/non raccolto: eccezione
-da dichiarare a «mai gruppi». Accettabili per i processi controllati della diagnostica
-con walltime/cgroup SLURM; nessun nuovo blocco o variazione scientifica. Durate su
-cluster ancora da misurare; timeout implica errore senza retry automatico.
-
-### GPT — 05/11/2026: R-TIMEOUT nella diagnostica corretta da Claude (fd874d7)
-
-logsquare_initialization_diagnostic.py:295–304 uccide il gruppo di torchrun, non i rank
-in sessioni separate; execute:436–445 termina solo il figlio diretto al timeout esterno.
-Entrambi riprodotti con heartbeat ancora in avanzamento, non semplice PID zombie.
-Il margine 300/270 s non limita il pre-controllo; serve pulizia dei discendenti anche
-se scatta prima il watchdog esterno. Il walltime SLURM resta un limite esterno, ma
-non sana il contratto del watchdog per contesto. Correzione a Claude con due test
-in docs/reviews/test_logsquare_detached_timeout_20261105.py. Piano REVIEW_REQUIRED,
-nessun lancio. Precisazioni editoriali: gain storico osservato ma stato completo
-ricostruito; dry run senza batch/forward, con letture di manifest/indici/scale.
-
-### GPT — 05/11/2026: hash iniziale LQ diverso, causa da isolare (base 48364d3)
-
-verify_initialization fallisce prima di torchrun; l'errore non stampa hash osservato/gain, quindi causa NON ancora provata. Precedente cluster60561493: ordine import→pochi ULP del bufferfe_gain. Qui import diversi sono una pista, non una conclusione; nessuna correzione dei thread o tolleranza alla cieca. Critico: replicare ordine prima costruzione e count_parameters del rank0, evitare introspezione Torch prima del costruttore. Il diagnostico non riproduce DDP/optimizer/teacher e non autorizza training. Correggere solo il modello temporaneo dell'audit non garantirebbe lo stato usato dal trainer: verifica necessaria prima di qualunque release nuova. Consegna da rivedere da Claude; nessun nuovo consenso operativo richiesto a Simone.
-
-
-### GPT — 04/11/2026: invii LQ regolari, distinzione fra sandbox e job
-
-Nessun errore SLURM dei tre invii. Il sandbox aveva bloccato l'accesso locale
-al ledger prima della prenotazione per checkout e5000; esecuzione tecnica
-autorizzata poi riuscita con un solo ID per fase. Nessun retry di training.
-Una lettura scontrol con due ID non supportata dalla CLI è stata corretta
-in due letture singole; risorse/tempi/dipendenza confermati. A1 superata.
-PENDING non significa training partito; nessun esito di loss o rappresentazione
-da interpretare. Non risottomettere:63532335 e63532370 sono già nel ledger.
-
-### GPT — 04/11/2026: gate della release LQ soddisfatti
-
-Nessun blocco scientifico o differenza nei sorgenti approvati. Stato della
-catena aggiornato dal commit dedicato, non dalle vecchie snapshot di review.
-Pin di checkpoint e rho_infer ancora assenti come previsto: impediranno
-estrazioni premature, senza bloccare il training autorizzato.
-
-### GPT — 04/11/2026: note operative della review finale LQ
-
-A1 soddisfatta, nessuna riselezione. Pubblicati rapporti storici esatti:
-db2-01 0,495; db2-23 0,469722; db3 0,331111; db6 0,575; p2 0,452222.
-Non sono garanzie di durata con feature LQ. Il launcher scrive failed.json
-sulle eccezioni Python; un kill SLURM può impedirlo. Per TIMEOUT il collector
-archivia failed.json locale con accounting/provenienza esplicita, senza
-modificare output del job, rilanciare o aumentare tetti. Sorgenti invariati.
-Release minimale e successivo commit dei pin sono distinti; entrambe le
-fasi training useranno lo stesso SHA esecutivo finale, mai i checkout eval.
-
-
-### GPT — 04/11/2026: limiti e correzioni della consegna adattatori LQ
-
-La review interna ha trovato un legame insufficiente fra ricevuta rho_infer e
-piano di estrazione aggiornato. Corretto prima dei job: contesto stabile di
-input/ricetta/radici, piano/codice/sorgenti pinnati e ricalcolo di tempi,
-conteggi e tetti; nessun ciclo fra hash quando si aggiungono pin e allocazioni.
-Aggiunti controlli simmetrici protocollo/config LQ fra ricevuta e provenienza
-nei due lettori. R1-b propagata fino ai report finali, non solo all'estrazione.
-Nessun blocco residuo trovato internamente; review Claude ancora richiesta.
-Misure CUDA, checkpoint e cache del candidato non esistono ancora. I gruppi
-del benchmark sono rappresentativi, non esaustivi; residuo pipeline cumulativo.
-Le OOF storiche NPZ sono remote: pin verificati sulle ricevute, byte da
-verificare a runtime. Per le sonde è proposta esplicitamente la riutilizzazione
-dei tempi storici per shard con ricetta/ambiente/conteggi identici; le feature
-possono cambiare il numero di iterazioni, quindi nessuna garanzia di durata.
-Per la posa resta nuovo benchmark train-only. Nessun retry o tetto aumentato
-automaticamente. APPROVED_FOR_TRAINING e release restano rinviati alla
-convergenza sugli adattatori, senza nuova autorizzazione operativa da Simone.
-
-### GPT — 04/11/2026: R1 LQ, stato della review e limiti del seguito
-
-Il collaudo non è privo di trigger:553segnalazioni della derivata richiedono
-decisione R1 scritta. Propostaepsilon0,001, nessuna esenzione S1, reviewClaude
-ancora necessaria. Dati train-only,64passi iniziali,LRfinale3,262e-6:
-non mostrano utilità delle feature o stabilità al picco1e-4. Differenze di clipping
-misurate, non interpretate come rapporti di update AdamW.
-Training da rivedere; rho_infer non misurato e valutatori/estrattori LQ ancora
-da adattare con pin. Legacy config: normalizzare soltanto i due nuovi default
-LQ per confrontare gli storici, senza cambiare hash/rawconfig o whitelist di nascosto.
-La richiesta di consenso per archiviare log già autorizzati è stata un errore
-operativo di GPT: autorizzazione persistente, nessun nuovo via scientifico
-richiesto per le stesse operazioni. Nessun nuovo job sottomesso.
-
-
-### GPT — 04/11/2026: limite operativo dopo invio LOGSQ
-
-Il collaudo63525730 è soltanto diagnostico: un suo eventuale completamento
-non autorizza training o estrazioni. Necessari letturaR1, preventivo misurato,
-orchestratori/pin e review; rho_infer resta da misurare separatamente.
-Nessun retry automatico.
-
-
-### GPT — 04/11/2026: precisazione scientifica S1 prima del collaudo
-
-Non si attribuisce al banco la differenza p200>=0,50/p2000<0,50 come fatto
-dimostrato: diverse sorgenti/spettri/scale e kernel a miscela non lo consentono.
-Nessun kernel esentato da R1; il contrasto è un indizio riportato integralmente.
-Questa precisazione non cambia il codice approvato né richiede nuovi dati.
-Training ed estrazioni restano fuori dall'approvazione del collaudo.
-
-
-### GPT — 04/11/2026: limiti dopo le correzioni T100-LQ
-
-Un controllo CUDA non ripetibile viene ora distinto da un mismatch del ramo;
-resta un gate che ferma il collaudo, non si allenta la tolleranza. Il rapporto
-di clipping descrive gradienti prima di AdamW, non direttamente update dei
-pesi. Le soglie epsilon sono operative e train-only, non evidenza scientifica
-di qualità. Tetti training/estrazione del candidato restano null fino alle
-misure pertinenti e pubblicazione del preventivo:22 e2,75GPUh sono storici.
-Nessun risultato CUDA/DDP o dato reale acquisito in questa consegna.
-
-
-### GPT — 04/11/2026: limiti dichiarati della consegna T100-LQ
-
-Il ramo nuovo mantiene la funzione iniziale, non la traiettoria: il gradiente
-di W_log può cambiare già al primo passo il clipping globale. Log delle risposte
-quadrate non è energia di banda. Epsilon0.001 non è ancora validato sui dati reali
-200Hz/2000Hz: diagnostica train preparata, nessuna selezione sulla val.
-Il preflight conserva due modelli in memoria, quindi il picco non è quello di un
-singolo training. Risorse scientifiche provvisorie26,75GPUh incluso collaudo,
-46,667coreh soloCPU; da ricalcolare prima dei fit/lanci. Il controllo T25−B
-non stima da solo il rumore fra pretraining indipendenti.
-La review Claude è pendente per esplicita sequenza richiesta da Simone.
-
-
-### 2026-11-04 | GPT | Confronto storico non equivale a pavimento del rumore
-
-T25-L−B è una coppia a stesso seme, non una stima tra semi. Nessun confondente
-scientifico dimostrato nelle configurazioni equivalenti; non certificabili
-retroattivamente identità bit-a-bit dei pesi/gain iniziali o di tutti i batchB,
-privi del tracciamento origini. Differiscono checkout e completezza provaambiente.
-C selezionato diverso12/20fold a stessa griglia: incluso nel contrasto tra pipeline
-fittate. P1 non è replica numerica esatta; IC EPN/P2 attraversanozero senza provare
-equivalenza. Nessuna soglia o correzione dei contrasti introdotta. Review/calcolo
-indipendenti; seme unico e sviluppo restano limiti. T100-G secondario logsquare
-aggiunto dopo averne visto gli score, quindi esplorativo. Nessun nuovo difetto
-ai risultati tokenizer. Agente300M conferma valutatori correnti vincolati384/768:
-servono guardie dedicate, non basta cambiare preset o disabilitare i pin.
-
-### 2026-11-04 | GPT | Ambiguità delle due sonde risolta
-
-Due momenti e due livelli richiesti esplicitamente. I latenti prima delbackbone
-sono già elaborati dal tokenizer/locale/Perceiver: non chiamarli tokenizer puro.
-Vantaggio/svantaggio di una sonda misura accessibilità perquel lettore, non perdita
-irreversibile di informazione. Nuove viste richiedono parità di supporto/forward
-e non sostituiscono in silenzio pool768. Nessun difetto nei risultati già conclusi.
-
-### 2026-11-04 | GPT | Controlli necessari per le nuove linee proposte
-
-Proseguire soloG risponde alla dose diG; dimostrare persistenza del vantaggio
-GELU richiede ancheL a dose piena. Un benchmark300M breve è fattibilità, non
-generalizzazione; uno screening5k nullo non esclude beneficio successivo.
-LR adatto alla taglia va distinto dalla ricetta esattamente identica, senza
-tuning downstream asimmetrico. «Due punti» può significare momenti o livelli:
-quesito aperto a Simone prima di fissare gli estrattori. Fine-tuning richiede
-controllo da zero e separazione sviluppo/conferma; pose su nuovi utenti non è
-nuovo task di regressione. Nessuna conclusione sulla contrastiva finché coppie,
-invarianti e peso non sono definiti. Nessun guasto ai job conclusi.
-
-### 2026-11-04 | GPT | Limiti finali tokenizer, nessun difetto tecnico aperto | Runtime b315dad
-
-Tutti420fit convergenti, max5916/12000; 36 record con warning di scoring DB3
-restano distinti dai warning solver, assenti. NI P2 G−T25 soddisfatta per soli
-0,014062pp oltre il margine: non descriverla come garanzia robusta di trasferimento.
-IC condizionati a un seme e a sviluppo già osservato, senza correzione multipla;
-EPN positivo non isola la frequenza200Hz. Soggetti P1 visti dall'encoder nel
-pretraining, esclusi soltanto dai fit della sonda; EPN/UCI esclusi dal pretraining.
-Posa su utenti esclusi ma task supervisionato, non regressione di trasferimento.
-Manca T25-G, quindi interazione completa finestra×GELU non identificata. Posa
-ancora attenuata; nessun vantaggio su ogni metrica. Nessun impedimento tecnico
-alla pubblicazione dopo ricalcolo indipendente, nessun nuovo esperimento implicito.
-
-### 2026-11-04 | GPT | Rettifica della regola storica sullo scaling
-
-Non è dimostrato che30M bastino né che300M risolvano il limite. La vecchiaH3 misurava
-rango iniziale, non prestazione downstream300M; la regola di attendere un beneficio
-piccolo prima di scalare era allocazione del budget, non conclusione scientifica.
-Il conteggio include student/decoder/teste, nonteacherEMA o statiottimizzatore.
-Benchmark15/10~3,9volte tempo30M al300M non è preventivo attuale. Risultati negativi
-alla dosebreve o con ottimizzazione inadeguata non chiudono l'ipotesi di capacità.
-Le evidenze di forecasting in letteratura non garantiscono scaling nell'EMG.
-
-
-
-### 2026-11-04 | GPT | ETA e accounting delle ultime sonde
-
-I due nuovi shardG hanno0warning e28fit convergenti; restano i36warning di scoring
-DB3 già documentati. Nessun nuovo difetto dimostrato. ETAultimoP2 15:05–15:15
-indicativa daP2precedenti, non garanzia. Il confronto finale deve ancora essere
-sottomesso dopo gli input completi; gli aggregatiT25 da8/16s non garantiscono
-il tempo del bootstrap finale. Monitor automatico sempre spento.
-
-
-
-### 2026-11-04 | GPT | Limiti da preservare nella proposta di seguito
-
-La classificazione tokenizer non è ancora letta: nessun vincitore assunto.
-Kernel/proiezione sono già apprendibili; GELU/log fissi. Il ramo log-quadratico
-non equivale a energia di banda e conserva T100-L come controllo primario anche
-se un altro braccio risultasse migliore. Dose completa significa confronto abbinato,
-non candidato lungo contro riferimento corto. Gli IC sui soggetti non includono
-variabilità tra pretraining; la val attuale è sviluppo. PSD-4 richiede esposizione
-controllata, distinta da una semplice valutazione multi-dataset.
-
-
-
-### 2026-11-04 | GPT | Controlli tecnici positivi, confronto ancora incompleto
-
-I quattro nuovi shard aggiungono 112/112 fit convergenti senza warning; totale
-336/336 e massimo 5.916/12.000 iterazioni. I 36 warning di scoring dei precedenti
-DB3 restano distinti dalla convergenza: non dichiarare zero warning complessivi.
-QoS a otto CPU per utente: i fit restano serializzati e i quattro aggregati attendono.
-Nessuna accuratezza finale dei tre bracci ancora disponibile; lettura rimandata
-al confronto completo. Nessun nuovo difetto del codice dimostrato.
-
-
-
-### 2026-11-04 | GPT | Stato tecnico delle sonde distinto dal risultato scientifico
-
-224fit/224convergenti, massimo4768iterazioni sulle12000, nessun errore del solver.
-Esistono36record con warning di scoring per classi predette assenti nei target
-del fold DB3; sono separati dai warning di convergenza, coerenti con la convenzione
-macro recall sui target presenti. Non scrivere genericamente zero warning.
-I report parziali non sono il confronto P1/P2/EPN dei tre modelli: nessuna scelta
-del vincitore. QoS8CPU perutente continua a serializzare i fit. ETAindicativa,
-non promessa di consegna automatica. Ricevute nuove e log devono essere pubblicati
-su origin; il problema SSH precedente puo persistere anche se Claude ha pubblicato
-1850121/4487445 alle11:45 (refloglocale update by push).
-
-### 2026-11-04 | GPT | Limiti di loss monitorate e passaggio da quattro a otto GPU
-
-fixed_eval e pose_panel sono pannelli TRAIN, non loss di validazione su utenti esclusi;
-TensorBoard da solo non colma questa differenza. Monitorare separatamente termini
-pesati (posa1+ancore0,2,JEPA0), LR/gradienti, validazione e dinamica della posa; tenere
-il test separato dalle scelte. Quattro GPU gia attive; ripresa con world_size diverso
-esplicitamente rifiutata dal trainer (RNG/stream). Otto GPU non garantiscono meta tempo:
-servono benchmark, integrazione multinodo e controllo del batch globale. Due nodi
-per due bracci indipendenti conservano invece quattro rank per run e possono ridurre
-il tempo della campagna, condizionatamente alla coda. Nessuna estensione lanciata.
-
-### 2026-11-04 | GPT | Una sonda negativa non dimostra mancata convergenza del FM
-
-Un esito negativo riguarda l'accessibilita con quel lettore, aggregazione, task e dose;
-non dimostra assenza di informazione nei tensori interi, impossibilita di migliorare
-proseguendo il training o assenza di beneficio con fine-tuning. Anche un buon risultato
-su un layer non attribuisce da solo il merito al pretraining senza controllo iniziale.
-Sondare le due meta separatamente localizza il contributo: il modello lineare congiunto
-puo gia usare ciascuna meta, quindi separarle non garantisce un recupero prestazionale.
-Il confronto corrente resta congelato. Eventuale confronto pretrain/fine-tuning contro
-inizializzazione casuale richiede un disegno distinto, con stessi dati e budget.
-Riferimenti metodologici: Alain/Bengio https://arxiv.org/abs/1610.01644;
-Kornblith et al. https://arxiv.org/abs/2010.16402 (evidenza su immagini, non risultato EMG).
-
-### 2026-11-04 | GPT | Tempi sonde condizionati alla coda
-
-Tre fit completati senza errori SLURM; soltanto il primo già raccolto e verificato
-in dettaglio. Nessun confronto classificazione finale ancora. Stima15:30–17:00CET
-basata sui40,5coreh storici/8CPU e report, condizionata ai prossimi invii e alla
-coda. Monitor disattivato su richiesta: nessuna promessa di notifica automatica.
-
-
-### 2026-11-04 | GPT | Risultato posa piccolo; classificazione ancora incompleta
-
-Beneficio presente ma sotto2% pratico, movimento ancora attenuato. Il vantaggio
-combinato si restringe da2,35% a5k a1,53% a19618. GELU peggiora lievemente il
-secondario statico rispetto100lineare. Un seme,val di sviluppo gia osservata;
-questa e posa2kHz supervisionata, non trasferimento a nuova regressione o
-risposta200Hz. EPN/P1/P2 attendono i loro fit. QOS8CPU perutente serializza
-le sonde, coda limitata10attivi; restanti lanci già autorizzati, no nuovo consenso.
-
-
-### 2026-11-04 | GPT | Limite di concorrenza seriale e ordine dei lettori
-
-QOSMaxCpuPerUserLimit serializza i fit da8CPU. Si dà precedenza alla breve
-ridge dopo il DB3 in esecuzione tramite hold/release dei soli quattro shard
-pendenti, senza cancellazioni, duplicati o modifica di ricetta. Gli hold devono
-essere rilasciati appena la ridge parte e comunque prima di terminare la chat.
-Un tentativo di validate interamente quotato è stato fermato dal sandbox prima
-del ledger; assenza verificata, stesso submitter eseguito con regola persistente.
-Nessun job è stato creato dal tentativo locale fallito.
-
-
-### 2026-11-04 | GPT | Risultati endpoint ancora da calcolare
-
-Le estrazioni riuscite non sono punteggi scientifici. Posa e sonde CPU devono
-ancora essere eseguite; lo screening5k non sostituisce l'endpoint19618.
-Budget CPU pubblicato distinto fra atteso e tetto; nessun nuovo consenso,
-nessun monitor riattivato e nessun nuovo training.
-
-
-### 2026-11-04 | GPT | Stato estrazioni e limiti dei benchmark CPU
-
-RUNNING non significa cache valide: prima dei fit servono ricevute finali,hash eparità.
-Il launcher sonde non aggiunge un benchmark inesistente nell'API: il piano usa i
-tempi storici dichiarati e tetti conservativi; il timingridge non misura la logistica.
-Nessun retry o aumento silenzioso dei tetti, nessun nuovo monitor. Incidentecheckout
-risolto prima delle nove estrazioni, nessun difetto scientifico identificato.
-
-### 2026-11-04 | GPT | Errore di sequenza: checkout avviato prima della fine del push
-
-GPT ha continuato dopo un tool gitpush che restituiva session_id anziché exit_code.
-Il checkout63491851 ha trovato il commit non ancora disponibile ed è fallito2:0
-dopo3s, prima di creare cartelle. Correzione: attendere exit0 e verificare oggetto
-remoto prima del secondo invio, nuovoIDr1; nessun training o estrazione toccato.
-
-### 2026-11-04 | GPT | Limiti dello screening tokenizer5k
-
-Il booleano automatico2percent del contrasto combinato non è un verdetto: confronto
-secondario e dose intermedia. Primari sotto2% puntuale; IC esplorativi senza correzione
-globale, condizionati al seme e utenti val riusati. Statiche peggiorano con100lineare;
-posa2kHz non risponde a EPN200Hz. Nessun recupero completo del movimento; tutti i
-bracci restano nella matrice endpoint approvata. Critico concorde, due formulazioni chiarite.
-
-### 2026-11-04 | GPT | Guardie endpoint e distinzione dodici/nove estrazioni
-
-Le12estrazioni sono la matrice totale:3posa5k già concluse,9residue a19618.
-Nessun difetto dei training o checkpoint. Il controller controlla formato delloSHA
-training ma non l'uguaglianza al commitatteso: l'attestazione esterna19618 verifica
-esplicitamente afb644e e sacct COMPLETED0:0, prima del freeze. Nessuna correzione del
-runtime necessaria. Non usare lo screening5k per selezionare bracci o modificare ricetta.
-
-### 2026-11-03 | GPT | Grafico JEPA fuorviante per la ricetta tokenizer; limiti della lettura train
-
-JEPA è calcolata ma pesa0: la salita del pannello destro non dimostra divergenza
-dell'obiettivo. I pannelli fissi migliorano, senza evidenza di divergenza nelle misure
-esaminate. Non è ancora evidenza di generalizzazione o recupero del movimento: la MSE
-posa di GELU migliora, mentre la sua varianza temporale predetta cala0,026602→0,024422.
-Il pannello non salva varianza target; non costruire rapporti con altri pannelli.
-Nessuna anomalia tecnica dimostrata, nessuna scelta del vincitore a14.500 o nuovo lancio.
-
-### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
-
-Il critico ha individuato attese delle diagnostiche degli altri rank dentro gli all-reduce
-cronometrati. Aggiunte barriere fuori timer e somma dei massimi per componente: il costo
-delle diagnostiche resta separato. Memoria di tre modelli residenti e loader agevolato dalla
-strumentazione non certificano un training singolo a regime; limiti dichiarati nel report.
-Nessun difetto residuo rilevato prima della sottomissione. Nessun risultato di prestazione
-scientifica può essere dedotto da questi64batch tecnici.
-
-### 03/11/2026 — GPT: limite finanziario precedente superato da autorizzazione esplicita
-
-Il rischio di non far entrare tre bracci nel residuo63,2925GPUh non blocca più la campagna:
-Simone autorizza esplicitamente lo sforamento. Rimangono i gate tecnici, la contabilità e
-richieste di walltime realistiche; il preventivo completo non viene sostituito da un credito
-numerico inventato. Nessun motivo per ridurre la dose del controllo25ms per risparmio.
-
-### 03/11/2026 — GPT: raggio corretto e limiti della review tokenizer
-
-Raggio2 restringeva inutilmente le query della ricetta B con JEPA spento: corretto con override0
-esplicito, nessun cambio ai default o ai run passati. La CLI doveva applicare il peso JEPA prima
-di validare il raggio; regressioni pertinenti ora verdi. Parità esatta di loss e gradienti T25
-storico/override0 verificata; gli artefatti02/11 rimangono storico, usare quelli03/11.
-Standardizzare ogni feature cambierebbe inizializzazione e ottimizzazione anche del controllo25ms:
-non viene introdotto automaticamente. Replica a stesso seme non stima variabilità fra training;
-non inferiorità con margine1pp ammette esito irrisolto. EPN a200Hz non è un esperimento causale sulla
-sola frequenza. NinaPro DB5 è presente nel pretraining con quota nominale2,15%, esposizione realizzata
-ancora da misurare. Budget tre bracci ancora stretto dopo la rettifica del doppio conto valutazioni;
-nessun ripiego sul controllo storico selezionato sulla base di nuovi risultati.
-
-### 02/11/2026 — GPT: controllo degli slot ancora da progettare e preventivare
-
-Il piccolo beneficio del temporale non dimostra che la media sia il collo di bottiglia.
-Il prossimo controllo proposto deve distinguere vista e capacità del lettore, senza assumere
-che concatenare tutti gli slot o salvarne tutta la cache sia economico. Costi e modalità di
-estrazione non misurati; nessun nuovo protocollo operativo o lancio implicito nell'aggiornamento.
-
-### 02/11/2026 — GPT: beneficio del temporale limitato, non diagnosi del pooling
-
-Nessun difetto tecnico rilevato. Beneficio B sull'errore dinamico circa0,49% relativo;
-varianza predetta scende10,85% del target e MAE assoluta aumenta leggermente. Non chiamarlo
-recupero del movimento o miglioramento uniforme. R3c guadagna di più ma resta peggiore diB.
-La vista media già64slot; contesto1152 e ridge selezionata non isolano pooling o meccanismo.
-Val già osservata e backbone bidirezionale: lettura esplorativa, non test online né criterio endpoint.
-PCA: rettifiche d93e22e coerenti e OOF già utilizzati; nessun rifit aggiuntivo necessario per chiudere
-questa consegna. Slot interi, obiettivo dinamico e contrastiva restano proposte distinte, non lanci.
-
-### 02/11/2026 — GPT: stato aggiornato dei dati PCA e limiti del timing temporale
-
-Le vecchie note sui quattro OOF mancanti in locale sono superate: recupero e confronto appaiato
-già conclusi. D93e22e conferma C grid identica e riferimento26,77core-ore; il contrasto resta
-fra pipeline, non causalità della sola PCA. Nessun rifit isolato disposto automaticamente.
-Benchmark temporale non misura CV/val: preventivo run aggiunge riserva e margine espliciti.
-Raccolta iniziale incompatibile con Python3.6 del login node, corretta solo nel collector;
-nessun difetto nel job scientifico e nessuna risottomissione. Costo checkout contabilizzato
-su2CPU effettivamente allocate da SLURM, non sulla richiesta1CPU.
-
-### 02/11/2026 — GPT: rimosso il blocco di operatore per la sola catena temporale
-
-La precedente attesa di semplicione è superata dall'autorizzazione esplicita di Simone
-al lancio diretto di questa catena. Nessuna deroga generale alla regola operativa:
-restano protocollo, preflight, budget e gate del timing prima del confronto completo.
-
-### 02/11/2026 — GPT: interpretazione PCA e unico blocco operativo del temporale
-
-Il peggioramento con pipeline128 è misurato anche con pairing rigoroso; su P2 B perde più di R3c.
-Non attribuirlo tutto alla sola PCA, né tutto il divario PSD-3 al pretraining: cambiano anche precisione
-e thread. MLP−logistica sulle stesse feature compresse resta informativo, ma non misura MLP768 o decoder
-senza PCA. B resta sotto R3c nelle stime puntuali pool768. Nessun adattamento del protocollo temporale
-in base a questi numeri; nessun rifitPCA isolato già eseguito.
-
-Il canale semplicione resta irraggiungibile: nessuna sottomissione diretta in sostituzione. Dopo aver
-completato codice,35test,review,cachecheck e piano concreto, chiesta a Simone soltanto indicazione
-della chat attuale/riattivazione oppure eccezione operativa per lanciare direttamente questa catena
-con lo stesso submitter/ledger. Non è richiesta una seconda approvazione scientifica del test.
-
-### 02/11/2026 — GPT: disponibilità operatore e limiti del confronto approvato
-
-La chat semplicione `01a18355-6241-7c53-98fe-fbc8450c2b30` non è raggiungibile via strumenti app
-(host durable non disponibile) e non compare negli elenchi attivi/archiviati consultati. Nessun
-nuovo agente omonimo, nessun lancio diretto sostitutivo. Codice, protocollo, test e output PCA
-possono avanzare autonomamente; la sottomissione temporale richiede il ripristino del canale o
-una nuova indicazione operativa di Simone. SSH in sola lettura funziona dopo l'escalation del
-sandbox di rete; questo non cambia la regola sulle sottomissioni.
-
-Il temporale legge latenti già mediati sui64 slot e usa più parametri dell'istantaneo; val già
-osservata, nessuna conclusione online. Il bootstrap PCA è esplorativo su pipeline note, non
-ablazione causale della sola PCA. Il rifit768 a implementazione identica resta separato e non
-è stato disposto automaticamente. Nessun nuovo obiettivo di training o FM è stato cambiato.
-
-### 02/11/2026 — GPT: limiti della lettura PSD-3/PCA e del passo temporale | Fonte Claude f69741d
-
-La chiusura PSD-3 riguarda classificazione teacher con tempo mediato, non regressione temporale student.
-MLP provata non universalmente inutile; IC che includono zero non dimostrano equivalenza, e pool/dec cambiano
-anche strato. Correzioni alla narrazione Claude: stessa griglia C nel confronto PCA; differiscono PCA,
-precisione del preprocessing e thread. Il rifit768 storico misura 26,77 core-ore: la stima di 10 non è verificata.
-I delta preliminari non identificano causalmente la PCA; bootstrap appaiato ancora assente per mancanza locale
-dei quattro OOF. Solo raccolta remota richiesta come seguito, nessun rifit automatico.
-
-Cache posa già temporali ma mediano K64: non sono gli slot interi né feature temporali P1/P2. Val già osservata,
-non test intatto; encoder bidirezionale, nessuna evidenza online. Nuovo lettore1152 da implementare/testare e
-misurare sul train: i 185 s/0,411 core-ore del vecchio rapporto384 non ne sono un preventivo. Distinguere validità
-EMG da maschera posa e ricomputare il baseline sullo stesso supporto centrale. Canale app di semplicione non
-disponibile nella verifica corrente: raccolta OOF/verifica cache live non eseguite. Nessun job nuovo sottomesso.
-
-### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
-
-Il segno di B−R3c nelle sonde non seleziona l'avvio di PSD-3 o i suoi parametri.
-Warning su pool768 non implicano automaticamente mancata convergenza della
-logistica PCA128. Il prompt non attesta chiusi i rilievi R1/R2/R3 o già misurati
-hash e tempi remoti. Perimetro temporaneo limitato ai due passaggi già decisi,
-senza nuovi training/loss del FM o scelta di un modello GPT. Prevale sulla
-precedente attesa di una nuova attivazione GPT per rivedere le correzioni: resta
-la review indipendente tecnica prima del deploy.
-
-
-### 29/10/2026 — GPT: limiti e dipendenze aperte della preparazione PSD-3 (base b1c1bda)
-
-Le viste pool/dec delle cache B19618 hanno già mediato il tempo e provengono da
-strati diversi: questa matrice misura accessibilità per classificazione interna,
-non inseguimento della posa né causalità della sola media dei canali. PCA128 e MLP
-a60epoche introducono limiti espliciti; un esito negativo non prova assenza di
-informazione nel FM. Nessuna modifica alle loss del FM o scelta di una nuova
-architettura. Per il tempo servirà un lettore su rappresentazioni temporali;
-l'eventuale estrazione dei latenti interi richiede inferenza, non nuovo training.
-
-Alla verifica finale di origin Claude ha consegnato codice `22bf2cd`, piano
-`b98ece0` e prompt di review `e074659`; la review di tale consegna è il prossimo
-passo, non è inclusa nella preparazione PSD-3. I tempi CPU e
-la memoria PSD-3 non sono misurati su Leonardo;86core-ore è un preventivo provvisorio,
-non un consuntivo o una garanzia. Richiesto a semplicione un inventario read-only,
-ma il tool della chat ha restituito host durable non disponibile: nessuno stato
-remoto inferito, nessun lancio diretto sostitutivo. SHA cache da ricalcolare in
-preflight; lo stato qui si basa sugli archivi già verificati della tranche B19618.
-
-
-
 ### 2026-11-05 | GPT coordinamento | Audit dei rami e aggiornamento dell'operatore su main
 
 - Verificati worktree, fetch origin, punte pubblicate, documenti Claude recepiti e inclusione dei commit della correzione LQ.
@@ -10177,7 +9382,815 @@ Linea 3 preparata separatamente su `codex/contrastive-target-windows-20261118`: 
 espliciti, nuove misure ancora da fare, nessun job. TCN e continuazione 300M storiche invariate.
 Su richiesta di Simone liberati 8,43 GiB di temporanei pytest inattivi; dati e checkpoint intatti.
 
+
+### 2026-11-18 | GPT | Linea 3: verifica completa della preparazione RMS100/fast125
+
+Codice verificato `65bc60222e364b09c1e5a54ea3b83a3eb050fa49`: **3,723 test CPU distinti passati**,
+con DDP separato e recupero integrale dei 13 file coinvolti nell'esaurimento del disco.
+Nessun sorgente cambiato durante il recupero; ricevuta in
+`results/infra/contrastive_targets_20261118/full_suite/verification.json`.
+Controllo indipendente del delta `e388a1de..0efdc29c`: nessun blocco, config e hash rigenerati,
+vecchie ricevute rifiutate, costi ricalcolati. Non sostituisce la review di Claude.
+Main integrato fino a `f546c9e4`, con review unica di `0d91297` e sue prove.
+Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,066667 coreh;
+nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
+
 ## 2) Problemi trovati
+
+### 18/11/2026 — Chiarito il riferimento alla chat nel worktree condiviso
+
+La dicitura «questa chat» in CLAUDE.md poteva attribuire i lanci sia a GPT
+scientifico sia a 3-launcher. La regola ora indica ciascun responsabile per nome.
+
+### 18/11/2026 — GPT: limiti dei diagnostici da sottoporre a review
+
+Il replay CUDA usa una fixture emg2pose a batch globale 8 e pesi iniziali con
+coda calibrata rimappata, non ricostruisce la traiettoria storica al passo 255.
+La ripresa conserva la ricetta aggiungendo solo un punto di salvataggio nella
+copia diagnostica. Le differenze numeriche restano descrittive; invarianti di
+input, RNG, metadata e identità della coda devono essere lette prima dei
+confronti. Nessun emendamento della soglia storica o rilascio dei training.
+
+### 18/11/2026 — GPT, controllo del riavvio e vita del gruppo DDP
+
+Un confronto locale su quattro rank Gloo ha trovato uno scarto di arrotondamento
+fra processo continuo e processo riavviato con gli stessi dati, RNG e stato di
+partenza. Le due repliche ricaricate concordano. Il driver conserva, quando il
+backend li espone, i dati sui gruppi di riduzione DDP per interpretare il confronto
+CUDA. Il risultato sulla fixture sintetica descrive un solo aggiornamento su CPU.
+
+### 18/11/2026 — GPT: parità negativa e confondimento del confronto delle riprese
+
+Il test attuale confronta due training indipendenti fin dall'inizio, uno dei quali
+si interrompe a 544. Le norme differiscono già al passo 1 e superano il limite prima
+dell'attivazione contrastiva; la deriva si amplia prima del riavvio. Il rapporto CPU
+negativo non può attribuire da solo gli scarti alla ripresa. Le origini coincidono,
+ma mancano hash per passo di input/maschere/RNG. Nessuna prova causale del bf16 e
+nessuna tolleranza modificata. Proposto diagnostico CUDA da stato e batch comuni,
+con ripetizioni dello stesso caso e confronto di precisione/backend; ripresa da
+un unico stato salvato. Nessun nuovo lancio, nessun training lungo rilasciato.
+
+### 18/11/2026 — GPT: target 3-launcher non raggiungibile dal tool
+
+Non confondere il pacchetto pronto con una sottomissione: i due ID CPU non sono inviati.
+La chat individuata è ChatGPT e il tool richiede una chat Codex raggiungibile; UI app
+bloccata dalla piattaforma. Serve il target corretto o inoltro del prompt già salvato.
+Nessun nuovo consenso scientifico/operativo richiesto e nessun aggiramento della delega.
+
+### 18/11/2026 — GPT: parità iniziale negativa, riprese ancora da verificare
+
+Metadati: CN 146 e CR 135 norme del gradiente oltre rtol 1e-4 / atol 1e-6 nei primi
+256 update, quando i termini contrastivi sono spenti. Loss totale nei limiti e stream
+identico. Massimi scarti relativi circa 0,725% / 0,314%; nessuna diagnosi causale ancora.
+Rapporti dei gradienti attivi e confronto fra bracci nei limiti. Non cambiare soglie
+né λ: completare il readout CPU su checkpoint e riprese, poi review mirata. Lanci
+successivi solo 3-launcher; nessun training autorizzato dal mero COMPLETED dei job.
+
+### 18/11/2026 — GPT: nessun invio contrastivo residuo
+
+Superata la sola attesa di quota per ripresa CR, ora sottomessa 64772690.
+Non duplicare alcuno dei cinque job. Due COMPLETED non sono ancora un verdetto sul
+collaudo complessivo: gradienti, parità e ripresa vanno letti su tutte le celle con
+il lettore congelato. Nessuna nuova soglia, nessun retry o training lungo automatico.
+
+### 18/11/2026 — GPT: quota per il quinto benchmark
+
+Quattro job debug già inviati: due in esecuzione e due in coda per MaxJobsPU 2.
+MaxSubmitPU 4 impedisce di inviare ora ripresa CR; nessun tentativo di sottomissione
+rifiutato. Attendere un posto e usare l'ID previsto, senza cambiare partizione o risorse.
+Primi log base/InfoNCE regolari; esito complessivo dei benchmark ancora da leggere.
+
+### 18/11/2026 — GPT: gate CUDA bf16 chiuso, limiti della lettura
+
+Nessun blocco tecnico residuo nel collaudo 64746651. Il massimo errore/limite è 0,6124
+sul teacher bf16; il criterio usa il rumore del riferimento e non è una soglia fissa
+all'1%. Test tecnico, nessuna conclusione sull'efficacia delle loss. I precedenti CUDA
+falliti restano tali. Per i cinque invii rispettare MaxJobsPU 2 / MaxSubmitPU 4,
+nessuna duplicazione o monitor in background. Consuntivo include tutti i tentativi.
+
+### 2026-11-17 | GPT | Compatibilità PyTorch del collaudo: Path con mmap
+
+Difetto degli script GPT: il PyTorch del cluster pretende str come primo argomento di torch.load
+quando mmap=True, mentre CUDA gli passa pathlib.Path. Identici rischi in validate_resume e nel
+lettore finale, sei siti complessivi. Il Mac con PyTorch più recente non aveva intercettato il
+problema. Il probe NCCL passato non sostituisce il collaudo numerico; nessun risultato sulle loss
+si ricava dal fallimento. Una conversione str(path) mantiene il caricamento ma cambia il digest
+di tre file inclusi nelle ricevute: rettifica tecnica da verificare prima di un nuovo checkout,
+senza falsificare i pin storici. Codice, ricetta e piano scientifico non modificati in questa lettura.
+
+### GPT — 17/11/2026: audit avviato come catena, esito ancora da leggere
+
+L'accettazione del job 64652559 non è un risultato scientifico né il superamento della copertura. Prima della calibrazione servono COMPLETED 0:0, report e pannello validi con hash verificati. Rifiuti SLURM precedenti risolti, nessun job di audit precedente creato. Training completi e λ restano non rilasciati/non misurati.
+
+
+### GPT — 17/11/2026: dipendenza del checkout già concluso scaduta
+
+Checkout corretto 64652383 COMPLETED 0:0 in 11 s. SLURM conserva i job terminati nel controller per soli 30 s; la dipendenza afterok è quindi scaduta e l'audit è stato nuovamente rifiutato senza creare un job. Verificati sacct, SHA e pulizia del checkout; si ripresenta senza la sola dipendenza già soddisfatta, mantenendo tutte le guardie runtime. Ricevute e diagnosi archiviate, nessun costo di audit/GPU e nessun nuovo checkout necessario.
+
+
+### GPT — 17/11/2026: memoria seriale corretta dopo rifiuto dell'audit
+
+Il checkout 64652044 è completato, ma l'audit non è stato creato: QoSMaxMemoryPerUser per 32 GiB richiesti oltre 30.800 MiB ammessi. Corretto errore GPT di launcher/guardia a 30 GiB, 18 test passati, nessun cambiamento scientifico. Nuovo digest operativo `ab2d6460…`, release aggiornata prima della ripresentazione con `--dopo-rifiuto`. Il vecchio checkout resta immutato; il nuovo richiede 4 CPU per 4 minuti, entro il costo residuo della fase iniziale. Nessuna GPU consumata.
+
+
+### GPT — 17/11/2026: autorità del rilascio distinta dalla review di Claude
+
+Il rilascio preparatorio è decisione di GPT sotto il nuovo via di Simone; non è una nuova review favorevole di Claude. Restano obbligatori gli esiti reali di audit, calibrazione, CUDA/NCCL, benchmark e ripresa. Le fasi successive si fermano su qualunque gate fallito, senza retry o ritocco automatico. La fonte scientifica e i tre bracci restano quelli fissati il 16/11; nessuna GPU viene richiesta nella prima cella audit.
+
+
+### GPT — 16/11/2026: contrastive corrette, attesa rilettura di Claude prima del collaudo
+
+Le tre decisioni D-1/D-3/D-2 sono di Simone, non ipotesi del revisore. Per CapgMyo il dato resta nel train e nel totale; la sola esenzione del cancello per dataset è definita dal manifest. Se anche un solo λ è fuori range, si ferma tutta la coorte. Confronto primario esplicitamente limitato a E_dyn/P1/EPN612, UCI/P2 descrittivi; non confondere NI irrisolta con danno dimostrato.
+
+Non ancora verificati sul cluster: CUDA/NCCL, uscita e pulizia dei processi, copertura sui segnali veri, gradienti a peso pieno, tempo/memoria e ripresa a quattro GPU. Il nuovo collaudo li misura con tetti e criteri pubblicati. Nessun risultato locale li sostituisce. La calibrazione usa lo stesso stato salvato per l'oracolo; nessuna ricostruzione floating point richiesta al lettore. Le prove distribuite e di supervisione locali bloccate dal sandbox sono state rieseguite fuori sandbox e passano; non sono errori del modello. La suite intera del repository non è stata eseguita: verifiche mirate contrastive e compatibilità LQ nella ricevuta.
+
+Prima dei training restano lettura del collaudo, costi misurati, release e catena dei valutatori con pin/cardinalità. Nessuna estensione di dose, loss, seme o braccio placebo. Questa consegna non modifica gli esempi MATLAB né i checkout di campagne precedenti.
+
+### GPT — 16/11/2026: perimetro delle versioni MATLAB
+
+Riferimento Python `db5ac41`. Le versioni MATLAB sono forward su matrici numeriche, non una seconda
+implementazione del trainer o dell'autodiff. Pool/proiettore, memoria/EMA, selezione temporale e filtri
+fisici restano a monte; i file ricevono feature e maschere già preparate. RnC va calcolata sulla popolazione
+globale, non come media di loss locali. Il demo InfoNCE usa esplicitamente due negativi per leggibilità;
+il default della funzione e la proposta mantengono 32. Undici verifiche forward passate in MATLAB non
+chiudono i sei test distribuiti Python ancora da verificare. Nessun nuovo difetto scientifico dimostrato.
+
+### GPT — 16/11/2026: confronto contrastivo, limiti da chiudere prima dei lanci
+
+Riferimento `db5ac41`. Corrette le due anomalie dimostrate nel prototipo RnC; eliminato il confondimento
+dei candidati locali scegliendo il batch globale. Restano da eseguire sei test nuovi distribuiti, inclusi
+rank senza posa e interazione autograd/DDP/checkpointing. La sandbox impedisce socket locali; richieste
+tecniche esterne annullate, non ripetute. Verifica locale e algebra non certificano CUDA/NCCL.
+Calibrazione e copertura sui dati reali, risorse e release esecutiva ancora da misurare/preparare dopo review.
+Il costo storico dei tre training è 50,83 GPU-ore prima dell'overhead, non un tetto. I config lasciano λ nulli
+finché misurati; nessuna sostituzione con il default tecnico. Un seme e dati di sviluppo: i CI non coprono
+variabilità fra training. Nessun vincitore imposto fra posa e classificazione. Nessun lancio effettuato.
+
+### GPT — 16/11/2026: RnC, coppie cross e partizione da correggere prima del training
+
+R1: cross esclude gli istanti della stessa finestra dai positivi ma li conserva nei
+denominatori; controesempio con quattro pose identiche dimostra repulsione intra-finestra
+(derivata logit +0,303413). Scegliere all o esclusione coerente da entrambi i ruoli.
+R2: la loss locale non è invariante alla divisione del batch: stessi quattro esempi danno
+1,348515 interi, 1,480332 in due micro-batch, zero in quattro micro-batch singoli. Non è
+un bug del riduttore: scegliere e congelare il bacino dei candidati o implementarlo globale.
+R3/R4: copertura/diversità sul loader reale e integrazione completa ancora da verificare.
+Nota minore: sentinel -1e4 errato con temperature estreme ammesse, non con 0,1 proposto.
+La versione finale corregge correttamente supporto/encode della prima; non ripetuti quei
+rilievi superati. Loss circa 1 non determina il peso; E4 resta locale, non gradiente globale.
+La domanda è supervisione della posa, senza promessa di dinamica o trasferimento generale.
+Nessun training autorizzato dalla review; proposta InfoNCE precedente non sostituita.
+
+### GPT — 07/11/2026: limiti della contrastiva e note LQ recepite
+
+N-1 Claude: statiche a 5.000 favorevoli a tutti gli altri bracci rispetto a L,
+non segnale specifico LQ; readout precisato senza riscrivere gli originali.
+N-2 archivi finali già pubblicati in 8c3a4fa, con hash uguali a quelli di Claude.
+Cache/checkpoint su SCRATCH non spostati; conservazione oltre la purga separata.
+N-3 un seme e sviluppo riutilizzato mantenuti; T25-L/T100-L cambia finestra e
+non misura rumore di repliche. La proposta contrastiva non garantisce dinamica:
+mean pooling globale, possibili falsi negativi e scorciatoie utente/montaggio.
+Coda e anzianità potrebbero non coprire dataset rari: audit prima del collaudo,
+nessuna esclusione automatica. Peso da gradiente iniziale soprattutto ancore
+perché la testa posa è a zero; non bilanciamento garantito nel training.
+Solo proposta da rivedere; nessuna autorizzazione nuova dedotta dalla review LQ.
+
+
+### GPT — 07/11/2026: LQ non recupera la dinamica, beneficio EPN circoscritto
+
+Nessun blocco operativo o mancata convergenza residua nella matrice conclusa.
+Il ramo log-quadratico è aggiornato (W_log non nullo), ma correlazione, errore
+centrato e MAE di posa restano al livello del lineare; varianza predetta 16,19%
+dei bersagli, non ampiezza 16%. GELU mantiene un piccolo vantaggio dinamico.
+Il risultato EPN non basta per parlare di trasferimento generale; DB3 presenta
+contrasti secondari sfavorevoli, P2 vs GELU ha NI irrisolta. Un solo seme e dati
+di sviluppo riutilizzati: IC condizionati ai checkpoint/fit, non variabilità del
+pretraining. Resta dichiarato il cambiamento del clipping insieme al nuovo ramo.
+Raccomandazione: non privilegiare LQ49k per la posa da questi dati; l'eventuale
+seguito richiede controllo pari dose. Contrastiva ancora da proporre su base
+fissata e revisionare, nessun cambio di loss o nuovo lancio in questa consegna.
+
+
+### GPT — 07/11/2026: nessun errore nei due invii finali
+
+I due confronti sono stati accettati al primo tentativo, senza duplicati o
+variazioni dei tetti. Esito ancora da raccogliere: nessun completamento viene
+presunto. Controlli interrotti su richiesta esplicita di Simone.
+
+### GPT — 07/11/2026: fit integri; dipendenza già soddisfatta
+
+Nessun errore nei due fit posa, nelle risorse o negli hash verificati. I confronti
+usano i rapporti effettivi di fit già COMPLETED 0:0, senza afterok verso job vecchi
+che SLURM può avere già rimosso dalla tabella attiva. Si conservano i pin e tutti
+i gate runtime; nessuna modifica alla scienza, al codice o alla ricetta.
+
+### GPT — 07/11/2026: attesa checkout risolta, gate dei fit rispettati
+
+Checkout B integro e COMPLETED 0:0; nessun errore nei due invii ridge. Non sono
+stati cambiati tetti, sorgenti, criteri o ricetta per anticipare la coda. I due
+confronti richiedono ancora esito 0:0 e SHA effettivi dei rapporti candidati.
+
+### GPT — 07/11/2026: attesa operativa del checkout B
+
+La seriale ha un tetto aggregato di 8 CPU e circa 30 GiB per utente; un fit
+occupa queste risorse e il checkout successivo resta in coda. Non è un errore
+della campagna. Nessun rilancio, aumento di tetto o sottomissione duplicata.
+Le due ridge e i due confronti posa restano da inviare nell'ordine registrato.
+
+### GPT — 07/11/2026: limite di coda CPU gestito, nessun job perso
+
+Aggregato P2 rifiutato da SLURM per QOSMaxSubmitJobPerUserLimit, senza creare job.
+Misurata la QoS lrd_all_serial: 10 invii e 8 CPU complessivi per utente. Dopo tre
+completamenti, invio accettato con --dopo-rifiuto (63775884), poi confronto 63775886.
+Storia del rifiuto conservata; nessuna duplicazione, modifica di tetto o retry
+scientifico. Tutti i gate preparatori posa passano con identità e risorse corrette.
+
+### GPT — 07/11/2026: controlli finali di integrità delle estrazioni LQ
+
+Nessun errore o eccedenza: quattro estrazioni COMPLETED 0:0 entro i tetti,
+8 CPU / 1 GPU / 100G ciascuna. Identità e hash di tutte le nove cache corretti.
+Il controllo delle allocazioni è stato eseguito esplicitamente oltre al generatore
+locale dei piani. Fit posa non ancora rilasciati: devono passare validate/benchmark
+con accounting e rapporto pinnati. I margini storici delle sonde restano un proxy,
+non una garanzia di durata o convergenza; nessun retry automatico.
+
+### GPT — 07/11/2026: ordine dell'interprete CPU corretto prima del primo invio
+
+Guard di percorso precedente all'attivazione del venv: difetto riprodotto con
+interprete iniziale incompatibile e corretto. Non cambia la matematica, non richiede
+nuovo benchmark GPU e non modifica i tre job in corso. La catena CPU resta in attesa
+delle cache complete, con gate e tetti congelati; nessun nuovo consenso necessario.
+
+### GPT — 07/11/2026: invii finali corretti; controllo preventivo dei launcher CPU
+
+Nessun errore nei tre invii o nel checkout. Le estrazioni usano c196323 immutabile.
+Nel controllo preventivo del lettore CPU posa è emerso che il guard dei percorsi
+invoca Python prima del caricamento del modulo/venv, pur richiedendo API moderne.
+Correzione tecnica separata in preparazione con regressione; non riguarda i tre
+estrattori in esecuzione né i sorgenti numerici dei fit.
+
+### GPT — 07/11/2026: attesa di coda terminata, endpoint LQ integro
+
+Nessun errore del training o arresto per tempo: conclusione a 19.618, ricevuta
+completa e checkpoint nominato verificato. squeue non restituisce più il job perché
+è concluso; sacct riporta COMPLETED 0:0. La qualità scientifica resta da valutare
+sulle cache e sui confronti appaiati, non dalla loss stampata nel log.
+
+### GPT — 06/11/2026: PartitionConfig è un motivo generico, causa specifica non provata
+
+SLURM documenta PartitionConfig come motivo generico per un limite della partizione.
+Le letture non identificano quale limite lo abbia prodotto: assenza di nodi idle e
+molti job con lo stesso motivo sono contesto, non una dimostrazione della causa.
+Il training non è iniziato e non ha prodotto un errore di esecuzione.
+
+### GPT — 05/11/2026: nessun errore nell'estrazione LQ; attesa della coda
+
+Estrazione conclusa entro il tetto di 3.000 s, tutti gli hash verificati. Il training
+19.618 non ha ancora iniziato: attesa Priority, senza log di esecuzione. Nessun retry
+o richiesta di consenso. Le metriche scientifiche non sono ancora state calcolate;
+lettura differita per indicazione di Simone, non per un blocco tecnico.
+
+### GPT — 05/11/2026: R-1 della review Claude, nessun impatto sui job
+
+Il test trattava ancora i piani come bozze con pin nulli. Ora distingue REVIEW_REQUIRED
+e APPROVED_FOR_BENCHMARK mantenendo selezione, aggregazione, 0,5 GPU-ore / 8 CPU,
+provenienza del 5.000 e assenza del 19.618. Nessun sorgente di produzione modificato.
+Primo giro dei 12 file: 343 passati e 20 falliti per restrizioni della sandbox
+(socket DDP e /bin/ps); riesecuzione fuori sandbox: 363 passati, nessun fallimento.
+N-2 registrato come nota di processo, senza introdurre una nuova regola o cambiare
+piani e release congelati. N-4: nuove voci scritte con spazi fra parole e numeri.
+
+### GPT — 05/11/2026: limiti del benchmark LQ e test storico chiuso
+
+I rapporti di inferenza sono proxy per la durata completa: posa 1,002825,
+classificazione fino a 1,013405. Le norme W_log non misurano qualità o importanza
+funzionale. La ricevuta completa è stata raccolta senza perdita e verificata per SHA;
+un primo trasferimento testuale era troncato dal limite di output ed è stato
+rifiutato dal controllo hash, poi sostituito da trasferimento compresso verificato.
+Il vecchio test B19618 usava lo schema corrente al posto del runtime storico pinnato:
+corretto dal coordinamento senza modificare il codice di produzione.
+
+### GPT — 05/11/2026: invio benchmark LQ e riferimenti successivi
+
+Nessun duplicato o errore nei due invii. Il piano di inferenza eseguito rimarrà
+immutabile dopo la ricevuta; il piano di estrazione successivo punterà a esso e ai
+tetti misurati, evitando un ciclo di hash. La misura non è un risultato scientifico.
+
+### GPT — 05/11/2026: nessun errore nel 5.000 LQ; inferenza non ancora valutazione
+
+Il training è completo, non fermato dal tempo. Gain iniziale e guard sono quelli
+previsti; nessun STOP. Loss di training da sola non conclude sul beneficio del ramo.
+Il benchmark misura soltanto risorse e non produce uno score o cache per i fit.
+Una lettura metadata iniziale aveva sovrascritto PYTHONPATH del modulo numerico:
+fallita prima di leggere dati, corretta preservando il percorso del modulo; nessun
+job, checkout o sorgente scientifico modificato da quel comando di sola lettura.
+
+### GPT — 05/11/2026: nuova catena LQ inviata senza errori o duplicati
+
+Checkout e due invii accettati al primo tentativo; primo trainingPENDING Priority,
+continuazionePENDING Dependency conafterok corretto. Nessuna diagnosi di training
+possibile prima dell'esecuzione. Se fallisce un gate o la continuazione lascia uno
+stato parziale, fermare e leggere; non riusare i vecchi job63532335/63532370 né fare
+retry ciechi. Questa chat non ha attivato automazioni di completamento.
+
+### GPT — 05/11/2026: nessun blocco residuo al rilascio corretto LQ
+
+La vecchia release del04/11 non certifica il nuovo ingresso per rank: preservata come
+evidenza e sostituita operativamente da nuovi file05/11 con4hashcontroller eguard.
+Audit finale favorevole, nessun sorgente scientifico cambiato. Piani valutativi
+mantengono null i checkpoint futuri; niente estrazioni prima di pin e benchmarkrho_infer.
+
+### GPT — 05/11/2026: blocco d'inizializzazione LQ riprodotto e correzione verificata
+
+Nei contesti odierni preflight ha gain548.6939187567023, trainer/controller548.6939187567021;
+solo1ULP del buffer spiega l'hash diverso. Non è una differenza dei parametri né
+evidenza di apprendimento. Gain dei checkpoint storici coincide col trainer odierno;
+hash iniziale storico completo non registrato. Il guard esatto rimane invariato,
+nuovo hash0b6abc835 osservato ma non adottato come nuovo atteso. Nessun difetto residuo
+nei controlli eseguiti; training richiede nuova release pinnata, non un retry del vecchio job.
+
+### GPT — 05/11/2026: dipendenza checkout già concluso rifiutata, risolta senza duplicati
+
+sbatch ha rifiutato LOGSQ-initdiag-run-20261105 con «Job dependency problem», nessun ID
+creato. sacct attestava checkout63590929 COMPLETED0:0/46s mentre scontrol non lo trovava
+più nella tabella attiva. Ricevuta originaria conservata; verificati codice/output e
+completamento, invio con --dopo-rifiuto senza dipendenza ormai soddisfatta. Accettato
+un solo diagnostico63591184. Non è un retry di calcolo; risorse e protocollo invariati.
+
+### GPT — 05/11/2026: R-TIMEOUT chiuso, limiti residui dichiarati (ff08483)
+
+Le due regressioni originarie passano senza modifiche. Supervisione interna/esterna
+unificata e pulizia limitata nel tempo. Restano limiti della lettura periodica di ps:
+discendente separato e orfano prima di una osservazione, riuso identificatori fra
+snapshot/segnali. Polling0,5/0,1s nominale, non finestra cieca massima garantita.
+Senza tabella il fallback segnala il solo gruppo radice vivo/non raccolto: eccezione
+da dichiarare a «mai gruppi». Accettabili per i processi controllati della diagnostica
+con walltime/cgroup SLURM; nessun nuovo blocco o variazione scientifica. Durate su
+cluster ancora da misurare; timeout implica errore senza retry automatico.
+
+### GPT — 05/11/2026: R-TIMEOUT nella diagnostica corretta da Claude (fd874d7)
+
+logsquare_initialization_diagnostic.py:295–304 uccide il gruppo di torchrun, non i rank
+in sessioni separate; execute:436–445 termina solo il figlio diretto al timeout esterno.
+Entrambi riprodotti con heartbeat ancora in avanzamento, non semplice PID zombie.
+Il margine 300/270 s non limita il pre-controllo; serve pulizia dei discendenti anche
+se scatta prima il watchdog esterno. Il walltime SLURM resta un limite esterno, ma
+non sana il contratto del watchdog per contesto. Correzione a Claude con due test
+in docs/reviews/test_logsquare_detached_timeout_20261105.py. Piano REVIEW_REQUIRED,
+nessun lancio. Precisazioni editoriali: gain storico osservato ma stato completo
+ricostruito; dry run senza batch/forward, con letture di manifest/indici/scale.
+
+### GPT — 05/11/2026: hash iniziale LQ diverso, causa da isolare (base 48364d3)
+
+verify_initialization fallisce prima di torchrun; l'errore non stampa hash osservato/gain, quindi causa NON ancora provata. Precedente cluster60561493: ordine import→pochi ULP del bufferfe_gain. Qui import diversi sono una pista, non una conclusione; nessuna correzione dei thread o tolleranza alla cieca. Critico: replicare ordine prima costruzione e count_parameters del rank0, evitare introspezione Torch prima del costruttore. Il diagnostico non riproduce DDP/optimizer/teacher e non autorizza training. Correggere solo il modello temporaneo dell'audit non garantirebbe lo stato usato dal trainer: verifica necessaria prima di qualunque release nuova. Consegna da rivedere da Claude; nessun nuovo consenso operativo richiesto a Simone.
+
+
+### GPT — 04/11/2026: invii LQ regolari, distinzione fra sandbox e job
+
+Nessun errore SLURM dei tre invii. Il sandbox aveva bloccato l'accesso locale
+al ledger prima della prenotazione per checkout e5000; esecuzione tecnica
+autorizzata poi riuscita con un solo ID per fase. Nessun retry di training.
+Una lettura scontrol con due ID non supportata dalla CLI è stata corretta
+in due letture singole; risorse/tempi/dipendenza confermati. A1 superata.
+PENDING non significa training partito; nessun esito di loss o rappresentazione
+da interpretare. Non risottomettere:63532335 e63532370 sono già nel ledger.
+
+### GPT — 04/11/2026: gate della release LQ soddisfatti
+
+Nessun blocco scientifico o differenza nei sorgenti approvati. Stato della
+catena aggiornato dal commit dedicato, non dalle vecchie snapshot di review.
+Pin di checkpoint e rho_infer ancora assenti come previsto: impediranno
+estrazioni premature, senza bloccare il training autorizzato.
+
+### GPT — 04/11/2026: note operative della review finale LQ
+
+A1 soddisfatta, nessuna riselezione. Pubblicati rapporti storici esatti:
+db2-01 0,495; db2-23 0,469722; db3 0,331111; db6 0,575; p2 0,452222.
+Non sono garanzie di durata con feature LQ. Il launcher scrive failed.json
+sulle eccezioni Python; un kill SLURM può impedirlo. Per TIMEOUT il collector
+archivia failed.json locale con accounting/provenienza esplicita, senza
+modificare output del job, rilanciare o aumentare tetti. Sorgenti invariati.
+Release minimale e successivo commit dei pin sono distinti; entrambe le
+fasi training useranno lo stesso SHA esecutivo finale, mai i checkout eval.
+
+
+### GPT — 04/11/2026: limiti e correzioni della consegna adattatori LQ
+
+La review interna ha trovato un legame insufficiente fra ricevuta rho_infer e
+piano di estrazione aggiornato. Corretto prima dei job: contesto stabile di
+input/ricetta/radici, piano/codice/sorgenti pinnati e ricalcolo di tempi,
+conteggi e tetti; nessun ciclo fra hash quando si aggiungono pin e allocazioni.
+Aggiunti controlli simmetrici protocollo/config LQ fra ricevuta e provenienza
+nei due lettori. R1-b propagata fino ai report finali, non solo all'estrazione.
+Nessun blocco residuo trovato internamente; review Claude ancora richiesta.
+Misure CUDA, checkpoint e cache del candidato non esistono ancora. I gruppi
+del benchmark sono rappresentativi, non esaustivi; residuo pipeline cumulativo.
+Le OOF storiche NPZ sono remote: pin verificati sulle ricevute, byte da
+verificare a runtime. Per le sonde è proposta esplicitamente la riutilizzazione
+dei tempi storici per shard con ricetta/ambiente/conteggi identici; le feature
+possono cambiare il numero di iterazioni, quindi nessuna garanzia di durata.
+Per la posa resta nuovo benchmark train-only. Nessun retry o tetto aumentato
+automaticamente. APPROVED_FOR_TRAINING e release restano rinviati alla
+convergenza sugli adattatori, senza nuova autorizzazione operativa da Simone.
+
+### GPT — 04/11/2026: R1 LQ, stato della review e limiti del seguito
+
+Il collaudo non è privo di trigger:553segnalazioni della derivata richiedono
+decisione R1 scritta. Propostaepsilon0,001, nessuna esenzione S1, reviewClaude
+ancora necessaria. Dati train-only,64passi iniziali,LRfinale3,262e-6:
+non mostrano utilità delle feature o stabilità al picco1e-4. Differenze di clipping
+misurate, non interpretate come rapporti di update AdamW.
+Training da rivedere; rho_infer non misurato e valutatori/estrattori LQ ancora
+da adattare con pin. Legacy config: normalizzare soltanto i due nuovi default
+LQ per confrontare gli storici, senza cambiare hash/rawconfig o whitelist di nascosto.
+La richiesta di consenso per archiviare log già autorizzati è stata un errore
+operativo di GPT: autorizzazione persistente, nessun nuovo via scientifico
+richiesto per le stesse operazioni. Nessun nuovo job sottomesso.
+
+
+### GPT — 04/11/2026: limite operativo dopo invio LOGSQ
+
+Il collaudo63525730 è soltanto diagnostico: un suo eventuale completamento
+non autorizza training o estrazioni. Necessari letturaR1, preventivo misurato,
+orchestratori/pin e review; rho_infer resta da misurare separatamente.
+Nessun retry automatico.
+
+
+### GPT — 04/11/2026: precisazione scientifica S1 prima del collaudo
+
+Non si attribuisce al banco la differenza p200>=0,50/p2000<0,50 come fatto
+dimostrato: diverse sorgenti/spettri/scale e kernel a miscela non lo consentono.
+Nessun kernel esentato da R1; il contrasto è un indizio riportato integralmente.
+Questa precisazione non cambia il codice approvato né richiede nuovi dati.
+Training ed estrazioni restano fuori dall'approvazione del collaudo.
+
+
+### GPT — 04/11/2026: limiti dopo le correzioni T100-LQ
+
+Un controllo CUDA non ripetibile viene ora distinto da un mismatch del ramo;
+resta un gate che ferma il collaudo, non si allenta la tolleranza. Il rapporto
+di clipping descrive gradienti prima di AdamW, non direttamente update dei
+pesi. Le soglie epsilon sono operative e train-only, non evidenza scientifica
+di qualità. Tetti training/estrazione del candidato restano null fino alle
+misure pertinenti e pubblicazione del preventivo:22 e2,75GPUh sono storici.
+Nessun risultato CUDA/DDP o dato reale acquisito in questa consegna.
+
+
+### GPT — 04/11/2026: limiti dichiarati della consegna T100-LQ
+
+Il ramo nuovo mantiene la funzione iniziale, non la traiettoria: il gradiente
+di W_log può cambiare già al primo passo il clipping globale. Log delle risposte
+quadrate non è energia di banda. Epsilon0.001 non è ancora validato sui dati reali
+200Hz/2000Hz: diagnostica train preparata, nessuna selezione sulla val.
+Il preflight conserva due modelli in memoria, quindi il picco non è quello di un
+singolo training. Risorse scientifiche provvisorie26,75GPUh incluso collaudo,
+46,667coreh soloCPU; da ricalcolare prima dei fit/lanci. Il controllo T25−B
+non stima da solo il rumore fra pretraining indipendenti.
+La review Claude è pendente per esplicita sequenza richiesta da Simone.
+
+
+### 2026-11-04 | GPT | Confronto storico non equivale a pavimento del rumore
+
+T25-L−B è una coppia a stesso seme, non una stima tra semi. Nessun confondente
+scientifico dimostrato nelle configurazioni equivalenti; non certificabili
+retroattivamente identità bit-a-bit dei pesi/gain iniziali o di tutti i batchB,
+privi del tracciamento origini. Differiscono checkout e completezza provaambiente.
+C selezionato diverso12/20fold a stessa griglia: incluso nel contrasto tra pipeline
+fittate. P1 non è replica numerica esatta; IC EPN/P2 attraversanozero senza provare
+equivalenza. Nessuna soglia o correzione dei contrasti introdotta. Review/calcolo
+indipendenti; seme unico e sviluppo restano limiti. T100-G secondario logsquare
+aggiunto dopo averne visto gli score, quindi esplorativo. Nessun nuovo difetto
+ai risultati tokenizer. Agente300M conferma valutatori correnti vincolati384/768:
+servono guardie dedicate, non basta cambiare preset o disabilitare i pin.
+
+### 2026-11-04 | GPT | Ambiguità delle due sonde risolta
+
+Due momenti e due livelli richiesti esplicitamente. I latenti prima delbackbone
+sono già elaborati dal tokenizer/locale/Perceiver: non chiamarli tokenizer puro.
+Vantaggio/svantaggio di una sonda misura accessibilità perquel lettore, non perdita
+irreversibile di informazione. Nuove viste richiedono parità di supporto/forward
+e non sostituiscono in silenzio pool768. Nessun difetto nei risultati già conclusi.
+
+### 2026-11-04 | GPT | Controlli necessari per le nuove linee proposte
+
+Proseguire soloG risponde alla dose diG; dimostrare persistenza del vantaggio
+GELU richiede ancheL a dose piena. Un benchmark300M breve è fattibilità, non
+generalizzazione; uno screening5k nullo non esclude beneficio successivo.
+LR adatto alla taglia va distinto dalla ricetta esattamente identica, senza
+tuning downstream asimmetrico. «Due punti» può significare momenti o livelli:
+quesito aperto a Simone prima di fissare gli estrattori. Fine-tuning richiede
+controllo da zero e separazione sviluppo/conferma; pose su nuovi utenti non è
+nuovo task di regressione. Nessuna conclusione sulla contrastiva finché coppie,
+invarianti e peso non sono definiti. Nessun guasto ai job conclusi.
+
+### 2026-11-04 | GPT | Limiti finali tokenizer, nessun difetto tecnico aperto | Runtime b315dad
+
+Tutti420fit convergenti, max5916/12000; 36 record con warning di scoring DB3
+restano distinti dai warning solver, assenti. NI P2 G−T25 soddisfatta per soli
+0,014062pp oltre il margine: non descriverla come garanzia robusta di trasferimento.
+IC condizionati a un seme e a sviluppo già osservato, senza correzione multipla;
+EPN positivo non isola la frequenza200Hz. Soggetti P1 visti dall'encoder nel
+pretraining, esclusi soltanto dai fit della sonda; EPN/UCI esclusi dal pretraining.
+Posa su utenti esclusi ma task supervisionato, non regressione di trasferimento.
+Manca T25-G, quindi interazione completa finestra×GELU non identificata. Posa
+ancora attenuata; nessun vantaggio su ogni metrica. Nessun impedimento tecnico
+alla pubblicazione dopo ricalcolo indipendente, nessun nuovo esperimento implicito.
+
+### 2026-11-04 | GPT | Rettifica della regola storica sullo scaling
+
+Non è dimostrato che30M bastino né che300M risolvano il limite. La vecchiaH3 misurava
+rango iniziale, non prestazione downstream300M; la regola di attendere un beneficio
+piccolo prima di scalare era allocazione del budget, non conclusione scientifica.
+Il conteggio include student/decoder/teste, nonteacherEMA o statiottimizzatore.
+Benchmark15/10~3,9volte tempo30M al300M non è preventivo attuale. Risultati negativi
+alla dosebreve o con ottimizzazione inadeguata non chiudono l'ipotesi di capacità.
+Le evidenze di forecasting in letteratura non garantiscono scaling nell'EMG.
+
+
+
+### 2026-11-04 | GPT | ETA e accounting delle ultime sonde
+
+I due nuovi shardG hanno0warning e28fit convergenti; restano i36warning di scoring
+DB3 già documentati. Nessun nuovo difetto dimostrato. ETAultimoP2 15:05–15:15
+indicativa daP2precedenti, non garanzia. Il confronto finale deve ancora essere
+sottomesso dopo gli input completi; gli aggregatiT25 da8/16s non garantiscono
+il tempo del bootstrap finale. Monitor automatico sempre spento.
+
+
+
+### 2026-11-04 | GPT | Limiti da preservare nella proposta di seguito
+
+La classificazione tokenizer non è ancora letta: nessun vincitore assunto.
+Kernel/proiezione sono già apprendibili; GELU/log fissi. Il ramo log-quadratico
+non equivale a energia di banda e conserva T100-L come controllo primario anche
+se un altro braccio risultasse migliore. Dose completa significa confronto abbinato,
+non candidato lungo contro riferimento corto. Gli IC sui soggetti non includono
+variabilità tra pretraining; la val attuale è sviluppo. PSD-4 richiede esposizione
+controllata, distinta da una semplice valutazione multi-dataset.
+
+
+
+### 2026-11-04 | GPT | Controlli tecnici positivi, confronto ancora incompleto
+
+I quattro nuovi shard aggiungono 112/112 fit convergenti senza warning; totale
+336/336 e massimo 5.916/12.000 iterazioni. I 36 warning di scoring dei precedenti
+DB3 restano distinti dalla convergenza: non dichiarare zero warning complessivi.
+QoS a otto CPU per utente: i fit restano serializzati e i quattro aggregati attendono.
+Nessuna accuratezza finale dei tre bracci ancora disponibile; lettura rimandata
+al confronto completo. Nessun nuovo difetto del codice dimostrato.
+
+
+
+### 2026-11-04 | GPT | Stato tecnico delle sonde distinto dal risultato scientifico
+
+224fit/224convergenti, massimo4768iterazioni sulle12000, nessun errore del solver.
+Esistono36record con warning di scoring per classi predette assenti nei target
+del fold DB3; sono separati dai warning di convergenza, coerenti con la convenzione
+macro recall sui target presenti. Non scrivere genericamente zero warning.
+I report parziali non sono il confronto P1/P2/EPN dei tre modelli: nessuna scelta
+del vincitore. QoS8CPU perutente continua a serializzare i fit. ETAindicativa,
+non promessa di consegna automatica. Ricevute nuove e log devono essere pubblicati
+su origin; il problema SSH precedente puo persistere anche se Claude ha pubblicato
+1850121/4487445 alle11:45 (refloglocale update by push).
+
+### 2026-11-04 | GPT | Limiti di loss monitorate e passaggio da quattro a otto GPU
+
+fixed_eval e pose_panel sono pannelli TRAIN, non loss di validazione su utenti esclusi;
+TensorBoard da solo non colma questa differenza. Monitorare separatamente termini
+pesati (posa1+ancore0,2,JEPA0), LR/gradienti, validazione e dinamica della posa; tenere
+il test separato dalle scelte. Quattro GPU gia attive; ripresa con world_size diverso
+esplicitamente rifiutata dal trainer (RNG/stream). Otto GPU non garantiscono meta tempo:
+servono benchmark, integrazione multinodo e controllo del batch globale. Due nodi
+per due bracci indipendenti conservano invece quattro rank per run e possono ridurre
+il tempo della campagna, condizionatamente alla coda. Nessuna estensione lanciata.
+
+### 2026-11-04 | GPT | Una sonda negativa non dimostra mancata convergenza del FM
+
+Un esito negativo riguarda l'accessibilita con quel lettore, aggregazione, task e dose;
+non dimostra assenza di informazione nei tensori interi, impossibilita di migliorare
+proseguendo il training o assenza di beneficio con fine-tuning. Anche un buon risultato
+su un layer non attribuisce da solo il merito al pretraining senza controllo iniziale.
+Sondare le due meta separatamente localizza il contributo: il modello lineare congiunto
+puo gia usare ciascuna meta, quindi separarle non garantisce un recupero prestazionale.
+Il confronto corrente resta congelato. Eventuale confronto pretrain/fine-tuning contro
+inizializzazione casuale richiede un disegno distinto, con stessi dati e budget.
+Riferimenti metodologici: Alain/Bengio https://arxiv.org/abs/1610.01644;
+Kornblith et al. https://arxiv.org/abs/2010.16402 (evidenza su immagini, non risultato EMG).
+
+### 2026-11-04 | GPT | Tempi sonde condizionati alla coda
+
+Tre fit completati senza errori SLURM; soltanto il primo già raccolto e verificato
+in dettaglio. Nessun confronto classificazione finale ancora. Stima15:30–17:00CET
+basata sui40,5coreh storici/8CPU e report, condizionata ai prossimi invii e alla
+coda. Monitor disattivato su richiesta: nessuna promessa di notifica automatica.
+
+
+### 2026-11-04 | GPT | Risultato posa piccolo; classificazione ancora incompleta
+
+Beneficio presente ma sotto2% pratico, movimento ancora attenuato. Il vantaggio
+combinato si restringe da2,35% a5k a1,53% a19618. GELU peggiora lievemente il
+secondario statico rispetto100lineare. Un seme,val di sviluppo gia osservata;
+questa e posa2kHz supervisionata, non trasferimento a nuova regressione o
+risposta200Hz. EPN/P1/P2 attendono i loro fit. QOS8CPU perutente serializza
+le sonde, coda limitata10attivi; restanti lanci già autorizzati, no nuovo consenso.
+
+
+### 2026-11-04 | GPT | Limite di concorrenza seriale e ordine dei lettori
+
+QOSMaxCpuPerUserLimit serializza i fit da8CPU. Si dà precedenza alla breve
+ridge dopo il DB3 in esecuzione tramite hold/release dei soli quattro shard
+pendenti, senza cancellazioni, duplicati o modifica di ricetta. Gli hold devono
+essere rilasciati appena la ridge parte e comunque prima di terminare la chat.
+Un tentativo di validate interamente quotato è stato fermato dal sandbox prima
+del ledger; assenza verificata, stesso submitter eseguito con regola persistente.
+Nessun job è stato creato dal tentativo locale fallito.
+
+
+### 2026-11-04 | GPT | Risultati endpoint ancora da calcolare
+
+Le estrazioni riuscite non sono punteggi scientifici. Posa e sonde CPU devono
+ancora essere eseguite; lo screening5k non sostituisce l'endpoint19618.
+Budget CPU pubblicato distinto fra atteso e tetto; nessun nuovo consenso,
+nessun monitor riattivato e nessun nuovo training.
+
+
+### 2026-11-04 | GPT | Stato estrazioni e limiti dei benchmark CPU
+
+RUNNING non significa cache valide: prima dei fit servono ricevute finali,hash eparità.
+Il launcher sonde non aggiunge un benchmark inesistente nell'API: il piano usa i
+tempi storici dichiarati e tetti conservativi; il timingridge non misura la logistica.
+Nessun retry o aumento silenzioso dei tetti, nessun nuovo monitor. Incidentecheckout
+risolto prima delle nove estrazioni, nessun difetto scientifico identificato.
+
+### 2026-11-04 | GPT | Errore di sequenza: checkout avviato prima della fine del push
+
+GPT ha continuato dopo un tool gitpush che restituiva session_id anziché exit_code.
+Il checkout63491851 ha trovato il commit non ancora disponibile ed è fallito2:0
+dopo3s, prima di creare cartelle. Correzione: attendere exit0 e verificare oggetto
+remoto prima del secondo invio, nuovoIDr1; nessun training o estrazione toccato.
+
+### 2026-11-04 | GPT | Limiti dello screening tokenizer5k
+
+Il booleano automatico2percent del contrasto combinato non è un verdetto: confronto
+secondario e dose intermedia. Primari sotto2% puntuale; IC esplorativi senza correzione
+globale, condizionati al seme e utenti val riusati. Statiche peggiorano con100lineare;
+posa2kHz non risponde a EPN200Hz. Nessun recupero completo del movimento; tutti i
+bracci restano nella matrice endpoint approvata. Critico concorde, due formulazioni chiarite.
+
+### 2026-11-04 | GPT | Guardie endpoint e distinzione dodici/nove estrazioni
+
+Le12estrazioni sono la matrice totale:3posa5k già concluse,9residue a19618.
+Nessun difetto dei training o checkpoint. Il controller controlla formato delloSHA
+training ma non l'uguaglianza al commitatteso: l'attestazione esterna19618 verifica
+esplicitamente afb644e e sacct COMPLETED0:0, prima del freeze. Nessuna correzione del
+runtime necessaria. Non usare lo screening5k per selezionare bracci o modificare ricetta.
+
+### 2026-11-03 | GPT | Grafico JEPA fuorviante per la ricetta tokenizer; limiti della lettura train
+
+JEPA è calcolata ma pesa0: la salita del pannello destro non dimostra divergenza
+dell'obiettivo. I pannelli fissi migliorano, senza evidenza di divergenza nelle misure
+esaminate. Non è ancora evidenza di generalizzazione o recupero del movimento: la MSE
+posa di GELU migliora, mentre la sua varianza temporale predetta cala0,026602→0,024422.
+Il pannello non salva varianza target; non costruire rapporti con altri pannelli.
+Nessuna anomalia tecnica dimostrata, nessuna scelta del vincitore a14.500 o nuovo lancio.
+
+### 03/11/2026 — GPT: corretto il timing del collaudo prima del lancio
+
+Il critico ha individuato attese delle diagnostiche degli altri rank dentro gli all-reduce
+cronometrati. Aggiunte barriere fuori timer e somma dei massimi per componente: il costo
+delle diagnostiche resta separato. Memoria di tre modelli residenti e loader agevolato dalla
+strumentazione non certificano un training singolo a regime; limiti dichiarati nel report.
+Nessun difetto residuo rilevato prima della sottomissione. Nessun risultato di prestazione
+scientifica può essere dedotto da questi64batch tecnici.
+
+### 03/11/2026 — GPT: limite finanziario precedente superato da autorizzazione esplicita
+
+Il rischio di non far entrare tre bracci nel residuo63,2925GPUh non blocca più la campagna:
+Simone autorizza esplicitamente lo sforamento. Rimangono i gate tecnici, la contabilità e
+richieste di walltime realistiche; il preventivo completo non viene sostituito da un credito
+numerico inventato. Nessun motivo per ridurre la dose del controllo25ms per risparmio.
+
+### 03/11/2026 — GPT: raggio corretto e limiti della review tokenizer
+
+Raggio2 restringeva inutilmente le query della ricetta B con JEPA spento: corretto con override0
+esplicito, nessun cambio ai default o ai run passati. La CLI doveva applicare il peso JEPA prima
+di validare il raggio; regressioni pertinenti ora verdi. Parità esatta di loss e gradienti T25
+storico/override0 verificata; gli artefatti02/11 rimangono storico, usare quelli03/11.
+Standardizzare ogni feature cambierebbe inizializzazione e ottimizzazione anche del controllo25ms:
+non viene introdotto automaticamente. Replica a stesso seme non stima variabilità fra training;
+non inferiorità con margine1pp ammette esito irrisolto. EPN a200Hz non è un esperimento causale sulla
+sola frequenza. NinaPro DB5 è presente nel pretraining con quota nominale2,15%, esposizione realizzata
+ancora da misurare. Budget tre bracci ancora stretto dopo la rettifica del doppio conto valutazioni;
+nessun ripiego sul controllo storico selezionato sulla base di nuovi risultati.
+
+### 02/11/2026 — GPT: controllo degli slot ancora da progettare e preventivare
+
+Il piccolo beneficio del temporale non dimostra che la media sia il collo di bottiglia.
+Il prossimo controllo proposto deve distinguere vista e capacità del lettore, senza assumere
+che concatenare tutti gli slot o salvarne tutta la cache sia economico. Costi e modalità di
+estrazione non misurati; nessun nuovo protocollo operativo o lancio implicito nell'aggiornamento.
+
+### 02/11/2026 — GPT: beneficio del temporale limitato, non diagnosi del pooling
+
+Nessun difetto tecnico rilevato. Beneficio B sull'errore dinamico circa0,49% relativo;
+varianza predetta scende10,85% del target e MAE assoluta aumenta leggermente. Non chiamarlo
+recupero del movimento o miglioramento uniforme. R3c guadagna di più ma resta peggiore diB.
+La vista media già64slot; contesto1152 e ridge selezionata non isolano pooling o meccanismo.
+Val già osservata e backbone bidirezionale: lettura esplorativa, non test online né criterio endpoint.
+PCA: rettifiche d93e22e coerenti e OOF già utilizzati; nessun rifit aggiuntivo necessario per chiudere
+questa consegna. Slot interi, obiettivo dinamico e contrastiva restano proposte distinte, non lanci.
+
+### 02/11/2026 — GPT: stato aggiornato dei dati PCA e limiti del timing temporale
+
+Le vecchie note sui quattro OOF mancanti in locale sono superate: recupero e confronto appaiato
+già conclusi. D93e22e conferma C grid identica e riferimento26,77core-ore; il contrasto resta
+fra pipeline, non causalità della sola PCA. Nessun rifit isolato disposto automaticamente.
+Benchmark temporale non misura CV/val: preventivo run aggiunge riserva e margine espliciti.
+Raccolta iniziale incompatibile con Python3.6 del login node, corretta solo nel collector;
+nessun difetto nel job scientifico e nessuna risottomissione. Costo checkout contabilizzato
+su2CPU effettivamente allocate da SLURM, non sulla richiesta1CPU.
+
+### 02/11/2026 — GPT: rimosso il blocco di operatore per la sola catena temporale
+
+La precedente attesa di semplicione è superata dall'autorizzazione esplicita di Simone
+al lancio diretto di questa catena. Nessuna deroga generale alla regola operativa:
+restano protocollo, preflight, budget e gate del timing prima del confronto completo.
+
+### 02/11/2026 — GPT: interpretazione PCA e unico blocco operativo del temporale
+
+Il peggioramento con pipeline128 è misurato anche con pairing rigoroso; su P2 B perde più di R3c.
+Non attribuirlo tutto alla sola PCA, né tutto il divario PSD-3 al pretraining: cambiano anche precisione
+e thread. MLP−logistica sulle stesse feature compresse resta informativo, ma non misura MLP768 o decoder
+senza PCA. B resta sotto R3c nelle stime puntuali pool768. Nessun adattamento del protocollo temporale
+in base a questi numeri; nessun rifitPCA isolato già eseguito.
+
+Il canale semplicione resta irraggiungibile: nessuna sottomissione diretta in sostituzione. Dopo aver
+completato codice,35test,review,cachecheck e piano concreto, chiesta a Simone soltanto indicazione
+della chat attuale/riattivazione oppure eccezione operativa per lanciare direttamente questa catena
+con lo stesso submitter/ledger. Non è richiesta una seconda approvazione scientifica del test.
+
+### 02/11/2026 — GPT: disponibilità operatore e limiti del confronto approvato
+
+La chat semplicione `01a18355-6241-7c53-98fe-fbc8450c2b30` non è raggiungibile via strumenti app
+(host durable non disponibile) e non compare negli elenchi attivi/archiviati consultati. Nessun
+nuovo agente omonimo, nessun lancio diretto sostitutivo. Codice, protocollo, test e output PCA
+possono avanzare autonomamente; la sottomissione temporale richiede il ripristino del canale o
+una nuova indicazione operativa di Simone. SSH in sola lettura funziona dopo l'escalation del
+sandbox di rete; questo non cambia la regola sulle sottomissioni.
+
+Il temporale legge latenti già mediati sui64 slot e usa più parametri dell'istantaneo; val già
+osservata, nessuna conclusione online. Il bootstrap PCA è esplorativo su pipeline note, non
+ablazione causale della sola PCA. Il rifit768 a implementazione identica resta separato e non
+è stato disposto automaticamente. Nessun nuovo obiettivo di training o FM è stato cambiato.
+
+### 02/11/2026 — GPT: limiti della lettura PSD-3/PCA e del passo temporale | Fonte Claude f69741d
+
+La chiusura PSD-3 riguarda classificazione teacher con tempo mediato, non regressione temporale student.
+MLP provata non universalmente inutile; IC che includono zero non dimostrano equivalenza, e pool/dec cambiano
+anche strato. Correzioni alla narrazione Claude: stessa griglia C nel confronto PCA; differiscono PCA,
+precisione del preprocessing e thread. Il rifit768 storico misura 26,77 core-ore: la stima di 10 non è verificata.
+I delta preliminari non identificano causalmente la PCA; bootstrap appaiato ancora assente per mancanza locale
+dei quattro OOF. Solo raccolta remota richiesta come seguito, nessun rifit automatico.
+
+Cache posa già temporali ma mediano K64: non sono gli slot interi né feature temporali P1/P2. Val già osservata,
+non test intatto; encoder bidirezionale, nessuna evidenza online. Nuovo lettore1152 da implementare/testare e
+misurare sul train: i 185 s/0,411 core-ore del vecchio rapporto384 non ne sono un preventivo. Distinguere validità
+EMG da maschera posa e ricomputare il baseline sullo stesso supporto centrale. Canale app di semplicione non
+disponibile nella verifica corrente: raccolta OOF/verifica cache live non eseguite. Nessun job nuovo sottomesso.
+
+### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
+
+Il segno di B−R3c nelle sonde non seleziona l'avvio di PSD-3 o i suoi parametri.
+Warning su pool768 non implicano automaticamente mancata convergenza della
+logistica PCA128. Il prompt non attesta chiusi i rilievi R1/R2/R3 o già misurati
+hash e tempi remoti. Perimetro temporaneo limitato ai due passaggi già decisi,
+senza nuovi training/loss del FM o scelta di un modello GPT. Prevale sulla
+precedente attesa di una nuova attivazione GPT per rivedere le correzioni: resta
+la review indipendente tecnica prima del deploy.
+
+
+### 29/10/2026 — GPT: limiti e dipendenze aperte della preparazione PSD-3 (base b1c1bda)
+
+Le viste pool/dec delle cache B19618 hanno già mediato il tempo e provengono da
+strati diversi: questa matrice misura accessibilità per classificazione interna,
+non inseguimento della posa né causalità della sola media dei canali. PCA128 e MLP
+a60epoche introducono limiti espliciti; un esito negativo non prova assenza di
+informazione nel FM. Nessuna modifica alle loss del FM o scelta di una nuova
+architettura. Per il tempo servirà un lettore su rappresentazioni temporali;
+l'eventuale estrazione dei latenti interi richiede inferenza, non nuovo training.
+
+Alla verifica finale di origin Claude ha consegnato codice `22bf2cd`, piano
+`b98ece0` e prompt di review `e074659`; la review di tale consegna è il prossimo
+passo, non è inclusa nella preparazione PSD-3. I tempi CPU e
+la memoria PSD-3 non sono misurati su Leonardo;86core-ore è un preventivo provvisorio,
+non un consuntivo o una garanzia. Richiesto a semplicione un inventario read-only,
+ma il tool della chat ha restituito host durable non disponibile: nessuno stato
+remoto inferito, nessun lancio diretto sostitutivo. SHA cache da ricalcolare in
+preflight; lo stato qui si basa sugli archivi già verificati della tranche B19618.
+
+
+
+
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
 
@@ -14293,3 +14306,12 @@ Guardia generica WSD rinviata per assenza di distinzione di schema nuovo/storico
 LQ negli artefatti prima del 04/11 preesistente e conservato. Nessuna reinterpretazione dei run.
 I fallimenti bf16/ripresa della linea 3 restano aperti: il cambio target non li risolve.
 Incidenti locali della suite riportati nella ricevuta completa; nessun sorgente cambiato per farla passare.
+
+### 2026-11-18 | GPT | Linea 3: limiti e cancelli della consegna target
+
+Nessun errore CPU irrisolto. Gli incidenti di spazio locale sono documentati, non cancellati dai log.
+Restano i fallimenti preesistenti bf16/ripresa: nuova ricetta e suite locale positiva non li sanano.
+Prima del rilascio servono l'esito della diagnostica congelata, review mirata, pin e controlli reali
+delle risorse. Audit, calibrazione, λ e benchmark nuovi sono preparati ma non eseguiti.
+
+Nota editoriale della consegna: corretto lo sdoppiamento del titolo della sezione 2 introdotto nel merge e388a1de. Il blocco delle attività era finito fra due blocchi di problemi: riportato nella sezione 1, conservando integralmente ogni voce (uguaglianza del multinsieme dei blocchi verificata prima e dopo). Nessuna riscrittura delle evidenze storiche.

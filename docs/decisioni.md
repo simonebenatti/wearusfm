@@ -8259,3 +8259,15 @@ Review e prove: `docs/reviews/target_windows_integration_20261118.md`,
 Linea 3 preparata separatamente su `codex/contrastive-target-windows-20261118`: RMS100/fast125
 espliciti, nuove misure ancora da fare, nessun job. TCN e continuazione 300M storiche invariate.
 Su richiesta di Simone liberati 8,43 GiB di temporanei pytest inattivi; dati e checkpoint intatti.
+
+### 2026-11-18 | GPT | Linea 3: verifica completa della preparazione RMS100/fast125
+
+Codice verificato `65bc60222e364b09c1e5a54ea3b83a3eb050fa49`: **3,723 test CPU distinti passati**,
+con DDP separato e recupero integrale dei 13 file coinvolti nell'esaurimento del disco.
+Nessun sorgente cambiato durante il recupero; ricevuta in
+`results/infra/contrastive_targets_20261118/full_suite/verification.json`.
+Controllo indipendente del delta `e388a1de..0efdc29c`: nessun blocco, config e hash rigenerati,
+vecchie ricevute rifiutate, costi ricalcolati. Non sostituisce la review di Claude.
+Main integrato fino a `f546c9e4`, con review unica di `0d91297` e sue prove.
+Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,066667 coreh;
+nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.

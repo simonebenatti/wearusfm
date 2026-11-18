@@ -1,0 +1,31 @@
+{
+  "status": "PASSED_FULL_CPU_SCOPE_WITH_DOCUMENTED_RECOVERIES",
+  "code_sha": "65bc60222e364b09c1e5a54ea3b83a3eb050fa49",
+  "unique_tests_passed": 3723,
+  "test_files": 233,
+  "unresolved_failures": 0,
+  "recovery_files": [
+    "tests/cpu/test_contrastive_audit.py",
+    "tests/cpu/test_contrastive_common_state_cuda.py",
+    "tests/cpu/test_contrastive_diagnostics.py",
+    "tests/cpu/test_contrastive_memory.py",
+    "tests/cpu/test_contrastive_run.py",
+    "tests/cpu/test_evaluation_chain.py",
+    "tests/cpu/test_pose_panel_ddp.py",
+    "tests/cpu/test_pose_temporal_readout.py",
+    "tests/cpu/test_probe_convergence.py",
+    "tests/cpu/test_scaling_readers_launcher.py",
+    "tests/cpu/test_step2c.py",
+    "tests/cpu/test_target_windows_fix.py",
+    "tests/cpu/test_tokenizer_checks_metrics.py"
+  ],
+  "recovery_cases_passed": 263,
+  "environment_incident": "First full run exhausted local disk space. All files named in FAILED or ERROR summaries were rerun unchanged after cleanup; original logs retained.",
+  "evidence_sha256": {
+    "cpu_suite.json": "91db0e60bdd7c09e56d257902d39cc910ce16cbd7ddd29dc4db29e8657226096",
+    "collection.log": "382e47ac97f4b2c3a09d1ebd4194280594de13c4bbefd66848540968d6f6b49d",
+    "disk_affected_files.json": "933f064110eabbfed6d29d8081aef856a20d53951f30c30a520f354b962e6e9f",
+    "recovery_remaining.json": "4afd79c36f4d9d822f0ff75dba5d547722d0f431cee9fff48cd73669b9bbadfc",
+    "recovery_remaining.xml": "343caa50865d95400e99b55f9c7fc0a34fd81c4bce313289d39ca1ba975a48ab"
+  }
+}

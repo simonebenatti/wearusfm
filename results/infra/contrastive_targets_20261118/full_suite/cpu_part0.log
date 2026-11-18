@@ -1,0 +1,3306 @@
+........................................................................ [  8%]
+........................................................................ [ 16%]
+........................................FEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE [ 23%]
+EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE [ 27%]
+EEEEEEEEEEEEEEEEEEEEEEEEE....................................F.......... [ 34%]
+........................................................................ [ 43%]
+........................................................................ [ 51%]
+........................................................................ [ 59%]
+........................................................................ [ 68%]
+........................................................................ [ 76%]
+........................................................................ [ 85%]
+........................................................................ [ 93%]
+......................................................                   [100%]
+==================================== ERRORS ====================================
+_ ERROR at teardown of test_audit_cache_cap_preserves_actual_loader_origins_masks_and_signal _
+
+self = <contextlib._GeneratorContextManager object at 0x152d3fe50>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_vector_comparison_resolves_direction_at_equal_norm_and_unused_parameters _
+
+self = <contextlib._GeneratorContextManager object at 0x150ec8690>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_vector_comparison_resolves_direction_at_equal_norm_and_unused_parameters _
+
+self = <contextlib._GeneratorContextManager object at 0x150d8dd90>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+__________ ERROR at setup of test_rng_and_input_mismatch_are_rejected __________
+
+self = <contextlib._GeneratorContextManager object at 0x150e8bf90>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+________ ERROR at teardown of test_rng_and_input_mismatch_are_rejected _________
+
+self = <contextlib._GeneratorContextManager object at 0x152b4fad0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_only_known_determinism_errors_are_reported_as_unsupported _
+
+self = <contextlib._GeneratorContextManager object at 0x150d0f290>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_only_known_determinism_errors_are_reported_as_unsupported _
+
+self = <contextlib._GeneratorContextManager object at 0x150b75f50>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+______ ERROR at setup of test_calibration_keys_keep_age_order_and_values _______
+
+self = <contextlib._GeneratorContextManager object at 0x150e8bf90>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_____ ERROR at teardown of test_calibration_keys_keep_age_order_and_values _____
+
+self = <contextlib._GeneratorContextManager object at 0x152b7c810>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_real_cpu_backward_replays_dropout_and_supports_both_losses _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_real_cpu_backward_replays_dropout_and_supports_both_losses>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_real_cpu_backward_replays', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_real_cpu_backward_replays in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x11095b610>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_real_cpu_backward_replays in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x150a032c0>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_real_cpu_backward_replays_dropout_and_supports_both_losses _
+
+self = <contextlib._GeneratorContextManager object at 0x169cd8310>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___ ERROR at setup of test_cross_precision_compares_same_rank_and_same_state ___
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_cross_precision_compares_same_rank_and_same_state>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_cross_precision_compares_', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_cross_precision_compares_ in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x169d8ef10>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_cross_precision_compares_ in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x169d8f340>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_cross_precision_compares_same_rank_and_same_state __
+
+self = <contextlib._GeneratorContextManager object at 0x169ce5550>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_matches_independent_upper_triangle_oracle_and_excludes_physical_duplicates _
+
+self = <contextlib._GeneratorContextManager object at 0x169ca44d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_matches_independent_upper_triangle_oracle_and_excludes_physical_duplicates _
+
+self = <contextlib._GeneratorContextManager object at 0x157188610>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+______________ ERROR at setup of test_average_tie_ranks_are_used _______________
+
+self = <contextlib._GeneratorContextManager object at 0x152e98090>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_____________ ERROR at teardown of test_average_tie_ranks_are_used _____________
+
+self = <contextlib._GeneratorContextManager object at 0x152d3c350>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_undefined_correlations_have_explicit_validity_and_finite_sentinel[empty] _
+
+self = <contextlib._GeneratorContextManager object at 0x150ce8350>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_undefined_correlations_have_explicit_validity_and_finite_sentinel[empty] _
+
+self = <contextlib._GeneratorContextManager object at 0x150d0c610>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_undefined_correlations_have_explicit_validity_and_finite_sentinel[single_window] _
+
+self = <contextlib._GeneratorContextManager object at 0x150a01610>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_undefined_correlations_have_explicit_validity_and_finite_sentinel[single_window] _
+
+self = <contextlib._GeneratorContextManager object at 0x152abe590>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_undefined_correlations_have_explicit_validity_and_finite_sentinel[one_pair] _
+
+self = <contextlib._GeneratorContextManager object at 0x1572848d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_undefined_correlations_have_explicit_validity_and_finite_sentinel[one_pair] _
+
+self = <contextlib._GeneratorContextManager object at 0x1509cee50>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_undefined_correlations_have_explicit_validity_and_finite_sentinel[constant_feature] _
+
+self = <contextlib._GeneratorContextManager object at 0x1509cf650>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_undefined_correlations_have_explicit_validity_and_finite_sentinel[constant_feature] _
+
+self = <contextlib._GeneratorContextManager object at 0x152eacc10>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_undefined_correlations_have_explicit_validity_and_finite_sentinel[constant_target] _
+
+self = <contextlib._GeneratorContextManager object at 0x153075c90>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_undefined_correlations_have_explicit_validity_and_finite_sentinel[constant_target] _
+
+self = <contextlib._GeneratorContextManager object at 0x153077a10>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+____ ERROR at setup of test_observation_preserves_gradients_rng_and_inputs _____
+
+self = <contextlib._GeneratorContextManager object at 0x150a71550>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___ ERROR at teardown of test_observation_preserves_gradients_rng_and_inputs ___
+
+self = <contextlib._GeneratorContextManager object at 0x152e30150>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+____ ERROR at setup of test_physical_patch_mask_controls_anchor_population _____
+
+self = <contextlib._GeneratorContextManager object at 0x1509cfc90>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___ ERROR at teardown of test_physical_patch_mask_controls_anchor_population ___
+
+self = <contextlib._GeneratorContextManager object at 0x150cea790>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___________ ERROR at setup of test_asymmetric_physical_mask_rejected ___________
+
+self = <contextlib._GeneratorContextManager object at 0x150e09c50>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_________ ERROR at teardown of test_asymmetric_physical_mask_rejected __________
+
+self = <contextlib._GeneratorContextManager object at 0x152ccbc10>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_batch_identity_ignores_montage_and_requires_explicit_coordinates _
+
+self = <contextlib._GeneratorContextManager object at 0x153076750>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_batch_identity_ignores_montage_and_requires_explicit_coordinates _
+
+self = <contextlib._GeneratorContextManager object at 0x150a8fa10>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+____________ ERROR at setup of test_bad_identity_rejected[change0] _____________
+
+self = <contextlib._GeneratorContextManager object at 0x1530772d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___________ ERROR at teardown of test_bad_identity_rejected[change0] ___________
+
+self = <contextlib._GeneratorContextManager object at 0x1100ef290>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+____________ ERROR at setup of test_bad_identity_rejected[change1] _____________
+
+self = <contextlib._GeneratorContextManager object at 0x152e9bed0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___________ ERROR at teardown of test_bad_identity_rejected[change1] ___________
+
+self = <contextlib._GeneratorContextManager object at 0x1509ce650>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+____________ ERROR at setup of test_bad_identity_rejected[change2] _____________
+
+self = <contextlib._GeneratorContextManager object at 0x153074910>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___________ ERROR at teardown of test_bad_identity_rejected[change2] ___________
+
+self = <contextlib._GeneratorContextManager object at 0x150e084d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+____________ ERROR at setup of test_bad_identity_rejected[change3] _____________
+
+self = <contextlib._GeneratorContextManager object at 0x169709890>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___________ ERROR at teardown of test_bad_identity_rejected[change3] ___________
+
+self = <contextlib._GeneratorContextManager object at 0x169229650>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+____________ ERROR at setup of test_bad_identity_rejected[change4] _____________
+
+self = <contextlib._GeneratorContextManager object at 0x1572875d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___________ ERROR at teardown of test_bad_identity_rejected[change4] ___________
+
+self = <contextlib._GeneratorContextManager object at 0x150ac6450>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+____________ ERROR at setup of test_bad_identity_rejected[change5] _____________
+
+self = <contextlib._GeneratorContextManager object at 0x152c5c510>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___________ ERROR at teardown of test_bad_identity_rejected[change5] ___________
+
+self = <contextlib._GeneratorContextManager object at 0x152e6e2d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+____________ ERROR at setup of test_bad_identity_rejected[change6] _____________
+
+self = <contextlib._GeneratorContextManager object at 0x152978390>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___________ ERROR at teardown of test_bad_identity_rejected[change6] ___________
+
+self = <contextlib._GeneratorContextManager object at 0x1530743d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+____________ ERROR at setup of test_bad_identity_rejected[change7] _____________
+
+self = <contextlib._GeneratorContextManager object at 0x150a8f390>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___________ ERROR at teardown of test_bad_identity_rejected[change7] ___________
+
+self = <contextlib._GeneratorContextManager object at 0x152ccb5d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_negative_filters_same_subject_and_boundary_in_seconds _
+
+self = <contextlib._GeneratorContextManager object at 0x152c12910>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_negative_filters_same_subject_and_boundary_in_seconds _
+
+self = <contextlib._GeneratorContextManager object at 0x152c12590>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[200.0] _
+
+self = <contextlib._GeneratorContextManager object at 0x157284890>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[200.0] _
+
+self = <contextlib._GeneratorContextManager object at 0x152a17e90>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[1000.0] _
+
+self = <contextlib._GeneratorContextManager object at 0x152c12710>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[1000.0] _
+
+self = <contextlib._GeneratorContextManager object at 0x169737350>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[2000.0] _
+
+self = <contextlib._GeneratorContextManager object at 0x152e9b410>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[2000.0] _
+
+self = <contextlib._GeneratorContextManager object at 0x152b7f8d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[2048.0] _
+
+self = <contextlib._GeneratorContextManager object at 0x152b7fb90>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[2048.0] _
+
+self = <contextlib._GeneratorContextManager object at 0x150e12f10>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_negative_diagnostics_are_pair_counts_and_snapshot_dedup_counts _
+
+self = <contextlib._GeneratorContextManager object at 0x1572868d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_negative_diagnostics_are_pair_counts_and_snapshot_dedup_counts _
+
+self = <contextlib._GeneratorContextManager object at 0x152e9a1d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_commit_physically_expires_old_keys_and_retains_age_boundary _
+
+self = <contextlib._GeneratorContextManager object at 0x152b7ff50>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_commit_physically_expires_old_keys_and_retains_age_boundary _
+
+self = <contextlib._GeneratorContextManager object at 0x152e31c10>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_snapshot_readonly_current_preferred_and_lowest_index_tie _
+
+self = <contextlib._GeneratorContextManager object at 0x152ca41d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_snapshot_readonly_current_preferred_and_lowest_index_tie _
+
+self = <contextlib._GeneratorContextManager object at 0x150b76090>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_capacity_is_per_dataset_and_invalid_copy_does_not_erase_valid_key _
+
+self = <contextlib._GeneratorContextManager object at 0x150a02550>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_capacity_is_per_dataset_and_invalid_copy_does_not_erase_valid_key _
+
+self = <contextlib._GeneratorContextManager object at 0x152ccaed0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___________ ERROR at setup of test_age_resume_and_state_not_aliased ____________
+
+self = <contextlib._GeneratorContextManager object at 0x16922af90>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+__________ ERROR at teardown of test_age_resume_and_state_not_aliased __________
+
+self = <contextlib._GeneratorContextManager object at 0x1529787d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_corrupt_queue_checkpoint_rejected_atomically[policy] __
+
+self = <contextlib._GeneratorContextManager object at 0x150a8eed0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_corrupt_queue_checkpoint_rejected_atomically[policy] _
+
+self = <contextlib._GeneratorContextManager object at 0x153076dd0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_corrupt_queue_checkpoint_rejected_atomically[duplicate] _
+
+self = <contextlib._GeneratorContextManager object at 0x152c5d590>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_corrupt_queue_checkpoint_rejected_atomically[duplicate] _
+
+self = <contextlib._GeneratorContextManager object at 0x169765090>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_corrupt_queue_checkpoint_rejected_atomically[future] __
+
+self = <contextlib._GeneratorContextManager object at 0x1529d0390>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_corrupt_queue_checkpoint_rejected_atomically[future] _
+
+self = <contextlib._GeneratorContextManager object at 0x152e98f10>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___ ERROR at setup of test_corrupt_queue_checkpoint_rejected_atomically[old] ___
+
+self = <contextlib._GeneratorContextManager object at 0x152e33b90>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_corrupt_queue_checkpoint_rejected_atomically[old] __
+
+self = <contextlib._GeneratorContextManager object at 0x152b7ec10>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_corrupt_queue_checkpoint_rejected_atomically[nonfinite] _
+
+self = <contextlib._GeneratorContextManager object at 0x152c5c790>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_corrupt_queue_checkpoint_rejected_atomically[nonfinite] _
+
+self = <contextlib._GeneratorContextManager object at 0x152abc550>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+__ ERROR at setup of test_corrupt_queue_checkpoint_rejected_atomically[shape] __
+
+self = <contextlib._GeneratorContextManager object at 0x1509cf810>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_corrupt_queue_checkpoint_rejected_atomically[shape] _
+
+self = <contextlib._GeneratorContextManager object at 0x150ef8e10>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+__ ERROR at setup of test_corrupt_queue_checkpoint_rejected_atomically[extra] __
+
+self = <contextlib._GeneratorContextManager object at 0x152d3c350>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_corrupt_queue_checkpoint_rejected_atomically[extra] _
+
+self = <contextlib._GeneratorContextManager object at 0x152ccb190>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+__ ERROR at setup of test_corrupt_queue_checkpoint_rejected_atomically[order] __
+
+self = <contextlib._GeneratorContextManager object at 0x152abef50>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_corrupt_queue_checkpoint_rejected_atomically[order] _
+
+self = <contextlib._GeneratorContextManager object at 0x152e6c5d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_corrupt_queue_checkpoint_rejected_atomically[version_type] _
+
+self = <contextlib._GeneratorContextManager object at 0x152fb0290>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_corrupt_queue_checkpoint_rejected_atomically[version_type] _
+
+self = <contextlib._GeneratorContextManager object at 0x152ca7490>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_corrupt_queue_checkpoint_rejected_atomically[policy_type] _
+
+self = <contextlib._GeneratorContextManager object at 0x150e0bcd0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_corrupt_queue_checkpoint_rejected_atomically[policy_type] _
+
+self = <contextlib._GeneratorContextManager object at 0x152c11390>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_single_process_gather_preserves_grad_only_when_requested _
+
+self = <contextlib._GeneratorContextManager object at 0x152e6e110>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_single_process_gather_preserves_grad_only_when_requested _
+
+self = <contextlib._GeneratorContextManager object at 0x152fb2a90>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_asymmetric_gather_gradient_participation_fails_before_tensor_collective[4] _
+
+self = <contextlib._GeneratorContextManager object at 0x152aeafd0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_asymmetric_gather_gradient_participation_fails_before_tensor_collective[4] _
+
+self = <contextlib._GeneratorContextManager object at 0x152e33550>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_asymmetric_gather_gradient_participation_fails_before_tensor_collective[5] _
+
+self = <contextlib._GeneratorContextManager object at 0x152fb0610>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_asymmetric_gather_gradient_participation_fails_before_tensor_collective[5] _
+
+self = <contextlib._GeneratorContextManager object at 0x152ca4550>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_distributed_variable_gather_matches_full_gradient[2-False] _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_distributed_variable_gather_matches_full_gradient[2-False]>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_distributed_variable_gath', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_distributed_variable_gath in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x169228410>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_distributed_variable_gath in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x152efe040>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_distributed_variable_gather_matches_full_gradient[2-False] _
+
+self = <contextlib._GeneratorContextManager object at 0x169aaa610>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_distributed_variable_gather_matches_full_gradient[4-False] _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_distributed_variable_gather_matches_full_gradient[4-False]>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_distributed_variable_gath', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_distributed_variable_gath in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x1571be110>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_distributed_variable_gath in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x1571bd7c0>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_distributed_variable_gather_matches_full_gradient[4-False] _
+
+self = <contextlib._GeneratorContextManager object at 0x169af8210>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_distributed_variable_gather_matches_full_gradient[2-True] _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_distributed_variable_gather_matches_full_gradient[2-True]>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_distributed_variable_gath', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_distributed_variable_gath in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x169c98ad0>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_distributed_variable_gath in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x169c98e00>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_distributed_variable_gather_matches_full_gradient[2-True] _
+
+self = <contextlib._GeneratorContextManager object at 0x169968110>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_review_configs_cannot_accidentally_be_training_recipes _
+
+self = <contextlib._GeneratorContextManager object at 0x1699d7990>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_review_configs_cannot_accidentally_be_training_recipes _
+
+self = <contextlib._GeneratorContextManager object at 0x150dd2ad0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_paired_recipes_only_use_authenticated_shared_weights[C0] _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_paired_recipes_only_use_authenticated_shared_weights[C0]>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_paired_recipes_only_use_a', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_paired_recipes_only_use_a in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x152adb2d0>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_paired_recipes_only_use_a in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x152adb040>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_paired_recipes_only_use_authenticated_shared_weights[C0] _
+
+self = <contextlib._GeneratorContextManager object at 0x169ccc050>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_paired_recipes_only_use_authenticated_shared_weights[CN] _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_paired_recipes_only_use_authenticated_shared_weights[CN]>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_paired_recipes_only_use_a', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_paired_recipes_only_use_a in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x152b62590>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_paired_recipes_only_use_a in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x1529e0640>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_paired_recipes_only_use_authenticated_shared_weights[CN] _
+
+self = <contextlib._GeneratorContextManager object at 0x169d40390>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_paired_recipes_only_use_authenticated_shared_weights[CR] _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_paired_recipes_only_use_authenticated_shared_weights[CR]>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_paired_recipes_only_use_a', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_paired_recipes_only_use_a in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x150c45250>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_paired_recipes_only_use_a in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x150c45d00>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_paired_recipes_only_use_authenticated_shared_weights[CR] _
+
+self = <contextlib._GeneratorContextManager object at 0x169c8c150>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_calibration_cannot_update_or_start_from_new_schedule __
+
+self = <contextlib._GeneratorContextManager object at 0x1518dd4d0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_calibration_cannot_update_or_start_from_new_schedule _
+
+self = <contextlib._GeneratorContextManager object at 0x152aa8210>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_execution_release_rejects_changed_inputs_code_time_or_audit _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_execution_release_rejects_changed_inputs_code_time_or_audit>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_execution_release_rejects', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_execution_release_rejects in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x1509ba710>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_execution_release_rejects in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x152acb100>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_execution_release_rejects_changed_inputs_code_time_or_audit _
+
+self = <contextlib._GeneratorContextManager object at 0x1699fd510>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_calibration_release_requires_passing_exact_audit_panel _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_calibration_release_requires_passing_exact_audit_panel>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_calibration_release_requi', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_calibration_release_requi in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x16990c3d0>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_calibration_release_requi in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x16990c780>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_calibration_release_requires_passing_exact_audit_panel _
+
+self = <contextlib._GeneratorContextManager object at 0x169c09890>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_validate_only_reads_supplied_release_even_if_truncated _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_validate_only_reads_supplied_release_even_if_truncated>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_validate_only_reads_suppl', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_validate_only_reads_suppl in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x16920f310>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_validate_only_reads_suppl in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x16920d480>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_validate_only_reads_supplied_release_even_if_truncated _
+
+self = <contextlib._GeneratorContextManager object at 0x169dada10>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+___ ERROR at setup of test_recipe_only_is_explicitly_not_release_validation ____
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_recipe_only_is_explicitly_not_release_validation>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_recipe_only_is_explicitly', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_recipe_only_is_explicitly in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x150f6a6d0>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_recipe_only_is_explicitly in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x16972d540>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+__ ERROR at teardown of test_recipe_only_is_explicitly_not_release_validation __
+
+self = <contextlib._GeneratorContextManager object at 0x169c50110>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+__ ERROR at setup of test_generator_cohort_binds_all_arms_and_every_endpoint ___
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_generator_cohort_binds_all_arms_and_every_endpoint>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_generator_cohort_binds_al', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_generator_cohort_binds_al in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x169cdf510>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_generator_cohort_binds_al in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x169cdebc0>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_generator_cohort_binds_all_arms_and_every_endpoint _
+
+self = <contextlib._GeneratorContextManager object at 0x169a74210>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_resume_requires_exact_successful_checkpoint_and_summary _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_resume_requires_exact_successful_checkpoint_and_summary>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_resume_requires_exact_suc', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_resume_requires_exact_suc in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x169978a90>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_resume_requires_exact_suc in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x169978e40>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+_ ERROR at teardown of test_resume_requires_exact_successful_checkpoint_and_summary _
+
+self = <contextlib._GeneratorContextManager object at 0x169dd5890>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_training_resource_gate_cannot_be_bypassed_without_measurements _
+
+self = <contextlib._GeneratorContextManager object at 0x150f69e90>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at teardown of test_training_resource_gate_cannot_be_bypassed_without_measurements _
+
+self = <contextlib._GeneratorContextManager object at 0x16923cfd0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_ ERROR at setup of test_split_controller_derives_only_reviewed_bounded_continuation _
+
+self = <CaptureManager _method='fd' _global_capturing=<MultiCapture out=<FDCapture 1 oldfd=5 _state='suspended' tmpfile=<_io....xtIOWrapper name='/dev/null' mode='r' encoding='utf-8'>> _state='suspended' _in_suspended=False> _capture_fixture=None>
+when = 'setup'
+item = <Function test_split_controller_derives_only_reviewed_bounded_continuation>
+
+    @contextlib.contextmanager
+    def item_capture(self, when: str, item: Item) -> Generator[None]:
+        self.resume_global_capture()
+        self.activate_fixture()
+        try:
+>           yield
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:862: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:164: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/runner.py:514: in setup
+    col.setup()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/python.py:1674: in setup
+    self._request._fillfixtures()
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:720: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:549: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:640: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1128: in execute
+    result = ihook.pytest_fixture_setup(fixturedef=self, request=request)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_hooks.py:513: in __call__
+    return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/pluggy/_manager.py:120: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:1196: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/fixtures.py:923: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:264: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:251: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/tmpdir.py:135: in mktemp
+    p = make_numbered_dir(root=self.getbasetemp(), prefix=basename, mode=0o700)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754')
+prefix = 'test_split_controller_derives_', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the folder
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix test_split_controller_derives_ in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries
+
+../../../../anaconda3/lib/python3.11/site-packages/_pytest/pathlib.py:240: OSError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x1571a5dd0>
+typ = <class 'OSError'>
+value = OSError('could not create numbered dir with prefix test_split_controller_derives_ in /private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754 after 10 tries')
+traceback = <traceback object at 0x1571a5d80>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+=================================== FAILURES ===================================
+____ test_audit_cache_cap_preserves_actual_loader_origins_masks_and_signal _____
+
+self = <contextlib._GeneratorContextManager object at 0x110998cd0>, typ = None
+value = None, traceback = None
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+>               next(self.gen)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:144: OSError
+_______ test_finished_predecessors_get_no_afterok_and_failed_ones_block ________
+
+tmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754/test_finished_predecessors_get0')
+
+    def test_finished_predecessors_get_no_afterok_and_failed_ones_block(tmp_path):
+        """Ultrareview del 15/10: SLURM dimentica i job finiti (MinJobAge) e rifiuterebbe afterok su un ID sconosciuto. Il predecessore finito
+        bene (sacct) non entra nella dipendenza; uno finito male blocca; uno che sacct non conosce fa aspettare."""
+        S = EC._submitter()
+        for training, expect in (("COMPLETED|0:0", "senza"), ("FAILED|1:0", "bloccato"), ("COMPLETED|3:0", "bloccato"), (None, "in attesa")):
+            d = tmp_path / str(len(list(tmp_path.iterdir())))
+            d.mkdir()
+            ssh, state = _cluster(d, jobs={} if training is None else {"1001": training})
+            reg = d / "jobs"
+            _train(S, reg, ssh)
+            p = d / "plan.json"
+            p.write_text(json.dumps(_plan()))
+>           assert EC.main([str(p), "--submit", "--registro", str(reg), "--ssh", ssh]) == 0
+E           AssertionError: assert 1 == 0
+E            +  where 1 = <function main at 0x150d8ade0>(['/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754/test_finished_predecesso...zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754/test_finished_predecessors_get0/0/cluster.json'])
+E            +    where <function main at 0x150d8ade0> = EC.main
+
+tests/cpu/test_evaluation_chain.py:249: AssertionError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x169a2e010>
+typ = <class 'AssertionError'>
+value = AssertionError("assert 1 == 0\n +  where 1 = <function main at 0x150d8ade0>(['/private/var/folders/zw/jj8pygg907b679t3...ti/pytest-754/test_finished_predecessors_get0/0/cluster.json'])\n +    where <function main at 0x150d8ade0> = EC.main")
+traceback = <traceback object at 0x150c47a40>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+E               OSError: [Errno 28] No space left on device
+
+../../../../anaconda3/lib/python3.11/contextlib.py:158: OSError
+--------------------------- Captured stdout teardown ---------------------------
+W1-A-j04: sottomesso, job 1001
+sottomesso ora   guard    W1-A-j04-guard-85b27d9d  (senza afterok su ['W1-A-j04']: gia' finiti bene secondo sacct)
+    python3 scripts/submit_job.py --id W1-A-j04-guard-85b27d9d --agente claude --campagna w1-eval --gpu-ore 0 -- --export=ALL,CODE_DIR=/C,EXPECTED_SHA=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa /C/scripts/slurm/check_checkpoint.sbatch /R/W1-A checkpoint_postdecay.pt /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/eval/guards/W1-A-j04-guard-85b27d9d.json --min-steps 98094
+W1-A-j04-guard-85b27d9d: sottomesso, job 1002
+stato del cluster non leggibile, mi fermo dopo ['W1-A-j04-guard-85b27d9d']: sacct non leggibile (uscita 1): , mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 28] No space left on device: '/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-754/test_finished_predecessors_get0/0/cluster.json'
+=============================== warnings summary ===============================
+tests/cpu/test_pose_objective.py::test_loader_batch_counts_match_the_terms_and_the_total_is_the_weighted_sum
+  /Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/tests/cpu/test_pose_objective.py:100: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+    assert abs(float(losses["pose"]) - float(np.mean(expected))) < 1e-4 * max(1.0, float(np.mean(expected)))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/cpu/test_contrastive_audit.py::test_audit_cache_cap_preserves_actual_loader_origins_masks_and_signal
+FAILED tests/cpu/test_evaluation_chain.py::test_finished_predecessors_get_no_afterok_and_failed_ones_block
+ERROR tests/cpu/test_contrastive_audit.py::test_audit_cache_cap_preserves_actual_loader_origins_masks_and_signal
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_vector_comparison_resolves_direction_at_equal_norm_and_unused_parameters
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_vector_comparison_resolves_direction_at_equal_norm_and_unused_parameters
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_rng_and_input_mismatch_are_rejected
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_rng_and_input_mismatch_are_rejected
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_only_known_determinism_errors_are_reported_as_unsupported
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_only_known_determinism_errors_are_reported_as_unsupported
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_calibration_keys_keep_age_order_and_values
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_calibration_keys_keep_age_order_and_values
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_real_cpu_backward_replays_dropout_and_supports_both_losses
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_real_cpu_backward_replays_dropout_and_supports_both_losses
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_cross_precision_compares_same_rank_and_same_state
+ERROR tests/cpu/test_contrastive_common_state_cuda.py::test_cross_precision_compares_same_rank_and_same_state
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_matches_independent_upper_triangle_oracle_and_excludes_physical_duplicates
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_matches_independent_upper_triangle_oracle_and_excludes_physical_duplicates
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_average_tie_ranks_are_used
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_average_tie_ranks_are_used
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_undefined_correlations_have_explicit_validity_and_finite_sentinel[empty]
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_undefined_correlations_have_explicit_validity_and_finite_sentinel[empty]
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_undefined_correlations_have_explicit_validity_and_finite_sentinel[single_window]
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_undefined_correlations_have_explicit_validity_and_finite_sentinel[single_window]
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_undefined_correlations_have_explicit_validity_and_finite_sentinel[one_pair]
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_undefined_correlations_have_explicit_validity_and_finite_sentinel[one_pair]
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_undefined_correlations_have_explicit_validity_and_finite_sentinel[constant_feature]
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_undefined_correlations_have_explicit_validity_and_finite_sentinel[constant_feature]
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_undefined_correlations_have_explicit_validity_and_finite_sentinel[constant_target]
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_undefined_correlations_have_explicit_validity_and_finite_sentinel[constant_target]
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_observation_preserves_gradients_rng_and_inputs
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_observation_preserves_gradients_rng_and_inputs
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_physical_patch_mask_controls_anchor_population
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_physical_patch_mask_controls_anchor_population
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_asymmetric_physical_mask_rejected
+ERROR tests/cpu/test_contrastive_diagnostics.py::test_asymmetric_physical_mask_rejected
+ERROR tests/cpu/test_contrastive_memory.py::test_batch_identity_ignores_montage_and_requires_explicit_coordinates
+ERROR tests/cpu/test_contrastive_memory.py::test_batch_identity_ignores_montage_and_requires_explicit_coordinates
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change0]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change0]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change1]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change1]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change2]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change2]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change3]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change3]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change4]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change4]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change5]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change5]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change6]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change6]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change7]
+ERROR tests/cpu/test_contrastive_memory.py::test_bad_identity_rejected[change7]
+ERROR tests/cpu/test_contrastive_memory.py::test_negative_filters_same_subject_and_boundary_in_seconds
+ERROR tests/cpu/test_contrastive_memory.py::test_negative_filters_same_subject_and_boundary_in_seconds
+ERROR tests/cpu/test_contrastive_memory.py::test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[200.0]
+ERROR tests/cpu/test_contrastive_memory.py::test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[200.0]
+ERROR tests/cpu/test_contrastive_memory.py::test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[1000.0]
+ERROR tests/cpu/test_contrastive_memory.py::test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[1000.0]
+ERROR tests/cpu/test_contrastive_memory.py::test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[2000.0]
+ERROR tests/cpu/test_contrastive_memory.py::test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[2000.0]
+ERROR tests/cpu/test_contrastive_memory.py::test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[2048.0]
+ERROR tests/cpu/test_contrastive_memory.py::test_exact_four_second_boundary_is_symmetric_for_large_sample_indices[2048.0]
+ERROR tests/cpu/test_contrastive_memory.py::test_negative_diagnostics_are_pair_counts_and_snapshot_dedup_counts
+ERROR tests/cpu/test_contrastive_memory.py::test_negative_diagnostics_are_pair_counts_and_snapshot_dedup_counts
+ERROR tests/cpu/test_contrastive_memory.py::test_commit_physically_expires_old_keys_and_retains_age_boundary
+ERROR tests/cpu/test_contrastive_memory.py::test_commit_physically_expires_old_keys_and_retains_age_boundary
+ERROR tests/cpu/test_contrastive_memory.py::test_snapshot_readonly_current_preferred_and_lowest_index_tie
+ERROR tests/cpu/test_contrastive_memory.py::test_snapshot_readonly_current_preferred_and_lowest_index_tie
+ERROR tests/cpu/test_contrastive_memory.py::test_capacity_is_per_dataset_and_invalid_copy_does_not_erase_valid_key
+ERROR tests/cpu/test_contrastive_memory.py::test_capacity_is_per_dataset_and_invalid_copy_does_not_erase_valid_key
+ERROR tests/cpu/test_contrastive_memory.py::test_age_resume_and_state_not_aliased
+ERROR tests/cpu/test_contrastive_memory.py::test_age_resume_and_state_not_aliased
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[policy]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[policy]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[duplicate]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[duplicate]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[future]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[future]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[old]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[old]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[nonfinite]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[nonfinite]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[shape]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[shape]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[extra]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[extra]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[order]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[order]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[version_type]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[version_type]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[policy_type]
+ERROR tests/cpu/test_contrastive_memory.py::test_corrupt_queue_checkpoint_rejected_atomically[policy_type]
+ERROR tests/cpu/test_contrastive_memory.py::test_single_process_gather_preserves_grad_only_when_requested
+ERROR tests/cpu/test_contrastive_memory.py::test_single_process_gather_preserves_grad_only_when_requested
+ERROR tests/cpu/test_contrastive_memory.py::test_asymmetric_gather_gradient_participation_fails_before_tensor_collective[4]
+ERROR tests/cpu/test_contrastive_memory.py::test_asymmetric_gather_gradient_participation_fails_before_tensor_collective[4]
+ERROR tests/cpu/test_contrastive_memory.py::test_asymmetric_gather_gradient_participation_fails_before_tensor_collective[5]
+ERROR tests/cpu/test_contrastive_memory.py::test_asymmetric_gather_gradient_participation_fails_before_tensor_collective[5]
+ERROR tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[2-False]
+ERROR tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[2-False]
+ERROR tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[4-False]
+ERROR tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[4-False]
+ERROR tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[2-True]
+ERROR tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[2-True]
+ERROR tests/cpu/test_contrastive_run.py::test_review_configs_cannot_accidentally_be_training_recipes
+ERROR tests/cpu/test_contrastive_run.py::test_review_configs_cannot_accidentally_be_training_recipes
+ERROR tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[C0]
+ERROR tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[C0]
+ERROR tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[CN]
+ERROR tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[CN]
+ERROR tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[CR]
+ERROR tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[CR]
+ERROR tests/cpu/test_contrastive_run.py::test_calibration_cannot_update_or_start_from_new_schedule
+ERROR tests/cpu/test_contrastive_run.py::test_calibration_cannot_update_or_start_from_new_schedule
+ERROR tests/cpu/test_contrastive_run.py::test_execution_release_rejects_changed_inputs_code_time_or_audit
+ERROR tests/cpu/test_contrastive_run.py::test_execution_release_rejects_changed_inputs_code_time_or_audit
+ERROR tests/cpu/test_contrastive_run.py::test_calibration_release_requires_passing_exact_audit_panel
+ERROR tests/cpu/test_contrastive_run.py::test_calibration_release_requires_passing_exact_audit_panel
+ERROR tests/cpu/test_contrastive_run.py::test_validate_only_reads_supplied_release_even_if_truncated
+ERROR tests/cpu/test_contrastive_run.py::test_validate_only_reads_supplied_release_even_if_truncated
+ERROR tests/cpu/test_contrastive_run.py::test_recipe_only_is_explicitly_not_release_validation
+ERROR tests/cpu/test_contrastive_run.py::test_recipe_only_is_explicitly_not_release_validation
+ERROR tests/cpu/test_contrastive_run.py::test_generator_cohort_binds_all_arms_and_every_endpoint
+ERROR tests/cpu/test_contrastive_run.py::test_generator_cohort_binds_all_arms_and_every_endpoint
+ERROR tests/cpu/test_contrastive_run.py::test_resume_requires_exact_successful_checkpoint_and_summary
+ERROR tests/cpu/test_contrastive_run.py::test_resume_requires_exact_successful_checkpoint_and_summary
+ERROR tests/cpu/test_contrastive_run.py::test_training_resource_gate_cannot_be_bypassed_without_measurements
+ERROR tests/cpu/test_contrastive_run.py::test_training_resource_gate_cannot_be_bypassed_without_measurements
+ERROR tests/cpu/test_contrastive_run.py::test_split_controller_derives_only_reviewed_bounded_continuation
+2 failed, 788 passed, 1 warning, 128 errors in 736.57s (0:12:16)
