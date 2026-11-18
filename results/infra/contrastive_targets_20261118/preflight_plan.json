@@ -1,0 +1,199 @@
+{
+  "protocol": "contrastive-target-windows-preflight-20261118-v1",
+  "status": "REVIEW_REQUIRED",
+  "executable": false,
+  "submission_authorized": false,
+  "training_authorized": false,
+  "science_plan": {
+    "path": "results/infra/contrastive_targets_20261118/plan.json",
+    "sha256": "6081832627cee150a8bdfe85f319ae999de879a5171f4c71aaf2f4757a7a72ca"
+  },
+  "source_sha256": "643a8937e83353345adff81999292d9d380fb06fdae73fa733deb8e147968ffb",
+  "cells": [
+    {
+      "id": "CONTRAST-AUDIT-targets-v3-20261118",
+      "mode": "audit",
+      "arm": null,
+      "gpus": 0,
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds": 7200,
+      "gpu_hours": 0.0,
+      "core_hours": 16.0,
+      "depends": [
+        "new_review",
+        "new_checkout",
+        "diagnostic_resolution"
+      ],
+      "status": "REVIEW_REQUIRED",
+      "code_sha": null,
+      "release": null
+    },
+    {
+      "id": "CONTRAST-CALIB-targets-v3-20261118",
+      "mode": "calibration",
+      "arm": null,
+      "gpus": 4,
+      "cpus": 32,
+      "memory_gib": 240,
+      "seconds": 1800,
+      "gpu_hours": 2.0,
+      "core_hours": 16.0,
+      "depends": [
+        "audit"
+      ],
+      "status": "REVIEW_REQUIRED",
+      "code_sha": null,
+      "release": null
+    },
+    {
+      "id": "CONTRAST-CUDA-targets-v3-20261118",
+      "mode": "cuda",
+      "arm": null,
+      "gpus": 4,
+      "cpus": 32,
+      "memory_gib": 240,
+      "seconds": 1800,
+      "gpu_hours": 2.0,
+      "core_hours": 16.0,
+      "depends": [
+        "calibration_accepted"
+      ],
+      "status": "REVIEW_REQUIRED",
+      "code_sha": null,
+      "release": null
+    },
+    {
+      "id": "CONTRAST-BENCH-C0-targets-v3-20261118",
+      "mode": "full",
+      "arm": "C0",
+      "gpus": 4,
+      "cpus": 32,
+      "memory_gib": 240,
+      "seconds": 1800,
+      "gpu_hours": 2.0,
+      "core_hours": 16.0,
+      "depends": [
+        "cuda",
+        "calibration_accepted"
+      ],
+      "status": "REVIEW_REQUIRED",
+      "code_sha": null,
+      "release": null
+    },
+    {
+      "id": "CONTRAST-BENCH-CN-targets-v3-20261118",
+      "mode": "full",
+      "arm": "CN",
+      "gpus": 4,
+      "cpus": 32,
+      "memory_gib": 240,
+      "seconds": 1800,
+      "gpu_hours": 2.0,
+      "core_hours": 16.0,
+      "depends": [
+        "cuda",
+        "calibration_accepted"
+      ],
+      "status": "REVIEW_REQUIRED",
+      "code_sha": null,
+      "release": null
+    },
+    {
+      "id": "CONTRAST-BENCH-CR-targets-v3-20261118",
+      "mode": "full",
+      "arm": "CR",
+      "gpus": 4,
+      "cpus": 32,
+      "memory_gib": 240,
+      "seconds": 1800,
+      "gpu_hours": 2.0,
+      "core_hours": 16.0,
+      "depends": [
+        "cuda",
+        "calibration_accepted"
+      ],
+      "status": "REVIEW_REQUIRED",
+      "code_sha": null,
+      "release": null
+    },
+    {
+      "id": "CONTRAST-RESUME-CN-targets-v3-20261118",
+      "mode": "split",
+      "arm": "CN",
+      "gpus": 4,
+      "cpus": 32,
+      "memory_gib": 240,
+      "seconds": 1800,
+      "gpu_hours": 2.0,
+      "core_hours": 16.0,
+      "depends": [
+        "cuda",
+        "calibration_accepted"
+      ],
+      "status": "REVIEW_REQUIRED",
+      "code_sha": null,
+      "release": null
+    },
+    {
+      "id": "CONTRAST-RESUME-CR-targets-v3-20261118",
+      "mode": "split",
+      "arm": "CR",
+      "gpus": 4,
+      "cpus": 32,
+      "memory_gib": 240,
+      "seconds": 1800,
+      "gpu_hours": 2.0,
+      "core_hours": 16.0,
+      "depends": [
+        "cuda",
+        "calibration_accepted"
+      ],
+      "status": "REVIEW_REQUIRED",
+      "code_sha": null,
+      "release": null
+    },
+    {
+      "id": "CONTRAST-READOUT-targets-v3-20261118",
+      "mode": "readout",
+      "arm": null,
+      "gpus": 0,
+      "cpus": 8,
+      "memory_gib": 30,
+      "seconds": 3600,
+      "gpu_hours": 0.0,
+      "core_hours": 8.0,
+      "depends": [
+        "all_five_benchmarks"
+      ],
+      "status": "REVIEW_REQUIRED",
+      "code_sha": null,
+      "release": null
+    }
+  ],
+  "checkouts": {
+    "count": 4,
+    "cpus": 4,
+    "memory_gib": 30,
+    "seconds_each": 240,
+    "core_hours": 1.0666666666666667
+  },
+  "resources": {
+    "gpu_hours_cap": 14.0,
+    "core_hours_cap": 137.06666666666666,
+    "measured_new_recipe_seconds": null
+  },
+  "fresh_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118",
+  "mandatory_audit_sbatch_override": [
+    "--time=02:00:00"
+  ],
+  "required_before_first_submission": [
+    "publish and present resource proposal to Simone",
+    "single package review and source pins",
+    "resolve historical bf16/initial-parity/resume failures with separately prepared common-state diagnostics",
+    "check ledger, quota, maintenance, available balance; no duplicates"
+  ],
+  "failure_policy": "Any failed gate stops descendants; no retry, time extension, lambda clipping or threshold relaxation. Archived audit TIMEOUT exception is not inherited.",
+  "old_evidence": "Retained under contrastive_comparison_20261116, invalid for target100/125 execution",
+  "training_release": "Absent; measured benchmark and separate training budget required"
+}

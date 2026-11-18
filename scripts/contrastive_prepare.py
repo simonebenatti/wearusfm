@@ -23,10 +23,11 @@ from wearusfm.training.contrastive_objectives import ContrastiveConfig
 from wearusfm.data.pretraining_loader import LoaderConfig
 from wearusfm.data.virtual_montage import VirtualSpec
 from wearusfm.training.masking import MaskSpec
+from wearusfm.model.spectral_targets import LEGACY_TARGET_VERSION, target_version_for_fast_window
 
 BASELINE = ROOT / "results/infra/tokenizer_execution_20261103/19618/T100-G/config.json"
 BASELINE_SHA256 = "f9d0318462fd30a5592087ef72c63d3036a88ff1d07fc0dad8624e36253c2cfa"
-PLAN = ROOT / "results/infra/contrastive_comparison_20261116/plan.json"
+PLAN = ROOT / "results/infra/contrastive_targets_20261118/plan.json"
 WORLD_SIZE, WORKERS_PER_RANK, CALIBRATION_STEPS, FILL_STEPS = 4, 6, 512, 256
 
 
@@ -40,7 +41,9 @@ def config_from_dict(data: dict) -> R.RunConfig:
     """Restore every nested configuration dataclass without changing the recipe."""
     if not isinstance(data, dict):
         raise ValueError("run config must be a dictionary")
-    d = copy.deepcopy(data)
+    # Missing target-window fields identify the historical 25/50 recipe. Never
+    # let today's LoaderConfig defaults reinterpret an archived configuration.
+    d = copy.deepcopy(R.with_legacy_target_windows(data))
     model = d.pop("model")
     _tuples(model, ("spectral_branches",))
     jepa = d.pop("jepa")
@@ -107,8 +110,11 @@ def validate_input_bindings(pins):
 
 
 def build_review_configs(baseline: dict) -> dict[str, dict]:
-    """Three full review recipes and an inert-weight 512-batch calibration recipe."""
+    """New 100/125 recipes derived explicitly from the historical T100-G base."""
     base = R.config_to_dict(config_from_dict(baseline))
+    if (base["loader"]["rms_window_ms"], base["loader"]["ms_fast_window_ms"], base["target_version"]) != (
+            25., 50., LEGACY_TARGET_VERSION):
+        raise ValueError("baseline target windows/version are not the historical T100-G 25/50 recipe")
     expected = {"batch_size": 32, "accum_steps": 1, "lr": 1e-4, "warmup_steps": 1962,
                 "weight_decay": .05, "grad_clip": 1., "max_steps": 19618, "seed": 0}
     if any(base.get(k) != v for k, v in expected.items()):
@@ -122,6 +128,11 @@ def build_review_configs(baseline: dict) -> dict[str, dict]:
         raise ValueError("baseline objective differs")
     if base["schedule"] != {"kind": "wsd", "total_steps": 49046, "decay_fraction": .2, "keep_checkpoints": [5000, 19618]}:
         raise ValueError("baseline schedule differs")
+    # This is a declared change to both anchor targets, shared by every new arm
+    # and its calibration. The archived baseline remains untouched.
+    base["loader"]["rms_window_ms"] = 100.
+    base["loader"]["ms_fast_window_ms"] = 125.
+    base["target_version"] = target_version_for_fast_window(125.)
     coverage = policy_reference("coverage", "manifest_reference")
     shared = {"coverage_quotas": coverage["quota_window"], "grad_every": 100, "grad_dense_start": 513, "grad_dense_end": 576,
               "coverage_exempt_datasets": tuple(coverage["exempt_datasets"])}

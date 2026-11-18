@@ -1,0 +1,928 @@
+........................................................................ [ 23%]
+...................................F.................................... [ 46%]
+.........................FFF............................................ [ 70%]
+.........................................FFF............................ [ 93%]
+...................                                                      [100%]
+=================================== FAILURES ===================================
+__ test_pinned_historical_receipt_still_requires_authenticated_recalculation ___
+
+tmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-747/test_pinned_historical_receipt0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x14cecdbd0>
+
+    def test_pinned_historical_receipt_still_requires_authenticated_recalculation(tmp_path, monkeypatch):
+        receipt = P._read(CALIBRATION / "calibration_report.json")
+        # Authenticate the entire original receipt with the real compatibility guard.
+>       metadata = S.validate_historical_evidence("calibration_receipt", receipt)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_historical_callsites.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(actual == manifest["current_sources"], "current execution source inventory/pins differ")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, message = 'current execution source inventory/pins differ'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: current execution source inventory/pins differ
+
+scripts/contrastive_source_compat.py:29: ValueError
+_______ test_distributed_variable_gather_matches_full_gradient[2-False] ________
+
+tmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-747/test_distributed_variable_gath0')
+world = 2, all_empty = False
+
+    @pytest.mark.parametrize("world,all_empty", [(2, False), (4, False), (2, True)])
+    def test_distributed_variable_gather_matches_full_gradient(tmp_path, world, all_empty):
+>       mp.spawn(_gather_worker, args=(world, str(tmp_path / "store"), str(tmp_path / "out"), all_empty),
+                 nprocs=world, join=True)
+
+tests/cpu/test_contrastive_memory.py:223: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:340: in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:296: in start_processes
+    while not context.join():
+              ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <torch.multiprocessing.spawn.ProcessContext object at 0x14d581010>
+timeout = None, grace_period = None
+
+    def join(self, timeout: float | None = None, grace_period: float | None = None):
+        r"""Join one or more processes within spawn context.
+    
+        Attempt to join one or more processes in this spawn context.
+        If one of them exited with a non-zero exit status, this function
+        kills the remaining processes (optionally with a grace period)
+        and raises an exception with the cause of the first process exiting.
+    
+        Returns ``True`` if all processes have been joined successfully,
+        ``False`` if there are more processes that need to be joined.
+    
+        Args:
+            timeout (float): Wait this long (in seconds) before giving up on waiting.
+            grace_period (float): When any processes fail, wait this long (in seconds)
+                for others to shutdown gracefully before terminating them. If they
+                still don't exit, wait another grace period before killing them.
+        """
+        # Ensure this function can be called even when we're done.
+        if len(self.sentinels) == 0:
+            return True
+    
+        # Wait for any process to fail or all of them to succeed.
+        ready = multiprocessing.connection.wait(
+            self.sentinels.keys(),
+            timeout=timeout,
+        )
+    
+        error_index = None
+        for sentinel in ready:
+            index = self.sentinels.pop(sentinel)
+            process = self.processes[index]
+            process.join()
+            if process.exitcode != 0:
+                error_index = index
+                break
+    
+        # Return if there was no error.
+        if error_index is None:
+            # Return whether or not all processes have been joined.
+            return len(self.sentinels) == 0
+        # An error occurred. Clean-up all processes before returning.
+        # First, allow a grace period for processes to shutdown themselves.
+        if grace_period is not None:
+            self._join_procs_with_timeout(grace_period)
+        # Then, terminate processes that are still alive. Try SIGTERM first.
+        for process in self.processes:
+            if process.is_alive():
+                log.warning("Terminating process %s via signal SIGTERM", process.pid)
+                process.terminate()
+    
+        # Try SIGKILL if the process isn't going down after another grace_period.
+        # The reason is related to python signal handling is limited
+        # to main thread and if that is in c/c++ land and stuck it won't
+        # to handle it. We have seen processes getting stuck not handling
+        # SIGTERM for the above reason.
+        self._join_procs_with_timeout(30 if grace_period is None else grace_period)
+        for process in self.processes:
+            if process.is_alive():
+                log.warning(
+                    "Unable to shutdown process %s via SIGTERM , forcefully exiting via SIGKILL",
+                    process.pid,
+                )
+                process.kill()
+            process.join()
+    
+        # The file will only be created if the process crashed.
+        failed_process = self.processes[error_index]
+        if not os.access(self.error_files[error_index], os.R_OK):
+            exitcode = self.processes[error_index].exitcode
+            if exitcode < 0:
+                try:
+                    name = signal.Signals(-exitcode).name
+                except ValueError:
+                    name = f"<Unknown signal {-exitcode}>"
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with signal {name}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                    signal_name=name,
+                )
+            else:
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with exit code {exitcode:d}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                )
+    
+        with open(self.error_files[error_index], "rb") as fh:
+            original_trace = pickle.load(fh)
+        msg = f"\n\n-- Process {error_index:d} terminated with the following error:\n"
+        msg += original_trace
+>       raise ProcessRaisedException(msg, error_index, failed_process.pid)
+E       torch.multiprocessing.spawn.ProcessRaisedException: 
+E       
+E       -- Process 0 terminated with the following error:
+E       Traceback (most recent call last):
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py", line 87, in _wrap
+E           fn(i, *args)
+E         File "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/tests/cpu/test_contrastive_memory.py", line 190, in _gather_worker
+E           dist.init_process_group("gloo", init_method=f"file://{store}", rank=rank, world_size=world,
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+E           return func(*args, **kwargs)
+E                  ^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 97, in wrapper
+E           func_return = func(*args, **kwargs)
+E                         ^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2553, in init_process_group
+E           default_pg, _ = _new_process_group_helper(
+E                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2874, in _new_process_group_helper
+E           backend_result = creator_fn(dist_backend_opts, backend_options)
+E                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 669, in _create_gloo_process_group
+E           backend_class = ProcessGroupGloo(
+E                           ^^^^^^^^^^^^^^^^^
+E       RuntimeError: Cannot resolve 127.0.0.1 to a (local) address
+
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:211: ProcessRaisedException
+----------------------------- Captured stderr call -----------------------------
+[W1118 22:04:37.793039000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+[W1118 22:04:37.793042000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+_______ test_distributed_variable_gather_matches_full_gradient[4-False] ________
+
+tmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-747/test_distributed_variable_gath1')
+world = 4, all_empty = False
+
+    @pytest.mark.parametrize("world,all_empty", [(2, False), (4, False), (2, True)])
+    def test_distributed_variable_gather_matches_full_gradient(tmp_path, world, all_empty):
+>       mp.spawn(_gather_worker, args=(world, str(tmp_path / "store"), str(tmp_path / "out"), all_empty),
+                 nprocs=world, join=True)
+
+tests/cpu/test_contrastive_memory.py:223: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:340: in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:296: in start_processes
+    while not context.join():
+              ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <torch.multiprocessing.spawn.ProcessContext object at 0x14ce10710>
+timeout = None, grace_period = None
+
+    def join(self, timeout: float | None = None, grace_period: float | None = None):
+        r"""Join one or more processes within spawn context.
+    
+        Attempt to join one or more processes in this spawn context.
+        If one of them exited with a non-zero exit status, this function
+        kills the remaining processes (optionally with a grace period)
+        and raises an exception with the cause of the first process exiting.
+    
+        Returns ``True`` if all processes have been joined successfully,
+        ``False`` if there are more processes that need to be joined.
+    
+        Args:
+            timeout (float): Wait this long (in seconds) before giving up on waiting.
+            grace_period (float): When any processes fail, wait this long (in seconds)
+                for others to shutdown gracefully before terminating them. If they
+                still don't exit, wait another grace period before killing them.
+        """
+        # Ensure this function can be called even when we're done.
+        if len(self.sentinels) == 0:
+            return True
+    
+        # Wait for any process to fail or all of them to succeed.
+        ready = multiprocessing.connection.wait(
+            self.sentinels.keys(),
+            timeout=timeout,
+        )
+    
+        error_index = None
+        for sentinel in ready:
+            index = self.sentinels.pop(sentinel)
+            process = self.processes[index]
+            process.join()
+            if process.exitcode != 0:
+                error_index = index
+                break
+    
+        # Return if there was no error.
+        if error_index is None:
+            # Return whether or not all processes have been joined.
+            return len(self.sentinels) == 0
+        # An error occurred. Clean-up all processes before returning.
+        # First, allow a grace period for processes to shutdown themselves.
+        if grace_period is not None:
+            self._join_procs_with_timeout(grace_period)
+        # Then, terminate processes that are still alive. Try SIGTERM first.
+        for process in self.processes:
+            if process.is_alive():
+                log.warning("Terminating process %s via signal SIGTERM", process.pid)
+                process.terminate()
+    
+        # Try SIGKILL if the process isn't going down after another grace_period.
+        # The reason is related to python signal handling is limited
+        # to main thread and if that is in c/c++ land and stuck it won't
+        # to handle it. We have seen processes getting stuck not handling
+        # SIGTERM for the above reason.
+        self._join_procs_with_timeout(30 if grace_period is None else grace_period)
+        for process in self.processes:
+            if process.is_alive():
+                log.warning(
+                    "Unable to shutdown process %s via SIGTERM , forcefully exiting via SIGKILL",
+                    process.pid,
+                )
+                process.kill()
+            process.join()
+    
+        # The file will only be created if the process crashed.
+        failed_process = self.processes[error_index]
+        if not os.access(self.error_files[error_index], os.R_OK):
+            exitcode = self.processes[error_index].exitcode
+            if exitcode < 0:
+                try:
+                    name = signal.Signals(-exitcode).name
+                except ValueError:
+                    name = f"<Unknown signal {-exitcode}>"
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with signal {name}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                    signal_name=name,
+                )
+            else:
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with exit code {exitcode:d}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                )
+    
+        with open(self.error_files[error_index], "rb") as fh:
+            original_trace = pickle.load(fh)
+        msg = f"\n\n-- Process {error_index:d} terminated with the following error:\n"
+        msg += original_trace
+>       raise ProcessRaisedException(msg, error_index, failed_process.pid)
+E       torch.multiprocessing.spawn.ProcessRaisedException: 
+E       
+E       -- Process 2 terminated with the following error:
+E       Traceback (most recent call last):
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py", line 87, in _wrap
+E           fn(i, *args)
+E         File "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/tests/cpu/test_contrastive_memory.py", line 190, in _gather_worker
+E           dist.init_process_group("gloo", init_method=f"file://{store}", rank=rank, world_size=world,
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+E           return func(*args, **kwargs)
+E                  ^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 97, in wrapper
+E           func_return = func(*args, **kwargs)
+E                         ^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2553, in init_process_group
+E           default_pg, _ = _new_process_group_helper(
+E                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2874, in _new_process_group_helper
+E           backend_result = creator_fn(dist_backend_opts, backend_options)
+E                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 669, in _create_gloo_process_group
+E           backend_class = ProcessGroupGloo(
+E                           ^^^^^^^^^^^^^^^^^
+E       RuntimeError: Cannot resolve 127.0.0.1 to a (local) address
+
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:211: ProcessRaisedException
+----------------------------- Captured stderr call -----------------------------
+[W1118 22:04:38.800592000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+[W1118 22:04:38.800594000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+[W1118 22:04:38.800606000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+[W1118 22:04:38.800610000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+________ test_distributed_variable_gather_matches_full_gradient[2-True] ________
+
+tmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-747/test_distributed_variable_gath2')
+world = 2, all_empty = True
+
+    @pytest.mark.parametrize("world,all_empty", [(2, False), (4, False), (2, True)])
+    def test_distributed_variable_gather_matches_full_gradient(tmp_path, world, all_empty):
+>       mp.spawn(_gather_worker, args=(world, str(tmp_path / "store"), str(tmp_path / "out"), all_empty),
+                 nprocs=world, join=True)
+
+tests/cpu/test_contrastive_memory.py:223: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:340: in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:296: in start_processes
+    while not context.join():
+              ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <torch.multiprocessing.spawn.ProcessContext object at 0x14cecde50>
+timeout = None, grace_period = None
+
+    def join(self, timeout: float | None = None, grace_period: float | None = None):
+        r"""Join one or more processes within spawn context.
+    
+        Attempt to join one or more processes in this spawn context.
+        If one of them exited with a non-zero exit status, this function
+        kills the remaining processes (optionally with a grace period)
+        and raises an exception with the cause of the first process exiting.
+    
+        Returns ``True`` if all processes have been joined successfully,
+        ``False`` if there are more processes that need to be joined.
+    
+        Args:
+            timeout (float): Wait this long (in seconds) before giving up on waiting.
+            grace_period (float): When any processes fail, wait this long (in seconds)
+                for others to shutdown gracefully before terminating them. If they
+                still don't exit, wait another grace period before killing them.
+        """
+        # Ensure this function can be called even when we're done.
+        if len(self.sentinels) == 0:
+            return True
+    
+        # Wait for any process to fail or all of them to succeed.
+        ready = multiprocessing.connection.wait(
+            self.sentinels.keys(),
+            timeout=timeout,
+        )
+    
+        error_index = None
+        for sentinel in ready:
+            index = self.sentinels.pop(sentinel)
+            process = self.processes[index]
+            process.join()
+            if process.exitcode != 0:
+                error_index = index
+                break
+    
+        # Return if there was no error.
+        if error_index is None:
+            # Return whether or not all processes have been joined.
+            return len(self.sentinels) == 0
+        # An error occurred. Clean-up all processes before returning.
+        # First, allow a grace period for processes to shutdown themselves.
+        if grace_period is not None:
+            self._join_procs_with_timeout(grace_period)
+        # Then, terminate processes that are still alive. Try SIGTERM first.
+        for process in self.processes:
+            if process.is_alive():
+                log.warning("Terminating process %s via signal SIGTERM", process.pid)
+                process.terminate()
+    
+        # Try SIGKILL if the process isn't going down after another grace_period.
+        # The reason is related to python signal handling is limited
+        # to main thread and if that is in c/c++ land and stuck it won't
+        # to handle it. We have seen processes getting stuck not handling
+        # SIGTERM for the above reason.
+        self._join_procs_with_timeout(30 if grace_period is None else grace_period)
+        for process in self.processes:
+            if process.is_alive():
+                log.warning(
+                    "Unable to shutdown process %s via SIGTERM , forcefully exiting via SIGKILL",
+                    process.pid,
+                )
+                process.kill()
+            process.join()
+    
+        # The file will only be created if the process crashed.
+        failed_process = self.processes[error_index]
+        if not os.access(self.error_files[error_index], os.R_OK):
+            exitcode = self.processes[error_index].exitcode
+            if exitcode < 0:
+                try:
+                    name = signal.Signals(-exitcode).name
+                except ValueError:
+                    name = f"<Unknown signal {-exitcode}>"
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with signal {name}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                    signal_name=name,
+                )
+            else:
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with exit code {exitcode:d}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                )
+    
+        with open(self.error_files[error_index], "rb") as fh:
+            original_trace = pickle.load(fh)
+        msg = f"\n\n-- Process {error_index:d} terminated with the following error:\n"
+        msg += original_trace
+>       raise ProcessRaisedException(msg, error_index, failed_process.pid)
+E       torch.multiprocessing.spawn.ProcessRaisedException: 
+E       
+E       -- Process 1 terminated with the following error:
+E       Traceback (most recent call last):
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py", line 87, in _wrap
+E           fn(i, *args)
+E         File "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/tests/cpu/test_contrastive_memory.py", line 190, in _gather_worker
+E           dist.init_process_group("gloo", init_method=f"file://{store}", rank=rank, world_size=world,
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+E           return func(*args, **kwargs)
+E                  ^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 97, in wrapper
+E           func_return = func(*args, **kwargs)
+E                         ^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2553, in init_process_group
+E           default_pg, _ = _new_process_group_helper(
+E                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2874, in _new_process_group_helper
+E           backend_result = creator_fn(dist_backend_opts, backend_options)
+E                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 669, in _create_gloo_process_group
+E           backend_class = ProcessGroupGloo(
+E                           ^^^^^^^^^^^^^^^^^
+E       RuntimeError: Cannot resolve 127.0.0.1 to a (local) address
+
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:211: ProcessRaisedException
+----------------------------- Captured stderr call -----------------------------
+[W1118 22:04:39.900628000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+[W1118 22:04:39.900635000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+W1118 22:04:39.582000 34817 torch/multiprocessing/spawn.py:165] Terminating process 34927 via signal SIGTERM
+___ test_global_full_model_gradients_match_ddp_with_rank_without_pose[CN-2] ____
+
+tmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-747/test_global_full_model_gradien0')
+arm = 'CN', world = 2
+
+    @pytest.mark.parametrize("arm,world", [("CN", 2), ("CR", 2), ("CR", 4)])
+    def test_global_full_model_gradients_match_ddp_with_rank_without_pose(tmp_path, arm, world):
+        root, manifest, pose_root = _pose_setup(tmp_path)
+        cfg = _config(pose_root, arm)
+        cfg = replace(cfg, contrastive={**cfg.contrastive, "grad_every": 1},
+                      loader=replace(cfg.loader, min_window_s=1., max_window_s=4.))
+        # Full population of physical windows, with some valid pose labels removed
+        # to force a whole rank to contribute only as an unlabelled/zero-pose rank.
+        loader = L.PretrainLoader(R.load_index(manifest, [root], cfg.datasets, cfg.nested), cfg.loader, {}, None)
+        batch = loader.batch(4, np.random.default_rng(3))
+        assert len({signal.shape[-1] for signal in batch.signals}) > 1
+        for i in range(2):
+            batch.pose[i] = None
+        assert any(item is not None for item in batch.pose[2:])
+        # Distinct synthetic sessions avoid relying on a lucky temporal gap for NCE.
+        batch.rows = [{**row, "session": f"synthetic_session_{i}"} for i, row in enumerate(batch.rows)]
+        torch.manual_seed(0)
+        init = attach_contrastive_head(WearUsFM(cfg.model)).double().state_dict()
+        reference = _global_update(cfg, init, batch, R.DistContext())
+        output = tmp_path / "ddp"
+        output.mkdir()
+>       _spawn_bounded(world, str(tmp_path / "store"), cfg, init, batch, str(output))
+
+tests/cpu/test_contrastive_runtime.py:229: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_contrastive_runtime.py:191: in _spawn_bounded
+    context = mp.spawn(_worker, args=(world, store, cfg, init, batch, output), nprocs=world, join=False)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:340: in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:280: in start_processes
+    idx, process, tf_name = start_process(i)
+                            ^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:275: in start_process
+    process.start()
+../../../../anaconda3/lib/python3.11/multiprocessing/process.py:121: in start
+    self._popen = self._Popen(self)
+                  ^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/multiprocessing/context.py:288: in _Popen
+    return Popen(process_obj)
+           ^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/multiprocessing/popen_spawn_posix.py:32: in __init__
+    super().__init__(process_obj)
+../../../../anaconda3/lib/python3.11/multiprocessing/popen_fork.py:19: in __init__
+    self._launch(process_obj)
+../../../../anaconda3/lib/python3.11/multiprocessing/popen_spawn_posix.py:47: in _launch
+    reduction.dump(process_obj, fp)
+../../../../anaconda3/lib/python3.11/multiprocessing/reduction.py:60: in dump
+    ForkingPickler(file, protocol).dump(obj)
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/reductions.py:602: in reduce_storage
+    metadata = storage._share_filename_cpu_()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py:458: in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self =  102
+ 87
+ 86
+ 137
+ 102
+ 179
+ 142
+ 64
+[torch.storage.UntypedStorage(device=cpu) of size 8]
+args = (), kwargs = {}
+
+    @_share_memory_lock_protected
+    def _share_filename_cpu_(self, *args, **kwargs):
+>       return super()._share_filename_cpu_(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       RuntimeError: torch_shm_manager at "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/bin/torch_shm_manager": Operation not permitted
+E       Exception raised from start_manager at /Users/runner/work/pytorch/pytorch/torch/lib/libshm/core.cpp:67 (most recent call first):
+E       frame #0: c10::Error::Error(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 52 (0x10753ff18 in libc10.dylib)
+E       frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) + 120 (0x10753d584 in libc10.dylib)
+E       frame #2: THManagedMapAllocatorInit::THManagedMapAllocatorInit(char const*, char const*) + 2104 (0x105f7bb14 in libshm.dylib)
+E       frame #3: THManagedMapAllocator::makeDataPtr(char const*, char const*, int, unsigned long) + 68 (0x105f7c114 in libshm.dylib)
+E       frame #4: THPStorage_shareFilename(_object*, _object*) + 156 (0x10ff8f4d4 in libtorch_python.dylib)
+E       frame #5: cfunction_vectorcall_NOARGS + 88 (0x1046ef7bc in python3.11)
+E       frame #6: _PyEval_EvalFrameDefault + 209024 (0x1047dcea0 in python3.11)
+E       frame #7: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #8: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #9: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #10: PyObject_CallOneArg + 108 (0x10468ab7c in python3.11)
+E       frame #11: save + 8840 (0x10638463c in _pickle.cpython-311-darwin.so)
+E       frame #12: save + 1232 (0x106382884 in _pickle.cpython-311-darwin.so)
+E       frame #13: save_reduce + 448 (0x106386a90 in _pickle.cpython-311-darwin.so)
+E       frame #14: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #15: save + 1264 (0x1063828a4 in _pickle.cpython-311-darwin.so)
+E       frame #16: save_reduce + 448 (0x106386a90 in _pickle.cpython-311-darwin.so)
+E       frame #17: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #18: batch_dict + 468 (0x1063884f0 in _pickle.cpython-311-darwin.so)
+E       frame #19: save_reduce + 1232 (0x106386da0 in _pickle.cpython-311-darwin.so)
+E       frame #20: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #21: save + 2036 (0x106382ba8 in _pickle.cpython-311-darwin.so)
+E       frame #22: save + 2036 (0x106382ba8 in _pickle.cpython-311-darwin.so)
+E       frame #23: save + 6108 (0x106383b90 in _pickle.cpython-311-darwin.so)
+E       frame #24: save_reduce + 828 (0x106386c0c in _pickle.cpython-311-darwin.so)
+E       frame #25: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #26: dump + 204 (0x106382044 in _pickle.cpython-311-darwin.so)
+E       frame #27: _pickle_Pickler_dump + 104 (0x106381c7c in _pickle.cpython-311-darwin.so)
+E       frame #28: method_vectorcall_O + 104 (0x10469c540 in python3.11)
+E       frame #29: _PyEval_EvalFrameDefault + 190916 (0x1047d87e4 in python3.11)
+E       frame #30: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #31: _PyObject_Call_Prepend + 156 (0x10468d4a4 in python3.11)
+E       frame #32: slot_tp_init + 208 (0x104720e78 in python3.11)
+E       frame #33: type_call + 136 (0x1047163b4 in python3.11)
+E       frame #34: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #35: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #36: _PyEval_EvalFrameDefault + 208784 (0x1047dcdb0 in python3.11)
+E       frame #37: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #38: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #39: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #40: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #41: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #42: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #43: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #44: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #45: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #46: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #47: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #48: _PyEval_EvalFrameDefault + 208076 (0x1047dcaec in python3.11)
+E       frame #49: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #50: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #51: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #52: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #53: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #54: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #55: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #56: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #57: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #58: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #59: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #60: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #61: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #62: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py:540: RuntimeError
+----------------------------- Captured stdout call -----------------------------
+[22:04:59] capgmyo: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[22:04:59] emg2pose: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[22:04:59] ninapro_db2: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+___ test_global_full_model_gradients_match_ddp_with_rank_without_pose[CR-2] ____
+
+tmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-747/test_global_full_model_gradien1')
+arm = 'CR', world = 2
+
+    @pytest.mark.parametrize("arm,world", [("CN", 2), ("CR", 2), ("CR", 4)])
+    def test_global_full_model_gradients_match_ddp_with_rank_without_pose(tmp_path, arm, world):
+        root, manifest, pose_root = _pose_setup(tmp_path)
+        cfg = _config(pose_root, arm)
+        cfg = replace(cfg, contrastive={**cfg.contrastive, "grad_every": 1},
+                      loader=replace(cfg.loader, min_window_s=1., max_window_s=4.))
+        # Full population of physical windows, with some valid pose labels removed
+        # to force a whole rank to contribute only as an unlabelled/zero-pose rank.
+        loader = L.PretrainLoader(R.load_index(manifest, [root], cfg.datasets, cfg.nested), cfg.loader, {}, None)
+        batch = loader.batch(4, np.random.default_rng(3))
+        assert len({signal.shape[-1] for signal in batch.signals}) > 1
+        for i in range(2):
+            batch.pose[i] = None
+        assert any(item is not None for item in batch.pose[2:])
+        # Distinct synthetic sessions avoid relying on a lucky temporal gap for NCE.
+        batch.rows = [{**row, "session": f"synthetic_session_{i}"} for i, row in enumerate(batch.rows)]
+        torch.manual_seed(0)
+        init = attach_contrastive_head(WearUsFM(cfg.model)).double().state_dict()
+        reference = _global_update(cfg, init, batch, R.DistContext())
+        output = tmp_path / "ddp"
+        output.mkdir()
+>       _spawn_bounded(world, str(tmp_path / "store"), cfg, init, batch, str(output))
+
+tests/cpu/test_contrastive_runtime.py:229: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_contrastive_runtime.py:191: in _spawn_bounded
+    context = mp.spawn(_worker, args=(world, store, cfg, init, batch, output), nprocs=world, join=False)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:340: in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:280: in start_processes
+    idx, process, tf_name = start_process(i)
+                            ^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:275: in start_process
+    process.start()
+../../../../anaconda3/lib/python3.11/multiprocessing/process.py:121: in start
+    self._popen = self._Popen(self)
+                  ^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/multiprocessing/context.py:288: in _Popen
+    return Popen(process_obj)
+           ^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/multiprocessing/popen_spawn_posix.py:32: in __init__
+    super().__init__(process_obj)
+../../../../anaconda3/lib/python3.11/multiprocessing/popen_fork.py:19: in __init__
+    self._launch(process_obj)
+../../../../anaconda3/lib/python3.11/multiprocessing/popen_spawn_posix.py:47: in _launch
+    reduction.dump(process_obj, fp)
+../../../../anaconda3/lib/python3.11/multiprocessing/reduction.py:60: in dump
+    ForkingPickler(file, protocol).dump(obj)
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/reductions.py:602: in reduce_storage
+    metadata = storage._share_filename_cpu_()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py:458: in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self =  102
+ 87
+ 86
+ 137
+ 102
+ 179
+ 142
+ 64
+[torch.storage.UntypedStorage(device=cpu) of size 8]
+args = (), kwargs = {}
+
+    @_share_memory_lock_protected
+    def _share_filename_cpu_(self, *args, **kwargs):
+>       return super()._share_filename_cpu_(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       RuntimeError: torch_shm_manager at "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/bin/torch_shm_manager": Operation not permitted
+E       Exception raised from start_manager at /Users/runner/work/pytorch/pytorch/torch/lib/libshm/core.cpp:67 (most recent call first):
+E       frame #0: c10::Error::Error(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 52 (0x10753ff18 in libc10.dylib)
+E       frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) + 120 (0x10753d584 in libc10.dylib)
+E       frame #2: THManagedMapAllocatorInit::THManagedMapAllocatorInit(char const*, char const*) + 2104 (0x105f7bb14 in libshm.dylib)
+E       frame #3: THManagedMapAllocator::makeDataPtr(char const*, char const*, int, unsigned long) + 68 (0x105f7c114 in libshm.dylib)
+E       frame #4: THPStorage_shareFilename(_object*, _object*) + 156 (0x10ff8f4d4 in libtorch_python.dylib)
+E       frame #5: cfunction_vectorcall_NOARGS + 88 (0x1046ef7bc in python3.11)
+E       frame #6: _PyEval_EvalFrameDefault + 209024 (0x1047dcea0 in python3.11)
+E       frame #7: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #8: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #9: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #10: PyObject_CallOneArg + 108 (0x10468ab7c in python3.11)
+E       frame #11: save + 8840 (0x10638463c in _pickle.cpython-311-darwin.so)
+E       frame #12: save + 1232 (0x106382884 in _pickle.cpython-311-darwin.so)
+E       frame #13: save_reduce + 448 (0x106386a90 in _pickle.cpython-311-darwin.so)
+E       frame #14: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #15: save + 1264 (0x1063828a4 in _pickle.cpython-311-darwin.so)
+E       frame #16: save_reduce + 448 (0x106386a90 in _pickle.cpython-311-darwin.so)
+E       frame #17: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #18: batch_dict + 468 (0x1063884f0 in _pickle.cpython-311-darwin.so)
+E       frame #19: save_reduce + 1232 (0x106386da0 in _pickle.cpython-311-darwin.so)
+E       frame #20: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #21: save + 2036 (0x106382ba8 in _pickle.cpython-311-darwin.so)
+E       frame #22: save + 2036 (0x106382ba8 in _pickle.cpython-311-darwin.so)
+E       frame #23: save + 6108 (0x106383b90 in _pickle.cpython-311-darwin.so)
+E       frame #24: save_reduce + 828 (0x106386c0c in _pickle.cpython-311-darwin.so)
+E       frame #25: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #26: dump + 204 (0x106382044 in _pickle.cpython-311-darwin.so)
+E       frame #27: _pickle_Pickler_dump + 104 (0x106381c7c in _pickle.cpython-311-darwin.so)
+E       frame #28: method_vectorcall_O + 104 (0x10469c540 in python3.11)
+E       frame #29: _PyEval_EvalFrameDefault + 190916 (0x1047d87e4 in python3.11)
+E       frame #30: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #31: _PyObject_Call_Prepend + 156 (0x10468d4a4 in python3.11)
+E       frame #32: slot_tp_init + 208 (0x104720e78 in python3.11)
+E       frame #33: type_call + 136 (0x1047163b4 in python3.11)
+E       frame #34: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #35: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #36: _PyEval_EvalFrameDefault + 208784 (0x1047dcdb0 in python3.11)
+E       frame #37: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #38: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #39: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #40: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #41: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #42: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #43: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #44: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #45: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #46: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #47: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #48: _PyEval_EvalFrameDefault + 208076 (0x1047dcaec in python3.11)
+E       frame #49: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #50: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #51: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #52: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #53: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #54: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #55: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #56: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #57: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #58: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #59: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #60: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #61: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #62: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py:540: RuntimeError
+----------------------------- Captured stdout call -----------------------------
+[22:05:00] capgmyo: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[22:05:00] emg2pose: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[22:05:00] ninapro_db2: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+___ test_global_full_model_gradients_match_ddp_with_rank_without_pose[CR-4] ____
+
+tmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-747/test_global_full_model_gradien2')
+arm = 'CR', world = 4
+
+    @pytest.mark.parametrize("arm,world", [("CN", 2), ("CR", 2), ("CR", 4)])
+    def test_global_full_model_gradients_match_ddp_with_rank_without_pose(tmp_path, arm, world):
+        root, manifest, pose_root = _pose_setup(tmp_path)
+        cfg = _config(pose_root, arm)
+        cfg = replace(cfg, contrastive={**cfg.contrastive, "grad_every": 1},
+                      loader=replace(cfg.loader, min_window_s=1., max_window_s=4.))
+        # Full population of physical windows, with some valid pose labels removed
+        # to force a whole rank to contribute only as an unlabelled/zero-pose rank.
+        loader = L.PretrainLoader(R.load_index(manifest, [root], cfg.datasets, cfg.nested), cfg.loader, {}, None)
+        batch = loader.batch(4, np.random.default_rng(3))
+        assert len({signal.shape[-1] for signal in batch.signals}) > 1
+        for i in range(2):
+            batch.pose[i] = None
+        assert any(item is not None for item in batch.pose[2:])
+        # Distinct synthetic sessions avoid relying on a lucky temporal gap for NCE.
+        batch.rows = [{**row, "session": f"synthetic_session_{i}"} for i, row in enumerate(batch.rows)]
+        torch.manual_seed(0)
+        init = attach_contrastive_head(WearUsFM(cfg.model)).double().state_dict()
+        reference = _global_update(cfg, init, batch, R.DistContext())
+        output = tmp_path / "ddp"
+        output.mkdir()
+>       _spawn_bounded(world, str(tmp_path / "store"), cfg, init, batch, str(output))
+
+tests/cpu/test_contrastive_runtime.py:229: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_contrastive_runtime.py:191: in _spawn_bounded
+    context = mp.spawn(_worker, args=(world, store, cfg, init, batch, output), nprocs=world, join=False)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:340: in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:280: in start_processes
+    idx, process, tf_name = start_process(i)
+                            ^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:275: in start_process
+    process.start()
+../../../../anaconda3/lib/python3.11/multiprocessing/process.py:121: in start
+    self._popen = self._Popen(self)
+                  ^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/multiprocessing/context.py:288: in _Popen
+    return Popen(process_obj)
+           ^^^^^^^^^^^^^^^^^^
+../../../../anaconda3/lib/python3.11/multiprocessing/popen_spawn_posix.py:32: in __init__
+    super().__init__(process_obj)
+../../../../anaconda3/lib/python3.11/multiprocessing/popen_fork.py:19: in __init__
+    self._launch(process_obj)
+../../../../anaconda3/lib/python3.11/multiprocessing/popen_spawn_posix.py:47: in _launch
+    reduction.dump(process_obj, fp)
+../../../../anaconda3/lib/python3.11/multiprocessing/reduction.py:60: in dump
+    ForkingPickler(file, protocol).dump(obj)
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/reductions.py:602: in reduce_storage
+    metadata = storage._share_filename_cpu_()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py:458: in wrapper
+    return fn(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self =  102
+ 87
+ 86
+ 137
+ 102
+ 179
+ 142
+ 64
+[torch.storage.UntypedStorage(device=cpu) of size 8]
+args = (), kwargs = {}
+
+    @_share_memory_lock_protected
+    def _share_filename_cpu_(self, *args, **kwargs):
+>       return super()._share_filename_cpu_(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       RuntimeError: torch_shm_manager at "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/bin/torch_shm_manager": Operation not permitted
+E       Exception raised from start_manager at /Users/runner/work/pytorch/pytorch/torch/lib/libshm/core.cpp:67 (most recent call first):
+E       frame #0: c10::Error::Error(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 52 (0x10753ff18 in libc10.dylib)
+E       frame #1: c10::detail::torchCheckFail(char const*, char const*, unsigned int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&) + 120 (0x10753d584 in libc10.dylib)
+E       frame #2: THManagedMapAllocatorInit::THManagedMapAllocatorInit(char const*, char const*) + 2104 (0x105f7bb14 in libshm.dylib)
+E       frame #3: THManagedMapAllocator::makeDataPtr(char const*, char const*, int, unsigned long) + 68 (0x105f7c114 in libshm.dylib)
+E       frame #4: THPStorage_shareFilename(_object*, _object*) + 156 (0x10ff8f4d4 in libtorch_python.dylib)
+E       frame #5: cfunction_vectorcall_NOARGS + 88 (0x1046ef7bc in python3.11)
+E       frame #6: _PyEval_EvalFrameDefault + 209024 (0x1047dcea0 in python3.11)
+E       frame #7: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #8: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #9: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #10: PyObject_CallOneArg + 108 (0x10468ab7c in python3.11)
+E       frame #11: save + 8840 (0x10638463c in _pickle.cpython-311-darwin.so)
+E       frame #12: save + 1232 (0x106382884 in _pickle.cpython-311-darwin.so)
+E       frame #13: save_reduce + 448 (0x106386a90 in _pickle.cpython-311-darwin.so)
+E       frame #14: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #15: save + 1264 (0x1063828a4 in _pickle.cpython-311-darwin.so)
+E       frame #16: save_reduce + 448 (0x106386a90 in _pickle.cpython-311-darwin.so)
+E       frame #17: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #18: batch_dict + 468 (0x1063884f0 in _pickle.cpython-311-darwin.so)
+E       frame #19: save_reduce + 1232 (0x106386da0 in _pickle.cpython-311-darwin.so)
+E       frame #20: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #21: save + 2036 (0x106382ba8 in _pickle.cpython-311-darwin.so)
+E       frame #22: save + 2036 (0x106382ba8 in _pickle.cpython-311-darwin.so)
+E       frame #23: save + 6108 (0x106383b90 in _pickle.cpython-311-darwin.so)
+E       frame #24: save_reduce + 828 (0x106386c0c in _pickle.cpython-311-darwin.so)
+E       frame #25: save + 1820 (0x106382ad0 in _pickle.cpython-311-darwin.so)
+E       frame #26: dump + 204 (0x106382044 in _pickle.cpython-311-darwin.so)
+E       frame #27: _pickle_Pickler_dump + 104 (0x106381c7c in _pickle.cpython-311-darwin.so)
+E       frame #28: method_vectorcall_O + 104 (0x10469c540 in python3.11)
+E       frame #29: _PyEval_EvalFrameDefault + 190916 (0x1047d87e4 in python3.11)
+E       frame #30: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #31: _PyObject_Call_Prepend + 156 (0x10468d4a4 in python3.11)
+E       frame #32: slot_tp_init + 208 (0x104720e78 in python3.11)
+E       frame #33: type_call + 136 (0x1047163b4 in python3.11)
+E       frame #34: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #35: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #36: _PyEval_EvalFrameDefault + 208784 (0x1047dcdb0 in python3.11)
+E       frame #37: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #38: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #39: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #40: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #41: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #42: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #43: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #44: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #45: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #46: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #47: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #48: _PyEval_EvalFrameDefault + 208076 (0x1047dcaec in python3.11)
+E       frame #49: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #50: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #51: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #52: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #53: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #54: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #55: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #56: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+E       frame #57: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #58: _PyObject_Call_Prepend + 904 (0x10468d790 in python3.11)
+E       frame #59: slot_tp_call + 120 (0x10471f4b0 in python3.11)
+E       frame #60: _PyEval_EvalFrameDefault + 191820 (0x1047d8b6c in python3.11)
+E       frame #61: _PyFunction_Vectorcall + 472 (0x10468b11c in python3.11)
+E       frame #62: _PyEval_EvalFrameDefault + 207824 (0x1047dc9f0 in python3.11)
+
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/storage.py:540: RuntimeError
+----------------------------- Captured stdout call -----------------------------
+[22:05:02] capgmyo: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[22:05:02] emg2pose: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[22:05:02] ninapro_db2: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+=========================== short test summary info ============================
+FAILED tests/cpu/test_contrastive_historical_callsites.py::test_pinned_historical_receipt_still_requires_authenticated_recalculation
+FAILED tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[2-False]
+FAILED tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[4-False]
+FAILED tests/cpu/test_contrastive_memory.py::test_distributed_variable_gather_matches_full_gradient[2-True]
+FAILED tests/cpu/test_contrastive_runtime.py::test_global_full_model_gradients_match_ddp_with_rank_without_pose[CN-2]
+FAILED tests/cpu/test_contrastive_runtime.py::test_global_full_model_gradients_match_ddp_with_rank_without_pose[CR-2]
+FAILED tests/cpu/test_contrastive_runtime.py::test_global_full_model_gradients_match_ddp_with_rank_without_pose[CR-4]
+7 failed, 300 passed in 54.73s

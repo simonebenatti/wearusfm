@@ -8211,3 +8211,13 @@ Dopo la verifica di Claude dei commit `5333c5c` e `b4b0963`, Simone: «quei 3 ri
 Dopo la verifica indipendente (quattro revisori, ciascuno con un controllore avversario) corretti anche `tokenizer_train`,
 `logsquare_evaluation`, i secondi confronti delle valutazioni e il launcher dell'estrazione dello Step 1.
 Contratto: `docs/target_windows_fix_20261118.md`. Nessun job.
+
+### 2026-11-18 — Linea3: adeguamento preparato a RMS100/fast125, nessun lancio
+
+Mandato Simone «fai tutto tu», dopo il chiarimento fra integratore/linea3 e TCN. La ricetta nuova
+si applica ugualmente a C0/CN/CR; lo storico T100-G resta25/50. Confronti interni invariati;
+confronto storico con due fattori aggiuntivi dichiarati. Piano separato, λ non misurate,
+sourcecompat vecchia non ampliata. Il preflight proposto costa al massimo14GPUh e137,066667coreh;
+non è rilasciato, e i problemi numerici già osservati restano aperti. Nessuna sottomissione,
+nuovo calcolo remoto o scrittura nei worktree altrui. Documento di riferimento:
+`docs/contrastive_targets_amendment_20261118.md`.

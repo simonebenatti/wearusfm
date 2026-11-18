@@ -1,3 +1,9 @@
+# Emendamento dei target del 18/11/2026
+
+Per la prossima coorte prevale [la ricetta esplicita RMS100/fast125](contrastive_targets_amendment_20261118.md).
+Il testo seguente conserva il protocollo statistico e la storia della coorte 25/50;
+le sue ricevute non qualificano il nuovo preflight. Nessun nuovo lancio è rilasciato.
+
 # InfoNCE e Rank-N-Contrast: confronto controllato v2 — 16/11/2026
 
 **Protocollo `contrastive-comparison-20261116-v2`. Decisioni scientifiche approvate da Simone; correzioni e rilascio esecutivo ancora da verificare.** Sono approvati l'esenzione di copertura basata sul manifest (D-1/A), il riferimento dei pesi al tratto storico attivo (D-3/2) e la famiglia decisionale E_dyn/P1/EPN612 con P2 e UCI descrittivi (D-2). L'autorizzazione ai lanci dopo la convergenza resta valida; questo documento e il `plan.json` in stato `REVIEW_REQUIRED` non sono da soli una release esecutiva. Comandi, risorse, criteri tecnici e ricevute sono nel [piano del collaudo](contrastive_preflight_execution_20261116.md).

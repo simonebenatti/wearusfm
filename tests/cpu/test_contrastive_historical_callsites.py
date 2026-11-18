@@ -6,6 +6,7 @@ import shutil
 import sys
 
 import pytest
+from frozen_campaign_support import run_frozen
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -113,39 +114,50 @@ def test_read_preflight_invokes_and_obeys_historical_audit_guard(audit_evidence,
     assert calls == [("audit", path)]
 
 
-def test_pinned_historical_receipt_still_requires_authenticated_recalculation(tmp_path, monkeypatch):
-    receipt = P._read(CALIBRATION / "calibration_report.json")
-    # Authenticate the entire original receipt with the real compatibility guard.
-    metadata = S.validate_historical_evidence("calibration_receipt", receipt)
-    assert metadata["historical_source_sha256"] == receipt["source_sha256"]
-    current = P.source_digest()
-    assert current != receipt["source_sha256"]
-
-    folder = tmp_path / "run"
-    shutil.copytree(CALIBRATION / "run", folder)
-    summary_path = folder / "summary.json"
-    summary = P._read(summary_path)
-    summary["contrastive"]["provenance"]["source_sha256"] = current
-    summary_path.write_text(json.dumps(summary))
-
-    guard_calls, recalculations = [], []
-    original_guard, original_report = S.validate_historical_evidence, P.calibration_report
-
-    def guard(kind, payload):
-        guard_calls.append(kind)
-        return original_guard(kind, payload)
-
-    def recalculate(run_dir):
-        measured = original_report(run_dir)
-        recalculations.append(measured)
-        return measured
-
-    monkeypatch.setattr(S, "validate_historical_evidence", guard)
-    monkeypatch.setattr(P, "calibration_report", recalculate)
-    with pytest.raises(ValueError, match="differs from authenticated recalculation"):
-        P.authenticate_calibration(receipt, folder)
-    assert guard_calls == ["calibration_receipt"]
-    assert len(recalculations) == 1
-    assert recalculations[0]["source_sha256"] == current
-    assert recalculations[0]["weights"] == receipt["weights"]
-    assert recalculations[0]["inputs"]["summary.json"] != receipt["inputs"]["summary.json"]
+def test_pinned_historical_receipt_still_requires_authenticated_recalculation(tmp_path):
+    # Exercise the real historical exception on the exact reader release which
+    # owns it. Current 100/125 sources must not inherit that exception.
+    result = run_frozen(
+        tmp_path, "8905e346b03e5d173cccc124aa40032bf588a191",
+        ("src", "scripts", "results/infra/contrastive_comparison_20261116",
+         "results/infra/tokenizer_execution_20261103/19618/T100-G/config.json"), """
+import json,shutil
+from unittest.mock import patch
+import contrastive_prepare as P
+import contrastive_source_compat as S
+calibration=root/'results/infra/contrastive_comparison_20261116/calibration_completed_20261117'
+receipt=P._read(calibration/'calibration_report.json')
+metadata=S.validate_historical_evidence('calibration_receipt',receipt)
+assert metadata['historical_source_sha256']==receipt['source_sha256']
+current=P.source_digest()
+assert current!=receipt['source_sha256']
+folder=root/'mutated-run'
+shutil.copytree(calibration/'run',folder)
+summary_path=folder/'summary.json'
+summary=P._read(summary_path)
+summary['contrastive']['provenance']['source_sha256']=current
+summary_path.write_text(json.dumps(summary))
+guard_calls,recalculations=[],[]
+original_guard,original_report=S.validate_historical_evidence,P.calibration_report
+def guard(kind,payload):
+    guard_calls.append(kind)
+    return original_guard(kind,payload)
+def recalculate(run_dir):
+    measured=original_report(run_dir)
+    recalculations.append(measured)
+    return measured
+with patch.object(S,'validate_historical_evidence',guard),patch.object(P,'calibration_report',recalculate):
+    try:
+        P.authenticate_calibration(receipt,folder)
+    except ValueError as exc:
+        assert 'differs from authenticated recalculation' in str(exc)
+    else:
+        raise AssertionError('pinned receipt bypassed authenticated recalculation')
+assert guard_calls==['calibration_receipt']
+assert len(recalculations)==1
+assert recalculations[0]['source_sha256']==current
+assert recalculations[0]['weights']==receipt['weights']
+assert recalculations[0]['inputs']['summary.json']!=receipt['inputs']['summary.json']
+print(json.dumps({'guard_calls':guard_calls,'recalculations':len(recalculations),'rejected':True}))
+""")
+    assert result == {"guard_calls": ["calibration_receipt"], "recalculations": 1, "rejected": True}

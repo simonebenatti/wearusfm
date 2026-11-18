@@ -13,6 +13,8 @@ from contrastive_prepare import ROOT, _read, source_digest, validate_input_bindi
 
 GPU_MODES = {'cuda', 'calibration', 'full', 'split'}
 MODES = GPU_MODES | {'audit', 'readout'}
+# The 100/125 ms recipe needs a two-hour audit; the readout keeps its one-hour allocation.
+ALLOCATED_SECONDS = {**{mode: 1800 for mode in GPU_MODES}, 'audit': 7200, 'readout': 3600}
 DATA_ROOTS = {Path('/leonardo_work/IscrB_WearUsFM/data/processed'),
               Path('/leonardo_scratch/large/userexternal/sbenatti/data/processed')}
 
@@ -62,7 +64,7 @@ def build_command(job, kind, allocated_seconds):
     if (job.get('status') != 'APPROVED_FOR_PREFLIGHT' or mode not in MODES or
             job.get('source_sha256') != source_digest() or
             kind != ('gpu' if mode in GPU_MODES else 'cpu') or
-            allocated_seconds != (1800 if kind == 'gpu' else 3600)):
+            allocated_seconds != ALLOCATED_SECONDS.get(mode)):
         raise ValueError('wrong mode, release, source or allocation')
     checked_file(job['review'])
     out = Path(job['out']).resolve()

@@ -6357,6 +6357,18 @@ Checkout 64746634 e CUDA 64746651 sottomessi con afterok tramite submitter/ledge
 Nuovi output e codice congelato; cinque benchmark non ancora sottomessi. Ricevute e consegna
 operativa aggiornate, autorizzazione già presente. Nessun monitor o training scientifico.
 
+### 2026-11-18 | GPT | Linea3: preparazione RMS100/fast125 in worktree separato
+
+Simone, dopo il chiarimento del perimetro: «fai tutto tu». Integrati i commit originali di main
+con merge, senza riscriverli; conservate entrambe le versioni delle voci nei conflitti documentali.
+Il worktree attivo wearusfm-logcontrast e la diagnostica non committata restano intatti.
+Nuovo piano results/infra/contrastive_targets_20261118/plan.json: C0/CN/CR e calibrazione
+esplicitano100/125/v3, storico normalizzato25/50. λ null; vecchie prove non riutilizzabili.
+Preventivo del solo preflight14GPUh/137,066667coreh,13allocazioni, audit2h. Stato REVIEW_REQUIRED,
+nessun invio o deploy. Restano i fallimenti bf16/parità/ripresa da risolvere con la diagnostica
+separata; nessuna soglia allentata. Test mirati121verdi; suite completa in corso e ricevuta a seguire.
+Protocollo: docs/contrastive_targets_amendment_20261118.md. TCN e continuazione300M invariati.
+
 ## 2) Problemi trovati
 
 ### 18/11/2026 — GPT: parità negativa e confondimento del confronto delle riprese
@@ -14201,3 +14213,12 @@ Nessun lancio implicito. Contratto e ricevuta in `docs/ms_fast_target_100ms_2026
   richiede di distinguere i piani nuovi da quelli storici: lo lascio a GPT, che scrive i piani della linea 3.
 - Suite CPU completa del codice finale, prima del commit: 3380 test passati, 0 falliti, 0 errori. 212 file in quattro parti
   parallele, poi `tests/cpu/test_ddp_equivalence.py` da solo (6 passati); nessun codice modificato dopo l'avvio della suite.
+
+### 2026-11-18 | GPT | Linea3: gate e compatibilità dopo il cambio dei target
+
+Il confronto C0−T100-G storico cambia anche RMS e spettro rapido: non isola la sola infrastruttura.
+Il coefficiente storico della formulaλ resta un prior dichiarato; λ e norme nuove si misurano sul train.
+Nuovi audit/calibrazione/CUDA/benchmark obbligatori, non ancora eseguiti. Il costo proposto non è una
+release. Audit7200s, lettura3600s, GPU1800s sono controllati per fase; l'override02:00:00 è obbligatorio
+per il solo audit. I test delle ricevute storiche usano reader congelati; non allentate le guardie nuove.
+La guardia generica dei nuovi pianiWSD e il limite LQ pre04/11 restano dichiarati fuori perimetro.

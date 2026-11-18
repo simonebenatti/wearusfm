@@ -108,7 +108,7 @@ def initial_calibration_description(run_dir):
             'historical_first8': reference['historical_first8'], 'historical_means': reference['historical_means'],
             'calibration_first8': values, 'calibration_means': means,
             'mean_ratios': {key: means[key]/reference['historical_means'][key] for key in means},
-            'interpretation': 'Only update 1 may match exactly; subsequent historical weights trained while calibration weights stay fixed.'}
+            'interpretation': 'Descriptive historical reference only: target supports changed from RMS25/fast50 to RMS100/fast125, so even update 1 need not match. Subsequent historical weights trained while calibration weights stay fixed.'}
 
 
 def _tensor_distance(a, b, reference=None):

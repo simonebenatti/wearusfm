@@ -50,17 +50,28 @@ def job_env(tmp_path, monkeypatch):
     return build, pin
 
 
-@pytest.mark.parametrize("mode,kind,script", [("audit", "cpu", "contrastive_audit.py"),
-    ("readout", "cpu", "contrastive_benchmark_readout.py"), ("cuda", "gpu", "contrastive_cuda_check.py"),
-    ("calibration", "gpu", "contrastive_run.py"), ("full", "gpu", "contrastive_run.py"),
-    ("split", "gpu", "contrastive_split_benchmark.py")])
-def test_stage_commands_use_frozen_absolute_scripts_and_fixed_resources(job_env, mode, kind, script):
+@pytest.mark.parametrize("mode,kind,seconds,script", [("audit", "cpu", 7200, "contrastive_audit.py"),
+    ("readout", "cpu", 3600, "contrastive_benchmark_readout.py"), ("cuda", "gpu", 1800, "contrastive_cuda_check.py"),
+    ("calibration", "gpu", 1800, "contrastive_run.py"), ("full", "gpu", 1800, "contrastive_run.py"),
+    ("split", "gpu", 1800, "contrastive_split_benchmark.py")])
+def test_stage_commands_use_frozen_absolute_scripts_and_fixed_resources(job_env, mode, kind, seconds, script):
     job = job_env[0](mode)
-    command = J.build_command(job, kind, 1800 if kind == "gpu" else 3600)
+    command = J.build_command(job, kind, seconds)
     assert str(ROOT / "scripts" / script) in command
     assert "--nproc_per_node=4" in command if mode in {"cuda", "calibration", "full"} else "--nproc_per_node=4" not in command
     assert "--stage" not in command or command[command.index("--stage") + 1] != "training"
     if mode == "split": assert command[command.index("--total-time-limit-s") + 1] == "1800"
+
+
+@pytest.mark.parametrize("mode,kind,seconds", [
+    ("audit", "cpu", 3600), ("audit", "cpu", 7199), ("audit", "cpu", 7201),
+    ("audit", "gpu", 7200), ("readout", "cpu", 1800), ("readout", "cpu", 7200),
+    ("readout", "gpu", 3600), ("cuda", "gpu", 7200), ("calibration", "gpu", 3600),
+    ("full", "cpu", 1800), ("split", "gpu", 7200),
+])
+def test_stage_allocations_cannot_be_swapped_or_extended(job_env, mode, kind, seconds):
+    with pytest.raises(ValueError, match="allocation"):
+        J.build_command(job_env[0](mode), kind, seconds)
 
 
 @pytest.mark.parametrize("field,value", [("status", "REVIEW_REQUIRED"), ("source_sha256", "b" * 64), ("mode", "training")])
@@ -85,10 +96,10 @@ def test_jobs_reject_output_escape_existing_output_and_wrong_roots(job_env, tmp_
     bad = copy.deepcopy(job)
     bad["out"] = str(tmp_path / "outside")
     with pytest.raises(ValueError, match="fresh output"):
-        J.build_command(bad, "cpu", 3600)
+        J.build_command(bad, "cpu", 7200)
     Path(job["out"]).mkdir()
     with pytest.raises(ValueError, match="fresh output"):
-        J.build_command(job, "cpu", 3600)
+        J.build_command(job, "cpu", 7200)
     job = job_env[0]("cuda")
     job["roots"] = [str(tmp_path)]
     with pytest.raises(ValueError, match="data roots"):

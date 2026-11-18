@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "status": "REVIEW_REQUIRED",
+  "training_approved": false,
+  "baseline": {
+    "path": "results/infra/tokenizer_execution_20261103/19618/T100-G/config.json",
+    "bytes": 3594,
+    "sha256": "f9d0318462fd30a5592087ef72c63d3036a88ff1d07fc0dad8624e36253c2cfa"
+  },
+  "world_size": 4,
+  "workers_per_rank": 6,
+  "training_weights": "null until calibration review and dedicated release",
+  "calibration_weights": "inert placeholders, C0 and calibration_only, no optimizer/EMA updates",
+  "configs": {
+    "C0": {
+      "path": "results/infra/contrastive_targets_20261118/review_configs/C0.config.json",
+      "bytes": 5286,
+      "sha256": "ef0b3c389764efcb99d8676816baf5ea36273eb73546dce4c880a4c4bf27932a"
+    },
+    "CN": {
+      "path": "results/infra/contrastive_targets_20261118/review_configs/CN.config.json",
+      "bytes": 5286,
+      "sha256": "5c88b285e027021a56bceef19527905ba094a6e1d6725749ca8f1a9884da15b6"
+    },
+    "CR": {
+      "path": "results/infra/contrastive_targets_20261118/review_configs/CR.config.json",
+      "bytes": 5286,
+      "sha256": "d3df3f6d90ab16178ddd4300ca4ea3326b598cc7bfaa97c56f312d3b61eef76b"
+    },
+    "calibration": {
+      "path": "results/infra/contrastive_targets_20261118/review_configs/calibration.config.json",
+      "bytes": 5281,
+      "sha256": "b50da4004c46ff95cfd79f00c199160af629a16c1bef1ac60360d30cce906b69"
+    }
+  }
+}

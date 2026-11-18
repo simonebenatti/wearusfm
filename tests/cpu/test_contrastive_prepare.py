@@ -2,11 +2,13 @@ import copy
 import importlib.util
 import json
 from pathlib import Path
+import sys
 
 import pytest
 from wearusfm.training.contrastive_objectives import ContrastiveRuntime
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
 spec = importlib.util.spec_from_file_location("contrastive_prepare", ROOT / "scripts/contrastive_prepare.py")
 P = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(P)
@@ -77,8 +79,45 @@ def test_config_roundtrip_restores_nested_types_and_preserves_baseline():
     with pytest.raises(TypeError): P.config_from_dict(bad)
 
 
+def test_missing_target_windows_are_historical_not_current_loader_defaults():
+    original = baseline()
+    assert "rms_window_ms" not in original["loader"]
+    assert "ms_fast_window_ms" not in original["loader"]
+    restored = P.R.config_to_dict(P.config_from_dict(original))
+    assert (restored["loader"]["rms_window_ms"], restored["loader"]["ms_fast_window_ms"],
+            restored["target_version"]) == (25., 50., P.LEGACY_TARGET_VERSION)
+    assert original == baseline()
+
+
+def test_explicit_target_windows_survive_config_restore():
+    raw = baseline()
+    raw["loader"].update(rms_window_ms=100., ms_fast_window_ms=125.)
+    raw["target_version"] = P.target_version_for_fast_window(125.)
+    restored = P.R.config_to_dict(P.config_from_dict(raw))
+    assert (restored["loader"]["rms_window_ms"], restored["loader"]["ms_fast_window_ms"],
+            restored["target_version"]) == (100., 125., "step1_psd_power_shape_energy_fast125_v3")
+
+
+@pytest.mark.parametrize("field,value", [("rms_window_ms", 100.), ("ms_fast_window_ms", 125.)])
+def test_review_builder_rejects_a_nonhistorical_baseline(field, value):
+    raw = baseline()
+    raw["loader"][field] = value
+    with pytest.raises(ValueError, match="historical T100-G 25/50"):
+        P.build_review_configs(raw)
+
+
+def test_review_builder_rejects_a_nonhistorical_target_version():
+    raw = baseline()
+    raw["target_version"] = P.target_version_for_fast_window(125.)
+    with pytest.raises(ValueError, match="historical T100-G 25/50"):
+        P.build_review_configs(raw)
+
+
 def test_review_configs_share_recipe_and_training_weights_are_not_executable():
     configs = P.build_review_configs(baseline())
+    for cfg in configs.values():
+        assert (cfg["loader"]["rms_window_ms"], cfg["loader"]["ms_fast_window_ms"],
+                cfg["target_version"]) == (100., 125., "step1_psd_power_shape_energy_fast125_v3")
     shared = []
     for name in ("C0", "CN", "CR"):
         cfg = copy.deepcopy(configs[name])
@@ -93,6 +132,18 @@ def test_review_configs_share_recipe_and_training_weights_are_not_executable():
     assert cal["schedule"]["total_steps"] == 49046
     cc = P.ContrastiveConfig(**cal["contrastive"])
     assert cc.calibration_only and cc.weights(511) == (0., 0.)
+
+
+def test_old_calibration_cannot_authorize_new_target_recipe(tmp_path):
+    folder = tmp_path / "run"
+    cfg, summary, records = fixture_run(folder)
+    # Historical payloads omit both fields and carry the original version.
+    del cfg["loader"]["rms_window_ms"]
+    del cfg["loader"]["ms_fast_window_ms"]
+    cfg["target_version"] = P.LEGACY_TARGET_VERSION
+    write_run(folder, cfg, summary, records)
+    with pytest.raises(ValueError, match="calibration run config differs"):
+        P.calibration_report(folder)
 
 
 @pytest.mark.parametrize("field,value", [("batch_size", 64), ("lr", 3e-4), ("max_steps", 5000), ("seed", 3)])
