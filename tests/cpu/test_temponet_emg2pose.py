@@ -399,7 +399,7 @@ def test_mse_vel_loss_and_gradient_match_an_independent_formula():
         output.retain_grad()
         zs.append(output)
 
-    m1.register_forward_hook(keep)
+    m1.out.register_forward_hook(keep)  # uscita dell'ultimo strato = z (il passo di mse_vel non chiama model.forward)
     loss = st._loss()
     loss.backward()
     sd_t, sdv_t = torch.tensor(sd), torch.tensor(sd_v)
@@ -460,7 +460,43 @@ def test_stepper_mse_vel_matches_a_plain_loop():
     assert st.take_parts() == (0.0, 0.0)  # azzerati dalla lettura
 
 
-@pytest.mark.parametrize("loss", ["smoothl1", "mse", "mse_vel"])
+def test_pair_forward_shares_the_dropout_mask():
+    import torch
+
+    x, xp, f, y, yp = _pair_batches(8, 1, 4)
+    mu, sd, sd_v = VEL_STATS
+    cpu = torch.device("cpu")
+    xa = x[0].permute(0, 2, 1).float() * f[0][:, None, None]
+    xb = xp[0].permute(0, 2, 1).float() * f[0][:, None, None]
+    # dropout spento: uguale al forward del modello
+    m0, o0, l0 = TE.build(5, cpu, 1e-3, dropout=0.0, loss="mse_vel")
+    st0 = TE.Stepper(m0, o0, l0, mu, sd, 4, False, cpu, vel=(0.1, sd_v))
+    m0.train()
+    assert torch.equal(st0._pair_forward(torch.cat([xa, xb])), m0(torch.cat([xa, xb])))
+    # dropout 0,5: una maschera per coppia (keep = rand >= p, scala 1 / (1 - p)), nuova a ogni chiamata
+    m1, o1, l1 = TE.build(5, cpu, 1e-3, dropout=0.5, loss="mse_vel")
+    st1 = TE.Stepper(m1, o1, l1, mu, sd, 4, False, cpu, vel=(0.1, sd_v))
+    m1.train()
+    z_same = st1._pair_forward(torch.cat([xa, xa]))
+    assert torch.equal(z_same[:4], z_same[4:])  # compagna = finestra: velocita' predetta esattamente nulla
+    torch.manual_seed(11)
+    z = st1._pair_forward(torch.cat([xa, xb]))
+    torch.manual_seed(11)
+    h = m1.features(torch.cat([xa, xb])).flatten(1)
+    for d in m1.head:
+        h = d.relu(d.bn(d.fc(h)))
+        keep = (torch.rand((4, h.shape[1])) >= 0.5).float() * 2.0
+        h = h * torch.cat([keep, keep])
+    assert torch.equal(z, m1.out(h))
+    assert not torch.equal(st1._pair_forward(torch.cat([xa, xb])), z)  # maschera rinnovata
+    # il termine della velocita' con compagna = finestra e' zero anche col dropout
+    for buf, val in ((st1.xb, x[0]), (st1.fb, f[0]), (st1.yb, y[0]), (st1.xpb, x[0]), (st1.ypb, y[0]), (st1.mb, torch.ones(4))):
+        buf.copy_(val)
+    st1._loss()
+    assert float(st1._parts[1]) == 0.0 and float(st1._parts[0]) > 0.0
+
+
+@pytest.mark.parametrize("loss", ["l1", "smoothl1", "mse", "mse_vel"])
 def test_train_with_the_other_losses_then_eval_on_cpu(tmp_path, loss):
     csv, proc, pose, manifest = _dataset(tmp_path)
     common = ["--csv", str(csv), "--processed-root", str(proc), "--pose-root", str(pose), "--targets-manifest", str(manifest), "--device", "cpu"]
@@ -475,10 +511,15 @@ def test_train_with_the_other_losses_then_eval_on_cpu(tmp_path, loss):
         assert len(r["vel_sd_rad"]) == 20 and min(r["vel_sd_rad"]) > 0 and 0 < r["vel_pairs_fraction"] < 1
         assert h["train_mse_vel_std"] == pytest.approx(h["train_pose_mse_std"] + 0.1 * h["train_vel_mse_std"])
     else:
-        assert "vel_sd_rad" not in r and "train_pose_mse_std" not in h
+        assert "vel_sd_rad" not in r and "train_pose_mse_std" not in h and "train_vel_mse_std" not in h
+    if loss == "l1":
+        assert "train_l1_std" in h
+        del r["args"]["loss"]  # come il run.json del braccio A (11/11), senza il campo
+        (run / "run.json").write_text(json.dumps(r))
     ev = tmp_path / "eval_val"
     assert TE.main(["eval", *common, "--out", str(ev), "--model-dir", str(run), "--val-only"]) == 0
-    assert json.loads((ev / "eval.json").read_text())["train_loss"] == loss
+    e = json.loads((ev / "eval.json").read_text())
+    assert e["train_loss"] == loss and "loss" not in e["args"] and "vel_weight" not in e["args"]
 
 
 def test_mse_vel_needs_a_positive_lag_and_weight(tmp_path):

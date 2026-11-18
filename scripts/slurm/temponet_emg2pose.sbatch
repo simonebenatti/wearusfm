@@ -57,16 +57,18 @@ print('GPU:', torch.cuda.get_device_name(0), '| torch', torch.__version__, '| CU
 PY
 COMMON=(--csv "$WORK/data/raw/emg2pose_mini/emg2pose_metadata.csv" --processed-root "$SCRATCH/data/processed/emg2pose"
   --pose-root "$SCRATCH/data/processed/emg2pose_pose" --targets-manifest "$MANIFEST" --cudnn-mode benchmark)
-echo "== $(date -Is) modo $MODE, codice $WEARUSFM_CODE_SHA in $WEARUSFM_CODE_DIR; uscite $OUT; loss $LOSS, limite del training $TRAIN_TIME"
+echo "== $(date -Is) modo $MODE, codice $WEARUSFM_CODE_SHA in $WEARUSFM_CODE_DIR; uscite $OUT$([ "$MODE" = train ] && echo "; loss $LOSS, limite $TRAIN_TIME")"
 if [ "$MODE" = smoke ]; then
   python3 scripts/temponet_emg2pose.py train "${COMMON[@]}" --out "$OUT/train" --check-graph --epochs 2 --max-train-recordings 400 \
     --max-val-recordings 60 --max-steps-per-epoch 4000 || exit 1
   python3 scripts/temponet_emg2pose.py eval "${COMMON[@]}" --out "$OUT/eval_val" --model-dir "$OUT/train" --val-only || exit 1
 elif [ "$MODE" = losssmoke ]; then
+  RC=0  # tutte e quattro le loss, anche dopo un fallimento: l'esito vale per loss (regola 4(a) del 18/11)
   for L in l1 smoothl1 mse mse_vel; do
     python3 scripts/temponet_emg2pose.py train "${COMMON[@]}" --out "$OUT/$L" --check-graph --loss "$L" --epochs 1 --max-train-recordings 400 \
-      --max-val-recordings 60 --max-steps-per-epoch 8000 || exit 1
+      --max-val-recordings 60 --max-steps-per-epoch 8000 || { echo "collaudo di $L FALLITO"; RC=1; }
   done
+  [ "$RC" = 0 ] || exit 1
 elif [ "$MODE" = train ]; then
   python3 scripts/temponet_emg2pose.py train "${COMMON[@]}" --out "$OUT" --check-graph --time-budget-s "$BUDGET" \
     --train-stride-blocks "${TRAIN_STRIDE:-8}" --loss "$LOSS" || exit 1

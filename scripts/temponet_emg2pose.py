@@ -304,13 +304,30 @@ class Stepper:
         import torch
 
         xp = self.xpb.permute(0, 2, 1).contiguous().float() * self.fb[:, None, None]
-        z = self.model(torch.cat([x, xp]))
+        z = self._pair_forward(torch.cat([x, xp]))
         za, zp = z[: x.shape[0]], z[x.shape[0] :]
         pose = self.loss_fn(za, y)
         dv = ((za - zp) * self.sd - (self.yb.float() - self.ypb.float())) / self.sd_v
         vel = (self.mb[:, None] * dv.square()).sum() / (self.mb.sum().clamp(min=1.0) * R.N_JOINTS)
         self._parts = torch.stack([pose.detach(), vel.detach()])
         return pose + self.vel_weight * vel
+
+    def _pair_forward(self, x2):
+        """Forward di finestre e compagne concatenate (BatchNorm sulle 2 x batch finestre) con UNA maschera del dropout per coppia, ripetuta
+        sulle due meta': la differenza fra le uscite di una coppia non contiene il rumore del dropout (review del 18/11, emendamento 3 in
+        `docs/decisioni.md`). Stesse operazioni di `TEMPONet.forward` e di `_Dense`; con il dropout spento coincide con `model(x2)`."""
+        import torch
+
+        m = self.model
+        h = m.features(x2).flatten(1)
+        half = x2.shape[0] // 2
+        for d in m.head:
+            h = d.relu(d.bn(d.fc(h)))
+            p = float(d.drop.p)
+            if m.training and p > 0:
+                keep = (torch.rand((half, h.shape[1]), device=h.device) >= p).to(h.dtype) / (1.0 - p)
+                h = h * torch.cat([keep, keep])
+        return m.out(h)
 
     def _eager(self):
         self.opt.zero_grad(set_to_none=True)
@@ -390,8 +407,34 @@ def graph_check(xs, fs, ys, mu, sd, batch: int, device, lr: float, loss: str = "
             out[f"{mode}_pose_vel_sums"] = list(st.take_parts())
         params[mode] = [p.detach().clone() for p in model.parameters()] + [b.detach().clone() for b in model.buffers()]
     out["max_abs_param_diff"] = max(float((a.double() - b.double()).abs().max()) for a, b in zip(params["eager"], params["graph"]))
+    if vel is not None:
+        out["dropout_check"] = dropout_check(xs, fs, ys, mu, sd, batch, device, vel)
     torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = saved
     return out
+
+
+DROPOUT_CHECK_VEL_MAX = 1e-8  # termine della velocita' ammesso con compagna = finestra e maschera condivisa
+
+
+def dropout_check(xs, fs, ys, mu, sd, batch: int, device, vel, steps: int = 4) -> dict:
+    """Solo `mse_vel`, nel CUDA graph che usera' il training (dropout 0,5): compagna = finestra stessa e lr 0, cosi' i pesi non cambiano.
+    Con la maschera condivisa il termine della velocita' deve essere nullo a ogni replay; il termine della posa deve cambiare fra un replay e
+    l'altro con lo stesso ingresso (la maschera si rinnova). -> esito e valori."""
+    import torch
+
+    model, opt, loss_fn = build(778, device, 0.0, dropout=0.5, loss="mse_vel")
+    model.train()
+    st = Stepper(model, opt, loss_fn, mu, sd, batch, True, device, vel=vel)
+    ones = torch.ones(batch, dtype=torch.float32, device=device)
+    pose, velv = [], []
+    for _ in range(T.GRAPH_WARMUP + steps):
+        st.step(xs[0], fs[0], ys[0], xs[0], ys[0], ones)
+        p, v = st.take_parts()
+        pose.append(p)
+        velv.append(v)
+    replay_pose = pose[T.GRAPH_WARMUP + 1 :]  # passi dopo la cattura, stesso ingresso e stessi pesi
+    ok = max(abs(v) for v in velv) <= DROPOUT_CHECK_VEL_MAX and len(set(replay_pose)) == len(replay_pose)
+    return {"passed": bool(ok), "pose_parts": pose, "vel_parts": velv, "vel_max_allowed": DROPOUT_CHECK_VEL_MAX}
 
 
 def predict(model, store: HostStore, ends, fw, device, batch: int = EVAL_BATCH) -> np.ndarray:
@@ -498,6 +541,12 @@ def run_train(args) -> int:
             run["status"] = "controllo eager/graph fallito: nessun training"
             (out / "run.json").write_text(json.dumps(run, indent=1))
             return 1
+        if "dropout_check" in check:
+            print(f"controllo della maschera condivisa: {'superato' if check['dropout_check']['passed'] else 'FALLITO'}", flush=True)
+            if not check["dropout_check"]["passed"]:
+                run["status"] = "controllo della maschera condivisa del dropout fallito: nessun training"
+                (out / "run.json").write_text(json.dumps(run, indent=1))
+                return 1
     model, opt, loss_fn = build(args.seed, device, args.lr, loss=args.loss)
     eval_model = T.denormalizer(model, mu_t.to(device), sd_t.to(device))
     stepper = Stepper(model, opt, loss_fn, mu, sd, args.batch, use_graph, device, vel=vel)
@@ -636,7 +685,7 @@ def run_eval(args) -> int:
     ckpt = Path(args.model_dir) / ("model_final.pt" if train_run.get("status") == "ok" else sorted((Path(args.model_dir) / "checkpoints").glob("*.pt"))[-1])
     eval_model.load_state_dict(torch.load(ckpt, map_location=device))
     t0 = time.time()
-    report = {"kind": "temponet_emg2pose_eval_v1", "args": vars(args), "code_sha": os.environ.get("WEARUSFM_CODE_SHA"),
+    report = {"kind": "temponet_emg2pose_eval_v1", "args": {k: v for k, v in vars(args).items() if k not in ("loss", "vel_weight", "vel_lag_blocks")}, "code_sha": os.environ.get("WEARUSFM_CODE_SHA"),
               "slurm_job_id": os.environ.get("SLURM_JOB_ID"), "checkpoint": str(ckpt), "train_status": train_run.get("status"), "k": k,
               "train_loss": train_run["args"].get("loss", "l1")}
     mu_dev = torch.tensor(mu, dtype=torch.float32, device=device)
