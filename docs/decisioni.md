@@ -7815,3 +7815,16 @@ Dopo la verifica di Claude dei commit `5333c5c` e `b4b0963`, Simone: «quei 3 ri
 Dopo la verifica indipendente (quattro revisori, ciascuno con un controllore avversario) corretti anche `tokenizer_train`,
 `logsquare_evaluation`, i secondi confronti delle valutazioni e il launcher dell'estrazione dello Step 1.
 Contratto: `docs/target_windows_fix_20261118.md`. Nessun job.
+
+### 2026-11-18 | GPT | Review unica e integrazione target 125, compatibilità storica
+
+Simone: «fai tutto tu». Rivisto Claude `0d91297776a5ee63ccd3f3d10b48cf63163172c9`
+e integrato con merge esplicito `7364f7c`, senza squash o rebase; nessuna modifica ai suoi sorgenti.
+Oracolo indipendente su 12 frequenze: maschere identiche, errore massimo 1,2585e-6.
+Suite CPU completa: 3.380 casi passati, con recuperi documentati dopo restrizioni della sandbox,
+disco pieno e un'attesa transitoria di subprocess; nessun errore irrisolto.
+Review e prove: `docs/reviews/target_windows_integration_20261118.md`,
+`results/infra/target_windows_integration_20261118/verification.json`.
+Linea 3 preparata separatamente su `codex/contrastive-target-windows-20261118`: RMS100/fast125
+espliciti, nuove misure ancora da fare, nessun job. TCN e continuazione 300M storiche invariate.
+Su richiesta di Simone liberati 8,43 GiB di temporanei pytest inattivi; dati e checkpoint intatti.

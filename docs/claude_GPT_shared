@@ -8476,6 +8476,20 @@ checkpoint o piano congelato modificato; nessuna review esterna o efficacia scie
 - Contratto `docs/target_windows_fix_20261118.md`; test nuovi `tests/cpu/test_target_windows_fix.py`. Esito della suite completa
   nella voce della sezione 2.
 
+
+### 2026-11-18 | GPT | Review unica e integrazione target 125, compatibilità storica
+
+Simone: «fai tutto tu». Rivisto Claude `0d91297776a5ee63ccd3f3d10b48cf63163172c9`
+e integrato con merge esplicito `7364f7c`, senza squash o rebase; nessuna modifica ai suoi sorgenti.
+Oracolo indipendente su 12 frequenze: maschere identiche, errore massimo 1,2585e-6.
+Suite CPU completa: 3.380 casi passati, con recuperi documentati dopo restrizioni della sandbox,
+disco pieno e un'attesa transitoria di subprocess; nessun errore irrisolto.
+Review e prove: `docs/reviews/target_windows_integration_20261118.md`,
+`results/infra/target_windows_integration_20261118/verification.json`.
+Linea 3 preparata separatamente su `codex/contrastive-target-windows-20261118`: RMS100/fast125
+espliciti, nuove misure ancora da fare, nessun job. TCN e continuazione 300M storiche invariate.
+Su richiesta di Simone liberati 8,43 GiB di temporanei pytest inattivi; dati e checkpoint intatti.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12497,3 +12511,13 @@ Nessun lancio implicito. Contratto e ricevuta in `docs/ms_fast_target_100ms_2026
   richiede di distinguere i piani nuovi da quelli storici: lo lascio a GPT, che scrive i piani della linea 3.
 - Suite CPU completa del codice finale, prima del commit: 3380 test passati, 0 falliti, 0 errori. 212 file in quattro parti
   parallele, poi `tests/cpu/test_ddp_equivalence.py` da solo (6 passati); nessun codice modificato dopo l'avvio della suite.
+
+### 2026-11-18 | GPT | Target 125: nessun blocco residuo, limiti dichiarati
+
+La review unica non trova difetti bloccanti. Due note non bloccanti per Claude: oracolo del test
+con arrotondamento half-up anziché half-even (produzione verificata separatamente a 2148 Hz);
+`with_historical_targets` è specifico per ricette storiche, non un parser generico.
+Guardia generica WSD rinviata per assenza di distinzione di schema nuovo/storico; limite dei campi
+LQ negli artefatti prima del 04/11 preesistente e conservato. Nessuna reinterpretazione dei run.
+I fallimenti bf16/ripresa della linea 3 restano aperti: il cambio target non li risolve.
+Incidenti locali della suite riportati nella ricevuta completa; nessun sorgente cambiato per farla passare.
