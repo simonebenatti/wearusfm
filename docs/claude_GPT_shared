@@ -8891,6 +8891,20 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   ore locali del progetto (`saldo -b`, 18/11 alle 23:26). Il job deve finire prima della manutenzione totale del 23-25/11.
 - Codice da aggiungere solo dopo l'approvazione: `EPOCHS` e due limiti nello sbatch, `--checkpoint` nella valutazione.
 
+### 2026-11-18 | Claude | TEMPONet su emg2pose, training lungo: APPROVATO da Simone (opzione B); codice, test e regole congelate; nessun job | Ramo `claude/temponet-residual-419618`
+
+- Simone: «Approvo B», alla domanda «Approvi l'opzione A con i tre checkpoint sul test?» (pulsanti «Sì, approvo A» e «Approvo B»).
+  Mia interpretazione: l'opzione B della proposta com'e', coi tre checkpoint e il tetto di 32,5 GPU-ore.
+- Codice `33cdfe7`:
+  - nello sbatch `EPOCHS` (default 19), i limiti 13:00 e 15:00 e `CHECKPOINT`;
+  - nella valutazione `--checkpoint epoch_NN.pt`.
+
+  I default restano invariati. 14 test CPU nuovi in `test_temponet_emg2pose_long.py`: 101 passati nei file di TEMPONet.
+- Regole in `docs/decisioni.md`. Principale: epoca 100 contro epoca 19 dello stesso run, ±0,3 gradi. Secondaria: residua contro senza
+  salti all'epoca 100.
+- Job previsti: checkout, due training (13:00 e 15:00) e sei valutazioni in afterok; tetto 32,5 GPU-ore. L'invio aspetta il rinnovo del
+  certificato, scaduto alle 23:01 del 18/11.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13045,3 +13059,10 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
 - Qui gli sguardi sarebbero tre, dichiarati prima, tutti riportati e senza scelta fra loro. L'alternativa e' il solo modello finale, che
   perde pero' il confronto dentro lo stesso run.
 - La scelta e' di Simone (decisione 2 della proposta) e va registrata prima del lancio.
+
+### 2026-11-18 | Claude | Training lungo di TEMPONet: i tre sguardi al test vengono dalla mia lettura di «Approvo B» | Ramo `claude/temponet-residual-419618`
+
+- La decisione 2 della proposta (tre checkpoint sul test oppure solo il modello finale) non ha una risposta esplicita. La domanda legava
+  i tre checkpoint all'opzione A, e Simone ha scelto B.
+- Ho registrato B coi tre checkpoint, come scritto nella proposta. Se Simone intendeva solo il modello finale, la regola principale va
+  cambiata prima del lancio.
