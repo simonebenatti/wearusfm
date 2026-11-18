@@ -7359,3 +7359,8 @@ Presa in carico esclusiva della consegna 432d0fa. Riconciliazione ledger/schedul
 
 Ridge 64701180 e fit 01–03 64701397/64701400/64701404 risultano COMPLETED 0:0, rispettivamente 292/1626/1476/3986 s. L'attesa locale era stata interrotta, il ledger conferma cinque shard ancora assenti prima della ripresa. Gate fresco superato e pubblicato in d5ea964 con SHA remoto verificato. Inviati fit 04–07 **64730416/64730417/64730419/64730421**, una catena afterok, massimo quattro job della linea. Resta fit 08 da inviare dopo completamento della tranche, con nuovo gate e senza nuovo consenso. Ricevute comuni affiancate alle righe. Benchmark e budget già accettati, nessun ampliamento del perimetro.
 
+
+### 18/11/2026 — launcher: controllo fit 04–07 fermato dall’autenticazione SSH
+
+Controlli scheduler eseguiti ogni cinque minuti come richiesto. Lettura iniziale fit 04 RUNNING, 05–07 PENDING. Il successivo accesso ha restituito Permission denied (publickey,gssapi-keyex,gssapi-with-mic). Anche ssh leonardo con il percorso configurato di rinnovo è fallito. Nessun esito finale dei quattro fit attestato e nessun fit 08 inviato. Ripresa già autorizzata appena torna l’accesso: riconciliazione ledger/scheduler, verifica esiti, gate fresco e invio di 08. Nessun nuovo consenso scientifico necessario. Dettaglio nel file authentication_block_20261118.json accanto alle ricevute.
+
