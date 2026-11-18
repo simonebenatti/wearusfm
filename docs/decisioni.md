@@ -8147,3 +8147,29 @@ Emendamenti, scritti prima di inviare B, C e D:
   verificato sul Mac: i pesi non cambiano. (2) Gli `eval.json` prodotti da `584d4ab` (braccio D) non hanno `args.loss`, `vel_weight` e
   `vel_lag_blocks`; quelli di B e C (`0342170`) hanno `args.loss` = l1, che e' quello della chiamata di valutazione. La loss si legge sempre
   da `train_loss`. (3) La voce del registro e' scritta prima dell'invio di D.
+
+### 2026-11-18 — TEMPONet su emg2pose, studio delle loss: ESITO e CONSUNTIVO (Claude)
+
+Tutti i job `COMPLETED 0:0`, cancello superato in tutti i bracci (A 0,831; B 0,840; C 0,862; D 0,888). Test con EMA, media fra utenti,
+Δ rispetto ad A con la regola congelata (punto 3 e emendamento 4):
+
+| Braccio | user | stage | user_stage | Lettura |
+|---|---|---|---|---|
+| A L1 (11/11) | 14,55 | 17,67 | 17,60 | riferimento |
+| B smooth L1 | 14,75 (+0,20) | 17,73 (+0,06) | 17,67 (+0,07) | non distinguibile da L1 con un seme |
+| C MSE | 15,05 (+0,50) | 18,15 (+0,47) | 18,15 (+0,55) | peggiore di L1, da confermare con altri semi |
+| D MSE + 0,1 velocita' | 15,64 (+1,09) | 18,53 (+0,85) | 18,45 (+0,85) | peggiore di L1, da confermare con altri semi |
+
+Descrittivi, senza soglia:
+- utenti migliori / peggiori rispetto ad A (user, stage, user_stage): B 1/19, 58/100, 7/13; C 0/20, 8/150, 2/18; D 0/20, 1/157, 0/20.
+  Con un seme il modello e' lo stesso per tutti gli utenti, quindi questi conteggi non separano la loss dal seme;
+- D rispetto a C: +0,59 / +0,38 / +0,30;
+- guadagno dell'EMA (grezza - EMA, user): A 0,31, B 0,24, C 0,21, D 0,10;
+- in D l'MSE standardizzato della velocita' resta circa 1,2 dalla prima all'ultima epoca (1,16 -> 1,20), mentre quello della posa scende
+  (0,91 -> 0,86; C 0,84).
+Nessuna loss si adotta: la ricetta di riferimento resta L1. Una conferma con altri semi sarebbe una proposta nuova.
+
+Consuntivo (tempo trascorso, 1 GPU per job): collaudi 0:04:58 + 0:02:05; B 2:53:31 + 0:21:00; C 2:52:37 + 0:21:45; D 3:38:53 +
+0:16:28. In tutto 37.877 s = **10,52 GPU-ore** (circa 84 ore locali), sulle circa 12 approvate e sotto il tetto di 12,5. Due checkout
+CPU su `lrd_all_serial`: 2 min 3 s e 40 s. Nessun nuovo tentativo. Attivita' conclusa; risultati, collaudi e log in
+`results/temponet_emg2pose/loss_study_20261118/` (confronto in `confronto/`).

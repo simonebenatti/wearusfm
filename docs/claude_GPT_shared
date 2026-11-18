@@ -8872,6 +8872,19 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Raccolti sul Mac report, storie e log (senza checkpoint) in `results/temponet_emg2pose/loss_study_20261118/`; confronto in
   `confronto_bc/`. D (training 64777099, valutazione 64777100) e' in corso; il certificato ssh e' stato rinnovato da Simone alle 21:50.
 
+### 2026-11-18 | Claude | Studio delle loss di TEMPONet concluso: L1 resta la migliore; smooth L1 non distinguibile, MSE e MSE + velocita' peggiori (un seme) | Ramo `claude/temponet-db8-20261109`
+
+- D: training 64777099 `COMPLETED 0:0` in 13.111 s, con il controllo della maschera condivisa superato nel job vero; valutazione
+  64777100 `COMPLETED 0:0`, cancello 0,888. Test con EMA: 15,64 / 18,53 / 18,45, cioe' +1,09 / +0,85 / +0,85 rispetto ad A: peggiore di
+  L1 in tutte e tre le condizioni, da confermare con altri semi.
+- Quadro finale con la regola congelata: B non distinguibile; C (+0,50 / +0,47 / +0,55) e D peggiori. Tabella, descrittivi e
+  consuntivo (10,52 GPU-ore) in `docs/decisioni.md`. Confronto in `results/temponet_emg2pose/loss_study_20261118/confronto/`.
+- Lettura di Claude, interpretazione e non verifica: la metrica e' un errore assoluto e la L1 lo ottimizza direttamente; piu' la loss
+  pesa gli errori grandi, piu' la MAE peggiora. In D l'MSE standardizzato della velocita' resta circa 1,2 per tutto il training: con
+  finestre di 128 ms la rete non predice la variazione su 20 ms, e il termine rende le uscite piu' lisce (guadagno dell'EMA da 0,21 a
+  0,10) a spese della posa.
+- Nessuna loss si adotta su un seme; nessun job aperto.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
