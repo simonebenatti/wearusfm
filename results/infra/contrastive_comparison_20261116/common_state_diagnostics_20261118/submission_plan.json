@@ -1,0 +1,252 @@
+{
+  "frozen_commit": "365cb1e29bc410013d4ee0494b9c2e92835bc7f1",
+  "submission_owner": "3-launcher",
+  "campaign_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-common-20261118",
+  "deploy_command": [
+    "git",
+    "push",
+    "leonardo",
+    "365cb1e29bc410013d4ee0494b9c2e92835bc7f1:refs/heads/deploy/contrastive-common-20261118"
+  ],
+  "deploy_ref": "refs/heads/deploy/contrastive-common-20261118",
+  "commands": {
+    "CONTRAST-CHECKOUT-common-20261118": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+      "--id",
+      "CONTRAST-CHECKOUT-common-20261118",
+      "--agente",
+      "gpt",
+      "--campagna",
+      "CONTRASTIVE-v2-20261116",
+      "--gpu-ore",
+      "0",
+      "--script-stdin",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/scripts/slurm/campaign_checkout.sbatch",
+      "--",
+      "--cpus-per-task=4",
+      "--time=00:04:00",
+      "--mem=2G",
+      "--export=ALL,CAMPAIGN=contrastive-common-20261118,CAMPAIGN_SHA=365cb1e29bc410013d4ee0494b9c2e92835bc7f1,EXPECTED_SHA=365cb1e29bc410013d4ee0494b9c2e92835bc7f1"
+    ],
+    "CONTRAST-COMMON-cuda-20261118": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+      "--id",
+      "CONTRAST-COMMON-cuda-20261118",
+      "--agente",
+      "gpt",
+      "--campagna",
+      "CONTRASTIVE-v2-20261116",
+      "--gpu-ore",
+      "2",
+      "--dopo",
+      "CONTRAST-CHECKOUT-common-20261118",
+      "--script-stdin",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/scripts/slurm/diagnose_contrastive_common.sbatch",
+      "--",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-common-20261118,EXPECTED_SHA=365cb1e29bc410013d4ee0494b9c2e92835bc7f1,DIAGNOSTIC_CELL=cuda"
+    ],
+    "CONTRAST-COMMON-resume-CN-20261118": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+      "--id",
+      "CONTRAST-COMMON-resume-CN-20261118",
+      "--agente",
+      "gpt",
+      "--campagna",
+      "CONTRASTIVE-v2-20261116",
+      "--gpu-ore",
+      "2",
+      "--dopo",
+      "CONTRAST-CHECKOUT-common-20261118",
+      "--script-stdin",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/scripts/slurm/diagnose_contrastive_common.sbatch",
+      "--",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-common-20261118,EXPECTED_SHA=365cb1e29bc410013d4ee0494b9c2e92835bc7f1,DIAGNOSTIC_CELL=resume_CN"
+    ],
+    "CONTRAST-COMMON-resume-CR-20261118": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+      "--id",
+      "CONTRAST-COMMON-resume-CR-20261118",
+      "--agente",
+      "gpt",
+      "--campagna",
+      "CONTRASTIVE-v2-20261116",
+      "--gpu-ore",
+      "2",
+      "--dopo",
+      "CONTRAST-CHECKOUT-common-20261118",
+      "--script-stdin",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/scripts/slurm/diagnose_contrastive_common.sbatch",
+      "--",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-common-20261118,EXPECTED_SHA=365cb1e29bc410013d4ee0494b9c2e92835bc7f1,DIAGNOSTIC_CELL=resume_CR"
+    ]
+  },
+  "gpu_commands_after_verified_completed_checkout": {
+    "CONTRAST-COMMON-cuda-20261118": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+      "--id",
+      "CONTRAST-COMMON-cuda-20261118",
+      "--agente",
+      "gpt",
+      "--campagna",
+      "CONTRASTIVE-v2-20261116",
+      "--gpu-ore",
+      "2",
+      "--script-stdin",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/scripts/slurm/diagnose_contrastive_common.sbatch",
+      "--",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-common-20261118,EXPECTED_SHA=365cb1e29bc410013d4ee0494b9c2e92835bc7f1,DIAGNOSTIC_CELL=cuda"
+    ],
+    "CONTRAST-COMMON-resume-CN-20261118": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+      "--id",
+      "CONTRAST-COMMON-resume-CN-20261118",
+      "--agente",
+      "gpt",
+      "--campagna",
+      "CONTRASTIVE-v2-20261116",
+      "--gpu-ore",
+      "2",
+      "--script-stdin",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/scripts/slurm/diagnose_contrastive_common.sbatch",
+      "--",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-common-20261118,EXPECTED_SHA=365cb1e29bc410013d4ee0494b9c2e92835bc7f1,DIAGNOSTIC_CELL=resume_CN"
+    ],
+    "CONTRAST-COMMON-resume-CR-20261118": [
+      "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+      "--id",
+      "CONTRAST-COMMON-resume-CR-20261118",
+      "--agente",
+      "gpt",
+      "--campagna",
+      "CONTRASTIVE-v2-20261116",
+      "--gpu-ore",
+      "2",
+      "--script-stdin",
+      "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontrast/scripts/slurm/diagnose_contrastive_common.sbatch",
+      "--",
+      "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-common-20261118,EXPECTED_SHA=365cb1e29bc410013d4ee0494b9c2e92835bc7f1,DIAGNOSTIC_CELL=resume_CR"
+    ]
+  },
+  "local_transport_and_driver_sha256": {
+    "scripts/slurm/campaign_checkout.sbatch": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+    "scripts/slurm/diagnose_contrastive_common.sbatch": "ae789993c85659e77d792428a1a54c9096037e40b74a27df26631cf5920e969c",
+    "scripts/diagnostics/contrastive_common_state_cuda.py": "456d062ec98c6540d19dc69d7c85f5185f2bfc58e0ee0dbeb739515a90e2bcf3",
+    "scripts/diagnostics/contrastive_common_checkpoint.py": "56dccbf049d791b914b6e2370c81f50e7f2fd1791bac81fffb535bb7ee07fc49",
+    "results/infra/contrastive_comparison_20261116/common_state_diagnostics_20261118/resources.json": "8076cfee0fc0247ab3f2ae2c2d15857c65cceb6d2db1e1e28515ecb3e68c46a8",
+    "results/infra/contrastive_comparison_20261116/common_state_diagnostics_20261118/prepare_handoff.py": "8c3bacbf9d2d4d517af9f0203454dc72dfeede19917fd3926e432747845585ea"
+  },
+  "submitter_sha256": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+  "reports": {
+    "cuda": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_common_diagnostics_20261118/cuda/report.json",
+    "resume_CN": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_common_diagnostics_20261118/resume_CN/report.json",
+    "resume_CR": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_common_diagnostics_20261118/resume_CR/report.json"
+  },
+  "slurm_log_pattern": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/contrastive_diag_%j.out",
+  "resources": {
+    "scope": "Three diagnostic allocations with a single new frozen checkout",
+    "campaign_directory": "contrastive-common-20261118",
+    "historical_source_sha256": "46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320",
+    "shared_submitter_sha256": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+    "before_diagnostics_used": {
+      "gpu_hours": 5.2844444444444445,
+      "core_hours": 51.37111111111111
+    },
+    "checkout": {
+      "partition": "lrd_all_serial",
+      "cpus": 4,
+      "requested_gib": 2,
+      "wall_seconds": 240,
+      "core_hours_cap": 0.26666666666666666
+    },
+    "each_gpu_cell": {
+      "cells": [
+        "cuda",
+        "resume_CN",
+        "resume_CR"
+      ],
+      "partition": "boost_usr_prod",
+      "qos": "boost_qos_dbg",
+      "nodes": 1,
+      "tasks": 1,
+      "gpus": 4,
+      "cpus": 32,
+      "memory_gib": 240,
+      "wall_seconds": 1800,
+      "gpu_hours_cap": 2,
+      "core_hours_cap": 16
+    },
+    "incremental_cap": {
+      "gpu_hours": 6,
+      "core_hours": 48.266666666666666
+    },
+    "cumulative_max": {
+      "gpu_hours": 11.284444444444444,
+      "core_hours": 99.63777777777777
+    },
+    "campaign_cap": {
+      "gpu_hours": 14,
+      "core_hours": 129.33333333333334
+    },
+    "scheduling": "Jobs share only read-only inputs. Each GPU cell is eligible after the frozen checkout. Account also for other boost_qos_dbg jobs; at most 2 running and 4 submitted for this user. If needed queue remaining cells once slots are available. When using the dependency-free variant verify the ledger ID, sacct COMPLETED 0:0 and the detached checkout HEAD first.",
+    "fresh_output_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_common_diagnostics_20261118",
+    "checkpoint_inputs": {
+      "cuda": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/calibration/checkpoint.pt",
+        "bytes": 234339066,
+        "sha256": "0756921a0e59c0d93cf5821793a8457f6becee7e55a7b68ea5ab1ec80e17d50a"
+      },
+      "resume_CN": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261118_bf16/benchmark/CN/checkpoint.pt",
+        "step": 576,
+        "sha256": "668bb2119d728126c7250903882376099e5be607bfe253a0552c44dedc7eddd5"
+      },
+      "resume_CR": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261118_bf16/benchmark/CR/checkpoint.pt",
+        "step": 576,
+        "sha256": "574220fa015a341a5caa9786a65085fb960f40ba144f8b4b39ac5dad347b31c8"
+      }
+    },
+    "data_inputs": {
+      "manifest": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+        "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+      },
+      "scales": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+        "sha256": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486"
+      },
+      "window_seconds": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+        "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+      },
+      "pose_stats": {
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+        "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+      }
+    },
+    "data_roots": [
+      "/leonardo_work/IscrB_WearUsFM/data/processed",
+      "/leonardo_scratch/large/userexternal/sbenatti/data/processed"
+    ],
+    "historical_files": {
+      "results/infra/contrastive_comparison_20261116/releases/bf16_20261118/cuda.job.json": "1f8ed48ab1662bb87b68d7cacd94f76f77ceefce85a26874e0d5736977146485",
+      "results/infra/contrastive_comparison_20261116/releases/bf16_20261118/full_CN.job.json": "b782b2a1f8b4c7475f913faf05f9daaf67370fe66939304e86432d008c67327b",
+      "results/infra/contrastive_comparison_20261116/releases/bf16_20261118/full_CR.job.json": "f1968ddb489e11d235874df543bc8749cd0f0e84fa9b69d57be2d1a4c52c19fa",
+      "results/infra/contrastive_comparison_20261116/calibrated_cohort_20261118_bf16/cohort.json": "b3bd2424c64dcb04d26838e1736862d83a3791436e3984ef7681dbe9a43f88c9",
+      "results/infra/contrastive_comparison_20261116/benchmarks_completed_bf16_20261118/preflight_readout.json": "deb6b8178362e23512f105d95b3859c28945d9ffa5356a653f1c8cad67c929fc"
+    },
+    "disk": {
+      "cuda_node_temporary_gib": 1,
+      "cuda_work_gib_estimate": 0.1,
+      "each_resume_work_gib_required": 7,
+      "two_resume_cells_total_gib_to_reserve": 14
+    }
+  }
+}

@@ -8,6 +8,12 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**18/11, consegna successiva per 3-launcher**. Simone ha affidato alla chat operativa
+i due diagnostici. Protocollo in `docs/contrastive_common_diagnostics_20261118.md`,
+pacchetto in `results/infra/contrastive_comparison_20261116/common_state_diagnostics_20261118/`
+e istruzioni di invio in `docs/prompt_3_launcher_common_diagnostics_20261118.md`.
+Il checkout storico e la lettura CPU menzionati sotto sono già conclusi.
+
 **18/11, lettura CPU finale completata con esito negativo controllato.**
 Checkout **64775502** COMPLETED 0:0; lettore **64775571** FAILED 2:0 dopo
 aver scritto il rapporto completo, come previsto per un gate negativo. Stato:

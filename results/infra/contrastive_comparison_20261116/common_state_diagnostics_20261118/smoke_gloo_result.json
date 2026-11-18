@@ -1,0 +1,210 @@
+{
+  "steps": [
+    4,
+    5
+  ],
+  "boundary_state_or_rng_mismatches": [],
+  "pairs": {
+    "continuous__reload_a": {
+      "input_rng_boundary_differences": [],
+      "final_exact": {
+        "optimizer": false,
+        "contrastive_state": true,
+        "config": true,
+        "data_signature": true,
+        "stream": true,
+        "alarm_counts": true,
+        "contrastive_initial_sha256": true,
+        "contrastive_provenance": true,
+        "pose_stats_sha256": true,
+        "rank_rng": true,
+        "optimizer_groups": true,
+        "optimizer_steps": true,
+        "contrastive_metadata": true,
+        "queue_metadata": true
+      },
+      "model_relative_to_left_displacement_from_fork": {
+        "student": 7.523143948052869e-07,
+        "teacher": 3.4472644095825752e-09
+      },
+      "optimizer_moments_relative_to_left": {
+        "exp_avg": 2.081891808208319e-08,
+        "exp_avg_sq": 2.7846377064055137e-08
+      },
+      "queue_identities_in_order_equal": true,
+      "queue_keys_relative_to_left": 0.0,
+      "first_exact_metric_difference": {
+        "step": 5,
+        "fields": [
+          "grad_norm",
+          "contrast_projector_grad_norm",
+          "grad_clip_factor"
+        ]
+      },
+      "step_metrics": [
+        {
+          "step": [
+            5,
+            5
+          ],
+          "total": [
+            4637.599360684678,
+            4637.599360684678
+          ],
+          "grad_norm": [
+            119.55769678148656,
+            119.55769680400743
+          ],
+          "contrast_projector_grad_norm": [
+            0.010709170854818338,
+            0.010709171143720483
+          ],
+          "grad_clip_factor": [
+            0.008364162466492492,
+            0.008364162464916948
+          ]
+        }
+      ]
+    },
+    "continuous__reload_b": {
+      "input_rng_boundary_differences": [],
+      "final_exact": {
+        "optimizer": false,
+        "contrastive_state": true,
+        "config": true,
+        "data_signature": true,
+        "stream": true,
+        "alarm_counts": true,
+        "contrastive_initial_sha256": true,
+        "contrastive_provenance": true,
+        "pose_stats_sha256": true,
+        "rank_rng": true,
+        "optimizer_groups": true,
+        "optimizer_steps": true,
+        "contrastive_metadata": true,
+        "queue_metadata": true
+      },
+      "model_relative_to_left_displacement_from_fork": {
+        "student": 7.523143948052869e-07,
+        "teacher": 3.4472644095825752e-09
+      },
+      "optimizer_moments_relative_to_left": {
+        "exp_avg": 2.081891808208319e-08,
+        "exp_avg_sq": 2.7846377064055137e-08
+      },
+      "queue_identities_in_order_equal": true,
+      "queue_keys_relative_to_left": 0.0,
+      "first_exact_metric_difference": {
+        "step": 5,
+        "fields": [
+          "grad_norm",
+          "contrast_projector_grad_norm",
+          "grad_clip_factor"
+        ]
+      },
+      "step_metrics": [
+        {
+          "step": [
+            5,
+            5
+          ],
+          "total": [
+            4637.599360684678,
+            4637.599360684678
+          ],
+          "grad_norm": [
+            119.55769678148656,
+            119.55769680400743
+          ],
+          "contrast_projector_grad_norm": [
+            0.010709170854818338,
+            0.010709171143720483
+          ],
+          "grad_clip_factor": [
+            0.008364162466492492,
+            0.008364162464916948
+          ]
+        }
+      ]
+    },
+    "reload_a__reload_b": {
+      "input_rng_boundary_differences": [],
+      "final_exact": {
+        "optimizer": true,
+        "contrastive_state": true,
+        "config": true,
+        "data_signature": true,
+        "stream": true,
+        "alarm_counts": true,
+        "contrastive_initial_sha256": true,
+        "contrastive_provenance": true,
+        "pose_stats_sha256": true,
+        "rank_rng": true,
+        "optimizer_groups": true,
+        "optimizer_steps": true,
+        "contrastive_metadata": true,
+        "queue_metadata": true
+      },
+      "model_relative_to_left_displacement_from_fork": {
+        "student": 0.0,
+        "teacher": 0.0
+      },
+      "optimizer_moments_relative_to_left": {
+        "exp_avg": 0.0,
+        "exp_avg_sq": 0.0
+      },
+      "queue_identities_in_order_equal": true,
+      "queue_keys_relative_to_left": 0.0,
+      "first_exact_metric_difference": null,
+      "step_metrics": [
+        {
+          "step": [
+            5,
+            5
+          ],
+          "total": [
+            4637.599360684678,
+            4637.599360684678
+          ],
+          "grad_norm": [
+            119.55769680400743,
+            119.55769680400743
+          ],
+          "contrast_projector_grad_norm": [
+            0.010709171143720483,
+            0.010709171143720483
+          ],
+          "grad_clip_factor": [
+            0.008364162464916948,
+            0.008364162464916948
+          ]
+        }
+      ]
+    }
+  },
+  "final_checkpoint_sha256": {
+    "continuous": "57b1bbc21c4f6c06e314b4a8665653f5fe2ae2750ed2da5995202c2851a276ea",
+    "reload_a": "ff3ba4a73f5f057cd2359a53783cfe5563463cf5bf82ac38cefd2e3263ff8ef4",
+    "reload_b": "ff3ba4a73f5f057cd2359a53783cfe5563463cf5bf82ac38cefd2e3263ff8ef4"
+  },
+  "ddp_at_split_rank0": {
+    "continuous": {
+      "update": 5,
+      "iteration": 2,
+      "has_rebuilt_buckets": 1,
+      "bucket_sizes": "82140, 27008",
+      "rebuilt_bucket_sizes": "27008, 82140",
+      "rebuilt_per_bucket_param_indices": "7 6 5 4 3 2 1 0, 105 104 103 102 101 100 98 99 97 96 95 94 93 92 90 91 89 88 87 86 78 79 85 84 83 82 76 77 81 80 74 75 72 73 71 70 69 68 58 59 67 66 65 64 56 57 63 62 61 60 54 55 53 52 51 50 42 43 49 48 47 46 40 41 45 44 37 39 38 36 35 34 33 21 22 28 27 31 30 29 32 26 25 24 23 19 20 18 17 14 16 15 13 12 11 10 9 8"
+    },
+    "reload_a": {
+      "update": 5,
+      "iteration": 0,
+      "bucket_sizes": "82140, 27008"
+    },
+    "reload_b": {
+      "update": 5,
+      "iteration": 0,
+      "bucket_sizes": "82140, 27008"
+    }
+  }
+}

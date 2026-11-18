@@ -178,6 +178,31 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 18/11/2026 — Simone ha inoltrato a 3-launcher il prompt dei due diagnostici
+
+Consegna `35ea94ba`, codice di esecuzione `365cb1e2`. Simone conferma che GPT
+scientifico cura disegno, implementazione e lettura dei risultati. La chat
+3-launcher gestisce lanci e verifiche su Leonardo e restituisce i rapporti.
+
+### 18/11/2026 — GPT: due controlli da stato comune, consegna per review
+
+Preparati replay CUDA a peso zero C0/CN/CR con repliche e quattro profili di
+precisione/backend, e ripresa CN/CR da checkpoint unico a 580 con prosecuzione
+in memoria e due reload fino a 588. Script separati dal sorgente storico,
+protocollo in docs/contrastive_common_diagnostics_20261118.md, test CPU e
+generatore argv per submitter/ledger comuni. Tetto incrementale 6 GPU-ore /
+48,27 core-ore. Stato REVIEW_REQUIRED, nessun job; prompt per Claude in
+docs/prompt_claude_common_diagnostics_20261118.md.
+
+### 18/11/2026 — GPT, confronto di precisione e riprese da un checkpoint comune
+
+Preparati i due controlli richiesti da Simone per 3-launcher. La cella CUDA confronta
+quattro profili e due backward per ciascuno dei tre bracci, con impronte per rank.
+Le altre due celle usano CN e CR a 576, salvano al passo 580 e confrontano al passo
+588 la prosecuzione in memoria con due riprese dallo stesso file. Protocollo in
+`docs/contrastive_common_diagnostics_20261118.md`. Budget incrementale massimo
+6 GPU-ore e 48,27 core-ore.
+
 ### 18/11/2026 — GPT: diagnosi delle norme, variabilità e riprese non isolate
 
 Su richiesta di Simone, analisi dei cinque benchmark senza nuovi job né modifiche
@@ -6370,6 +6395,28 @@ separata; nessuna soglia allentata. Test mirati121verdi; suite completa in corso
 Protocollo: docs/contrastive_targets_amendment_20261118.md. TCN e continuazione300M invariati.
 
 ## 2) Problemi trovati
+
+### 18/11/2026 — Chiarito il riferimento alla chat nel worktree condiviso
+
+La dicitura «questa chat» in CLAUDE.md poteva attribuire i lanci sia a GPT
+scientifico sia a 3-launcher. La regola ora indica ciascun responsabile per nome.
+
+### 18/11/2026 — GPT: limiti dei diagnostici da sottoporre a review
+
+Il replay CUDA usa una fixture emg2pose a batch globale 8 e pesi iniziali con
+coda calibrata rimappata, non ricostruisce la traiettoria storica al passo 255.
+La ripresa conserva la ricetta aggiungendo solo un punto di salvataggio nella
+copia diagnostica. Le differenze numeriche restano descrittive; invarianti di
+input, RNG, metadata e identità della coda devono essere lette prima dei
+confronti. Nessun emendamento della soglia storica o rilascio dei training.
+
+### 18/11/2026 — GPT, controllo del riavvio e vita del gruppo DDP
+
+Un confronto locale su quattro rank Gloo ha trovato uno scarto di arrotondamento
+fra processo continuo e processo riavviato con gli stessi dati, RNG e stato di
+partenza. Le due repliche ricaricate concordano. Il driver conserva, quando il
+backend li espone, i dati sui gruppi di riduzione DDP per interpretare il confronto
+CUDA. Il risultato sulla fixture sintetica descrive un solo aggiornamento su CPU.
 
 ### 18/11/2026 — GPT: parità negativa e confondimento del confronto delle riprese
 
