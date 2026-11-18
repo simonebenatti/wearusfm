@@ -6757,3 +6757,16 @@ GateR-1 futuro: riprodurre0,7859020004638595 e0,7786289843513977 entro1e-12,8327
 Tetto nuovo **proposto, non autorizzato:24GPUh+80corehCPU-only=272coreh allocate/orelocali condizionate**;output8GiB. Matrice103traettorie iniziali/max147, massimoprudente1.477.800update,40.128evalheld+37evalfitting. Benchmark della matrice massima con tutte le estensioni,CPUWLS e memoria; riserva non autorizza tentativi nuovi. Saldo09/11 12:21 dafccf88d:691.863orelocali residue storiche,272 lascerebbero691.591 solo rispettoaquesta fotografia. GatequotaWORK12GiB+scritturependenti. Tre prerequisiti storiciSCRATCH (stats eB19618 train/val) restano dichiarati, con verifica futura e stopseassenti; nessuna copia/rinfresco promesso.
 
 Futuro codice solo scripts/pose_temponet/ e test dedicati, nessun cambiamento a sorgenti/configcongelati. GPT prepara codice e piano eseguibile; Claude review e unicooperatore proposti di questaattività. Una futura firma§10 autorizzerebbe implementazione e, dopo una reviewfavorevole delpacchetto operativo, benchmark/catena entroigates senza nuovi consensi perciascuninvio. **L'istruzione odierna non è quella firma.** Resta da ottenere la rilettura documentale diClaude e la decisione diSimone sulla tabella.
+
+
+### 18/11/2026 — Pin della revisione documentale TCN v2, in attesa dell'ultima review
+
+Contenuti pubblicabili identificati dal commit **`62348abdae9c7f92856f573e04d057c9a3153c42`**, ramo `codex/pose-temponet-proposal-20261117`.
+Protocollo `docs/pose_temponet_frozen_protocol_20261117.md`, SHA256 **`05a9eb09a7cd4341184056a93802887a8277bb615400972b1f2d6d2186ec22f7`**.
+Piano descrittivo `results/infra/pose_temponet_proposal_20261117/proposal.json`, SHA256 **`f3b92c4a8f0aa525fc982632078b6a3d8774ee81838014203c24b4cb47494d9f`**.
+Manifest completo: `results/infra/pose_temponet_proposal_20261117/delivery_pin_20261118.json`.
+
+I due testi contengono le regole proposte della voce precedente; questi pin le rendono riesaminabili, **non registrano una firma**.
+Stato REVIEW_REQUIRED, review finale Claude e firma di Simone ancora assenti. Il commit di pin aggiunge solo questo record,
+il manifest e le voci di registro; nessun cambiamento ai contenuti scientifici di `62348ab`.
+Verifica documentale:22 controlli passati; nessun test runtime, accesso al cluster, benchmark, fit, deploy o job.
