@@ -8246,3 +8246,16 @@ batch, RNG e diagnostica DDP, con lettura numerica su otto aggiornamenti. Regole
 di interpretazione in `docs/contrastive_common_diagnostics_20261118.md`.
 Checkout CPU e tre celle debug da 30 minuti ciascuna, massimo 6 GPU-ore aggiuntive.
 Le ricevute saranno analizzate prima di decidere sui training lunghi.
+
+### 2026-11-18 | GPT | Review unica e integrazione target 125, compatibilità storica
+
+Simone: «fai tutto tu». Rivisto Claude `0d91297776a5ee63ccd3f3d10b48cf63163172c9`
+e integrato con merge esplicito `7364f7c`, senza squash o rebase; nessuna modifica ai suoi sorgenti.
+Oracolo indipendente su 12 frequenze: maschere identiche, errore massimo 1,2585e-6.
+Suite CPU completa: 3.380 casi passati, con recuperi documentati dopo restrizioni della sandbox,
+disco pieno e un'attesa transitoria di subprocess; nessun errore irrisolto.
+Review e prove: `docs/reviews/target_windows_integration_20261118.md`,
+`results/infra/target_windows_integration_20261118/verification.json`.
+Linea 3 preparata separatamente su `codex/contrastive-target-windows-20261118`: RMS100/fast125
+espliciti, nuove misure ancora da fare, nessun job. TCN e continuazione 300M storiche invariate.
+Su richiesta di Simone liberati 8,43 GiB di temporanei pytest inattivi; dati e checkpoint intatti.

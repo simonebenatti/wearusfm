@@ -1,0 +1,45 @@
+........................................................................ [  8%]
+........................................................................ [ 16%]
+........................................................................ [ 24%]
+........................................................................ [ 33%]
+........................................................................ [ 41%]
+........................................................................ [ 49%]
+........................................................................ [ 57%]
+........................................................................ [ 66%]
+........................................................................ [ 74%]
+........................................................................ [ 82%]
+........................................................................ [ 91%]
+...........................................................FEEEEEEEEEEEE [ 98%]
+EEEEEEEEEEEEEEEEEEEEEEE                                                  [100%]Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/pytest/__main__.py", line 9, in <module>
+    raise SystemExit(pytest.console_main())
+                     ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/config/__init__.py", line 201, in console_main
+    code = main()
+           ^^^^^^
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/config/__init__.py", line 181, in main
+    config._ensure_unconfigure()
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/config/__init__.py", line 1131, in _ensure_unconfigure
+    self._cleanup_stack.close()
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/contextlib.py", line 609, in close
+    self.__exit__(None, None, None)
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/contextlib.py", line 601, in __exit__
+    raise exc_details[1]
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/contextlib.py", line 586, in __exit__
+    if cb(*exc_details):
+       ^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/contextlib.py", line 469, in _exit_wrapper
+    callback(*args, **kwds)
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/capture.py", line 778, in stop_global_capturing
+    self._global_capturing.pop_outerr_to_orig()
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/capture.py", line 659, in pop_outerr_to_orig
+    out, err = self.readouterr()
+               ^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/capture.py", line 706, in readouterr
+    out = self.out.snap() if self.out else ""
+          ^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/site-packages/_pytest/capture.py", line 594, in snap
+    self.tmpfile.truncate()
+OSError: [Errno 28] No space left on device

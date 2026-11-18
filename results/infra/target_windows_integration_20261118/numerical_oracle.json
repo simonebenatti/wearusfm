@@ -1,0 +1,363 @@
+{
+  "passed": true,
+  "reviewed_commit": "0d91297776a5ee63ccd3f3d10b48cf63163172c9",
+  "checkout_head": "7364f7c50ab2bad914932212229e24693f2b40f3",
+  "script_sha256": "f2a360cfbaab3f611cd174c22838d2c95e9d060228242fa6451b7c0b9a64e837",
+  "source_files": {
+    "src/wearusfm/model/anchor_targets.py": {
+      "sha256": "c4260a0f5e3949618b25bc284a07f02aa1dd09830bf09c917c7ecd2f55594fff",
+      "identical_to_reviewed_commit": true
+    },
+    "src/wearusfm/model/spectral_targets.py": {
+      "sha256": "a6d3783efb63dbd17811f189dc9fb9419aa84068c153a926b39c4a1b04d0f8ca",
+      "identical_to_reviewed_commit": true
+    }
+  },
+  "environment": {
+    "python": "3.11.14",
+    "numpy": "2.3.5",
+    "scipy": "1.16.3"
+  },
+  "input": {
+    "seed": 18,
+    "seconds": 2,
+    "channels": 1,
+    "distribution": "standard_normal",
+    "dtype": "float32",
+    "band_limit": "min(fs/2,450)"
+  },
+  "oracle": {
+    "support_rounding": "rational_half_even_fs_over_8",
+    "start_rounding": "rational_half_up",
+    "fft": "numpy_float64",
+    "window": "symmetric_hann",
+    "one_sided_density": true,
+    "absolute_log_tolerance": 3e-05
+  },
+  "rates": [
+    {
+      "fs_hz": 200,
+      "support_samples": 25,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        1,
+        0,
+        0
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 7.42098981376671e-07
+    },
+    {
+      "fs_hz": 1000,
+      "support_samples": 125,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        8,
+        14,
+        23
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 8.352854541371357e-07
+    },
+    {
+      "fs_hz": 1024,
+      "support_samples": 128,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        8,
+        14,
+        23
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 6.185058971652779e-07
+    },
+    {
+      "fs_hz": 1200,
+      "support_samples": 150,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        8,
+        14,
+        23
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 3.7897804938680224e-07
+    },
+    {
+      "fs_hz": 1926,
+      "support_samples": 241,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        8,
+        14,
+        23
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 8.85805798489514e-07
+    },
+    {
+      "fs_hz": 2000,
+      "support_samples": 250,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        8,
+        14,
+        23
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 7.938013064645588e-07
+    },
+    {
+      "fs_hz": 2048,
+      "support_samples": 256,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        8,
+        14,
+        23
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 6.367680285279675e-07
+    },
+    {
+      "fs_hz": 2148,
+      "support_samples": 268,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        8,
+        14,
+        23
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 4.1956363627804194e-07
+    },
+    {
+      "fs_hz": 4000,
+      "support_samples": 500,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        8,
+        14,
+        23
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 4.898693166666135e-07
+    },
+    {
+      "fs_hz": 4096,
+      "support_samples": 512,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        8,
+        14,
+        23
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 4.268353350767029e-07
+    },
+    {
+      "fs_hz": 5120,
+      "support_samples": 640,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        8,
+        14,
+        23
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 8.204226666919112e-07
+    },
+    {
+      "fs_hz": 10240,
+      "support_samples": 1280,
+      "bins_per_band": [
+        2,
+        3,
+        4,
+        8,
+        14,
+        23
+      ],
+      "available_bands": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "valid_patches": 76,
+      "mask_equal": true,
+      "all_targets_finite": true,
+      "max_absolute_log_error": 1.2584936026627247e-06
+    }
+  ],
+  "max_absolute_log_error": 1.2584936026627247e-06,
+  "withdrawn_100ms_bin_counts": {
+    "1000": [
+      2,
+      2,
+      4,
+      6,
+      11,
+      18
+    ],
+    "1926": [
+      1,
+      2,
+      4,
+      6,
+      11,
+      19
+    ],
+    "2000": [
+      2,
+      2,
+      4,
+      6,
+      11,
+      18
+    ],
+    "2048": [
+      1,
+      2,
+      4,
+      6,
+      11,
+      19
+    ]
+  },
+  "scope": "Finite synthetic oracle; not evidence of scientific superiority or exact sampling-rate invariance."
+}

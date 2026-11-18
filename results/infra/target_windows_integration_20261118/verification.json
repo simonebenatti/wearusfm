@@ -1,0 +1,35 @@
+{
+  "status": "PASSED_FULL_CPU_SCOPE_WITH_DOCUMENTED_RECOVERIES",
+  "code_sha": "7364f7c50ab2bad914932212229e24693f2b40f3",
+  "reviewed_claude_sha": "0d91297776a5ee63ccd3f3d10b48cf63163172c9",
+  "production_and_tests_identical_to_claude": true,
+  "unique_tests_passed": 3380,
+  "group_counts": [
+    869,
+    751,
+    892,
+    862,
+    6
+  ],
+  "unresolved_failures": 0,
+  "first_group_recovery": {
+    "passed_before_interruption": 307,
+    "remaining_passed": 562,
+    "partition": "recovery_partition.json"
+  },
+  "environment_incidents": [
+    "First sandbox invocation could not execute required multiprocess/socket checks; retained separately.",
+    "First unrestricted full run exhausted local disk space. Groups 1/2/3 and standalone DDP passed; group 0 rerun.",
+    "Group 0 recovery stalled in subprocess wait after 307 passes and was interrupted; that test passed alone in 3.27 s. Remaining 562 cases then passed without code changes. Cause of the transient stall is not established."
+  ],
+  "evidence_sha256": {
+    "cpu_suite.json": "a01ed48b9b6bf5cd364b49ad2450e37074c3a1286424bb70073d1f5da915ce29",
+    "recovery.xml": "9f9ff5eab49bede5c528f317ed49741fe49a374b4aca83619c01bc64e7eab6c2",
+    "recovery_remaining.xml": "eb28899c187ede33042cc43471cecec7ce2dd8d13056d0f91b819f46dcf64fe8",
+    "recovery_partition.json": "4146f65b8f7076740dcfb167bbc2e585ae95b7db5e02b7f148f495ee055d13df",
+    "numerical_oracle.json": "8b137bf3c5b3b7fad6b8832a9e1a9d7d05b85099a2a21a1ac5a7ac4dd7f524f2",
+    "mac_cleanup.json": "6b4a65cd3244055b2193c53c19b399f97fde2fbdbe6de2e06413e46c62724510"
+  },
+  "remote_work_performed": false,
+  "line3_status": "prepared on codex/contrastive-target-windows-20261118; REVIEW_REQUIRED; existing bf16/resume gates remain open"
+}

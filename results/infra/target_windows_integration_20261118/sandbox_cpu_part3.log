@@ -1,0 +1,346 @@
+........................................................................ [  8%]
+........................................................................ [ 16%]
+........................................................................ [ 25%]
+.................................s...................................... [ 33%]
+........F............................................................... [ 41%]
+.............FF......................................................... [ 50%]
+........................................................................ [ 58%]
+........................................................................ [ 66%]
+........................................................................ [ 75%]
+........................................................................ [ 83%]
+........................................................................ [ 91%]
+......................................................................   [100%]
+=================================== FAILURES ===================================
+_ test_four_real_ranks_train_the_verified_state_and_the_dry_run_trains_nothing _
+
+run = {'entry': <function run.<locals>.entry at 0x17cb46b60>, 'guard': {'arm': 'T100-LQ', 'gain_buffer': 'tokenizer.fe_gain'...8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-736/test_four_real_ranks_train_the0/initial_state'), ...}
+
+    def test_four_real_ranks_train_the_verified_state_and_the_dry_run_trains_nothing(run):
+        """Real process group, DDP wrapper and buffer broadcast on CPU: behind the entry the four ranks train exactly the
+        state the plain trainer trains, every rank attests the student it built, and the dry run stops before training."""
+        tmp, records = run['tmp'], run['records']
+        guarded = ['scripts/logsquare_train_rank.py', *run['entry']('guarded', '--max-steps', '2')]
+        plain = ['scripts/train_jepa.py', *run['trainer']('plain', '--max-steps', '2')]
+        for arguments in (plain, guarded):
+>           assert [code for code, _ in four_ranks(arguments)] == [0, 0, 0, 0]
+                                        ^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_logsquare_train_rank.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ['scripts/train_jepa.py', '--preset', 'small', '--manifest', '/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-736/test_four_real_ranks_train_the0/manifest.json.gz', '--root', ...]
+
+    def four_ranks(arguments):
+        """Four real training processes in one process group, as torchrun starts them (its environment, without its launcher)."""
+        with socket.socket() as free:
+>           free.bind(('127.0.0.1', 0))
+E           PermissionError: [Errno 1] Operation not permitted
+
+tests/cpu/test_logsquare_train_rank.py:58: PermissionError
+---------------------------- Captured stdout setup -----------------------------
+[21:57:46] capgmyo: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[21:57:46] emg2pose: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[21:57:46] ninapro_db2: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+_____________ test_pose_panel_preserves_two_rank_training_and_rng ______________
+
+tmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-736/test_pose_panel_preserves_two_0')
+
+    def test_pose_panel_preserves_two_rank_training_and_rng(tmp_path):
+        data = _multi_tree(tmp_path)
+>       plain, plain_ranks = _run(tmp_path, data, "plain", panel=False)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_pose_panel_ddp.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_pose_panel_ddp.py:64: in _run
+    mp.spawn(_worker, args=(str(tmp_path / f"store_{tag}"), str(root), str(manifest), str(pose_root),
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:340: in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:296: in start_processes
+    while not context.join():
+              ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <torch.multiprocessing.spawn.ProcessContext object at 0x31427f210>
+timeout = None, grace_period = None
+
+    def join(self, timeout: float | None = None, grace_period: float | None = None):
+        r"""Join one or more processes within spawn context.
+    
+        Attempt to join one or more processes in this spawn context.
+        If one of them exited with a non-zero exit status, this function
+        kills the remaining processes (optionally with a grace period)
+        and raises an exception with the cause of the first process exiting.
+    
+        Returns ``True`` if all processes have been joined successfully,
+        ``False`` if there are more processes that need to be joined.
+    
+        Args:
+            timeout (float): Wait this long (in seconds) before giving up on waiting.
+            grace_period (float): When any processes fail, wait this long (in seconds)
+                for others to shutdown gracefully before terminating them. If they
+                still don't exit, wait another grace period before killing them.
+        """
+        # Ensure this function can be called even when we're done.
+        if len(self.sentinels) == 0:
+            return True
+    
+        # Wait for any process to fail or all of them to succeed.
+        ready = multiprocessing.connection.wait(
+            self.sentinels.keys(),
+            timeout=timeout,
+        )
+    
+        error_index = None
+        for sentinel in ready:
+            index = self.sentinels.pop(sentinel)
+            process = self.processes[index]
+            process.join()
+            if process.exitcode != 0:
+                error_index = index
+                break
+    
+        # Return if there was no error.
+        if error_index is None:
+            # Return whether or not all processes have been joined.
+            return len(self.sentinels) == 0
+        # An error occurred. Clean-up all processes before returning.
+        # First, allow a grace period for processes to shutdown themselves.
+        if grace_period is not None:
+            self._join_procs_with_timeout(grace_period)
+        # Then, terminate processes that are still alive. Try SIGTERM first.
+        for process in self.processes:
+            if process.is_alive():
+                log.warning("Terminating process %s via signal SIGTERM", process.pid)
+                process.terminate()
+    
+        # Try SIGKILL if the process isn't going down after another grace_period.
+        # The reason is related to python signal handling is limited
+        # to main thread and if that is in c/c++ land and stuck it won't
+        # to handle it. We have seen processes getting stuck not handling
+        # SIGTERM for the above reason.
+        self._join_procs_with_timeout(30 if grace_period is None else grace_period)
+        for process in self.processes:
+            if process.is_alive():
+                log.warning(
+                    "Unable to shutdown process %s via SIGTERM , forcefully exiting via SIGKILL",
+                    process.pid,
+                )
+                process.kill()
+            process.join()
+    
+        # The file will only be created if the process crashed.
+        failed_process = self.processes[error_index]
+        if not os.access(self.error_files[error_index], os.R_OK):
+            exitcode = self.processes[error_index].exitcode
+            if exitcode < 0:
+                try:
+                    name = signal.Signals(-exitcode).name
+                except ValueError:
+                    name = f"<Unknown signal {-exitcode}>"
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with signal {name}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                    signal_name=name,
+                )
+            else:
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with exit code {exitcode:d}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                )
+    
+        with open(self.error_files[error_index], "rb") as fh:
+            original_trace = pickle.load(fh)
+        msg = f"\n\n-- Process {error_index:d} terminated with the following error:\n"
+        msg += original_trace
+>       raise ProcessRaisedException(msg, error_index, failed_process.pid)
+E       torch.multiprocessing.spawn.ProcessRaisedException: 
+E       
+E       -- Process 0 terminated with the following error:
+E       Traceback (most recent call last):
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py", line 87, in _wrap
+E           fn(i, *args)
+E         File "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-target-integration/tests/cpu/test_pose_panel_ddp.py", line 21, in _worker
+E           dist.init_process_group("gloo", init_method=f"file://{store}", rank=rank, world_size=2,
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+E           return func(*args, **kwargs)
+E                  ^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 97, in wrapper
+E           func_return = func(*args, **kwargs)
+E                         ^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2553, in init_process_group
+E           default_pg, _ = _new_process_group_helper(
+E                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2874, in _new_process_group_helper
+E           backend_result = creator_fn(dist_backend_opts, backend_options)
+E                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 669, in _create_gloo_process_group
+E           backend_class = ProcessGroupGloo(
+E                           ^^^^^^^^^^^^^^^^^
+E       RuntimeError: Cannot resolve 127.0.0.1 to a (local) address
+
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:211: ProcessRaisedException
+----------------------------- Captured stdout call -----------------------------
+[21:58:57] emg2pose: 6 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+----------------------------- Captured stderr call -----------------------------
+[W1118 21:58:59.872245000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+[W1118 21:58:59.872247000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+___________ test_pose_panel_construction_failure_reaches_both_ranks ____________
+
+tmp_path = PosixPath('/private/var/folders/zw/jj8pygg907b679t38rl1bt880000gn/T/pytest-of-simonebenatti/pytest-736/test_pose_panel_construction_f0')
+
+    def test_pose_panel_construction_failure_reaches_both_ranks(tmp_path):
+        data = _multi_tree(tmp_path)  # tre utenti: la richiesta di quattro e' impossibile solo nella costruzione sul rank 0
+>       out, results = _run(tmp_path, data, "invalid", panel=True, invalid=True)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_pose_panel_ddp.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_pose_panel_ddp.py:64: in _run
+    mp.spawn(_worker, args=(str(tmp_path / f"store_{tag}"), str(root), str(manifest), str(pose_root),
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:340: in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:296: in start_processes
+    while not context.join():
+              ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <torch.multiprocessing.spawn.ProcessContext object at 0x17ca22250>
+timeout = None, grace_period = None
+
+    def join(self, timeout: float | None = None, grace_period: float | None = None):
+        r"""Join one or more processes within spawn context.
+    
+        Attempt to join one or more processes in this spawn context.
+        If one of them exited with a non-zero exit status, this function
+        kills the remaining processes (optionally with a grace period)
+        and raises an exception with the cause of the first process exiting.
+    
+        Returns ``True`` if all processes have been joined successfully,
+        ``False`` if there are more processes that need to be joined.
+    
+        Args:
+            timeout (float): Wait this long (in seconds) before giving up on waiting.
+            grace_period (float): When any processes fail, wait this long (in seconds)
+                for others to shutdown gracefully before terminating them. If they
+                still don't exit, wait another grace period before killing them.
+        """
+        # Ensure this function can be called even when we're done.
+        if len(self.sentinels) == 0:
+            return True
+    
+        # Wait for any process to fail or all of them to succeed.
+        ready = multiprocessing.connection.wait(
+            self.sentinels.keys(),
+            timeout=timeout,
+        )
+    
+        error_index = None
+        for sentinel in ready:
+            index = self.sentinels.pop(sentinel)
+            process = self.processes[index]
+            process.join()
+            if process.exitcode != 0:
+                error_index = index
+                break
+    
+        # Return if there was no error.
+        if error_index is None:
+            # Return whether or not all processes have been joined.
+            return len(self.sentinels) == 0
+        # An error occurred. Clean-up all processes before returning.
+        # First, allow a grace period for processes to shutdown themselves.
+        if grace_period is not None:
+            self._join_procs_with_timeout(grace_period)
+        # Then, terminate processes that are still alive. Try SIGTERM first.
+        for process in self.processes:
+            if process.is_alive():
+                log.warning("Terminating process %s via signal SIGTERM", process.pid)
+                process.terminate()
+    
+        # Try SIGKILL if the process isn't going down after another grace_period.
+        # The reason is related to python signal handling is limited
+        # to main thread and if that is in c/c++ land and stuck it won't
+        # to handle it. We have seen processes getting stuck not handling
+        # SIGTERM for the above reason.
+        self._join_procs_with_timeout(30 if grace_period is None else grace_period)
+        for process in self.processes:
+            if process.is_alive():
+                log.warning(
+                    "Unable to shutdown process %s via SIGTERM , forcefully exiting via SIGKILL",
+                    process.pid,
+                )
+                process.kill()
+            process.join()
+    
+        # The file will only be created if the process crashed.
+        failed_process = self.processes[error_index]
+        if not os.access(self.error_files[error_index], os.R_OK):
+            exitcode = self.processes[error_index].exitcode
+            if exitcode < 0:
+                try:
+                    name = signal.Signals(-exitcode).name
+                except ValueError:
+                    name = f"<Unknown signal {-exitcode}>"
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with signal {name}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                    signal_name=name,
+                )
+            else:
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with exit code {exitcode:d}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                )
+    
+        with open(self.error_files[error_index], "rb") as fh:
+            original_trace = pickle.load(fh)
+        msg = f"\n\n-- Process {error_index:d} terminated with the following error:\n"
+        msg += original_trace
+>       raise ProcessRaisedException(msg, error_index, failed_process.pid)
+E       torch.multiprocessing.spawn.ProcessRaisedException: 
+E       
+E       -- Process 1 terminated with the following error:
+E       Traceback (most recent call last):
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py", line 87, in _wrap
+E           fn(i, *args)
+E         File "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-target-integration/tests/cpu/test_pose_panel_ddp.py", line 21, in _worker
+E           dist.init_process_group("gloo", init_method=f"file://{store}", rank=rank, world_size=2,
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+E           return func(*args, **kwargs)
+E                  ^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 97, in wrapper
+E           func_return = func(*args, **kwargs)
+E                         ^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2553, in init_process_group
+E           default_pg, _ = _new_process_group_helper(
+E                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2874, in _new_process_group_helper
+E           backend_result = creator_fn(dist_backend_opts, backend_options)
+E                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "/Users/simonebenatti/.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 669, in _create_gloo_process_group
+E           backend_class = ProcessGroupGloo(
+E                           ^^^^^^^^^^^^^^^^^
+E       RuntimeError: Cannot resolve 127.0.0.1 to a (local) address
+
+../../../../.venvs/wearusfm-tok/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:211: ProcessRaisedException
+----------------------------- Captured stdout call -----------------------------
+[21:58:59] emg2pose: 6 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+----------------------------- Captured stderr call -----------------------------
+[W1118 21:59:01.740127000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+[W1118 21:59:01.740136000 ProcessGroupGloo.cpp:558] Warning: Unable to resolve hostname to a (local) address. Using the loopback address as fallback. Manually set the network interface to bind to with GLOO_SOCKET_IFNAME. (function operator())
+=========================== short test summary info ============================
+FAILED tests/cpu/test_logsquare_train_rank.py::test_four_real_ranks_train_the_verified_state_and_the_dry_run_trains_nothing
+FAILED tests/cpu/test_pose_panel_ddp.py::test_pose_panel_preserves_two_rank_training_and_rng
+FAILED tests/cpu/test_pose_panel_ddp.py::test_pose_panel_construction_failure_reaches_both_ranks
+3 failed, 858 passed, 1 skipped in 396.17s (0:06:36)
