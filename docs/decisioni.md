@@ -8126,8 +8126,8 @@ Mia interpretazione: l'opzione B della proposta com'e', cioe' coi tre checkpoint
    run.
    - |Δ| ≤ 0,3 gradi: le 19 epoche bastano (non distinguibile con un seme).
    - Δ < −0,3: segnale che il training lungo migliora, da confermare con piu' semi.
-   - Δ > +0,3: segnale che peggiora (sovra-adattamento), da confermare.
-4. **Regola secondaria** (lo scopo dell'opzione B), per condizione: Δ = MAE residua − MAE senza salti, all'epoca 100, con le stesse tre
+   - Δ > +0,3: segnale che peggiora, da confermare. Non si attribuisce una causa.
+4. **Regola secondaria**, per condizione: Δ = MAE residua − MAE senza salti, all'epoca 100, con le stesse tre
    classi.
 5. **Calcolo:** si usano i valori a piena precisione di `test.conditions.<condizione>.ema.mean_over_users_deg`. La classe si decide sul Δ
    non arrotondato, che poi si riporta con due decimali.
@@ -8135,7 +8135,12 @@ Mia interpretazione: l'opzione B della proposta com'e', cioe' coi tre checkpoint
    - l'epoca 50;
    - l'epoca 19 di ogni run lungo contro il run corto con la stessa rete (L1 dell'11/11, residua del 18/11), dove mi aspetto una differenza
      piccola;
-   - le curve di validazione per epoca e l'uscita grezza.
+   - le curve di validazione per epoca e l'uscita grezza;
+   - accanto a ogni Δ, la validazione grezza delle epoche vicine (18-20, 49-51, 98-100). Nei run corti fra due checkpoint vicini ha
+     oscillato fino a 0,41 gradi: dall'epoca 18 alla 19, 16,006 -> 15,627 nella L1 e 15,982 -> 15,571 nella residua. La soglia resta
+     0,3: cambiarla spetta a Simone;
+   - la differenza dei guadagni (residua 100 − residua 19) − (senza salti 100 − senza salti 19), dalle stesse sei valutazioni. La regola
+     secondaria misura il livello raggiunto all'epoca 100, non il guadagno.
 7. **Casi particolari:** un checkpoint che non supera il cancello non va al test, e le letture che lo usano non si fanno. Un training
    incompleto non si legge. In entrambi i casi niente rilancio senza diagnosi.
 8. **Risorse:** **tetto 32,5 GPU-ore**.
@@ -8144,3 +8149,6 @@ Mia interpretazione: l'opzione B della proposta com'e', cioe' coi tre checkpoint
    - Sei valutazioni da 45 min in afterok: al massimo 4,5 GPU-ore.
    - Checkout CPU: 10 min.
    - Un job che finirebbe dentro la manutenzione del 23-25/11 aspetta la fine in coda.
+
+Emendamento prima del lancio, dalla review del critico (nessun dato dei run lunghi esiste): tolta l'etichetta «sovra-adattamento» e
+l'inciso sullo scopo dell'opzione B; aggiunti i due descrittivi del punto 6. Soglie, confronti e tetto invariati.

@@ -502,7 +502,8 @@ def run_eval(args) -> int:
         if not ckpt.is_file():
             raise SystemExit(f"checkpoint assente: {ckpt}")
     else:
-        ckpt = Path(args.model_dir) / ("model_final.pt" if train_run.get("status") == "ok" else sorted((Path(args.model_dir) / "checkpoints").glob("*.pt"))[-1])
+        last = lambda: max((Path(args.model_dir) / "checkpoints").glob("epoch_*.pt"), key=lambda p: int(p.stem.split("_")[1]))  # noqa: E731
+        ckpt = Path(args.model_dir) / "model_final.pt" if train_run.get("status") == "ok" else last()  # ultima epoca per numero, non per nome
     eval_model.load_state_dict(torch.load(ckpt, map_location=device))
     t0 = time.time()
     report = {"kind": "temponet_emg2pose_eval_v1", "args": vars(args), "code_sha": os.environ.get("WEARUSFM_CODE_SHA"),

@@ -8905,6 +8905,19 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Job previsti: checkout, due training (13:00 e 15:00) e sei valutazioni in afterok; tetto 32,5 GPU-ore. L'invio aspetta il rinnovo del
   certificato, scaduto alle 23:01 del 18/11.
 
+### 2026-11-18 | Claude | TEMPONet su emg2pose, training lungo: critico APPROVATO, cinque minori corretti prima del lancio; nessun job | Ramo `claude/temponet-residual-419618`
+
+- Critico su `4a81293`: «VERDETTO: APPROVATO», con cinque minori, corretti in questo commit senza un nuovo giro.
+  - Regola: tolta l'etichetta «sovra-adattamento»; aggiunta come descrittivo la validazione grezza delle epoche vicine a 19, 50 e 100.
+  - Regola secondaria: tolto l'inciso sullo scopo dell'opzione B; aggiunta come descrittivo la differenza dei guadagni.
+  - Test: un training incompleto non si valuta, nemmeno con `--checkpoint`; i messaggi d'errore dello sbatch si confrontano per intero.
+  - Ripiego di `--val-only` su un training incompleto: l'ultima epoca si prende per numero e non per nome (con 100 epoche prendeva
+    `epoch_99.pt`).
+
+  Emendamento in `docs/decisioni.md`, prima di ogni dato dei run lunghi: soglie, confronti e tetto invariati.
+- Rettifica della voce precedente. I «101 passati nei file di TEMPONet» comprendevano `test_db8_classical_baselines.py` (11 test). Ora
+  sono 102 con quel file e 91 senza.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13066,3 +13079,13 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   i tre checkpoint all'opzione A, e Simone ha scelto B.
 - Ho registrato B coi tre checkpoint, come scritto nella proposta. Se Simone intendeva solo il modello finale, la regola principale va
   cambiata prima del lancio.
+
+### 2026-11-18 | Claude | Training lungo di TEMPONet: fra checkpoint vicini la validazione oscilla quanto la soglia | Ramo `claude/temponet-residual-419618`
+
+- Trovato dal critico nelle ricevute dei run corti. Con learning rate costante, dall'epoca 18 alla 19 la validazione grezza passa da 16,006
+  a 15,627 nella L1 e da 15,982 a 15,571 nella residua: 0,38 e 0,41 gradi, piu' della soglia di 0,3. Inoltre l'epoca 19 e' il minimo
+  della curva in tutti e due i run.
+- Il confronto fra due singoli checkpoint (100 contro 19) puo' quindi dipendere da dove cade un'oscillazione. L'EMA del test ne toglie una
+  parte, ma quanta non e' misurato.
+- La soglia resta quella approvata; accanto a ogni Δ si riportano le epoche vicine. Cambiarla, per esempio facendo la media di piu'
+  checkpoint, spetta a Simone.
