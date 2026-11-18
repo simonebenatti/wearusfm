@@ -178,6 +178,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-18 | GPT consolidamento | Revisione documentale TCN con ramo lineare dopo Claude32e5452/8d34f9c | Base c15aac9
+
+Simone autorizza revisione documentale, commit/push e prompt ultima review: «per ora niente codice o lanci».
+Consegna REVIEW_REQUIRED: protocollo pose-temponet-frozen-encoder-readout-20261117-v2, proposal.json,
+risposta13rilievi/50note, conti e prompt. Ramo codex/pose-temponet-proposal-20261117. Nessun merge/deploy/SSH/job.
+Ramo affine inMLP/TCNpost/TCNpre;4→6LR e150→300 con controlli positivi train-only, soglia interna train,
+MSE unico selettore, esiti irrisolti distinti; WLS descrittiva pesata e QR/SVD, non ottimoAdamW/held.
+103→147traiettorie, max1.477.800update; nuovo tetto proposto24GPUh+80CPUcoreh=272coreh, non autorizzato.
+Candidata con1/4/5 passati e nessun deterioramento2/3, gate qualità/comparatori prima. DipendenzaSCRATCH dichiarata.
+Prove solo documentali/aritmetiche, nessuna misura nuova sui latenti o benchmark. Claude rilegge le parti cambiate,
+poi Simone decide§10. Il successivo record di pubblicazione pinna SHAcommit/SHA256 senza autoreferenza.
+
+
 ### 2026-11-17 | GPT consolidamento | TEMPONet sui latenti: proposta dopo il lungo, REVIEW_REQUIRED
 
 Simone ha chiesto di anteporre al protocollo A di efficienza delle etichette una prova delle teste di regressione TEMPONet,
@@ -5972,6 +5985,20 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 2026-11-18 | GPT consolidamento | Correzioni della proposta TCN: convergenza, confronti e conservazione | Base c15aac9; review32e5452/8d34f9c
+
+Accolto rischioS-1:50epoche e dueLR non bastavano come garanzia di lettura del negativo. Il casoV ha minimoMSE43
+ma dinamica50: estensione ora legge entrambe, selezione restaMSE. Controlli positivi possono non calibrarsi o non
+passare: niente conclusione negativa sull'encoder, nessuna ricerca automatica fino al successo.
+RettificatoA-1: le reti originarie contengonoL0 sul dominioLN limitato; il nuovo ramo dà accesso diretto, non garanzia.
+WLS descrittiva deve rispettare pesi per finestra; QR/SVD, non rango daGram al limitefloat64. Nessuna equiparazione
+ridge/AdamW. Copertura delle simulazioni nonuniversale; bootstrapresta2000 conflagalbordo. Metodo raw corretto:
+un endpointperblocco terminante10j+9, niente doppia media. ChiusuraC2 esplicita conveto seMLP/L13 risolti migliori.
+Corretta falsaindipendenzaSCRATCH: stats e riferimentiB19618 restano prerequisiti pinnati. Saldo/quota solo storici.
+I vecchi tetti4/12/44 e le letture preliminari di c15aac9 sono superati, preservati nello storico; codice immutato.
+La reviewfinale e tutti i gate runtime restano pendenti. Nessun nuovo costo cluster o firma sperimentale registrati.
+
 
 ### 2026-11-17 | GPT consolidamento | Limiti e correzioni della proposta TEMPONet
 

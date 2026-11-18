@@ -1,0 +1,157 @@
+{
+  "base_commit": "c15aac9bcf291f4ca2e7757dd248ff61045040df",
+  "budget_authorized": false,
+  "checked_files": {
+    "docs/pose_temponet_frozen_protocol_20261117.md": "05a9eb09a7cd4341184056a93802887a8277bb615400972b1f2d6d2186ec22f7",
+    "docs/prompt_claude_pose_temponet_review_20261117.md": "401066e6fdd6e836a0e8480888008528b45600355b9b795fb5a31e8f08b28c71",
+    "docs/reviews/pose_temponet_response_20261118.md": "076d35f161703d8de5cf2b7456282337a34139d951a72887dfe6f7b58df90d2b",
+    "results/infra/pose_temponet_proposal_20261117/analytic_checks.json": "4ee7d920e04ee142f50fd954e5ef77886769604f3496b56abb346f8093db2e79",
+    "results/infra/pose_temponet_proposal_20261117/proposal.json": "f3b92c4a8f0aa525fc982632078b6a3d8774ee81838014203c24b4cb47494d9f",
+    "results/infra/pose_temponet_proposal_20261117/raw_source_identity.json": "fdec0551c4b976f6d23869081eca3cf71f00b9c15ccc5b4a90ed7d2414930d6e"
+  },
+  "checks": [
+    {
+      "details": null,
+      "name": "unapproved_document_only",
+      "passed": true
+    },
+    {
+      "details": {
+        "L0": 8468,
+        "L13": 100628,
+        "MLP": 73000,
+        "TCN_post": 72904,
+        "TCN_pre": 72904
+      },
+      "name": "parameter_counts",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "weights_MAC_RF",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "matrix_trajectories",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "update_bound",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "evaluation_counts",
+      "passed": true
+    },
+    {
+      "details": {
+        "allocated_core_hours": 272.0,
+        "cpu_only_core_hours": 80.0,
+        "gpu_hours": 24.0
+      },
+      "name": "budget_totals",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "phase_resource_units",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "prediction_storage",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "historical_pins_unchanged",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "scratch_pins_match_archived_manifest",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "all50_notes_unique",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "all13_findings",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "stable_section_anchors",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "document_and_machine_scope",
+      "passed": true
+    },
+    {
+      "details": {
+        "scripts/temponet_emg2pose.py": true,
+        "src/wearusfm/model/temponet.py": true
+      },
+      "name": "raw_model_and_script_byte_identity_rechecked_from_git",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "complete_raw_keys_results/temponet_emg2pose/eval_20261111/eval.json",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "complete_raw_keys_results/temponet_emg2pose/train_20261111/run.json",
+      "passed": true
+    },
+    {
+      "details": "none",
+      "name": "no_scientific_or_runtime_changes",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "no_runtime_files_untracked",
+      "passed": true
+    },
+    {
+      "details": [],
+      "name": "local_document_links",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "git_diff_check",
+      "passed": true
+    }
+  ],
+  "date_local": "2026-11-18",
+  "independent_review_notes_closed": [
+    "QR/SVD avoids Gram rank at FP64floor",
+    "stationary AR1noise formula fixed",
+    "noncalibrated/non_diagnostic stop explicit",
+    "selected-checkpoint trainMSE forward accounted",
+    "pooled folds checkpoint pair preserved",
+    "reviewresponse threshold/owner aligned"
+  ],
+  "not_performed": [
+    "runtimeimplementation",
+    "neuraltest",
+    "syntheticfit",
+    "realcacheload",
+    "clusterread",
+    "benchmark",
+    "deployment",
+    "jobsubmission"
+  ],
+  "status": "document_checks_passed_review_still_required"
+}

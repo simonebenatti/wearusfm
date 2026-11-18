@@ -29,7 +29,8 @@
       "alpha",
       "alpha_grid_mae_deg_min",
       "gate",
-      "test"
+      "test",
+      "seconds"
     ]
   },
   "results/temponet_emg2pose/train_20261111/run.json": {
@@ -46,8 +47,25 @@
       "started",
       "scale_exponent_k",
       "targets_manifest",
-      "n_train_recordings"
+      "n_train_recordings",
+      "n_val_recordings",
+      "train_users",
+      "status",
+      "parameters",
+      "train_gib",
+      "train_load_seconds",
+      "val_gib",
+      "val_load_seconds",
+      "n_train_windows",
+      "steps_per_epoch",
+      "n_val_windows_epoch",
+      "max_rss_gb_after_load",
+      "finished",
+      "seconds",
+      "max_rss_gb",
+      "gather_seconds_total"
     ]
   },
+  "revision_note": "18Nov complete top_level_keys; sourcebyteidentities unchanged from archivedraw commits; no runtimeexecuted",
   "runtime_commit": "0c19c4bc32a96e3b72d15a09770d204a747fa13b"
 }

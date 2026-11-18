@@ -1,18 +1,30 @@
 {
-  "MACs_each_P160_excluding_norm_bias_ReLU": 10260480,
-  "MLP_TCN_transform_weights_each": 64128,
+  "MACs_each_P160_excluding_norm_bias_ReLU": 11489280,
+  "MLP_TCN_transform_weights_each": 71808,
   "all15_predictions_GiB": 3.316640853881836,
+  "cache_and_three_reference_bytes": 5720939041,
   "central_positions_P160": 148,
+  "claude_1260000_max_updates_superseded": "11 target/head combinations*6LR*300*(30+30)+15*300*60=1458000, geometrybound1477800",
+  "control_cv_fits_initial": 48,
+  "control_cv_fits_max": 72,
   "frozen_cache_total_bytes": 5068390194,
-  "new_cv_fits": 20,
+  "internal_fold_evaluations_max": 40128,
+  "linear_path_added_params": 7700,
+  "new_cv_fits_initial": 40,
+  "new_cv_fits_max": 60,
   "new_refits": 15,
-  "note": "No neural module implemented or fitted; no measured CPU/GPU timing.",
+  "note": "No neuralmodule implemented/fitted; no CPU/GPU timing or cache read thisrevision. Matrixcounts are conservative geometry bounds.",
   "parameters": {
     "L0": 8468,
     "L13": 100628,
-    "MLP": 65300,
-    "TCN_post": 65204,
-    "TCN_pre": 65204
+    "MLP": 73000,
+    "TCN_post": 72904,
+    "TCN_pre": 72904
+  },
+  "resource_caps": {
+    "allocated_core_hours": 272,
+    "cpu_only_core_hours": 80,
+    "gpu_hours": 24
   },
   "rf_offsets": [
     -6,
@@ -20,7 +32,13 @@
   ],
   "rf_patches": 13,
   "runtime_implemented": false,
+  "selected_fitting_evaluations_max": 37,
   "status": "analytic_verification_only",
-  "total_new_fits": 35,
+  "total_trajectories_initial": 103,
+  "total_trajectories_max": 147,
+  "updates_nominal_initial": 531000,
+  "updates_nominal_max": 1458000,
+  "updates_upper_bound_initial": 537600,
+  "updates_upper_bound_max": 1477800,
   "val_prediction_FP32_bytes_per_head_full160": 237414400
 }

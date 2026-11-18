@@ -1,3 +1,6 @@
+AVVISO 18/11/2026: le tre letture sotto riguardano SOLO c15aac9, non la revisione v2.
+I vecchi numeri di parametri/fit/tetti e la proposta di media raw sono superati dal protocollo v2; non sono verdetti rinnovati.
+
 Review locali della proposta — 17/11/2026
 Scope: disegno e sorgenti esistenti, nessun runtime nuovo implementato/fittato.
 
@@ -13,3 +16,10 @@ Risorse (/root/temponet_resources_review): PASS come tetto condizionato, non sti
 Precisazioni accolte: RAM host GPU distinta da VRAM da misurare;24GiB CPU/32GiBhostGPU;NPZ decompresso una volta per vista, cast a lotti;fattore2ancheinferenza. Saldo/quota restano storici e da aggiornare dall'operatore prima dell'esecuzione. Claude unico operatore proposto, non nuovo invio autorizzato.
 
 Le letture preliminari non costituiscono firma scientifica di Simone o review finale di Claude. Sorgenti src/,scripts/ e test runtime invariati.
+
+18/11/2026 — Revisione documentale richiesta da Simone.
+S-1 accolto: ricetta150→300,4→6LR,controlli sintetici train-only,stati irrisolti.
+A-1: dimostrato contenimento algebrico originario; aggiunto cammino affine diretto comune.
+Rettifiche: WLS descrittiva non certificatoAdamW; copertura simulata nonuniversale; allineamento raw perblockendpoint10j+9; dipendenzaSCRATCH esplicita.
+Conti indipendenti:103→147traiettorie; max1.477.800update;24GPUh+80CPUcoreh=272coreh allocate. Nessuna misuraA100 o prova del modulo futuro.
+La risposta puntuale13rilievi/50note e i controlli di coerenza documentali accompagnano la consegna; review finaleClaude ancora richiesta.

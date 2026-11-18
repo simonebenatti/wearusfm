@@ -1,4 +1,11 @@
 {
+  "authorization": {
+    "budget_authorized": false,
+    "future_signature_scope": "section10: implementation, one operational-package review, then benchmark and gated chain within caps; no renewed per-job permission for same signed scope",
+    "runtime_authorized": false,
+    "scope": "documentation revision, commit and origin push only",
+    "user_quote": "va bene, procedi con la revisione documentale, committa e pusha tutto e poi preparami il prompt per l'ultima review di claude. per ora niente codice o lanci"
+  },
   "caches": {
     "train": {
       "bytes": 474412856,
@@ -17,26 +24,98 @@
   },
   "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
   "checkpoint_step": 49046,
+  "code_plan": {
+    "base_branch": "codex/pose-temponet-proposal-20261117",
+    "current_code_changes": false,
+    "future_runtime_directory": "scripts/pose_temponet/",
+    "no_top_level_scripts_py": true,
+    "one_operational_package_review_before_futurelaunch": true,
+    "original_base_commit": "cfa6462f261fa7e70afb9dc13684d4436756ad65"
+  },
   "evaluation": {
     "bootstrap_replicates": 2000,
     "bootstrap_seed": 20261102,
     "bootstrap_unit": "user",
+    "candidate": {
+      "iff": "all qualitygates and L0/MLP/L13/TCNpost admitted; contrasts1,4,5 eachbeneficio_pratico_risolto; neither2nor3 deterioramento_pratico",
+      "missing_or_unresolved_comparator": "candidacy not established; dependentcontrasts unlabelled",
+      "scope": "centered dynamics reader of thischeckpoint only; no automatic adoption, pretrainingclaim orlevelB",
+      "trained_head_point_threshold_necessary": 0.7630564046643697
+    },
     "ci": "percentile99 per contrast; five Bonferroni intervals for nominal simultaneous95, exploratory approximation",
     "confirmation": "none independent; development only; official test excluded",
-    "confirmatory_family": [
+    "descriptive": [
+      "L0 vs historicalpostridge",
+      "L0 vs historicaltrainedhead",
+      "MLP vs L0",
+      "L13 vs L0",
+      "TCN_post vs TCN_pre",
+      "TCN_pre beside historicalpre_ridge summary",
+      "all/static/perjoint/MAE/level/correlation/variance"
+    ],
+    "descriptive_ci_percent": 95,
+    "gain_formula": "100*(E_ref-E_TCN)/E_ref",
+    "historical_pre_ridge_descriptive": {
+      "paired_CI_against_TCN_pre": false,
+      "point_E_dyn": 1.0321280032044744,
+      "reason": "summary anchor only; no new historical predictionpayload required",
+      "source_key": "pose.cells.49046/pre_ridge.groups.dynamic.E_dyn.point",
+      "source_path": "results/infra/consolidation_long_20261105/gpt_review_20261107/scientific_readout.json",
+      "source_sha256": "4f10f678b385039837c172d195ef1d69d63181ba4f573c7dad73aab26398cd9f"
+    },
+    "historical_reference_gate": {
+      "absolute_tolerance": 1e-12,
+      "alignment": "cache pred[:,6:154] same validvaluesas historicaltrainedhead148 payload; indexidentity not onlymaskhash",
+      "dynamic_valid_elements": 20119920,
+      "dynamic_windows": 8327,
+      "post_ridge_E_dyn": 0.7859020004638595,
+      "timing": "before newcontrasts, never used to tuneheads",
+      "trained_head_E_dyn": 0.7786289843513977
+    },
+    "monte_carlo_border": {
+      "distance_pp": 0.1,
+      "extra_bootstrap_allowed": false,
+      "flag": "al_bordo_MC",
+      "label_changes": false,
+      "thresholds_pp": [
+        0,
+        2
+      ]
+    },
+    "outcome_priority": [
+      {
+        "condition": "gain>=2 and lower99>0",
+        "label": "beneficio_pratico_risolto"
+      },
+      {
+        "condition": "gain<=-2 and upper99<0",
+        "label": "deterioramento_pratico"
+      },
+      {
+        "condition": "upper99<2",
+        "label": "beneficio_2pct_non_sostenuto"
+      },
+      {
+        "condition": "otherwise",
+        "label": "inconclusivo"
+      }
+    ],
+    "practical_improvement_percent": 2,
+    "practical_readout_recommendation": "all qualitygates and L0/MLP/L13/TCNpost admitted; contrasts1,4,5 eachbeneficio_pratico_risolto; neither2nor3 deterioramento_pratico; centered dynamics reader of thischeckpoint only; no automatic adoption, pretrainingclaim orlevelB",
+    "prespecified_family": [
       "TCN_post vs L0",
       "TCN_post vs MLP",
       "TCN_post vs L13",
       "TCN_post vs historical_post_ridge",
       "TCN_post vs historical_trained_head"
     ],
-    "descriptive": "TCN_post vs TCN_pre and all/static/per-joint metrics, no pass/fail",
-    "practical_improvement_percent": 2,
-    "practical_readout_recommendation": "candidate for better centered-dynamics reader only if primary and both historical-reference contrasts pass; no automatic operational adoption; inspect MAE/level trade-offs first, no implied noninferiority",
-    "primary": "TCN_post vs L0, relative E_dyn improvement on dynamic windows",
-    "readout_failures": "if upper adjusted CI <2%, useful-sized benefit not supported by this interval; if >=2% remains possible, inconclusive; no automatic search",
+    "primary": "TCN_post inspiredbyTEMPONet with jointlytrained linearpath vs L0, relative centered E_dyn improvement on dynamicwindows",
+    "reading_limits": "development15alreadyconsulted; simulationcoverage97/85-91 not universal; singleencoder; no guaranteednominalcoverage; MSE/dynamics tradeoffflagretained",
+    "readout_failures": "qualityfailures precede scientificlabels; noncandidacy may beinconclusive, not automaticallynegative; noautomaticsearch",
     "secondary_seed_aggregation": "report correlation, variance ratio, level and MAE per seed plus arithmetic mean of seed metrics; never correlation of averaged moments presented as mean correlation",
+    "secondary_worsening": "positive MAE/level delta is estimatedworsening; lower95>0 is resolvedworsening; no noninferioritymargin",
     "seed_aggregation": "mean per-user seed-specific moment/SSE accumulators; never average predictions; then metric and bootstrap",
+    "seed_uncertainty": "sample SD of three seedmetrics separatefrom paireduserbootstrap; no hierarchicalbootstrap; s-vs-s forcontrasts1..3; ninecrosses onlydescriptive",
     "val_reads": "one final locked evaluation batch for all frozen selected models; no tuning/retraining on15users"
   },
   "executable": false,
@@ -47,31 +126,106 @@
       0.999
     ],
     "clip_norm": 1.0,
+    "control_cv_fits_initial": 48,
+    "control_cv_fits_max": 72,
     "cv_folds": "alternating sorted train users, exactly two disjoint 20-user folds",
     "cv_seed": 0,
     "drop_last": false,
     "eps": 1e-08,
+    "extensions": {
+      "continuations_per_trajectory": 1,
+      "epoch_trigger": "for each LR, earliest minimizer of pooled MSE OR pooled E_dyn in146..150; continue both folds to300 with optimizer and RNG preserved",
+      "lower_lr": 3e-05,
+      "lr_trigger": "pooled-MSE winner at current grid boundary; apply the single outward value for that side and reselect; no other values",
+      "max_additions_per_side": 1,
+      "max_lrs": 6,
+      "unresolved": "selectedLR still at expanded boundary, OR selected duration is first quarter-epoch checkpoint, OR minimum MSE or E_dyn of selectedLR in last5 at maximum horizon; unselected-LR boundaries reported only",
+      "upper_lr": 0.01
+    },
+    "failure_states": [
+      "controllo_non_calibrato",
+      "controllo_non_diagnostico",
+      "ricetta_non_ammessa_dal_controllo_positivo",
+      "ottimizzazione_non_risolta_entro_il_budget",
+      "technical_failure"
+    ],
+    "first_epoch": {
+      "fractions": [
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "step0": "diagnostic only, not selectable",
+      "steps": "ceil(fraction*steps_per_epoch), deduplicate; same fraction in refit"
+    },
+    "initial_epochs": 150,
+    "internal_dynamic_threshold": {
+      "definition": "mean per-joint population temporal variance using valid full160 targets (>=2 each); threshold max(median_supported_window_variance,1e-12)",
+      "external_historical_threshold_used": false,
+      "held": "apply corresponding fitting threshold; pool centered SSE/targetSS acrossfolds",
+      "source": "fitting users only per direction; real targets for real fits, synthetic forcontrols"
+    },
+    "internal_evaluation": "eval, no_grad, FP32 each epoch and quarter-first-epoch checkpoints; save full MSE and E_dyn curves, no per-epoch external predictions",
+    "internal_fold_evaluations_max": 40128,
     "learning_rates": [
       0.0001,
-      0.001
+      0.0003,
+      0.001,
+      0.003
     ],
     "loss": "standardized MSE: mean valid elements within window, then mean supported windows; crop6 all groups",
-    "max_epochs": 50,
-    "new_cv_fits": 20,
+    "matrix_formula": "11*L*E*(S0+S1)+15*E*Sfull; steps from supported windows, not equal user counts",
+    "max_epochs": 300,
+    "new_cv_fits_initial": 40,
+    "new_cv_fits_max": 60,
     "new_refits": 15,
-    "new_total_fits": 35,
+    "new_total_trajectories_initial": 103,
+    "new_total_trajectories_max": 147,
+    "numerical": {
+      "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+      "autocast": false,
+      "blas_omp_intraop_threads": 8,
+      "cudnn_benchmark": false,
+      "cudnn_deterministic": true,
+      "deterministic_algorithms": true,
+      "failure": "stop on unsupported deterministic operation, do not switch flag",
+      "loader_workers": 0,
+      "runtime_versions": "pin before code release; benchmark and fits identical",
+      "tf32": false,
+      "torch_interop_threads": 1
+    },
+    "objective_tradeoff": {
+      "consequence": "retain MSE selection, publish both epochs/curves; restrict interpretation of contrast3 and any negative TCN conclusion; no extra development inference",
+      "epoch_distance_gt": 5,
+      "relative_E_dyn_regret_percent_ge": 2,
+      "same_selected_lr_only": true,
+      "zero_minimum": "positive selected error over zero minimum gives infinite regret"
+    },
     "optimizer": "AdamW",
+    "paired_fold_checkpointing": "advance bothfolds to synchronized exposure checkpoints, preserve independentoptimizer/RNG, save pair onimprovedpooledMSE plus currentpair; never independentbestepochs, no needallstates",
     "precision": "FP32, autocast off, TF32 off",
-    "refit": "full40 users from fresh initialization at chosen fixed LR and epoch, no early stopping",
+    "refit": "fresh full40 initialization at pooled-MSE selected LR and duration, including fractional first epoch; never automatically 300; no development early stopping",
     "refit_seeds": [
       0,
       1,
       2
     ],
     "schedule": "constant; no warmup",
-    "selection": "minimum pooled internal held per-window MSE across both folds for (LR,epoch); ties earliest epoch then lowest LR",
+    "selected_fitting_evaluations_max": 37,
+    "selection": "minimum pooled held-internal per-window MSE across both user folds; exact ties earlier exposure checkpoint then smaller LR",
     "shuffle_each_epoch": true,
-    "shuffle_rng": "dedicated generator per fold/seed, independent from initialization/dropout; identical minibatch ordering across heads for same fold/seed",
+    "shuffle_rng": {
+      "dropout": "200000+100*f+s",
+      "fold_id": "0,1 forCV;2forfullrefit",
+      "initialization": "100000+s",
+      "paired": "dedicated shuffle independent of init/dropout, same metadata order across heads/LR/world for fold/seed",
+      "shuffle": "300000+100*f+s"
+    },
+    "updates_nominal_initial": 531000,
+    "updates_nominal_max": 1458000,
+    "updates_upper_bound_initial": 537600,
+    "updates_upper_bound_max": 1477800,
     "weight_decay": 0.01,
     "weight_decay_applies_to": "matrix/kernel weights only; no bias or LN"
   },
@@ -87,7 +241,8 @@
       "view": "lat"
     },
     "MLP": {
-      "params": 65300,
+      "linear_skip": true,
+      "params": 73000,
       "view": "lat",
       "widths": [
         384,
@@ -116,7 +271,8 @@
         1,
         1
       ],
-      "params": 65204,
+      "linear_skip": true,
+      "params": 72904,
       "view": "lat",
       "widths": [
         384,
@@ -129,27 +285,74 @@
       ]
     },
     "TCN_pre": {
-      "params": 65204,
+      "linear_skip": true,
+      "params": 72904,
       "same_as": "TCN_post",
       "view": "pre"
     }
   },
   "jobs_authorized": false,
   "level": "A: readout on frozen teacher mean-slot cache; not joint pretraining",
+  "linear_diagnostics": {
+    "claims": "numerically checked minimum train MSE at stated tolerance; not AdamW/ridge optimum and not held E_dyn optimality; gap alone nofailure",
+    "dtype": "float64",
+    "inner_designs_for_calibration": 4,
+    "inner_rhs_basis": [
+      "real",
+      "L",
+      "T",
+      "epsilon"
+    ],
+    "input": "fixed gamma1 beta0 LayerNorm; dimension384 or13*384; learnable affine LN can be absorbed",
+    "intercept": "free",
+    "kind": "weighted unregularized least squares, descriptive",
+    "mask_groups": "each design/factorization multiplied by distinct weight/maskpatterns acrossjoints; no assumption all20equal",
+    "no_external_predictions": true,
+    "normal_residual_tolerance": 1e-06,
+    "outer_designs": 4,
+    "outer_target_solution_blocks": 12,
+    "relative_design_singular_cutoff": 1e-08,
+    "solver": "stable blockedQR/TSQR thenSVD ofR; no rankfromGram eigenvalues",
+    "solver_storage": "blockQR with RHS, sequentialpattern solves within24GiB; no naiveinverse; timingrequired",
+    "train_objective_comparison": "full fitting eval/no_grad at selected frozenweights, same perwindowweighting; not runningepochloss",
+    "weights": "m_itj/q_i; q_i=sum over all valid t,j of eachwindow"
+  },
   "model": "T100-G 30M",
   "new_head_common": {
+    "additive_linear_path": {
+      "bias": true,
+      "dimensions": [
+        384,
+        20
+      ],
+      "extra_zero_gate": false,
+      "heads": [
+        "MLP",
+        "TCN_post",
+        "TCN_pre"
+      ],
+      "historical_weights_used": false,
+      "initialization": "zeros",
+      "input": "same learned affine LayerNorm as deep path and L0",
+      "learned_jointly": true,
+      "parameters_added": 7700
+    },
     "bias": true,
     "dropout_MLP_TCN": {
       "after_hidden_layers": [
         4,
         5
       ],
-      "p": 0.1
+      "direct_affine_path": false,
+      "p": 0.1,
+      "train_only": true,
+      "type": "nn.Dropout elementwise"
     },
     "hidden_activation": "ReLU",
     "input_layernorm_affine": true,
-    "other_weights_initialization": "torch defaults under seed; pin torch version before runtime",
-    "output_layer_initialization": "zeros",
+    "module_rng_policy": "LN, g layers in listed order, then affine under fork_rng; save init state hashes perhead/seed/fold before first fit; same state acrossLRs",
+    "other_weights_initialization": "Kaiming normal fan_in ReLU on hidden g; hidden biases zero",
+    "output_layer_initialization": "zero deep output and zero direct affine; L0/L13 fulloutput zero",
     "pooling": false,
     "receptive_field_TCN_L13_center_offsets_ms": [
       -150,
@@ -175,12 +378,100 @@
   ],
   "outputs": {
     "collect_to_git": "reports, receipts, manifests, scientific readout only; NPZ/PT persist WORK",
+    "execution_owner": "Claude executionbranch, GPT doesnotrewrite",
     "input_duplication": false,
     "persistent_cap_gib": 8,
     "proposed_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117",
-    "temporary_expanded_cache": "decompress required NPZ views once within phase host-RAM cap (24GiB CPU,32GiB GPU job); cast batches; no mmap assumption or persistent duplication"
+    "temporary_expanded_cache": "one requiredNPZview decompressed atatime, batchFP32, no mmapassumption, no repeatedepoch predictions; CPU24GiB/GPUhost32GiB with measuredprojection"
   },
-  "protocol": "pose-temponet-frozen-head-20261117-v1-proposal",
+  "positive_controls": {
+    "all_thresholds_status": "proposed, unmeasured, no guarantee of realdata success",
+    "calibration": {
+      "a_grid": [
+        0.2,
+        0.4,
+        0.6,
+        0.8,
+        1.0
+      ],
+      "aggregation": "pool innerSSE/targetSS, not meanratios; nonpositive/nonfinite denominator =>nondiagnostic",
+      "baseline": "weightedLS L0 internalpredictions",
+      "choice": "temporal minimumdistance togain0.08 thenreal_E thena then sigma; linearclosestreal_E thenlower sigma",
+      "linear_a": 0,
+      "no_pair": "control_non_calibrated; stop, no new grid/seed",
+      "population": "20 fittingouter users only; alternating sorted2inner10userfolds; outerheldexcluded",
+      "preferred_temporal_gain": 0.08,
+      "real_E_dyn_abs_tolerance": 0.05,
+      "real_reference": "E_dyn of weightedLS L0 on real targets from innerfolds only",
+      "sigma_grid": [
+        1,
+        1.5,
+        2,
+        2.5,
+        3
+      ],
+      "sufficient_statistics_reuse": "fixeddesigns/weights/masks/rankpolicy, linearcombinations ofprojectedRHSbasis, no25factorizations",
+      "temporal_oracle_gain_range_fraction": [
+        0.06,
+        0.1
+      ],
+      "threshold": "computed from fittinginner synthetic targets for eachpair; afterselection outerfittingthreshold fixedforgate"
+    },
+    "count": 2,
+    "failure": "all noncalibrated/nondiagnostic/failedpositive/unresolvedoptimization outcomes stop before realneuralfits, preserveevidence; noautomatictargetsearch orscientificnegative",
+    "folds": 2,
+    "gates": {
+      "evaluation": "both outerfolds separately and pooled; every required condition mustpass; no bootstrap claim",
+      "linear": {
+        "baseline": "fittingouter weightedjointmean constant",
+        "formula": "(E_constant-E_head)/(E_constant-E_oracle)",
+        "heads": [
+          "L0",
+          "MLP",
+          "TCN_post"
+        ],
+        "metric": [
+          "perwindow_MSE",
+          "E_dyn"
+        ],
+        "min_fraction": 0.9,
+        "nonpositive_margin": "non_diagnostic"
+      },
+      "temporal": {
+        "baseline": "weightedLS L0 on fittingouter with selectedsynthetictarget; neuralL0/MLP descriptive",
+        "formula": "(E_LS-E_TCN)/(E_LS-E_oracle)",
+        "gap_outside_range": "non_diagnostic, not TCN failure",
+        "head": "TCN_post",
+        "metric": "E_dyn",
+        "min_fraction": 0.5,
+        "oracle_gap_fraction_required": [
+          0.06,
+          0.1
+        ]
+      }
+    },
+    "generator": {
+      "L": "affine384to20",
+      "T": "same conv/ReLU geometry with all hiddenwidth8, dropoutoff, nonzero teacher output; embeddable in64/32head",
+      "features": "fixed initial LN of real lat train, not latent clean hiddenfactors",
+      "formula": "y_star=L(z)+a*T(z); y=y_star+sigma*epsilon",
+      "noise": "epsilon0~N(0,1); epsilon_t=rho*epsilon_prev+sqrt(1-rho^2)*eta, eta~N(0,1),rho=exp(-1/4); NumPyPCG64 perwindow/joint seedfirst8 SHA256byteslittleendian ofcanonicalJSON[seed,metadata,joint]; no Pythonhash; sigma stationarySD",
+      "normalization": "component mean/std perjoint on fittingouter only, perwindowweights; std<=1e-8 failscalibration",
+      "oracle": "known y_star from observed features, not guaranteed finite-samplelowerbound",
+      "seed": "20261118+1000*outerfold forL, +1forT, +2fornoise",
+      "teacher_rng": "pinnedTorch CPU, savegeneratorstates/hashesbeforecontrols",
+      "weights": "hiddenKaimingnormal fan_in ReLU; teacheroutput/L Gaussianvariance1/fan_in; biaszero"
+    },
+    "heads": [
+      "L0",
+      "MLP",
+      "TCN_post"
+    ],
+    "refits": 0,
+    "training_recipe": "same fit policy as real; seed0; no external users"
+  },
+  "previous_proposal_commit": "c15aac9bcf291f4ca2e7757dd248ff61045040df",
+  "protocol": "pose-temponet-frozen-encoder-readout-20261117-v2",
   "references": {
     "post_ridge_coefficients": {
       "bytes": 59367,
@@ -202,30 +493,184 @@
     }
   },
   "resource_proposal": {
-    "benchmark_gpu_hours_cap": 0.25,
-    "cpu_only_core_hours_cap": 12,
+    "a_priori_timing": "analog4.1..18.5ms/update only;max1.4778M gives1.68..7.59GPUh update-only; doubled3.37..15.19 beforeeval/I/O, not newhead measurement",
+    "benchmark_gpu_hours_cap": 0.5,
+    "budget_name": "lettore posa TCN v2",
+    "budget_status": "PROPOSED_NOT_AUTHORIZED",
+    "cpu_only_core_hours_cap": 80,
     "cpu_ram_gib": 24,
-    "fit_phase_gpu_hours_cap": 3,
-    "gate": "2x projected full selection+max50epoch refits including validation,I/O,startup <=3GPUh; 2x inference projection including I/O <=0.5GPUh; CPU/storage caps must also pass; no partial launch",
+    "fit_initial_updates_upper": 537600,
+    "fit_max_updates_upper": 1477800,
+    "fit_phase_gpu_hours_cap": 20,
+    "gate": "all resource gates before any neuralfit includingcontrols; 2x wholemaxmatrix train/40128heldeval/37selected-fittingeval/I/O/startups/save <=20GPUh and inclusivejobpacking;2x inference<=1GPUh; WLS<=64coreh andperjob<=4hinclusive; metrics<=8coreh; CPU/RAM/diskcaps; stop no partialreal launch",
     "gpu_attached_cpus": 8,
-    "gpu_hours_cap": 4,
+    "gpu_hours_cap": 24,
     "gpu_job_host_ram_gib": 32,
-    "inference_gpu_hours_cap": 0.5,
-    "local_hours_conditional_cap": 44,
+    "historical_balance": {
+      "allocated_local_hours": 2000000,
+      "consumed_local_hours": 1308137,
+      "current": false,
+      "date_local": "2026-11-09 12:21 Europe/Rome",
+      "remaining_if_only_thiscap_from_snapshot": 691591,
+      "remaining_local_hours": 691863,
+      "source_commit": "fccf88d493c1c444f231b612f88bc3b41daa5827"
+    },
+    "inference_gpu_hours_cap": 1,
+    "io_scale": "max(byte_ratio,window_ratio), stream15 outputs",
+    "job_grace_seconds_counted": 180,
+    "local_hours_conditional_cap": 272,
+    "max_cpu_only_jobs": 7,
+    "max_gpu_jobs": 40,
     "measured_estimate": null,
+    "memory_policy": "measureRSS/VRAM;1.25*(fixed+oneview valbufferandbatch) usingtrainrepetition shapedlikeval;include copiesworkspacecompression, no externaltargetinspection",
     "operator_preflight_required": [
-      "current quota",
-      "current balance",
-      "actual AllocTRES/billing",
-      "input hashes",
-      "source pins",
-      "full matrix cost gate"
+      "hashallinputpins includingSCRATCH",
+      "source andmanifestpins",
+      "WORKfree>=12GiB+otherpendingwrites",
+      "currentbalance",
+      "reservations includingreported23-25Novstop",
+      "sharedseriallane",
+      "actualAllocTRESbillingfirstjob",
+      "fullresource andpackinggate",
+      "calibration/positivecontrols before realneuralfits"
     ],
-    "reserve_gpu_hours": 0.25,
-    "total_allocated_core_hours_cap": 44,
+    "overhead_policy": "SUM(requestedwalltime+180seconds)*resources <=eachphase; reserve not automaticretries; no doublecount",
+    "phases": [
+      {
+        "allocated_core_hours_cap": 0.5,
+        "cpu_only_core_hours_cap": 0.5,
+        "cpus": 2,
+        "cumulative_wall_hours_including_180s_perjob": 0.25,
+        "gpu_hours_cap": 0,
+        "gpus": 0,
+        "host_ram_gib": 24,
+        "local_hours_if_stated_billing": 0.5,
+        "phase": "checkout_preflight"
+      },
+      {
+        "allocated_core_hours_cap": 4,
+        "cpu_only_core_hours_cap": 4,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 0.5,
+        "gpu_hours_cap": 0,
+        "gpus": 0,
+        "host_ram_gib": 24,
+        "local_hours_if_stated_billing": 4,
+        "phase": "cpu_benchmark"
+      },
+      {
+        "allocated_core_hours_cap": 64,
+        "cpu_only_core_hours_cap": 64,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 8,
+        "gpu_hours_cap": 0,
+        "gpus": 0,
+        "host_ram_gib": 24,
+        "local_hours_if_stated_billing": 64,
+        "phase": "wls_calibration"
+      },
+      {
+        "allocated_core_hours_cap": 4.0,
+        "cpu_only_core_hours_cap": 0,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 0.5,
+        "gpu_hours_cap": 0.5,
+        "gpus": 1,
+        "host_ram_gib": 32,
+        "local_hours_if_stated_billing": 4.0,
+        "phase": "gpu_benchmark"
+      },
+      {
+        "allocated_core_hours_cap": 160,
+        "cpu_only_core_hours_cap": 0,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 20,
+        "gpu_hours_cap": 20,
+        "gpus": 1,
+        "host_ram_gib": 32,
+        "local_hours_if_stated_billing": 160,
+        "phase": "controls_selection_refits"
+      },
+      {
+        "allocated_core_hours_cap": 8,
+        "cpu_only_core_hours_cap": 0,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 1,
+        "gpu_hours_cap": 1,
+        "gpus": 1,
+        "host_ram_gib": 32,
+        "local_hours_if_stated_billing": 8,
+        "phase": "locked_inference"
+      },
+      {
+        "allocated_core_hours_cap": 8,
+        "cpu_only_core_hours_cap": 8,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 1,
+        "gpu_hours_cap": 0,
+        "gpus": 0,
+        "host_ram_gib": 24,
+        "local_hours_if_stated_billing": 8,
+        "phase": "metrics"
+      },
+      {
+        "allocated_core_hours_cap": 0.5,
+        "cpu_only_core_hours_cap": 0.5,
+        "cpus": 2,
+        "cumulative_wall_hours_including_180s_perjob": 0.25,
+        "gpu_hours_cap": 0,
+        "gpus": 0,
+        "host_ram_gib": 24,
+        "local_hours_if_stated_billing": 0.5,
+        "phase": "collection"
+      }
+    ],
+    "reserve_cpu_core_hours": 3,
+    "reserve_gpu_hours": 2.5,
+    "reserve_use": "accountedstartup/overrun; no newseeds/architectures/automaticretry",
+    "time_statistic": {
+      "measured_epochs": 10,
+      "projection": "p95 linearinterpolation",
+      "report": [
+        "median",
+        "p95"
+      ],
+      "synchronization": "CUDA synchronize at timedboundaries",
+      "timed": [
+        "train_epoch_perhead_fold_full",
+        "held_eval_perhead_fold",
+        "load",
+        "save",
+        "startup",
+        "wls_stats",
+        "wls_factor_eachmaskpattern",
+        "wls_rhs_predict",
+        "calibration",
+        "bootstrap",
+        "serialization"
+      ],
+      "warmup_epochs_excluded": 1
+    },
+    "total_allocated_core_hours_cap": 272,
+    "vram_gate_gib": 48,
     "vram_requirement_gib": null,
-    "vram_status": "to be measured at train-only benchmark"
+    "vram_status": "not measured",
+    "wls_jobs": 2,
+    "wls_requested_walltime_max": "03:57:00"
   },
+  "review": {
+    "approval_of_revision_not_yet_received": true,
+    "claude_followup_commit": "8d34f9c6525dc73be02448598cfccfbd4e0a1a61",
+    "claude_initial_commit": "32e54526637da2ee825ab75c2507612956633cb0",
+    "response_path": "docs/reviews/pose_temponet_response_20261118.md",
+    "status": "REVIEW_REQUIRED"
+  },
+  "review_materials": {
+    "protocol_path": "docs/pose_temponet_frozen_protocol_20261117.md",
+    "response_path": "docs/reviews/pose_temponet_response_20261118.md",
+    "validation_status": "documentary checks only, no neuraltest"
+  },
+  "revision_date": "2026-11-18",
   "roles_proposed": {
     "final_decision": "Simone",
     "no_change_to_other_lines": true,
@@ -233,6 +678,33 @@
     "scientific_owner_and_code": "GPT consolidamento"
   },
   "runtime_implemented": false,
+  "scratch_dependencies": {
+    "policy": "explicitly keep historicalfiles requiredby cachevalidators; no unauthorizedcopy or bypass; stop ifabsent/hashdiffers",
+    "pose_references": {
+      "train": {
+        "bytes": 257675076,
+        "n_recordings": 200,
+        "n_users": 40,
+        "n_windows": 1907,
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz",
+        "sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23"
+      },
+      "val": {
+        "bytes": 2485295825,
+        "n_recordings": 1950,
+        "n_users": 15,
+        "n_windows": 18548,
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz",
+        "sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904"
+      }
+    },
+    "pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+    },
+    "refresh": "12Novrefresh reportedbyClaude not reverified; 3Decrefresh not promised; no independencefromSCRATCHclaimed",
+    "source_manifest": "results/infra/tokenizer_evaluation_20261103/extraction_plan_19618.json"
+  },
   "source_provenance": {
     "base_commit": "cfa6462f261fa7e70afb9dc13684d4436756ad65",
     "historical_fit_receipt_commit": "2930d7d6feb6a054ae0ce9fded98ac5ac1b12abe",
