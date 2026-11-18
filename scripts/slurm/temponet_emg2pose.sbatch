@@ -20,10 +20,18 @@
 #     sbatch --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha>[,TRAIN_STRIDE=8] temponet_emg2pose.sbatch train <manifest> <uscite>
 #   valutazione (passo 3): alpha e cancello sulla validazione, poi il test solo se il cancello passa; 45 minuti (al massimo 0,75 GPU-ore)
 #     sbatch --time=00:45:00 --export=ALL,... temponet_emg2pose.sbatch eval <manifest> <uscite> <cartella del training>
+#   variante residua (18/11/2026, docs/temponet_emg2pose_residual_plan_20261118.md): ARCH=plain|residual (default plain, la rete di [Z21]);
+#     la valutazione legge l'architettura da run.json del training e, se ARCH e' data, la controlla. TRAIN_TIME = limite del training, uguale a
+#     --time, fra quelli della tabella sotto (default 03:30:00):
+#     sbatch --time=04:00:00 --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha>,ARCH=residual,TRAIN_TIME=04:00:00 temponet_emg2pose.sbatch train ...
 # Le uscite vanno in una cartella NUOVA fuori dal codice; nessun riavvio automatico, nessun nuovo tentativo.
 set -uo pipefail
 MODE="${1:?smoke, train o eval}"; MANIFEST="${2:?manifest del passo 0}"; OUT="${3:?cartella delle uscite}"; MODEL_DIR="${4:-}"
-case "$MODE" in smoke) EXPECTED_TIME=00:30:00;; train) EXPECTED_TIME=03:30:00;; eval) EXPECTED_TIME=00:45:00;; *) echo "modo: smoke, train o eval"; exit 2;; esac
+ARCH="${ARCH:-plain}"; TRAIN_TIME="${TRAIN_TIME:-03:30:00}"
+case "$ARCH" in plain|residual) ;; *) echo "ARCH: plain o residual"; exit 2;; esac
+# tempo massimo del training prima dell'ultima epoca: 600 s di margine col limite di 3 ore e 30 (come l'11/11), 900 s con i limiti piu' lunghi
+case "$TRAIN_TIME" in 03:30:00) BUDGET=12000;; 04:00:00) BUDGET=13500;; *) echo "TRAIN_TIME non ammesso: $TRAIN_TIME"; exit 2;; esac
+case "$MODE" in smoke) EXPECTED_TIME=00:30:00;; train) EXPECTED_TIME=$TRAIN_TIME;; eval) EXPECTED_TIME=00:45:00;; *) echo "modo: smoke, train o eval"; exit 2;; esac
 if [ "$MODE" = eval ] && [ -z "$MODEL_DIR" ]; then echo "eval: serve la cartella del training"; exit 2; fi
 for P in "$MANIFEST" "$OUT" ${MODEL_DIR:+"$MODEL_DIR"}; do case "$P" in /*) ;; *) echo "percorso relativo rifiutato: $P"; exit 2;; esac; done
 case "$OUT" in "$WORK/wearusfm"|"$WORK/wearusfm"/*|/leonardo_work/IscrB_WearUsFM/wearusfm|/leonardo_work/IscrB_WearUsFM/wearusfm/*|\
@@ -46,16 +54,16 @@ print('GPU:', torch.cuda.get_device_name(0), '| torch', torch.__version__, '| CU
 PY
 COMMON=(--csv "$WORK/data/raw/emg2pose_mini/emg2pose_metadata.csv" --processed-root "$SCRATCH/data/processed/emg2pose"
   --pose-root "$SCRATCH/data/processed/emg2pose_pose" --targets-manifest "$MANIFEST" --cudnn-mode benchmark)
-echo "== $(date -Is) modo $MODE, codice $WEARUSFM_CODE_SHA in $WEARUSFM_CODE_DIR; uscite $OUT"
+echo "== $(date -Is) modo $MODE, codice $WEARUSFM_CODE_SHA in $WEARUSFM_CODE_DIR; uscite $OUT; architettura $ARCH, limite del training $TRAIN_TIME"
 if [ "$MODE" = smoke ]; then
   python3 scripts/temponet_emg2pose.py train "${COMMON[@]}" --out "$OUT/train" --check-graph --epochs 2 --max-train-recordings 400 \
-    --max-val-recordings 60 --max-steps-per-epoch 4000 || exit 1
-  python3 scripts/temponet_emg2pose.py eval "${COMMON[@]}" --out "$OUT/eval_val" --model-dir "$OUT/train" --val-only || exit 1
+    --max-val-recordings 60 --max-steps-per-epoch 4000 --arch "$ARCH" || exit 1
+  python3 scripts/temponet_emg2pose.py eval "${COMMON[@]}" --out "$OUT/eval_val" --model-dir "$OUT/train" --val-only --arch "$ARCH" || exit 1
 elif [ "$MODE" = train ]; then
-  python3 scripts/temponet_emg2pose.py train "${COMMON[@]}" --out "$OUT" --check-graph --time-budget-s 12000 \
-    --train-stride-blocks "${TRAIN_STRIDE:-8}" || exit 1
+  python3 scripts/temponet_emg2pose.py train "${COMMON[@]}" --out "$OUT" --check-graph --time-budget-s "$BUDGET" \
+    --train-stride-blocks "${TRAIN_STRIDE:-8}" --arch "$ARCH" || exit 1
 else
-  python3 scripts/temponet_emg2pose.py eval "${COMMON[@]}" --out "$OUT" --model-dir "$MODEL_DIR"
+  python3 scripts/temponet_emg2pose.py eval "${COMMON[@]}" --out "$OUT" --model-dir "$MODEL_DIR" --arch "$ARCH"
   RC=$?
   [ "$RC" = 0 ] || exit "$RC"
 fi

@@ -24,6 +24,19 @@ BatchNorm con gamma e beta) e' 70.917, cioe' i 70,9 kB int8 di [Z21]; con Block 
 Convoluzioni dilatate causali ([Z21] eq. 1 e testo: «2 dilated causal convolutions [...] full padding»): padding (k-1)*d solo a sinistra, la
 lunghezza resta invariata. Q-PPG usa padding simmetrico: e' disponibile con `causal=False`. Convoluzione con stride: padding 2, «same» per stride 1.
 Ordine nel blocco strided come Q-PPG: Conv -> AvgPool -> BatchNorm -> ReLU (in inferenza pool e BN commutano: sono lineari per canale).
+
+Variante residua (`residual=True`; richiesta di Simone del 18/11/2026, su [Z20] Fig. 3: «i residual li metterei nel x3, in ogni blocco
+cerchiato»; piano in `docs/temponet_emg2pose_residual_plan_20261118.md`). Un salto attorno a ciascuno dei tre blocchi interi:
+    y = ReLU(BN(AvgPool(Conv_s(TC2(TC1(x))))) + Skip(x)),   Skip(x) = BN(Conv1x1(AvgPool_{2s}(x))),
+cioe' l'ultimo ReLU del blocco passa dopo la somma, come nel blocco residuo di ResNet [H16], con il salto «a proiezione» (eq. 2 di [H16]:
+1x1 senza bias e BatchNorm) e la riduzione della lunghezza con un average pooling prima della 1x1, come in ResNet-D [H19]. Il pooling ha
+kernel e passo 2 x stride (2, 4, 8), cosi' la lunghezza del salto e' quella del blocco (128, 32, 4 con 256 campioni: lo verifica il
+costruttore). La proiezione c'e' anche nel blocco 1, dove i canali coincidono (16 -> 16): con l'identita' il salto sommerebbe l'EMG grezzo, non
+normalizzato, al ramo normalizzato dalle BatchNorm, e la rete non sarebbe piu' invariante alla scala globale dell'ingresso (10^k), come
+invece e' quella senza salti (convoluzioni senza bias seguite da BatchNorm). Tutto il resto e' invariato; i rami del salto si creano per
+ultimi, quindi a parita' di seme i pesi in comune hanno lo stesso valore iniziale della rete senza salti. [H16] K. He et al., «Deep Residual
+Learning for Image Recognition», CVPR 2016; [H19] T. He et al., «Bag of Tricks for Image Classification with Convolutional Neural Networks»,
+CVPR 2019. Con 5 uscite: 73.957 parametri (+3.040).
 """
 
 from __future__ import annotations
@@ -59,17 +72,31 @@ class _TemporalConv(nn.Module):
 
 
 class _StridedConv(nn.Module):
-    """Conv1d (kernel 5, stride s, padding 2, senza bias) -> AvgPool(2) -> BatchNorm -> ReLU."""
+    """Conv1d (kernel 5, stride s, padding 2, senza bias) -> AvgPool(2) -> BatchNorm -> ReLU (senza ReLU con `activation=False`: variante
+    residua, dove il ReLU segue la somma col salto)."""
 
-    def __init__(self, ch_in: int, ch_out: int, stride: int):
+    def __init__(self, ch_in: int, ch_out: int, stride: int, activation: bool = True):
         super().__init__()
         self.conv = nn.Conv1d(ch_in, ch_out, STRIDED_KERNEL, stride=stride, padding=STRIDED_PADDING, bias=False)
         self.pool = nn.AvgPool1d(POOL, stride=POOL)
         self.bn = nn.BatchNorm1d(ch_out)
-        self.relu = nn.ReLU()
+        self.relu = nn.ReLU() if activation else nn.Identity()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.relu(self.bn(self.pool(self.conv(x))))
+
+
+class _Skip(nn.Module):
+    """Salto di un blocco della variante residua: AvgPool (kernel e passo 2 x stride) -> Conv1d 1x1 senza bias -> BatchNorm."""
+
+    def __init__(self, ch_in: int, ch_out: int, stride: int):
+        super().__init__()
+        self.pool = nn.AvgPool1d(POOL * stride, stride=POOL * stride)
+        self.conv = nn.Conv1d(ch_in, ch_out, 1, bias=False)
+        self.bn = nn.BatchNorm1d(ch_out)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.bn(self.conv(self.pool(x)))
 
 
 class _Dense(nn.Module):
@@ -108,7 +135,8 @@ def receptive_field(dilations=DEFAULT_DILATIONS, strides=DEFAULT_STRIDES) -> int
 
 
 class TEMPONet(nn.Module):
-    """TEMPONet per regressione ([Z21]): (batch, canali, campioni) -> (batch, uscite)."""
+    """TEMPONet per regressione ([Z21]): (batch, canali, campioni) -> (batch, uscite). `residual=True`: un salto attorno a ogni blocco
+    (docstring del modulo); il default e' la rete di [Z21], invariata."""
 
     def __init__(
         self,
@@ -121,15 +149,17 @@ class TEMPONet(nn.Module):
         strides=DEFAULT_STRIDES,
         dropout: float = 0.5,
         causal: bool = True,
+        residual: bool = False,
     ):
         super().__init__()
         if not (len(block_channels) == len(dilations) == len(strides)):
             raise ValueError("block_channels, dilations e strides devono avere la stessa lunghezza")
         self.in_channels, self.window, self.out_dim = int(in_channels), int(window), int(out_dim)
+        self.residual = bool(residual)
         layers: list[nn.Module] = []
         ch = self.in_channels
         for c, d, s in zip(block_channels, dilations, strides):
-            layers += [_TemporalConv(ch, c, d, causal), _TemporalConv(c, c, d, causal), _StridedConv(c, c, s)]
+            layers += [_TemporalConv(ch, c, d, causal), _TemporalConv(c, c, d, causal), _StridedConv(c, c, s, activation=not self.residual)]
             ch = c
         self.features = nn.Sequential(*layers)
         self.out_length = output_length(self.window, strides)
@@ -142,11 +172,26 @@ class TEMPONet(nn.Module):
             ft = units
         self.head = nn.Sequential(*dense)
         self.out = nn.Linear(ft, self.out_dim)
+        if self.residual:  # creati per ultimi: i pesi in comune con la rete senza salti hanno lo stesso valore iniziale a parita' di seme
+            self.skips = nn.ModuleList()
+            ch_in, length = self.in_channels, self.window
+            for c, s in zip(block_channels, strides):
+                block_length = output_length(length, (s,))
+                if length // (POOL * s) != block_length:
+                    raise ValueError(f"salto del blocco con stride {s}: lunghezza {length // (POOL * s)}, blocco {block_length}")
+                self.skips.append(_Skip(ch_in, c, s))
+                ch_in, length = c, block_length
+            self.relu = nn.ReLU()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         if x.ndim != 3 or x.shape[1] != self.in_channels or x.shape[2] != self.window:
             raise ValueError(f"ingresso atteso (batch, {self.in_channels}, {self.window}), ricevuto {tuple(x.shape)}")
-        return self.out(self.head(self.features(x).flatten(1)))
+        if not self.residual:
+            return self.out(self.head(self.features(x).flatten(1)))
+        f = self.features
+        for i, skip in enumerate(self.skips):
+            x = self.relu(f[3 * i + 2](f[3 * i + 1](f[3 * i](x))) + skip(x))
+        return self.out(self.head(x.flatten(1)))
 
 
 def count_parameters(model: nn.Module) -> int:

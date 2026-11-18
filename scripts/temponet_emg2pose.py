@@ -179,14 +179,15 @@ class Feeder:
 
 # --- modello e passo --------------------------------------------------------------------------------------------------------------------
 
-def build(seed: int, device, lr: float, dropout: float = 0.5):
+def build(seed: int, device, lr: float, dropout: float = 0.5, residual: bool = False):
     import torch
     from torch import nn
 
     from wearusfm.model.temponet import TEMPONet
 
     torch.manual_seed(seed)
-    model = TEMPONet(in_channels=R.N_CHANNELS, window=R.WINDOW, out_dim=R.N_JOINTS, causal=False, dropout=dropout).to(device)  # V13: simmetrico
+    model = TEMPONet(in_channels=R.N_CHANNELS, window=R.WINDOW, out_dim=R.N_JOINTS, causal=False, dropout=dropout,
+                     residual=residual).to(device)  # V13: simmetrico; residual: un salto per blocco (`--arch residual`)
     opt = torch.optim.Adam(model.parameters(), lr=lr, capturable=device.type == "cuda")
     return model, opt, nn.L1Loss()
 
@@ -253,7 +254,7 @@ class Stepper:
         return v
 
 
-def graph_check(xs, fs, ys, mu, sd, batch: int, device, lr: float) -> dict:
+def graph_check(xs, fs, ys, mu, sd, batch: int, device, lr: float, residual: bool = False) -> dict:
     """Stessi pesi iniziali (seme 777), stessi batch, dropout 0, cuDNN deterministico: len(xs) passi eager contro graph."""
     import torch
 
@@ -261,7 +262,7 @@ def graph_check(xs, fs, ys, mu, sd, batch: int, device, lr: float) -> dict:
     torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = True, False
     out, params = {"steps": len(xs)}, {}
     for mode in ("eager", "graph"):
-        model, opt, loss_fn = build(777, device, lr, dropout=0.0)
+        model, opt, loss_fn = build(777, device, lr, dropout=0.0, residual=residual)
         model.train()
         st = Stepper(model, opt, loss_fn, mu, sd, batch, mode == "graph", device)
         for i in range(T.GRAPH_WARMUP + 1):
@@ -335,7 +336,9 @@ def run_train(args) -> int:
            "train_users": len({r["user"] for r in train_rows}), "status": "in corso"}
     from wearusfm.model.temponet import TEMPONet, count_parameters
 
-    run["parameters"] = count_parameters(TEMPONet(in_channels=R.N_CHANNELS, window=R.WINDOW, out_dim=R.N_JOINTS, causal=False))
+    run["arch"] = args.arch or "plain"
+    residual = run["arch"] == "residual"
+    run["parameters"] = count_parameters(TEMPONet(in_channels=R.N_CHANNELS, window=R.WINDOW, out_dim=R.N_JOINTS, causal=False, residual=residual))
     (out / "run.json").write_text(json.dumps(run, indent=1))
     store = HostStore(train_rows, args.processed_root, k)
     ends, fw, ys = block_index(store, args.pose_root, args.train_stride_blocks)
@@ -359,7 +362,7 @@ def run_train(args) -> int:
         xs = store.gather(ends[sel]).to(device).view(60, args.batch, R.WINDOW, R.N_CHANNELS)
         fs = fw[sel].to(device).view(60, args.batch)
         yv = ys[sel].to(device).view(60, args.batch, R.N_JOINTS)
-        check = graph_check(xs, fs, yv, mu, sd, args.batch, device, args.lr)
+        check = graph_check(xs, fs, yv, mu, sd, args.batch, device, args.lr, residual=residual)
         (out / "graph_check.json").write_text(json.dumps(check, indent=1))
         print(f"controllo eager/graph: differenza massima {check['max_abs_param_diff']:.3g}, {check['eager_ms_per_step']:.2f} ms contro "
               f"{check['graph_ms_per_step']:.2f} ms per passo", flush=True)
@@ -367,7 +370,7 @@ def run_train(args) -> int:
             run["status"] = "controllo eager/graph fallito: nessun training"
             (out / "run.json").write_text(json.dumps(run, indent=1))
             return 1
-    model, opt, loss_fn = build(args.seed, device, args.lr)
+    model, opt, loss_fn = build(args.seed, device, args.lr, residual=residual)
     eval_model = T.denormalizer(model, mu_t.to(device), sd_t.to(device))
     stepper = Stepper(model, opt, loss_fn, mu, sd, args.batch, use_graph, device)
     feeder = Feeder(store, ends, fw, ys, args.batch, args.chunk_steps, pin=device.type == "cuda")
@@ -486,13 +489,17 @@ def run_eval(args) -> int:
     if int(train_run["scale_exponent_k"]) != k:
         raise SystemExit("scala del training diversa da quella del manifest")
     mu, sd = R.pose_stats_all(args.pose_root)
-    model, _, _ = build(0, device, 1e-4)
+    arch = train_run.get("arch") or "plain"  # la architettura del checkpoint e' quella del training (run.json); prima del 18/11 solo plain
+    if args.arch and args.arch != arch:
+        raise SystemExit(f"--arch {args.arch} diversa da quella del training ({arch})")
+    model, _, _ = build(0, device, 1e-4, residual=arch == "residual")
     eval_model = T.denormalizer(model, torch.tensor(mu, dtype=torch.float32).to(device), torch.tensor(sd, dtype=torch.float32).to(device))
     ckpt = Path(args.model_dir) / ("model_final.pt" if train_run.get("status") == "ok" else sorted((Path(args.model_dir) / "checkpoints").glob("*.pt"))[-1])
     eval_model.load_state_dict(torch.load(ckpt, map_location=device))
     t0 = time.time()
     report = {"kind": "temponet_emg2pose_eval_v1", "args": vars(args), "code_sha": os.environ.get("WEARUSFM_CODE_SHA"),
-              "slurm_job_id": os.environ.get("SLURM_JOB_ID"), "checkpoint": str(ckpt), "train_status": train_run.get("status"), "k": k}
+              "slurm_job_id": os.environ.get("SLURM_JOB_ID"), "checkpoint": str(ckpt), "train_status": train_run.get("status"), "k": k,
+              "arch": arch}
     mu_dev = torch.tensor(mu, dtype=torch.float32, device=device)
     Pv, Yv, meta_v, info_v = collect("val", manifest, targets_dir, args, eval_model, k, device)
     alphas, mae_grid = R.tune_alpha_windows(Pv, Yv)
@@ -579,6 +586,8 @@ def main(argv=None) -> int:
     ap.add_argument("--cudnn-mode", choices=sorted(T.CUDNN_MODES), default="benchmark")
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--time-budget-s", type=float, default=0.0, help="train: nessuna epoca nuova dopo questo tempo (run incompleto)")
+    ap.add_argument("--arch", choices=("plain", "residual"), default=None,
+                    help="train: architettura (default plain, la rete di [Z21]); eval: si legge da run.json del training, se data deve coincidere")
     args = ap.parse_args(argv)
     if args.mode == "eval" and not args.model_dir:
         ap.error("eval richiede --model-dir")
