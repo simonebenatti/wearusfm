@@ -66,6 +66,8 @@ def test_numpy_rank_rng_and_optimizer_step_are_exact_even_with_float_tolerance()
     with pytest.raises(ValueError, match='exactly'):
         B._nested_equal({'step': torch.tensor(576.)}, {'step': torch.tensor(575.)}, 'optimizer', .01)
     B._nested_equal({'exp_avg': torch.tensor([1.])}, {'exp_avg': torch.tensor([1.005])}, 'optimizer', .01)
+    with pytest.raises(ValueError, match='beyond1%'):
+        B._nested_equal({'exp_avg': torch.tensor([1.])}, {'exp_avg': torch.tensor([1.02])}, 'optimizer', .01)
 
 
 @pytest.mark.parametrize('text', ['{"x":1,"x":2}', '{"x":1e999}', '{"x":NaN}'])
@@ -120,6 +122,91 @@ def test_resume_uses_saved_initial_displacement_and_exact_rng_buffers(tmp_path):
     changed['teacher'][name].view(-1)[0] += 1
     torch.save(changed, resumed)
     with pytest.raises(ValueError, match='buffers'):
+        B.compare_resume(full, resumed, cfg, state_sha256(initial), initial)
+
+
+def _serialized_resume_fixture(tmp_path):
+    cfg = replace(R.small_config(), contrastive=asdict(ContrastiveConfig(nce_weight=.1, rnc_weight=.2, arm='CN')))
+    model = attach_contrastive_head(WearUsFM(cfg.model))
+    initial = copy.deepcopy(model.state_dict())
+    parameter = next(model.parameters())
+    optimizer = torch.optim.AdamW([parameter])
+    parameter.grad = torch.ones_like(parameter)
+    optimizer.step()
+    optimizer_state = optimizer.state_dict()
+    optimizer_state['state'][0]['step'].fill_(576)
+    engine = B.ContrastiveRuntime(cfg.contrastive)
+    engine.queue.commit(torch.ones(1, 2), [WindowIdentity('A', 'subject', 'session', None, 0, 1000, 1000.)], step=0)
+    contrastive_state = engine.state_dict()
+    contrastive_state['queue']['last_step'] = contrastive_state['queue']['entries'][0]['step'] = 575
+    trained = copy.deepcopy(model.state_dict())
+    state = {
+        'step': 576, 'student': trained, 'teacher': copy.deepcopy(trained),
+        'optimizer': optimizer_state, 'contrastive_state': contrastive_state,
+        'rank_rng': [{'numpy': np.random.get_state(), 'torch': torch.get_rng_state()} for _ in range(4)],
+        'stream': {}, 'config': R.config_to_dict(cfg), 'data_signature': {}, 'pose_stats_sha256': None,
+        'contrastive_provenance': {}, 'contrastive_initial_sha256': state_sha256(initial), 'alarm_counts': [0, 0],
+    }
+    full, resumed = tmp_path/'full.pt', tmp_path/'resumed.pt'
+    torch.save(state, full)
+    return cfg, initial, state, full, resumed
+
+
+def test_resume_finite_optimizer_and_queue_excess_returns_complete_json_report(tmp_path):
+    cfg, initial, state, full, resumed = _serialized_resume_fixture(tmp_path)
+    changed = copy.deepcopy(state)
+    changed['optimizer']['state'][0]['exp_avg'].mul_(1.02)
+    changed['contrastive_state']['queue']['entries'][0]['key'].mul_(1.03)
+    torch.save(changed, resumed)
+    report = B.compare_resume(full, resumed, cfg, state_sha256(initial), initial)
+    # Both out-of-bound states are preserved; the first one must not abort traversal.
+    paths = {'optimizer.state.0.exp_avg': .02, 'contrastive_state.queue.entries.0.key': .03}
+    assert report['passed'] is False
+    assert report['relative_to_full_displacement'] == {'student': 0., 'teacher': 0.}
+    assert set(report['floating_state_errors']) == set(paths)
+    assert len(report['failure_reasons']) == len(paths)
+    for path, error in paths.items():
+        assert report['floating_state_errors'][path]['relative_error'] == pytest.approx(error, abs=1e-6)
+        assert report['floating_state_errors'][path]['bound'] == .01
+        assert any(path in reason and 'exceeds' in reason for reason in report['failure_reasons'])
+    assert json.loads(json.dumps(report, allow_nan=False)) == report
+    # Values inside the same frozen 1% bound still pass.
+    changed['optimizer']['state'][0]['exp_avg'] = state['optimizer']['state'][0]['exp_avg'] * 1.005
+    changed['contrastive_state']['queue']['entries'][0]['key'] = state['contrastive_state']['queue']['entries'][0]['key'] * 1.005
+    torch.save(changed, resumed)
+    report = B.compare_resume(full, resumed, cfg, state_sha256(initial), initial)
+    assert report['passed'] and report['floating_state_errors'] == {} and report['failure_reasons'] == []
+
+
+@pytest.mark.parametrize('mutation,match', [
+    ('optimizer_step', 'exactly'), ('checkpoint_step', '576-update'), ('rank_rng', 'exactly'),
+    ('optimizer_nan', 'nonfinite'), ('queue_inf', 'nonfinite'),
+    ('queue_shape', 'schema'), ('queue_dtype', 'schema'), ('queue_metadata', 'metadata'),
+])
+def test_resume_report_collection_never_softens_exact_or_nonfinite_checks(tmp_path, mutation, match):
+    cfg, initial, state, full, resumed = _serialized_resume_fixture(tmp_path)
+    changed = copy.deepcopy(state)
+    # A finite violation must not hide a later structural/exact failure.
+    changed['optimizer']['state'][0]['exp_avg'].mul_(1.02)
+    queue_entry = changed['contrastive_state']['queue']['entries'][0]
+    if mutation == 'optimizer_step':
+        changed['optimizer']['state'][0]['step'].fill_(575)
+    elif mutation == 'checkpoint_step':
+        changed['step'] = 575
+    elif mutation == 'rank_rng':
+        changed['rank_rng'][1]['torch'][0] ^= 1
+    elif mutation == 'optimizer_nan':
+        changed['optimizer']['state'][0]['exp_avg'].view(-1)[0] = float('nan')
+    elif mutation == 'queue_inf':
+        queue_entry['key'][0] = float('inf')
+    elif mutation == 'queue_shape':
+        queue_entry['key'] = queue_entry['key'][:1]
+    elif mutation == 'queue_dtype':
+        queue_entry['key'] = queue_entry['key'].double()
+    elif mutation == 'queue_metadata':
+        queue_entry['global_index'] += 1
+    torch.save(changed, resumed)
+    with pytest.raises(ValueError, match=match):
         B.compare_resume(full, resumed, cfg, state_sha256(initial), initial)
 
 

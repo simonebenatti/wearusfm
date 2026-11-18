@@ -127,14 +127,19 @@ def _tensor_distance(a, b, reference=None):
     return math.sqrt(error2)/max(math.sqrt(scale2), 1e-12)
 
 
-def _nested_equal(a, b, path='state', floating_tolerance=None):
-    """Exact structure/metadata/RNG, numerical tolerance only for floating state."""
+def _nested_equal(a, b, path='state', floating_tolerance=None, floating_errors=None):
+    """Exact structure/metadata/RNG; optionally collect finite floating violations."""
     if isinstance(a, torch.Tensor):
         if not isinstance(b, torch.Tensor) or a.shape != b.shape or a.dtype != b.dtype:
             raise ValueError(path+' tensor schema differs')
         if a.is_floating_point() and floating_tolerance is not None and not path.endswith('.step'):
-            if _tensor_distance({'x': a}, {'x': b}) > floating_tolerance:
-                raise ValueError(path+' differs beyond1% numeric bound')
+            error = _tensor_distance({'x': a}, {'x': b})
+            if not math.isfinite(error):
+                raise ValueError(path+' nonfinite numeric distance')
+            if error > floating_tolerance:
+                if floating_errors is None:
+                    raise ValueError(path+' differs beyond1% numeric bound')
+                floating_errors[path] = {'relative_error': error, 'bound': floating_tolerance}
         elif not torch.equal(a, b):
             raise ValueError(path+' differs exactly')
     elif isinstance(a, np.ndarray):
@@ -143,10 +148,10 @@ def _nested_equal(a, b, path='state', floating_tolerance=None):
     elif isinstance(a, dict):
         if not isinstance(b, dict) or set(a) != set(b):
             raise ValueError(path+' dictionary differs')
-        for k in a: _nested_equal(a[k], b[k], path+'.'+str(k), floating_tolerance)
+        for k in a: _nested_equal(a[k], b[k], path+'.'+str(k), floating_tolerance, floating_errors)
     elif isinstance(a, (tuple, list)):
         if type(a) != type(b) or len(a) != len(b): raise ValueError(path+' sequence differs')
-        for i, (x, y) in enumerate(zip(a, b)): _nested_equal(x, y, path+'.'+str(i), floating_tolerance)
+        for i, (x, y) in enumerate(zip(a, b)): _nested_equal(x, y, path+'.'+str(i), floating_tolerance, floating_errors)
     elif type(a) != type(b) or a != b:
         raise ValueError(path+' metadata differs')
 
@@ -175,15 +180,21 @@ def compare_resume(full_path, resumed_path, cfg, initial_sha, initial):
         relative[part] = _tensor_distance({k: v for k, v in a[part].items() if k in parameters},
                                          {k: v for k, v in b[part].items() if k in parameters},
                                          {k: v for k, v in initial.items() if k in parameters})
+    floating_errors = {}
     for part in ('optimizer', 'contrastive_state'):
         if part not in a or part not in b: raise ValueError('checkpoint missing '+part)
-        _nested_equal(a[part], b[part], part, .01)
+        _nested_equal(a[part], b[part], part, .01, floating_errors)
     for part in ('rank_rng', 'stream', 'config', 'data_signature', 'pose_stats_sha256', 'contrastive_provenance',
                  'contrastive_initial_sha256', 'alarm_counts'):
         if part not in a or part not in b: raise ValueError('checkpoint missing '+part)
         _nested_equal(a[part], b[part], part)
-    return {'passed': all(v <= RESUME_RELATIVE_DISPLACEMENT for v in relative.values()),
+    failure_reasons = [f'{part}: relative displacement {value:.17g} exceeds {RESUME_RELATIVE_DISPLACEMENT:.17g}'
+                       for part, value in relative.items() if value > RESUME_RELATIVE_DISPLACEMENT]
+    failure_reasons.extend(f'{path}: relative error {row["relative_error"]:.17g} exceeds {row["bound"]:.17g}'
+                           for path, row in floating_errors.items())
+    return {'passed': all(v <= RESUME_RELATIVE_DISPLACEMENT for v in relative.values()) and not floating_errors,
             'relative_to_full_displacement': relative, 'bound': RESUME_RELATIVE_DISPLACEMENT,
+            'floating_state_errors': floating_errors, 'failure_reasons': failure_reasons,
             'full_sha256': sha(full_path), 'resumed_sha256': sha(resumed_path)}
 
 
@@ -370,7 +381,9 @@ def read_preflight(cohort_path, full_dirs, resumed_dirs, cuda_path, *, cpu_audit
             check = compare_resume(Path(folder)/'checkpoint.pt', resumed/'checkpoint.pt', config_from_dict(cfg), cohort['initial_state_sha256'], initial)
             check['evidence_sha256'] = resumed_pins
             result['arms'][arm]['resume'] = check
-            if not check['passed']: result['failure_reasons'].append(arm+': 4GPU resume numerical bound failed')
+            if not check['passed']:
+                result['failure_reasons'].append(arm+': 4GPU resume numerical bound failed')
+                result['failure_reasons'].extend(arm+': resume '+reason for reason in check['failure_reasons'])
     ratio = result['arms']['CN']['ratios']['nce']['median']/max(result['arms']['CR']['ratios']['rnc']['median'], 1e-30)
     result['ratio_CN_over_CR'] = ratio
     if not RATIO_RULE['between_min'] <= ratio <= RATIO_RULE['between_max']:
