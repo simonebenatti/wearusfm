@@ -102,6 +102,34 @@ Su DB8 lo stesso seme rifatto differiva di 0,076 gradi per il solo cuDNN; tre se
 Uscite: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/residual_20261118/{train,eval}`. Ricevute da copiare sul Mac in
 `results/temponet_emg2pose/residual_20261118/`.
 
+## Esito (18/11/2026, regola applicata come congelata)
+
+- **Job:** tutti `COMPLETED 0:0`.
+  - Training 64775724: 3 h 18 min 41 s; 19 epoche da 328.746 passi a 1,254 ms per passo; controllo eager/graph con differenza 0.
+  - Valutazione 64775725: 11 min 56 s.
+  - Ricevute in `results/temponet_emg2pose/residual_20261118/`, sha256 uguali a Leonardo.
+- **Cancello** sulla validazione: 15,083 / 18,191 = 0,829 < 0,9, superato (L1: 0,831). Gli alpha dell'EMA vanno da 0,89 a 0,97, come nella
+  L1.
+- **Test, letto una volta.** MAE con EMA, media ± dev. std. fra utenti:
+
+| Condizione | residua | L1 | Δ | lettura della regola |
+|---|---|---|---|---|
+| `user` (20 utenti) | 14,56 ± 1,57 | 14,55 ± 1,54 | +0,01 | non distinguibile con un seme |
+| `stage` (158 utenti) | 17,62 ± 1,59 | 17,67 ± 1,60 | −0,06 | non distinguibile con un seme |
+| `user_stage` (20 utenti) | 17,58 ± 1,86 | 17,60 ± 1,76 | −0,02 | non distinguibile con un seme |
+
+- **Δ a piena precisione:** +0,0076, −0,0578 e −0,0185 gradi.
+- **Descrittivi:**
+  - con l'uscita grezza Δ vale −0,001, −0,076 e −0,038;
+  - rispetto alla Tab. 4 di [E24] la lettura resta «fra NeuroPose e SensingDynamics» in tutte e tre le condizioni;
+  - la loss di training finale e' 0,7051 contro 0,7074;
+  - la validazione grezza per epoca e' piu' bassa della L1 in 18 epoche su 19, di 0,01-0,19 gradi, e piu' alta di 0,03 all'epoca 15
+    (15,57 contro 15,63 all'ultima).
+- **Tempo:** il passo misurato (1,254 ms, +15,6%) sta sotto la soglia di 1,304 ms. Col senno di poi il limite di 3:30 bastava. Quello di
+  4:00 non e' costato nulla in piu', perche' si conta il tempo usato.
+- **Consuntivo:** 3,510 GPU-ore sul tetto di 4,75 (28,1 ore locali con billing 8): training 3,311, valutazione 0,199. Checkout 0,039 core-ore.
+- Nessuna scelta presa dopo il test. Nessun rilancio.
+
 ## Fonti
 
 - [Z20], [Z21]: vedi la docstring di `src/wearusfm/model/temponet.py`.

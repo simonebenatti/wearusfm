@@ -8091,3 +8091,21 @@ ognio blocco cerchiato». Piano: `docs/temponet_emg2pose_residual_plan_20261118.
    Si riportano anche dev. std. fra utenti, cancello, validazione e, come descrittivi, uscita grezza e curva per epoca. Un verdetto per
    condizione, nessun verdetto complessivo, nessuna scelta dopo il test. Cancello non superato: il test non si guarda e si apre una diagnosi.
    Training incompleto: non si legge niente. La soglia e' una convenzione comune allo studio delle loss, non un test.
+
+### 2026-11-18 — TEMPONet residua su emg2pose: ESITO e CONSUNTIVO del seme 0 (Claude)
+
+Eseguito con le regole congelate nella voce precedente, codice `4c8bb84`. Dettagli in `docs/temponet_emg2pose_residual_plan_20261118.md`,
+«Esito»; ricevute in `results/temponet_emg2pose/residual_20261118/`, sha256 uguali a Leonardo.
+
+1. **Training:** job 64775724, `COMPLETED 0:0` in 3 h 18 min 41 s. 19 epoche a 1,254 ms per passo; controllo eager/graph con differenza 0.
+2. **Cancello** (job 64775725, `COMPLETED 0:0` in 11 min 56 s): 15,083 / 18,191 = **0,829 < 0,9, superato**.
+3. **Test, letto una volta.** MAE con EMA, residua contro L1, con Δ a piena precisione:
+   - `user`: 14,5551 contro 14,5475, Δ = +0,0076;
+   - `stage`: 17,6169 contro 17,6747, Δ = −0,0578;
+   - `user_stage`: 17,5836 contro 17,6020, Δ = −0,0185.
+
+   **Regola 4: non distinguibile con un seme in tutte e tre le condizioni.** Lettura descrittiva rispetto alla Tab. 4 di [E24]: fra
+   NeuroPose e SensingDynamics, come la L1.
+4. Nessuna scelta presa dopo il test, nessun rilancio.
+
+**Consuntivo:** **3,510 GPU-ore sul tetto di 4,75** (28,1 ore locali con billing 8): training 3,311, valutazione 0,199. Checkout 0,039 core-ore.

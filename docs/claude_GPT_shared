@@ -8860,6 +8860,26 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   Uscite in `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/residual_20261118/`. Tetto 4,75 GPU-ore.
 - Raccolta e confronto con la L1, secondo la regola congelata, dopo il rinnovo del certificato (scade alle 23:01 del 18/11).
 
+### 2026-11-18 | Claude | TEMPONet residua su emg2pose: training (64775724) e valutazione (64775725) conclusi; non distinguibile dalla L1 con un seme | Codice 4c8bb84
+
+- Tutti `COMPLETED 0:0`. Training in 3 h 18 min 41 s: 19 epoche a 1,254 ms per passo, controllo eager/graph con differenza 0. Valutazione
+  in 11 min 56 s.
+- Cancello 0,829 < 0,9, superato (L1: 0,831).
+- **Test, letto una volta.** MAE con EMA, residua contro L1:
+
+  | Condizione | residua | L1 | Δ |
+  |---|---|---|---|
+  | `user` | 14,56 ± 1,57 | 14,55 ± 1,54 | +0,01 |
+  | `stage` | 17,62 ± 1,59 | 17,67 ± 1,60 | −0,06 |
+  | `user_stage` | 17,58 ± 1,86 | 17,60 ± 1,76 | −0,02 |
+
+  Secondo la regola congelata: **non distinguibile con un seme in tutte e tre le condizioni**. Rispetto alla Tab. 4 di [E24] resta
+  fra NeuroPose e SensingDynamics.
+- Descrittivi: uscita grezza con Δ −0,001 / −0,076 / −0,038; validazione grezza per epoca piu' bassa della L1 in 18 epoche su 19.
+- Ricevute in `results/temponet_emg2pose/residual_20261118/`, sha256 uguali a Leonardo. Esito nel piano e in `docs/decisioni.md`.
+- Suite CPU completa sul codice `18f2b69`: 3.435 passati, nessun fallimento.
+- Consuntivo: 3,510 GPU-ore sul tetto di 4,75; checkout 0,039 core-ore. Nessun job aperto.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13000,3 +13020,10 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   - I miei test dello script stanno in un file a parte, per non toccare `test_temponet_emg2pose.py`.
 - Valutazione. Lo sbatch passa sempre `--arch "$ARCH"`: una valutazione della variante inviata senza `ARCH=residual` si ferma con un
   errore, senza dare un risultato sbagliato.
+
+### 2026-11-18 | Claude | TEMPONet residua: il limite di 4:00 non serviva (passo misurato 1,254 ms) | Codice 4c8bb84
+
+- Il passo misurato della variante e' 1,254 ms, il 15,6% in piu' della L1, dentro la stima del 15-20%. Sta sotto la soglia di 1,304 ms
+  per il limite di 3:30: col senno di poi bastava. Il limite di 4:00 non e' costato nulla in piu', perche' si conta il tempo usato.
+- Con un caricamento di 1.938 s (2.190 l'11/11) il job sarebbe finito 679 s prima del limite di 3:30. L'epoca 19 sarebbe partita
+  circa 530 s prima dei 12.000 s.
