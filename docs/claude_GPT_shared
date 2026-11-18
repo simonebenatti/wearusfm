@@ -8844,6 +8844,20 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   correzione, un nuovo collaudo e la verifica mirata del critico.
 - Sessione sorella aperta su richiesta di Simone per la variante a blocchi residui (`temponet-residual`): registra le sue attivita'.
 
+### 2026-11-18 | Claude | Studio delle loss di TEMPONet: braccio D corretto (maschera del dropout condivisa), secondo collaudo, verifica del critico e invio di D | Ramo `claude/temponet-db8-20261109`
+
+- Correzione `584d4ab` del rilievo bloccante (voce nella sezione 2): `Stepper._pair_forward` usa una maschera del dropout per finestra e
+  compagna; `dropout_check` lo verifica nel CUDA graph del training. Ci sono anche gli args degli `eval.json`, il collaudo che prova
+  tutte le loss e 2 test nuovi (29 in tutto); il percorso L1 resta identico su CPU (`check_l1_identity`).
+- Deploy `deploy/temponet-emg2pose-loss-20261118-v2` = `584d4ab`. Checkout `temponet-emg2pose-loss-584d4ab` = 64776710 e secondo collaudo
+  64776819, entrambi `COMPLETED 0:0`: controllo eager/graph a differenza 0 per le quattro loss; controllo della maschera condivisa
+  superato (velocita' esattamente 0 con compagna = finestra, posa diversa fra i replay); MSE della velocita' alla prima epoca da 2,50 a
+  1,52; r = 1,380.
+- Verifica mirata del critico: APPROVATO, tre minori registrati in `docs/decisioni.md`. Il torch 2.2 di Leonardo ha lo stesso ramo di
+  Adam `capturable`: con lr 0 i pesi non cambiano.
+- D inviato con limite 05:00:00 (emendamento in `docs/decisioni.md`) e la sua valutazione in `afterok`; ID nel ledger. Spesa attesa
+  dello studio circa 11,1 GPU-ore, esposizione massima circa 16,4.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B

@@ -8123,3 +8123,27 @@ Emendamenti, scritti prima di inviare B, C e D:
    ore locali (fattore 8). Esposizione massima con i limiti (B 4,5, C 4,5, D dal nuovo collaudo, tre valutazioni 0,75): circa 16 GPU-ore,
    da riferire a Simone. Saldo del progetto letto alle 18:55 con `saldo -b`: 1.341.366 ore locali consumate su 2.000.000, residuo 658.634.
    Checkout `TEMPONET-E2P-loss-checkout-20261118` = 64774804: `lrd_all_serial`, limite 10 min, `COMPLETED 0:0` in 2 min 3 s, 0 GPU-ore.
+
+### 2026-11-18 — TEMPONet su emg2pose, studio delle loss: braccio D corretto, secondo collaudo, limite e costo PRIMA del lancio di D (Claude)
+
+- Codice corretto `584d4ab`: una maschera del dropout condivisa per finestra e compagna (emendamento 3). Checkout
+  `temponet-emg2pose-loss-584d4ab` = 64776710, `COMPLETED 0:0` in 40 s.
+- Secondo collaudo `TEMPONET-E2P-loss-smoke-20261118-v2` = 64776819 (dbg, `COMPLETED 0:0`, 2 min 5 s, circa 0,035 GPU-ore). Esiti:
+  - controllo eager/graph con differenza 0 per le quattro loss;
+  - controllo della maschera condivisa nel CUDA graph superato: con compagna = finestra e lr 0, termine della velocita' esattamente 0
+    nei 7 passi; il termine della posa cambia fra i replay. Con lr 0 Adam `capturable` non cambia i pesi: il denominatore diventa
+    -inf e l'aggiornamento ±0. Quindi le variazioni vengono dalle maschere;
+  - l1 con le stesse somme del controllo del primo collaudo e dell'11/11;
+  - MSE della velocita' alla prima epoca 1,52, contro 2,50 con le maschere indipendenti.
+- r = 1,551 / 1,1243 = 1,380 (emendamento 1). Tempo atteso di D = 1,05 x 4.025 + 19 x (357 x 1,380 + 14) = 13.849 s, circa 3,85 ore.
+- **Limite di D: 05:00:00** (tempo massimo 17.100 s), piu' largo di quanto dia la regola 4(b). La regola darebbe 04:30:00, con 66 s di
+  margine sul fattore 1,10. Vale la stessa ragione dell'emendamento 2, un caricamento piu' lento; la spesa attesa non cambia.
+- Regola 4(c): spesa attesa B 3,08 + C 3,08 + D 3,85 + tre valutazioni 0,93 + due collaudi 0,12 = circa 11,1 GPU-ore ≤ 12,5: D parte,
+  con la verifica mirata del critico sulla correzione. Esposizione massima con i limiti: 4,5 + 4,5 + 5,0 + 2,25 + 0,12 = circa 16,4
+  GPU-ore.
+- Verifica mirata del critico sulla correzione `584d4ab`: **APPROVATO**, con tre minori. (1) Il controllo della maschera non guarda i NaN
+  ne' l'invarianza dei pesi. Nel collaudo i 14 valori sono finiti, e nel torch 2.2 di Leonardo
+  (`.../cineca-ai-env/lib/python3.11/site-packages/torch/optim/adam.py`, righe 538-563) il ramo `capturable` con lr 0 e' lo stesso
+  verificato sul Mac: i pesi non cambiano. (2) Gli `eval.json` prodotti da `584d4ab` (braccio D) non hanno `args.loss`, `vel_weight` e
+  `vel_lag_blocks`; quelli di B e C (`0342170`) hanno `args.loss` = l1, che e' quello della chiamata di valutazione. La loss si legge sempre
+  da `train_loss`. (3) La voce del registro e' scritta prima dell'invio di D.
