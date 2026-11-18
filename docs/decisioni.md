@@ -6712,3 +6712,28 @@ differiscono, non solo le norme riportate. Nessun retry e nessun training rilasc
 Analisi, numeri, limiti e proposta di diagnostico da stato/batch comuni in
 docs/reviews/contrastive_gradient_parity_diagnostic_20261118.md; nessun nuovo job
 da GPT scientifico, nessun cambio ai 117 sorgenti, ricette, lambda o soglie.
+
+### 18/11/2026 — Due diagnostici da stato comune per review di Claude
+
+Su richiesta di Simone, preparati due controlli con tre celle GPU: replay
+C0/CN/CR a peso zero su fixture identica, in quattro profili precisione/backend;
+ripresa da checkpoint comune per CN e CR, con due reload indipendenti accanto
+alla prosecuzione in memoria. Protocollo, codice, test, risorse e generatore
+argv pubblicati per review; stato REVIEW_REQUIRED. Nessun lancio.
+Tetto incrementale 6 GPU-ore / 48,27 core-ore; le misure non autorizzano da sole
+i training e non emendano il rapporto storico. Verifiche locali: 7 test passati,
+launcher valido, smoke a quattro rank Gloo con input/RNG/stati di confine uguali
+e due reload bit-identici. Piccolo scarto della prosecuzione rispetto ai reload,
+student 7,5231e-7 dello spostamento, conservato nell'evidenza. Review richiesta
+su disegno, implementazione e prerequisiti prima del deploy.
+
+### 18/11/2026 — Protocollo dei due diagnostici del gradiente e della ripresa
+
+Simone richiede il pacchetto e il prompt per 3-launcher. Fissiamo 24 backward (quattro
+profili, tre bracci a peso zero, due ripetizioni per braccio) e due celle CN/CR
+con prosecuzione e doppia ripresa da un checkpoint comune al passo 580. Confronto
+dei vettori per blocco prima del clipping. Nelle riprese si registrano stato,
+batch, RNG e diagnostica DDP, con lettura numerica su otto aggiornamenti. Regole
+di interpretazione in `docs/contrastive_common_diagnostics_20261118.md`.
+Checkout CPU e tre celle debug da 30 minuti ciascuna, massimo 6 GPU-ore aggiuntive.
+Le ricevute saranno analizzate prima di decidere sui training lunghi.
