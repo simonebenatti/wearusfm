@@ -1,0 +1,55 @@
+{
+ "id": "SCALING-19618-probe-aggregate-01-20261106",
+ "creato": "2026-11-18T18:22:22+01:00",
+ "agente": "gpt",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-19618-probe-aggregate-01-20261106",
+  "--comment=wearusfm:SCALING-19618-probe-aggregate-01-20261106",
+  "--cpus-per-task=2",
+  "--mem=30G",
+  "--time=00:10:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1,EXPECTED_SHA=df2de35c05381e7a5a69edde409171b210a3b5d8",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1/scripts/slurm/scaling_readers19618.sbatch",
+  "probe-aggregate",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_plans19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/readers/probe_plan.json",
+  "4bbfd06515c2a935b09d8befc3686ce1173b84bc7230a6540844827d7a76acf6",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_aggregates/T100-G-30M-natural-p1/aggregate.json",
+  "--cell",
+  "T100-G-30M-natural",
+  "--task",
+  "p1",
+  "--shards",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-30M-natural-p1-01/shard.json"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-18T18:22:22+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-18T18:22:22+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-18T18:22:33+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 64774705,
+   "uscita": 0,
+   "stdout": "64774705\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 64774705,
+ "uscita": 0,
+ "stdout": "64774705\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}
