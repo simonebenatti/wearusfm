@@ -22,6 +22,7 @@ import json
 import os
 import platform
 import queue
+import re
 import resource
 import sys
 import threading
@@ -494,7 +495,14 @@ def run_eval(args) -> int:
         raise SystemExit(f"--arch {args.arch} diversa da quella del training ({arch})")
     model, _, _ = build(0, device, 1e-4, residual=arch == "residual")
     eval_model = T.denormalizer(model, torch.tensor(mu, dtype=torch.float32).to(device), torch.tensor(sd, dtype=torch.float32).to(device))
-    ckpt = Path(args.model_dir) / ("model_final.pt" if train_run.get("status") == "ok" else sorted((Path(args.model_dir) / "checkpoints").glob("*.pt"))[-1])
+    if args.checkpoint:  # training lungo (18/11): il checkpoint di un'epoca dichiarata, invece del modello finale
+        if not re.fullmatch(r"epoch_\d{2,3}\.pt", args.checkpoint):
+            raise SystemExit(f"--checkpoint {args.checkpoint}: atteso epoch_NN.pt")
+        ckpt = Path(args.model_dir) / "checkpoints" / args.checkpoint
+        if not ckpt.is_file():
+            raise SystemExit(f"checkpoint assente: {ckpt}")
+    else:
+        ckpt = Path(args.model_dir) / ("model_final.pt" if train_run.get("status") == "ok" else sorted((Path(args.model_dir) / "checkpoints").glob("*.pt"))[-1])
     eval_model.load_state_dict(torch.load(ckpt, map_location=device))
     t0 = time.time()
     report = {"kind": "temponet_emg2pose_eval_v1", "args": vars(args), "code_sha": os.environ.get("WEARUSFM_CODE_SHA"),
@@ -588,6 +596,8 @@ def main(argv=None) -> int:
     ap.add_argument("--time-budget-s", type=float, default=0.0, help="train: nessuna epoca nuova dopo questo tempo (run incompleto)")
     ap.add_argument("--arch", choices=("plain", "residual"), default=None,
                     help="train: architettura (default plain, la rete di [Z21]); eval: si legge da run.json del training, se data deve coincidere")
+    ap.add_argument("--checkpoint", default=None,
+                    help="eval: checkpoint di un'epoca in <model-dir>/checkpoints (es. epoch_19.pt) invece del modello finale")
     args = ap.parse_args(argv)
     if args.mode == "eval" and not args.model_dir:
         ap.error("eval richiede --model-dir")

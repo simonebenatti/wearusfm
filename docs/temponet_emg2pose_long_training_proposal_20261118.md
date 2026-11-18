@@ -1,6 +1,7 @@
 # TEMPONet su emg2pose: training lungo (proposta, 18/11/2026)
 
-**Stato:** proposta per la firma di Simone. Nessun codice, nessun job, nessuna soglia congelata.
+**Stato:** APPROVATA da Simone il 18/11 («Approvo B»), regole congelate in `docs/decisioni.md` (voce del 18/11). Codice: `EPOCHS`,
+limiti 13:00 e 15:00 e `CHECKPOINT` nello sbatch, `--checkpoint` nella valutazione, con test CPU. Nessun job ancora.
 
 ## Domanda
 
@@ -72,3 +73,14 @@ Il costo massimo e' calcolato sui limiti richiesti.
 1. **Opzione:** A o B.
 2. **Test:** i tre checkpoint 19, 50 e 100, oppure solo il modello finale (un solo sguardo, ma senza il confronto dentro lo stesso run).
 3. **Tetto:** 15,25 GPU-ore per A, 32,5 per B.
+
+## Esecuzione (opzione B)
+
+| ID logico | cosa | risorse |
+|---|---|---|
+| `TEMPONET-E2P-LONG-checkout-20261118` | checkout di campagna congelato | CPU, 10 min |
+| `TEMPONET-E2P-LONG-train-plain-20261118` | 100 epoche, `ARCH=plain`, `EPOCHS=100`, `TRAIN_TIME=13:00:00` | 1 GPU, 13 h |
+| `TEMPONET-E2P-LONG-train-res-20261118` | 100 epoche, `ARCH=residual`, `EPOCHS=100`, `TRAIN_TIME=15:00:00` | 1 GPU, 15 h |
+| `TEMPONET-E2P-LONG-eval-{plain,res}-e{19,50,100}-20261118` | sei valutazioni in afterok (`CHECKPOINT=epoch_19.pt`, `epoch_50.pt`; modello finale) | 1 GPU, 45 min l'una |
+
+Uscite in `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/long_20261118/{plain,residual}/{train,eval_e19,eval_e50,eval_e100}`.

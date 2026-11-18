@@ -8109,3 +8109,38 @@ Eseguito con le regole congelate nella voce precedente, codice `4c8bb84`. Dettag
 4. Nessuna scelta presa dopo il test, nessun rilancio.
 
 **Consuntivo:** **3,510 GPU-ore sul tetto di 4,75** (28,1 ore locali con billing 8): training 3,311, valutazione 0,199. Checkout 0,039 core-ore.
+
+### 2026-11-18 — TEMPONet su emg2pose: training lungo APPROVATO da Simone (opzione B); regole e tetto congelati PRIMA del lancio (Claude)
+
+Alla domanda «Approvi l'opzione A con i tre checkpoint sul test?», con i pulsanti «Sì, approvo A» e «Approvo B», Simone risponde
+«Approvo B». Proposta: `docs/temponet_emg2pose_long_training_proposal_20261118.md` (commit 203b78d).
+
+Mia interpretazione: l'opzione B della proposta com'e', cioe' coi tre checkpoint sul test (decisione 2) e il tetto di 32,5 GPU-ore
+(decisione 3). L'approvazione comprende i lanci (regola del 28/10); nessun rilancio, nessun altro seme o braccio. Congelati qui:
+
+1. **Configurazione:** due run da 100 epoche, la rete senza salti (`ARCH=plain`) e la residua del 18/11 (`ARCH=residual`). Tutto il resto
+   come la L1 (voce del 10/11, punti 1-8) e come la residua (voce del 18/11, punto 2). Seme 0.
+2. **Valutazione:** per ogni run i checkpoint delle epoche 19, 50 e 100, dove il 100 e' il modello finale. Stessa valutazione della L1, col
+   cancello < 0,9 per ciascun checkpoint. Sono tre sguardi al test per run, dichiarati qui e tutti riportati; nessuna scelta fra loro.
+3. **Regola principale**, per run e per condizione (`user`, `stage`, `user_stage`): Δ = MAE all'epoca 100 − MAE all'epoca 19 dello stesso
+   run.
+   - |Δ| ≤ 0,3 gradi: le 19 epoche bastano (non distinguibile con un seme).
+   - Δ < −0,3: segnale che il training lungo migliora, da confermare con piu' semi.
+   - Δ > +0,3: segnale che peggiora (sovra-adattamento), da confermare.
+4. **Regola secondaria** (lo scopo dell'opzione B), per condizione: Δ = MAE residua − MAE senza salti, all'epoca 100, con le stesse tre
+   classi.
+5. **Calcolo:** si usano i valori a piena precisione di `test.conditions.<condizione>.ema.mean_over_users_deg`. La classe si decide sul Δ
+   non arrotondato, che poi si riporta con due decimali.
+6. **Descrittivi:**
+   - l'epoca 50;
+   - l'epoca 19 di ogni run lungo contro il run corto con la stessa rete (L1 dell'11/11, residua del 18/11), dove mi aspetto una differenza
+     piccola;
+   - le curve di validazione per epoca e l'uscita grezza.
+7. **Casi particolari:** un checkpoint che non supera il cancello non va al test, e le letture che lo usano non si fanno. Un training
+   incompleto non si legge. In entrambi i casi niente rilancio senza diagnosi.
+8. **Risorse:** **tetto 32,5 GPU-ore**.
+   - Senza salti: 1 GPU, limite 13:00, nessuna epoca nuova dopo 45.900 s, 8 CPU, 120 GB; al massimo 13 GPU-ore.
+   - Residua: limite 15:00, nessuna epoca nuova dopo 53.100 s; al massimo 15 GPU-ore.
+   - Sei valutazioni da 45 min in afterok: al massimo 4,5 GPU-ore.
+   - Checkout CPU: 10 min.
+   - Un job che finirebbe dentro la manutenzione del 23-25/11 aspetta la fine in coda.

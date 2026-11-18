@@ -25,13 +25,19 @@
 #     (altrimenti si ferma con un errore). TRAIN_TIME = limite del training, uguale a
 #     --time, fra quelli della tabella sotto (default 03:30:00):
 #     sbatch --time=04:00:00 --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha>,ARCH=residual,TRAIN_TIME=04:00:00 temponet_emg2pose.sbatch train ...
+#   training lungo (18/11/2026, docs/temponet_emg2pose_long_training_proposal_20261118.md): EPOCHS = epoche del training (default 19, la
+#     ricetta di [Z21]), con TRAIN_TIME 13:00:00 o 15:00:00; CHECKPOINT=epoch_NN.pt fa valutare il checkpoint di quell'epoca invece del modello
+#     finale (default: il modello finale).
 # Le uscite vanno in una cartella NUOVA fuori dal codice; nessun riavvio automatico, nessun nuovo tentativo.
 set -uo pipefail
 MODE="${1:?smoke, train o eval}"; MANIFEST="${2:?manifest del passo 0}"; OUT="${3:?cartella delle uscite}"; MODEL_DIR="${4:-}"
-ARCH="${ARCH:-plain}"; TRAIN_TIME="${TRAIN_TIME:-03:30:00}"
+ARCH="${ARCH:-plain}"; TRAIN_TIME="${TRAIN_TIME:-03:30:00}"; EPOCHS="${EPOCHS:-19}"; CHECKPOINT="${CHECKPOINT:-}"
 case "$ARCH" in plain|residual) ;; *) echo "ARCH: plain o residual"; exit 2;; esac
+case "$EPOCHS" in ""|*[!0-9]*|0*) echo "EPOCHS: intero positivo senza zeri iniziali"; exit 2;; esac
+case "$CHECKPOINT" in ""|epoch_[0-9][0-9].pt|epoch_[0-9][0-9][0-9].pt) ;; *) echo "CHECKPOINT: epoch_NN.pt"; exit 2;; esac
 # tempo massimo del training prima dell'ultima epoca: 600 s di margine col limite di 3 ore e 30 (come l'11/11), 900 s con i limiti piu' lunghi
-case "$TRAIN_TIME" in 03:30:00) BUDGET=12000;; 04:00:00) BUDGET=13500;; *) echo "TRAIN_TIME non ammesso: $TRAIN_TIME"; exit 2;; esac
+case "$TRAIN_TIME" in 03:30:00) BUDGET=12000;; 04:00:00) BUDGET=13500;; 13:00:00) BUDGET=45900;; 15:00:00) BUDGET=53100;;
+  *) echo "TRAIN_TIME non ammesso: $TRAIN_TIME"; exit 2;; esac
 case "$MODE" in smoke) EXPECTED_TIME=00:30:00;; train) EXPECTED_TIME=$TRAIN_TIME;; eval) EXPECTED_TIME=00:45:00;; *) echo "modo: smoke, train o eval"; exit 2;; esac
 if [ "$MODE" = eval ] && [ -z "$MODEL_DIR" ]; then echo "eval: serve la cartella del training"; exit 2; fi
 for P in "$MANIFEST" "$OUT" ${MODEL_DIR:+"$MODEL_DIR"}; do case "$P" in /*) ;; *) echo "percorso relativo rifiutato: $P"; exit 2;; esac; done
@@ -62,9 +68,10 @@ if [ "$MODE" = smoke ]; then
   python3 scripts/temponet_emg2pose.py eval "${COMMON[@]}" --out "$OUT/eval_val" --model-dir "$OUT/train" --val-only --arch "$ARCH" || exit 1
 elif [ "$MODE" = train ]; then
   python3 scripts/temponet_emg2pose.py train "${COMMON[@]}" --out "$OUT" --check-graph --time-budget-s "$BUDGET" \
-    --train-stride-blocks "${TRAIN_STRIDE:-8}" --arch "$ARCH" || exit 1
+    --train-stride-blocks "${TRAIN_STRIDE:-8}" --arch "$ARCH" --epochs "$EPOCHS" || exit 1
 else
-  python3 scripts/temponet_emg2pose.py eval "${COMMON[@]}" --out "$OUT" --model-dir "$MODEL_DIR" --arch "$ARCH"
+  python3 scripts/temponet_emg2pose.py eval "${COMMON[@]}" --out "$OUT" --model-dir "$MODEL_DIR" --arch "$ARCH" \
+    ${CHECKPOINT:+--checkpoint "$CHECKPOINT"}
   RC=$?
   [ "$RC" = 0 ] || exit "$RC"
 fi
