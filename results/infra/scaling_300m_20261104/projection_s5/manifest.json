@@ -1,0 +1,56 @@
+{
+  "algorithm": {
+    "data_independent": true,
+    "distribution": "standard_normal_float64",
+    "generator": "numpy.Generator(PCG64)",
+    "pool_block_order": [
+      "backbone",
+      "local"
+    ],
+    "qr": "numpy.linalg.qr(mode=reduced)",
+    "rescaling": null,
+    "shape": [
+      896,
+      384
+    ],
+    "sign": "positive diagonal of R; matching column signs in Q",
+    "storage": "C-contiguous little-endian float32"
+  },
+  "complete": true,
+  "files": {
+    "backbone": {
+      "array_sha256": "597571a6a3bb76a4a2cc1cac212252f081a6e7031ab51dfe9aecb40551f6918c",
+      "bytes": 1376384,
+      "dtype": "<f4",
+      "file": "backbone.npy",
+      "seed": 2026110401,
+      "sha256": "29657a833d3effb94e2149e38ffa71b0ed7b8cd6b7b7336c99225b94f9b5028c",
+      "shape": [
+        896,
+        384
+      ]
+    },
+    "local": {
+      "array_sha256": "4b7d480ed6a06ce80b412f81ef88cec25b8e6356fb57c7c96ba71fcc1b19edfe",
+      "bytes": 1376384,
+      "dtype": "<f4",
+      "file": "local.npy",
+      "seed": 2026110402,
+      "sha256": "f0673be7ffc2dfd5cce16bac46c44f50d520586a61f64cb049884e2878353dbf",
+      "shape": [
+        896,
+        384
+      ]
+    }
+  },
+  "generator_source_sha256": "a8c0f7880095df02186e465a1ce86030b8b2fe5ee1beb8a965b349ff205ee88d",
+  "protocol": "scaling-projection-20261104-v1",
+  "seeds": {
+    "backbone": 2026110401,
+    "local": 2026110402
+  },
+  "versions": {
+    "numpy": "2.3.5",
+    "python": "3.11.14"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "campaign": "consolidation-20261104",
+  "status": "ready_after_claude_convergence",
+  "review": "0b2623a",
+  "campaign_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-20261104",
+  "deploy_ref": "refs/heads/deploy/consolidation-20261104",
+  "code_pin": "commit containing this plan; full SHA must be published and recorded in submission receipt",
+  "submitter": "scripts/submit_job.py",
+  "ledger": "~/wearusfm_local/jobs/",
+  "jobs": [
+    {
+      "logical_id": "CONSOL-checkout-20261104",
+      "after": [],
+      "gpus": 0,
+      "cpus": 1,
+      "memory": "2G",
+      "seconds": 600,
+      "gpu_hours_estimate": 0,
+      "script_stdin": "scripts/slurm/campaign_checkout.sbatch"
+    },
+    {
+      "logical_id": "CONSOL-G-30000-20261104",
+      "after": [
+        "CONSOL-checkout-20261104"
+      ],
+      "gpus": 4,
+      "cpus": 32,
+      "memory": "480G",
+      "seconds": 10800,
+      "gpu_hours_estimate": 8.944040680439642,
+      "launcher": "scripts/slurm/consolidation_continue.sbatch",
+      "args": [
+        "30000"
+      ]
+    },
+    {
+      "logical_id": "CONSOL-G-39237-20261104",
+      "after": [
+        "CONSOL-G-30000-20261104"
+      ],
+      "gpus": 4,
+      "cpus": 32,
+      "memory": "480G",
+      "seconds": 10800,
+      "gpu_hours_estimate": 7.9576289506088385,
+      "launcher": "scripts/slurm/consolidation_continue.sbatch",
+      "args": [
+        "39237"
+      ]
+    },
+    {
+      "logical_id": "CONSOL-G-49046-20261104",
+      "after": [
+        "CONSOL-G-39237-20261104"
+      ],
+      "gpus": 4,
+      "cpus": 32,
+      "memory": "480G",
+      "seconds": 10800,
+      "gpu_hours_estimate": 8.450404068043964,
+      "launcher": "scripts/slurm/consolidation_continue.sbatch",
+      "args": [
+        "49046"
+      ]
+    },
+    {
+      "logical_id": "FT-BENCH-20261104",
+      "after": [
+        "CONSOL-checkout-20261104"
+      ],
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 1800,
+      "gpu_hours_estimate": 0.5,
+      "launcher": "scripts/slurm/consolidation_finetune.sbatch",
+      "args": [
+        "benchmark",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/benchmark"
+      ]
+    }
+  ],
+  "gpu_hours_cap": 36.5,
+  "allocated_core_hours_cap": 292.1666666666667,
+  "rules": [
+    "quota evidence age checked immediately before each submission",
+    "same code and continuation plan across all three phases",
+    "no duplicate IDs or blind retries",
+    "benchmark and FT results under WORK",
+    "fits require complete pinned benchmark and published measured budget",
+    "no automatic monitor"
+  ]
+}

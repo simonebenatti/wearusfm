@@ -334,9 +334,12 @@ def test_load_context_rebuilds_actual_frozen_cli_and_data_signature(tmp_path, mo
     for flag, name in (('--manifest', 'manifest'), ('--scales', 'scales'), ('--window-seconds', 'windows')):
         argv[argv.index(flag) + 1] = inputs[name]['path']
     argv[argv.index('--pose-root') + 1] = str(tmp_path)
-    cfg = train_jepa.build_config(train_jepa.build_parser().parse_args(argv[1:]))
+    cfg = train_jepa.build_config(train_jepa.build_parser().parse_args(train_jepa.historical_args(argv[1:])))  # run storico: 25/50
     config_path = tmp_path / 'frozen_config.json'
-    cp = save_json(config_path, R.config_to_dict(cfg))
+    stored = R.config_to_dict(cfg)
+    for key in ('rms_window_ms', 'ms_fast_window_ms'):  # config salvato prima del 18/11: i due campi mancano (= 25/50)
+        del stored['loader'][key]
+    cp = save_json(config_path, stored)
     comparison = save_json(tmp_path / 'comparison.json', {'arm_configurations': {'T100-G': {
         'config': cp['path'], 'sha256': cp['sha256'], 'validated_trainer_argv': argv}}})
     refs = {split: {'path': str(tmp_path / (split + '.npz')), 'sha256': '0' * 64, 'bytes': 1, **selection}

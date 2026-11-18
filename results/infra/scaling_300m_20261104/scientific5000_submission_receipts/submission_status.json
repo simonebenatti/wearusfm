@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "campaign": "scaling-300m-20261104",
+  "code_sha": "dc96559405b5fff971a3be06a6ca59c992d342dc",
+  "submission_metadata_commit": "6c9b145365801c07f508708e461c915ce474b492",
+  "plan_sha256": "66aac4e8cfaf7bb85f36ce78a1f3454fe1fb696a17f0b2fc5a7d3a3b86fb4c66",
+  "checkout": {
+    "logical_id": "SCALING-300M-checkout-scientific5000-20261104",
+    "job_id": 63532877,
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 27,
+    "allocated_cpus": 2,
+    "actual_core_hours": 0.015,
+    "verified": [
+      "HEAD",
+      "clean_tree",
+      "read_only",
+      "launcher_sha256",
+      "plan_sha256"
+    ]
+  },
+  "training": {
+    "logical_id": "SCALING-300M-train5000-20261104",
+    "job_id": 63532932,
+    "submitted_at": "2026-11-04T21:34:49+01:00",
+    "initial_observed_state": "PENDING",
+    "initial_observed_reason": "Priority",
+    "state_evidence": "training_initial_status.txt",
+    "resources": {
+      "nodes": 1,
+      "gpus": 4,
+      "cpus": 32,
+      "memory_gib": 480,
+      "walltime_seconds": 19800
+    },
+    "reserved_gpu_hours": 22,
+    "reserved_core_hours": 176,
+    "resume": false,
+    "steps": 5000
+  },
+  "checkout_reserved_core_hours": 0.3333333333333333,
+  "automatic_continuation_19618": false,
+  "background_monitor": false,
+  "runtime_guards_completed_at_submission": false,
+  "runtime_guards_note": "The wrapper will revalidate full S3 evidence including its technical checkpoint hash, plus the pinned 30M control state, in the allocation before torchrun. Scheduler acceptance does not certify those checks.",
+  "next_phase": "After complete checkpoint and receipts: verify dose and hashes, publish actual pins for the five planned extractions. Read measured cache benchmarks before CPU fits.",
+  "scientific_result_available": false
+}

@@ -1,0 +1,44 @@
+{
+ "id": "SCALING-cpu-plans-checkout-20261105",
+ "creato": "2026-11-05T14:59:43+01:00",
+ "agente": "gpt",
+ "campagna": "scaling-300m-20261104",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "1bde83e5be036ad6168ad25f6ffa80069ea58700",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SCALING-cpu-plans-checkout-20261105",
+  "--comment=wearusfm:SCALING-cpu-plans-checkout-20261105",
+  "--cpus-per-task=2",
+  "--mem=4G",
+  "--time=00:05:00",
+  "--export=ALL,CAMPAIGN=scaling_300m_cpu_plans_20261105_v1,CAMPAIGN_SHA=1bde83e5be036ad6168ad25f6ffa80069ea58700,EXPECTED_SHA=1bde83e5be036ad6168ad25f6ffa80069ea58700"
+ ],
+ "dopo": null,
+ "script_stdin": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-scaling-300m/scripts/slurm/campaign_checkout.sbatch",
+ "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-05T14:59:43+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-05T14:59:43+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-05T14:59:44+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63591447,
+   "uscita": 0,
+   "stdout": "63591447\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63591447,
+ "uscita": 0,
+ "stdout": "63591447\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

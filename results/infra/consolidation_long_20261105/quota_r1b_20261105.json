@@ -1,0 +1,30 @@
+{
+  "observed_at_utc": "2026-11-05T19:22:44.346212Z",
+  "project_id": 20147512,
+  "used_kbytes": 1038988100,
+  "soft_quota_kbytes": 1073741824,
+  "free_bytes": 35587813376,
+  "files": 1500277,
+  "ft15_inventory": {
+    "method": "read-only stat of the24 registered candidate directories, no payload read",
+    "candidate_directories": 24,
+    "existing_directories": 16,
+    "complete_checkpoint_files": 8,
+    "complete_regime": "frozen",
+    "checkpoint_bytes_each": 113593316,
+    "pending_checkpoint_files": 16,
+    "pending_regimes": [
+      "finetune",
+      "scratch"
+    ],
+    "pending_checkpoint_bytes": 1817493056,
+    "remaining_metadata_allowance_bytes": 33554432
+  },
+  "long_pending_output_bytes": 25769803776,
+  "base_headroom_bytes": 8589934592,
+  "required_free_bytes_including_ft15": 36210785856,
+  "passes_initial32GiB": true,
+  "passes_admitted_unwritten_outputs": false,
+  "shortfall_bytes": 622972480,
+  "limitation": "bounded inventory confirms future ownFT15 writes, not authorship of past shared project growth; other concurrent campaigns may add writes; no deletions/moves and refresh required before launch"
+}

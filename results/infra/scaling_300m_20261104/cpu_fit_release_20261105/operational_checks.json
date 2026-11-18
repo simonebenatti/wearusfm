@@ -1,0 +1,27 @@
+{
+  "uci_accepted": true,
+  "benchmark_matrix": "15/15",
+  "complete_benchmark_fits": 90,
+  "historical_partial_fits": 5,
+  "packing_independently_checked": true,
+  "scientific_runtime_diff_against_aef": "empty",
+  "script_stdin_sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5",
+  "ledger_all15_logical_ids_unused": true,
+  "pre_submission_correction": "pose-ridge --out is a directory; corrected from nested report.json before any submit",
+  "remote_deploy_check": {
+    "canonical_head": "refs/heads/main",
+    "receive_denycurrentbranch": "updateInstead",
+    "pre_receive": null,
+    "update": null,
+    "post_receive": null,
+    "metadata_destination_absent": true
+  },
+  "remaining_live_gates": [
+    "metadata checkout complete and hash verified",
+    "actual remote pins",
+    "free serial queue slots",
+    "no preceding job failures"
+  ],
+  "independent_operational_review": "PASS after correction of pose out directory: real submitter/dispatcher parser on15argv, pins,60coverage,14shards, formula and budget; no remaining metadata blocker.",
+  "reviewed_submission_plan_sha256": "0370cdf8a819d5e6e6c39731725b8754d1c884f3054f24875010f895bf35d505"
+}

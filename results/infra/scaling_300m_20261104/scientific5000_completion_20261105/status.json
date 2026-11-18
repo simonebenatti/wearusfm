@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "job_id": 63532932,
+  "code_sha": "dc96559405b5fff971a3be06a6ca59c992d342dc",
+  "observed_date": "2026-11-05",
+  "timezone": "Europe/Rome",
+  "slurm": {
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "start": "2026-11-05T07:16:12+01:00",
+    "end": "2026-11-05T11:22:13+01:00",
+    "elapsed_seconds": 14761,
+    "cpus": 32,
+    "gpus": 4,
+    "batch_max_rss_kib": 93553760
+  },
+  "actual_gpu_hours": 16.40111111111111,
+  "actual_core_hours": 131.20888888888888,
+  "log_summary": {
+    "stopped": "max_steps",
+    "steps": 5000,
+    "parameters": 292054847,
+    "world_size": 4,
+    "batch_per_process": 8,
+    "accum_steps": 1,
+    "prefetch": true,
+    "elapsed_s": 14665.05355668068,
+    "gpu_max_memory_gib": 37.7518310546875,
+    "python": "3.11.6",
+    "torch": "2.2.0a0+git6c8c5ad",
+    "cuda": "12.1"
+  },
+  "receipt_listing": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/scientific5000_v1",
+    "files_bytes": {
+      "config.json": 3595,
+      "launch.json": 65641,
+      "receipt.json": 15217,
+      "summary.json": 1902
+    }
+  },
+  "checkpoint_listing": {
+    "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000",
+    "files_bytes": {
+      "checkpoint.pt": 4673783740,
+      "checkpoint_step0005000.pt": 4673783740
+    }
+  },
+  "collection_complete": true,
+  "remote_hashes_reverified": true,
+  "extractions_submitted": true,
+  "collection_obstacle": null,
+  "scientific_comparison_available": false,
+  "next": "Wait for five extraction jobs to complete, verify receipts and cache support, then CPU benchmarks before fits.",
+  "background_monitor": false,
+  "transient_collection_issue": "SSH timeouts/closed connections resolved for required receipts and hashes; a Python3.6 diagnostic collector was corrected (text=True unsupported); no job affected.",
+  "receipt_files_collected": [
+    "launch.json",
+    "config.json",
+    "summary.json",
+    "receipt.json"
+  ],
+  "remote_hash_inventory": "remote_sha256.txt",
+  "training_log_audit": "diagnostics.json",
+  "local_checkpoint_state_reloaded": false,
+  "checkpoint_state_guard": "Producer validated before final receipt; each extraction validates again on compute.",
+  "evaluation_submission_status": "../evaluation_submission_receipts_20261105/submission_status.json"
+}

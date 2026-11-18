@@ -1,0 +1,112 @@
+{
+  "protocol": "scaling-s3-independent-collected-audit-20261104-v1",
+  "complete": true,
+  "scope": "independent audit of small collected evidence; not full validate_report",
+  "job_id": "63527446",
+  "code_sha": "0d5f0f90074bbaf1142be86d22490e360b632c63",
+  "training_source_contract_sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+  "verified_at_utc": "2026-11-04T20:26:48.521356+00:00",
+  "verifier": {
+    "path": "results/infra/scaling_300m_20261104/production_memory_63527446/verify_collected.py",
+    "sha256": "dda20567f0d06680e396d42e4f48ab348d5156ddb6be59c03401fff6bb80e983",
+    "bytes": 23784
+  },
+  "collection_manifest": {
+    "sha256": "ae1cd9c86848904a3aebcf7a3e259ee0ececcdd18be2e740b8c9e634ac1d818f",
+    "bytes": 4271
+  },
+  "accounting": {
+    "sha256": "2b479f3d11dc455b7486eb96c070aa2a6741bc16dd83da0b0a1e6a12aa654d9b",
+    "bytes": 919
+  },
+  "report": {
+    "sha256": "45acd95c81db3a550eb9bd1dabf5055dd5ae5d35e94a8cb0fabb39035144f7f9",
+    "bytes": 9505
+  },
+  "files_verified": 15,
+  "source_files_verified": 106,
+  "steps": 500,
+  "global_windows_per_update": 32,
+  "global_windows_processed": 16000,
+  "ranks": 4,
+  "coverage_steps": {
+    "fixed_eval": [
+      0,
+      500
+    ],
+    "pose_panel": [
+      0,
+      500
+    ],
+    "gradient_diagnostics": [
+      500
+    ]
+  },
+  "production_memory_gate_passed": true,
+  "peak_allocated_gib_by_rank": [
+    29.610982418060303,
+    31.24164628982544,
+    29.71045160293579,
+    34.544031620025635
+  ],
+  "memory_fraction_by_rank": [
+    0.46688326332597774,
+    0.4925943207670551,
+    0.4684516171542762,
+    0.5446638001904501
+  ],
+  "max_memory_fraction_allowed": 0.9,
+  "summary_elapsed_seconds": 1568.9162013530731,
+  "runtime": {
+    "python": "3.11.6",
+    "torch": "2.2.0a0+git6c8c5ad",
+    "cuda": "12.1",
+    "cudnn": 8907
+  },
+  "runtime_comparison": {
+    "matched_fields": [
+      "python",
+      "torch",
+      "cuda"
+    ],
+    "unavailable_in_reference": [
+      "cudnn"
+    ],
+    "reference": {
+      "python": "3.11.6",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "cuda": "12.1"
+    }
+  },
+  "observed_allocation_and_cost": {
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 1619,
+    "gpus": 4,
+    "cpus": 32,
+    "nodes": 1,
+    "gpu_hours": 1.798888888888889,
+    "cpu_core_hours": 14.391111111111112,
+    "max_rss_by_sacct_row": {
+      "63527446": "",
+      "63527446.batch": "57005816K",
+      "63527446.extern": ""
+    }
+  },
+  "technical_checkpoint": {
+    "producer_pin": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/production_memory_v1/checkpoint.pt",
+      "sha256": "3abe7deda256532cad9440eb384e246516cd2669192e849c0d454d32d2d23a6d",
+      "bytes": 4673783740
+    },
+    "downloaded": false,
+    "locally_hashed": false,
+    "locally_loaded": false
+  },
+  "full_validate_report_local": false,
+  "remaining_checks": [
+    "Scientific wrapper repeats full validate_report on its compute node, including remote checkpoint hash.",
+    "Remote absence of STOP/scientific checkpoints and checkpoint contents are not independently inspected here."
+  ],
+  "authorizes_scientific_training": false
+}

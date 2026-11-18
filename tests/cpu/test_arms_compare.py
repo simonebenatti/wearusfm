@@ -64,6 +64,7 @@ def _config(plan, run_id):
     run = next(r for r in W.resolve(plan) if r["id"] == run_id)
     argv = ["--preset", run["preset"], "--manifest", "m.json.gz", "--root", "r", "--scales", str(WS), "--out-dir", str(_TMP / "out"),
             "--max-steps", str(run["total_steps"])] + shlex.split(W.extra_args(plan, run))
+    argv = TJ.historical_args(argv)  # run di un piano storico (finestra 1): il trainer di allora aveva i target 25/50
     captured = {}
     orig = TJ.R.train, TJ.R.check_input_files
     try:

@@ -1,0 +1,58 @@
+{
+  "protocol": "scaling-pose-resources-20261104-v1",
+  "complete": true,
+  "code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+  "plan_sha256": "a500cc3c56bde3938a2aa384bf6a942fd6eaf02be0ebd5935ac251f732cb2198",
+  "allocation": {
+    "cpus": 8,
+    "memory_gib": 30,
+    "walltime_seconds": 3600
+  },
+  "validation_report": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/pose_validate/report.json",
+    "sha256": "b0af2231601d33f60006205681b9943e21c26ff6346b28a4d584ca7840774c63",
+    "bytes": 18480
+  },
+  "validation_accounting": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_budgets_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/pose_validate/accounting.json",
+    "sha256": "d46ab04d1712788a72fbe44732ee65fbe884a127b625c2955119ec33f787085a",
+    "bytes": 690
+  },
+  "benchmarks": {
+    "T100-G-30M-natural": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/pose_benchmark/T100-G-30M-natural/report.json",
+      "sha256": "a95885c8d06d6442471a36d41c058a9674470f50bf7f348367dd722b6fa099dd",
+      "bytes": 12595
+    },
+    "T100-G-300M-natural": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/pose_benchmark/T100-G-300M-natural/report.json",
+      "sha256": "810513c12f31bc66f0074986c3f419affdf64e8cb42ca847d416486cd16ac4ff",
+      "bytes": 12593
+    },
+    "T100-G-300M-matched": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/pose_benchmark/T100-G-300M-matched/report.json",
+      "sha256": "df64d89f672ad09643c21edb3ba07dab18602545bde6b414191a9128cea302ad",
+      "bytes": 12593
+    }
+  },
+  "benchmark_accounting": {
+    "T100-G-30M-natural": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_budgets_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/pose_benchmark/T100-G-30M-natural/accounting.json",
+      "sha256": "7bc51326ca4b71b0197360a2b154ba74d3b81a97eb23d9b16d609b470420a59a",
+      "bytes": 704
+    },
+    "T100-G-300M-natural": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_budgets_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/pose_benchmark/T100-G-300M-natural/accounting.json",
+      "sha256": "f69e3edde05a12bb500b497aa774bdf26ac390dc6d8b9cbbb02091ece3a26b0d",
+      "bytes": 704
+    },
+    "T100-G-300M-matched": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_budgets_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/pose_benchmark/T100-G-300M-matched/accounting.json",
+      "sha256": "ac4476e40e60096352a32dcbd8ebf2bc186b6bf791ccd64de1dfd27e8df073cd",
+      "bytes": 704
+    }
+  },
+  "derived_seconds": 660,
+  "full_live_runtime_gate_pending": true,
+  "release_note": "Measured budget prepared. Publish and verify metadata checkout and fit argv before submission; no job is submitted by this JSON."
+}

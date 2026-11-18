@@ -1,0 +1,227 @@
+{
+  "observed_at_utc": "2026-11-05T12:14:35.039183+00:00",
+  "code_sha": "1359b924d25601f92e9035b8bd621c2c6a93f947",
+  "all24_submitted": true,
+  "unique_slurm_jobs": 24,
+  "dependency_count": 12,
+  "rows": [
+    {
+      "id": "FT15-EPN-frozen-F0-20261105-C0",
+      "job_id": 63581664,
+      "regime": "frozen",
+      "fold": 0,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-frozen-F0-20261105-C1",
+      "job_id": 63581670,
+      "regime": "frozen",
+      "fold": 0,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63581664"
+      ]
+    },
+    {
+      "id": "FT15-EPN-frozen-F1-20261105-C0",
+      "job_id": 63581672,
+      "regime": "frozen",
+      "fold": 1,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-frozen-F1-20261105-C1",
+      "job_id": 63581673,
+      "regime": "frozen",
+      "fold": 1,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63581672"
+      ]
+    },
+    {
+      "id": "FT15-EPN-frozen-F2-20261105-C0",
+      "job_id": 63581674,
+      "regime": "frozen",
+      "fold": 2,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-frozen-F2-20261105-C1",
+      "job_id": 63581677,
+      "regime": "frozen",
+      "fold": 2,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63581674"
+      ]
+    },
+    {
+      "id": "FT15-EPN-frozen-F3-20261105-C0",
+      "job_id": 63581682,
+      "regime": "frozen",
+      "fold": 3,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-frozen-F3-20261105-C1",
+      "job_id": 63581713,
+      "regime": "frozen",
+      "fold": 3,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63581682"
+      ]
+    },
+    {
+      "id": "FT15-EPN-finetune-F0-20261105-C0",
+      "job_id": 63581718,
+      "regime": "finetune",
+      "fold": 0,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-finetune-F0-20261105-C1",
+      "job_id": 63581725,
+      "regime": "finetune",
+      "fold": 0,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63581718"
+      ]
+    },
+    {
+      "id": "FT15-EPN-finetune-F1-20261105-C0",
+      "job_id": 63581735,
+      "regime": "finetune",
+      "fold": 1,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-finetune-F1-20261105-C1",
+      "job_id": 63581741,
+      "regime": "finetune",
+      "fold": 1,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63581735"
+      ]
+    },
+    {
+      "id": "FT15-EPN-finetune-F2-20261105-C0",
+      "job_id": 63581742,
+      "regime": "finetune",
+      "fold": 2,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-finetune-F2-20261105-C1",
+      "job_id": 63581745,
+      "regime": "finetune",
+      "fold": 2,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63581742"
+      ]
+    },
+    {
+      "id": "FT15-EPN-finetune-F3-20261105-C0",
+      "job_id": 63581750,
+      "regime": "finetune",
+      "fold": 3,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-finetune-F3-20261105-C1",
+      "job_id": 63581751,
+      "regime": "finetune",
+      "fold": 3,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63581750"
+      ]
+    },
+    {
+      "id": "FT15-EPN-scratch-F0-20261105-C0",
+      "job_id": 63581768,
+      "regime": "scratch",
+      "fold": 0,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-scratch-F0-20261105-C1",
+      "job_id": 63581837,
+      "regime": "scratch",
+      "fold": 0,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63581768"
+      ]
+    },
+    {
+      "id": "FT15-EPN-scratch-F1-20261105-C0",
+      "job_id": 63581887,
+      "regime": "scratch",
+      "fold": 1,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-scratch-F1-20261105-C1",
+      "job_id": 63582180,
+      "regime": "scratch",
+      "fold": 1,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63581887"
+      ]
+    },
+    {
+      "id": "FT15-EPN-scratch-F2-20261105-C0",
+      "job_id": 63582244,
+      "regime": "scratch",
+      "fold": 2,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-scratch-F2-20261105-C1",
+      "job_id": 63582253,
+      "regime": "scratch",
+      "fold": 2,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63582244"
+      ]
+    },
+    {
+      "id": "FT15-EPN-scratch-F3-20261105-C0",
+      "job_id": 63582258,
+      "regime": "scratch",
+      "fold": 3,
+      "candidate": 0,
+      "dependency": []
+    },
+    {
+      "id": "FT15-EPN-scratch-F3-20261105-C1",
+      "job_id": 63582269,
+      "regime": "scratch",
+      "fold": 3,
+      "candidate": 1,
+      "dependency": [
+        "--dependency=afterok:63582258"
+      ]
+    }
+  ],
+  "scope": "common ledger and submission commands, not current SLURM runtime state",
+  "no_job_cancelled_or_resubmitted": true
+}

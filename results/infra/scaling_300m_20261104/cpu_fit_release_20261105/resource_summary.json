@@ -1,0 +1,44 @@
+{
+  "protocol": "scaling5000-measured-envelope-20261105-v1",
+  "simone_cap_core_hours": 310,
+  "fit_cap_requested_core_hours": 240,
+  "actual_cpu_so_far": 28.358888888888888,
+  "probe_fits": 14,
+  "probe_requested_core_hours": 205.86666666666667,
+  "probe_serial_allocated_hours": 25.733333333333334,
+  "pose_ridge_requested_core_hours": 8,
+  "pose_ridge_formula_seconds": 660,
+  "gpu_hours": 0,
+  "lines": [
+    {
+      "stage": "actual_CPU_including_recoveries",
+      "core_hours": 28.358888888888888
+    },
+    {
+      "stage": "probe_fits",
+      "requested_core_hours": 205.86666666666667,
+      "shutdown_allowance_core_hours": 5.6,
+      "core_hours": 211.46666666666667
+    },
+    {
+      "stage": "pose_ridge",
+      "core_hours": 8.4
+    },
+    {
+      "stage": "six_aggregates",
+      "core_hours": 2.6
+    },
+    {
+      "stage": "comparison",
+      "core_hours": 4.4
+    },
+    {
+      "stage": "two_metadata_checkouts",
+      "core_hours": 0.5333333333333333
+    }
+  ],
+  "total_actual_plus_maximum_remaining_core_hours": 255.7588888888889,
+  "reserve_to_310_core_hours": 54.24111111111111,
+  "budget_not_duration_forecast": true,
+  "new_science": false
+}

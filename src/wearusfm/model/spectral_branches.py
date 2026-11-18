@@ -39,7 +39,7 @@ from torch.nn import functional as F
 
 from wearusfm.model.spectral_targets import EPS
 
-SCALES = (("fast", 50.0, 25.0, 6), ("slow", 500.0, 100.0, 24))  # (nome, finestra ms, passo ms, bande): come MS_SCALES e MS_HOP_MS delle ancore
+SCALES = (("fast", 50.0, 25.0, 6), ("slow", 500.0, 100.0, 24))  # frontend storico: il target ms_fast del 18/11 (125 ms) non cambia l'ingresso dei rami
 BRANCH_KINDS = ("psd", "wavelet")
 SUPPORT_SIGMAS = 3.0  # supporto di un filtro wavelet: +-3 sigma_t (ampiezza e^-4,5 ~ 1%)
 BRANCHES_VERSION = "steps23_psd_wavelet_v1"

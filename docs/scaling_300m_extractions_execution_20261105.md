@@ -1,0 +1,122 @@
+# Estrazioni 30M/300M a 5.000 passi — 5 novembre 2026
+
+Il training **63532932 è COMPLETED 0:0**: 5.000 update, batch globale 32,
+160.000 finestre. Consuntivo 16,401111 GPU-ore e 131,208889 core-ore; nessun
+resume o cambiamento di ricetta. Raccolte le quattro ricevute, confrontate con
+gli hash remoti, il piano e il contratto. Checkpoint nominato e finale 300M:
+`37279995d0d484e241b032eb9b6b23a31c16a5947a0e2cf0c575da0cb70641aa`.
+Controllo 30M rihashato: `49dd518b…daa80`; snapshot immutabili a 5.000 confermati.
+Il controllo dei log trova tutti i passi, LR e cadenze previsti, senza STOP.
+Le copie locali non ricaricano il checkpoint: il producer lo ha verificato
+prima della receipt e ogni estrazione ripete la verifica integrale sul compute.
+
+## Piano congelato e finalità
+
+Piano unico `results/infra/scaling_300m_20261104/extraction_plan_5000_20261105.json`,
+SHA256 `8b358951182f02dc6af8fafd2621f2dc1ae2eb98939e67c5c914ecc09933528d`.
+Usa il teacher dei due checkpoint a pari dose, le stesse popolazioni e gli
+estrattori già approvati. Nessuna scelta dai risultati di validazione e nessun
+nuovo training. Per la posa 30M si riusano le due cache esistenti a 5.000.
+Le cinque estrazioni producono dodici cache; insieme alle due storiche sono
+quattordici. La proiezione S5 viene applicata nei lettori CPU successivi.
+
+## Risorse e invii
+
+Checkout nuovo `scaling_300m_evaluation_20261105_v1`, codice del commit che
+pubblica questo piano, da registrare nello stato degli invii. Un checkout
+congelato comune per tutti gli estrattori e per il codice dei lettori successivi.
+Il training conserva il proprio commit dc965594.
+
+| ID logico | Operazione | GPU | CPU | RAM | Tempo massimo | GPU-ore |
+|---|---|---:|---:|---|---|---:|
+| SCALING-300M-eval-checkout-20261105 | Checkout | 0 | 2 | 4G | 10 min | 0 |
+| SCALING-300M-eval-pose-20261105 | Posa 300M, train e val | 1 | 8 | 100G | 150 min | 2,50 |
+| SCALING-300M-eval-p1-20261105 | P1 300M | 1 | 8 | 100G | 120 min | 2,00 |
+| SCALING-300M-eval-p2-20261105 | P2 300M | 1 | 8 | 100G | 150 min | 2,50 |
+| SCALING-30M-eval-p1-20261105 | P1 30M | 1 | 8 | 100G | 30 min | 0,50 |
+| SCALING-30M-eval-p2-20261105 | P2 30M | 1 | 8 | 100G | 45 min | 0,75 |
+
+Totale estrazioni **8,25 GPU-ore e 66 core-ore associate alle GPU**. Il checkout
+prenota 0,333333 core-ore, comprese nell'inviluppo CPU già fissato di 180 core-ore.
+Non si aumenta alcun tetto. Partizione estrazioni boost_usr_prod; checkout
+lrd_all_serial. Le cinque celle sono indipendenti dopo il checkout verificato.
+
+Output nuovi sotto
+`/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_300m_20261105/5000/`,
+nelle sottocartelle T100-G-300M/{pose,p1,p2} e T100-G-30M/{p1,p2}.
+Gli ID si prenotano soltanto con `scripts/submit_job.py` nel ledger comune.
+I comandi finali, con SHA effettivo, vanno pubblicati prima della sottomissione.
+Checkout COMPLETED 0:0, HEAD, tree pulito e sola lettura sono verifiche sincrone;
+non usare dipendenze afterok verso job già purgati.
+
+## Passaggio ai lettori
+
+Dopo le estrazioni verificare ricevute, hash, supporti e provenienza. Poi
+validate e benchmark CPU sul train nelle allocazioni già fissate. I fit si
+lanciano soltanto se i tempi e la RAM misurati rientrano nelle formule e nei
+tetti pubblicati in `docs/scaling_300m_evaluation_execution_20261104.md`.
+Nessun monitor automatico, nessuna continuazione a 19.618, nessuna variazione
+di loss, dose, seme o popolazione. Le autorizzazioni già espresse coprono
+questa catena; errori reali fermano la fase senza retry cieco.
+
+## Invii effettivi e review successiva
+
+Codice **aef665ba7ea66fc80291846487907bb3ef9107df**, comandi pubblicati in
+**e4ed7eee672950fe07eb1f07f7954449aae71918**. Checkout **63580233 COMPLETED0:0**,
+53s su2CPU (0,029444core-ore), HEAD/pulizia/sola lettura/hash verificati.
+
+| Job | Cella | Stato osservato alle12:49CET |
+|---|---|---|
+|63580385|Posa300M|RUNNING|
+|63580603|P1-300M|RUNNING|
+|63580771|P2-300M|RUNNING|
+|63580776|P1-30M|RUNNING|
+|63580820|P2-30M|RUNNING|
+
+Ricevute e snapshot in `evaluation_submission_receipts_20261105/` sotto la
+cartella infra scaling. Nessun risultato finale delle estrazioni ancora letto.
+Claude ha chiarito che la propria copertura termina a0d5f0f9 e al preflight;
+le review successive citate qui sono interne. GPT ha preparato una consegna
+specifica per la sua verifica, riconoscendo la sostituzione del passaggio del
+revisore concordato. Prima dei fit CPU acquisire il riscontro di Claude, oltre
+ai benchmark e ai guard previsti. Nessun nuovo consenso ai lanci della catena.
+
+## Aggiornamento 05/11, 14:33:40 CET — review ricevuta e quattro estrazioni complete
+
+Review Claude **c0a4f58b** acquisita integralmente: lavoro affidabile, nessun blocco;
+launcher dei lettori CPU approvato. È una verifica successiva, non un'approvazione
+retroattiva dei lanci. Il requisito di riscontro del revisore è ora soddisfatto.
+
+| Job | Cella | Stato | Termine CET |
+|---|---|---|---|
+|63580385|Posa 300M|RUNNING|Limite 15:15:45|
+|63580603|P1 300M|COMPLETED 0:0|13:19:47|
+|63580771|P2 300M|COMPLETED 0:0|14:26:17|
+|63580776|P1 30M|COMPLETED 0:0|13:03:02|
+|63580820|P2 30M|COMPLETED 0:0|13:16:44|
+
+Quattro ricevute originali compresse e dieci provenance raccolte; 24 hash remoti
+concordi (4 ricevute, 10 provenance, 10 cache). Dati e accounting raw/JSON affiancati
+in `results/infra/scaling_300m_20261104/classification_completed_20261105/`.
+Quattro estrazioni: **2,894167 GPU-ore / 23,153333 core-ore**; posa esclusa finché
+attiva. La verifica numerica delle cache sarà eseguita nella fase CPU prevista.
+
+Nessun nuovo job in questo aggiornamento. Dopo la receipt completa della posa:
+pubblicare piani con pin reali, validazione, benchmark train-only, e solo dopo
+fit se i gate accettano. Il checkout eventuale dei piani usa la riserva CPU già
+pubblicata, non un budget aggiuntivo. Stop al primo gate rifiutato o TIMEOUT,
+nessun retry. Un TIMEOUT della posa va comunicato a Simone prima di nuovi invii.
+La receipt P2-300M è appena disponibile per la verifica di Claude; quella della
+posa segue a completamento. Nessun risultato scientifico del confronto ancora.
+
+## Completamento alle 14:43:18 CET e passaggio CPU
+
+Posa 63580385 COMPLETED 0:0 in 7.053 s; receipt `a57c9420…`. Cinque estrazioni
+concluse, dodici cache nuove e due riusate. Consuntivo totale **4,853333 GPU-ore /
+38,826667 core-ore**. Aggiunta Claude **8b763610**, §9, acquisita: ultime due
+ricevute conformi, O-4 chiusa, nessun retry o intervento necessario. Le cautele
+sul TIMEOUT di questo job sono superate dal completamento osservato.
+
+Prossima fase in `docs/scaling_300m_cpu_execution_20261105.md`: piani con hash
+reali, validazione, benchmark train-only, budget e poi fit. Nessun punteggio
+scientifico è implicito nel completamento delle estrazioni.

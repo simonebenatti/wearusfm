@@ -90,7 +90,7 @@ def test_registered_plan_pins_exact_candidate_and_rejects_epsilon_change(tmp_pat
     spec.loader.exec_module(cli)
     entries = json.loads((REPO / "results/infra/tokenizer_review_20261103/comparison_configurations.json").read_text())
     argv = entries["arm_configurations"]["T100-L"]["validated_trainer_argv"][1:]
-    baseline = cli.build_config(cli.build_parser().parse_args(argv))
+    baseline = cli.build_config(cli.build_parser().parse_args(cli.historical_args(argv)))  # braccio storico: target 25/50
     plan_path = REPO / "results/infra/logsquare_review_20261104/preflight_plan.json"
     plan = json.loads(plan_path.read_text())
     # Remote data are not read on the Mac; the historical loader's remote

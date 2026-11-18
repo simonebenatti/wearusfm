@@ -43,6 +43,15 @@ def git_source_identity(sha):
     return hashlib.sha256(json.dumps(hashes, sort_keys=True, allow_nan=False).encode()).hexdigest()
 
 
+def pre_18_11_config(config):
+    """Un config salvato prima del 18/11/2026: senza `loader.rms_window_ms` e `loader.ms_fast_window_ms` (assenti = 25/50), come
+    i config veri delle campagne storiche; cosi' i test esercitano il confronto con `run.with_legacy_target_windows`."""
+    config = copy.deepcopy(config)
+    for key in ('rms_window_ms', 'ms_fast_window_ms'):
+        del config['loader'][key]
+    return config
+
+
 def synthetic_scaling_contract(module, tmp_path):
     """A test-only contract for the current tree; historical evidence is tested separately.
 
@@ -54,7 +63,8 @@ def synthetic_scaling_contract(module, tmp_path):
     contract = json.loads(original.read_text())
     comparison = json.loads((ROOT / contract['comparison']['path']).read_text())
     args = comparison['arm_configurations']['T100-G']['validated_trainer_argv']
-    config = module.R.config_to_dict(module.CLI.build_config(module.CLI.build_parser().parse_args(args[1:])))
+    # la ricetta registrata e' storica (run del 03-04/11): target 25/50, non i default del 18/11
+    config = module.R.config_to_dict(module.CLI.build_config(module.CLI.build_parser().parse_args(module.CLI.historical_args(args[1:]))))
     paths = {str(p.relative_to(ROOT)) for p in (ROOT / 'src/wearusfm').rglob('*')
              if p.is_file() and '__pycache__' not in p.parts and p.suffix not in ('.pyc', '.pyo')}
     paths |= module.SCRIPT_PATHS
@@ -63,7 +73,7 @@ def synthetic_scaling_contract(module, tmp_path):
         path = tmp_path / name
         path.write_text(json.dumps(data))
         return {'path': str(path), 'sha256': module.R.sha256_file(path)}
-    contract['config_30m'] = save('synthetic_control_config.json', config)
+    contract['config_30m'] = save('synthetic_control_config.json', pre_18_11_config(config))
     comparison['arm_configurations']['T100-G']['sha256'] = contract['config_30m']['sha256']
     contract['comparison'] = save('synthetic_comparison.json', comparison)
     return Path(save('synthetic_source_contract.json', contract)['path'])

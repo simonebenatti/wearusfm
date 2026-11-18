@@ -1,0 +1,606 @@
+{
+ "protocol": "sonde_convergenza_v1",
+ "task": "p1",
+ "order": [
+  "A_R3c",
+  "A_B",
+  "B_R3c",
+  "B_B"
+ ],
+ "weights": {
+  "ninapro_db2": 0.6153846153846154,
+  "ninapro_db3": 0.23076923076923078,
+  "ninapro_db6": 0.15384615384615385
+ },
+ "bootstrap": {
+  "n_boot": 1000,
+  "seed": 20261009,
+  "method": "soggetti ricampionati insieme per i quattro rapporti, per dataset in ordine alfabetico, come arms_compare.s_comparison"
+ },
+ "S": {
+  "A_R3c": 0.17550895754133722,
+  "A_B": 0.16994653104131188,
+  "B_R3c": 0.17547308907670656,
+  "B_B": 0.16994653104131188
+ },
+ "S_se_reports": {
+  "A_R3c": 0.00702010962199905,
+  "A_B": 0.006878732670018197,
+  "B_R3c": 0.00701748246174278,
+  "B_B": 0.006878732670018197
+ },
+ "contrasts": {
+  "B_minus_R3c_A": {
+   "delta": -0.005562426500025336,
+   "ci95": [
+    -0.011038182674065302,
+    -0.00026464330835547164
+   ],
+   "paired_subject_se": 0.0027315935273928365
+  },
+  "B_minus_R3c_B": {
+   "delta": -0.005526558035394674,
+   "ci95": [
+    -0.01105344462990066,
+    -0.00017161131445000955
+   ],
+   "paired_subject_se": 0.002744392363262164
+  },
+  "R3c_B_minus_A": {
+   "delta": -3.5868464630661734e-05,
+   "ci95": [
+    -0.0001274678170324034,
+    2.2931397056524095e-05
+   ],
+   "paired_subject_se": 4.190959646399373e-05
+  },
+  "B_B_minus_A": {
+   "delta": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "paired_subject_se": 0.0
+  },
+  "delta_of_deltas": {
+   "delta": 3.5868464630661734e-05,
+   "ci95": [
+    -2.293139705652411e-05,
+    0.00012746781703240338
+   ],
+   "paired_subject_se": 4.190959646399373e-05
+  }
+ },
+ "datasets": {
+  "ninapro_db2": {
+   "weight": 0.6153846153846154,
+   "S": {
+    "A_R3c": 0.18807368892893647,
+    "A_B": 0.1811577348748858,
+    "B_R3c": 0.18807368892893647,
+    "B_B": 0.1811577348748858
+   },
+   "contrasts": {
+    "B_minus_R3c_A": {
+     "delta": -0.0069159540540506825,
+     "ci95": [
+      -0.013331448580024765,
+      -0.0004563828493115949
+     ],
+     "paired_subject_se": 0.00324856456317066
+    },
+    "B_minus_R3c_B": {
+     "delta": -0.0069159540540506825,
+     "ci95": [
+      -0.013331448580024765,
+      -0.0004563828493115949
+     ],
+     "paired_subject_se": 0.00324856456317066
+    },
+    "R3c_B_minus_A": {
+     "delta": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "paired_subject_se": 0.0
+    },
+    "B_B_minus_A": {
+     "delta": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "paired_subject_se": 0.0
+    },
+    "delta_of_deltas": {
+     "delta": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "paired_subject_se": 0.0
+    }
+   }
+  },
+  "ninapro_db3": {
+   "weight": 0.23076923076923078,
+   "S": {
+    "A_R3c": 0.027647143550483734,
+    "A_B": 0.026994356207674562,
+    "B_R3c": 0.027647143550483734,
+    "B_B": 0.026994356207674562
+   },
+   "contrasts": {
+    "B_minus_R3c_A": {
+     "delta": -0.0006527873428091718,
+     "ci95": [
+      -0.009973313629332747,
+      0.011763189060015503
+     ],
+     "paired_subject_se": 0.0057792093259806145
+    },
+    "B_minus_R3c_B": {
+     "delta": -0.0006527873428091718,
+     "ci95": [
+      -0.009973313629332747,
+      0.011763189060015503
+     ],
+     "paired_subject_se": 0.0057792093259806145
+    },
+    "R3c_B_minus_A": {
+     "delta": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "paired_subject_se": 0.0
+    },
+    "B_B_minus_A": {
+     "delta": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "paired_subject_se": 0.0
+    },
+    "delta_of_deltas": {
+     "delta": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "paired_subject_se": 0.0
+    }
+   }
+  },
+  "ninapro_db6": {
+   "weight": 0.15384615384615385,
+   "S": {
+    "A_R3c": 0.3470427529772203,
+    "A_B": 0.33952997795747214,
+    "B_R3c": 0.346809607957121,
+    "B_B": 0.33952997795747214
+   },
+   "contrasts": {
+    "B_minus_R3c_A": {
+     "delta": -0.007512775019748175,
+     "ci95": [
+      -0.024419263841142957,
+      0.0096915705612451
+     ],
+     "paired_subject_se": 0.00835970315583044
+    },
+    "B_minus_R3c_B": {
+     "delta": -0.007279629999648873,
+     "ci95": [
+      -0.024276124796270233,
+      0.010059419775473463
+     ],
+     "paired_subject_se": 0.008514800247576062
+    },
+    "R3c_B_minus_A": {
+     "delta": -0.00023314502009930127,
+     "ci95": [
+      -0.0008285408107105554,
+      0.0001490540808673251
+     ],
+     "paired_subject_se": 0.00027241237701596487
+    },
+    "B_B_minus_A": {
+     "delta": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "paired_subject_se": 0.0
+    },
+    "delta_of_deltas": {
+     "delta": 0.00023314502009930127,
+     "ci95": [
+      -0.00014905408086732518,
+      0.0008285408107105554
+     ],
+     "paired_subject_se": 0.00027241237701596487
+    }
+   }
+  }
+ },
+ "changes_12000_vs_3000": {
+  "B": {
+   "ninapro_db2": {
+    "predictions_changed": 0,
+    "n": 38544,
+    "fraction_changed": 0.0,
+    "c_3000": [
+     0.01,
+     0.1,
+     0.01,
+     0.1
+    ],
+    "c_12000": [
+     0.01,
+     0.1,
+     0.01,
+     0.1
+    ],
+    "folds_with_c_shift": 0,
+    "s_3000": 0.1811577348748858,
+    "s_12000": 0.1811577348748858
+   },
+   "ninapro_db3": {
+    "predictions_changed": 0,
+    "n": 9834,
+    "fraction_changed": 0.0,
+    "c_3000": [
+     100.0,
+     10.0,
+     0.1,
+     0.001
+    ],
+    "c_12000": [
+     100.0,
+     10.0,
+     0.1,
+     0.001
+    ],
+    "folds_with_c_shift": 0,
+    "s_3000": 0.026994356207674562,
+    "s_12000": 0.026994356207674562
+   },
+   "ninapro_db6": {
+    "predictions_changed": 0,
+    "n": 33961,
+    "fraction_changed": 0.0,
+    "c_3000": [
+     0.001,
+     0.001,
+     0.001,
+     0.01
+    ],
+    "c_12000": [
+     0.001,
+     0.001,
+     0.001,
+     0.01
+    ],
+    "folds_with_c_shift": 0,
+    "s_3000": 0.33952997795747214,
+    "s_12000": 0.33952997795747214
+   }
+  },
+  "R3c": {
+   "ninapro_db2": {
+    "predictions_changed": 0,
+    "n": 38544,
+    "fraction_changed": 0.0,
+    "c_3000": [
+     0.01,
+     0.1,
+     0.1,
+     0.1
+    ],
+    "c_12000": [
+     0.01,
+     0.1,
+     0.1,
+     0.1
+    ],
+    "folds_with_c_shift": 0,
+    "s_3000": 0.18807368892893647,
+    "s_12000": 0.18807368892893647
+   },
+   "ninapro_db3": {
+    "predictions_changed": 0,
+    "n": 9834,
+    "fraction_changed": 0.0,
+    "c_3000": [
+     1.0,
+     0.01,
+     10.0,
+     1.0
+    ],
+    "c_12000": [
+     1.0,
+     0.01,
+     10.0,
+     1.0
+    ],
+    "folds_with_c_shift": 0,
+    "s_3000": 0.027647143550483734,
+    "s_12000": 0.027647143550483734
+   },
+   "ninapro_db6": {
+    "predictions_changed": 255,
+    "n": 33961,
+    "fraction_changed": 0.007508612820588322,
+    "c_3000": [
+     0.01,
+     0.01,
+     0.1,
+     100.0
+    ],
+    "c_12000": [
+     0.01,
+     0.01,
+     0.1,
+     100.0
+    ],
+    "folds_with_c_shift": 0,
+    "s_3000": 0.3470427529772203,
+    "s_12000": 0.346809607957121
+   }
+  }
+ },
+ "warnings": {
+  "A_R3c": {
+   "n_records": 84,
+   "reached_limit": 5,
+   "convergence_warnings": 5,
+   "anomalous_stop": 0,
+   "exceptions": 0,
+   "by_dataset": {
+    "ninapro_db2": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    },
+    "ninapro_db3": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    },
+    "ninapro_db6": {
+     "n_fits": 28,
+     "reached_limit": 5,
+     "convergence_warnings": 5,
+     "selected_reached_limit": 1,
+     "refit_reached_limit": 1
+    }
+   },
+   "positions": [
+    {
+     "dataset": "ninapro_db6",
+     "fold": 0,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    },
+    {
+     "dataset": "ninapro_db6",
+     "fold": 1,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    },
+    {
+     "dataset": "ninapro_db6",
+     "fold": 2,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    },
+    {
+     "dataset": "ninapro_db6",
+     "fold": 3,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": true
+    },
+    {
+     "dataset": "ninapro_db6",
+     "fold": 3,
+     "fit_phase": "refit",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": null
+    }
+   ]
+  },
+  "A_B": {
+   "n_records": 84,
+   "reached_limit": 4,
+   "convergence_warnings": 4,
+   "anomalous_stop": 0,
+   "exceptions": 0,
+   "by_dataset": {
+    "ninapro_db2": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    },
+    "ninapro_db3": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    },
+    "ninapro_db6": {
+     "n_fits": 28,
+     "reached_limit": 4,
+     "convergence_warnings": 4,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    }
+   },
+   "positions": [
+    {
+     "dataset": "ninapro_db6",
+     "fold": 0,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    },
+    {
+     "dataset": "ninapro_db6",
+     "fold": 1,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    },
+    {
+     "dataset": "ninapro_db6",
+     "fold": 2,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    },
+    {
+     "dataset": "ninapro_db6",
+     "fold": 3,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    }
+   ]
+  },
+  "B_R3c": {
+   "n_records": 84,
+   "reached_limit": 0,
+   "convergence_warnings": 0,
+   "anomalous_stop": 0,
+   "exceptions": 0,
+   "by_dataset": {
+    "ninapro_db2": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    },
+    "ninapro_db3": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    },
+    "ninapro_db6": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    }
+   },
+   "positions": []
+  },
+  "B_B": {
+   "n_records": 84,
+   "reached_limit": 0,
+   "convergence_warnings": 0,
+   "anomalous_stop": 0,
+   "exceptions": 0,
+   "by_dataset": {
+    "ninapro_db2": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    },
+    "ninapro_db3": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    },
+    "ninapro_db6": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    }
+   },
+   "positions": []
+  }
+ },
+ "residual_warnings_at_12000": {
+  "B": 0,
+  "R3c": 0
+ },
+ "numeric_sha256": "e5b710ec622035ebd6fbe9ed8d3424d734b44a33e38f897041fbd78fde5a7215",
+ "reading": {
+  "note": "lettura descrittiva di robustezza, un solo seme di pretraining, nessuna nuova soglia di adozione; IC che contiene 0 = inconclusivo, non equivalenza; delta stabile con warning residui = insensibilita' osservata a questo aumento di iterazioni, non convergenza certificata",
+  "delta_of_deltas_ci_contains_zero": true,
+  "sign_B_minus_R3c_A": -1.0,
+  "sign_B_minus_R3c_B": -1.0
+ },
+ "official": {
+  "A": {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/confronto/ufficiale_p1_A.json",
+   "delta": -0.005562426500025332,
+   "ci95": [
+    -0.011038182674065273,
+    -0.000264643308355437
+   ],
+   "agrees_with_joint_bootstrap": true,
+   "verdict_label": "regola non superata"
+  },
+  "B": {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/confronto/ufficiale_p1_B.json",
+   "delta": -0.005526558035394671,
+   "ci95": [
+    -0.01105344462990065,
+    -0.00017161131445000922
+   ],
+   "agrees_with_joint_bootstrap": true,
+   "verdict_label": "regola non superata"
+  }
+ }
+}

@@ -1,0 +1,95 @@
+{
+ "protocol": "readout_per_canale_v1",
+ "task": "p2",
+ "mode": "due modelli con lo stesso readout (--models); un solo seme per lato (--single-seed): nessun accordo fra semi",
+ "seeds": 1,
+ "reference": [
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/A/R3c_p2_pool.json",
+   "S": 0.8083719637436697,
+   "S_se": 0.02238299982183616,
+   "feature_set": "channel_readout/pool",
+   "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3C-ancore-30M-s0/checkpoint_step0019618.pt",
+   "checkpoint_sha256": "ee78d2a96264322258f73b2b3b249c800b76276fb557f5023c5d76830b243e29",
+   "readout": {
+    "layer": "pool",
+    "k_requested": 0,
+    "reduction": "se k < larghezza: standardizzazione e PCA (randomized, seme della sonda) a k componenti stimate sul solo train del fold, poi `linear_probe(scale=False)` sulle componenti (nessuna nuova scala); altrimenti `linear_probe` sulle colonne, come la calibrazione"
+   }
+  }
+ ],
+ "candidate": [
+  {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/A/B_p2_pool.json",
+   "S": 0.7960443110796318,
+   "S_se": 0.019549430455628937,
+   "feature_set": "channel_readout/pool",
+   "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/pilot_posa/PILOT-POSA-R3-B19618-30M-s0-20261028/checkpoint_step0019618.pt",
+   "checkpoint_sha256": "96f87035520e291e1d96920722ae89bd440b4e5c5cbb335b7a04d65e75bfc229",
+   "readout": {
+    "layer": "pool",
+    "k_requested": 0,
+    "reduction": "se k < larghezza: standardizzazione e PCA (randomized, seme della sonda) a k componenti stimate sul solo train del fold, poi `linear_probe(scale=False)` sulle componenti (nessuna nuova scala); altrimenti `linear_probe` sulle colonne, come la calibrazione"
+   }
+  }
+ ],
+ "comparison": {
+  "A": 0.8083719637436697,
+  "B": 0.7960443110796318,
+  "delta": -0.012327652664037958,
+  "delta_by_model_seed": [
+   -0.012327652664037958,
+   -0.012327652664037958
+  ],
+  "ci95": [
+   -0.02997250474260461,
+   0.005761470977837396
+  ],
+  "paired_subject_se": 0.009198583782076298,
+  "datasets": {
+   "epn612": {
+    "A": 0.8439915074309977,
+    "B": 0.8181953290870488,
+    "delta": -0.025796178343948872,
+    "delta_by_model_seed": [
+     -0.025796178343948872,
+     -0.025796178343948872
+    ],
+    "ci95": [
+     -0.03172027600849282,
+     -0.02031847133757969
+    ],
+    "paired_subject_se": 0.0029848086209265435
+   },
+   "uci_emg": {
+    "A": 0.7727524200563417,
+    "B": 0.7738932930722147,
+    "delta": 0.0011408730158729563,
+    "delta_by_model_seed": [
+     0.0011408730158729563,
+     0.0011408730158729563
+    ],
+    "ci95": [
+     -0.033921266940603725,
+     0.03591112060307696
+    ],
+    "paired_subject_se": 0.01809783261900869
+   }
+  },
+  "beats": false,
+  "not_harmful": false
+ },
+ "bootstrap": {
+  "n_boot": 1000,
+  "seed": 20261009,
+  "method": "soggetti ricampionati insieme per i quattro rapporti (downstream_ab.paired_component), intervallo dei percentili"
+ },
+ "reading": {
+  "beats": false,
+  "not_harmful": false,
+  "verdict": "regola non superata",
+  "min_delta": 0.01,
+  "seeds": 1
+ },
+ "oof_maps": []
+}

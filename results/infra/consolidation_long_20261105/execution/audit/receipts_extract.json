@@ -1,0 +1,72 @@
+{
+  "phase": "extract",
+  "collected_at": "2026-11-05T22:54:32+01:00",
+  "receipts": {
+    "LONG-G19618-p1-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1/report.json",
+      "sha256": "bd3dbba254d8563c741df6f1dee5218cb49ed43a0a0d9ffe0a699d1975bc2ef2",
+      "bytes": 5988
+    },
+    "LONG-G19618-p2-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2/report.json",
+      "sha256": "2d0fef248a3ca1ff7aec4b675f227aecfe353da424b2592f995526d0f604ee3b",
+      "bytes": 5697
+    },
+    "LONG-G19618-pose-train-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/train/report.json",
+      "sha256": "4343caeb7112fa23232582d25b3a6dc78c822ea1ed94099cd43de49162724a6a",
+      "bytes": 342031
+    },
+    "LONG-G19618-pose-val-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/val/report.json",
+      "sha256": "3af7a906590a3f47804d14491951f216e7a740e620710c17d738d7f012dd903c",
+      "bytes": 3258394
+    },
+    "LONG-G39237-p1-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p1/report.json",
+      "sha256": "7d94761d0283df12585da1d8c4994cf9cecaf6264144299395b73232c86213d3",
+      "bytes": 5985
+    },
+    "LONG-G39237-p2-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p2/report.json",
+      "sha256": "2781586d8f04abf5fb9ae95e2759606e1c37f1b9ba308b42345f6a13df4415a7",
+      "bytes": 5694
+    },
+    "LONG-G39237-pose-train-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/pose/train/report.json",
+      "sha256": "ec620574b4653dbdd32792ded49e490a72fa649bcdbf4d44aaf13c76f224462a",
+      "bytes": 342028
+    },
+    "LONG-G39237-pose-val-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/pose/val/report.json",
+      "sha256": "2bfa6d761aa779bc17fa76fdf2b9e613c54d9918bdf297d39204f70ff20ac0c8",
+      "bytes": 3258391
+    },
+    "LONG-G49046-p1-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p1/report.json",
+      "sha256": "21a243cc470bcdafef54b147c7bfe479f0a3d477bcbc25ae8ffdb11a7ec07e39",
+      "bytes": 5986
+    },
+    "LONG-G49046-p2-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p2/report.json",
+      "sha256": "69dbf4b076c2fe36025278e9d22d79df6b63c37b7c46290c48355f5a0562531a",
+      "bytes": 5695
+    },
+    "LONG-G49046-pose-train-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train/report.json",
+      "sha256": "27297241e4bf0f12a61edb2e5cf5d8cef28262f6f26caee44f98af263b3a1f36",
+      "bytes": 342030
+    },
+    "LONG-G49046-pose-val-20261105": {
+      "remote_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/val/report.json",
+      "sha256": "1321038a8e0f50da56e57543c9b5a662c391af523d7094c6984cad1a396a755c",
+      "bytes": 3258392
+    }
+  },
+  "accounting": {
+    "rows": 13,
+    "gpu_hours": 3.373611,
+    "allocated_core_hours": 27.001667,
+    "rule": "ElapsedRaw x allocated GPUs / 3600 and ElapsedRaw x AllocCPUS / 3600, one row per allocation (sacct -X)"
+  }
+}

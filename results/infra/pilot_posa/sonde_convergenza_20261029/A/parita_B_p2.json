@@ -1,0 +1,152 @@
+{
+ "protocol": "sonde_convergenza_v1",
+ "original": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/B19618_20261028/B_p2_pool.json",
+ "original_sha256": "4c2eff1dbc74e8c8f25d857facc41e040ef8e8c828dba0e7869ca9fc1ee85370",
+ "new": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/A/B_p2_pool.json",
+ "new_sha256": "9d20d36b484868b5764ae8971d80b492a6d21f7c5aec52674ee73e9d6e8f07db",
+ "original_legacy_solver_recipe": true,
+ "task": "p2",
+ "datasets": {
+  "epn612": {
+   "rows_identical": true,
+   "subjects_identical": true,
+   "fold_roles_identical": true,
+   "c_original": [
+    1.0,
+    100.0,
+    10.0,
+    10.0
+   ],
+   "c_new": [
+    1.0,
+    100.0,
+    10.0,
+    10.0
+   ],
+   "folds_with_different_c": 0,
+   "predictions_differing": 0,
+   "n_oof_windows": 47100,
+   "s_original": 0.8181953290870488,
+   "s_new": 0.8181953290870488,
+   "s_abs_diff": 0.0,
+   "held_bacc_abs_diff": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "val_bacc_abs_diff": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "train_bacc_abs_diff": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "fields_differing": []
+  },
+  "uci_emg": {
+   "rows_identical": true,
+   "subjects_identical": true,
+   "fold_roles_identical": true,
+   "c_original": [
+    0.001,
+    10.0,
+    0.001,
+    0.001
+   ],
+   "c_new": [
+    0.001,
+    10.0,
+    0.001,
+    0.001
+   ],
+   "folds_with_different_c": 0,
+   "predictions_differing": 0,
+   "n_oof_windows": 364,
+   "s_original": 0.7738932930722147,
+   "s_new": 0.7738932930722147,
+   "s_abs_diff": 0.0,
+   "held_bacc_abs_diff": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "val_bacc_abs_diff": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "train_bacc_abs_diff": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "fields_differing": []
+  }
+ },
+ "problems": [],
+ "differences": {
+  "report": {},
+  "datasets": {}
+ },
+ "compared_fields": {
+  "report": [
+   "k_folds",
+   "fold_seed",
+   "val_frac",
+   "probe_seed",
+   "window_s",
+   "task",
+   "splits_sha256",
+   "weights",
+   "extraction_recipe",
+   "feature_set",
+   "checkpoint_sha256",
+   "S",
+   "S_se"
+  ],
+  "dataset": [
+   "input_sha256",
+   "oof_rows_sha256",
+   "subjects",
+   "s",
+   "n_classes",
+   "n_windows",
+   "n_oof_windows",
+   "readout"
+  ],
+  "fold": [
+   "train",
+   "val",
+   "held",
+   "c",
+   "held_bacc",
+   "val_bacc",
+   "train_bacc",
+   "n_train",
+   "n_val",
+   "n_held",
+   "dropped_val_windows",
+   "dropped_held_windows",
+   "k",
+   "k_capped",
+   "explained_variance"
+  ]
+ },
+ "S_original": 0.7960443110796318,
+ "S_new": 0.7960443110796318,
+ "S_abs_diff": 0.0,
+ "S_se_original": 0.019549430455628937,
+ "S_se_new": 0.019549430455628937,
+ "predictions_differing_total": 0,
+ "folds_with_different_c": 0,
+ "identical": true
+}

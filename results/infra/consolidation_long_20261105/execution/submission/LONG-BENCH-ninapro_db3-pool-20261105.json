@@ -1,0 +1,63 @@
+{
+ "id": "LONG-BENCH-ninapro_db3-pool-20261105",
+ "creato": "2026-11-06T10:00:29+01:00",
+ "agente": "claude",
+ "campagna": "consolidation_long_20261105",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "166fb8653b53439507183d76e3e36a79dd28d166",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=LONG-BENCH-ninapro_db3-pool-20261105",
+  "--comment=wearusfm:LONG-BENCH-ninapro_db3-pool-20261105",
+  "--partition=lrd_all_serial",
+  "--nodes=1",
+  "--ntasks=1",
+  "--cpus-per-task=8",
+  "--mem=30G",
+  "--time=00:30:00",
+  "--no-requeue",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-long-benchmark-20261105,EXPECTED_SHA=166fb8653b53439507183d76e3e36a79dd28d166",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-long-benchmark-20261105/scripts/slurm/consolidation_long.sbatch",
+  "--plan",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-long-benchmark-20261105/results/infra/consolidation_long_20261105/plan.json",
+  "--expected-code",
+  "166fb8653b53439507183d76e3e36a79dd28d166",
+  "--stage",
+  "benchmark-classification",
+  "--out",
+  "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/pool",
+  "--step",
+  "19618",
+  "--dataset",
+  "ninapro_db3",
+  "--view",
+  "pool"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-06T10:00:29+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-06T10:00:29+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-06T10:00:30+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63650932,
+   "uscita": 0,
+   "stdout": "63650932\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63650932,
+ "uscita": 0,
+ "stdout": "63650932\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

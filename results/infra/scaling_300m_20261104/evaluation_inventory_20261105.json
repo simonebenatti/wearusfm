@@ -1,0 +1,62 @@
+{
+  "deploy_ref_absent": true,
+  "deploy_ref_returncode": 0,
+  "deploy_ref_stderr": "",
+  "input_files": {
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json": {
+      "bytes": 7377,
+      "exists": true
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db2.npz": {
+      "bytes": 829630314,
+      "exists": true
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db3.npz": {
+      "bytes": 211675986,
+      "exists": true
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db6.npz": {
+      "bytes": 939642062,
+      "exists": true
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/epn612.npz": {
+      "bytes": 729002818,
+      "exists": true
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p2/uci_emg.npz": {
+      "bytes": 5606442,
+      "exists": true
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz": {
+      "bytes": 257675076,
+      "exists": true
+    },
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz": {
+      "bytes": 2485295825,
+      "exists": true
+    },
+    "/leonardo_work/IscrB_WearUsFM/data/raw/emg2pose_mini/emg2pose_metadata.csv": {
+      "bytes": 5674462,
+      "exists": true
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz": {
+      "bytes": 1688959,
+      "exists": true
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json": {
+      "bytes": 2234011,
+      "exists": true
+    },
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json": {
+      "bytes": 2156652,
+      "exists": true
+    }
+  },
+  "new_checkout_absent": true,
+  "new_outputs_absent": true,
+  "stop_absent": true,
+  "training_head": "dc96559405b5fff971a3be06a6ca59c992d342dc",
+  "training_status": "",
+  "deploy_ref_check": "git for-each-ref --format=%(objectname) %(refname) refs/heads/deploy/scaling_300m_evaluation_20261105_v1: exit0, empty stdout",
+  "initial_ref_check_note": "Old git show-ref --verify returned128 for missing ref; replaced by explicit for-each-ref empty listing. No ref mutation."
+}

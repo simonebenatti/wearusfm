@@ -1,0 +1,26 @@
+{
+  "JobIDRaw": "63593593",
+  "State": "COMPLETED",
+  "ExitCode": "0:0",
+  "ElapsedRaw": 2194,
+  "AllocCPUS": 8,
+  "MaxRSS": "",
+  "MaxRSSNode": "",
+  "MaxRSSTask": "",
+  "AllocTRES": "billing=8,cpu=8,gres/tmpfs=10737418240,mem=31457280K,node=1",
+  "NodeList": "login08",
+  "Partition": "lrd_all_serial",
+  "Start": "2026-11-05T15:54:57",
+  "End": "2026-11-05T16:31:31",
+  "Timelimit": "00:45:00",
+  "MaxRSS_bytes": 2866003968,
+  "MaxRSS_source_rows": [
+    "63593593.batch"
+  ],
+  "actual_core_hours": 4.875555555555556,
+  "accounting_rule": "Parent elapsed for allocated cost; step elapsed not added. TIMEOUT remains a failure despite parent ExitCode0:0.",
+  "raw_sacct": {
+    "path": "sacct.txt",
+    "sha256": "dcb683e64d6e8336a0855998312a601e801d2ba6d95026042c7d3752bc822775"
+  }
+}

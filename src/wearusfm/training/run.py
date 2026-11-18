@@ -40,7 +40,7 @@ from wearusfm.data import rvq_codes as RC
 from wearusfm.data import virtual_montage as VM
 from wearusfm.model.anchors import N_RVQ_CODES
 from wearusfm.model.fm import FMConfig, WearUsFM
-from wearusfm.model.spectral_targets import TARGET_VERSION
+from wearusfm.model.spectral_targets import RETIRED_TARGET_VERSIONS, TARGET_VERSION, target_version_for_fast_window
 from wearusfm.model.spectral_step1 import READOUT_VERSION
 from wearusfm.training.spectral_calibration import calibration_signature, read_calibration, sha256_file
 from wearusfm.model.query_decoder import probe_query_collapse
@@ -200,10 +200,31 @@ def _config_with_defaults(d: dict) -> dict:
     if isinstance(out.get("model"), dict):
         out["model"] = {"pose_head": False, **out["model"]}  # R3, 26/10
     if isinstance(out.get("loader"), dict):
-        out["loader"] = {"pose_root": None, "pose_unprompted": True, **out["loader"]}  # R3, 26/10
+        # Campo assente nei checkpoint storici = RMS da 25 ms, NON il nuovo default da 100 ms.
+        out["loader"] = {"pose_root": None, "pose_unprompted": True, "rms_window_ms": L.AT.LEGACY_RMS_WINDOW_MS,
+                         "ms_fast_window_ms": L.AT.LEGACY_MS_FAST_WINDOW_MS,
+                         **out["loader"]}  # R3, 26/10; RMS, 18/11
     if isinstance(out.get("alarm"), dict):
         out["alarm"] = {"erank_min": None, **out["alarm"]}  # soglia assoluta del rango (firmata il 23/10): assente = regola (16)
     return out
+
+
+def with_historical_targets(cfg: RunConfig) -> RunConfig:
+    """La ricetta dei target dei run nati prima del 18/11/2026 (RMS 25 ms, spettro rapido 50 ms, versione v1), per i costruttori delle
+    campagne storiche che non passano dalla riga di comando (review di Claude del 18/11)."""
+    return replace(cfg, loader=replace(cfg.loader, rms_window_ms=L.AT.LEGACY_RMS_WINDOW_MS,
+                                       ms_fast_window_ms=L.AT.LEGACY_MS_FAST_WINDOW_MS),
+                   target_version=target_version_for_fast_window(L.AT.LEGACY_MS_FAST_WINDOW_MS))
+
+
+def with_legacy_target_windows(d: dict) -> dict:
+    """Config salvato prima del 18/11/2026: aggiunge solo i due campi nati quel giorno (`loader.rms_window_ms` = 25,
+    `loader.ms_fast_window_ms` = 50) se mancano. A differenza di `_config_with_defaults`, che serve alla ripresa, non completa
+    nessun altro campo: i confronti esatti degli strumenti storici restano stretti come prima (review di Claude del 18/11)."""
+    if not isinstance(d.get("loader"), dict):
+        return d
+    return {**d, "loader": {"rms_window_ms": L.AT.LEGACY_RMS_WINDOW_MS, "ms_fast_window_ms": L.AT.LEGACY_MS_FAST_WINDOW_MS,
+                            **d["loader"]}}
 
 
 def wsd_warmup_steps(steps_at_d: int) -> int:
@@ -1222,8 +1243,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     t_start = time.time()
     ctx = dist or DistContext()
     say = log if ctx.is_main else (lambda m: None)
-    if cfg.target_version != TARGET_VERSION:
-        raise ValueError("target_version incompatible with this code")
+    if cfg.target_version in RETIRED_TARGET_VERSIONS:
+        raise ValueError(f"target_version {cfg.target_version} ritirata il 18/11/2026 prima di ogni training: usare 125 ms o 50 ms")
+    if cfg.target_version != target_version_for_fast_window(cfg.loader.ms_fast_window_ms):
+        raise ValueError("target_version incompatible with loader.ms_fast_window_ms")
     if cfg.readout_version != READOUT_VERSION:
         raise ValueError("readout_version incompatible with this code")
     masked_query_radius(cfg.jepa, cfg.model)  # valida prima di caricare dati o costruire il modello

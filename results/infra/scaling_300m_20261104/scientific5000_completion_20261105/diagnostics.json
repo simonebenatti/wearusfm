@@ -1,0 +1,61 @@
+{
+  "errors": [],
+  "files": {
+    "fixed_eval.jsonl": {
+      "bytes": 17136,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000/fixed_eval.jsonl",
+      "sha256": "ad51fd7036e964cfdb42ee1925f071f8119361695872c9951be9b32948818208"
+    },
+    "metrics.jsonl": {
+      "bytes": 7765417,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000/metrics.jsonl",
+      "sha256": "06873e1d800409fd02c592b5d151c0e83c32b00c1ed0c2d5c75248c4333d693c"
+    },
+    "pose_panel.jsonl": {
+      "bytes": 3914601,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000/pose_panel.jsonl",
+      "sha256": "c762ebf4b643bef8f45631b01b5d2a9c4b0c4f0786d5cdded53de49e1263a08b"
+    }
+  },
+  "fixed_eval_steps": [
+    0,
+    500,
+    1000,
+    1500,
+    2000,
+    2500,
+    3000,
+    3500,
+    4000,
+    4500,
+    5000
+  ],
+  "global_windows": 160000,
+  "last_train_metrics": {
+    "grad_norm": 3.2327158927975925,
+    "jepa": 0.031079621985554695,
+    "lr": 0.0001,
+    "pose": 0.873678142374212,
+    "step": 5000,
+    "total": 1.9323845958167856
+  },
+  "metric_count": 5000,
+  "panel_sha256": "04d32d6491d7bb29acdde18898b938f13effc513aded506af7e4e8d9f6a63a6f",
+  "passed": true,
+  "pose_panel_steps": [
+    0,
+    500,
+    1000,
+    1500,
+    2000,
+    2500,
+    3000,
+    3500,
+    4000,
+    4500,
+    5000
+  ],
+  "protocol": "scaling-training-log-audit-20261105-v1",
+  "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-5000",
+  "scope": "Training logs and dose only; no checkpoint load or held-out scientific comparison."
+}

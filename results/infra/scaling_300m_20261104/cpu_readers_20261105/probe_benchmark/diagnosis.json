@@ -1,0 +1,376 @@
+{
+  "status": "HALTED_TIMEOUT_AND_INSUFFICIENT_FIT_CAP",
+  "fits_released": false,
+  "collected_files_hash_verified": 30,
+  "complete_reports": 13,
+  "expected_reports": 15,
+  "completed_benchmark_fits": 83,
+  "completed_fits_converged": 83,
+  "missing_reports": [
+    "T100-G-300M-natural/epn612",
+    "T100-G-300M-natural/uci_emg"
+  ],
+  "numeric_context_identical": true,
+  "numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+  "plan_sha256": "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+  "scientific_scores_computed": false,
+  "limitations": [
+    "Offline check does not rehash live remote caches or reconstruct fold subjects/labels.",
+    "Three complete reports belong to the TIMEOUT parent; no release or implicit reuse.",
+    "Partial audit is not a complete benchmark and does not identify the interrupted instruction.",
+    "Lower bound is on the frozen budget formula, not on future actual runtime."
+  ],
+  "accounts": [
+    {
+      "cell": "T100-G-300M-matched",
+      "job_id": 63593593,
+      "state": "COMPLETED",
+      "elapsed_seconds": 2194,
+      "actual_core_hours": 4.875555555555556,
+      "max_rss_gib": 2.6691741943359375
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "job_id": 63593508,
+      "state": "TIMEOUT",
+      "elapsed_seconds": 5584,
+      "actual_core_hours": 12.408888888888889,
+      "max_rss_gib": 3.838756561279297
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "job_id": 63593262,
+      "state": "COMPLETED",
+      "elapsed_seconds": 2018,
+      "actual_core_hours": 4.484444444444445,
+      "max_rss_gib": 2.633930206298828
+    }
+  ],
+  "probe_actual_core_hours": 21.768888888888892,
+  "known_fit_budget_lower_bound_core_hours": 148.1348685548791,
+  "known_fit_budget_excludes": "120 seconds per shard plus both missing benchmark datasets",
+  "fit_cap_core_hours": 136,
+  "fit_cap_impossible_from_known_reports": true,
+  "partial_epn_completed_C": [
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0
+  ],
+  "partial_epn_completed_fit_seconds": 1422.494821681641,
+  "reports": [
+    {
+      "cell": "T100-G-300M-matched",
+      "dataset": "epn612",
+      "report_sha256": "639aee302f053ad892be591df018cbdcbb37be8b1f5848cb0cbb27a81d1eae4f",
+      "elapsed_seconds": 495.03468523547053,
+      "fit_seconds": 465.05039879027754,
+      "max_fit_seconds": 196.5572883207351,
+      "peak_rss_bytes": 1889165312,
+      "n_iterations": [
+        339,
+        769,
+        1250,
+        1683,
+        3756,
+        5590
+      ],
+      "budget_terms_seconds_by_fold": [
+        992.411530666519,
+        992.411530666519,
+        997.1149028497725,
+        997.1149028497725
+      ],
+      "budget_all_four_folds_seconds": 4099.052867032583
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "dataset": "ninapro_db2",
+      "report_sha256": "85532e30aeee8912c9db70230a1ecfe7ce8b9816ffd835210165d77c723f2b0b",
+      "elapsed_seconds": 1100.104441266507,
+      "fit_seconds": 1080.3603727286682,
+      "max_fit_seconds": 543.5104518020526,
+      "peak_rss_bytes": 1541537792,
+      "n_iterations": [
+        138,
+        206,
+        336,
+        815,
+        1735,
+        3261
+      ],
+      "budget_terms_seconds_by_fold": [
+        2435.806236796081,
+        2642.972007595959,
+        2435.806236796081,
+        2435.806236796081
+      ],
+      "budget_all_four_folds_seconds": 10070.390717984203
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "dataset": "ninapro_db3",
+      "report_sha256": "782724571866809d8b7c910a93d62ff7f84c2b10945b0be78fd08fc44b17dfa3",
+      "elapsed_seconds": 254.78827747050673,
+      "fit_seconds": 247.4194947546348,
+      "max_fit_seconds": 127.58886712882668,
+      "peak_rss_bytes": 701493248,
+      "n_iterations": [
+        83,
+        146,
+        312,
+        582,
+        1348,
+        2066
+      ],
+      "budget_terms_seconds_by_fold": [
+        562.5125428251922,
+        562.5125428251922,
+        629.7675068561772,
+        562.5125428251922
+      ],
+      "budget_all_four_folds_seconds": 2437.3051353317537
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "dataset": "ninapro_db6",
+      "report_sha256": "39da54eae1e567019e624df5f8b4287ae3a83a85e991bfef5079457c95d75db0",
+      "elapsed_seconds": 304.3308015568182,
+      "fit_seconds": 284.5364728998393,
+      "max_fit_seconds": 134.32455464731902,
+      "peak_rss_bytes": 1428836352,
+      "n_iterations": [
+        118,
+        235,
+        656,
+        1597,
+        3219,
+        5440
+      ],
+      "budget_terms_seconds_by_fold": [
+        628.2915413207375,
+        630.1026848748515,
+        628.2915413207375,
+        628.2915413207375
+      ],
+      "budget_all_four_folds_seconds": 2634.977308837064
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "dataset": "uci_emg",
+      "report_sha256": "78144d752c99b213a43a1dc2b4e524bdf5c9dc176eb6524ecc1027859f03987b",
+      "elapsed_seconds": 1.8017469877377152,
+      "fit_seconds": 1.0635006939992309,
+      "max_fit_seconds": 0.4374611685052514,
+      "peak_rss_bytes": 388464640,
+      "n_iterations": [
+        69,
+        172,
+        345,
+        226,
+        153,
+        65
+      ],
+      "budget_terms_seconds_by_fold": [
+        2.2514427937567234,
+        2.2514427937567234,
+        2.2798223247704636,
+        2.4500995108529047
+      ],
+      "budget_all_four_folds_seconds": 129.23280742313682
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "dataset": "ninapro_db2",
+      "report_sha256": "ed2690813e01ad4c09db13080d43aa9af12f1912a7aa872d3b07d70411286ae5",
+      "elapsed_seconds": 1630.0382257290184,
+      "fit_seconds": 1609.010634943843,
+      "max_fit_seconds": 670.5369014069438,
+      "peak_rss_bytes": 2975178752,
+      "n_iterations": [
+        212,
+        313,
+        494,
+        1135,
+        2210,
+        3164
+      ],
+      "budget_terms_seconds_by_fold": [
+        3419.32130452618,
+        3710.1352136802816,
+        3419.32130452618,
+        3419.32130452618
+      ],
+      "budget_all_four_folds_seconds": 14088.099127258822
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "dataset": "ninapro_db3",
+      "report_sha256": "d0d2deb4595dd26b0f253c1252d9caf7fefbe7bf6efd035509817d3a197dac8c",
+      "elapsed_seconds": 379.76538861729205,
+      "fit_seconds": 372.22875083517283,
+      "max_fit_seconds": 126.11604804825038,
+      "peak_rss_bytes": 1020944384,
+      "n_iterations": [
+        123,
+        280,
+        504,
+        781,
+        1558,
+        1266
+      ],
+      "budget_terms_seconds_by_fold": [
+        747.5171983251348,
+        747.5171983251348,
+        836.8916361526002,
+        747.5171983251348
+      ],
+      "budget_all_four_folds_seconds": 3199.4432311280048
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "dataset": "ninapro_db6",
+      "report_sha256": "09fb98aa950bb3b8fe58b2659a719d81e989aa57584b2f78657fecffd025576d",
+      "elapsed_seconds": 1553.7432785229757,
+      "fit_seconds": 1533.4915511785075,
+      "max_fit_seconds": 702.6976029863581,
+      "peak_rss_bytes": 2688573440,
+      "n_iterations": [
+        200,
+        363,
+        930,
+        2160,
+        4882,
+        7825
+      ],
+      "budget_terms_seconds_by_fold": [
+        3354.2837312472984,
+        3363.9529515996014,
+        3354.2837312472984,
+        3354.2837312472984
+      ],
+      "budget_all_four_folds_seconds": 13546.804145341497
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "dataset": "epn612",
+      "report_sha256": "d4f9532351212a0f805236972aa7e78d2b0d31a3ff969548e6d67c26dd448cfe",
+      "elapsed_seconds": 524.9469875423238,
+      "fit_seconds": 513.0292810164392,
+      "max_fit_seconds": 250.47919759433717,
+      "peak_rss_bytes": 1850130432,
+      "n_iterations": [
+        378,
+        738,
+        1259,
+        1692,
+        3715,
+        7422
+      ],
+      "budget_terms_seconds_by_fold": [
+        1145.2627179161645,
+        1145.2627179161645,
+        1150.690503309132,
+        1150.690503309132
+      ],
+      "budget_all_four_folds_seconds": 4711.906442450593
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "dataset": "ninapro_db2",
+      "report_sha256": "24d405d037024cc95ec66e05fbbb3e2a0bd5698ed675d875e768844a9b3d1753",
+      "elapsed_seconds": 1019.7688913019374,
+      "fit_seconds": 1007.1788724167272,
+      "max_fit_seconds": 479.37486571632326,
+      "peak_rss_bytes": 1583079424,
+      "n_iterations": [
+        142,
+        227,
+        353,
+        836,
+        1648,
+        3115
+      ],
+      "budget_terms_seconds_by_fold": [
+        2229.8306071995758,
+        2419.478112619085,
+        2229.8306071995758,
+        2229.8306071995758
+      ],
+      "budget_all_four_folds_seconds": 9228.969934217812
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "dataset": "ninapro_db3",
+      "report_sha256": "3b017a3bb1c34d54c5dd3312583c0d1d30676a6a9a5f7554b57db2b0241536b5",
+      "elapsed_seconds": 180.0705191679299,
+      "fit_seconds": 174.4806617172435,
+      "max_fit_seconds": 78.32589222863317,
+      "peak_rss_bytes": 689364992,
+      "n_iterations": [
+        85,
+        146,
+        255,
+        551,
+        1166,
+        1937
+      ],
+      "budget_terms_seconds_by_fold": [
+        379.209830918815,
+        379.209830918815,
+        424.54880844729723,
+        379.209830918815
+      ],
+      "budget_all_four_folds_seconds": 1682.1783012037422
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "dataset": "ninapro_db6",
+      "report_sha256": "d71706669fdc57cb82e7e22f63f9ec4bc24aeaeb715bae703791260855c2415f",
+      "elapsed_seconds": 254.73273272626102,
+      "fit_seconds": 241.83449744805694,
+      "max_fit_seconds": 115.06758621893823,
+      "peak_rss_bytes": 1428869120,
+      "n_iterations": [
+        124,
+        229,
+        609,
+        1455,
+        2939,
+        4831
+      ],
+      "budget_terms_seconds_by_fold": [
+        535.3531255004928,
+        536.8963602866668,
+        535.3531255004928,
+        535.3531255004928
+      ],
+      "budget_all_four_folds_seconds": 2262.9557367881453
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "dataset": "uci_emg",
+      "report_sha256": "7be23087d1f308c29274c4e54a42f4c485626d8cd371670a84a28f2a00df2a0a",
+      "elapsed_seconds": 1.8199066575616598,
+      "fit_seconds": 1.1094469651579857,
+      "max_fit_seconds": 0.41464629862457514,
+      "peak_rss_bytes": 387702784,
+      "n_iterations": [
+        66,
+        176,
+        288,
+        154,
+        111,
+        56
+      ],
+      "budget_terms_seconds_by_fold": [
+        2.2861398956738412,
+        2.2861398956738412,
+        2.314956785115108,
+        2.4878581217627094
+      ],
+      "budget_all_four_folds_seconds": 129.3750946982255
+    }
+  ]
+}

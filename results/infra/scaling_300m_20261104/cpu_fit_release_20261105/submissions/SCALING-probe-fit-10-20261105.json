@@ -1,0 +1,64 @@
+{
+  "agente": "gpt",
+  "campagna": "scaling-300m-20261104",
+  "codice_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+  "creato": "2026-11-05T22:23:08+01:00",
+  "dopo": "SCALING-probe-fit-09-20261105",
+  "gpu_ore_stimate": 0.0,
+  "id": "SCALING-probe-fit-10-20261105",
+  "job_slurm": 63629605,
+  "sbatch": [
+    "sbatch",
+    "--parsable",
+    "--job-name=SCALING-probe-fit-10-20261105",
+    "--comment=wearusfm:SCALING-probe-fit-10-20261105",
+    "--dependency=afterok:63627052",
+    "--cpus-per-task=8",
+    "--mem=30G",
+    "--time=02:19:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation_20261105_v1,EXPECTED_SHA=aef665ba7ea66fc80291846487907bb3ef9107df",
+    "/dev/stdin",
+    "probe-fit",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+    "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-03",
+    "--cell",
+    "T100-G-300M-natural",
+    "--task",
+    "p1",
+    "--datasets",
+    "ninapro_db3",
+    "ninapro_db6",
+    "--folds",
+    "0",
+    "1",
+    "--resource-plan",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_budgets_20261105_v1/results/infra/scaling_300m_20261104/cpu_fit_release_20261105/probe_fit_resources.json",
+    "--resource-sha256",
+    "92726f54b5a9beefe05fcb7b66147d0460377ebfe277c7730c664bc1c5aefbc7"
+  ],
+  "script_stdin": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-scaling-300m/scripts/slurm/scaling_readers_recovery.sbatch",
+  "script_stdin_sha256": "c2bd7979699b2d70150cdfad9d2a6eca657615551ba5073630417c8c46cf14d5",
+  "stato": "sottomesso",
+  "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n",
+  "stdout": "63629605\n",
+  "storia": [
+    {
+      "quando": "2026-11-05T22:23:08+01:00",
+      "stato": "prenotato"
+    },
+    {
+      "quando": "2026-11-05T22:23:08+01:00",
+      "stato": "in_sottomissione"
+    },
+    {
+      "job_slurm": 63629605,
+      "quando": "2026-11-05T22:23:08+01:00",
+      "stato": "sottomesso",
+      "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n",
+      "stdout": "63629605\n",
+      "uscita": 0
+    }
+  ],
+  "uscita": 0
+}

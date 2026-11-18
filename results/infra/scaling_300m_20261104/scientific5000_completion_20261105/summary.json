@@ -1,0 +1,45 @@
+{
+  "stopped": "max_steps",
+  "steps": 5000,
+  "elapsed_s": 14665.05355668068,
+  "parameters": 292054847,
+  "device": "cuda:0",
+  "gpu_max_memory_gib": 37.7518310546875,
+  "code": {
+    "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_scientific5000_20261104_v1",
+    "sha": "dc96559405b5fff971a3be06a6ca59c992d342dc"
+  },
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.2.0a0+git6c8c5ad",
+    "cuda": "12.1",
+    "pip_freeze_file": null,
+    "pip_freeze_sha256": null,
+    "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"
+  },
+  "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "world_size": 4,
+  "batch_per_process": 8,
+  "prefetch": true,
+  "prefetch_audit_steps": null,
+  "accum_steps": 1,
+  "micro_batch": 8,
+  "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch",
+  "pose_panel_timing": {
+    "prepare_s": 21.60942290816456,
+    "evaluations_s": [
+      14.898423376958817,
+      14.857640362344682,
+      14.861649821978062,
+      14.88028182508424,
+      14.841673023067415,
+      14.894777331966907,
+      14.877603949978948,
+      14.891924418043345,
+      14.907130574807525,
+      14.88814991991967,
+      14.906598324421793
+    ],
+    "total_s": 185.31527583673596
+  }
+}

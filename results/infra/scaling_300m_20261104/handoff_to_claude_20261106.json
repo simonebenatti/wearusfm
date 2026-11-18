@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-06",
+  "line": "1 - scaling 30M/300M",
+  "authorization_source": "Simone: direct handoff instruction in GPT scaling chat, followed by scientific reasoning/assessment clarification",
+  "gpt_role": [
+    "scientific_reasoning",
+    "direction_assessment",
+    "review_before_each_submission",
+    "main_integrator"
+  ],
+  "claude_role": [
+    "code",
+    "deployment",
+    "submission",
+    "operational_status_and_logs",
+    "collection"
+  ],
+  "gpt_operational_stop": true,
+  "gpt_last_execution_branch_commit": "97125bd8bb8b14590958501ba91986c8456037f9",
+  "claude_execution_branch_base": "97125bd8bb8b14590958501ba91986c8456037f9",
+  "last_job": {
+    "logical_id": "SCALING-probe-fit-14-20261105",
+    "job_id": 63635524,
+    "submitted_at": "2026-11-06T00:14:56+01:00",
+    "dependency": "afterok:63634004"
+  },
+  "runner": {
+    "result": "all_15_submitted",
+    "finished": true,
+    "restart_authorized": false,
+    "evidence": "results/infra/scaling_300m_20261104/cpu_fit_release_20261105/submissions/finish_result.json"
+  },
+  "final_stages_at_handoff": {
+    "concrete_submission_commands_prepared": false,
+    "concrete_submission_plans_published": false,
+    "comparison_manifest_prepared": false,
+    "aggregate_jobs_submitted_by_gpt": 0,
+    "comparison_jobs_submitted_by_gpt": 0,
+    "existing_assets": "Frozen code, generic interfaces and budget only"
+  },
+  "review10": {
+    "source_commit": "d3976c36172bbae7bb51daf17b94f317b1f97fc0",
+    "covered_gpt_commit": "97125bd8bb8b14590958501ba91986c8456037f9",
+    "frozen_numeric_commit": "aef665ba7ea66fc80291846487907bb3ef9107df",
+    "verdict": "APPROVED_NO_BLOCKERS",
+    "files_sha256": {
+      "docs/reviews/claude_review_scaling_300m_final_stages_code_20261106.md": "e9feb5f9a9fa1e9e9d00440636bc040bad15fd23e8d64a8fb6d2e7a29f1788e7",
+      "docs/reviews/claude_review_scaling_300m_final_stages_code_20261106_checks.py": "a142e8a6c414ad18300a2d5e674974c0a9775aaa576db02c15af0daeca29a9ec",
+      "docs/reviews/claude_review_scaling_300m_final_stages_code_20261106_oof_identity.py": "d70c01c8007cff12e42571e7409ce0d25197abbff56ab3164b4f2f7df3d5ffd4",
+      "docs/reviews/claude_review_scaling_300m_final_stages_code_20261106_real_metadata.py": "98b33b6c06a73efbc1e5d4591419b9f10a5ee558982f7421e0ce5ddf6f0044c1"
+    },
+    "suggestions_deferred": [
+      "S-1",
+      "S-2",
+      "S-3",
+      "S-4"
+    ],
+    "next_review_anchors": [
+      "section 3",
+      "section 5"
+    ]
+  },
+  "constraints": {
+    "cpu_cumulative_core_hours": 310,
+    "classification_fit_shards": 14,
+    "classification_aggregates": 6,
+    "final_comparisons": 1,
+    "continuation_19618_authorized": false,
+    "lines_2_and_3_unchanged": true,
+    "frozen_code_unchanged": true,
+    "frozen_s8_unchanged": true,
+    "no_blind_retry": true,
+    "no_duplicate_jobs": true,
+    "common_submitter_and_ledger": true
+  },
+  "verification_scope": "Local repository and published evidence only; no new remote status/log/collection, submission, deployment or runner operation"
+}

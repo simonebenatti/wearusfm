@@ -1,0 +1,486 @@
+{
+ "protocol": "sonde_convergenza_v1",
+ "task": "p2",
+ "order": [
+  "A_R3c",
+  "A_B",
+  "B_R3c",
+  "B_B"
+ ],
+ "weights": {
+  "epn612": 0.5,
+  "uci_emg": 0.5
+ },
+ "bootstrap": {
+  "n_boot": 1000,
+  "seed": 20261009,
+  "method": "soggetti ricampionati insieme per i quattro rapporti, per dataset in ordine alfabetico, come arms_compare.s_comparison"
+ },
+ "S": {
+  "A_R3c": 0.8083719637436697,
+  "A_B": 0.7960443110796318,
+  "B_R3c": 0.8078517938922898,
+  "B_B": 0.7961292367696531
+ },
+ "S_se_reports": {
+  "A_R3c": 0.02238299982183616,
+  "A_B": 0.019549430455628937,
+  "B_R3c": 0.022391209460323146,
+  "B_B": 0.019547766426090997
+ },
+ "contrasts": {
+  "B_minus_R3c_A": {
+   "delta": -0.012327652664037902,
+   "ci95": [
+    -0.02997250474260461,
+    0.005761470977837396
+   ],
+   "paired_subject_se": 0.009198583782076298
+  },
+  "B_minus_R3c_B": {
+   "delta": -0.011722557122636701,
+   "ci95": [
+    -0.0295552104293206,
+    0.006506697201183001
+   ],
+   "paired_subject_se": 0.009201570080288437
+  },
+  "R3c_B_minus_A": {
+   "delta": -0.0005201698513799258,
+   "ci95": [
+    -0.0009129511677282737,
+    -0.00015923566878983387
+   ],
+   "paired_subject_se": 0.00019133394301519509
+  },
+  "B_B_minus_A": {
+   "delta": 8.492569002127581e-05,
+   "ci95": [
+    -0.0004248938428875776,
+    0.0006050955414014236
+   ],
+   "paired_subject_se": 0.00026376588324203935
+  },
+  "delta_of_deltas": {
+   "delta": 0.0006050955414012016,
+   "ci95": [
+    1.0615711252714988e-05,
+    0.0012001061571126454
+   ],
+   "paired_subject_se": 0.00031238642801648564
+  }
+ },
+ "datasets": {
+  "epn612": {
+   "weight": 0.5,
+   "S": {
+    "A_R3c": 0.8439915074309977,
+    "A_B": 0.8181953290870488,
+    "B_R3c": 0.8429511677282377,
+    "B_B": 0.8183651804670914
+   },
+   "contrasts": {
+    "B_minus_R3c_A": {
+     "delta": -0.025796178343948872,
+     "ci95": [
+      -0.03172027600849282,
+      -0.02031847133757969
+     ],
+     "paired_subject_se": 0.0029848086209265435
+    },
+    "B_minus_R3c_B": {
+     "delta": -0.024585987261146358,
+     "ci95": [
+      -0.03068152866242043,
+      -0.019256900212314187
+     ],
+     "paired_subject_se": 0.002994732609804056
+    },
+    "R3c_B_minus_A": {
+     "delta": -0.0010403397027599626,
+     "ci95": [
+      -0.0018259023354564364,
+      -0.00031847133757956225
+     ],
+     "paired_subject_se": 0.0003826678860303912
+    },
+    "B_B_minus_A": {
+     "delta": 0.00016985138004255163,
+     "ci95": [
+      -0.000849787685775158,
+      0.0012101910828026252
+     ],
+     "paired_subject_se": 0.0005275317664840786
+    },
+    "delta_of_deltas": {
+     "delta": 0.0012101910828025142,
+     "ci95": [
+      2.1231422505318953e-05,
+      0.0024002123142254045
+     ],
+     "paired_subject_se": 0.0006247728560329723
+    }
+   }
+  },
+  "uci_emg": {
+   "weight": 0.5,
+   "S": {
+    "A_R3c": 0.7727524200563417,
+    "A_B": 0.7738932930722147,
+    "B_R3c": 0.7727524200563417,
+    "B_B": 0.7738932930722147
+   },
+   "contrasts": {
+    "B_minus_R3c_A": {
+     "delta": 0.0011408730158729563,
+     "ci95": [
+      -0.033921266940603725,
+      0.03591112060307696
+     ],
+     "paired_subject_se": 0.01809783261900869
+    },
+    "B_minus_R3c_B": {
+     "delta": 0.0011408730158729563,
+     "ci95": [
+      -0.033921266940603725,
+      0.03591112060307696
+     ],
+     "paired_subject_se": 0.01809783261900869
+    },
+    "R3c_B_minus_A": {
+     "delta": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "paired_subject_se": 0.0
+    },
+    "B_B_minus_A": {
+     "delta": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "paired_subject_se": 0.0
+    },
+    "delta_of_deltas": {
+     "delta": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "paired_subject_se": 0.0
+    }
+   }
+  }
+ },
+ "changes_12000_vs_3000": {
+  "B": {
+   "epn612": {
+    "predictions_changed": 666,
+    "n": 47100,
+    "fraction_changed": 0.014140127388535031,
+    "c_3000": [
+     1.0,
+     100.0,
+     10.0,
+     10.0
+    ],
+    "c_12000": [
+     1.0,
+     100.0,
+     10.0,
+     100.0
+    ],
+    "folds_with_c_shift": 1,
+    "s_3000": 0.8181953290870488,
+    "s_12000": 0.8183651804670914
+   },
+   "uci_emg": {
+    "predictions_changed": 0,
+    "n": 364,
+    "fraction_changed": 0.0,
+    "c_3000": [
+     0.001,
+     10.0,
+     0.001,
+     0.001
+    ],
+    "c_12000": [
+     0.001,
+     10.0,
+     0.001,
+     0.001
+    ],
+    "folds_with_c_shift": 0,
+    "s_3000": 0.7738932930722147,
+    "s_12000": 0.7738932930722147
+   }
+  },
+  "R3c": {
+   "epn612": {
+    "predictions_changed": 358,
+    "n": 47100,
+    "fraction_changed": 0.007600849256900213,
+    "c_3000": [
+     1.0,
+     10.0,
+     10.0,
+     1.0
+    ],
+    "c_12000": [
+     1.0,
+     100.0,
+     10.0,
+     1.0
+    ],
+    "folds_with_c_shift": 1,
+    "s_3000": 0.8439915074309977,
+    "s_12000": 0.8429511677282377
+   },
+   "uci_emg": {
+    "predictions_changed": 0,
+    "n": 364,
+    "fraction_changed": 0.0,
+    "c_3000": [
+     10.0,
+     0.1,
+     0.001,
+     0.001
+    ],
+    "c_12000": [
+     10.0,
+     0.1,
+     0.001,
+     0.001
+    ],
+    "folds_with_c_shift": 0,
+    "s_3000": 0.7727524200563417,
+    "s_12000": 0.7727524200563417
+   }
+  }
+ },
+ "warnings": {
+  "A_R3c": {
+   "n_records": 56,
+   "reached_limit": 4,
+   "convergence_warnings": 4,
+   "anomalous_stop": 0,
+   "exceptions": 0,
+   "by_dataset": {
+    "epn612": {
+     "n_fits": 28,
+     "reached_limit": 4,
+     "convergence_warnings": 4,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    },
+    "uci_emg": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    }
+   },
+   "positions": [
+    {
+     "dataset": "epn612",
+     "fold": 0,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    },
+    {
+     "dataset": "epn612",
+     "fold": 1,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    },
+    {
+     "dataset": "epn612",
+     "fold": 2,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    },
+    {
+     "dataset": "epn612",
+     "fold": 3,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    }
+   ]
+  },
+  "A_B": {
+   "n_records": 56,
+   "reached_limit": 5,
+   "convergence_warnings": 5,
+   "anomalous_stop": 0,
+   "exceptions": 0,
+   "by_dataset": {
+    "epn612": {
+     "n_fits": 28,
+     "reached_limit": 5,
+     "convergence_warnings": 5,
+     "selected_reached_limit": 1,
+     "refit_reached_limit": 1
+    },
+    "uci_emg": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    }
+   },
+   "positions": [
+    {
+     "dataset": "epn612",
+     "fold": 0,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    },
+    {
+     "dataset": "epn612",
+     "fold": 1,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": true
+    },
+    {
+     "dataset": "epn612",
+     "fold": 1,
+     "fit_phase": "refit",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": null
+    },
+    {
+     "dataset": "epn612",
+     "fold": 2,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    },
+    {
+     "dataset": "epn612",
+     "fold": 3,
+     "fit_phase": "candidate",
+     "C": 100.0,
+     "n_iter": 3000,
+     "reached_limit": true,
+     "convergence_warnings": 1,
+     "selected": false
+    }
+   ]
+  },
+  "B_R3c": {
+   "n_records": 56,
+   "reached_limit": 0,
+   "convergence_warnings": 0,
+   "anomalous_stop": 0,
+   "exceptions": 0,
+   "by_dataset": {
+    "epn612": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    },
+    "uci_emg": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    }
+   },
+   "positions": []
+  },
+  "B_B": {
+   "n_records": 56,
+   "reached_limit": 0,
+   "convergence_warnings": 0,
+   "anomalous_stop": 0,
+   "exceptions": 0,
+   "by_dataset": {
+    "epn612": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    },
+    "uci_emg": {
+     "n_fits": 28,
+     "reached_limit": 0,
+     "convergence_warnings": 0,
+     "selected_reached_limit": 0,
+     "refit_reached_limit": 0
+    }
+   },
+   "positions": []
+  }
+ },
+ "residual_warnings_at_12000": {
+  "B": 0,
+  "R3c": 0
+ },
+ "numeric_sha256": "e5b710ec622035ebd6fbe9ed8d3424d734b44a33e38f897041fbd78fde5a7215",
+ "reading": {
+  "note": "lettura descrittiva di robustezza, un solo seme di pretraining, nessuna nuova soglia di adozione; IC che contiene 0 = inconclusivo, non equivalenza; delta stabile con warning residui = insensibilita' osservata a questo aumento di iterazioni, non convergenza certificata",
+  "delta_of_deltas_ci_contains_zero": false,
+  "sign_B_minus_R3c_A": -1.0,
+  "sign_B_minus_R3c_B": -1.0
+ },
+ "official": {
+  "A": {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/confronto/ufficiale_p2_A.json",
+   "delta": -0.012327652664037958,
+   "ci95": [
+    -0.02997250474260461,
+    0.005761470977837396
+   ],
+   "agrees_with_joint_bootstrap": true,
+   "verdict_label": "regola non superata"
+  },
+  "B": {
+   "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pilot_posa/sonde_convergenza_20261029/confronto/ufficiale_p2_B.json",
+   "delta": -0.011722557122636701,
+   "ci95": [
+    -0.029555210429320543,
+    0.006506697201182949
+   ],
+   "agrees_with_joint_bootstrap": true,
+   "verdict_label": "regola non superata"
+  }
+ }
+}

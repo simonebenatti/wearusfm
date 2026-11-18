@@ -23,7 +23,8 @@ def test_band_shape_puts_the_power_in_the_right_band():
 
 def test_rms_envelope_and_edges():
     tg = A.anchor_targets(_sine(100.0, 2000.0, amp=2.0), 2000.0, 450.0)
-    assert np.allclose(tg.log_rms[0, 1:-1], math.log(2.0 / math.sqrt(2)), atol=1e-3) and tg.rms_valid.all()
+    assert np.allclose(tg.log_rms[tg.rms_valid], math.log(2.0 / math.sqrt(2)), atol=1e-3)
+    assert not tg.rms_valid[0, :2].any() and not tg.rms_valid[0, -2:].any() and tg.rms_valid[0, 2:-2].all()
     assert np.allclose(tg.log_env[0][tg.env_valid[0]], math.log(2.0 / math.sqrt(2)), atol=1e-3)
     p = tg.log_rms.shape[1]
     assert p == 80 and not tg.spec_valid[0, :3].any() and tg.spec_valid[0, 4:p - 4].all()  # 200 ms centrati: le prime 3 patch escono
@@ -69,7 +70,7 @@ def _reference(x, fs, band_limit_hz, patch_ms=25.0):
     limit = np.minimum(np.broadcast_to(np.asarray(band_limit_hz, dtype=np.float64), (c,)), fs / 2.0)
     edges = np.asarray(A.BAND_EDGES_HZ)
     avail = edges[None, 1:] <= limit[:, None] + 1e-9
-    seg, _ = A._windows(x, fs, centers, A.RMS_WINDOW_MS)
+    seg, _ = A._windows(x, fs, centers, A.LEGACY_RMS_WINDOW_MS)
     log_rms = np.log(np.sqrt(np.mean(seg ** 2, axis=-1)) + A.EPS)
     seg, _ = A._windows(x, fs, centers, A.SPECTRAL_WINDOW_MS)
     n = seg.shape[-1]
@@ -85,7 +86,7 @@ def test_fast_targets_equal_the_reference_also_at_the_edges():
     rng = np.random.default_rng(3)
     for c, fs, t, lim in [(4, 2000.0, 8000, 450.0), (3, 1000.0, 1000, 450.0), (5, 200.0, 800, 100.0), (2, 2048.0, 3000, [450.0, 100.0])]:
         x = rng.normal(size=(c, t)) * np.linspace(0.1, 3.0, t)[None, :]  # ampiezza che cambia: i bordi contano
-        got = A.anchor_targets(x.astype(np.float32), fs, lim)
+        got = A.anchor_targets(x.astype(np.float32), fs, lim, rms_window_ms=A.LEGACY_RMS_WINDOW_MS)
         ref_rms, ref_shape, ref_env = _reference(x.astype(np.float32), fs, lim)
         assert np.allclose(got.log_rms, ref_rms, atol=1e-6) and np.allclose(got.log_env, ref_env, atol=1e-6)  # tutte le patch, anche fuori
         ok = got.spec_valid[:, :, None] & got.band_available[:, None, :]
@@ -102,7 +103,7 @@ def test_rvq_windows_ignore_channels_discarded_by_qc():
 
 
 def test_multiscale_anchor_targets_scales_bands_and_masks():
-    """Ancora multi-scala (Simone, 04/10/2026): 6 bande a 50 ms e 24 bande a 500 ms, centrate sulla patch; bande oltre il limite non disponibili."""
+    """Ancora multi-scala aggiornata il18/11: 6 bande a100ms e24 a500ms; bande oltre il limite non disponibili."""
     fs = 2000.0
     t = np.arange(8000) / fs
     x = np.sin(2 * np.pi * 300 * t)[None, :] * np.ones((2, 1))
@@ -130,7 +131,7 @@ def test_multiscale_slow_scale_one_window_every_100_ms():
     limit = np.full(3, 450.0)
     ref, ok, _ = A._band_logpower(x.astype(np.float32), fs, (np.arange(40) * 4 + 2.0) * 0.025, 500.0, 24, limit)
     assert np.allclose(groups[:, :, 0], ref) and np.array_equal(tg.ms_slow_valid[0].reshape(40, 4)[:, 0], ok)
-    fast, _, _ = A._band_logpower(x.astype(np.float32), fs, (np.arange(160) + 0.5) * 0.025, 50.0, 6, limit)
+    fast, _, _ = A._band_logpower(x.astype(np.float32), fs, (np.arange(160) + 0.5) * 0.025, 125.0, 6, limit, round_half_up=True)
     assert np.allclose(tg.ms_fast, fast)
     odd = A.anchor_targets(x[:, :7950], fs, 450.0, multiscale=True)  # 159 patch: l'ultimo gruppo e' incompleto
     assert odd.ms_slow.shape == (3, 159, 24) and odd.ms_slow_valid.shape == (3, 159)

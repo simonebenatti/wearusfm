@@ -35,11 +35,11 @@ def _noise(c, seconds, fs, seed=0):
 # --- frontend ---------------------------------------------------------------------------------------------------------------------------
 
 @pytest.mark.parametrize("fs", [200.0, 1000.0, 1500.0, 2000.0, 2048.0])
-def test_psd_frontend_equals_step1_targets(fs):
-    """Stesse finestre, stessa PSD, stesse bande e stessa disponibilita' dei target multiscala dello Step 1 (`anchor_targets`)."""
+def test_psd_frontend_equals_legacy_step1_targets(fs):
+    """Il ramo PSD storico50/500ms resta identico ai target storici espliciti; il nuovo target100ms non cambia quel frontend."""
     x = _noise(3, 3.1, fs, seed=int(fs))
     limit = np.array([450.0, 300.0, fs / 2])
-    tg = AT.anchor_targets(x, fs, limit, multiscale=True)
+    tg = AT.anchor_targets(x, fs, limit, multiscale=True, ms_fast_window_ms=50)
     out = SB.PSDFrontend()(torch.from_numpy(x), fs, np.minimum(limit, fs / 2), (0, 0))
     for name, attr, per in (("fast", "ms_fast", 1), ("slow", "ms_slow", 4)):
         power, valid = (v.numpy() for v in out[name])

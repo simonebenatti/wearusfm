@@ -1,0 +1,58 @@
+{
+  "protocol": "ft15-resource-projection-20261105-v1",
+  "reference_accounting": {
+    "path": "results/infra/consolidation_20261104/final_20261105/accounting.json",
+    "sha256": "aa88916e072b395f9ec9df94f411f0e8785e034a76f0dbff3d991342528c3c36"
+  },
+  "policy": {
+    "reference_epochs": 5,
+    "target_epochs": 15,
+    "elapsed_multiplier": 1.25,
+    "extra_seconds": 600,
+    "throughput": "seconds_per_update_steady",
+    "slowdown_floor": 1,
+    "load_multiplier": 1.5,
+    "formula": "ceil(3*M*1.25*q+600+D)"
+  },
+  "regimes": [
+    {
+      "regime": "frozen",
+      "candidate_jobs": 8,
+      "max_five_seconds": 4519,
+      "three_times_observed_total_gpu_hours": 29.230833333333333,
+      "projected_one_seconds_at_q1_D0": 17547,
+      "projected_regime_gpu_hours_at_q1_D0": 38.99333333333333,
+      "walltime_seconds": 21600,
+      "limit_seconds": 21300,
+      "gpu_hours_cap": 48.0
+    },
+    {
+      "regime": "finetune",
+      "candidate_jobs": 8,
+      "max_five_seconds": 13359,
+      "three_times_observed_total_gpu_hours": 87.79166666666667,
+      "projected_one_seconds_at_q1_D0": 50697,
+      "projected_regime_gpu_hours_at_q1_D0": 112.66,
+      "walltime_seconds": 57600,
+      "limit_seconds": 57300,
+      "gpu_hours_cap": 128.0
+    },
+    {
+      "regime": "scratch",
+      "candidate_jobs": 8,
+      "max_five_seconds": 13446,
+      "three_times_observed_total_gpu_hours": 87.79249999999999,
+      "projected_one_seconds_at_q1_D0": 51023,
+      "projected_regime_gpu_hours_at_q1_D0": 113.38444444444444,
+      "walltime_seconds": 57600,
+      "limit_seconds": 57300,
+      "gpu_hours_cap": 128.0
+    }
+  ],
+  "observed_threefold_gpu_hours": 204.815,
+  "prudential_fit_gpu_hours_at_q1_D0": 265.03777777777776,
+  "fit_gpu_hours_cap": 304,
+  "total_gpu_hours_cap": 304.5,
+  "total_allocated_core_hours_cap": 2436.6666666666665,
+  "not_a_benchmark_receipt": true
+}

@@ -1,0 +1,67 @@
+2026-11-05 21:41:36
+login05.leonardo.local
+== scontrol
+Priority=142313
+Account=iscrb_wearusfm
+QOS=normal
+JobState=PENDING
+Reason=Priority
+Dependency=(null)
+TimeLimit=04:00:00
+SubmitTime=2026-11-05T15:18:42
+EligibleTime=2026-11-05T16:38:00
+AccrueTime=2026-11-05T16:38:00
+StartTime=Unknown
+LastSchedEval=2026-11-05T21:41:29
+Partition=boost_usr_prod
+NumNodes=1-1
+NumCPUs=32
+ReqTRES=cpu=32,mem=480G,node=1,billing=32,gres/gpu=4
+MinMemoryNode=480G
+Features=(null)
+TresPerNode=gres/gpu:4
+== sprio job
+          JOBID PARTITION     USER  ACCOUNT   PRIORITY       SITE        AGE      ASSOC  FAIRSHARE    JOBSIZE  PARTITION    QOSNAME        QOS        NICE                 TRES
+       63593128 boost_usr sbenatti iscrb_we     142313          0        595          0      21710          8          0     normal     120000           0                     
+== sprio pesi
+          JOBID PARTITION   PRIORITY       SITE        AGE  FAIRSHARE    JOBSIZE        QOS
+        Weights                               1      20000      25000   10000000     300000
+== start stimato
+63593128|N/A|Priority|142313
+== posizione (priorita 142313)
+pending totali 13191 | con priorita maggiore 2745 | in attesa per Priority o Resources  | di cui davanti 
+== nodi boost_usr_prod per stato
+completing 5
+mixed- 13
+planned 6
+draining 1
+drained 1
+mixed 303
+allocated 2984
+idle 8
+== miei pending
+142313|63593128|LOGSQ-T100-LQ-19618-20261105|Priority|gres/gpu:4|1|2026-11-05T15:18:42
+141712|63581725|FT15-EPN-finetune-F0-20261105-C1|Dependency|gres/gpu:1|1|2026-11-05T13:01:40
+141712|63581741|FT15-EPN-finetune-F1-20261105-C1|Dependency|gres/gpu:1|1|2026-11-05T13:01:51
+141712|63581745|FT15-EPN-finetune-F2-20261105-C1|Dependency|gres/gpu:1|1|2026-11-05T13:02:01
+141712|63581751|FT15-EPN-finetune-F3-20261105-C1|Dependency|gres/gpu:1|1|2026-11-05T13:02:13
+141712|63581837|FT15-EPN-scratch-F0-20261105-C1|Dependency|gres/gpu:1|1|2026-11-05T13:04:30
+141712|63582180|FT15-EPN-scratch-F1-20261105-C1|Dependency|gres/gpu:1|1|2026-11-05T13:12:11
+141712|63582253|FT15-EPN-scratch-F2-20261105-C1|Dependency|gres/gpu:1|1|2026-11-05T13:13:30
+141712|63582269|FT15-EPN-scratch-F3-20261105-C1|Dependency|gres/gpu:1|1|2026-11-05T13:13:52
+== sacct confronto
+JobID|JobName|Submit|Eligible|Start|State|Priority|ReqTRES
+63581718|FT15-EPN-finetune-F0-20261105-C0|2026-11-05T13:01:36|2026-11-05T13:01:36|2026-11-05T13:02:12|RUNNING|142527|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1
+63593091|LOGSQ-T100-LQ-5000-20261105|2026-11-05T15:18:24|2026-11-05T15:18:24|2026-11-05T15:31:30|COMPLETED|142242|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1
+63593128|LOGSQ-T100-LQ-19618-20261105|2026-11-05T15:18:42|2026-11-05T16:38:00|Unknown|PENDING|142228|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1
+63614514|LOGSQ-infer-5000-20261105|2026-11-05T19:06:45|2026-11-05T19:06:45|2026-11-05T19:07:00|COMPLETED|141882|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1
+63615952|LOGSQ-pose-5000-20261105|2026-11-05T19:24:02|2026-11-05T19:24:02|2026-11-05T19:24:49|COMPLETED|141836|billing=8,cpu=8,gres/gpu=1,mem=100G,node=1
+== sshare
+Account|User|RawShares|NormShares|RawUsage|EffectvUsage|FairShare
+iscrb_wearusfm|sbenatti|parent|0.001606|9576075|0.000327|0.868419
+== saldo
+-----------------------------------------------------------------------------------------------------------------------------------------
+account                start         end         total        localCluster   totConsumed     totConsumed     monthTotal     monthConsumed
+                                             (local h)   Consumed(local h)     (local h)               %      (local h)         (local h)
+-----------------------------------------------------------------------------------------------------------------------------------------
+IscrB_WearUsFM      20260107    20270107       2000000             1303196       1303196            65.2        164383               3055

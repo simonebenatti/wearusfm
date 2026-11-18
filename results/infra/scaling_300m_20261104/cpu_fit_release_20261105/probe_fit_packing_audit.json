@@ -1,0 +1,139 @@
+{
+  "protocol": "scaling-probe-packing-audit-20261105-v1",
+  "complete": true,
+  "method": "Exact-cover dynamic programming separately per cell/task; minimum shards, then minimum sum rounded seconds, then lexicographic rectangle indices",
+  "formula": "120 + 1.5 * sum_dataset((sum(C_times)+max(C_times))*sum_fold(max(1,n_train_fold/n_train_fold0)))",
+  "allocation_rounding_seconds": 60,
+  "benchmarks_complete": 15,
+  "covered_cells_dataset_folds": 60,
+  "source_plan": {
+    "path": "results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+    "sha256": "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+    "bytes": 42708
+  },
+  "source_acceptance_manifest": {
+    "path": "results/infra/scaling_300m_20261104/cpu_recovery_20261105/accepted_benchmarks.json",
+    "sha256": "44e9f1fc390451728a7310094386dfe24438cdc79f7cc01d442e80dcb99ae875",
+    "bytes": 36167
+  },
+  "builder": {
+    "path": "results/infra/scaling_300m_20261104/cpu_fit_release_20261105/build_probe_fit_resources.py",
+    "sha256": "94a9095ae130d5cc894432f1f2112f6363f422099e9be803b7da0b0254927031",
+    "bytes": 10038
+  },
+  "numeric_context": {
+    "python": "3.11.6",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpools": [
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.21.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.23.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libgomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libgomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      }
+    ],
+    "features_dtype": "float32"
+  },
+  "numerical_runtime_code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+  "no_scientific_scores_computed": true,
+  "groups": [
+    {
+      "cell": "T100-G-30M-natural",
+      "task": "p1",
+      "candidate_rectangles": 103,
+      "dynamic_program_states": 381,
+      "minimum_shards": 2,
+      "rounded_seconds": 13080
+    },
+    {
+      "cell": "T100-G-30M-natural",
+      "task": "p2",
+      "candidate_rectangles": 45,
+      "dynamic_program_states": 43,
+      "minimum_shards": 1,
+      "rounded_seconds": 4740
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "task": "p1",
+      "candidate_rectangles": 71,
+      "dynamic_program_states": 360,
+      "minimum_shards": 4,
+      "rounded_seconds": 31020
+    },
+    {
+      "cell": "T100-G-300M-natural",
+      "task": "p2",
+      "candidate_rectangles": 23,
+      "dynamic_program_states": 31,
+      "minimum_shards": 4,
+      "rounded_seconds": 24600
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "task": "p1",
+      "candidate_rectangles": 98,
+      "dynamic_program_states": 380,
+      "minimum_shards": 2,
+      "rounded_seconds": 15060
+    },
+    {
+      "cell": "T100-G-300M-matched",
+      "task": "p2",
+      "candidate_rectangles": 45,
+      "dynamic_program_states": 43,
+      "minimum_shards": 1,
+      "rounded_seconds": 4140
+    }
+  ],
+  "minimum_shards": 14,
+  "total_requested_seconds": 92640,
+  "requested_core_hours": 205.86666666666667,
+  "sequential_walltime_hours": 25.733333333333334,
+  "formula_seconds_before_rounding": 92378.79691564605,
+  "formula_core_hours_before_rounding": 205.28621536810232,
+  "scheduler_overtime_allowance_seconds_per_job": 180,
+  "core_hours_with_scheduler_allowance": 211.46666666666667,
+  "remaining_to_240_requested_core_hours": 34.133333333333326,
+  "limitations": [
+    "Runtime/cache guards must still execute on Leonardo; no live cache loading here.",
+    "Walltime is the frozen conservative allocation formula, not an actual duration forecast.",
+    "Publication, checkout, user approval record and live queue/ledger checks remain root responsibilities."
+  ]
+}

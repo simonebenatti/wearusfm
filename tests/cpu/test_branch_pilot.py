@@ -75,10 +75,15 @@ def test_the_probe_code_is_the_one_of_the_diagnostic_reports():
     diagnostica, serve una decisione, non un aggiornamento dell'hash.
     Decisione di Simone del 23/10/2026 («adesso le modifiche principali sono quelle che fai tu», readout per canale): `harness/probe.py`
     guadagna il parametro `scale` di `linear_probe` con default invariato (il percorso di default, quello del pilot e della diagnostica, e'
-    provato uguale in `test_channel_readout.py`); l'hash e' quello di quel commit, non piu' di aba1f2e."""
+    provato uguale in `test_channel_readout.py`); l'hash e' quello di quel commit, non piu' di aba1f2e.
+    Decisione del 29/10/2026 (Simone: «stavolta devi scrivere tu il codice, poi gpt lo revisionerà»; GPT, prompt b1c1bda e review de06bca;
+    critico 29/10, problema 1): `harness/probe.py` guadagna l'audit per fit (`max_iter`, `audit`, `context`, `persist`) per il controllo della
+    convergenza delle sonde, con default invariati: con `audit=None` e `max_iter=3000` le chiamate sono le stesse di prima (provato in
+    `test_probe_convergence.py` e nell'uguaglianza con `calibration_probe` di `test_channel_readout.py`). L'hash e' quello del commit della
+    decisione (decisioni.md, 29/10); gli altri quattro file restano quelli di aba1f2e."""
     at_diagnostic = {
         "scripts/calibration_probe.py": "197d19d061aa188a5a6c87305e60087f25b346e1966ad949c1a6ab7f8522aac3",
-        "src/wearusfm/harness/probe.py": "98dcc1a1fbd55593c0a1740d458df2f3943becde3eb2060d411e30e02e750998",
+        "src/wearusfm/harness/probe.py": "f17d338db6fdf031160a122fca455b75bdfedae4af3935b5d31d8d1e40152659",
         "src/wearusfm/harness/p1_cross_subject.py": "7045b947920d314e7b25e85dc41e42de6bc5dc42aef0812c485b247bda31c4ce",
         "src/wearusfm/harness/downstream_ab.py": "ea3b91423fe6c12743acb9679e4a3e9e214d84e4135769aeb4bbd82ed97b3164",
         "src/wearusfm/harness/splits.py": "51039fe49c211b8670445e1f037faae4c08b6290a881757e779971f71adc501e"}

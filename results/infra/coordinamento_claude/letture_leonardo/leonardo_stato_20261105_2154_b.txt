@@ -1,0 +1,27 @@
+2026-11-05 21:54:05
+== du (kB)
+1287804	wearusfm_runs/results/scaling_300m_20261105
+895952	wearusfm_runs/results/finetune15_20261105
+4462280	wearusfm_runs/results/consolidation_20261104
+18540	wearusfm_runs/logs
+2355496	wearusfm_campaigns
+== checkout: numero e ultimi
+54
+dr-xr-xr-x. 11 sbenatti interactive 4096 2026-11-05 21:44 wearusfm_campaigns/scaling_300m_cpu_budgets_20261105_v1
+dr-xr-xr-x. 11 sbenatti interactive 4096 2026-11-05 19:20 wearusfm_campaigns/logsquare-pose-5000-20261105
+dr-xr-xr-x. 11 sbenatti interactive 4096 2026-11-05 19:03 wearusfm_campaigns/logsquare-infer-5000-20261105
+dr-xr-xr-x. 11 sbenatti interactive 4096 2026-11-05 15:16 wearusfm_campaigns/logsquare-training-20261105
+== scaling fit
+63593128|LOGSQ-T100-LQ-19618-20261105|PENDING|0:00|4:00:00|(Priority)
+63626956|SCALING-probe-fit-02-20261105|PENDING|0:00|1:04:00|(Dependency)
+63626966|SCALING-probe-fit-03-20261105|PENDING|0:00|1:09:00|(Dependency)
+63626971|SCALING-probe-fit-04-20261105|PENDING|0:00|1:19:00|(Dependency)
+63626975|SCALING-probe-fit-05-20261105|PENDING|0:00|1:23:00|(Dependency)
+63627052|SCALING-probe-fit-09-20261105|PENDING|0:00|1:43:00|(Dependency)
+63627047|SCALING-probe-fit-08-20261105|PENDING|0:00|1:43:00|(Dependency)
+63627028|SCALING-probe-fit-07-20261105|PENDING|0:00|1:42:00|(Dependency)
+63626978|SCALING-probe-fit-06-20261105|PENDING|0:00|1:42:00|(Dependency)
+63626931|SCALING-probe-fit-01-20261105|RUNNING|2:09|59:00|login08
+63626931|RUNNING|00:02:09
+== quota
+                1037332492  1073741824       0       - 1501019       0       0       -

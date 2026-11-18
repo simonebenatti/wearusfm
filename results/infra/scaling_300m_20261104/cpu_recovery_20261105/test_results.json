@@ -1,0 +1,37 @@
+{
+  "commands": [
+    {
+      "files": [
+        "tests/cpu/test_scaling_readers_recovery_launcher.py"
+      ],
+      "passed": 42,
+      "seconds": 39.64,
+      "executor": "GPT delegated implementation agent"
+    },
+    {
+      "files": [
+        "tests/cpu/test_scaling_readers_launcher.py",
+        "tests/cpu/test_scaling_probe.py",
+        "tests/cpu/test_scaling_reading.py"
+      ],
+      "passed": 124,
+      "seconds": 82.8,
+      "executor": "GPT root"
+    }
+  ],
+  "environment": {
+    "PYTHONPATH": "src:scripts",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "pytest_flags": [
+    "-q",
+    "-p",
+    "no:cacheprovider"
+  ],
+  "total_distinct_passed": 166,
+  "frozen_runtime_unchanged": true,
+  "cluster_tests_or_jobs_submitted": false
+}

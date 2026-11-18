@@ -1,0 +1,77 @@
+{
+  "observation_date": "2026-11-06",
+  "observed_job_at_cet": "08:22:55",
+  "job_id": 63593128,
+  "logical_id": "LOGSQ-T100-LQ-19618-20261105",
+  "state": "PENDING",
+  "reason": "Priority",
+  "eligible_time": "2026-11-05T16:38:00+01:00",
+  "dependency": null,
+  "start_time": "Unknown",
+  "account": "iscrb_wearusfm",
+  "qos": "normal",
+  "priority": 142879,
+  "nice": 0,
+  "request": {
+    "nodes": 1,
+    "gpus": 4,
+    "cpus": 32,
+    "memory": "480G",
+    "walltime_seconds": 14400
+  },
+  "partition_states_nodes": {
+    "allocated": 2892,
+    "mixed": 384,
+    "mixed-": 29,
+    "completing": 18,
+    "planned": 1,
+    "idle": 0
+  },
+  "queue_snapshot_against_priority_142879": {
+    "pending_total": 9972,
+    "higher_priority": 1242,
+    "higher_priority_normal_single_full_node": 120
+  },
+  "user_fairshare": 0.839856,
+  "association_qos": [
+    "boost_qos_bprod",
+    "boost_qos_dbg",
+    "boost_qos_lprod",
+    "normal"
+  ],
+  "qos_relevant": {
+    "normal": {
+      "priority": 40
+    },
+    "boost_qos_lprod": {
+      "priority": 40,
+      "max_nodes": 8
+    },
+    "boost_qos_bprod": {
+      "priority": 60,
+      "min_nodes": 65
+    },
+    "boost_qos_dbg": {
+      "priority": 80,
+      "max_wall_seconds": 1800
+    }
+  },
+  "source_commands": [
+    "scontrol show job -dd 63593128",
+    "squeue --start -j 63593128",
+    "sprio -j 63593128 -l",
+    "scontrol show partition boost_usr_prod",
+    "scontrol show reservation",
+    "sacctmgr show qos",
+    "sacctmgr show assoc",
+    "sinfo -p boost_usr_prod",
+    "sshare -A IscrB_WearUsFM -u sbenatti -l"
+  ],
+  "official_documentation": "https://docs.hpc.cineca.it/hpc/leonardo.html",
+  "limitations": [
+    "Separate point-in-time samples, not an exact single global scheduler snapshot.",
+    "Priority counts are not a FIFO queue position or a start-time prediction.",
+    "PENDING Priority does not indicate a failed training."
+  ],
+  "mutations": []
+}

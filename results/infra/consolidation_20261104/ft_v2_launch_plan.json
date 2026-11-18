@@ -1,0 +1,37 @@
+{
+  "campaign": "consolidation-ft-v2-20261104",
+  "review_commit": "f70dc72a1b219bd41168ea0de6c7fe5265c824d3",
+  "status": "ready_new_benchmark_before_fits",
+  "campaign_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-ft-v2-20261104",
+  "deploy_ref": "refs/heads/deploy/consolidation-ft-v2-20261104",
+  "code_pin": "commit containing this plan, full SHA in submission receipt",
+  "benchmark_out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/finetuning/benchmark_v2",
+  "jobs": [
+    {
+      "id": "FT-checkout-v2-20261104",
+      "gpus": 0,
+      "cpus_requested": 1,
+      "cpus_budgeted": 2,
+      "memory": "2G",
+      "seconds": 600,
+      "gpu_hours_cap": 0,
+      "allocated_core_hours_cap": 0.3333333333333333
+    },
+    {
+      "id": "FT-BENCH-v2-20261104",
+      "after": "FT-checkout-v2-20261104",
+      "gpus": 1,
+      "cpus": 8,
+      "memory": "100G",
+      "seconds": 1800,
+      "gpu_hours_cap": 0.5,
+      "allocated_core_hours_cap": 4
+    }
+  ],
+  "fit_rules": "publish pin and measured per-regime packaging/resources before fit submission; separate fit checkout with unchanged source_identity",
+  "optional_N2": "not adopted; frozen stays4h, scientific and operational recipe as reviewed",
+  "submitter": "scripts/submit_job.py",
+  "ledger": "~/wearusfm_local/jobs/",
+  "owner": "GPT direct: Simone 04/11 says semplicione no longer exists; always launch yourself",
+  "no_monitors": true
+}

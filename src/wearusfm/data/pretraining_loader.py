@@ -91,11 +91,20 @@ class LoaderConfig:
     # `<pose_root>/u<utente>/<stem>/` scritto da `ingest.emg2pose_pose`, con `pose_stats.json`. None = il default (nessun target di posa)
     pose_root: str | None = None
     pose_unprompted: bool = True  # tenere le registrazioni a mano non sollecitata nel termine di posa (firma del 26/10/2026); False = mascherate
+    # Simone, 18/11/2026: RMS su 100 ms, sempre sulla griglia patch da 25 ms. 25 solo per riprese/controlli storici espliciti.
+    rms_window_ms: float = AT.RMS_WINDOW_MS
+    ms_fast_window_ms: float = AT.MS_FAST_WINDOW_MS  # sei bande su 125 ms, passo patch invariato (Simone, 18/11)
+
+    def __post_init__(self):
+        if not math.isfinite(self.rms_window_ms) or self.rms_window_ms <= 0:
+            raise ValueError("rms_window_ms deve essere finito e positivo")
+        AT.target_version_for_fast_window(self.ms_fast_window_ms)
 
 
 def signed_config(filter_band_hz: tuple[float, float] | None = (20.0, 450.0)) -> LoaderConfig:
     """La configurazione firmata il 03/10/2026 (D9 decisione 8, D10 decisioni 10-12, sanity decisione 15, filtro decisione 13), comune al sanity,
-    alla misura del ritmo e al calcolo delle lunghezze delle finestre. Le opzioni della finestra 1 (decisioni del 04/10) restano spente."""
+    alla misura del ritmo e al calcolo delle lunghezze delle finestre. Le opzioni della finestra 1 (decisioni del 04/10) restano spente.
+    Il supporto del target RMS segue l'aggiornamento del 18/11/2026: 100 ms per i nuovi training."""
     return LoaderConfig(min_window_s=1.0, max_window_s=4.0, split_at_gaps=True, mask=MK.MaskSpec.d10_proposal(0.5), k_neighbors=8,
                         filter_band_hz=filter_band_hz)
 
@@ -629,7 +638,9 @@ class PretrainLoader:
             g = int(round(self.cfg.anchor_edge_guard_s * view.fs))
             guard = (max(0, g - (win.start - win.span[0])), max(0, g - (win.span[1] - win.stop))) if g else (0, 0)
             limit = view.band_limit_hz() if vm is None else VM.band_limit_hz(montage, view.fs)
-            targets.append(AT.anchor_targets(x, view.fs, limit, patch_ms=self.cfg.patch_ms, guard=guard, multiscale=self.cfg.multiscale_anchor))
+            targets.append(AT.anchor_targets(x, view.fs, limit, patch_ms=self.cfg.patch_ms, guard=guard,
+                                             multiscale=self.cfg.multiscale_anchor, rms_window_ms=self.cfg.rms_window_ms,
+                                             ms_fast_window_ms=self.cfg.ms_fast_window_ms))
             limits.append(np.broadcast_to(np.asarray(limit, dtype=np.float64), (layout.n_channels,)).copy())
             guards.append(guard)
             if self.rvq_store is not None:

@@ -1,0 +1,39 @@
+{
+  "complete": true,
+  "interpretation": "resource benchmark only; no scientific FT outcome",
+  "job_id": 63525812,
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed_seconds": 457,
+  "allocated_gpus": 1,
+  "allocated_cpus": 8,
+  "gpu_hours": 0.12694444444444444,
+  "allocated_core_hours": 1.0155555555555555,
+  "report_sha256": "a5eada1ab8cc0b265c3c7b2ba03a0b7f43ca9b1e819db2011362a00971f80c72",
+  "code_recipe_input_checkpoint_and_source_verified": true,
+  "memory_gate_passed": true,
+  "timing_policy": {
+    "frozen": "split",
+    "finetune": "blocked",
+    "scratch": "blocked"
+  },
+  "single_candidate_projected_hours": {
+    "frozen": 2.2110769863701383,
+    "finetune": 6.544038951017827,
+    "scratch": 6.537500799355269
+  },
+  "projection_24_candidates_gpu_hours": 122.34093389394586,
+  "fits_submitted": false,
+  "reason": "FT and scratch exceed even the single-candidate 14100s gate; full comparison waits for reviewed execution amendment",
+  "independent_review": "ft_benchmark_reading: confirmed time gate, costs, separate memory gate and source_identity impact",
+  "validation_code_sha": "17dd455f8d40d5430f87c2154c571a2f9e683baa",
+  "amendment_prepared_pending_review": {
+    "frozen_job_hours": 4,
+    "finetune_scratch_job_hours": 7,
+    "jobs": 24,
+    "gpu_hours_cap": 144,
+    "allocated_core_hours_cap": 1152,
+    "same_dose_batch_seed_lr_and_selection": true,
+    "requires_reviewed_controller_launcher_plan_and_new_benchmark": true
+  }
+}

@@ -20,6 +20,28 @@ import torch  # noqa: E402
 
 from wearusfm.training import run as R  # noqa: E402
 
+# Ricetta dei target dei run nati prima del 18/11/2026: RMS su 25 ms e spettro rapido su 50 ms. Il contratto
+# (docs/rms_target_100ms_20261118.md) chiede che riprese e controlli storici la passino esplicitamente.
+HISTORICAL_TARGET_ARGS = ("--rms-window-ms", "25", "--ms-fast-window-ms", "50")
+
+
+def historical_args(argv) -> list[str]:
+    """Gli argomenti registrati di un run storico con la ricetta dei target resa esplicita: aggiunge `--rms-window-ms 25` e
+    `--ms-fast-window-ms 50` se mancano, senza toccare valori gia' scritti. Serve a ricostruire o riprendere run nati prima del
+    18/11/2026 (review di Claude del 18/11: gli strumenti delle campagne storiche ricalcolavano la ricetta con i default nuovi)."""
+    out = [str(a) for a in argv]
+    options = {o: a.dest for a in build_parser()._actions for o in a.option_strings}
+    given = set()
+    for tok in out:  # abbreviazioni delle opzioni lunghe risolte come argparse (stessa regola di wsd_chain.free_arg_dests)
+        name = tok.split("=", 1)[0]
+        hits = [name] if name in options else [o for o in options if name.startswith("--") and len(name) > 2 and o.startswith(name)]
+        if len(hits) == 1:
+            given.add(options[hits[0]])
+    for flag, value in zip(HISTORICAL_TARGET_ARGS[::2], HISTORICAL_TARGET_ARGS[1::2]):
+        if options[flag] not in given:
+            out += [flag, value]
+    return out
+
 
 def build_parser() -> argparse.ArgumentParser:
     """Il parser delle opzioni (usato anche da scripts/wsd_chain.py per controllare gli argomenti liberi dei piani)."""
@@ -52,6 +74,12 @@ def build_parser() -> argparse.ArgumentParser:
                     help="soglia assoluta dell'allarme sul rango effettivo (firmata il 23/10/2026, R.W1_ERANK_MIN); default la regola (16), 10%% della dimensione")
     ap.add_argument("--anchor-weight", type=float, default=None,
                     help="peso complessivo delle ancore; default quello del preset (0,2, decisione 18); 0 = JEPA puro (braccio W1-OBJ)")
+    ap.add_argument("--rms-window-ms", type=float, default=None,
+                    help="supporto del target RMS: default 100 ms, passo 25 ms; 25 solo per riprese/controlli storici. "
+                         "Indipendente da --window-ms del tokenizer; cambiare il supporto richiede un nuovo run")
+    ap.add_argument("--ms-fast-window-ms", type=float, default=None,
+                    help="supporto delle sei bande del target spettrale rapido: default 125 ms, passo 25 ms; "
+                         "50 solo per riprese/controlli storici, con la versione dei target originale")
     ap.add_argument("--jepa-weight", type=float, default=None,
                     help="peso della perdita JEPA; default 1; 0 = ancore attuali da sole (braccio W1-OBJ)")
     ap.add_argument("--jepa-target", choices=["a", "b"], default=None,
@@ -170,6 +198,18 @@ def build_config(args, error=None) -> "R.RunConfig":
             cfg = replace(cfg, model=replace(cfg.model, window_ms=float(args.window_ms)))
         except ValueError as e:
             fail(f"--window-ms: {e}")
+    if getattr(args, "rms_window_ms", None) is not None:
+        try:
+            cfg = replace(cfg, loader=replace(cfg.loader, rms_window_ms=float(args.rms_window_ms)))
+        except ValueError as e:
+            fail(f"--rms-window-ms: {e}")
+    if getattr(args, "ms_fast_window_ms", None) is not None:
+        try:
+            window_ms = float(args.ms_fast_window_ms)
+            cfg = replace(cfg, loader=replace(cfg.loader, ms_fast_window_ms=window_ms),
+                          target_version=R.target_version_for_fast_window(window_ms))
+        except ValueError as e:
+            fail(f"--ms-fast-window-ms: {e}")
     if getattr(args, "jepa_region_target", False):
         cfg = replace(cfg, jepa=replace(cfg.jepa, region_target=True))
     if getattr(args, "tokenizer_activation", None) is not None:

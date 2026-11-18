@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-04",
+  "base_commit": "bbca9407fafe3429ae83b30e5d91257dcc9afb68",
+  "review_commit": "63fd9c5bb16cb3708be3cb246d8cbfd3f33770b1",
+  "review_original_sha256": "89c69e179fbe0692475770bfc910e47e3867a2a0dc0cd1a2ca4388d4ed8f2092",
+  "scientific_source_pin": {
+    "path": "results/infra/tokenizer_execution_20261103/training_plan.json",
+    "sha256": "04a389158a0390c2ae0dffc2c77b43a1edec5e7ee80150943c1e06a684d50cb8",
+    "count": 100,
+    "identical": 100
+  },
+  "files_sha256": {
+    "scripts/consolidation_continue.py": "f8f35ccbc3ae4cb924e28aa63c52d7b8030b40061cd7cf472fca6225f4682d09",
+    "scripts/consolidation_finetune.py": "80ce3287afc2eb42d47e9040b86849092dbdd170c4c5cda7b419b67a061a952f",
+    "scripts/slurm/consolidation_continue.sbatch": "937230ab515488843103964cf726e0eeb5af17ab5ea3add26ff716fc42b6abd1",
+    "scripts/slurm/consolidation_finetune.sbatch": "f143d8e894446ebb7b5d1d32e2b2ac4fb47025c084909cc961b568d5746c9f80",
+    "src/wearusfm/harness/finetuning.py": "3109c3146dae1c16947e6477307bb7f1e2305050481f749697e60e90692f8aac",
+    "results/infra/consolidation_20261104/continuation_plan.json": "f8be02c56187081358c713a8b5eb7d44e13d1ebac288a3ec507955ac398026b1",
+    "results/infra/consolidation_20261104/finetune_plan.json": "11809529f5d3b0f0fa51a227699b37e6f05bd45c7537a1672d5312910d624221"
+  },
+  "tests": {
+    "status": "passed",
+    "count": 123,
+    "elapsed_seconds": 82.65,
+    "files": [
+      "tests/cpu/test_consolidation.py",
+      "tests/cpu/test_finetuning_review.py",
+      "tests/cpu/test_consolidation_review_controller.py",
+      "tests/cpu/test_consolidation_operations.py",
+      "tests/cpu/test_training_wsd.py",
+      "tests/cpu/test_wsd_chain.py",
+      "tests/cpu/test_tokenizer_train.py"
+    ],
+    "environment": {
+      "PYTHONPATH": "src",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "python": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "pytest_args": [
+      "-q",
+      "-p",
+      "no:cacheprovider"
+    ]
+  },
+  "last_targeted_check": {
+    "file": "tests/cpu/test_consolidation_review_controller.py",
+    "selector": "split_second",
+    "passed": 1,
+    "deselected": 9,
+    "elapsed_seconds": 1.17,
+    "reason": "source_receipt reference added to prior_candidate after full run"
+  },
+  "review_followup_critic": "no material defects found; code and documents reviewed read-only",
+  "pending": [
+    "Claude correction-diff review and convergence",
+    "real Lustre quota pin before continuation submission",
+    "CUDA benchmark receipt and measured FT execution costs",
+    "long evaluation matrix controllers/checkpoint pins/costs",
+    "FT OOF/CI aggregator and connection of scratch rule"
+  ],
+  "new_jobs": 0,
+  "new_remote_checkouts": 0,
+  "new_monitors": 0
+}

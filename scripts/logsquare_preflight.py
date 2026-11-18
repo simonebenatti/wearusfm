@@ -42,7 +42,7 @@ def load_plan(path):
     candidate = replace(baseline, model=replace(baseline.model, tokenizer_logsquare=True,
                                               tokenizer_logsquare_eps=plan['epsilon']))
     states['candidate_config'] = P.pinned_file(plan['candidate_config'])
-    require(R.config_to_dict(candidate) == json.loads(Path(states['candidate_config']['path']).read_text()),
+    require(R.config_to_dict(candidate) == R.with_legacy_target_windows(json.loads(Path(states['candidate_config']['path']).read_text())),
             'candidate config differs from registered branch')
     states['reference_plan'] = states['plan']
     states['plan'] = P.file_identity(path)

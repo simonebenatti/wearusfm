@@ -1,0 +1,230 @@
+{
+  "protocol": "scaling-probe-20261104-v1",
+  "kind": "shard",
+  "complete": true,
+  "cell": "T100-G-300M-natural",
+  "arm": "T100-G-300M",
+  "readout": "natural",
+  "task": "p1",
+  "step": 5000,
+  "recipe": {
+    "encoder": "teacher",
+    "layer": "pool",
+    "features_dtype": "float32",
+    "pca": false,
+    "scaler": "StandardScaler fitted only on fold train",
+    "solver": "lbfgs",
+    "penalty": "l2",
+    "class_weight": "balanced",
+    "max_iter": 12000,
+    "tol": 0.0001,
+    "seed": 0,
+    "C_grid": [
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ],
+    "selection": "max validation balanced accuracy; ties smallest C; refit train only",
+    "k_folds": 4,
+    "fold_seed": 20261015,
+    "val_frac": 0.1,
+    "bootstrap": {
+      "unit": "subject within dataset",
+      "seed": 20261102,
+      "replicates": 2000,
+      "missing_classes": "macro recall over present target classes; no discarded draws"
+    },
+    "checkpoint_step": 5000,
+    "widths": {
+      "T100-G-30M-natural": 768,
+      "T100-G-300M-natural": 1792,
+      "T100-G-300M-matched": 768
+    },
+    "cells": {
+      "T100-G-30M-natural": {
+        "arm": "T100-G-30M",
+        "readout": "natural"
+      },
+      "T100-G-300M-natural": {
+        "arm": "T100-G-300M",
+        "readout": "natural"
+      },
+      "T100-G-300M-matched": {
+        "arm": "T100-G-300M",
+        "readout": "matched"
+      }
+    },
+    "aliases": {
+      "T100-G-30M-matched": "T100-G-30M-natural"
+    },
+    "primary": "natural",
+    "secondary": "fixed independent backbone/local QR projections before train-only StandardScaler"
+  },
+  "plan_content_sha256": "9954c47fc03c2ccde86991f1eac226b9a76d4cc8b8ce17fe86757578805ac65b",
+  "code_sha": "aef665ba7ea66fc80291846487907bb3ef9107df",
+  "plan_sha256": "d2cc7da1cf08473067d96b52bff532463453ff5ce633814743b1a53dda5bbb63",
+  "plan_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_plans_20261105_v1/results/infra/scaling_300m_20261104/cpu_readers_20261105/probe_plan.json",
+  "projection_sha256": "74d1a0f2453592cb134ab104247d05a9a43b2960e43417bc23c31426fa1b9b3d",
+  "resource_verification": {
+    "resource_plan": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_cpu_budgets_20261105_v1/results/infra/scaling_300m_20261104/cpu_fit_release_20261105/probe_fit_resources.json",
+      "sha256": "92726f54b5a9beefe05fcb7b66147d0460377ebfe277c7730c664bc1c5aefbc7",
+      "bytes": 11210,
+      "inode": 162135427304759700,
+      "mtime_ns": 1793911483000000000,
+      "ctime_ns": 1793911496000000000
+    },
+    "allocation": {
+      "datasets": [
+        "ninapro_db2"
+      ],
+      "folds": [
+        0
+      ],
+      "estimated_seconds_with_margin": 3539.32130452618,
+      "walltime_seconds": 3540,
+      "observed_peak_rss_bytes": 2975178752,
+      "cell": "T100-G-300M-natural",
+      "task": "p1",
+      "cpus": 8,
+      "memory_gib": 30,
+      "shard_name": "T100-G-300M-natural-p1-01"
+    },
+    "estimated_seconds_with_margin": 3539.32130452618,
+    "observed_peak_rss_bytes": 2975178752
+  },
+  "numeric_context": {
+    "python": "3.11.6",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpools": [
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.21.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.23.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libgomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libgomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      }
+    ],
+    "features_dtype": "float32"
+  },
+  "numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+  "datasets": {
+    "ninapro_db2": {
+      "folds": [
+        {
+          "fold": 0,
+          "train": [
+            "s02",
+            "s04",
+            "s05",
+            "s06",
+            "s07",
+            "s08",
+            "s11",
+            "s17",
+            "s20",
+            "s22",
+            "s23",
+            "s24",
+            "s25",
+            "s26",
+            "s27",
+            "s29",
+            "s30",
+            "s31",
+            "s34",
+            "s36",
+            "s39"
+          ],
+          "val": [
+            "s10",
+            "s18",
+            "s28"
+          ],
+          "held": [
+            "s01",
+            "s03",
+            "s14",
+            "s19",
+            "s32",
+            "s35",
+            "s37",
+            "s38"
+          ],
+          "c": 1.0,
+          "val_bacc": 0.20144349272744602,
+          "held_bacc": 0.18106843900907382,
+          "train_bacc": 0.6908988705629567,
+          "val_scores": {
+            "0.001": 0.1548481023720336,
+            "0.01": 0.17870435170818744,
+            "0.1": 0.1974675322812689,
+            "1.0": 0.20144349272744602,
+            "10.0": 0.1912227053753195,
+            "100.0": 0.17586344383615168
+          },
+          "n_train": 24609,
+          "n_val": 4046,
+          "n_held": 9889,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "f747a80b38a99a8962d0a0e7f7a511e0c08fadb0ae26fd10725cb3a5d61a01c9",
+          "scaler_sha256": "77039cad9cd9c8de8d3afcd39a575e7abbf5db3ec922d6da73f9c71eb1b0274b"
+        }
+      ]
+    }
+  },
+  "audit_summary": {
+    "fits": 7,
+    "convergence_warnings": 0,
+    "reached_limit": 0,
+    "converged_by_criterion": true,
+    "unresolved_fits": []
+  },
+  "audit": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-01/audit.jsonl",
+  "audit_sha256": "1681c1609e38c355de959e5f2b527fd9710f141735bbea69a8e75c650bded68e",
+  "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_fits/T100-G-300M-natural-p1-01/shard.oof.npz",
+  "oof_sha256": "2a336ab17b8ce2c63b1a4ce16ce666eb5cfdc1f012beab0d609f2b41a1feae56"
+}

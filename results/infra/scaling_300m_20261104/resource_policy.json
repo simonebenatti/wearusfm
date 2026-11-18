@@ -1,0 +1,96 @@
+{
+  "protocol": "scaling-300m-resources-20261104-v1",
+  "status": "preflight fixed; scientific phases provisional until measured benchmark and reviewed evaluators",
+  "preflight": {
+    "logical_id": "SCALING-300M-preflight-20261104",
+    "nodes": 1,
+    "gpus": 4,
+    "cpus": 32,
+    "memory": "480G",
+    "walltime_seconds": 1800,
+    "gpu_hours_cap": 2.0,
+    "allocated_core_hours_cap": 16.0
+  },
+  "checkout": {
+    "logical_id": "SCALING-300M-checkout-20261104",
+    "cpus": 2,
+    "memory": "4G",
+    "walltime_seconds": 600,
+    "core_hours_cap": 0.3333333333333333
+  },
+  "train5000_provisional": {
+    "gpus": 4,
+    "cpus": 32,
+    "memory": "480G",
+    "historical_update_ratio_300_to_30": 3.916548797736917,
+    "expected_wall_seconds_proxy": 15208.075541384995,
+    "walltime_seconds_provisional_cap": 21600,
+    "gpu_hours_provisional_cap": 24.0,
+    "formula_after_benchmark": "ceil_15min(5000 * max(observed30Mtrainer5000/5000 * max(1,benchmark300M/benchmark30M), measured300M_update_mean) *1.20 +1200)",
+    "note": "Historical ratio only, not current measured throughput. No train submission from this file.",
+    "observed_T100G5000_trainer_seconds": 3883.029760837555
+  },
+  "extractions_provisional": {
+    "teacher_300M_pose_train_val": {
+      "jobs": 1,
+      "gpus_each": 1,
+      "cpus_each": 8,
+      "memory_each": "100G",
+      "minutes_each": 150,
+      "gpu_hours_cap": 2.5
+    },
+    "teacher_300M_p1": {
+      "jobs": 1,
+      "gpus_each": 1,
+      "cpus_each": 8,
+      "memory_each": "100G",
+      "minutes_each": 120,
+      "gpu_hours_cap": 2.0
+    },
+    "teacher_300M_p2": {
+      "jobs": 1,
+      "gpus_each": 1,
+      "cpus_each": 8,
+      "memory_each": "100G",
+      "minutes_each": 150,
+      "gpu_hours_cap": 2.5
+    },
+    "teacher_30M_p1_p2_control5000": {
+      "jobs": 2,
+      "gpus_each": 1,
+      "cpus_each": 8,
+      "memory_each": "100G",
+      "minutes_each": [
+        30,
+        45
+      ],
+      "gpu_hours_cap": 1.25
+    },
+    "gpu_hours_provisional_cap": 8.25,
+    "note": "Pose30M5000 already exists; no new training30M. Validate inference memory and dimension-aware extraction before freezing."
+  },
+  "readers_provisional": {
+    "pose": {
+      "maximum_cpus": 8,
+      "maximum_memory": "30G",
+      "maximum_minutes": 60,
+      "benchmark_before_fit": true
+    },
+    "classification": {
+      "maximum_cpus": 8,
+      "maximum_memory": "30G",
+      "maximum_minutes_per_shard": 120,
+      "maximum_shards": 10,
+      "benchmark_before_fit": true
+    },
+    "cpu_hours_envelope": 180.0,
+    "note": "Dimension896 implies ridge cubic factor about12.7 and pool1792 classifier width factor2.33 vs30M. Shard caps derived after benchmark, never extrapolate only parameter count."
+  },
+  "followup19618": {
+    "authorized_in_first_tranche": false,
+    "additional_steps": 14618,
+    "historical_expected_gpu_hours_proxy": 49.402588503103516,
+    "note": "Prepare after5000 interpretation; no downstream-selected LR and no adverse5k-only veto on scaling."
+  },
+  "monitor": false
+}

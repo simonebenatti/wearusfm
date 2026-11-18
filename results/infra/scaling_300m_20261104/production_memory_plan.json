@@ -1,0 +1,35 @@
+{
+  "protocol": "scaling-production-memory-plan-20261104-v1",
+  "arm": "T100-G-300M",
+  "steps": 500,
+  "technical_only": true,
+  "source_contract": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_memory_20261104_v1/results/infra/scaling_300m_20261104/training_source_contract.json",
+    "sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+    "bytes": 13685
+  },
+  "preflight": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_memory_20261104_v1/results/infra/scaling_300m_20261104/preflight_63526191/report.json",
+    "sha256": "90254bb4bd8aa525730cdd43cec2fa6c98237387754145f0704037e3f5ec8831",
+    "bytes": 20816
+  },
+  "reference_runtime_summary": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_memory_20261104_v1/results/infra/tokenizer_execution_20261103/5000/T100-G/summary.json",
+    "sha256": "4fbfa43be38ce5741650c9a4e5eab97fdc58121d6d2f2eaf0df7b2afa83d32ca",
+    "bytes": 1887
+  },
+  "execution_source_sha256": {
+    "scripts/scaling_preflight.py": "0a3224190957986425cd17e24001a3b8bcc7ba98fa1c190d45bbcc1e48531e04",
+    "scripts/scaling_production_memory.py": "12448d045364f2a8fb137259006937749a2a06b36a645cc49242a86323859091",
+    "scripts/scaling_train.py": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac"
+  },
+  "allocation": {
+    "nodes": 1,
+    "gpus": 4,
+    "cpus": 32,
+    "memory": "480G",
+    "walltime_seconds": 3600
+  },
+  "run_dir": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/production_memory_v1",
+  "receipt_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/production_memory_v1"
+}

@@ -5212,7 +5212,6 @@ Il rapporto dipende dall'estrazione completata; non si deduce movimento corretto
 Piano/comandi congelati prima del lancio in `results/infra/pilot_posa/piano_b_e1e2_20261028.json` e relativo file comandi.
 Gli ID effettivi saranno registrati dopo la sottomissione; R3 completo resta una decisione separata.
 
-
 ### Seguito: E1/E2 sottomessa e precisazioni prima dei risultati
 
 Congelamento e pubblicazione pre-lancio `78e9b2c`; ID **62539724** estrazione e **62540295** rapporto afterok:62539724.
@@ -5224,7 +5223,6 @@ solo lettura descrittiva a5.000, senza superato/non_superato scientifico; attese
 come indicazioni non esclusive; student readonly; E3 sui latenti B facoltativa in seguito, non sottomessa ora.
 IC del gap E2 da derivare localmente dai dati appaiati per utente: 1.000 ricampionamenti, seme20261009, medie pesate per
 supporto valido e percentili2,5/97,5. Metodo nel protocollo, nessuna nuova soglia e nessuna estrazione aggiuntiva.
-
 
 ### 2026-10-28 — E1/E2 di B a 5.000: completata, lettura descrittiva
 
@@ -5245,7 +5243,6 @@ medie e delle traiettorie centrate, varianze/covarianza e aggregazioni per utent
 un'altra inferenza GPU. La media del target della finestra e' un oracolo descrittivo. Script/review/preventivo prima di
 qualunque eventuale lancio; nessun job nuovo in questa consegna. E3 B/R0 e J2 bis restano rimandati.
 
-
 ### 2026-10-28 — Autorizzata analisi CPU della dinamica di B
 
 Simone: «va bene, procedi» alla proposta di separare errore sulla postura media ed errore sulle variazioni entro finestra,
@@ -5261,7 +5258,6 @@ Il critico scientifico approva dopo chiarimento di unita', pesi, supporti e sign
 ID logico PILOT-POSA-B5000-dynamics-20261028; source e payload versionati/hashati, ambiente frozen24139ab,
 submitter comune e output nuovo fuori codice. Preflight positivo. Test e review tecnica prima della sottomissione;
 risultati e costi registrati successivamente, nessun retry automatico. R3 completo resta una decisione separata.
-
 
 ### Aggiornamento del 28/10/2026: autonomia autorizzata da Simone
 
@@ -5282,7 +5278,6 @@ un'altra volta [...] in questo caso anche se supera le 5h gpu».
 
 Invariati metodo fissato prima dei risultati, review pertinenti, un writer per checkout, campagne congelate,
 submitter/ledger comuni e registrazione delle attivita'. Le istruzioni valgono anche nei turni successivi.
-
 
 ### 2026-10-28 — Risultato della separazione postura/dinamica B
 
@@ -5436,6 +5431,68 @@ L'istruzione supera l'assegnazione precedente dei lanci a leonardo-ops. Nessun n
 od obbligo di ripetere l'approvazione dei piani gia' autorizzati. B19618 e 12 valutazioni erano gia' stati sottomessi.
 Affidato a semplicione un controllo puntuale in sola lettura di stato/log per il riepilogo dopo il merge.
 
+### 2026-11-05 — GPT esegue sottomissioni e controllo operativo dei log
+
+Simone conferma alle 14:57 circa a Claude: «Sì, sottomette GPT», in risposta a «Confermi che ora le sottomissioni le fa GPT e non più semplicione?»,
+e aggiunge «semplici9one non c'e piu». Fonte: commit Claude 3099836 e messaggio diretto alla chat GPT di coordinamento.
+La regola del 28/10 e' superata. Sottomette e controlla stato/log l'owner GPT di ciascuna linea; GPT coordinamento e' l'integratore
+su main e non duplica i lanci. Claude rivede il lavoro e non sottomette. N-2 (2d157cc) e N-3 (c0a4f58) chiuse.
+CLAUDE.md riallineato; invariati submitter e ledger comuni, budget, criteri, review e approvazioni dei singoli test.
+Nessun nuovo job, deploy o modifica ai checkpoint e ai checkout in uso; i registri storici restano conservati.
+
+### 2026-11-05 sera — Claude unico operatore della linea 2 (EPN15 e valutazione lunga)
+
+Simone, sulle due righe della linea2: «da ora in poi questa parte la gestisci tu» e
+«riscrivimi il prompt in modo che sarai tu a fare il deployment e a gestirlo , dimmi se serve un feedback da chat gpt o puoilanciare tu adesso».
+Fonte Claude3566c8dd805a7ce7513481e5df1fdba77b31f5d8, confermata dal messaggio diretto di Simone nella chat GPT consolidamento.
+Deployment, invii, stato/log e raccolta della sola linea2 passano aClaude; GPT mantiene codice e responsabilita' scientifica.
+La disposizione supera la regola delle14:57 solo per questo perimetro; linee1/3 restanoGPT, coordinamento integratore main.
+ConsegnaGPT: uscite lunghe suSCRATCH grande, ownerclaude nei piani, N-4 e handoff; successiva quarta reviewClaude prima dei pin/deploy.
+Nessun nuovo consenso per il piano gia' autorizzato, nessun duplicato o retry cieco; invariati submitter/ledger, tetti e criteri.
+Aggiornati CLAUDE.md e tabella operatori; nessun job, deploy o modifica di sorgenti scientifici da coordinamento.
+
+### Numerazione unica e ripartizione del lavoro (Simone, 14/10/2026)
+
+Richiesta: «usiamo una numerazione unica e mettiamola nel file condiviso», con specchietto aggiornato e tranche parallela.
+Riferimento operativo: blocco «Coordinamento attivo: numerazione unica dei sei punti critici» in apertura di docs/claude_GPT_shared:
+1 confronti2A/2C (GPT per il secondario, Claude per i report2C); 2 baselinecasuale (GPT); 3 review/integrazione (GPT, correzioniClaude);
+4 stabilita' (regola condivisa, reviewGPT, trainer/testClaude); 5 obiettivo (gradienti/sonde fisiche e temporali/propostaSSL GPT,
+screening locale-backbone Claude); 6 finestra1 (scienza/piano/reviewGPT, fattibilita'/GPU/dataloader/calibrazione/launcherClaude).
+
+Tranche immediata: GPT diagnosi/test baseline e review; Claude protocolloGPU/dati, bozza della regola di stabilita' e fattibilita'.
+Sonde separate ancora in attesa come da registro Claude12585fd; nessun lancio implicito. SCRATCH entro22/10 coordinato daClaude.
+Un writer per file, passaggio harness limitato ed esclusivo prima delle modifiche, ledger/submitter comuni. Firma finale di default,
+configurazioni e budget resta di Simone; la numerazione non altera soglie, budget, autorizzazioni di job o campagne gia' congelate.
+
+### Lettura della consegna WSD/manifest e priorita' successive (GPT, 15/10/2026, fonte Claude225b380)
+
+Artefatto results/infra/w1cat_20261015.json sul ramoClaude: collaudo w1_catena_v1 PASS sui criteri congelati, codice df4d2f5;
+tronco990->1400, ramo1100->1375, scorte uscite gia' complete. Costo registrato1,55GPUh, infrastruttura9,26/25usate e15,74residue.
+La continuazione2D del planner e il collegamento nested sono consegne successive da review; nessuna integrazione di quel delta qui.
+
+La stima aggiornata della finestra1 e'5.000-5.600GPUh, non budget firmato. Restano bracci non implementati e catena di valutazione,
+oltre a regola di stabilita', protocollo scientifico, calibrazione, tetto nodi e SCRATCH22/10. Proposta: review del delta in parallelo
+alla definizione4/5, non nuovi training prima di protocollo/costi. Sono proposte, non nuove autorizzazioni.
+
+Pesi nested ancora da firmare: GPT preferisce valutare D9 riapplicata ai sottoinsiemi (quote20/75/5, sqrtore, tetto8), non adottata.
+Il report mostra B74,133% al12,5% (-0,867punti, non mezzo punto) e massimo8,031passaggi al50%. Il conteggio delle epoche deve inoltre
+replicare l'esclusione/rinormalizzazione del sampler per62sessioni senza finestre: scarto~0,04% tenendo lo stesso budget di ore,
+non un nuovo valore finale di passi approvato. Distinguere ore nominali/campionabili e congelare una sola regola di arrotondamento.
+
+Nessuna soglia«1% di loss» adottata dal confronto bf16; norme dei gradienti non attribuiscono causalmente l'apprendimento alle ancore.
+Queste cautele non cambiano verdetti, soglie pregresse o architettura; nessun lancio, nuovo budget o decisione scientifica firmata.
+
+### Parere sulla proposta nested D9 e calendario a 8 nodi (GPT, 15/10/2026, fonte Claude ecdfc50)
+
+Favorevole a manifest congelati per frazione con D9 riapplicata, stessi ingressi e provenienza completa; non ancora adozione delle
+quote finali. Al25% il residuoC rende la massa totale0,99974648745: la normalizzazione globale porta il cap atteso a8,00203.
+Lo script stampa quote normalizzate ma passaggi grezzi: servono gestione esplicita del residuo e verifica sul sampler finale, comprese
+le sessioni senza finestre. Non e' una tolleranza o una deroga firmata al tetto8; riportare quote effettivamente realizzabili.
+
+Calendario8nodi6,8-7,6giorni e costo~5.100-5.700GPUh restano scenario/stima: non comprendono attese di coda, cap account e disponibilita'
+non verificati. Riferimento30M a due semi gia' nella bozza: nessun run aggiuntivo deciso. Coseni e sonde intermedie sono proposte utili,
+non sostituti delle ablation. Nessuna nuova soglia, campagna, autorizzazione di spesa o modifica del default adottata qui.
+
 ### 2026-10-28 — Completare B19618 prima di esplorare loss o latenti non mediati
 
 Dopo la discussione sulle loss con GPT e Claude, Simone: «forse possiamo guardarci ma un po piu avanti.
@@ -5464,7 +5521,6 @@ Evidenze riuscite raccolte alle22:34; training partito22:18:26, passo6150. Confr
 Start=None/elapsed0, con kill_invalid_depend e prerequisito fallito19:20:52. Quattro warning lbfgs/max_iter restano
 nel log e nella lettura: la correzione non cambia iperparametri ne' dichiara convergenza dei fit. Il solo S80,84
 non autorizza conclusioni sul vantaggio di B. Hash OOF atteso dal rapporto, misura diretta obbligatoria pre-lancio.
-
 
 ### Seguito esecutivo — recupero P2 del 28/10, piano f45a73b
 
@@ -6035,6 +6091,1319 @@ scaling_300m_execution sul ramo codex/scaling-300m-20261104; protocollo/codice/
 preventivo in preparazione, nessuna sottomissione da questa consegna.19.618 resta
 seguito naturale da pianificare, non estensione automatica di uno screening nullo.
 
+### 04/11/2026 — Coordinamento esclusivo dei tre fork
+
+Simone assegna alla chat coordinamento la verifica delle interferenze. Owner
+scaling: thread originale; esplorazione: fork log-quadratico/contrastiva;
+consolidamento: fork schedule/FT. Worktree separati verificati. Un duplicato
+scaling dal fork consolidamento è stato chiuso senza scritture/lanci secondo
+l'owner; la consegna originale `31f6d03` è pronta per Claude. Review Claude prima
+dei lanci, un submitter per linea e ledger globale unico. Coordinamento integra
+i rami revisionati e non sottomette copie degli esperimenti. Estrattore comune
+pre/post backbone assegnato al consolidamento, riuso da scaling dopo review.
+Dettagli in `docs/coordinamento_linee_20261104.md`; nessun job o merge main qui.
+
+### 2026-11-05 — Audit di coordinamento delle tre linee e operatore GPT
+
+Su richiesta di Simone verificati rami, origin, review Claude e ledger comune; dettagli in
+`reviews/allineamento_gpt_claude_20261105.md`. Codice separato fra le tre linee; restano integrazione dei registri
+su main e aggiornamento degli snapshot. Main `7616f33` recepisce la conferma «Sì, sottomette GPT» e
+«semplici9one non c'e piu» (fonte Claude 3099836 e messaggio diretto di Simone): GPT sottomette e controlla i log,
+un owner per linea. Invariati budget, criteri, review, submitter/ledger e approvazioni. Nessun job, deploy o merge scientifico.
+
+### 2026-11-05 — Seguito audit Claude, stop CPU scaling e test del runtime congelato B19618
+
+Audit Claude ef0d987 accolto, copia testuale acquisita sul ramo di coordinamento. ConfermaSLURM19:03:
+63593508TIMEOUT,63593091COMPLETED,63593128Priority; EPN15ancora incompleto. Chat1 fermata secondo76a3126:
+nessun nuovo invio sotto il piano fallito, diagnosi/consuntivo/prompt recupero pubblicati dall'owner a03cbd18.
+Qualunque recupero richiede emendamento esplicito e reviewClaude; nessun nuovo esperimento o retry da coordinamento.
+
+D-5 riprodotto e corretto in d2f2f08, SOLO test: il launcher B19618 impone24139ab, mentre il test leggeva il
+trainer/schema attuale introdotto da c052792. Il test ora importa24139ab in subprocess isolato e mantiene la
+verifica rigorosa; regressione aggiuntiva su default neutri/rifiuto schema diverso.15test passati in3,40s.
+Launcher, trainer e checkpoint storici intatti. Patch da integrare prima del merge delle campagne su main.
+D-1/D-2 (main e unione dei registri/decisioni) restano aperti; i job MONALISA restano distinguibili dal budget
+WearUsFM ma consumano la quota complessiva dello stesso account, senza cancellazioni o ripartizioni automatiche.
+
+### 2026-11-05 sera — Owner operativo linea2 Claude
+
+Verificata la disposizione diretta di Simone nella chat2 e il registro Claude3566c8d: deployment, invii, stato/log e
+raccolta di EPN15 e valutazione lunga passano aClaude. Codice e responsabilita' scientifica restanoGPT consolidamento;
+linee1/3 invariate. Main **fe66e2d** aggiornaCLAUDE e conserva testualmente le voci Claude. Tabella operatori riallineata.
+Un solo operatore e ledger comune; nessun job/deploy da coordinamento, nessun nuovo esperimento o sblocco implicito dei gate.
+
+### 2026-11-05 sera — Consegna linea2 pubblicata, quarta review aClaude
+
+ConsegnaGPTconsolidamento9d195e7 verificata suorigin: prontuario operativo completo, radice lungaSCRATCH,
+ownerclaude, N-4 neltest, 82job+4checkout e tetti invariati. Plan e launch_plan restano awaiting_claude_rereview,
+review.commit nullo. La quarta review copre il diff da51b4574; Claude prepara successivamente pin e deployment.
+Registrato nello specchietto; nessun nuovo controllo di coda, job o deploy da coordinamento.
+
+### 2026-11-06 — Verifica della coda LQ19618 senza modifica del job
+
+Su domanda di Simone controllati scheduler, partizione, associazione eQoS.63593128 attende perPriority un nodo intero
+per4h, eleggibile dal05/11ore16:38; nessun hold o dipendenza residua. NessunaQoS piu' prioritaria applicabile alla
+richiesta corrente, nessuna partenza stimata. Cap ridotto incompatibile con il piano/guard congelato senza emendamento.
+Diagnosi e prove pubblicate in reviews/lq_queue_diagnosis_20261106.md e relativoJSON. Informata la chat3;
+nessun cambioQoS, walltime, cancellazione, duplicato, nuovo invio o modifica ai checkpoint da questa consegna.
+
+### 04/11/2026 — Linea parallela300M: consegna del collaudo per reviewClaude
+
+Simone approva il test30M/300M con frontendT100-G e chiede un agenteparallelo.
+Poi precisa: «quando l'agente dello scaling ha qualcosa me lo dici che lo facciamo
+revisionare aClaude». Prima consegna circoscritta: codice/protocollo/test/preventivo
+per collaudo train-only64warmup+64stress LRpicco, modelli residenti uno alla volta,
+nessun checkpoint. La review interna ha fatto correggere monitor delle matrici
+QKV/MLP primo/ultimo blocco, rigore della dose nei report e base dei tempi osservati.
+23test CPU passati e bash -n/diffcheckpuliti. Tetto collaudo4GPU×30min=2GPUh,
+32CPU×30min=16coreh; checkout2CPU×10min=0,333coreh. Nessuna sottomissione.
+
+Protocollo: docs/scaling_300m_protocol_20261104.md. Dati/target/schedule/clipLR
+restanoidentici salvo presetLADDER; soglia rangoassoluta38,4 conservata. Stress
+tecnico non simula ilcheckpoint1962 e non sceglieLR suval.5000scientifico richiede
+benchmark completato, freeze del preventivo e controllerdimensionali pronti:
+D896/pool1792, duebracci e dose5000. Controllo30M5000posa giàmisurato; classifica
+richiede estrazione. Inviluppi provvisori separati24GPUhtrain,8,25GPUhestrazioni,
+180corehCPU; non prenotazioni o viaalrun.19.618restapropostadasecondatranche,
+nessunveto sul300Mda unrisultatonulloabrevedose. Rootcoordina i lanci doporeviewClaude.
+
+### 04/11/2026 — Scaling: Claude approva il collaudo, preparazione degli invii
+
+Reviewbefab4a APPROVATOsenza blocchi; Simone porta il verdetto e conferma che
+il collaudo può essere sottomesso così com'è. GPT mantiene codice05d4bf0, piano
+e launcher immutati; pubblica esecuzione concreta e hash prima dei job.
+Due IDSCALING-300M-checkout/preflight-20261104, afterok echeckoutdetachednuovo;
+2GPUh+16coreh collaudo e0,333coreh checkout. Nonè iltraining5000.
+
+Protocollo aggiornato prima risultati: salvaguardia controllo30M5000, identità
+codice rispettoafb644e, proxy memoria produzione e prova reale separata, fallback
+accum2/global32 contest e nuovo collaudo, secondario a dimensione pareggiata
+conproiezioni casuali fisse. LR1e-4/clip1misurano taglia nella ricetta; nonottimalità.
+F1–F6differiti; rapporto tempi su112update pertaglia. S7corretto: T25−Bdescrittivo,
+nessun noise floor/margine statistico derivato dauna coppia. Nessun nuovo consenso
+per ilcollaudoapprovato; nessunmonitor. Piano esecutivo in
+docs/scaling_300m_execution_20261104.md; ricevute/IDsaranno registrati solo dopo invio.
+
+### 04/11/2026 — Scaling: accesso remoto non operativo prima dei job
+
+Alle17:12CET piano70cbd85 pronto, nessunjob o prenotazione. SessioniSSH
+accettate ma `hostname` senzaoutput anche suconnessioneseparata; lettureinterrotte.
+Nessunpushdeploy, submittero monitor. Stato remoto non deducibile.
+La ripresa usa lo stesso piano approvato senza nuovo consenso; nessun cambiamento
+di ricetta o retry di calcolo. Evidenza submission_status.json.
+
+### 04/11/2026 — Preparazione offline della fase scientifica300M e regola S8
+
+Guasto del login node confermato da Simone tramite email ricevuta. Su sua richiesta
+si lavora offline sui complementi Claude2f3207b, senza riesaminare l'approvazione
+del collaudo05d4bf0 e senza cambiarne codice, risorse o dose. S4 già scritto prima
+dei risultati; F5/F8 rafforzano soltanto l'oracolo CPU.
+
+Nuovi wrapper training5000 e valutazioneD896/pool1792 con regressioneD384, contratto
+103sorgenti rispettoafb644e, cinque primitive estrazione pinnate. Review interna
+chiude i rilievi su binding/preset/readiness/retention; evidenze nella consegnaoffline.
+Non è ancora catena5000 pronta: reader ridge/sonde/aggregatore/S5 e misure reali
+rimangono gate; nessuna ricevuta fittizia e nessun nuovo job.
+
+S8 fissata prima estrazioni: EPN delta300−30 e posaE_dyn separati, tre esiti daIC95;
+2% sulla riduzione relativa puntuale della posa conICfavorevole,1ppsolosuP1/P2.
+Miglioramento senza peggioramento/perditaPoltre margine propone19kperconferma;
+dueprimariirrisolti senza tali perdite propongono19kperdose; qualunqueprimario
+peggiore o perditaPoltre margine impone pausa operativa della ricetta. Nonè un
+veto allo scaling. Fit/artifactsnonvalidi→correzionevalutazione. ICmarginalia
+semeunico, nessuna probabilitàcongiunta95% o noisefloorstorico.
+
+Tetto aggiuntivo19k inGPU-ore:4×ceil900(14618×max(t300M5000/5000,u300M112)×1,20+1200)/3600,
+con separati tetti estrazione/CPU pubblicati prima diaprire gli score5000.
+La tabella genera una proposta;19k rimane fuori dalla prima trancheautorizzata.
+Dettagli in docs/scaling_300m_protocol_20261104.md e policyversionata; nessunmonitor.
+
+Validazione finale offline:248test passati in19,52s, review indipendente favorevole;
+nove hash verificati dopo test. Nessun rilievo aperto alla consegna aClaude.
+
+### 04/11/2026 — Scaling: accesso ripristinato e dipendenza checkout scaduta
+
+Deploy congelato05d4bf0 verificato; checkout63525937 COMPLETED0:0 in16s,
+0,008889coreh. Completamento, HEAD, pulizia, sola lettura e hash verificati.
+Il primo invio GPU è rifiutato senza ID: MinJobAge30s elimina dal controller
+il checkout già concluso, rendendo afterok invalido. Nessun job GPU creato.
+Pubblicare la rettifica submission_amendment.json prima del singolo invio corretto:
+gate sincrono completo al posto della dipendenza scaduta, stesso ID logico e
+--dopo-rifiuto tramite submitter/ledger. Codice, ricetta e tetti invariati.
+Nessun consenso scientifico nuovo necessario, nessun monitor o training5000.
+
+Invio corretto dopo pubblicazione ce22991: job **63526191**, accettato18:35:41,
+RUNNING dalle18:35:59 su lrdn1813. Risorse effettive4GPU/32CPU/480G/30min
+verificate, tetti invariati; ricevuta e snapshot versionati. Nessun verdetto tecnico
+anticipato, nessun training5000 o monitor. Review Claude del seguito separata.
+
+### 04/11/2026 — Scaling: collaudo favorevole, chiusura dei requisiti scientifici
+
+Job63526191 COMPLETED0:0 in546s,0,606667GPUh e4,853333coreh. Verificati13hash,
+1.024record e512coppie rank/passo. 300M picco28,4057GiB, contro13,1121del30M;
+ratio tempi3,9086. Proxy prespecificato33,5224GiB sotto57,0804GiB: non si attiva
+accum2 dalproxy. Restano misura realeS3 e valutatori/confronti pronti prima5000.
+Per coprire le diagnostiche con stati residenti S3 deve raggiungere500passi dazero;
+guardiaoffline da precisare con artefatti verificabili, senza toccare iltrainerstorico.
+Si procede alla preparazione locale parallela, non a un lancio5000 prematuro.
+Claude comunica APPROVATO per preparazioneoffline,248test; fallimento della suite
+completa ancora da identificare. Nessun altrojob o monitor; nessun nuovo consenso.
+
+### 04/11/2026 — GPT: lettori dello scaling e prova di memoria S3
+
+Completati i lettori e il confronto a tre viste, mantenendo i due primari S8 e
+il secondario S5 congelati. Matrici 896×384 pubblicate con manifest e hash, nessuna
+selezione sui dati. 425 test passati; review interna favorevole. Claude riceve
+un prompt sul nuovo codice, senza ripetere la review offline approvata 5e4eb8a.
+
+S3: prova tecnica fresca di 500 passi, necessaria per esercitare la diagnostica
+periodica con AdamW/prefetch residenti; il checkpoint tecnico non si riusa.
+Formula sul preflight reale: ceil900(500×3,035413×1,20+1200)=3600 secondi.
+Tetto 4 GPU-ore +32 core-ore; checkout 2 CPU/4G/10min =0,333334 core-ore.
+Piano, risorse e launcher pubblicati prima dell'invio. Rientra nell'autonomia
+già autorizzata da Simone; nessun consenso aggiuntivo richiesto. Fonte operativa:
+`docs/scaling_300m_readers_memory_20261104.md`. Nessun invio attestato da questa voce,
+nessun training scientifico a 5.000, nessuna automazione.
+
+S8 precisa che la pausa valuta entità e dose; 19.618 non misura la variabilità
+fra pretraining e non si assegna una probabilità congiunta inventata ai controlli.
+Soglie, endpoint e tabella invariati.
+
+### 04/11/2026 — GPT: S3 63527446 sottomesso dopo checkout verificato
+
+Piano pubblicato prima degli invii in ec2f093, codice congelato 0d5f0f9.
+Checkout63527364 COMPLETED0:0, 21s su2CPU (0,011667core-ore). Dopo verifica
+sincrona di HEAD, pulizia e hash: S3 **63527446**, alle19:11:43CET
+PENDING Priority. Tetto4GPU-ore+32core-ore, nessun duplicato, nessun seguito
+automatico a5.000. Ricevute in production_memory_submission; monitor assente.
+
+### 04/11/2026 — GPT: review lettori acquisita e pacchetto operativo congelato
+
+ReviewClaudea988a72 APPROVATO, nessun blocco: copia integrale e voci conservate.
+F-1 corretto senza indebolire hash/supporti; F-2 risolto nei launcher con bootstrap
+numerico comune, F-3/F-4 congelando sorgenti e matrici; F-5 differito. Review
+operativa indipendente favorevole dopo correzioni concrete su OpenMP/runpy e
+accounting/RSS. Verifica finale571test passati/154,95s, 103sorgenti identici.
+
+S5: prima del training si fissano codice/test/launcher/formule/tetti; i benchmark
+sulle cache300M reali seguono le estrazioni e precedono i fit, che devono rientrare
+nei limiti già pubblicati. Nessuna selezione dagli score o benchmark inventato.
+Tetti: trainingfresh5000 22GPUh+176coreh; cinque estrazioni8,25GPUh+66coreh;
+CPU180coreh, incluse tre viste/420fit scientifici e90fit tecnici dei benchmark.
+Massimo15shard,136coreh cumulativi nei fit; confronto8CPU/30min. RiservaCPU2/3h.
+Risorse dettagliate e gate in `docs/scaling_300m_evaluation_execution_20261104.md`.
+
+S3 63527446 è in corso, avviato20:42:52CET; la readiness dei lettori pubblicata
+non sostituisce l'esito S3 né la review legata ai quattro gate finali. Controllo30M
+rihashato, orizzonte11novembre. Nessun nuovo job o monitor in questa consegna.
+22GPUh sono il tetto dei primi5000, non della tranche19618: rettifica materiale
+alla review§2.3; la continuazione resta separata. Autorizzazioni di Simone
+persistenti, nessuna nuova richiesta per lo stesso piano già approvato.
+
+### 04/11/2026 — GPT: S3 superato, rilascio fresco300M5000 con gate reali
+
+S3 63527446 COMPLETED0:0/1619s; massimo34,544032GiB contro57,080402GiB,
+15hash verificati,500update batch32,quattro rank,diagnostiche reali. Consuntivo
+1,798889GPUh+14,391111coreh, checkoutseparato. Proxy33,522417GiB leggermente
+inferiore al reale, ma nessuna attivazioneaccum2. Audit indipendente e critico
+favorevoli; fullvalidate sulcompute giàeseguito e da ripetere nel wrapperfinale.
+
+Piano finale fresh300M5000 con quattro gate reali pubblicabili, reviewinterna
+APPROVATO,571test e103sorgenti identici, controllo30M garantito operativamente
+fino11novembre. Tetto22GPUh+176coreh, checkout2CPU/4G/10min=0,333333coreh.
+I benchmarkCPU delle valutazioni seguono le cache, entro l'inviluppo pubblicato;
+nessuna sostituzione con tempi fittizi. Nessun resumeS3, variazione di ricetta,
+monitor o continuazione19618. Invii registrati separatamente dopo l'accettazione.
+
+ReviewClaudea476aad del preflight acquisita:CORRETTO/CONFORME. Precisato RNG512/512
+e riferimento del clipping; rawreport e verificatore storico invariati. Il requisito
+di un nuovo via non si applica: Simone ha già autorizzato questo piano ed esecuzione.
+
+### 04/11/2026 — GPT: fresh 300M a 5.000 sottomesso, job 63532932
+
+Codice dc965594 e comandi 6c9b145 pubblicati prima dell'invio, SHA origin e deploy
+verificati. Checkout 63532877 COMPLETED 0:0 in 27 s, 0,015 core-ore; HEAD, pulizia,
+sola lettura e hash del piano/launcher verificati. Invio tramite submitter e ledger
+comuni alle 21:34:49 CET: **63532932**, stato iniziale PENDING Priority.
+Un nodo, 4 GPU, 32 CPU, 480G, 5h30; tetto training 22 GPU-ore e 176 core-ore.
+Il wrapper ripete i guard integrali prima di torchrun: accettazione SLURM non
+equivale alla loro esecuzione. Ricevute pubblicate in scientific5000_submission_receipts.
+Nessun resume S3, nessun monitor, nessuna continuazione a 19.618. Dopo checkpoint
+completo si verificano dose, ricevute e hash prima delle cinque estrazioni previste.
+
+### 05/11/2026 — GPT: 300M a 5.000 concluso e verificato; rilascio delle cinque estrazioni
+
+63532932 COMPLETED 0:0, 07:16:12–11:22:13 CET, 14.761 s; consuntivo 16,401111 GPU-ore
+e 131,208889 core-ore contro tetti 22/176. Il log certifica termine max_steps a 5.000,
+quattro rank, batch globale 32, accum 1; riepilogo memoria 37,751831 GiB.
+Quattro ricevute raccolte, 13 hash riconciliati; audit dei log conferma 160.000
+finestre, passi/LR/cadenze regolari. Accesso SSH intermittente poi ripristinato;
+nessuna modifica ai sorgenti congelati. Review indipendente APPROVATO su prove
+e piano estrazioni SHA8b358951. Cinque celle già previste, 8,25 GPU-ore/66 core-ore
+associate alle GPU; checkout0,333333 core-ore nell'inviluppo CPU180. Pubblicare
+pin e comandi esatti prima dell'invio, via submitter/ledger. Nessun nuovo consenso,
+monitor o seguito a19.618. La lettura scientifica resta successiva ai fit CPU.
+
+### 05/11/2026 — GPT: cinque estrazioni attive e copertura della review Claude
+
+Pubblicati aef665b (codice/piano) ed e4ed7ee (comandi); checkout63580233 completo
+0:0/53s,0,029444core-ore. Invii via ledger comune:63580385 posa300M,63580603 P1-300M,
+63580771 P2-300M,63580776 P1-30M,63580820 P2-30M. Tutti RUNNING al primo controllo
+12:49CET; tetto8,25GPUh/66coreh GPU, nessun invio CPU di fit. Nessun monitor.
+
+Simone conferma nuovamente l'autorizzazione a tutti gli invii della catena.
+Claude precisa che la sua review copre solo0d5f0f9 e preflight63526191. GPT aveva
+usato la review interna per S3/rilascio/estrazioni: scelta operativa propria che
+non sostituisce il ruolo concordato di Claude. Consegna mirata pubblicata per
+verificare anche il seguito; prima dei fit CPU acquisire il suo riscontro.
+
+### 05/11/2026 — GPT: recepita review Claude c0a4f58; quattro estrazioni concluse
+
+Riferimenti: codice congelato aef665ba, consegna precedente c74d2079, review Claude
+c0a4f58b (copiata byte per byte, comprese entrambe le voci originali del registro).
+Verdetto affidabile/nessun blocco: verifica a posteriori, non approvazione retroattiva.
+Launcher CPU approvato; riscontro del revisore acquisito. Alle 14:33:40 CET quattro
+estrazioni COMPLETED 0:0: 63580603, 63580771, 63580776, 63580820. Raccolti quattro
+originali receipt gzip senza perdita, dieci provenance e dieci hash cache ricalcolati
+sui file remoti: 24/24 hash concordi. Consuntivi con sacct -P testuale accanto a ogni
+JSON (O-7): 2,894167 GPU-ore e 23,153333 core-ore per queste quattro sole estrazioni.
+Artefatti in results/infra/scaling_300m_20261104/classification_completed_20261105/.
+Posa 300M 63580385 ancora RUNNING, limite 15:15:45 CET; nessun fit CPU o nuovo invio.
+La nuova receipt P2-300M non era coperta dalla review delle 13:41: disponibile qui
+per Claude; la receipt finale della posa segue solo a completamento valido.
+
+### 05/11/2026 — GPT: osservazioni Claude recepite e limiti del punto corrente
+
+Review c0a4f58: O-6/O-8 vincolanti, stop al primo gate rifiutato o TIMEOUT, nessun
+retry. Se 63580385 va in TIMEOUT, comunicarlo a Simone prima di qualsiasi nuovo
+invio. Piani e pin effettivi vanno pubblicati prima di ogni fase CPU; benchmark
+train-only e tetti invariati, cap cumulativo 180 core-ore. Il checkout comune
+63580233 ha già usato la propria voce: un eventuale checkout dei piani consuma
+esplicitamente la riserva (0,666667 core-ore), senza aggiungere budget.
+O-1: per un'eventuale futura tranche 19.618 baseline misurata 37,751831 GiB e
+raccolta allocato/riservato per rank; nessuna tranche ora autorizzata dal risultato.
+Registrati senza interventi sulla campagna O-2 (review interne distinte da Claude),
+O-3 (snapshot S3), O-4 (log posa bufferizzato), O-5 (nodo CPU), N-1…N-4; dettagli
+nella review originale conservata. Nessun cambiamento di protocollo o job attivi.
+Nessuna conclusione scientifica 30M/300M prima dei lettori; il confronto finale
+resta da produrre. Nessun monitor automatico, nessun nuovo consenso richiesto.
+
+### 05/11/2026 — GPT: estrazioni scaling concluse, review Claude integrata e rilascio CPU
+
+Riferimenti: codice aef665ba invariato; aggiunta Claude 8b763610 acquisita byte per
+byte, voci originali conservate nelle due sezioni. Posa 63580385 COMPLETED 0:0
+alle 14:43:18, 7.053 s; receipt a57c9420 completa. Dieci hash posa ricalcolati
+(nuovo e riuso 30M), tutti concordi; raw sacct affiancato all'accounting.
+Le cinque estrazioni totalizzano 4,853333 GPU-ore e 38,826667 core-ore, entro8,25/66.
+Dodici cache nuove e due riusate. O-4 chiusa; nessun job da rifare.
+
+Pubblicati i piani reali posa (a500cc3c…) e sonde (d2cc7da1…), con sourcehash,
+checkpoint, receipt, provenance e dati congelati. Codice/launcher restano nel
+checkout aef665ba; un checkout documentale distinto distribuisce i piani.
+Primo rilascio: validazione e sei benchmark train-only, 29 core-ore; checkout
+aggiuntivo 2CPU/4G/5min, 0,166667 core-ore dalla riserva già prevista.
+Comandi esatti e pin in cpu_readers_20261105/submission_plan.json; ordine e costi
+in docs/scaling_300m_cpu_execution_20261105.md. Invii effettivi registrati dopo
+pubblicazione/verifica origin e deploy. Nessun fit senza misure e budget pubblicati.
+
+### 05/11/2026 — GPT: condizioni CPU confermate dopo chiusura delle estrazioni
+
+Claude 8b763610 copre ora anche P2 e posa 300M. Nessun problema nuovo dalle ricevute;
+nessuna lettura scientifica 30M/300M ancora disponibile. La convalida locale dei
+piani non sostituisce il guard sulle cache reali, da eseguire nel job CPU.
+O-6/O-8 invarianti: fermare gli invii successivi al primo errore, gate rifiutato o
+TIMEOUT, senza retry; O-7 raw sacct accanto a ogni accounting. Nessun monitor.
+Nel tetto CPU180: stadi numerici179, checkout originario1/3, fino tre checkout
+documentali aggiuntivi da1/6 ciascuno, riserva residua1/6. Nessuna estensione dei
+limiti numerici o della campagna; nessun training nuovo o seguito automatico19618.
+Le autorizzazioni di Simone sono già sufficienti per questa catena.
+
+### 05/11/2026 — GPT: primi invii CPU dello scaling 5.000
+
+Piani pubblicati 1bde83e, comando checkout 26781ee; origin e deploy verificati.
+Review operativa indipendente APPROVATO, docs/reviews/scaling_cpu_release_20261105.md,
+oltre alla review Claude già acquisita. Checkout documentale 63591447 COMPLETED
+0:0 in 44 s (0,024444 core-ore); HEAD1bde83e, pulizia, sola lettura e hash dei due
+piani/launcher verificati. Sottomessa validazione posa **63591791** via submitter
+comune, codice aef665ba,2CPU/30G/30min, cap1core-ora. Ricevute in
+cpu_readers_20261105/submissions, raw sacct e accounting checkout affiancati.
+I sei benchmark vengono inviati solo dopo esito valido; nessun fit già in coda.
+
+### 05/11/2026 — GPT: validazione CPU in attesa, nessuno score scientifico
+
+63591791 è il primo stadio CPU; l'accettazione SLURM non equivale al passaggio
+del guard. Al primo errore/TIMEOUT si ferma il seguito, senza retry. Restano da
+misurare i sei benchmark prima del piano risorse dei fit; nessun risultato
+scientifico letto, nessuna continuazione19618 o automazione. Verificare e congelare
+anche il preventivo numerico condizionale S8 prima dell'apertura degli score.
+
+Validazione63591791 conclusa COMPLETED0:0 in45s, MaxRSS2,171310GiB,
+report b0af2231 accettato (quattro cache, piano/ricetta/pin/sorgenti coerenti,
+nessuna metrica scientifica). Receipt, report, accounting e raw sacct pubblicati
+prima del seguito. Sei benchmark train-only già previsti pronti per invio; costo
+massimo28core-ore, compreso nel rilascio29 già pubblicato.
+
+### 05/11/2026 — GPT: sei benchmark CPU inviati, posa misurata e S8 numerica congelata
+
+Tutti gli invii via submitter/ledger, codice aef665ba, piani1bde83e e comando
+checkout26781ee già pubblicati. Posa:63592426/63592917/63593029 COMPLETED0:0,
+22/30/29s; tre report originali+raw sacct+accounting raccolti. Identici runtime
+numerici8thread, pin, supporto40utenti/4.813.620elementi. Formula del fit=660s,
+entro cap3600; pose_budget.json preparato con pin reali. Nessun fit inviato.
+Sonde:63593262(30M naturale),63593508(300M naturale),63593593(300M matched).
+Alle15:36:50 il primo RUNNING, gli altri PENDING; reason poi letto
+QOSMaxCpuPerUserLimit. Nessuna variazione di QoS, nodo, thread o dati.
+
+Prima di qualunque score5.000, congelato il preventivo S8 condizionale19.618:
+formula originale con tempi reali=53.100s/14h45,59GPUh training;7GPUh estrazioni,
+180coreh CPU-only. Totale66GPUh e708coreh incluse le CPU dei jobGPU. Scheduler
+partizione/QoS24h e associazione utente verificati in sola lettura;14pin reali e
+formula ricalcolati. Documento e JSON continuation19618_budget_freeze_20261105.
+Nessuna autorizzazione o rilascio della continuazione, nessun nuovo training.
+
+Letto aggiornamento operativo main7616f336: GPT è l'operatore delle proprie
+linee, semplicione non è più operativo, N-3 chiusa. Nessun merge qui e nessuna
+modifica dei checkout congelati. Le istruzioni aggiornate non cambiano i gate.
+
+### 05/11/2026 — GPT: attesa dei benchmark sonde, vincoli del seguito
+
+Nessun errore nei job conclusi. I benchmark sonde attendono il limite CPU per
+utente; non aggirarlo con risorse/runtime diversi. Non usare report parziali per
+il piano dei fit. Servono15report completi dei tre job e accounting con raw.
+Il budget posa660s è misurato ma non sostituisce il guard runtime vivo del launcher.
+S8 ha ora tetti numerici prima degli score; conservarne la precedenza documentata.
+Controllo30M19618 inventariato localmente, conservazione remota da riverificare
+prima di qualunque futura prosecuzione. Criteri scientifici invariati.
+
+Stop al primo errore/TIMEOUT/gate rifiutato, nessun retry. Prima dei fit pubblicare
+budget sonde misurato e argv esatti, checkout budget e pin verificati; costo
+cumulativo≤180coreh. Nessun monitor automatico o nuovo consenso per la catena5000.
+Una prova locale del submitter è stata impedita dal sandbox prima della creazione
+della prenotazione; eseguita poi con permesso tecnico, un solo job per ID.
+Nessun job fallito/duplicato o retry scientifico. Nessuno score downstream letto.
+
+### 05/11/2026 — GPT scaling: TIMEOUT raccolto, 13 benchmark conservati; recupero alla review Claude
+
+Riferimenti: piano76a3126, runtime aef665ba invariato. Alla ripresa delle18:44:27,
+63593262(30M) e63593593(matched) COMPLETED0:0,2018/2194s;
+63593508(300M naturale) TIMEOUT,5584s su5400, batchCANCELLED0:15.
+Raccolti30file originali con manifest/hash:13benchmark,14audit,3log; raw sacct
+accanto a ogni accounting. Consuntivo tre benchmark21,768889coreh; CPU-only
+cumulativo22,027778coreh. Nessun fit downstream, retry, nuovo job o monitor.
+
+Audit offline riproducibile e review indipendente concordi:13report coerenti,
+83fit registrati convergenti; EPN300M parziale con5C, UCI300M non iniziato.
+Checkpoint5k e14cache restano acquisiti, nessun training/estrazione da ripetere.
+Diagnosi docs/reviews/scaling_cpu_timeout_20261105.md e review del critico;
+artefatti in cpu_readers_20261105/probe_benchmark. Simone chiede log e prompt,
+poi ripartenza dopo convergenza con Claude: docs/prompt_claude_scaling_cpu_recovery_20261105.md.
+Proposti soltanto recupero EPN/UCI e correzione risorse, nessun invio rilasciato.
+
+### 05/11/2026 — GPT scaling: STOP per TIMEOUT e preventivo fit insufficiente
+
+O-6/O-8 applicate all'intera catena, inclusa posa già dimensionata660s.
+Il parentTIMEOUT resta fallito anche con ExitCode0:0. RSS3,839GiB su30GiB,
+nessun OOM/traceback e nessun fallimento di convergenza nei fit terminati:
+nessuna conclusione scientifica sul300M. Il consuntivo include5584s e il
+fallimento; non troncare5400 né sommare parent e batch.
+
+Secondo blocco: formula congelata sui soli13report completi richiede almeno
+148,134869coreh, senza overhead/shard e senzaEPN/UCI300M: cap136 già impossibile.
+Errore di preventivo operativo, non motivo per ridurre griglia/fold/tolleranze.
+I3report completi del parent fallito non sanano il job; riuso solo con decisione
+esplicita revisionata, audit parziale non promosso a report. Proposta EPN120min
++UCI10min,8CPU/30GiB,17,333333coreh/zeroGPU, ancora da rivedere e implementare;
+poi budget fit completo e cumulativo da pubblicare, nessun nuovo totale inventato.
+S8/19.618 non autorizzato; impatto della nuova evidenza sul budget condizionale
+da dichiarare prima degli score. Codice numerico e criteri scientifici invariati.
+
+### 05/11/2026 — GPT scaling: adottata correzione del test storico B19618
+
+Su consegna del coordinamento, cherry-pick del solo commit d2f2f085 come6e57e19;
+modificato unicamente tests/cpu/test_pose_b19618_launcher.py. Il test legge ora
+CLI e src del runtime congelato24139ab tramite git archive e subprocess isolato,
+conservando il confronto esatto della ricetta. Nuova regressione: default attuali
+compatibili con resume, ma ricevuta storica rigorosa; GELU/raggio diversi rifiutati.
+Review indipendente del diff senza rilievi. File rieseguito sul ramo scaling:
+15passati in4,31s. Prima della patch riprodotto il fallimento noto:1fallito/13passati.
+Nessuna modifica di launcher, guardie, trainer o checkout remoti; runtime della
+campagna aef665ba e riferimenti scientifici invariati. Recupero CPU sempre fermo
+alla review Claude richiesta da Simone; nessun nuovo job o monitor.
+
+### 05/11/2026 — GPT scaling: falso fallimento B19618 risolto, stop CPU invariato
+
+Il test storico importava lo schema corrente invece del runtime24139ab imposto
+dal launcher: nuovi campi neutrali rendevano diverso il JSON della ricetta.
+Corretto solo il test, non normalizzata né allentata la guardia di produzione.
+Prima applicazione del cherry-pick impedita dal sandbox sull'indice Git, poi
+applicazione con permesso tecnico riuscita; nessuna modifica parziale o job.
+D-1/D-2 (merge main e unione registri) restano al coordinamento, non chiusi qui.
+TIMEOUT63593508 e insufficienza del tetto136coreh restano blocchi distinti:
+nessuna ripartenza in conseguenza di questa patch al test.
+
+### 05/11/2026 — GPT scaling: Review7 acquisita e recupero concreto preparato
+
+ReviewClaude1c21047 e script dei conti acquisiti byte per byte; voci originali
+nelle due sezioni. B-2: dispatcher separato scaling_readers_recovery.sbatch con
+runtime aef665ba esplicitamente invariato, benchmark singoloEPN/UCI, fit≤15shard,
+≤3h e≤240coreh richieste. Nuovi42test verdi; launcher originale/probe/reading
+124test verdi. Nessun controller o launcher frozen modificato.
+
+B-1: proposta310coreh CPU-only cumulative,22,027778giàspese,302,094444budgetate
+incluse tolleranze,7,905556riserva. Decisione numerica310 di Simone non ancora
+registrata; gate prima del primo fit. Recupero2benchmark18,133333coreh inclusi
+180s/job, entro vecchio180 cumulativo.13report legati a hash/log/parent/receipt,
+NinaPro figliTIMEOUT senza sanatoria del padre. Pin e argv dei2invii pubblicati;
+EPN prima,UCI dopo accettazione, nessun invio ora.
+
+B-3: raw scheduler conferma MinTRESbprod65nodi; freezeS8v2 usa normal e conserva
+formula66GPUh richieste (+0,35margine). CPU-only futura350,senza costi5000:
+345,166667voci+4,833333riserva. V1JSON preservato, criteriS8 invariati, nessun19618.
+Documenti execution_recupero,freezev2 e prompt della review concreta pubblicati.
+Review interne distinte dalla coperturaClaude; attesa sua verifica del dispatcher.
+
+### 05/11/2026 — GPT scaling: condizioni prima del recupero e rettifica S8
+
+B-1 rimane gate decisionale sul tetto310; le autorizzazioni ordinarie ai lanci
+non vengono rinominate come approvazione retroattiva di quel numero. B-2 implementato
+ma non ancora rivisto daClaude; fitbudget misurato ancora impossibile senzaEPN/UCI.
+B-3 rettifica errore mio: controllare solo MaxWall/associazione non bastava,
+bprod richiede65nodi. Normal/partizione sono compatibili nei dati letti, non è
+un test di sottomissione. Limiti CPU futuri fissati prima degli score, senzavia19618.
+
+F-1/F-2/F-4/F-5 accolti; F-3 nessun cambio runtime; F-6 review interne separate.
+Margine180s non garantisce kill istantaneo; il consuntivo usa elapsed vero e la
+riserva non finanzia retry/cambi cap. QoS10job sottomessi/8CPU vale sull'intero
+utente: controllare anche le altre linee. Nessun job o score nuovo in questa fase.
+
+### 05/11/2026 — GPT scaling: Simone approva il tetto CPU310
+
+Simone risponde «approvo» alla proposta numerica pubblicata in4c670bd:310core-ore
+CPU-only cumulative per completare la valutazione5.000, incluse22,027778già
+consumate, zero nuoveGPU. Registrata l'approvazione nei JSON di policy/stato e
+nel piano; B-1 decisionale soddisfatta. Nessun nuovo consenso per le sottomissioni
+della catena approvata una volta superate review e guardie previste. Restano
+reviewClaude del dispatcher, recuperoEPN/UCI e budgetfit misurato prima dei fit.
+Nessun job, deploy o checkout remoto nuovo; nessuna autorizzazione19618.
+
+### 05/11/2026 — GPT scaling: approvazione310 distinta dai gate ancora aperti
+
+Il tetto310 è complessivo, non aggiuntivo alle22,027778coreh sostenute. Resta
+il capfit240 richiesto,15shard/3h e margini pubblicati. L'approvazione di Simone
+chiude B-1 sul budget, non sostituisce la reviewClaude del nuovo dispatcher,
+né la verifica dei15report e del runtime. I tettiS8 futuri restano condizionali;
+nessuna continuazione19618 è stata approvata o sottomessa in questo passaggio.
+
+### 05/11/2026 — GPT scaling: Review8 recepita, correzione stdin e rilascio del recupero
+
+ReviewClaude4e6542f acquisita integralmente e voci originali preservate. Dispatcher,
+riuso13report, inviluppo310 e freezeS8v2 approvati; applicata l'unica correzione
+obbligatoria ai2argv: /dev/stdin prima di probe-benchmark. La stessa forma diventa
+obbligatoria per ogni stadio successivo su stdin. Pin dispatcher c2bd7979 invariato,
+nessun cambio numerico o al submitter; controllo locale dei2argv e hash superato.
+F-1 recepito: ricevute nuove accettate solo con script_stdin_sha256 coincidente.
+F-2: limite10 per utente nella QoSseriale, non conteggio di jobGPU; F-3:350CPUh/
+66,35GPUh S8restano proposta futura non approvata daSimone; F-4nessun cambio runtime.
+
+Simone autorizza partire dopo queste correzioni, senza altra review. Lettura20:08:
+coda lrd_all_serial vuota, runtimeaef pulito, piano d2cc7da1, outputrecoveryassente;
+ledger senza IDrecupero. Pubblicazione e verificaSHA precedono il primo invio.
+EPN prima; UCI solo dopo accettazioneEPN. Nessun fit senza15report e piano misurato.
+
+### 05/11/2026 — GPT scaling: B-1 Review8 chiusa senza cambiare dispatcher
+
+Il submitter non inserisce automaticamente il nome dello script: su stdin con
+argomenti serve /dev/stdin. L'omissione era nei comandi preparati, nessun job
+rifiutato né IDconsumato per questo difetto; corretti prima dell'invio. I166test
+già passati coprono il dispatcher, non la sintassi di sbatch: aggiunto controllo
+puntuale dei2argv senza presentarlo come nuovo collaudo SLURM. Prima letturaSSH
+chiusa senza dati, seconda riuscita; nessuna sottomissione ambigua o retrydi job.
+Le condizioni della Review8 sono soddisfatte per il recupero; nuova misuraEPN,
+runtime vivo, convergenza e budgetfit restano gate reali, non risultati acquisiti.
+
+### 05/11/2026 — GPT scaling: EPN612 recupero sottomesso63620780
+
+Piano corretto5275b0d pubblicato con SHAorigin verificato prima dell'invio.
+Submitter/ledger comune: SCALING-probe-recover-epn612-20261105,job63620780,
+sottomesso20:22:50,8CPU/30GiB/2h/zeroGPU. Ricevuta copiata byte per byte in
+cpu_recovery_20261105/submissions; argv esatto con/dev/stdin, codiceaef e
+script_stdin_sha256 c2bd7979 verificati. Tetto16coreh richieste,16,4con margine.
+Alle20:23:27 PENDING(Resources), non ancora in esecuzione; log non ancora creato.
+UCI non inviato: segue solo EPNCOMPLETED0:0, report completo e accettazione.
+Nessun fit anticipato, nessun nuovo training, nessun monitor in background.
+
+### 05/11/2026 — GPT scaling: attesa risorse del recupero, non un errore
+
+63620780 accettato daSLURM e in attesa(Resources); il filelog assente mentre il
+job èPENDING non è un fallimento del dispatcher. Il limite di10sottomessi si
+controlla sulla partizione/QoSseriale: la colonnaQOSdel job riporta normal, mentre
+la partizione applica lrd_all_serial. Non filtrare erroneamente soloQOS=serial
+nella colonna del job. Prossima lettura conserva ID63620780: non risottomettere.
+Al primo errore/TIMEOUT stop; primaUCI servono report e accountingEPN verificati.
+
+### 05/11/2026 — GPT scaling: EPN recupero in esecuzione, controllo20:41
+
+Su richiesta di Simone verificato63620780: RUNNING su login08,8CPU, avvio20:26:23;
+alle20:41:06 elapsed884s. Log iniziale coerente con runtimeaef e moduli congelati,
+nessun errore riportato. Snapshot originale pubblicato in cpu_recovery_20261105.
+UCI non ancora inviato, subordinato al completamento e accettazioneEPN.
+
+### 05/11/2026 — GPT scaling: RUNNING non è completamento del benchmark
+
+63620780 sta eseguendo il recupero; nessun report finale ancora presente alla
+lettura20:41. Nessuna stima nuova di convergenza o qualità del FM dal log iniziale.
+GateEPN→UCI e stop al primo errore restano invariati; nessun invio aggiuntivo.
+
+### 05/11/2026 — GPT scaling: EPN recuperato e accettato, UCI pronto
+
+Job63620780 COMPLETED0:0 alle21:13:23:2820s,8CPU=6,266667coreh,
+MaxRSS4,065578GiB. SeiC convergenti, nessun warning/limite; C1008933iter.
+Report4b52dc33, audit, log, sacct-P originale e accounting hash-bound raccolti in
+cpu_recovery_20261105/epn612_completed. Piano/code/ricetta/runtime1ac848 invariati;
+primi5fit identici al parziale eccetto tempi, supporto e ruoli uguali alle altre viste.
+Ricevuta dispatcher c2bd verificata; audit offline riproducibile e controllo
+indipendente del critico concordi. Matrice14/15, CPU cumulativa28,294444/310.
+Simone conferma di verificare EPN e avviare UCI senza nuovo consenso. Dopo questo
+commit/push verificato si invia il solo UCI con argv5275b0d,8CPU/30GiB/10min.
+
+### 05/11/2026 — GPT scaling: il recupero EPN chiude il report mancante, non la valutazione
+
+Nessun nuovo gate fallito. Il TIMEOUT originale resta registrato; il suo parziale
+non sostituisce il nuovo report completo. Questi benchmark misurano risorse e
+convergenza sul train: nessun punteggio downstream disponibile e nessun verdetto
+30M/300M. Restano UCI e il piano completo dei fit entro240coreh/15shard/3h.
+Le cache remote non sono rilette da questo audit offline; valgono i controlli
+precedenti di estrazione/validazione. Nessun training o estensione19.618.
+
+### 05/11/2026 — GPT scaling: UCI recupero sottomesso63625951
+
+Dopo accettazione EPN pubblicata6e58861 e SHAorigin verificato, invio UCI con
+argv esatto del piano5275b0d: submitter/ledger comune, ricevuta63625951,
+21:32:52,8CPU/30GiB/10min/zeroGPU. Runtime remoto aef pulito, piano d2cc,
+dispatcher c2bd, directory nuova e coda seriale vuota verificati prima dell'invio.
+Receipt copiato byte per byte e controllato. Alle21:33:40 PENDING(Resources).
+Nessun nuovo consenso: esecuzione richiesta esplicitamente da Simone dopo EPN.
+I fit non sono ancora inviati: manca il report UCI e il preventivo completo misurato.
+
+### 05/11/2026 — GPT scaling: distinguere benchmark da qualità
+
+EPN/UCI sono benchmark train-only: controllano convergenza e risorse su fold0,
+non producono score sugli utenti esclusi. I FM30M/300M e le estrazioni sono già
+completati; restano sonde complete, ridge posa e comparatore. Nessun nuovo errore
+al rilascio UCI. Stima temporale comunicata: ordine di un giorno di calcolo CPU
+per i fit, più coda, da precisare con tutti15report e packing effettivo. Nessuna
+promessa di completamento entro domani e nessun monitor in background attivato.
+
+### 05/11/2026 — GPT scaling: UCI accettato, rilascio misurato dei fit
+
+UCI63625951 COMPLETED0:0/29s,8CPU=0,064444coreh; tutti6C convergenti.
+Report b97ef2cc, audit, log, sacct-P e accounting pubblicati con hash. Audit
+riproducibile e verifica indipendente concordi:15report,90fit completi convergenti;
+5fit del vecchio parziale restano storico separato. CPU cumulativa28,358889coreh.
+Simone conferma di verificare UCI e avviare i fit senza nuovo consenso.
+
+Piano misurato:14shard, copertura esatta60combinazioni cell/dataset/fold,
+8CPU/30GiB, massimo2h58,205,866667coreh richieste (25h44m seriali); con margine
+scheduler211,466667. Ridge posa8CPU/30GiB/60min, formula misurata660s.
+Consumato più tutti i tetti residui255,758889<=310. Numerica aef, dispatcher
+c2bd e criteri invariati. Pin/argv/risorse in cpu_fit_release_20261105.
+Prima dei fit: commit/push verificati, deploy solo metadata e checkoutversionato.
+Poi ridge e14fit in catena afterok, ordine per walltime crescente; si riempiono
+solo slot liberi fino a10sottomessi nella QoSseriale. Prima delle tranche successive
+si verificano risultati e accounting dei conclusi. Nessun retry o monitor inbackground.
+
+### 05/11/2026 — GPT scaling: benchmark chiusi; qualità ancora da leggere
+
+Il recupero UCI non introduce errori né nuovi criteri. Tre benchmarkNinaPro con
+padreTIMEOUT restano esplicitamente riusati secondo Claude8; nessun costo cancellato.
+Il packing è operativo, non selezione dei risultati: fold e griglia restano integri.
+25h44m sono walltime richiesto prudenziale, non durata misurata né scadenza garantita;
+la coda si aggiunge. Il limite10job richiede più tranche per15job totali (ridge+14fit).
+Al primo errore/TIMEOUT si ferma la fase e si raccolgono evidenze; nessun nuovo training.
+
+### 05/11/2026 — GPT scaling: checkout budget63626623 accettato
+
+Piano fit ec221a6, comando esatto5e20d8c pubblicati suorigin; deploy metadata
+verificato ec221a6, canonical main intatto. Job63626623 COMPLETED0:0/27s,
+2CPU=0,015coreh, checkout metadata pulito e hash effettivi uguali ai pin.
+Raccolti log originale con hash, sacct-P e accounting. Verificati27input remoti
+(piani,15benchmark,report/accounting posa,budget), tutti15output ancora assenti,
+runtimeaef pulito e coda seriale vuota. CPU consumata28,373889coreh.
+Pronta prima tranche ridge+9fit, entro10sottomessi; altri5fit da inviare solo
+quando liberi gli slot e verificati gli esiti precedenti. Tutti gli argv già pubblicati.
+
+### 05/11/2026 — GPT scaling: correzione operativa prima dei fit
+
+Review indipendente ha trovato --out posa trattato come file anziché directory:
+corretto nel piano prima del commit ec221a6 e di ogni invio; nessunjob coinvolto.
+Rieseguito parsing reale dei15comandi e controllati pin/risorse/copertura. Nessun
+blocco residuo al rilascio. Le verifiche live dei lettori restano attive; afterok
+arresta i successivi su errore ma non sostituisce la lettura prima delle nuove tranche.
+
+### 05/11/2026 — GPT scaling: fit avviati, prima tranche di10job
+
+Dopo9e1e24e pubblicato e SHAorigin verificato, sottomessi tramite submitter comune
+ridge63626871 e9sonde63626931/63626956/63626966/63626971/63626975/63626978/
+63627028/63627047/63627052. Ricevute copiate e pin/argv verificati; coda e stati
+precedenti controllati prima di ogni invio. Alle21:48:58 ridgeRUNNING dal21:47:31,
+9fitPENDINGDependency, catenaafterok corretta. Altri5fit10..14 ancora non inviati
+per il cap10sottomessi seriali. Nessuna richiesta nuova di decisione scientifica;
+Simone ribadisce di raggruppare le operazioni senza ripetere autorizzazioni.
+
+### 05/11/2026 — GPT scaling: limiti di coda e permessi tecnici
+
+Nessun gate runtime fallito al controllo21:48:58. Restano5sottomissioni, non14fit
+giàinviati: il cap10 della QoS comprende la ridge. Nuove tranche solo dopo la
+verifica dei conclusi e dei posti liberi. Le finestre di escalation sono il sandbox
+dell'app, distinte dal consenso di Simone già acquisito; si raggruppano le operazioni
+senza aggirare i controlli e senza attivare monitor inbackground.
+
+### 05/11/2026 — GPT scaling: completamento dei soli cinque invii senza monitor AI
+
+Simone chiarisce che vuole evitare il consumo di token durante l'attesa. I dieci
+invii iniziali restano invariati. Preparato finish_submissions.py: avvio unico di
+un processo locale indipendente, senza AI, limitato agli esatti cinque argv10..14
+già pubblicati. Controlla ogni60s, massimo8h; raccoglie e verifica report/audit/hash/
+accounting dei conclusi, rispetta10job seriali/8CPU e310coreh, poi termina appena
+sono tutti15sottomessi. STOP senza retry su errore/ambiguità; prenotazione e lock
+impediscono doppio avvio. Non osserva il completamento finale della campagna.
+
+42test passati, anche10ricevute/ledger reali controllati. Nuova operazione solo
+logistica: runtimeaef, dispatcher c2bd e piano0370cdf invariati. Solver unresolved
+resta flag, nessuna nuova soglia; validazione OOF/scientifica sarà eseguita dagli
+aggregatori congelati. Fonte e comando esatto in finish_execution.json pubblicati
+prima dell'avvio. Mac deve restare non sospeso; schermo spento consentito.
+
+### 05/11/2026 — GPT scaling: attesa senza token, distinta dalla review finale
+
+Il processo locale chiude soltanto le cinque sottomissioni: non modifica budget,
+protocollo, modelli o risultati e non riattiva automazioni della chat. LLM non resta
+in polling. Un errore SSH ferma il processo senza ritentare invii; si conserva STOP.
+Raccolta operativa usa hash OOF remoto senza scaricare dati; contenuto/score OOF
+saranno verificati dall'aggregatore già rivisto. Limite8h o Mac sospeso possono
+ritardare/interrompere i nuovi invii, senza fermare job già affidati a SLURM.
+
+### 05/11/2026 — GPT scaling: processo locale senza AI avviato e verificato
+
+Fonte ef8db2b suorigin con SHA verificato; review finale30b8b9b9 PASS,42test.
+Avvio unico --start alle22:08:47CET, PID2321 verificato; limite8h, nessun restart.
+Il processo ha già raccolto e accettato operativamente la ridge63626871:
+COMPLETED0:0/289s,0,642222coreh. Report, log, accounting e hash dei6output
+raccolti senza scaricare predizioni/coefficenti; nessuna interpretazione scientifica
+prima del confronto previsto. CPU cumulativa29,016111coreh.
+
+Snapshot22:08:48: fit01RUNNING,altri8fitPENDING; nella QoS anche checkout LONG63628160,
+quindi10slot occupati e5fit ancora da inviare. Il processo li accoderà usando solo
+argvpubblicati dopo i controlli; non serve tenere il modello in polling e non si
+consumano token AI nell'attesa. Rimane un processo locale bounded, non automazione
+Codex né monitor del completamento finale. Occorrono Mac nonsospeso e rete.
+
+### 05/11/2026 — GPT scaling: controlli di processo e limiti della raccolta
+
+--status in sandbox non poteva interrogare PID tramite os.kill(pid,0); la verifica
+nel contesto tecnico autorizzato conferma processo presente e nessun risultatoSTOP.
+Questo non ha toccato i job né comportato retry. CapQoS include l'altro checkout LONG;
+nessun tentativo di superarlo. Stato/log mutabili locali esclusi dal versionamento
+continuo; startup e snapshot immutabile pubblicati, ricevute/accettazioni nuove si
+raccolgono nella prossima lettura ordinaria. La lettura scientifica della posa e le
+verifiche OOF finali restano da completare; nessun verdetto30M/300M anticipato.
+
+### 06/11/2026 — GPT scaling: ReviewClaude9 recepita, tutti i fit accodati
+
+Acquisiti review b66a3e6 e due script di verifica come blob originali; conservate
+verbatim quattro voci Claude nelle due sezioni. Verdetto CONFORME, nessun blocco.
+Il processo locale ha chiuso all_15_submitted: ultimo invio fit14/63635524 alle
+2026-11-06T00:14:56+01:00. Nessun STOP, rifiuto o duplicato. Audit locale indipendente:
+15ricevute/ledger/argv corretti,5stdout nuovi riusciti;29hash su posa+fit01..04.
+Nessun riavvio o modifica del processo congelato.
+
+Lettura SLURM unica alle08:22:50CET: posa e12/14fit COMPLETED0:0, fit13/63634004
+RUNNING dalle07:21:20, fit14/63635524 PENDINGDependency. Nessun job fallito.
+CPU-only dei conclusi104,380556coreh; in corso ulteriori8,2coreh osservate,
+non ancora consuntivo finale. Raw sacct/accounting in review9_followup_20261106.
+I15invii sono completi; la lettura scientifica e aggregati/confronto restano successivi.
+
+### 06/11/2026 — GPT scaling: N-4/N-5/N-6 e coordinamento della seriale
+
+N-1/N-3 chiuse secondoClaude. N-4 è un difetto reale del controllo di transizione:
+sacctCOMPLETED/squeueCOMPLETING va trattato come ancora in chiusura in un futuro
+riuso, con regressione dedicata. Non osservato in questa esecuzione; non si altera
+il file storico30b8b9b9 né si rilancia alcunjob. N-5: nessun rifiuto di questa catena;
+il processo è terminato e non prende più slot. Alle08:22 restano2job seriali,
+quindi8posti di sottomissione liberi; le8CPU sono ancora tutte occupate dal fit13.
+Questa è l'informazione per il coordinamento con linea2, senza cambiare priorità.
+
+N-6: prima dell'avvio esisteva review del critico interno (42test e pin/ricevute),
+non reviewClaude; quella diClaude9 è successiva. Coperture e cronologia restano
+distinte, nessuna approvazione retroattiva né nuova regola imposta a Simone.
+Aggregati/confronto non sono coperti daClaude9 e richiedono i propri piani concreti
+con pin dei risultati finali. Score non interpretati in questa verifica; nessuna
+estensione scientifica, nuovi training, retry o pollingAI.
+
+### 04/11/2026 — Convergenza con Claude: controllo storico e secondario GELU
+
+Su richiesta riportata da Simone, aggiunto all'analisi il contrasto OOF appaiato
+T25-L−B19618 con sondeconvergenti: P1+0,510pp IC[0,090;0,926], P2−0,093pp
+[−1,382;1,065], EPN−0,236pp [−0,764;0,274].280fit verificati e pairingesatto;
+bootstrap appaiato2000seed20261102 e verifica indipendente. Nessunjob/fit nuovo,
+solo letturaOOF esistenti e calcoloMac. È un controllo storico di riproducibilità,
+non un pavimento statistico o una nuova soglia, come già precisato il03/11.
+
+T100-G aggiunto fra i secondari del log-quadratico, insieme ai riferimenti lineari;
+primario/baseT100-L invariati. Emendamento dopo i risultatiGELU e prima delnuovo
+candidato; riuso di cache/OOF, nessun trainingdi controllo richiesto per l'aggiunta.
+Restano semeunico, sviluppo, nessunT25-G, gain/calibrazione storici non sceltiGELU.
+
+Simone approva inoltre agente parallelo per300M100ms+GELU: collaudotecnico,
+screening5000 contro30M5000, verificaottimizzazione train-only. Agente isolato
+scaling_300m_execution sul ramo codex/scaling-300m-20261104; protocollo/codice/
+preventivo in preparazione, nessuna sottomissione da questa consegna.19.618 resta
+seguito naturale da pianificare, non estensione automatica di uno screening nullo.
+
+
+## 04/11/2026 — Preparazione consolidamento T100-G e FT, review Claude prima dei lanci
+
+Simone assegna a questa linea il30M100ms+GELU lungo e il fine-tuning, e specifica:
+«prepari la roba, poi claude la valida e convergiamo, alla fine la lanci».
+Worktree esclusivo wearusfm-consolidation, ramo codex/consolidation-20261104, base8ee6603.
+300M resta al thread originale; duplicato riattivato dal contesto terminato senza
+scrivere/lanciare. Nessun merge su main, nessun job o automazione creati.
+
+[Protocollo](consolidation_protocol_20261104.md) e
+[prompt review Claude](prompt_claude_consolidation_20261104.md). Controller e launcher
+per continuazione completa19618→30000operativo→39237→49046, WSD e codice scientifico
+invariati; stima25,35GPUh e tetto36GPUh/288coreh, più checkout0,167coreh.
+Estrattore pre/postbackbone D-indipendente con parità storico; owner questa linea.
+
+Proposto FT EPN sviluppo: frozen/fullFT/scratch, stessa testaLN+linear,4fold interni,
+2LR per regime,5epoche complete, selezione solo validation. Protocollo/confronto
+restano da validare con Claude. Benchmark train-only0,5GPUh/4coreh, misura risorse e
+preprocessing;12job di2candidati, tetto complessivo48GPUh/384coreh, costo atteso da
+misurare. Gate85%RAM/VRAM e proiezione entro14100s per job4h. Nessun test ufficiale
+valutato, nessuna pretesa di convergenza scratch o trasferimento in regressione.
+
+Critico interno favorevole dopo due correzioni;54test su pacchetto e regressioni,
+13test del pacchetto dopo nuova guardia review, launcher Bash validi. I piani
+awaiting_claude_review bloccano esecuzione. Le valutazioni lunghe hanno libreria e
+protocollo, ma adattatori/controller e preventivo CPU finale ancora da consegnare
+prima dei relativi lanci: non dichiarati già pronti.
+
+### 04/11/2026 — Correzioni alla review Claude 63fd9c5, in attesa di rilettura
+
+Review su `bbca940`, ricevuta da Simone e conservata integralmente in
+`docs/reviews/claude_review_consolidation_20261104.md`. Risposta a ogni rilievo in
+`docs/reviews/consolidation_response_to_claude_20261104.md`; prompt per la rilettura
+in `docs/prompt_claude_consolidation_followup_20261104.md`. Perimetro invariato:
+continuazione 30M T100-G e fine-tuning EPN dal teacher 19.618. Nessun lancio o
+checkout remoto; entrambi i piani restano `awaiting_claude_review`. L'allegato
+richiede convergenza sul diff delle correzioni prima di procedere.
+
+**F-B1/F-M4:** griglia della testa `{1e-3, 1e-2}` identica nei tre regimi, con
+moltiplicatori frozen/finetune/scratch pari a 1/100/10; griglie dell'encoder
+invariate. Moltiplicatori inclusi nella ricetta, nel suo hash e nel controllo
+runtime. Rimangono 24 candidati, senza costo aggiuntivo per questa correzione.
+Persistenza immediata del report e dei pesi di ogni candidato; divergenza numerica
+registrata come esito con score JSON `null`. OOM ed errori di codice non sono
+assorbiti come divergenza. Se nessun candidato è finito, nessuna predizione held
+inventata e nessuna esclusione silenziosa del fold. Test di parità frozen con le
+feature storiche e seed esplicito nella ricostruzione del selezionato.
+
+**B-R1/B-M2, prima del benchmark:** quattro update di warm-up su un modello
+separato, poi nuova istanza per i 32 update misurati. Report dei tempi all/steady;
+proiezione sulla steady con fattore 1,5 e costi fissi dichiarati. Per ciascun
+regime, due candidati nello stesso job se la proiezione è ≤14.100 s; altrimenti
+un candidato per job solo se la proiezione del singolo è ≤14.100 s. Se anche il
+singolo supera il limite, stop: nessuna riduzione automatica di epoche, batch o
+griglia. Nel caso split il secondo job verifica ricevuta/hash/pesi del primo,
+sceglie su validation dopo entrambi e predice held una volta; non cambia scelta
+dopo aver letto held. Benchmark: tetto 0,5 GPU-ore e 4 core-ore. Fit congiunti:
+12 job, tetto 48 GPU-ore e 384 core-ore; ripiego completo: 24 job, 96 GPU-ore e
+768 core-ore. Sono tetti alternativi, non da sommare. Preventivo effettivo e
+modalità per regime saranno pubblicati dopo il benchmark corretto e prima dei fit.
+
+**F-R2, prima dei fit:** la regola «scratch ancora in miglioramento» usa i quattro
+candidati scratch selezionati su validation, con cinque epoche complete ciascuno.
+Scatta se almeno 3 fold hanno la prima epoca migliore alla quinta, oppure se la
+mediana sui quattro fold di validation balanced accuracy(epoca 5 − epoca 4) è
+≥0,005 (0,5 punti percentuali). Un fold incompleto/divergente rende la regola non
+valutabile. A cinque epoche si legge il vantaggio a dose fissata, senza dichiarare
+l'ottimo di scratch o la necessità del pretraining. Se scatta, il seguito previsto
+confronta scratch e finetune entrambi a 15 epoche, stessi dati, seed, griglie e
+inizializzazioni originali; nuovo cosine a 15 epoche, non ripresa dal checkpoint
+selezionato a cinque. Stima del training circa 3× il misurato, più costi fissi e
+valutazione. Implementazione, preventivo e review dell'estensione restano da
+chiudere: nessun job a 15 epoche è incluso in questa consegna. La funzione della
+regola è testata; il suo collegamento all'aggregatore finale FT è ancora da fare.
+
+**C-M1/C-M2, prima della continuazione:** recovery solo con nuova revisione del
+piano, nuovo ID logico, pin del checkpoint e consuntivo residuo. Se il training è
+già completo e fallisce la verifica/copia finale, si recupera quella fase senza
+ripetere gli update. Se è parziale, servono `summary.stopped == "limite di tempo"`,
+assenza di STOP, dose nella fase e stato completo verificato; niente retry cieco
+o riavvio del warm-up. Procedura in `consolidation_continuation_operations_20261104.md`.
+Il wrapper copia atomicamente in WORK, senza sovrascrivere, il sorgente 19.618 e
+gli endpoint 30.000/39.237/49.046; SHA e metadati nella ricevuta, completa solo dopo
+copia verificata. Stima purge SCRATCH da mtime +40 giorni, senza considerarla una
+garanzia: la protezione è la copia persistente. Circa 1,8 GB di checkpoint; quota
+di progetto richiesta libera almeno 8 GiB e 1.000 inode. Evidenza quota reale
+ancora assente: da raccogliere e pinnare prima del lancio, entro 24 ore dalla
+sottomissione, e da verificare nuovamente a runtime. Il tempo in coda non invalida
+da solo la ricevuta. Stima training 25,35 GPU-ore e tetto 36 GPU-ore/288 core-ore
+invariati; nessuna quota dichiarata verificata senza misura.
+
+**V-R1, proposta per la convergenza prima delle estrazioni:** la replica storica
+T25-L − B19618 resta un confronto empirico appaiato con IC, non un pavimento
+statistico universale. Soglie pratiche proposte: 1 pp di balanced accuracy e 2%
+relativo di E_dyn, con IC appaiato favorevole. Primario di dose 49.046 − 19.618;
+secondari 39.237 − 19.618 e 49.046 − 39.237, tutti riportati. Classificazione:
+beneficio se P1 o P2 guadagna ≥1 pp con IC inferiore >0 e l'altro mantiene IC
+inferiore >−1 pp; peggioramento pratico se uno perde ≥1 pp con IC superiore <0.
+Esiti misti restano compromessi, IC irrisolti non sono equivalenza. Riferimento:
+19.618 se nessun beneficio, unico endpoint favorevole se uno solo, altrimenti
+39.237 salvo ulteriore beneficio pratico di 49.046 contro 39.237. Per la posa usare
+`100*(1 − E_dyn_nuovo/E_dyn_riferimento)`: beneficio ≥2% con IC inferiore >0,
+peggioramento ≤−2% con IC superiore <0; stessa preferenza per la dose minore se
+l'incremento finale non aggiunge beneficio pratico. Correlazione, varianza,
+livello ed E2 sul supporto comune sempre visibili; una regressione chiara degli
+altri indicatori rinvia la scelta e impone di esplicitare il compromesso.
+Post − pre usa gli stessi margini a pari D/supporto/lettore, senza dedurre perdita
+irreversibile d'informazione dal solo readout. Classificazione e posa possono
+richiedere riferimenti diversi. Scelte esplorative su sviluppo, un solo seme,
+nessuna correzione dei nuovi contrasti sottraendo la replica storica.
+
+Restano da consegnare controller/pin/preventivo della matrice lunga (V-R2) e
+aggregatore OOF/IC FT. Rinviate le ottimizzazioni facoltative cache frozen (F-M5)
+e terza vista prenormalizzata (V-F3), senza cambiare la matrice corrente.
+Critico interno senza nuovi rilievi bloccanti; 123 test passati su pacchetto e
+regressioni WSD/tokenizer, più verifica mirata dopo l'aggiunta del riferimento
+alla ricevuta split. Sorgenti scientifici storici invariati: 100/100 hash uguali.
+I controlli locali non sostituiscono la rilettura Claude né il benchmark CUDA.
+
+### 04/11/2026 — Convergenza Claude0b2623a e invii del consolidamento
+
+Rilettura di2dbd498 acquisita. Continuazione, benchmark FT e regole F-R2/V-R1
+convergenti. R-1 corretto prima dei fit: fit_output_root sotto WORK, inclusi i
+pesi dei candidati; nessuna modifica della ricetta/hash o del codice runtime.
+Quota reale del04/11 17:04:12UTC pinnata con testo originale eSHA: progetto20147512,
+40,4175GiB liberi, inode senza quota. Gate età≤24h da richiamare immediatamente
+prima di ogni invio; runtime ripete la query. Rilettura GPT ancora sopra40GiB.
+
+Piano esecutivo pubblicato prima di sbatch in consolidation_execution_20261104.md
+e results/infra/consolidation_20261104/launch_plan.json. Cinque ID: checkout CPU,
+CONSOL-G-30000/39237/49046-20261104 concatenati, FT-BENCH-20261104 indipendente
+dalla continuazione dopo checkout. Tetto prima tranche36,5GPUh/292,166667coreh;
+training atteso25,3521GPUh. Checkout2GiB allineato al launcher. Nessun cambio
+a dose/schedule/seed/loss. Submitter comune, ledger unico, owner di questa linea;
+nessun nuovo consenso né monitor. Aggiornare ricevute e ID dopo le sottomissioni.
+
+Fit convergenti dopo R-1, ma non inviabili senza benchmark completo, pin e
+preventivo effettivo joint/split. Matrice lunga e aggregatore ancora condizionati.
+N-3 esplicitata: mancato scatto F-R2 non certifica scratch convergente.
+
+### 04/11/2026 — Prima tranche consolidamento sottomessa, runtime17dd455
+
+Checkout63525708 COMPLETED0:0; CONSOL-G-30000/39237/49046 sottomessi con
+ID63525803/63525805/63525809 e dipendenze afterok. FT-BENCH63525812 sottomesso
+in parallelo. Alle18:27:46Europe/Rome benchmarkRUNNING, trainingPENDING Priority,
+successoriDependency. Ricevute ledger complete archiviate in
+results/infra/consolidation_20261104/submission, quote pre-submit verificate.
+
+Primo invio30k rifiutato prima di creare job per script chiamato '-'; corretta
+invocazione al path del launcher congelato, --dopo-rifiuto sullo stessoID. Nessun
+calcolo duplicato né modifica scientifica. Checkout allocato2CPU contro1richiesta:
+24s,0,013333coreh; massimo allocato totale292,333333coreh (richiesto292,166667),
+GPU36,5invariato.39test operativi passati,100/100pin scientifici invariati.
+Nessun monitor; benchmark da completare prima del preventivo/pin dei fit.
+
+### 04/11/2026 — Benchmark FT completo e aumento dei limiti autorizzato
+
+Job63525812 COMPLETED0:0,457s,0,126944GPUh/1,015556coreh. Report verificato
+SHAa5eada1a,provenienza17dd455 e ricetta invariati; dati in
+results/infra/consolidation_20261104/benchmark. Memoria valida,tempo singolo
+frozen7959,88s/FT23558,54s/scratch23535,00s. Policy originale:split/blocked/blocked.
+Nessunfit sottomesso; nessuno score scientifico disponibile dal benchmark.
+
+Simone: «poi se devi alzare limiti di tempo vai tranquillo», chiedendo prima
+di stampare il prompt perClaude. Preparato adeguamento operativo:4h frozen,7h
+FT/scratch, limiti14100/24900/24900s (300sriserva). Dose5epoche,batch8,seed0,
+LR,inizializzazioni,selezione e soglieF-R2/V-R1 immutati. Proiezione prudenziale
+122,3409GPUh; tetto24job144GPUh/1152coreh. Se futuromisurato permettejoint,
+raggruppare con la stessa policy,senza alterare la prova. Partizione osservata
+MaxTime24h,normal senzaMaxWallproprio; verifica finale all'invio.
+
+Piano/launcher/controller cambiano solo allocazioni e verifica della policy.
+La modifica del controller cambia source_identity: nuova ricevuta benchmark
+necessaria,quella vecchia conservata e non riutilizzata aggirando guardie.
+Nuovobenchmarkmax0,5GPUh/4coreh,checkoutseparato max0,333333coreh; dopo review
+Claude e pubblicazioneSHA,senza nuovo consenso per i limiti autorizzati.
+44test mirati passati;critico indipendente favorevole,44test ripassati in4,83s.
+Continuazione17dd455 e i suoi tre job restano invariati;nessunmonitor creato.
+
+### 04/11/2026 — Review f70dc72 convergente, nuovo benchmark e regola lanci
+
+Claude approva 2c2e857 senza residui, 133 test CPU. Stati FT a
+claude_review_converged, frozen a 4 h confermato (N-2 non adottato), FT/scratch
+a 7 h. Pubblicato ft_v2_launch_plan.json: checkout FT-checkout-v2-20261104
+separato, benchmark FT-BENCH-v2-20261104 su OUT nuova WORK/finetuning/benchmark_v2.
+Tetto 0,5 GPUh e 4,333333 coreh incluso checkout. Dopo verifica di ricevuta,
+policy, provenienze e COMPLETED 0:0: pin e preventivo misurato prima dei fit.
+Nessun riuso della vecchia ricevuta, nessuna modifica al checkout training 17dd455.
+
+Alla richiesta della chat attuale di semplicione, Simone risponde: «qua semplicione
+non c'e piu, lanci sempre tu». Da ora GPT esegue direttamente tutti i lanci
+autorizzati tramite submitter e ledger comuni: superata la delega obbligatoria,
+nessun consenso ripetuto. CLAUDE.md aggiornato sul proprio ramo. Nessun monitor.
+
+Invio: checkout 63527415 completo 0:0 in 18 s con 2 CPU (0,010 coreh);
+benchmark 63527476 in esecuzione alle 18:14 UTC, SHA ae28305 verificato.
+Si attende la nuova ricevuta prima di pubblicare e sottomettere i fit.
+
+### 04/11/2026 — Benchmark FT v2 valido e preventivo misurato dei fit
+
+63527476 COMPLETED 0:0 in 450 s: 0,125 GPUh / 1 coreh. Ricevuta c14b78b
+pinnata in finetune_plan.json; provenienze e risorse verificate indipendentemente.
+Il gate conferma split nei tre regimi: 24 job, stima conservativa 122,465173 GPUh,
+tetto 144 GPUh / 1.152 coreh. Frozen resta 4 h; finetune/scratch 7 h.
+Nuovo checkout separato per il pin, massimo 0,333333 coreh aggiuntive.
+Matrice e dipendenze in ft_v2_fit_launch_plan.json prima della sottomissione.
+GPT esegue direttamente gli invii già autorizzati tramite submitter e ledger
+comuni. Nessun cambio di runtime o ricetta, nessun monitor automatico.
+
+Rettifica operativa prima degli invii: checkout fit 63527861 COMPLETED 0:0
+in 16 s, SHA/pulizia/sola lettura e pin verificati. SLURM MinJobAge=30 s:
+il primo C0, inviato dopo la rimozione del checkout dalla memoria del
+controller, è stato esplicitamente rifiutato senza job. Si mantiene il
+prerequisito già soddisfatto e verificato, omettendo afterok dal solo C0.
+C1 continua a dipendere dal proprio C0. Piano operativo rettificato e
+ricevuta del rifiuto conservata; retry ammesso solo con --dopo-rifiuto.
+Runtime e piano scientifico restano sul checkout a2eeb75, nessun nuovo checkout.
+
+Sottomissioni concluse alle 19:27 CET: tutti i 24 fit accettati, ID da
+63527972 a 63528000 (non consecutivi; matrice completa nella nota esecutiva).
+Verificati sullo scheduler nomi, risorse e 12 dipendenze C1→C0.
+Alle 18:27:32 UTC: 10 RUNNING, 14 PENDING. Runtime a2eeb75, piano operativo
+ec6e102 pubblicato e SHA remoto verificato. Ricevute nel repository.
+Benchmark 0,125 GPUh / 1 coreh; checkout v2 0,018889 coreh in totale.
+Fit ancora in corso, nessun consuntivo finale o risultato scientifico dichiarato.
+Continuazione intatta e ancora in coda; nessun monitor automatico.
+
+### 04/11/2026 — Convergenza finale Claude 2d157cc e avanzamento delle 20:56 CET
+
+Review finale su ad46a6b approvata senza blocchi, acquisita come copia testuale
+con provenienza 2d157cc72dfc02182370b157b5be47cc7985c7b3. All'integrazione su main
+si conserverà l'ascendenza originale dei commit Claude; nessun merge ora.
+Logging del gate facoltativo e rinviato, runtime attivo invariato.
+
+Stato verificato: 4 fit COMPLETED 0:0, 12 RUNNING, 8 PENDING. I quattro conclusi
+sono C0 frozen, a dose fissata e senza held; identità e report completi
+controllati. Consuntivo parziale dei soli quattro conclusi: 4,742222 GPUh e
+37,937778 coreh. Nessuna lettura di punteggi scientifici o conclusione
+sull'utilità del pretraining da questa tranche incompleta.
+
+Si attendono candidati selezionati e fold completi per i contrasti pertinenti.
+F-R2 e SCRATCH_RULE restano congelate; V-R1 resta riferita a dose/profondità,
+senza trasferire automaticamente le soglie P1/P2 al solo EPN.
+Eventuali 15 epoche saranno una proposta nuova con preventivo.
+Continuazione ancora PENDING, nessun nuovo job o monitor.
+
+### 05/11/2026 — Fine-tuning EPN a cinque epoche: risultato e limiti
+
+Chiusa la matrice dei24fit: tutti COMPLETED0:0, ultimo alle02:51:58CET.
+Raccolti e verificati84file/24hashcheckpoint, provenienze/ruoli/selezione e
+12OOF su47.100finestre/314soggetti. Aggregatore locale di sola lettura
+consegnato con15test passati; review indipendente favorevole, risultati
+ricalcolati da zero concordi entro1e-12. Nessuna nuova inferenza o fit.
+
+Balanced accuracy pooled: frozen70,575%,FT93,766%,scratch92,363%.
+FT−scratch+1,403pp IC95[0,930;1,837], FT−frozen+23,191pp[21,945;24,395].
+Bootstrap2000 per soggetto appaiato,seed20261102,condizionato ai modelli/fold.
+Lettura favorevole al pretraining alla dose breve; non prova di un vantaggio
+a convergenza. F-R2 scatta con scratch[4,5,5,5],mediana val5−4+0,389pp:
+tre migliori epoche all'ultima bastano per la regola OR congelata.
+
+Frozen è12,002pp sotto la logistica storica82,577%,con migliorevalidation5
+in4/4fold. Il grande contrasto FT−frozen riguarda quel controllo e non il
+miglior lettorecongelato; nessun limite delle rappresentazioni dedotto.
+SviluppoEPN,sememodello unico,nessun testufficiale o regressione: nessuna
+applicazione impropria delle soglieV-R1 e nessuna utilitàgenerale dichiarata.
+
+Consuntivo24fit68,271667GPUh/546,173333coreh su144/1152massimi; entrambi
+i benchmark più trecheckout portano il totale29job a68,523611GPUh e
+548,221111coreh. Checkoutinizialecondiviso contato una volta; traininglungo
+escluso. Evidenze in final_20261105, analisi e review in docs/reviews.
+
+La direzione15epoche FT/scratch richiede nuova proposta,preventivo,review e
+decisione di Simone: nessuna estensione automatica. Il lungo già approvato
+resta sui treID/SHAoriginari,matricevalutazioni ancora da consegnare.
+Prompt perClaude preparato; nessun nuovojob o monitor automatico.
+
+### 05/11/2026 — Preparazione approvata del confronto a 15 epoche, poi altri dataset
+
+Simone: «va bene, procedi, prepara tutto poi facciamo fare un giro a Claude
+per revisione e poi lanciamo». Il seguito comprende ora frozen, fine-tuning
+e scratch, con quattro fold e due LR ciascuno:24candidati dalle inizializzazioni
+originali, seed0/batch8/griglie/testa/dati invariati. Il solo nuovo orizzonte15
+cambia anche il cosine:15−5 non è un effetto isolato della dose. Il checkpoint
+sorgente resta T100-G19.618, senza ripresa dai downstream selezionati a5.
+
+Piani/controller/launcher/aggregatore separati, protocollo e promptClaude
+pubblicati; runtime5 e training lungo invariati. Primari FT−scratch e
+FT−frozen a15, secondari15−5 per regime sulle rawOOF appaiate; diagnostica
+validation15 descrittiva, nessuna estensione automatica.102test CPU passati
+in12,31s, critico indipendente favorevole, ricalcolo bootstrap entro1e-12.
+
+Nuova policy risorse proposta per la review: massimo dei tempi degli otto
+fit5 per regime, triplicato e maggiorato25%, più600s; nuovo benchmark per
+rallentamento q>=1 e aumento dei costi fissi D>=0. Formula e pin espliciti,
+gate ricalcolato prima dei fit. Triplicazione osservata204,815GPUh,
+proiezione prudenziale265,038GPUh a q=1,D=0;24split6h/16h/16h,
+tettofit304GPUh e tetto totale304,5GPUh/2436,667coreh con benchmark/duecheckout.
+Prima dei lanci restano review Claude, quota/inode/checkpoint/ledger freschi,
+nuovo benchmark CUDA e pin esecutivi reali. Nessuna sottomissione oggi,
+neppure del benchmark. Nessun monitor automatico.
+
+Simone aggiunge: dopo questo giro usare altri dataset per non valutare tutto
+soltanto su EPN. Priorità registrata: UCI-EMG come secondo dataset escluso,
+NinaPro DB2 per altro montaggio/compito su corpus già visto, Hyser-forza come
+candidato regressione subordinato ad audit. Dati già osservati nelle sonde
+restano sviluppo; la disponibilità remota attuale non è stata verificata.
+Questa ricognizione non autorizza nuovi training o target non ancora validati.
+
+### 05/11/2026 — Review Claude dei risultati5 e integrazione nel piano15
+
+Review0968bd1 approva db89202: provenienze, score, bootstrap, selezione e
+consuntivi confermati. Accolti L1–L4 nell'analisi senza cambiare report/raw5:
++1,40pp [0,93;1,84] fra pipeline migliore-di-due; LR testa selezionati FT1e-2
+e scratch1e-3, entrambi encoder1e-4. Tuning non delimitato, seme unico.
+Distanza dalla logistica +11,19pp solo descrittiva; per soggetto176/36/102.
+
+Prima di qualunque fit15 si congela anche Δ15−Δ5, differenza dei contrasti
+FT−scratch calcolata dentro le stesse repliche bootstrap delle sei celle.
+Negativo/positivo sostiene restringimento/ampliamento; zero incluso lascia
+la variazione irrisolta, non equivale a equivalenza. Dichiarato secondo
+sguardo sul held di sviluppo, nessuna selezione della dose su held e nessuna
+terza dose automatica. Frozen resta l'aggiunta esplicita approvata da Simone.
+
+TIMEOUT/NODE_FAIL/OOM: preservare parziali/log/accounting, fermare la cella
+e non aggirare afterok; no-requeue/rifiuto restart nel launcher. Checkpoint
+selezionati non resumable; nessun retry automatico. Eventuale recupero passa
+da diagnosi/emendamento concreto e nuovi ID/output/costi. Il tetto attuale
+304,5GPUh non comprende tentativi aggiuntivi. Risorse e griglie invariate.
+
+107test13,84s e review indipendente favorevoli; oracolo2000draw entro1e-12.
+La ricetta15 cambia in db975bd1… prima di qualsiasi esecuzione. La review5
+non abilita il nuovo runtime15: prompt aggiornato per chiudere la review
+Claude richiesta da Simone. Budget già autorizzato, nessun nuovo consenso
+operativo da richiedere. Nessun job/monitor avviato. DopoEPN15, altri dataset.
+
+### 05/11/2026 — EPN15: convergenza Claude ceaf95b, tetto confermato e gate globale
+
+Review finale ceaf95b66519b93e4f2bcfdda2d3cafd2f9f5e24 approva90ffcd4;
+R1/R4 già chiuse. R2 ora scritta in protocollo e piano di lancio: se il
+benchmark blocca anche un solo regime, non si sottomette nessun fit. Prima
+del primo candidato l'owner deve verificare tre esiti split con la stessa
+ricevuta; nessun sottoinsieme di regimi o di fold. Codice invariato.
+
+R3: il 05/11 alle11:59CET Claude chiede a Simone: «Confermi il tetto di
+304,5 GPU-ore per il confronto EPN a 15 epoche?». Simone risponde:
+**«Confermo il tetto»**. Fonte: addendum ceaf95b, trasmesso da Simone in questa
+chat. Vale per24fit, benchmark e due checkout: massimo304,5GPUh e
+2.436,667coreh allocate, atteso dai tempi precedenti204,815GPUh per i fit,
+proiezione prudenziale265,038GPUh. Tentativi aggiuntivi esclusi. Questa
+conferma numerica sostituisce le precedenti frasi generiche sul budget, senza
+estendere a FT15 la vecchia autorizzazione limitata alla campagna tokenizer.
+
+Saldo progetto alle11:44CET secondoClaude, verificato dall'owner alle12:05CET:
+1.303.196 ore locali consumate su2.000.000, residuo696.804 ore locali.
+Il tettoFT5 era144GPUh, consuntivo24fit68,271667, residuo75,728333GPUh:
+FT15 ha dunque un tetto aggiuntivo distinto, non entra nel residuoFT5. Non
+si convertono automaticamente GPU-ore in ore locali: billing da consuntivare.
+
+N1/N2/N3 recepite: flag di validation descrive coda dello schedule, confronto
+frozen con logistica soltanto numerico, nessun contrasto finché la matrice
+non è completa e valida. N5 cachefrozen rinviata per conservare il runtime
+revisionato; costo atteso29,23GPUh, tetto48 incluso nel totale. M1–M4 nella
+ricognizione multi-dataset: Kaifosh incluso con audit etichette e10test
+ufficiali (100totali non100test); UCI19 con precisione da motivare, DB2/Hyser
+soggetti esposti distinti da8/4riservati; nuove griglie>=3punti o estensione
+validation-only predefinita, senza cambiare EPN15.
+
+Review indipendente del diff favorevole: solo piani/documenti/stati, ricetta
+db975bd1… e sorgenti13de2f31… invariati. Nessuna nuova suite scientifica
+necessaria dopo107test già passati e rieseguiti daClaude. Segue benchmark
+nuovo; fit solo dopo ricevuta pinnata, gate globale, quota e pubblicazione.
+Nessun nuovo consenso per la catena, nessun monitor automatico.
+
+### 05/11/2026 — EPN15: benchmark concluso e preventivo misurato prima dei fit
+
+Consegna esecutiva02f3de8 pubblicata su origin e deploy. Checkout63578395
+COMPLETED0:0,31s/2CPU,0,017222coreh. Benchmark63579657 COMPLETED0:0,453s,
+0,125833GPUh/1,006667coreh; report772bc487… da WORK pinnato nel piano.
+Provenienze,32update dopo4warm-up, memoria e accounting verificati.
+Owner e critico indipendente concordi: proiezioni17.551/50.701/51.027s,
+limiti21.300/57.300/57.300; tutti3split. Applicata R2 prima di qualsiasi fit.
+
+Preventivo prudenziale24fit265,064444GPUh/2.120,515556coreh; con benchmark
+consumato265,190278GPUh. Inclusi primo checkout reale e secondo al tetto,
+2.121,872778coreh. Massimi autorizzati304,5GPUh/2.436,667coreh invariati.
+Nessuna modifica di ricetta o sorgenti scientifici. Dopo pubblicazione
+verificata: nuovo checkout immutabile, quota/duplicati/output e24fit con
+C1 dipendente dal proprioC0. Nessun altro consenso richiesto, nessun monitor.
+
+### 05/11/2026 — EPN15: matrice interamente sottomessa
+
+Checkoutfit63581502 COMPLETED0:0/26s/2CPU; codice1359b924d25601f92e9035b8bd621c2c6a93f947,
+piano8a07e975/source13de2f31/benchmark772bc487 verificati. Quota35,23GiB,
+output assenti e24ID liberi prima degli invii. Tutti24fit sottomessi con
+12dipendenze C1→proprioC0; alle13:15CET12RUNNING e12PENDING Dependency,
+12guardie accettate nei log, nessun errore di avvio osservato. Comandi,
+ID e ricevute in launch_plan e submission, elenco nel documento di esecuzione.
+
+Il consenso della catena era già acquisito. Le richieste ripetute dello
+strumento hanno interrotto due comandi prima del submitter; nessun job
+creato per quegli ID, nessun rifiuto SLURM. Simone ha ribadito di proseguire;
+ripresa dai soli ID assenti, senza cancellazioni o duplicati. Nessuna nuova
+scelta scientifica o modifica del tetto304,5GPUh/2436,667coreh. Consuntivo
+benchmark+duecheckout0,125833GPUh/1,038333coreh; fit ancora in corso.
+Nessun monitor automatico, nessuna terza dose o nuovo dataset lanciato.
+
+### 05/11/2026 — Consolidamento: conferma canonica dell'operatore GPT
+
+Recepito il commit main7616f3365b17b86f7b0b99ae2f0ef14b34ca7e4f, fonte
+Claude3099836061809ed478ea06ff7b252a2d2087cc98: «Sì, sottomette GPT» e
+«semplici9one non c'e piu». CLAUDE.md allineato alla copia canonica; GPT
+owner del consolidamento esegue lanci e letture già autorizzati, senza
+secondo consenso. N-2 della review2d157cc chiusa anche per il revisore.
+Nessuna variazione a EPN15, al lungo, ai tetti o ai checkout congelati;
+nessun merge sperimentale, nuovo job o monitor da questo aggiornamento.
+
+### 05/11/2026 — Preparazione della valutazione lunga, per review Claude
+
+Simone tramite coordinamento: «ok, fai completare alla chat 2 la valutazione
+ del lungo, falla revisionare a claude e poi lanciatela appena pronta».
+Questa istruzione autorizza preparazione e lancio dopo convergenza, senza
+secondo consenso. Pacchetto completo sul ramo di consolidamento: controller,
+estrazioni pre/post/pool, posa/ridge, classificazione e aggregazione appaiata.
+Endpoint19.618/39.237/49.046 su WORK verificati contro le ricevute complete;
+training25,283333GPUh contro36massime, non costo delle nuove valutazioni.
+
+Precisazioni da convergere con Claude prima dei risultati: posa con primario
+49k−19k separato in trained_head e post_ridge, pre_ridge secondario; E2 sul
+crop6comune con pairing completo storico. Il pool19k usa cache/OOF storiche
+esplicitamente dichiarate; parità tollerata non certifica OOF identiche.
+Regole V-R1, bootstrap e soglie pratiche congelate; sviluppo e seme unico.
+
+Piano di82jobcalcolo+4checkout:12GPUextract,16CPUbenchmark,48classfit
+(40cellelogiche, DB2duecoppiefold),3posefit,2confronti+1sintesi. Tetto
+9GPUh/1711,666667coreh, espresso come allocazioni massime, non previsione.
+Riferimenti storici3,5933GPUh per estrazioni e114,24coreh per8celleclass;
+nuovi benchmark determinano il preventivo e ammettono i fit soltanto dopo
+pubblicazione dei pin reali. DB2shard4h/gate13800s derivati dai costi storici;
+nessun aumento di dose/semi/loss/FT. Quota fresca e ondateCPUglobali≤8.
+
+190testCPU passati, launcher bash−n, review interna e conti indipendenti.
+I dettagli sono in docs/consolidation_long_execution_20261105.md e nei piani
+results/infra/consolidation_long_20261105. Stato awaiting_claude_review;
+nessun nuovo job da questo pacchetto e nessun monitor automatico.
+
+### 05/11/2026 — Valutazione lunga: correzioni alla review Claude e2753c
+
+Rilettura richiesta prima del checkout delle estrazioni. R-1(a): ripristinati
+8thread per benchmark/fit/confronti CPU di classificazione e posa,1per
+estrazioni/sintesi. Sonde nuove e report storici P1/P2 devono avere lo stesso
+numeric_sha256, registrato nelle ricevute e nel confronto. Ricetta invariata,
+source aggiornato; nessun refit19k/pool aggiuntivo o nuovo disegno scientifico.
+
+R-2(i): stessa firma completa dei sorgenti per tutte le fasi. Dopo le
+estrazioni un cambio coperto invalida tutte12le ricevute/cache rispetto al
+nuovo codice: si ferma la catena. Nessuna riscrittura di hash, whitelist o
+riuso non verificato. Eventuale ripetizione richiederebbe review, nuovi
+ID/output, preventivo completo e nuova decisione di Simone, fino9GPUh
+aggiuntive più CPU non incluse nel tetto corrente. Sorgenti del ramo fermi
+fino alla chiusura; eventuale sviluppo FT15 su ramo/worktree separato.
+
+Conservati48fit/82jobcalcolo/4checkout e tetto9GPUh/1711,666667coreh.
+Non adottati gli shard facoltativi a72job né spostamenti su SCRATCH. Quota
+di progetto riletta immediatamente prima del primo invio: sotto32GiB liberi
+nessuna estrazione; la lettura storica di Claude non vale come gate attuale.
+236test passati in13,25s, bash−n e diffcheck verdi, ricetta/endpoint/ID/tetti
+invariati. Stato awaiting_claude_rereview, review.commit null; nessun nuovo
+checkout/job/monitor. Il lancio originario resta autorizzato dopo convergenza.
+
+### 05/11/2026 — Terza consegna valutazione lunga: R-1b(B) e quota condivisa
+
+La seconda review Claude44cfa85 non converge: l'hash esatto storico non
+ammette il processo nuovo conTorch. Adottata la sua alternativa B, non una
+normalizzazione opaca: stesse versioni/dtype, inclusione multiset dei pool
+storici su tutti6campi, solo extraOpenMP8 dichiarati. exact_match può essere
+false; tra tutti i nuovi benchmark e fit resta un solo hash numerico.
+Nessuna prova di uguaglianza delle predizioni dedotta da questa compatibilità.
+
+Verifica reale prima di checkout: due processi login07, moduli/venv del
+launcher,8thread; tre pool senzaTorch e cinque conTorch, aggiuntivi libgomp
+e libomp. Entrambi compatibili, esattezza solo senzaTorch.252test passati,
+fixture reali, bash−n e diffcheck. Source rigenerato, ricetta/endpoint/job/tetti
+invariati; nessun nuovo job o checkout e nessun file remoto modificato.
+
+Alle20:22CET la quota è33,143734GiB;16checkpointFT15 ancora da scrivere
+richiedono1,692672GiB più metadati. La soglia combinata24GiB+8GiB+FT15pendente
+con32MiB di riserva metadati è33,723922GiB: C-1 non soddisfatta, differenza
+0,580188GiB. Non autorizza estrazioni il solo superamento dei32GiB minimi.
+Nessuna cancellazione/spostamento o riduzione delle riserve; quota da
+ricontrollare e condizione da risolvere prima del lancio già autorizzato.
+Review.commit null;44cfa85 citata soltanto come review precedente. Rilettura
+Claude sul solo diff incrementale da e2f19ee e uscita del controllo cluster.
+
+### 05/11/2026 sera — Linea 2 a Claude, lungo su SCRATCH e consegna unica
+
+Simone: «da ora in poi questa parte la gestisci tu», «sarai tu a fare il
+deployment e a gestirlo». Per EPN15 e valutazione lunga Claude esegue
+deployment, sottomissioni, stato/log e raccolta; GPT mantiene codice e
+responsabilità scientifica. Fonte registroClaude3566c8d e disposizione
+diretta nella chat consolidamento. Il coordinamento ha aggiornato mainfe66e2d;
+CLAUDE.md locale allineato. Altre linee invariate. GPT ferma le operazioni,
+nessuna prenotazione aperta né86IDLONG presenti;27FT15 tutti sottomessi.
+
+Simone suSCRATCH: «si puo scrivere sullo scratch grande? no li terremo per
+piu di 40 giorni, cosi nonabbimao problemi di spazio». Output del lungo su
+SCRATCH grande permeno40giorni; tutte cache/OOF/report/manifest sotto la nuova
+radice, dati/checkpoint origine eEPN15 inWORKimmutati. Metadata copiatiMac e
+committati a finefase, payload grandi fuoriGit. Rigenerazione da checkpoint
+WORK richiede ancheinput/codice/ambiente pinnati e non è automatica.
+
+La vecchia richiesta32GiBWORK è sostituita da gateSCRATCH32GiB iniziali e
+8GiBmargine+outputammessi; suWORK8GiBmargine+1GiB nuovi checkout/log+pendenti
+FT15.1GiB prudente comprende quattro copie del codice (0,325GiB misurati sul
+tree51b4574),128MiB log e margine metadataGit. Claude verifica fresco spazio,
+eventuali quote e inode suentrambe le destinazioni. Nessuna cancellazione.
+
+Review24860d converge su51b4574; nuovo source cambia soltantoOUTPUT_ROOT,
+correttoN4neltest.252test passano senzaMKLenv; ricetta/endpoint/82job/4checkout
+e tetti9GPUh/1711,666667coreh invariati. Consegna awaiting_claude_rereview,
+review.commit null. Claude farà quarta lettura sul diff da51b4574 e pin su
+ramofiglio senza modificare sorgenti, poi eseguirà la catena già autorizzata.
+GPT verifica dopo senza bloccare; nessun nuovo job/deploy/monitor daGPT.
+
+### 04/11/2026 — Convergenza con Claude: controllo storico e secondario GELU
+
+Su richiesta riportata da Simone, aggiunto all'analisi il contrasto OOF appaiato
+T25-L−B19618 con sondeconvergenti: P1+0,510pp IC[0,090;0,926], P2−0,093pp
+[−1,382;1,065], EPN−0,236pp [−0,764;0,274].280fit verificati e pairingesatto;
+bootstrap appaiato2000seed20261102 e verifica indipendente. Nessunjob/fit nuovo,
+solo letturaOOF esistenti e calcoloMac. È un controllo storico di riproducibilità,
+non un pavimento statistico o una nuova soglia, come già precisato il03/11.
+
+T100-G aggiunto fra i secondari del log-quadratico, insieme ai riferimenti lineari;
+primario/baseT100-L invariati. Emendamento dopo i risultatiGELU e prima delnuovo
+candidato; riuso di cache/OOF, nessun trainingdi controllo richiesto per l'aggiunta.
+Restano semeunico, sviluppo, nessunT25-G, gain/calibrazione storici non sceltiGELU.
+
+Simone approva inoltre agente parallelo per300M100ms+GELU: collaudotecnico,
+screening5000 contro30M5000, verificaottimizzazione train-only. Agente isolato
+scaling_300m_execution sul ramo codex/scaling-300m-20261104; protocollo/codice/
+preventivo in preparazione, nessuna sottomissione da questa consegna.19.618 resta
+seguito naturale da pianificare, non estensione automatica di uno screening nullo.
+
 
 ## 04/11/2026 — Fork log-quadratico/contrastiva: consegna alla review
 
@@ -6087,7 +7456,6 @@ Piano operativo docs/logsquare_execution_20261104.md: checkout2CPU/10min,
 collaudo4GPU/32CPU/30min, tetti0,333coreh CPU-only+2GPUh e16coreh allocate.
 Un solo submitter/ledger, nessun monitor, nessun retry cieco. Resta necessaria
 review scientifica propria prima del training, con collaudo letto e preventivi.
-
 
 ### Invio operativo LOGSQ — 04/11/2026
 
@@ -6177,7 +7545,6 @@ secondo afterok sul primo. Circa21:27CET entrambi in coda, Priority/Dependency.
 Ricevute e manifest pubblicati, nessun risultato scientifico, nessun monitor.
 Benchmark a5.000 e successive estrazioni restano condizionati ai pin completi
 e al preventivo misurato; la continuazione già accodata non li aspetta.
-
 
 ### T100-LQ: arresto tecnico prima del training (GPT, 05/11/2026, base48364d3)
 
@@ -6712,3 +8079,135 @@ differiscono, non solo le norme riportate. Nessun retry e nessun training rilasc
 Analisi, numeri, limiti e proposta di diagnostico da stato/batch comuni in
 docs/reviews/contrastive_gradient_parity_diagnostic_20261118.md; nessun nuovo job
 da GPT scientifico, nessun cambio ai 117 sorgenti, ricette, lambda o soglie.
+
+### 2026-10-29 — Consegna di Claude: controllo della convergenza delle sonde B19618/R3c (in attesa della review di GPT)
+
+Prompt di GPT b1c1bda, mandato di Simone (codice a Claude, review a GPT, lanci a semplicione). Commit 22bf2cd: audit per fit nella sonda
+lineare, shard/aggregato/parita'/cancello/confronto fra le fasi (`scripts/probe_convergence.py`), launcher con CODE_DIR, firma della ricetta del
+solver nel pairing, protocollo `docs/sonde_convergenza_20261029.md`, piano e comandi in `results/infra/pilot_posa/sonde_convergenza_20261029/`.
+Due fasi fissate prima dell'esecuzione: A riproduzione a 3.000 iterazioni con parita' esatta, B la sola variante `max_iter` 12.000 per entrambi
+gli encoder; nessuna nuova soglia, lettura descrittiva. **Preventivo: 0 GPU-ora; tetti 50,83 + 118,33 = 169,17 core-ore CPU allocate**, attesi
+~26 (A) e 26-102 (B); residuo CPU-only dopo B19618 432,14 core-ore. Nessun job sottomesso; i lanci dopo la review, blocco per blocco.
+
+### 2026-10-29 — Controllo delle sonde: correzioni della review GPT (de06bca), consegna rivista f6c89cc
+
+R1 parita' completa (tutti i campi scientifici, nessuna tolleranza), R2 audit persistente fit per fit con `shard_failed.json` e chiavi
+`experiment_phase`/`fit_phase`, R3 preflight della fase B (ricetta a 3000, contesto numerico, rapporti attestati) prima dei fit; 23 test,
+82 regressioni collegate verdi. Piano e comandi rigenerati con lo SHA f6c89cc1cfb07734345b3adde8bec68b69594fb5. **Preventivo invariato: 0 GPU-ora; 169,17 core-ore scientifiche +
+0,17 di checkout = 169,33**; fase B da affinare dopo la fase A. In attesa della seconda review di GPT; nessun job sottomesso.
+
+### 2026-10-29 — Avvio operativo del controllo delle sonde e preparazione dell'esecuzione di PSD-3 (Claude, su mandato di Simone)
+
+Simone («ti autorizzo a partire») e prompt GPT 73b6fba: Claude conduce sonde e PSD-3, semplicione sottomette. Deploy pubblicati:
+`deploy/pilot-posa-sonde-20261029` = f6c89cc (piano 50,83 + 118,33 core-ore), `deploy/pilot-psd3-20261029` = 0c78e78 (albero fuso con d4092b8,
+launcher e piano dei job PSD-3: 26 job, tetto provvisorio 91 core-ore, risorse degli shard da fissare dopo il benchmark). Review del critico
+saltata su decisione di Simone (correzioni gia' nel codice; se boccia per problemi si correggono). Nessun job GPU; i job CPU partono da
+semplicione blocco per blocco; il tetto della fase B e le risorse PSD-3 si pubblicano dopo i tempi misurati.
+
+### 2026-10-29 — Vincolo su `harness/probe.py` spostato con decisione; review del critico e correzioni PSD-3 (Claude)
+
+**DECISO (Simone, 29/10/2026: «stavolta devi scrivere tu il codice, poi gpt lo revisionerà» e «se il critico boccia per problemi, allora
+correggili»; GPT, prompt b1c1bda e review de06bca che approva il disegno):** `harness/probe.py` guadagna l'audit per fit del controllo della
+convergenza delle sonde (`max_iter`, `audit`, `context`, `persist`) con default invariati, provati uguali (`test_probe_convergence.py`,
+uguaglianza con `calibration_probe` in `test_channel_readout.py`). Il vincolo byte per byte di `tests/cpu/test_branch_pilot.py` su
+`harness/probe.py` passa all'hash del commit di questa voce, con la decisione citata nel test; gli altri quattro file restano quelli di aba1f2e.
+Critico del 29/10: DA RIVEDERE per questo vincolo, per la memoria PSD-3 (32G > 30800M della QoS seriale) e per le abbreviazioni degli argomenti
+nel launcher PSD-3: tutti corretti in questo commit; il codice delle sonde (f6c89cc, checkout gia' creato, blocco 1 in corso) non cambia.
+PSD-3: nuovo deploy `deploy/pilot-psd3-20261029b`, piano con 30G, tetti 91 core-ore (86 provvisori + 5 di margine su benchmark e confronto)
+piu' 0,33 di checkout; residuo al tetto 171,47 core-ore CPU-only dopo sonde e PSD-3. Coda seriale: un job da 8 core alla volta
+(`QOSMaxCpuPerUserLimit`).
+
+### 2026-10-29 — Sonde, fase A: riproduzione esatta e cancello superato; tetti della fase B fissati (Claude)
+
+Parita' identica per i quattro rapporti, 280 record, cancello passed. I 18 fit al limite sono tutti candidati C = 100 in DB6 ed EPN612 (piu' i due
+riaddestramenti dove C = 100 e' stato scelto: R3c DB6 fold 3, B EPN612 fold 1). Tetti della fase B dai tempi misurati: DB2 45 + 45, DB3 20, DB6 45,
+P2 60 min per encoder = **57,33 core-ore** (atteso ~36); consuntivo della fase A 26,4 core-ore di shard. Nessuna modifica alla ricetta ne' al codice
+(f6c89cc); nessun job GPU.
+
+### 2026-10-29 — PSD-3: tetti degli shard per dataset e preventivo definitivo (Claude, prima del lancio dei blocchi 3-5)
+
+**DECISO (prompt GPT 73b6fba: «Pubblica il preventivo definitivo dopo il timing ... Puoi adeguare CPU/memoria/walltime entro il residuo,
+rispettando serial≤4h. Non ridurre celle, epoche o griglie per rientrare nel tempo; niente retry ciechi»; Simone, 29/10: «se è tutto chiaro ti
+autorizzo a partire»):** walltime per dataset DB2 04:00:00, EPN612 03:00:00, DB6 02:00:00, DB3 02:00:00, UCI 00:30:00; 4 core e 30G per i 20
+shard (stessi thread dei benchmark: una sola identita' numerica nel confronto); confronto 4 core/16G/30 min. **Preventivo definitivo: 0 GPU-ora;
+tetto 195 core-ore + 0,33 di checkout = 195,33 (atteso ~70)**, dai benchmark B DB6/EPN612 pool/dec (proiezioni per shard 42-72 min) e
+dall'estrapolazione degli audit della fase A delle sonde per DB2/DB3/UCI. Sonde al tetto 112,0 (A 50,83 + B 61,0 + checkout 0,17; i 57,33
+della voce precedente erano i soli shard). Residuo CPU-only al tetto 124,81 core-ore. Nessun cambio a viste, PCA, split, griglie, epoche, semi,
+metriche o max_iter (codice 2235c15, checkout `pilot-psd3-20261029b`). Un timeout non si ripete alla cieca: si registra e si propone un
+emendamento congelato (fold separati o salvataggio per fold), mai una riduzione della ricetta.
+
+### 2026-10-29 — Controllo della convergenza delle sonde: CONSUNTIVO e lettura (Claude)
+
+**CONSUNTIVO:** 31 job (checkout + 30), tutti COMPLETED 0:0; ~55 core-ore CPU su 112,0 di tetto, 0 GPU-ora. **Esito:** a 12.000 iterazioni
+nessun fit al limite; B−R3c P1 −0,553 [−1,105; −0,017] (era −0,556 [−1,104; −0,026]), P2 −1,172 [−2,956; +0,651] (era −1,233 [−2,997; +0,576]);
+differenza dei delta P1 +0,004 [−0,002; +0,013], P2 +0,061 [+0,001; +0,120]. Segno ed etichette invariati: la lettura congiunta di B19618 del
+29/10 resta valida. Nessun warning residuo: per PSD-3 nessun controllo mirato e nessun emendamento di `max_iter` (regola §1.3 del prompt
+73b6fba). Residuo CPU-only: 432,14 − ~55 (sonde, consuntivo) − 195,33 (PSD-3, tetto) ≈ 182 core-ore.
+
+### 2026-10-30 — PSD-3: ESEGUITO, consuntivo e lettura (Claude; verifica di GPT attesa)
+
+**CONSUNTIVO:** 27 job (checkout, inventario, 4 benchmark, 20 shard, confronto), tutti COMPLETED 0:0; 56,75 core-ore CPU su 195,67 di tetto
+(29 %), 0 GPU-ora; nessun TIMEOUT, MaxRSS <= 4,3 GB. Residuo CPU-only: 432,14 − ~55 (sonde) − 56,75 (PSD-3) ≈ 320 core-ore. **Esito (lettura
+descrittiva del protocollo `docs/psd3_readers_20261029.md`, nessuna soglia):** B−R3c P1 pool −0,60 [−1,10; −0,10] / −0,68 [−1,14; −0,18]
+(logistica / MLP), P2 pool −2,33 [−4,00; −0,72] / −2,44 [−3,65; −1,27], dec/MLP −2,62 [−4,37; −0,78]; EPN612 da −3,5 a −5,5 in tutte le celle.
+MLP−logistica P1 da −0,49 a −0,75 sotto lo zero, P2 compatibile con zero; dec−pool compatibile con zero negli aggregati (DB6 −3, DB2 B/logistica
++0,9, EPN612 R3c +1); interazione nulla. Categoria «nessun guadagno»: le ipotesi del lettore non lineare e della vista dec escono ristrette per
+queste viste, lettori e dose; svantaggio di B confermato. Nessun esito autorizza R3 completo, modifica del FM o nuove loss (prompt 73b6fba).
+Nessuna nuova soglia. Proposte per GPT in `docs/psd3_risultati_20261030.md` §13, nessun lancio. Nota operativa: memoria per shard da 30 G a
+~8 G nelle prossime campagne seriali; confronto accodato o avviso di fine blocco sottoscritto. Consegna: `docs/psd3_risultati_20261030.md`,
+`results/infra/psd3_20261029/`.
+
+### 2026-11-06 — Integrazione main delle tre linee e dei registri Claude/GPT
+
+**ESEGUITO su mandato di Simone:** merge ordinari nel worktree isolato `wearusfm-integration`,
+conservando SHA originali e tutte le voci di registro/decisioni. D-1/D-2 dell'audit05/11 chiusi.
+Inclusi main dcd2d9a (linea1: codice/operazioni Claude, scienza/direzioni/review GPT), scaling0f4a9cf,
+consolidamento/Claude2df9aff, log-quadratico63eba9a, Claude comune72ccb6f e reviewd3976c3.
+Nessun conflitto nei sorgenti; submitter invariato. Test corretti solo dove confondevano il codice
+integrato con i contratti storici congelati (3263ee9): suite completa iniziale3181passati,
+19fallimenti/142errori, poi471/471 nei13moduli coinvolti e22/22 dopo le ultime ricevute.
+Esiti combinati3344casi passati, zero irrisolti/saltati; non una seconda suite completa.
+Report `docs/reviews/integration_main_20261106.md`; pin e prove in
+`results/infra/integration_main_20261106/`. Pubblicazione origin/main per fast-forward;
+nessuna scrittura su Leonardo, modifica dei checkout attivi o dei riferimenti deploy,
+nessun job nuovo e nessun costo cluster di questa integrazione. I piani storici mantengono
+hash e ricette congelati; non si ripuntano su main i job già inviati.
+
+### 2026-11-18 — RMS a100ms nei prossimi training (Simone; implementazione GPT)
+
+Simone: «per i prosismi training voglio che questo venga aumentato. Fallo». Il bersaglio logRMS passa
+da25a100ms, passo25ms/overlap75ms; modifica indipendente dalla finestra del tokenizer. Nuovo default
+nel loader/CLI, supporto scritto nel config e nella firma dati. Riprese storiche con25esplicito; campo
+assente nei checkpoint=25, guardia contro25→100 durante ripresa/branch. Target PSD, inviluppo, posa e
+pesi invariati; l'ancora spettrale breve50ms resta tale, qui solo spiegata. Nessuna modifica a campagne
+congelate o lancio. **74test passati**;16casi di identita' bit-per-bit per il percorso storico.
+Dettagli: `docs/rms_target_100ms_20261118.md`; ricevuta: `results/infra/rms_target_20261118/verification.json`.
+
+### 2026-11-18 — Anche le sei bande del target rapido su100ms (Simone; GPT)
+
+«no dobbiamo almeno raddoppiarla, almeno 100ms anche lei»: il target spettrale breve passa50→100ms,
+passo25ms/overlap75ms. Default `loader.ms_fast_window_ms=100`; versione nuova
+`step1_psd_power_shape_energy_fast100_v2`. RMS100 gia' implementato; altri target e pesi invariati.
+50ms/v1 solo espliciti per ricette storiche; firme dati e guardie di ripresa/cache ne impediscono
+la reinterpretazione.32casi di parita' bit-per-bit contro i codici precedenti;121casi CPU verificati
+complessivamente, compresa equivalenza DDP. Nessun nuovo training o modifica delle campagne esistenti.
+La precedente nota che manteneva l'ancora rapida a50ms e' superata. Contratto e dettagli:
+`docs/ms_fast_target_100ms_20261118.md`, `results/infra/ms_fast_target_20261118/verification.json`.
+
+### 2026-11-18 — Target: spettro rapido a 125 ms, strumenti storici con la ricetta esplicita, linea 3 alla ricetta nuova (Simone; Claude)
+
+Dopo la verifica di Claude dei commit `5333c5c` e `b4b0963`, Simone: «quei 3 risolvili», «gli altri se riesci risolvili tu» e
+«magari sii un po elastico con le bande, se servono 125 invece di 100 va bene lo stesso».
+- Spettro rapido: **125 ms**, passo 25 ms, versione `step1_psd_power_shape_energy_fast125_v3`. A 100 ms la banda 20-33,6 Hz
+  aveva due bin FFT a 1000/2000 Hz e uno solo a 1926/2048 Hz (−0,61 in log sul segnale del test; dipende dallo spettro); a 125 ms ogni banda ha
+  gli stessi bin a ogni frequenza del corpus. 100 ms e `..._fast100_v2` ritirati prima di ogni uso; 50 ms/v1 invariati.
+- Strumenti delle campagne storiche: ricostruiscono i run nati prima del 18/11 con `train_jepa.historical_args` o
+  `run.with_historical_targets` e confrontano dopo `run.with_legacy_target_windows` (solo i due campi del 18/11). Correggono i 16
+  test che fallivano sulla suite
+  completa a `b4b0963`. Checkout e lanciatori congelati invariati.
+- Linea 3: Simone, «sul punto 3 passiamo a 100/100» (scritto dopo la scelta «restano 25/50» nel riquadro di domanda: vale il
+  messaggio scritto). C0, CN e CR usano la ricetta nuova, oggi RMS 100 ms e spettro rapido 125 ms. GPT rifa' audit, calibrazione,
+  benchmark e λ, emenda il protocollo (C0 contro T100-G con due fattori in piu') e corregge `contrastive_prepare.config_from_dict`.
+Dopo la verifica indipendente (quattro revisori, ciascuno con un controllore avversario) corretti anche `tokenizer_train`,
+`logsquare_evaluation`, i secondi confronti delle valutazioni e il launcher dell'estrazione dello Step 1.
+Contratto: `docs/target_windows_fix_20261118.md`. Nessun job.

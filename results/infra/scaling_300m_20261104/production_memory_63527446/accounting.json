@@ -1,0 +1,37 @@
+{
+  "protocol": "scaling-s3-accounting-20261104-v1",
+  "job_id": "63527446",
+  "sacct_rows": [
+    {
+      "JobIDRaw": "63527446",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": 1619,
+      "AllocCPUS": 32,
+      "AllocTRES": "billing=32,cpu=32,gres/gpu=4,mem=480G,node=1",
+      "NNodes": 1,
+      "MaxRSS": ""
+    },
+    {
+      "JobIDRaw": "63527446.batch",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": 1619,
+      "AllocCPUS": 32,
+      "AllocTRES": "cpu=32,gres/gpu=4,mem=480G,node=1",
+      "NNodes": 1,
+      "MaxRSS": "57005816K"
+    },
+    {
+      "JobIDRaw": "63527446.extern",
+      "State": "COMPLETED",
+      "ExitCode": "0:0",
+      "ElapsedRaw": 1619,
+      "AllocCPUS": 32,
+      "AllocTRES": "billing=32,cpu=32,gres/gpu=4,mem=480G,node=1",
+      "NNodes": 1,
+      "MaxRSS": ""
+    }
+  ],
+  "collected_at_utc": "2026-11-04T20:25:59.025757+00:00"
+}

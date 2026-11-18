@@ -1,0 +1,44 @@
+{
+ "id": "CONSOL-checkout-20261104",
+ "creato": "2026-11-04T18:25:40+01:00",
+ "agente": "gpt",
+ "campagna": "consolidation-20261104",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "17dd455f8d40d5430f87c2154c571a2f9e683baa",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONSOL-checkout-20261104",
+  "--comment=wearusfm:CONSOL-checkout-20261104",
+  "--export=ALL,CAMPAIGN=consolidation-20261104,CAMPAIGN_SHA=17dd455f8d40d5430f87c2154c571a2f9e683baa,EXPECTED_SHA=17dd455f8d40d5430f87c2154c571a2f9e683baa",
+  "--cpus-per-task=1",
+  "--mem=2G",
+  "--time=00:10:00"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/campaign_checkout.sbatch",
+ "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-04T18:25:40+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-04T18:25:40+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-04T18:25:41+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 63525708,
+   "uscita": 0,
+   "stdout": "63525708\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 63525708,
+ "uscita": 0,
+ "stdout": "63525708\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

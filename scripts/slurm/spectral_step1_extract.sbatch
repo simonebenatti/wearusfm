@@ -45,5 +45,6 @@ python scripts/spectral_step1.py extract \
   --manifest "$MANIFEST" --root "$WORK/data/processed" --root "$SCRATCH/data/processed" \
   --datasets emg2qwerty --seed 0 --splits "$SPLITS" --scales "$SCALES" \
   --window-seconds "$WINDOW_SECONDS" --windows-per-subject 100 \
-  --checkpoint "$CKPT" --which teacher --device cuda --out "$OUT"
+  --checkpoint "$CKPT" --which teacher --device cuda --out "$OUT" \
+  --rms-window-ms 25 --ms-fast-window-ms 50  # protocollo Step 1 A/B storico (step1_ab: ricetta 25/50), review di Claude del 18/11
 sha256sum "$OUT"

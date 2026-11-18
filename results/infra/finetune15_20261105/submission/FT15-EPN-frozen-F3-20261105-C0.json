@@ -1,0 +1,63 @@
+{
+  "id": "FT15-EPN-frozen-F3-20261105-C0",
+  "creato": "2026-11-05T13:01:25+01:00",
+  "agente": "gpt",
+  "campagna": "finetune15-20261105",
+  "gpu_ore_stimate": 6.0,
+  "codice_sha": "1359b924d25601f92e9035b8bd621c2c6a93f947",
+  "sbatch": [
+    "sbatch",
+    "--parsable",
+    "--job-name=FT15-EPN-frozen-F3-20261105-C0",
+    "--comment=wearusfm:FT15-EPN-frozen-F3-20261105-C0",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/finetune15-fits-20261105,EXPECTED_SHA=1359b924d25601f92e9035b8bd621c2c6a93f947",
+    "--qos=normal",
+    "--nodes=1",
+    "--ntasks=1",
+    "--gres=gpu:1",
+    "--cpus-per-task=8",
+    "--mem=100G",
+    "--time=06:00:00",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/finetune15-fits-20261105/scripts/slurm/consolidation_finetune15.sbatch",
+    "fit",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/finetune15_20261105/epn/fold3/frozen/candidate0",
+    "3",
+    "frozen",
+    "0"
+  ],
+  "dopo": null,
+  "script_stdin": null,
+  "script_stdin_sha256": null,
+  "stato": "sottomesso",
+  "storia": [
+    {
+      "quando": "2026-11-05T13:01:25+01:00",
+      "stato": "prenotato"
+    },
+    {
+      "quando": "2026-11-05T13:01:25+01:00",
+      "stato": "in_sottomissione"
+    },
+    {
+      "quando": "2026-11-05T13:01:28+01:00",
+      "stato": "sottomesso",
+      "job_slurm": 63581682,
+      "uscita": 0,
+      "stdout": "63581682\n",
+      "stderr": "[SSH public certificate announcement omitted]\n** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+    }
+  ],
+  "job_slurm": 63581682,
+  "uscita": 0,
+  "stdout": "63581682\n",
+  "stderr": "[SSH public certificate announcement omitted]\n** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n",
+  "publication_provenance": {
+    "canonical_local_path": "/Users/simonebenatti/wearusfm_local/jobs/FT15-EPN-frozen-F3-20261105-C0/state.json",
+    "canonical_sha256": "391945a55beb8bccf66b011cf039f4aa22c4b9de945861b2c5d5ea82045c763e",
+    "redacted_fields": [
+      "/storia/2/stderr",
+      "/stderr"
+    ],
+    "redaction": "Public SSH certificate announcement omitted; canonical ledger unchanged."
+  }
+}

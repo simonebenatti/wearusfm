@@ -295,6 +295,7 @@ def _true_config_json(lr, seed=0, extra=""):
     run = W.resolve(plan)[0]
     argv = ["--preset", "sanity", "--manifest", "m.json.gz", "--root", "r", "--scales", str(_TMP / "ws.json"), "--out-dir", str(_TMP / "out"),
             "--num-workers", "6", "--max-steps", str(STEPS), "--time-limit-s", "60"] + shlex.split(W.extra_args(plan, run))
+    argv = TJ.historical_args(argv)  # run di un piano storico (finestra 1): il trainer di allora aveva i target 25/50
     captured = {}
     orig = TJ.R.train, TJ.R.check_input_files
     try:

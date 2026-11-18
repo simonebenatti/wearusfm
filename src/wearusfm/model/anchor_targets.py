@@ -6,9 +6,10 @@ centrate sul centro della patch; un target la cui finestra esce dal segnale non 
 
 | Target | Finestra (proposta di AG) | v10 §6.3 |
 |---|---|---|
-| log RMS | 25 ms = la patch | 20-50 ms; la patch stessa evita che il target guardi le patch vicine, magari visibili |
+| log RMS | 100 ms, passo 25 ms (Simone, 18/11/2026) | 25 ms conservati solo per riprese/controlli storici espliciti |
 | forma spettrale: log della frazione di potenza in 5 bande | 200 ms (8 patch, la griglia RVQ) | >= 100-250 ms, risoluzione 4-10 Hz (qui 5 Hz) |
 | log inviluppo (RMS su finestra lunga) | 500 ms | «finestre piu' lunghe», contesto di attivazione |
+| log-potenze multiscala: 6 bande rapide / 24 lente | 125 / 500 ms | rapida da 50 a 125 ms (Simone, 18/11/2026; 100 ms ritirato per la banda 20-33,6 Hz) |
 
 Bande: 5, **log-spaziate su 20-450 Hz** (v10 §6.3; l'alternativa «dalla PSD media del corpus» resta aperta). **Mascherate oltre la banda
 disponibile** del canale (v10 §4.2): una banda il cui bordo superiore supera il limite del canale (min fra Nyquist e banda effettiva dichiarata) non
@@ -27,17 +28,19 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import fft as sfft
 
-from wearusfm.model.spectral_targets import hann_periodogram
+from wearusfm.model.spectral_targets import (hann_periodogram, MS_FAST_WINDOW_MS, LEGACY_MS_FAST_WINDOW_MS,
+                                            target_version_for_fast_window)
 
 BAND_EDGES_HZ = tuple(float(v) for v in np.geomspace(20.0, 450.0, 6))  # 20, 37, 70, 130, 242, 450 Hz
-RMS_WINDOW_MS = 25.0
+RMS_WINDOW_MS = 100.0
+LEGACY_RMS_WINDOW_MS = 25.0
 SPECTRAL_WINDOW_MS = 200.0
 ENVELOPE_WINDOW_MS = 500.0
 RVQ_TOKEN_MS = 200.0
 EPS = 1e-8
 # ancora multi-scala (Simone, 04/10/2026, dalla finestra 1): log della potenza in bande log-spaziate fra 20 e 450 Hz su due finestre centrate sulla
 # patch, scelta dal confronto dei target candidati (decisioni.md)
-MS_SCALES = (("ms_fast", 50.0, 6), ("ms_slow", 500.0, 24))  # (nome, finestra in ms, bande)
+MS_SCALES = (("ms_fast", MS_FAST_WINDOW_MS, 6), ("ms_slow", 500.0, 24))  # dal 18/11: rapida 125 ms, lenta invariata
 # passo fra le finestre di una scala (default: la patch). La scala lenta ha una finestra da 500 ms ogni 100 ms (4 patch), assegnata alle 4 patch
 # che la circondano: al piu' 37,5 ms dal loro centro, il 7,5% della finestra. Centrata su ogni patch costava ~32 ms per finestra di dati (2 kHz, 32
 # canali, 4 s, sul Mac), quasi tutto FFT; nel confronto dei target candidati la finestra da 500 ms era centrata su blocchi da 200 ms.
@@ -62,21 +65,28 @@ class AnchorTargets:
     ms_slow_available: np.ndarray | None = None
 
 
-def _windows(x: np.ndarray, fs: float, centers_s: np.ndarray, win_ms: float) -> tuple[np.ndarray, np.ndarray]:
+def _windows(x: np.ndarray, fs: float, centers_s: np.ndarray, win_ms: float, *, round_half_up: bool = False
+             ) -> tuple[np.ndarray, np.ndarray]:
     """(C, P, n) finestre centrate, (P,) valida se la finestra sta tutta nel segnale."""
     n = max(1, int(round(win_ms / 1000.0 * fs)))
-    starts = np.round(centers_s * fs - n / 2.0).astype(np.int64)
+    positions = centers_s * fs - n / 2.0
+    starts = (np.floor(positions + 0.5 + 1e-9) if round_half_up else np.round(positions)).astype(np.int64)
     valid = (starts >= 0) & (starts + n <= x.shape[1])
     idx = np.clip(starts[:, None] + np.arange(n)[None, :], 0, x.shape[1] - 1)
     return x[:, idx], valid
 
 
-def _window_rms(x: np.ndarray, fs: float, centers_s: np.ndarray, win_ms: float) -> tuple[np.ndarray, np.ndarray]:
-    """(C, P) RMS sulle stesse finestre di `_windows`, senza materializzarle (somme cumulative dei quadrati): stesso risultato, anche ai bordi
-    (indici tagliati = campione di bordo ripetuto). A 2 kHz la finestra da 500 ms materializzata era il 30-45% del tempo dei target."""
+def _window_rms(x: np.ndarray, fs: float, centers_s: np.ndarray, win_ms: float, *, round_half_up: bool = False
+                ) -> tuple[np.ndarray, np.ndarray]:
+    """(C, P) RMS tramite somme cumulative dei quadrati, senza materializzare le finestre.
+    Nel percorso storico stessi indici di `_windows`, anche ai bordi (campione di bordo ripetuto); il nuovo RMS usa round_half_up.
+    A 2 kHz la finestra da 500 ms materializzata era il 30-45% del tempo dei target."""
     c, t = x.shape
     n = max(1, int(round(win_ms / 1000.0 * fs)))
-    starts = np.round(centers_s * fs - n / 2.0).astype(np.int64)
+    positions = centers_s * fs - n / 2.0
+    # Nuovo RMS: ties sempre nello stesso verso, altrimenti a 200 Hz i passi diventano 4/6 campioni invece di 5.
+    # Il percorso storico e l'inviluppo conservano l'arrotondamento originale, bit per bit.
+    starts = (np.floor(positions + 0.5 + 1e-9) if round_half_up else np.round(positions)).astype(np.int64)
     valid = (starts >= 0) & (starts + n <= t)
     pad_l, pad_r = max(0, int(-starts.min())), max(0, int(starts.max()) + n - t)
     xp = np.pad(x, ((0, 0), (pad_l, pad_r)), mode="edge") if pad_l or pad_r else x
@@ -86,10 +96,11 @@ def _window_rms(x: np.ndarray, fs: float, centers_s: np.ndarray, win_ms: float) 
     return np.sqrt(np.maximum((cs[:, s + n] - cs[:, s]) / n, 0.0)), valid
 
 
-def _band_logpower(x32: np.ndarray, fs: float, centers: np.ndarray, win_ms: float, n_bands: int, limit: np.ndarray):
+def _band_logpower(x32: np.ndarray, fs: float, centers: np.ndarray, win_ms: float, n_bands: int, limit: np.ndarray,
+                   *, round_half_up: bool = False):
     """Log della potenza in `n_bands` bande log-spaziate fra 20 e 450 Hz su finestre di `win_ms` centrate: ((C, P, B), (P,) finestra dentro il
     segnale, (C, B) banda disponibile = sotto il limite del canale e con almeno una frequenza a questa risoluzione)."""
-    seg, ok = _windows(x32, fs, centers, win_ms)
+    seg, ok = _windows(x32, fs, centers, win_ms, round_half_up=round_half_up)
     n = seg.shape[-1]
     power, freqs = hann_periodogram(seg, fs)
     edges = np.geomspace(20.0, 450.0, n_bands + 1)
@@ -107,10 +118,17 @@ def _hop_patches(name: str, patch_ms: float) -> int:
 
 
 def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float = 25.0, edges_hz=BAND_EDGES_HZ,
-                   guard: tuple[int, int] = (0, 0), multiscale: bool = False) -> AnchorTargets:
+                   guard: tuple[int, int] = (0, 0), multiscale: bool = False, rms_window_ms: float = RMS_WINDOW_MS,
+                   ms_fast_window_ms: float = MS_FAST_WINDOW_MS) -> AnchorTargets:
     """x: (C, T) segnale normalizzato alla sua fs nativa; band_limit_hz: scalare o (C,) limite superiore realmente disponibile per canale.
     guard = (inizio, fine): campioni all'inizio e alla fine di x che stanno entro la zona di bordo di un tratto (transitorio del filtro): le patch
-    che li toccano non hanno target (Simone, 04/10/2026, decisione 3: entro 100 ms dal bordo di un tratto)."""
+    che li toccano non hanno target (Simone, 04/10/2026, decisione 3: entro 100 ms dal bordo di un tratto).
+    rms_window_ms e' il supporto del solo RMS: 100 ms per i nuovi training, indipendente dal passo delle patch e dal tokenizer.
+    I target RMS senza supporto completo dentro x sono mascherati; 25 ms riproduce la definizione storica.
+    ms_fast_window_ms: le sei log-potenze rapide su 125 ms; 50 solo per la ricetta storica esplicita."""
+    if not math.isfinite(rms_window_ms) or rms_window_ms <= 0:
+        raise ValueError("rms_window_ms deve essere finito e positivo")
+    target_version_for_fast_window(ms_fast_window_ms)
     x = np.asarray(x, dtype=np.float64)
     c, t = x.shape
     patch_s = patch_ms / 1000.0
@@ -122,7 +140,7 @@ def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float =
     edges = np.asarray(edges_hz, dtype=np.float64)
     band_available = edges[None, 1:] <= limit[:, None] + 1e-9  # (C, B)
 
-    rms, rms_ok = _window_rms(x, fs, centers, RMS_WINDOW_MS)
+    rms, rms_ok = _window_rms(x, fs, centers, rms_window_ms, round_half_up=rms_window_ms != LEGACY_RMS_WINDOW_MS)
     log_rms = np.log(rms + EPS)
 
     # spettro in float32 (il segnale e' normalizzato per sessione: la precisione basta), bande come prodotto con una matrice indicatrice
@@ -143,9 +161,13 @@ def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float =
     if multiscale:
         x32 = x.astype(np.float32)
         for name, win_ms, nb in MS_SCALES:
+            if name == "ms_fast":
+                win_ms = ms_fast_window_ms
             per = _hop_patches(name, patch_ms)
             hop_centers = (np.arange(-(-n_patch // per)) * per + per / 2.0) * patch_s  # per = 1: i centri delle patch
-            v, ok, ms[name + "_available"] = _band_logpower(x32, fs, hop_centers, win_ms, nb, limit)
+            v, ok, ms[name + "_available"] = _band_logpower(
+                x32, fs, hop_centers, win_ms, nb, limit,
+                round_half_up=name == "ms_fast" and win_ms != LEGACY_MS_FAST_WINDOW_MS)
             ms[name], ms[name + "_valid"] = np.repeat(v, per, axis=1)[:, :n_patch], np.repeat(ok, per)[:n_patch]
     clear = np.ones(n_patch, dtype=bool)
     if guard[0] > 0 or guard[1] > 0:

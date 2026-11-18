@@ -1,0 +1,63 @@
+{
+  "collected_at_utc": "2026-11-04T17:27:47.385854+00:00",
+  "code_sha": "17dd455f8d40d5430f87c2154c571a2f9e683baa",
+  "launch_plan_sha256": "9180314132c3231966612f176dbcca24bee0b9e2792e8b035e16f3fe177965fe",
+  "continuation_plan_sha256": "1ce5372071ea99b61da0ec17d5f6a3d367cdeafc1ceb0249012f199e9afca5b1",
+  "finetune_plan_sha256": "b037997f3b8bf84498cebb7e6244508648580cc8197abeb1a5cfe588ea2aaec5",
+  "jobs": [
+    {
+      "id": "CONSOL-checkout-20261104",
+      "job_id": 63525708,
+      "state_sha256": "2580b337ca7ce710547662f5be3bcb70aa180a87a307982052a338b71219e5a3"
+    },
+    {
+      "id": "CONSOL-G-30000-20261104",
+      "job_id": 63525803,
+      "state_sha256": "6e342bd9fd85b03a459ea9dba7dfbf09f87b72a69a1c5912051b87fff12d3db6"
+    },
+    {
+      "id": "CONSOL-G-39237-20261104",
+      "job_id": 63525805,
+      "state_sha256": "f82b2feb4e908b0c317d6c3d675b7dc44bc8f3a1ea689582300205acdb75e796"
+    },
+    {
+      "id": "CONSOL-G-49046-20261104",
+      "job_id": 63525809,
+      "state_sha256": "f40d16196078980746893831727e77aee945ed907d48a6820b6a570c0f6b9c03"
+    },
+    {
+      "id": "FT-BENCH-20261104",
+      "job_id": 63525812,
+      "state_sha256": "f02cce113d469bc21afa80305c7b12af0925d2762b96022a140d294667ac92f5"
+    }
+  ],
+  "quota_pre_submit_checks": "passed immediately before each accepted submission; pinned evidence from 2026-11-04T17:04:12Z",
+  "submission_correction": {
+    "id": "CONSOL-G-30000-20261104",
+    "first_attempt": "explicit sbatch rejection: Unable to open file -; no SLURM ID, zero compute",
+    "resolution": "same logical ID with --dopo-rifiuto; launcher at verified frozen checkout path; runtime unchanged"
+  },
+  "validation": {
+    "operational_tests_passed": 39,
+    "seconds": 3.89,
+    "scientific_sources_unchanged": 100,
+    "recipe_hash_unchanged": true
+  },
+  "observed_status_utc": "2026-11-04T17:27:46Z",
+  "observed_status": {
+    "63525708": "COMPLETED 0:0",
+    "63525803": "PENDING Priority",
+    "63525805": "PENDING Dependency afterok:63525803",
+    "63525809": "PENDING Dependency afterok:63525805",
+    "63525812": "RUNNING lrdn0431"
+  },
+  "checkout_accounting": {
+    "elapsed_seconds": 24,
+    "requested_cpus": 1,
+    "allocated_cpus": 2,
+    "allocated_core_hours": 0.013333333333333334,
+    "gpu_hours": 0,
+    "max_allocated_core_hours_if_full_walltime": 0.3333333333333333,
+    "note": "SLURM allocated 2 CPUs for requested 1; total allocated core-hour cap 292.333333 instead of requested 292.166667; actual checkout only 0.013333 core-hours"
+  }
+}

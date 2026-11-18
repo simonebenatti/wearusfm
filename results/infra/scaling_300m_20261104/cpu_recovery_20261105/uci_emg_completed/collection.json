@@ -1,0 +1,29 @@
+{
+  "collected_at": "2026-11-05T21:37:33.211125",
+  "failed_json_exists": false,
+  "files": [
+    {
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark_recovery_20261105/SCALING-probe-recover-uci_emg-20261105/uci_emg/benchmark.json",
+      "bytes": 11775,
+      "sha256": "b97ef2cc89d23ecc07db21738b6e5b13a24af3849a3b3558569237752ca2be44"
+    },
+    {
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261105/cpu/probe_benchmark_recovery_20261105/SCALING-probe-recover-uci_emg-20261105/uci_emg/audit_progress.jsonl",
+      "bytes": 5621,
+      "sha256": "7f4c911f9fde0d011bb559bfba065f0583c5da40ea6c78b98d9aa514e3239876"
+    },
+    {
+      "remote_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_readers_recovery_63625951.out",
+      "bytes": 1151,
+      "sha256": "a0455bd8896394f49901faff248ca3d20cb02525a10b7be76105e89494abddd0"
+    }
+  ],
+  "sacct_argv": [
+    "sacct",
+    "-j",
+    "63625951",
+    "-P",
+    "--format=JobIDRaw,State,ExitCode,ElapsedRaw,AllocCPUS,MaxRSS,MaxRSSNode,MaxRSSTask,AllocTRES,NodeList,Partition,Start,End,Timelimit"
+  ],
+  "serial_queue": ""
+}

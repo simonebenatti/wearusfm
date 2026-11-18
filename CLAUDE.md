@@ -1,5 +1,35 @@
 # WearUsFM
 
+## Target RMS e spettro breve dei prossimi training — Simone, 18/11/2026
+
+Simone: «per i prosismi training voglio che questo venga aumentato. Fallo», riferito al target log RMS.
+**Nuovi training: target RMS su 100 ms, passo 25 ms e overlap 75 ms.** Il parametro
+`loader.rms_window_ms` e' indipendente dalla finestra del tokenizer e deve comparire nella ricetta pubblicata.
+Il default del codice e della CLI e' 100 ms. Le riprese e i controlli storici conservano esplicitamente 25 ms
+(`--rms-window-ms 25`); un checkpoint senza il campo e' storico, non diventa un run RMS100.
+La guardia della ripresa rifiuta il cambio. Non modificare checkout, piani congelati o job delle campagne esistenti.
+Successiva richiesta esplicita: «no dobbiamo almeno raddoppiarla, almeno 100ms anche lei» (ancora spettrale breve).
+**Le sei bande del target rapido passano da 50 a 125 ms, passo 25 ms, overlap 100 ms.** Erano state portate prima a 100 ms;
+poi Simone: «magari sii un po elastico con le bande, se servono 125 invece di 100 va bene lo stesso». A 100 ms la banda
+20-33,6 Hz aveva due bin FFT a 1000/2000 Hz e uno solo a 1926/2048 Hz; a 125 ms ogni banda ha gli stessi bin a ogni frequenza
+del corpus. Nuovo default `loader.ms_fast_window_ms=125`, versione `step1_psd_power_shape_energy_fast125_v3`; 100 ms e
+`step1_psd_power_shape_energy_fast100_v2` sono ritirati prima di qualsiasi training.
+Per una ricetta storica completa: `--rms-window-ms 25 --ms-fast-window-ms 50`; la CLI seleziona la versione precedente.
+Gli strumenti che ricostruiscono run nati prima del 18/11 dai comandi o piani registrati usano `train_jepa.historical_args`
+(o `run.with_historical_targets`) e confrontano le configurazioni salvate dopo `run.with_legacy_target_windows`, che aggiunge
+solo i due campi del 18/11 (`run._config_with_defaults` resta per la ripresa: completa anche altri campi e allenterebbe i confronti).
+Un piano nuovo scrive le due finestre in modo esplicito: senza, il trainer usa i default nuovi ma `calibration_select` lo legge
+come storico (25/50) e rifiuta il run dopo il training.
+Un braccio nuovo confrontato a un solo fattore con bracci storici usa la ricetta storica esplicita, oppure il piano dichiara i
+due fattori in piu' (RMS e spettro rapido).
+**Linea 3, confronto contrastivo C0/CN/CR:** Simone, «sul punto 3 passiamo a 100/100». La linea 3 adotta la ricetta nuova
+(oggi RMS 100 ms e spettro rapido 125 ms) e rifa' audit, calibrazione, benchmark e λ; C0 contro T100-G differisce anche per
+RMS e spettro rapido. Esegue GPT, operatore della linea 3.
+Campo spettrale assente nei vecchi checkpoint =50ms. Versione, firma dati e guardie impediscono il cambio implicito.
+Restano invariati il target spettrale200ms, la scala lenta500ms, l'inviluppo500ms, la posa e i pesi della loss.
+Dettagli: `docs/rms_target_100ms_20261118.md`, `docs/ms_fast_target_100ms_20261118.md` e, per i 125 ms e gli strumenti
+storici, `docs/target_windows_fix_20261118.md`. Nessun lancio implicito.
+
 ## Architettura di lavoro
 - L'agente gira sul Mac. Leonardo e' remoto, raggiungibile con `ssh leonardo`.
 - Non editare mai file sotto $WORK via ssh: niente sed, niente heredoc, niente vim.
@@ -17,26 +47,99 @@ precedente delega a semplicione. Le autorizzazioni già date restano valide;
 nessun nuovo consenso operativo. Nessuna duplicazione dei cinque benchmark già
 sottomessi. Letture, analisi, review, commit e push restano autonomi in questa chat.
 
-### Sottomissioni affidate a semplicione — istruzione successiva del 28/10/2026
 
-Simone: «d'ora in poi nuova regola, qando devi sottomettere dei job su leonardo lo fai fare a "semplicione" che e' l'agente qua di fianco a te».
-**Da questa istruzione, le nuove sottomissioni su Leonardo passano dalla chat `semplicione`**, gia' esistente sul Mac
-(thread `01a18355-6241-7c53-98fe-fbc8450c2b30`, host `local`; identita' verificata nell'app).
-Simone gli ha assegnato anche il controllo dei log nella sua chat. GPT scientifico prepara codice, protocollo, review,
-piano committato/pushato, SHA, risorse, budget, output e dipendenze; poi affida la sottomissione a semplicione.
-La richiesta di Simone autorizza questa delega operativa: non serve chiedere nuovamente chi debba eseguire un piano gia' approvato.
+### Operatori delle tre linee — aggiornamento del 06/11/2026
 
-Semplicione usa sempre `scripts/submit_job.py` e il ledger comune, conserva gli SHA congelati e restituisce ID, stato e log.
-Non creare un secondo agente omonimo o duplicare un lancio: prima verificare le prenotazioni e gli ID esistenti.
-Questa regola sostituisce l'assegnazione delle sottomissioni al subagent leonardo-ops e il lancio diretto da questa chat;
-restano responsabilita' scientifica, criteri, budget e autorizzazioni gia' definite. I job B19618 e le 12 valutazioni sono
-stati sottomessi prima della nuova regola: nessuna risottomissione, cancellazione o migrazione implicita.
+Simone, 05/11/2026 alle 14:57 circa, alla domanda di Claude «Confermi che ora le sottomissioni le fa GPT e non più semplicione?»:
+«Sì, sottomette GPT», seguito da «semplici9one non c'e piu».
+Fonte: `origin/worktree-claude-training-engine`, commit `3099836061809ed478ea06ff7b252a2d2087cc98`,
+voce di Claude in `docs/claude_GPT_shared`; conferma trasmessa anche alla chat GPT di coordinamento.
+
+**Claude esegue codice e operazioni della linea 1; per EPN15 e valutazione lunga della linea 2 esegue le operazioni; GPT resta operatore della linea 3.**
+L'operatore di ciascuna linea gestisce deployment, sottomissioni, stato/log e raccolta. GPT coordinamento
+controlla le interferenze e integra su `main`, senza duplicare le operazioni. Nella sola linea 3 Claude resta revisore e non lancia job;
+eventuali correzioni tecniche affidategli esplicitamente restano soggette alla review di GPT. Per le linee 1 e 2 valgono le disposizioni sotto.
+
+La regola del 28/10 «Sottomissioni affidate a semplicione» e' superata: quella chat non e' piu' operativa e non deve essere
+ricreata o sostituita con un secondo submitter. Nessuna delega al precedente subagent leonardo-ops.
+Restano invariati `scripts/submit_job.py`, il ledger comune `~/wearusfm_local/jobs/ledger.tsv`, prenotazioni sotto lock,
+ID logici univoci, checkout congelati, budget, criteri, review e approvazioni dei singoli test. L'approvazione di un test
+comprende il lancio gia' autorizzato, senza una seconda richiesta di consenso; non autorizza nuovi esperimenti o retry ciechi.
+Chiuse le note N-2 della review `2d157cc` e N-3 della review 6 `c0a4f58` sull'identita' dell'operatore.
+Questa disposizione prevale sui riferimenti storici a semplicione conservati nei registri, nelle decisioni e nei vecchi checkout.
+
+### Eccezione: gestione operativa della sola linea 2 affidata a Claude — 05/11/2026 sera
+
+Simone, riferendosi alle righe «2 — EPN15» e «2 — Valutazione lungo»:
+«da ora in poi questa parte la gestisci tu» e «riscrivimi il prompt in modo che sarai tu a fare il deployment e a gestirlo , dimmi se serve un feedback da chat gpt o puoilanciare tu adesso».
+Fonte: voce Claude `3566c8dd805a7ce7513481e5df1fdba77b31f5d8`,
+`origin/worktree-claude-training-engine`; disposizione confermata direttamente da Simone nella chat GPT
+`2-schedule lungo e consolidamento` (`01a1a72a-070b-7bc1-8eea-452c4c53cff9`).
+
+**Solo per EPN15 e valutazione lunga della linea 2, Claude e' l'unico operatore:** deployment, sottomissioni,
+controllo di stato/log e raccolta degli esiti. GPT consolidamento conserva codice e responsabilita' scientifica,
+prepara la consegna operativa, rivede il seguito concordato e non fa deploy, invii, cancellazioni o rilanci su questa linea.
+I job EPN15 gia' inviati da GPT restano gli stessi: il cambio di operatore non autorizza duplicati o migrazioni.
+GPT coordinamento resta integratore su main e tiene il quadro delle tre linee senza diventare un secondo operatore.
+
+La disposizione supera, **per la sola linea 2**, la regola delle 14:57 «Claude resta revisore e non lancia job».
+La linea 3 resta invariata; per la linea 1 vale la successiva disposizione del 06/11 sotto. Restano submitter e ledger comuni, prenotazione sotto lock, budget e criteri approvati,
+review previste, checkout congelati, nessun retry cieco e nessun nuovo esperimento implicito.
+Il cambio di operatore non converte un piano in review in un piano eseguibile: la modifica delle uscite lunghe
+su SCRATCH, richiesta da Simone, va consegnata da GPT e riletta da Claude prima del pin e del deployment.
+Ricevute, report e manifest si raccolgono sul Mac e si committano; cache/OOF su SCRATCH sono rigenerabili
+ dai checkpoint persistenti in WORK e soggetti alla cancellazione automatica a 40 giorni.
+
+### Linea 1: codice e operazioni a Claude, review e direzione scientifica a GPT — 06/11/2026
+
+Simone: «Da ora Claude scrive il codice e fa deployment, invii, stato/log e raccolta della linea 1.
+Tu fai le review di questa linea e resti integratore su main. Linee 2 e 3 invariate».
+Precisa inoltre che GPT serve nel «ragionamento scientifico e nella valutazione delle direzioni».
+Fonte: istruzione diretta nella chat GPT scaling del 06/11, registrata in `docs/claude_GPT_shared`.
+
+**Claude e' l'unico autore del codice e operatore della linea 1 (scaling 30M/300M). GPT fa ragionamento
+scientifico, valutazione delle direzioni e review; resta integratore su main.** GPT non esegue deployment,
+invii, cancellazioni, rilanci, runner, monitoraggio operativo o raccolta della linea 1. Rivede le evidenze
+pubblicate da Claude; non modifica il codice di esecuzione per conto di Claude.
+
+Consegna: base del ramo di esecuzione Claude `97125bd8bb8b14590958501ba91986c8456037f9`;
+ultimo job inviato da GPT fit 14, **63635524**. I job gia' inviati restano gli stessi, senza duplicati.
+GPT conferma nel registro il fermo e l'assenza di piani/comandi/manifest eseguibili degli stadi finali;
+Claude non invia prima di questa conferma. Il precedente runner ha terminato tutti i suoi invii e non si riavvia.
+
+Per la chiusura dello screening a 5.000 sono state riviste le consegne dei sei aggregati,
+del manifest/comando del confronto e dell'esito. Ancore e controlli: Review 10 Claude `d3976c3`,
+`docs/reviews/claude_review_scaling_300m_final_stages_code_20261106.md`, sezioni 3 e 5.
+La Review 10 approva il codice congelato `aef665b` fino alla consegna `97125bd`, non i manifest futuri.
+I suggerimenti S-1...S-4 restano per il prossimo giro; i checkout scientifici congelati non si modificano.
+
+**Aggiornamento di Simone, 06/11 alle 17:22:** «si autorizzo maq non voglio una ennersima review di gpt prima
+di ogni lancio, ne facciamo una poi lancio». Per la linea 1 questa istruzione sostituisce la review prima di
+ogni invio con **una review del pacchetto operativo pubblicato**. Dopo l'esito favorevole Claude esegue i
+lanci inclusi, rispettando i cancelli meccanici, senza nuove review o richieste di consenso fra i passaggi.
+Per lo stadio di training della continuazione, il pacchetto comprende deploy, checkout e training.
+Questo non attesta codice di valutazione ancora non consegnato: il suo rilascio e' distinto dai controlli
+meccanici fra i job gia' coperti. Nessun retry cieco, modifica di perimetro o dose ulteriore impliciti.
+
+Lo screening a 5.000 (14 fit, sei aggregati e un confronto, tetto **310 core-ore CPU**) e' concluso e
+accettato nella review GPT `5e15009`. **La continuazione del 300M fino a 19.618 e' autorizzata da Simone
+il 06/11**, registrata da GPT in `2d58e98`; si applicano piano e risorse propri della tranche. Restano
+submitter/ledger comuni, checkout congelati e definizioni scientifiche fissate prima dei risultati.
+Le linee 2 e 3 non cambiano. Questa disposizione prevale sulle assegnazioni storiche per la linea 1.
+
+| Linea | Codice e responsabilita' scientifica | Deployment, invii, stato/log e raccolta |
+|---|---|---|
+| 1 — Scaling 30M/300M | **Claude: codice; GPT: ragionamento scientifico, direzioni e review** | **Claude** |
+| 2 — EPN15 e valutazione lunga | GPT consolidamento | **Claude** |
+| 3 — Log-quadratico e contrastiva | GPT logcontrast | GPT logcontrast |
+| Coordinamento | GPT integratore su main | Coordinamento dei responsabili, nessun invio duplicato |
 
 ### Autonomia operativa — istruzioni di Simone del 28/10/2026
 
 **Aggiornamento dei ruoli, successivo alla review E3 B:** Simone: «adesso sarai tu ad implementare le modifiche e a
 lanciare le cose, e clasude fara solo da revisore». GPT assume anche implementazione e sottomissioni del lavoro affidato;
-Claude resta revisore. Questa istruzione supera la precedente proprieta' esclusiva del codice tecnico assegnata a Claude.
+Claude resta revisore. Questa istruzione supera la precedente proprieta' esclusiva del codice tecnico assegnata a Claude;
+per i ruoli correnti prevalgono le disposizioni del 05/11 sulla linea 2 e del 06/11 sulla linea 1 riportate sopra.
 Restano worktree separati, un writer per checkout, review pertinenti, criteri congelati e registro condiviso.
 
 Queste istruzioni successive prevalgono sui precedenti passaggi che chiedevano un nuovo consenso prima di ogni lancio:
@@ -131,8 +234,10 @@ non cambia automaticamente obiettivi, architetture o perimetro di un esperimento
   `rsync -a` preserva le date vecchie: dopo una copia si rinfresca
   (vedi `scripts/slurm/verify_touch_scratch_raw.sbatch`). Stato dettagliato per dataset:
   `docs/dataset_access.md`, sezione "Stato dell'ingest".
-- Manutenzione programmata di Leonardo: 30/09/2026 08:00 - 01/10/2026 08:00 (Booster, DCGP, nodi di
-  login/viz): i job sottomessi restano PENDING fino alla fine. Prossima: DCGP, 15-18/10/2026.
+- Manutenzioni programmate di Leonardo (lette in `scontrol show reservation` il 03/11/2026): 10/11 07:00 - 12/11 07:00 su 540 nodi
+  Booster (lrdn[2701-3240]) e 12/11 07:00 - 14/11 07:00 su altri 180 (lrdn[3241-3420]): la partizione resta su, ma un job che
+  finirebbe dentro la finestra non viene messo su quei nodi. **23/11/2026 08:00 - 25/11/2026 08:00 tutto Leonardo** (Booster, DCGP,
+  nodi di login/viz): i job sottomessi restano PENDING fino alla fine. Passate: 30/09-01/10 (tutto) e DCGP 15-18/10.
 - Repo remoto: $WORK/wearusfm
 - **Checkout di campagna (eccezione approvata da Simone il 09/10/2026).** Si possono creare checkout congelati del codice SOLO: da un
   commit gia' pubblicato su leonardo; con la procedura versionata nel repo, eseguita da un job CPU su `lrd_all_serial` (mai a mano sul
@@ -141,14 +246,14 @@ non cambia automaticamente obiettivi, architetture o perimetro di un esperimento
   `CODE_DIR`; log, risultati e checkpoint restano fuori dal codice, come sempre.
 - **Sottomissioni:** un solo meccanismo comune ai due agenti (prenotazione sotto lock prima di `sbatch`, ID logico nel `--comment`,
   stato persistente; se la risposta di `sbatch` e' ambigua si riconcilia con `sacct`, mai rilancio alla cieca): `scripts/submit_job.py`,
-  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Dal 28/10/2026 lo esegue semplicione dal Mac (regola successiva sopra). Checkout di campagna:
+  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Dal 06/11/2026 lo esegue Claude dal Mac per la linea 1 e, come dalla sera del 05/11, per EPN15 e valutazione lunga della linea 2; GPT lo esegue per la linea 3. Stato/log e raccolta spettano allo stesso operatore. Checkout di campagna:
   `scripts/slurm/campaign_checkout.sbatch` (passato a `sbatch` su stdin); launcher: `scripts/slurm/lib_code_dir.sh`.
 - **Budget «preparazione dell'infrastruttura della finestra 1»: 25 GPU-ora** (Simone, 09/10/2026), separato dal budget della finestra 1.
   Ogni prova si presenta comunque con preventivo e si lancia solo col via di Simone; consuntivo in `docs/decisioni.md`.
   Anche i job CPU di deployment richiedono risorse, durata massima e costo CPU approvati: 0 GPU-ora non significa costo nullo.
 - Per le operazioni di sola lettura su Leonardo (module av, ls, cat, squeue, sacct, tail, du, df)
-  procedi senza chiedermi conferma. Chiedi conferma solo prima di scrivere file, creare env,
-  installare pacchetti o sottomettere job.
+  procedi senza chiedermi conferma. Per scritture, ambienti, pacchetti e sottomissioni valgono le autorizzazioni gia' acquisite
+  e il perimetro approvato; chiedere una nuova decisione solo per attivita' non ancora autorizzate.
 
 ## Progetto FM sEMG
 - Documento di riferimento: `docs/fm_emg_reference_v10.md`. Piano operativo:
@@ -170,14 +275,15 @@ non cambia automaticamente obiettivi, architetture o perimetro di un esperimento
   dentro `$WORK/wearusfm/` puo' creare file non tracciati che il prossimo
   `git push leonardo main` dal Mac rifiuta (tree remoto "sporco"). Un risultato entra nel
   repo (`results/<passo>/...`) solo quando viene copiato deliberatamente sul Mac e
-  committato da li'.
+  committato da li'. Per la valutazione lunga della linea 2, Simone ha autorizzato invece le uscite su `$SCRATCH` grande:
+  vale la consegna revisionata con radice esplicita e raccolta di ricevute/report/manifest sul Mac, come descritto nell'eccezione sopra.
 
 ## Vincoli non negoziabili
 - Login node: limite di 10 minuti di CPU time. Tutto il resto va in srun o sbatch.
 - Compute node: nessun accesso a internet. Niente pip install, niente download di modelli,
   nessuna chiamata API dentro un job SLURM. Gli scaricamenti si fanno prima, dal login node.
 - $HOME ha 50GB di quota ed e' gia' stato riempito una volta. Mai dati, modelli o cache li'.
-- Sottomissioni e controllo operativo dei log passano da semplicione (regola successiva del 28/10 sopra); nessun lancio parallelo tramite il vecchio subagent leonardo-ops.
+- Un solo operatore per linea: **Claude per la linea 1 e per EPN15 e valutazione lunga della linea 2; GPT per la linea 3**. Lo stesso operatore gestisce deployment, invii, stato/log e raccolta. Per la linea 1 GPT rivede il pacchetto operativo una volta prima dei lanci inclusi, non ogni invio, e resta integratore su main. Semplicione non e' piu' operativo; nessun submitter parallelo o duplicato.
 
 ## Test
 - Il codice non gira sul Mac: niente CUDA, architettura diversa.
