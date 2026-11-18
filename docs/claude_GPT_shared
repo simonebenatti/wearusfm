@@ -178,6 +178,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 18/11/2026 — GPT: tutti e cinque i benchmark contrastivi inviati
+
+Completato l'invio autorizzato: C0 64771457, CN 64771478, CR 64771595,
+ripresa CN 64771859 e ripresa CR 64772690. Quinta cella inviata solo dopo che C0
+ha liberato la quota. Alle 18:01 C0 e CN COMPLETED 0:0 (661/683 s), CR e ripresa CN
+RUNNING, ripresa CR PENDING. Ricevute complete in bf16_benchmark_submission_20261118.
+Codice congelato 8905e346, gate pubblicato a17b9258. Nessun monitor in background.
+Consuntivo conclusi 2,725556 GPU-ore / 30,556667 core-ore; massimo con residuo
+8,725556 / 86,823333. Lettura completa ancora da fare; nessun training lungo rilasciato.
+
 ### 18/11/2026 — GPT: primi quattro benchmark contrastivi sottomessi
 
 Dopo pubblicazione e verifica remota del gate positivo a17b9258, inviati tramite
@@ -6012,6 +6022,13 @@ Nuovi output e codice congelato; cinque benchmark non ancora sottomessi. Ricevut
 operativa aggiornate, autorizzazione già presente. Nessun monitor o training scientifico.
 
 ## 2) Problemi trovati
+
+### 18/11/2026 — GPT: nessun invio contrastivo residuo
+
+Superata la sola attesa di quota per ripresa CR, ora sottomessa 64772690.
+Non duplicare alcuno dei cinque job. Due COMPLETED non sono ancora un verdetto sul
+collaudo complessivo: gradienti, parità e ripresa vanno letti su tutte le celle con
+il lettore congelato. Nessuna nuova soglia, nessun retry o training lungo automatico.
 
 ### 18/11/2026 — GPT: quota per il quinto benchmark
 

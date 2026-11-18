@@ -1,0 +1,30 @@
+{
+  "status": "ALL_FIVE_SUBMITTED",
+  "gate_publication_commit": "a17b9258d756bbb40f380a4f5bc01fccda081598",
+  "frozen_commit": "8905e346b03e5d173cccc124aa40032bf588a191",
+  "source_sha256": "46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320",
+  "jobs": {
+    "CONTRAST-BENCH-C0-bf16-20261118": 64771457,
+    "CONTRAST-BENCH-CN-bf16-20261118": 64771478,
+    "CONTRAST-BENCH-CR-bf16-20261118": 64771595,
+    "CONTRAST-RESUME-CN-bf16-20261118": 64771859,
+    "CONTRAST-RESUME-CR-bf16-20261118": 64772690
+  },
+  "gpu_hours_cap_this_group": 10,
+  "core_hours_cap_this_group": 80,
+  "training_approved": false,
+  "background_monitor_created": false,
+  "snapshot_at": "2026-11-18T18:01:46+01:00",
+  "slurm_snapshot": {
+    "64771457": "COMPLETED 0:0",
+    "64771478": "COMPLETED 0:0",
+    "64771595": "RUNNING",
+    "64771859": "RUNNING",
+    "64772690": "PENDING QOSMaxJobsPerUserLimit"
+  },
+  "completed_campaign_gpu_hours": 2.7255555555555557,
+  "completed_campaign_core_hours": 30.556666666666665,
+  "max_completed_plus_remaining_gpu_hours": 8.725555555555555,
+  "max_completed_plus_remaining_core_hours": 86.82333333333334,
+  "full_preflight_readout_completed": false
+}

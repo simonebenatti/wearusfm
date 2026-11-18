@@ -38,3 +38,35 @@ Cinque celle residue: tetto 10 GPU-ore / 80 core-ore; mantenendo anche checkout 
 0,266667 core-ore e lettura CPU 8 core-ore, massimo complessivo
 **11,232222 GPU-ore / 106,876667 core-ore**, sotto 14 / 129,333333.
 QoS riletta: MaxJobsPU 2 e MaxSubmitPU 4. Invii a gruppi contando tutte le linee.
+
+## Seguito operativo dopo pubblicazione
+
+**18/11, tutti e cinque i benchmark sottomessi.** Snapshot 18:01 Europe/Rome:
+
+| Cella | Job | Stato |
+| --- | --- | --- |
+| C0, base, 576 update | 64771457 | COMPLETED 0:0, 661 s |
+| CN, InfoNCE, 576 update | 64771478 | COMPLETED 0:0, 683 s |
+| CR, RnC, 576 update | 64771595 | RUNNING |
+| CN, ripresa 544+32 | 64771859 | RUNNING |
+| CR, ripresa 544+32 | 64772690 | PENDING QOSMaxJobsPerUserLimit |
+
+Gate CUDA pubblicato prima degli invii in a17b9258; ricevute e snapshot in
+`results/infra/contrastive_comparison_20261116/bf16_benchmark_submission_20261118/`.
+Tutti i job usano il checkout congelato 8905e346 e source 46938f31…9320.
+**Non risottomettere nessuna cella.** La quinta è stata inviata dopo la conclusione di C0,
+rispettando MaxJobsPU 2 / MaxSubmitPU 4. Nessun monitor in background.
+
+Dopo la conclusione raccogliere i tre benchmark e le due riprese, senza retry automatici;
+applicare il lettore congelato e i criteri già pubblicati. Il solo COMPLETED non certifica
+rapporti dei gradienti, parità iniziale o ripresa: la lettura completa resta da fare.
+Rapporti sotto `$WORK/wearusfm_runs/results/contrastive_preflight_20261118_bf16/`,
+cartelle `benchmark/{C0,CN,CR}` e `resume/{CN,CR}`. Per la lettura CPU finale conservare
+il pin dell'audit originale 5c720fad…547b, checkpoint della calibrazione 0756921a…d50a,
+coorte bf16, CUDA 979f4429…771f5 e probe d0a75115…dfd78. Il lettore autentica anche
+optimizer, coda, stream e parità dei primi 256 update; nessun training lungo rilasciato.
+
+Consuntivo conclusi (inclusi C0/CN e tentativi storici): **2,725556 GPU-ore /
+30,556667 core-ore**. Con le tre celle ancora da terminare al tetto completo, checkout
+finale e lettura CPU: massimo **8,725556 GPU-ore / 86,823333 core-ore**.
+Gli snapshot seguenti conservano la cronologia.

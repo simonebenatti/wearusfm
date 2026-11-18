@@ -6664,3 +6664,13 @@ Codice congelato 8905e346; ricevute in bf16_benchmark_submission_20261118.
 Alle 17:54 C0/CN RUNNING e gli altri due PENDING; resta ripresa CR da sottomettere
 quando il numero di job debug dell'utente scende sotto quattro. Nessun nuovo consenso,
 nessuna duplicazione, nessuna modifica della ricetta. Nessun training lungo.
+
+### 18/11/2026 — GPT: tutti e cinque i benchmark contrastivi inviati
+
+Completato l'invio autorizzato: C0 64771457, CN 64771478, CR 64771595,
+ripresa CN 64771859 e ripresa CR 64772690. Quinta cella inviata solo dopo che C0
+ha liberato la quota. Alle 18:01 C0 e CN COMPLETED 0:0 (661/683 s), CR e ripresa CN
+RUNNING, ripresa CR PENDING. Ricevute complete in bf16_benchmark_submission_20261118.
+Codice congelato 8905e346, gate pubblicato a17b9258. Nessun monitor in background.
+Consuntivo conclusi 2,725556 GPU-ore / 30,556667 core-ore; massimo con residuo
+8,725556 / 86,823333. Lettura completa ancora da fare; nessun training lungo rilasciato.
