@@ -20,6 +20,21 @@ import torch  # noqa: E402
 
 from wearusfm.training import run as R  # noqa: E402
 
+# Ricetta dei target dei run nati prima del 18/11/2026: RMS su 25 ms e spettro rapido su 50 ms. Il contratto
+# (docs/rms_target_100ms_20261118.md) chiede che riprese e controlli storici la passino esplicitamente.
+HISTORICAL_TARGET_ARGS = ("--rms-window-ms", "25", "--ms-fast-window-ms", "50")
+
+
+def historical_args(argv) -> list[str]:
+    """Gli argomenti registrati di un run storico con la ricetta dei target resa esplicita: aggiunge `--rms-window-ms 25` e
+    `--ms-fast-window-ms 50` se mancano, senza toccare valori gia' scritti. Serve a ricostruire o riprendere run nati prima del
+    18/11/2026 (review di Claude del 18/11: gli strumenti delle campagne storiche ricalcolavano la ricetta con i default nuovi)."""
+    out = [str(a) for a in argv]
+    for flag, value in zip(HISTORICAL_TARGET_ARGS[::2], HISTORICAL_TARGET_ARGS[1::2]):
+        if not any(a == flag or a.startswith(flag + "=") for a in out):
+            out += [flag, value]
+    return out
+
 
 def build_parser() -> argparse.ArgumentParser:
     """Il parser delle opzioni (usato anche da scripts/wsd_chain.py per controllare gli argomenti liberi dei piani)."""
@@ -56,7 +71,7 @@ def build_parser() -> argparse.ArgumentParser:
                     help="supporto del target RMS: default 100 ms, passo 25 ms; 25 solo per riprese/controlli storici. "
                          "Indipendente da --window-ms del tokenizer; cambiare il supporto richiede un nuovo run")
     ap.add_argument("--ms-fast-window-ms", type=float, default=None,
-                    help="supporto delle sei bande del target spettrale rapido: default 100 ms, passo 25 ms; "
+                    help="supporto delle sei bande del target spettrale rapido: default 125 ms, passo 25 ms; "
                          "50 solo per riprese/controlli storici, con la versione dei target originale")
     ap.add_argument("--jepa-weight", type=float, default=None,
                     help="peso della perdita JEPA; default 1; 0 = ancore attuali da sole (braccio W1-OBJ)")

@@ -146,8 +146,9 @@ def load_context(plan_path, arm, step, expected_code_sha):
     spec.loader.exec_module(cli)
     argv = entry["validated_trainer_argv"]
     require(argv[0] == "scripts/train_jepa.py", "wrong trainer executable")
-    cfg = cli.build_config(cli.build_parser().parse_args(argv[1:]))
-    require(R.config_to_dict(cfg) == json.loads(Path(states["expected_config"]["path"]).read_text()), "frozen CLI/config mismatch")
+    cfg = cli.build_config(cli.build_parser().parse_args(cli.historical_args(argv[1:])))
+    require(R.config_to_dict(cfg) == R._config_with_defaults(json.loads(Path(states["expected_config"]["path"]).read_text())),
+            "frozen CLI/config mismatch")
     cfg = replace(cfg, max_steps=step)
     require(cfg.model.dim == 384 and cfg.model.k_latents == 64 and cfg.model.patch_ms == 25 and cfg.model.pose_head and
             cfg.jepa.jepa_weight == 0 and cfg.jepa.masked_loss_radius == 0, "not the registered tokenizer campaign")

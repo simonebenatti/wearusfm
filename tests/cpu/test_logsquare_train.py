@@ -27,13 +27,14 @@ PREFLIGHT_GAIN, TRAINING_GAIN = 548.6939187567023, 548.6939187567021
 def candidate():
     comparison = json.loads((ROOT / 'results/infra/tokenizer_review_20261103/comparison_configurations.json').read_text())
     argv = comparison['arm_configurations']['T100-L']['validated_trainer_argv']
-    args = T.CLI.build_parser().parse_args(argv[1:] + ['--tokenizer-logsquare', '--tokenizer-logsquare-eps', '.001'])
+    args = T.CLI.build_parser().parse_args(T.CLI.historical_args(argv[1:] + ['--tokenizer-logsquare', '--tokenizer-logsquare-eps', '.001']))
     return comparison, T.CLI.build_config(args)
 
 
 def test_registered_command_changes_only_branch_output_dose_and_timeout():
     comparison, cfg = candidate()
-    assert R.config_to_dict(cfg) == json.loads((ROOT / 'results/infra/logsquare_review_20261104/config_T100-LQ.json').read_text())
+    assert R.config_to_dict(cfg) == R._config_with_defaults(
+        json.loads((ROOT / 'results/infra/logsquare_review_20261104/config_T100-LQ.json').read_text()))
     guard, records = {'path': '/code/guard.json', 'sha256': 'a' * 64}, Path('/tmp/phase/initial_state')
     for step, cap in ((5000, 5400), (19618, 14400)):
         fresh = (guard, records) if step == 5000 else ()
@@ -50,7 +51,7 @@ def test_registered_command_changes_only_branch_output_dose_and_timeout():
         original = comparison['arm_configurations']['T100-L']['validated_trainer_argv']
         recovered[recovered.index('--out-dir') + 1] = original[original.index('--out-dir') + 1]
         recovered[recovered.index('--max-steps') + 1] = '5000'
-        assert recovered == original
+        assert recovered == T.CLI.historical_args(original)  # dal 18/11 il comando storico porta i target 25/50 espliciti
         with pytest.raises(ValueError, match='CLI/config'):
             T.command_for(comparison, replace(cfg, lr=cfg.lr * 2), Path('/tmp/new'), step, cap, *fresh)
     for flag in ('--init-from', '--branch-from', '--branch-state-from', '--tokenizer-logsquare'):

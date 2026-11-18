@@ -124,7 +124,7 @@ def test_calibration_rejects_false_train_only_provenance(tmp_path):
 
 
 @pytest.mark.parametrize("corruption", ["version", "loader"])
-def test_probe_rejects_fast100_cache_mislabeled_as_legacy(tmp_path, cli, inputs, corruption):
+def test_probe_rejects_fast125_cache_mislabeled_as_legacy(tmp_path, cli, inputs, corruption):
     from wearusfm.model.spectral_targets import LEGACY_TARGET_VERSION
 
     module, _ = cli
@@ -133,7 +133,7 @@ def test_probe_rejects_fast100_cache_mislabeled_as_legacy(tmp_path, cli, inputs,
     with np.load(cache, allow_pickle=False) as data:
         arrays = {k: data[k].copy() for k in data.files}
     meta = json.loads(str(arrays["metadata_json"]))
-    assert meta["loader"]["ms_fast_window_ms"] == 100
+    assert meta["loader"]["ms_fast_window_ms"] == 125
     if corruption == "version":
         meta["target_version"] = LEGACY_TARGET_VERSION
     else:

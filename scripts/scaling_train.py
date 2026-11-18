@@ -124,9 +124,10 @@ def check_source_contract(contract_or_path, root=ROOT):
     require(entry["sha256"] == contract["config_30m"]["sha256"], "control configuration pin differs")
     argv = entry["validated_trainer_argv"]
     require(argv[0] == "scripts/train_jepa.py", "unexpected training entry point")
-    args = CLI.build_parser().parse_args(argv[1:])
+    args = CLI.build_parser().parse_args(CLI.historical_args(argv[1:]))  # controllo storico 30M: target 25/50
     cfg = CLI.build_config(args)
-    require(R.config_to_dict(cfg) == json.loads(Path(states["config_30m"]["path"]).read_text()), "base CLI/config mismatch")
+    require(R.config_to_dict(cfg) == R._config_with_defaults(json.loads(Path(states["config_30m"]["path"]).read_text())),
+            "base CLI/config mismatch")
     require(args.preset == "sanity" and args.distributed and args.num_workers == 6 and cfg.max_steps == STEP,
             "base recipe differs from historical control")
     require([str(p) for p in args.root] == contract["roots"], "source roots differ from validated CLI")
@@ -151,7 +152,7 @@ def derive_recipe(context, run_dir, seconds):
     run_dir = Path(run_dir)
     require(run_dir.is_absolute(), "absolute run directory required")
     original = list(context["comparison"]["arm_configurations"]["T100-G"]["validated_trainer_argv"])
-    argv = original.copy()
+    argv = CLI.historical_args(original)  # campagna 300M nata prima del 18/11: target 25/50 espliciti nel comando
     for flag, value in (("--preset", "300m"), ("--out-dir", str(run_dir)), ("--max-steps", str(STEP))):
         require(argv.count(flag) == 1, "duplicate/missing scientific argument: " + flag)
         argv[argv.index(flag) + 1] = value

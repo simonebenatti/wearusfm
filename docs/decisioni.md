@@ -7797,3 +7797,18 @@ la reinterpretazione.32casi di parita' bit-per-bit contro i codici precedenti;12
 complessivamente, compresa equivalenza DDP. Nessun nuovo training o modifica delle campagne esistenti.
 La precedente nota che manteneva l'ancora rapida a50ms e' superata. Contratto e dettagli:
 `docs/ms_fast_target_100ms_20261118.md`, `results/infra/ms_fast_target_20261118/verification.json`.
+
+### 2026-11-18 — Target: spettro rapido a 125 ms, strumenti storici con la ricetta esplicita, linea 3 alla ricetta nuova (Simone; Claude)
+
+Dopo la verifica di Claude dei commit `5333c5c` e `b4b0963`, Simone: «quei 3 risolvili», «gli altri se riesci risolvili tu» e
+«magari sii un po elastico con le bande, se servono 125 invece di 100 va bene lo stesso».
+- Spettro rapido: **125 ms**, passo 25 ms, versione `step1_psd_power_shape_energy_fast125_v3`. A 100 ms la banda 20-33,6 Hz
+  aveva due bin FFT a 1000/2000 Hz e uno solo a 1926/2048 Hz (circa −0,3 in log per lo stesso segnale); a 125 ms ogni banda ha
+  gli stessi bin a ogni frequenza del corpus. 100 ms e `..._fast100_v2` ritirati prima di ogni uso; 50 ms/v1 invariati.
+- Strumenti delle campagne storiche: ricostruiscono i run nati prima del 18/11 con `train_jepa.historical_args` o
+  `run.with_historical_targets` e confrontano dopo `run._config_with_defaults`. Correggono i 16 test che fallivano sulla suite
+  completa a `b4b0963`. Checkout e lanciatori congelati invariati.
+- Linea 3: Simone, «sul punto 3 passiamo a 100/100» (scritto dopo la scelta «restano 25/50» nel riquadro di domanda: vale il
+  messaggio scritto). C0, CN e CR usano la ricetta nuova, oggi RMS 100 ms e spettro rapido 125 ms. GPT rifa' audit, calibrazione,
+  benchmark e λ, emenda il protocollo (C0 contro T100-G con due fattori in piu') e corregge `contrastive_prepare.config_from_dict`.
+Contratto: `docs/target_windows_fix_20261118.md`. Nessun job.

@@ -386,8 +386,9 @@ def test_child_construction_order_warmup_and_late_environment_inspection(monkeyp
         events.append(('warmup', model_cfg.tokenizer_logsquare))
         # Real count_parameters constructs a fresh model without seeding it.
         return sum(parameter.numel() for parameter in construct(model_cfg).parameters())
-    cli = SimpleNamespace(R=SimpleNamespace(config_to_dict=lambda value: candidate, count_parameters=warmup),
-                          build_config=lambda args: cfg,
+    cli = SimpleNamespace(R=SimpleNamespace(config_to_dict=lambda value: candidate, count_parameters=warmup,
+                                            _config_with_defaults=lambda value: value),
+                          build_config=lambda args: cfg, historical_args=lambda args: list(args),
                           build_parser=lambda: SimpleNamespace(parse_args=lambda args: None))
     def imported(relative, name):
         events.append(('import', relative))
@@ -485,12 +486,24 @@ def archived_rank_root(tmp_path_factory):
 
 @pytest.fixture
 def archived_rank_diagnostic(monkeypatch, archived_rank_root):
-    spec=importlib.util.spec_from_file_location('archived_lq_diagnostic_test',
-        archived_rank_root/'scripts/logsquare_initialization_diagnostic.py')
-    module=importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    monkeypatch.setattr(sys.modules[__name__],'D',module)
-    return module
+    # Il codice congelato 63eba9a gira con la propria libreria, come nel suo checkout di produzione: dal 18/11 la libreria corrente
+    # ha target nuovi (RMS 100 ms, spettro rapido 125 ms) e ricostruirebbe un'altra ricetta (review di Claude del 18/11).
+    saved = {k: v for k, v in sys.modules.items() if k == 'wearusfm' or k.startswith('wearusfm.')}
+    for k in saved:
+        del sys.modules[k]
+    sys.path.insert(0, str(archived_rank_root / 'src'))
+    try:
+        spec=importlib.util.spec_from_file_location('archived_lq_diagnostic_test',
+            archived_rank_root/'scripts/logsquare_initialization_diagnostic.py')
+        module=importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        monkeypatch.setattr(sys.modules[__name__],'D',module)
+        yield module
+    finally:
+        sys.path.remove(str(archived_rank_root / 'src'))
+        for k in [k for k in sys.modules if k == 'wearusfm' or k.startswith('wearusfm.')]:
+            del sys.modules[k]
+        sys.modules.update(saved)
 
 
 @pytest.mark.parametrize('mode', ['passed', 'rejected', 'missing', 'timeout', 'trained', 'left_behind'])

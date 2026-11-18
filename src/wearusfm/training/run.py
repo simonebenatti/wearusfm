@@ -208,6 +208,14 @@ def _config_with_defaults(d: dict) -> dict:
     return out
 
 
+def with_historical_targets(cfg: RunConfig) -> RunConfig:
+    """La ricetta dei target dei run nati prima del 18/11/2026 (RMS 25 ms, spettro rapido 50 ms, versione v1), per i costruttori delle
+    campagne storiche che non passano dalla riga di comando (review di Claude del 18/11)."""
+    return replace(cfg, loader=replace(cfg.loader, rms_window_ms=L.AT.LEGACY_RMS_WINDOW_MS,
+                                       ms_fast_window_ms=L.AT.LEGACY_MS_FAST_WINDOW_MS),
+                   target_version=target_version_for_fast_window(L.AT.LEGACY_MS_FAST_WINDOW_MS))
+
+
 def wsd_warmup_steps(steps_at_d: int) -> int:
     """D14: warmup lineare sul 2% dei passi a D, almeno 1.000. Nel pilot e nella continuazione a 2D il warmup resta quello di D per tutti i
     rami: si calcola una volta e si passa esplicito."""

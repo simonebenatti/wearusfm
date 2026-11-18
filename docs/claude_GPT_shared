@@ -8460,6 +8460,21 @@ Registro delle due anomalie risolte e hash in `results/infra/ms_fast_target_2026
 Regola aggiornata in CLAUDE.md; contratto in `docs/ms_fast_target_100ms_20261118.md`. Nessun lancio cluster,
 checkpoint o piano congelato modificato; nessuna review esterna o efficacia scientifica dichiarata.
 
+### 2026-11-18 | Claude | Target RMS100/ms_fast: spettro rapido a 125 ms e strumenti storici con la ricetta esplicita (nessun job) | Ramo `claude/target-windows-fix-20261118`
+
+- Oggetto: la verifica dei commit `5333c5c` e `b4b0963` chiesta da Simone e le correzioni che ne sono seguite («quei 3 risolvili»,
+  «gli altri se riesci risolvili tu», «magari sii un po elastico con le bande, se servono 125 invece di 100 va bene lo stesso»).
+  Ramo nuovo da `main` = `b4b0963`.
+- Spettro rapido a 125 ms, versione `step1_psd_power_shape_energy_fast125_v3`; 100 ms e `..._fast100_v2` ritirati prima di ogni
+  uso. A 125 ms ogni banda ha gli stessi bin FFT a undici frequenze di campionamento, da 1000 a 10240 Hz.
+- Strumenti delle campagne storiche: `train_jepa.historical_args` e `run.with_historical_targets` rendono esplicita la ricetta
+  25/50 dove si ricostruiscono run nati prima del 18/11; confronti dopo `run._config_with_defaults`. Dodici strumenti corretti,
+  piu' `step1_ab` e lo script wavelet contro Gabor. Checkout e lanciatori congelati invariati.
+- Linea 3: Simone, «sul punto 3 passiamo a 100/100» (dopo la scelta «restano 25/50» nel riquadro: vale il messaggio scritto).
+  Registrato in `CLAUDE.md` e `docs/decisioni.md`; l'esecuzione e' di GPT, operatore della linea 3.
+- Contratto `docs/target_windows_fix_20261118.md`; test nuovi `tests/cpu/test_target_windows_fix.py`. Esito della suite completa
+  nella voce della sezione 2.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12438,3 +12453,19 @@ pavimento1e-8 gia' esistente, senza cambiare PSD o precisione. Un test DDP richi
 la memoria condivisa: rieseguito identico e passato. Esito combinato121casi, nessun errore irrisolto.
 Gli altri rami devono integrare questa consegna per nuovi training; i job congelati non cambiano.
 Nessun lancio implicito. Contratto e ricevuta in `docs/ms_fast_target_100ms_20261118.md`.
+
+### 2026-11-18 | Claude | Verifica di `5333c5c` e `b4b0963`: 16 test falliti su `main`, banda 1 dipendente dalla frequenza di campionamento
+
+- Suite CPU completa a `b4b0963`, eseguita da Claude su un clone privato (non c'era nella consegna, che riportava solo test
+  mirati): 16 fallimenti. Alcuni, controllati, passano a `e114a78` e falliscono a `5333c5c`. Causa unica: gli strumenti delle
+  campagne storiche ricostruivano la ricetta dai comandi o piani registrati con i default nuovi (100) invece che con quelli del run
+  (25/50). Il contratto lo chiedeva («Le riprese e i controlli storici conservano esplicitamente 25 ms»), ma gli strumenti non erano
+  stati aggiornati. Non tocca i checkout congelati.
+- A 100 ms la banda 20-33,6 Hz del target rapido aveva due bin FFT a 1000/2000 Hz e uno solo a 1926/2048 Hz: circa −0,3 in log per
+  lo stesso segnale nei dataset a 2048 Hz (Hyser, CSL-hdemg, GRABMyo) e a 1926 Hz (NinaPro DB10). Corretto portando il supporto a 125
+  ms, come autorizzato da Simone.
+- Linea 3: il confronto contrastivo era calibrato su T100-G (25/50) e la consegna non sceglieva la ricetta. Scelta di Simone: ricetta
+  nuova. Restano a GPT audit, calibrazione, benchmark e λ nuovi, l'emendamento del protocollo e la correzione di
+  `contrastive_prepare.config_from_dict` (normalizzare le ricette storiche senza i due campi).
+- Note che restano: `--rms-window-ms 25` da solo con lo spettro nuovo e' accettato (ablazione legittima); le ricevute di GPT
+  dicevano «74 test passati» su 8 file, senza la suite completa.

@@ -119,6 +119,7 @@ def recipe(context, run_dir, seconds):
         require(argv.count(flag) == 1, "missing/duplicate recipe argument")
         argv[argv.index(flag) + 1] = value
     cli = module("train_jepa")
+    argv = cli.historical_args(argv)  # campagna 300M nata prima del 18/11: target 25/50 espliciti nel comando
     cfg = cli.build_config(cli.build_parser().parse_args(argv[1:]))
     expected = replace(context["config_300m"], max_steps=STEPS)
     require(R.config_to_dict(cfg) == R.config_to_dict(expected), "technical recipe differs")

@@ -9,12 +9,24 @@ Il default del codice e della CLI e' 100 ms. Le riprese e i controlli storici co
 (`--rms-window-ms 25`); un checkpoint senza il campo e' storico, non diventa un run RMS100.
 La guardia della ripresa rifiuta il cambio. Non modificare checkout, piani congelati o job delle campagne esistenti.
 Successiva richiesta esplicita: «no dobbiamo almeno raddoppiarla, almeno 100ms anche lei» (ancora spettrale breve).
-**Anche le sei bande del target rapido passano da50a100ms, passo25ms/overlap75ms.**
-Nuovo default `loader.ms_fast_window_ms=100`, versione `step1_psd_power_shape_energy_fast100_v2`.
+**Le sei bande del target rapido passano da 50 a 125 ms, passo 25 ms, overlap 100 ms.** Erano state portate prima a 100 ms;
+poi Simone: «magari sii un po elastico con le bande, se servono 125 invece di 100 va bene lo stesso». A 100 ms la banda
+20-33,6 Hz aveva due bin FFT a 1000/2000 Hz e uno solo a 1926/2048 Hz; a 125 ms ogni banda ha gli stessi bin a ogni frequenza
+del corpus. Nuovo default `loader.ms_fast_window_ms=125`, versione `step1_psd_power_shape_energy_fast125_v3`; 100 ms e
+`step1_psd_power_shape_energy_fast100_v2` sono ritirati prima di qualsiasi training.
 Per una ricetta storica completa: `--rms-window-ms 25 --ms-fast-window-ms 50`; la CLI seleziona la versione precedente.
+Gli strumenti che ricostruiscono run nati prima del 18/11 dai comandi o piani registrati usano `train_jepa.historical_args`
+(o `run.with_historical_targets`) e confrontano le configurazioni salvate dopo `run._config_with_defaults`.
+Un piano nuovo scrive le due finestre in modo esplicito: senza, gli strumenti lo leggono come storico (25/50).
+Un braccio nuovo confrontato a un solo fattore con bracci storici usa la ricetta storica esplicita, oppure il piano dichiara i
+due fattori in piu' (RMS e spettro rapido).
+**Linea 3, confronto contrastivo C0/CN/CR:** Simone, «sul punto 3 passiamo a 100/100». La linea 3 adotta la ricetta nuova
+(oggi RMS 100 ms e spettro rapido 125 ms) e rifa' audit, calibrazione, benchmark e λ; C0 contro T100-G differisce anche per
+RMS e spettro rapido. Esegue GPT, operatore della linea 3.
 Campo spettrale assente nei vecchi checkpoint =50ms. Versione, firma dati e guardie impediscono il cambio implicito.
 Restano invariati il target spettrale200ms, la scala lenta500ms, l'inviluppo500ms, la posa e i pesi della loss.
-Dettagli: `docs/rms_target_100ms_20261118.md` e `docs/ms_fast_target_100ms_20261118.md`. Nessun lancio implicito.
+Dettagli: `docs/rms_target_100ms_20261118.md`, `docs/ms_fast_target_100ms_20261118.md` e, per i 125 ms e gli strumenti
+storici, `docs/target_windows_fix_20261118.md`. Nessun lancio implicito.
 
 ## Architettura di lavoro
 - L'agente gira sul Mac. Leonardo e' remoto, raggiungibile con `ssh leonardo`.

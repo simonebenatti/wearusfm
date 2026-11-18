@@ -42,7 +42,7 @@ def checked_commit(expected):
 
 
 def build_config(arm, seed, calibration):
-    cfg = R.with_window1_rules(R.sanity_config(max_steps=STEPS))
+    cfg = R.with_historical_targets(R.with_window1_rules(R.sanity_config(max_steps=STEPS)))  # A/B storico: target 25/50
     cfg = replace(cfg, seed=seed, keep_grad_every=500, pairing_audit=True)
     return R.with_spectral_keep(cfg, calibration, WEIGHTS[arm])
 
