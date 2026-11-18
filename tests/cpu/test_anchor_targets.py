@@ -23,7 +23,8 @@ def test_band_shape_puts_the_power_in_the_right_band():
 
 def test_rms_envelope_and_edges():
     tg = A.anchor_targets(_sine(100.0, 2000.0, amp=2.0), 2000.0, 450.0)
-    assert np.allclose(tg.log_rms[0, 1:-1], math.log(2.0 / math.sqrt(2)), atol=1e-3) and tg.rms_valid.all()
+    assert np.allclose(tg.log_rms[tg.rms_valid], math.log(2.0 / math.sqrt(2)), atol=1e-3)
+    assert not tg.rms_valid[0, :2].any() and not tg.rms_valid[0, -2:].any() and tg.rms_valid[0, 2:-2].all()
     assert np.allclose(tg.log_env[0][tg.env_valid[0]], math.log(2.0 / math.sqrt(2)), atol=1e-3)
     p = tg.log_rms.shape[1]
     assert p == 80 and not tg.spec_valid[0, :3].any() and tg.spec_valid[0, 4:p - 4].all()  # 200 ms centrati: le prime 3 patch escono
@@ -69,7 +70,7 @@ def _reference(x, fs, band_limit_hz, patch_ms=25.0):
     limit = np.minimum(np.broadcast_to(np.asarray(band_limit_hz, dtype=np.float64), (c,)), fs / 2.0)
     edges = np.asarray(A.BAND_EDGES_HZ)
     avail = edges[None, 1:] <= limit[:, None] + 1e-9
-    seg, _ = A._windows(x, fs, centers, A.RMS_WINDOW_MS)
+    seg, _ = A._windows(x, fs, centers, A.LEGACY_RMS_WINDOW_MS)
     log_rms = np.log(np.sqrt(np.mean(seg ** 2, axis=-1)) + A.EPS)
     seg, _ = A._windows(x, fs, centers, A.SPECTRAL_WINDOW_MS)
     n = seg.shape[-1]
@@ -85,7 +86,7 @@ def test_fast_targets_equal_the_reference_also_at_the_edges():
     rng = np.random.default_rng(3)
     for c, fs, t, lim in [(4, 2000.0, 8000, 450.0), (3, 1000.0, 1000, 450.0), (5, 200.0, 800, 100.0), (2, 2048.0, 3000, [450.0, 100.0])]:
         x = rng.normal(size=(c, t)) * np.linspace(0.1, 3.0, t)[None, :]  # ampiezza che cambia: i bordi contano
-        got = A.anchor_targets(x.astype(np.float32), fs, lim)
+        got = A.anchor_targets(x.astype(np.float32), fs, lim, rms_window_ms=A.LEGACY_RMS_WINDOW_MS)
         ref_rms, ref_shape, ref_env = _reference(x.astype(np.float32), fs, lim)
         assert np.allclose(got.log_rms, ref_rms, atol=1e-6) and np.allclose(got.log_env, ref_env, atol=1e-6)  # tutte le patch, anche fuori
         ok = got.spec_valid[:, :, None] & got.band_available[:, None, :]

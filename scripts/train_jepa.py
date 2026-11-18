@@ -52,6 +52,9 @@ def build_parser() -> argparse.ArgumentParser:
                     help="soglia assoluta dell'allarme sul rango effettivo (firmata il 23/10/2026, R.W1_ERANK_MIN); default la regola (16), 10%% della dimensione")
     ap.add_argument("--anchor-weight", type=float, default=None,
                     help="peso complessivo delle ancore; default quello del preset (0,2, decisione 18); 0 = JEPA puro (braccio W1-OBJ)")
+    ap.add_argument("--rms-window-ms", type=float, default=None,
+                    help="supporto del target RMS: default 100 ms, passo 25 ms; 25 solo per riprese/controlli storici. "
+                         "Indipendente da --window-ms del tokenizer; cambiare il supporto richiede un nuovo run")
     ap.add_argument("--jepa-weight", type=float, default=None,
                     help="peso della perdita JEPA; default 1; 0 = ancore attuali da sole (braccio W1-OBJ)")
     ap.add_argument("--jepa-target", choices=["a", "b"], default=None,
@@ -170,6 +173,11 @@ def build_config(args, error=None) -> "R.RunConfig":
             cfg = replace(cfg, model=replace(cfg.model, window_ms=float(args.window_ms)))
         except ValueError as e:
             fail(f"--window-ms: {e}")
+    if getattr(args, "rms_window_ms", None) is not None:
+        try:
+            cfg = replace(cfg, loader=replace(cfg.loader, rms_window_ms=float(args.rms_window_ms)))
+        except ValueError as e:
+            fail(f"--rms-window-ms: {e}")
     if getattr(args, "jepa_region_target", False):
         cfg = replace(cfg, jepa=replace(cfg.jepa, region_target=True))
     if getattr(args, "tokenizer_activation", None) is not None:

@@ -291,15 +291,20 @@ def test_time_weighted_quotas_divide_by_the_mean_window_length(tmp_path):
     assert L.PretrainLoader(idx, _cfg(), None, {}).probs is idx.weights  # spento: com'era
 
 
-def test_anchor_targets_skip_patches_near_segment_edges(tmp_path):
+@pytest.mark.parametrize("rms_window_ms", [25.0, 100.0])
+def test_anchor_targets_skip_patches_near_segment_edges(tmp_path, rms_window_ms):
     """Decisione 3 del 04/10/2026: entro 100 ms dal bordo di un tratto il filtro ha un transitorio, le ancore non hanno target."""
     root, mpath = _tree(tmp_path)
     idx = L.ManifestIndex.load(mpath, [root])
     idx = L.ManifestIndex([r for r in idx.rows if r["dataset"] == "capgmyo"], np.ones(1), idx.roots)  # prove da 1 s: ogni finestra tocca i bordi
-    b0 = L.PretrainLoader(idx, _cfg(filter_band_hz=(20.0, 450.0))).batch(2, np.random.default_rng(0))
-    b1 = L.PretrainLoader(idx, _cfg(filter_band_hz=(20.0, 450.0), anchor_edge_guard_s=0.1)).batch(2, np.random.default_rng(0))
+    b0 = L.PretrainLoader(idx, _cfg(filter_band_hz=(20.0, 450.0), rms_window_ms=rms_window_ms)).batch(2, np.random.default_rng(0))
+    b1 = L.PretrainLoader(idx, _cfg(filter_band_hz=(20.0, 450.0), anchor_edge_guard_s=0.1,
+                                  rms_window_ms=rms_window_ms)).batch(2, np.random.default_rng(0))
     for t0, t1 in zip(b0.anchor_targets, b1.anchor_targets):
-        assert t0.rms_valid[:, 4:36].all() and t0.rms_valid[:, :4].all()  # senza zona di bordo: tutte le patch hanno il target RMS
+        if rms_window_ms == 25:
+            assert t0.rms_valid.all()  # supporto storico interamente dentro ogni patch
+        else:
+            assert t0.rms_valid[:, 2:38].all() and not t0.rms_valid[:, :2].any() and not t0.rms_valid[:, -2:].any()
         assert not t1.rms_valid[:, :4].any() and not t1.rms_valid[:, 36:].any() and t1.rms_valid[:, 4:36].all()  # 100 ms = 4 patch per lato
         assert np.array_equal(t0.log_rms, t1.log_rms)  # cambiano le maschere, non i valori
 

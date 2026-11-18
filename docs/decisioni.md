@@ -7776,3 +7776,13 @@ Report `docs/reviews/integration_main_20261106.md`; pin e prove in
 nessuna scrittura su Leonardo, modifica dei checkout attivi o dei riferimenti deploy,
 nessun job nuovo e nessun costo cluster di questa integrazione. I piani storici mantengono
 hash e ricette congelati; non si ripuntano su main i job già inviati.
+
+### 2026-11-18 — RMS a100ms nei prossimi training (Simone; implementazione GPT)
+
+Simone: «per i prosismi training voglio che questo venga aumentato. Fallo». Il bersaglio logRMS passa
+da25a100ms, passo25ms/overlap75ms; modifica indipendente dalla finestra del tokenizer. Nuovo default
+nel loader/CLI, supporto scritto nel config e nella firma dati. Riprese storiche con25esplicito; campo
+assente nei checkpoint=25, guardia contro25→100 durante ripresa/branch. Target PSD, inviluppo, posa e
+pesi invariati; l'ancora spettrale breve50ms resta tale, qui solo spiegata. Nessuna modifica a campagne
+congelate o lancio. **74test passati**;16casi di identita' bit-per-bit per il percorso storico.
+Dettagli: `docs/rms_target_100ms_20261118.md`; ricevuta: `results/infra/rms_target_20261118/verification.json`.

@@ -199,7 +199,9 @@ def _config_with_defaults(d: dict) -> dict:
     if isinstance(out.get("model"), dict):
         out["model"] = {"pose_head": False, **out["model"]}  # R3, 26/10
     if isinstance(out.get("loader"), dict):
-        out["loader"] = {"pose_root": None, "pose_unprompted": True, **out["loader"]}  # R3, 26/10
+        # Campo assente nei checkpoint storici = RMS da 25 ms, NON il nuovo default da 100 ms.
+        out["loader"] = {"pose_root": None, "pose_unprompted": True, "rms_window_ms": L.AT.LEGACY_RMS_WINDOW_MS,
+                         **out["loader"]}  # R3, 26/10; RMS, 18/11
     if isinstance(out.get("alarm"), dict):
         out["alarm"] = {"erank_min": None, **out["alarm"]}  # soglia assoluta del rango (firmata il 23/10): assente = regola (16)
     return out

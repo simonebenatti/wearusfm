@@ -1,5 +1,16 @@
 # WearUsFM
 
+## Target RMS dei prossimi training — Simone, 18/11/2026
+
+Simone: «per i prosismi training voglio che questo venga aumentato. Fallo», riferito al target log RMS.
+**Nuovi training: target RMS su 100 ms, passo 25 ms e overlap 75 ms.** Il parametro
+`loader.rms_window_ms` e' indipendente dalla finestra del tokenizer e deve comparire nella ricetta pubblicata.
+Il default del codice e della CLI e' 100 ms. Le riprese e i controlli storici conservano esplicitamente 25 ms
+(`--rms-window-ms 25`); un checkpoint senza il campo e' storico, non diventa un run RMS100.
+La guardia della ripresa rifiuta il cambio. Non modificare checkout, piani congelati o job delle campagne esistenti.
+Le ancore spettrali a 50/200/500 ms, l'inviluppo a 500 ms, la posa e i pesi della loss restano invariati.
+Dettagli e verifiche: `docs/rms_target_100ms_20261118.md`. Nessun lancio implicito in questa modifica.
+
 ## Architettura di lavoro
 - L'agente gira sul Mac. Leonardo e' remoto, raggiungibile con `ssh leonardo`.
 - Non editare mai file sotto $WORK via ssh: niente sed, niente heredoc, niente vim.

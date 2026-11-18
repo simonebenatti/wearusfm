@@ -8,6 +8,7 @@ import numpy as np
 
 from wearusfm.model.spectral_step1 import READOUT_VERSION
 from wearusfm.model.spectral_targets import TARGET_VERSION
+from wearusfm.model.anchor_targets import LEGACY_RMS_WINDOW_MS
 
 
 def sha256_file(path):
@@ -24,11 +25,14 @@ def json_sha256(value):
 
 def _loader_signature(loader) -> dict:
     """La configurazione del loader nella firma dei dati; i campi della posa (R3, 26/10/2026) solo se accesi, cosi' i checkpoint di prima
-    della posa si riprendono con la stessa firma."""
+    della posa si riprendono con la stessa firma. RMS da 25 ms conserva la firma storica senza il campo; ogni altro supporto
+    (default nuovo: 100 ms) e' esplicito nella firma, quindi una ripresa non puo' cambiare i target silenziosamente."""
     d = json.loads(json.dumps(asdict(loader)))
     if d.get("pose_root") is None:
         d.pop("pose_root", None)
         d.pop("pose_unprompted", None)
+    if d.get("rms_window_ms") == LEGACY_RMS_WINDOW_MS:
+        d.pop("rms_window_ms")
     return d
 
 

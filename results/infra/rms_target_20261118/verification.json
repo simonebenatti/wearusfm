@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-18",
+  "base_commit": "e114a788aa923bdf749aae7106504ebf42c4cd78",
+  "new_default_rms_window_ms": 100.0,
+  "patch_ms": 25.0,
+  "legacy_rms_window_ms": 25.0,
+  "pytest": {
+    "passed": 74,
+    "failed": 0,
+    "seconds": 111.67,
+    "files": [
+      "tests/cpu/test_rms_target_window.py",
+      "tests/cpu/test_anchor_targets.py",
+      "tests/cpu/test_pretraining_loader.py",
+      "tests/cpu/test_training_run.py",
+      "tests/cpu/test_spectral_tools.py",
+      "tests/cpu/test_resume_recipe.py",
+      "tests/cpu/test_training_wsd.py",
+      "tests/cpu/test_anchors_and_tokens.py"
+    ]
+  },
+  "initial_test_run": {
+    "passed": 49,
+    "failed": 1,
+    "cause": "Old loader test assumed RMS was valid at all edge patches; now covers both legacy25 and new100 support."
+  },
+  "legacy_bitwise_verification": {
+    "reference_commit": "e114a788aa923bdf749aae7106504ebf42c4cd78",
+    "cases": 16,
+    "fs_hz": [
+      200,
+      1000,
+      2000,
+      2048
+    ],
+    "multiscale": [
+      false,
+      true
+    ],
+    "guard_s": [
+      0,
+      0.1
+    ],
+    "all_target_fields_equal": true,
+    "method": "Loaded the original anchor_targets module from git show and compared every dataclass field with numpy.array_equal against rms_window_ms=25."
+  },
+  "cluster_jobs_submitted": 0,
+  "source_sha256": {
+    "scripts/train_jepa.py": "44a4f086f436e9d4dbd792857fff5b4ee7bf7622001628fb1eb61b9dcd7daf03",
+    "src/wearusfm/data/pretraining_loader.py": "b1d6d95206130b379a5f06551d2d31af74a41918e05676d6afa0817cc398bc44",
+    "src/wearusfm/model/anchor_targets.py": "1e8c42956f6835807809364963a3e8bf6ada46bccdd2378e77d306828c8114c7",
+    "src/wearusfm/training/run.py": "5f984c97cef866e8185ae02c55f5e0f1d50f1e79deeef738ba604e248479eecc",
+    "src/wearusfm/training/spectral_calibration.py": "43fb1c016f8808cba0beb54e05b2727e6e75f0fe7580b4cfc5c158e283b1d42f",
+    "tests/cpu/test_rms_target_window.py": "57df0cd6adb8c9939e172423267f46da55d1e8d25a6fe2bc188c1f2a95de9e3b",
+    "tests/cpu/test_anchor_targets.py": "4fcdc09518d68819f49ca57fa38df0300a7612100e3424b75ac7e0079ae575a1",
+    "tests/cpu/test_pretraining_loader.py": "a0304368bc936a6810ce671d7d1cf6894a1243e892b5a03e353ad8d56440c11f"
+  }
+}

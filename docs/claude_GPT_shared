@@ -8427,6 +8427,22 @@ Copertura combinata3344casi, nessuno irrisolto o saltato; non è una seconda sui
 Report `docs/reviews/integration_main_20261106.md` e prove in `results/infra/integration_main_20261106/`.
 Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione sul cluster.
 
+
+### 2026-11-18 | GPT — Target RMS100 per i prossimi training, richiesta di Simone
+
+Base main `e114a78`; consegna isolata `codex/rms-target-100ms-20261118`. Simone nella conversazione laterale:
+«per i prosismi training voglio che questo venga aumentato. Fallo». Implementato target RMS su100ms,
+passo25ms/overlap75ms, default del loader e della CLI; parametro esplicito `loader.rms_window_ms`.
+Oracolo su indici grezzi a200/1000/2000/2048Hz; a200Hz20campioni e avanzamento5, senza alternanza4/6
+nei mezzi campioni. Le maschere RMS richiedono supporto completo; invariati altri target e input.
+Vecchi checkpoint senza campo interpretati a25ms: override esplicito per riprese storiche, firma dati
+compatibile e guardia della ricetta contro il cambio implicito25→100. Nessun cambio ai target PSD.
+**74 test CPU passati** in111,67s;16casi bit-per-bit contro il modulo originale di main con RMS25.
+Il primo giro aveva49passati/1fallito: aspettativa storica del test di bordo aggiornata e parametrizzata
+su25/100; il secondo giro e' interamente verde. Nessuna review esterna dichiarata; nessun lancio cluster,
+modifica a campagne congelate o file di altri worktree. Regola persistente in CLAUDE.md, spiegazione e
+compatibilita' in `docs/rms_target_100ms_20261118.md`, prove in `results/infra/rms_target_20261118/verification.json`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12385,3 +12401,12 @@ allentata e tutti i161casi inizialmente falliti/in errore passano nella riesecuz
 Main integrato non sostituisce i checkout dei job attivi; nessun intervento su checkpoint, cache,
 ambienti, ledger o riferimenti deploy. D-5 già corretto e verificato; nessun seguito scientifico
 nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main_20261106.md`.
+
+### 2026-11-18 | GPT — RMS rimasto a25ms dopo il tokenizer100: corretto per i nuovi training
+
+La precedente estensione a100ms riguardava solo il tokenizer; il target RMS restava a25ms (5campioni a200Hz).
+Simone ha chiarito e autorizzato qui il target100ms. Il nuovo default e'100ms; i run storici non vengono
+reinterpretati. Gli altri rami in sviluppo devono integrare questa consegna prima di nuovi training; i loro
+checkout congelati non cambiano. L'ancora `ms_fast` (sei bande su50ms) e' stata spiegata, NON modificata.
+Nessuna promessa di miglioramento scientifico: qui si verifica l'implementazione, non l'efficacia del target.
+Nessun esperimento o deploy avviato. Consegna e74test in `docs/rms_target_100ms_20261118.md`.
