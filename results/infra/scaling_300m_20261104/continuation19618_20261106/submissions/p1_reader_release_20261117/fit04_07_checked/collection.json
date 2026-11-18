@@ -1,0 +1,160 @@
+{
+  "stage": "probe-fit",
+  "remote_time_utc": "2026-11-18T14:35:53Z",
+  "jobs": {
+    "SCALING-19618-probe-fit-04-20261106": {
+      "job_slurm": "64730416",
+      "local": "T100-G-300M-natural-p2-02",
+      "elapsed_seconds": 3645,
+      "core_hours": 8.1,
+      "gpu_hours": 0.0,
+      "folder": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p2-02",
+      "listing": [
+        "audit.jsonl",
+        "audit_progress.jsonl",
+        "shard.json",
+        "shard.oof.npz"
+      ]
+    },
+    "SCALING-19618-probe-fit-05-20261106": {
+      "job_slurm": "64730417",
+      "local": "T100-G-300M-matched-p1-01",
+      "elapsed_seconds": 5502,
+      "core_hours": 12.226666666666667,
+      "gpu_hours": 0.0,
+      "folder": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-matched-p1-01",
+      "listing": [
+        "audit.jsonl",
+        "audit_progress.jsonl",
+        "shard.json",
+        "shard.oof.npz"
+      ]
+    },
+    "SCALING-19618-probe-fit-06-20261106": {
+      "job_slurm": "64730419",
+      "local": "T100-G-30M-natural-p1-01",
+      "elapsed_seconds": 5554,
+      "core_hours": 12.342222222222222,
+      "gpu_hours": 0.0,
+      "folder": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-30M-natural-p1-01",
+      "listing": [
+        "audit.jsonl",
+        "audit_progress.jsonl",
+        "shard.json",
+        "shard.oof.npz"
+      ]
+    },
+    "SCALING-19618-probe-fit-07-20261106": {
+      "job_slurm": "64730421",
+      "local": "T100-G-300M-natural-p1-02",
+      "elapsed_seconds": 4723,
+      "core_hours": 10.495555555555555,
+      "gpu_hours": 0.0,
+      "folder": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p1-02",
+      "listing": [
+        "audit.jsonl",
+        "audit_progress.jsonl",
+        "shard.json",
+        "shard.oof.npz"
+      ]
+    }
+  },
+  "files": {
+    "T100-G-300M-natural-p2-02/shard.json": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p2-02/shard.json",
+      "sha256": "e3e9e12f8ac112eab9aaf9a776203930851c187bedf12647dda961f0dc8e61d9",
+      "bytes": 31927,
+      "stored": "plain"
+    },
+    "T100-G-300M-natural-p2-02/audit.jsonl": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p2-02/audit.jsonl",
+      "sha256": "92391685f432b7be0316566da483fc9891645952e6f6910beb0bb3f747837451",
+      "bytes": 47227,
+      "stored": "plain"
+    },
+    "T100-G-300M-natural-p2-02/shard.oof.npz": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p2-02/shard.oof.npz",
+      "sha256": "293df8e145ecddb6241f7dc05df9cb8edcc69dfcca486295672eea9f4a3f29b2",
+      "bytes": 3940264,
+      "stored": "pin-only"
+    },
+    "T100-G-300M-natural-p2-02/slurm_log.txt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_readers19618_64730416.out",
+      "sha256": "42bf77518eefca91ba84bd3afc0efb685c865e8da58ba9eeadb1dcbe9b2845eb",
+      "bytes": 1132,
+      "stored": "plain"
+    },
+    "T100-G-300M-matched-p1-01/shard.json": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-matched-p1-01/shard.json",
+      "sha256": "5242cba430a1dd0768b527177274dd29af4bdf6dc5d79cc7adde617883609ee4",
+      "bytes": 21027,
+      "stored": "plain"
+    },
+    "T100-G-300M-matched-p1-01/audit.jsonl": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-matched-p1-01/audit.jsonl",
+      "sha256": "27e6cb37ec42c63b696e559261d6b0e23e90743e96277c9e3e1467c079980376",
+      "bytes": 165053,
+      "stored": "plain"
+    },
+    "T100-G-300M-matched-p1-01/shard.oof.npz": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-matched-p1-01/shard.oof.npz",
+      "sha256": "93a3d336f2a5a0ad2a83baa21bb759a66679c178c681e27245a4a9ece4b5bd8b",
+      "bytes": 3626856,
+      "stored": "pin-only"
+    },
+    "T100-G-300M-matched-p1-01/slurm_log.txt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_readers19618_64730417.out",
+      "sha256": "774fb3d7d077c6a70ccf1242d27dd5966970102c06e292f030f602ca4fd68d1e",
+      "bytes": 4036,
+      "stored": "plain"
+    },
+    "T100-G-30M-natural-p1-01/shard.json": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-30M-natural-p1-01/shard.json",
+      "sha256": "4a47a9a02d984cd04be7a6f3f8d106f14947ca5c419899d2ea2a5601aa58f539",
+      "bytes": 21025,
+      "stored": "plain"
+    },
+    "T100-G-30M-natural-p1-01/audit.jsonl": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-30M-natural-p1-01/audit.jsonl",
+      "sha256": "43457d5112fe9dd9e2adfe84cf39c00db0591de865c8f574b1dd705afce94a63",
+      "bytes": 164899,
+      "stored": "plain"
+    },
+    "T100-G-30M-natural-p1-01/shard.oof.npz": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-30M-natural-p1-01/shard.oof.npz",
+      "sha256": "f600daad6190c53f78951a4504609aaf8e1f5adc26c1840066a917489e869054",
+      "bytes": 3626856,
+      "stored": "pin-only"
+    },
+    "T100-G-30M-natural-p1-01/slurm_log.txt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_readers19618_64730419.out",
+      "sha256": "80d8b37129b1a019d64dc7b6ccb8e5b8ed07e2f81bb548cfbf1e14b74ae38793",
+      "bytes": 4035,
+      "stored": "plain"
+    },
+    "T100-G-300M-natural-p1-02/shard.json": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p1-02/shard.json",
+      "sha256": "741ffc7c066cc474b0cecf3566250d1f3dbd6238ed34864995f1a89be241d63b",
+      "bytes": 9782,
+      "stored": "plain"
+    },
+    "T100-G-300M-natural-p1-02/audit.jsonl": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p1-02/audit.jsonl",
+      "sha256": "157f8b08e4ba540d21acc278d313b87a373cc962442568cba2960de1f90cc3df",
+      "bytes": 47313,
+      "stored": "plain"
+    },
+    "T100-G-300M-natural-p1-02/shard.oof.npz": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p1-02/shard.oof.npz",
+      "sha256": "6f0fde23621536abf7dc1e1150dec8824a68a7eac8671e1405ec67707b40f619",
+      "bytes": 1495612,
+      "stored": "pin-only"
+    },
+    "T100-G-300M-natural-p1-02/slurm_log.txt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_readers19618_64730421.out",
+      "sha256": "b6946018346a93c2b5efd07733a666ad6e42e68e043e9025e45ef75c75d92992",
+      "bytes": 1132,
+      "stored": "plain"
+    }
+  }
+}

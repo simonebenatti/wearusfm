@@ -1,0 +1,329 @@
+{
+  "protocol": "scaling-probe-19618-20261106-v1",
+  "kind": "shard",
+  "complete": true,
+  "cell": "T100-G-300M-natural",
+  "arm": "T100-G-300M",
+  "readout": "natural",
+  "task": "p1",
+  "step": 19618,
+  "recipe": {
+    "encoder": "teacher",
+    "layer": "pool",
+    "features_dtype": "float32",
+    "pca": false,
+    "scaler": "StandardScaler fitted only on fold train",
+    "solver": "lbfgs",
+    "penalty": "l2",
+    "class_weight": "balanced",
+    "max_iter": 12000,
+    "tol": 0.0001,
+    "seed": 0,
+    "C_grid": [
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ],
+    "selection": "max validation balanced accuracy; ties smallest C; refit train only",
+    "k_folds": 4,
+    "fold_seed": 20261015,
+    "val_frac": 0.1,
+    "bootstrap": {
+      "unit": "subject within dataset",
+      "seed": 20261102,
+      "replicates": 2000,
+      "missing_classes": "macro recall over present target classes; no discarded draws"
+    },
+    "checkpoint_step": 19618,
+    "widths": {
+      "T100-G-30M-natural": 768,
+      "T100-G-300M-natural": 1792,
+      "T100-G-300M-matched": 768
+    },
+    "cells": {
+      "T100-G-30M-natural": {
+        "arm": "T100-G-30M",
+        "readout": "natural"
+      },
+      "T100-G-300M-natural": {
+        "arm": "T100-G-300M",
+        "readout": "natural"
+      },
+      "T100-G-300M-matched": {
+        "arm": "T100-G-300M",
+        "readout": "matched"
+      }
+    },
+    "aliases": {
+      "T100-G-30M-matched": "T100-G-30M-natural"
+    },
+    "primary": "natural",
+    "secondary": "fixed independent backbone/local QR projections before train-only StandardScaler"
+  },
+  "plan_content_sha256": "3f6025bb4780612dd64e6d3d0f479f307c6ad62c2cda85312c116d5d4affb9da",
+  "code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+  "plan_sha256": "4bbfd06515c2a935b09d8befc3686ce1173b84bc7230a6540844827d7a76acf6",
+  "plan_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_plans19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/readers/probe_plan.json",
+  "projection_sha256": "74d1a0f2453592cb134ab104247d05a9a43b2960e43417bc23c31426fa1b9b3d",
+  "resource_verification": {
+    "resource_plan": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_budgets19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/readers/probe_resources.json",
+      "sha256": "6a18f6e9b17abf77b5b7f1dae90a8417860185223993a9c3891b84f44036e968",
+      "bytes": 9037,
+      "inode": 234194342716236712,
+      "mtime_ns": 1794929023000000000,
+      "ctime_ns": 1794929082000000000
+    },
+    "allocation": {
+      "datasets": [
+        "ninapro_db6"
+      ],
+      "folds": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "estimated_seconds_with_margin": 10517.86463395502,
+      "walltime_seconds": 10560,
+      "observed_peak_rss_bytes": 2655559680,
+      "cell": "T100-G-300M-natural",
+      "task": "p1",
+      "cpus": 8,
+      "memory_gib": 30,
+      "shard_name": "T100-G-300M-natural-p1-02"
+    },
+    "estimated_seconds_with_margin": 10517.86463395502,
+    "observed_peak_rss_bytes": 2655559680
+  },
+  "numeric_context": {
+    "python": "3.11.6",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpools": [
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.21.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.23.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libgomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libgomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      }
+    ],
+    "features_dtype": "float32"
+  },
+  "numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+  "datasets": {
+    "ninapro_db6": {
+      "folds": [
+        {
+          "fold": 0,
+          "train": [
+            "s01",
+            "s02",
+            "s07",
+            "s08",
+            "s10"
+          ],
+          "val": [
+            "s09"
+          ],
+          "held": [
+            "s03",
+            "s06"
+          ],
+          "c": 0.01,
+          "val_bacc": 0.3469994287434051,
+          "held_bacc": 0.35698651050886676,
+          "train_bacc": 0.672879761191762,
+          "val_scores": {
+            "0.001": 0.3410320161855474,
+            "0.01": 0.3469994287434051,
+            "0.1": 0.3317687327413304,
+            "1.0": 0.3021523681550128,
+            "10.0": 0.28916112514315573,
+            "100.0": 0.29168698459675174
+          },
+          "n_train": 21508,
+          "n_val": 3925,
+          "n_held": 8528,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "43584b4d96188742215b7d41e55df21ae3e84d47b2da29915c8c4578c734dc5f",
+          "scaler_sha256": "f696ee4bbaf0eeef59ab16f1ab301f705187d9e6809ccb7ee9b802739dec21e7"
+        },
+        {
+          "fold": 1,
+          "train": [
+            "s02",
+            "s03",
+            "s06",
+            "s07",
+            "s10"
+          ],
+          "val": [
+            "s01"
+          ],
+          "held": [
+            "s08",
+            "s09"
+          ],
+          "c": 0.01,
+          "val_bacc": 0.3747416039456995,
+          "held_bacc": 0.36209406284960133,
+          "train_bacc": 0.6676957505327517,
+          "val_scores": {
+            "0.001": 0.3537291690504442,
+            "0.01": 0.3747416039456995,
+            "0.1": 0.3705752195108829,
+            "1.0": 0.3371302378541698,
+            "10.0": 0.32033709974669694,
+            "100.0": 0.2990106621612072
+          },
+          "n_train": 21570,
+          "n_val": 4452,
+          "n_held": 7939,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "aa11f3a3f108f3e2f67b7f294d02206ebefeadad2c8260931128a9395c7ff694",
+          "scaler_sha256": "5e182cf46be22725ca6a326708d7c4bd126f224c50b26336e2e01ba62331e738"
+        },
+        {
+          "fold": 2,
+          "train": [
+            "s02",
+            "s06",
+            "s07",
+            "s08",
+            "s09"
+          ],
+          "val": [
+            "s03"
+          ],
+          "held": [
+            "s01",
+            "s10"
+          ],
+          "c": 0.1,
+          "val_bacc": 0.35452022580348286,
+          "held_bacc": 0.2837925891913307,
+          "train_bacc": 0.7469159085530661,
+          "val_scores": {
+            "0.001": 0.3284608318567918,
+            "0.01": 0.33498388725760725,
+            "0.1": 0.35452022580348286,
+            "1.0": 0.3488225263532951,
+            "10.0": 0.3382856317612499,
+            "100.0": 0.32926887818330275
+          },
+          "n_train": 20827,
+          "n_val": 4196,
+          "n_held": 8938,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "0005cc600f5b5f56380bc04bd525260e7158ef5824bc1cdb889bfae7bc10665f",
+          "scaler_sha256": "e672d4f22c1c908a6b2270ee1020d08e7e077c629c917430af9420f24e0df086"
+        },
+        {
+          "fold": 3,
+          "train": [
+            "s01",
+            "s03",
+            "s06",
+            "s09",
+            "s10"
+          ],
+          "val": [
+            "s08"
+          ],
+          "held": [
+            "s02",
+            "s07"
+          ],
+          "c": 0.01,
+          "val_bacc": 0.4040172422707368,
+          "held_bacc": 0.3162455667469694,
+          "train_bacc": 0.6769116227900575,
+          "val_scores": {
+            "0.001": 0.39163913579121473,
+            "0.01": 0.4040172422707368,
+            "0.1": 0.39801157952790106,
+            "1.0": 0.39598311261384456,
+            "10.0": 0.38860517769760056,
+            "100.0": 0.3899124361076458
+          },
+          "n_train": 21391,
+          "n_val": 4014,
+          "n_held": 8556,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "708e11ba7d58c499963cb9bd76098bf0d42e6b41f9c8826f09f2cd2f62953a77",
+          "scaler_sha256": "9dd4b0fc0866c8cb380248807fbdd98ad2a0212e269378f39ce9ca079a8a90e3"
+        }
+      ]
+    }
+  },
+  "audit_summary": {
+    "fits": 28,
+    "convergence_warnings": 0,
+    "reached_limit": 0,
+    "converged_by_criterion": true,
+    "unresolved_fits": []
+  },
+  "audit": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p1-02/audit.jsonl",
+  "audit_sha256": "157f8b08e4ba540d21acc278d313b87a373cc962442568cba2960de1f90cc3df",
+  "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p1-02/shard.oof.npz",
+  "oof_sha256": "6f0fde23621536abf7dc1e1150dec8824a68a7eac8671e1405ec67707b40f619"
+}
