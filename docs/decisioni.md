@@ -7364,3 +7364,8 @@ Ridge 64701180 e fit 01–03 64701397/64701400/64701404 risultano COMPLETED 0:0,
 
 Controlli scheduler eseguiti ogni cinque minuti come richiesto. Lettura iniziale fit 04 RUNNING, 05–07 PENDING. Il successivo accesso ha restituito Permission denied (publickey,gssapi-keyex,gssapi-with-mic). Anche ssh leonardo con il percorso configurato di rinnovo è fallito. Nessun esito finale dei quattro fit attestato e nessun fit 08 inviato. Ripresa già autorizzata appena torna l’accesso: riconciliazione ledger/scheduler, verifica esiti, gate fresco e invio di 08. Nessun nuovo consenso scientifico necessario. Dettaglio nel file authentication_block_20261118.json accanto alle ricevute.
 
+
+### 18/11/2026 — launcher: esiti 04–07 verificati e fit 08 inviato
+
+Controlli ogni cinque minuti fino a COMPLETED 0:0 del fit 07 (4723 s). Raccolti in fit04_07_checked i quattro shard, log, sacct grezzo, accounting e pin OOF. Identità codice/piano/contesto numerico e hash audit/OOF coerenti. Totale 224 fit interni, tutti convergenti per criterio, zero warnings, zero raggiungimenti del limite e zero irrisolti. Durate 04–07 rispettivamente 3645/5502/5554/4723 s. Gate fresco superato con sette job COMPLETED 0:0, piani e checkout integri e budget entro 351 core-ore. Evidenze e riga esatta pubblicate in 6e7a7bd5, SHA origin verificato prima dell'invio. Fit **08 sottomesso, job 64763083**, tramite ledger comune, senza retry. Tutti gli otto shard risultano ora inviati. Raccolta canonica dell'intero stadio e lettura finale restano da eseguire dopo conclusione di 08.
+
