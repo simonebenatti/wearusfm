@@ -1,0 +1,54 @@
+{
+  "status": "PASSED_FOR_DEPLOYMENT",
+  "source_sha256": "46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320",
+  "historical_evidence_checks": [
+    {
+      "protocol": "contrastive-source-compatibility-20261118-v1",
+      "kind": "audit",
+      "manifest_sha256": "ab09a90de18d505aae8f5620fe95966a6e01be6505290ff8dbd746736cbfd3ce",
+      "historical_source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+      "current_source_sha256": "46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320",
+      "artifact_sha256": "5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b"
+    },
+    {
+      "protocol": "contrastive-source-compatibility-20261118-v1",
+      "kind": "calibration_run",
+      "manifest_sha256": "ab09a90de18d505aae8f5620fe95966a6e01be6505290ff8dbd746736cbfd3ce",
+      "historical_source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+      "current_source_sha256": "46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320",
+      "artifact_sha256": {
+        "config.json": "cff2eff02d9d07c2f0783c6370aa442c57cd023602583949748ca60dad241e87",
+        "summary.json": "7a3b9490faf9c51d3012a52fdcfdcc8590853ca1329e3506e6d23de8bce4329f",
+        "metrics.jsonl": "bc332847ac1231009fd5cf9ba983e7f6522faf66a2062cf2cdb9f826550306a7"
+      }
+    },
+    {
+      "protocol": "contrastive-source-compatibility-20261118-v1",
+      "kind": "calibration_receipt",
+      "manifest_sha256": "ab09a90de18d505aae8f5620fe95966a6e01be6505290ff8dbd746736cbfd3ce",
+      "historical_source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+      "current_source_sha256": "46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320",
+      "artifact_sha256": "4f302517da3b23952d62adfbcb71737aa01043784a4317d5fc312ded95132cf3"
+    }
+  ],
+  "benchmark_releases_validated": [
+    "full_C0",
+    "full_CN",
+    "full_CR",
+    "split_CN",
+    "split_CR"
+  ],
+  "cuda_recipe_checkpoint_pin_valid": true,
+  "old_cuda_report_and_probe_hashes_verified": true,
+  "old_cuda_passed": false,
+  "old_probe_passed": true,
+  "tests_distinct_passed": 165,
+  "callsites_mutation_tests": "5 of 5 fail when corresponding guard/recalculation is removed in memory",
+  "bash_n_launchers": 3,
+  "receipt_original_unchanged": true,
+  "all_12_configs_byte_identical": true,
+  "training_authorized": false,
+  "benchmarks_require_positive_new_cuda": true,
+  "new_logical_ids_absent": true,
+  "claude_pinned_document_unchanged": true
+}

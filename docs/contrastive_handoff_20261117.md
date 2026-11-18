@@ -8,6 +8,17 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**18/11, nuova review bf16:** 64730941 è concluso FAILED 1:0, rapporto completo;
+correzione mmap riuscita, otto scarti diagnostici bf16 fuori regola. Claude be21629 acquisito
+in fast-forward e review GPT favorevole. Ulteriore commit 7352e2f conserva come rapporti
+negativi gli scarti finiti optimizer/coda >1%, senza cambiare soglia. Sorgenti finali
+46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320; coorte/release bf16 rigenerate.
+Seguire docs/reviews/gpt_contrastive_bf16_review_20261118.md e releases/bf16_20261118/.
+I due vecchi tentativi CUDA restano agli atti; nessun benchmark sottomesso. Nuovo CUDA da
+sottomettere dopo pubblicazione del pacchetto, poi rapporto positivo prima dei cinque invii
+in gruppi secondo quota debug effettiva. Autorizzazione di Simone già presente. Nessun monitor.
+Gli snapshot sotto sono cronologia, non istruzioni per duplicare o riusare vecchi job.
+
 **18/11, CUDA ACCODATO: 64730941**, `CONTRAST-CUDA-mmap-20261118`, afterok:64730738.
 Checkout 64730738 in attesa quota CPU; CUDA partirà soltanto dopo il suo completamento riuscito.
 Codice congelato **3b5d4be2bda36bdc601ae3c50ae9b8ace696f16e**, runtime source **6b421b75…754aa**.

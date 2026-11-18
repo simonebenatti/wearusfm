@@ -6611,3 +6611,26 @@ calibrated_cohort_20261118_bf16, release releases/bf16_20261118, uscite contrast
 1,075556 GPU-ore / 17,297778 core-ore; massimo con le fasi residue 13,075556 / 121,831111, entro 14 / 129,333333.
 Review della correzione a GPT, come da CLAUDE.md; deployment e invii a GPT, nessun job da Claude. Documento:
 docs/reviews/claude_contrastive_bf16_amendment_20261118.md.
+
+### 18/11/2026 — Review emendamento bf16 e rapporto della ripresa fissato prima del rilancio
+
+GPT approva la correzione tecnica di Claude be21629, acquisita senza riscrittura della storia.
+CUDA 64730941 resta FAILED 1:0: 312/320 confronti entro la regola originale; gli otto fuori
+limite sono norme diagnostiche InfoNCE bf16 all'update 2. Il pavimento max(regola,0,01) è
+post hoc, limitato alle tre norme diagnostiche bf16. Nessun cambio a FP32, perdite, gradiente,
+student/teacher, STOP, probe o λ. Lettura prudente: compatibile con arrotondamento, non prova
+assoluta di assenza di difetti. Ricalcolo retrospettivo non sostituisce un nuovo CUDA completo.
+
+Prima del nuovo CUDA GPT adotta anche il rapporto negativo per scarti finiti oltre 1% nei
+floating di optimizer/coda: stesso limite, passato=false con percorso, errore e soglia, poi
+FAILED_REQUIRES_REVIEW nel rapporto finale. Nessuna promozione degli scarti prima respinti.
+Schema, dtype, step, RNG, metadati, buffer e valori non finiti restano controlli rigidi.
+Solo lettore/test in 7352e2f; nuove release e manifest dopo la correzione, documento Claude
+pinnato intatto. Audit/calibrazione originali riusati con autenticazione completa.
+
+Autorizzazione persistente di Simone: nuovo checkout e solo CUDA; cinque benchmark soltanto
+dopo rapporto positivo pubblicato, a gruppi considerando MaxJobsPU=2 e MaxSubmitPU=4 e altre
+linee. Se la quota CPU è occupata, CUDA accodato con afterok usando launcher immutabile già
+esistente byte-identico, CODE_DIR nuovo. Nessun monitor. Massimo 13,075556 GPU-ore /
+121,831111 core-ore, entro 14 / 129,333333. Review GPT in
+docs/reviews/gpt_contrastive_bf16_review_20261118.md; hash remoti archiviati.

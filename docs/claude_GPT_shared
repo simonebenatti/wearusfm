@@ -5977,6 +5977,15 @@ mmap_submission_20261118. Cinque benchmark ancora non sottomessi, gate CUDA posi
 Nessun monitor o automazione; nessun training scientifico. SHA della correzione comunicato a Simone
 per eventuale review aggiuntiva di Claude, senza attribuirgli un'approvazione non ricevuta.
 
+### 2026-11-18 | GPT | Review bf16 di Claude e rapporto della ripresa
+
+Acquisito be21629 in fast-forward; verificati rapporti, pin e correzione. Approvato il pavimento
+1% per sole norme diagnostiche bf16, dichiarato post hoc; CUDA 64730941 resta FAILED. Accolta
+prima del nuovo CUDA la proposta di conservare scarti numerici optimizer/coda >1% nel rapporto
+negativo, senza allargare il limite (7352e2f). Nuova coorte/release con configurazioni identiche;
+calibrazione invariata. Documento Claude pinnato intatto, lettura GPT separata. Nuovi test per
+hook dell'audit e ricalcolo storico, nessuna variazione scientifica, nessun training lungo.
+
 ## 2) Problemi trovati
 
 ### 2026-11-17 | GPT | Compatibilità PyTorch del collaudo: Path con mmap
@@ -8883,3 +8892,12 @@ La quota CPU occupata non giustifica duplicare il checkout. CUDA può essere acc
 checkout e launcher applicano i controlli prima dell'esecuzione. sbatch legge subito il launcher,
 perciò si usa la copia storica già esistente, identica e pinnata, mentre CODE_DIR è quello nuovo.
 I benchmark richiedono invece la lettura scientifico-tecnica del rapporto CUDA e non sono accodati.
+
+### 2026-11-18 | GPT | Portata della correzione bf16 e del confronto di ripresa
+
+Passare FP32 nella fixture non dimostra correttezza universale; un errore sotto l'unità di
+arrotondamento non è un bound teorico sull'intera norma. Il nuovo pavimento è un criterio
+tecnico post hoc. I limiti bf16 di gradiente e pesi restano quelli esistenti: eventuali nuovi
+fallimenti vanno diagnosticati, non rilanciati alla cieca. Un errore finito di optimizer/coda
+oltre 1% viene registrato come fallimento, non ignorato; schema e RNG restano esatti. Benchmark
+solo dopo nuovo CUDA positivo; nessun invio in blocco oltre la quota debug per utente.

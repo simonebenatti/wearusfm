@@ -1,0 +1,151 @@
+"""Legacy evidence guards must remain on every consumer's execution path."""
+import hashlib
+import json
+from pathlib import Path
+import shutil
+import sys
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
+import contrastive_benchmark_readout as B
+import contrastive_prepare as P
+import contrastive_run as R
+import contrastive_source_compat as S
+
+CALIBRATION = ROOT / "results/infra/contrastive_comparison_20261116/calibration_completed_20261117"
+CURRENT_SOURCE = "c" * 64
+
+
+class AfterAuditGate(Exception):
+    """Stop the callsite test before any CUDA/checkpoint evidence is read."""
+
+
+@pytest.fixture
+def audit_evidence(tmp_path):
+    config = {"contrastive": {}}
+    input_path = tmp_path / "manifest.json"
+    input_path.write_text("{}\n")
+    inputs = {"manifest": input_path}
+    report = {
+        "source_sha256": S.HISTORICAL_SOURCE_SHA256,
+        "inputs": {"manifest": hashlib.sha256(input_path.read_bytes()).hexdigest()},
+        "steps": 1024,
+        "world_size": 4,
+        "workers_per_rank": 6,
+        "config_sha256": hashlib.sha256(
+            json.dumps(config, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest(),
+        "expected_datasets": ["fixture"],
+        "calibration_panel": {},
+        "passed": True,
+    }
+    path = tmp_path / "audit.json"
+    path.write_text(json.dumps(report))
+    return path, report, inputs, config
+
+
+def _legacy_guard(monkeypatch, *, reject):
+    calls = []
+
+    def guard(kind, payload):
+        calls.append((kind, payload))
+        if reject:
+            raise ValueError("legacy artifact pin rejected")
+        return {"kind": kind}
+
+    monkeypatch.setattr(S, "validate_historical_evidence", guard)
+    return calls
+
+
+@pytest.mark.parametrize("reject", [False, True])
+def test_validate_audit_invokes_and_obeys_historical_guard(audit_evidence, monkeypatch, reject):
+    path, report, inputs, config = audit_evidence
+    monkeypatch.setattr(R, "source_digest", lambda: CURRENT_SOURCE)
+    monkeypatch.setattr(R, "_coverage", lambda _: {"passed": True})
+    calls = _legacy_guard(monkeypatch, reject=reject)
+
+    if reject:
+        with pytest.raises(ValueError, match="legacy artifact pin rejected"):
+            R.validate_audit(path, inputs, config)
+    else:
+        assert R.validate_audit(path, inputs, config) == report
+    assert calls == [("audit", path)]
+
+
+@pytest.mark.parametrize("reject", [False, True])
+def test_read_preflight_invokes_and_obeys_historical_audit_guard(audit_evidence, monkeypatch, reject):
+    path, report, _, config = audit_evidence
+    cohort_path = path.parent / "cohort.json"
+    receipt_path = path.parent / "receipt.json"
+    cohort_path.write_text(json.dumps({
+        "endpoint": 576,
+        "source_sha256": CURRENT_SOURCE,
+        "configs": {arm: {"path": arm + ".json"} for arm in B.ARMS},
+    }))
+    receipt_path.write_text(json.dumps({"input_sha256": report["inputs"]}))
+    # Other gates have their own tests. Reach the actual audit branch with only
+    # three tiny JSON files, then stop before any GPU evidence/model loading.
+    monkeypatch.setattr(B, "authenticate_calibration", lambda *args: None)
+    monkeypatch.setattr(B, "calibrated_configs", lambda *args: {})
+    monkeypatch.setattr(R, "validate_cohort", lambda *args: None)
+    monkeypatch.setattr(P, "BASELINE", cohort_path)
+    monkeypatch.setattr(P, "build_review_configs", lambda _: {"calibration": config})
+    monkeypatch.setattr(P, "_coverage", lambda _: {"passed": True})
+
+    def after_audit(*args):
+        raise AfterAuditGate
+
+    monkeypatch.setattr(B, "_cuda_evidence", after_audit)
+    calls = _legacy_guard(monkeypatch, reject=reject)
+    expected_error = ValueError if reject else AfterAuditGate
+    with pytest.raises(expected_error, match="legacy artifact pin rejected" if reject else None):
+        B.read_preflight(
+            cohort_path,
+            {arm: path.parent / arm for arm in B.ARMS},
+            {arm: path.parent / (arm + "-resumed") for arm in ("CN", "CR")},
+            path.parent / "cuda.json",
+            cpu_audit_path=path,
+            calibration_path=receipt_path,
+            calibration_run_dir=path.parent / "calibration-run",
+        )
+    assert calls == [("audit", path)]
+
+
+def test_pinned_historical_receipt_still_requires_authenticated_recalculation(tmp_path, monkeypatch):
+    receipt = P._read(CALIBRATION / "calibration_report.json")
+    # Authenticate the entire original receipt with the real compatibility guard.
+    metadata = S.validate_historical_evidence("calibration_receipt", receipt)
+    assert metadata["historical_source_sha256"] == receipt["source_sha256"]
+    current = P.source_digest()
+    assert current != receipt["source_sha256"]
+
+    folder = tmp_path / "run"
+    shutil.copytree(CALIBRATION / "run", folder)
+    summary_path = folder / "summary.json"
+    summary = P._read(summary_path)
+    summary["contrastive"]["provenance"]["source_sha256"] = current
+    summary_path.write_text(json.dumps(summary))
+
+    guard_calls, recalculations = [], []
+    original_guard, original_report = S.validate_historical_evidence, P.calibration_report
+
+    def guard(kind, payload):
+        guard_calls.append(kind)
+        return original_guard(kind, payload)
+
+    def recalculate(run_dir):
+        measured = original_report(run_dir)
+        recalculations.append(measured)
+        return measured
+
+    monkeypatch.setattr(S, "validate_historical_evidence", guard)
+    monkeypatch.setattr(P, "calibration_report", recalculate)
+    with pytest.raises(ValueError, match="differs from authenticated recalculation"):
+        P.authenticate_calibration(receipt, folder)
+    assert guard_calls == ["calibration_receipt"]
+    assert len(recalculations) == 1
+    assert recalculations[0]["source_sha256"] == current
+    assert recalculations[0]["weights"] == receipt["weights"]
+    assert recalculations[0]["inputs"]["summary.json"] != receipt["inputs"]["summary.json"]
