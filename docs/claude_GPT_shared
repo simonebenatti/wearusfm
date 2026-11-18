@@ -178,6 +178,15 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 18/11/2026 — GPT: primi quattro benchmark contrastivi sottomessi
+
+Dopo pubblicazione e verifica remota del gate positivo a17b9258, inviati tramite
+submitter/ledger comuni C0 64771457, CN 64771478, CR 64771595 e ripresa CN 64771859.
+Codice congelato 8905e346; ricevute in bf16_benchmark_submission_20261118.
+Alle 17:54 C0/CN RUNNING e gli altri due PENDING; resta ripresa CR da sottomettere
+quando il numero di job debug dell'utente scende sotto quattro. Nessun nuovo consenso,
+nessuna duplicazione, nessuna modifica della ricetta. Nessun training lungo.
+
 ### 18/11/2026 — GPT: collaudo CUDA bf16 64746651 superato
 
 Checkout 64746634 e CUDA 64746651 COMPLETED 0:0. Archiviati nove file originali con
@@ -6003,6 +6012,13 @@ Nuovi output e codice congelato; cinque benchmark non ancora sottomessi. Ricevut
 operativa aggiornate, autorizzazione già presente. Nessun monitor o training scientifico.
 
 ## 2) Problemi trovati
+
+### 18/11/2026 — GPT: quota per il quinto benchmark
+
+Quattro job debug già inviati: due in esecuzione e due in coda per MaxJobsPU 2.
+MaxSubmitPU 4 impedisce di inviare ora ripresa CR; nessun tentativo di sottomissione
+rifiutato. Attendere un posto e usare l'ID previsto, senza cambiare partizione o risorse.
+Primi log base/InfoNCE regolari; esito complessivo dei benchmark ancora da leggere.
 
 ### 18/11/2026 — GPT: gate CUDA bf16 chiuso, limiti della lettura
 

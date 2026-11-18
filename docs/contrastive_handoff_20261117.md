@@ -8,6 +8,16 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**18/11, primi quattro benchmark sottomessi dopo il gate pubblicato a17b9258:**
+C0 **64771457**, CN **64771478**, CR **64771595**, ripresa CN **64771859**.
+Alle 17:52 C0/CN RUNNING, CR/ripresa CN PENDING QOSMaxJobsPerUserLimit.
+Resta da inviare soltanto `CONTRAST-RESUME-CR-bf16-20261118` quando ci sono meno di
+quattro job boost_qos_dbg attivi/sottomessi sull'utente. Nessun altro consenso necessario.
+Non duplicare gli ID sopra; ricevute in `bf16_benchmark_submission_20261118/`.
+Codice di tutti i job congelato a 8905e346, source 46938f31…9320, tetto 30 minuti,
+4 GPU / 32 CPU / 240 GiB per cella. Nessun training lungo o monitor in background.
+Gli snapshot seguenti restano cronologia.
+
 **18/11, CUDA 64746651 SUPERATO**, COMPLETED 0:0, 141 s; checkout 64746634 COMPLETED 0:0, 53 s.
 320/320 confronti, STOP e probe validi; lettori congelati e review indipendente concordi.
 Rapporto e hash in `cuda_completed_bf16_20261118/`, lettura in

@@ -6655,3 +6655,12 @@ Lettura e consuntivo in docs/reviews/contrastive_cuda_bf16_results_20261118.md.
 Si procede sotto l'autorizzazione già ricevuta ai soli cinque benchmark tecnici
 C0/CN/CR 576 e CN/CR 544+32 tramite submitter e ledger, gruppi secondo quota 2/4.
 Massimo residuo più consumato 11,232222 GPU-ore / 106,876667 core-ore; nessun training lungo.
+
+### 18/11/2026 — GPT: primi quattro benchmark contrastivi sottomessi
+
+Dopo pubblicazione e verifica remota del gate positivo a17b9258, inviati tramite
+submitter/ledger comuni C0 64771457, CN 64771478, CR 64771595 e ripresa CN 64771859.
+Codice congelato 8905e346; ricevute in bf16_benchmark_submission_20261118.
+Alle 17:54 C0/CN RUNNING e gli altri due PENDING; resta ripresa CR da sottomettere
+quando il numero di job debug dell'utente scende sotto quattro. Nessun nuovo consenso,
+nessuna duplicazione, nessuna modifica della ricetta. Nessun training lungo.

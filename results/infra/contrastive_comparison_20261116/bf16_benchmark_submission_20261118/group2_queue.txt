@@ -1,0 +1,28 @@
+2026-11-18T17:52:47+01:00
+64771595|CONTRAST-BENCH-CR-bf16-20261118|PENDING|boost_qos_dbg|32|(QOSMaxJobsPerUserLimit)
+64771859|CONTRAST-RESUME-CN-bf16-20261118|PENDING|boost_qos_dbg|32|(QOSMaxJobsPerUserLimit)
+64771478|CONTRAST-BENCH-CN-bf16-20261118|RUNNING|boost_qos_dbg|32|lrdn2271
+64771457|CONTRAST-BENCH-C0-bf16-20261118|RUNNING|boost_qos_dbg|32|lrdn0268
+ee_node instead.
+  _torch_pytree._register_pytree_node(
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+passo 1: totale 6.8635, jepa 0.0258, 4.57 s/passo (dati 2.75 s), memoria GPU max 6.9 GiB
+passo 50: totale 4.6624, jepa 0.2714, 0.68 s/passo (dati 0.00 s), memoria GPU max 11.0 GiB
+passo 100: totale 3.9844, jepa 0.7244, 1.51 s/passo (dati 0.00 s), memoria GPU max 11.0 GiB
+passo 150: totale 3.4138, jepa 0.8750, 0.82 s/passo (dati 0.01 s), memoria GPU max 11.0 GiB
+passo 200: totale 3.3945, jepa 0.7792, 1.76 s/passo (dati 0.01 s), memoria GPU max 11.0 GiB
+passo 250: totale 3.3096, jepa 0.5615, 0.90 s/passo (dati 0.00 s), memoria GPU max 11.3 GiB
+ls._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+passo 1: totale 6.8635, jepa 0.0258, 4.14 s/passo (dati 2.37 s), memoria GPU max 6.9 GiB
+passo 50: totale 4.6624, jepa 0.2714, 0.67 s/passo (dati 0.00 s), memoria GPU max 11.0 GiB
+passo 100: totale 3.9844, jepa 0.7244, 1.50 s/passo (dati 0.00 s), memoria GPU max 11.0 GiB
+passo 150: totale 3.4138, jepa 0.8750, 0.83 s/passo (dati 0.01 s), memoria GPU max 11.0 GiB
+passo 200: totale 3.3945, jepa 0.7792, 1.56 s/passo (dati 0.01 s), memoria GPU max 11.0 GiB

@@ -1,0 +1,44 @@
+{
+ "id": "CONTRAST-BENCH-CR-bf16-20261118",
+ "creato": "2026-11-18T17:49:07+01:00",
+ "agente": "gpt",
+ "campagna": "CONTRASTIVE-v2-20261116",
+ "gpu_ore_stimate": 2.0,
+ "codice_sha": "8905e346b03e5d173cccc124aa40032bf588a191",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONTRAST-BENCH-CR-bf16-20261118",
+  "--comment=wearusfm:CONTRAST-BENCH-CR-bf16-20261118",
+  "--time=00:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261118-bf16,EXPECTED_SHA=8905e346b03e5d173cccc124aa40032bf588a191",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261118-bf16/scripts/slurm/contrastive_preflight_gpu.sbatch",
+  "results/infra/contrastive_comparison_20261116/releases/bf16_20261118/full_CR.job.json"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-18T17:49:07+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-18T17:49:07+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-18T17:49:09+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 64771595,
+   "uscita": 0,
+   "stdout": "64771595\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  }
+ ],
+ "job_slurm": 64771595,
+ "uscita": 0,
+ "stdout": "64771595\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}
