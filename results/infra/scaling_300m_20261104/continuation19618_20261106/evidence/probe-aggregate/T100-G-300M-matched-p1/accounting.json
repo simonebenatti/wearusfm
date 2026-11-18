@@ -1,0 +1,26 @@
+{
+  "JobIDRaw": "64775598",
+  "State": "COMPLETED",
+  "ExitCode": "0:0",
+  "ElapsedRaw": 39,
+  "AllocCPUS": 2,
+  "MaxRSS": "",
+  "NodeList": "login08",
+  "Partition": "lrd_all_serial",
+  "Start": "2026-11-18T18:42:59",
+  "End": "2026-11-18T18:43:38",
+  "Timelimit": "00:10:00",
+  "AllocTRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=30G,node=1",
+  "MaxRSS_bytes": 1783889920,
+  "MaxRSS_source_rows": [
+    "64775598.batch"
+  ],
+  "core_hours": 0.021666666666666667,
+  "cap_core_hours": 0.3333333333333333,
+  "gpus": 0,
+  "gpu_hours": 0.0,
+  "raw_sacct": {
+    "path": "sacct.txt",
+    "sha256": "eb50795a49d88b280dc97c2d9bf439e18562291f150c77dcc4915ef01817187b"
+  }
+}
