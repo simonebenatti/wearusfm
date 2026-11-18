@@ -1,0 +1,32 @@
+V0 attuale: WLS/WLS su y, a<=1, sigma {1..3}
+  E_real=0.80: non calibrati 22 su 81; per r: r=0.2: 16/27, r=0.4: 2/27, r=0.6: 4/27
+  E_real=0.85: non calibrati 29 su 81; per r: r=0.2: 21/27, r=0.4: 6/27, r=0.6: 2/27
+  E_real=0.90: non calibrati 40 su 81; per r: r=0.2: 24/27, r=0.4: 13/27, r=0.6: 3/27
+  E_real=0.94: non calibrati 53 su 81; per r: r=0.2: 27/27, r=0.4: 19/27, r=0.6: 7/27
+V1b: ridge/LS su y, a<=3, sigma fitta 0,5-3
+  E_real=0.80: non calibrati 0 su 81; per r: r=0.2: 0/27, r=0.4: 0/27, r=0.6: 0/27
+  E_real=0.85: non calibrati 6 su 81; per r: r=0.2: 6/27, r=0.4: 0/27, r=0.6: 0/27
+  E_real=0.90: non calibrati 20 su 81; per r: r=0.2: 20/27, r=0.4: 0/27, r=0.6: 0/27
+  E_real=0.94: non calibrati 36 su 81; per r: r=0.2: 26/27, r=0.4: 9/27, r=0.6: 1/27
+V1 bozza: ridge su y / LS su y*, a<=3, sigma fitta 0,5-3
+  E_real=0.80: non calibrati 2 su 81; per r: r=0.2: 2/27, r=0.4: 0/27, r=0.6: 0/27
+  E_real=0.85: non calibrati 24 su 81; per r: r=0.2: 24/27, r=0.4: 0/27, r=0.6: 0/27
+  E_real=0.90: non calibrati 31 su 81; per r: r=0.2: 27/27, r=0.4: 4/27, r=0.6: 0/27
+  E_real=0.94: non calibrati 48 su 81; per r: r=0.2: 27/27, r=0.4: 18/27, r=0.6: 3/27
+V1 bozza: ridge su y / LS su y*, a<=3, sigma fitta 0,5-5
+  E_real=0.80: non calibrati 0 su 81; per r: r=0.2: 0/27, r=0.4: 0/27, r=0.6: 0/27
+  E_real=0.85: non calibrati 17 su 81; per r: r=0.2: 17/27, r=0.4: 0/27, r=0.6: 0/27
+  E_real=0.90: non calibrati 27 su 81; per r: r=0.2: 27/27, r=0.4: 0/27, r=0.6: 0/27
+  E_real=0.94: non calibrati 28 su 81; per r: r=0.2: 27/27, r=0.4: 1/27, r=0.6: 0/27
+V1 bozza con a<=1: ridge su y / LS su y*, sigma fitta 0,5-3
+  E_real=0.80: non calibrati 28 su 81; per r: r=0.2: 25/27, r=0.4: 3/27, r=0.6: 0/27
+  E_real=0.85: non calibrati 39 su 81; per r: r=0.2: 27/27, r=0.4: 9/27, r=0.6: 3/27
+  E_real=0.90: non calibrati 51 su 81; per r: r=0.2: 27/27, r=0.4: 18/27, r=0.6: 6/27
+  E_real=0.94: non calibrati 63 su 81; per r: r=0.2: 27/27, r=0.4: 25/27, r=0.6: 11/27
+
+Soglia necessaria su r con la banda su y* (eccesso da rumore nullo nella banda): R_T/S >= E'/((1-E')/g+E'),
+E' = E_real - eccesso della ridge nell'ancora; con S = f_L + a^2 f_T: r >= c (1 + f_L/(a^2 f_T)).
+  E=0.80, g=0.06: c=0.194; f_L=f_T: r>=0.387 con a=1, r>=0.215 con a=3; nessun a basta se r<0.194
+  E=0.85, g=0.06: c=0.254; f_L=f_T: r>=0.507 con a=1, r>=0.282 con a=3; nessun a basta se r<0.254
+  E=0.90, g=0.06: c=0.351; f_L=f_T: r>=0.701 con a=1, r>=0.390 con a=3; nessun a basta se r<0.351
+  E=0.94, g=0.06: c=0.485; f_L=f_T: r>=0.969 con a=1, r>=0.538 con a=3; nessun a basta se r<0.485

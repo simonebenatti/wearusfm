@@ -1,0 +1,358 @@
+RILETTURA INDIPENDENTE DELLA BOZZA - LENTE: FEDELTA' ALLE FONTI, COERENZA INTERNA, COMPLETEZZA
+Bozza: .claude/worktrees/claude-temponet/docs/reviews/claude_review_pose_temponet_revision_20261118.md (non modificata da me)
+Data: 18/11/2026. Rilettore: subagent, sola lettura. Nessun git in scrittura, ssh, rete, job o subagent.
+
+ATTENZIONE SULLE VERSIONI. La bozza e' cambiata mentre la rileggevo:
+  - v1, letta all'inizio (469 righe, ore 11:58 circa): le sezioni 1-4 di questo rapporto citano le sue righe;
+  - v2, 12:25 (489 righe, sha256 c3a41ace..., copia bozza_snapshot_1225.md);
+  - v3, 12:26 (497 righe, sha256 5f10113a..., copia bozza_snapshot_1226.md).
+  La sezione 6 in fondo riporta lo stato di ogni problema sulla v3, con le righe della v3: e' quella che vale per l'elenco finale.
+
+Abbreviazioni
+  B   = bozza (numero = riga della bozza)
+  S2  = scratchpad/tcnreview2
+  RES = tasks/w785grg3y.output, chiave "result" (dump leggibile: rilettura_fedelta/result_dump.txt, righe citate come RES:n)
+  VAC = S2/verify_architettura-controlli.txt   VRC = S2/verify_ricetta-criteri.txt   VCC = S2/verify_costo-consegna.txt
+  RCO = S2/review_controlli.txt  RCN = S2/review_consegna.txt
+  P, J, R, DEC = protocollo, proposal.json, risposta, decisioni.md nella copia S2/gpt_3e007c8 (righe di cat -n)
+  REQ = S2/gpt_richiesta_20261118.txt
+Script miei (solo aritmetica): rilettura_fedelta/conteggi.py, dump_result.py, conti_rilettura.py (+ .out.txt).
+
+=====================================================================================================================
+0. CONTROLLI CHE REGGONO (sintesi, per dire che cosa ho guardato)
+=====================================================================================================================
+- Conteggi del metodo (B:49-52): ESEGUITO conteggi.py sul JSON: 58 rilievi dei revisori, 46 CONFERMATO e 12 PARZIALE,
+  nessun RESPINTO; 5 nuovi (V-*); sospetti: S-B confermato, S-G respinto, gli altri 6 parziali; dopo la verifica sui 63:
+  3 bloccanti (controlli-1, controlli-2, ricetta-3), 18 minori, 42 note. Tutto come in bozza.
+- Numeri del controesempio di BL-1 (B:72-77): CALCOLATO conti_rilettura.py con il modello di v_scan_lineare.py (f'=0,5,
+  K=(2,5;5)): E_LS,inner 0,9373 a sigma 2,5 (scelta, distanza 0,0173; ammissibili anche 2 e 3), E_or 0,9214, E_WLS 0,9294,
+  R_dyn = R_MSE = 0,8983. Tornano.
+- Ricevuta storica (B:65-66): VAC:94 percorso alpha 0,01 -> 0,76973 ... 1e5 -> 0,65612, 1e6 -> 0,67091: 1e5 e' davvero
+  l'alpha migliore della griglia. +17,3% torna.
+- OB-3 (B:185-187): gain3 +1,562 e -2,041 (CALCOLATO). OB-5 e §3 R-1: 0,98 x testa = 0,7630564046643697, 2,9069% sotto la
+  ridge (CALCOLATO). BL-3: 0,7268 contro 0,7269 = 0,0138% (la bozza dice «0,01%», come V-ricetta-criteri-2: va bene).
+- Citazioni di P, J, DEC, R e del prompt di GPT (P:69, 72, 90-98, 104, 122, 151, 153; J:40-42, 142, 308, 311, 405, 421,
+  441, 444, 471; DEC:6747, 6749; prompt:17-18; R:19-21, 27, 46, 51-57, 67, 73, 81, 83): LETTO, tutte corrette.
+- Citazioni di GPT e di Simone: B:3-7 coincidono con REQ:9, 18, 29, 31 (e la frase su Simone e' attribuita a GPT);
+  B:145-146 coincide con la memoria feedback_limit_review_rounds.md. Nessuna frase attribuita a torto.
+- Ramo di pubblicazione (B:406): il worktree e' su claude/temponet-db8-20261109 (git branch, sola lettura). La cartella
+  _evidence e il LEGGIMI.md esistono, con lo script v_scan_lineare.py citato a B:73.
+- Disposizioni (B:279-286): RCN:118-120 dà 63 righe, 45 semplici (8 rilievi, 37 note), 18 qualificate (A-1, C-1, C-2, S-2,
+  K-3 e 13 note). Torna.
+- Calendario (B:387-388): DEC:1332 e la memoria del rinfresco dicono «ogni giro autorizzato da Simone [al momento]»:
+  «resta da autorizzare» e' corretto. 12/11 + 40 giorni = 22/12 (VCC, conti_verifica_output).
+- Gate GPU (B:376-382): 19,39-27,78 e 9,87-14,11 GPUh in conti_verifica_output.txt. Tornano.
+- Sospetti S-A...S-H: tutti resi conto. S-A e S-B nel titolo di BL-1 e BL-2; S-C in BL-1(d); S-D in OB-4; S-E e S-F nella
+  sezione 5; S-G nella sezione 3 e nella 5; S-H nella sezione 5, 6 e 8. Sul modo in cui sono resi vedi sotto (S-C, S-D).
+- Richiesta di GPT: la bozza dichiara esplicitamente «Convergenza documentale: non ancora» e «La tabella del §10 non è
+  ancora pronta per Simone» (B:22, B:410). Ogni blocco ha «Dove» e «Controesempio minimo» e «Tipo: disegno». La sezione 6
+  separa implementazione e benchmark. Sul rispetto della distinzione vedi P-16.
+- Criterio «bloccante»: presentato come interpretazione di Claude («il criterio è mio», B:147-148). Sulla sua
+  applicazione vedi P-10 e P-11.
+
+=====================================================================================================================
+1. FEDELTA' ALLE FONTI DOPO LA VERIFICA
+=====================================================================================================================
+
+P-1 [B:69-71] ERRORE. «Un arresto verrebbe allora attribuito alla ricetta anche quando nessuno stimatore della classe
+  poteva passare.» E' proprio la parte di controlli-1 che il verificatore ha respinto.
+  Fonte: VAC:113-117 «"Nemmeno la forma chiusa passa" non vuol dire "la classe non può passare": la WLS non regolarizzata
+  non è l'ottimo held ... la ridge ottima 0,908-0,872 con spettro isotropo, ma 0,940-0,925 con spettro anisotropo ... Una L0
+  neurale ben fermata può quindi passare dove la WLS fallisce. Il controesempio non prova un'attribuzione sbagliata certa:
+  prova che l'esito non è leggibile»; RES:348 «l'esito è illeggibile più che sicuramente sbagliato».
+  Correzione: «Un arresto verrebbe attribuito alla ricetta anche quando lo stesso stimatore lineare esatto resta sotto il
+  90%: l'esito non si legge (una testa ben regolarizzata potrebbe anche passare).»
+
+P-2 [B:75-77] ERRORE. «Nel mondo lineare quella WLS è lo stimatore di massima verosimiglianza, eppure recupera l'89,8% ...
+  L0, MLP e TCN dovrebbero fare meglio di lei. La catena si ferma con «ricetta non ammessa ...»».
+  (i) Nessun rapporto lo dice (grep di «verosimiglianza», «MLE», «GLS» in review_*.txt e verify_*.txt: 0 occorrenze).
+  (ii) E' falso: il rumore e' AR(1) dentro la finestra (P:88) e i pesi sono m_itj/q_i (P:76), non l'inversa della covarianza
+  del rumore; lo stimatore di massima verosimiglianza sarebbe un GLS con la covarianza AR(1). (iii) Anche con un MLE vero,
+  l'argomento «le teste dovrebbero battere l'MLE» e' quello che il verificatore smonta (P-1): uno stimatore regolarizzato
+  batte la WLS sull'errore held. (iv) «La catena si ferma» e' detto come certo; per VAC:113-117 si ferma solo se anche le
+  teste restano sotto il 90%. Lo stesso nel prompt, B:420-421 («anche la WLS esatta recupera solo l'89,8% del margine: la
+  catena si ferma con «ricetta non ammessa»»).
+  Correzione: «In questo mondo anche la WLS esatta a 20 utenti recupera l'89,8%. Se le teste restano vicine a lei, la catena
+  si ferma con «ricetta non ammessa» e la causa non si legge; una testa ben regolarizzata potrebbe anche passare.» Stessa
+  frase nel prompt.
+
+P-3 [B:64, B:416-417] IMPRECISIONE. «sui target veri la WLS non regolarizzata con 10 utenti sbaglia molto per stima», detto
+  come fatto. La fonte regge la direzione, non l'entità: VAC:95-96 «La direzione «E_real > 0,786» è robusta»; VAC:109-112
+  «La forbice ... è un'estrapolazione con un parametro libero ... 0,83-0,94. Il regime di fallimento (>=0,90-0,92) è
+  plausibile, non stabilito». Il +17,3% e' una MSE di ridge a 20 utenti su tutte le finestre, non l'E_dyn della WLS a 10.
+  Correzione: «sui target veri la WLS non regolarizzata a 10 utenti ha un errore di stima che la ricevuta storica fa pensare
+  grande (a 20 utenti la ridge quasi non regolarizzata è +17,3% in MSE); quanto pesi su E_real non è stabilito».
+
+P-4 [B:410-421, prompt] IMPRECISIONE. Il blocco BL-1 del prompt non porta il ridimensionamento del verificatore: manca
+  «plausibile, non stabilito» (presente in corpo a B:80) e la stima 0,83-0,94 di E_real. GPT legge nel prompt un
+  meccanismo dato per certo.
+  Fonte: RES:348; VAC:109-112. Correzione: aggiungere nel prompt, dopo il controesempio, «Quanto è probabile: plausibile, non
+  stabilito (E_real stimata 0,83-1,01, più probabilmente 0,83-0,94; E_real non è misurata)».
+
+P-5 [B:80-81] IMPRECISIONE (lieve). «Nel modello la WLS esatta smette di passare quando E_real supera circa 0,90-0,94».
+  v_scan_lineare.out.txt (righe f'=0,3-0,6): l'ultimo «passa» e' a 0,88-0,92, il primo «fallisce» a 0,90-0,94; VAC:102-103
+  «passa il 90% fino a E_real ~0,90-0,92 e fallisce sopra». «Supera 0,94» non compare in nessuna riga.
+  Correzione: «passa fino a circa 0,88-0,92 e fallisce da 0,90-0,94, secondo i parametri».
+
+P-6 [B:136-148, B:34] IMPRECISIONE. BL-3 regge la promozione su «un percorso probabile» (B:148) e la tabella dice che
+  l'allarme «scatta» (B:34), ma non dice che e' un ragionamento senza misura, mentre per BL-1 la bozza ha un paragrafo
+  «Quanto è probabile». Fonti: review_ricetta (RES:590) «È un argomento qualitativo, non una misura»; VRC:70 «ragionamento,
+  non misura»; VRC:408 «Nessuna simulazione: gli argomenti su ricetta-12 e V-2 sono qualitativi ..., non misure». La
+  sezione 9 (B:392-400) non lo riporta.
+  Correzione: in BL-3 una riga «Quanto è probabile: argomento qualitativo (eccesso di plateau che cresce con il LR), non
+  misurato; il verificatore lo ritiene probabile per L0, L13 e il controllo lineare»; in B:34 «può scattare»; stessa
+  avvertenza nella sezione 9.
+
+P-7 [B:311] IMPRECISIONE (lieve). «un RHS rappresentabile esattamente, come la base «L» della calibrazione, fa scattare
+  l'arresto senza alcun errore numerico». Il verificatore lo ha ridimensionato: VAC:44-46 «il controesempio vale, ma solo se
+  si sommano tre scelte d'implementazione: normalizzazione di LSQR con ||r||, verifica applicata alla base «L» da sola, e L(z)
+  calcolata in float64 sullo stesso disegno float64. Se L è calcolata in FP32 ... il controllo passa»; tipo corretto in
+  «implementazione» (RES:296).
+  Correzione: «se la norma è quella di LSQR e la base «L» è calcolata in float64 sullo stesso disegno, il controllo scatta
+  senza errore numerico».
+
+P-8 [B:119-120] IMPRECISIONE (lieve). «il margine piantato si legge in modo istantaneo, e la ricetta non c'entra». La fonte
+  dice solo la prima parte (VAC:139-140; RES:359). Se la TCN non batte la MLP di q, non si può escludere che la ricetta non
+  abbia sfruttato la parte temporale: e' esattamente ciò che il controllo non sa più dire.
+  Correzione: «... si legge almeno in parte in modo istantaneo, quindi il controllo non dice se la ricetta sfrutta il tempo».
+
+P-9 [B:39, B:412] IMPRECISIONE (lieve). «Disposizioni ...: Complete e fedeli» come esito del punto. Il verificatore dà
+  «Consegna — disposizioni, pin e integrità: CONVERGE_CON_CORREZIONI», con due minori prima della firma (consegna-1,
+  consegna-2) (RES:1683-1685). Il prompt riduce a «Disposizioni: complete e fedeli», senza le correzioni.
+  Correzione: «Complete e fedeli nel testo; converge con correzioni (consegna-1 → OB-5, consegna-2 → sezione 5, 12 promesse
+  della sezione 4)», anche nel prompt.
+
+=====================================================================================================================
+2. COMPLETEZZA (rilievi bloccanti o minori dopo la verifica, e loro parti confermate)
+=====================================================================================================================
+Tutti i 3 bloccanti e i 18 minori post-verifica compaiono (BL, OB o sezione 5), con gli assorbimenti dichiarati negli ID
+(ricetta-3 in BL-2; ricetta-1 in OB-1/OB-4; consegna-1 in OB-5; consegna-2 con criteri-5; ricetta-4, controlli-3, controlli-4
+e V-architettura-controlli-1 in BL-1(d)). Mancano pero' parti confermate di alcuni di essi.
+
+P-12 [B:14] MANCANZA. «alle HH:MM»: segnaposto non compilato. VCC (spot check «punta remota del ramo GPT: NON VERIFICATA ...
+  Claude deve rileggere lo SHA remoto prima del verdetto», RES:1670-1672). Correzione: ls-remote subito prima del commit e ora
+  vera; se la punta non e' piu' 3e007c8, rifare il controllo delle righe toccate.
+
+P-13 [B:171-176, B:444] MANCANZA. OB-2 (ricetta-2) omette la seconda parte confermata: DEC:6747 elenca come allarme solo il
+  «Bordo finale irrisolto» e non la scelta al primo quarto di epoca. Fonte: RES:602 («La voce di decisioni.md non nomina
+  inoltre l'allarme della scelta al primo quarto»), verificatore RES:916 «In D manca anche l'allarme della scelta al primo
+  quarto»; fix del revisore RES:604 «Nella voce di decisioni.md elencare i tre allarmi del punto 5».
+  Correzione: in OB-2 e nel prompt «e in DEC:6747 i tre allarmi del punto 5, compreso il primo quarto».
+
+P-14 [B:313] MANCANZA. criteri-2 (minore, PARZIALE) e' riportato solo nel verso «L0 peggiore delle storiche». Il verificatore
+  conferma anche l'altro: RES:1006 «Manca anche il verso «L0 migliore della ridge = effetto del rifit», cioe' il caso «1 no,
+  4 e 5 si'»»; controesempio RES:755-757 (E_L0 0,770, E_TCN 0,760: gain1 +1,30, gain4 +3,30, gain5 +2,39).
+  Correzione: aggiungere «e, se L0 è migliore delle storiche, il caso "1 non passa, 4 e 5 passano" si legge come effetto del
+  rifit e della ricetta comune, non della TCN».
+
+P-15 [B:63-71, B:94, B:427] MANCANZA (lieve). La correzione (c) «Nel temporale, a anche oltre 1» non ha il difetto che la
+  motiva: BL-1 descrive solo il controllo lineare. Fonti: RES:124 (claim di controlli-1 (i): «il controllo temporale con a<=1
+  spesso non trova una coppia ammissibile»); VAC:104-106 (con a<=1 serve r >= 0,25-0,35 gia' a E=0,79 e 0,47-0,64 a 0,90:
+  «Il rischio "non calibrato" c'è anche vicino al valore storico»).
+  Correzione: una frase in BL-1 «Nel temporale, con a ≤ 1, la calibrazione può non trovare coppie anche con E_real vicina
+  allo storico, se la parte di T non leggibile da L0 è sotto circa un terzo: per questo (c)».
+
+P-16b [B:196-203] MANCANZA (lieve). OB-4 non dice di riscrivere P:104 «Se L0 o TCN-post non è ammissibile, niente promozione
+  primaria», che con la regola direzionale resta in contraddizione (vale per L0, non per TCN-post). Fonte: VRC:294 (S-D,
+  punto 2) «Va riscritta P:104 ... con la regola direzionale vale per L0, non per TCN-post». Correzione: aggiungere P:104 ai
+  luoghi da riscrivere, con P:122, J e §10 (fix del verificatore, RES:1090).
+
+=====================================================================================================================
+3. COERENZA INTERNA (tabella, sezioni 1-2, prompt, sezioni 5-8)
+=====================================================================================================================
+
+P-10 [B:384 contro B:118-120 e B:433-434] ERRORE. La sezione 8 dice a Simone: «"Non calibrato" e "non diagnostico" si
+  decidono in forma chiusa, prima di ogni fit neurale.» Ma l'opzione «cancello» di BL-2 assegna «controllo non diagnostico»
+  quando (E_MLP − E_TCN)/(E_LS − E_oracolo) < q, cioe' DOPO i fit neurali dei controlli. Le due frasi non possono essere vere
+  insieme, e per Simone la differenza conta (con BL-2 le traiettorie di controllo si spendono anche se poi l'esito e' «non
+  diagnostico»).
+  Correzione: in B:384 «... in forma chiusa prima di ogni fit neurale, salvo la clausola MLP di BL-2 se diventa cancello, che
+  si decide dopo i fit dei controlli»; oppure, in BL-2, un'etichetta diversa da «non diagnostico».
+
+P-11 [B:144-148] IMPRECISIONE. La promozione di BL-3 non applica il criterio dichiarato in modo controllabile.
+  (i) «su un percorso probabile toglie il primario» non e' nessuno dei tre casi del criterio (fallire un job, falsare un
+  risultato, ammettere evidenze sbagliate); il caso pertinente andrebbe nominato (l'etichetta «ottimizzazione non risolta»
+  per una ricetta risolta falsa l'esito; nel controllo lineare l'arresto ferma la catena, VRC:77-79).
+  (ii) Lo stesso effetto hanno rilievi lasciati fra le obbligatorie: OB-4, B:194-195 «Non c'è primario, anche se il
+  beneficio è misurato e risolto»; OB-2, B:174-175 «S-2 su L13 è probabile ... L13 non è ammessa e la candidata cade».
+  (iii) «quindi va corretto prima della firma» vale anche per OB-1...OB-5 (B:156) e per la rilettura della sezione 7: non
+  distingue un blocco da un'obbligatoria. L'unico effetto della promozione e' che il punto 2 diventa «Blocco» contro il
+  verdetto del verificatore (RES:1200 «CONVERGE_CON_CORREZIONI»), e la bozza non lo dice nella tabella (B:34).
+  Correzione: dire quale caso del criterio si applica, perche' OB-2 (J gia' univoco) e OB-4 (percorso non mostrato
+  probabile, VRC:296-297; scelta scientifica di GPT) restano obbligatorie, e in tabella «Blocco (classificazione mia:
+  revisore e verificatore danno converge con correzioni)».
+
+P-16 [B:351] IMPRECISIONE. ricetta-9 e' messo fra le verifiche d'implementazione «senza scelte di disegno» (B:342) con la
+  voce «compreso se la catena prosegue con allarmi aperti (P:104)». Il verificatore la separa: RES:974 «La voce (vii), cioe'
+  se la catena prosegue con allarmi aperti, e' una precisazione di testo di P:104»; e la risposta dipende da OB-4 (che cosa
+  bloccano gli allarmi). GPT ha chiesto di distinguere disegno e implementazione (REQ:29).
+  Correzione: togliere (vii) dalla sezione 6 e metterlo in OB-4 («dire in P:104 che con allarmi aperti la catena prosegue
+  con rifit e inferenza e cadono solo le letture bloccate»).
+
+P-17 [B:365 contro B:28-29, B:307, B:463; e B:33, B:37, B:311-316] IMPRECISIONE. La sezione 7 dice «GPT corregge BL e OB
+  ... con quanto vuole della sezione 5», mentre l'Esito (B:28 «GPT le fa»), l'intestazione della sezione 5 (B:307 «GPT le
+  corregge nella stessa revisione») e il prompt (B:463 «Correggilo senza un nuovo giro») le chiedono. In piu' i verificatori
+  vogliono prima della firma alcune voci della sezione 5: RES:550 (punto 1) «Prima del congelamento vanno corretti ...
+  architettura-5 ... e architettura-2»; RES:1206 (punto 5) «Prima della firma vanno corretti: ... criteri-5 ..., criteri-6/
+  S-E ..., criteri-2 e criteri-3». La sezione 5 non le distingue dalle note facoltative, e la loro verifica e' rinviata alla
+  review del pacchetto, che P:147 colloca dopo la firma e P:209 dichiara «non un'altra revisione del disegno».
+  Correzione: in sezione 5 marcare «prima della firma» architettura-2, architettura-5, criteri-2, criteri-3, criteri-5/
+  consegna-2, criteri-6/S-E; in B:365 «con le correzioni della sezione 5 (le facoltative a sua scelta)»; e dire che, se alla
+  review del pacchetto una di queste risulta sbagliata, serve una modifica registrata del testo firmato.
+
+P-18 [B:284, B:296-302 contro B:316, B:320, B:326, B:337] IMPRECISIONE. Gli stessi ID indicano cose diverse nello stesso
+  documento: nella sezione 4 sono gli ID della review 32e5452 («Nota 47, consegna-7» = I-1; «Nota 49, consegna-9» = ID nei
+  manifest; «Nota 39, costo-7» = corsia; «Nota 12, controlli-6» = larghezza; «mia nota criteri-6» = copertura), nella
+  sezione 5 gli ID dei rapporti di oggi (consegna-7 = ID nel README; consegna-9 = pin; costo-7 = liste dei fold; controlli-6 =
+  livello nel mondo sintetico; criteri-6 = gate R-1). B:54 dice «Gli ID fra parentesi sono quelli dei rapporti». GPT deve
+  applicare le correzioni per ID.
+  Correzione: prefissare gli ID storici («32e5452/consegna-7») o usare solo il numero di nota nella sezione 4.
+
+P-19 [B:427, B:433-434, B:436-439, B:442-443] IMPRECISIONE. Il prompt, che Simone incolla, perde pezzi delle proposte del
+  corpo: (a) BL-1(c) senza l'alternativa «banda del guadagno sganciata dall'ancora» (B:94); (b) BL-2, opzione descrittiva,
+  senza «un temporale superato con la MLP vicina alla TCN non qualifica la lettura temporale» (B:121-122; il revisore chiede
+  di dichiarare che il controllo non separa tempo e non linearità istantanea, RES:139): senza questa frase l'opzione lascia
+  un controllo «superato» che non dice nulla; (c) BL-3 senza l'alternativa della tolleranza (B:152) e senza la definizione di
+  «epoca interna»; (d) OB-1 senza la regola delle etichette (B:165-167); (e) BL-3 senza dire che revisore e verificatore lo
+  danno minore e che il blocco e' una classificazione di Claude con il suo criterio (B:144-148); (f) B:437 «per P:104, toglie
+  il primario» riferito anche a L13, per cui P:104 non vale: L13 non ammessa toglie la candidata (J:40-41).
+  Correzione: riportare nel prompt le alternative e le frasi indicate, una riga ciascuna.
+
+P-20 [B:448-450] ERRORE. Nel prompt OB-4 mancano le due clausole che chiudono il controesempio del verificatore: «compresa
+  l'assenza di deterioramento usata dal veto» (B:198-199) e «la candidata richiede L0, MLP e L13 ammessi» (B:200). Resta la
+  formula che il verificatore ha detto insufficiente: VRC:286-290 «La formula "un allarme su un comparatore impedisce il
+  beneficio contro quel comparatore" non basta ... MLP con allarme, gain2 = +0,5 (etichetta 3), contrasti 1, 4, 5 passati
+  ... la TCN diventerebbe candidata».
+  Correzione: nel prompt «Allarme su L0, MLP o L13: si bloccano le letture favorevoli alla TCN contro quella testa, compresa
+  l'assenza di deterioramento del veto; la candidata richiede L0, MLP e L13 ammessi» (piu' la correzione di P-22).
+
+P-21 [B:168-169] IMPRECISIONE (lieve). La precedenza «vale l'allarme» e' chiesta solo in P:72; il verificatore la vuole in
+  P:72, P:98, P:104 e nel §10 (RES:900). Inoltre la frase presuppone che «minimo interno» di S-2 significhi «minimo sugli
+  held interni» (V-ricetta-criteri-3), che la bozza lascia fra le note della sezione 5 (B:323): con l'altra lettura S-2 non
+  e' definito proprio in questo caso (RES:1140).
+  Correzione: «in P:72, P:98, P:104 e nel §10», e spostare la definizione di V-ricetta-criteri-3 dentro OB-1.
+
+=====================================================================================================================
+4. CORRETTEZZA TECNICA DELLE PROPOSTE (BL-1...BL-3, OB-1...OB-5)
+=====================================================================================================================
+Reggono senza osservazioni: BL-1(a) (stesso stimatore regolarizzato per E_real ed E_LS,synth: sposta sigma verso il basso e
+allarga il margine), BL-1(c), BL-1(d) per griglia fitta e soglia di E_real, BL-3 (opzione (b) del revisore, preferita dal
+verificatore, VRC:83-86), OB-2, OB-5, la seconda correzione di OB-3 (dichiarazione «sotto la selezione MSE comune», scelta
+consigliata dal verificatore, RES:1120).
+
+P-22 [B:196-200] ERRORE. La regola direzionale raccomandata in OB-4, letta come e' scritta, ammette una candidata
+  sbagliata. «Allarme sulla TCN: si bloccano le letture negative o nulle» e «un allarme della sola TCN-post non la esclude»:
+  un deterioramento_pratico della TCN contro MLP o L13 e' una lettura negativa, quindi resta senza etichetta; il veto della
+  candidata (P:122, J:40: «né 2 né 3 ha etichetta deterioramento_pratico») non scatta, perche' l'etichetta non c'e'.
+  Controesempio minimo (CALCOLATO con le etichette di P:116-120, conti_rilettura.out.txt): TCN-post con minimo di E_dyn
+  all'epoca 298 di 300; contrasti 1, 4, 5 con etichetta 1; contrasto 2 con gain −3,0 e IC99 [−4,5; −1,5], cioe'
+  deterioramento_pratico. Con la regola direzionale la lettura 2 e' bloccata, il veto e' vuoto e la TCN diventa «candidata al
+  migliore lettore» mentre la MLP e' migliore in modo pratico e risolto. Per il criterio dichiarato da Claude e' un caso di
+  «ammetterebbe evidenze sbagliate». La lacuna viene dal fix del verificatore (RES:1090), che la bozza copia.
+  Correzione: aggiungere «L'allarme sulla TCN sospende solo le conclusioni negative o nulle sul valore della TCN; il veto
+  resta: un deterioramento_pratico misurato nel contrasto 2 o 3 esclude comunque la candidatura».
+
+P-23 [B:183-184, B:445-446] IMPRECISIONE. In OB-3 l'opzione (a) «togliere la frase» perde la meta' del fix del revisore,
+  che il verificatore conferma senza cambiarlo: RES:744 «(a) Sostituire «risolti migliori» con «con etichetta
+  deterioramento_pratico ...». Dichiarare lettura mista un comparatore migliore con IC99 sotto 0 ma meno del 2%, e chiamare
+  l'esito «candidata, non peggiore in modo pratico di MLP/L13», non «migliore»». Con la sola cancellazione, nel controesempio
+  della bozza stessa (contrasto 2: −1,5, IC99 [−1,9; −0,8], MLP migliore e risolta) la TCN resta «Candidata al migliore
+  lettore della dinamica centrata» (P:203): la contraddizione sparisce, ma il nome dichiara il falso.
+  Correzione: (a) = togliere la frase, dichiarare «lettura mista» quel caso e rinominare l'esito «candidata, non peggiore in
+  modo pratico di MLP/L13», in P:122, J, DEC e §10; lo stesso nel prompt.
+
+P-24 [B:97-98, B:427] IMPRECISIONE. BL-1(d) applica la LS sul bersaglio pulito y* alla sola banda [6%, 10%] e dice che cosi'
+  si chiude anche S-C. Ma S-C riguarda il cancello del 50%: il margine (E_LS − E_oracolo) contiene l'eccesso di stima della
+  LS, che una testa regolarizzata recupera senza leggere il tempo (VAC:202-209). Il verificatore lo chiude con il
+  «riferimento sulla LS fittata sul bersaglio pulito y*», «così il margine è solo R_T» (VAC:208-209; RES:469). Se la banda
+  usa y* e il cancello resta sulla LS fittata su y (P:96 usa lo stesso E_LS per entrambi), S-C resta aperto e il protocollo
+  avrebbe due E_LS diversi.
+  Correzione: «E_LS = LS fittata su y* sia nella banda sia nel cancello del 50% (numeratore e denominatore)». Va detto anche
+  che il cancello diventa piu' severo (la TCN deve avere X_TCN ≤ 0,5·R_T, cfr. controlli-12).
+
+P-25 [B:90-93] IMPRECISIONE (lieve). BL-1(b) «La stessa ridge, con alpha dai soli inner, fittata sui 20 utenti» non dice (i)
+  che alpha va scelto sul bersaglio sintetico lineare (non sul reale), (ii) come si porta da 10 a 20 utenti: con la loss
+  media per finestra (P:57) l'alpha ottimo scala circa come 1/n, quindi l'alpha inner e' circa doppio. Nel modello dei
+  revisori (isotropo, sigma 2,5) la ridge ottima recupera 0,908, con alpha doppio 0,901, la WLS 0,898 (CALCOLATO,
+  conti_rilettura.out.txt). (iii) Se (b) passa di un soffio, una L0 neurale fra la WLS e la ridge da' ancora «ricetta non
+  ammessa» con causa illeggibile: (b) da sola non chiude il controesempio di B:72-77, serve (a), che abbassa sigma.
+  Correzione: «alpha sul bersaglio sintetico, penalità sulla somma dei quadrati (o alpha × n_inner/n_outer)»; dire che (a) e
+  (b) vanno insieme, oppure riprendere l'alternativa del revisore «definire il cancello rispetto a quel riferimento»
+  (RES:127).
+
+P-26 [B:118-120 con B:165-167] IMPRECISIONE. BL-2 (opzione cancello) e OB-1 non si compongono. (i) Etichette: se la
+  condizione sulla MLP non passa, OB-1 da' «ricetta non ammessa» (o «ottimizzazione non risolta» con allarme), BL-2 da'
+  «controllo non diagnostico»; manca la precedenza, e la nota controlli-8 (4) su un ordine fisso degli stati (RES:203-205) e'
+  stata lasciata fuori (B:318). (ii) Allarme sulla MLP: in questa condizione la MLP e' un comparatore; una MLP sottoallenata
+  (allarme aperto) rende piu' facile (E_MLP − E_TCN) ≥ q·margine. Con OB-1 l'allarme «si registra» e il controllo risulta
+  specifico grazie a un comparatore allenato male: e' il caso che P:104 vieta («Nessuna vittoria costruita su un comparatore
+  inadeguatamente allenato») e che OB-4 tratta in modo direzionale.
+  Correzione: in BL-2 «se la condizione MLP non passa: non diagnostico (prevale su ricetta non ammessa); con allarme aperto
+  sulla MLP la condizione non conta come superata», e un ordine fisso delle etichette nei controlli.
+
+=====================================================================================================================
+5. RISPOSTA ALLA RICHIESTA DI GPT (punto 4 del compito)
+=====================================================================================================================
+- Convergenza: dichiarata esplicitamente come non raggiunta e tabella del §10 dichiarata non pronta (v3:26 e v3:435). OK.
+- Ogni blocco ha posizione («Dove») e controesempio minimo marcato come modello o numeri d'esempio. OK.
+- Distinzione disegno / implementazione / benchmark: BL con «Tipo: disegno»; sezione 6 per codice e benchmark. Eccezione:
+  ricetta-9 (vii) messo fra l'implementazione (P-16). Le OB non hanno il «Tipo» (tutte disegno o testo): non e' un errore.
+
+=====================================================================================================================
+6. STATO SULLA VERSIONE CORRENTE v3 (12:26, sha256 5f10113a..., righe della v3)
+=====================================================================================================================
+Risolti nelle versioni v2/v3 (non vanno nell'elenco finale):
+  P-1 («nessuno stimatore della classe»: ora v3:73-74 «quando nemmeno la forma chiusa non regolarizzata lo recupera»);
+  P-2 nel corpo (v3:83-85 condizionale, «massima verosimiglianza» tolto) e nel prompt (v3:445-448 condizionale);
+  P-5 (v3:92-93 «smette di passare fra 0,90 e 0,94», corretto sulla griglia dello script);
+  P-14 (criteri-2 nei due versi, v3:337); P-18 (prefisso 32e5452: applicato nella sezione 4, v3:305, v3:315-325);
+  P-19 (f) (v3:464-465 distingue L0 e L13); P-23 nel corpo (v3:201-203 rimette il rinomina dell'esito);
+  P-4 in parte (il prompt ora dice che il controesempio dipende dai parametri, v3:447-448).
+Restano (con le righe della v3), in ordine di importanza:
+
+ERRORI
+ E1 = P-22 [v3:216-220] OB-4: con allarme sulla TCN le «letture negative» bloccate comprendono il deterioramento_pratico in
+     2/3, quindi il veto non ha etichetta e la TCN diventa candidata anche se la MLP e' migliore in modo pratico (contrasto 2
+     −3,0, IC99 [−4,5; −1,5]). Fix: il veto resta; l'allarme TCN sospende solo le conclusioni negative o nulle.
+ E2 = P-20 [v3:476-478] Prompt OB-4 senza «compresa l'assenza di deterioramento usata dal veto» e senza «la candidata
+     richiede L0, MLP e L13 ammessi» (v3:218-220): e' la formula che VRC:286-290 dimostra insufficiente.
+ E3 = P-10 [v3:409 contro v3:130-132 e v3:461] «non diagnostico si decide in forma chiusa, prima di ogni fit neurale» e'
+     falso con l'opzione cancello di BL-2, che da' «non diagnostico» dopo i fit dei controlli.
+
+IMPRECISIONI
+ I1 = P-11 [v3:160-164] promozione di BL-3 non motivata con il criterio dichiarato; OB-4 (v3:214-215) e OB-2 (v3:191-192)
+      hanno lo stesso effetto e restano obbligatorie; «va corretto prima della firma» vale anche per le OB; il verdetto del
+      punto 2 diverge da quello del verificatore senza dirlo in tabella (v3:38).
+ I2 = P-26 [v3:130-132 con v3:182-184] BL-2 cancello e OB-1: etichette in conflitto («non diagnostico» contro «ricetta non
+      ammessa») senza precedenza; un allarme sulla MLP rende la condizione piu' facile e OB-1 lo «registra» soltanto.
+ I3 = P-24 [v3:109-110, v3:454] la LS su y* solo nella banda non chiude S-C, che riguarda il cancello del 50%.
+ I4 = P-23 [v3:473-474 contro v3:200-204] prompt OB-3 «(a) toglierla» contro corpo «(a) tenere la regola, sostituire e
+      rinominare l'esito».
+ I5 = P-19 [v3:453, 461, 466-467, 470-471, 463-465] prompt senza: alternativa di BL-1(c); frase dell'opzione descrittiva di
+      BL-2; alternativa della tolleranza e definizione di «epoca interna» in BL-3; regola delle etichette di OB-1; avviso che
+      BL-3 e' un minore promosso da Claude con il suo criterio.
+ I6 = P-17 [v3:389 contro v3:329-331 e v3:491] «con quanto vuole della sezione 5» contro «Le righe "minore" vanno
+      corrette»; e la verifica delle minori e' rinviata alla review del pacchetto, dopo la firma (P:147), che P:209 dichiara
+      «non un'altra revisione del disegno».
+ I7 = P-16 [v3:375] ricetta-9 (vii) fra l'implementazione; RES:974 lo dice testo di P:104, e dipende da OB-4.
+ I8 = P-3 [v3:68, v3:442] «sbaglia molto per stima» come fatto; fonte: direzione robusta, entita' plausibile non stabilita
+      (VAC:95-96, VAC:109-112); il prompt non porta «plausibile, non stabilito».
+ I9 = P-6 [v3:38, v3:141, v3:164] «scatta» come fatto e nessuna avvertenza che l'argomento e' qualitativo (RES:590; VRC:70,
+      VRC:408).
+ I10 = P-25 [v3:102-105] BL-1(b): alpha di quale bersaglio e come portato da 10 a 20 utenti; con alpha non riscalato la ridge
+      passa di un soffio (0,901 contro 0,908 ottima, WLS 0,898): (b) da sola non chiude il controesempio.
+ I11 = P-21 [v3:185-186] precedenza solo in P:72 (verificatore: P:72, P:98, P:104, §10) e dipendente dalla definizione di
+      V-ricetta-criteri-3 lasciata fra le note (v3:347).
+ I12 = P-7 [v3:335] architettura-2: il caso «base L» scatta solo con L in float64 e norma di LSQR (VAC:44-46).
+ I13 = P-8 [v3:131-132] «e la ricetta non c'entra» non e' nella fonte e non si puo' affermare.
+ I14 = P-9 [v3:43, v3:437] «Complete e fedeli» contro CONVERGE_CON_CORREZIONI del verificatore (RES:1683-1685).
+
+MANCANZE
+ M1 = P-12 [v3:14] segnaposto HH:MM.
+ M2 = P-13 [v3:188-193, v3:472] OB-2 senza l'allarme del primo quarto che manca in DEC:6747 (RES:602, RES:604, RES:916).
+ M3 = P-15 [v3:67-74, v3:106, v3:453] BL-1 non descrive il rischio di «non calibrato» del temporale con a ≤ 1 che motiva (c)
+      (RES:124; VAC:104-106).
+ M4 = P-16b [v3:212-224] OB-4 non chiede di riscrivere P:104 («Se L0 o TCN-post non è ammissibile...»), che con la regola
+      direzionale vale per L0 e non per TCN-post (VRC:294).
+
+Totale sulla v3: 3 errori, 14 imprecisioni, 4 mancanze.

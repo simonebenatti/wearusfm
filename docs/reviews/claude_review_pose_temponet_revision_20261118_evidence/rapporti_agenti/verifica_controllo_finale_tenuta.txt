@@ -1,0 +1,235 @@
+VERIFICA AVVERSARIA DEL CONTROLLO «TENUTA» (secondo giro) - bozza congelata controllo2/bozza_controllo2.md
+==========================================================================================================
+Bozza: sha256 cdaee410f031b9f05b85dc72c8f35becad2abaf51909d52ac2d05bd4c273127a, 669 righe (ESEGUITO shasum all'inizio: coincide;
+non modificata). «bozza:N» = riga della copia congelata. Fonti: P, J, R, DEC, prompt nella copia gpt_3e007c8/ (3e007c8); rapporto e
+script del controllore (controllo2/tenuta/); sintesi e rapporti del primo giro (controllo/sintesi_controllo.txt: AVV-04, AVV-05,
+AVV-10, AVV-11, VA-N1); review_controlli.txt; verify_architettura-controlli.txt; sintesi_verify.txt; script degli agenti
+(v_scan_lineare.py, v_controlli_conti.py, conti_temporale_dettaglio.py, conti_rilettura.py, verifica_conti.py); ricevuta pinnata
+work_criteri/LONG-FIT-G49046-pose-20261105.json (ESEGUITO shasum: b08e6e32...7c14, coincide col pin).
+Script miei, in questa cartella (solo aritmetica sulle formule degli agenti, nessun dato, nessuna simulazione):
+  - v_t01_ancora.py -> .out.txt : con l'ancora (a) sigma sale o scende, al variare di quanto la ridge abbassa E_real;
+  - v_t02_arresti.py -> .out.txt : arresti in forma chiusa del temporale contando anche la banda outer (controlli-4);
+  - v_t02_a_usate.py -> .out.txt : quali a restano usabili con sigma <= 3 e <= 6.
+  - v_t07_plateau.py -> .out.txt : residuo al LR piu' piccolo rispetto al margine, per tre leggi di plateau.
+Metodo: per ogni rilievo rileggo il passo della bozza e le fonti, rifaccio i conti del controllore e provo a smentirlo, anche
+con le correzioni gia' accolte al primo giro (che la bozza attuale applica).
+
+----------------------------------------------------------------------------------------------------------
+T-01 | bozza:125-126 (482; prompt 569-570) | PARZIALE | imprecisione
+----------------------------------------------------------------------------------------------------------
+Che cosa regge.
+- Il meccanismo e' giusto. CALCOLATO v_t01_ancora.out.txt (formule di v_scan_lineare.py e verifica_conti.py): a pari sigma la ridge
+  sintetica ha meno eccesso della WLS (Delta_syn 0,0022-0,0048 di E_dyn nei quattro casi); se la ridge non abbassa affatto E_real
+  l'ancora (a) chiede un sigma un po' piu' alto (2,546 -> 2,599 con K 2,5/5 ed E_real 0,94; ridge di (b) 90,46% -> 90,10%). Con
+  K 3,5/7 ed E_real 0,92: 90,32% -> 89,93%, cioe' «non diagnostico». Numeri del controllore riprodotti esattamente.
+- Il prompt non riporta la condizione di bozza:125-126; conserva solo il contrasto implicito «che chiude il caso qualunque sia
+  la composizione di E_real» (bozza:571-572).
+Che cosa non regge.
+- «non chiude il controesempio nel caso nominato dalla bozza stessa» non e' un difetto nuovo: e' quello che la bozza scrive gia'
+  (bozza:126 «la stretta resta») e per cui offre l'alternativa (bozza:127). E' la correzione AVV-04 parte (2) del primo giro,
+  accolta con CORRECTED_FIX «(a)+(b) solo nella misura detta» (controllo/sintesi_controllo.txt:142-146) e applicata.
+- «peggiora» vale solo al limite. CALCOLATO v_t01_ancora.out.txt: sigma sale solo se la ridge abbassa E_real meno di Delta_syn
+  (0,0022-0,0048 di E_dyn); con Delta_real 0,005 sigma scende gia' in tutti e quattro i casi. Il verificatore
+  del primo giro stima l'eccesso di stima reale su E_dyn ben sopra (phi 0,1-0,3 -> E_real 0,83-1,01 da 0,786, cioe' 0,04-0,2 di
+  E_dyn: verify_architettura-controlli.txt:109-112, v_controlli_conti.out.txt punto 1): «soprattutto dallo spostamento» non
+  implica Delta_real < 0,003. «Resta» e' una descrizione corretta a meno di 0,4 punti nel caso estremo.
+- La sezione 7 (bozza:482) non va cambiata: la bozza raccomanda (a)+(b) dichiarando il residuo (bozza:125-126) e da' l'alternativa
+  completa (bozza:127-129); se GPT adotta (a)+(b), l'accettazione con residuo dichiarato e' coerente con BL-1 come e' scritto (i
+  due difetti di bozza:39 sono tolti: ancora regolarizzata e verifica di leggibilita'). Nel caso K 3,5/7 a 0,92, poi, (a)+(b) da'
+  «non diagnostico», un'etichetta giusta, dove la sola (b) darebbe «ricetta non ammessa» a una L0 simile alla WLS (89,28%): non e'
+  un esito peggiore per l'attribuzione, solo per la probabilita' di arresto.
+Correzione accolta (ridotta): bozza:126 «Se E_real nasce soprattutto dallo spostamento fra utenti, la stretta resta (e, se la ridge
+  non abbassa affatto E_real, cresce di poco: a pari sigma la ridge sintetica sbaglia meno della WLS, nel modello circa 0,003 di
+  E_dyn)». Nel prompt, prima di «Per questo (a) e (b) vanno insieme» (bozza:570): «(a) aiuta nella misura in cui l'errore di stima
+  pesa su E_real; se E_real nasce soprattutto dallo spostamento fra utenti la stretta resta, e la chiude solo l'alternativa».
+  Nessuna modifica alla sezione 7; facoltativa una riga nella sezione 8.
+
+----------------------------------------------------------------------------------------------------------
+T-02 | bozza:143-150, 130, 132 (79-80; prompt 574-581) | PARZIALE | mancanza
+----------------------------------------------------------------------------------------------------------
+Che cosa regge.
+- (i) Con la banda su E_LS* l'eccesso di stima esce dal guadagno: g* = R_T/(N+R_T) invece di (R_T+X)/(N+R_T+X), quindi a pari
+  (a, sigma) il guadagno scende e serve una quota r piu' alta. Rifatti i conti: bl1_soglia_r.out.txt (a=1, E_real 0,85: r minimo
+  0,27 -> 0,37; 0,90: 0,35 -> 0,47) e bl1_temporale_isolato.out.txt (solo non calibrati, a<=1: 12/23/33/46 -> 28/39/50/62).
+  La bozza dice solo che diventa piu' severo il cancello del 50% (bozza:149-150), non la calibrazione: la mancanza c'e'.
+- (ii) Con L e T a varianza 1 (P:86), piu' a vuol dire piu' segnale e piu' sigma per restare entro 0,05 da E_real; (c) dice «a
+  fino a 3» (bozza:130) e (d) «griglia di sigma fitta o continua» (bozza:132) senza allargare l'intervallo di P:90 (1-3).
+  CALCOLATO v_t02_arresti.out.txt (ancora ridge, banda su y*, a<=3): non calibrati 2/24/31/48 su 81 con sigma fitta fino a 3,
+  0/14/27/28 fino a 6 (E_real 0,80/0,85/0,90/0,94). L'allargamento conta.
+- (iii) Il limite strutturale regge: r >= c(1 + f_L/(a^2 f_T)) con c = E'/((1-E')/g + E') (v_controlli_conti.py:57-61); se r < c
+  nessuna a basta e P:92 vieta seme e griglia nuovi. Lo chiude solo la seconda opzione di (c) o una regola fissata ora su r.
+Che cosa non regge.
+- «i numeri della riga 80 non valgono piu'» / «Aggiornare la riga 80»: no. Bozza:79-80 sta in «Che cosa non va» e descrive il
+  protocollo attuale, dove la banda usa la WLS su y e l'errore di stima conta: «con l'errore di stima a K = 3» e' giusto per quel
+  protocollo (verify_architettura-controlli.txt:104-106). Il numero nuovo (0,37-0,46 senza X) va nella correzione, non al posto
+  della riga 80.
+- La conta e' a senso unico. Il controllore conta solo i «non calibrato»; con la banda su y c'e' anche l'arresto «non diagnostico»
+  della banda outer di P:96, che si sposta in basso da 10 a 20 utenti (controlli-4: con K=5, 21 dei 48 casi calibrati escono dalla
+  banda, review_controlli.txt:209-218). E' proprio cio' che E_LS* toglie (bozza:148). CALCOLATO v_t02_arresti.out.txt, arresti in
+  forma chiusa totali (non calibrato + non diagnostico outer), regola di scelta di P:92:
+    ancora ridge, a<=3, sigma 0,5-3: banda su y 0/12/29/44, su y* 2/24/31/48 (+2/+12/+2/+4);
+    ancora ridge, a<=3, sigma 0,5-6: banda su y 0/3/21/27, su y* 0/14/27/28 (0/+11/+6/+1);
+    ancora ridge, a<=1, sigma 0,5-3: banda su y 21/32/44/57, su y* 28/39/51/63 (+7/+7/+7/+6);
+    ancora ridge, a<=3, sigma P:90 {1..3}: banda su y 14/27/33/49, su y* 14/26/33/53 (0/-1/0/+4).
+  Il saldo di E_LS* e' quindi da -1 a +12 arresti su 81, non +11...+18. Rispetto al protocollo attuale (ancora WLS, a<=1, sigma
+  {1..3}, banda su y: 34/43/51/62) l'insieme delle correzioni con a fino a 3 li riduce (2/24/31/48): «le regole riscritte rendono
+  piu' probabile il non calibrato» vale per la sola componente E_LS*, non per la correzione nel suo insieme.
+- «con sigma fra 1 e 3 le a oltre 1,5 restano inutili» e' troppo forte. CALCOLATO v_t02_a_usate.out.txt: con sigma fino a 3 la
+  regola sceglie a = 2,0 in 11-15 casi su 81 (E_real 0,85-0,94); restano quasi inutili a = 2,5-3 (scelte in 0-2 casi), che con
+  sigma fino a 6 diventano le piu' scelte (26-29 casi per a = 3).
+Correzione accolta (corretta): nella nota sotto la tabella (bozza:148-150) aggiungere: «La banda su E_LS* alza anche la quota
+  minima di T non leggibile da L0 che serve per calibrare (nel modello da 0,27 a 0,37 con a = 1 ed E_real 0,85), quindi rende piu'
+  probabile «non calibrato»; in cambio toglie lo spostamento della banda outer (controlli-4). Nel modello dei revisori il saldo
+  degli arresti in forma chiusa e' di al piu' 12 casi su 81 in piu' (da -1 a +12 secondo a e sigma).» In (c): «Con a oltre 1 va allargato anche l'intervallo di sigma,
+  fissato ora (nel modello a = 3 chiede sigma fino a circa 6). Se la quota r di T non leggibile da L0 e' sotto c(E', 0,06) nessuna
+  a basta e P:92 vieta un nuovo seme: serve allora la banda sganciata dall'ancora, oppure una regola fissata ora dopo aver misurato
+  r in forma chiusa sul RHS-base T (P:80).» Riga 80 invariata. Stesse due frasi nel prompt, (c) e (d) (bozza:574-581).
+  La terza strada del controllore (banda sulla LS su y, E_LS* solo nel margine) non va proposta come equivalente: riporta lo
+  spostamento di controlli-4 e lascia un margine R_T che puo' stare sotto il 6% di E_LS*, quindi un cancello del 50% piu' duro;
+  la tabella attuale viene dalla correzione AVV-03 accolta al primo giro (controllo/sintesi_controllo.txt:137-141).
+
+----------------------------------------------------------------------------------------------------------
+T-03 | bozza:81 (prompt 555) | CONFERMATO | imprecisione
+----------------------------------------------------------------------------------------------------------
+Tentativo di smentita: «leggibile» potrebbe voler dire solo «margine abbastanza grande» (la banda ha un minimo del 6%), e
+l'asimmetria con P:95 (che ferma solo i margini non positivi) e' reale (verify_architettura-controlli.txt:100-101). Non basta:
+la bozza stessa definisce la leggibilita' come recuperabilita' da uno stimatore in forma chiusa: titolo di BL-1 (bozza:67), (b)
+«Verifica di leggibilita' del controllo lineare [...] deve recuperare almeno il 90%» (bozza:114-117), tabella dell'Esito
+(bozza:39 «non verifica che il margine piantato sia recuperabile da uno stimatore lineare in forma chiusa»). P:96 controlla solo
+che il margine LS-L0 -> oracolo stia in [6%, 10%] («fuori intervallo -> controllo non diagnostico, non fallimento della TCN»):
+nessuna verifica che la TCN, fittata su y rumoroso, ne recuperi il 50%. CALCOLATO: con E_LS* il recupero e' (R_T - X_TCN)/R_T,
+quindi passa se e solo se X_TCN <= 0,5 R_T (sintesi_verify.txt:21 con X_LS = 0); un fallimento per errore di stima della TCN prende
+«ricetta non ammessa» (P:98, OB-1 bozza:248). Il prompt (bozza:555) lo dice in modo netto: «Il controllo lineare non ha una verifica
+di leggibilita' (P:95), il temporale si' (P:96)». La premessa e' imprecisa, e la bozza stessa (bozza:474) rimanda alla misura
+proprio la domanda che bozza:81 da' per verificata.
+Correzione del controllore giusta. L'ultima frase («dire che il 50% piu' severo rende piu' probabile anche questo esito») e'
+quasi gia' in bozza:149-150; basta collegarla.
+
+----------------------------------------------------------------------------------------------------------
+T-04 | bozza:127-129 (prompt 571-573) | CONFERMATO | imprecisione
+----------------------------------------------------------------------------------------------------------
+Tentativo di smentita: OB-1 (bozza:255-257; prompt 619-620) da' l'ordine giusto («non diagnostico» dalla quota minima della ridge,
+poi gli stati per testa), quindi un lettore attento ricompone. Ma le due frasi stanno entrambe nel testo da applicare e si
+contraddicono: alla lettera di bozza:128-129 («La testa deve recuperare [...] e la ridge una quota minima [...]. Altrimenti:
+«controllo non diagnostico»») una testa che fallisce riceve «non diagnostico», l'etichetta che P:96 riserva al «non fallimento
+della TCN»: e' lo schema VA-N1 del primo giro (controllo/sintesi_controllo.txt:192-195). (ii) regge con una precisazione: il prompt
+dice «In alternativa ad (a) e (b)» (bozza:571), ma poi (d) «Inoltre [...] E_cal, la ridge su y, per l'aggancio a E_real»
+(bozza:575, 579) e la tabella del corpo («ridge di (a)», bozza:142) tengono la ridge nell'ancora. Non e' quindi certo che l'ancora
+torni alla WLS: il testo e' contraddittorio, e GPT deve scegliere una delle due letture. (iii) regge: senza (a) e (b) l'alpha
+della ridge del cancello (inner, sintetico, penalita' sulla somma dei quadrati) non e' scritto da nessuna parte.
+Correzione del controllore giusta: «In alternativa a (b)», con la ridge di (a)-(b) definita e gli stati per testa di OB-1; (a)
+resta per l'ancora. La clausola «se GPT sostituisce anche (a), (c) deve essere la banda sganciata» e' coerente con T-02 (iii).
+
+----------------------------------------------------------------------------------------------------------
+T-05 | bozza:110-113 (prompt 565-566) | CONFERMATO | mancanza
+----------------------------------------------------------------------------------------------------------
+Tentativo di smentita: la scala di alpha dipende dalla parametrizzazione. La ridge storica penalizzava la SSE grezza su tutti gli
+elementi validi, la WLS di P:76 pesa m_itj/q_i (somma 1 per finestra): l'ottimo storico 1e5 non dice dove cada l'ottimo nuovo,
+e GPT potrebbe scegliere una griglia larga. Ma l'obiezione conferma il rilievo: proprio perche' la scala non e' nota, una griglia
+finita senza regola di bordo puo' lasciare l'ottimo fuori, e alla rilettura «corrisponde» (bozza:482). ESEGUITO lettura della
+ricevuta pinnata (sha256 b08e6e32...7c14, coincide): alpha scelto 1e5 (riga 1378), extensions upper 2 (riga 1384), mse 0,691356 a
+1e4 (riga 1459), 0,656115 a 1e5 (riga 1463), 0,670911 a 1e6 (riga 1467); CALCOLATO 0,691356/0,656115 - 1 = +5,37%. La regola
+storica del progetto aveva la regola di bordo (DEC:5319 «estensioni fino a 3 decadi per lato, parita' alpha minore, eventuale
+bordo irrisolto dichiarato»). Anche la variante dell'intervallo regge come mancanza: P:92 sceglie «errore piu' vicino a E_real»
+nel lineare e «poi da E_real» nel temporale, e senza ancora quelle regole non hanno oggetto. L'intercetta e' libera nella WLS
+(P:76): dirlo anche per la ridge e' un dettaglio, ma costa due parole.
+Correzione del controllore giusta (la regola storica come esempio, conseguenza dichiarata se il minimo resta al bordo, intercetta
+non penalizzata, regola di scelta per la variante dell'intervallo).
+
+----------------------------------------------------------------------------------------------------------
+T-06 | bozza:174-175 (prompt 590) | CONFERMATO | errore
+----------------------------------------------------------------------------------------------------------
+Origine: la regola di bozza:174-175 e' il CORRECTED_FIX di AVV-05/VA-N1 del primo giro (controllo/sintesi_controllo.txt:148-152,
+192-195), costruito sul caso B (TCN 0,62 senza allarme, MLP 0,40 con allarme): li' la clausola passa nei numeri e un allarme
+della MLP la rende sospetta. Il caso T-06 (clausola fallita nei numeri, allarme della sola MLP) quel giro non lo esamina.
+Tentativo di smentita: un allarme della MLP potrebbe voler dire che la sua E_dyn misurata non e' rappresentativa (scelta al primo
+quarto di epoca, o con la selezione sulla MSE la E_dyn si muove nei due versi). Non regge: la clausola fallita e' una misura su un
+predittore istantaneo vero, che sugli held outer legge gia' quasi quanto la TCN; e' una prova di esistenza della leggibilita'
+istantanea, cioe' la motivazione di «non diagnostico» (bozza:168). Gli allarmi di P:69 sulla MLP (bordo del LR, minimo
+nelle ultime 5, primo quarto) indicano che una MLP con piu' budget potrebbe fare meglio, cioe' allargare il fallimento, non
+toglierlo; nel mondo sintetico non c'e' la componente di livello (controlli-6, bozza:437), quindi MSE ed E_dyn vanno insieme.
+L'allarme della MLP conta solo dove rende la clausola piu' facile, cioe' quando passerebbe (bozza:176-177): coerente con OB-4
+(bozza:298-299), che con un allarme sul comparatore blocca solo letture favorevoli alla TCN. ESEGUITO rilettura delle 16
+combinazioni di bl2_ob1_combinazioni.py: le regole riproducono le righe della bozza, l'unica differenza e' 1 0 0 1. Etichette uniche
+in tutti i casi. Gravita' «errore» adeguata: e' una regola da copiare in P, J e DEC.
+Correzione del controllore giusta.
+
+----------------------------------------------------------------------------------------------------------
+T-07 | bozza:224-226 (prompt 603-605) | CONFERMATO | imprecisione
+----------------------------------------------------------------------------------------------------------
+Origine: l'esenzione senza tetto per L0 e L13 e' il CORRECTED_FIX di AVV-11 (controllo/sintesi_controllo.txt:181-186), che ha
+separato le teste affini da MLP e TCN ma non ha guardato il margine. Tentativo di smentita: il 3/7 viene da un plateau
+proporzionale al LR, mentre la bozza dice solo che l'eccesso «cresce con il LR» (bozza:191-192). CALCOLATO v_t07_plateau.out.txt:
+con eccesso proporzionale a LR^k il residuo a 3e-5 vale 1,21 (k = 0,5), 0,43 (k = 1) o 0,10 (k = 2) volte il margine di
+vittoria. Il numero cambia, la conclusione no: per ogni legge crescente con eccesso nullo a LR nullo il residuo e' una frazione
+fissa del margine, quindi l'argomento che giustifica l'esenzione dice anche che con un margine grande resta un comparatore
+sotto-ottimizzato. Con il margine dello 0,014% del controesempio il residuo e' 0,001-0,017%: trascurabile; con l'1% sarebbe
+0,1-1,2% su L0 (primario) o L13 (veto), a favore della TCN, contro P:104. La bozza usa questa stessa ragione per la tolleranza di
+MLP e TCN (bozza:227-231). Probabilita' bassa, come dice il controllore.
+Correzione del controllore giusta (tetto con la stessa quota relativa di MLP e TCN); il «3/7» va presentato come esempio del
+modello lineare, non come valore.
+
+----------------------------------------------------------------------------------------------------------
+T-08 | bozza:276-278, 295-297 (prompt 627-628, 635-636) | CONFERMATO | imprecisione
+----------------------------------------------------------------------------------------------------------
+Tentativo di smentita: OB-4 sospende «le conclusioni negative o nulle sul valore della TCN» (bozza:295), e il nome misto si potrebbe
+leggere come descrizione, non come conclusione. Ma il nome misto e' costruito proprio sull'etichetta 3 e su upper99 < 0 del
+contrasto 2 o 3 («con MLP/L13 risolti migliori (upper99 < 0) ma con stima sotto il 2%», bozza:277-278), cioe' su una conclusione
+negativa sulla TCN; OB-4 tratta a parte solo la condizione di veto (bozza:295-297), non la lettura mista. La bozza non dice quale
+delle due regole vale. ESEGUITO rilettura di ob3_ob4_combinazioni.py: la logica riproduce OB-3(a)/(b) e OB-4 come scritti; l'unico
+caso con due esiti e' OB-3(a), allarme TCN, contrasto 2 con etichetta 3 e upper99 < 0. Con l'opzione (b) lo stesso caso e' veto,
+quindi l'ambiguita' nasce solo con (a). Il nome entra nella riga «Esito positivo» (OB-5, bozza:317), che Simone firma.
+Correzione del controllore giusta.
+
+----------------------------------------------------------------------------------------------------------
+T-09 | bozza:275, 304, 223 (prompt 625, 641-642) | CONFERMATO | mancanza
+----------------------------------------------------------------------------------------------------------
+(i) LETTO J:104, campo `practical_readout_recommendation` dentro `evaluation`, fuori da `candidate` (J:39-44): «all qualitygates
+and L0/MLP/L13/TCNpost admitted; contrasts1,4,5 eachbeneficio_pratico_risolto; neither2nor3 deterioramento_pratico; [...]». E'
+la stessa regola di J:40. OB-3 dice «J `candidate`» (bozza:275) e OB-4 «J `candidate` (J:40-41)» (bozza:304): seguiti alla lettera,
+J:40 e J:104 si contraddicono su TCN-post e, con l'opzione (b), sul veto. ESEGUITO grep di «admitted», «TCNpost», «deterioramento»
+in J, P, DEC e README: nessun altro duplicato. (ii) LETTO DEC:6747: «Bordo finale irrisolto: «ottimizzazione non risolta entro il
+budget», non verdetto negativo»; BL-3 elenca solo P:69, J:142, J:471 (bozza:223), mentre per BL-1 e BL-2 la bozza chiede anche DEC
+(bozza:108, 166). OB-2 fa gia' riscrivere DEC:6747 (bozza:267-268), ma senza l'esenzione e la tolleranza di BL-3. (iii) LETTO
+DEC:6753 «S-2 limita attribuzione delcontrasto3»; la qualificazione S-2 di OB-3 va solo in P:122, J `candidate` e §10
+(bozza:287-288). Non e' una contraddizione, ma DEC resterebbe piu' stretto (solo L13, solo contrasto 3).
+Correzione del controllore giusta.
+
+----------------------------------------------------------------------------------------------------------
+T-10 | bozza:569-570, 579-580, 586-594, 615 (prompt) | PARZIALE | imprecisione
+----------------------------------------------------------------------------------------------------------
+(1) Regge in parte: il prompt non ha la condizione di bozza:125-126, ma conserva «che chiude il caso qualunque sia la composizione
+di E_real» (bozza:571-572), che da' il contrasto in forma implicita. Correzione: quella di T-01 come corretta sopra.
+(2) Regge a meta'. «E_real dalla stessa ridge sui target reali» e' gia' nel prompt: (a) chiede la ridge «con una metrica
+dichiarata, per ciascun bersaglio» (bozza:565-566), cioe' reale e sintetico. Manca solo «stimatore da dichiarare: WLS o ridge» per
+E_LS* (bozza:143 contro bozza:579).
+(3) Regge: bozza:180-181 (con il cancello la quota di T non leggibile in modo istantaneo diventa condizione di riuscita; controlli-7
+propone di misurarla prima) non e' nel blocco BL-2 del prompt (bozza:583-594); controlli-7 compare solo fra le note (bozza:660).
+(4) Regge: corpo (bozza:249-250, solo minimo di E_dyn nelle ultime 5 epoche) e prompt (bozza:615, ogni allarme di P:69) non
+coincidono. Gli altri allarmi possono coincidere con S-2 (bordo del LR o scelta al primo quarto, con il minimo di E_dyn piu' di
+5 epoche dopo): la forma del prompt e' quella giusta, e le conseguenze restano compatibili.
+Correzione corretta: (1) come T-01 corretta; (2) in bozza:579 solo «E_LS*, la LS su y* (stimatore da dichiarare: WLS o ridge)
+valutata su y»; (3) e (4) come il controllore.
+
+==========================================================================================================
+NUOVI PROBLEMI
+==========================================================================================================
+Nessuno serio oltre ai dieci. Ho riletto le parti riscritte che i rilievi toccano (bozza:67-152, 154-183, 185-234, 240-309,
+478-487, 499-504, 529-669) cercando contraddizioni fra le regole, etichette senza nome o con due nomi, luoghi mancanti: quello che
+trovo e' gia' dentro T-01...T-10 o nelle correzioni corrette sopra (saldo degli arresti di T-02, contraddizione con (d) di T-04).
+Osservazione non bloccante, non la apro come problema: bozza:148 «Il margine e' solo la parte temporale piantata» parafrasa
+«il margine e' solo R_T» (sintesi_verify.txt:25), ma R_T contiene anche la parte non lineare istantanea di T, che e' il motivo di
+BL-2 (bozza:168, review_controlli.txt:179-182). «la parte di T piantata che L0 non legge» sarebbe piu' esatto.
+
+==========================================================================================================
+SINTESI
+==========================================================================================================
+10 rilievi verificati: 7 CONFERMATI (T-03, T-04, T-05, T-06, T-07, T-08, T-09), 3 PARZIALI (T-01, T-02, T-10), nessuno
+respinto. Gravita' dopo la verifica: 1 errore (T-06), 6 imprecisioni (T-01, T-03, T-04, T-07, T-08, T-10), 3 mancanze (T-02,
+T-05, T-09). Nessuno cambia il verdetto della bozza; tutti si chiudono con frasi.
+- T-01: il «peggiora» vale solo se la ridge abbassa E_real meno di 0,002-0,005 di E_dyn; il resto (non chiude con lo spostamento
+  fra utenti) la bozza lo dice gia' (AVV-04 accolta). Restano una parentesi in bozza:126 e la condizione nel prompt; sezione 7 invariata.
+- T-02: mancanza vera (la banda su E_LS* alza la soglia su r; (c) con a fino a 3 chiede sigma oltre 3; limite strutturale con r < c),
+  ma la riga 80 e' giusta com'e' e il saldo degli arresti, contando la banda outer di controlli-4, e' da -1 a +12 su 81, non
+  +11...+18; «a oltre 1,5 inutili» e' troppo forte (a = 2 resta usata con sigma <= 3).
+- T-10: il punto (2) e' mezzo coperto da (a) del prompt («per ciascun bersaglio»): manca solo «stimatore da dichiarare».

@@ -1,0 +1,37 @@
+== BL-1 controesempio, due coppie di K
+  K=(2.5,5.0) f=0.5 E_real=0.92: sigma=2.5 WLSin=0.9373 oracolo=0.9214 WLSout=0.9294 R_dyn=0.8983 R_MSE=0.8983
+  K=(2.5,5.0) f=0.4 E_real=0.78: non calibrato
+  K=(2.5,5.0) f=0.4 E_real=0.8: non calibrato
+  K=(3.5,7.0) f=0.5 E_real=0.92: sigma=2 WLSin=0.9038 oracolo=0.8823 WLSout=0.8930 R_dyn=0.9089 R_MSE=0.9089
+  K=(3.5,7.0) f=0.4 E_real=0.78: non calibrato
+  K=(3.5,7.0) f=0.4 E_real=0.8: non calibrato
+== griglia v_scan: primo E_real con F (WLS esatta sotto 90%) e ultimo con P
+  K=(2.5,5.0) f=0.3: PPPNPPPFFFFF ultimo P=0.9 primo F=0.92
+  K=(2.5,5.0) f=0.4: NNPPPPPPFFFF ultimo P=0.92 primo F=0.94
+  K=(2.5,5.0) f=0.5: PPPPPPPFFFFF ultimo P=0.9 primo F=0.92
+  K=(2.5,5.0) f=0.6: PPPPPPFFFFFN ultimo P=0.88 primo F=0.9
+  K=(3.5,7.0) f=0.3: PPPNPPPPFFFF ultimo P=0.92 primo F=0.94
+  K=(3.5,7.0) f=0.4: NNPPPPFFFFFF ultimo P=0.88 primo F=0.9
+  K=(3.5,7.0) f=0.5: PPPPPPPPFFFF ultimo P=0.92 primo F=0.94
+  K=(3.5,7.0) f=0.6: PPPPPPPFFFFF ultimo P=0.9 primo F=0.92
+== BL-1(b): ridge in due parametrizzazioni (modello isotropo di conti_rilettura.py, sigma 2,5 e 3, K_tot 5)
+  sigma=2.5: WLS 0.8983; ridge alpha ottimo 0.9077 (= alpha inner con penalita' sulla SSE, alpha* indip. da n); ridge alpha x2 0.9012 (= alpha inner con loss media, alpha*~1/n)
+  sigma=3.0: WLS 0.8536; ridge alpha ottimo 0.8723 (= alpha inner con penalita' sulla SSE, alpha* indip. da n); ridge alpha x2 0.8611 (= alpha inner con loss media, alpha*~1/n)
+== BL-3
+  (0,7269-0,7268)/0,7269 = 0.0138%
+== ricevuta: alpha 0,01 vs 1e5
+  0,7697254997148791/0,6561153689170307-1 = 17.316%
+== OB-3 e OB-4
+  gain3 L13 0,7619 TCN 0,750: 1.562; L13 0,735: -2.041
+  OB-3 contrasto 2 (-1,5; [-1,9; -0,8]) -> 3
+  OB-4 contrasto 1 (+5; [+3; +7]) -> 1
+== OB-2 regret L13: 3,66% ->  3.7 ; 11,9% -> 12
+== OB-5 soglia
+  0.7630564046643697  sotto ridge 2.9069%
+== ricetta-7: (1-1e-2*0.01)^9000 = 0.4066
+== costo-2/ricetta-6
+  5LR nominale 1260000  limite 1276500  6LR nominale 1458000  limite 1477800
+  traiettorie 5LR 125  eval held 5LR 33440  6LR 40128
+== disposizioni: 45+18 = 63 ; 8+37 = 45 ; 5+13 = 18
+== 2,0e-16 vs 1e-12 ok;  12/11+40 giorni:
+   2026-12-22

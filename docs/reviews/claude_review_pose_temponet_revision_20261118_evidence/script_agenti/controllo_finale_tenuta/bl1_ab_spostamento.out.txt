@@ -1,0 +1,10 @@
+K=(2.5;5.0) f'=0.5 E_real=0.90 | ancora WLS: sigma 2.023, WLS outer dyn/MSE 0.9334/0.9334, ridge 0.9376/0.9376 | ancora ridge (a) con E_real invariata: sigma 2.041, WLS 0.9322/0.9322, ridge (b) 0.9365/0.9365 -> (b) passa
+K=(2.5;5.0) f'=0.5 E_real=0.92 | ancora WLS: sigma 2.245, WLS outer dyn/MSE 0.9180/0.9180, ridge 0.9242/0.9242 | ancora ridge (a) con E_real invariata: sigma 2.275, WLS 0.9158/0.9158, ridge (b) 0.9223/0.9223 -> (b) passa
+K=(2.5;5.0) f'=0.5 E_real=0.93 | ancora WLS: sigma 2.383, WLS outer dyn/MSE 0.9076/0.9076, ridge 0.9154/0.9154 | ancora ridge (a) con E_real invariata: sigma 2.422, WLS 0.9045/0.9045, ridge (b) 0.9129/0.9129 -> (b) passa
+K=(2.5;5.0) f'=0.5 E_real=0.94 | ancora WLS: sigma 2.546, WLS outer dyn/MSE 0.8945/0.8945, ridge 0.9046/0.9046 | ancora ridge (a) con E_real invariata: sigma 2.599, WLS 0.8901/0.8901, ridge (b) 0.9010/0.9010 -> (b) passa
+K=(3.5;7.0) f'=0.5 E_real=0.90 | ancora WLS: sigma 1.965, WLS outer dyn/MSE 0.9120/0.9120, ridge 0.9191/0.9191 | ancora ridge (a) con E_real invariata: sigma 1.996, WLS 0.9093/0.9093, ridge (b) 0.9168/0.9168 -> (b) passa
+K=(3.5;7.0) f'=0.5 E_real=0.92 | ancora WLS: sigma 2.169, WLS outer dyn/MSE 0.8928/0.8928, ridge 0.9032/0.9032 | ancora ridge (a) con E_real invariata: sigma 2.217, WLS 0.8880/0.8880, ridge (b) 0.8993/0.8993 -> (b) NON DIAGNOSTICO
+K=(3.5;7.0) f'=0.5 E_real=0.93 | ancora WLS: sigma 2.294, WLS outer dyn/MSE 0.8802/0.8802, ridge 0.8930/0.8930 | ancora ridge (a) con E_real invariata: sigma 2.356, WLS 0.8736/0.8736, ridge (b) 0.8878/0.8878 -> (b) NON DIAGNOSTICO
+K=(3.5;7.0) f'=0.5 E_real=0.94 | ancora WLS: sigma 2.439, WLS outer dyn/MSE 0.8645/0.8645, ridge 0.8807/0.8807 | ancora ridge (a) con E_real invariata: sigma 2.522, WLS 0.8551/0.8551, ridge (b) 0.8734/0.8734 -> (b) NON DIAGNOSTICO
+Lettura: se la ridge non abbassa E_real (spostamento fra utenti), l'ancora (a) sui target sintetici chiede piu' rumore della WLS,
+perche' la ridge sintetica ha meno errore di stima: sigma sale e il margine si stringe ancora; (b) decide fra passa e non diagnostico.

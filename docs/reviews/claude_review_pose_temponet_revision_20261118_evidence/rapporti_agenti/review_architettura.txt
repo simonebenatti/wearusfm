@@ -1,0 +1,419 @@
+RAPPORTO DEL REVISORE - DIMENSIONE «architettura»
+Rilettura delle parti cambiate fra c15aac9 e 3e007c8 (contenuti scientifici in 62348ab)
+Data: 18/11/2026. Revisore indipendente per Claude. Solo lettura, conti e costruzione dei moduli per contare.
+Nessun training, nessuna simulazione di reti o mondi sintetici, nessun dato del progetto, nessun accesso al cluster.
+
+Perimetro: punto 1 della richiesta di GPT (ramo affine comune a MLP, TCN-post e TCN-pre; inizializzazione,
+conteggi e interpretazione) e parte matematica del punto 4 (riferimenti lineari pesati per finestra).
+File principali (snapshot di GPT 3e007c8, percorsi relativi a .../tcnreview2/gpt_3e007c8/):
+  P  = docs/pose_temponet_frozen_protocol_20261117.md (209 righe)
+  R  = docs/reviews/pose_temponet_response_20261118.md (152 righe)
+  J  = results/infra/pose_temponet_proposal_20261117/proposal.json (riga unica; cito le chiavi)
+  AC = results/infra/pose_temponet_proposal_20261117/analytic_checks.json
+Le righe citate di P e R sono quelle di `cat -n` sullo snapshot.
+
+Legenda delle prove: ESEGUITO (comando e risultato), CALCOLATO (conto mostrato), LETTO (file:riga e citazione breve).
+
+==========================================================================================================
+0. PREPARAZIONE
+==========================================================================================================
+LETTO  P:26 «il ramo affine384→20 usa **la stessa LN**, senza dropout, e aggiunge 7.700 parametri»
+LETTO  P:28 «TCN, ramo `g`: Conv1x1(384,64)–ReLU–Conv k3,d1(64,64)–...–Conv1x1(32,20)»
+LETTO  P:30 «MLP: `384→96→96→96→64→32→20`, cinque ReLU, dropout dopo i hidden64 e32»
+LETTO  P:42 «hidden di `g` Kaiming normal, fan_in, ReLU; bias hidden zero; ultimo strato di `g`, ramo affine e intera uscita di L0/L13 a zero»
+LETTO  src/wearusfm/model/pose_head.py a 3e007c8, righe 23-30: `nn.LayerNorm(dim)` (eps di default 1e-5, affine),
+       `nn.Linear(dim, n_joints)` creato sotto `torch.random.fork_rng(devices=[])` e poi azzerato (pesi e bias).
+       Quindi L0 = «PoseHead rifittata» ha proprio LN affine eps=1e-5 gamma=1 beta=0 e uscita a zero, come P:26 e P:42.
+
+==========================================================================================================
+(a) CONTEGGI, PESI, BIAS, MAC, CAMPO RICETTIVO, CROP6
+==========================================================================================================
+ESEGUITO  OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ~/.venvs/wearusfm-tok/bin/python -I work_architettura/conta_moduli.py
+  (moduli costruiti dalla specifica P:26-30, nessun training; input costanti solo per gli hook e il campo ricettivo)
+  Risultato:
+    L0        tot=  8468 LN=768 pesi_trasf=  7680 bias= 20 ramo_aff=   0 MAC/finestra160=  1.228.800
+    L13       tot=100628 LN=768 pesi_trasf= 99840 bias= 20 ramo_aff=   0 MAC/finestra160= 15.974.400
+    MLP       tot= 73000 LN=768 pesi_trasf= 71808 bias=424 ramo_aff=7700 MAC/finestra160= 11.489.280
+    TCN_post  tot= 72904 LN=768 pesi_trasf= 71808 bias=328 ramo_aff=7700 MAC/finestra160= 11.489.280
+    TCN_pre   identica a TCN_post
+    RF (autograd, pesi positivi): L13 e TCN al centro 6, 80, 153 dipendono da 13 posizioni, offset -6..+6;
+      ai centri 0 e 159 solo 7 posizioni (il resto e' padding).
+    Analisi strato per strato (conv d3 -> d2 -> d1): per t in 6..153 nessuna posizione intermedia esce da [0,159];
+      i centri che toccano il padding sono esattamente 0..5 e 154..159 (12); crop6 = 148 centri.
+CALCOLATO a mano, per controllo:
+    ramo affine 384*20+20 = 7.700; LN 2*384 = 768.
+    g della MLP: pesi 384*96+96*96+96*96+96*64+64*32+32*20 = 36864+9216+9216+6144+2048+640 = 64.128; bias 96+96+96+64+32+20 = 404.
+    g della TCN: pesi 384*64+3*(64*64*3)+64*32+32*20 = 24576+36864+2048+640 = 64.128; bias 4*64+32+20 = 308.
+    MLP = 768+64.128+404+7.700 = 73.000; TCN = 768+64.128+308+7.700 = 72.904; differenza 404-308 = 96 bias.
+    pesi delle trasformazioni con ramo: 64.128+7.680 = 71.808; MAC = 71.808*160 = 11.489.280 (conv k3 contate su tutte
+    le 160 uscite, padding compreso, come si fa di solito).
+    RF = 1+2*(1+2+3) = 13; 6 patch * 25 ms = 150 ms; 12*25 = 300 ms; 13*25 = 325 ms.
+    Rapporto TCN/L0 = 72.904/8.468 = 8,609 («8,6 volte», P:142).
+LETTO  P:35-40 tabella e riga «MLP e TCN: 71.808 pesi nelle trasformazioni, 11.489.280 MAC per finestra160»: coincide.
+LETTO  J heads.*.params = 8468/100628/73000/72904/72904; AC parameters e MACs_each_P160 = 11489280,
+       MLP_TCN_transform_weights_each = 71808, linear_path_added_params = 7700, rf_patches 13, rf_offsets [-6,6]: coincidono.
+LETTO  J new_head_common.dropout_MLP_TCN.after_hidden_layers = [4,5]: coincide con P:28 e P:30 (dopo hidden64 e hidden32).
+LETTO  J new_head_common.receptive_field_TCN_L13_center_offsets_ms = [-150,150]: coincide.
+ESITO (a): tutti i numeri reggono. Nessun rilievo.
+  Nota di formulazione (non rilievo): P:40 dice «esclusi bias/LN/attivazioni» e conta le conv k3 su 160 uscite con padding;
+  se si contassero solo i tap non di padding il numero scenderebbe di poco. La convenzione e' quella usuale e uguale fra MLP e TCN.
+
+==========================================================================================================
+(b) PROVA DI CONTENIMENTO DI A-1 (R §4.1, righe 104-112)
+==========================================================================================================
+LETTO  R:106 «`||n(x)||² = D*v/(v+eps) ≤ D`» ; R:108 «scegliendo ciascun `c_j > sup_x |W_j h(x)|`» ;
+       R:108 «Nella TCN si usa la stessa costruzione mettendo a zero tutti i tap temporali salvo quello centrale»;
+       R:110 «non identifica un contributo non lineare puro: `g` può apprendere anche una componente affine».
+Verifica passo per passo (CALCOLATO, algebra):
+  1. LN senza parametri con varianza di popolazione v (come nn.LayerNorm): sum_k (x_k-mu)^2/(v+eps) = D*v/(v+eps) < D.
+     Quindi ||n(x)|| < sqrt(384) = 19,6 per OGNI x, non solo sui dati. Con gamma, beta finiti:
+     |W_j h(x)| <= ||W_j ⊙ gamma||*sqrt(D) + |W_j·beta| < infinito. Il sup esiste: la scelta di c_j e' lecita.
+  2. Primo strato (Linear 384->96 o Conv1x1 384->64): righe 1..20 = W h(x) + c, positive per ogni x; le altre righe a zero,
+     ReLU(0) = 0. Strati successivi: copia identica delle prime 20 coordinate con bias zero; ReLU e' l'identita' sui positivi.
+  3. Ultimo strato (32->20): copia le 20 coordinate e aggiunge b - c. Uscita = W h(x) + b, esatta.
+  4. TCN: kernel k3 con i soli tap centrali non nulli; i valori di padding moltiplicano pesi nulli, quindi la costruzione e'
+     esatta su tutte le 160 posizioni, non solo sul crop6.
+  Ipotesi davvero necessarie:
+   (i)   tutte le larghezze nascoste >= 20 (numero di uscite): MLP 96,96,96,64,32; TCN 64,64,64,64,32. Vero.
+   (ii)  immagine limitata dell'ingresso del primo strato: la da' la LN per ogni gamma, beta finiti (eps>0 o v>0). Vero.
+   (iii) bias nel primo e nell'ultimo strato (per c e b-c); gli strati intermedi possono avere bias zero. P:28 «Bias in ogni strato».
+   (iv)  ReLU come attivazione (identita' sul semiasse positivo). Vero.
+   (v)   dropout spento: in train il dropout invertito scala a caso le coordinate copiate; il contenimento vale per la
+         funzione in valutazione. R:108 lo dice.
+   (vi)  solo per la TCN: tap fuori centro a zero. Il padding NON e' un'ipotesi necessaria (moltiplica pesi nulli).
+  Conclusione: la prova e' corretta e completa. Confuta il titolo di A-1 («non contengono L0»). Coincide con quanto la
+  review 32e5452 diceva gia' nel testo di A-1 (righe 208-209: «Possono imitare L0 solo con bias grandi che tengono accese le ReLU»).
+Frase «il ramo affine non identifica un contributo non lineare puro» (R:110, P:122): CORRETTA, anzi in forma forte.
+  Per i punti 1-4, g puo' rappresentare ESATTAMENTE ogni mappa affine sul dominio della LN. Quindi per ogni affine A
+  (W, b, g) e (W - A_W, b - A_b, g + A) danno la stessa funzione: la scomposizione fra ramo affine e g non e' identificabile.
+  Nessuna attribuzione «al solo g» ha senso senza una normalizzazione in piu'. P:122 «Nessuna attribuzione causale “pura” al
+  ramo g, che può imparare componenti affini» e' la lettura giusta.
+Conseguenza sull'annidamento (CALCOLATO): con il ramo, L0 ⊂ TCN+affine e L0 ⊂ MLP+affine (g=0). Invece TCN+affine NON
+  contiene L13: dagli ingressi fuori centro z_{t+l}, l≠0, l'unico cammino passa per Conv1x1(384,64), quindi l'uscita dipende
+  da essi solo attraverso P z_{t+l} con P∈R^{64x384}. Un L13 generico ha righe fuori centro che occupano fino a
+  min(384, 12*20=240) dimensioni > 64: non rappresentabile, nemmeno in modo approssimato. E L13 non contiene la TCN (non lineare).
+  Il contrasto 3 resta fra classi non annidate (vedi rilievo architettura-7).
+
+==========================================================================================================
+(c) INIZIALIZZAZIONE, GATE MORTI, GRADIENTI AL PRIMO PASSO, ORDINE DI CREAZIONE E GENERATORI
+==========================================================================================================
+LETTO  P:42 «Nessun gate scalare a zero davanti al ramo già azzerato. Al primo backward imparano uscita e ramo affine»
+LETTO  P:44 «Ordine di creazione: LN, strati di `g` nell'ordine sopra, ramo affine; quest'ultimo sotto fork_rng»
+LETTO  P:44 «Generatori separati: init `100000+s`, dropout `200000+100*f+s`, shuffle `300000+100*f+s`»
+LETTO  P:28 «**nn.Dropout per elemento**, non Dropout1d, disattivato in eval, solo dentro `g`»
+LETTO  J new_head_common.module_rng_policy, output_layer_initialization, other_weights_initialization; J fit.shuffle_rng:
+       stessi semi e stessa politica del protocollo. Coerenti fra loro.
+Gradienti al primo passo (CALCOLATO). y = W h + b + g(h), delta = dL/dy ≠ 0 (all'avvio y = 0, target standardizzati).
+  - dL/dW = sum delta h^T ≠ 0; dL/db = sum delta ≠ 0.
+  - Ultimo strato di g (W6, b6): dL/dW6 = sum delta a5^T, con a5 = attivazioni dell'ultimo hidden: con Kaiming e bias zero
+    circa meta' delle unita' sono accese per ogni ingresso, quindi ≠ 0.
+  - Strati interni: dL/da5 = W6^T delta = 0 perche' W6 = 0: gradiente nullo al primo passo.
+  - LN: dL/dh = W^T delta + J_g^T delta = 0 + 0 (W = 0, W6 = 0): gradiente nullo al primo passo.
+  - Dal secondo passo W ≠ 0 e W6 ≠ 0: interni e LN ricevono gradiente. E' esattamente P:42 e R:112.
+  - AdamW con gradiente nullo: m = v = 0, passo nullo; il decay disaccoppiato contrae i soli pesi interni di (1 - lr*0,01),
+    trascurabile. Nessun blocco.
+Gate morti (CALCOLATO). Con y = W h + b + alpha*g(h), alpha = 0 e W6 = 0: dL/dalpha = delta·g(h) = 0 e dL/dtheta_g ∝ alpha = 0.
+  Nessuno dei due si muove mai: il gate sarebbe morto per sempre. La scelta di non metterlo (P:42, R:112, J extra_zero_gate=false)
+  e' giusta. Nemmeno ReLU morte all'avvio: con Kaiming fan_in e bias zero la pre-attivazione del primo hidden ha varianza
+  2*||h||^2/384 ≈ 2 (||h||^2 ≈ 384 per la LN con gamma=1), quindi meta' circa delle unita' accese, non un terzo spento come
+  con l'inizializzazione di default (nota `architettura-5` della review 32e5452, R:39).
+  Fan_in delle conv k3: 64*3 = 192 (dilatazione irrilevante); nn.init.kaiming_normal_ lo calcola cosi'. Implementabile.
+Ordine di creazione e fork_rng (LETTO src/wearusfm/model/pose_head.py:26-30 a 3e007c8): PoseHead crea gia' l'uscita sotto
+  `torch.random.fork_rng(devices=[])` e poi la azzera. Il ramo affine sotto fork_rng ripete lo stesso schema: coerente.
+  Poiche' il ramo e' creato per ultimo, fork_rng conta solo se la reinizializzazione Kaiming di g avviene DOPO la creazione di
+  tutti i moduli; in ogni caso non fa danni. Con il pin delle versioni e l'hash dello stato iniziale (P:44) la mappa
+  seme -> pesi e' fissata dal codice; non serve altra scelta scientifica.
+Generatori separati (ESEGUITO, ispezione dell'API, ~/.venvs/wearusfm-tok/bin/python, torch 2.14.0):
+  - F.dropout(input, p, training, inplace): NESSUN argomento generator; nn.Dropout(p, inplace) idem.
+  - torch.nn.init.kaiming_normal_(..., generator=None): accetta un generatore dedicato.
+  - Tensor.bernoulli_(p, *, generator=None): accetta un generatore (anche CUDA).
+  - torch.manual_seed -> _manual_seed_impl chiama torch.cuda.manual_seed_all(seed): semina ANCHE tutti i generatori CUDA.
+  Quindi «generatore dropout 200000+100*f+s» con nn.Dropout letterale e' realizzabile solo cosi': il generatore CUDA di default
+  del device, seminato con quel seme DOPO l'inizializzazione (un torch.manual_seed successivo lo sovrascriverebbe), non usato da
+  nient'altro durante il training, salvato e ripristinato (get/set_rng_state) a ogni cambio fra le due traiettorie appaiate dei
+  fold (P:66 «con stato/RNG distinto per traiettoria») e salvato con lo stato per la continuazione a 300. In alternativa un
+  dropout per elemento equivalente con bernoulli_(generator=...), che pero' non e' «nn.Dropout» alla lettera.
+  Lo shuffle con torch.Generator dedicato (randperm o DataLoader(generator=...), worker 0) e' diretto.
+  Esito: coerente e realizzabile senza scelte scientifiche nuove, ma il testo va precisato (rilievo architettura-3, nota).
+Altri controlli di coerenza (CALCOLATO): init 100000+s non dipende da f, quindi i due fold CV (s=0) e il rifit seme 0 partono
+  dagli stessi pesi; e' coerente con P:44 «stessa inizializzazione per testa/seme/fold fra LR» e con J
+  (initialization "100000+s"). TCN-post e TCN-pre con lo stesso seme hanno pesi iniziali identici (stessa architettura): buon
+  appaiamento. L0/L13: tutti zero e LN gamma=1 beta=0, deterministici; i tre semi cambiano solo lo shuffle (P:44): corretto.
+
+==========================================================================================================
+(d) CON g = 0 LA TESTA COINCIDE CON L0
+==========================================================================================================
+LETTO  P:26 «Con `g=0` la funzione è una L0; non è garantita la stessa traiettoria di AdamW».
+LETTO  P:35 L0 = «LN→Linear384,20, PoseHead rifittata»; pose_head.py:23 `nn.LayerNorm(dim)` (eps 1e-5, affine), :27-30 Linear a zero.
+CALCOLATO: con l'ultimo strato di g a zero, g(h) = 0 per ogni h e per ogni valore dei pesi interni. La testa diventa
+  W LN_{gamma,beta}(x) + b con LN affine384 eps 1e-5 e Linear 384->20 con bias: la stessa classe e la stessa parametrizzazione
+  di L0 (stessa LN, stesse forme, stessi gruppi di weight decay: W si', b e LN no). All'avvio entrambe valgono 0 ovunque.
+  Primo passo: delta e h sono uguali nelle due teste; il clipping a norma 1 scala in modo diverso (la norma globale contiene
+  anche dL/dW6), ma il primo passo di Adam vale circa lr*sign(grad) ed e' invariante alla scala del gradiente. Dal secondo passo
+  g ≠ 0 e le traiettorie divergono. «Non è garantita la stessa traiettoria» e' quindi esatto; R:112 cita clipping e altri
+  gradienti come cause: corretto.
+ESITO (d): verificato. Nessun rilievo.
+
+==========================================================================================================
+(e) MATEMATICA DEI RIFERIMENTI WLS (P §4.3 righe 74-80, R §4.2 righe 114-130, J linear_diagnostics)
+==========================================================================================================
+e1. Assorbimento della LN affine (LETTO P:76, R:116). CALCOLATO:
+    L0: W(gamma⊙n + beta) + b = (W diag gamma) n + (W beta + b) = A n + c.
+    L13 su un centro del crop6: sum_l W_l(gamma⊙n_{t+l} + beta) + b = sum_l (W_l diag gamma) n_{t+l} + (sum_l W_l beta + b).
+    Con gamma = 1, beta = 0 si ottiene ogni (A, c) o (A_l, c): le due classi coincidono con tutte le mappe affini di
+    z = LN(x, gamma=1, beta=0) e, per L13, dei 13 vettori z_{t-6..t+6}. Corretto.
+    Padding: ai bordi la conv vede h = 0 (padding dopo la LN), non gamma⊙n + beta: la riscrittura dell'intercetta cambierebbe.
+    Sui centri 6..153 nessun tap e' di padding (ESEGUITO in (a)). R:116 «il crop6 esclude i bordi»: corretto e necessario.
+e2. Obiettivo (LETTO R:118-120, P:76, J linear_diagnostics.weights). L = (1/N) sum_i (1/q_i) sum_tj m_itj (pred - target)^2,
+    con q_i = sum_tj m_itj. E' la loss di P:57 («media sugli elementi validi della singola finestra, poi media delle finestre»).
+    1/N e' costante e non sposta il minimo. Corretto.
+    Separabilita' (CALCOLATO): pred_itj = a_j·phi_it + c_j, quindi L = sum_j L_j(a_j, c_j) con
+    L_j = (1/N) sum_{i,t} (m_itj/q_i)(a_j·phi_it + c_j - y_itj)^2. q_i e' una costante della finestra (non dipende dai
+    parametri), quindi i 20 problemi sono indipendenti, ciascuno con i propri pesi m_itj/q_i. Giunti con maschere identiche
+    hanno lo stesso disegno pesato e possono condividere la fattorizzazione; maschere diverse richiedono disegni diversi.
+    P:80 «Ogni disegno si moltiplica per i pattern distinti di pesi/maschere dei giunti» e R:122: corretti.
+    (LETTO scripts/pose_e3_b.py:110-114 e 131-148 a 3e007c8: il solver storico raggruppa gia' i giunti per firma di
+    maschera, `mask_groups`/`merge_stats`: stessa idea.)
+    Ambiguita' di testo: P:76 «q_i numero totale elementi validi della finestra» e J «q_i=sum over all valid t,j of eachwindow»
+    non dicono che «validi» significa «supportati dopo il crop6». R:118 lo dice («la maschera dopo il supporto geometrico»).
+    Se q_i fosse contato sulle 160 patch, l'obiettivo sarebbe un altro e il limite inferiore potrebbe non valere
+    (rilievo architettura-6, nota).
+e3. Minimo globale e limite inferiore (LETTO R:124, P:78). CALCOLATO: L_j e' una quadratica convessa; ogni soluzione dei
+    minimi quadrati la minimizza; la soluzione a norma minima e' unica. Le teste neurali L0 e L13 stanno nella classe di e1
+    (qualunque gamma, beta, W, b), quindi la loro loss train sul medesimo fitting, con la stessa pesatura, e' >= il minimo WLS,
+    a meno dell'errore di arrotondamento FP32 del forward neurale (ordine 1e-7 relativo) e del troncamento (sotto).
+    Per MLP/TCN il limite NON vale (contengono L0 e possono scendere sotto): il protocollo non lo afferma. Corretto.
+    Il troncamento a 1e-8 aumenta l'obiettivo di sum_{k troncati} (u_k^T y_w)^2: «entro tolleranza numerica» (P:78) e' la
+    formulazione giusta.
+e4. Ridge con alpha > 0 (LETTO R:126, P:78 «né confondere alpha>0 con un lower bound»). CALCOLATO: la ridge minimizza
+    L + alpha||A||^2; la sua loss train e' >= del minimo WLS, quindi una testa puo' scendere sotto la ridge: non e' un limite
+    inferiore. Corretto. Anche R:126 sul weight decay e' corretto e anzi piu' forte di quanto scritto: la funzione dipende da
+    A = W diag(gamma) e gamma non ha decay, quindi la penalita' su W si puo' ridurre a piacere scalando gamma in su e W in giu':
+    il decay su W non e' una ridge su A. (LETTO scripts/pose_e3_b.py:165 `require(... alpha > 0, 'alpha must be positive')`:
+    conferma R:128, il solver storico non si riusa come WLS non regolarizzata.)
+e5. Rango dall'SVD di R, non dalla Gram (LETTO P:76). CALCOLATO: X_w = Q R, quindi sigma(R) = sigma(X_w); gli autovalori
+    della Gram sono sigma^2. La soglia 1e-8 sui sigma equivale a 1e-16 sugli autovalori, sotto la risoluzione float64
+    (u64 = 1,11e-16; errore assoluto degli autovalori calcolati ~ u64*sigma_max^2). Dalla Gram il rango a quella soglia non
+    si risolve. La scelta QR/TSQR + SVD di R e' corretta.
+e6. Dipendenze esatte introdotte dalla LN (CALCOLATO). Per ogni x, sum_k n_k(x) = 0 (sottrazione della media), quindi il
+    vettore (1,...,1) sulle 384 colonne di z e' nel nucleo. L0: 385 colonne (384 + intercetta), rango generico 383 + 1 = 384.
+    L13: un vincolo per ciascuno dei 13 tap, 4.993 colonne, rango generico 13*383 + 1 = 4.980. L'intercetta non sta nello span
+    di z (servirebbe a·z = 1 su tutti i dati). R:124 «LN introduce dipendenze lineari tra colonne»: corretto.
+    Precisione della LN e soglia 1e-8 (CALCOLATO, ordine di grandezza): con LN in float64 la componente lungo il nucleo vale
+    ~ sqrt(D)*u64 ≈ 2e-15, molto sotto 1e-8: tagliata, rango 384/4.980. Con LN in FP32 (come il forward neurale e come il
+    solver storico, LETTO scripts/pose_e3_b.py:92-100, docstring a :93 «FP32 torch matches the head's transform») la componente vale
+    ~ D*u32/sqrt(D) ≈ sqrt(D)*u32 ≈ 1,2e-6, e sigma_null/sigma_max sta fra 6e-8 e 1,2e-6 (sigma_max/sqrt(sum w) fra 1 e
+    sqrt(385)): sopra 1e-8, non tagliata. Il rango riportato sarebbe 385 o fino a 4.993, e i coefficienti avrebbero una
+    componente grande lungo (1,...,1). Effetto sulle predizioni: come un regressore di rumore in piu', RMS ~ 1/sqrt(n_righe)
+    ≈ 1/sqrt(141.192) ≈ 0,0027 in unita' standardizzate per direzione (≈ 0,0096 con 13 direzioni per L13), trascurabile sulla
+    MSE. Quindi non cambia i numeri, ma cambia il rango dichiarato (rilievo architettura-4, nota).
+e7. Residuo normale relativo <= 1e-6 (LETTO P:76 «Verifica residuo normale relativo<=1e-6 e finitezza»; J
+    normal_residual_tolerance 1e-6). Il denominatore non e' definito. CALCOLATO:
+    - Con ||X_w^T r_w|| / (||X_w||_2 ||y_w||_2): per una soluzione QR stabile l'errore e' ~ c*u64*kappa_mantenuto; con
+      kappa <= 1e8 (soglia 1e-8) vale <= c*2,2e-8: verificabile con margine per c fino a circa 45. Va bene.
+    - Con la forma di LSQR/LSMR ||X^T r|| / (||X|| ||r||) (tolleranza di default 1e-6 in quei solver): per un RHS
+      rappresentabile esattamente il residuo r e' solo arrotondamento, quasi casuale, e il rapporto vale ~ sqrt(p_eff/n),
+      al piu' sqrt(385/70.596) ≈ 0,074 sul disegno inner (0,012 con rango stabile 10), molto sopra 1e-6. Il RHS-base «L» della calibrazione (P:80,
+      J positive_controls ... inner_rhs_basis ["real","L","T","epsilon"]) e' proprio cosi': L(z) e' affine in z per
+      costruzione (J generator.L "affine384to20"). Con questa lettura il controllo fallisce sempre su «L» e scatta
+      «riferimento non verificato e arresto prima dei fit reali» (P:76) senza alcun errore numerico.
+    Va scritta la normalizzazione (rilievo architettura-2, minore).
+e8. Memoria (LETTO P:80 «un fattore R4993² float64 circa190 MiB per pattern»). CALCOLATO: 4.993^2*8 = 199.440.392 B =
+    190,2 MiB; 20 pattern 3,71 GiB (R:130 «circa 3,7 GiB»). R:130 parla di «Gram», P:76 di fattore R: stessa dimensione,
+    numeri coerenti. L0: 385^2*8 = 1,13 MiB.
+e9. Conteggio dei blocchi (LETTO P:80). 2 teste lineari x 2 fold outer = 4 disegni; x 3 RHS (reale, lineare, temporale) =
+    12 blocchi; calibrazione: 2 inner x 2 outer = 4 disegni L0. Coerente con J (outer_designs 4, outer_target_solution_blocks
+    12, inner_designs_for_calibration 4). Le soluzioni a norma minima troncate sono lineari nel RHS
+    (beta = V_r Sigma_r^-1 U_r^T y), quindi combinare le basi (reale, L, T, eps) senza rifattorizzare e' esatto per disegno,
+    pesi e troncamento fissati. Corretto.
+    Osservazione: i RHS sintetici di L13 (lineare e temporale) non entrano in nessun cancello (il controllo temporale usa
+    LS-L0, P:96); sono descrittivi. Non e' un errore.
+e10. Contenimento del generatore T nella TCN (LETTO P:86 «inseribile nella TCN più larga»; J generator.T «embeddable in64/32head»).
+    CALCOLATO: T ha la stessa geometria (k 1,3,3,3,1,1; dilatazioni 1,1,2,3,1,1) con hidden 8; si inserisce nei canali 0..7
+    della TCN 64/64/64/64/32 con pesi nulli altrove e bias zero (ReLU(0)=0); L va nel ramo affine. Quindi y* = L + a*T sta
+    esattamente nella classe TCN-post+affine (in valutazione). MLP+affine contiene L ma non T. Corretto: il controllo temporale
+    misura l'ottimizzazione, non la rappresentabilita'.
+
+==========================================================================================================
+(f) NOMI E NUMERI FRA PROTOCOLLO, JSON E TABELLA DEL §10
+==========================================================================================================
+Nomi (ESEGUITO grep su P, R, README, prompt; LETTO decisioni.md e registro a 3e007c8):
+  «ramo lineare»: P:1 (titolo), P:109 (primario «TCN-post ispirata a TEMPONet con ramo lineare vs L0»), P:198 (§10, Oggetto),
+    README:1, prompt:1, decisioni.md:6741 (titolo della voce), claude_GPT_shared:186 (titolo della voce);
+    J evaluation.primary «with jointlytrained linearpath», J heads.*.linear_skip, J new_head_common.additive_linear_path.
+  «ramo/percorso affine»: P:10, P:26, P:30, P:36-38, P:42, P:44, P:84 («MLP+affine, TCN-post+affine»), P:200 (§10, Bracci
+    «MLP+affine ... TCN-post+affine, TCN-pre+affine»), README:12, decisioni.md:6745 e 6751.
+  La risposta promette l'opposto di cio' che e' scritto nei titoli: R:22 (R-3) «Oggetto: TCN compatta ispirata a TEMPONet
+    con ramo affine»; R:35 (nota 01) «ora con ramo affine, in tutti i titoli».
+  Nella tabella del §10 due righe vicine usano due nomi per lo stesso oggetto (Oggetto: «lineare»; Bracci: «+affine»).
+  Il ramo ha bias (P:26 W h + b; J additive_linear_path.bias true): «affine» e' il termine esatto; «lineare» va bene solo se
+  definito una volta. Sostanza invariata, ma la disposizione di R-3/nota 01 non e' applicata alla lettera (rilievo architettura-1).
+Numeri (CALCOLATO in (a), LETTO P e J):
+  P:35-38 = J heads.*.params = AC parameters: 8.468 / 100.628 / 73.000 / 72.904 / 72.904.
+  P:26 7.700 = J additive_linear_path.parameters_added = AC linear_path_added_params.
+  P:40 71.808 e 11.489.280 = AC MLP_TCN_transform_weights_each e MACs_each_P160_excluding_norm_bias_ReLU.
+  P:198 72.904 = P:142 «La testa TCN72.904»; 72.904/8.468 = 8,61 («8,6 volte»); 72.904/30.000.000 = 0,243% («circa0,24%»,
+    rispetto a un 30M nominale; il conteggio esatto del FM non e' nel mio perimetro).
+  J heads.TCN_post kernels [1,3,3,3,1,1], dilations [1,1,2,3,1,1], widths [384,64,64,64,64,32,20]; MLP widths
+    [384,96,96,96,64,32,20]: coincidono con P:28-30.
+  J historical_pre_ridge_descriptive.point_E_dyn 1.0321280032044744 = P:46 «circa1,032128».
+  Tutto coerente.
+Note di architettura della review 32e5452 gia' chiuse e verificate nella v2 (non riapro, confermo; gli ID fra apici
+  sono quelli della review, non i miei rilievi):
+  nota 02 (`architettura-2`): P:28 «nn.Dropout per elemento, non Dropout1d, disattivato in eval, solo dentro g»; P:26 ramo
+    «senza dropout»; J dropout_MLP_TCN.direct_affine_path false. Applicata.
+  nota 03 (`architettura-3`): P:44 ordine, fork_rng, semi, hash. Applicata (con la precisazione del mio rilievo
+    architettura-3 sotto).
+  nota 04 (`architettura-4`): P:44 «Tre semi L0/L13 cambiano solo shuffle». Applicata.
+  nota 05 (`architettura-5`): P:42 Kaiming e bias zero; R:39 non attribuisce tutto all'init. Applicata.
+  nota 06 (`architettura-6`): P:30 «scelta di contesto compatibile con crop6, non una replica del campo raw». Applicata;
+    RF 13 = 2*6+1 e' il massimo simmetrico senza padding sul crop6 (ESEGUITO in (a)).
+  nota 07 (`architettura-7`): P:19 «0–159 non causale e 0–123 causale». Applicata.
+  nota 08 (`architettura-8`): ESEGUITO git show 8917e2a:results/temponet_emg2pose/{eval_20261111/eval.json,
+    train_20261111/run.json} | chiavi: 13 e 28 chiavi, identiche a raw_source_identity.json di 3e007c8 (prima 12 e 12).
+    ESEGUITO shasum -a 256 di temponet.py e temponet_emg2pose.py a 8917e2a e a 0c19c4b: 9d5a03e2... e 8d7f9dbe...
+    uguali fra loro e al JSON. Applicata.
+  nota 09 (`architettura-controlli-N1`): P:17 DOI 10.1109/COINS51742.2021.9524188 e hdl 11585/841320. Applicata.
+
+Nota informativa (fuori dal mio perimetro, solo a sostegno di P:80 «costo misurato, non assunto economico»):
+  CALCOLATO a priori, non misura. I pattern sono per giunto, quindi al piu' 20 per disegno: per L13 al piu' 2 fold x 20 = 40
+  fattorizzazioni di circa 141.192 x 4.993 (righe stimate = 954 finestre x 148 centri). QR ~ 2np^2 = 6,96e12 flop, SVD di R
+  ~ 12-21 p^3 = 1,5-2,6e12 flop: in tutto 3,4-3,8e14 flop. A 50-150 GFLOP/s sostenuti su 8 core: 0,6-2,1 h, 5-17 core-ore.
+  Compatibile con il tetto WLS di 64 core-ore (P:166, P:185) ma non e' una misura: il benchmark resta necessario.
+
+==========================================================================================================
+RILIEVI (nessun bloccante)
+==========================================================================================================
+architettura-1 | minore | testo | Nome del ramo: «lineare» nei titoli e nel §10, «affine» nel §3, nei bracci e nella risposta
+  Posizione: P:1, P:109, P:198 (Oggetto del §10) contro P:200 (Bracci del §10) e P:26-44, P:84; README:1; prompt:1;
+    decisioni.md:6741; claude_GPT_shared:186; J evaluation.primary «linearpath», J heads.*.linear_skip.
+  Fatto: R:22 (R-3) dispone «Oggetto: TCN compatta ispirata a TEMPONet con ramo affine»; R:35 (nota 01) «ora con ramo affine,
+    in tutti i titoli». I titoli e la riga Oggetto del §10 dicono invece «ramo lineare»; la riga Bracci del §10, subito sotto,
+    dice «+affine». Il ramo ha bias (W h + b): il nome esatto e' «affine». La sostanza non cambia.
+  Correzione: un solo nome in titolo, §5, §10, README, decisioni e registro («ramo affine 384→20», oppure «ramo lineare»
+    definito una volta come Linear con bias); nel JSON una chiave coerente (per esempio additive_affine_path) o una nota.
+
+architettura-2 | minore | disegno | Residuo normale relativo <= 1e-6 senza denominatore: con la forma di LSQR il cancello
+  scatta sempre sul RHS-base «L»
+  Posizione: P:76 «Verifica residuo normale relativo<=1e-6 [...] mancata verifica → riferimento non verificato e arresto
+    prima dei fit reali»; J linear_diagnostics.normal_residual_tolerance 1e-6; P:80 e J inner_rhs_basis ["real","L","T","epsilon"].
+  Controesempio minimo (se il controllo vale anche per i RHS-base della calibrazione, come lasciano intendere P:76, P:90
+    «riferimenti L0 pesati» e J calibration.sufficient_statistics_reuse «fixeddesigns/weights/masks/rankpolicy»):
+    RHS = L(z), affine in z per costruzione (J generator.L «affine384to20»), sul disegno L0 inner
+    (≈70.596 righe, 385 colonne). La soluzione e' esatta e il residuo r e' solo arrotondamento, quasi casuale. Con la lettura
+    di LSQR/LSMR, ||X^T r|| / (||X|| ||r||) ≈ sqrt(p_eff/n), con p_eff = rango stabile <= 385: al piu' sqrt(385/70.596) ≈
+    0,074, e 0,012 anche con p_eff = 10; sempre ordini di grandezza sopra 1e-6: «riferimento non verificato» e
+    arresto, senza alcun errore numerico. Con ||X_w^T r_w|| / (||X_w||_2 ||y_w||_2) la stessa soluzione da' fra ~1e-17 e
+    ~4e-9 (L(z) in float64 o in FP32: 0,074*u) e passa;
+    per una soluzione QR stabile con kappa mantenuto <= 1e8 il valore atteso e' <= c*u64*1e8 = c*2,2e-8, quindi la soglia
+    1e-6 e' verificabile con margine.
+  ESEGUITO ~/.venvs/wearusfm-tok/bin/python -I: scipy 1.16.3, lsqr e lsmr hanno atol=1e-06, btol=1e-06, conlim=1e8 di
+    default; la documentazione di lsqr dice che per un sistema incompatibile si ferma quando «norm(A^H r) <= atol *
+    norm(A) * norm(r)», e per un sistema compatibile usa un altro test («norm(r) <= atol * norm(A) * norm(x) + btol *
+    norm(b)»). Le due soglie del protocollo (1e-8 sui sigma, 1e-6 sul residuo) coincidono con questi default: la lettura
+    con ||r|| al denominatore e' quindi plausibile, ed e' proprio quella che fallisce sui RHS compatibili come «L».
+  Correzione: scrivere la normalizzazione, per esempio ||X_w^T (y_w − X_w beta)||_2 <= 1e-6 * ||X_w||_2 * ||y_w||_2, per
+    ogni disegno, pattern di giunto e RHS (base o combinato, dirlo), calcolata in float64 con un passaggio sui dati (non solo
+    da R e Q^T y, che non verifica l'accumulo TSQR). Non cambia l'impianto. Tipo disegno perche' e' un cancello che ferma i fit.
+
+architettura-3 | nota | implementazione | «Generatori separati» e nn.Dropout: realizzabile, ma va detto come
+  Posizione: P:28 «nn.Dropout per elemento»; P:44 «Generatori separati: init `100000+s`, dropout `200000+100*f+s`»;
+    P:66 «stato/RNG distinto per traiettoria»; J fit.shuffle_rng.
+  Fatto (ESEGUITO, torch 2.14.0): F.dropout e nn.Dropout non hanno argomento generator; torch.manual_seed semina anche
+    tutti i generatori CUDA (manual_seed_all); nn.init.kaiming_normal_ e Tensor.bernoulli_ accettano un generator.
+  Quindi: (i) il «generatore del dropout» e' il generatore CUDA di default del device, seminato con 200000+100*f+s DOPO
+    l'inizializzazione, usato solo dal dropout, salvato/ripristinato a ogni cambio fra le due traiettorie appaiate dei fold e
+    salvato con lo stato per la continuazione a 300; oppure (ii) un dropout per elemento con bernoulli_(generator=...).
+    Creare i moduli su CPU: fork_rng(devices=[]) come in PoseHead protegge solo il generatore CPU. Scrivere «pesi e bias» per
+    l'ultimo strato di g azzerato (P:42 dice «ultimo strato di g ... a zero»; c15aac9 riga 35 diceva «pesi e bias
+    inizializzati a zero»; R:112 richiede l'uscita iniziale nulla, che con un bias di default ±1/sqrt(32) non ci sarebbe).
+  Nessuna scelta scientifica nuova; i test previsti in P:153 («generatori riproducibili») devono controllare proprio questo.
+
+architettura-4 | nota | implementazione | Precisione della LN nella WLS e rango atteso
+  Posizione: P:76 «float64 [...] soglia relativa sul valore singolare del design 1e-8», «rango e scarto numerico riportati»;
+    R:122 «Stesse cache, cast e LayerNorm»; precedente storico in FP32 (scripts/pose_e3_b.py:93).
+  Fatto (CALCOLATO): sum_k z_k = 0 esattamente, quindi un vettore di nucleo per ogni blocco LN; rango generico 384 su 385
+    colonne (L0) e 4.980 su 4.993 (L13). Con LN in float64 la direzione nulla vale ~2e-15 relativo e viene tagliata. Con LN
+    in FP32 vale ~6e-8..1,2e-6 relativo, sopra 1e-8: non tagliata, rango riportato pieno (385; fino a 4.993), coefficienti
+    grandi lungo (1,...,1). Sulle predizioni l'effetto e' quello di un regressore di rumore, RMS ≈ 1/sqrt(141.192) ≈ 0,0027
+    per direzione: trascurabile. Cambia pero' il significato del rango riportato.
+  Suggerimento: calcolare z = LN(x) in float64 dai valori FP16 (cast esatto) per la WLS e scrivere i ranghi generici attesi
+    384/4.980 come controllo di sanita' (uno scarto segnala degenerazioni nei dati o un errore di pipeline).
+
+architettura-5 | minore | testo | Nota 12 accolta ma non riportata: TCN/MLP scambia larghezza con connessioni temporali
+  (confine con la dimensione criteri)
+  Posizione: R:46 (nota 12, controlli-6) «Il confronto scambia anche larghezza per connessioni temporali: non è una
+    manipolazione isolata del solo accesso al tempo», destinazione §5; P:122 dice solo «TCN/MLP passa → vantaggio pratico del
+    contesto in questo controllo; il contrario favorisce l'istantaneo in questa ricetta».
+  Fatto (CALCOLATO in (a)): a pari pesi delle trasformazioni (71.808), la MLP ha hidden 96/96/96/64/32, la TCN 64/64/64/64/32
+    e spende i pesi nei tap temporali. Un esito MLP migliore non isola «l'istantaneo»: puo' venire dalla larghezza.
+  Correzione: aggiungere in P:122 la frase della nota 12 (a pari pesi, larghezze diverse; non manipolazione isolata del tempo).
+
+architettura-6 | nota | testo | q_i: dire «elementi supportati dopo il crop6», e usare il segno del divario come controllo
+  Posizione: P:76 «q_i numero totale elementi validi della finestra»; J linear_diagnostics.weights «q_i=sum over all valid
+    t,j of eachwindow»; R:118 invece e' esplicito («la maschera dopo il supporto geometrico»).
+  Fatto (CALCOLATO): se q_i fosse contato sulle 160 patch, la WLS minimizzerebbe un obiettivo diverso dalla loss di P:57 e
+    il «limite inferiore» potrebbe non valere. Con lo stesso obiettivo, una MSE train neurale di L0/L13 sotto il minimo WLS
+    oltre la tolleranza numerica e' impossibile: segnala una differenza di pipeline (crop, q_i, LN, cast).
+  Suggerimento: scrivere in P:76 e nel JSON «q_i = numero di elementi supportati (crop6 ∩ maschera) della finestra» e
+    trattare un divario negativo oltre tolleranza come errore nei test previsti (P:153 «per-window WLS e rango»).
+
+architettura-7 | nota | testo | La v2 ha tolto la cautela di c15aac9 su L13 (classi non annidate, capacita' diversa)
+  Posizione: c15aac9 riga 49 «un confronto TCN/L13 riguarda questa ricetta e la sua parametrizzazione, non un teorema sulla
+    non linearità» (ESEGUITO ricerca: assente nella v2); P:112 e P:122 conservano solo «questa lettura temporale lineare
+    fittata» e «vantaggio sulla ricetta lineare temporale».
+  Fatto (CALCOLATO in (b)): con il ramo, L0 ⊂ TCN+affine, ma TCN+affine non contiene L13 (fuori centro passa solo P z con
+    P∈R^{64x384}) e L13 non contiene la TCN. Il contrasto 3 confronta classi non annidate (100.628 contro 72.904 parametri).
+  Suggerimento: una frase in P:122 o P:46 che lo dica. P:122 «Nessuna attribuzione causale “pura” al ramo g» copre gia'
+    buona parte del rischio: per questo e' solo una nota.
+
+==========================================================================================================
+CONFERME (cose verificate che reggono)
+==========================================================================================================
+C1  Conteggi: L0 8.468, L13 100.628, MLP 73.000, TCN-post/pre 72.904; ramo 7.700; pesi delle trasformazioni 71.808 per MLP
+    e TCN (64.128 di g + 7.680 del ramo); bias 424 contro 328, differenza 96; MAC per finestra 160: L0 1.228.800,
+    L13 15.974.400, MLP e TCN 11.489.280. ESEGUITO conta_moduli.py; uguali a P:35-40, J heads, AC.
+C2  Campo ricettivo 13, offset −6..+6, 150/300/325 ms; i 148 centri 6..153 non toccano il padding in nessuno strato, i centri
+    0..5 e 154..159 si'. ESEGUITO (autograd e analisi strato per strato).
+C3  Prova di contenimento di A-1 (R:106-108) corretta. Ipotesi necessarie: larghezze >= 20, immagine limitata della LN (per ogni
+    x, con gamma e beta finiti), bias nel primo e nell'ultimo strato, ReLU, dropout spento, nella TCN tap fuori centro nulli.
+    Il padding non serve come ipotesi. CALCOLATO.
+C4  «Il ramo affine non identifica un contributo non lineare puro» (R:110, P:122) corretto in forma forte: g rappresenta
+    esattamente ogni mappa affine sul dominio della LN, quindi la scomposizione non e' identificabile. CALCOLATO.
+C5  Inizializzazione: al primo passo solo ramo affine e ultimo strato di g hanno gradiente; interni e LN lo ricevono dal
+    secondo passo; nessun gate morto; con Kaiming fan_in e bias zero non ci sono ReLU spente all'avvio. P:42 e R:112 esatti.
+    CALCOLATO; API Kaiming con fan_in 192 per le k3 ESEGUITO (firma di nn.init.kaiming_normal_).
+C6  Ordine di creazione con fork_rng sul ramo affine coerente con PoseHead (LETTO pose_head.py:26-30). Semi init/dropout/
+    shuffle coerenti fra P:44 e J fit.shuffle_rng; i tre semi di L0/L13 cambiano solo lo shuffle. LETTO.
+C7  Con g = 0 la testa e' esattamente L0 (stessa LN affine eps 1e-5, stesso Linear 384->20 con bias, stessi gruppi di decay);
+    la traiettoria AdamW non e' garantita uguale (clipping e gradienti di g dal secondo passo). CALCOLATO; LETTO pose_head.py.
+C8  Assorbimento della LN affine e uguaglianza delle classi di L0 e L13 con le mappe affini di z; il crop6 e' necessario per L13.
+    CALCOLATO.
+C9  Obiettivo WLS = loss di training (pesi m_itj/q_i, q_i totale della finestra); separabile per giunto; un disegno per
+    pattern di maschera. CALCOLATO; LETTO R:118-122, P:76-80, pose_e3_b.py:110-148.
+C10 WLS non regolarizzata = minimo globale della loss train nella classe, quindi limite inferiore solo per L0/L13 (entro la
+    tolleranza numerica); la ridge con alpha>0 non lo e'; il decay di AdamW su W non e' una ridge su A = W diag(gamma) perche'
+    gamma non ha decay. CALCOLATO; LETTO pose_e3_b.py:165 (alpha>0 obbligatorio nel solver storico, come R:128).
+C11 Rango da SVD di R e non dalla Gram: la Gram quadra il condizionamento e la soglia 1e-8 diventerebbe 1e-16, sotto la
+    risoluzione float64. CALCOLATO.
+C12 Dipendenze esatte della LN: un vettore di nucleo per blocco; ranghi generici 384 (L0) e 4.980 (L13). CALCOLATO.
+C13 Memoria del fattore R di L13: 4.993^2*8 = 190,2 MiB per pattern, 3,71 GiB per 20 pattern (P:80, R:130). CALCOLATO.
+C14 Blocchi 4 disegni outer x 3 RHS = 12; 4 disegni L0 di calibrazione; combinazione lineare dei RHS-base esatta a disegno,
+    pesi e troncamento fissati. CALCOLATO; LETTO J linear_diagnostics.
+C15 Il generatore T (hidden 8, stessa geometria) si inserisce esattamente nella TCN 64/32 e L nel ramo affine: y* sta nella
+    classe TCN-post+affine; la MLP+affine contiene L ma non T. CALCOLATO.
+C16 Numeri coerenti fra P, J, AC e §10 (72.904 nell'Oggetto, 8,6 volte L0, ancora pre 1,032128). LETTO.
+C17 Note di architettura 02-09 applicate; chiavi complete di raw_source_identity.json (13 e 28) e sha256 dei sorgenti raw
+    identici a 8917e2a e 0c19c4b. ESEGUITO git show/shasum.
+
+==========================================================================================================
+VERDETTO SUL MIO PUNTO (architettura: punto 1 e parte matematica del punto 4)
+==========================================================================================================
+CONVERGE_CON_CORREZIONI. Nessun bloccante. Tre minori da correggere nel testo prima del congelamento:
+  architettura-1 (nome «lineare»/«affine», anche nella tabella del §10), architettura-2 (denominatore del residuo normale,
+  cancello che altrimenti puo' fermare tutto sul RHS «L»), architettura-5 (frase della nota 12 su larghezza e tempo).
+Quattro note (architettura-3, -4, -6, -7): precisazioni facoltative o verifiche riservate all'implementazione.
+Distinzione chiesta da GPT: problema di disegno = solo architettura-2 (definizione di un cancello). Testo = architettura-1,
+  -5, -6, -7. Implementazione = architettura-3, -4. Nessuna verifica riservata al benchmark nel mio perimetro (la stima di
+  costo WLS sopra e' solo informativa).
+Le parti del mio perimetro sono pronte per la tabella del §10 dopo queste correzioni di testo; nessuna richiede nuove misure.

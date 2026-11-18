@@ -1,0 +1,33 @@
+K=(2.5,5.0) f'=0.3  soglia continua 0.9361
+   transizioni griglia attuale (E_real da 0,78): 0.7800->P(s=1), 0.8207->N(s=None), 0.8407->P(s=1.5), 0.9164->F(s=2)
+   griglia != continua (escluso N): [0.9164, 0.9361] griglia F / continua P
+K=(2.5,5.0) f'=0.4  soglia continua 0.9361
+   transizioni griglia attuale (E_real da 0,78): 0.7800->N(s=None), 0.8052->P(s=1.5), 0.9359->F(s=2.5)
+   griglia != continua (escluso N): [0.9359, 0.9361] griglia F / continua P
+K=(2.5,5.0) f'=0.5  soglia continua 0.9361
+   transizioni griglia attuale (E_real da 0,78): 0.7800->P(s=1.5), 0.9175->F(s=2.5)
+   griglia != continua (escluso N): [0.9175, 0.9361] griglia F / continua P
+K=(2.5,5.0) f'=0.6  soglia continua 0.9214
+   transizioni griglia attuale (E_real da 0,78): 0.7800->P(s=1.5), 0.9000->F(s=2.5), 0.9998->N(s=None)
+   griglia != continua (escluso N): [0.9000, 0.9213] griglia F / continua P
+K=(3.5,7.0) f'=0.3  soglia continua 0.9133
+   transizioni griglia attuale (E_real da 0,78): 0.7800->P(s=1), 0.8260->N(s=None), 0.8468->P(s=1.5), 0.9226->F(s=2)
+   griglia != continua (escluso N): [0.9134, 0.9225] griglia P / continua F
+K=(3.5,7.0) f'=0.4  soglia continua 0.9133
+   transizioni griglia attuale (E_real da 0,78): 0.7800->N(s=None), 0.8110->P(s=1.5), 0.8933->F(s=2)
+   griglia != continua (escluso N): [0.8933, 0.9133] griglia F / continua P
+K=(3.5,7.0) f'=0.5  soglia continua 0.9133
+   transizioni griglia attuale (E_real da 0,78): 0.7800->P(s=1.5), 0.9238->F(s=2.5)
+   griglia != continua (escluso N): [0.9134, 0.9237] griglia P / continua F
+K=(3.5,7.0) f'=0.6  soglia continua 0.8939
+   transizioni griglia attuale (E_real da 0,78): 0.7800->P(s=1.5), 0.9061->F(s=2.5)
+   griglia != continua (escluso N): [0.8940, 0.9060] griglia P / continua F
+
+caso K=(3.5,7.0) f'=0.5 E_real=0.920: griglia s=2 inner=0.9038 R=0.9089 P | continua s=2.169 R=0.8928 F
+caso K=(2.5,5.0) f'=0.5 E_real=0.920: griglia s=2.5 inner=0.9373 R=0.8983 F | continua s=2.245 R=0.9180 P
+caso K=(3.5,7.0) f'=0.3 E_real=0.915: griglia s=1.5 inner=0.8967 R=0.9146 P | continua s=1.637 R=0.8983 F
+caso K=(3.5,7.0) f'=0.3 E_real=0.920: griglia s=1.5 inner=0.8967 R=0.9146 P | continua s=1.680 R=0.8928 F
+caso K=(3.5,7.0) f'=0.6 E_real=0.895: griglia s=2 inner=0.8830 R=0.9089 P | continua s=2.105 R=0.8991 F
+caso K=(3.5,7.0) f'=0.6 E_real=0.905: griglia s=2 inner=0.8830 R=0.9089 P | continua s=2.204 R=0.8894 F
+caso K=(2.5,5.0) f'=0.5 E_real=0.940: griglia s=2.5 inner=0.9373 R=0.8983 F | continua s=2.546 R=0.8945 F
+caso K=(3.5,7.0) f'=0.5 E_real=0.940: griglia s=2.5 inner=0.9437 R=0.8576 F | continua s=2.439 R=0.8645 F

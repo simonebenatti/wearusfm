@@ -1,0 +1,402 @@
+RAPPORTO DEL REVISORE — DIMENSIONE «consegna»
+Matrice delle disposizioni e integrita' della consegna GPT 3e007c8 (contenuti 62348ab), rispetto a c15aac9,
+review Claude 32e5452 e seguito 8d34f9c. Data: 18/11/2026.
+
+Regole seguite: sola lettura di repo, worktree e snapshot; nessun esperimento; scritture solo in
+work_consegna/ e in questo file. Prove marcate ESEGUITO / CALCOLATO / LETTO.
+Abbreviazioni: PROT = gpt_3e007c8/docs/pose_temponet_frozen_protocol_20261117.md;
+RISP = gpt_3e007c8/docs/reviews/pose_temponet_response_20261118.md;
+PJ = gpt_3e007c8/results/infra/pose_temponet_proposal_20261117/proposal.json;
+REV = worktree claude-temponet docs/reviews/claude_review_pose_temponet_proposal_20261117.md (32e5452).
+
+(rapporto scritto a pezzi; le sezioni seguono man mano)
+
+======================================================================
+PARTE (d) — INTEGRITA' DELLA CONSEGNA
+======================================================================
+
+d.1 Commit e ramo. ESEGUITO (worktree, git log): 3e007c8 ha genitore 62348ab, che ha genitore c15aac9,
+    che ha genitore cfa6462. origin/codex/pose-temponet-proposal-20261117 nel ref locale = 3e007c8
+    (git for-each-ref; nessun fetch di rete fatto da me: lo SHA remoto va riletto da Claude con ls-remote).
+    32e5452 e 8d34f9c sono contenuti in origin/claude/temponet-db8-20261109 (git branch -r --contains):
+    i due link GitHub della risposta (RISP:8-9) puntano a commit pubblicati.
+
+d.2 Snapshot = albero git. ESEGUITO: git hash-object su tutti i 2.130 file dello snapshot contro
+    git ls-tree -r 3e007c8: 2.130 confrontati, 0 diversi; stessi percorsi. Patch del materiale:
+    sha256(git diff c15aac9 3e007c8) = 33a10de8...2c2e = sha256(diff_c15aac9_3e007c8.patch);
+    stesso esito per diff_protocol.patch (ad021e6e...90dd).
+
+d.3 Pin. ESEGUITO (shasum -a 256 e wc -c sullo snapshot; git show 62348ab:<f> | shasum; git show 3e007c8:<f> | shasum):
+    i 9 file di delivery_pin_20261118.json hanno byte e sha256 identici nelle tre sorgenti:
+      protocollo 34.916 B 05a9eb09...ec22f7; prompt 4.887 B 401066e6...8c71; risposta 46.271 B 076d35f1...2b;
+      README 1.636 B 116d412a...13d; analytic_checks 1.439 B 4ee7d920...e79; design_review 2.492 B 15bb0730...fc5;
+      document_checks 4.084 B b7f30751...389; proposal.json 30.101 B f3b92c4a...d9f; raw_source_identity 1.894 B fdec0551...d6e.
+    I 6 file di document_checks_20261118.json hanno gli stessi hash (sottoinsieme coerente).
+    La voce di pin in decisioni.md (3e007c8) riporta 62348abd... , protocollo 05a9eb09... e proposal f3b92c4a...: coincidono.
+    delivery_pin non esiste in 62348ab (git show restituisce vuoto, hash e3b0c442...): giusto, nasce in 3e007c8.
+    «checks_passed: 22» = 22 controlli, tutti passed, in document_checks (ESEGUITO, conteggio Python).
+
+d.4 Perimetro del diff. ESEGUITO (git diff --name-status/--numstat c15aac9 3e007c8): 12 file, tutti di testo:
+    docs/claude_GPT_shared (+37), docs/decisioni.md (+34), protocollo (+139/-112), prompt (+17/-17),
+    risposta (nuova, 152 righe), e in results/infra/pose_temponet_proposal_20261117/ README, analytic_checks,
+    delivery_pin (nuovo), design_review, document_checks (nuovo), proposal.json, raw_source_identity.
+    Nessun file fuori da docs/ e da quella cartella; nessun .py, nessun binario, nessun dato. git diff --check: esito 0.
+    62348ab..3e007c8 tocca solo delivery_pin (nuovo), due voci di registro e una voce di pin in decisioni.md
+    (ESEGUITO, git diff 62348ab 3e007c8): la frase di GPT «aggiunge soltanto pin e registro» regge,
+    intendendo come «pin» anche la voce di decisioni.md, che lo dichiara da se'
+    (LETTO decisioni.md 3e007c8: «Il commit di pin aggiunge solo questo record, il manifest e le voci di registro»).
+
+d.5 JSON. ESEGUITO (json.loads con rifiuto di chiavi duplicate e di NaN/Infinity): analytic_checks, delivery_pin,
+    document_checks, proposal, raw_source_identity tutti validi, senza chiavi duplicate, newline finale presente.
+
+d.6 Pin storici invariati. ESEGUITO (confronto Python dei JSON di c15aac9 e v2): caches, references,
+    checkpoint_sha256, checkpoint_step, stats_sha256, model, which, support e source_provenance identici.
+    Pin SCRATCH: path, sha256, byte, finestre, utenti e registrazioni di train_subset.npz e val.npz, e path/sha256
+    di pose_stats.json, coincidono con results/infra/tokenizer_evaluation_20261103/extraction_plan_19618.json (453ce6c).
+
+d.7 ID del protocollo. ESEGUITO (grep): «pose-temponet-frozen-encoder-readout-20261117-v2» compare in PROT:3,
+    PJ "protocol", delivery_pin "protocol", prompt:8 e voce di registro di GPT (claude_GPT_shared:189 in 3e007c8).
+    Il README dice solo «IDv2» (README:5) e le due voci 18/11 di decisioni.md non riportano l'ID esteso
+    (solo «[Protocollo v2](...)» e lo sha256 del file). Nessuna contraddizione; vedi nota [consegna-7].
+    La risposta cita «-v1» solo dentro l'enunciato della nota consegna-9 (testo della review): corretto.
+    Il vecchio ID di c15aac9 era «pose-temponet-frozen-head-20261117-v1-proposal» (PJ c15aac9): il cambio di nome e' voluto.
+
+d.8 Ancore e link. ESEGUITO (grep): PROT ha <a id="p1"> ... <a id="p10"> alle righe 7, 14, 23, 48, 106, 130, 137,
+    144, 157, 193, ognuna subito prima del titolo del paragrafo omonimo. La risposta usa 106 link #p1...#p10, tutti
+    verso ancore esistenti (p1 1, p2 5, p3 13, p4 20, p5 22, p6 1, p7 2, p8 15, p9 17, p10 10) e uno senza ancora.
+    I link relativi del protocollo (proposal.json, raw_source_identity.json, reviews/pose_temponet_response_20261118.md)
+    risolvono a file esistenti. La correttezza di ciascuna destinazione e' nella parte (b).
+
+d.9 Prompt aggiornato contro richiesta di oggi. LETTO prompt_claude_pose_temponet_review_20261117.md:1-24 e
+    gpt_richiesta_20261118.txt. I sei punti coincidono nel contenuto (prompt:15-20 contro richiesta punti 1-6),
+    come l'elenco «Leggi», la richiesta di distinguere disegno/implementazione/benchmark (prompt:22), la
+    convergenza «documentale» con tabella §10 pronta (prompt:24) e il divieto di codice/lanci. Differenze solo di
+    forma: il prompt non contiene lo SHA (prompt:3: «SHA esatto comunicato con il prompt e nel pin»), inevitabile per un
+    file dentro 62348ab; il prompt esclude «nuovo esperimento sintetico lungo» (prompt:5), la richiesta ogni nuovo
+    esperimento: vale la richiesta. Il prompt ripete «costante→teacher» per il controllo lineare (prompt:17): vedi [consegna-3].
+
+======================================================================
+PARTE (a) — FEDELTA' DEGLI ENUNCIATI
+======================================================================
+
+a.1 Frase «49 punti elenco ma 50 ID» (RISP:11). ESEGUITO work_consegna/fedelta_note.py su REV §7 (righe 363-470):
+    49 punti elenco, 50 ID tutti distinti; l'unico punto con due ID e' il 15° («Test d'ingresso ... vedi R-1
+    (selezione-3, criteri-9)», REV:402). Conteggio per gruppo (ESEGUITO/CALCOLATO): architettura 9 punti/9 ID,
+    controlli 5/5, selezione 9/10, criteri 10/10, costo 9/9, consegna 7/7 = 49/50. La frase e' esatta.
+
+a.2 Le 50 note. ESEGUITO (stesso script): 50 righe nella tabella RISP:33-84, nessun ID mancante ne' in piu'.
+    Confronto testuale, dopo aver tolto solo la parentesi finale con gli ID: 0 differenze su 50.
+    Gli enunciati sono copie letterali di REV §7. Cadono solo i rimandi «vedi R-3» (architettura-1) e «vedi S-1»
+    (architettura-5) dentro la parentesi; la colonna della disposizione li ripristina (RISP:35 cita R-3; RISP:39 e' «evidenza sintetica»).
+    Nessun enunciato altera il senso.
+
+a.3 I 13 rilievi. ESEGUITO work_consegna/fedelta_rilievi.py: per S-1, A-1, C-1, C-2, C-3, R-3, S-2, K-1, K-2, K-3, R-2,
+    R-1, P-1 il titolo in RISP:17-29 coincide con il titolo ### di REV §4-§6, e coincidono gravita' (1 bloccante,
+    12 minori) e ID originario (selezione-1, architettura-controlli-N2, controlli-1, controlli-2, controlli-4,
+    consegna-5, selezione-2, criteri-2, selezione-criteri-N1, selezione-criteri-N2, consegna-4, consegna-3, costo-1).
+
+a.4 costo-6 (RISP:86): «resta respinto, come nella review» = REV:469-470 («Rifiutato dai verificatori: costo-6.
+    Il tetto di 8 GiB vincola gia' l'implementazione»). Fedele.
+
+a.5 Seguito 8d34f9c (RISP:90-98) contro registro di Claude (claude_GPT_shared:8778-8803 e :12894-12908 del worktree)
+    e testo consegnato a GPT. I quattro punti sono riassunti fedelmente; il punto 1 accorcia «rumore tarato sui numeri veri»
+    in «rumore», ma la disposizione e il protocollo contengono la taratura (PROT:90-92, |E_LS,synth−E_real|<=0.05).
+    Le tre rettifiche sono riportate con il loro senso: epoca 43/ultima nel mondo V; contenimento esatto di L0 «con bias
+    grandi»; 2% troppo debole se il guadagno piantato e' grande. Fedele.
+
+a.6 Restatement nella colonna delle disposizioni. LETTO: dove la disposizione riassume la richiesta della review
+    (S-1, C-1, C-2, K-1, R-1, P-1) il riassunto e' corretto. Le sole divergenze sono dichiarate come precisazioni
+    (vedi parte b: C-2 «non automaticamente prova contro l'ipotesi» si discosta da REV:246-247 «Altrimenti esito negativo»,
+    con motivazione corretta).
+
+Esito (a): nessun rilievo. Gli enunciati sono letterali e la frase 49/50 e' vera.
+
+======================================================================
+PARTE (b) — TRACCIABILITA' DELLE DISPOSIZIONI
+======================================================================
+
+b.0 Conteggio delle disposizioni. ESEGUITO (Python su RISP): 63 righe; 45 «Accolta.» semplici (8 rilievi: S-1, C-3,
+    R-3, K-1, K-2, R-2, R-1, P-1; 37 note) e 18 qualificate (A-1, C-1, C-2, S-2, K-3; note 05, 06, 17, 23, 26, 27,
+    29, 30, 33, 34, 40, 45, 46). Nessuna riga senza disposizione.
+
+b.1 Rilievi, «Accolta» semplice (LETTO PROT e PJ; righe di PROT):
+  S-1  init nominata :42; ricerca finita e estensioni :65-69; due controlli train-only :82-98; «ottimizzazione non
+       risolta entro il budget» :69, :98, anche per i comparatori :104; ammissione legata al guadagno noto :92, :96;
+       costo :160-191. Correzione 1 della review (cambio di specifica firmato se il controllo fallisce) :98. PRESENTE.
+  C-3  candidata per la dinamica centrata di questo checkpoint :122, :203, PJ evaluation.candidate.scope; niente adozione
+       :124, :203; niente non-inferiorita' MAE/livello :124; niente B :124, :140, :203; val gia' consultata :10, :57, :199;
+       nullo non prova limite dell'encoder :12, :204; confirmatory_family rinominata (PJ: 0 occorrenze di
+       «confirmatory», ora prespecified_family; ESEGUITO). PARZIALE nella tabella §10: vedi [consegna-1].
+  R-3  PROT:1, :21, :109, :198; README:1; PJ evaluation.primary; testa additiva da zero PJ additive_linear_path
+       (learned_jointly true, historical_weights_used false). PRESENTE.
+  K-1  «passa» = beneficio_pratico_risolto :117, :122 («“Passa” significa esattamente1»); formula :111, PJ gain_formula,
+       decisioni.md 18/11; letture 2/3 :122. PRESENTE.
+  K-2  PJ evaluation.outcome_priority (4 etichette, condizioni e ordine), candidate.iff, readout_failures,
+       fit.failure_states; stessi nomi in PROT:117-120 e decisioni.md. PRESENTE, salvo technical_failure: vedi [consegna-2].
+  R-2  decisioni.md 18/11 (62348ab) riporta soglia 0,2574231028556824, pareggi, 4 etichette, candidata, IC95
+       descrittivi e arresti; la voce di pin (3e007c8) riporta commit 62348abd... e sha256 di protocollo e proposta
+       (ESEGUITO: coincidono). PJ ha descriptive_ci_percent 95. L'arresto su NaN/OOM nel JSON c'e' solo come etichetta:
+       vedi [consegna-2].
+  R-1  PROT:151 (valori, 1e-12, 8.327/20.119.920, [6:154], pred della cache = payload 148 sui validi), :153 (shuffle,
+       gate prima dei fit, etichette su intervalli); PJ evaluation.historical_reference_gate. Valori 0,7859020004638595 e
+       0,7786289843513977 = scientific_readout.json di 3e007c8 (ESEGUITO). PRESENTE.
+  P-1  statistica dei tempi :181 (warmup 1, 10 epoche, mediana/p95, proiezione p95); memoria :187; impostazioni
+       numeriche identiche :63, :181; matrice intera :183-185; job/walltime al piano :175. PRESENTE.
+
+b.2 Rilievi con qualificazione — motivazione:
+  A-1  «Confutato l'enunciato matematico». CORRETTA. Verificata la costruzione di RISP:106-110: dopo LN il dominio e'
+       limitato (||n(x)||² = D·v/(v+eps) <= D), si scrivono le 20 uscite di L0 piu' costanti c_j > sup|W_j h| nelle prime
+       20 unita', tutte le larghezze nascoste sono >= 20 (MLP 96/96/96/64/32; TCN 64/64/64/64/32), le ReLU sono identita' su
+       valori positivi, l'ultimo strato sottrae c; nella TCN i soli tap centrali, e il padding non tocca il tap centrale.
+       La review stessa scriveva «Possono imitare L0 solo con bias grandi che tengono accese le ReLU» (REV:209), e Claude
+       ha riconosciuto l'errore (registro worktree claude_GPT_shared:12901-12904). Conti del ramo (CALCOLATO): 384·20+20 = 7.700;
+       65.300+7.700 = 73.000; 65.204+7.700 = 72.904; 64.128+7.680 = 71.808; 10.260.480+160·7.680 = 11.489.280;
+       bias nascosti MLP 404 − TCN 308 = 96. Coerenti fra RISP:112, PROT:36-40, PJ heads, analytic_checks.
+  C-1  «con precisazione»: L0 e ridge differiscono per pesatura, regolarizzazione, algoritmo e precisione. CORRETTA
+       (REV:222 diceva «il loro scarto misura solo la ricetta»: la precisazione elenca cosa c'e' nella ricetta).
+       Descrittivi presenti :126 e PJ descriptive. La lettura promessa nella riga («i contrasti 1–3 restano confronti
+       fra queste ricette») non e' scritta nel protocollo: vedi [consegna-4].
+  C-2  «con precisazione»: il mancato accesso alla candidatura non e' automaticamente prova contro l'ipotesi.
+       CORRETTA: si discosta da REV:246-247 («Altrimenti esito negativo per l'ipotesi»), ma in modo coerente con la
+       regola a quattro etichette, che «non deduce equivalenze da un esito non significativo» (REV:117). Regola n.&s.
+       :122; descrittivi MLP/L0 e L13/L0 :126. La lettura «L13 peggiore di L0 → niente attribuzione forte del
+       contrasto 3» non e' scritta: vedi [consegna-4].
+  S-2  «con perimetro». CORRETTA: tiene la MSE come chiede REV:289, regola scritta prima :72 (distanza >5 epoche e
+       perdita E_dyn >=2% → objective_tradeoff, PJ fit.objective_tradeoff), curve entrambe :66, :72; soglia interna dal
+       train :59. Il perimetro (numeri sintetici non trasferibili) ripete REV:174-175.
+  K-3  «nome piu' preciso». CORRETTA: «ottimizzazione non risolta entro il budget» :69, :98, PJ failure_states;
+       nessuna etichetta negativa :98, come REV:189-190 e :316-317.
+
+b.3 Note con qualificazione o non adozione — motivazione:
+  05 architettura-5 «evidenza sintetica»: corretta (REV:171-173 dice gia' «non come causa dimostrata»). Kaiming :42.
+  06 architettura-6 «con distinzione»: corretta e dentro la facolta' data dalla nota («E' facoltativo», REV:379). :30.
+  17 selezione-5 «aggiornando l'orizzonte»: corretta; eval/no_grad/FP32 :65, passo 0 escluso :65. Vedi [consegna-5]
+       per «prima del rifit».
+  23 selezione-11 «con qualificazione»: CORRETTA. CALCOLATO, contrazione disaccoppiata (1−lr·0,01)^passi senza
+       gradiente: orizzonte originale lr 1e-3, 3.000 passi → e^-0,03 = 0,970 (come REV:225); nuovo orizzonte lr 1e-2,
+       300 epoche × 30 passi = 9.000 → e^-0,9 = 0,41; rifit 18.000 passi → e^-1,8 = 0,17; lr 3e-3 sui fold → e^-0,27 = 0,76.
+       Quindi «non si trasferisce invariata all'orizzonte piu' lungo» e' vero. Ma «Dichiarare il limite» non e' nel
+       protocollo (decay solo a :63): vedi [consegna-5].
+  26 criteri-3 «non adottata l'estensione inferenziale»: motivazione corretta e limite dichiarato (:128 «Il “no” resta
+       condizionato ai semi osservati»; SD dei semi separata). La review lasciava la scelta a Simone («Se Simone vuole
+       proteggere il «no», decidere ora», REV:421-422): la scelta non e' visibile nella tabella §10. Vedi [consegna-6].
+  27 criteri-4 «con perimetro»: corretta; :128 «il2% non è un pavimento del rumore».
+  29 criteri-6 «Qualificata; respinta la lettura universale»: CORRETTA. La lettura universale c'e' davvero nella review:
+       la tabella dei verdetti scrive «La copertura vera degli intervalli è circa 97%» (REV:22), mentre la base e' una
+       simulazione (REV:118 «In simulazione»). Nessun metodo garantisce la nominale con 15 utenti; Bonferroni non
+       corregge intervalli marginali mal calibrati (RISP:134): vero. Limite dichiarato :114 e PJ reading_limits.
+       La scelta resta da mostrare a Simone: vedi [consegna-6].
+  30 criteri-7 «la seconda opzione»: e' una delle due offerte dalla review (REV:428-430); :114, PJ monte_carlo_border
+       (0,1 pp, soglie 0/2, label_changes false, extra_bootstrap_allowed false). CORRETTA.
+  33 N3 «condizione necessaria sulla stima»: corretta. CALCOLATO 0,98 × 0,7786289843513977 = 0,76305640466437;
+       1 − 0,7630564/0,7859020 = 2,907% sotto la ridge. :124, PJ candidate.trained_head_point_threshold_necessary.
+       La riga indica anche §10, dove il numero non c'e': vedi [consegna-1].
+  34 N4 «rischio documentato»: corretta; :67 «E_dyn non sceglie un secondo vincitore», :72.
+  40 costo-8 «con precisione sul pin»: CORRETTA. Confrontare digest gia' registrati non rilegge il file ne' ne prova
+       l'esistenza; la dipendenza resta dichiarata con arresto :189, PJ scratch_dependencies.policy e
+       operator_preflight_required «hashallinputpins includingSCRATCH».
+  45 consegna-2 «la seconda strada»: e' una delle due offerte (REV:457-459); :149 e PJ code_plan
+       (future_runtime_directory scripts/pose_temponet/, no_top_level_scripts_py). CORRETTA.
+  46 consegna-6 «come contesto»: corretta, la nota era «Per informazione» (REV:460).
+
+b.4 Note con «Accolta» semplice (LETTO; riga di PROT o chiave di PJ):
+  01 :1, :21, :198, README:1, titolo della voce decisioni.md 18/11. | 02 :26, :28; PJ dropout_MLP_TCN.
+  03 :44; PJ module_rng_policy. | 04 :44 («Tre semi L0/L13 cambiano solo shuffle»). | 07 :19.
+  08 raw_source_identity: chiavi complete (ESEGUITO: uguali alle chiavi di eval.json e run.json in 8917e2a; solo
+     aggiunte e revision_note nel diff, hash invariati). | 09 :17; DOI e postprint = temponet.py:5 in 8917e2a (ESEGUITO).
+  10 :135; appendice datata in design_review.txt (solo aggiunte, numstat 10/0). Funzioni citate in RISP:140
+     esistono in 8d34f9c (ESEGUITO); train_blocks: «La finestra finisce in 10 j + 9; il bersaglio e' la media del blocco».
+     CALCOLATO 18.548×148×5 = 13.725.520; /12.468.000 = 1,10.
+  11 :46. | 12 :122 nei due versi; la frase su larghezza/connessioni manca: [consegna-5]. | 13 :46, :126; PJ
+     historical_pre_ridge_descriptive: valore 1,0321280032044744 e sha256 4f10f678... = file in 3e007c8 (ESEGUITO).
+  14 :46. | 15 e 24 :151. | 16 :70, :102. | 18 :44, :63, :181. | 19 :53; CALCOLATO 474.412.856+4.593.977.338 =
+     5.068.390.194 B = 4,720 GiB; +59.367+418.440.754+234.048.726 = 5.720.939.041 B = 5,328 GiB.
+  20 regola dei fold in PJ fit.cv_folds e :57; le liste esplicite non ci sono: [consegna-5]. | 21 :53, :55, :102.
+  22 :46. | 25 :116-122, :153. | 28 :128. | 31 :128. | 32 :124; PJ secondary_worsening.
+  35 :175; PJ overhead_policy. | 36 PJ resource_proposal.phases = tabella :162-173, fase per fase (CALCOLATO:
+     GPUh 0,5+20+1+2,5 = 24; CPU-only 0,5+4+64+8+0,5+3 = 80; allocate 0,5+4+64+4+160+8+8+0,5+23 = 272).
+  37 :177, :179; saldo 2.000.000 − 1.308.137 = 691.863 letto in fccf88d remote_listing.txt («IscrB_WearUsFM ...
+     2000000 1308137», ESEGUITO); 691.863 − 272 = 691.591; 272/691.863 = 0,0393%.
+  38 :181, :185; PJ time_statistic.timed. | 39 :191. | 41 :191; PJ operator_preflight_required. | 42 :104, :175.
+  43 :189; PJ scratch_dependencies (scelta la terza strada della review, REV:449-452). | 44 :206-209; «linea 2»
+     assente dal protocollo (ESEGUITO grep). | 47 :142; manca I-1: [consegna-5]. | 48 :155; PJ outputs.execution_owner.
+  49 ID in PROT:3, PJ, delivery_pin; vedi [consegna-5] per §1 e «futuri output». | 50 :147, :206; PJ code_plan,
+     roles_proposed.
+  costo-6 :187 («no pred interne di tutte le epoche»), coerente con RISP:86.
+
+======================================================================
+PARTE (c) — SEGUITO 8d34f9c: QUATTRO PUNTI E TRE RETTIFICHE
+======================================================================
+
+c.1 Punto 1, controlli positivi. Criterio legato al guadagno piantato: margine dell'oracolo 6–10% e recupero >=50%
+    (PROT:92, :96); guadagno «di poche volte la soglia pratica»: 6–10% = 3–5 volte il 2% (CALCOLATO); rumore tarato
+    perche' L0 sintetica abbia E_dyn interna vicina alla vera: |E_LS,synth − E_real| <= 0,05 (:92), griglia finita
+    a × sigma 5×5 (:90); finestre dinamiche del bersaglio sintetico: soglie dal fitting inner/outer, mai dalla soglia val
+    (:59, :90, :92); controllo lineare: recupero >=90% del margine costante→oracolo (:95); conseguenza del fallimento:
+    stop prima dei fit reali, «eventuale specifica nuova da firmare», nessuna etichetta negativa (:98). DISPOSTO E PRESENTE.
+c.2 Punto 2, S-2 e soglia del trigger: :72 e :59 (soglia solo train per trigger e S-2; soglia storica solo nel report
+    finale). DISPOSTO E PRESENTE.
+c.3 Punto 3, forma chiusa per L0/L13: :76-80, PJ linear_diagnostics. La qualificazione (limite della MSE train,
+    non certificato di AdamW o dell'ottimo held; costo misurato, non «poco costoso» a priori) e' corretta: CALCOLATO
+    4.993² × 8 B = 199.440.392 B = 190 MiB per pattern, ×20 = 3,7 GiB, come RISP:130. Il solver storico richiede
+    alpha>0 (ESEGUITO: scripts/pose_e3_b.py:165 in 3e007c8, «alpha must be positive»), come RISP:128. DISPOSTO E PRESENTE.
+c.4 Punto 4: prima epoca, checkpoint a 1/4, 1/2, 3/4 e conseguenza «non risolta» se vince il primo quarto (:65, :69);
+    rifit alla durata scelta, mai 300 automatiche (:70); ramo affine in TCN-pre (:38); ramo sulla stessa LN, con g=0 la
+    testa e' una L0 (:26, PJ additive_linear_path.input); oggetto nella tabella (:198) e nel primario (:109, PJ primary).
+    DISPOSTO E PRESENTE.
+c.5 Rettifica delle epoche: trigger MSE oppure E_dyn nelle epoche 146–150 (:66, PJ extensions.epoch_trigger). PRESENTE.
+    Rettifica A-1: :42 e RISP §4.1. PRESENTE. Rettifica del 2%: :96, e «Non si usa il +21,3%» (:96). PRESENTE.
+c.6 «Restano dovuti C-1, C-2, C-3, R-1, R-2, P-1, K-1, K-3, le 50 note, la frase su SCRATCH»: tutti disposti
+    (parte b); la frase sull'indipendenza da SCRATCH e' sostituita da :189 «Nessuna dichiarazione di indipendenza daSCRATCH».
+c.7 Conto dei passi del seguito (531.000 e 1,26 milioni): il protocollo tiene 531.000 nominali iniziali e porta il
+    massimo a 1.458.000 nominali / 1.477.800 prudenti (:102). CALCOLATO 11·4·150·60 + 15·150·60 = 531.000;
+    11·6·300·60 + 15·300·60 = 1.458.000; con S0+S1 <= 61: 537.600 e 1.477.800. analytic_checks dichiara superato
+    il conto di Claude (chiave claude_1260000_max_updates_superseded): corretto, il nuovo e' un tetto piu' prudente.
+
+Esito (c): nessun rilievo.
+
+======================================================================
+RILIEVI
+======================================================================
+Convenzione: i miei rilievi sono [consegna-N] fra parentesi quadre. Le note della review 32e5452 con lo stesso
+nome (consegna-1 ... consegna-9 della dimensione «consegna» di quella review) sono citate per numero di riga di RISP.
+Nessun bloccante. Tre minori ([consegna-1], [consegna-2], [consegna-4]), sei note.
+
+[consegna-1] minore, testo — La tabella del §10 non porta tutto il perimetro di C-3 ne' la soglia della nota N3.
+  Posizione: PROT:203 (riga «Esito positivo»); RISP:21 (C-3, destinazione §10); RISP:67 (nota 33, destinazione §10).
+  Prova: LETTO PROT:203 «Candidata ... iff1/4/5 passano, ... nessuna adozione o livelloB automatici». ESEGUITO grep:
+  «0.763» solo a PROT:124 (§5); «pretraining» solo a PROT:12, :133, :140. C-3 chiedeva nella tabella anche
+  «Non autorizza affermazioni sul pretraining rispetto a encoder random o a reti da zero» e «Non è una conferma su dati
+  mai visti» (REV:262-264); N3 chiedeva «Va detto a Simone» per E_dyn <= 0,763056 (REV:434-435). Le clausole ci sono in
+  PJ candidate.scope, in decisioni.md e nel §5, non nella tabella che Simone firma.
+  Correzione: aggiungere alla riga «Esito positivo»: nessuna affermazione sul valore del pretraining (encoder random e
+  reti da zero restano dovuti); non e' conferma su dati mai visti (15 di sviluppo gia' consultati); in pratica serve
+  E_dyn <= 0,7630564 (2% sotto la testa storica, circa 2,91% sotto la ridge). Oppure togliere §10 dalle due righe.
+
+[consegna-2] minore, testo — In proposal.json l'arresto tecnico (NaN/OOM) e' solo un'etichetta.
+  Posizione: PJ fit.failure_states[4] «technical_failure»; PROT:104; RISP:27 (R-2, destinazioni §8 e §10).
+  Prova: ESEGUITO su PJ: 0 occorrenze di NaN, OOM, TIMEOUT; «technical_failure» compare una sola volta, come voce
+  dell'elenco, senza condizioni ne' conseguenza. R-2 chiedeva: «In `proposal.json` vanno aggiunti anche l'IC 95%
+  descrittivo e l'arresto su NaN o OOM» (REV:329-330); l'IC95 c'e' (descriptive_ci_percent 95), l'arresto no. Il
+  protocollo ha la regola a :104 («NaN/Inf, divergenza non finita, OOM, fit incompleto/TIMEOUT, supporti o pin diversi
+  fermano la fase»), ma senza il nome dell'etichetta; §8 e §10, indicati dalla riga R-2, non la contengono.
+  Correzione: in PJ un oggetto (per esempio fit.technical_stop) con le condizioni di PROT:104 e la conseguenza (stop della
+  fase; nessun retry cieco, seme sostitutivo o riduzione della matrice; fit con allarmi aperti conservati senza etichette
+  inferenziali); nominare «technical_failure» a PROT:104; nella riga R-2 indicare §4.5.
+
+[consegna-3] nota, testo — «costante→teacher» al posto di «costante→oracolo».
+  Posizione: decisioni.md:6749 (voce 18/11, 62348ab) e prompt_claude_pose_temponet_review_20261117.md:17.
+  Prova: LETTO decisioni.md:6749 «lineare: almeno90% margine costante→teacher suMSE/E_dyn»; PROT:95 «recupero >=90% del
+  margine costante→oracolo»; PJ positive_controls.gates.linear.formula «(E_constant-E_head)/(E_constant-E_oracle)».
+  Nel protocollo «teacher» indica gia' il generatore T(z) (PROT:86, :88) e l'encoder T100-G (PROT:199); nel controllo
+  lineare a=0 il bersaglio pulito e' L(z), non T. Il JSON e' univoco, quindi il rischio e' basso.
+  Correzione: «costante→oracolo» nelle due righe (K-1 chiede le stesse parole in protocollo, JSON e decisioni.md).
+
+[consegna-4] minore, testo — Due letture accolte nella matrice (C-1 e C-2) non sono scritte nel §5.
+  Posizione: RISP:19 e RISP:20 contro PROT:122 e :126.
+  (i) C-1, RISP:19: «Se L0 è deteriorata rispetto alla ridge, i contrasti 1–3 restano confronti fra queste ricette».
+      PROT:126 dice solo «L0 inferiore alle storiche invita a leggere le differenze di dose/loss/FP16 e i controlli
+      train». Le frasi retoriche che C-1 voleva fermare sono state tolte (ESEGUITO grep: «promettente» e «Se la TCN
+      migliora» 0 nel nuovo, 1 nel vecchio), quindi resta solo la lettura dei contrasti 1–3.
+  (ii) C-2, RISP:20: «Un L13 peggiore di L0 ... in quel caso niente attribuzione forte del contrasto 3 alla non
+      linearità». Nel protocollo L13 vs L0 e' solo un descrittivo (:126); la lettura del contrasto 3 e' «TCN/L13 passa →
+      vantaggio sulla ricetta lineare temporale, con cautela S-2» (:122). La frase generale di :104 «Nessuna vittoria
+      costruita su un comparatore inadeguatamente allenato» non e' operativa: L13 peggiore di L0 non e' un allarme del §4.2.
+  Controesempio minimo (CALCOLATO): L0 0,785, L13 0,830, TCN 0,760. L13 vs L0 = (0,785−0,830)/0,785 = −5,7%
+  (deterioramento); contrasto 3 = (0,830−0,760)/0,830 = +8,4% → «beneficio_pratico_risolto», che :122 legge come
+  vantaggio sulla lettura lineare temporale anche se quel comparatore generalizza peggio del lettore istantaneo.
+  Con la lettura promessa in RISP:20 il contrasto 3 non si attribuirebbe alla non linearita'.
+  Correzione: due frasi a PROT:126 con le letture di RISP:19 e RISP:20, oppure togliere le promesse dalle righe.
+
+[consegna-5] nota, testo — Altre piccole promesse delle righe che il protocollo non contiene, o destinazioni imprecise.
+  a. Nota 12 controlli-6 (RISP:46): «Il confronto scambia anche larghezza per connessioni temporali»: assente
+     (PROT:112 «contesto rispetto alla sola non linearità istantanea»; «larghezza» solo a :40).
+  b. Nota 23 selezione-11 (RISP:57): «Dichiarare il limite»: assente, il weight decay e' solo a PROT:63. Il limite
+     conta: CALCOLATO contrazione senza gradiente 0,97 nell'orizzonte vecchio, 0,41 con lr 1e-2 su 9.000 passi.
+  c. Nota 47 consegna-7 (RISP:81): «inclusa compatibilità con I-1»: «I-1» assente da tutto il protocollo (ESEGUITO grep).
+  d. Nota 17 selezione-5 (RISP:51): «Curve e decisioni prima del rifit»: PROT:70 blocca il manifest «Prima
+     dell'inferenza finale». Rischio piccolo: il rifit non usa dati held.
+  e. Nota 20 selezione-8 (RISP:54): «Conservare liste esplicite» in proposal.json: in PJ c'e' solo la regola
+     (fit.cv_folds); ESEGUITO: 0 ID utente nel JSON v2 e in quello di c15aac9, quindi non c'e' nulla da «conservare»;
+     PROT:57 rinvia liste e hash al manifest futuro.
+  f. Nota 49 consegna-9 (RISP:83): il link va a §1, ma l'ID e' a PROT:3, prima dell'ancora p1 (:7); «uguale in ...
+     manifest e futuri output» non e' scritto nel protocollo.
+  g. Nota 39 costo-7 (RISP:73): «disponibilità della corsia controllata per fase»: PROT:191 e PJ
+     operator_preflight_required la mettono solo nel preflight.
+  h. Nota 18 selezione-6 (RISP:52): la derivazione dei semi e' nel §3 (PROT:44), la riga rimanda a §4 e §9.
+  Correzione: una frase ciascuna nel protocollo, o correggere la riga. Nessuno cambia l'impianto.
+
+[consegna-6] nota, testo — Le due scelte che la review lasciava a Simone (criteri-3, criteri-6) non si vedono nella tabella.
+  Posizione: PROT:202 (riga «Criteri»); RISP:60, RISP:63.
+  Prova: REV:421-422 «Se Simone vuole proteggere il «no», decidere ora il bootstrap a due livelli o la concordanza dei
+  semi»; REV:426-427 «decisi ora». GPT non le adotta con motivazione corretta e dichiara i limiti in §5 (:114, :128),
+  ma la riga «Criteri» dice solo «5IC99,2000bootstrap, soglia dinamica storica finale, quattro esiti ordinati».
+  Correzione: aggiungere alla riga «Criteri»: copertura solo nominale (con 15 utenti puo' essere piu' bassa); nessun
+  bootstrap a due livelli: il «no» resta condizionato ai tre semi.
+
+[consegna-7] nota, testo — L'ID esteso manca in README e in decisioni.md.
+  Posizione: README:5 («IDv2»); decisioni.md:6741-6772 (due voci 18/11, solo «Protocollo v2» e sha256).
+  Prova: ESEGUITO grep (parte d.7). Lo sha256 identifica il file senza ambiguita'; l'ID esteso serve a ritrovare la voce
+  di congelamento e i futuri output. Correzione: scrivere pose-temponet-frozen-encoder-readout-20261117-v2 nella voce di pin.
+
+[consegna-8] nota, testo — Parole fuse nel testo che Simone legge.
+  Posizione: PROT intero, in particolare la tabella §10 (PROT:196-207); anche decisioni.md 18/11 e README.
+  Prova: ESEGUITO (euristica con espressione regolare su lettere e cifre attaccate, fuori dal codice): circa 162
+  occorrenze nel protocollo v2 contro circa 8 in c15aac9. Esempi in §10: «72.904parametri», «40train/15sviluppo»,
+  «3semi», «2000bootstrap», «iff1/4/5», «pratico2/3», «gateammissione», «livelloB», «nelFM», «272coreh/orelocali».
+  Correzione: un passaggio sugli spazi prima che Simone legga la tabella. Non cambia il contenuto, ma cambia lo sha256
+  (vedi [consegna-9]).
+
+[consegna-9] nota, testo — Pin da rifare dopo le correzioni; nome di un controllo fuorviante.
+  Posizione: delivery_pin_20261118.json; decisioni.md:6762-6772; document_checks_20261118.json, controllo
+  «no_scientific_or_runtime_changes».
+  Prova: LETTO. I pin puntano a 62348ab (protocollo 05a9eb09..., proposta f3b92c4a...). Ogni correzione chiesta da
+  questa rilettura crea un nuovo commit di contenuto: il pin va rifatto su quello, e la voce di congelamento alla firma
+  (R-2) deve citare il commit firmato e i suoi sha256, non quelli di oggi se cambiano. Il controllo
+  «no_scientific_or_runtime_changes» passa con dettagli «none», ma la revisione cambia il disegno scientifico: il nome
+  intende, verosimilmente, nessun cambio a sorgenti e runtime.
+  Correzione: ripinnare dopo le correzioni; rinominare il controllo, per esempio «no_source_or_runtime_changes».
+
+======================================================================
+CONCLUSIONE SULLA DIMENSIONE «consegna»
+======================================================================
+Integrita' piena: snapshot = 3e007c8; pin, byte e sha256 coincidono in snapshot, 62348ab e 3e007c8; diff solo
+documentale (12 file di testo, nessun codice o dato); JSON validi; ancore e link a posto; prompt = richiesta di oggi.
+Fedelta' piena: 13 titoli e 50 enunciati letterali; la frase «49 punti elenco ma 50 ID» e' vera.
+Tracciabilita': le 63 disposizioni esistono e quasi tutte sono nel protocollo o nel JSON alla riga indicata.
+Le qualificazioni e i rifiuti hanno motivazioni corrette (A-1, C-1, C-2, S-2, selezione-11, criteri-3, criteri-6,
+criteri-7, costo-8, costo-consegna-N1, consegna-2 della review). Il seguito 8d34f9c e' disposto e presente per intero.
+Restano tre correzioni minori di testo (tabella §10, arresto tecnico nel JSON, due letture del §5) e sei note.
+Nessuna richiede nuovi esperimenti o cambia l'impianto. Verdetto del punto: CONVERGE_CON_CORREZIONI.
+Distinzione chiesta da GPT: tutti i rilievi sono di tipo «testo»; nessuna verifica e' stata spostata in modo
+improprio a implementazione o benchmark.
+
+======================================================================
+CONFERME PRINCIPALI (dettagli e prove nelle parti a-d)
+======================================================================
+ 1. Snapshot identico all'albero di 3e007c8: 2.130 file, 0 diversi (ESEGUITO git hash-object).
+ 2. Pin: 9 file con byte e sha256 uguali in snapshot, 62348ab e 3e007c8; document_checks coerente; voce di pin in
+    decisioni.md coerente; 22 controlli su 22 (ESEGUITO).
+ 3. Diff c15aac9..3e007c8: 12 file di testo in docs/ e results/infra/pose_temponet_proposal_20261117/, nessun codice,
+    binario o dato; git diff --check pulito; 3e007c8 aggiunge solo pin e registro (ESEGUITO).
+ 4. JSON validi, senza chiavi duplicate ne' NaN (ESEGUITO). Tabelle markdown ben formate (ESEGUITO).
+ 5. Pin storici invariati da c15aac9; pin SCRATCH = extraction_plan_19618.json (ESEGUITO).
+ 6. ID v2 uguale in protocollo, JSON, delivery_pin, prompt e registro (ESEGUITO).
+ 7. Ancore p1-p10 presenti; 106 link della risposta risolvono (ESEGUITO).
+ 8. 49 punti elenco e 50 ID nel §7; 50 enunciati e 13 titoli letterali, gravita' e ID giusti (ESEGUITO).
+ 9. 63 disposizioni, nessuna mancante; 45 semplici e 18 qualificate (ESEGUITO).
+10. A-1 confutato correttamente: costruzione verificata, coerente con REV:209 e col riconoscimento di Claude (LETTO).
+11. Motivazioni corrette per C-1, C-2, S-2, K-3, selezione-11 (CALCOLATO 0,97 → 0,41), criteri-3, criteri-6
+    (REV:22 diceva davvero «copertura vera»), criteri-7, costo-8, costo-consegna-N1 e consegna-2 della review.
+12. Seguito 8d34f9c: quattro punti e tre rettifiche disposti e presenti (PROT:59, :65-72, :76-80, :86-98, :26, :38, :198).
+13. Numeri ricalcolati: 0,7630564046643697 e 2,907%; 4,720 e 5,328 GiB; fasi 24/80/272; saldo 691.863 (fccf88d);
+    13.725.520 endpoint; 531.000/1.458.000/537.600/1.477.800 aggiornamenti; 40.128 valutazioni (CALCOLATO).
+14. Valori di R-1 e ancora ridge pre (1,0321280032044744, sha256 4f10f678...) = scientific_readout.json (ESEGUITO).
+15. Provenienza raw: chiavi complete; temponet.py identico in 8917e2a/0c19c4b/60b35bd; DOI e postprint a temponet.py:5;
+    solver storico con alpha>0 (pose_e3_b.py:165); train_blocks con endpoint 10j+9 (ESEGUITO).
+16. Prompt aggiornato = richiesta di oggi nei sei punti e nelle consegne (LETTO).
+17. Voci GPT 18/11 di registro e decisioni.md coerenti col protocollo, salvo «teacher» ([consegna-3]) (LETTO).
+18. Tolte le frasi superate: «linea 2», «confirmatory_family», «promettente», «Se la TCN migliora» (ESEGUITO grep).
+
+Script di lavoro: work_consegna/fedelta_note.py, work_consegna/fedelta_rilievi.py, work_consegna/tree_3e007c8.tsv.
+Fine del rapporto.

@@ -1,0 +1,169 @@
+VERIFICA AVVERSARIA DEI TRE PROBLEMI DELLA LENTE «CORREZIONI» (F13, F9, F21)
+Data: 18/11/2026. Verificatore: subagent, sola lettura (nessuna modifica a bozza, fonti o repository; git solo in lettura;
+niente ssh, rete, job o subagent). Script, appunti e rapporto solo in questa cartella.
+
+Bozza controllata (copia congelata, non modificata):
+  .../scratchpad/tcnreview2/controllo/bozza_controllo.md
+  sha256 5e872e1d2089df94e2907c6065fbcbe27938db3ac4dcc14aa85643ed739a6dcf, 585 righe (ricontrollati: OK).
+Rapporto del controllore verificato: .../controllo/correzioni/rapporto.txt (P1 = F13, P2 = F9, P3 = F21) e il suo conto
+  .../controllo/correzioni/alpha_scala.py -> alpha_scala.out.txt.
+
+Abbreviazioni
+  B    = bozza_controllo.md (numero = riga della copia congelata)
+  SEG  = controllo/segnalazioni_rilettori.txt
+  RF   = rilettura_fedelta/rapporto.txt ; RN = rilettura_numeri/rapporto.txt ; RR = rilettura_riferimenti/rapporto.txt
+  VAC, VRC, VCC = verify_architettura-controlli.txt, verify_ricetta-criteri.txt, verify_costo-consegna.txt
+  P, J, R, DEC = file della copia gpt_3e007c8 (righe di cat -n)
+  EV   = .../worktrees/claude-temponet/docs/reviews/claude_review_pose_temponet_revision_20261118_evidence/
+  CTRL = controllo/correzioni/rapporto.txt (rapporto del controllore)
+
+Metodo. Per ogni problema: (1) rilettura del passo nella bozza congelata e del contesto; (2) rilettura della fonte primaria
+che il passo cita o riassume; (3) tentativo di smentita (la frase si puo' leggere in modo coerente? la fonte dice altro? la
+correzione proposta e' giusta?); (4) verdetto: CONFERMATO, PARZIALE (con correzione rivista) o RESPINTO.
+
+==========================================================================================================================
+F13 (P1 del controllore) - B:111-114, prompt B:508 - VERDETTO: CONFERMATO - imprecisione
+==========================================================================================================================
+Passo. B:106-110: «La stessa ridge, con alpha scelto sugli inner sul bersaglio sintetico e penalità sulla somma dei quadrati,
+  fittata sui 20 utenti di fitting outer, deve recuperare almeno il 90% [...] Con la penalità sulla somma dei quadrati alpha
+  passa da 10 a 20 utenti senza riscalare.» B:111-113: «(b) da sola non basta. Nel modello dei revisori, con spettro isotropo
+  e sigma 2,5, la ridge recupera il 90,8% all'alpha ottimo e il 90,1% con l'alpha degli inner non riscalato; la WLS l'89,8%.
+  Il riferimento passa di un soffio, e una L0 neurale fra le due darebbe ancora «ricetta non ammessa»». Prompt B:508: «la
+  ridge recupera il 90,1-90,8% e la WLS l'89,8%».
+
+Tentativo di smentita.
+  (1) La frase si puo' leggere come «90,1% nel caso della loss media»? No: la bozza non nomina mai la loss media (grep su
+      bozza_controllo.md: nessuna occorrenza di «loss media»; «riscal» solo a B:109 e B:112). L'unica parametrizzazione
+      scritta nella (b) e' la penalita' sulla somma dei quadrati, e B:109 dice che con essa alpha «passa [...] senza
+      riscalare». Letta nel suo contesto, «l'alpha degli inner non riscalato» e' quindi la (b) prescritta.
+  (2) La fonte attribuisce il 90,1% a quel caso? No. EV/script_agenti/rilettura_fedelta/conti_rilettura.py:10 «ridge con
+      alpha portato da 10 a 20 utenti senza riscalare (parametrizzazione a loss media: alpha* ~ 1/n)»; :12 rischio con
+      lambda = c·v; :16 «dbl=sum(risk(sk,v,2) ...)», cioe' lambda doppio; conti_rilettura.out.txt:9 «isotropo sigma=2.5:
+      R_MSE OLS=0.898 ridge ottima=0.908 ridge alpha x2=0.901». RF:274-276 (P-25): «con la loss media per finestra (P:57)
+      l'alpha ottimo scala circa come 1/n, quindi l'alpha inner e' circa doppio [...] con alpha doppio 0,901». La stessa
+      P-25 propone come correzione «penalità sulla somma dei quadrati (o alpha × n_inner/n_outer)» (RF:279), cioe' proprio
+      il rimedio che elimina il caso del 90,1%. La bozza ha preso la correzione e, insieme, la cifra del caso non corretto,
+      con l'etichetta del riassunto I10 (RF:342-343 «con alpha non riscalato la ridge passa di un soffio (0,901 ...)»), che
+      nel rapporto del rilettore si riferiva alla loss media.
+  (3) Algebra (CALCOLATO). Con min ||y−Xb||² + lambda||b||² e X'X = nI lo shrink e' n/(n+lambda) e l'ottimo per direzione
+      e' lambda* = sigma²K/s_k, che non dipende da n: lambda scelto a 10 utenti e usato a 20 e' ancora l'ottimo. Con la loss
+      media alpha = lambda/n, quindi alpha*(10 utenti) = 2·alpha*(20 utenti): non riscalato, lambda raddoppia.
+      Ricalcolo indipendente in ricalcolo_f13.py -> ricalcolo_f13.out.txt (sigma 2,5, K 5, p 384, n_out 118.000):
+        WLS 0,8983; somma dei quadrati, lambda degli inner non riscalato 0,9077 (= ottimo su griglia 0,9077);
+        loss media, alpha degli inner non riscalato (lambda x2) 0,9012; loss media riscalata 0,9077.
+      Coincide con alpha_scala.out.txt del controllore (0,9077 / 0,9012 / 0,8983).
+  (4) «una L0 neurale fra le due darebbe ancora «ricetta non ammessa»»: il cancello e' il 90% (P:95 «recupero >=90% del
+      margine costante→oracolo sia su MSE che su E_dyn»). Fra WLS (0,8983) e ridge (0,9077) fallisce solo la parte sotto
+      0,90, cioe' il 18% dell'intervallo (il 59% anche con la cifra del 90,1%): la frase vale solo per una L0 sotto il 90%.
+      Se «le due» si legge come «le due cifre della ridge» (90,1 e 90,8), la frase e' falsa (sopra il 90% si passa).
+Esito. Il problema c'e' come descritto: la cifra del 90,1% e' attribuita al caso che la (b) stessa rende ottimo (contraddice
+  B:108-109) e il prompt passa a GPT un intervallo che mescola due parametrizzazioni. L'argomento «(b) da sola non basta» regge
+  (con la (b) prescritta la ridge supera il 90% di 0,8 punti; una L0 neurale fra 89,8% e 90% e' «ricetta non ammessa» con il
+  controllo dichiarato diagnostico): nessun verdetto, blocco o correzione obbligatoria cambia.
+Gravita'. Imprecisione (cifra giusta della fonte, attribuita al caso sbagliato; effetto nullo sulle conclusioni). Letta alla
+  lettera contro B:108-109 la frase e' falsa, quindi «errore a effetto nullo» sarebbe difendibile; tengo «imprecisione» come
+  il rilettore (F13) e il controllore, in linea con l'uso del workflow per le cifre attribuite male (N8, N9).
+Correzione. Quella del controllore regge (B:111-113 e prompt B:508). Facoltativo: se la frase nuova dice che la penalita'
+  sulla somma dei quadrati porta all'ottimo, mettere fra le prove anche il conto (alpha_scala.py o ricalcolo_f13.py), perche'
+  conti_rilettura.py etichetta lo 0,908 solo come «ridge ottima».
+Corroborazione (non usata come prova): lo stesso punto e' NE-1 di controllo/nuovi-errori/rapporto.txt:40-57 e compare in
+  controllo/avvocato-gpt/rapporto.txt:51-52 e :281-295.
+
+==========================================================================================================================
+F9 (P2 del controllore) - B:369 - VERDETTO: CONFERMATO - imprecisione
+==========================================================================================================================
+Passo. B:367-371: «## 5. Da correggere senza un nuovo giro / GPT le corregge nella stessa revisione; le ricontrollo alla
+  review del pacchetto operativo. Le righe «minore» vanno corrette. Per le «note» basta una riga di disposizione [...]».
+
+Tentativo di smentita.
+  (1) «le ricontrollo» si puo' leggere come «anche» (minori rilette due volte: nel prossimo giro e al pacchetto)? Il
+      pronome non ha altro antecedente che le righe della tabella, minori comprese, e la frase indica un solo momento di
+      controllo. Il resto della bozza separa invece i due momenti per tipo di riga: Esito B:30-33 («e le correzioni minori
+      della sezione 5. Dopo, rileggo solo le righe cambiate (sezione 7) [...] Per le note della sezione 5 [...] le
+      ricontrollo alla review del pacchetto operativo»); sezione 7 B:430-432 («GPT corregge [...] le minori della sezione
+      5»; «Rileggo solo le righe che toccano BL, OB e le minori») e B:437-438 («Le note della sezione 5 le ricontrollo alla
+      review del pacchetto operativo [...] Quella review viene dopo la firma»); prompt B:582-583 («rileggo solo le righe di
+      BL, OB e delle minori [...] Le note le ricontrollo alla review del pacchetto operativo»). Con questa struttura, B:369
+      e' l'unico punto che rimanda le minori al pacchetto operativo: la lettura «anche» non e' sostenuta dal testo.
+  (2) E' un residuo della correzione di F9? Si'. Nella bozza delle 12:26 (rilettura_fedelta/bozza_snapshot_1226.md) la
+      stessa frase c'era gia' a riga 329, e la sezione 7 diceva «3. Le correzioni della sezione 5 le ricontrollo alla review
+      del pacchetto operativo» (riga 396): allora le due frasi erano coerenti. La correzione di F9 ha cambiato Esito,
+      sezione 7 e prompt e ha lasciato B:369 com'era. F9 (SEG:45) chiedeva esattamente questo: «la verifica delle minori
+      rinviata al pacchetto operativo cade dopo la firma (P:147, P:209): includerle o dire che un errore dopo la firma
+      richiede una modifica registrata»; RF:192-201 (P-17).
+  (3) Effetto reale? La review del pacchetto viene dopo la firma (P:147 «Dopo eventuale firma §10: [...] Claude fa una
+      review del pacchetto operativo completo»; P:209 «non un'altra revisione del disegno già convergente»). Chi legge la
+      sezione 5 prima della 7 ricava che le minori non entrano nella convergenza. Il prompt, che GPT applica, e' coerente,
+      quindi il rischio pratico e' basso: imprecisione di coerenza interna, non errore.
+Esito. Il problema c'e' come descritto.
+Correzione. Quella del controllore regge: «GPT le corregge nella stessa revisione. Le righe «minore» vanno corrette e le
+  rileggo insieme a BL e OB (sezione 7). Per le «note» basta una riga di disposizione, accolta o motivata, come per le note
+  di ieri, e le ricontrollo alla review del pacchetto operativo; quelle segnate «facoltativa» possono restare come sono.»
+Corroborazione (non usata come prova): NE-3 di controllo/nuovi-errori/rapporto.txt:72-83, con una correzione equivalente.
+
+==========================================================================================================================
+F21 (P3 del controllore) - prompt B:562 (corpo B:258-260) - VERDETTO: PARZIALE - mancanza
+==========================================================================================================================
+Passo. Corpo B:259-260: «Va riscritta anche P:104 («Se L0 o TCN-post non è ammissibile, niente promozione primaria»): con la
+  regola direzionale vale per L0, non per la TCN-post. Nello stesso punto va scritto se la catena prosegue con allarmi aperti
+  (voce vii di `ricetta-9`).» Prompt B:562: «Riscrivi anche P:104, dicendo se la catena prosegue con allarmi aperti.»
+
+Tentativo di smentita.
+  (1) Il prompt copre gia' il punto per implicazione? Le voci B:557 («allarme sulla TCN: si sospendono solo le conclusioni
+      negative o nulle sulla TCN») e B:561 («un allarme della sola TCN-post non la esclude») implicano che un allarme della
+      TCN-post non tolga il primario, ma nessuna nomina la frase di P:104 sul primario; B:561 riguarda la candidata. «Riscrivi
+      anche P:104» con la sola indicazione della voce vii lascia aperta la lettura «aggiungi una frase», con «o TCN-post»
+      intatto: e' il controesempio di OB-4 (B:250-251, primario perso con contrasto 1 a +5 e IC99 [+3; +7]). La parte del
+      corpo che manca nel prompt e' proprio il contenuto di F21 (SEG:57) e del fix del verificatore (VRC:294-295 «Va riscritta
+      P:104 [...]: con la regola direzionale vale per L0, non per TCN-post»). Il problema descritto dal controllore c'e'.
+  (2) Il corpo e' davvero completo, come scrive il controllore (CTRL:177 «Corpo B:259-260 completo»)? Solo in parte. La
+      correzione completa di F21 nel rapporto del rilettore e' «aggiungere P:104 ai luoghi da riscrivere, con P:122, J e §10
+      (fix del verificatore, RES:1090)» (RF:155-158, P-16b), e il fix del verificatore su S-D dice «Scrivere in P:104,
+      P:122, J e nel §10 una conseguenza direzionale [...] La candidata richiede L0, MLP e L13 ammessi; un allarme di TCN-post
+      non la esclude» (result_dump.txt:1090; stesso testo nel JSON del workflow, w785grg3y.output, seeded_claims S-D). Nella
+      bozza OB-4 nomina P:104 (B:259) e il §10 (B:263, e OB-5 a B:272 «le scelte di OB-3 e OB-4»), ma non P:122 ne' J;
+      neppure DEC. Eppure la regola della candidata chiede ancora TCN-post ammessa in tre punti (LETTO):
+        P:122 «condizionatamente ai gate comuni e all'ammissibilità di L0/MLP/L13/TCN-post»;
+        J:40 «"iff": "all qualitygates and L0/MLP/L13/TCNpost admitted; [...]"» e J:41 «"missing_or_unresolved_comparator":
+          "candidacy not established; dependentcontrasts unlabelled"» (la seconda e' la conseguenza simmetrica per i
+          comparatori, che con la regola direzionale diventa «letture favorevoli alla TCN bloccate»);
+        DEC:6753 «**Candidata iff** L0/MLP/L13/TCN-post ammessi, 1/4/5 passano [...]».
+      La voce di OB-4 «la candidata richiede L0, MLP e L13 ammessi; un allarme della sola TCN-post non la esclude» (B:258,
+      prompt B:561) contraddice questi tre punti, ma la bozza non dice dove va scritta. Il rischio e' quello che la review
+      segnala altrove (BL-2: P e J divergenti): GPT cambia P:122 e lascia J:40 o DEC:6753. OB-3 nomina gli stessi luoghi
+      (B:236 «P:122, J `candidate`, DEC e §10») solo per la regola di veto, non per il requisito di ammissione.
+  (3) Peso. Basso, come il resto di F21: la regola da adottare e' scritta; mancano i luoghi. Ma e' cio' che fa la differenza
+      fra una rilettura che «controlla solo che corrispondano» (B:434) e un giro in piu'.
+Esito. PARZIALE: il problema del controllore c'e' e la sua correzione del prompt e' giusta, ma il residuo di F21 e' piu' largo
+  di quanto dice (anche il corpo omette P:122, J `candidate` e DEC). La correzione va estesa a corpo e prompt.
+Correzione rivista.
+  Corpo B:259-260: «Va riscritta anche P:104 («Se L0 o TCN-post non è ammissibile, niente promozione primaria»): con la regola
+    direzionale vale per L0, non per un allarme della sola TCN-post. Lo stesso cambia nella regola della candidata, da
+    scrivere uguale in P:122, J `candidate` (J:40-41) e DEC:6753, che oggi chiedono anche TCN-post ammessa. Nello stesso punto
+    va scritto se la catena prosegue con allarmi aperti (voce vii di `ricetta-9`).»
+  Prompt B:562: «Riscrivi anche P:104: con la regola direzionale «niente promozione primaria» vale se L0 non è ammessa, non
+    per un allarme della sola TCN-post; di' se la catena prosegue con allarmi aperti. Togli TCN-post dal requisito di
+    ammissione della candidata in P:122, J candidate e DEC:6753.» (poi invariato: «Se tieni la regola simmetrica, [...]»).
+Corroborazione (non usata come prova): la parte sul prompt e' anche NE-10 (controllo/nuovi-errori/rapporto.txt:159-170) e
+  C-05(e) (controllo/coerenza/rapporto.txt:175-176); nessuna delle due nomina P:122, J o DEC per OB-4.
+
+==========================================================================================================================
+PROBLEMI NUOVI
+==========================================================================================================================
+Nessuno oltre a quanto gia' detto. L'unico residuo che il controllore non ha visto (OB-4 non nomina P:122, J `candidate` e
+DEC:6753 per il requisito di ammissione della candidata) e' lo stesso rilievo F21 dei rilettori (RF:155-158, P-16b), quindi
+l'ho messo nella correzione rivista di F21 invece che fra i problemi nuovi, per non avere due correzioni sulle stesse righe
+(B:259-260 e B:562).
+
+==========================================================================================================================
+ESITO
+==========================================================================================================================
+  F13  CONFERMATO  imprecisione  correzione del controllore valida (B:111-113 e prompt B:508).
+  F9   CONFERMATO  imprecisione  correzione del controllore valida (B:369-371).
+  F21  PARZIALE    mancanza      il problema c'e'; la correzione va estesa a P:122, J `candidate` (J:40-41) e DEC:6753,
+                                 nel corpo (B:259-260) e nel prompt (B:562).
+Nessuno dei tre cambia verdetti, blocchi o correzioni obbligatorie della bozza.
+
+Limiti. Solo lettura di bozza congelata, fonti e prove; un conto aritmetico nuovo (ricalcolo_f13.py, modello dei revisori,
+nessun dato). Le uscite delle altre lenti (nuovi-errori, coerenza, avvocato-gpt) sono citate solo come corroborazione, non
+come prova. Nessun file fuori da questa cartella e' stato scritto o modificato; sha256 della bozza ricontrollato (OK).

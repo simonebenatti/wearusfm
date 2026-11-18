@@ -1,0 +1,301 @@
+CONTROLLO FINALE DELLA BOZZA - LENTE: CONTROLLO DELLE CORREZIONI
+Data: 18/11/2026. Controllore: subagent, sola lettura (nessuna modifica a bozza, fonti o repository; git solo in lettura;
+niente ssh, rete, job o subagent). Script e uscite solo in questa cartella.
+
+Bozza controllata (copia congelata): .../scratchpad/tcnreview2/controllo/bozza_controllo.md
+  sha256 5e872e1d2089df94e2907c6065fbcbe27938db3ac4dcc14aa85643ed739a6dcf, 585 righe (ricontrollati da cerca_passi.py: OK).
+Segnalazioni controllate: .../controllo/segnalazioni_rilettori.txt (N1-N12, R1-R15, F1-F21 = 48), con i rapporti completi
+  dei tre rilettori per i dettagli delle correzioni proposte.
+
+Abbreviazioni
+  B    = bozza_controllo.md (numero = riga della copia congelata)
+  SEG  = controllo/segnalazioni_rilettori.txt
+  RN, RR, RF = rilettura_numeri/rapporto.txt, rilettura_riferimenti/rapporto.txt, rilettura_fedelta/rapporto.txt
+  VAC, VRC, VCC = verify_architettura-controlli.txt, verify_ricetta-criteri.txt, verify_costo-consegna.txt (in tcnreview2/)
+  SV   = sintesi_verify.txt ; RRIC = review_ricetta.txt ; RCO = review_controlli.txt
+  P, J, R, DEC = protocollo, proposal.json, risposta, decisioni.md nella copia gpt_3e007c8 (righe di cat -n)
+  EV   = /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-temponet/docs/reviews/
+         claude_review_pose_temponet_revision_20261118_evidence/
+  32e5452 = git show 32e5452:docs/reviews/claude_review_pose_temponet_proposal_20261117.md (sola lettura)
+  c15aac9 = copia tcnreview/gpt_c15aac9/docs/pose_temponet_frozen_protocol_20261117.md
+
+Script di questa cartella
+  cerca_passi.py -> cerca_passi.out.txt: per ogni segnalazione, frasi che devono esserci o non esserci nella bozza, con le righe
+    (ESEGUITO). Le 6 «ATTENZIONE» dell'uscita sono frasi spezzate a capo: cerca_a_capo.out.txt le ritrova tutte
+    (R8 238-239 e 551-552; F3 452-453; F4 190-191; F16 145-146; F21 259-260).
+  alpha_scala.py -> alpha_scala.out.txt: per P1, ridge del modello isotropo con lambda scelto a 10 utenti e usato a 20 senza
+    riscalare, nelle due parametrizzazioni (CALCOLATO, stesse formule di conti_rilettura.py): somma dei quadrati 0,9077,
+    loss media (lambda x2) 0,9012, WLS 0,8983.
+  Altri conti: ricontrollati sulle uscite gia' presenti (EV/script_agenti/work_verifica_architettura-controlli/
+    v_scan_lineare.out.txt, EV/script_agenti/rilettura_riferimenti/ricalcola_bl1.out.txt,
+    EV/script_agenti/rilettura_fedelta/conti_rilettura.out.txt, EV/script_agenti/work_verifica_costo-consegna/
+    conti_verifica_output.txt).
+
+Metodo. Per ogni segnalazione: (1) passo della bozza congelata cercato per contenuto; (2) confronto con la correzione chiesta
+(elenco SEG e, dove serve, rapporto completo del rilettore); (3) controllo che il testo nuovo sia fedele alla fonte primaria
+(rapporti dei revisori/verificatori, P/J/R/DEC, 32e5452, c15aac9, script delle prove); (4) confronto fra corpo e prompt del
+§10 (B:473-585). Stati: CORRETTA, CORRETTA IN PARTE, NON CORRETTA, CORRETTA MALE, NON APPLICABILE.
+
+==========================================================================================================================
+1. ESITO IN BREVE
+==========================================================================================================================
+Segnalazioni esaminate: 48 (12 N + 15 R + 21 F).
+  CORRETTA          42
+  CORRETTA IN PARTE  2   F9 (introduzione della sezione 5), F21 (prompt di OB-4)
+  CORRETTA MALE      1   F13 (cifra del 90,1% etichettata con la parametrizzazione sbagliata)
+  NON CORRETTA       0
+  NON APPLICABILE    3   N4, R1, F18 (segnaposto HH:MM, da compilare al commit)
+Nessuna correzione manca del tutto. I tre problemi sono brevi da sistemare (una frase ciascuno) e nessuno cambia un verdetto,
+un blocco o una correzione obbligatoria; due toccano il testo che GPT applica (F13, F21), uno la coerenza interna (F9).
+
+==========================================================================================================================
+2. STATO DELLE 48 SEGNALAZIONI (riga della bozza congelata, che cosa c'e' ora, prova)
+==========================================================================================================================
+
+--- LENTE NUMERI ---------------------------------------------------------------------------------------------------------
+N1  CORRETTA. B:85-89. «massima verosimiglianza» non c'e' piu' (cerca_passi.out.txt). Ora: «Per passare, L0, MLP e TCN devono
+    fare meglio della forma chiusa non regolarizzata. Possono riuscirci con la regolarizzazione implicita [...] Se non ci
+    riescono, la catena si ferma [...] e la causa non si legge»: fedele a VAC:113-117 («Una L0 neurale ben fermata può quindi
+    passare dove la WLS fallisce [...] prova che l'esito non è leggibile»). Nota non bloccante in sezione 4 (O1).
+N2  CORRETTA. B:81-83 dichiara «c_n 0,9372, n_out 118.000, [...] K_dyn 2,5 e K_MSE 5» (= v_scan_lineare.py righe 2 e 9:
+    c_n, n_out, coppia (2.5,5.0); Kt entra in R_MSE) e che i valori sono ricalcolati; il ricalcolo esiste in
+    EV/script_agenti/rilettura_riferimenti/ricalcola_bl1.out.txt. B:90-91 «Con K_dyn 3,5 e K_MSE 7 [...] sigma 2 e la WLS
+    recupera il 90,9%: passa» = ricalcola_bl1.out.txt riga 4 (sigma=2.0, R_dyn 0.9089, PASSA). Prompt B:496 e B:501 coerenti.
+N3  CORRETTA. B:95-97 «Sulla griglia dello script (E_real a passi di 0,02, quota dinamica fra 0,3 e 0,6, due coppie di K) la
+    WLS esatta smette di passare fra 0,90 e 0,94». Ricontrollato su v_scan_lineare.out.txt (righe 2-5 e 7-10, E_real
+    0,78...1,00): primo «F» a 0,92/0,94/0,92/0,90 con K=(2,5;5) e 0,94/0,90/0,94/0,92 con K=(3,5;7). La frase e' attribuita
+    alla griglia, non al verificatore (che dice «~0,90-0,92», VAC:102), quindi non contraddice la fonte.
+N4  NON APPLICABILE. B:14 «HH:MM»: segnaposto da compilare al commit.
+N5  CORRETTA. B:174 «vince per 0,0001, cioè lo 0,014%» (RRIC:381 «per 0,0001 (0,014%)»); prompt B:530 «per lo 0,014%».
+    Lo «0,01%» resta solo a B:211, attribuito al caso del verificatore nel controllo lineare: e' il numero della fonte
+    (SV:63, counterexample di V-ricetta-criteri-2 «piu' basso dello 0,01%»).
+N6  CORRETTA. B:209 «Controesempio (numeri d'esempio): nel controllo temporale la TCN recupera il 60% [...] epoca 298 di 300».
+N7  CORRETTA. B:250 «Controesempio (numeri d'esempio): la TCN-post ha il contrasto 1 a +5, con IC99 [+3; +7]».
+N8  CORRETTA. B:328-330 «I byte dei due npz sono uguali ai pin di J; per `pose_stats.json`, che J pinna solo per sha256, sono
+    uguali a quelli della lettura di controllo del 12/11». Ricontrollato: J:685 bytes 257675076, J:693 bytes 2485295825,
+    J:701-704 pose_stats senza bytes (grep su proposal.json); spotcheck del 12/11 in RR:188-192.
+N9  CORRETTA. B:356 «R-2 (rilievo `32e5452`, riga 329; accolto a R:27) [...] R:27 promette solo la voce di DEC, che c'è
+    (DEC:6755)». Ricontrollato: 32e5452:328-329 «In `proposal.json` vanno aggiunti anche l'IC 95% descrittivo e l'arresto su
+    NaN o OOM»; R:27 parla della «nuova voce»; DEC:6755 «NaN/Inf,OOM,TIMEOUT,[...] fermano la fase».
+N10 CORRETTA. B:380 «la `pred` della cache è float32, il payload float64»; prompt B:576 coerente.
+N11 CORRETTA. B:445-449: «19-28 GPU-ore, prima di I/O, avvii e salvataggi, contro un gate di 20» e «9,9-14,1 GPU-ore; il gate
+    vero è un po' più alto, perché conta anche I/O, avvii e salvataggi». Fonte: conti_verifica_output.txt righe 10-22
+    («Gate raddoppiato, prima di I/O/avvii/salvataggi»: 27,78/21,49/19,39 e 14,11/10,93/9,87); il «20» e' P:183 («<=20GPUh»).
+N12 CORRETTA. B:20-22 dichiara la convenzione («quelli di ieri li scrivo con il prefisso `32e5452:`»); sezione 4 B:345 e
+    B:355-365 usano il prefisso. Ricontrollati gli ID contro R: 46 (`controlli-6`), 51 (`selezione-5`), 52 (`selezione-6`),
+    54 (`selezione-8`), 57 (`selezione-11`), 63 (`criteri-6`), 73 (`costo-7`), 81 (`consegna-7`), 83 (`consegna-9`): tutti
+    uguali. Unica imprecisione minima, non di sostanza: B:355 `32e5452:N3`, mentre l'ID e' `selezione-criteri-N3` (R:67;
+    32e5452:435) - vedi O2.
+
+--- LENTE RIFERIMENTI ----------------------------------------------------------------------------------------------------
+R1  NON APPLICABILE. B:13-14. La parte sostanziale e' il segnaposto HH:MM, da compilare al commit. Le ore 10:27 e 11:46 sono
+    controlli di Claude (le ripete registro_bozza.txt:22); nessuna uscita di ls-remote e' salvata fra le prove: facoltativo
+    salvarla in EV al commit (O9).
+R2  CORRETTA. B:16-19: aggiunti «prompt = `docs/prompt_claude_pose_temponet_review_20261117.md`» e la cartella di README,
+    `analytic_checks.json`, `document_checks_20261118.json`. Ricontrollato: i tre file stanno in
+    gpt_3e007c8/results/infra/pose_temponet_proposal_20261117/ e il prompt in gpt_3e007c8/docs/.
+R3  CORRETTA. Come N12 (B:20-22, B:345, B:355-365); resta solo l'abbreviazione `32e5452:N3` (O2).
+R4  CORRETTA. B:37: «Solo» tolto; ora «Correzioni di testo (sezione 5) e dettagli per il codice (sezione 6)». Coerente con il
+    verificatore, che classifica architettura-2 «implementazione» (SV:4) e la vuole prima del congelamento con architettura-5
+    (SV:29; VAC:261): la bozza le mette fra le minori da correggere (B:369-370, B:375-376) e da rileggere (B:432); il test CPU
+    e' in sezione 6 (B:413).
+R5  CORRETTA. B:38 «Su L0 toglie il primario, su L13 la candidatura e l'etichetta del contrasto 3»; B:175-177; prompt B:531.
+    Ricontrollato: P:112 (L13 entra solo nel contrasto 3), P:104 (primario legato a L0/TCN-post), P:122 (ammissibilita' di
+    L13 per la candidata).
+R6  CORRETTA. Come N2 (B:81-83, B:90-91; prompt B:496, B:501).
+R7  CORRETTA. Come N3 (B:95-97).
+R8  CORRETTA. B:237-239 e prompt B:550-552: (a) «Tenere la regola, scrivendo «con etichetta `deterioramento_pratico` nel
+    contrasto 2 o 3» al posto di «risolti migliori»» e caso misto «candidata, non peggiore in modo pratico di MLP/L13», non
+    «migliore». Fedele a review_criteri.txt:115-117 (testo quasi letterale).
+R9  CORRETTA. Come N8 (B:328-330).
+R10 CORRETTA. Come N9 (B:356).
+R11 CORRETTA. B:357 e B:377 «Se L0 è deteriorata rispetto alla ridge»: letterale da R:19.
+R12 CORRETTA. B:377 aggiunge il secondo verso: «Se L0 è migliore della ridge, va riportato come effetto del rifit: è il caso
+    «1 no, 4 e 5 sì»». Fonti: 32e5452:235 «se L0 è migliore della ridge, va riportato come effetto del rifit» (letterale) e il
+    verdetto del verificatore su criteri-2 («cioe' il caso «1 no, 4 e 5 si'»», RR:264-268). Prompt B:574 «nei due versi».
+R13 CORRETTA. B:378 «riportando comunque direzione e ampiezza. Non chiamarlo equivalenza.»: identico a c15aac9:97
+    (ricontrollato con awk sulla copia gpt_c15aac9).
+R14 CORRETTA. B:381 `architettura-1`, `S-F` «(note, facoltativa)»; B:395 `architettura-6`, `architettura-7` «(note,
+    facoltative)»; B:396 `costo-1`, `V-costo-consegna-1`, `S-H` «(note, facoltativa ma utile a Simone)»; B:370-371 dice che
+    cosa significa «facoltativa». Fonti: SV:3 («Unificare i nomi è facoltativo»), SV:8 («Facoltativo»), VAC:261
+    («Facoltative: architettura-1, -3, -4, -6, -7»), VCC:67 («facoltativo ma utile a Simone»), SV:60 (S-F, non da correggere
+    prima del congelamento). Vedi O7 per le altre note di costo.
+R15 CORRETTA. Prompt B:572-573: «frase della nota 12 a P:122 (architettura-5)» e «lettura di C-1 nei due versi a P:126».
+
+--- LENTE FEDELTA' -------------------------------------------------------------------------------------------------------
+F1  CORRETTA. B:253-255: «allarme sulla TCN: si sospendono solo le conclusioni negative o nulle sul valore della TCN. Un
+    `deterioramento_pratico` misurato nel contrasto 2 o 3 non diventa una conclusione negativa, ma esclude comunque la
+    candidatura». Prompt B:557-558 uguale nella sostanza. E' la correzione di RF:252-253 (P-22) e regge con la «formula
+    corretta» di VRC:290-293 (il veto e' una lettura positiva sulla TCN, non una conclusione negativa).
+F2  CORRETTA. Prompt B:559-561: «compresa l'assenza di deterioramento del veto» e «la candidata richiede L0, MLP e L13
+    ammessi; un allarme della sola TCN-post non la esclude» (RF:226-227; VRC:292-293).
+F3  CORRETTA. B:452-453: «Fa eccezione la clausola MLP di BL-2, se diventa un cancello: quella si decide dopo i fit neurali dei
+    controlli» (RF:169-170). Coerente con B:151 e con il prompt B:523-524 («Si valuta dopo i fit dei controlli»).
+F4  CORRETTA. Tabella B:38 «**Blocco** (classificazione mia; per il verificatore converge con correzioni)» (SV:66 punto 2
+    CONVERGE_CON_CORREZIONI); B:184-194 nomina i casi del criterio («falsa un risultato», «fa fallire la prova») e dice perche'
+    OB-2 e OB-4 restano obbligatorie; «percorso probabile» tolto. Osservazioni non bloccanti O3 e O8.
+F5  CORRETTA. B:150-154 (tre regole: valutazione dopo i fit, «non diagnostico» prevale sulle etichette di OB-1, allarme sulla
+    MLP = clausola non superata, con la citazione letterale di P:104) e B:218-221 (ordine fisso degli stati, controlli-8);
+    prompt B:522-524 e B:545 coerenti. Fonti: RF:290-291 (P-26), review_controlli.txt:262-273.
+F6  CORRETTA. B:121-124: LS su y* «sia nella banda [6%, 10%] sia nel margine del cancello del 50%», «Il cancello diventa più
+    severo [...]: va detto», «Se la LS su y* entra solo nella banda, S-C resta aperto»; prompt B:514 coerente (RF:270-271;
+    VAC:150-151).
+F7  CORRETTA. Prompt B:550-552 ora uguale al corpo B:237-239 (vedi R8).
+F8  CORRETTA. Prompt: (a) B:511 «oppure una banda sganciata dall'ancora»; (b) B:525-526 «con la frase che un temporale superato
+    con la MLP vicina alla TCN non qualifica la lettura temporale»; (c) B:534-536 epoca interna definita e «In alternativa, una
+    tolleranza dichiarata ora»; (d) B:540-541 regola delle etichette; (e) B:532-533 e B:486 minore promosso da Claude;
+    (f) B:531 L0 e L13 distinti.
+F9  CORRETTA IN PARTE. Sistemati B:430-439 (sezione 7: «GPT corregge [...] le minori della sezione 5»; «Rileggo solo le righe
+    che toccano BL, OB e le minori»; per le note dopo la firma «servirebbe una modifica registrata») e il prompt B:581-583.
+    Resta B:369, introduzione della sezione 5: «GPT le corregge nella stessa revisione; le ricontrollo alla review del pacchetto
+    operativo» vale per tutte le righe della sezione 5, minori comprese. -> Problema P2.
+F10 CORRETTA. B:415-416 («La voce vii [...] è invece testo di P:104 e sta in OB-4») e B:259-260 (OB-4); prompt B:562.
+F11 CORRETTA. B:68-69 «ha un errore di stima che la ricevuta storica fa pensare grande; quanto pesi su E_real non è
+    stabilito»; prompt B:491-492 e B:502 («Il rischio è plausibile, non stabilito»). Fonte VAC:95-96, VAC:109-112 (RF:83-84).
+F12 CORRETTA. B:38 e B:161 «può scattare»; B:180-182 «Quanto è probabile: è un argomento qualitativo, non una misura»; prompt
+    B:529-530. La riga in sezione 9 chiesta anche da RF:103-104 non c'e' (O4, facoltativa).
+F13 CORRETTA MALE. Sistemati: bersaglio di alpha (B:107 «sul bersaglio sintetico»), passaggio da 10 a 20 utenti (B:107-109
+    «penalità sulla somma dei quadrati [...] senza riscalare»), «(a) e (b) vanno insieme» (B:102, prompt B:503), alternativa del
+    cancello riferito alla forma chiusa (B:115-117, prompt B:509-510). Ma la cifra nuova di B:111-112 «il 90,1% con l'alpha
+    degli inner non riscalato» viene da un conto fatto con la loss media (alpha raddoppiato), non con la penalita' prescritta due
+    righe sopra; il prompt B:508 la eredita. -> Problema P1.
+F14 CORRETTA. B:215-217 «In P:72, P:98, P:104 e nel §10 [...] vale l'allarme» (= corrected_fix di ricetta-1, SV:34) con la
+    definizione di «minimo interno» letterale dal fix di V-ricetta-criteri-3 (SV:64: «minimo di E_dyn pooled sugli held
+    interni, fra tutti i checkpoint ammessi del LR selezionato, passo 0 escluso»); prompt B:542-544; rinvio in B:387.
+F15 CORRETTA. B:375: «Se si usa il denominatore di LSQR (‖r‖) e la base «L» [...] è calcolata in float64 sullo stesso disegno,
+    quel RHS [...] fa scattare l'arresto senza alcun errore numerico; con L in FP32 il controllo passa» (SV:4; VAC:44-46).
+F16 CORRETTA. B:145-146: «il margine piantato si legge in modo istantaneo, quindi il controllo non dice se la ricetta sfrutta
+    il tempo»; «e la ricetta non c'entra» tolto. Prima parte = precisazione di VAC:139-140. Osservazione O5 («almeno in parte»).
+F17 CORRETTA. B:43 «Complete e fedeli nel testo; convergono con correzioni» con consegna-1/consegna-2; prompt B:484 uguale
+    (SV:93: «Consegna [...] CONVERGE_CON_CORREZIONI»).
+F18 NON APPLICABILE. B:14 HH:MM, da compilare al commit.
+F19 CORRETTA. B:228-229 e prompt B:546-547: «In DEC:6747 vanno elencati i tre allarmi del punto 5: manca quello della scelta al
+    primo quarto di epoca» (SV:36 «In D manca anche l'allarme della scelta al primo quarto»). Ricontrollato DEC:6747: nomina
+    «Allarme S-2» e «Bordo finale irrisolto», non il primo quarto (O6).
+F20 CORRETTA. B:74-75: «Nel controllo temporale, con a ≤ 1, la calibrazione può anche non trovare nessuna coppia [...] già a
+    E_real 0,79 [...] deve superare 0,25-0,35 (con l'errore di stima a K = 3)» = VAC:104-106; prompt B:494-495.
+F21 CORRETTA IN PARTE. Corpo B:259-260 completo («Va riscritta anche P:104 [...]: con la regola direzionale vale per L0, non
+    per la TCN-post»). Il prompt B:562 chiede di riscrivere P:104 solo per dire «se la catena prosegue con allarmi aperti».
+    -> Problema P3.
+
+==========================================================================================================================
+3. PROBLEMI (stati diversi da CORRETTA e NON APPLICABILE)
+==========================================================================================================================
+
+P1 - F13 - CORRETTA MALE - imprecisione
+  Riga: B:111-113 (e prompt B:508).
+  Passo: «(b) da sola non basta. Nel modello dei revisori, con spettro isotropo e sigma 2,5, la ridge recupera il 90,8% all'alpha
+    ottimo e il 90,1% con l'alpha degli inner non riscalato; la WLS l'89,8%. Il riferimento passa di un soffio, e una L0 neurale
+    fra le due darebbe ancora «ricetta non ammessa»». Prompt B:508: «la ridge recupera il 90,1-90,8% e la WLS l'89,8%».
+  Che cosa non va. Il 90,1% della fonte e' la ridge con «alpha x2» nella parametrizzazione a loss media (alpha* circa 1/n):
+    portato da 10 a 20 utenti senza riscalare, l'alpha raddoppia. Due righe sopra, pero', la bozza prescrive la penalita' sulla
+    somma dei quadrati, con cui «alpha passa da 10 a 20 utenti senza riscalare» (B:108-109): con la sua regola, l'alpha degli
+    inner non riscalato e' quello giusto (vicino all'ottimo, 90,8% nel modello). La frase attribuisce quindi il 90,1% proprio al
+    caso che la bozza tratta come ottimo: contraddice B:108-109 e non e' fedele alla fonte. Conseguenze: (i) con la (b) come
+    scritta, nel modello isotropo il riferimento sta al 90,8%, e il prompt dice a GPT un intervallo che mescola due
+    parametrizzazioni; (ii) «una L0 neurale fra le due darebbe ancora "ricetta non ammessa"» vale solo per una L0 sotto il 90%,
+    non per tutto l'intervallo fra WLS e ridge. L'argomento «(b) da sola non basta» resta valido (il riferimento supera il 90%
+    di soli 0,8 punti), quindi nessun verdetto cambia.
+  Prova: EV/script_agenti/rilettura_fedelta/conti_rilettura.py:10 («ridge con alpha portato da 10 a 20 utenti senza riscalare
+    (parametrizzazione a loss media: alpha* ~ 1/n)»); conti_rilettura.out.txt:8-9 («isotropo sigma=2.5: R_MSE OLS=0.898 ridge
+    ottima=0.908 ridge alpha x2=0.901»); RF:274-276 (P-25: «con la loss media per finestra (P:57) l'alpha ottimo scala circa
+    come 1/n, quindi l'alpha inner e' circa doppio»); B:107-109. Algebra: con penalita' sulla somma dei quadrati lambda* =
+    sigma_eff²/s_k non dipende da n; con la loss media alpha = lambda/n, quindi alpha*(10 utenti) = 2·alpha*(20 utenti).
+    CALCOLATO alpha_scala.out.txt: lambda degli inner non riscalato, somma dei quadrati 0,9077; loss media 0,9012; WLS 0,8983.
+  Correzione. B:111-113: «(b) da sola non basta. Nel modello dei revisori, con spettro isotropo e sigma 2,5, la ridge recupera
+    il 90,8% all'alpha ottimo, a cui porta la penalità sulla somma dei quadrati se gli inner lo stimano bene; con la loss media e
+    l'alpha degli inner non riscalato (cioè doppio) scenderebbe al 90,1%; la WLS fa l'89,8%. Il riferimento passa di un soffio:
+    una L0 neurale fra la WLS e il 90% darebbe ancora «ricetta non ammessa» con il controllo dichiarato diagnostico.»
+    Prompt B:508: «Da sola non basta: nel modello isotropo a sigma 2,5 la ridge recupera circa il 90,8% (il 90,1% con alpha
+    doppio) e la WLS l'89,8%.»
+
+P2 - F9 - CORRETTA IN PARTE - imprecisione
+  Riga: B:369 (contro B:430-438 e B:581-583).
+  Passo: «GPT le corregge nella stessa revisione; le ricontrollo alla review del pacchetto operativo. Le righe «minore» vanno
+    corrette.»
+  Che cosa non va. Dopo la correzione, la sezione 7 e il prompt rileggono le minori nel prossimo giro, insieme a BL e OB
+    (B:432 «Rileggo solo le righe che toccano BL, OB e le minori»; B:582 «rileggo solo le righe di BL, OB e delle minori»), cioe'
+    prima della convergenza e della firma; solo le note vanno alla review del pacchetto operativo, che viene dopo la firma
+    (B:437-438). L'introduzione della sezione 5 dice ancora che tutte le correzioni della sezione 5, minori comprese, si
+    ricontrollano alla review del pacchetto operativo. E' la seconda meta' di F9 («la verifica delle minori rinviata al
+    pacchetto operativo cade dopo la firma») rimasta in questa frase: la bozza da' due momenti diversi per lo stesso controllo.
+  Prova: B:369; B:432; B:437-438 («Le note della sezione 5 le ricontrollo alla review del pacchetto operativo [...] Quella review
+    viene dopo la firma»); B:582-583; P:147 («Dopo eventuale firma §10: [...] Claude fa una review del pacchetto operativo
+    completo»); SEG:45; RF:192-201 (P-17).
+  Correzione. B:369-371: «GPT le corregge nella stessa revisione. Le righe «minore» vanno corrette e le rileggo insieme a BL e OB
+    (sezione 7). Per le «note» basta una riga di disposizione, accolta o motivata, come per le note di ieri, e le ricontrollo
+    alla review del pacchetto operativo; quelle segnate «facoltativa» possono restare come sono.»
+
+P3 - F21 - CORRETTA IN PARTE - mancanza (incoerenza fra corpo e prompt)
+  Riga: B:562 (prompt), contro B:259-260 (corpo).
+  Passo: «Riscrivi anche P:104, dicendo se la catena prosegue con allarmi aperti.»
+  Che cosa non va. Il corpo chiede due cose per P:104: che «Se L0 o TCN-post non è ammissibile, niente promozione primaria», con
+    la regola direzionale, valga per L0 e non per la TCN-post (e' il contenuto di F21), e che si dica se la catena prosegue con
+    allarmi aperti (voce vii di ricetta-9). Il prompt, che GPT applica, porta solo la seconda. Se GPT adotta la regola
+    direzionale e lascia «o TCN-post», un allarme della sola TCN-post toglie ancora il primario a un beneficio misurato: e' il
+    controesempio di OB-4 (B:250-251). La voce precedente del prompt («un allarme della sola TCN-post non la esclude», B:561)
+    riguarda la candidata, non il primario, quindi non supplisce.
+  Prova: B:259-260; B:561-562; P:104 («Se L0 o TCN-post non è ammissibile, niente promozione primaria»); VRC:294-295 («Va
+    riscritta P:104 [...]: con la regola direzionale vale per L0, non per TCN-post»); SEG:57; RF:155-158 (P-16b).
+  Correzione. Prompt B:562: «Riscrivi anche P:104: con la regola direzionale «niente promozione primaria» vale se L0 non è
+    ammessa, non per un allarme della sola TCN-post; e di' se la catena prosegue con allarmi aperti.»
+
+==========================================================================================================================
+4. OSSERVAZIONI NON BLOCCANTI (correzioni giudicate CORRETTE; ritocchi facoltativi, nessuno cambia la sostanza)
+==========================================================================================================================
+O1 (N1, B:87-88) «e allora l'esito misura quanto regolarizza la ricetta, non se recupera il segnale»: la fonte lo pone come
+   domanda, VAC:116-117 «prova che l'esito non è leggibile (efficienza della regolarizzazione o recupero?)». Piu' aderente:
+   «e allora l'esito non distingue la regolarizzazione dal recupero».
+O2 (N12/R3, B:355) `32e5452:N3`: l'ID della nota 33 e' `selezione-criteri-N3` (R:67; 32e5452:435). Con la convenzione di
+   B:20-22: `32e5452:selezione-criteri-N3`. Nessun rischio di confusione (la riga porta anche «Nota 33» e R:67).
+O3 (F4, B:190-193) (i) «Nel controllo lineare ferma la catena prima dei fit reali, quindi fa fallire la prova»: il criterio di
+   B:188 dice «fallire un job», e OB-1 (obbligatoria, B:212-214) toglie proprio l'arresto per le teste che passano; dopo OB-1
+   la promozione regge sul primo caso («falsa un risultato»: L0 non ammessa nei fit reali), che basta da solo. (ii) «Basta
+   togliere una parola» riduce OB-2, che a B:228-229 chiede anche una frase in P:72 e i tre allarmi in DEC:6747; piu' esatto:
+   «basta chiamarlo compromesso e dirlo in P:72».
+O4 (F12) RF:103-104 chiedeva la stessa avvertenza anche nella sezione 9; B:461-469 non la porta. Il corpo la dice gia'
+   (B:180-182), quindi e' facoltativa.
+O5 (F16, B:145) «il margine piantato si legge in modo istantaneo»: VAC:139-140 lo dice per il caso «la MLP recupera quanto la
+   TCN»; con q > 0 il cancello fallisce anche con la MLP un po' sotto la TCN. «almeno in parte» (RF:117) e' piu' preciso.
+O6 (F19) DEC:6747 nomina «Bordo finale irrisolto», che si puo' leggere come comprensivo del bordo LR; la bozza segue le fonti
+   (SV:36: manca solo il primo quarto). Nessuna modifica necessaria.
+O7 (R14) Il verdetto del punto 6 (SV:93) chiama facoltative, in blocco, anche le altre note di costo (costo-2, -4, -5, -6, -7);
+   la bozza le tiene come note con una riga di disposizione (B:370-371), compatibile con i verdetti singoli (per costo-2 il
+   «Facoltativo» e' gia' scritto a B:397). Nessuna modifica necessaria.
+O8 (F4, B:185) «Revisore e verificatore lo classificano minore, perché l'esito è conservativo e la correzione è una riga»: «la
+   correzione è una riga» e' del solo verificatore (SV:35); il revisore dice «la regola e' definita e l'esito e' conservativo»
+   (RRIC:388). Frase gia' presente prima delle correzioni (bozza delle 12:25); ritocco facoltativo.
+O9 (R1) Le ore 10:27 e 11:46 non hanno una prova salvata; al commit si puo' aggiungere a EV l'uscita del ls-remote fatto
+   subito prima (insieme all'ora HH:MM).
+
+==========================================================================================================================
+5. COERENZA FRA CORPO E PROMPT (§10, B:473-585) DELLE PARTI CORRETTE
+==========================================================================================================================
+Confronto voce per voce (corpo -> prompt):
+- Verdetti e tabella (F4, F17): B:37-43 -> B:480-486. Coerenti.
+- BL-1 (N2, R6, F11, F13, F20, F6, F8a): B:62-129 -> B:490-516. Coerenti, salvo la cifra del 90,1% (P1) che il prompt
+  riporta come intervallo «90,1-90,8%». Il prompt omette senza conseguenze «griglia fissata ora» in (a) e «altrimenti
+  «controllo non diagnostico»» nell'alternativa.
+- BL-2 (F5, F8b, F16, F3): B:131-159 -> B:518-526. Coerenti (tre regole del cancello, opzione descrittiva con la frase).
+- BL-3 (R5, N5, F8c/e/f, F12): B:161-200 -> B:528-536. Coerenti.
+- OB-1 (F5, F14, F8d): B:206-221 -> B:539-545. Coerenti.
+- OB-2 (F19): B:223-229 -> B:546-547. Coerenti.
+- OB-3 (R8, F7): B:231-246 -> B:548-554. Coerenti.
+- OB-4 (F1, F2, F10, F21): B:248-264 -> B:555-563. Coerenti per F1, F2, F10; incompleto per F21 (P3).
+- OB-5: B:266-276 -> B:564-568. Coerenti.
+- Minori della sezione 5 (R11, R12, R13, R15, N10, F15): B:375-380 -> B:570-576. Coerenti.
+- Giro successivo (F9): B:430-439 -> B:581-584. Coerenti; l'incoerenza residua e' interna al corpo (B:369, P2).
+Nessuna correzione presente nel prompt manca nel corpo.
+
+==========================================================================================================================
+6. LIMITI DI QUESTO CONTROLLO
+==========================================================================================================================
+- Lente limitata alle 48 segnalazioni e alla coerenza corpo/prompt delle parti corrette; gli errori nuovi fuori da questi
+  passi, la difesa delle scelte di GPT e la coerenza generale spettano alle altre lenti.
+- Un solo conto nuovo (alpha_scala.py, aritmetica del modello dei revisori, nessun dato); gli altri numeri delle correzioni
+  sono stati confrontati con le uscite gia' salvate in EV (v_scan_lineare.out.txt, ricalcola_bl1.out.txt,
+  conti_rilettura.out.txt, conti_verifica_output.txt).
+- Le ore 10:27 e 11:46 (R1) non sono verificabili da qui.
+- Nessun file fuori da questa cartella e' stato scritto o modificato; bozza congelata ricontrollata per sha256 (OK).
+
+Segnalazioni esaminate: 48. Problemi: 3 (1 CORRETTA MALE, 2 CORRETTA IN PARTE); NON APPLICABILE 3; CORRETTA 42.

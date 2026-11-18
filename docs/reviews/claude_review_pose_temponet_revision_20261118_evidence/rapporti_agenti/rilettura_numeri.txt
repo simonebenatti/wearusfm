@@ -1,0 +1,174 @@
+RILETTURA INDIPENDENTE DEI NUMERI E DEI CONTI
+Bozza: /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-temponet/docs/reviews/claude_review_pose_temponet_revision_20261118.md (469 righe)
+Data: 18/11/2026. Lente: numeri e conti. Script in questa cartella.
+Notazione: B:n = riga n della bozza. S2 = .../scratchpad/tcnreview2. W = tasks/w785grg3y.output (JSON del workflow).
+
+== 1. Conteggi del workflow (B:49-52, B:407-408) ==
+Script: conteggi_workflow.py (legge W, chiave "result").
+- 58 rilievi dei revisori: REGGE (7 architettura, 9 consegna, 12 controlli, 7 costo, 11 criteri, 12 ricetta).
+- 46 confermati, 12 parziali, 0 respinti: REGGE (58 verdetti, uno per rilievo, nessun duplicato o mancante).
+- 5 nuovi rilievi dei verificatori: REGGE (V-architettura-controlli-1, V-ricetta-criteri-1..3, V-costo-consegna-1).
+- 8 sospetti: 1 confermato (S-B), 6 parziali, 1 respinto (S-G): REGGE.
+- Dopo la verifica sui 63 (58+5): 3 bloccanti, 18 minori, 42 note: REGGE
+  (verdetti 3/16/39 + nuovi 0/2/3). I tre bloccanti sono controlli-1 (PARZIALE), controlli-2 (CONFERMATO), ricetta-3 (PARZIALE, rialzato da nota a bloccante).
+- ricetta-12 minore sia per il revisore sia per il verificatore: REGGE (nessun cambio di severita').
+- Cambi di severita' revisore->verificatore: 4 (architettura-1 minore->nota, ricetta-3 nota->bloccante, costo-1 minore->nota, consegna-4 minore->nota).
+
+== 2. Intestazione e richiesta (B:3-18) ==
+- «sei punti», «13 rilievi», «50 note», quote di GPT: REGGONO (S2/gpt_richiesta_20261118.txt, punti 1-6 e paragrafo sulle disposizioni).
+- SHA 3e007c841c97..., 62348abdae9c..., commit successivo «solo pin e registro»: REGGONO (gpt_richiesta).
+- B:14 «alle 10:27, alle 11:46 e alle HH:MM»: HH:MM e' un SEGNAPOSTO non compilato. 10:27 e 11:46 non verificabili dalle fonti
+  date (i file di S2 hanno mtime 10:28 per i diff e 11:40 per le sintesi: compatibili, non una prova).
+
+== 3. Numeri di P/J usati nella bozza (lettura diretta) ==
+- P:65 LR iniziali {1e-4,3e-4,1e-3,3e-3}; P:68 estensioni 3e-5/1e-2, max 6 LR: coerenti con BL-3 (vince 1e-4 -> si aggiunge 3e-5).
+- P:69 «primo quarto di epoca», «ultime5 epoche dell'orizzonte massimo»: coerenti con BL-3, OB-1.
+- P:72 S-2: distanza >5 epoche e perdita >=2%: coerente con OB-2/OB-3.
+- P:90 griglie a={0.2..1} (5) e sigma={1..3} (5): 25 temporali + 5 lineari = 30 (costo-5, B:335): REGGE.
+- P:92 tolleranza 0,05, banda [0,06;0,10]: coerenti con BL-1(d) «banda [6%,10%]».
+- P:95 recupero >=90%, P:96 >=50%: coerenti con BL-1(b) e BL-2.
+- P:102: 40/60, 48/72, 15, 103/147; 531.000/1.458.000; 537.600/1.477.800; 40.128 + 37 (22+15): REGGONO (B:259-261).
+- P:114 bootstrap 2000, seme 20261102; P:59/J soglia 0,2574231028556824: REGGONO (B:250-251).
+- P:116-120 etichette: usate per i controesempi di OB-3 e OB-4 (vedi sezione 6).
+- P:124 0.7630564046643697, «circa2,91% sotto ridge»: REGGE (B:208, B:256).
+- P:151 gate R-1: ridge 0.7859020004638595, testa 0.7786289843513977, 8.327, 20.119.920, [6:154], «stessi dtype»: REGGE (B:253-255, B:316).
+- P:160-173 tabella delle fasi: GPUh 0+0+0+0,5+20+1+0+0+2,5 = 24; coreh CPU 0,5+4+64+0+0+0+8+0,5+3 = 80;
+  ore locali 0,5+4+64+4+160+8+8+0,5+23 = 272; riserva 23 = 2,5x8+3: REGGE (B:262-263). J phases coerenti.
+- P:175 03:57:00 + 180 s = 04:00:00: REGGE (B:264).
+- P:179 691.863; 272/691.863 = 0,039314% -> 0,03931%: REGGE (B:265).
+- P:189 byte dei due npz 257.675.076 / 2.485.295.825: REGGE (B:268-269).
+- P:191 fermo 23/11 08:00-25/11 08:00: REGGE (B:387).
+- P:198-205 parole fuse «72.904parametri» (P:198), «gateammissione» e «livelloB» (P:203), «nelFM» (P:204),
+  «272coreh/orelocali» (P:205): tutte presenti (B:215-216).
+- J:40, J:142, J:308, J:311, J:405, J:418, J:421, J:441, J:444, J:471: contenuti come citati nella bozza.
+
+== 4. SCRATCH (B:266-269) ==
+- ls del 18/11 (S2/work_verifica_costo-consegna/ssh_ls_scratch_20261118.txt): pose_stats.json 7377 B 2026-11-12 15:38:44;
+  train_subset.npz 257675076 B 2026-11-12 15:52:26; val.npz 2485295825 B 2026-11-12 15:52:26. I numeri REGGONO.
+- PERO' «byte uguali ai pin» non vale per pose_stats.json: in J (proposal.json:701-704, scratch_dependencies.pose_stats) e nel
+  manifest sorgente (work_costo/extraction_plan_19618.json:20-23) c'e' solo lo sha256, nessun pin dei byte. I 7.377 byte
+  coincidono con lo spotcheck del 12/11 in 47ca96e (verify_costo-consegna.txt:24-25), non con un pin. IMPRECISIONE.
+- 12/11 + 40 giorni = 22/12: REGGE.
+
+== 5. BL-1 (B:58-103) e prompt (B:416-428) ==
+Script: bl1_controesempio.py (formule ricopiate da work_verifica_architettura-controlli/v_scan_lineare.py), ricevuta_alpha.py.
+- sha256 della ricevuta b08e6e32...037c14 (=J source_provenance.historical_fit_receipt_sha256): REGGE («b08e6e32…7c14»).
+- Percorso alpha (cells.post_ridge.fit.selection.grid): alpha 0,01 -> 0,7697254997; alpha 1e5 (scelto) -> 0,6561153689;
+  rapporto-1 = 17,3156%: REGGE «0,76973», «0,65612», «+17,3%». La MSE e' «pooled masked standardized SSE / valid elements across
+  both held-out folds», fold 20/20 utenti: «fittata su 20 utenti» REGGE (e' MSE held-out della CV, non train).
+- Controesempio, con K_dyn=2,5 e K_tot=5 (prima coppia dello script), f=0,5, E_real=0,92:
+  E_LS,inner per sigma 1..3 = 0,663 / 0,822 / 0,898 / 0,937 / 0,960; entro 0,05 da 0,92: sigma 2 (0,0224), 2,5 (0,0174), 3 (0,0404)
+  -> sceglie 2,5: REGGE. E_LS,inner 0,93735 (REGGE «0,937»); oracolo outer 0,92135 (REGGE «0,921»); WLS outer 0,92935 (REGGE «0,929»);
+  recupero E_dyn = 1-X/f' = 0,89831 e MSE 0,89831: REGGE «89,8% sia su E_dyn sia sulla MSE».
+  PERO': con la seconda coppia dello stesso script, K=(3,5;7), lo stesso caso (f=0,5, E_real=0,92) sceglie sigma 2 e la WLS
+  recupera 0,90888 (>=0,90): PASSA (riga dello script «f'=0.5: PPPPPPPPFFFF», ottava posizione = 0,92 -> P). La bozza non dice K:
+  il controesempio vale solo per K_dyn=2,5, K_tot=5. IMPRECISIONE (parametro mancante). Inoltre i numeri 0,937/0,921/0,929/89,8%
+  non sono stampati dallo script citato (che stampa solo P/F/N): sono ricalcoli con le sue formule; conviene dirlo.
+- «Con quota 0,4 ... E_real fra 0,78 e 0,80 ... buco»: con K_dyn=2,5 E_LS,inner(sigma=1)=0,713, (1,5)=0,855 -> buco (0,763; 0,805);
+  0,78, 0,786 e 0,80 non calibrati: REGGE (verify_architettura-controlli.txt:142-144). «storico 0,786» = ridge post 0,7859: REGGE.
+- «Il verificatore stima E_real fra 0,83 e 1,01, più probabilmente fra 0,83 e 0,94»: REGGE (verify_architettura-controlli.txt:111-112).
+- «la WLS esatta smette di passare quando E_real supera circa 0,90-0,94»: la fonte dice «passa il 90% fino a E_real ~0,90-0,92 e
+  fallisce sopra» (verify_architettura-controlli.txt:102; sintesi_verify riga 10 «fino a E_real ≈ 0,90-0,92»). Ricalcolo continuo
+  con lo script: primo fallimento a 0,9163 / 0,9358 / 0,9175 / 0,8999 (K=2,5; f'=0,3/0,4/0,5/0,6) e 0,9226 / 0,8933 / 0,9238 / 0,9061
+  (K=3,5), cioe' 0,89-0,94. Il «0,94» non e' nella fonte; il «0,90» iniziale e' un po' alto (0,893). IMPRECISIONE.
+- «Nel mondo lineare quella WLS è lo stimatore di massima verosimiglianza» (B:75): non e' in nessuna fonte (grep su review_* e
+  verify_*). Il modello stesso lo contraddice: il rumore e' AR(1) entro finestra e il fattore K>1 nasce proprio
+  dall'autocorrelazione (review_controlli.txt:128-131); con rumore AR(1) gaussiano lo stimatore di MV e' il GLS, non la WLS che
+  ignora la correlazione. Il verificatore dice anzi che una L0 regolarizzata puo' superare il 90% dove la WLS fallisce
+  (verify_architettura-controlli.txt:113-118). IMPRECISIONE (affermazione che sostiene il conto, non verificabile e contraddetta).
+- 90% (b), «a fino a 3» (c), banda [6%,10%] (d): REGGONO (verify_architettura-controlli.txt:128-137, P:92/P:96).
+
+== 6. BL-2, BL-3, OB-1..OB-5 ==
+- BL-2 (B:113-114, B:432): «TCN 55%, MLP 0,869, TCN 0,870»: REGGE (review_controlli.txt:183, recupero 0,55 su fold 0, 1 e pooled; E_dyn
+  pooled). Formula (E_MLP − E_TCN)/(E_LS − E_oracolo) >= q: REGGE (verify controlli-2).
+- BL-3 (B:139-141): «vince 1e-4; si aggiunge 3e-5, all'epoca 57»: REGGE (review_ricetta.txt:379-381: 1e-4 0,7269 ep 17; 3e-5 0,7268
+  ep 57; 17x(1e-4/3e-5) = 56,7). «più basso dello 0,01%»: la fonte di questo caso dice «per 0,0001 (0,014%)» (review_ricetta.txt:381;
+  0,0001/0,7269 = 0,0138%). Lo «0,01%» viene dal controesempio del controllo lineare di V-ricetta-criteri-2. Arrotondamento
+  accettabile ma diverso dalla fonte del caso: IMPRECISIONE lieve.
+- BL-3 correzione «non nel primo quarto ... non nelle ultime 5 epoche»: REGGE (review_ricetta.txt:393-394; verify ricetta-12).
+- OB-1 (B:163): «la TCN recupera il 60% ma ha il minimo di E_dyn all'epoca 298 di 300»: numeri non presenti nelle fonti
+  (ricetta-1 parla di 296-300 senza valori; il controesempio di V-ricetta-criteri-2 e' un altro: L0 al 99% nel lineare con allarme
+  di bordo LR). Coerenti (298 e' nelle ultime 5; 60% >= 50%) ma non marcati come «numeri d'esempio»: NON VERIFICABILE.
+- OB-2 (B:174): «dal 3,7% al 12%»: arrotondamenti di 3,66% e 11,9% (review_ricetta.txt:236-238): REGGE.
+- OB-3 (B:181-182): gain -1,5, IC99 [-1,9; -0,8] -> etichetta 3 (no 1: gain<2; no 2: gain>-2; si' 3: upper99<2): REGGE (verify criteri-1,
+  etichette.py). B:185-187: 0,735x1,0366 = 0,7619; gain3 = +1,562 e -2,041: REGGE «+1,56 / -2,04» (V-ricetta-criteri-1).
+- OB-4 (B:194): «contrasto 1 a +5, IC99 [+3; +7] (etichetta 1), minimo all'epoca 298 di 300»: etichetta corretta (gain>=2, lower99>0),
+  ma numeri assenti dalle fonti (S-D usa un altro caso: MLP con allarme, gain2 +0,5): NON VERIFICABILE, non marcati come d'esempio.
+- OB-5 (B:208): 0,98 x 0,7786289843513977 = 0,7630564046643697 (uguaglianza esatta in float64); 1-0,7630564046643697/0,7859020004638595
+  = 2,9069%: REGGE «2%» e «circa il 2,91%».
+
+== 7. Sezione 3 «Che cosa regge» (B:218-275) ==
+Script: conti_vari.py, r1_ricevuta.py (del verificatore, rieseguito), lr_massimo.py (rieseguito).
+- Conteggi (B:221-222): L0 768+7.700 = 8.468; L13 768+99.860 = 100.628; MLP 768+64.128+404+7.700 = 73.000; TCN 768+64.128+308+7.700 =
+  72.904; ramo 7.700; pesi 64.128+7.680 = 71.808; MAC 71.808x160 = 11.489.280; bias 404-308 = 96: REGGE.
+- RF 1+2(1+2+3) = 13, offset -6..+6; 160-12 = 148 centri: REGGE. «larghezze >= 20»: REGGE (R:108).
+- R 4993^2 float64 = 199.440.392 B = 190,2 MiB: REGGE («circa 190 MiB»; P:80).
+- «11 tracce» (review_ricetta), «720 ordini, al più 5 LR» (lr_massimo.py: 720 ordini, massimo 5, 0 con due lati, 72 allarmi): REGGE.
+- Gate R-1 dalla ricevuta: ridge 0,7859020004638595, testa 0,7786289843513977 (ricalcolati = memorizzati); 8.329 selezionate,
+  8.327 con supporto, 166.540 = 8.327x20 coppie, 20.119.920 elementi, 15 utenti; 0,98 x testa = 0,7630564046643697 esatto;
+  2,9069% sotto la ridge: REGGE (B:253-256).
+- Punto 6: traiettorie 40+48+15 = 103, 60+72+15 = 147; aggiornamenti 11·L·E·(S0+S1)+15·E·Sfull = 531.000 / 1.458.000 (S0+S1=60) e
+  537.600 / 1.477.800 (S0+S1=61, ceil(1907/32)+1); valutazioni 132x304 = 40.128 e 22+15 = 37; fasi 24/80/272, riserva 2,5/3;
+  03:57:00+180 s = 4:00:00; 272/691.863 = 0,03931%: REGGE (B:258-264).
+- SCRATCH: vedi sezione 4 (imprecisione su pose_stats).
+- Integrita': 2.130 file (work_consegna/tree_files.txt e snap_files.txt, 2.130 righe ciascuno); delivery_pin files = 9; diff
+  c15aac9..3e007c8 = 12 file (tutti .md/.json/.txt/registro); checks_passed 22 e 22/22 passed in document_checks; ancore p1-p10 e 106
+  link (review_consegna.txt:64-65): REGGE (B:271-275).
+
+== 8. Sezione 4 «Disposizioni» (B:277-303) ==
+Script: disposizioni.py (legge R).
+- 13 rilievi + 50 note = 63; semplici 45 = 8 rilievi (S-1, C-3, R-3, K-1, K-2, R-2, R-1, P-1) + 37 note; qualificate 18 = 5 rilievi
+  (A-1, C-1, C-2, S-2, K-3) + 13 note (05, 06, 17, 23, 26, 27, 29, 30, 33, 34, 40, 45, 46): REGGE (B:279-282).
+- «49 punti elenco ma 50 ID» (R:11): REGGE. «circa 97%» (32e5452 riga 22, tabella dei verdetti, «circa 97% per contrasto»): REGGE.
+- 8d34f9c «quattro punti e tre rettifiche» (R:88-98): REGGE.
+- Tabella delle 12 promesse: 12 righe = consegna-1 (C-3, N3) + consegna-2 (R-2) + consegna-4(i) (C-1) + consegna-5 a-h (8 note):
+  REGGE. Numeri di nota e righe di R (21, 67, 27, 19, 46, 57, 81, 51, 54, 83, 73, 52) corrispondono.
+  PERO' riga R-2 (B:294): R:27 non contiene «arresto su NaN o OOM in proposal.json»: parla della voce di decisioni.md; la richiesta e'
+  nella 32e5452, riga 329 («In `proposal.json` vanno aggiunti anche l'IC 95% descrittivo e l'arresto su NaN o OOM»), e il
+  verificatore lo dice (sintesi_verify riga 50: «La disposizione R:27 parla solo della voce di D»). IMPRECISIONE di citazione.
+- Etichette: in sezione 4 e a B:284 gli ID (controlli-6, costo-7, consegna-7, consegna-9, criteri-6) sono quelli della 32e5452,
+  in sezione 5 gli stessi nomi indicano rilievi NUOVI diversi; B:54 dice «Gli ID fra parentesi sono quelli dei rapporti».
+  IMPRECISIONE (etichette omonime; i prefissi «Nota N» aiutano, B:284 no).
+
+== 9. Sezione 5, 6, 8 e prompt ==
+- B:311 formula del residuo normale = corrected_fix del verificatore (sintesi_verify riga 4): REGGE.
+- B:316 «(la cache è float32, il payload float64 ...)»: la fonte dice che e' la `pred` della cache a essere float32
+  (review_criteri.txt:56 «la `pred` della cache deve essere np.float32»; verify_ricetta-criteri.txt:214). Le feature della cache
+  sono FP16 (P:26, P:46, J support.normalization «FP16 cache cast FP32»), e la bozza stessa a B:347 dice «dai valori FP16».
+  IMPRECISIONE (etichetta di dtype).
+- B:321 (1-1e-2·0,01)^9000 = 0,4066 -> 0,41: REGGE (9.000 = 300 epoche x 30 passi).
+- B:333 125 = 110+15, 1.276.500, 33.440 = 110x304, 1.260.000 = 11x5x300x60+15x300x60, 1.458.000; chiave «superseded» a
+  analytic_checks.json:7: REGGE.
+- B:334 03/12 e 22/12 (DEC:1332 «ogni giro autorizzato da Simone»): REGGE. B:335 30 = 25+5: REGGE.
+- B:344 seme dropout 200000+100f+s (P:44): REGGE. B:347 ranghi 384 e 13x383+1 = 4.980: REGGE. B:355 2,2e-16: REGGE.
+- B:376-381: «6 LR a 300», «al più 5»: REGGE. 4,1 / 18,5 ms (registro 8917e2a:8492-8495, TEMPONET-DB8-smoke2): REGGE.
+  19-28 = 19,39 / 21,49 / 27,78 (eval = 1/3, 1/2, 1 passo) e 9,9-14,1 = 9,87-14,11 (misto, 6 LR); 37% = 547.200/1.477.800: REGGONO
+  come numeri, MA sono «Gate raddoppiato, prima di I/O/avvii/salvataggi» (conti_verifica_output.txt:10-22): «il gate fa
+  9,9-14,1 GPU-ore» presenta come valore del gate (P:183, che include I/O, avvii e salvataggi) una cifra che li esclude.
+  IMPRECISIONE di etichetta (per il caso pessimo l'omissione va nel verso prudente).
+- B:387 fermo 23-25/11 (P:191): REGGE.
+- Prompt (B:404-468): numeri ripetuti dal corpo; stessi esiti (58/46/12/5, +17,3%, 0,5/0,92/2,5, 89,8%, 55%/0,869/0,870,
+  0,7630564, 8.329/8.327, 30, 12): REGGONO, con la stessa imprecisione su K a B:420-421.
+
+== 10. Riferimenti di riga ==
+Script: riferimenti_riga.py -> riferimenti_riga.txt (58 riferimenti distinti, 115 occorrenze). Tutti puntano a righe con il
+contenuto citato, salvo R:27 per la promessa NaN/OOM (sezione 8).
+
+== 11. Conteggio ==
+conta_numeri.py: 283 occorrenze numeriche con significato + 115 riferimenti di riga = 398 numeri controllati.
+Problemi: 1 errore (B:75, massima verosimiglianza), 11 imprecisioni.
+
+== 12. ELENCO FINALE DEI PROBLEMI ==
+[75-76] ERRORE — «Nel mondo lineare quella WLS è lo stimatore di massima verosimiglianza, eppure recupera l'89,8%» — in nessuna fonte; nel modello il rumore e' AR(1) entro finestra e K>1 nasce dall'autocorrelazione (review_controlli.txt:128-131; la bozza stessa a B:394-396), quindi lo stimatore di MV e' il GLS, non la WLS; il verificatore scrive che una L0 regolarizzata puo' superare il 90% dove la WLS fallisce (verify_architettura-controlli.txt:113-118) — togliere la frase, o «quella WLS e' il riferimento in forma chiusa non regolarizzato, non il miglior stimatore possibile».
+[73-76; 420-421] IMPRECISIONE — controesempio con sola «quota dinamica 0,5, E_real 0,92 -> sigma 2,5; 0,937 / 0,921 / 0,929; 89,8%» — rifatti: 0,93735 / 0,92135 / 0,92935 / 0,89831, ma solo con K_dyn=2,5, K_tot=5; con la seconda coppia dello stesso script, K=(3,5;7), lo stesso caso sceglie sigma 2 e la WLS recupera 0,909 e passa (v_scan_lineare.out.txt:9, ottava posizione = 0,92 -> P); lo script stampa solo P/F/N — aggiungere «K_dyn 2,5, K_tot 5 (c_n 0,9372, n_out 118.000)» e «valori ricalcolati con le formule dello script».
+[81] IMPRECISIONE — «la WLS esatta smette di passare quando E_real supera circa 0,90-0,94» — fonte: «passa il 90% fino a E_real ~0,90-0,92 e fallisce sopra» (verify_architettura-controlli.txt:102); ricalcolo con lo script: primo fallimento fra 0,893 e 0,936 secondo f' e K — «circa 0,89-0,94 (ricalcolo con v_scan_lineare.py)» oppure il «0,90-0,92» della fonte.
+[14] IMPRECISIONE — «alle 10:27, alle 11:46 e alle HH:MM» — segnaposto non compilato; 10:27 e 11:46 non verificabili dalle fonti date — compilare con l'ora della lettura ls-remote subito prima del commit.
+[140] IMPRECISIONE — «un minimo pooled più basso dello 0,01%» (L0, fit reali, epoca 57) — fonte del caso: 0,7268 contro 0,7269, «per 0,0001 (0,014%)» (review_ricetta.txt:379-381); lo 0,01% e' del controesempio del controllo lineare (V-ricetta-criteri-2, sintesi_verify.txt:63) — «dello 0,014% (0,7268 contro 0,7269)».
+[163] IMPRECISIONE — «la TCN recupera il 60% ma ha il minimo di E_dyn all'epoca 298 di 300» — non verificabile: nessuna fonte ha questi valori (ricetta-1 descrive il caso senza numeri, review_ricetta.txt:211-213; il controesempio di V-ricetta-criteri-2 e' L0 al 99% nel lineare con allarme di bordo LR, sintesi_verify.txt:63) — marcarli «numeri d'esempio» (sono coerenti: 298 nelle ultime 5, 60% >= 50%).
+[194] IMPRECISIONE — «contrasto 1 a +5, con IC99 [+3; +7] (etichetta 1) ... epoca 298 di 300» — non verificabile: S-D usa un altro caso (MLP con allarme, gain2 +0,5; verify_ricetta-criteri.txt:288); l'etichetta 1 e' giusta (P:117) — marcarli «numeri d'esempio».
+[268-269] IMPRECISIONE — «tutti con data 12/11 e byte uguali ai pin» — per pose_stats.json non c'e' un pin dei byte: J ne pinna solo lo sha256 (proposal.json:701-704; anche extraction_plan_19618.json:20-23); i 7.377 byte coincidono con lo spotcheck del 12/11 in 47ca96e (verify_costo-consegna.txt:24-25) — «byte uguali ai pin per i due npz; per pose_stats.json, pinnato solo per sha256, uguali allo spotcheck del 12/11».
+[294] IMPRECISIONE — «R-2 (rilievo, R:27) | arresto su NaN o OOM in proposal.json» — R:27 parla solo della voce di decisioni.md (sintesi_verify.txt:50, criteri-5); la richiesta per proposal.json e' nella 32e5452, riga 329 — «R-2 (rilievo accolto a R:27; richiesta alla riga 329 della 32e5452)».
+[316] IMPRECISIONE — «(la cache è float32, il payload float64 ...)» — e' la `pred` della cache a essere float32 (review_criteri.txt:56; verify_ricetta-criteri.txt:214); le feature della cache sono FP16 (P:26, P:46; la bozza stessa a B:347 «dai valori FP16») — «la `pred` della cache è float32».
+[378-381] IMPRECISIONE — «la proiezione sarebbe 19-28 GPU-ore» e «il gate fa 9,9-14,1 GPU-ore» — i valori sono «Gate raddoppiato, prima di I/O/avvii/salvataggi» (work_verifica_costo-consegna/conti_verifica_output.txt:10-19), mentre il gate di P:183 li include — aggiungere «prima di I/O, avvii e salvataggi» (nel caso misto il gate vero e' piu' alto).
+[284; 296-303 contro 313-337] IMPRECISIONE — stessi ID per rilievi diversi: criteri-6, controlli-6, costo-7, consegna-7, consegna-9 sono note della 32e5452 in sezione 4 e a B:284, e rilievi nuovi in sezione 5; B:54 dice «Gli ID fra parentesi sono quelli dei rapporti» — marcare in sezione 4 e a B:284 «ID della 32e5452».
+Numeri controllati: 398; problemi: 1 errori, 11 imprecisioni

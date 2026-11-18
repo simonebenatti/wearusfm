@@ -1,0 +1,383 @@
+RAPPORTO DI REVISIONE - DIMENSIONE «controlli» (punto 3 della richiesta di GPT del 18/11/2026)
+Oggetto: controlli positivi train-only del protocollo v2 (§4.4, con calibrazione e WLS del §4.3) e proposal.json
+Consegna rivista: 3e007c841c97da5793ed4aac6cfceb41c99a00ee (contenuti scientifici 62348abdae9c7f92856f573e04d057c9a3153c42)
+Base del confronto: c15aac9 (proposta originale), review Claude 32e5452, seguito 8d34f9c
+Revisore: subagente del workflow per Claude. Nessun esperimento, nessuna simulazione, nessun accesso al cluster.
+Livelli di prova: ESEGUITO (comando e risultato), CALCOLATO (conto mostrato), LETTO (file:riga e citazione breve).
+Abbreviazioni: PROT = gpt_3e007c8/docs/pose_temponet_frozen_protocol_20261117.md; PJ = gpt_3e007c8/results/infra/
+pose_temponet_proposal_20261117/proposal.json (righe del file così com'è, non riformattato); RISP = gpt_3e007c8/docs/reviews/
+pose_temponet_response_20261118.md; DEC = git show 3e007c8:docs/decisioni.md.
+
+=====================================================================================================================
+0. IDENTITÀ DEI MATERIALI
+=====================================================================================================================
+ESEGUITO: shasum -a 256 sullo snapshot e su `git show 3e007c8:<file>` nel worktree claude-temponet:
+- PROT 05a9eb09a7cd4341184056a93802887a8277bb615400972b1f2d6d2186ec22f7 (uguale al pin di delivery_pin_20261118.json:11)
+- PJ   f3b92c4a8f0aa525fc982632078b6a3d8774ee81838014203c24b4cb47494d9f (uguale al pin :39)
+- RISP 076d35f161703d8de5cf2b7456282337a34139d951a72887dfe6f7b58df90d2b (uguale al pin :19)
+- git rev-parse 3e007c8 62348ab -> SHA completi uguali a quelli della richiesta.
+Lo snapshot che leggo è quindi la consegna pinnata.
+
+=====================================================================================================================
+1. PERIMETRO E METODO
+=====================================================================================================================
+- Parte rivista: PROT §4.4 (righe 82-98), con calibrazione e WLS del §4.3 (righe 74-80), soglia train-only del §4.1 (riga 59),
+  matrice del §4.5 (riga 102) e ordine delle fasi del §9 (riga 185); PJ "positive_controls" (righe 387-472), "linear_diagnostics"
+  (296-319), "fit.failure_states" (145-151), "fit.internal_dynamic_threshold" (163-168); RISP §1 riga S-1, §3 riga 1 e rettifica
+  del 2%; DEC 18/11 (riga 6749 di `git show 3e007c8:docs/decisioni.md`).
+- LETTO: c15aac9 non aveva controlli positivi (nessuna chiave "positive_controls" in PJ di c15aac9; nel protocollo c15aac9 la sola
+  riga 140 cita «un oracolo semplice» per le metriche). Tutto il §4.4 e il blocco JSON sono quindi parti nuove.
+- Nessuna simulazione. I conti delle sezioni 3-4 sono in forma chiusa (script in work_controlli/: conti_base.py,
+  conti_calibrazione.py, conti_temporale_dettaglio.py, conti_E_real.py). Usano ipotesi dichiarate; mostrano ordini di grandezza
+  e direzioni, non i valori che si misureranno sui latenti.
+
+=====================================================================================================================
+2. CONFERME (verificate e reggono)
+=====================================================================================================================
+C-1  Il generatore temporale è rappresentabile esattamente dalla TCN-post con ramo affine.
+     LETTO PROT:28 (g: Conv1x1 384->64, tre Conv k3 d1/d2/d3, Conv1x1 64->32, Conv1x1 32->20) e PROT:86 «stessa struttura/RF
+     con tutti i hidden larghi8». CALCOLATO (conti_base.py): T ha 3.932 parametri, RF 1+2(1+2+3)=13 come g; g ha 64.436
+     parametri, +7.700 ramo affine +768 LN = 72.904 (uguale a PROT:37). Argomento algebrico: si copiano i pesi di T nei primi 8
+     canali di ogni strato e si mettono a zero gli altri pesi e bias; ReLU(0)=0, quindi i canali in più non contribuiscono; il
+     padding 1/2/3 è lo stesso. La normalizzazione per giunto di L e T (centro e scala) è affine per uscita: la scala entra nelle
+     righe dell'ultimo strato e del ramo affine, il centro nei bias. Con LN della testa all'avvio (gamma=1, beta=0) h=z. Quindi
+     y* = L_n + a*T_n è nella classe di TCN-post+affine; L_n è nella classe di L0, MLP+affine e TCN+affine.
+C-2  Rumore AR(1) ben definito e stazionario. LETTO PROT:88 «epsilon0~N(0,1) ed epsilon_t=rho*epsilon_(t-1)+sqrt(1-rho²)*eta_t».
+     CALCOLATO: rho=exp(-1/4)=0,778801; Var(eps_t)=rho²·1+(1-rho²)·1=1 per ogni t; correlazione rho^k; tempo di correlazione
+     4 patch = 100 ms; sigma è quindi esattamente la deviazione standard stazionaria, come scritto (PJ:458 «sigma stationarySD»).
+     Indipendenza per finestra e giunto e seme da SHA256 del JSON canonico, mai hash() di Python né valori di feature/etichette
+     (PROT:88): riproducibile e senza dipendenza dai dati.
+C-3  Semi distinti e senza collisioni. CALCOLATO: L 20261118/20262118, T 20261119/20262119, rumore 20261120/20262120 (f=0/1);
+     teste: init 100000+s, dropout 200000+100f+s, shuffle 300000+100f+s (PROT:44), massimo 300202. «I seed di mondo sintetico
+     non cambiano l'ordine dei batch» (PROT:44). Stati e hash del generatore salvati prima della qualificazione (PROT:86).
+C-4  Oracolo come funzione delle feature disponibili. LETTO PROT:88 «L'oracolo è y* funzione delle feature disponibili, non fattori
+     nascosti del generatore»; PJ:456 «not latent clean hiddenfactors». L'oracolo vede gli stessi z delle teste: nessun bersaglio
+     irraggiungibile per costruzione. La precisazione «Non è un bound campionario garantito sul noisy held» è corretta: sull'held
+     finito una testa può battere y* per caso, di pochissimo.
+C-5  Isolamento outer/inner dei parametri del mondo. LETTO PROT:90 «nei20 utenti fitting outer, due sottofold alterni10/10»;
+     PROT:92 «Parametri distinti per direzione outer; i20 held outer non li scelgono»; PJ:402 «outerheldexcluded». Normalizzazione
+     di L e T, costante del controllo lineare e soglie dinamiche dei gate vengono dal fitting outer (PROT:86, 92, 95). I 15 utenti
+     di sviluppo non entrano (PROT:84 «nessun rifit sui40 o accesso ai15 sviluppo»; PJ:471 «no external users»). La sola
+     informazione dei target reali che entra è E_real, calcolata sui 20 utenti di fitting outer: non tocca la selezione dei fit
+     reali. Nessuna fuga verso i 15 sviluppo (vedi però controlli-5 per la selezione delle teste di controllo).
+C-6  Soglie dinamiche dal train e dal bersaglio sintetico. LETTO PROT:59 (media per finestra delle varianze per giunto
+     sull'intera finestra160, mediana sul fitting, minimo 1e-12) e PROT:90 «mai dalla soglia storica val»; PJ:163-168
+     «synthetic forcontrols», «external_historical_threshold_used: false». Risponde alla richiesta 8d34f9c (regola delle finestre
+     dinamiche del bersaglio sintetico).
+C-7  La combinazione lineare delle soluzioni sui RHS-base è corretta. La soluzione minimum-norm con design, pesi m_itj/q_i,
+     maschere e soglia di rango fissati (PROT:76, PJ:314) è beta = R^+ Q' W^(1/2) y: lineare in y. Il centro e la scala di L e T
+     sono trasformazioni affini per giunto, con intercetta libera; y = L_n + a*T_n + sigma*eps è lineare in (1, a, sigma).
+     Quindi soluzioni e predizioni di ogni coppia sono combinazioni esatte di quelle dei quattro RHS-base (reale, L, T, eps;
+     PJ:300-305) e «senza rifattorizzare25 disegni» (PROT:90) è corretto. Soglia dinamica ed E_dyn invece sono quadratiche in
+     (a, sigma) e la selezione delle finestre cambia con la coppia: vanno ricalcolate per coppia dalle predizioni e dai target
+     combinati (momenti per finestra), non combinate linearmente. PROT:90 lo prevede («Soglie dinamiche per coppia»): regge,
+     con la nota di implementazione controlli-9.
+C-8  Aggregazione e casi degeneri. «rapporto delle somme SSE/targetSS, non media dei rapporti; denominatore nullo/non finito ->
+     controllo non diagnostico» (PROT:90; PJ:397). Per E_dyn la previsione costante ha errore esattamente 1 (predizione centrata
+     nulla): CALCOLATO, coerente con PROT:95. Margini non positivi -> non diagnostico (PROT:95; PJ:438).
+C-9  Criterio legato al guadagno piantato, come chiedeva 8d34f9c. Temporale: margine LS-L0 -> oracolo del 6-10% e recupero >=50%,
+     quindi la TCN deve battere la LS-L0 del 3-5% di E_dyn: da 1,5 a 2,5 volte la soglia pratica del 2%, con un guadagno piantato
+     di 3-5 volte quella soglia (CALCOLATO: 0,5×6=3, 0,5×10=5). Lineare: >=90% del margine costante -> oracolo su MSE ed E_dyn
+     per L0, MLP e TCN. Il rumore è tarato sulla E_dyn interna reale; c'è la regola delle finestre dinamiche; le conseguenze del
+     fallimento sono scritte (stop prima dei fit reali, nuova specifica da firmare, nessuna etichetta negativa). Tutti i sei
+     elementi del punto 1 di 8d34f9c sono nel testo (ma vedi controlli-1 sull'ancoraggio di E_real).
+C-10 Conseguenze distinte e conservative. LETTO PROT:98 e PJ:145-151, 421: «controllo non calibrato», «controllo non diagnostico»,
+     «ricetta non ammessa dal controllo positivo» (causa non attribuita all'ottimizzazione), «ottimizzazione non risolta entro il
+     budget»; tutte fermano prima dei fit reali, artefatti conservati, nessuna ricerca «finché si vince», nessuna etichetta
+     scientifica negativa. Coerente con K-3 e S-1 della review e con la risposta (RISP:17, 26).
+C-11 Non dichiarati superati. PROT:98 «proposte ingegneristiche non ancora misurate»; PJ:388 «proposed, unmeasured»; registro
+     GPT 18/11 sezione 2 «non sono dichiarati superati»; document_checks_20261118.json:146-155 «syntheticfit» fra i non eseguiti.
+C-12 Conteggio delle traiettorie di controllo. CALCOLATO: 2 controlli × 3 teste × 2 fold × 4 LR = 48, × 6 LR = 72 (PROT:102;
+     PJ:129-130; analytic_checks.json:8-9). Le 11 combinazioni della formula 11*L*E*(S0+S1) = 5 teste reali + 6 di controllo.
+C-13 Disposizioni accolte presenti nel testo. Rettifica del 2% (RISP:98) -> PROT:96 «Non si usa il +21,3%»; la qualificazione
+     «selezionato in modo ottimista» è corretta (la review stessa lo scriveva). Seguito 8d34f9c punto 1 (RISP:92) -> PROT:86-98 e
+     PJ:387-472. S-1 (RISP:17) -> controlli, stati e conseguenze presenti. Non trovo disposizioni accolte assenti dal testo
+     nel mio punto, salvo l'incoerenza di controlli-2.
+
+=====================================================================================================================
+3. RILIEVI
+=====================================================================================================================
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-1 — L'ancora E_real è la WLS NON regolarizzata a 10 utenti: con un valore plausibile la calibrazione fallisce o porta
+              il controllo lineare dove nemmeno la forma chiusa passa il 90%
+Gravità: BLOCCANTE. Tipo: disegno. Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+Posizione: PROT:90 «Stima interna E_real sui target reali» con i «riferimenti L0 pesati» del §4.3, cioè la WLS
+«non regolarizzati» di PROT:76; PROT:92 (ammissibilità |E_LS,synth−E_real|<=0.05, griglie a<=1 e sigma<=3); PROT:95 (cancello
+lineare senza un controllo di diagnosticità del riferimento); PJ:398 «weightedLS L0 internalpredictions», PJ:405
+«E_dyn of weightedLS L0 on real targets from innerfolds only», PJ:308 «weighted unregularized least squares».
+
+Che cosa dice il testo. Il rumore si tara perché la WLS non regolarizzata, fittata su 10 utenti e letta sugli altri 10, abbia
+sul bersaglio sintetico la stessa E_dyn che ha sui target reali (E_real). Per il controllo lineare non c'è nessuna verifica che
+la forma chiusa raggiunga il 90%: l'unico caso «non diagnostico» è un margine non positivo (PROT:95). Per il temporale invece
+la banda del riferimento LS è verificata sugli held outer (PROT:96). PROT:78 stesso avverte che la WLS «Non è l'ottimo [...]
+della E_dyn held».
+
+Perché E_real è probabilmente molto sopra 0,78.
+- LETTO: ricevuta storica pinnata (PJ:710-712, `git show 2930d7d:results/infra/consolidation_long_20261105/execution/receipts/
+  LONG-FIT-G49046-pose-20261105.json`, sha256 b08e6e32...7c14, verificato ESEGUITO): percorso della ridge sui due fold interni
+  20/20 dei 40 utenti train. alpha 0,01 -> MSE 0,7697254997; alpha 1e5 (scelto) -> 0,6561153689. A 20 utenti la lettura quasi
+  non regolarizzata è già +17,3% sopra l'ottimo (CALCOLATO 0,76973/0,65612−1 = 0,1732).
+- CALCOLATO (conti_E_real.py; ipotesi: eccesso classico M*(1+p/(n_eff−p−1)), n_eff proporzionale agli utenti, quota dinamica
+  dell'eccesso 10-50%): n_eff ≈ 2.000-2.600 per giunto a 20 utenti, cioè 2-3 campioni efficaci per finestra; a 10 utenti la MSE
+  della WLS non regolarizzata sale a circa 0,93-1,02 e la E_dyn interna a circa 0,84-1,16 (0,89-1,16 se la quota dinamica è
+  almeno il 20%). È una stima d'ordine di grandezza, non una misura. Ma la direzione è robusta: E_real, come è definita, è la
+  lettura sovradattata di 10 utenti, non lo 0,786 storico.
+
+Che cosa succede allora (CALCOLATO in forma chiusa, conti_calibrazione.py; ipotesi: rumore dinamico N = sigma²·c_n con c_n=0,937;
+eccesso da rumore della WLS X = sigma²·p·K/n con p=384, n≈118.000 elementi per giunto nel fitting outer e 59.000 inner; K =
+inflazione per autocorrelazione del rumore e spostamento fra utenti, da 1 a 8 per AR(1) con rho=e^(−1/4), K_dyn 2,5-3,5 e
+K_tot 5-7 nei due casi; L_n a varianza 1, segnale dinamico f'):
+- Recupero della WLS esatta nel controllo lineare, sugli held outer: R_dyn = 1 − X/f' = 1 − x·E_or/(1−E_or) e
+  R_MSE ≈ 1 − sigma²·p·K_tot/n. Il primo crolla quando E_oracolo si avvicina a 1; il secondo cade sotto 0,90 per sigma>=2,5
+  già con K_tot=5 (2,5: 0,898; 3: 0,854).
+- Con E_real = 0,95 e f'=0,5, K_dyn=2,5, K_tot=5: la regola sceglie sigma=3 (E_LS,inner 0,960); sugli held outer E_or=0,944,
+  R_dyn=0,854, R_MSE=0,854. Una L0 identica alla forma chiusa non passa nessuno dei due cancelli. Esito del protocollo: «ricetta
+  non ammessa dal controllo positivo». Con E_real = 0,95 fallisce in tutti i quattro f' provati (0,3-1,0), con entrambi i K.
+- Con E_real = 1,00: f'>=0,8 «controllo non calibrato» (sigma<=3 non basta); f'<=0,5 calibrato a sigma=3 e WLS esatta sotto 0,90.
+- Controllo temporale: ignorando X, con E_LS=E e guadagno g servirebbe una quota non leggibile linearmente di T
+  r > E/((1−E)/g+E): per E=0,90 e g=0,06 serve r>0,351 e insieme a·T che domini L; per E=0,95, r>0,533; per E=1 serve r=1.
+  Con a<=1 e L_n, T_n a varianza 1 è difficile. Nella griglia di ipotesi (f_L 0,3-0,8; f_T 0,3-0,9; r 0,2-0,6; K 2-5) i casi
+  «non calibrato» sono 22/81 con E_real=0,80, 40/81 con 0,90, 76/81 con 1,00 (conti_temporale_dettaglio.py). Esempio f_L=0,5,
+  f_T=0,6, r=0,4, K=3: solo 2 coppie su 25 hanno g in banda, con E_LS 0,771 e 0,839; con E_real=0,95 nessuna è ammissibile.
+
+Controesempio minimo. Dati veri con E_real=0,95 (dentro la forbice stimata dai numeri pinnati), f'=0,5, K_dyn=2,5, K_tot=5;
+T con f_T=0,6 e r=0,4: con K_dyn=2,5 le sole coppie con g in banda hanno E_LS 0,629, 0,768 e 0,836, nessuna entro 0,05 da
+0,95. Controllo temporale: «controllo non calibrato». Controllo lineare: sigma=3 e una L0 che riproduce
+esattamente la WLS ha R_dyn=R_MSE=0,854<0,90: «ricetta non ammessa dal controllo positivo». La catena si ferma con qualunque
+ricetta, e nel secondo caso la causa scritta (la ricetta) è sbagliata: il cancello è irraggiungibile per la classe stessa.
+Precisazione onesta: una L0 fermata presto è regolarizzata e può fare meglio della WLS non regolarizzata. Ma allora il
+controllo lineare misura l'efficienza della regolarizzazione ad alto rumore, non che «le teste più complesse sappiano recuperare
+una relazione semplice» (controproposta GPT del 17/11), e il protocollo non ha un riferimento per distinguere i due casi.
+
+Perché è un problema di disegno e va deciso ora. La soglia 0,05, le griglie e l'ancora si congelano prima di guardare E_real.
+Cambiarle dopo averla misurata sarebbe una scelta post hoc. La correzione non cambia l'impianto e costa poco (tutto in forma
+chiusa sulla CPU, prima dei fit neurali).
+
+Correzione (una qualsiasi combinazione, scritta prima del congelamento):
+(a) ancora regolarizzata: usare per E_real e per E_LS,synth una ridge sugli stessi disegni inner, con alpha scelto sugli inner
+    held (dalla SVD di R il percorso costa quasi niente), oppure fissare ora un intervallo di E_oracolo/E_LS sintetico (per
+    esempio vicino a 0,786 storico) senza misurarlo sui target reali;
+(b) diagnosticità simmetrica al temporale: nel controllo lineare il riferimento in forma chiusa sugli held outer (già fra i 12
+    blocchi di PROT:80, RHS «controllo lineare») deve passare il 90% su MSE ed E_dyn, per fold e pooled; se no «controllo non
+    diagnostico», calcolato prima dei fit neurali; oppure definire il cancello lineare rispetto a quel riferimento;
+(c) per il temporale, griglia di a che raggiunga la banda anche con rumore alto (a oltre 1), oppure banda del guadagno
+    sganciata dall'ancora (vedi anche controlli-3 e controlli-4).
+Restano al benchmark i valori veri di E_real, f', K: la correzione serve proprio a non dipendere da essi.
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-2 — «MLP non deve vincere il temporale»: cancello nel protocollo, descrittivo nel JSON, e non definito
+Gravità: BLOCCANTE (correzione di una riga). Tipo: testo, con una scelta di disegno. Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+Posizione: PROT:94 «(tutte devono passare)» e PROT:96 «MLP non deve vincere il temporale»; PJ:441 «neuralL0/MLP descriptive»;
+PJ:440-451 contiene solo la condizione della TCN (head TCN_post, min_fraction 0.5). DEC:6749 riporta solo «margine noto6–10% e
+recupero almeno50%». Nessuna regola dice quale documento prevale (ESEGUITO: grep di «prevale|precedence» su PROT, PJ, RISP: nessun
+risultato).
+Problema. Il protocollo mette la frase nell'elenco delle condizioni che devono passare; il JSON la tratta come descrittiva.
+Non sono definiti metrica (E_dyn o MSE), margine (basta un pareggio?), valutazioni (fold, pooled o entrambi) e conseguenza.
+Perché conta. Il margine piantato LS-L0 -> oracolo contiene anche la parte non lineare ma istantanea di T: T è una rete ReLU di
+z_(t−6..t+6) e, con z autocorrelato, E[T | z_t] è una funzione non lineare istantanea che una MLP può imparare. Quindi la TCN può
+superare il 50% imparando soprattutto la parte istantanea, come la MLP; la frase sulla MLP è l'unica difesa della specificità
+temporale del controllo, ed è proprio quella non definita.
+Controesempio minimo. TCN con recupero 0,55 su fold 0, fold 1 e pooled; E_dyn pooled MLP 0,869 e TCN 0,870. Secondo PROT:94-96 la
+MLP «vince»: «ricetta non ammessa», stop. Secondo PJ:441 la MLP è descrittiva: controllo superato, si passa ai fit reali. Due
+implementazioni fedeli ai due documenti danno esiti opposti.
+Correzione. Decidere ora e scrivere uguale in PROT, PJ e DEC: o (i) cancello definito, per esempio
+(E_MLP − E_TCN)/(E_LS − E_oracolo) >= q con q fissato (0,10-0,25), su E_dyn, per fold e pooled, conseguenza «ricetta non ammessa»;
+o (ii) solo descrittivo, dichiarando che il controllo temporale non separa l'apprendimento temporale da quello non lineare
+istantaneo. Riportare in ogni caso anche il recupero della MLP.
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-3 — Griglie troppo rade rispetto alla tolleranza 0,05: «non calibrato» possibile anche con E_real moderata
+Gravità: minore. Tipo: disegno. Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+Posizione: PROT:90 (a={0.2,...,1}, sigma={1,...,3}) e PROT:92 (tolleranza 0,05; nessun nuovo seed o griglia); PJ:390-412, 401.
+Evidenza (CALCOLATO, conti_calibrazione.py, K_dyn=3). Nel controllo lineare c'è un solo parametro e cinque valori. E_LS,inner sui
+cinque sigma, con salti fra 1 e 1,5 di 0,09-0,20, più larghi della banda ammessa (0,10):
+- f'=0,3: 0,773 0,894 0,945 0,971 0,986 -> E_real non calibrabile fra 0,823 e 0,844, sotto 0,723 e sopra 1,036;
+- f'=0,5: 0,666 0,825 0,901 0,941 0,964 -> buco fra 0,716 e 0,775 (vicino allo 0,786 storico), sopra 1,014;
+- f'=0,8: 0,551 0,740 0,841 0,898 0,932 -> buco fra 0,601 e 0,690, sopra 0,982;
+- f'=1,0: 0,494 0,692 0,806 0,872 0,913 -> buchi fra 0,544 e 0,642 e fra 0,742 e 0,756, sopra 0,963.
+Nel temporale g varia molto fra punti vicini (con a²·r·f_T e con sigma²): nell'esempio di controlli-1 solo 2 coppie su 25 cadono
+nella banda [0,06; 0,10].
+Conseguenza. Uno stop «controllo non calibrato» che dipende da dove E_real cade rispetto alla griglia, non dalla ricetta.
+Correzione. Griglie fitte fissate ora (per esempio sigma da 0,5 a 4 a passi di 0,1 e a da 0,1 a 2 a passi di 0,1), oppure sigma
+risolto in modo continuo (E_LS(sigma) è monotona per a fisso). Grazie ai RHS-base il costo è trascurabile (C-7).
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-4 — Il guadagno tarato sugli inner a 10 utenti contiene l'errore di stima della LS: sugli outer a 20 utenti la banda
+              [6%,10%] è spostata in basso
+Gravità: minore. Tipo: disegno. Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+Posizione: PROT:92 (guadagno inner, preferenza 0,08) e PROT:96 (stessa banda sugli held outer, fuori -> non diagnostico);
+PJ:403, 414-417, 447-450.
+Evidenza (CALCOLATO, conti_calibrazione.py). g = (R_T + X)/(N + R_T + X): X, l'eccesso da rumore della WLS, si dimezza
+passando da 10 a 20 utenti di fitting. Con g_inner=0,08 esatto: K_dyn=3 -> quota del guadagno dovuta alla stima 0,24, g_outer
+atteso 0,071; K=6 -> 0,48 e 0,062; K=8 -> 0,64 e 0,056 (fuori banda). Nella griglia di ipotesi, con K=5, 21 dei 48 casi
+calibrati hanno g_outer<0,06; spostamento medio −0,015.
+Conseguenze. (i) «controllo non diagnostico» più probabile per una ragione nota in anticipo; (ii) parte del «guadagno temporale»
+piantato non è temporale: è l'errore di stima della LS, che anche una testa istantanea ben regolarizzata può recuperare.
+Correzione. Definire il guadagno sulla parte di popolazione: LS fittata sul bersaglio pulito y* (combinazione dei RHS-base senza
+eps), che non contiene l'errore da rumore; oppure fissare per gli outer una banda più larga (per esempio [0,04; 0,12]) e
+dichiarare lo spostamento atteso.
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-5 — Gli held outer non scelgono (a, sigma), ma scelgono LR ed epoca delle teste di controllo
+Gravità: nota. Tipo: disegno (da dichiarare). Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+LETTO: PROT:84 «stessa selezione MSE e ricerca finita»; PROT:67 selezione sul minimo della MSE pooled degli held interni; PROT:92
+«i20 held outer non li scelgono» (riferito ai parametri del mondo); PROT:94 cancelli «sui held outer». Le teste di controllo
+scelgono LR, epoca ed estensioni sugli stessi 20+20 held su cui poi si valutano i cancelli. È lo stesso schema della CV reale e non
+tocca i 15 sviluppo, ma rende i valori dei cancelli un po' ottimisti (selezione sullo stesso insieme). L'affermazione «i 20 held
+outer non scelgono niente» sarebbe falsa: vale solo per (a, sigma). Suggerimento: dichiararlo accanto al §4.4.
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-6 — Il mondo sintetico non ha la componente di livello che domina la MSE reale: i controlli non provano il meccanismo
+              di S-2
+Gravità: nota. Tipo: disegno (limite da dichiarare). Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+CALCOLATO (conti_base.py): per l'AR(1) con rho=e^(−1/4) su ~124 punti validi la media di finestra ha varianza 0,063: il 94% del
+rumore è dinamico. Il livello di y* è una funzione di z e la LS o l'oracolo lo leggono. Nei dati veri invece il livello pesa il
+65,9% della MSE della ridge su tutte le finestre e il 54,4% sulle dinamiche (review 32e5452, S-1). Quindi nei controlli MSE ed
+E_dyn sono quasi allineate, e la selezione sulla MSE non incontra il conflitto livello/dinamica che ha motivato S-2 e il trigger su
+E_dyn. Un controllo superato non copre quel meccanismo; lo copre solo l'allarme S-2 sui fit reali. Suggerimento facoltativo: un
+quinto RHS-base con uno scostamento per finestra e giunto, varianza fissata ora; resta lineare e quasi gratuito, ma aumenta
+l'errore di stima (inflazione circa 7,8 per le direzioni di livello) e va tenuto insieme a controlli-1.
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-7 — «Uscita teacher non nulla» è controllata solo da std>1e-8: T può essere quasi lineare o con unità spente
+Gravità: nota. Tipo: disegno / implementazione. Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+LETTO: PROT:86 «uscita teacher non nulla», bias zero, Kaiming negli hidden; unico controllo «deviazione<=1e-8 -> controllo non
+calibrabile». Con bias zero e input z=LN(lat) non centrato per dimensione, il segno della pre-attivazione di un'unità larga 8 può
+dipendere soprattutto dalla media di z: unità sempre accese (lineari) o sempre spente. Allora T diventa quasi un filtro lineare
+nel tempo: resta un vantaggio temporale su L0 (che L13 potrebbe già prendere), ma la parte «non lineare» chiesta dalla
+controproposta GPT del 17/11 può essere piccola. Non si quantifica senza dati.
+Suggerimento: riportare prima dei fit la frazione di unità attive per strato di T sul fitting outer e la quota di E_LS->E_oracolo
+recuperata dalla WLS L13 sul bersaglio temporale (è già fra i 12 blocchi di PROT:80, ma il §4.4 non dice a che cosa serve);
+facoltativo: centrare z per dimensione sul fitting outer prima di T (resta rappresentabile: il centro entra nel primo bias).
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-8 — Parole non allineate fra i documenti e precedenza delle etichette
+Gravità: nota. Tipo: testo. Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+- PROT:86 «controllo non calibrabile» per std<=1e-8; PROT:92 e PJ:146 «controllo non calibrato»: usare un solo nome.
+- DEC:6749 e prompt (docs/prompt_claude_pose_temponet_review_20261117.md:17) «margine costante→teacher»; PROT:95 e PJ:427
+  «oracolo/E_oracle». «teacher» nel progetto indica anche il modello T100-G (PROT:10): scrivere «oracolo».
+- DEC:6749 «rumoreAR1 a varianza fissata»: sigma è scelta su una griglia dalla calibrazione; meglio «griglia fissata».
+- Se nello stesso controllo coesistono più stati (per esempio allarme di §4.2 aperto e cancello fallito, o un controllo non
+  calibrato e l'altro fallito) la conseguenza è la stessa (stop), ma non è scritto quale etichetta si registra. Suggerimento:
+  registrare tutti gli stati, con un ordine fisso nel report.
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-9 — Dettagli da fissare nel codice e nel manifest
+Gravità: nota. Tipo: implementazione. Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+- Seme del rumore (PROT:88): campi esatti di «metadata_finestra» e serializzazione del «JSON canonico» (ordine delle chiavi,
+  separatori, formato dei numeri); unicità dei metadati per finestra (due finestre con gli stessi metadati avrebbero lo stesso
+  rumore); test di collisione.
+- Rumore generato su tutte le 160 patch e poi mascherato e ritagliato, così l'AR(1) resta continuo anche dove ci sono buchi.
+- Normalizzazione di L e T (PROT:86): su quali elementi (centri crop6 validi?) e con quali pesi («peso per finestra» = m_itj/q_i?).
+- Soglie dinamiche ed E_dyn dei controlli sul bersaglio osservato rumoroso y (implicito in «noisy held», PROT:88): scriverlo.
+- Per ogni coppia (a, sigma), soglia e E_dyn ricalcolate dai momenti per finestra dei RHS-base combinati (C-7), non combinate
+  linearmente; test che confronti la combinazione con un calcolo diretto su una coppia.
+- Versioni di NumPy e Torch pinnate (gli stream di numpy.random.Generator non sono garantiti stabili fra versioni): già coperto
+  da PROT:63 «Versioni e contesto numerico pinnati».
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-10 — Due mondi diversi per direzione outer: il pooled è una miscela pesata dalle scale
+Gravità: nota. Tipo: disegno (da dichiarare). Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+LETTO: PROT:86 «Seed 20261118+1000*f» per L e T; PROT:92 parametri distinti per direzione. I due fold outer sono quindi due mondi
+con L, T e (a, sigma) diversi. La selezione delle teste usa la MSE pooled sui due fold (PROT:67): la MSE cresce con 1+a²+sigma²,
+quindi la direzione con sigma più alto pesa di più nella scelta di LR ed epoca; anche i cancelli pooled sono una media pesata dei
+due mondi. Non è sbagliato; va dichiarato, oppure si usa un solo L e un solo T per le due direzioni, con normalizzazione e (a,
+sigma) per direzione.
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-11 — Le verifiche in forma chiusa dei controlli vanno eseguite prima dei fit neurali di controllo
+Gravità: nota. Tipo: implementazione (ordine delle fasi). Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+LETTO: PROT:185 «Dopo i gate risorse si eseguono WLS/calibrazione e qualificazione». La banda della LS temporale sugli held outer
+(PROT:96) e l'eventuale verifica lineare di controlli-1(b) si calcolano dai 12 blocchi in forma chiusa sulla CPU. Scrivere che
+«non calibrato» e «non diagnostico» si decidono prima di lanciare le 48-72 traiettorie di controllo, così non si spende GPU su
+un controllo che non può qualificare.
+
+---------------------------------------------------------------------------------------------------------------------
+controlli-12 — Raggiungibilità del 50% della TCN: non stabilita qui, va misurata
+Gravità: nota. Tipo: benchmark. Parte nuova.
+---------------------------------------------------------------------------------------------------------------------
+CALCOLATO (ordine di grandezza, ipotesi di controlli-1): la condizione è X_TCN/N <= 0,5·(R_T/N + x_outer), indipendente da sigma.
+Con K=3 e g=0,08 il margine vale ~0,076 N per elemento: la TCN deve tenere il suo eccesso sotto ~0,038 N, cioè l'equivalente di
+~1.500 parametri efficaci per giunto (0,038·118.000/3), di cui ~385 per la parte affine. T si descrive con 3.932 parametri condivisi
+fra 20 giunti (~200 per giunto): in regime favorevole il 50% è plausibile, con K>=6 diventa stretto. Dipende da quanto regolarizza
+l'arresto con AdamW: è una misura, ed è proprio ciò che il controllo deve misurare. Nessuna correzione richiesta al disegno.
+
+=====================================================================================================================
+4. RISPOSTE ALLE DOMANDE CHIAVE
+=====================================================================================================================
+(1) Condizioni univoche? Quasi tutte sì: metrica, riferimento, fold e pooled, margine e conseguenza sono scritti per la
+    calibrazione (PROT:90-92), il cancello lineare (PROT:95) e il cancello temporale della TCN (PROT:96), con pareggi ordinati
+    (PROT:92). Eccezione: «MLP non deve vincere il temporale» (controlli-2), non definito e in contrasto con PJ:441. Dettagli
+    implementativi da fissare: controlli-9. Nomi da allineare: controlli-8.
+
+(2) Soglie raggiungibili da un buon lettore con 20 utenti? Dipende dall'ancora.
+    - Se E_real fosse ~0,78-0,85, la WLS esatta passerebbe il 90% lineare nella maggior parte dei casi (tabella in
+      conti_calibrazione.py: E_real 0,80 -> R 0,91-0,98 su MSE ed E_dyn; 0,85 -> fallisce solo f'=1, sigma=2,5, R_MSE 0,898).
+    - Ma E_real del protocollo è la WLS non regolarizzata a 10 utenti: dai numeri pinnati è plausibilmente 0,84-1,16, più
+      probabilmente sopra 0,9 (conti_E_real.py). Lì il cancello lineare è irraggiungibile anche per la forma chiusa, oppure
+      il controllo non si calibra, e il temporale spesso non si calibra (controlli-1).
+    - Errore di stima atteso (forma chiusa): eccesso dinamico della WLS X = sigma²·p·K_dyn/n, con p=384, n≈118.000 per giunto,
+      K_dyn 2,5-3,5 per l'AR(1) dato; recupero lineare R_dyn = 1 − x·E_or/(1−E_or), con x = p·K_dyn/(c_n·n) ≈ 0,009-0,012:
+      E_or 0,75 -> 0,96-0,97; 0,85 -> 0,93-0,95; 0,90 -> 0,89-0,92; 0,95 -> 0,77-0,84.
+    - Il 50% della TCN: plausibile in regime favorevole, stretto con K>=6; va misurato (controlli-12).
+
+(3) Fallimento da campionamento distinguibile da difetto della ricetta? In parte.
+    - Temporale: la banda della LS sugli held outer verifica che il margine ci sia (PROT:96), ma è spostata in basso
+      (controlli-4); manca un riferimento che dica se il 50% è raggiungibile.
+    - Lineare: nessun riferimento; un cancello irraggiungibile per la classe diventa «ricetta non ammessa» (controlli-1).
+    - Le etichette sono prudenti («causa non attribuita automaticamente a ottimizzazione», PROT:98) e la conseguenza è uno stop,
+      non un verdetto scientifico. Il requisito «per fold e sul pooled, tutte» (PROT:94) aumenta il rischio da campionamento:
+      con 20 utenti per held basta una direzione sfortunata. Numeratori e denominatori sono previsti solo per il temporale
+      (PROT:96): chiederli anche per il lineare.
+
+(4) Quante condizioni devono essere tutte vere? CALCOLATO dal testo:
+    - calibrazione: 4 esistenze di una coppia ammissibile (2 controlli × 2 direzioni), più normalizzazioni non degeneri e
+      verifiche numeriche delle WLS;
+    - diagnosticità: banda temporale della LS su fold 0, fold 1 e pooled = 3;
+    - qualificazione: lineare 3 teste × 2 metriche × 3 valutazioni = 18; TCN temporale × 3 = 3; clausola MLP × 3 se cancello;
+    - allarmi di §4.2 assenti per 6 combinazioni testa-controllo (LR al bordo esteso, primo quarto d'epoca, minimo di MSE o
+      E_dyn nelle ultime 5 epoche dell'orizzonte massimo).
+    Totale 34 condizioni sostanziali (37 con la clausola MLP), molte correlate. Tre meccanismi indipendenti dalla ricetta
+    (controlli-1, controlli-3, controlli-4) rendono un arresto plausibile anche con una ricetta buona; con E_real>=0,9
+    diventa probabile.
+
+(5) Criterio legato al guadagno piantato, come chiedeva 8d34f9c? Sì nella forma (C-9): quota del margine LS->oracolo
+    del 6-10% e recupero >=50%; 90% del margine costante->oracolo nel lineare. Due limiti: il margine contiene anche la parte non
+    lineare istantanea di T (controlli-2) e l'errore di stima della LS (controlli-4), quindi non è tutto «temporale».
+
+(6) Combinazione lineare sui RHS-base corretta? Sì per soluzioni e predizioni (C-7). Soglie dinamiche ed E_dyn non sono
+    lineari in (a, sigma): vanno ricalcolate per coppia dai momenti per finestra; il testo lo prevede (controlli-9 per il test).
+
+(7) Fughe d'informazione? Nessuna verso o dai 15 utenti di sviluppo; nessun parametro del mondo scelto sugli held outer (C-5).
+    I target reali entrano solo tramite E_real, sui 20 utenti di fitting outer. Due precisazioni: le teste di controllo scelgono
+    LR ed epoca sugli held outer dove poi si valutano (controlli-5); la normalizzazione di L e T usa tutti i 20 utenti di
+    fitting outer, compresi i 10 inner held della calibrazione (effetto trascurabile: è solo centro e scala per giunto, assorbiti
+    da intercetta e coefficienti).
+
+=====================================================================================================================
+5. VERDETTO SUL PUNTO 3
+=====================================================================================================================
+BLOCCO. Il disegno dei controlli positivi è finito, senza fughe e ben collegato al guadagno piantato; generatore, rumore,
+oracolo, semi, conseguenze e combinazione dei RHS reggono (C-1...C-13). Restano due bloccanti, entrambi correggibili senza
+cambiare l'impianto e senza nuove misure:
+- controlli-1 (disegno): l'ancora E_real è la WLS non regolarizzata a 10 utenti; dai numeri pinnati è plausibilmente 0,84-1,16;
+  allora la calibrazione fallisce o porta il controllo lineare dove nemmeno la forma chiusa passa il 90%, e lo stop verrebbe
+  attribuito alla ricetta. Serve un'ancora regolarizzata o fissata ora, più una verifica di diagnosticità del controllo
+  lineare simmetrica a quella temporale.
+- controlli-2 (testo): «MLP non deve vincere il temporale» è un cancello nel protocollo e un descrittivo nel JSON, senza
+  definizione.
+Minori da correggere prima del congelamento: controlli-3 (griglie rade), controlli-4 (banda outer spostata). Note: controlli-5
+... controlli-12. Le verifiche di raggiungibilità del 50% e i valori veri di E_real, f' e K restano a implementazione e
+benchmark.

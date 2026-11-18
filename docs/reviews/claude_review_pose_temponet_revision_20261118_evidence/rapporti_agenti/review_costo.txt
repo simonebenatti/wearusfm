@@ -1,0 +1,269 @@
+RAPPORTO DIMENSIONE «costo» — punto 6 della richiesta di GPT del 18/11/2026
+Revisore: subagente di Claude. Snapshot letto: gpt_3e007c8 (consegna 3e007c8, contenuti 62348ab).
+Base di confronto: gpt_c15aac9. Nessun esperimento, nessun accesso al cluster.
+Riferimenti di riga: protocollo = docs/pose_temponet_frozen_protocol_20261117.md dello snapshot 3e007c8;
+risposta = docs/reviews/pose_temponet_response_20261118.md; JSON = results/infra/pose_temponet_proposal_20261117/.
+Rapporto scritto man mano.
+
+======================================================================================================
+0) IDENTITA' DEI MATERIALI
+======================================================================================================
+- ESEGUITO: sha256 e byte dei 9 file dello snapshot contro delivery_pin_20261118.json: 9 su 9 uguali
+  (protocollo 05a9eb09..., proposal.json f3b92c4a..., risposta 076d35f1..., analytic_checks 4ee7d920...).
+- ESEGUITO: git diff --stat 62348ab 3e007c8: solo docs/claude_GPT_shared, docs/decisioni.md e delivery_pin_20261118.json.
+  I contenuti scientifici sono quelli di 62348ab, come dichiarato.
+- Script dei conti: work_costo/conti_costo.py; uscita completa: work_costo/conti_costo_output.txt.
+  Copie lette dal repository (git show, sola lettura): work_costo/extraction_plan_19618.json (sha256 a01799f8..., uguale a
+  3e007c8:results/infra/tokenizer_evaluation_20261103/extraction_plan_19618.json), work_costo/LONG-FIT-G49046-pose-20261105.json
+  (sha256 b08e6e32..., uguale al pin historical_fit_receipt_sha256 di proposal.json), work_costo/train_subset.provenance.json,
+  work_costo/LONG-G49046-pose-train-20261105.json.
+
+======================================================================================================
+1) CONFERME (cose verificate che reggono)
+======================================================================================================
+
+C-1 Traiettorie 40/60, 48/72, 15; 103/147 -> REGGE.
+- CALCOLATO: combinazioni testa/bersaglio = 5 reali + 2 controlli x 3 teste = 11. CV reale 5x4x2 = 40, max 5x6x2 = 60;
+  controlli 2x3x4x2 = 48, max 2x3x6x2 = 72; rifit 5x3 = 15. Totali 103 e 147 (conti_costo_output.txt, sezione 1).
+- LETTO: protocollo riga 102 «103 traiettorie iniziali, massimo147»; proposal.json fit.new_total_trajectories_initial/max 103/147.
+
+C-2 Aggiornamenti 531.000 / 1.458.000 e limiti 537.600 / 1.477.800 -> REGGE.
+- CALCOLATO con la formula 11*L*E*(S0+S1)+15*E*Sfull: 11x4x150x60 + 15x150x60 = 396.000 + 135.000 = 531.000;
+  11x6x300x60 + 15x300x60 = 1.188.000 + 270.000 = 1.458.000; con S0+S1 = 61: 537.600 e 1.477.800.
+- ESEGUITO: massimo di ceil(a/32)+ceil((1907-a)/32) su tutte le divisioni a+b = 1907: 61; ceil(1907/32) = 60. I limiti 61/60
+  valgono per qualunque divisione dei fold, anche senza i conteggi veri.
+- I conteggi veri per fold NON sono in proposal.json ne' nei manifest letti: il riferimento pilota ha solo i 200 record per
+  registrazione (100 per fold, ESEGUITO sulle fold_users della ricevuta storica), non le finestre per fold. Il protocollo (riga 57)
+  rimanda «liste/hash e conteggi» al manifest prima dei fit. Il limite non ne dipende.
+- LETTO train_subset.npz.provenance.json (3e007c8, extraction_metadata/B/pose): n_windows 1907, n_windows_with_valid_pose 1854.
+  La cache 49046 ha la stessa firma di metadati/target/maschera del riferimento pilota: il lettore storico lo impone
+  (3e007c8:scripts/consolidation_long_pose.py:151-153, «historical metadata/target/mask/std/pose_var mismatch»); stessa metadata
+  sha256 b270cdd3... nella ricevuta di estrazione 49046 e nel benchmark del pose_slots. CALCOLATO: con al massimo 1854 finestre
+  supportate Sfull <= 58 e S0+S1 <= 59, limite massimo 1.429.200: quello dichiarato (1.477.800) copre con circa 3% di margine.
+
+C-3 Valutazioni 40.128 + 37 -> REGGE.
+- CALCOLATO: 132 traiettorie CV x (300 epoche + 3 quarti + passo 0) = 132 x 304 = 40.128; diagnostici 11 x 2 + 15 = 37.
+- LETTO: protocollo riga 102; proposal.json fit.internal_fold_evaluations_max 40128, selected_fitting_evaluations_max 37.
+
+C-4 GPU-ore a priori 0,61-2,76; 1,68-7,59; 3,37-15,19 -> REGGE come aritmetica.
+- CALCOLATO: 537.600 x 4,1 ms = 0,6123 h; x 18,5 ms = 2,7627 h; 1.477.800 x 4,1 ms = 1,6831 h; x 18,5 ms = 7,5942 h;
+  raddoppiati 3,3661 e 15,1885 h. Per il contenuto (che cosa esclude) vedi costo-1.
+
+C-5 Tabella delle fasi e totali 24 / 80 / 272, riserva -> REGGE, coerente fra protocollo e JSON.
+- ESEGUITO sulle 8 fasi di proposal.json: per ognuna cpus x ore = allocated_core_hours_cap, gpus x ore = gpu_hours_cap,
+  ore locali = core-ore allocate. Somme: GPUh 0,5+20+1 + riserva 2,5 = 24; CPU-only 0,5+4+64+8+0,5 + riserva 3 = 80;
+  allocate 249 + riserva (2,5x8+3 = 23) = 272 = 24x8 + 80. RAM per fase uguali al protocollo (righe 164-172).
+- LETTO: il billing dichiarato corrisponde alle AllocTRES storiche: 3e007c8:results/infra/consolidation_20261104/benchmark/
+  sacct.txt:1 «billing=8,cpu=8,gres/gpu=1»; consolidation_long_20261105/execution/accounting/sacct_benchmark.tsv:3
+  «billing=8,cpu=8» per un job solo CPU a 8 core; consolidation_20261104/final_20261105/sacct.txt:3 «billing=2,cpu=2».
+
+C-6 Job seriali 03:57:00 + 180 s e limiti della coda -> REGGE.
+- CALCOLATO: 03:57:00 + 180 s = 4,000 h; 2 job x 8 CPU x 4 h = 64 core-ore = tetto della fase WLS.
+- LETTO fccf88d:.../recovery-v3-reread-20261109/remote_listing.txt righe 123 e 127: lrd_all_serial MaxTime=04:00:00,
+  DefMemPerCPU=3850; 8 x 3850 = 30.800 MB. 24 GiB = 24.576 MiB, sotto il limite. boost_usr_prod DefMemPerCPU=15400 (riga 119):
+  8 x 15.400 = 123.200 MB per un job da 8 core; 32 GiB e' sotto, e sotto 1/4 del nodo da 512 GB.
+- CALCOLATO: 7 job CPU-only bastano per checkout/preflight (1-2), benchmark CPU (1), WLS (2), metriche (1), raccolta (1).
+  40 job GPU x 180 s = 2 h, gia' dentro le 20 h della fase (riga 175: l'overhead non si conta due volte).
+
+C-7 Saldo storico e imputazione -> REGGE.
+- LETTO fccf88d remote_listing.txt riga 190 (sezione «=== saldo»): total 2000000, consumed 1308137. CALCOLATO: 691.863; 272/691.863 =
+  0,03931%; residuo 691.591. Data: commit fccf88d del 09/11 alle 12:22, titolo «(09/11, 12:21)». Dichiarato storico (riga 179).
+
+C-8 Gate GPU e gate CPU meccanici come chiedeva P-1 -> REGGE.
+- LETTO riga 181: 1 epoca di warmup esclusa, 10 epoche temporizzate, mediana e p95 con interpolazione lineare esplicita (statistica).
+- LETTO riga 187: proiezione 1.25*(parte fissa + buffer di una vista val e un batch) con surrogato train delle dimensioni della val,
+  soglie 24/32/48 GiB (memoria).
+- LETTO righe 63 e 181: contesto numerico pinnato e identico fra benchmark e fit; stessi loader, posizione dei file, flag, thread
+  e hardware (impostazioni numeriche).
+- LETTO riga 183: formula 2*(epoche*p95 + eval*p95 + I/O + avvii + salvataggi) sulla matrice massima, soglia 20 GPUh, packing
+  entro lo stesso tetto; inferenza 2x <= 1 GPUh. Riga 185: WLS/calibrazione <= 64 core-ore e ogni job <= 4 h, report <= 8.
+  Se un gate fallisce nessun fit neurale. I tre punti mancanti in P-1 sono tutti presenti.
+
+C-9 Memoria -> REGGE, con margini larghi.
+- CALCOLATO: R (o Gram) 4993^2 float64 = 199.440.392 B = 190,2 MiB; x20 = 3,715 GiB (protocollo riga 80, risposta §4.2 riga 130).
+- LETTO provenance del riferimento train: n_rows_partial_joints 0 e n_valid_per_joint uguale (260.163) per tutti i 20 giunti:
+  le maschere sono comuni ai giunti. Con la stessa firma della cache 49046 (C-2), ogni disegno ha un solo pattern di pesi:
+  un R da 190 MiB per disegno, non 3,7 GiB. Il caso a 20 pattern e' un limite prudente.
+- LETTO LONG-BENCH-pose (3e007c8, receipts): valid_fit_elements 4.813.620 per i 40 utenti, cioe' 240.681 righe per giunto;
+  circa 120.000 per fold. CALCOLATO: un disegno L13 di un fold materializzato in float64 = circa 4,5 GiB; con TSQR a blocchi
+  bastano R e un blocco. Entro 24 GiB anche senza blocchi.
+- CALCOLATO: vista val FP16 2,12 GiB (FP32 4,25 GiB), vista train FP16 0,22 GiB. Host GPU 32 GiB e VRAM 48 GiB larghi.
+  La proiezione storica di picco per la val sul percorso CPU era 13,45 GB (LONG-BENCH-pose, projected_peak_rss_bytes).
+- CALCOLATO: 15 predizioni 18.548x160x20x4 B = 3.561.216.000 B = 3,31664 GiB; tetto 8 GiB; quota WORK 12 GiB = 8 + 4.
+- CALCOLATO: cache 5.068.390.194 B = 4,7203 GiB; con i tre riferimenti WORK 5.720.939.041 B = 5,3280 GiB (righe 53 e
+  analytic_checks).
+
+C-10 Pin delle dipendenze -> REGGE.
+- ESEGUITO: in proposal.json scratch_dependencies, percorso e sha256 di pose_stats.json e percorso, sha256, byte, finestre, utenti,
+  registrazioni di train_subset.npz (257.675.076 B) e val.npz (2.485.295.825 B) uguali a extraction_plan_19618.json, il
+  source_manifest citato. stats_sha256 = 757f2aee... come la checkpoint_guard della ricevuta di estrazione 49046.
+- ESEGUITO: sha256 e byte delle due cache e dei tre riferimenti WORK di proposal.json uguali alla ricevuta storica
+  LONG-FIT-G49046-pose (2930d7d), che li riporta con i percorsi SCRATCH; source_path dei riferimenti uguali.
+- ESEGUITO: gli stessi cinque sha256 e byte compaiono nell'inventario della copia su WORK (424f0ec, .copy.sha256 e .copy.sizes;
+  job 63781257, «sha256 identici»). Anche i report.json delle due cache sono nella copia WORK.
+- ESEGUITO: sha256 di scientific_readout.json (ancora pre-ridge) = 4f10f678..., uguale al pin di proposal.json.
+
+C-11 Rinfresco del 12/11 e perimetro -> REGGE (i tre file SCRATCH ci rientrano).
+- LETTO 47ca96e:scripts/slurm/refresh_scratch.sbatch (sha256 5ad03da2..., come nel messaggio di commit): perimetro predefinito
+  data/raw, data/processed, wearusfm_runs, external; per ogni voce di primo livello «find -L "$d" -exec touch -c {} +».
+- LETTO 47ca96e:results/infra/scratch_refresh_20261112/refresh_scratch_64280872.log: «data/processed/emg2pose_pose:
+  file=75760 ... ancora_vecchi_dopo=0» (contiene pose_stats.json) e «wearusfm_runs/results: file=972 ... ancora_vecchi_dopo=0»
+  (contiene results/pilot_posa/B19618_20261028/B/pose/). Fine «cartelle con problemi = 0».
+- CALCOLATO: 12/11 + 40 giorni = 22/12/2026; un giro il 03/12 porterebbe al 12/01/2027.
+- LETTO 3e007c8:docs/decisioni.md:1332: calendario D9 «(22/10, 12/11, 03/12, 24/12), ogni giro autorizzato da Simone». Quindi
+  «rinfresco03/12 non promesso da questo piano» (riga 189) e' corretto: ogni giro chiede un via.
+- LETTO: il fermo 23/11 08:00 - 25/11 08:00 e' quello di CLAUDE.md; il protocollo non promette completamenti (riga 191).
+
+C-12 Disposizioni di costo della risposta presenti nel protocollo o nel JSON -> REGGONO (eccezioni parziali in costo-1 e costo-6
+     di questo rapporto). Qui gli ID fra virgolette sono quelli della review 32e5452, non quelli di questo rapporto.
+- P-1 «costo-1»: C-8. Nota 35 «costo-2» (walltime+180 s): riga 175. Nota 36 «costo-3» (fasi nel JSON): resource_proposal.phases.
+  Nota 37 «costo-4» (stima a priori e saldo datato): righe 177-179, incompleta per le valutazioni (costo-1 qui). Nota 38 «costo-5»
+  (misure del benchmark CPU): riga 185 e time_statistic.timed. Note 40 e 43 «costo-8» e «costo-consegna-N1» (SCRATCH): riga 189
+  e scratch_dependencies. Nota 41 «costo-9» (preflight): riga 191 e operator_preflight_required. Nota 42 «costo-10» (riserva non
+  retry): riga 175 e reserve_use. Nota 39 «costo-7»: fermo e corsia nel preflight, ma non «per fase» (costo-6 qui).
+  Nota 16 «selezione-4» (60 passi nel rifit): riga 70. Nota 19 «selezione-7» (byte): riga 53. Nota 21 «selezione-9» (passi
+  contati nel benchmark): righe 55 e 102. Nota 47 «consegna-7» (costo di B): riga 142.
+
+C-13 Tetti dei benchmark, dell'inferenza e della WLS -> REGGONO, larghi anche con l'analogo pessimistico.
+- CALCOLATO (stime analitiche, non misure): benchmark GPU, 5 teste x (11 epoche fold da 30 passi + 11 full da 60) = 4.950 passi,
+  piu' circa 1.650 batch di eval e 2.900 batch del surrogato val: circa 9.500 batch x 18,5 ms = 176 s; con avvio e I/O pochi
+  minuti, sotto le 0,5 h meno 180 s. Inferenza: 15 modelli x ceil(18.548/32) = 8.700 batch x 18,5 ms = 161 s, raddoppiati 5,4
+  minuti piu' decompressione e scrittura di 3,32 GiB: sotto 1 GPUh.
+- CALCOLATO: WLS L13 per fold, TSQR 2 x 120.000 x 4993^2 = 6,0e12 flop, SVD di R circa 22 x 4993^3 = 2,7e12 flop; due fold
+  circa 1,7e13 flop. Con un'ipotesi di 20-100 GFLOP/s effettivi su 8 core: 3-15 minuti. I disegni L0 (385 colonne) sono
+  trascurabili; la calibrazione combina soluzioni gia' calcolate (riga 90). Il tetto di 64 core-ore e' molto largo; resta una
+  misura del benchmark CPU, come scrive la riga 177.
+
+======================================================================================================
+2) RILIEVI
+======================================================================================================
+
+costo-1 (minore; tipo testo, con una scelta d'implementazione e la verifica al benchmark)
+La stima a priori del §9 esclude le valutazioni held e usa come estremo basso un tempo non deterministico. Con l'analogo
+deterministico, l'unico pertinente ai flag del §4.2, il gate di 20 GPUh puo' non passare.
+- Posizione: protocollo riga 177 («3,37–15,19GPUh **prima di validation/I/O**»), riga 183 (gate), riga 63 (flag deterministici),
+  riga 65 (valutazione held a ogni epoca); proposal.json resource_proposal.a_priori_timing.
+- Prove.
+  LETTO 8917e2a:docs/claude_GPT_shared:8492-8495 (ramo Claude): 18,5 ms per passo in eager con deterministic=True; «senza vincolo
+  4,1 ms in eager». Il §4.2 (riga 63) impone use_deterministic_algorithms(True) e cuDNN deterministic=True, e vieta di cambiare
+  i flag. L'estremo 4,1 ms riguarda quindi una modalita' che il protocollo esclude.
+  CALCOLATO: con batch di valutazione 32, le 40.128 valutazioni held sono al massimo 11 x 6 x 304 x 61 = 1.223.904 batch, piu'
+  1.571 batch dei 37 forward sul fitting: 0,83 volte i 1.477.800 passi di training; a pari tempo per batch il 45% del gate.
+  CALCOLATO, gate raddoppiato a 18,5 ms per passo, prima di I/O, avvii e salvataggi: 27,78 GPUh se un batch di valutazione costa
+  come un passo; 21,49 se costa meta'; 19,39 se costa un terzo. Margini rispetto a 20 GPUh: -7,78, -1,49, +0,61.
+  Con 40 job, 40 x 180 s = 2 h del tetto vanno al packing (riga 175): restano circa 18 h.
+  CALCOLATO, tempo di pareggio per batch: 13,3 ms (valutazione = passo) o 19,1 ms (valutazione = 1/3); con 18 h utili 12,0 e 17,2 ms.
+  A 4,1 ms il gate sarebbe 4,3-6,2 GPUh.
+- Controesempio minimo (non bloccante: il gate ferma, non produce conclusioni sbagliate). Testa a 18,5 ms per passo, valutazione
+  held a batch 32 che costa meta' di un passo: proiezione raddoppiata 21,5 GPUh > 20. Il gate ferma l'attivita' prima di ogni fit,
+  e serve una nuova decisione. Il testo letto da Simone (solo update, al piu' 15,19 GPUh) lasciava pensare a un margine.
+- Correzione.
+  (testo) Nella riga 177 aggiungere il termine delle valutazioni e dire quale analogo corrisponde ai flag del §4.2. Per esempio:
+  «a pari tempo per batch, le valutazioni held aggiungono fino a 1,22 milioni di batch; con l'analogo deterministico (18,5 ms) il
+  gate andrebbe a circa 19-28 GPUh e potrebbe fermare l'attivita'; 4,1 ms e' un tempo senza vincolo deterministico».
+  (implementazione) Fissare nel pacchetto operativo il batch della valutazione held, uguale in benchmark e fit. Con un batch
+  grande (per esempio l'intero fold tenuto fuori, circa 950 finestre: 11-15 GMAC, input FP32 circa 234 MB) il termine diventa
+  trascurabile. Oggi il protocollo fissa il batch 32 solo per il training (riga 63).
+  (benchmark) La cifra vera resta quella del gate misurato; nessun cambio al disegno del gate.
+
+costo-2 (nota; tipo disegno e testo)
+Con l'ordine dei passi 2-4 del §4.2 il sesto LR non si raggiunge: al piu' 5 LR per combinazione. Il massimo dichiarato copre il
+caso peggiore, ma il gate proietta una matrice irraggiungibile.
+- Posizione: protocollo righe 66-68 e 102, riga 183 («matrice massima 6LR300»); proposal.json fit.extensions.max_lrs 6;
+  analytic_checks.json, chiave claude_1260000_max_updates_superseded.
+- Prove.
+  LETTO riga 67: selezione unica del minimo MSE fra tutti i checkpoint ammessi. Riga 68: «Se vince il bordo inferiore/superiore
+  della griglia attiva, aggiungere [...] una volta per lato [...] Dopo ogni aggiunta si ricalcola la selezione».
+  Ragionamento: un'aggiunta porta solo candidati nuovi. Il vincitore nuovo e' il vecchio (ora interno) oppure il LR aggiunto, che
+  sta sullo stesso lato. Il LR del bordo opposto non vinceva prima e non puo' vincere dopo. Con continuazioni (passo 2) prima della
+  selezione (passo 3) e del bordo (passo 4), ogni combinazione arriva al piu' a 4+1 = 5 LR.
+  CALCOLATO: massimo raggiungibile 11 x 5 x 2 = 110 traiettorie CV + 15 rifit = 125 (non 147); limite degli update
+  11 x 5 x 300 x 61 + 15 x 300 x 60 = 1.276.500 (non 1.477.800); valutazioni held 110 x 304 = 33.440 (non 40.128).
+  CALCOLATO: il 1.260.000 di Claude (testo per GPT del 17/11 sera) e' 11 x 5 x 300 x 60 + 15 x 300 x 60, cioe' proprio questo
+  massimo raggiungibile a 30 passi per fold. La chiave di analytic_checks lo dice «superseded».
+  CALCOLATO: a 18,5 ms con valutazione = 1/2 passo, prima di I/O, avvii, salvataggi e packing, il gate da' 21,49 GPUh con 6 LR
+  (non passa) e 18,37 con 5 LR (passa se il packing usa meno di 1,6 h, cioe' meno di 33 job).
+- Effetto: nessun rischio di sottostima. Rischio di un arresto al gate per una matrice che non puo' accadere.
+- Correzione (scelta da fare prima della firma). O dichiarare che 6 e' un tetto formale non raggiungibile con l'ordine scritto e
+  tenere il gate prudente sapendolo; oppure calcolare il gate sulla matrice raggiungibile (5 LR, 125 traiettorie, 33.440
+  valutazioni). Se invece si vuole controllare il bordo anche prima delle continuazioni, va scritto: allora 6 diventa raggiungibile
+  e cambiano anche gli stadi del piano. In analytic_checks rinominare la chiave: il conto di Claude non e' superato, e' il massimo
+  raggiungibile; quello di GPT e' un limite piu' largo. Questo punto tocca anche il punto 2 della richiesta (ricetta).
+
+costo-3 (nota; tipo implementazione, con un ritocco di testo)
+L'elenco delle dipendenze e' giusto per il disegno, ma i validatori storici, se riusati invariati, aprono anche altri file.
+- Posizione: protocollo riga 189 («Le cache/predizioni principali sono suWORK, ma pose_stats.json e i riferimenti B19618 [...]
+  aperti dai validatori storici, sono suSCRATCH»); proposal.json caches, references, scratch_dependencies.
+- Prove.
+  LETTO 3e007c8:results/infra/consolidation_long_20261105/execution/manifests/cache_manifest.json, voce pose.49046: cache e
+  report.json di train e val hanno percorsi /leonardo_scratch/.../consolidation_long_20261105/49046/pose/. Il lettore storico
+  _read (3e007c8:scripts/consolidation_long_pose_runtime.py:90-93) prende la cache da quel manifest.
+  LETTO 3e007c8:scripts/consolidation_long_common.py:114-121: load_context verifica tutti i legacy inputs del piano 19618. Oltre a
+  pose_stats.json (SCRATCH) sono passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz, passo6/loader_59623700/session_scales.json,
+  passo6/window_seconds_59425316.json e data/raw/emg2pose_mini/emg2pose_metadata.csv, su WORK (work_costo/extraction_plan_19618.json).
+  LETTO 5ecead9:results/infra/storage_move_20261106/outcome_october_20261106.log: le quattro cartelle di passo6 spostate su
+  SCRATCH il 06/11 sono step2c_1410, step1_downstream_0910, step1_random_20261014_r3 e step2a_20261014. I tre file di passo6
+  sopra non sono fra queste: restano su WORK.
+  ESEGUITO: la provenienza delle copie WORK (424f0ec, job 63781257) non e' citata in proposal.json; i report.json WORK delle cache
+  sono nella copia (sha256 27297241... e 1321038a...) ma non sono pinnati.
+- Rischio: se il codice futuro risolve le cache con il manifest storico, la dipendenza da SCRATCH si allarga alla LONG_ROOT su
+  SCRATCH (rinfrescata il 12/11, stessa scadenza dal 22/12). Se riusa load_context, quattro file WORK in piu' diventano prerequisiti.
+- Correzione: nel pacchetto operativo elencare ogni file aperto (percorso, sha256, area) e leggere le cache dai pin WORK di
+  proposal.json, non dal manifest storico. Facoltativo nel testo: citare 424f0ec come ponte SCRATCH -> WORK. Non tocca il disegno.
+
+costo-4 (nota; tipo testo, con un controllo operativo)
+Rinfresco e finestra di esecuzione: la condizione «solo se realmente applicato» ha gia' una prova.
+- Posizione: protocollo riga 189 («Il rinfresco12/11 riportato da Claude implica scadenze da22/12 solo se realmente applicato»);
+  proposal.json scratch_dependencies.refresh.
+- Prove: C-11. Il giro del 12/11 e' documentato in 47ca96e (ramo worktree-claude-training-engine, non antenato di 3e007c8): i
+  tre file stanno dentro voci con «ancora_vecchi_dopo=0». Scadenza dal 22/12; il giro del 03/12 e' nel calendario D9 ma chiede
+  un via di Simone (decisioni.md:1332).
+- Rischio: il protocollo controlla gli hash al preflight (riga 191). Se la catena attraversa il 22/12 senza il giro del 03/12, un
+  job successivo che riapre i file si ferma a meta' (riga 104: pin diversi fermano la fase). Nessuna conclusione sbagliata.
+- Correzione: citare 47ca96e al posto del condizionale; nel piano operativo ricontrollare i tre file prima di ogni fase che li
+  apre, e chiudere la catena prima del 22/12 se il giro del 03/12 non e' autorizzato.
+
+costo-5 (nota; tipo testo)
+Il gate CPU conta «calibrazione25combinazioni», ma la griglia ne ha 30 per direzione outer.
+- Posizione: protocollo riga 185 e riga 90 («a={0.2,0.4,0.6,0.8,1}, sigma={1,1.5,2,2.5,3}; lineare a=0 con la stessa griglia
+  sigma»).
+- CALCOLATO: 5 x 5 = 25 coppie temporali + 5 lineari = 30 per direzione, 60 in tutto. Il costo e' trascurabile (combinazioni
+  lineari di soluzioni gia' fattorizzate), ma il gate dovrebbe nominare anche le 5 lineari.
+
+costo-6 (nota; tipo testo)
+Ordine delle fasi e controllo della corsia seriale.
+- Posizione: tabella righe 164-172 (WLS prima del benchmark GPU) contro riga 185 («Dopo i gate risorse si eseguono WLS/calibrazione
+  e qualificazione»); risposta riga 73 (nota 39: «disponibilità della corsia controllata per fase») contro protocollo riga 191 e
+  proposal.json operator_preflight_required, dove la corsia compare solo nel preflight.
+- Effetto: la tabella non e' l'ordine di esecuzione. Se si eseguisse la WLS prima del gate GPU, un gate GPU fallito sprecherebbe
+  fino a 64 core-ore. La disposizione della nota 39 dice «per fase», il protocollo no.
+- Correzione: una frase con l'ordine (benchmark CPU e GPU, gate, WLS/calibrazione, controlli, fit reali, rifit, inferenza,
+  metriche) e «corsia seriale ricontrollata prima di ogni fase CPU».
+
+costo-7 (nota; tipo testo; tocca anche il punto della selezione)
+La disposizione della nota 20 manda le liste dei fold in proposal.json, che pero' contiene solo la regola.
+- Posizione: risposta riga 54 (nota 20, selezione-8: «Conservare liste esplicite [...] proposal.json»); proposal.json
+  fit.cv_folds = «alternating sorted train users, exactly two disjoint 20-user folds»; protocollo riga 57 («liste/hash e conteggi
+  fissati nel manifest prima dei fit»).
+- Prove: ESEGUITO grep di un ID train (03d49b393e) in proposal.json e nel protocollo: 0 occorrenze. ESEGUITO: le fold_users
+  della ricevuta storica LONG-FIT-G49046-pose (fit.selection) sono 20 + 20 e coincidono con gli ID ordinati presi ad indici
+  alterni ([::2] e [1::2]) dei 40 utenti del riferimento train.
+- Effetto sul costo: nessuno, i limiti di C-2 valgono per ogni divisione. Le finestre per fold restano ignote fino al manifest.
+- Correzione: mettere le due liste in proposal.json, oppure correggere la destinazione della disposizione («nel manifest prima
+  dei fit», come la riga 57).
+
+======================================================================================================
+3) VERDETTO SUL PUNTO 6
+======================================================================================================
+CONVERGE_CON_CORREZIONI. Nessun bloccante.
+- L'aritmetica regge tutta: traiettorie, update, valutazioni, GPU-ore a priori, fasi, totali 24 / 80 / 272, riserva, billing,
+  job seriali, saldo e imputazione (C-1...C-7). Il gate e' meccanico come chiedeva P-1 (C-8). Memoria larga (C-9). Pin e
+  perimetro del rinfresco verificati (C-10, C-11). Il massimo dichiarato copre il caso peggiore, anzi lo supera (costo-2).
+- Una correzione minore di testo prima della firma (costo-1): la stima a priori va completata con le valutazioni held e con
+  l'analogo pertinente ai flag deterministici. Con 18,5 ms per passo il gate puo' fermare l'attivita' (19-28 GPUh contro 20).
+  Conviene fissare nel pacchetto operativo il batch della valutazione held.
+- Note: matrice a 6 LR irraggiungibile (costo-2), dipendenze effettive dei validatori storici (costo-3), condizionale sul
+  rinfresco e controllo per fase (costo-4), 25 contro 30 combinazioni (costo-5), ordine delle fasi e corsia seriale (costo-6),
+  liste dei fold (costo-7).
+- Distinzione richiesta da GPT: disegno = scelta su costo-2 (matrice del gate); testo = costo-1, costo-4, costo-5, costo-6,
+  costo-7; implementazione = batch della valutazione (costo-1) e file aperti (costo-3); benchmark = cifra vera del gate.

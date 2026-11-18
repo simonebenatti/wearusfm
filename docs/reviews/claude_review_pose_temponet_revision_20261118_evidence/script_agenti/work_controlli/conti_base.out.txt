@@ -1,0 +1,21 @@
+rho = exp(-1/4) = 0.7788007830714049
+1-rho^2 = 0.3934693402873666  sqrt = 0.6272713450233213
+Var stazionaria: 1.0
+tempo di correlazione (patch): 4.0 -> ms: 100.0
+n=148: sum_ts rho^|t-s| = 1158.33; Var(media finestra) = 0.0529; c_n = 1-Var = 0.9471; inflazione v_T = S/n = 7.827
+n=124: sum_ts rho^|t-s| = 965.33; Var(media finestra) = 0.0628; c_n = 1-Var = 0.9372; inflazione v_T = S/n = 7.785
+n=160: sum_ts rho^|t-s| = 1254.83; Var(media finestra) = 0.0490; c_n = 1-Var = 0.9510; inflazione v_T = S/n = 7.843
+(1+rho)/(1-rho) = 8.041623328375598
+inflazione AR(phi)xAR(rho) phi=0.0: 1.00
+inflazione AR(phi)xAR(rho) phi=0.5: 2.28
+inflazione AR(phi)xAR(rho) phi=0.8: 4.31
+inflazione AR(phi)xAR(rho) phi=0.95: 6.69
+inflazione AR(phi)xAR(rho) phi=1.0: 8.04
+fold 0: L 20261118, T 20261119, rumore 20261120
+fold 1: L 20262118, T 20262119, rumore 20262120
+parametri T (hidden 8): 3932  di cui pesi: 3872
+parametri g TCN: 64436  + ramo affine 7700 + LN 768 = 72904
+RF: 13
+validi per finestra-giunto (val, dinamiche): 20119920/(8327*20) = 120.81133661582803
+validi per finestra-giunto (val, tutte): 41194560/(16620*20) = 123.93068592057762
+finestre per fold ~ 953.5 ; elementi validi per giunto ~ 118234.0

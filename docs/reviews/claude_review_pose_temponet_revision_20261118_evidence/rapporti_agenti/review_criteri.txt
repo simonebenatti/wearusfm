@@ -1,0 +1,382 @@
+RAPPORTO DEL REVISORE - DIMENSIONE «criteri» (punto 5 della richiesta di GPT del 18/11)
+Oggetto: revisione documentale di GPT 3e007c8 (contenuti 62348ab) rispetto a c15aac9.
+Perimetro: protocollo §5, gate R-1 del §8, tabella del §10; proposal.json (evaluation, fit.failure_states,
+positive_controls.failure); nuova voce GPT del 18/11 in docs/decisioni.md; disposizioni C-1, C-2, C-3, K-1, K-2, K-3,
+R-1, R-2, R-3 e note criteri-* della risposta di GPT.
+Regole: sola lettura, nessun esperimento. Prove marcate ESEGUITO / CALCOLATO / LETTO.
+Abbreviazioni: PROT = gpt_3e007c8/docs/pose_temponet_frozen_protocol_20261117.md; PJ = gpt_3e007c8/results/infra/
+pose_temponet_proposal_20261117/proposal.json; RISP = gpt_3e007c8/docs/reviews/pose_temponet_response_20261118.md;
+DEC = gpt_3e007c8/docs/decisioni.md; REV = review Claude 32e5452 (worktree claude-temponet).
+Cartella di lavoro: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview2/work_criteri/
+
+======================================================================================================================
+0. IDENTITA' DEI FILE LETTI
+======================================================================================================================
+- ESEGUITO: shasum -a 256 sullo snapshot 3e007c8:
+  PROT 05a9eb09a7cd4341184056a93802887a8277bb615400972b1f2d6d2186ec22f7
+  PJ   f3b92c4a8f0aa525fc982632078b6a3d8774ee81838014203c24b4cb47494d9f
+  RISP 076d35f161703d8de5cf2b7456282337a34139d951a72887dfe6f7b58df90d2b
+  Coincidono con delivery_pin_20261118.json e con DEC:6765-6766. CONFERMA.
+- ESEGUITO: git show 2930d7d:results/infra/consolidation_long_20261105/execution/receipts/LONG-FIT-G49046-pose-20261105.json
+  (copia in work_criteri/), sha256 b08e6e321f3803318991b934ff89ddef70493a422f7f3884abd9daa1d5037c14 = PJ
+  source_provenance.historical_fit_receipt_sha256. CONFERMA.
+
+======================================================================================================================
+1. GATE R-1: NUMERI CONTRO LE RICEVUTE STORICHE
+======================================================================================================================
+Testo: PROT:151 «riprodurre ridge 0.7859020004638595 e testa 0.7786289843513977, tolleranza assoluta1e-12», poi
+«8.327 finestre dinamiche,20.119.920 elementi» e «Ritaglio nuove uscite160: `[6:154]`». PJ evaluation.historical_reference_gate
+uguale (dynamic_windows 8327, dynamic_valid_elements 20119920, tolerance 1e-12). DEC:6755 uguale.
+
+CONFERME
+- ESEGUITO: script mio work_criteri/scripts/r1_counts.py sulla ricevuta FIT pinnata (sha256 b08e6e32...037c14),
+  somme per utente del gruppo dinamico:
+    post_ridge   E_dyn=0.7859020004638595  utenti 15, finestre 8327, elementi 20119920, coppie 166540, selezionate 8329
+    trained_head E_dyn=0.7786289843513977  stessi conteggi, stesso support_sha256 973930475e94...
+    pre_ridge    E_dyn=1.0321280032044744 (la ricevuta memorizza 1.0321280032044746: 2e-16, ordine di somma)
+  Gruppo static: 8329 selezionate, 8293 supportate. Gruppo all: 18548 selezionate, 16620 supportate.
+  Quindi 8329 + 8329 = 16658 finestre con pose_var finita e 18548 - 16658 = 1890 non finite: coincide con il
+  verificatore della review 32e5452 (verify_selezione-criteri.txt:243). I numeri del gate sono quelli giusti:
+  8.327 = finestre dinamiche CON supporto centrato, non le 8.329 selezionate dalla soglia.
+- ESEGUITO: scientific_readout.json (sha256 4f10f678...cd9f = PJ historical_pre_ridge_descriptive.source_sha256):
+  49046/post_ridge 0.7859020004638595 IC95 [0.76414, 0.80625]; 49046/trained_head 0.7786289843513977
+  IC95 [0.75734, 0.79878]; 49046/pre_ridge 1.0321280032044744 (= PJ point_E_dyn; PROT:46 «circa1,032128»).
+- LETTO: gpt_3e007c8/scripts/consolidation_long_pose_runtime.py:275 «held["pred"][:, P.OFFSET:-P.OFFSET].astype(np.float64)»;
+  scripts/tokenizer_pose_readout.py:30 «OFFSET, EPS, SEED, N_BOOT, BATCH = 6, 1e-5, 20261102, 2000, 64».
+  Con 160 patch, [:, 6:-6] = [6:154], 148 posizioni, centri 6..153: coincide con il supporto «6<=t e t+6<N_i» di
+  PROT:55. Il ritaglio del gate e' corretto.
+- CALCOLATO: 0,98 x 0,7786289843513977 = 0,7630564046643697 (PROT:124, PJ candidate.trained_head_point_threshold_necessary);
+  a questa E_TCN il gain5 vale 2,0000000000000013 >= 2; rispetto alla ridge (0,7859020004638595 - 0,7630564046643697)/
+  0,7859020004638595 = 2,9069% («circa2,91%» di PROT:124). La soglia vincolante e' quella della testa: il 2% sotto la
+  ridge richiederebbe solo 0,7701839604545823.
+- LETTO: scripts/tokenizer_pose_readout.py:278 «"dynamic": np.isfinite(pv) & (pv >= THRESHOLD)» e :31 THRESHOLD =
+  0.2574231028556824 = PROT:109, PJ support.dynamic_threshold, DEC:6751. Soglia finale storica invariata. CONFERMA.
+
+RILIEVI SUL TESTO DEL GATE (vedi sezione 6, criteri-6)
+- LETTO: gpt_3e007c8/scripts/consolidation_long_pose.py:147 la `pred` della cache deve essere np.float32; il payload
+  trained_head.predictions.npz e' float64 (runtime:275 .astype(np.float64), salvato con np.savez_compressed). PROT:151
+  chiede «stessi dtype/valori»: alla lettera falso per costruzione (FP32 contro FP64). Vale l'uguaglianza esatta dopo il
+  cast FP32->FP64, che e' esatto. PJ dice solo «same validvalues»: corretto.
+- PROT:151 «8.327 finestre dinamiche» non dice «con supporto»: chi conta le selezionate trova 8.329 e ferma la catena.
+- Conseguenza del mancato superamento non scritta in PROT:151 ne' in PJ historical_reference_gate (implicita in
+  «gate» e in PROT:104 «supporti o pin diversi fermano la fase», che non copre un E_dyn diverso con pin e supporti
+  uguali, cioe' un errore del codice delle metriche).
+
+======================================================================================================================
+2. GAIN, QUATTRO ETICHETTE, «PASSA», REGOLA DELLA CANDIDATA
+======================================================================================================================
+CONFERME
+- LETTO: PROT:111 «gain=100*(E_ref−E_TCN)/E_ref»; PJ evaluation.gain_formula «100*(E_ref-E_TCN)/E_ref»; DEC:6751 uguale.
+  Stessa formula della valutazione lunga (gpt_3e007c8/scripts/consolidation_long_pose.py:370 «100*(1-point[candidate]
+  ["E_dyn"]/point[control]["E_dyn"])», identica algebricamente) e di c15aac9:83. Positivo = TCN migliore. CONFERMA.
+- LETTO: PROT:116-120, PJ evaluation.outcome_priority (lista ordinata con «otherwise» in coda), DEC:6753: stesse quattro
+  etichette, stesse condizioni, stesso ordine «prima condizione vera». Gate di qualita' prima delle etichette in tutti e
+  tre (PROT:116, PJ readout_failures «qualityfailures precede scientificlabels», DEC:6753 «Dopo i gatequalità»). CONFERMA.
+- ESEGUITO: work_criteri/scripts/labels_check.py, griglia gain/lower/upper da -6 a 6 passo 0,25 con lower<=upper:
+  60.025 terne, ognuna con esattamente un'etichetta (5.100 / 5.100 / 20.296 / 29.529). Casi chiesti:
+    gain  1,5, IC99 [0,5; 1,9]   -> beneficio_2pct_non_sostenuto
+    gain  1,5, IC99 [0,5; 2,5]   -> inconclusivo
+    gain -1,5, IC99 [-1,9; -0,8] -> beneficio_2pct_non_sostenuto
+    gain  0,0, IC99 [-1,0; 1,0]  -> beneficio_2pct_non_sostenuto
+  La copertura e' completa e l'ordine risolve le sovrapposizioni. Anche il caso raro di stima fuori dall'IC percentile
+  (gain 2,05, IC [0,3; 1,98]) ha un'etichetta sola (la 1, per precedenza; il flag al_bordo_MC scatta). CONFERMA.
+- LETTO: PROT:122 «“Passa” significa esattamente1, non il solo IC sopra zero»; DEC:6753 «“Passa”=primaetichetta»;
+  PJ candidate.iff «contrasts1,4,5 eachbeneficio_pratico_risolto». K-1 chiuso. Lettura di 2 e 3 quando passano:
+  PROT:122 «TCN/MLP passa → vantaggio pratico del contesto», «TCN/L13 passa → vantaggio sulla ricetta lineare
+  temporale, con cautela S-2». CONFERMA.
+- LETTO: regola della candidata identica nei quattro testi: PROT:122 («Necessario e sufficiente ... passano 1,4,5 tutti e
+  né2 né3 ha etichetta deterioramento_pratico», condizionata ai gate comuni e all'ammissibilita' di L0/MLP/L13/TCN-post);
+  PJ candidate.iff; DEC:6753 «Candidata iff»; §10 PROT:203. Esempi C-2 della review 32e5452 (L13 0,730 o MLP 0,735 con
+  TCN 0,750): ESEGUITO labels_check.py, contrasto 3 -2,740 e contrasto 2 -2,041; con upper99<0 sono
+  deterioramento_pratico e bloccano la candidatura. C-2 chiuso nella sostanza. CONFERMA.
+- LETTO: comparatore irrisolto: PROT:104 «senza etichette inferenziali sui contrasti che dipendono da quella testa»,
+  PJ candidate.missing_or_unresolved_comparator «candidacy not established; dependentcontrasts unlabelled». Il
+  mancato accesso non diventa negativo (PROT:122, PJ readout_failures, DEC:6753). CONFERMA.
+
+RILIEVO criteri-1 (minore; disegno) - «risolti migliori» non e' definito e, letto come nel resto del §5, contraddice
+la sufficienza della regola.
+- Posizione: PROT:122 «Se MLP o L13 sono risolti migliori, la TCN non è candidata preferita». «Candidata preferita» non
+  compare altrove. Nello stesso §5 «risolto» vuol dire solo IC che esclude 0: PROT:124 «lower95>0 peggioramento
+  risolto». La regola dichiarata «necessaria e sufficiente» veta invece solo deterioramento_pratico (gain<=-2 e upper99<0).
+  Il registro GPT usa la stessa formula ambigua: gpt_3e007c8/docs/claude_GPT_shared:6007 «conveto seMLP/L13 risolti migliori».
+- Controesempio minimo (CALCOLATO, labels_check.py): E_L0 0,800; E_TCN 0,750; E_L13 0,790; ridge e testa storiche.
+  Gain 1 = +6,25, 4 = +4,568, 5 = +3,677, 3 = +5,06: con IC sopra 0 passano. E_MLP 0,740: gain2 = -1,351 con IC99
+  [-1,9; -0,8] -> etichetta beneficio_2pct_non_sostenuto. Per la regola iff (PJ, DEC, §10) la TCN e' «candidata alla
+  migliore lettura»; per la frase di PROT:122 la MLP e' «risolta migliore» e la TCN non e' «candidata preferita».
+  Due esiti opposti dallo stesso protocollo.
+- Il caso e' realistico. ESEGUITO: in scientific_readout.json i contrasti appaiati sui 15 utenti hanno IC95 stretti:
+  49046/39237 ridge post [2,620; 3,301], testa [2,839; 3,705], semiampiezza 0,34-0,43 punti. Differenze dell'1% fra
+  teste sugli stessi utenti saranno spesso risolte.
+- Variante (CALCOLATO): E_MLP 0,731, gain2 = -2,599 con IC99 [-5,0; +0,3] -> beneficio_2pct_non_sostenuto, nessun veto
+  in nessuna delle due letture. Il veto attuale e' il piu' debole possibile (deterioramento pratico E risolto).
+- Perche' minore: PJ, DEC e §10 dicono tutti la stessa cosa (lettura a); la frase e' una sola. Ma la scelta tocca il
+  significato di «migliore lettura» e va fatta prima della firma.
+- Correzione, una delle due, uguale in PROT, PJ, DEC e §10:
+  (a) tenere la regola e sostituire «risolti migliori» con «con etichetta deterioramento_pratico nel contrasto 2 o 3».
+      Aggiungere che un comparatore migliore con IC99 sotto 0 ma meno del 2% e' una lettura mista dichiarata. In quel
+      caso l'esito si chiama «candidata, non peggiore in modo pratico di MLP/L13», non «migliore»;
+  (b) rendere il veto piu' forte: nessuna candidatura se il contrasto 2 o 3 ha upper99<0, qualunque sia la stima.
+
+RILIEVO criteri-3 (minore; testo) - l'etichetta 3 ha perso nel protocollo «direzione e ampiezza» e «nessuna equivalenza».
+- Posizione: PROT:119 «3. `beneficio_2pct_non_sostenuto`: upper99<2;». In c15aac9:97 c'era «riportando comunque
+  direzione e ampiezza. Non chiamarlo equivalenza.». In v2 il protocollo e PJ outcome_priority non lo dicono; solo
+  DEC:6753 conserva «Nessuna equivalenza».
+- Controesempio (ESEGUITO, labels_check.py): con la precedenza, l'etichetta 3 raccoglie tre situazioni diverse:
+  deterioramento risolto sotto il 2% (-1,5, [-1,9; -0,8]), nullo (0, [-1; 1]) e beneficio risolto sotto il 2%
+  (1,5, [0,5; 1,9]). Per i contrasti 2 e 3 sono proprio i casi di criteri-1. Senza direzione e ampiezza scritte,
+  l'etichetta da sola non si legge. La vecchia practical_assessment del lungo li chiamava «small»
+  (consolidation_long_pose.py:361).
+- Correzione: rimettere in PROT §5 e in PJ, accanto a outcome_priority: «si riportano sempre gain, IC99 e verso;
+  nessuna equivalenza dedotta da un'etichetta 3 o 4».
+
+======================================================================================================================
+3. LETTURE MISTE, DUE VERSI, DESCRITTIVI, MAE E LIVELLO, SEMI, BOOTSTRAP
+======================================================================================================================
+CONFERME
+- LETTO: descrittivi predefiniti, IC95 appaiati, nessun gate (PROT:126): L0 contro ridge e testa storiche, MLP contro L0,
+  L13 contro L0, TCN-post contro TCN-pre, TCN-pre accanto alla ridge pre storica. PJ evaluation.descriptive li elenca
+  tutti, descriptive_ci_percent 95; historical_pre_ridge_descriptive.paired_CI_against_TCN_pre false (solo il punto
+  1,0321280032044744, sorgente pinnata). DEC:6751/6753 uguale. C-1 (parte dei descrittivi), C-2 (MLP/L0, L13/L0) e
+  controlli-7 chiusi. CONFERMA.
+- LETTO: le due frasi che C-1 voleva togliere non ci sono piu': nessuna «architettura promettente» (c15aac9:100) e
+  nessun «Se la TCN migliora il lettore» (c15aac9:118). §7 di v2 (PROT:140) «Nessun automatismo»; PROT:124 «Il successo
+  non autorizza adozione operativa o livello B». CONFERMA.
+- LETTO: TCN contro MLP nei due versi (controlli-6): PROT:122 «il contrario favorisce l'istantaneo in questa ricetta;
+  inconclusivo non prova irrilevanza del tempo», dopo il caso in cui il contrasto 2 passa. CONFERMA.
+- LETTO: post contro pre (controlli-7): PROT:126 «Post>pre indica accessibilità con questa testa, non origine/distruzione
+  dell'informazione»; anche un nullo non rende equivalenti le viste. CONFERMA.
+- LETTO: MAE e livello (criteri-10): PROT:124 «delta positivo è peggioramento stimato, lower95>0 peggioramento risolto» e
+  «nessuna nuova soglia di non inferiorità», con IC95 descrittivo; PJ secondary_worsening uguale; DEC:6753
+  «Nessuna ... noninferioritàMAE/livello». Direzione definita, nessuna soglia nuova. CONFERMA (con criteri-7).
+- LETTO: semi s contro s (criteri-8): PROT:128 «Contrasti1–3 per seme s contro s; nove incroci solo descrittivi»; PJ
+  seed_uncertainty uguale. SD campionaria fra i tre semi separata dall'IC (criteri-3): PROT:128, PJ seed_uncertainty.
+  CONFERMA.
+- LETTO: bootstrap e bordo MC (criteri-7 della review): PROT:114 «Estremo dell'IC entro0,1 punti percentuali da0 o2: flag
+  `al_bordo_MC`, etichetta invariata, nessun nuovo bootstrap/seme»; PJ monte_carlo_border {distance_pp 0.1, thresholds_pp
+  [0,2], label_changes false, extra_bootstrap_allowed false}; DEC:6751. Le soglie degli estremi usate dalle etichette sono
+  solo 0 (lower99>0, upper99<0) e 2 (upper99<2): l'elenco [0,2] e' completo; -2 e 2 sulla stima non hanno errore Monte
+  Carlo. 2.000 repliche e seme 20261102 come lo storico (tokenizer_pose_readout.py:30). CONFERMA.
+- LETTO: copertura (criteri-6): PROT:114 «il96–97%/85–91% delle simulazioni Claude non è la copertura “vera”»; RISP:134-136.
+  La motivazione regge: la copertura simulata dipende dai mondi simulati, e Bonferroni non corregge intervalli marginali
+  mal calibrati. In piu', con questa regola la decisione positiva dipende soprattutto dalla stima >= 2 (review 32e5452,
+  evidenze, rapporti_agenti/review_criteri.txt:462 «la regola del beneficio, in pratica, e' "la media dei tre semi
+  migliora di almeno il 2%"»), quindi la sottocopertura conta poco per l'esito positivo. CONFERMA.
+
+RILIEVO criteri-2 (minore; testo) - tre letture accolte nella risposta non sono nel protocollo ne' nel JSON.
+- RISP:19 (C-1): se L0 e' deteriorata rispetto alla ridge, «i contrasti 1–3 restano confronti fra queste ricette», senza
+  promozione dell'architettura ne' motivazione per B. PROT dice solo (PROT:126) «L0 inferiore alle storiche invita a
+  leggere le differenze di dose/loss/FP16». La conseguenza sui contrasti 1-3 non c'e'. Manca anche il verso opposto chiesto da C-1: «se L0 è migliore della ridge, va riportato come effetto del rifit».
+  E' la lettura del caso misto «1 non passa, 4 e 5 passano», che oggi non ha nessuna frase. Esempio (CALCOLATO):
+  E_L0 0,770 ed E_TCN 0,760 danno gain1 +1,30 (non passa), gain4 +3,30 e gain5 +2,39 (possono passare); L0 da sola e'
+  +2,02 sulla ridge e +1,11 sulla testa. Senza la frase, un resoconto puo' attribuire alla TCN un vantaggio sulle teste
+  storiche che viene dal rifit.
+- RISP:20 (C-2), per un L13 peggiore di L0: «niente attribuzione forte del contrasto 3 alla non linearità».
+  Non e' in PROT:122/126 ne' in PJ. PROT:72 copre solo il caso S-2.
+- RISP:46 (controlli-6): «Il confronto scambia anche larghezza per connessioni temporali». Non e' in PROT §5.
+- «L0 inferiore» (PROT:126) e «Post>pre» (PROT:126) sono ambigui con una metrica in cui piu' basso e' meglio.
+- Facoltativo, sul primario: con il ramo affine la TCN contiene L0 anche come classe di funzioni. Un deterioramento_pratico
+  del contrasto 1 indica allora un limite di questa ricetta (generalizzazione o arresto), non l'inutilita' della lettura
+  temporale. PROT §1:12 lo dice solo per l'«esito nullo».
+- Correzione: due o tre frasi in PROT §5 e una chiave in PJ evaluation (per esempio descriptive_readings), con
+  «peggiore (E_dyn piu' alta)» al posto di «inferiore» e «post migliore di pre» al posto di «Post>pre».
+
+RILIEVO criteri-7 (nota; testo) - MAE e livello: manca il riferimento del delta.
+- RISP:66 (criteri-10) dichiara «Esplicitare la direzione dei delta descrittivi e il riferimento». PROT:124 e PJ
+  secondary_worsening danno il verso, non il riferimento. Proposta: TCN-post meno ciascuno dei cinque riferimenti; per
+  la futura decisione di adozione conta quello contro la testa storica, che e' il lettore in uso.
+
+======================================================================================================================
+4. STATI CHE IMPEDISCONO UN VERDETTO: CONSEGUENZE CONTRASTO PER CONTRASTO
+======================================================================================================================
+CONFERME (LETTO; mappa ricostruita dai testi, nessuna scelta nuova necessaria)
+- Controllo non calibrato (PROT:92, PJ positive_controls.calibration.no_pair), non diagnostico (PROT:90, 95, 96; PJ
+  gates.linear.nonpositive_margin, gates.temporal.gap_outside_range), ricetta non ammessa (PROT:98), ottimizzazione non
+  risolta nei controlli (PROT:98): «stop prima dei fit reali, artefatti conservati». Nessun contrasto esiste, nessuna
+  etichetta negativa (PROT:98; PJ positive_controls.failure «stop before realneuralfits ... noautomatictargetsearch
+  orscientificnegative»). Vale per tutti e cinque i contrasti.
+- WLS non verificata (PROT:76 «arresto prima dei fit reali») e gate risorse falliti (PROT:185 «nessun fit neurale»):
+  stessa conseguenza.
+- Ottimizzazione non risolta in un fit reale (PROT:69, 104; PJ fit.extensions.unresolved): fit conservati, nessuna
+  etichetta inferenziale sui contrasti che dipendono da quella testa. Contrasto per contrasto:
+    TCN-post irrisolta -> contrasti 1-5 senza etichetta, nessuna candidatura;
+    L0 irrisolta       -> contrasto 1 senza etichetta; 2-5 etichettabili; candidatura non accertata («Se L0 o TCN-post
+                          non è ammissibile, niente promozione primaria», PROT:104);
+    MLP irrisolta      -> contrasto 2 senza etichetta; candidatura non accertata (PJ missing_or_unresolved_comparator);
+    L13 irrisolta      -> contrasto 3 senza etichetta; candidatura non accertata;
+    TCN-pre irrisolta  -> solo il descrittivo post/pre (PROT:84 «ha le proprie curve e allarmi reali»).
+  I riferimenti storici sono fissi: i contrasti 4 e 5 dipendono solo da TCN-post e dal gate R-1.
+- objective_tradeoff (S-2) non e' uno stato di arresto: selettore invariato, interpretazione ristretta del contrasto 3 e di
+  un negativo della TCN (PROT:72; PJ fit.objective_tradeoff.consequence). al_bordo_MC non cambia etichette. CONFERMA.
+- Guasto tecnico (NaN/Inf, OOM, TIMEOUT, pin o supporti diversi): «fermano la fase; nessun retry cieco, seme sostitutivo
+  o riduzione della matrice» (PROT:104; DEC:6755). Anche un guasto nel solo braccio descrittivo TCN-pre ferma la fase:
+  scelta prudente e coerente con «nessuna riduzione della matrice». CONFERMA.
+
+RILIEVO criteri-5 (minore; testo) - nel JSON lo stato technical_failure non ha cause ne' conseguenza; il gate R-1 non ha
+conseguenza scritta.
+- PJ fit.failure_states elenca «technical_failure» solo per nome. La review 32e5452 (R-2) chiedeva: «In proposal.json
+  vanno aggiunti anche l'IC 95% descrittivo e l'arresto su NaN o OOM». L'IC95 c'e' (descriptive_ci_percent 95); l'arresto
+  su NaN/OOM no (ESEGUITO: kwic.py su PJ, nessuna occorrenza di «NaN», «OOM», «TIMEOUT»). PROT:104 e DEC:6755 lo hanno.
+- PROT:151 e PJ historical_reference_gate dicono quando si esegue il gate R-1 (prima dei contrasti) ma non che cosa
+  succede se fallisce. PROT:104 copre «supporti o pin diversi», non un E_dyn diverso con pin e supporti uguali (errore del
+  codice delle metriche).
+- Correzione: in PJ un oggetto technical_failure {cause: NaN/Inf, divergenza non finita, OOM, fit incompleto/TIMEOUT,
+  supporti o pin diversi; conseguenza: arresto della fase, nessun retry cieco, seme sostitutivo o riduzione}; nel gate
+  R-1 (PROT:151 e PJ) «se non riproduce: arresto prima dei contrasti, nessuna etichetta; correzione del codice solo con
+  decisione registrata».
+
+RILIEVO criteri-8 (nota; testo) - «ammessa» e «gate di qualità» non sono elencati in un punto solo.
+- PJ candidate.iff «all qualitygates and L0/MLP/L13/TCNpost admitted» e §10 «gateammissione» non dicono quali gate ne'
+  quando una testa e' «ammessa». Si ricavano da §4.2, §4.4, §4.5, §8 e §9, e al momento delle etichette tutti i gate che
+  fermano la catena sono gia' superati per costruzione: resta solo l'ammissione per testa. Proposta di una riga:
+  «ammessa = nessun allarme di §4.2 aperto sul LR selezionato e nessun guasto tecnico; gate di qualita' = risorse, WLS
+  verificate, controlli positivi calibrati/diagnostici/superati, R-1».
+
+======================================================================================================================
+5. TABELLA DEL §10 CONTRO CORPO DEL PROTOCOLLO E proposal.json
+======================================================================================================================
+CONFERME (LETTO PROT:196-209 contro corpo e PJ)
+- Oggetto (PROT:198): «TCN compatta ispirata a TEMPONet con ramo lineare», non la classe raw ne' i suoi pesi, 72.904
+  parametri = PROT:21, 38; PJ heads.TCN_post.params 72904. CALCOLATO a mano dalla specifica di PROT:28:
+  g = 24.640 + 3x12.352 + 2.080 + 660 = 64.436; + LN 768 + ramo affine 7.700 = 72.904. R-3 chiuso.
+- Livello (PROT:199) = PROT:10, PJ level/which/checkpoint_step/caches (40 e 15 utenti).
+- Bracci (PROT:200) = tabella di PROT:32-38 e PJ heads; due riferimenti storici = PJ references.
+- Ricetta (PROT:201) = PROT:65-70 e PJ fit (4 LR, max_lrs 6, 150/300, refit_seeds [0,1,2]), §4.3-4.4 e PJ
+  positive_controls.count 2.
+- Criteri (PROT:202) = PROT:109-120: cinque IC99, 2.000 repliche, soglia storica, quattro esiti ordinati, gate prima.
+- Esito positivo (PROT:203) = regola di PROT:122, PJ candidate.iff, DEC:6753.
+- Esito negativo/irrisolto (PROT:204) coerente con PROT:12, 98, 104 e PJ readout_failures.
+- Tetto (PROT:205) = PROT:160-173 e PJ resource_proposal (24, 80, 272) e outputs.persistent_cap_gib 8.
+- Ruoli e portata (PROT:206-207) = PROT:147 e PJ roles_proposed, authorization.future_signature_scope.
+- La frase «Oggi la firma non c'è» (PROT:209) e PJ authorization (runtime_authorized false, budget_authorized false)
+  sono coerenti con lo stato REVIEW_REQUIRED.
+
+RILIEVO criteri-4 (minore; testo) - nella riga «Esito positivo» mancano clausole che la risposta destina al §10.
+- RISP:21 (C-3) indica come destinazione anche il §10 per: «nessuna non-inferiorità implicita di MAE/livello» e
+  «nessuna affermazione sul valore del pretraining»; RISP:67 (selezione-criteri-N3) e RISP:66 (criteri-10) indicano il §10
+  per la soglia E_dyn <= 0,7630564046643697 e per MAE/livello. La riga di PROT:203 dice solo «nessuna adozione o livelloB
+  automatici». Le clausole stanno nel corpo (PROT:12, 124), in PJ candidate.scope e secondary_worsening e in DEC:6753,
+  ma non nella riga che Simone firma. La nota N3 della review diceva «Va detto a Simone».
+- Correzione: aggiungere alla riga «Esito positivo»: «richiede E_dyn TCN <= 0,7631 (2% sotto la testa storica, circa
+  2,91% sotto la ridge); nessuna non-inferiorità di MAE/livello; nessuna affermazione sul valore del pretraining (baseline
+  v10 §8 dovute); 15 utenti di sviluppo già consultati, non una conferma». Facoltativo: dichiarare nella stessa riga che il
+  «no» non e' protetto dal rumore fra semi (criteri-3 della review, scelta di GPT, PROT:128).
+
+======================================================================================================================
+6. COERENZA DI proposal.json (K-2) E DELLA NUOVA VOCE DI decisioni.md (R-2)
+======================================================================================================================
+CONFERME
+- K-2. PJ contiene: formula (evaluation.gain_formula); quattro etichette con condizioni e ordine (outcome_priority);
+  «passa» come etichetta 1 dentro candidate.iff; regola completa (candidate.iff, missing_or_unresolved_comparator, scope);
+  precedenza degli stati (readout_failures, fit.failure_states); soglia della testa (trained_head_point_threshold_necessary);
+  bordo MC; descrittivi e IC95; gate R-1. Le etichette hanno gli stessi nomi in PROT, PJ e DEC. C-3: la chiave
+  confirmatory_family non c'e' piu' (ESEGUITO: grep -c confirmatory su PJ = 0), sostituita da prespecified_family.
+- R-2. DEC:6741-6759 riporta per esteso: soglia storica 0,2574231028556824 (6751), pareggi «checkpoint precedente poi
+  LRminore» (6747; = PROT:67 «durata minore, poi LR minore», PJ fit.selection), quattro etichette e «prima condizione
+  vera» (6753), candidata iff (6753), IC95 descrittivi (6751), arresto su NaN/Inf, OOM, TIMEOUT, pin/supporti (6755),
+  gate R-1 (6755). Il pin (DEC:6762-6772) cita il commit 62348ab e gli sha256 di PROT e PJ; ESEGUITO: gli sha256
+  coincidono con i file di 3e007c8. La voce si dichiara proposta non firmata (6743, 6769). R-2 chiuso per decisioni.md.
+- Coincidenza DEC/PROT/PJ sui numeri dei criteri: famiglia, 2.000/20261102, IC99, bordo 0,1 pp, soglia, R-1 (1e-12,
+  8.327, 20.119.920, [6:154]). Nessuna discrepanza numerica trovata.
+- Unica differenza di contenuto: la frase «risolti migliori» sta solo in PROT:122, non in PJ, DEC o §10 (criteri-1).
+  Le letture di criteri-2 stanno solo nella risposta.
+
+RILIEVO criteri-6 (minore; testo) - due imprecisioni nel testo del gate R-1 (PROT:151).
+- «stessi dtype/valori»: falso per costruzione. LETTO consolidation_long_pose.py:147 (pred della cache float32) e
+  consolidation_long_pose_runtime.py:275 (payload float64). Letto alla lettera, il gate ferma la catena senza motivo.
+  Correggere in «valori identici dopo il cast FP32 -> FP64 (esatto)», come gia' dice PJ «same validvalues».
+- «8.327 finestre dinamiche»: sono quelle con supporto centrato; le selezionate dalla soglia sono 8.329 (ESEGUITO,
+  sezione 1). Scrivere «8.329 selezionate, 8.327 con supporto centrato, 166.540 coppie finestra-giunto, 20.119.920
+  elementi, 15 utenti», anche in PJ historical_reference_gate.
+
+RILIEVO criteri-9 (nota; implementazione) - il gate R-1 puo' controllare anche il bootstrap, a costo quasi nullo.
+- LETTO: lo storico usa utenti ordinati, np.random.default_rng(20261102).integers(0, n_utenti, (2000, n_utenti)) e
+  np.percentile lineare (consolidation_long_pose.py:304, 314, 290). La nuova analisi usa lo stesso seme e le stesse repliche
+  (PROT:114). Riprodurre anche gli IC95 storici delle due celle ([0,764135611744122; 0,8062532050171899] e
+  [0,7573438876212192; 0,7987804832677875], scientific_readout.json) verificherebbe estrazioni, appaiamento e quantile
+  del codice che produrra' gli IC99 decisivi. Conviene anche eseguire R-1 prima dell'inferenza bloccata: un errore del
+  codice delle metriche si corregge prima che esistano predizioni nuove. Tolleranza 1e-12: richiede accumuli float64;
+  l'ordine di somma da solo sposta di circa 2e-16 (ESEGUITO, pre_ridge sezione 1).
+
+RILIEVO criteri-10 (nota; testo) - altre frasi del §5 di c15aac9 cadute nella riscrittura, senza contraddizioni.
+- c15aac9:91 «Stessi sorteggi fra bracci, semi e riferimenti» (v2 PROT:114 dice solo «appaiato»); c15aac9:100 «Si
+  pubblicano tutti e cinque, senza scegliere il confronto favorevole»; c15aac9:104 «una nuova metrica di tratto
+  richiederebbe una proposta distinta». La famiglia fissa le copre in parte. Conviene rimetterle in una riga.
+- PROT:126 mette «TCN-pre e ancora ridge pre dal report storico» sotto «IC95 appaiati», mentre PJ
+  historical_pre_ridge_descriptive.paired_CI_against_TCN_pre e' false (le predizioni della ridge pre non sono pinnate in
+  PJ references). Scrivere in PROT che per la ridge pre c'e' solo il punto storico.
+
+RILIEVO criteri-11 (nota; testo/implementazione) - in PJ regola e scope sono prosa compressa, con i nomi delle etichette
+attaccati alle parole.
+- PJ candidate.iff «contrasts1,4,5 eachbeneficio_pratico_risolto; neither2nor3 deterioramento_pratico»; scope
+  «pretrainingclaim orlevelB». Il codice futuro non deve leggere queste stringhe. Proposta: campi strutturati, per
+  esempio pass_label, must_pass [1,4,5], veto_label, veto_contrasts [2,3], required_admitted [L0, MLP, L13, TCN_post].
+  Anche PROT e DEC hanno molti spazi mancanti («IC percentile99», «Bonferroni nominale95»): da sistemare nel testo che
+  Simone firma.
+
+- Le soglie dei controlli positivi in DEC:6749 (6-10%, 50%, 90%) coincidono con PROT:92-96 e PJ positive_controls;
+  tolleranza 0,05, preferenza 0,08 e griglie stanno solo in PROT/PJ, richiamati da DEC:6749 «completi nel§4/JSON» e
+  fissati dagli sha256 del pin. Accettabile, purche' il record di congelamento alla firma pinni gli stessi hash
+  (dimensione dei controlli, non verificata oltre).
+
+======================================================================================================================
+6-bis. PRECISAZIONI E RIFIUTI DELLA RISPOSTA NEL MIO PERIMETRO: LE MOTIVAZIONI REGGONO
+======================================================================================================================
+- C-1 «accolta con precisazione» (RISP:19): L0 e ridge differiscono per pesatura, regolarizzazione, algoritmo e precisione,
+  quindi il loro scarto non certifica la convergenza. Corretto, e coerente con la review («il loro scarto misura solo la
+  ricetta»). Manca pero' nel protocollo la lettura accolta (criteri-2).
+- C-2 «accolta con precisazione» (RISP:20): la non candidatura non e' automaticamente un negativo. Corretto: le etichette
+  3 e 4 non sono negative, e la review stessa escludeva equivalenze da un esito non significativo. Anche «un L13
+  peggiore di L0 può dipendere anche dall'ottimizzazione» e' una qualificazione giusta della frase della review.
+- K-3 «con nome più preciso» (RISP:26): «ottimizzazione non risolta entro il budget» descrive meglio un controllo finito.
+  Corretto.
+- criteri-3 «non adottata l'estensione inferenziale» (RISP:60): la review la lasciava a Simone («Se Simone vuole»). La
+  scelta e' dichiarata in PROT:128 («Il “no” resta condizionato ai semi osservati»); va solo resa visibile a Simone
+  (facoltativo in criteri-4).
+- criteri-6 «qualificata» (RISP:63) e criteri-7 «seconda opzione» (RISP:64): motivazioni corrette (sezione 3).
+- selezione-criteri-N3 «condizione necessaria sulla stima» (RISP:67): corretto, da sola non basta (servono IC, primario,
+  comparatori, ammissibilita').
+
+======================================================================================================================
+7. ELENCO DEI RILIEVI
+======================================================================================================================
+id          gravita'  tipo                       in breve
+criteri-1   minore    disegno                    «risolti migliori» (PROT:122) contro la regola iff: banda -2<gain2<0 con
+                                                 upper99<0 da' due esiti opposti; scegliere (a) o (b) in tutti i testi
+criteri-2   minore    testo                      letture accolte in RISP (C-1 nei due versi, C-2 su L13<L0, controlli-6)
+                                                 assenti da PROT e PJ; caso misto «1 no, 4 e 5 si'» senza lettura
+criteri-3   minore    testo                      etichetta 3 senza «direzione e ampiezza» e senza «nessuna equivalenza»
+                                                 (regressione da c15aac9:97)
+criteri-4   minore    testo                      riga «Esito positivo» del §10 senza E_dyn<=0,7631, MAE/livello e
+                                                 pretraining, che RISP destina al §10
+criteri-5   minore    testo                      PJ: technical_failure senza cause ne' conseguenza (R-2); gate R-1 senza
+                                                 conseguenza scritta
+criteri-6   minore    testo                      gate R-1: «stessi dtype» falso per costruzione; «8.327» senza «con supporto»
+criteri-7   nota      testo                      MAE/livello: manca il riferimento del delta (RISP criteri-10)
+criteri-8   nota      testo                      «ammessa» e «gate di qualità» non elencati in un punto solo
+criteri-9   nota      implementazione            R-1 puo' riprodurre anche gli IC95 storici; eseguirlo prima dell'inferenza
+criteri-10  nota      testo                      frasi di c15aac9 cadute (stessi sorteggi, tutti e cinque, nessuna metrica
+                                                 nuova); ridge pre solo punto storico
+criteri-11  nota      testo/implementazione      PJ in prosa compressa: servono campi strutturati per la regola
+
+Nessun rilievo bloccante. Nessun problema di disegno che cambi l'impianto: tutte le correzioni sono di una o due frasi.
+Verifiche riservate all'implementazione: criteri-9, criteri-11 (e il cast di criteri-6). Al benchmark: nessuna, sul
+punto 5.
+
+======================================================================================================================
+8. CHE COSA NON HO VERIFICATO
+======================================================================================================================
+- Nessun ricalcolo dai file delle predizioni su $WORK (non accessibili dal Mac, nessun ssh): i due E_dyn e i conteggi
+  sono riprodotti dalle somme per utente della ricevuta pinnata, come nella review 32e5452. Il ricalcolo dai file
+  resta il gate R-1 del codice futuro.
+- Nessuna simulazione della copertura o delle etichette su dati sintetici: solo aritmetica sulle regole scritte.
+- Le dimensioni ricetta, controlli, riferimenti lineari e costo sono di altri revisori: ne ho letto solo cio' che tocca
+  le conseguenze sui contrasti.
+
+======================================================================================================================
+9. VERDETTO SUL PUNTO 5
+======================================================================================================================
+CONVERGE_CON_CORREZIONI. Gain, quattro etichette e loro ordine, «passa», regola iff della candidata, comparatori ammessi,
+stati che impediscono il verdetto, descrittivi, MAE/livello, semi s contro s, bootstrap 2000 con al_bordo_MC, soglia
+storica e numeri del gate R-1 reggono e coincidono in PROT, PJ e DEC. Restano sei correzioni minori di testo o di scelta
+esplicita (criteri-1...6) e cinque note. La tabella del §10 e' fedele al corpo; diventa pronta per Simone dopo
+criteri-1 (scelta del veto) e criteri-4 (tre clausole nella riga «Esito positivo»).

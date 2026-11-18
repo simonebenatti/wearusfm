@@ -1,0 +1,84 @@
+sha256 bozza: 9492d23ea1ba5788e16871f8e6b97f6d8088b33887b43c91794841c55d6cf9b6
+(+ deve esserci, - non deve esserci, ? da controllare a mano; ricerca sul testo con gli a capo uniti)
+== P-01
+  [+] OK       righe~[192] «la MLP recupera più del 50% − q del margine»
+  [+] OK       righe~[193] «si legge almeno in parte in modo istantaneo»
+  [+] OK       righe~[] «L'etichetta segue le regole sotto»
+  [-] OK       righe~[] «Se non passa, il margine piantato si legge in modo istantaneo»
+== P-02
+  [+] OK       righe~[106] «fino a circa 0,02 in giù o 0,01 in su»
+  [+] OK       righe~[] «resta fra 0,89 e 0,94»
+  [+] OK       righe~[107] «più in basso la griglia ha anche buchi»
+  [-] OK       righe~[] «Sotto quella soglia l'esito dipende»
+== P-03
+  [+] OK       righe~[472] «misurare sul fitting outer la frazione di unità attive»
+  [+] OK       righe~[472] «centrare z per dimensione sul fitting outer prima di T (il centro entra nel primo bias)»
+== P-04
+  [+] OK       righe~[708] «T quasi lineare, da misurare prima dei fit di controllo (controlli-7), e P:122 come destinazione di C-2 (conse»
+  [-] OK       righe~[] «- controlli-7 e consegna-4;»
+== P-05
+  [-] OK       righe~[] «tolleranza dichiarata ora, cioè»
+  [+] OK       righe~[] «per esempio lo 0,5% della MSE pooled del LR vicino; sotto quella quota»
+== VA2-N1
+  [+] OK       righe~[203] «se la clausola passa nei numeri ma la MLP ha un allarme aperto, non conta come superata e l'etichetta è «ottim»
+  [+] OK       righe~[634] «Se passa nei numeri ma la MLP ha un allarme aperto: non conta come superato, «ottimizzazione non risolta»»
+== T-01
+  [+] OK       righe~[] «se la ridge non abbassa affatto E_real cresce di poco»
+  [+] OK       righe~[607] «(a) aiuta nella misura in cui l'errore di stima pesa su E_real; se E_real nasce soprattutto dallo spostamento »
+== T-02
+  [+] OK       righe~[] «da 0,27 a 0,37, con a = 1 ed E_real 0,85»
+  [+] OK       righe~[171] «va da 1 caso in meno a 12 in più, su 81»
+  [+] OK       righe~[144, 613] «nel modello a = 3 chiede sigma fino a circa 6»
+  [+] OK       righe~[145] «P:92 vieta un nuovo seme»
+  [+] OK       righe~[] «rende più probabile «non calibrato»; non è equivalente la banda su y con E_LS* solo nel margine»
+  [?] presente righe~[170] «In cambio toglie il «non diagnostico»»
+  [?] assente  righe~[] «toglie il «non diagnostico» dello spostamento»
+== T-03
+  [+] OK       righe~[82] «verifica almeno che il margine piantato esista»
+  [+] OK       righe~[591] «il temporale verifica almeno che il margine esista (P:96)»
+  [+] OK       righe~[168] ««ricetta non ammessa» diventa più probabile»
+  [-] OK       righe~[] «il temporale sì (P:96)»
+== T-04
+  [+] OK       righe~[137] «Un'alternativa a (b) chiude il caso»
+  [+] OK       righe~[140, 611, 631] «altrimenti valgono gli stati per testa di OB-1»
+  [+] OK       righe~[141] «La (a) resta per l'ancora»
+  [+] OK       righe~[141] «Se GPT sostituisce anche (a) con l'intervallo di E_oracolo»
+  [+] OK       righe~[612] «se sostituisci anche (a), la (c) deve essere la banda sganciata dall'ancora»
+  [-] OK       righe~[] «In alternativa ad (a) e (b)»
+== T-05
+  [+] OK       righe~[116] «La griglia ha bisogno di una regola di bordo»
+  [+] OK       righe~[117] «con la conseguenza scritta se il minimo resta al bordo»
+  [+] OK       righe~[118] «L'intercetta non si penalizza»
+  [+] OK       righe~[] «regola di bordo (per esempio quella storica di DEC:5319)»
+  [+] OK       righe~[602] «intercetta non penalizzata»
+  [?] presente righe~[117] «conseguenza scritta se il minimo resta al bordo»
+  [+] OK       righe~[603] «come si sceglie sigma nel lineare e come si spareggia nel temporale»
+== T-06
+  [+] OK       righe~[200] «se la TCN supera il 50% e la clausola non passa nei numeri: «ottimizzazione non risolta» se la TCN ha un allar»
+  [+] OK       righe~[201] «Un allarme della sola MLP non cambia l'esito»
+  [+] OK       righe~[632] «Se non passa nei numeri: «ottimizzazione non risolta» con un allarme aperto sulla TCN»
+  [-] OK       righe~[] «con un allarme aperto su TCN o MLP»
+== T-07
+  [+] OK       righe~[252] «Sul lato inferiore il bordo è un allarme solo se il LR più piccolo vince di più di una quota relativa fissata »
+  [+] OK       righe~[649] «Vale per tutte le teste, nei fit reali e nei controlli»
+  [-] OK       righe~[] «per L0 e L13 ovunque e per tutte le teste nel controllo lineare»
+== T-08
+  [+] OK       righe~[333, 686] «con un allarme sulla TCN il nome misto di OB-3(a) resta, perché descrive i predittori selezionati»
+  [+] OK       righe~[333, 686] «con un allarme sulla TCN il nome misto di OB-3(a) resta; si sospende solo»
+  [+] OK       righe~[334] «La scelta opposta va bene, purché dichiarata»
+== T-09
+  [+] OK       righe~[306] «J `candidate` (J:40), J:104, DEC:6753 e §10»
+  [+] OK       righe~[320] «in J:104, in DEC:6753 e nel §10»
+  [+] OK       righe~[338] «J `candidate` (J:40-41), J:104 e DEC:6753»
+  [+] OK       righe~[251] «Correzione proposta (P:69, J:142, J:471, DEC:6747)»
+  [+] OK       righe~[654] «aggiorna anche DEC:6747»
+  [+] OK       righe~[671] «J candidate (J:40), J:104, DEC:6753 e §10»
+  [+] OK       righe~[678] «J candidate, J:104, DEC:6753 e §10»
+  [+] OK       righe~[690] «J candidate, J:104 e DEC:6753»
+== T-10
+  [+] OK       righe~[607] «(a) aiuta nella misura in cui»
+  [+] OK       righe~[620] «E_LS*, la LS su y* (stimatore da dichiarare: WLS o ridge) valutata su y»
+  [+] OK       righe~[] «controlli-7 propone di misurarla in forma chiusa prima dei fit di controllo»
+  [+] OK       righe~[280] «se un allarme di P:69 e S-2 riguardano la stessa testa, vale l'allarme»
+  [+] OK       righe~[281] «Il caso tipico è un minimo di E_dyn nelle ultime 5 epoche dell'orizzonte massimo»
+  [+] OK       righe~[661] «prevale su S-2 sulla stessa testa»

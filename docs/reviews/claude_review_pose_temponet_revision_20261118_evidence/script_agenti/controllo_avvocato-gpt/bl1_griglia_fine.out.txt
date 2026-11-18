@@ -1,0 +1,24 @@
+K=(2.5,5.0) f'=0.5 E_real=0.92 | griglia attuale: sigma=2.5 inner=0.9373 R_dyn=0.8983 R_MSE=0.8983 FALLISCE | sigma continua: sigma=2.245 inner=0.9200 R_dyn=0.9180 R_MSE=0.9180 PASSA
+K=(2.5,5.0) f'=0.3 E_real=0.92 | griglia attuale: sigma=2.0 inner=0.9420 R_dyn=0.8915 R_MSE=0.9349 FALLISCE | sigma continua: sigma=1.739 inner=0.9200 R_dyn=0.9180 R_MSE=0.9508 PASSA
+K=(2.5,5.0) f'=0.6 E_real=0.92 | griglia attuale: sigma=2.5 inner=0.9228 R_dyn=0.9153 R_MSE=0.8983 FALLISCE | sigma continua: sigma=2.460 inner=0.9200 R_dyn=0.9180 R_MSE=0.9016 PASSA
+K=(2.5,5.0) f'=0.5 E_real=0.90 | griglia attuale: sigma=2.0 inner=0.8976 R_dyn=0.9349 R_MSE=0.9349 PASSA | sigma continua: sigma=2.023 inner=0.9000 R_dyn=0.9334 R_MSE=0.9334 PASSA
+K=(2.5,5.0) f'=0.5 E_real=0.94 | griglia attuale: sigma=2.5 inner=0.9373 R_dyn=0.8983 R_MSE=0.8983 FALLISCE | sigma continua: sigma=2.546 inner=0.9400 R_dyn=0.8945 R_MSE=0.8945 FALLISCE
+K=(3.5,7.0) f'=0.5 E_real=0.92 | griglia attuale: sigma=2.0 inner=0.9038 R_dyn=0.9089 R_MSE=0.9089 PASSA | sigma continua: sigma=2.169 inner=0.9200 R_dyn=0.8928 R_MSE=0.8928 FALLISCE
+K=(3.5,7.0) f'=0.3 E_real=0.92 | griglia attuale: sigma=1.5 inner=0.8967 R_dyn=0.9146 R_MSE=0.9487 PASSA | sigma continua: sigma=1.680 inner=0.9200 R_dyn=0.8928 R_MSE=0.9357 FALLISCE
+K=(3.5,7.0) f'=0.6 E_real=0.92 | griglia attuale: sigma=2.5 inner=0.9291 R_dyn=0.8814 R_MSE=0.8576 FALLISCE | sigma continua: sigma=2.376 inner=0.9200 R_dyn=0.8928 R_MSE=0.8714 FALLISCE
+K=(3.5,7.0) f'=0.5 E_real=0.90 | griglia attuale: sigma=2.0 inner=0.9038 R_dyn=0.9089 R_MSE=0.9089 PASSA | sigma continua: sigma=1.965 inner=0.9000 R_dyn=0.9120 R_MSE=0.9120 PASSA
+K=(3.5,7.0) f'=0.5 E_real=0.94 | griglia attuale: sigma=2.5 inner=0.9437 R_dyn=0.8576 R_MSE=0.8576 FALLISCE | sigma continua: sigma=2.439 inner=0.9400 R_dyn=0.8645 R_MSE=0.8645 FALLISCE
+
+sigma continua K=(2.5,5.0) f'=0.3: la WLS esatta smette di passare a E_real ~ 0.9365
+sigma continua K=(2.5,5.0) f'=0.4: la WLS esatta smette di passare a E_real ~ 0.9365
+sigma continua K=(2.5,5.0) f'=0.5: la WLS esatta smette di passare a E_real ~ 0.9365
+sigma continua K=(2.5,5.0) f'=0.6: la WLS esatta smette di passare a E_real ~ 0.9215
+sigma continua K=(3.5,7.0) f'=0.3: la WLS esatta smette di passare a E_real ~ 0.9135
+sigma continua K=(3.5,7.0) f'=0.4: la WLS esatta smette di passare a E_real ~ 0.9135
+sigma continua K=(3.5,7.0) f'=0.5: la WLS esatta smette di passare a E_real ~ 0.9135
+sigma continua K=(3.5,7.0) f'=0.6: la WLS esatta smette di passare a E_real ~ 0.8940
+
+griglia 0,1 K=(2.5,5.0) f'=0.5 E_real=0.92: sigma=2.2 inner=0.9164 R_dyn=0.9212 R_MSE=0.9212 PASSA
+griglia 0,1 K=(2.5,5.0) f'=0.5 E_real=0.94: sigma=2.5 inner=0.9373 R_dyn=0.8983 R_MSE=0.8983 FALLISCE
+griglia 0,1 K=(3.5,7.0) f'=0.5 E_real=0.92: sigma=2.2 inner=0.9226 R_dyn=0.8897 R_MSE=0.8897 FALLISCE
+griglia 0,1 K=(3.5,7.0) f'=0.5 E_real=0.94: sigma=2.4 inner=0.9375 R_dyn=0.8688 R_MSE=0.8688 FALLISCE

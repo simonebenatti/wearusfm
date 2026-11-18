@@ -8802,6 +8802,30 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   passo. La cifra vera viene dal benchmark.
 - Testo per GPT consegnato a Simone.
 
+### 2026-11-18 | Claude | Rilettura della revisione GPT `3e007c8` della proposta TCN: convergenza documentale non ancora raggiunta, tre blocchi di disegno (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: la revisione di GPT consolidamento `3e007c8` (contenuti in `62348ab`; ramo `codex/pose-temponet-proposal-20261117`,
+  stato REVIEW_REQUIRED). Risponde alla review `32e5452` e al seguito `8d34f9c`. Nel messaggio incollato da Simone il 18/11 GPT
+  chiedeva «l'ultima rilettura delle parti cambiate rispetto a c15aac9», su sei punti e sulle disposizioni dei 13 rilievi e delle
+  50 note.
+- Review in `docs/reviews/claude_review_pose_temponet_revision_20261118.md`; rapporti e script degli agenti in
+  `docs/reviews/claude_review_pose_temponet_revision_20261118_evidence/`. Hanno lavorato sei revisori e tre verificatori avversari,
+  tutto sul Mac su CPU: lettura, conti in forma chiusa, piccoli controlli numerici e controlli dei file, nessun esperimento.
+  L'unica lettura su Leonardo è un `ls -l` di tre file su SCRATCH.
+- Esito: convergenza documentale non ancora raggiunta; la tabella del §10 non è ancora pronta per Simone. I punti 1 e 4
+  convergono con correzioni, il 5 con correzioni obbligatorie, il 6 converge; le disposizioni sono complete e fedeli nel testo e
+  convergono con correzioni. I punti 2 e 3 hanno un blocco. In tutto tre blocchi di disegno (voce nella sezione 2), cinque
+  correzioni obbligatorie brevi (OB-1...OB-5) e le minori della sezione 5; per le note basta una riga di disposizione.
+- Seguito proposto: GPT corregge e pubblica un nuovo SHA. Claude rilegge solo le righe dei blocchi, delle correzioni obbligatorie
+  e delle minori, senza agenti; se reggono, dichiara la convergenza documentale e la tabella va a Simone. Le note si ricontrollano
+  alla review del pacchetto operativo, che viene dopo la firma.
+- Prima del commit la bozza è stata riletta contro le fonti da tre rilettori (48 segnalazioni), controllata da quattro
+  controllori con verificatori (43 segnalazioni, 42 confermate in tutto o in parte, più 3 nuove), poi da un ultimo controllo delle
+  parti cambiate (15 confermate in tutto o in parte, più una nuova) e da un rilettore finale (5 segnalazioni, un errore). Tutto
+  corretto.
+- Punta del ramo di GPT controllata alle 10:27, alle 11:46 e alle 15:21, subito prima del commit: `3e007c8`.
+- Il prompt per GPT consolidamento è nella sezione 10 della review ed è stato consegnato a Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12906,3 +12930,23 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   grande. Nel mondo V la TCN a 150 epoche fa +3,65% e passerebbe, prendendo circa un sesto del guadagno della ridge con ritardi
   (+21,3%, stima ottimista). Il criterio va legato al guadagno piantato. Trovato da Claude rileggendo la controproposta.
 - La review resta com'è: le correzioni entrano nella revisione di GPT e nella prossima review di Claude.
+
+### 2026-11-18 | Claude | Revisione TCN `3e007c8`: tre blocchi di disegno prima della firma (calibrazione dei controlli positivi, clausola della MLP, allarme del bordo inferiore del LR)
+
+- BL-1. La calibrazione dei controlli positivi si ancora alla WLS L0 non regolarizzata sui sottofold 10/10, e il controllo
+  lineare non verifica che il margine piantato sia recuperabile da una forma chiusa. In un modello in forma chiusa, con E_real
+  0,94, anche la WLS esatta recupera solo l'89,8% del margine (85,8% con l'altra coppia di parametri), e la catena si ferma con
+  «ricetta non ammessa» senza che la causa si legga. È plausibile, non stabilito: E_real non è ancora misurato. Va deciso prima
+  di misurarlo: ancora con una ridge in forma chiusa e verifica di leggibilità del lineare, oppure cancello riferito alla forma
+  chiusa; a oltre 1 nel temporale, con l'intervallo di sigma allargato; E_dyn sempre su y osservato; due grandezze distinte in P:92.
+- BL-2. «MLP non deve vincere il temporale» è un cancello nel protocollo e un descrittivo nel JSON, senza metrica né conseguenza:
+  due implementazioni fedeli danno esiti opposti. Va scelto e scritto uguale ovunque; se diventa un cancello, la review dà le
+  regole delle etichette.
+- BL-3. L'allarme «LR ancora al bordo dopo l'estensione» non ha tolleranza. Sulle teste lineari, dove con LR costante tende a
+  vincere il LR più piccolo, può scattare per differenze di rumore: su L0 toglie il primario, su L13 la candidatura. Revisore e
+  verificatore lo davano minore; Claude lo porta fra i blocchi con il criterio dichiarato nella review. Proposta: una quota
+  relativa di tolleranza per tutte le teste.
+- Rettifiche di Claude. Nella tabella dei verdetti della `32e5452` «La copertura vera degli intervalli è circa 97%» era una
+  simulazione, come dice GPT. Il conto di Claude di 1,26 milioni di aggiornamenti (17/11) era già il massimo raggiungibile, perché
+  con le regole di GPT si arriva al più a 5 LR: la chiave «superseded» di `analytic_checks.json` è inesatta.
+- Nessun job; le correzioni entrano nella revisione di GPT.

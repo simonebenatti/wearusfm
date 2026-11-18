@@ -1,0 +1,276 @@
+VERIFICA AVVERSARIA DEI PROBLEMI DELLA LENTE «COERENZA» (C-01...C-16)
+Bozza congelata: scratchpad/tcnreview2/controllo/bozza_controllo.md, 585 righe, sha256 5e872e1d2089df94e2907c6065fbcbe2
+7938db3ac4dcc14aa85643ed739a6dcf (ricontrollato all'inizio; non modificata). Data 18/11/2026. Verificatore: subagent, sola
+lettura; nessun git in scrittura, ssh, rete, job o subagent. File miei solo in controllo/verifica-coerenza/: dump_ids.py
+(estrae rilievi, verdetti e sospetti dal JSON del workflow) e questo rapporto.
+
+Abbreviazioni
+  B    = bozza congelata (numero = riga)
+  S2   = scratchpad/tcnreview2
+  RES  = tasks/w785grg3y.output, chiave "result" (letto con dump_ids.py)
+  VAC, VRC, VCC = S2/verify_architettura-controlli.txt, S2/verify_ricetta-criteri.txt, S2/verify_costo-consegna.txt
+  RCO = S2/review_controlli.txt; RCR = S2/review_criteri.txt
+  P, J, R, DEC, PR = protocollo, proposal.json, risposta, decisioni.md, prompt nella copia S2/gpt_3e007c8 (righe di cat -n)
+  REV  = review 32e5452 (worktree claude-temponet, docs/reviews/claude_review_pose_temponet_proposal_20261117.md)
+  REQ  = S2/gpt_richiesta_20261118.txt
+  FED  = S2/rilettura_fedelta/rapporto.txt
+  CTL  = rapporto del controllore, controllo/coerenza/rapporto.txt
+
+Metodo. Per ogni problema ho riletto il passo della bozza, le righe citate come prova e le fonti primarie (P, J, R, DEC, RES,
+rapporti dei verificatori). Ho cercato un'interpretazione della bozza che reggesse e una prova contraria. Ho rifatto con grep
+la collocazione dei 63 rilievi (C-04), l'uso di «§N», «sezione N», «punto N» e di «S-2» (C-13...C-15) e le parole sulla scelta
+di GPT dentro il prompt (nuovo N-1).
+
+Esito sintetico, 16 problemi: CONFERMATO 8 (C-02, C-03, C-04, C-05, C-06, C-11, C-15, C-16); PARZIALE 7 (C-01, C-07,
+C-08, C-09, C-10, C-12, C-13); RESPINTO 1 (C-14). Un problema nuovo (N-1). Nessuno tocca la sostanza dei tre blocchi.
+
+=====================================================================================================================
+1. VERDETTI
+=====================================================================================================================
+
+C-01 [B:367-371] — PARZIALE. Gravita': imprecisione (non errore).
+  Regge: l'introduzione della sezione 5 dice «GPT le corregge nella stessa revisione; le ricontrollo alla review del pacchetto
+  operativo. Le righe «minore» vanno corrette. Per le «note» basta una riga...» (B:369-370). Il secondo «le» ha lo stesso
+  referente del primo, cioe' tutte le righe della sezione, minori comprese. Esito (B:30-33: «e le correzioni minori della
+  sezione 5. Dopo, rileggo solo le righe cambiate (sezione 7)... Per le note della sezione 5 [...] le ricontrollo alla review
+  del pacchetto operativo»), sezione 7 (B:432 «Rileggo solo le righe che toccano BL, OB e le minori»; B:437 «Le note della
+  sezione 5 le ricontrollo alla review del pacchetto operativo») e prompt (B:582-583) rinviano solo le note. La review del
+  pacchetto viene dopo la firma (P:147 «Dopo eventuale firma §10: [...] Claude fa una review del pacchetto operativo
+  completo»), e i verificatori vogliono le minori sistemate prima della firma (VAC:260 «prima del congelamento»; VRC:382 e
+  VRC:394 «Correzioni [da fare] prima della firma»). E' il residuo di FED P-17/I6 (FED:192-201, :334-336): la sezione 7 e' stata corretta,
+  l'introduzione della sezione 5 no.
+  Da ridimensionare: (1) la frase non dice «solo» e i tre luoghi operativi (Esito, sezione 7, prompt) sono univoci, quindi e'
+  un'incoerenza da correggere, non un'affermazione falsa che cambi il piano: imprecisione. (2) Il titolo «Da correggere senza
+  un nuovo giro» regge anche per le minori: si correggono nella revisione che GPT fa comunque per i blocchi e si rileggono
+  nella stessa rilettura della sezione 7 (B:430-433), senza un giro in piu'. Il titolo non va cambiato.
+  Correzione: solo l'introduzione: «Le righe «minore» GPT le corregge nella stessa revisione e io le rileggo insieme ai blocchi
+  (sezione 7, punto 2). Per le «note» basta una riga di disposizione, accolta o motivata, come per le note di ieri; quelle
+  segnate «facoltativa» possono restare come sono. Le note le ricontrollo alla review del pacchetto operativo.»
+
+C-02 [B:190-191, B:532-533] — CONFERMATO. Imprecisione.
+  OB-1 (B:212-213) scrive «Nei controlli si ferma la catena solo se una condizione richiesta del cancello non passa. Gli
+  allarmi delle teste che passano si registrano.» Con OB-1, il falso allarme di bordo su una L0 che passa il controllo lineare
+  non ferma piu' la catena; se la testa non passa, la catena si ferma comunque e cambia solo l'etichetta («ottimizzazione non
+  risolta» invece di «ricetta non ammessa», B:213-214). La bozza lo sa: B:178 rinvia a OB-1, e B:210-211 usa proprio questo
+  caso come controesempio di OB-1. Il verificatore: V-ricetta-criteri-2 «unifica la parte controlli di ricetta-1, ricetta-3 e
+  ricetta-12» (RES, claim; VRC:385-386), mentre S-D punto (5) dice che resta «un falso allarme su L0 blocca comunque il
+  contrasto 1» (RES, S-D reason), cioe' l'effetto nei fit reali. «Fa fallire la prova» non e' nessuno dei tre casi del
+  criterio dichiarato (B:188-189 «farebbe fallire un job, falserebbe un risultato o ammetterebbe evidenze sbagliate»).
+  Rafforza il rilievo: se l'arresto nei controlli bastasse a fare un blocco, per coerenza anche OB-1 (difetto: «P:98 ferma la
+  catena per un allarme aperto anche quando la testa ha superato il cancello», B:208) dovrebbe essere un blocco, e la bozza
+  lo tiene fra le obbligatorie senza dire perche' (B:192-194 motiva solo OB-2 e OB-4). Fondare BL-3 sui fit reali toglie
+  anche questa incoerenza. La prima ragione basta: L0 non ammessa toglie il primario (P:104), L13 la candidatura (P:122,
+  J:40), con entrambe le regole di OB-4.
+  La correzione del controllore va bene.
+
+C-03 [B:577-578, B:354-358] — CONFERMATO. Imprecisione.
+  Delle 12 righe della sezione 4: C-3 (B:354) e Nota 33 (B:355) sono marcate «→ OB-5»; R-2 (B:356) e' la minore
+  criteri-5/consegna-2 (B:379, «In J un oggetto con le cause di P:104 [...] e la conseguenza»); C-1 (B:357) e' la minore
+  criteri-2 (B:377, stessa frase); Nota 12 (B:358) e' la minore architettura-5 (B:376, «Frase della nota 12»). Queste cinque
+  vanno corrette (B:369) e rilette prima della convergenza (B:432); il prompt (B:577-578) le mette fra le note, per cui «basta
+  una riga di disposizione, accolta o motivata», cioe' anche un rifiuto. Il rischio pratico e' basso, perche' OB-5 e le
+  minori hanno righe proprie nel prompt (B:564-576), ma le due istruzioni si contraddicono. Fonte del conteggio: RES,
+  consegna-5, claim «Otto righe «Accolta» promettono testo che il protocollo non contiene» (note 12, 17, 18, 20, 23, 39, 47,
+  49); le altre quattro righe vengono da consegna-1 (C-3, N3), consegna-2 (R-2) e consegna-4 (C-1).
+  Nota alla correzione: lo stesso accorpamento c'e' anche nel corpo, B:402 «`consegna-5` (nota) | Le promesse della tabella
+  della sezione 4»; con i rinvii nella terza colonna della sezione 4 B:402 diventa leggibile, ma conviene scrivere «le sette
+  promesse della sezione 4 non coperte da OB-5 o dalle minori». Per il resto la correzione del controllore va bene.
+
+C-04 [B:156-157, B:373-402] — CONFERMATO. Mancanza.
+  Rifatto con grep sugli ID estratti dal JSON: tutti i 63 rilievi compaiono in BL, OB o nelle sezioni 5-6, salvo due.
+  consegna-4: 0 occorrenze. controlli-7: una sola, B:156-157, come avvertenza dentro BL-2, senza la sua correzione.
+  - consegna-4 (minore per il revisore, nota PARZIALE per il verificatore): il contenuto utile e' la riga C-1 della sezione 4 e
+    la minore criteri-2 (B:357, B:377); la parte su C-2 il verificatore la respinge («Per RISP:20 non serve nulla», RES,
+    consegna-4, corrected_fix; VCC:152-168). Manca solo l'ID: tracciabilita', nessun contenuto perso.
+  - controlli-7 (nota, CONFERMATO): la correzione «Riportare prima dei fit la frazione di unità attive per strato e la quota
+    del margine recuperata dalla WLS L13 sul bersaglio temporale (già fra i 12 blocchi di PROT:80). Facoltativo: centrare z sul
+    fitting outer prima di T» (RES, controlli-7, fix) non c'e'. Il verificatore la lega alla calibrabilita' del temporale
+    (VAC:161-163), cioe' a BL-1(c). Senza una riga in sezione 5, la sezione 7 (B:430-431 «una riga di disposizione per
+    ciascuna nota» della sezione 5) non la chiede a GPT e la review del pacchetto non la ricontrolla.
+  La correzione del controllore va bene (in «frazione di unità attive per strato di T sul fitting outer», «sul fitting outer»
+  e' un'aggiunta del controllore, innocua; la fonte dice solo «per strato»).
+
+C-05 [B:504-510, 546, 554, 562, 575] — CONFERMATO. Imprecisione.
+  Ho confrontato corpo e prompt riga per riga; le sei perdite ci sono tutte:
+  (a) B:103-104 «con alpha scelto sugli held inner, su una griglia fissata ora e per ciascun bersaglio» contro B:504 «con alpha
+      dagli held inner per ciascun bersaglio»: cade «griglia fissata ora», che serve a non scegliere dopo la misura di E_real
+      (B:97-98).
+  (b) B:115-117 e' una voce a se' e finisce con «altrimenti «controllo non diagnostico»»; nel prompt (B:509-510) e' rientrata
+      con quattro spazi dentro il blocco di (b) e la conseguenza e' sparita. Senza etichetta, un fallimento della ridge potrebbe
+      finire in «ricetta non ammessa», proprio cio' che BL-1 vuole evitare (B:76-78).
+  (c) B:228 «in P:72 la frase che S-2 non toglie etichette né ammissibilità» contro B:546, senza la posizione.
+  (d) B:244-246 «senza affermare la superiorità sulla lettura lineare temporale (o istantanea). Va scritto in P:122, in J
+      `candidate` e nel §10» contro B:554, solo il nome dell'esito: cade la conseguenza che e' la sostanza di
+      V-ricetta-criteri-1 (RES, fix «non si afferma la superiorita'»).
+  (e) B:259-260 «con la regola direzionale vale per L0, non per la TCN-post» contro B:562 «Riscrivi anche P:104», senza il come
+      (si ricava in parte dalla terza voce di OB-4 nel prompt, B:561, ma non per P:104).
+  (f) B:379 «il nome `technical_failure` a P:104; che cosa segue a un fallimento del gate R-1» contro B:575.
+  Le perdite (b) e (d) toccano etichette e conclusioni; le altre sono posizioni o precisazioni. Il prompt rinvia alla review
+  pubblicata, quindi GPT puo' recuperarle, ma il prompt e' il testo operativo.
+  Aggiunta, nello stesso genere: B:506-507 «fittata sui 20 outer» contro B:107 «fittata sui 20 utenti di fitting outer». Nel
+  protocollo «outer» indica sia il fitting outer sia gli held outer (P:92, P:94); conviene «sui 20 utenti di fitting outer»,
+  come nel corpo. Rischio basso (GPT conosce P:96 «fittato sul fitting outer»), correzione a costo nullo.
+  La correzione del controllore va bene, con l'aggiunta sopra.
+
+C-06 [B:522] — CONFERMATO. Imprecisione (lieve).
+  Corpo B:144 «Cancello: su E_dyn, sugli held outer, per fold e pooled, per esempio (E_MLP − E_TCN)/(E_LS − E_oracolo) ≥ q»;
+  prompt B:521-522 «Decidi una delle due opzioni [...]: - un cancello su E_dyn per fold e pooled, (E_MLP − E_TCN)/(E_LS −
+  E_oracolo) ≥ q». Cade «per esempio»: la formula da esempio diventa la definizione dell'opzione. La fonte la da' come esempio
+  (RCO:186-187 «cancello definito, per esempio [...]»; RES, S-B fix «per esempio»), il verificatore chiede una scelta
+  «cancello o descrittivo, e quale cancello» (VAC:138-139), e la bozza dichiara la scelta scientifica di GPT (B:101-102,
+  B:435). «sugli held outer» e' implicito in P:94 («Qualificazione, sui held outer»): la sua perdita conta poco.
+  La correzione del controllore va bene.
+
+C-07 [B:356] — PARZIALE. Imprecisione (lieve).
+  Regge il nucleo: nella terza colonna «R:27 promette solo la voce di DEC, che c'è (DEC:6755)», letta alla lettera, dice che
+  la promessa e' mantenuta, in tensione con la seconda colonna (promessa su J) e con il titolo della tabella (B:350, «promesse
+  accolte che il testo non contiene ancora»). La parola sbagliata e' «promette»: R:27 accoglie il rilievo, e per R:3
+  ««accolta» significa incorporare la correzione nel disegno»; la correzione di REV:329 comprende J («In `proposal.json` vanno
+  aggiunti anche l'IC 95% descrittivo e l'arresto su NaN o OOM»). Il testo di R:27 *descrive* solo la voce di DEC. Cosi' la
+  leggono i verificatori: VRC:206-207 «la disposizione di R-2 «Accolta» parla solo della voce di decisioni.md [...] E' una
+  disposizione accolta che non e' nel JSON»; VCC:142-143 «La parte di R-2 su decisioni.md e' quindi soddisfatta; manca solo
+  il JSON».
+  Da ridimensionare: la prima colonna rimanda gia' a «rilievo `32e5452`, riga 329», dove J c'e', quindi la riga si ricostruisce;
+  e il legame con B:43 non regge: «Complete e fedeli nel testo» riguarda la presenza delle 63 disposizioni e la copia letterale
+  di titoli ed enunciati (B:340-347), non le promesse, che B:43 elenca a parte in «Che cosa resta».
+  Correzione: nella terza colonna «J ha solo l'etichetta `technical_failure` (→ criteri-5, consegna-2); R:27 descrive solo la
+  voce di DEC, che c'è (DEC:6755), ma «accolta» vale per tutta la correzione (R:3)».
+
+C-08 [B:305, B:306-308, B:39] — PARZIALE. Imprecisione (lieve).
+  Le due frasi sono fedeli alle conferme delle fonti e vere in senso stretto: RCO:84-87 (C-10, «Conseguenze distinte e
+  conservative»: quattro nomi diversi, tutti fermano prima dei fit reali, nessuna etichetta negativa) e VRC:392-394 («Reggono e
+  coincidono in P, J e D: formula del gain, [...] regola della candidata»), che nello stesso paragrafo elenca criteri-1 fra le
+  correzioni. La regola necessaria e sufficiente ha lo stesso testo in P:122, J:40 e DEC:6753; OB-3 corregge un'altra frase
+  di P:122 che la contraddice; l'ammissione dei comparatori e' scritta uguale (P:122, J:40, DEC:6753). Quindi non c'e'
+  contraddizione, ma manca un rinvio.
+  Regge di piu' per il punto 3: «distinte» e' proprio cio' che OB-1 completa. La terza voce di OB-1 (ordine fisso degli
+  stati, da controlli-8: «non è scritto quale etichetta si registra», RCO:269-271) e la prima (P:98 ferma la catena con un
+  cancello superato) riguardano le «conseguenze distinte dei fallimenti» che GPT mette nel punto 3 (REQ:22). Nella tabella
+  dell'Esito, pero', OB-1 compare solo nella riga del punto 2 (B:38), non in quella del punto 3 (B:39).
+  Correzione: B:305 «Le conseguenze hanno nomi distinti e sono conservative (tutte fermano prima dei fit reali, nessuna
+  etichetta negativa); attribuzione e ordine degli stati vanno completati con BL-1(b) e OB-1. Il criterio è legato al guadagno
+  piantato, come chiedeva `8d34f9c`.»; in B:39 aggiungere «OB-1 (arresto e ordine degli stati nei controlli)». Per B:306
+  basta, facoltativo, «salvo la frase di P:122 (OB-3) e il nome di S-2 (OB-2)».
+
+C-09 [B:215-216, B:220, B:253-257, B:152-153] — PARZIALE. Imprecisione.
+  (i) Regge. B:215-216 scrive la precedenza «In P:72, P:98, P:104 e nel §10» e poi «vale l'allarme, con la conseguenza scelta
+      in OB-4»; OB-4 e' «Conseguenza degli allarmi nei fit reali» (B:248), mentre P:98 e' nei controlli, dove vale la regola di
+      OB-1 (B:212-214). La fonte diceva «con la sua conseguenza» (RES, ricetta-1 corrected_fix).
+  (ii) Regge, e la lista e' piu' incompleta di quanto dica il controllore. Oltre al «non diagnostico» dell'alternativa ad
+      (a)+(b) (B:115-117), mancano i due che il protocollo ha gia': denominatore nullo o non finito (P:90) e margini non positivi
+      o non finiti (P:95, J:438). La voce 2 dell'ordine (B:220) li omette tutti e tre.
+  (iii) Regge. Il veto che OB-4 conserva e' scritto come «deterioramento_pratico» e «assenza di deterioramento usata dal veto»
+      (B:253-257), cioe' l'opzione (a) di OB-3; con l'opzione (b) il veto e' «upper99 < 0» (B:240).
+  (iv) Non regge. La bozza dice gia' quale etichetta: B:150-153, per la clausola MLP come cancello, «se non passa, «non
+      diagnostico» prevale sulle etichette di OB-1» e «con un allarme aperto sulla MLP la clausola non conta come superata»;
+      quindi clausola non superata -> «non diagnostico», che prevale anche su «ottimizzazione non risolta». L'ordine di OB-1
+      mette la clausola MLP nella voce 2 (B:220), prima degli stati delle teste (B:221). E' la correzione di FED P-26
+      (FED:290-291), adottata. Nessuna ambiguita' residua.
+  Correzione: (i) «vale l'allarme, con la sua conseguenza: nei controlli la regola qui sopra, nei fit reali quella scelta in
+  OB-4»; (ii) «2. «non diagnostico»: denominatori nulli o margini non positivi (P:90, P:95), banda di P:96, verifica di BL-1(b)
+  o, con l'alternativa, quota minima della ridge, clausola MLP di BL-2 se diventa un cancello»; (iii) in OB-4 «il veto scelto
+  in OB-3 (deterioramento_pratico con l'opzione a, upper99 < 0 con l'opzione b)» nelle due voci; (iv) nessuna modifica.
+
+C-10 [B:441-459] — PARZIALE. Mancanza (lieve).
+  Le quattro cose stanno nel corpo, ma non tutte mancano davvero a Simone.
+  (1) Regge come utile. Le due scelte che la review lasciava a Simone (REV:421-422 «decidere ora il bootstrap a due livelli»,
+      REV:426-427 «decisi ora») oggi GPT le ha prese da solo (R:60 «non adottata l'estensione inferenziale», R:63 «Qualificata»).
+      La bozza le manda nella riga «Criteri» del §10 (B:273-274), che soddisfa gia' il verificatore (VCC:176-179: riga «Criteri»
+      «oppure» messaggio di Claude a Simone, «Entrambe vanno bene»). Dirle anche nella sezione 8 non e' obbligatorio, ma
+      permette a Simone di cambiarle prima della revisione di GPT, coerente con «pochi giri»: se le vuole diverse alla firma
+      serve un giro in piu'.
+  (2) Facoltativa. L'effetto della regola simmetrica e' condizionato alla scelta di GPT, e la bozza la fa gia' scrivere nella
+      riga «Esito negativo/irrisolto» del §10 (B:263-264): Simone firma sapendolo. Utile nella sezione 8 solo per la stessa
+      ragione di (1).
+  (3) Regge. Che le note si verifichino dopo la firma, con una modifica registrata da firmare se toccano il testo firmato, e'
+      solo in B:437-439; l'Esito (B:32-33) non dice «dopo la firma». Riguarda proprio cio' che Simone firma.
+  (4) Non serve. La soglia 0,7630564 e' gia' in P:124, che Simone legge (VCC:133-134: «Va detto a Simone» e' «soddisfatto dal
+      §5»), e OB-5 la porta anche nella riga «Esito positivo» del §10 (B:268).
+  Correzione: una voce in fondo alla sezione 8, «Prima della firma»: le due scelte (copertura solo nominale con 15 utenti,
+  nessun bootstrap a due livelli, quindi «no» condizionato ai tre semi), che GPT non adotta e che conviene confermare ora; le
+  note verificate alla review del pacchetto operativo, dopo la firma, con una modifica registrata da firmare se una toccasse
+  il testo firmato. Facoltativa la frase sulla regola simmetrica; la soglia non va ripetuta.
+
+C-11 [B:451-455] — CONFERMATO. Mancanza (lieve).
+  Con OB-1 «Se una testa non passa e ha un allarme aperto, l'etichetta è "ottimizzazione non risolta"» (B:213-214), e P:98 lo
+  prevede gia' come stato che ferma la catena. La sezione 8 nomina «non calibrato», «non diagnostico» e «ricetta non ammessa»
+  (B:452-454). Lo stato mancante si decide nello stesso momento di «ricetta non ammessa», quindi la tempistica per Simone e'
+  gia' giusta; manca solo il nome. La correzione del controllore va bene.
+
+C-12 [B:443-450] — PARZIALE. Imprecisione (lieve).
+  Regge solo il doppio senso: «contro un gate di 20» (B:446) e' la soglia, «il gate vero è un po' più alto» (B:449) e' il
+  valore proiettato. In quel punto si puo' leggere come una soglia piu' alta di 20, cioe' un tetto diverso. La fonte usa
+  «gate» per il valore («gate raddoppiato 9,87-14,11 GPUh», VCC:59, VCC:260), quindi la bozza eredita l'ambiguita', ma in
+  un testo per Simone conta.
+  Il resto e' spiegazione in piu', non incoerenza: «raddoppiata» e' gia' detto e corrisponde al fattore 2 di P:183; il 20
+  contro il 24 e' coerente con P:168 e P:183, che Simone firma; l'origine della forbice 19-28 (valutazione da un terzo a un
+  passo, RES costo-1 evidence 19,39/21,49/27,78) e' utile ma facoltativa.
+  Correzione: B:449 «la proiezione vera è un po' più alta, perché conta anche I/O, avvii e salvataggi»; B:446 «contro la soglia
+  di 20 GPU-ore (il tetto della fase controlli + selezioni + rifit, P:168)». Facoltativi il «fattore di sicurezza 2 di P:183»
+  e la frase sull'origine di 19-28.
+
+C-13 [B:39-40] — PARZIALE. Imprecisione (lieve).
+  Regge per Simone: «S-2» compare 25 volte (grep) e non e' mai detto che cosa sia; l'Esito lo usa (B:40). Per GPT no: e' il
+  nome della regola di P:72 e GPT stesso scrive «regola S-2» (REQ:23). «Leggibile» si capisce da B:76-78; nella tabella e'
+  compresso ma non sbagliato.
+  La definizione proposta dal controllore e' incompleta: P:72 chiede due condizioni, «distanza >5 epoche e perdita relativa
+  E_dyn >=2% rispetto al suo minimo interno»; la correzione ne riporta una sola.
+  Correzione: riga del punto 4 «S-2 (P:72: il checkpoint scelto sulla MSE dista più di 5 epoche dal minimo interno di E_dyn e
+  ci perde almeno il 2%) va chiamato compromesso, non allarme (OB-2), e va trattato nella candidata (OB-3)». La frase su
+  «leggibile» e' facoltativa.
+
+C-14 [B:33, B:437] — RESPINTO.
+  Nessuna incoerenza: la bozza usa una convenzione costante. «§N» indica sempre una sezione di P (B:26 e B:41 «§10» nello
+  stesso Esito; B:186, 215, 236, 246, 263, 266, 267, 354-365, 385, 390, 396, 436, 437, 479, 542, 549, 563, 564) e «sezione N»
+  sempre una sezione della review (B:31, 32, 37, 40, 42, 43, 298, 396, 402, 413, 430, 437, 570, 577, 578), come fanno P e R
+  per il protocollo (P:98 «allarme di §4.2», R:17 «[§4]»). B:396 le mette una accanto all'altra («nel §9 sul gate (sezione 8 qui
+  sotto)»). Nessun «§N» indica la review e nessuna «sezione N» indica P. Il rischio che «dal §8» si confonda con la sezione 8
+  e' una supposizione senza un uso sbagliato che la provi. Facoltativo, a costo nullo: «(P:147)» dopo «§8» a B:33 e B:437.
+
+C-15 [B:542, B:546-547, B:175, B:229] — CONFERMATO. Imprecisione (lieve).
+  «Punto N» indica i punti della richiesta di GPT nella tabella (B:35-43), nel metodo (B:48-49), nella sezione 3 (B:280-317)
+  e nel prompt (B:481-486, «punto 5 (criteri)»). In BL-3 «punto 5» e' la voce 5 di §4.2 ed e' ancorato («P:69, punto 5»,
+  B:163; B:175 sta nello stesso blocco). In OB-2 (B:229) e nel prompt (B:542, B:546-547) non e' ancorato, e la riga «punto 5»
+  della tabella (B:41) tratta proprio la conseguenza degli allarmi (OB-4): la lettura sbagliata e' plausibile. B:175 si puo'
+  lasciare. La correzione del controllore va bene per B:229, B:542 e B:546-547.
+
+C-16 [B:192-193] — CONFERMATO. Imprecisione (lieve).
+  OB-2 chiede tre interventi (B:228-229): «compromesso S-2» in P:153, DEC:6747 e PR:18; una frase in P:72; il terzo allarme in
+  DEC:6747, che oggi nomina solo il «Bordo finale irrisolto» (DEC:6747; RES, ricetta-2 verdetto «In D manca anche l'allarme
+  della scelta al primo quarto»). «Basta togliere una parola» e' piu' stretto della correzione, e lo e' nel punto che spiega
+  perche' OB-2 non e' un blocco. La sostanza dell'argomento regge (nessuna scelta nuova: J:145-151 e P:72 danno gia' la
+  lettura voluta), quindi va cambiata solo la frase. La correzione del controllore va bene.
+
+=====================================================================================================================
+2. PROBLEMA NUOVO
+=====================================================================================================================
+
+N-1 [B:581-583, con B:503 e B:534] — imprecisione. Il prompt non dice a GPT che puo' scegliere una soluzione diversa.
+  Passo: «Che cosa ti chiedo: una revisione sul tuo ramo [...]. Se un rilievo è sbagliato, dimostralo con una prova. Poi
+  rileggo solo le righe di BL, OB e delle minori, senza agenti.» (B:581-583); «Proposta: (a) e (b) vanno insieme.» (B:503);
+  «Proposta: sul lato inferiore [...]» (B:534).
+  Problema: il corpo dice due volte che la scelta scientifica e' di GPT e che una scelta diversa basta che chiuda il
+  controesempio: B:101-102 «La scelta scientifica è di GPT»; B:434-435 «Se GPT adotta le formulazioni proposte, la rilettura
+  controlla solo che corrispondano. Se sceglie diversamente (la scelta scientifica è sua), controlla che la scelta chiuda il
+  controesempio». Nel prompt (B:473-585, grep di «scelt», «scegli», «tua»: solo le opzioni chiuse di BL-2 e OB-3 e il
+  «Raccomando» di OB-4) questa regola non c'e'. Per BL-1 e BL-3 il prompt da' «Proposta:» e un vincolo («(a) e (b) vanno
+  insieme»), e l'unica uscita indicata e' dimostrare sbagliato il rilievo. Letto da solo, il prompt impone le formulazioni,
+  contro la premessa che la review propone e non impone; e un'alternativa di GPT non prevista dal prompt rischia di essere
+  letta come un rifiuto, con un giro in piu'. E' lo stesso genere di C-06, ma vale per tutti i blocchi.
+  Prova: B:101-102, B:434-435, B:503, B:534, B:581-583; grep sulle righe 473-585 della bozza.
+  Correzione: in «Che cosa ti chiedo», prima di «Se un rilievo è sbagliato»: «Le correzioni sono proposte: la scelta
+  scientifica è tua. Se ne scegli una diversa, alla rilettura controllo che chiuda il controesempio del blocco o della
+  correzione obbligatoria.»
+
+=====================================================================================================================
+3. SINTESI PER CHI CORREGGE LA BOZZA
+=====================================================================================================================
+Da applicare come proposto dal controllore: C-02, C-03 (con B:402), C-04, C-05 (con «fitting outer» a B:507), C-06, C-11,
+C-15 (B:229, B:542, B:546-547), C-16.
+Da applicare con la correzione cambiata: C-01 (solo l'introduzione, titolo invariato), C-07 («descrive» invece di
+«promette», niente B:43), C-08 (rinvio a OB-1 a B:305 e in B:39; B:306 facoltativo), C-09 ((i), (ii) estesa a P:90/P:95,
+(iii); niente (iv)), C-10 (scelte di copertura e bootstrap e verifica delle note dopo la firma; facoltativa la regola
+simmetrica; niente soglia), C-12 («proiezione vera», «soglia di 20»), C-13 (definizione di S-2 con le due condizioni di P:72).
+Da non applicare: C-14 (facoltativo «(P:147)»).
+Nuovo: N-1.
+La bozza congelata non e' stata modificata.

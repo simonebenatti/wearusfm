@@ -1,0 +1,22 @@
+== BL-1 controesempio (modello del revisore, f'=0,5, K=(2,5;5), E_real=0,92)
+  sigma=1: E_LS,inner=0.6634 dist=0.2566 
+  sigma=1.5: E_LS,inner=0.8224 dist=0.0976 
+  sigma=2: E_LS,inner=0.8976 dist=0.0224 amm.
+  sigma=2.5: E_LS,inner=0.9373 dist=0.0173 amm.
+  sigma=3: E_LS,inner=0.9604 dist=0.0404 amm.
+  outer: E_or=0.9214 E_WLS=0.9294 R_dyn=0.8983 R_MSE=0.8983
+== BL-1(b): ridge con alpha portato da 10 a 20 utenti senza riscalare (parametrizzazione a loss media: alpha* ~ 1/n)
+  isotropo sigma=2.5: R_MSE OLS=0.898 ridge ottima=0.908 ridge alpha x2=0.901
+  isotropo sigma=3.0: R_MSE OLS=0.854 ridge ottima=0.872 ridge alpha x2=0.861
+  anisotropo sigma=2.5: R_MSE OLS=0.898 ridge ottima=0.940 ridge alpha x2=0.934
+  anisotropo sigma=3.0: R_MSE OLS=0.854 ridge ottima=0.925 ridge alpha x2=0.919
+== OB-3 e V-ricetta-criteri-1
+  gain3 L13=0,7619 TCN=0,750: 1.562; L13=0,735: -2.041; 0,735*1,0366=0.7619
+  gain2 MLP=0,740 TCN=0,750: -1.351
+== Soglia R-1 e OB-5
+  0,98*testa=0.7630564046643697; sotto la ridge=2.9069%
+== BL-3: 0,7268 contro 0,7269
+  differenza relativa=0.0138%
+== OB-4, controesempio della lacuna (etichette del §5)
+  contrasto 2 gain -3,0 IC99 [-4,5; -1,5] -> 2 (deterioramento_pratico)
+  con allarme TCN e regola direzionale la lettura negativa e' bloccata: se 'bloccata' = senza etichetta, il veto (etichetta 2 in 2 o 3) non scatta

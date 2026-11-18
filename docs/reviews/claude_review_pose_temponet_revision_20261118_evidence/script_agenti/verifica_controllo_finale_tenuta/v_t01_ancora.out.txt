@@ -1,0 +1,35 @@
+K=(2.5;5.0) f'=0,5 E_real(WLS)=0.92: sigma con ancora WLS 2.245; Delta_syn a pari sigma 0.0022; ridge (b) 0.9242, WLS 0.9180
+   Delta_real 0.0000 -> E_real(ridge) 0.9200: sigma con ancora ridge 2.275 (sale); ridge (b) 0.9223 -> passa
+   Delta_real 0.0020 -> E_real(ridge) 0.9180: sigma con ancora ridge 2.248 (sale); ridge (b) 0.9240 -> passa
+   Delta_real 0.0022 -> E_real(ridge) 0.9178: sigma con ancora ridge 2.245 (uguale); ridge (b) 0.9242 -> passa
+   Delta_real 0.0050 -> E_real(ridge) 0.9150: sigma con ancora ridge 2.210 (scende); ridge (b) 0.9264 -> passa
+   Delta_real 0.0100 -> E_real(ridge) 0.9100: sigma con ancora ridge 2.149 (scende); ridge (b) 0.9301 -> passa
+   Delta_real 0.0200 -> E_real(ridge) 0.9000: sigma con ancora ridge 2.041 (scende); ridge (b) 0.9365 -> passa
+   Delta_real 0.0400 -> E_real(ridge) 0.8800: sigma con ancora ridge 1.861 (scende); ridge (b) 0.9467 -> passa
+K=(2.5;5.0) f'=0,5 E_real(WLS)=0.94: sigma con ancora WLS 2.546; Delta_syn a pari sigma 0.0028; ridge (b) 0.9046, WLS 0.8945
+   Delta_real 0.0000 -> E_real(ridge) 0.9400: sigma con ancora ridge 2.599 (sale); ridge (b) 0.9010 -> passa
+   Delta_real 0.0020 -> E_real(ridge) 0.9380: sigma con ancora ridge 2.561 (sale); ridge (b) 0.9036 -> passa
+   Delta_real 0.0028 -> E_real(ridge) 0.9372: sigma con ancora ridge 2.546 (uguale); ridge (b) 0.9046 -> passa
+   Delta_real 0.0050 -> E_real(ridge) 0.9350: sigma con ancora ridge 2.506 (scende); ridge (b) 0.9073 -> passa
+   Delta_real 0.0100 -> E_real(ridge) 0.9300: sigma con ancora ridge 2.422 (scende); ridge (b) 0.9129 -> passa
+   Delta_real 0.0200 -> E_real(ridge) 0.9200: sigma con ancora ridge 2.275 (scende); ridge (b) 0.9223 -> passa
+   Delta_real 0.0400 -> E_real(ridge) 0.9000: sigma con ancora ridge 2.041 (scende); ridge (b) 0.9365 -> passa
+K=(3.5;7.0) f'=0,5 E_real(WLS)=0.92: sigma con ancora WLS 2.169; Delta_syn a pari sigma 0.0039; ridge (b) 0.9032, WLS 0.8928
+   Delta_real 0.0000 -> E_real(ridge) 0.9200: sigma con ancora ridge 2.217 (sale); ridge (b) 0.8993 -> non diagnostico
+   Delta_real 0.0020 -> E_real(ridge) 0.9180: sigma con ancora ridge 2.192 (sale); ridge (b) 0.9014 -> passa
+   Delta_real 0.0039 -> E_real(ridge) 0.9161: sigma con ancora ridge 2.169 (uguale); ridge (b) 0.9032 -> passa
+   Delta_real 0.0050 -> E_real(ridge) 0.9150: sigma con ancora ridge 2.156 (scende); ridge (b) 0.9043 -> passa
+   Delta_real 0.0100 -> E_real(ridge) 0.9100: sigma con ancora ridge 2.099 (scende); ridge (b) 0.9088 -> passa
+   Delta_real 0.0200 -> E_real(ridge) 0.9000: sigma con ancora ridge 1.996 (scende); ridge (b) 0.9168 -> passa
+   Delta_real 0.0400 -> E_real(ridge) 0.8800: sigma con ancora ridge 1.824 (scende); ridge (b) 0.9295 -> passa
+K=(3.5;7.0) f'=0,5 E_real(WLS)=0.94: sigma con ancora WLS 2.439; Delta_syn a pari sigma 0.0048; ridge (b) 0.8807, WLS 0.8645
+   Delta_real 0.0000 -> E_real(ridge) 0.9400: sigma con ancora ridge 2.522 (sale); ridge (b) 0.8734 -> non diagnostico
+   Delta_real 0.0020 -> E_real(ridge) 0.9380: sigma con ancora ridge 2.486 (sale); ridge (b) 0.8766 -> non diagnostico
+   Delta_real 0.0048 -> E_real(ridge) 0.9352: sigma con ancora ridge 2.439 (uguale); ridge (b) 0.8807 -> non diagnostico
+   Delta_real 0.0050 -> E_real(ridge) 0.9350: sigma con ancora ridge 2.435 (scende); ridge (b) 0.8810 -> non diagnostico
+   Delta_real 0.0100 -> E_real(ridge) 0.9300: sigma con ancora ridge 2.356 (scende); ridge (b) 0.8878 -> non diagnostico
+   Delta_real 0.0200 -> E_real(ridge) 0.9200: sigma con ancora ridge 2.217 (scende); ridge (b) 0.8993 -> non diagnostico
+   Delta_real 0.0400 -> E_real(ridge) 0.9000: sigma con ancora ridge 1.996 (scende); ridge (b) 0.9168 -> passa
+
+Lettura: (a) alza sigma solo se Delta_real < Delta_syn (circa 0,003 di E_dyn nel modello); con Delta_real di 0,005 o piu'
+sigma scende. Con E_real invariata la ridge di (b) perde 0,36-0,39 punti (K 2,5/5) e 0,4-0,7 (K 3,5/7).

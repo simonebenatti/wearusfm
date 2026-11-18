@@ -1,0 +1,33 @@
+sha256 bozza: 9492d23ea1ba5788e16871f8e6b97f6d8088b33887b43c91794841c55d6cf9b6
+P:69 OK  «LR ancora al bordo dopo l'estensione di quel lato» -- BL-3: allarme del bordo; B3:255 altre condizioni
+P:69 OK  «minimo MSE o E_dyn ancora nelle ultime5 epoche» -- OB-1 B3:281-282 caso tipico: minimo di E_dyn nelle ultime 5 epoche
+P:69 OK  «checkpoint selezionato al primo quarto di epoca» -- BL-3 B3:255-256
+P:72 OK  «non automaticamente non convergenza» -- B3:248
+P:80 OK  «12 blocchi di soluzioni» -- B3:472 (P-03)
+P:80 OK  «RHS-base reale,L,T,rumore» -- B3:146, B3:615 RHS-base T
+P:86 OK  «usando solo il fitting outer» -- P-03 / B3:472
+P:92 OK  «nessun nuovo seed/griglia automatica» -- B3:145 'P:92 vieta un nuovo seme'
+P:92 OK  «poi daE_real» -- B3:120 spareggio del temporale basato su E_real
+P:92 OK  «scegliere errore più vicino aE_real» -- B3:120 scelta di sigma nel lineare basata su E_real
+P:92 OK  «abs(E_LS,synth−E_real)<=0.05» -- ancora del temporale (T-04)
+P:95 OK  «Margini non positivi/non finiti → controllo non diagnostico» -- B3:84
+P:96 OK  «margine relativo oracolo in[6%,10%]» -- B3:82 banda 6-10%
+P:96 OK  «fuori intervallo → controllo non diagnostico» -- B3:170 non diagnostico della banda outer
+P:98 OK  «causa non attribuita automaticamente a ottimizzazione» -- B3:83
+P:104 OK  «Nessuna vittoria costruita su un comparatore inadeguatamente allenato» -- B3:204-205 (citazione)
+P:104 OK  «Se L0 o TCN-post non è ammissibile, niente promozione primaria» -- B3:336
+P:122 OK  «Se MLP o L13 sono risolti migliori, la TCN non è candidata preferita» -- OB-3
+J:40 OK  «L0/MLP/L13/TCNpost admitted» -- OB-3/OB-4 J candidate
+J:41 OK  «missing_or_unresolved_comparator» -- OB-4 J:40-41
+J:104 OK  «practical_readout_recommendation» -- T-09 J:104
+J:104 OK  «L0/MLP/L13/TCNpost admitted» -- T-09 J:104 chiede TCN-post ammessa
+J:142 OK  «selectedLR still at expanded boundary» -- BL-3 J:142
+J:471 OK  «same fit policy as real» -- BL-3 J:471
+DEC:5319 OK  «alpha 10**[-2..4], estensioni fino a 3 decadi per lato, parita' alpha minore» -- T-05 B3:116-117
+DEC:5320 OK  «bordo irrisolto dichiarato» -- T-05 B3:117
+DEC:6747 OK  «Bordo finale irrisolto» -- T-09(ii) BL-3 DEC:6747
+DEC:6747 OK  «Allarme S-2» -- OB-2 DEC:6747
+DEC:6753 OK  «Candidata iff» -- T-09 OB-3/OB-4 DEC:6753
+DEC:6753 OK  «TCN-post ammessi» -- OB-4 DEC:6753 chiede TCN-post
+DEC:6753 OK  «S-2 limita attribuzione» -- T-09(iii) DEC:6753
+R:20 OK  «Un L13 peggiore di L0» -- consegna-4: C-2 (R:20, L13 peggiore di L0)

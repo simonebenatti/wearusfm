@@ -1,0 +1,57 @@
+SEGNALAZIONI DEI TRE RILETTORI DELLA PRIMA BOZZA (elenchi finali restituiti a Claude).
+I numeri di riga fra [] si riferiscono a versioni precedenti della bozza, NON a bozza_controllo.md: cercare i passi per contenuto.
+Rapporti completi: ../rilettura_numeri/rapporto.txt, ../rilettura_riferimenti/rapporto.txt, ../rilettura_fedelta/rapporto.txt
+
+=== LENTE NUMERI (1 errore, 11 imprecisioni) ===
+N1 [75-76] errore — «Nel mondo lineare quella WLS è lo stimatore di massima verosimiglianza, eppure recupera l'89,8%» — con rumore AR(1) lo stimatore di massima verosimiglianza è il GLS; una L0 regolarizzata può superare il 90% dove la WLS fallisce — togliere la frase o riformulare.
+N2 [73-76; 420-421] imprecisione — controesempio di BL-1 valido solo con K_dyn=2,5 e K_tot=5; con K=(3,5;7) lo stesso caso sceglie sigma 2 e la WLS recupera 0,909, quindi passa — dichiarare i parametri.
+N3 [81] imprecisione — «smette di passare quando E_real supera circa 0,90-0,94»: la fonte dice ~0,90-0,92; ricalcolo 0,893-0,936.
+N4 [14] imprecisione — «HH:MM» segnaposto da compilare al commit (ls-remote subito prima del commit).
+N5 [140] imprecisione — «0,01%» per L0 nei fit reali all'epoca 57: la fonte dà 0,7268 contro 0,7269, 0,014%.
+N6 [163] imprecisione — OB-1 «TCN 60%, minimo E_dyn all'epoca 298»: non nelle fonti, marcare «numeri d'esempio».
+N7 [194] imprecisione — OB-4 «contrasto 1 a +5, IC99 [+3; +7], epoca 298»: non nelle fonti, marcare «numeri d'esempio».
+N8 [268-269] imprecisione — «tutti con data 12/11 e byte uguali ai pin»: pose_stats.json è pinnato solo per sha256; i 7.377 byte coincidono con lo spotcheck del 12/11.
+N9 [294] imprecisione — riga R-2 della tabella della sezione 4: R:27 parla solo della voce di decisioni.md; la richiesta per proposal.json è alla riga 329 della 32e5452.
+N10 [316] imprecisione — «la cache è float32»: è la `pred` della cache a essere float32; le feature sono FP16.
+N11 [378-381] imprecisione — 19-28 e 9,9-14,1 GPU-ore sono il gate raddoppiato prima di I/O, avvii e salvataggi.
+N12 [284; 296-303 contro 313-337] imprecisione — stessi ID per rilievi diversi (criteri-6, controlli-6, costo-7, consegna-7, consegna-9 della 32e5452 contro quelli di oggi): marcare gli ID della 32e5452.
+
+=== LENTE RIFERIMENTI (1 errore, 14 imprecisioni) ===
+R1 [14] imprecisione — HH:MM non compilato; 10:27 e 11:46 non verificabili dalle prove (controlli di Claude).
+R2 [16-18] imprecisione — abbreviazioni: manca «prompt = docs/prompt_claude_pose_temponet_review_20261117.md»; README, analytic_checks.json e document_checks_20261118.json senza percorso.
+R3 [54; 284; 296; 298; 301; 302] imprecisione — gli ID della sezione 4 sono della 32e5452, omonimi di rilievi diversi di oggi: dichiarare la convenzione o usare il prefisso «32e5452:».
+R4 [33] imprecisione — punto 1 «Solo correzioni di testo»: architettura-2 è minore/disegno (revisore) o minore/implementazione (verificatore).
+R5 [34; 436-437] imprecisione — BL-3 «toglie il primario»: vale per L0; su L13 toglie la candidatura e l'etichetta del contrasto 3.
+R6 [72-78; 420-421] imprecisione — parametri del controesempio di BL-1 non dichiarati; con K=(3,5;7) il caso passa (ricalcolo in rilettura_riferimenti/ricalcola_bl1.out.txt).
+R7 [81-82] imprecisione — «0,90-0,94» contro il verificatore «0,90-0,92».
+R8 [183] imprecisione — OB-3 opzione (a): nei rapporti (a) sostituisce «risolti migliori» con «con etichetta deterioramento_pratico nel contrasto 2 o 3» e chiama il caso misto «candidata, non peggiore in modo pratico di MLP/L13».
+R9 [269] imprecisione — byte di pose_stats.json non pinnati (come N8).
+R10 [294] imprecisione — riga R-2 (come N9).
+R11 [295; 313] imprecisione — «L0 peggiore delle storiche»: R:19 dice «Se L0 è deteriorata rispetto alla ridge».
+R12 [313] imprecisione — criteri-2 riporta un solo verso di C-1; manca «L0 migliore della ridge = effetto del rifit», caso «1 no, 4 e 5 sì».
+R13 [314] errore — citazione non letterale di c15aac9:97: il testo è «riportando comunque direzione e ampiezza. Non chiamarlo equivalenza.»
+R14 [317, 331, 332] imprecisione — facoltativi non segnati: architettura-1, S-F, architettura-6, architettura-7, costo-1.
+R15 [457] imprecisione — prompt: «frase della nota 12 e lettura di C-1 a P:126»: la nota 12 va a P:122.
+
+=== LENTE FEDELTA' (3 errori, 14 imprecisioni, 4 mancanze) ===
+F1 [216-220] errore — OB-4 direzionale: con allarme sulla TCN «si bloccano le letture negative», quindi anche un deterioramento_pratico nel contrasto 2 o 3; il veto resta vuoto e la TCN diventa candidata anche con la MLP migliore in modo pratico. Correzione: l'allarme sulla TCN sospende solo le conclusioni negative o nulle sul valore della TCN; un deterioramento_pratico misurato nel contrasto 2 o 3 esclude comunque la candidatura (anche nel prompt).
+F2 [476-478] errore — nel prompt OB-4 mancano «compresa l'assenza di deterioramento usata dal veto» e «la candidata richiede L0, MLP e L13 ammessi».
+F3 [409] errore — sezione 8: «"Non calibrato" e "non diagnostico" si decidono in forma chiusa, prima di ogni fit neurale» è falso con l'opzione cancello di BL-2, che si decide dopo i fit dei controlli.
+F4 [160-164] imprecisione — promozione di BL-3: nominare il caso del criterio; dire perché OB-2 e OB-4 restano OB; in tabella «Blocco (classificazione mia; verificatore: converge con correzioni)».
+F5 [130-132 con 182-184] imprecisione — BL-2 (cancello) e OB-1 non si compongono: manca la precedenza («non diagnostico» prevale); con allarme aperto sulla MLP la condizione non deve contare come superata (P:104); ordine fisso degli stati nei controlli (controlli-8).
+F6 [109-110, 454] imprecisione — la LS su y* nella sola banda non chiude S-C: va usata anche nel margine del cancello del 50%, dicendo che il cancello diventa più severo.
+F7 [473-474] imprecisione — prompt OB-3 «(a) toglierla» diverso dal corpo.
+F8 [453, 461, 463-467, 470-471] imprecisione — il prompt perde pezzi: alternativa «banda sganciata dall'ancora» di BL-1(c); frase dell'opzione descrittiva di BL-2; tolleranza e «epoca interna» di BL-3; regola delle etichette di OB-1; avviso che BL-3 è un minore promosso da Claude.
+F9 [389] imprecisione — sezione 7 «con quanto vuole della sezione 5» contraddice «Le righe minore vanno corrette» e «Correggilo»; la verifica delle minori rinviata al pacchetto operativo cade dopo la firma (P:147, P:209): includerle o dire che un errore dopo la firma richiede una modifica registrata.
+F10 [375] imprecisione — ricetta-9 voce vii («se la catena prosegue con allarmi aperti») è testo di P:104 e dipende da OB-4: spostarla.
+F11 [68, 442] imprecisione — «sbaglia molto per stima» detto come fatto: la fonte regge la direzione, non l'entità; aggiungere «plausibile, non stabilito» anche nel prompt.
+F12 [38, 141, 164] imprecisione — BL-3 «scatta» detto come fatto: «può scattare» e «Quanto è probabile: argomento qualitativo, non misurato».
+F13 [102-105] imprecisione — BL-1(b) non dice su quale bersaglio si sceglie alpha né come passa da 10 a 20 utenti; nel modello isotropo a sigma 2,5 la ridge recupera 0,901 (alpha x2) o 0,908 (ottimo) contro 0,898 della WLS: (b) da sola non chiude; (a) e (b) insieme, oppure cancello riferito al riferimento.
+F14 [185-186] imprecisione — precedenza «vale l'allarme» solo in P:72: va in P:72, P:98, P:104 e §10, con la definizione di «minimo interno» (V-ricetta-criteri-3) dentro OB-1.
+F15 [335] imprecisione — architettura-2: «la base L fa scattare l'arresto» vale solo con la norma di LSQR e L in float64 sullo stesso disegno; con L in FP32 passa: frase condizionale.
+F16 [131-132] imprecisione — BL-2 «e la ricetta non c'entra»: non nella fonte; scrivere «quindi il controllo non dice se la ricetta sfrutta il tempo».
+F17 [43, 437] imprecisione — disposizioni «Complete e fedeli» contro il verificatore CONVERGE_CON_CORREZIONI (consegna-1, consegna-2 prima della firma).
+F18 [14] mancanza — HH:MM non compilato.
+F19 [188-193, 472] mancanza — OB-2 omette che DEC:6747 non elenca l'allarme della scelta al primo quarto di epoca.
+F20 [67-74, 106, 453] mancanza — BL-1 non descrive il rischio di «non calibrato» nel temporale con a ≤ 1 (già a E_real 0,79 serve r ≥ 0,25-0,35), che motiva la (c).
+F21 [212-224] mancanza — OB-4 non chiede di riscrivere P:104 («Se L0 o TCN-post non è ammissibile, niente promozione primaria»).

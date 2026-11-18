@@ -1,0 +1,448 @@
+RAPPORTO DEL REVISORE - DIMENSIONE «ricetta»
+Proposta TCN ispirata a TEMPONet con ramo lineare, revisione documentale di GPT del 18/11/2026
+Consegna 3e007c841c97da5793ed4aac6cfceb41c99a00ee (contenuti 62348ab), confronto con c15aac9
+Perimetro: punto 2 della richiesta di GPT (ricetta finita) e parte del punto 4 (S-2, soglie dinamiche interne train-only).
+Protocollo §4.1 ultimo capoverso, §4.2, §4.5; proposal.json (fit, extensions, objective_tradeoff, internal_dynamic_threshold).
+Nessun esperimento, nessun training, nessun accesso al cluster. Solo lettura, aritmetica e tracce a mano.
+
+Convenzione delle prove: ESEGUITO (comando e risultato), CALCOLATO (conto mostrato), LETTO (file:riga, citazione breve).
+P = docs/pose_temponet_frozen_protocol_20261117.md nello snapshot 3e007c8
+J = results/infra/pose_temponet_proposal_20261117/proposal.json nello snapshot 3e007c8 (chiavi JSON)
+R = docs/reviews/pose_temponet_response_20261118.md nello snapshot 3e007c8
+D = docs/decisioni.md nello snapshot 3e007c8
+
+================================================================
+0. IDENTITA' DEI MATERIALI
+================================================================
+ESEGUITO: shasum -a 256 sullo snapshot e su git show 3e007c8:<file> e 62348ab:<file> nel worktree claude-temponet.
+- protocollo 05a9eb09a7cd4341184056a93802887a8277bb615400972b1f2d6d2186ec22f7 (snapshot = 3e007c8 = 62348ab = pin)
+- proposal.json f3b92c4a8f0aa525fc982632078b6a3d8774ee81838014203c24b4cb47494d9f (snapshot = 3e007c8 = pin)
+- risposta 076d35f161703d8de5cf2b7456282337a34139d951a72887dfe6f7b58df90d2b (= pin di delivery_pin_20261118.json)
+Le righe citate sotto sono quelle dello snapshot, identico al commit.
+
+================================================================
+1. ESITO IN BREVE (scritto alla fine, vedi sezione 6)
+================================================================
+Verdetto: CONVERGE_CON_CORREZIONI, nessun bloccante (dettagli nella sezione 6).
+- La ricetta e' finita: ogni caso termina con scelta, estensione o allarme; nessun ciclo; estensioni fissate prima e uguali
+  per tutte le teste. Selezione appaiata, durata dei rifit e soglia interna solo train sono definite.
+- Quattro minori: ricetta-1 (E_dyn al bordo di 300: compromesso S-2 o «ottimizzazione non risolta»? il testo dice entrambe le
+  cose), ricetta-12 (l'allarme del bordo LR puo' scattare su L0/L13 per differenze minime e togliere il primario o fermare il
+  controllo lineare), ricetta-2 (S-2 chiamato «allarme» mentre gli «allarmi aperti» tolgono etichette), ricetta-4 (controlli:
+  y osservato o y*).
+- Note: massimo LR raggiungibile 5 e non 6 (il conto 1,26 M di Claude era giusto), NaN nei LR esplorativi, weight decay non
+  scritto nel protocollo, dettagli per il codice.
+
+================================================================
+2. CONFERME: COSE VERIFICATE CHE REGGONO
+================================================================
+C-r1. La ricetta e' finita: nessun ciclo possibile.
+  LETTO P:68 «una volta per lato, con la stessa politica150→300; massimo6 LR»; P:66 «una sola estensione, non ripartenza».
+  Ogni LR ha al piu' una continuazione (150->300); ogni lato della griglia al piu' un'aggiunta. Il numero di LR e di epoche e'
+  limitato, quindi la procedura termina sempre con: una scelta, eventuali allarmi e il rifit.
+  ESEGUITO: work_ricetta/traccia_regole.py applica le regole come scritte a curve scritte a mano (nessun modello, nessun dato);
+  tutti gli 11 casi terminano con scelta, durata del rifit, allarmi e S-2 definiti (risultati nella sezione 3).
+
+C-r2. Estensioni decise prima, uguali per tutte le teste e per i controlli, senza scelte post hoc.
+  LETTO P:65-68 (griglia {1e-4,3e-4,1e-3,3e-3}, trigger 146-150, 3e-5/1e-2), J fit.extensions (righe 137-142);
+  J positive_controls.training_recipe (riga 471) «same fit policy as real; seed0; no external users».
+  Nessun passo lascia una scelta all'operatore: valori, soglie e orizzonti sono numeri fissati.
+
+C-r3. Trigger delle epoche su MSE OPPURE E_dyn: corrisponde alla controproposta di GPT e alla rettifica di Claude in 8d34f9c.
+  LETTO P:66 «Se minimo MSE oppure minimo E_dyn è nelle epoche146–150»; J riga 137 «earliest minimizer of pooled MSE OR pooled E_dyn».
+  CALCOLATO sui numeri del mondo V (rapporto verify_selezione-criteri.txt:263-267 e :342-344 nella cartella delle evidenze 32e5452):
+  a 50 epoche il minimo MSE (ep 43) non e' nelle ultime 5 (46-50), il minimo E_dyn (ep 50) si'; a 150 epoche il minimo MSE (ep 93)
+  non e' in 146-150, il minimo E_dyn (ep 148) si'. Il trigger su E_dyn coglie entrambi i casi; quello sulla sola MSE no.
+  La disposizione R:96 («Il trigger osserva entrambe; non cambia per questo la metrica di selezione») e' nel testo.
+
+C-r4. Selezione unica sulla MSE, pareggi definiti, E_dyn non sceglie.
+  LETTO P:67 «pareggi esatti: durata minore, poi LR minore. E_dyn non sceglie un secondo vincitore»; P:66 «Minimi/tie: checkpoint
+  più precoce»; J riga 216. P e J coincidono. Il passo 0 e' escluso (P:65 «Passo0 solo diagnostico, mai selezionabile»; J riga 159).
+
+C-r5. Checkpoint appaiati dei fold ben definiti.
+  LETTO P:66 «A ogni nuovo minimo MSE pooled si salva la coppia di stati dei fold, non due migliori epoche separate; si conserva anche
+  la coppia corrente per la continuazione»; «MSE=sum(per-window loss)/numero finestre, E_dyn=rapporto delle somme»; «continuare
+  entrambi i fold a300, preservando optimizer/RNG». J riga 206 uguale. Il salvataggio della sola coppia al nuovo minimo pooled basta
+  per il forward diagnostico sul fitting (P:78, massimo 37 = 22 selezioni + 15 rifit) e per la continuazione.
+  Con stato del modello, momenti di AdamW (contatore dei passi compreso) e stato dei generatori di dropout e shuffle conservati, la
+  continuazione 151-300 e' la stessa traiettoria di un fit unico da 300 epoche, sotto i flag deterministici di P:63, purche' le
+  valutazioni ai checkpoint non consumino i generatori del training (dettaglio di codice, ricetta-9 (iv)-(v)).
+
+C-r6. Prima epoca e passi: conti giusti.
+  LETTO P:65 «Checkpoint aggiuntivi a1/4,1/2,3/4 della prima epoca, passi ceil(q*S_fold), duplicati deduplicati».
+  ESEGUITO (work_ricetta/conti.py): S=30 -> passi 8, 15, 23, 30; S=31 -> 8, 16, 24, 31; S_full=60 -> 15, 30, 45, 60. Nessun duplicato
+  per S>=4; il checkpoint a q=1 coincide con la fine dell'epoca 1 (deduplicato). Quindi 304 valutazioni per traiettoria a 300
+  epoche (passo 0 + 3 quarti + 300 epoche): 132 x 304 = 40.128, come P:102.
+  CALCOLATO: S_full = ceil(1907/32) = 60; massimo di ceil(n/32)+ceil((1907-n)/32) = 61, come P:102 («somma passi fold<=61, full<=60»).
+
+C-r7. Durata dei rifit definita, anche dopo un'estensione e nella prima epoca.
+  LETTO P:70 «da zero al LR e durata scelti (non300 automatiche); stessa frazione nella prima epoca tramite ceil(q*S_full). A pari
+  epoche si fanno circa60 passi invece di30»; J riga 208. Chiude la nota selezione-4 (R:50) e il punto 4 del seguito 8d34f9c
+  (epoche dei rifit dopo un'estensione). Esempio: scelto 1/4 di epoca -> ceil(0,25 x 60) = 15 passi; scelta all'epoca 220 dopo
+  l'estensione -> 220 x 60 passi.
+
+C-r8. Soglia dinamica interna solo train: coincide con la definizione storica di pose_var sulle cache di questo progetto.
+  LETTO P:59 «media delle varianze population per giunto sui tempi validi dell'intera finestra160 (almeno2 punti), poi mediana sulle
+  finestre del fitting della direzione del fold, limite inferiore1e-12». J righe 163-167.
+  LETTO src/wearusfm/harness/pose_eval.py:182-183 (worktree claude-temponet, identico a 3e007c8): «rows_ok = m.any(axis=1)» e
+  «float(t[rows_ok].var(axis=0).mean()) if rows_ok.sum() > 1 else float("nan")»: varianza population (ddof 0) sui tempi validi della
+  finestra intera, media sui 20 giunti, almeno 2 tempi.
+  LETTO src/wearusfm/data/pose_targets.py:177-179: «has = cnt > 0» e «mask[has] = True»: la maschera vale per tutti i 20 giunti
+  insieme (validita' per blocco, emg2pose_pose.py:139 «v.all(axis=1)»). Quindi «per giunto sui tempi validi» e «righe con almeno un
+  giunto valido» coincidono: la nuova definizione e' la stessa formula del pose_var gia' in cache.
+  LETTO scripts/tokenizer_pose_readout.py:31 e scripts/pose_slot_readout.py:176: la soglia storica 0,2574231028556824 e'
+  «np.nanmedian(val['pose_var'])» sulle finestre val. ESEGUITO: float(np.float32(0.2574231028556824)) == 0.2574231028556824 -> True
+  (e' il valore float32 della mediana del campo in cache).
+  Differenze dichiarate e accettabili: popolazione della mediana = finestre del fitting della direzione, non i val; limite 1e-12
+  nuovo; la soglia storica resta solo per il report finale (P:59 «resta solo per il report finale»). Chiude il punto 2 del seguito
+  8d34f9c («dichiaralo, oppure ricavala dal train»).
+
+C-r9. S-2 definito e finito; le soglie scelte colgono i casi delle prove sintetiche della review.
+  LETTO P:72 «distanza >5 epoche e perdita relativa E_dyn >=2%» -> objective_tradeoff; J righe 198-203.
+  CALCOLATO (conti.py, numeri del rapporto verify_selezione-criteri.txt): TCN mondo V a 150 epoche: distanza 55, regret 2,42% ->
+  objective_tradeoff; L13 mondo V: distanza 18, regret 3,66% -> objective_tradeoff; L0 mondo V: distanza 3, regret 0,17% -> no;
+  TCN a 50 epoche: distanza 7, regret 0,67% -> no. La regola segnala L13 (il caso per cui la review l'aveva chiesta) e non L0.
+
+C-r10. Qualificazione di GPT sulla nota selezione-11 (weight decay): corretta.
+  LETTO R:57 «non si trasferisce invariata all'orizzonte più lungo».
+  CALCOLATO (conti.py), fattore (1 - lr*wd)^passi con wd 0,01: 50 ep x 30 passi a 1e-3 -> 0,985 (contrazione 1,5%); 300 ep x 30 a
+  3e-3 -> 0,763 (23,7%); 300 x 30 a 1e-2 -> 0,407 (59,3%); rifit 300 x 60 a 1e-2 -> 0,165 (83,5%). Con il nuovo orizzonte e i LR alti
+  il decay non e' piu' trascurabile. La qualificazione regge (ma vedi ricetta-7 per la collocazione nel protocollo).
+
+C-r11. «Divergenza non finita» al posto di «divergenza» (P:104 contro c15aac9:75): un LR alto che peggiora resta un LR perdente,
+  non un arresto. Solo NaN/Inf fermano la fase. Modifica coerente con la griglia estesa (vedi pero' la nota ricetta-8).
+
+C-r12. P e J coincidono su tutti i parametri della ricetta (griglia, 3e-5/1e-2, 150/300, trigger 146-150, quarti, passo 0, pareggi,
+  rifit, S-2 5 epoche/2%, soglia interna). LETTO P:63-72 e J righe 122-231 (sezione fit); nessuna divergenza di valori trovata.
+
+================================================================
+3. TRACCE MINIME DEI CASI RICHIESTI
+================================================================
+ESEGUITO: OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ~/.venvs/wearusfm-tok/bin/python -I work_ricetta/traccia_regole.py
+Le curve sono sequenze scritte a mano (parabole, rette, costanti): servono solo a far girare le regole di P:65-72 come sono scritte.
+Non sono simulazioni di reti. Scelte di lettura dichiarate nel file: passo 0 escluso anche dai minimi; argmin = checkpoint piu'
+precoce; «orizzonte massimo» = 300.
+
+T1. Minimo MSE interno ed E_dyn ancora in discesa al bordo (caso A).
+  LR 1e-3: MSE minima all'epoca 93, E_dyn decrescente fino a 300. A 150: argmin E_dyn = 150 in 146-150 -> continuazione a 300 dei
+  due fold (P:66). Selezione: 1e-3, epoca 93 (P:67). Non al bordo LR. Punto 5 (P:69): minimo E_dyn a 300, nelle ultime 5 -> 
+  «ottimizzazione non risolta entro il budget». S-2 (P:72): distanza 207, regret 2,96% -> objective_tradeoff. Rifit: 93 epoche.
+  Esito definito, ma con DUE caratterizzazioni (vedi ricetta-1). Nota: la scelta (epoca 93) e il rifit (93 epoche) sono gli stessi
+  che si avrebbero con 150 epoche: l'estensione non cambia il modello scelto, aggiunge solo l'allarme.
+  Variante A' (E_dyn minima a 148 e poi in risalita): continuazione a 300, scelta 93, nessun allarme, regret 0,41% -> nessun S-2.
+
+T2. Minimo E_dyn interno e MSE al bordo (caso B).
+  LR 3e-4: E_dyn minima all'epoca 60; MSE ancora in discesa a 150 (argmin in 146-150) -> continuazione a 300; minimo MSE poi a 220.
+  Selezione 3e-4 a 220; nessun allarme; S-2: distanza 160, regret 3,46% -> objective_tradeoff. Rifit 220 epoche (non 300).
+
+T3. LR vincente al bordo prima e dopo l'estensione di quel lato (caso C).
+  Vince 3e-3 (bordo superiore) -> si aggiunge 1e-2 (stessa politica 150->300) -> si riseleziona -> vince 1e-2, bordo superiore gia'
+  esteso -> allarme «LR ancora al bordo dopo l'estensione» (P:69). 5 LR provati. Fine.
+  Caso C': vince 1e-4 -> si aggiunge 3e-5 -> vince ancora 1e-4, ora interno -> nessun allarme. 5 LR provati. Fine.
+
+T4. Pareggio esatto fra due LR (caso D).
+  3e-4 e 1e-3 con la stessa MSE alla stessa epoca 50 -> «durata minore, poi LR minore» (P:67) -> 3e-4. Se il pareggio fosse fra 1e-4
+  e 3e-4, vincerebbe 1e-4 e scatterebbe l'aggiunta di 3e-5: definito.
+
+T5. Checkpoint scelto a 1/4 di epoca (caso E).
+  Selezione 1e-3 a q=0,25 -> allarme «checkpoint selezionato al primo quarto» (P:69). Rifit: ceil(0,25 x 60) = 15 passi (P:70).
+  Il fit reale e' conservato senza etichette inferenziali sui contrasti che dipendono da quella testa (P:104); in un controllo e'
+  arresto prima dei fit reali (P:98).
+
+T6. Estensione 150->300 di un LR con i due fold (descrizione, nessun codice).
+  Le curve pooled (somma delle loss per finestra dei due held / numero finestre; E_dyn = somme SSE / somme SS) hanno l'argmin di una
+  delle due in 146-150. Si riprende la «coppia corrente» (P:66): per ciascun fold pesi, momenti AdamW e contatore, generatori di
+  dropout e shuffle. Le due traiettorie avanzano di nuovo a checkpoint sincronizzati 151..300; a ogni nuovo minimo della MSE pooled si
+  sovrascrive la coppia migliore. La continuazione si conta una volta sola (P:102). Definito.
+
+T7. LR scartato ancora al bordo (caso G).
+  1e-4 lento: argmin MSE a 150 -> continuazione; a 300 ancora in discesa ma peggiore di 3e-4 (scelto all'epoca 100). Punto 5: nessun
+  allarme sul vincitore; 1e-4 «si registra, ma non invalida da solo il vincitore» (P:69; J riga 142 «unselected-LR boundaries
+  reported only»). Definito.
+
+T8. S-2 con E_dyn_min = 0 (casi H1 e H2).
+  H1: E_dyn = 0 dall'epoca 40, scelto all'epoca 20 con E_dyn 0,1 -> regret infinito (P:72 «la perdita è infinita») -> objective_tradeoff.
+  H2: E_dyn = 0 anche al checkpoint scelto (epoca 50): il regret e' 0/0, il testo non lo definisce; con l'argmin «piu' precoce» la
+  distanza e' 10 > 5. Il caso e' degenere (con rumore o target reali E_dyn > 0); serve solo una riga (vedi ricetta-9).
+
+T9. Interazione S-2 / punto 5: vedi T1. Quando il minimo E_dyn del LR scelto e' nelle epoche 296-300 e la MSE ha minimo interno,
+  scattano insieme objective_tradeoff (P:72, «non automaticamente non convergenza») e «ottimizzazione non risolta» (P:69). La
+  conseguenza piu' forte (P:104 per i fit reali, P:98 per i controlli) prevale di fatto, ma il testo non lo dice. Rilievo ricetta-1.
+
+T10. Numero massimo di LR raggiungibile.
+  Dopo l'aggiunta di 3e-5 (bordo inferiore) il nuovo vincitore puo' essere solo 3e-5 o il vincitore di prima (1e-4): l'ordine fra gli
+  altri LR non cambia. Il bordo superiore non puo' vincere se prima non vinceva. Lo stesso vale in senso opposto. Quindi per ogni
+  combinazione testa/bersaglio si estende al piu' UN lato: massimo 5 LR, non 6. Rilievo ricetta-6 (nota, conti nel paragrafo).
+
+T11. Bordo LR piatto su una testa lineare veloce (caso L, aggiunto dopo).
+  Minimi pooled scritti a mano: 3e-3 0,7330, 1e-3 0,7290, 3e-4 0,7272, 1e-4 0,7269, 3e-5 0,7268. Vince 1e-4 -> si aggiunge 3e-5 ->
+  vince 3e-5 per 0,0001 -> allarme «LR ancora al bordo dopo l'estensione». Definito, ma vedi ricetta-12.
+
+================================================================
+4. RILIEVI
+================================================================
+Nessun bloccante. Le regole sono finite e implementabili come scritte. Restano due minori di disegno da decidere prima della
+firma (ricetta-1 e ricetta-12, quest'ultimo in fondo all'elenco perche' trovato dopo le tracce), un minore di testo (ricetta-2),
+un minore di testo condiviso con la dimensione dei controlli (ricetta-4) e note.
+
+----------------------------------------------------------------
+ricetta-1 | MINORE | DISEGNO | Il minimo di E_dyn al bordo di 300 trasforma un compromesso S-2 in «ottimizzazione non risolta»
+----------------------------------------------------------------
+Posizione: P:69 (punto 5), P:72 (S-2), P:98 (controlli), P:104 (fit reali); J righe 142 e 199; R:23.
+Che cosa dice il testo.
+  - LETTO P:69: «minimo MSE o E_dyn ancora nelle ultime5 epoche dell'orizzonte massimo [...] dà ottimizzazione non risolta».
+  - LETTO P:72: S-2 «È un compromesso livello/dinamica, non automaticamente non convergenza».
+  - LETTO R:23 (disposizione di S-2): «i disaccordi residui limitano l'interpretazione».
+  - LETTO controproposta di GPT in chat: le due idee c'erano gia' entrambe. «Arresto: Se i controlli restano irrisolti al limite
+    previsto» (i controlli sono MSE oppure E_dyn nelle ultime cinque) e, poco dopo, se la dinamica «continua a migliorare mentre
+    la MSE peggiora, potremmo avere un compromesso». Claude in 8d34f9c ha accolto l'impianto e ha chiesto E_dyn nel trigger.
+    La revisione ha scritto le due regole senza dire quale prevale nel caso in cui si sovrappongono.
+Controesempio minimo (traccia T1, ESEGUITO traccia_regole.py, caso A). TCN-post, LR 1e-3 interno. MSE pooled con minimo all'epoca 93
+  e poi in salita; E_dyn pooled sempre in discesa fino a 300. A 150 il trigger su E_dyn estende a 300. La selezione resta epoca 93,
+  quindi il rifit e' a 93 epoche: lo stesso modello che si sceglierebbe con 150 epoche o con un budget piu' grande, finche' la MSE non
+  scende sotto il valore dell'epoca 93. Il punto 5 dichiara pero' «ottimizzazione non risolta entro il budget»; S-2 segnala nello
+  stesso tempo objective_tradeoff (distanza 207, regret 2,96%).
+  E' il caso del mondo V che ha motivato il trigger: a 150 epoche MSE minima all'epoca 93 e E_dyn minima a 148 (verify_selezione-
+  criteri.txt:342-344). Che finisca in allarme dipende solo da dove cade il minimo di E_dyn fra 151 e 300.
+Conseguenze, oggi non scritte insieme:
+  - fit reali (P:104): «conservati senza etichette inferenziali sui contrasti che dipendono da quella testa». Se tocca TCN-post,
+    nessuno dei cinque contrasti ha etichetta e la prova si chiude come irrisolta. Se tocca L0, MLP o L13, la testa non e'
+    «ammessa» e la candidata non si puo' stabilire (P:122; J riga 41 «candidacy not established»);
+  - controlli (P:98): «stop prima dei fit reali», anche quando la stessa testa supera il recupero >=50% o >=90%. Nel controllo
+    temporale e' plausibile che la TCN continui a migliorare E_dyn mentre la MSE (che contiene il rumore AR(1)) ha gia' un minimo:
+    la catena si fermerebbe per un motivo che non e' il mancato recupero del margine.
+Perche' non e' bloccante: la regola e' meccanica, il codice puo' alzare entrambi i segnali e applicare P:104/P:98; l'esito e'
+  conservativo (nessuna etichetta, nessun verdetto negativo). Ma le due frasi danno due letture opposte dello stesso caso, e la
+  tabella del §10 che Simone firma non lo dice.
+Correzione (da scegliere e scrivere prima della firma):
+  (a) consigliata: lasciare E_dyn nel TRIGGER (P:66) e toglierlo dall'esito finale. Allarmi del punto 5: minimo MSE in 296-300, LR
+      al bordo dopo l'estensione, scelta al primo quarto. Minimo E_dyn in 296-300 con MSE interna = objective_tradeoff (se regret
+      >=2%) piu' un segnale descrittivo «dinamica ancora in miglioramento a 300», con le cautele gia' scritte in P:72. E' coerente con
+      la frase della chat sul compromesso, con R:23 e con la selezione sulla sola MSE. Va insieme alla frase di ricetta-5 (compromesso su un
+      comparatore -> cautela sul contrasto positivo), perche' P:104 vuole anche «Nessuna vittoria costruita su un comparatore
+      inadeguatamente allenato»;
+  (b) in alternativa, tenere la regola com'e' e scriverne la precedenza: in P:72 «salvo minimo E_dyn nelle ultime 5 epoche di 300,
+      che e' allarme del punto 5»; in P:98 e P:104 la conseguenza esplicita anche per i controlli; una riga nel §10 per Simone.
+
+----------------------------------------------------------------
+ricetta-2 | MINORE | TESTO | S-2 chiamato «allarme» in tre punti, mentre P:104 toglie etichette e ammissibilita' agli «allarmi aperti»
+----------------------------------------------------------------
+Posizione: P:153 «entrambe le curve e allarmeS-2»; D:6747 «Allarme S-2 se distanza>5epoche e regretE_dyn>=2%»;
+  docs/prompt_claude_pose_temponet_review_20261117.md:18 «Allarme di compromesso»; P:104 «Fit reali con allarmi aperti vengono
+  conservati senza etichette inferenziali».
+Lettura corretta, gia' nel disegno: S-2 non e' uno stato di fallimento. LETTO J righe 145-151 (failure_states senza
+  objective_tradeoff) e riga 199 («retain MSE selection [...] restrict interpretation of contrast3»); P:72 «il contrasto3 resta una
+  prestazione di questa selezione MSE».
+Controesempio minimo: L13 con i numeri del mondo V (distanza 18, regret 3,66%, CALCOLATO in conti.py) -> objective_tradeoff.
+  Lettura J/P:72: contrasto 3 etichettato con cautela, candidata possibile. Lettura «allarme aperto» di P:104: contrasto 3 senza
+  etichetta, L13 non ammessa, candidata impossibile. Le prove sintetiche della review danno S-2 su L13 in entrambi i mondi (3,66% e
+  11,9%): il caso e' probabile, non marginale. Lo stesso vale nei controlli: P:98 ferma la catena se «un allarme di §4.2 resta
+  aperto», e S-2 sta nel §4.2.
+Correzione: chiamarlo «diagnosi S-2 (objective_tradeoff)» in P:153, D e prompt; aggiungere in P:104 una frase: «objective_tradeoff
+  non e' un allarme aperto: non toglie etichette ne' ammissibilita'». Nella voce di D elencare anche i tre allarmi del punto 5
+  (D:6747 dice solo «Bordo finale irrisolto» e non nomina la scelta al primo quarto).
+
+----------------------------------------------------------------
+ricetta-3 | NOTA | DISEGNO | Nei controlli non e' detto quali teste fermano la catena con un allarme
+----------------------------------------------------------------
+Posizione: P:98 «Se un allarme di §4.2 resta aperto [...] stop prima dei fit reali»; J riga 421 «unresolvedoptimization outcomes
+  stop before realneuralfits»; J riga 441 «neuralL0/MLP descriptive» (controllo temporale); P:96 «MLP non deve vincere il temporale».
+Il testo applica l'arresto a ogni testa di ogni controllo. Nel temporale la L0 neurale e' solo descrittiva (J riga 441): un suo
+  allarme (per esempio scelta al primo quarto) fermerebbe la catena senza che nessun cancello la usi. Per la MLP del temporale P:96
+  («non deve vincere») e J riga 441 («descriptive») non dicono la stessa cosa: va allineato (dimensione dei controlli).
+Correzione facoltativa: scrivere che fermano la catena gli allarmi delle teste che entrano in una condizione del cancello (lineare:
+  L0, MLP, TCN; temporale: TCN, e MLP se resta condizione); per le altre l'allarme si registra.
+
+----------------------------------------------------------------
+ricetta-4 | MINORE | TESTO | Nei controlli la soglia dinamica e E_dyn non dicono se si calcolano su y osservato o su y* pulito
+----------------------------------------------------------------
+Posizione: P:59 «Nei controlli i bersagli sono sintetici»; P:92 «mediana del fitting outer sul bersaglio sintetico scelto»;
+  P:88 «Bersaglio pulito noto y*=L+a*T; osservato y=y*+sigma*epsilon»; J riga 167 «synthetic forcontrols»; J riga 418.
+  (Condiviso con la dimensione dei controlli: tocca trigger, S-2 e allarmi della ricetta quando gira sui controlli.)
+Il testo chiama «bersaglio» y* e «osservato» y; la soglia e' detta «sul bersaglio sintetico». Le teste si allenano su y e l'oracolo
+  e' valutato «sul noisy held» (P:88), quindi E_dyn dovrebbe usare y; ma la soglia potrebbe essere letta su y*.
+Perche' conta (CALCOLATO, work_ricetta/rumore_ar1.py, forma chiusa per AR(1) stazionario, rho = exp(-1/4), n = 160 tempi, 20 giunti
+  indipendenti): la parte di rumore in pose_var(y) vale circa 0,95*sigma^2 e oscilla fra finestre di circa 0,051*sigma^2: 0,05 a
+  sigma 1, 0,20 a sigma 2, 0,46 a sigma 3. Per sigma >= 2 questa sola oscillazione e' dello stesso ordine della mediana storica di
+  pose_var dei target reali (0,257). Calcolata su y, la scelta delle finestre «dinamiche» puo' dipendere molto dal rumore; su y* solo
+  dal segnale. Quanto conti davvero dipende dalla sigma calibrata e dalla varianza in finestra di y*, che oggi non si conoscono.
+Correzione: una frase in P:59 e P:92: pose_var, soglia e accumulatori E_dyn dei controlli si calcolano sul target osservato y (o su
+  y*, se si preferisce), lo stesso per teste, LS-L0, oracolo e calibrazione.
+
+----------------------------------------------------------------
+ricetta-5 | NOTA | TESTO | S-2 non dice che cosa succede se il compromesso riguarda L0 o MLP
+----------------------------------------------------------------
+Posizione: P:72 («Se riguarda L13 [...] Se riguarda TCN [...]»); J riga 199 «restrict interpretation of contrast3 and any negative
+  TCN conclusion».
+Se L0 (comparatore del primario) o MLP ha objective_tradeoff, la sua E_dyn al checkpoint scelto sulla MSE e' peggiore di almeno il 2%
+  rispetto al suo minimo interno: il contrasto 1 o 2 favorisce la TCN anche per questo. Le prove sintetiche danno a L0 un costo
+  piccolo (0,17% nel mondo V, CALCOLATO in conti.py; 0,3-1,2% nei mondi del revisore, verify_selezione-criteri.txt:333-335): rischio basso.
+Correzione facoltativa: «se riguarda L0 o MLP, un contrasto 1 o 2 positivo si legge con la stessa cautela; nessun cambio di etichetta».
+
+----------------------------------------------------------------
+ricetta-6 | NOTA | TESTO | «Massimo 6 LR» non si raggiunge: il massimo vero e' 5 per combinazione
+----------------------------------------------------------------
+Posizione: P:68 «massimo6 LR»; P:102 «103 traiettorie iniziali, massimo147», «1.477.800»; P:183 «matrice massima6LR300»;
+  J riga 141 «max_lrs: 6»; analytic_checks.json riga 7 «claude_1260000_max_updates_superseded».
+Ragionamento (traccia T10): l'aggiunta di un LR aggiunge solo candidati; il nuovo vincitore e' il vecchio o il LR aggiunto. Dopo
+  3e-5 puo' vincere solo 3e-5 o 1e-4; dopo 1e-2 solo 1e-2 o 3e-3. L'altro lato non puo' piu' vincere. ESEGUITO traccia_regole.py:
+  casi C e C' provano 5 LR al massimo.
+CALCOLATO (conti.py), con L = 5 LR e 300 epoche: 110 traiettorie CV, 125 in tutto (non 147); limite di update 1.276.500 (non
+  1.477.800); nominale 30+30/60 = 1.260.000; valutazioni held 110 x 304 = 33.440 (non 40.128).
+  Il conto di Claude in 8d34f9c («1,26 milioni con tutte») era proprio il massimo raggiungibile. La voce di analytic_checks.json che
+  lo dichiara superato da 1.458.000 «11*6LR*300*60» ha quindi una motivazione sbagliata. Il limite a 6 LR resta valido come
+  margine (+15,8% sugli update; a 18,5 ms/update raddoppiati 15,19 contro 13,12 GPUh), ma il cancello GPU di P:183 e' piu' stretto
+  del necessario.
+Correzione facoltativa: scrivere «massimo 5 LR raggiungibili; il preventivo usa 6 come margine dichiarato» e correggere la voce di
+  analytic_checks.json. Nessun effetto sulle conclusioni.
+
+----------------------------------------------------------------
+ricetta-7 | NOTA | TESTO | La nota selezione-11 e' «accolta con qualificazione», ma il limite non e' scritto nel protocollo
+----------------------------------------------------------------
+Posizione: R:57 («Dichiarare il limite e demandare ai controlli della ricetta. [§4]»); P:63 (solo «weight decay0,01 solo
+  matrici/kernel»). ESEGUITO: grep di «decay|regolarizz» in P: nessuna frase sul limite; P:78 parla del divario WLS, non del decay.
+La qualificazione e' giusta (C-r10): contrazione 1,5% a 1e-3 x 1500 passi, 23,7% a 3e-3 x 9000, 59,3% a 1e-2 x 9000. Il decay quindi
+  regolarizza in modo diverso secondo LR e durata.
+Correzione facoltativa: una frase in P:63 con questi fattori e con il fatto che l'arresto (epoca scelta) resta il regolatore
+  principale a LR bassi.
+
+----------------------------------------------------------------
+ricetta-8 | NOTA | DISEGNO | Un NaN in un LR esplorativo ferma tutta la fase
+----------------------------------------------------------------
+Posizione: P:104 «NaN/Inf, divergenza non finita, OOM, fit incompleto/TIMEOUT [...] fermano la fase»; P:65 e P:68 (3e-3 nella
+  griglia iniziale, 1e-2 come estensione: valori nuovi rispetto a c15aac9:66 che aveva solo 1e-4 e 1e-3).
+La regola e' definita. Ma in una ricerca del LR una perdita non finita al LR piu' alto e' un esito normale: oggi fermerebbe la fase e
+  chiederebbe una nuova decisione. Con AdamW, clipping 1 e FP32 il caso e' poco probabile.
+Correzione facoltativa: «un LR con perdita non finita e' escluso dalla selezione e registrato; un valore non finito nel LR scelto, nei
+  rifit, nei controlli o nell'inferenza resta arresto tecnico».
+
+----------------------------------------------------------------
+ricetta-9 | NOTA | IMPLEMENTAZIONE | Dettagli da fissare nel codice e nei test del §8
+----------------------------------------------------------------
+Posizione: P:59, P:65-66, P:72, P:153; J righe 159, 164, 203.
+(i)  S-2 con E_dyn_min = 0 e E_dyn scelto = 0: regret 0/0 non definito (traccia T8, caso H2). Basta «se E scelto = E minimo il
+     regret e' 0».
+(ii) Il passo 0 e' escluso dalla selezione (J riga 159); dirlo anche per i minimi di E_dyn del trigger, di S-2 e del punto 5. Al passo
+     0 l'uscita e' zero e E_dyn vale 1: se rientrasse, una testa peggiore della costante avrebbe il «minimo» al passo 0.
+(iii) Soglia interna sui target reali: usare il campo pose_var gia' in cache (float32), che e' la stessa formula (C-r8); confronto «>=»
+     come lo storico (LETTO scripts/consolidation_long_pose.py:227 «(data["pose_var"] >= R.THRESHOLD)»); finestre con meno di 2 tempi
+     validi: NaN, fuori dalla mediana (nanmedian) e non dinamiche (isfinite), come lo storico. P:59 e J riga 164 non dicono «>=» ne'
+     il trattamento dei NaN. Un ricalcolo in float64 puo' spostare di poco la mediana e scambiare finestre vicine alla soglia.
+(iv) Generatore del dropout per traiettoria (P:44, P:66 «stato/RNG distinto per traiettoria»): ESEGUITO nel venv locale (torch
+     2.14.0) inspect.signature: F.dropout(input, p, training, inplace) e nn.Dropout(p, inplace), senza argomento generator. Con
+     nn.Dropout il codice deve salvare e ripristinare lo stato del generatore globale CUDA a ogni cambio fra i due fold (o usare un
+     processo per traiettoria, o una maschera con torch.bernoulli(..., generator=g), che e' lo stesso dropout per elemento).
+(v)  Test da aggiungere a P:153: la continuazione 150->300 da stato salvato da' gli stessi pesi e le stesse curve di un fit unico a
+     300 epoche; la coppia salvata al minimo pooled e' quella che si ottiene rifacendo il fit fino a quel checkpoint; le valutazioni
+     ai checkpoint (eval, no_grad) non consumano i generatori di dropout e shuffle del training.
+(vi) Le curve sono «aggregate sui due held interni» (P:66), ma i cancelli dei controlli si giudicano «per fold e sul pooled»
+     (P:94): conservare per ogni checkpoint le somme per fold (SSE, SS, loss, conteggi), da cui il pooled e' la somma.
+(vii) P:104 «Fit reali con allarmi aperti vengono conservati»: dire che la catena prosegue per tutte le teste (rifit, inferenza
+     bloccata, descrittivi) e che l'allarme toglie solo le etichette dei contrasti che dipendono da quella testa. Oggi si puo'
+     leggere anche come «si conservano i fit di CV e non si fanno i rifit di quella testa».
+
+----------------------------------------------------------------
+ricetta-10 | NOTA | TESTO | Manifest di selezione: bloccato prima dell'inferenza, non esplicitamente prima del rifit
+----------------------------------------------------------------
+Posizione: R:51 (selezione-5, «Curve e decisioni prima del rifit e dell'apertura val»); P:70 «Prima dell'inferenza finale si
+  bloccano manifest di selezione, pesi e hash di tutti i rifit».
+La scelta precede per forza il rifit, e i rifit non leggono held; non c'e' fuga. Ma la disposizione accolta dice «prima del rifit» e il
+  protocollo scrive solo «prima dell'inferenza finale».
+Correzione facoltativa: «manifest di selezione (curve, LR, durata, allarmi, S-2) scritto e con hash prima del primo rifit».
+
+----------------------------------------------------------------
+ricetta-11 | NOTA | DISEGNO | Nei controlli lo stesso held outer sceglie LR/epoca e poi giudica il recupero (fuori perimetro stretto)
+----------------------------------------------------------------
+Posizione: P:84 «due fold outer, stessa selezione MSE e ricerca finita»; P:94 «Qualificazione, sui held outer»; J riga 424.
+Nei fit reali la selezione usa gli held interni e il giudizio usa i 15 utenti di sviluppo. Nei controlli manca un terzo insieme: la
+  testa e' scelta (fra fino a 5 LR e fino a 303 checkpoint ammessi per LR) sulla MSE degli stessi utenti su cui si misura il
+  recupero; il riferimento LS-L0 non ha questa scelta. Il vantaggio ottimistico e' indiretto (si sceglie sulla MSE, si giudica su
+  E_dyn) e probabilmente piccolo, ma va a favore del superamento. Da dichiarare (il controllo misura il caso migliore della ricetta) o da lasciare alla dimensione dei
+  controlli.
+
+----------------------------------------------------------------
+ricetta-12 | MINORE | DISEGNO | L'allarme «LR ancora al bordo dopo l'estensione» puo' scattare su L0/L13 per differenze minime
+----------------------------------------------------------------
+(Aggiunto dopo le tracce: e' il secondo rilievo per importanza, dopo ricetta-1.)
+Posizione: P:68 (un'aggiunta per lato), P:69 («oppure LR ancora al bordo dopo l'estensione di quel lato»), P:98, P:104, P:122;
+  J righe 139-142.
+Meccanismo (ragionamento, non misura). Con LR costante e arresto sull'epoca migliore, per una testa che arriva presto al suo ottimo
+  un LR piu' piccolo percorre quasi la stessa traiettoria con passi piu' fini e meno rumore di AdamW: il suo minimo tende a essere
+  uguale o appena piu' basso. Per queste teste il profilo «MSE migliore contro LR» e' piatto verso i LR bassi e vince facilmente il
+  LR piu' piccolo. Il bordo LR qui non indica un ottimo fuori griglia, a differenza dell'alpha della ridge storica.
+Provenienza: l'estensione al bordo e l'esito «non a convergenza» li aveva chiesti la review 32e5452 (S-1 punto 2 e K-3), per
+  analogia con l'alpha della ridge. Il problema non e' la regola in se', ma applicarla senza tolleranza a un asse che, con
+  l'arresto sull'epoca migliore, e' quasi piatto verso i LR bassi.
+Indizi nelle prove della review (LETTO verify_selezione-criteri.txt:264 e :223-225): nel mondo V L0 a 1e-4 ha minimo all'epoca 17
+  (0,7269), a 1e-3 gia' all'epoca 1 (0,7373), cioe' al primo checkpoint disponibile; L13 a 1e-4 ha minimo all'epoca 5 su una curva
+  «piatta e rumorosa» nelle prime dieci epoche (:330-331). Sono le teste piu' veloci: proprio L0 e L13.
+Controesempio minimo (ESEGUITO traccia_regole.py, caso L, numeri scritti a mano vicini al mondo V). Minimi pooled di L0: 3e-3 0,7330
+  (q 1/4), 1e-3 0,7290 (q 3/4), 3e-4 0,7272 (ep 6), 1e-4 0,7269 (ep 17), 3e-5 0,7268 (ep 57). Vince 1e-4 (bordo) -> si aggiunge 3e-5
+  -> vince 3e-5 per 0,0001 (0,014%) -> allarme -> L0 «ottimizzazione non risolta». Conseguenza: P:104 «Se L0 o TCN-post non è
+  ammissibile, niente promozione primaria»; contrasto 1 senza etichetta; candidata impossibile (P:122). Con L13 al posto di L0:
+  candidata impossibile.
+Nel controllo lineare il rischio e' forse maggiore: il bersaglio e' esattamente affine e uguale per tutti gli utenti, quindi per L0
+  l'arresto anticipato serve poco e la MSE held scende quasi fino a un plateau; con LR costante l'eccesso del plateau sul minimo LS
+  cresce con il LR. Tende a vincere il LR piu' piccolo che arriva al plateau entro 300 epoche; se e' 3e-5, l'allarme ferma la
+  catena prima dei fit reali (P:98). E' un argomento qualitativo: quanto spesso accada si sapra' solo dai controlli.
+Perche' minore e non bloccante: la regola e' definita e l'esito e' conservativo (nessun verdetto negativo). Ma un falso allarme qui
+  chiude la prova o le toglie il primario per una differenza che non dice nulla sull'ottimizzazione.
+Correzione (da scegliere prima della firma, senza dati):
+  (a) tolleranza fissata ora: l'allarme del bordo LR scatta solo se il LR di bordo migliora la MSE pooled del LR vicino di piu' di
+      una quota relativa dichiarata (per esempio 0,5%); altrimenti «bordo LR piatto», registrato, non allarme; oppure
+  (b) per il solo lato inferiore: se il LR piu' piccolo vince con epoca interna (non al primo quarto, non nelle ultime 5 di 300),
+      il bordo si registra e non e' allarme; il lato superiore resta allarme.
+  In entrambi i casi la regola resta uguale per tutte le teste e i controlli, scritta prima dei fit.
+
+================================================================
+5. CONFRONTO CON LA CONTROPROPOSTA DI GPT (chat 17/11) E CON IL SEGUITO 8d34f9c
+================================================================
+Controproposta di GPT -> protocollo v2 (LETTO gpt_controproposta_chat_20261117.txt e P):
+  - Kaiming negli hidden, bias e uscita a zero, uguale per MLP e TCN: P:42. Presente.
+  - Quattro LR 1e-4...3e-3 e «una sola estensione verso quel lato»: P:65, P:68. Presente; il protocollo scrive «una volta per lato,
+    massimo 6», ma per la regola stessa si estende un solo lato (ricetta-6).
+  - 150 epoche, una continuazione a 300 se il minimo di MSE oppure di E_dyn e' nelle ultime cinque: P:66. Presente.
+  - Controlli nella prima epoca: quarti di epoca, allarme se si sceglie il primo quarto, passo 0 solo diagnostico: P:65, P:69. Presente.
+  - «Ottimizzazione non risolta entro il budget», senza conclusione negativa: P:69, P:98, P:104. Presente.
+  - MSE unico selettore, entrambe le curve pubblicate, E_dyn diagnostica del compromesso: P:67, P:72. Presente; l'esito finale
+    usa E_dyn anche come allarme di non convergenza al bordo di 300, come la riga «Arresto» della chat; la chat chiamava pero'
+    lo stesso caso anche compromesso. La sovrapposizione non e' risolta (ricetta-1).
+  - Adeguatezza dell'allenamento anche dei comparatori: P:69 vale per il LR scelto di ogni testa; P:104 e P:122. Presente.
+Seguito di Claude 8d34f9c (LETTO registro claude-temponet, voce del 17/11 sezione 1, e claude_testo_per_gpt_20261117_sera.txt):
+  - Rettifica della regola delle epoche (trigger anche su E_dyn): P:66, R:96. Presente e corretta (C-r3).
+  - Punto 2, S-2 per L13 e soglia del trigger: regola P:72; soglia solo train P:59 («La soglia storica [...] resta solo per il
+    report finale»). Presente (C-r8, C-r9), con le precisazioni di ricetta-2 e ricetta-4.
+  - Punto 4, conseguenza del controllo nella prima epoca e epoche dei rifit dopo un'estensione: P:69 e P:70. Presente (C-r7).
+  - Conto dei passi «1,26 milioni con tutte»: superato a torto in analytic_checks.json riga 7 (ricetta-6); il limite a 6 LR resta un
+    margine conservativo.
+Disposizioni della risposta nel mio perimetro (R):
+  - S-1 / selezione-1 (R:17): ricetta finita nel protocollo. Regge.
+  - S-2 / selezione-2 (R:23): regola nel protocollo; la frase «i disaccordi residui limitano l'interpretazione» non vale nel caso
+    del bordo di 300 (ricetta-1).
+  - K-3 / selezione-criteri-N2 (R:26): nome e conseguenze presenti. Regge.
+  - selezione-4 (R:50): P:70. Regge.
+  - selezione-5 (R:51): epoca 0 esclusa (P:65), valutazione a ogni epoca (P:65); il blocco del manifest e' scritto «prima
+    dell'inferenza», non «prima del rifit» (ricetta-10).
+  - selezione-6 (R:52): semi derivati (P:44), flag deterministici uguali fra benchmark e fit (P:63, P:181). Regge.
+  - selezione-11 (R:57): qualificazione corretta (C-r10), limite non scritto nel protocollo (ricetta-7).
+  - selezione-criteri-N4 (R:68): selezione sulla MSE conservata, E_dyn solo per diagnosi ed estensione (P:67). Regge.
+
+================================================================
+6. VERDETTO SUL PUNTO «ricetta»
+================================================================
+CONVERGE_CON_CORREZIONI. Nessun bloccante.
+La ricetta e' finita e completa: ogni caso provato (T1-T11) finisce con una scelta, un'estensione o un allarme definiti, senza cicli.
+Le estensioni sono fissate prima e uguali per tutte le teste e i controlli. La selezione appaiata dei fold, la durata dei rifit e la
+soglia interna solo train sono definite; la soglia coincide con la formula storica di pose_var sulle cache del progetto, perche' la
+maschera della posa e' comune ai 20 giunti.
+Da correggere nel testo prima del congelamento:
+  - ricetta-1 (minore, disegno): decidere se un minimo di E_dyn nelle ultime 5 epoche di 300, con MSE a minimo interno, e'
+    «ottimizzazione non risolta» o compromesso S-2; oggi il protocollo dice entrambe le cose, e la conseguenza piu' forte ferma i
+    controlli o toglie le etichette. Consigliata l'opzione (a).
+  - ricetta-12 (minore, disegno): l'allarme «LR ancora al bordo dopo l'estensione» non distingue un bordo piatto da un ottimo
+    fuori griglia; sulle teste lineari veloci (L0, L13) e nel controllo lineare puo' scattare per differenze minime. Aggiungere una
+    tolleranza dichiarata o la regola del lato inferiore con epoca interna.
+  - ricetta-2 (minore, testo): S-2 non e' un «allarme aperto»; correggere il nome in P:153, D:6747 e nel prompt, e scriverlo in P:104.
+  - ricetta-4 (minore, testo, condiviso con i controlli): dire se soglia e E_dyn dei controlli usano y osservato o y* pulito.
+Note facoltative: ricetta-3, -5, -6, -7, -8, -10, -11 (testo/disegno); ricetta-9 per il codice e i test del §8.
+Nessuna di queste richiede nuovi esperimenti. Le verifiche di ricetta-9 spettano all'implementazione; nessuna al benchmark.

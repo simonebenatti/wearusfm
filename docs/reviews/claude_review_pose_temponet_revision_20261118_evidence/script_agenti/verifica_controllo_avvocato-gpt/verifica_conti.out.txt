@@ -1,0 +1,35 @@
+== AVV-01: controesempio di BL-1 con griglia attuale, griglia 0,1 e sigma continua
+K=(2.5;5.0) f'=0.5 E_real=0.92 | attuale: sigma 2.50 inner 0.9373 R_dyn 0.8983 R_MSE 0.8983 FALLISCE | 0,1: sigma 2.20 inner 0.9164 R_dyn 0.9212 R_MSE 0.9212 PASSA | continua: sigma 2.245 R_dyn 0.9180 R_MSE 0.9180 PASSA
+K=(2.5;5.0) f'=0.5 E_real=0.94 | attuale: sigma 2.50 inner 0.9373 R_dyn 0.8983 R_MSE 0.8983 FALLISCE | 0,1: sigma 2.50 inner 0.9373 R_dyn 0.8983 R_MSE 0.8983 FALLISCE | continua: sigma 2.546 R_dyn 0.8945 R_MSE 0.8945 FALLISCE
+K=(2.5;5.0) f'=0.5 E_real=0.95 | attuale: sigma 3.00 inner 0.9604 R_dyn 0.8536 R_MSE 0.8536 FALLISCE | 0,1: sigma 2.70 inner 0.9480 R_dyn 0.8814 R_MSE 0.8814 FALLISCE | continua: sigma 2.743 R_dyn 0.8776 R_MSE 0.8776 FALLISCE
+K=(3.5;7.0) f'=0.5 E_real=0.92 | attuale: sigma 2.00 inner 0.9038 R_dyn 0.9089 R_MSE 0.9089 PASSA | 0,1: sigma 2.20 inner 0.9226 R_dyn 0.8897 R_MSE 0.8897 FALLISCE | continua: sigma 2.169 R_dyn 0.8928 R_MSE 0.8928 FALLISCE
+K=(3.5;7.0) f'=0.5 E_real=0.94 | attuale: sigma 2.50 inner 0.9437 R_dyn 0.8576 R_MSE 0.8576 FALLISCE | 0,1: sigma 2.40 inner 0.9375 R_dyn 0.8688 R_MSE 0.8688 FALLISCE | continua: sigma 2.439 R_dyn 0.8645 R_MSE 0.8645 FALLISCE
+K=(3.5;7.0) f'=0.5 E_real=0.95 | attuale: sigma 2.50 inner 0.9437 R_dyn 0.8576 R_MSE 0.8576 FALLISCE | 0,1: sigma 2.60 inner 0.9494 R_dyn 0.8460 R_MSE 0.8460 FALLISCE | continua: sigma 2.612 R_dyn 0.8446 R_MSE 0.8446 FALLISCE
+R_dyn con sigma continua = 1 - E_real*(p*Kd/n_out)/(c_n*(1-E_real)+p*Kd/n_in): non dipende da f'
+  K_dyn 2.5: R_dyn < 0,90 per E_real > 0.9361 (vincolo su E_dyn)
+    f'=0.3: vincolo MSE fallisce per E_real > 0.9670; soglia complessiva 0.9361
+    f'=0.4: vincolo MSE fallisce per E_real > 0.9513; soglia complessiva 0.9361
+    f'=0.5: vincolo MSE fallisce per E_real > 0.9361; soglia complessiva 0.9361
+    f'=0.6: vincolo MSE fallisce per E_real > 0.9214; soglia complessiva 0.9214
+  K_dyn 3.5: R_dyn < 0,90 per E_real > 0.9133 (vincolo su E_dyn)
+    f'=0.3: vincolo MSE fallisce per E_real > 0.9547; soglia complessiva 0.9133
+    f'=0.4: vincolo MSE fallisce per E_real > 0.9335; soglia complessiva 0.9133
+    f'=0.5: vincolo MSE fallisce per E_real > 0.9133; soglia complessiva 0.9133
+    f'=0.6: vincolo MSE fallisce per E_real > 0.8939; soglia complessiva 0.8939
+
+== AVV-04: ridge con penalita' sulla somma dei quadrati (alpha* = sigma^2 K / tau^2, indipendente da n)
+  isotropo sigma 2.5: WLS 0.8983; ridge SSE alpha inner (= ottimo outer) 0.9077; loss media senza riscalare (c=2) 0.9012
+  isotropo sigma 3.0: WLS 0.8536; ridge SSE alpha inner (= ottimo outer) 0.8723; loss media senza riscalare (c=2) 0.8611
+  Con la ridge a 0,908 e la soglia 0,90: una L0 neurale fra 0,898 e 0,900 riceve «ricetta non ammessa»; fra 0,900 e 0,908 passa.
+
+== AVV-02: con E_dyn misurata su y* l'oracolo (= y*) ha errore nullo
+  banda richiesta 0.06: guadagno (E_LS - 0)/E_LS = 1 per ogni E_LS > 0 -> mai in [0,06; 0,10]
+  banda richiesta 0.08: guadagno (E_LS - 0)/E_LS = 1 per ogni E_LS > 0 -> mai in [0,06; 0,10]
+  banda richiesta 0.10: guadagno (E_LS - 0)/E_LS = 1 per ogni E_LS > 0 -> mai in [0,06; 0,10]
+
+== AVV-05: regole di BL-2 (cancello) composte con OB-1; recupero = (E_LS-E)/(E_LS-E_or); clausola = rec_TCN - rec_MLP >= q
+  caso A (avvocato): TCN 0.48 allarme True, MLP 0.52 allarme False -> bozza «non diagnostico»; OB-1 senza clausola «ottimizzazione non risolta»; clausola numerica False
+  caso A' (MLP bassa): TCN 0.30 allarme True, MLP 0.35 allarme False -> bozza «non diagnostico»; OB-1 senza clausola «ottimizzazione non risolta»; clausola numerica False
+  caso B (avvocato): TCN 0.62 allarme False, MLP 0.40 allarme True -> bozza «non diagnostico»; OB-1 senza clausola «passa»; clausola numerica True
+  caso C senza allarmi, TCN sotto 50%: TCN 0.30 allarme False, MLP 0.35 allarme False -> bozza «non diagnostico»; OB-1 senza clausola «ricetta non ammessa»; clausola numerica False
+  caso D caso di controlli-2: TCN 0.55 allarme False, MLP 0.56 allarme False -> bozza «non diagnostico»; OB-1 senza clausola «passa»; clausola numerica False

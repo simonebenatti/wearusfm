@@ -1,0 +1,45 @@
+== (1) Sensibilita' di E_real alla legge di scala (ricevuta storica: alpha 0,01 -> 0,76973; alpha 1e5 -> 0,65612)
+  M*=0.62 phi=0.1: E_real classica 0.861 | asintotica 0.843
+  M*=0.62 phi=0.2: E_real classica 0.936 | asintotica 0.900
+  M*=0.62 phi=0.3: E_real classica 1.012 | asintotica 0.957
+  M*=0.6561 phi=0.1: E_real classica 0.838 | asintotica 0.829
+  M*=0.6561 phi=0.2: E_real classica 0.891 | asintotica 0.873
+  M*=0.6561 phi=0.3: E_real classica 0.943 | asintotica 0.916
+
+== (2) Controllo lineare: soglia di E_real oltre la quale la WLS esatta non passa il 90% (K_dyn,K_tot)=(2.5,5) e (3.5,7)
+  K=(2.5,5.0) f'=0.3: primo E_real non 'passa' = (0.822, 'NON CALIBRATO')
+  K=(2.5,5.0) f'=0.4: primo E_real non 'passa' = (0.78, 'NON CALIBRATO')
+  K=(2.5,5.0) f'=0.5: primo E_real non 'passa' = (0.918, 'FALLISCE(s=2.5)')
+  K=(3.5,7.0) f'=0.3: primo E_real non 'passa' = (0.826, 'NON CALIBRATO')
+  K=(3.5,7.0) f'=0.4: primo E_real non 'passa' = (0.78, 'NON CALIBRATO')
+  K=(3.5,7.0) f'=0.5: primo E_real non 'passa' = (0.924, 'FALLISCE(s=2.5)')
+
+== (3) Una L0 regolarizzata puo' passare dove la WLS non regolarizzata fallisce? (ridge ottima, spettro ipotetico)
+  isotropo, sigma=2.5, K_tot=5: R_MSE OLS=0.898, ridge ottima=0.908
+  isotropo, sigma=3.0, K_tot=5: R_MSE OLS=0.854, ridge ottima=0.872
+  anisotropo 50 dir. al 90%, sigma=2.5, K_tot=5: R_MSE OLS=0.898, ridge ottima=0.940
+  anisotropo 50 dir. al 90%, sigma=3.0, K_tot=5: R_MSE OLS=0.854, ridge ottima=0.925
+
+== (4) S-A: con E_real ~0,78 quanto margine usa la WLS esatta (modello del revisore)
+  K=(2.5,5.0) f'=0.3: sigma=1, margine E_dyn=0.242, tolleranza 10%=0.024, eccesso WLS=0.0066 (27% della tolleranza); R_MSE=0.984
+  K=(2.5,5.0) f'=0.5: sigma=1.5, margine E_dyn=0.192, tolleranza 10%=0.019, eccesso WLS=0.0070 (37% della tolleranza); R_MSE=0.963
+  K=(3.5,7.0) f'=0.3: sigma=1, margine E_dyn=0.242, tolleranza 10%=0.024, eccesso WLS=0.0092 (38% della tolleranza); R_MSE=0.977
+  K=(3.5,7.0) f'=0.5: sigma=1.5, margine E_dyn=0.192, tolleranza 10%=0.019, eccesso WLS=0.0098 (51% della tolleranza); R_MSE=0.949
+  SD relativa dell'eccesso: chi2 0.072, termine incrociato ~0.102
+
+== (5) S-C: quota del margine outer LS->oracolo dovuta all'errore di stima della LS (g_inner=0,08)
+  K=2: quota stima outer = 0.09; recupero 'gratuito' se una testa istantanea regolarizzata togliesse 25%/50% di quell'eccesso: 0.02/0.04
+  K=3: quota stima outer = 0.14; recupero 'gratuito' se una testa istantanea regolarizzata togliesse 25%/50% di quell'eccesso: 0.03/0.07
+  K=5: quota stima outer = 0.25; recupero 'gratuito' se una testa istantanea regolarizzata togliesse 25%/50% di quell'eccesso: 0.06/0.12
+  K=6: quota stima outer = 0.32; recupero 'gratuito' se una testa istantanea regolarizzata togliesse 25%/50% di quell'eccesso: 0.08/0.16
+  K=8: quota stima outer = 0.47; recupero 'gratuito' se una testa istantanea regolarizzata togliesse 25%/50% di quell'eccesso: 0.12/0.23
+
+== (6) Controllo temporale: quota minima r del segnale dinamico di T non leggibile da L0 istantanea
+  E=0.79 g=0.06: R_T/S >= 0.184; con a=1 e f_L=f_T serve r >= 0.37 (senza il contributo di X)
+  E=0.79 g=0.08: R_T/S >= 0.231; con a=1 e f_L=f_T serve r >= 0.46 (senza il contributo di X)
+  E=0.85 g=0.06: R_T/S >= 0.254; con a=1 e f_L=f_T serve r >= 0.51 (senza il contributo di X)
+  E=0.85 g=0.08: R_T/S >= 0.312; con a=1 e f_L=f_T serve r >= 0.62 (senza il contributo di X)
+  E=0.9 g=0.06: R_T/S >= 0.351; con a=1 e f_L=f_T serve r >= 0.70 (senza il contributo di X)
+  E=0.9 g=0.08: R_T/S >= 0.419; con a=1 e f_L=f_T serve r >= 0.84 (senza il contributo di X)
+  E=0.95 g=0.06: R_T/S >= 0.533; con a=1 e f_L=f_T serve r >= 1.07 (senza il contributo di X)
+  E=0.95 g=0.08: R_T/S >= 0.603; con a=1 e f_L=f_T serve r >= 1.21 (senza il contributo di X)
