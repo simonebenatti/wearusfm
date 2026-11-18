@@ -159,7 +159,7 @@ def load_teacher(ctx, step, device='cpu'):
     comparison = read_pin(legacy['comparison'])
     argv = comparison['arm_configurations']['T100-G']['validated_trainer_argv']
     require(argv[0] == 'scripts/train_jepa.py', 'unexpected historical trainer')
-    cfg = replace(J.build_config(J.build_parser().parse_args(argv[1:])), max_steps=step)
+    cfg = replace(J.build_config(J.build_parser().parse_args(J.historical_args(argv[1:]))), max_steps=step)
     require(cfg.model.dim == 384 and cfg.model.k_latents == 64 and cfg.model.window_ms == 100
             and cfg.model.tokenizer_activation == 'gelu' and cfg.model.pose_head,
             'not the registered T100-G teacher')

@@ -114,6 +114,7 @@ def command_for(comparison, cfg, run_dir, step, seconds, guard=None, records=Non
              '--tokenizer-logsquare-eps')), 'unregistered trainer arguments')
     argv[argv.index('--max-steps') + 1] = str(step)
     argv[argv.index('--out-dir') + 1] = str(run_dir)
+    argv = CLI.historical_args(argv)  # braccio storico T100-L: target 25/50 espliciti nel comando
     argv += ['--tokenizer-logsquare', '--tokenizer-logsquare-eps', '0.001', '--time-limit-s', str(seconds - 300)]
     args = CLI.build_parser().parse_args(argv[1:])
     effective = CLI.build_config(args)

@@ -119,6 +119,7 @@ def recipe(context, run_dir, seconds):
         require(argv.count(flag) == 1, "missing/duplicate recipe argument")
         argv[argv.index(flag) + 1] = value
     cli = module("train_jepa")
+    argv = cli.historical_args(argv)  # campagna 300M nata prima del 18/11: target 25/50 espliciti nel comando
     cfg = cli.build_config(cli.build_parser().parse_args(argv[1:]))
     expected = replace(context["config_300m"], max_steps=STEPS)
     require(R.config_to_dict(cfg) == R.config_to_dict(expected), "technical recipe differs")
@@ -202,7 +203,7 @@ def inspect_evidence(plan, artifacts, ranks, expected_config, contract_sha, code
     config = data["config"]
     expected = dict(expected_config)
     expected["max_steps"] = STEPS
-    require(config == expected and config["batch_size"] == 32 and config["accum_steps"] == 1 and
+    require(R.with_legacy_target_windows(config) == expected and config["batch_size"] == 32 and config["accum_steps"] == 1 and
             config["prefetch"] is True and all(config[k] == 500 for k in
             ("eval_every", "pose_grad_every", "fixed_eval_every", "pose_panel_every", "ckpt_every")),
             "production config/cadence differs")

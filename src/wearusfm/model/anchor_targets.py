@@ -9,7 +9,7 @@ centrate sul centro della patch; un target la cui finestra esce dal segnale non 
 | log RMS | 100 ms, passo 25 ms (Simone, 18/11/2026) | 25 ms conservati solo per riprese/controlli storici espliciti |
 | forma spettrale: log della frazione di potenza in 5 bande | 200 ms (8 patch, la griglia RVQ) | >= 100-250 ms, risoluzione 4-10 Hz (qui 5 Hz) |
 | log inviluppo (RMS su finestra lunga) | 500 ms | «finestre piu' lunghe», contesto di attivazione |
-| log-potenze multiscala: 6 bande rapide / 24 lente | 100 / 500 ms | rapida aggiornata da50a100ms da Simone,18/11/2026 |
+| log-potenze multiscala: 6 bande rapide / 24 lente | 125 / 500 ms | rapida da 50 a 125 ms (Simone, 18/11/2026; 100 ms ritirato per la banda 20-33,6 Hz) |
 
 Bande: 5, **log-spaziate su 20-450 Hz** (v10 §6.3; l'alternativa «dalla PSD media del corpus» resta aperta). **Mascherate oltre la banda
 disponibile** del canale (v10 §4.2): una banda il cui bordo superiore supera il limite del canale (min fra Nyquist e banda effettiva dichiarata) non
@@ -40,7 +40,7 @@ RVQ_TOKEN_MS = 200.0
 EPS = 1e-8
 # ancora multi-scala (Simone, 04/10/2026, dalla finestra 1): log della potenza in bande log-spaziate fra 20 e 450 Hz su due finestre centrate sulla
 # patch, scelta dal confronto dei target candidati (decisioni.md)
-MS_SCALES = (("ms_fast", MS_FAST_WINDOW_MS, 6), ("ms_slow", 500.0, 24))  # dal 18/11: rapida 100 ms, lenta invariata
+MS_SCALES = (("ms_fast", MS_FAST_WINDOW_MS, 6), ("ms_slow", 500.0, 24))  # dal 18/11: rapida 125 ms, lenta invariata
 # passo fra le finestre di una scala (default: la patch). La scala lenta ha una finestra da 500 ms ogni 100 ms (4 patch), assegnata alle 4 patch
 # che la circondano: al piu' 37,5 ms dal loro centro, il 7,5% della finestra. Centrata su ogni patch costava ~32 ms per finestra di dati (2 kHz, 32
 # canali, 4 s, sul Mac), quasi tutto FFT; nel confronto dei target candidati la finestra da 500 ms era centrata su blocchi da 200 ms.
@@ -125,7 +125,7 @@ def anchor_targets(x: np.ndarray, fs: float, band_limit_hz, *, patch_ms: float =
     che li toccano non hanno target (Simone, 04/10/2026, decisione 3: entro 100 ms dal bordo di un tratto).
     rms_window_ms e' il supporto del solo RMS: 100 ms per i nuovi training, indipendente dal passo delle patch e dal tokenizer.
     I target RMS senza supporto completo dentro x sono mascherati; 25 ms riproduce la definizione storica.
-    ms_fast_window_ms: le sei log-potenze rapide su 100 ms; 50 solo per la ricetta storica esplicita."""
+    ms_fast_window_ms: le sei log-potenze rapide su 125 ms; 50 solo per la ricetta storica esplicita."""
     if not math.isfinite(rms_window_ms) or rms_window_ms <= 0:
         raise ValueError("rms_window_ms deve essere finito e positivo")
     target_version_for_fast_window(ms_fast_window_ms)

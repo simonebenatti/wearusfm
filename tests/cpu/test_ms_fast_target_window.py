@@ -1,4 +1,4 @@
-"""Fast spectral targets100ms: independent Fourier oracle, identity and historical resume."""
+"""Fast spectral targets 125 ms (18/11/2026; 100 ms retired): independent Fourier oracle, identity and historical resume."""
 
 import importlib.util
 from dataclasses import fields, replace
@@ -15,11 +15,11 @@ from wearusfm.training.spectral_calibration import _loader_signature, calibratio
 
 
 @pytest.mark.parametrize("fs", [200, 1000, 2000, 2048])
-def test_fast100_matches_raw_index_and_fourier_oracle(fs):
+def test_fast125_matches_raw_index_and_fourier_oracle(fs):
     x = np.random.default_rng(62).normal(size=(2, 2 * fs)).astype(np.float32)
     limit = np.array([min(450, fs / 2), min(70, fs / 2)])
     got = A.anchor_targets(x, fs, limit, multiscale=True)
-    n = round(fs / 10)
+    n = int(np.floor(fs * 0.125 + 0.5))
     starts = np.array([(fs * (2 * p + 1) - 40 * n + 40) // 80 for p in range(80)])
     valid = (starts >= 0) & (starts + n <= x.shape[1])
     edges = np.geomspace(20, 450, 7)
@@ -39,7 +39,7 @@ def test_fast100_matches_raw_index_and_fourier_oracle(fs):
         expected = np.log(np.stack([density[:, b].sum(1) * fs / n for b in bins], axis=1) + 1e-8)
         np.testing.assert_allclose(got.ms_fast[:, p][available], expected[available], rtol=0, atol=3e-5)
     if fs == 200:
-        assert n == 20 and np.all(np.diff(starts) == 5) and np.all(n - np.diff(starts) == 15)
+        assert n == 25 and np.all(np.diff(starts) == 5) and np.all(n - np.diff(starts) == 20)
         assert available[0].tolist() == [True, True, True, False, False, False]
     old = A.anchor_targets(x, fs, limit, multiscale=True, ms_fast_window_ms=50)
     for f in fields(got):
@@ -75,7 +75,7 @@ def test_legacy_recipe_is_pinned_and_new_support_cannot_resume_it(tmp_path):
     with pytest.raises(ValueError, match="loader"):
         R._check_resume_recipe(cfg, {"config": historical})
     assert "ms_fast_window_ms" not in _loader_signature(old.loader)
-    assert _loader_signature(cfg.loader)["ms_fast_window_ms"] == 100
+    assert _loader_signature(cfg.loader)["ms_fast_window_ms"] == 125
     manifest = tmp_path / "manifest"
     manifest.write_text("test")
     a, b = [calibration_signature(c, manifest, {}, None) for c in (old, cfg)]
@@ -87,7 +87,7 @@ def test_legacy_recipe_is_pinned_and_new_support_cannot_resume_it(tmp_path):
     assert not (tmp_path / "must_not_exist").exists()
 
 
-@pytest.mark.parametrize("bad", [0, -50, 75, float("nan"), float("inf")])
+@pytest.mark.parametrize("bad", [0, -50, 75, 100, float("nan"), float("inf")])  # 100: ritirato il 18/11
 def test_unregistered_fast_window_rejected(bad):
     with pytest.raises(ValueError, match="ms_fast_window_ms"):
         replace(L.signed_config(), ms_fast_window_ms=bad)
@@ -95,14 +95,14 @@ def test_unregistered_fast_window_rejected(bad):
         A.anchor_targets(np.ones((1, 200)), 200, 100, ms_fast_window_ms=bad)
 
 
-def test_cli_fast100_default_and_explicit_legacy_recipe():
+def test_cli_fast125_default_and_explicit_legacy_recipe():
     script = Path(__file__).resolve().parents[2] / "scripts" / "train_jepa.py"
     spec = importlib.util.spec_from_file_location("train_ms_fast_test", script)
     cli = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cli)
     args = ["--preset", "small", "--manifest", "unused", "--root", "unused", "--out-dir", "unused"]
     cfg = cli.build_config(cli.build_parser().parse_args(args))
-    assert cfg.loader.rms_window_ms == cfg.loader.ms_fast_window_ms == 100
+    assert cfg.loader.rms_window_ms == 100 and cfg.loader.ms_fast_window_ms == 125
     assert cfg.target_version == TARGET_VERSION
     old = cli.build_config(cli.build_parser().parse_args(args + ["--rms-window-ms", "25", "--ms-fast-window-ms", "50"]))
     assert old.loader.ms_fast_window_ms == 50 and old.loader.rms_window_ms == 25 and old.target_version == LEGACY_TARGET_VERSION

@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from wearusfm.model.spectral_step1 import READOUT_VERSION
-from wearusfm.model.spectral_targets import LEGACY_MS_FAST_WINDOW_MS, target_version_for_fast_window
+from wearusfm.model.spectral_targets import LEGACY_MS_FAST_WINDOW_MS, RETIRED_TARGET_VERSIONS, target_version_for_fast_window
 from wearusfm.model.anchor_targets import LEGACY_RMS_WINDOW_MS
 
 
@@ -27,7 +27,7 @@ def _loader_signature(loader) -> dict:
     """La configurazione del loader nella firma dei dati; i campi della posa (R3, 26/10/2026) solo se accesi, cosi' i checkpoint di prima
     della posa si riprendono con la stessa firma. RMS da 25 ms conserva la firma storica senza il campo; ogni altro supporto
     (default nuovo: 100 ms) e' esplicito nella firma. Lo stesso vale per la scala spettrale rapida:50ms storici omessi,
-    100ms nuovi espliciti. Una ripresa non puo' cambiare i target silenziosamente."""
+    125 ms nuovi espliciti (100 ms ritirato il 18/11). Una ripresa non puo' cambiare i target silenziosamente."""
     d = json.loads(json.dumps(asdict(loader)))
     if d.get("pose_root") is None:
         d.pop("pose_root", None)
@@ -40,6 +40,8 @@ def _loader_signature(loader) -> dict:
 
 
 def calibration_signature(cfg, manifest, scales, window_s):
+    if cfg.target_version in RETIRED_TARGET_VERSIONS:
+        raise ValueError(f"target_version {cfg.target_version} ritirata il 18/11/2026 prima di ogni training: usare 125 ms o 50 ms")
     if cfg.target_version != target_version_for_fast_window(cfg.loader.ms_fast_window_ms):
         raise ValueError("target_version incompatible with loader.ms_fast_window_ms")
     return {"target_version": cfg.target_version, "readout_version": READOUT_VERSION,

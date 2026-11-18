@@ -84,8 +84,8 @@ def main(argv=None):
         if command != "split":
             p.add_argument("--rms-window-ms", type=float, default=None,
                            help="default 100; 25 solo per riprodurre una ricetta storica")
-            p.add_argument("--ms-fast-window-ms", type=float, choices=[50, 100], default=None,
-                           help="default 100; 50 solo per i target spettrali storici")
+            p.add_argument("--ms-fast-window-ms", type=float, choices=[50, 125], default=None,
+                           help="default 125; 50 solo per i target spettrali storici")
             p.add_argument("--splits", type=Path, required=True)
             p.add_argument("--scales", type=Path, required=True)
             p.add_argument("--window-seconds", type=Path, required=True)

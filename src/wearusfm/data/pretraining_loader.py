@@ -93,7 +93,7 @@ class LoaderConfig:
     pose_unprompted: bool = True  # tenere le registrazioni a mano non sollecitata nel termine di posa (firma del 26/10/2026); False = mascherate
     # Simone, 18/11/2026: RMS su 100 ms, sempre sulla griglia patch da 25 ms. 25 solo per riprese/controlli storici espliciti.
     rms_window_ms: float = AT.RMS_WINDOW_MS
-    ms_fast_window_ms: float = AT.MS_FAST_WINDOW_MS  # sei bande su 100 ms, passo patch invariato (Simone, 18/11)
+    ms_fast_window_ms: float = AT.MS_FAST_WINDOW_MS  # sei bande su 125 ms, passo patch invariato (Simone, 18/11)
 
     def __post_init__(self):
         if not math.isfinite(self.rms_window_ms) or self.rms_window_ms <= 0:

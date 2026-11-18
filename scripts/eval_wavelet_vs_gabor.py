@@ -105,7 +105,8 @@ X = {"gabor": [], "wavelet": [], "psd": []}
 Y, M = [], []
 for i in range(N):
     x = synth()
-    tg = AT.anchor_targets(x, FS, 450.0, multiscale=True)
+    # esito congelato del 13/10 (results/steps23/wavelet_vs_gabor_20261013.json): ricetta storica dei target, RMS 25 e spettro 50 ms
+    tg = AT.anchor_targets(x, FS, 450.0, multiscale=True, rms_window_ms=25.0, ms_fast_window_ms=50.0)
     y, m = global_spectral_targets([tg], [x.shape[0]], np.ones(x.shape[0], bool))
     Y.append(y[0])
     M.append(m[0])
