@@ -8,6 +8,16 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**18/11, ore 18:24: tutti i cinque benchmark COMPLETED 0:0.**
+C0 64771457, CN 64771478, CR 64771595, ripresa CN 64771859, ripresa CR 64772690.
+Nuovo operatore dei lanci: **3-launcher**, per istruzione diretta di Simone in questa chat.
+Nessun nuovo invio eseguito da GPT scientifico dopo tale istruzione.
+Lettura CPU pronta in `releases/readout_bf16_20261118/`, consegna:
+`docs/reviews/contrastive_readout_release_20261118.md`. Non duplicare i cinque benchmark.
+La parità delle norme nei primi 256 update è già negativa nei metadati; il readout CPU
+completa i controlli sui checkpoint e sulle riprese. Nessun training lungo rilasciato.
+Gli snapshot seguenti sono cronologia.
+
 **18/11, tutti e cinque i benchmark sottomessi.** Snapshot 18:01 Europe/Rome:
 
 | Cella | Job | Stato |

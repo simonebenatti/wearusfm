@@ -6674,3 +6674,13 @@ RUNNING, ripresa CR PENDING. Ricevute complete in bf16_benchmark_submission_2026
 Codice congelato 8905e346, gate pubblicato a17b9258. Nessun monitor in background.
 Consuntivo conclusi 2,725556 GPU-ore / 30,556667 core-ore; massimo con residuo
 8,725556 / 86,823333. Lettura completa ancora da fare; nessun training lungo rilasciato.
+
+### 18/11/2026 — GPT: cinque benchmark conclusi, lettura CPU a 3-launcher
+
+Tutti i cinque job COMPLETED 0:0 e summary finali a 576. Raccolti metadati e log con
+25 hash remoti verificati. Simone affida da ora i lanci della linea 3 alla chat
+3-launcher; GPT scientifico prepara soltanto il pacchetto. Job e risorse della lettura
+CPU in releases/readout_bf16_20261118, sorgenti 46938f31…9320 invariati.
+Prima lettura negativa per parità grad_norm nei 256 update a peso nullo; rapporti attivi
+nei limiti. CPU necessaria per completare checkpoint e riprese, senza nuovi criteri.
+Nessun training lungo rilasciato. Consegna docs/reviews/contrastive_readout_release_20261118.md.

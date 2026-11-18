@@ -4,6 +4,18 @@
 - L'agente gira sul Mac. Leonardo e' remoto, raggiungibile con `ssh leonardo`.
 - Non editare mai file sotto $WORK via ssh: niente sed, niente heredoc, niente vim.
 
+### Linea 3: lanci alla chat 3-launcher — istruzione del 18/11/2026
+
+Simone: «ora i lanci li faccoamo gestire alla tua chat sorella 3-launcher».
+Per la linea log-quadratica/contrastiva, GPT scientifico prepara e pubblica piani,
+SHA, pin, risorse e comandi; la chat **3-launcher** esegue gli invii tramite il
+submitter e ledger comuni. Identità verificata nell'app: chat
+`6afdde9b-b61c-83eb-a0e7-df812aa34a03`, titolo esatto `3-launcher`.
+Questa istruzione successiva sostituisce, per la linea 3, gli invii diretti e la
+precedente delega a semplicione. Le autorizzazioni già date restano valide;
+nessun nuovo consenso operativo. Nessuna duplicazione dei cinque benchmark già
+sottomessi. Letture, analisi, review, commit e push restano autonomi in questa chat.
+
 ### Sottomissioni affidate a semplicione — istruzione successiva del 28/10/2026
 
 Simone: «d'ora in poi nuova regola, qando devi sottomettere dei job su leonardo lo fai fare a "semplicione" che e' l'agente qua di fianco a te».

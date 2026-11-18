@@ -1,0 +1,272 @@
+{
+ "stopped": "max_steps",
+ "steps": 576,
+ "elapsed_s": 638.2366509437561,
+ "parameters": 28559133,
+ "device": "cuda:0",
+ "gpu_max_memory_gib": 13.722497940063477,
+ "workers_per_rank": 6,
+ "code": {
+  "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261118-bf16",
+  "sha": "8905e346b03e5d173cccc124aa40032bf588a191"
+ },
+ "environment": {
+  "python": "3.11.6",
+  "torch": "2.2.0a0+git6c8c5ad",
+  "cuda": "12.1",
+  "pip_freeze_file": null,
+  "pip_freeze_sha256": null,
+  "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"
+ },
+ "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+ "world_size": 4,
+ "batch_per_process": 8,
+ "prefetch": true,
+ "prefetch_audit_steps": null,
+ "accum_steps": 1,
+ "micro_batch": 8,
+ "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch",
+ "contrastive": {
+  "config": {
+   "nce_weight": 0.11942686122572264,
+   "rnc_weight": 0.33044627364850215,
+   "arm": "C0",
+   "nce_temperature": 0.2,
+   "rnc_temperature": 0.1,
+   "rnc_stride": 8,
+   "rnc_resolution": 0.0,
+   "capacity_per_dataset": 1024,
+   "max_age": 256,
+   "min_negatives": 32,
+   "gap_seconds": 4.0,
+   "fill_steps": 256,
+   "ramp_steps": 256,
+   "grad_every": 100,
+   "grad_steps": [
+    256,
+    512,
+    1962,
+    5000,
+    19618
+   ],
+   "grad_dense_start": 513,
+   "grad_dense_end": 576,
+   "calibration_only": false,
+   "coverage_block": 1024,
+   "enforce_coverage": true,
+   "coverage_min_queries": 32,
+   "coverage_dataset_fraction": 0.8,
+   "coverage_nce_fraction": 0.9,
+   "coverage_rnc_fraction": 0.9,
+   "coverage_quotas": {
+    "camargo2021": 0.03442090877923247,
+    "capgmyo": 0.0028543868474759163,
+    "csl_hdemg": 0.022266032822690757,
+    "emg2pose": 0.23915890022728797,
+    "emg2qwerty": 0.244385666820943,
+    "grabmyo": 0.05427090782371972,
+    "hyser": 0.05186791335093826,
+    "ninapro_db10": 0.09309970233153658,
+    "ninapro_db2": 0.039898146559794796,
+    "ninapro_db3": 0.01261529967940154,
+    "ninapro_db4": 0.017458292398431052,
+    "ninapro_db5": 0.020261549338847138,
+    "ninapro_db6": 0.0329335435867361,
+    "ninapro_db7": 0.030381940692308724,
+    "ninapro_db8": 0.019509832779750533,
+    "putemg": 0.03921819812464841,
+    "zhang2026": 0.045398777836257134
+   },
+   "coverage_global_batch_size": 32,
+   "coverage_exempt_datasets": [
+    "capgmyo"
+   ]
+  },
+  "queue_last_step": 575,
+  "expected_datasets": [
+   "camargo2021",
+   "capgmyo",
+   "csl_hdemg",
+   "emg2pose",
+   "emg2qwerty",
+   "grabmyo",
+   "hyser",
+   "ninapro_db10",
+   "ninapro_db2",
+   "ninapro_db3",
+   "ninapro_db4",
+   "ninapro_db5",
+   "ninapro_db6",
+   "ninapro_db7",
+   "ninapro_db8",
+   "putemg",
+   "zhang2026"
+  ],
+  "rnc_reduction": "replicated global loss, differentiable SUM gather plus DDP mean",
+  "optimizer_updates": 576,
+  "initial_sha256": "ba8a86579992a0eeb2a8072c67eef30b699465ad091671b50123c0073173fa2f",
+  "provenance": {
+   "source_sha256": "46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320",
+   "calibration_sha256": "f57d8731a1434f592a6360547ad604cdedb517cc47e278c5c3839384df000b5e",
+   "cohort_sha256": "b3bd2424c64dcb04d26838e1736862d83a3791436e3984ef7681dbe9a43f88c9",
+   "input_sha256": {
+    "manifest": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+    "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+    "pose_stats": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+   }
+  },
+  "final_student_sha256": "617a59565355771646541a28197d1d003da7f9bd5b3ba748bd018e4528d64489",
+  "final_teacher_sha256": "b122cc9d87e6e14833b3abd59c5c84fda1cfaebed4216f024b491263d51c8174",
+  "coverage_completed_blocks": [],
+  "coverage_partial_block": {
+   "through_step": 575,
+   "updates": 320,
+   "nce_fraction": 0.99853515625,
+   "rnc_active_fraction": 1.0,
+   "datasets": {
+    "camargo2021": {
+     "queries": 322,
+     "eligible": 322,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "emg2pose": {
+     "queries": 2625,
+     "eligible": 2625,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "emg2qwerty": {
+     "queries": 2369,
+     "eligible": 2369,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "grabmyo": {
+     "queries": 571,
+     "eligible": 571,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "hyser": {
+     "queries": 537,
+     "eligible": 537,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "ninapro_db10": {
+     "queries": 867,
+     "eligible": 867,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "ninapro_db2": {
+     "queries": 385,
+     "eligible": 385,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "ninapro_db3": {
+     "queries": 65,
+     "eligible": 65,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "ninapro_db8": {
+     "queries": 203,
+     "eligible": 203,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "putemg": {
+     "queries": 487,
+     "eligible": 487,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "zhang2026": {
+     "queries": 456,
+     "eligible": 456,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "csl_hdemg": {
+     "queries": 272,
+     "eligible": 272,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "ninapro_db5": {
+     "queries": 227,
+     "eligible": 227,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "ninapro_db6": {
+     "queries": 353,
+     "eligible": 353,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "ninapro_db7": {
+     "queries": 323,
+     "eligible": 323,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "ninapro_db4": {
+     "queries": 163,
+     "eligible": 163,
+     "fraction": 1.0,
+     "exempt": false
+    },
+    "capgmyo": {
+     "queries": 15,
+     "eligible": 0,
+     "fraction": 0.0,
+     "exempt": true
+    }
+   },
+   "passed": true,
+   "exempt_datasets": [
+    "capgmyo"
+   ],
+   "policy": {
+    "coverage_min_queries": 32,
+    "coverage_dataset_fraction": 0.8,
+    "coverage_nce_fraction": 0.9,
+    "coverage_rnc_fraction": 0.9,
+    "coverage_global_batch_size": 32,
+    "coverage_quotas": {
+     "camargo2021": 0.03442090877923247,
+     "capgmyo": 0.0028543868474759163,
+     "csl_hdemg": 0.022266032822690757,
+     "emg2pose": 0.23915890022728797,
+     "emg2qwerty": 0.244385666820943,
+     "grabmyo": 0.05427090782371972,
+     "hyser": 0.05186791335093826,
+     "ninapro_db10": 0.09309970233153658,
+     "ninapro_db2": 0.039898146559794796,
+     "ninapro_db3": 0.01261529967940154,
+     "ninapro_db4": 0.017458292398431052,
+     "ninapro_db5": 0.020261549338847138,
+     "ninapro_db6": 0.0329335435867361,
+     "ninapro_db7": 0.030381940692308724,
+     "ninapro_db8": 0.019509832779750533,
+     "putemg": 0.03921819812464841,
+     "zhang2026": 0.045398777836257134
+    }
+   }
+  },
+  "coverage_failed_block": null
+ },
+ "pose_panel_timing": {
+  "prepare_s": 22.28337769024074,
+  "evaluations_s": [
+   3.477077428251505,
+   3.4616520442068577
+  ],
+  "total_s": 29.222107162699103
+ }
+}

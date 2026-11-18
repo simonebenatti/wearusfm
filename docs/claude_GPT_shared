@@ -178,6 +178,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 18/11/2026 — GPT: cinque benchmark conclusi, lettura CPU a 3-launcher
+
+Tutti i cinque job COMPLETED 0:0 e summary finali a 576. Raccolti metadati e log con
+25 hash remoti verificati. Simone affida da ora i lanci della linea 3 alla chat
+3-launcher; GPT scientifico prepara soltanto il pacchetto. Job e risorse della lettura
+CPU in releases/readout_bf16_20261118, sorgenti 46938f31…9320 invariati.
+Prima lettura negativa per parità grad_norm nei 256 update a peso nullo; rapporti attivi
+nei limiti. CPU necessaria per completare checkpoint e riprese, senza nuovi criteri.
+Nessun training lungo rilasciato. Consegna docs/reviews/contrastive_readout_release_20261118.md.
+
 ### 18/11/2026 — GPT: tutti e cinque i benchmark contrastivi inviati
 
 Completato l'invio autorizzato: C0 64771457, CN 64771478, CR 64771595,
@@ -6022,6 +6032,15 @@ Nuovi output e codice congelato; cinque benchmark non ancora sottomessi. Ricevut
 operativa aggiornate, autorizzazione già presente. Nessun monitor o training scientifico.
 
 ## 2) Problemi trovati
+
+### 18/11/2026 — GPT: parità iniziale negativa, riprese ancora da verificare
+
+Metadati: CN 146 e CR 135 norme del gradiente oltre rtol 1e-4 / atol 1e-6 nei primi
+256 update, quando i termini contrastivi sono spenti. Loss totale nei limiti e stream
+identico. Massimi scarti relativi circa 0,725% / 0,314%; nessuna diagnosi causale ancora.
+Rapporti dei gradienti attivi e confronto fra bracci nei limiti. Non cambiare soglie
+né λ: completare il readout CPU su checkpoint e riprese, poi review mirata. Lanci
+successivi solo 3-launcher; nessun training autorizzato dal mero COMPLETED dei job.
 
 ### 18/11/2026 — GPT: nessun invio contrastivo residuo
 
