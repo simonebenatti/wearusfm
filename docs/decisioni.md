@@ -8089,3 +8089,37 @@ valutazioni (regola del 28/10); altri semi o altri bracci non sono approvati. **
 5. **Risorse:** B e C 1 GPU, 3 h 30, 8 CPU, 120 GB (≤ 3,5 GPU-ore ciascuno); D 1 GPU, limite dalla regola 4; valutazioni 1 GPU, 45 min
    (≤ 0,75); checkout su `lrd_all_serial` (0 GPU-ore). Attese: B 3,08, C 3,08, D circa 4,1 con r = 1,5, valutazioni 0,93, collaudo circa 0,25:
    circa 11,4 GPU-ore. Nessun nuovo tentativo alla cieca.
+
+### 2026-11-18 — TEMPONet su emg2pose, studio delle loss: esito della review e del collaudo; emendamenti PRIMA dei training (Claude)
+
+**Verifica prima del lancio** (regola del 16/10): `critico` e quattro lenti con verificatori avversari sul codice `0342170` e sul piano
+(workflow `wf_d4e7c261-7db`). Il critico conclude «DA RIVEDERE». Ha un rilievo bloccante, solo per D: con maschere del dropout
+indipendenti fra finestra e compagna, il termine della velocita' misura per circa l'80% la differenza fra due maschere (stima su CPU col
+modello L1 dell'11/11, un utente di test). B e C non hanno rilievi bloccanti. I minori sono qui sotto.
+
+**Collaudo** `TEMPONET-E2P-loss-smoke-20261118` = 64775154 (dbg, `COMPLETED 0:0`, 4 min 58 s, circa 0,08 GPU-ore). Esiti:
+- controllo eager/graph con differenza 0 per le quattro loss;
+- ms per passo dalla `history.json`: l1 1,137, smoothl1 1,141, mse 1,131, mse_vel 1,541;
+- 457.727 finestre per ogni loss, come il collaudo dell'11/11;
+- per l1, somme eager e graph del controllo uguali bit per bit a quelle del collaudo dell'11/11 (50,52579802274704): il percorso L1 e'
+  identico anche sulla GPU.
+
+Emendamenti, scritti prima di inviare B, C e D:
+1. **r** = `ms_per_step` della `history.json` di `mse_vel` diviso quello di `l1`, nello stesso collaudo. E' la sola misura coerente con i
+   357 s per epoca della formula. La scelta e' scritta DOPO aver visto il collaudo, quindi e' post hoc. L'altra misura, quella del
+   controllo eager/graph in cuDNN deterministico, darebbe r = 1,963, limite di D 06:00:00 e spesa attesa 12,1: anche cosi' sotto il tetto
+   congelato. Se nessun `TRAIN_TIME` della tabella soddisfa la regola 4(b), D non parte.
+2. **B e C con limite 04:30:00** (tempo massimo 15.300 s) invece di 3:30, per non perdere un braccio se il caricamento rallenta di un
+   terzo. A ricetta normale il tempo massimo non scatta, quindi il training e' lo stesso.
+3. **D si corregge prima del lancio**: una sola maschera del dropout per finestra e compagna, nel solo percorso `mse_vel`. D parte solo dal
+   commit corretto, dopo un nuovo collaudo (controllo eager/graph e r rimisurato) e una verifica mirata del critico sulla correzione. Le
+   regole 4(b) e 4(c) si applicano al nuovo r.
+4. **Lettura**: Δ si calcola senza arrotondare, da `test.conditions.<cond>.ema.mean_over_users_deg` dell'`eval.json` del braccio e di
+   `results/temponet_emg2pose/eval_20261111/eval.json` (A, codice `0c19c4b`, identico a `ee118a2` nei file usati). Nel confronto la loss del
+   braccio si legge da `train_loss`; `args.loss` dell'`eval.json` e' quello della chiamata di valutazione.
+5. **Fallimenti tecnici** (TIMEOUT, run «incompleto», guasto del nodo, controllo eager/graph fallito): nessun nuovo invio senza Simone.
+   Una loss che un collaudo non ha provato non parte.
+6. **Costi**. Spesa attesa con r = 1,355: B 3,08 + C 3,08 + D 3,80 + valutazioni 0,93 + collaudi circa 0,17 = circa 11,1 GPU-ore, circa 89
+   ore locali (fattore 8). Esposizione massima con i limiti (B 4,5, C 4,5, D dal nuovo collaudo, tre valutazioni 0,75): circa 16 GPU-ore,
+   da riferire a Simone. Saldo del progetto letto alle 18:55 con `saldo -b`: 1.341.366 ore locali consumate su 2.000.000, residuo 658.634.
+   Checkout `TEMPONET-E2P-loss-checkout-20261118` = 64774804: `lrd_all_serial`, limite 10 min, `COMPLETED 0:0` in 2 min 3 s, 0 GPU-ore.

@@ -8826,6 +8826,24 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Punta del ramo di GPT controllata alle 10:27, alle 11:46 e alle 15:21, subito prima del commit: `3e007c8`.
 - Il prompt per GPT consolidamento è nella sezione 10 della review ed è stato consegnato a Simone.
 
+### 2026-11-18 | Claude | TEMPONet su emg2pose: studio delle loss approvato (smooth L1, MSE, MSE + velocita'), codice, review, collaudo e invii di B e C | Ramo `claude/temponet-db8-20261109`
+
+- Richiesta di Simone: «vorrei studiare diversi tipi di loss per la regressione su temponet»; alla domanda «Approvi i tre bracci, smooth
+  L1, MSE e MSE più velocità, un seme, circa 12 GPU-ore?» risponde «Sì, approvo». Piano `docs/temponet_emg2pose_loss_plan_20261118.md`;
+  regole congelate in `docs/decisioni.md` (`2a2f7a6`) prima del collaudo, emendamenti dopo la review e prima dei training.
+- Codice `0342170`: `--loss {l1,smoothl1,mse,mse_vel}`. Le compagne per la velocita' finiscono 20 ms prima nella stessa registrazione;
+  la deviazione della velocita' viene dal training; Stepper, Feeder e controllo eager/graph gestiscono le compagne; sbatch con `LOSS`,
+  `TRAIN_TIME` e il modo `losssmoke`. 27 test CPU. Percorso L1 identico bit per bit a `ee118a2` su CPU
+  (`results/temponet_emg2pose/loss_study_20261118/`) e sulla GPU (somme del controllo eager/graph del collaudo uguali a quelle dell'11/11).
+- Review prima del lancio (workflow `wf_d4e7c261-7db`: critico e quattro lenti con verificatori). Il critico dice «DA RIVEDERE» per un
+  bloccante su D, il dropout con maschere indipendenti (voce nella sezione 2); B e C non hanno bloccanti. I minori sono recepiti negli
+  emendamenti di `docs/decisioni.md`.
+- Deploy `deploy/temponet-emg2pose-loss-20261118` = `0342170`. Checkout `temponet-emg2pose-loss-0342170` = 64774804, `COMPLETED 0:0`.
+  Collaudo 64775154, `COMPLETED 0:0`: controllo eager/graph a differenza 0 per le quattro loss, r = 1,355.
+- Inviati B e C con limite 04:30:00, valutazioni in `afterok`: ID nel ledger (`TEMPONET-E2P-loss-*-20261118`). D parte dopo la
+  correzione, un nuovo collaudo e la verifica mirata del critico.
+- Sessione sorella aperta su richiesta di Simone per la variante a blocchi residui (`temponet-residual`): registra le sue attivita'.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12950,3 +12968,15 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   simulazione, come dice GPT. Il conto di Claude di 1,26 milioni di aggiornamenti (17/11) era già il massimo raggiungibile, perché
   con le regole di GPT si arriva al più a 5 LR: la chiave «superseded» di `analytic_checks.json` è inesatta.
 - Nessun job; le correzioni entrano nella revisione di GPT.
+
+### 2026-11-18 | Claude | Studio delle loss di TEMPONet: nel braccio D il termine della velocita' misurava soprattutto il dropout (corretto prima del lancio)
+
+- Problema (critico e lente «dati-formula» della review `wf_d4e7c261-7db`, confermato dal verificatore): in `0342170` finestra e compagna
+  passano insieme nel modello con maschere del dropout 0,5 indipendenti. L'errore della velocita' e' diviso per sd_v, che e' 6-14 volte
+  piu' piccola di sd, quindi il rumore del dropout pesa (sd/sd_v)^2 volte di piu'. Stima su CPU col modello L1 dell'11/11 (un utente di
+  test): la quota del solo dropout e' il 79% del termine della velocita' (84% all'inizializzazione), e il termine pesato vale circa quanto
+  quello della posa o di piu'. D avrebbe ottimizzato soprattutto la coerenza fra due maschere, non «MSE + velocita'».
+- Correzione: una maschera del dropout condivisa fra finestra e compagna, nel solo percorso `mse_vel`; nuovo commit, collaudo e verifica
+  mirata prima di D. B e C non ne dipendono.
+- Incidente operativo: durante il push del ref di deploy la connessione ssh condivisa e' caduta (login01 con carico 120). Il ref era gia'
+  arrivato: il secondo push ha risposto «Everything up-to-date» e `ls-remote` lo conferma.
