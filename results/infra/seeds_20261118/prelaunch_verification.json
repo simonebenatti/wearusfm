@@ -1,0 +1,21 @@
+{
+  "tests": {
+    "passed": 70,
+    "seconds": 6.93,
+    "command": "python -m pytest -q -p no:cacheprovider tests/cpu/test_seeds_download.py tests/cpu/test_seeds_inventory.py tests/cpu/test_seeds_audit.py"
+  },
+  "shell_syntax": "passed",
+  "real_sample_audit": "local_sample_audit.json",
+  "real_sample_only": true,
+  "full_cluster_audit_completed": false,
+  "source_hashes": {
+    "scripts/seeds_inventory.py": "452a5b9ee19a378d4a49be459c4a3485a05fb02a3c7f204fafde2178bbc256d3",
+    "scripts/seeds_download.py": "8820d0fc1d1e2fa99c366ac4366ed1f36fd4d98690da1cdd7961b4ca0bcb68eb",
+    "scripts/seeds_audit.py": "2dafb060ea67e562ce599c76be36f5f548e1e92daa12fb2095652740b2785e5b",
+    "scripts/slurm/seeds_download.sbatch": "c5954c72538c9233ffd725c5a1db6e7df967de5cbab24ff64ee6adfc2da773a1",
+    "scripts/slurm/seeds_audit.sbatch": "c4276c4bcf92366085abf903256d6837ab8eec506956f2e1af8e4db8ed1cdfa6",
+    "tests/cpu/test_seeds_inventory.py": "01e1631a5ff856d524a87cb29b6aaf673a2646e9e59c3e25282c81c28524ebc3",
+    "tests/cpu/test_seeds_download.py": "3cdfef53932649075c6ee3b6758f75942a3e7f3fb5b92de04731820937f48307",
+    "tests/cpu/test_seeds_audit.py": "cdb8c61fdd1048dec9acf7e74ace819f80de1117d0000cd473eebe8c5e8fa278"
+  }
+}

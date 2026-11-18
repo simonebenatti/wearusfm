@@ -1,0 +1,39 @@
+{
+  "dataset": "SEEDS",
+  "purpose": "external_regression_benchmark",
+  "pretraining_allowed": false,
+  "algorithm": "SHA256(SEEDS-subject-split-v1|20261118|AA), ascending; first15train,next5validation,last5test",
+  "train": [
+    5,
+    6,
+    7,
+    8,
+    11,
+    12,
+    14,
+    15,
+    16,
+    18,
+    20,
+    21,
+    22,
+    23,
+    24
+  ],
+  "validation": [
+    1,
+    2,
+    4,
+    17,
+    19
+  ],
+  "test": [
+    3,
+    9,
+    10,
+    13,
+    25
+  ],
+  "all_sessions_and_trials_same_subject_split": true,
+  "test_predictive_metrics_allowed": false
+}

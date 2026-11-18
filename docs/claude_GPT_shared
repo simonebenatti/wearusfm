@@ -8466,6 +8466,20 @@ testaFM;DB8 non replica7,585vs6,89. Contrastivadf36272 ancora proposta globale p
 non obiettivo temporale già pronto. Scaling19k allenato nella consegnaClaude11/11 ma report
 scientifico non pubblicato. Nessun job, nuova misura, merge, modifica scientifica o rilancio.
 
+### 2026-11-18 | GPT coordinamento | SEEDS: acquisizione esterna e preparazione confronto | Base8eba5e4
+
+Simone autorizza download e verifiche SEEDS e chiede di mantenerlo interamente fuori dal
+pretraining, preparando FM congelato / fine-tuning / TEMPONet. Nuovo worktree e ramo
+codex/seeds-benchmark-20261118; nessuna modifica delle linee1/2/3 o dei loro checkout.
+Inventario ufficiale completo: tre nodi OSF,5.850 trial+25calibrazioni+5accessori,
+59.737.275.276byte, tutti25soggetti,CCBY4.0. Manifest con versioni,size,SHA256,MD5;
+API originali conservate compresse. Campione locale: un trial e una calibrazione verificati,
+nessuna attestazione prematura del payload completo. Download/audit CPU preparati tramite
+submitter/ledger comuni: tetto12,167coreh,0GPUh,raw in SCRATCH/data/external_benchmarks/seeds.
+Protocollo15/5/5 separa persone intere; checkpoint30MT100-G49k dichiarato prima dei risultati;
+nessun training scientifico lanciato. Dettagli: docs/seeds_acquisition_execution_20261118.md,
+docs/seeds_benchmark_protocol_20261118.md, results/infra/seeds_20261118/.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12455,3 +12469,16 @@ TEMPONet è già osservato. La contrastiva globale del07/11 ha obiettivi classif
 priorità sul movimento richiede diversa domanda prima di implementarla. Nessun difetto nuovo
 nei risultati verificati. Candidati di testa/loss restano separati; questa sintesi non cambia
 criteri o autorizzazioni. Dati e limiti nel report del16/11.
+
+### 2026-11-18 | GPT coordinamento | SEEDS: limiti verificati prima del benchmark | Base8eba5e4
+
+Target:18letture normalizzate del guanto,non gradi; valori fuori0–1 validi,nessun clipping.
+Guanto60Hz acquisiti/256Hz distribuiti;EMG2048Hz. Helper MATLAB ePython non equivalenti:
+interpolazione agli estremi controFFT8×e troncamento. Il rapporto lunghezze non è sempre8;
+convenzione unica e oracolo prima dei fit,nessuna falsa prova di allineamento fisiologico.
+Adattatori attuali emg2pose/TEMPONet non riutilizzabili cambiando soltanto18output:
+formato,frequenza,134canali e regressione sequenziale da qualificare. L'attenzione locale con
+montaggio misto può costare molta memoria; benchmarkbatch1 prima del fine-tuning.
+Il protocollo prepara3bracci,non dimostra già causalmente il valore del pretraining senza
+il distinto controlloFMda zero. Testpredittivo SEEDS sigillato; nessuna metrica test usata
+per definire split,checkpoint o architettura. Stato completo download/audit ancora da leggere.

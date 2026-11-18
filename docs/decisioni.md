@@ -7809,3 +7809,15 @@ su latenti o nel pretraining resta proposta, come la contrastiva globale07/11. P
 al centro la regressione occorre esplicitare obiettivo temporale e supporto comune; evitare
 cambio simultaneo di testa e loss. Nessun nuovo criterio firmato, budget, job o autorizzazione;
 nessuna modifica dei risultati/checkout storici. Fonti con14hash in `results/infra/regression_synthesis_20261116/sources.json`.
+
+### 2026-11-18 — SEEDS esterno al pretraining, acquisizione e confronto preparato
+
+Su richiesta esplicita di Simone, acquisizione SEEDS dai tre componenti ufficialiOSF:
+25soggetti,5.850trial,18target normalizzati. Tutto il dataset rimane esterno al pretraining;
+nessuna modifica al corpus o ai job correnti. Radice dedicataexternal_benchmarks/seeds,
+manifest con hash e marker di esclusione. Download e auditCPU:12,167coreh massime,0GPUh,
+submitter/ledger comuni,nessun retrySLURMautomatico. Protocollo in
+`docs/seeds_benchmark_protocol_20261118.md`: persone15/5/5,FMcongelato eFT dallo stesso
+30MT100-G49k,TEMPONetraw adattata,loss/supporti comuni. Gli adattatori,il significato dei
+tempi e il costo dei fit richiedono ancora collaudo/review prima dell'esecuzione scientifica.
+Non sono autorizzati implicitamente pretraining suSEEDS,nuova loss o un quarto braccio.

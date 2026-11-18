@@ -1,0 +1,17 @@
+{
+  "checked_utc": "2026-11-18T13:54:24.907401+00:00",
+  "partition": "lrd_all_serial",
+  "state": "UP",
+  "partition_max_time": "04:00:00",
+  "qos": "lrd_all_serial",
+  "qos_max_wall": "04:00:00",
+  "account": "iscrb_wearusfm",
+  "nodes": "login[08,13]",
+  "evidence_commands": [
+    "scontrol show partition lrd_all_serial -o",
+    "sacctmgr show assoc where user=sbenatti format=Account,Partition,QOS,DefaultQOS -P",
+    "sacctmgr show qos format=Name,MaxWall -P"
+  ],
+  "initial_8h_proposal_not_submitted": true,
+  "corrected_download_walltime_seconds": 14400
+}

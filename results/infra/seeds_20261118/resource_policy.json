@@ -1,0 +1,29 @@
+{
+  "gpu_hours_max": 0,
+  "cpu_core_hours_max": 12.166666666666666,
+  "download_bytes_max": 59737275276,
+  "disk_margin_bytes": 5368709120,
+  "jobs": [
+    {
+      "id": "SEEDS-checkout-20261118",
+      "cpus": 1,
+      "memory_gib": 2,
+      "time_minutes": 10
+    },
+    {
+      "id": "SEEDS-download-20261118",
+      "cpus": 2,
+      "memory_gib": 4,
+      "time_minutes": 240
+    },
+    {
+      "id": "SEEDS-audit-20261118",
+      "cpus": 2,
+      "memory_gib": 16,
+      "time_minutes": 120
+    }
+  ],
+  "parallel_http_connections_max": 4,
+  "transport_retries_max": 2,
+  "slurm_automatic_retries": 0
+}
