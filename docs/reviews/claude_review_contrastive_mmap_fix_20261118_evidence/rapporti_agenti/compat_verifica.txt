@@ -1,0 +1,122 @@
+Rapporto dell'agente «compat_verifica». Review Claude del 18/11/2026. Testo dell'agente: vale la review per ciò che ne ho tratto.
+Percorsi: <archivio> = cartella di lavoro conservata fuori dal repository; <alberi>/<commit> = git archive dei commit.
+
+SOMMARIO
+Verifica avversaria della dimensione compat. Nessun BLOCCANTE. Manifest, artefatti, coorte e ricevuta confermati con prove indipendenti: object store di git, gunzip/shasum, CLI come __main__, tre versioni di Python, generatore del manifest rieseguito byte-identico, coorte ricalcolata byte-identica. Rilievi dell'analista: 8 CONFERMATI, 1 PARZIALE (R-5: la lettura finale non puo' girare da 3b5d4be; serve un commit nuovo con lo stesso digest 6b421b75). Mutanti contro la suite completa (296 test, non 8 file): i ganci di validate_audit e read_preflight sopravvivono (R-1 confermato; lacuna preesistente: a f67acb0 sopravvive anche il vecchio controllo, 250 test); i sopravvissuti di R-2 restano tali; nuovo sopravvissuto NON equivalente k5 nel ramo storico di authenticate_calibration (NF-4, MINORE). Voci verificate attaccate 10 su 10: 2 PARZIALI (nessuna alterazione accettata dalla catena completa: falso per la lettura finale, dove un audit rietichettato al digest corrente passa read_preflight; validate_release 'completi'). Nuovi rilievi: 1 MINORE, 5 NOTE. Il CUDA 64730941 non attraversa il meccanismo; il primo uso reale sara' nei cinque benchmark. Rapporto: <archivio>/agents/verifica-compat/RAPPORTO.md; JSON: <archivio>/wf/verifica_compat.json
+
+================================================================================
+VERDICTS
+--------------------------------------------------------------------------------
+[id] R-1
+[verdict] CONFERMATO
+[severity] MINORE
+[evidence] ESEGUITO: mutanti miei diversi dai suoi (condizione 'if False and ...' invece di 'pass') contro TUTTA la suite contrastive: g1 (validate_audit) e g2 (read_preflight) sopravvivono, 296 passati su 296 (v6_mutants.out). LETTO: release_fixture di test_contrastive_run.py costruisce l'audit con source_digest() corrente; test_contrastive_benchmark_readout.py sostituisce read_preflight con monkeypatch. ESEGUITO a f67acb0 (v9_oldgap.py): tolto il vecchio confronto del sorgente dell'audit in validate_audit (o1) o in read_preflight (o2), la suite di f67acb0 passa (250 su 250): la lacuna e' preesistente.
+[correction] Gravita' MINORE condivisa. Precisare che la lacuna non nasce con 3b5d4be: anche il vecchio controllo non era isolato. Le sue due regressioni proposte funzionano: con audit['source_sha256']='0'*64 l'helper legge il manifest vero e solleva 'historical evidence compatibility: historical audit bytes changed'.
+--------------------------------------------------------------------------------
+[id] R-2
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO sulla suite completa (296), non solo sugli 8 file: f_b16 (chiavi duplicate), f_b18 (fuga dal checkout), f_b19 (campi del manifest), f_h3 (reader_provenance mai confrontata) sopravvivono tutti, 296 passati (v6_mutants_f.out). Aggiungo k7 (pin con campi in piu' accettati): sopravvive, quasi equivalente. k2 (sottoinsieme sui file aggiunti) sopravvive ma e' equivalente. ESEGUITO git ls-tree: in 3b5d4be non c'e' nessun symlink, quindi b18 e' solo teorico. b20, b22, b23, b15: LETTO, concordo che sono quasi equivalenti.
+[correction] Nessuna sulla gravita'.
+--------------------------------------------------------------------------------
+[id] R-3
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO grep in scripts/, src/, tests/cpu/ di 3b5d4be: compatibility_manifest, cuda_gate e audit_recovery non sono letti da codice ne' da test; build_command legge solo chiavi nominate e ignora le altre. Il vincolo effettivo e' il checkout: EXPECTED_SHA 3b5d4be2bda36bdc601ae3c50ae9b8ace696f16e in tutti gli 8 comandi di submission_plan.json e queued_cuda_submission_plan.json, piu' lib_code_dir (HEAD, pulizia, sola lettura, LETTO). ESEGUITO: pin d1695b73 / 35.650 byte = manifest; manifest rigenerato dal generatore byte-identico.
+[correction] Nessuna. La frase del documento 'pinnato nella release' va corretta o resa vera con checked_file in build_command.
+--------------------------------------------------------------------------------
+[id] R-4
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] LETTO: contrastive_prepare.py:281 e :374, contrastive_run.py:96, contrastive_benchmark_readout.py:319 scartano il ritorno. La ricevuta di read_preflight registra source_sha256 della coorte (corrente) e cpu_audit_sha256, non il produttore storico ab2d6460 dell'audit.
+[correction] Nessuna.
+--------------------------------------------------------------------------------
+[id] R-5
+[verdict] PARZIALE
+[severity] NOTA
+[evidence] LETTO: preflight_plan.json contiene la lettura solo come cella CONTRAST-READOUT-v2-20261116, senza job.json; releases/mmap_20261118 ha solo cuda e i cinque benchmark; contrastive_job.main rifiuta un job fuori dal checkout. Quindi la lettura finale NON puo' girare da 3b5d4be. Il vincolo vero e' lo stesso digest: validate_cohort (cohort.source == source_digest()), _run_evidence (provenienza dei benchmark), _cuda_evidence e validate_receipt del probe confrontano tutti col digest della coorte. ESEGUITO: con la suite completa s1 mostra che anche annullare una sola delle cinque correzioni fa cadere l'helper (regola 'esattamente cinque'), e i test storici falliscono.
+[correction] Portata diversa: non 'stesso checkout 3b5d4be' ma 'commit e checkout nuovi, con il solo job di lettura aggiunto e nessuno dei 117 file toccato (digest 6b421b75)'. Ogni modifica ai 117 file riapre manifest, ALLOWED_CHANGED_SOURCES dell'helper, coorte, release e review.
+--------------------------------------------------------------------------------
+[id] R-6
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO con codice mio (v7_break.py, casi N8): summary con source_sha256 = 6b421b75 e ricevuta rigenerata dal lettore corrente: authenticate_calibration ACCETTA (lambda identici); validate_cohort RIFIUTA ('cohort calibration/source pins differ'); ricevuta storica genuina con lo stesso run rietichettato: RIFIUTATA. LETTO: build_command verifica il pin 7a3b9490 di calibration_summary prima di torchrun.
+[correction] Nessuna.
+--------------------------------------------------------------------------------
+[id] R-7
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO git ls-tree -r 3b5d4be: in src/ solo file .py; gli script contrastive_* importano solo contrastive_*, wearusfm, stdlib e terze parti. Baseline, piano e riferimenti di policy hanno pin propri (BASELINE_SHA256, frozen_documents, policy_reference). LETTO: lib_code_dir usa 'git status --porcelain --untracked-files=all', che NON mostra i file ignorati da .gitignore (__pycache__/, build/, *.out, *.csv).
+[correction] Precisare la sua frase 'lib_code_dir.sh rifiuta file non tracciati': vale solo per i non ignorati. Nessun effetto oggi: un checkout nuovo non li contiene, e un .py ignorato sotto src/wearusfm cambierebbe comunque l'inventario (rifiuto).
+--------------------------------------------------------------------------------
+[id] R-8
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO grep di torch.load con mmap=True in tutto scripts/ e src/: sei siti, tutti con str(). ESEGUITO s1..s6 contro la suite completa: tutti uccisi dal proprio caso dello shim; s1 anche da test_only_exact_historical_audit_is_compatible e test_original_calibration_authenticates_without_relabelling_producer. LETTO torch_mmap_source.txt del cluster: 'if not isinstance(f, str): raise ValueError(...)', identico allo shim. Torch locale 2.4 e 2.9 accettano Path.
+[correction] La sua prova 'nessun altro test se ne accorge' viene da una corsa su 4 file (MMAP_TESTS): sulla suite completa s1 e' ucciso anche da due test storici, perche' togliere quella str() riporta contrastive_cuda_check.py ai byte storici. Irrilevante per la gravita'.
+--------------------------------------------------------------------------------
+[id] R-9
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO con wrapper di conteggio: validate_recipe = 2 chiamate dell'helper, validate_cohort = 4, validate_audit = 1: 7 per rank per processo; 0,023-0,026 s l'una; validate_recipe 0,20 s e validate_cohort 0,31 s sul Mac. Lustre non misurato.
+[correction] Nessuna.
+================================================================================
+NEW_FINDINGS
+--------------------------------------------------------------------------------
+[id] NF-4
+[title] Ramo storico di authenticate_calibration: nessun test lega la ricevuta storica al suo run
+[severity] MINORE
+[category] difetto_dimostrato
+[where] scripts/contrastive_prepare.py:371-379; tests/cpu/test_contrastive_historical_calibration.py:18-39
+[claim] Sostituendo lo scambio di reader_provenance con 'comparable = _jsonable(receipt)' (mutante k5) la suite completa passa (296). Il mutante non e' equivalente: una ricevuta storica genuina viene accettata con un run qualunque etichettato al digest corrente, senza confronto col ricalcolo. In produzione lo fermerebbe solo il pin di summary.json nel job.
+[evidence] ESEGUITO: v6_mutants.py k5 sulla suite completa: SOPRAVVIVE. ESEGUITO v10_k5_demo.py (sorgente eseguito in memoria, albero non toccato): ricevuta storica + run col summary rietichettato a 6b421b75: codice vero RIFIUTA ('differs from authenticated recalculation'), k5 ACCETTA.
+[suggested_fix] Un test: copiare il run archiviato, porre summary.contrastive.provenance.source_sha256 = source_digest(), chiamare authenticate_calibration con la ricevuta storica genuina e attendere ValueError 'differs from authenticated recalculation'.
+--------------------------------------------------------------------------------
+[id] NF-1
+[title] read_preflight non pinna l'audit: un audit rietichettato al digest corrente salta il manifest
+[severity] NOTA
+[category] dubbio
+[where] scripts/contrastive_benchmark_readout.py:309-323; scripts/contrastive_run.py:112-159 (validate_measured_budget)
+[claim] Il gancio scatta solo se audit.source_sha256 differisce dalla coorte. Un audit con source_sha256 = 6b421b75 e il resto identico passa senza manifest. Nella catena dei benchmark lo ferma audit_sha256 della release; nella lettura finale solo il pin del job di lettura, che non esiste ancora. Preesistente: a f67acb0 bastava source = coorte. Neanche validate_measured_budget confronta cpu_audit_sha256 della ricevuta di preflight con audit_sha256 della release.
+[evidence] ESEGUITO v7_break.py: N1a validate_audit ACCETTA; N1b validate_release RIFIUTA ('CPU audit receipt missing or changed'); N1c read_preflight ACCETTA e si ferma al cancello CUDA come il genuino N0. LETTO validate_measured_budget.
+[suggested_fix] Nel job di lettura pinnare audit = 5c720fad / 20.275.571 byte come nei benchmark. Meglio: in read_preflight confrontare sha(cpu_audit_path) con un pin (manifest o release), e in validate_measured_budget confrontare cpu_audit_sha256 con audit_sha256 della release di training.
+--------------------------------------------------------------------------------
+[id] NF-2
+[title] Del run di calibrazione il job pinna solo summary.json; config.json e metrics.jsonl si verificano a GPU allocate
+[severity] NOTA
+[category] dubbio
+[where] scripts/contrastive_job.py:37-41 e :128; scripts/contrastive_source_compat.py:191-194; compatibility_20261118/prelaunch_verification.json
+[claim] Se config.json o metrics.jsonl sul cluster fossero cambiati dopo il 17/11, ognuno dei cinque benchmark fallirebbe dentro torchrun, dopo l'allocazione di 4 GPU (fallisce chiuso). Il ricontrollo remoto di GPT copre solo audit e checkpoint.
+[evidence] LETTO: calibration_directory verifica solo summary.json; i tre file sono confrontati solo dall'helper in contrastive_run; prelaunch_verification registra remote_rechecked solo per checkpoint e audit. LETTO accounting_and_hashes.txt: il 17/11 i tre hash sul cluster erano uguali ai pin. Stato attuale non verificato (niente ssh).
+[suggested_fix] Prima di inviare i benchmark, rileggere sul cluster (sola lettura) sha256 di config.json e metrics.jsonl della cartella di calibrazione; oppure pinnare i tre file nel job e verificarli in build_command.
+--------------------------------------------------------------------------------
+[id] NF-3
+[title] build_manifest.py ordina per stringa, l'helper per componenti di percorso
+[severity] NOTA
+[category] preferenza
+[where] results/infra/contrastive_comparison_20261116/compatibility_20261118/build_manifest.py:10-17; scripts/contrastive_source_compat.py:108-109
+[claim] Con un modulo e un pacchetto omonimi (src/wearusfm/x.py e src/wearusfm/x/...) il generatore produrrebbe un ordine che l'helper rifiuta. Oggi coincidono. Latente e fermato al build: build_release confronta current_source_sha256 con source_digest().
+[evidence] ESEGUITO: manifest rigenerato in sandbox byte-identico; ordine per stringa = per componenti sui veri inventari; nessuna coppia omonima.
+[suggested_fix] Ordinare con key=lambda p: PurePosixPath(p).parts, come l'helper.
+--------------------------------------------------------------------------------
+[id] NF-5
+[title] Nessun test valida la coorte e le release mmap committate
+[severity] NOTA
+[category] preferenza
+[where] tests/cpu/test_contrastive_historical_calibration.py:27-29
+[claim] I test confrontano le config con calibrated_cohort_20261117; nessuno esegue validate_cohort o validate_release su calibrated_cohort_20261118_mmap e releases/mmap_20261118. Un errore di build_release emergerebbe solo nel job, a GPU allocate.
+[evidence] ESEGUITO grep in tests/: nessun riferimento a 20261118_mmap o mmap_20261118. ESEGUITO: la coorte committata e' byte-identica a quella prodotta dalla CLI corrente (V4), quindi oggi e' corretta.
+[suggested_fix] Un test che chiami validate_cohort per i tre bracci e validate_recipe per le cinque config delle release mmap con le evidenze archiviate.
+--------------------------------------------------------------------------------
+[id] NF-6
+[title] La ricevuta storica non e' rigenerabile
+[severity] NOTA
+[category] dubbio
+[where] scripts/contrastive_prepare.py:372-377; scripts/contrastive_source_compat.py:183-186
+[claim] La ricevuta che il lettore corrente produce sullo stesso run storico e' rifiutata da authenticate_calibration (reader_provenance diversa, canonico diverso). Solo il file f57d8731 e' ammissibile: se andasse perso, nessun recupero senza nuovo manifest.
+[evidence] ESEGUITO v7_break.py N5: RIFIUTATA ('historical calibration receipt changed').
+[suggested_fix] Nessuna nel codice. Dichiararlo nel documento e trattare il file come evidenza immutabile (oggi e' committato).
+================================================================================
+CONTESTED_OK
+- Voce 'Resistenza a 111 alterazioni ... nessuna alterazione accettata dalla catena completa': PARZIALE. Vale per la catena dei benchmark (audit_sha256 della release). Per la lettura finale no: un audit identico al genuino salvo source_sha256 = 6b421b75 passa read_preflight senza manifest e arriva al cancello CUDA come il genuino (ESEGUITO, v7_break N1c); lo fermerebbe solo il pin di un job di lettura che non esiste ancora. Il caso non era fra i suoi 111.
+- Voce 'Cancelli d'ingresso dei cinque benchmark: validate_recipe e validate_release completi passano': PARZIALE nella formulazione. Il suo script sostituisce lo sha dei quattro input fisici con il pin (dichiarato solo nella docstring) e non esercita R.check_input_files ne' le radici dati. Il resto regge: le mie corse --recipe-only come __main__ passano per le cinque config e validate_release di full_CN passa con le evidenze vere.

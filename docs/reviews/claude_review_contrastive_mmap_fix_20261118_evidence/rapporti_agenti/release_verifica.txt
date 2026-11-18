@@ -1,0 +1,88 @@
+Rapporto dell'agente «release_verifica». Review Claude del 18/11/2026. Testo dell'agente: vale la review per ciò che ne ho tratto.
+Percorsi: <archivio> = cartella di lavoro conservata fuori dal repository; <alberi>/<commit> = git archive dei commit.
+
+SOMMARIO
+Verifica avversaria della dimensione release: nessun BLOCCANTE. Su 8 rilievi: 6 CONFERMATI (R-3 MINORE; R-4, R-5, R-6, R-7, R-8 NOTA), 2 PARZIALI con gravita' o portata ridotte (R-1 da MINORE a NOTA; R-2 NOTA, scenari quantificati non raggiungibili), nessun RIFIUTATO. Attaccate 18 voci su 19 di «verificato corretto» con script miei (Fraction per il budget, sha256 e diff JSON per coorte e job, ricalcolo calibrated_configs/validate_cohort col codice di 3b5d4be, risoluzione di tutti i pin, confronto ricevute-ledger, simulazione del launcher con git simulato, lettura del sorgente Slurm 25.05.7): nessuna cade; limiti di portata su OK6 (consuntivi letterali in build_release.py) e OK13 (git status non vede i percorsi ignorati, teorico). Tre rilievi nuovi, tutti NOTA: review indipendente della rettifica e ricontrolli remoti senza ricevuta; sei checkout contro «quattro inclusi»; checkout fermo dietro la catena seriale della linea 1 (CUDA partira' senza sorveglianza a un'ora non nota). Rapporto: <archivio>/agents/verifica-release/RAPPORTO.md; JSON: <archivio>/wf/verifica_release.json
+
+================================================================================
+VERDICTS
+--------------------------------------------------------------------------------
+[id] R-1
+[verdict] PARZIALE
+[severity] NOTA
+[evidence] ESEGUITO (lettura ricevute): calibrazione 64701482 ElapsedRaw 774 s contro summary elapsed_s 749,159 s: circa 25 s fuori dal cronometro, dato confermato. LETTO: run.py:1222 t_start all'ingresso di train(); run.py:1586 controllo del tempo solo all'inizio di ogni passo; salvataggio finale e summary dopo lo stop; contrastive_run.py:301 RuntimeError se i passi sono meno di 576. Split: deadline = avvio + 1770 s (contrastive_split_benchmark.py:108); la fase 1 riceve 1800 come limite interno (righe 111-112), quindi conta solo la deadline del wrapper. CUDA: nessun limite complessivo, probe 90 s e timeout NCCL 10 min (contrastive_cuda_check.py:246). NON misurati i tempi d'avvio dei benchmark.
+[correction] Il margine scarso pesa solo quando la cella e' gia' fallita (stop a tempo = meno di 576 passi). Stima mia, non misurata: la cella finisce FAILED intorno a 1800-1815 s, dentro OverTimeLimit; costo in piu' di secondi, non 3 minuti; nessuna evidenza falsata. «Fino a +3 min» vale solo per un blocco (hang), non per lo stop a tempo. Gravita' NOTA, non MINORE.
+--------------------------------------------------------------------------------
+[id] R-2
+[verdict] PARZIALE
+[severity] NOTA
+[evidence] ESEGUITO budget_frac.py (Fraction, dalle 7 ricevute): massimo 11641/900 GPU-h = 12,934444 e 27149/225 core-h = 120,662222; margini 959/900 GPU-h e 1951/225 core-h. Cinque benchmark in TIMEOUT: +180 s -> 13,934 GPU-h / 128,662 core-h (entro); i tetti cadono con sforo > 191,8 s (GPU) e > 195,1 s (core) per ciascuno dei cinque. Sforo misurato 187 s (audit 64652559, 3787 su 3600); KillWait = 180 s (audit_completed_20261117/accounting_and_integrity.txt) consente fino a circa +360 s se i processi non escono al SIGTERM.
+[correction] Il punto (massimo convenzionale) regge, gli scenari no: «sei celle in TIMEOUT = 14,134» non e' raggiungibile, perche' un CUDA non COMPLETED 0:0 blocca i benchmark (cuda_gate); i 129,462 core-h richiedono anche lettura finale e due checkout in TIMEOUT, esclusi dalla regola «fermare le fasi dipendenti». Scenario reale: piu' benchmark bloccati; il piano non ha una regola di arresto fra benchmark e quelli gia' in coda partono da soli. Costo per cella in TIMEOUT: walltime + OverTimeLimit + fino a KillWait.
+--------------------------------------------------------------------------------
+[id] R-3
+[verdict] CONFERMATO
+[severity] MINORE
+[evidence] LETTO decisioni.md:1395 (03/10: MaxJobsPU 2, MaxSubmitPU 2, contano i job in attesa di dipendenza) e nota di Claude del 05/11 (boost_qos_dbg: 2 in esecuzione, 4 sottomessi): con entrambe cinque invii in blocco non passano. LETTO submit_job.py: rifiuto -> «rifiutato», ripresentabile solo con --dopo-rifiuto, nessun duplicato. ESEGUITO lettura ledger e state.json: il checkout aspetta la catena seriale della linea 1 (vedi N-3) mentre il CUDA 64730941 occupa un posto dbg. NON riletti i limiti di oggi (niente ssh).
+[correction] Nessuna sulla sostanza. Aggiungere al piano l'ordine d'invio per posti dbg liberi, contando i job dbg delle altre linee.
+--------------------------------------------------------------------------------
+[id] R-4
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] LETTO submission_20261117/dependency_diagnosis.json (kill_invalid_depend, MinJobAge 30) e pilot_posa/b19618_20261028/recovery/diagnosis_snapshot.json: il 28/10 il dipendente 62583165 e' CANCELLED 3 s dopo il FAILED del prerequisito, Start None. LETTO sorgente Slurm tag slurm-25-05-7-1 (job_scheduler.c, web): afterok fallito -> DEPEND_FAILED -> handle_invalid_dependency; record assente -> «job is gone, dependency lifted» -> DEPEND_FULFILLED. ESEGUITO sim/run_case.sh (git simulato): checkout o lib assenti -> uscita 1 alla riga 20 del launcher, prima di module e python3; SHA diverso, scrivibile, non tracciato, status fallito, non git -> uscita 2.
+[correction] Nessuna. Il caso MinJobAge e' possibile nel sorgente ma improbabile (valutazione in pochi secondi); se accade si ferma prima di Python.
+--------------------------------------------------------------------------------
+[id] R-5
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO grep di d3f128ae a b7db83a: solo in decisioni.md, documento di rettifica, piano accodato, manifest e verification_v2.json; nessuna uscita grezza in mmap_submission_20261118/. Il 17/11 c'era checkout_ready.json («sha256sum ... immediately before submission»). LETTO scheduler_config.txt: AccountingStoreFlags = job_comment,job_script, quindi sacct -B -j 64730941 restituisce lo script effettivo (metodo usato il 28/10, actual_sbatch_payloads). Rischio basso: stesso blob 4dc96b4a a 93f24c9 e 3b5d4be, nessun .gitattributes o symlink.
+[correction] Nessuna.
+--------------------------------------------------------------------------------
+[id] R-6
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO grep: «compatibility_manifest» assente da scripts/, src/, tests/ a 3b5d4be. LETTO contrastive_source_compat.py: percorso fisso MANIFEST_RELATIVE_PATH (riga 17), nessun confronto con un pin; il manifest e' fuori dall'inventario di source_digest (_source_inventory), quindi source_sha256 non lo identifica; il valore di ritorno di validate_historical_evidence (con manifest_sha256) e' scartato a contrastive_run.py:96 e contrastive_benchmark_readout.py:319. La provenienza resta su code.sha (run.py:1802) ed environment.code_sha del cuda.json.
+[correction] Nessuna: la garanzia e' EXPECTED_SHA + checkout pulito e in sola lettura, come scritto.
+--------------------------------------------------------------------------------
+[id] R-7
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO receipts_check.py: il comando CUDA di afe7cff differisce da quello inviato solo per il percorso del launcher e per --dopo; il piano accodato riproduce esattamente lo sbatch registrato (--parsable, --job-name, --comment, --dependency=afterok:64730738). LETTO submit_job.py: un ID «sottomesso» non si ripresenta.
+[correction] Nessuna.
+--------------------------------------------------------------------------------
+[id] R-8
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO grep: cuda_gate assente dal codice; cuda_report solo nel modo readout (contrastive_job.py:76) e nel lettore. LETTO _cuda_evidence (257-293) e read_preflight (324-334): passed, source della coorte nuova, quattro rank, STOP, input, stato iniziale; validate_receipt con source nuovo rifiuterebbe anche il probe di 64706211 (source ab2d6460).
+[correction] Nessuna.
+================================================================================
+NEW_FINDINGS
+--------------------------------------------------------------------------------
+[id] N-1
+[title] Review indipendente della rettifica e ricontrolli remoti del 18/11 dichiarati senza ricevuta
+[category] dubbio
+[severity] NOTA
+[where] docs/reviews/contrastive_mmap_queue_amendment_20261118.md:24-26; docs/decisioni.md (18/11, «CUDA accodato»); results/infra/contrastive_comparison_20261116/compatibility_20261118/prelaunch_verification.json (remote_rechecked_*); mmap_submission_20261118/
+[claim] La rettifica dichiara «Review indipendente di audit_timeout_review favorevole», ma 7e96014 non aggiunge alcun file di review. independent_review.json e' del 3b5d4be, precede la rettifica e non parla ne' del launcher di trasporto ne' di afterok. I ricontrolli remoti (launcher, checkpoint, audit) sono dichiarazioni senza uscita grezza, a differenza del 17/11. Nessun effetto sul runtime: i pin si ricontrollano al lancio.
+[evidence] ESEGUITO git show --stat 7e96014 (6 file: registro, handoff, decisioni, rettifica, checkout_state, piano accodato); git grep audit_timeout_review a b7db83a; lettura di independent_review.json (cuda_relaunch_approved, nessuna voce sul trasporto). LETTO cuda_completed_20261117/remote_hashes.txt e cuda_benchmarks_submission_20261117/checkout_ready.json come termine di paragone.
+[suggested_fix] Archiviare l'esito della review della rettifica e l'uscita grezza dei controlli remoti (oppure sacct -B -j 64730941) accanto alle ricevute.
+--------------------------------------------------------------------------------
+[id] N-2
+[title] Sei checkout contro i «quattro checkout inclusi» del tetto del 16/11
+[category] preferenza
+[severity] NOTA
+[where] docs/decisioni.md:6475 (16/11) e releases/mmap_20261118/release.json (resources.remaining_checkouts = 2)
+[claim] Il tetto 14 GPU-h / 129,3333 core-h era descritto con quattro checkout. Ora sono sei: 64652044, 64652383, 64701182, 64705989 eseguiti; 64730738 e quello della lettura finale residui. Il costo in piu' e' al massimo 0,533 core-h e il totale resta entro 129,333. Il 17/11 si scriveva di cinque («tre checkout residui»); nessuna voce registra il passaggio a sei rispetto alla descrizione approvata.
+[evidence] ESEGUITO lettura del ledger (righe 1604-1683, campagna CONTRASTIVE-v2-20261116) e budget_frac.py. LETTO decisioni.md 16-18/11.
+[suggested_fix] Una riga nel registro o in decisioni.md: sei checkout, assorbiti nel tetto in core-ore.
+--------------------------------------------------------------------------------
+[id] N-3
+[title] Il checkout aspetta la catena seriale della linea 1: CUDA senza sorveglianza a ora non nota, lettura finale sulla stessa corsia
+[category] dubbio
+[severity] NOTA
+[where] ~/wearusfm_local/jobs/ledger.tsv righe 1672-1679; state.json di SCALING-19618-probe-fit-04..07; scripts/slurm/scaling_readers19618.sbatch a df2de35; docs/reviews/contrastive_mmap_queue_amendment_20261118.md:3
+[claim] La «altra campagna» e' la catena della linea 1 inviata da GPT alle 09:59: 64730416 -> 64730417 -> 64730419 -> 64730421 (afterok), 8 CPU e 30G ciascuno su lrd_all_serial/login08, limiti sommati 10 h 44 min. Ogni fit occupa da solo il limite per utente (cpu=8, mem=30800M). Lettura mia, non osservata: il checkout dovrebbe partire dopo il primo fit (anzianita' dei job in catena contata dall'eleggibilita'). Il CUDA partira' poi da solo, senza sorveglianza; la lettura finale (8 CPU, 30 GiB, 1 h) dovra' contendere la stessa corsia. La rettifica non nomina i job ne' l'ordine.
+[evidence] ESEGUITO lettura del ledger e degli state.json (dopo = fit precedente; tutti «sottomesso»); git show df2de35:scripts/slurm/scaling_readers19618.sbatch (-p lrd_all_serial, --nodelist=login08, 8 CPU, 30G). LETTO queue_snapshot (64730738 PENDING QOSMaxCpuPerUserLimit). NON verificato lo stato attuale (niente ssh).
+[suggested_fix] Scrivere nel handoff quali job occupano la corsia e l'ordine atteso; pianificare lo slot della lettura finale insieme alla linea 1.
+================================================================================
+CONTESTED_OK
+(nessuno)

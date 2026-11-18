@@ -1,0 +1,149 @@
+Rapporto dell'agente «compat_analisi». Review Claude del 18/11/2026. Testo dell'agente: vale la review per ciò che ne ho tratto.
+Percorsi: <archivio> = cartella di lavoro conservata fuori dal repository; <alberi>/<commit> = git archive dei commit.
+
+SOMMARIO
+Dimensione compat: riuso di audit 64652559 e calibrazione 64701482 (prodotti da ab2d6460) con i sorgenti corretti 6b421b75. Nessun rilievo BLOCCANTE.
+
+Il manifest dice il vero: i 116 sorgenti storici sono uguali a f09bf85, 4fc5152 e f67acb0. I 117 correnti sono uguali a 3b5d4be e b7db83a. Cambiano solo l'helper (aggiunto) e i 4 script dichiarati. Audit, tre file del run e ricevuta canonica coincidono con i file archiviati. Il checkpoint della calibrazione non e' nel repository: lo pinnano i job e lo stato iniziale della ricevuta.
+
+Il diff dei cinque file contiene solo 6 str(), 4 ganci e il cambio del campo source_sha256 della ricevuta. Non cambiano cancelli, soglie, calcolo dei lambda o pin. Quel campo e' letto solo da authenticate_calibration e da build_release.py.
+
+Prove eseguite:
+- 111 tentativi di rottura su copie: tutti con l'esito atteso. La catena completa non ha accettato nessuna alterazione.
+- Ricevuta ricalcolata col lettore corrente: identica in JSON canonico tranne reader_provenance; lambda e passi 257-288 identici.
+- Cancelli d'ingresso delle 5 release dei benchmark (validate_recipe e validate_release, con audit, coorte e calibrazione): passano in locale con le evidenze vere.
+- read_preflight supera ricevuta, coorte e audit.
+- Test: 46 nuovi e 296 contrastive passati.
+- Mutanti: 6 su 6 senza str() uccisi; 37 in tutto, 27 uccisi, 10 sopravvissuti.
+
+Un rilievo MINORE: i ganci sull'audit in validate_audit e read_preflight non sono coperti da nessun test (mutanti h5 e h6 sopravvissuti). Il resto sono NOTE.
+
+Rapporto: <archivio>/agents/compat/RAPPORTO.md
+JSON: <archivio>/wf/cerca_compat.json
+
+================================================================================
+FINDINGS
+--------------------------------------------------------------------------------
+[id] R-1
+[title] Ganci sull'audit in validate_audit e read_preflight non coperti dai test
+[category] difetto_dimostrato
+[severity] MINORE
+[where] scripts/contrastive_run.py:94-96; scripts/contrastive_benchmark_readout.py:317-319
+[claim] Se una modifica futura togliesse o aggirasse il gancio, nessun test se ne accorgerebbe. validate_audit e read_preflight accetterebbero allora un audit di sorgente diverso dal corrente, con i soli pin grezzi di release e job come difesa. Il codice attuale si comporta bene.
+[evidence] ESEGUITO: mutanti h5 (gancio di validate_audit sostituito da pass) e h6 (gancio di read_preflight sostituito da pass), con manifest ripinnato: 135 test passati su 135 negli 8 file pertinenti. ESEGUITO: col codice vero l'audit con una cifra cambiata o uno spazio in coda e' rifiutato sia via validate_audit sia via read_preflight (casi E1a, E1b). LETTO: test_contrastive_run.py costruisce solo audit col sorgente corrente; l'unico test sull'audit storico chiama l'helper direttamente.
+[suggested_fix] Due regressioni. (1) In test_contrastive_run.py: release_fixture con audit['source_sha256']='0'*64 e audit_sha256 della release aggiornato; validate_release deve sollevare ValueError con 'historical evidence compatibility'. (2) In test_contrastive_benchmark_readout.py: read_preflight sulle evidenze archiviate con un byte aggiunto all'audit; deve sollevare lo stesso errore.
+[reproduce] cd <archivio>/agents/compat && ~/.venvs/wearusfm-tok/bin/python -B mutants.py h5 h6
+--------------------------------------------------------------------------------
+[id] R-2
+[title] Altre protezioni dell'helper non isolate dai test
+[category] preferenza
+[severity] NOTA
+[where] scripts/contrastive_source_compat.py:68, :72, :89, :153, :176-177, :181, :200; scripts/contrastive_prepare.py:372-377
+[claim] Oltre a h5 e h6 sopravvivono 8 mutanti: b15 (rilettura del manifest), b16 (chiavi duplicate), b18 (fuga dal checkout via symlink), b19 (campi del manifest), b20 e b22 (insiemi degli artefatti), b23 (costanti non finite), h3 (reader_provenance non confrontata anche per le ricevute correnti). b20, b22 e b23 sono quasi equivalenti: KeyError o _canonical_json rifiutano comunque. b15 richiede una modifica concorrente. I rilevanti sono b18, b16 e h3.
+[evidence] ESEGUITO: mutants.py in variante ripinnata, 135 test passati per ciascuno. ESEGUITO: il codice vero rifiuta i casi corrispondenti (T_manifest_symlink_outside_checkout, T_plan_symlink_outside_checkout, T_src_symlink_outside_identical_content, T_manifest_extra_top_level_field, T_manifest_artifact_run_extra_file).
+[suggested_fix] Aggiungere test per: manifest, piano o sorgente come symlink fuori dal checkout; manifest con 'artifacts' duplicato (prima copia falsa, ultima vera); campo in piu' nel manifest; ricevuta del sorgente corrente con reader_provenance cambiata.
+[reproduce] cd <archivio>/agents/compat && ~/.venvs/wearusfm-tok/bin/python -B mutants.py b15 b16 b18 b19 b20 b22 b23 h3
+--------------------------------------------------------------------------------
+[id] R-3
+[title] Il pin compatibility_manifest di job e release non e' letto da nessun codice
+[category] preferenza
+[severity] NOTA
+[where] results/infra/contrastive_comparison_20261116/releases/mmap_20261118/*.json (campo compatibility_manifest); scripts/contrastive_job.py:60 build_command; scripts/contrastive_run.py:162 validate_release
+[claim] Il documento di GPT dice che il manifest e' pinnato nella release, ma quel pin e' solo documentale. A runtime il vincolo e' il checkout: manifest a percorso fisso nel commit, HEAD = EXPECTED_SHA 3b5d4be, nessun file modificato o non tracciato, sola lettura. Questo basta. L'helper pinna il contenuto del manifest, non i byte. Lo stesso vale per audit_recovery e cuda_gate.
+[evidence] LETTO: grep di compatibility_manifest, audit_recovery e cuda_gate in scripts/ e src/: nessun uso. lib_code_dir.sh controlla HEAD, pulizia (anche file non tracciati) e sola lettura; i piani d'invio usano EXPECTED_SHA a 40 caratteri. ESEGUITO: il pin vale d1695b73 / 35650 byte = manifest vero (check_release_pins.py); un manifest reindentato e' accettato dall'helper (T_manifest_reindented_4).
+[suggested_fix] Facoltativa: in build_command verificare checked_file(job['compatibility_manifest']) e che il path sia MANIFEST_RELATIVE_PATH. Oppure correggere la frase del documento.
+[reproduce] grep -rn compatibility_manifest scripts src (sull'albero 3b5d4be)
+--------------------------------------------------------------------------------
+[id] R-4
+[title] La provenienza restituita dall'helper non e' registrata in nessuna uscita
+[category] preferenza
+[severity] NOTA
+[where] scripts/contrastive_prepare.py:281 e :374; scripts/contrastive_run.py:96; scripts/contrastive_benchmark_readout.py:319
+[claim] Il valore di ritorno (manifest_sha256, digest produttore e corrente, sha degli artefatti) viene scartato nei quattro punti. Ne' la ricevuta della lettura ne' i summary dei benchmark dicono che audit e calibrazione sono stati ammessi tramite il manifest.
+[evidence] LETTO: i quattro punti chiamano validate_historical_evidence senza usarne il ritorno; read_preflight non ha un campo equivalente.
+[suggested_fix] Aggiungere al risultato di read_preflight un campo historical_evidence con i tre ritorni. authenticate_preflight resta coerente, perche' confronta ricalcolo e ricevuta.
+[reproduce] 
+--------------------------------------------------------------------------------
+[id] R-5
+[title] Portata del meccanismo: ogni correzione futura riapre tutto il giro
+[category] dubbio
+[severity] NOTA
+[where] scripts/contrastive_source_compat.py:20-23, :165-168
+[claim] L'helper ammette qualunque contenuto dei cinque file, se il manifest e' rigenerato. Il contenuto scientifico resta protetto da tre cose: la ricevuta pinnata, la ricetta congelata e il digest corrente pinnato in coorte, release e job. Conseguenza: una correzione di uno qualunque dei 117 file richiede nuovi manifest, coorte, release, job e checkout. La lettura finale deve girare dallo stesso checkout 3b5d4be.
+[evidence] ESEGUITO (break_cases2.py), sempre con manifest ripinnato. Fattore dei lambda 0,1->0,2: l'helper accetta, authenticate_calibration rifiuta. grad_every 100->50: calibration_report e validate_cohort rifiutano. num_workers 6->5 in contrastive_run.main: l'helper accetta, validate_cohort rifiuta per il digest della coorte.
+[suggested_fix] Nessuna nel codice. Nel piano: dichiarare che la lettura finale usa il checkout 3b5d4be e che ogni nuova correzione riapre manifest, coorte, release e review.
+[reproduce] cd <archivio>/agents/compat && ~/.venvs/wearusfm-tok/bin/python -B break_cases2.py
+--------------------------------------------------------------------------------
+[id] R-6
+[title] Provenienza della calibrazione autodichiarata (preesistente)
+[category] dubbio
+[severity] NOTA
+[where] scripts/contrastive_prepare.py:276-281 e :364-380
+[claim] Un summary.json rietichettato al digest corrente, con una ricevuta rigenerata, passa authenticate_calibration. Lo fermano validate_cohort (sha grezzo della ricevuta) e i pin di release e job. Valeva gia' prima della correzione.
+[evidence] ESEGUITO: casi E2g di break_cases.py (authenticate_calibration accetta, validate_cohort rifiuta).
+[suggested_fix] Nessuna per questo collaudo.
+[reproduce] cd <archivio>/agents/compat && ~/.venvs/wearusfm-tok/bin/python -B break_cases.py E2g
+--------------------------------------------------------------------------------
+[id] R-7
+[title] File fuori inventario non coperti (stessa regola di source_digest)
+[category] preferenza
+[severity] NOTA
+[where] scripts/contrastive_source_compat.py:112-118; scripts/contrastive_prepare.py:181-190
+[claim] Non entrano nell'inventario i file non .py in src/wearusfm e gli script non contrastive_*. Oggi src/wearusfm non contiene file non .py. Sul cluster lib_code_dir.sh rifiuta i file non tracciati.
+[evidence] ESEGUITO: T_src_new_non_py_file e T_scripts_new_noncontrastive_py accettati; find di file non .py in src/wearusfm vuoto.
+[suggested_fix] Nessuna per questo collaudo.
+[reproduce] cd <archivio>/agents/compat && ~/.venvs/wearusfm-tok/bin/python -B break_cases.py T_src_new_non_py T_scripts_new_noncontrastive
+--------------------------------------------------------------------------------
+[id] R-8
+[title] Il test AST dei punti mmap scansiona solo tre file
+[category] preferenza
+[severity] NOTA
+[where] tests/cpu/test_contrastive_mmap_compatibility.py:16-23 e :37-47
+[claim] Un nuovo torch.load(..., mmap=True) in un altro file non sarebbe visto dal test. Oggi non ce ne sono: in src/ ci sono solo mmap di numpy. I sei punti attuali sono ben protetti.
+[evidence] ESEGUITO: i 6 mutanti senza str() sono uccisi, ciascuno solo dal proprio caso del test con lo shim di torch 2.2. Nessun altro test se ne accorge, perche' torch 2.14 accetta Path. LETTO: grep di mmap in src/ e scripts/.
+[suggested_fix] Estendere la scansione AST a tutti i file dell'inventario dei sorgenti.
+[reproduce] cd <archivio>/agents/compat && ~/.venvs/wearusfm-tok/bin/python -B mutants.py a
+--------------------------------------------------------------------------------
+[id] R-9
+[title] Costo dei controlli prima del training trascurabile
+[category] preferenza
+[severity] NOTA
+[where] src/wearusfm/training/run.py:1222 e :1586; scripts/contrastive_run.py main
+[claim] I controlli girano prima di R.train, quindi si sommano al walltime (1800 s contro 1770 s di training). Il costo dell'helper e' piccolo.
+[evidence] ESEGUITO (timing.py, Mac con SSD): helper audit 0,032 s, run 0,027 s, ricevuta 0,023 s. Per processo di un benchmark full (3 run, 3 ricevute, 1 audit) circa 0,18 s. Lustre non misurato.
+[suggested_fix] Nessuna.
+[reproduce] cd <archivio>/agents/compat && ~/.venvs/wearusfm-tok/bin/python -B timing.py
+================================================================================
+VERIFIED_OK
+-   [what] Manifest vero: sorgenti storici e correnti, documenti congelati, artefatti
+  [how] ESEGUITO check_manifest.py. 116 righe storiche uguali all'inventario di f09bf85, 4fc5152 e f67acb0 (digest ab2d6460). 117 correnti uguali a 3b5d4be e b7db83a (6b421b75). Aggiunto solo l'helper, cambiati solo 4 script. plan.json 7733aa8d uguale ovunque. Uguali ai pin: audit gz decompresso 5c720fad; run cff2eff0, 7a3b9490, bc332847; ricevuta canonica 4f302517. Non sono nel repository il checkpoint 0756921a e l'audit grezzo.
+-   [what] Test nuovi e contrastive sull'albero 3b5d4be
+  [how] ESEGUITO su copia completa: 46 test nuovi passati (32+7+7); 296 test contrastive passati, 0 falliti.
+-   [what] Ricevuta ricalcolata col lettore corrente
+  [how] ESEGUITO recompute_receipt.py. 20 chiavi; 19 campi uguali in JSON canonico; differisce solo reader_provenance (4 script e l'helper). source_sha256 = ab2d6460. Lambda 0.11942686122572264 / 0.33044627364850215, passi 257-288. Dopo lo scambio di reader_provenance lo sha canonico e' 4f302517 = pin.
+-   [what] Resistenza a 111 alterazioni
+  [how] ESEGUITO break_cases.py, in sottoprocessi nuovi su copie: audit, run, ricevuta, manifest, piano, sorgenti, symlink, import da un altro checkout. 111 esiti attesi; la catena completa non accetta nessuna alterazione.
+-   [what] Mutanti senza str()
+  [how] ESEGUITO: 6 su 6 uccisi, ciascuno dal proprio caso del test con lo shim di torch 2.2, anche con manifest ripinnato.
+-   [what] Pin di job e release mmap
+  [how] ESEGUITO check_release_pins.py: 275 controlli, 0 problemi. File identici fra 3b5d4be e b7db83a. inputs della release = input_sha256 della ricevuta = inputs dell'audit. EXPECTED_SHA 3b5d4be a 40 caratteri.
+-   [what] Cancelli d'ingresso dei cinque benchmark
+  [how] ESEGUITO validate_releases_local.py: validate_recipe e validate_release completi passano per le 5 release, validate_pair_policy per le due split. read_preflight supera ricevuta, coorte e audit (caso C8).
+-   [what] Diff dei cinque file e uso di source_sha256
+  [how] LETTO git diff f67acb0 3b5d4be: 6 str(), 4 ganci che sostituiscono solo il confronto del sorgente, 1 cambio di campo. Nessun cancello, soglia, lambda, selezione o pin cambiato. LETTO grep: il source_sha256 della ricevuta e' usato solo da authenticate_calibration e build_release.py.
+-   [what] Mutanti dei controlli principali del validatore e dei ganci
+  [how] ESEGUITO: uccisi b01-b14, b17, b21, h1, h2, h4, h7, h8.
+-   [what] Alberi condivisi intatti
+  [how] ESEGUITO: nessun __pycache__ negli alberi; dopo ogni serie, diff -rq delle copie con trees/3b5d4be vuoto.
+================================================================================
+NOT_VERIFIED
+- Esecuzione su Leonardo (torch 2.2.0a0, Python 3.11.6, Lustre): niente ssh.
+- I quattro input dati fisici e i file remoti della calibrazione: solo gli hash annotati negli archivi.
+- checkpoint.pt della calibrazione: non e' nel repository; ho solo il pin nei job.
+- Fase di ripresa (continuation_release, validate_resume, secondo validate_release): serve il checkpoint della split.
+- Job della lettura finale su CPU: non esiste ancora nella release.
+- Validita' dell'audit 64652559 terminato in TIMEOUT: fuori da questa dimensione.
+- Cancello CUDA -> benchmark: e' procedurale, perche' cuda_gate non e' letto dal codice; fuori da questa dimensione.
+- Commit del ramo di GPT successivi a b7db83a: nessun fetch.
+- Insieme esatto dei 150 test di GPT: non ricostruito; ho eseguito un insieme piu' ampio (296).
+- Contratto reale di torch 2.2 sui Path: verificato solo tramite lo shim dei test (dimensione torch22).

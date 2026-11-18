@@ -1,0 +1,91 @@
+Rapporto dell'agente «correzione_bf16_release». Review Claude del 18/11/2026. Testo dell'agente: vale la review per ciò che ne ho tratto.
+Percorsi: <archivio> = cartella di lavoro conservata fuori dal repository; <alberi>/<commit> = git archive dei commit.
+
+SOMMARIO
+Lente artefatti di release su 7389887: nessun BLOCCANTE. releases/bf16_20261118 differisce da mmap_20261118 solo nei campi previsti (148 differenze foglia: sorgente, pin di review/manifest/coorte/release, percorsi config, uscite _bf16, consumi). Coorte: 12 config byte-identiche, cohort.json cambia solo source_sha256. Manifest: 2 differenze, ricostruito byte per byte; digest fd838f1d confermato in tre modi. Validazioni locali, lettore del gate e risorse: tutto OK. Restano quattro MINORI documentali (ricevuta citata ma assente; numeri del solo rank 0; intervalli della sola nce; citazione non letterale) e uno di processo (manca la voce nel registro condiviso). Attenzione: il documento di Claude e' pinnato in tutti i 12 file della release, quindi va corretto prima; poi si rigenerano coorte e release e si rifa' il controllo dei pin. Rapporto: <archivio>/agents/bf16-release/RAPPORTO.md; JSON: <archivio>/wf/bf16_release.json
+
+================================================================================
+FINDINGS
+--------------------------------------------------------------------------------
+[id] F1
+[severity] MINORE
+[where] docs/reviews/claude_contrastive_bf16_amendment_20261118.md:51
+[claim] Il documento cita la ricevuta amendment_bf16_20261118/prelaunch_verification.json, che non esiste nel commit 7389887.
+[evidence] Letto: git ls-tree 7389887 della cartella amendment_bf16_20261118 contiene solo build_release.py. Alle 11:46 la suite completa dell'agente principale era al 62% (mine/suite_full_bf16.log). Nessun codice legge il file: i job non si bloccano, ma la review di GPT lo troverebbe.
+[suggested_fix] Creare il file proprio in results/infra/contrastive_comparison_20261116/amendment_bf16_20261118/prelaunch_verification.json, il percorso gia' citato: il documento non cambia e i pin restano validi. Contenuto: digest fd838f1d, manifest ebabdc1c, esito della suite e delle validazioni. Committarlo prima della consegna.
+--------------------------------------------------------------------------------
+[id] F2
+[severity] MINORE
+[where] docs/reviews/claude_contrastive_bf16_amendment_20261118.md:19-24 e :30; docs/decisioni.md:6600
+[claim] I numeri del collaudo sono quelli del solo rank 0 (blocco arms del rapporto), ma sono presentati come numeri del job. Il lettore del gate controlla tutti e quattro i rank.
+[evidence] Eseguito sul testo remoto (sha 3bcae089), con scripts/cuda_ranks.py e cuda_margins.py: il blocco arms coincide con il rank 0. Sui 4 rank: 8 confronti fuori limite su 320 (2 per rank, sempre contrast_global_grad_nce bf16 all'update 2, in CN e CR). Massimo FP32 7,34e-7 (rank 1), non 5,63e-7. Massimo FP32 di studente e teacher 7,42e-4 (rank 2), non 4,82e-4. Per nce, scarto 4 rank contro 1 processo 0,047%-0,177% (rank 1 CN: 1,767e-3 contro 1,440e-3). Riferimento bf16 contro FP32 per nce 0,0017%-0,143% (rank 3 CR: limite vecchio 2,71e-5). La conclusione regge: tutti i fallimenti sono nce, massimo 1,77e-3 < 0,01. Con la regola nuova: 0 fallimenti su 320.
+[suggested_fix] Scrivere 'rank 0' accanto ai numeri, oppure dare i massimi sui quattro rank (8 su 320; 7,34e-7; 7,42e-4; 1,77e-3). decisioni.md si corregge senza altro. Il documento invece e' pinnato: dopo la modifica cancellare calibrated_cohort_20261118_bf16/ e releases/bf16_20261118/, rilanciare amendment_bf16_20261118/build_release.py e ricontrollare i pin, prima di pubblicare.
+--------------------------------------------------------------------------------
+[id] F3
+[severity] MINORE
+[where] docs/reviews/claude_contrastive_bf16_amendment_20261118.md:28-30
+[claim] Gli intervalli 0,047%-0,139% e 0,011%-0,105% valgono per la sola norma nce, ma la frase parla delle tre norme diagnostiche.
+[evidence] Eseguito sul rank 0, tre norme: scarto 4 rank contro 1 processo 0,0004%-0,139%; riferimento bf16 contro FP32 0,011%-0,349% (rnc, CR, update 2: 3,49e-3). Tutti i valori restano sotto 2^-8 = 0,39%, quindi la frase sull'unita' di arrotondamento resta vera.
+[suggested_fix] Scrivere 'per contrast_global_grad_nce', oppure dare gli intervalli delle tre norme. Farlo nello stesso giro di modifica e rigenerazione di F2.
+--------------------------------------------------------------------------------
+[id] F4
+[severity] MINORE
+[where] docs/reviews/claude_contrastive_bf16_amendment_20261118.md:3; docs/decisioni.md:6602-6603
+[claim] La citazione di Simone non e' letterale: i refusi sono corretti senza segnalarlo e sono tagliati inizio e coda.
+[evidence] Letto. Messaggio di Simone: «mah , allora per non fare troppi rimpalli sistema tiu il problema, poi mi generi un prompt per cxhat gpt cosi lo teniamo aggiornato e poi lo faccio lanciare, coswi risparmio i tuoi token per le cose piu utili». Documento e decisioni.md riportano «... sistema tu ... chat gpt così ...». CLAUDE.md riporta le citazioni con i refusi. La regola di progetto e' citare alla lettera.
+[suggested_fix] Citare alla lettera ('sistema tiu il problema', 'cxhat gpt cosi'), al bisogno con [sic]. Nel documento farlo nello stesso giro di rigenerazione di F2.
+--------------------------------------------------------------------------------
+[id] F5
+[severity] MINORE
+[where] docs/claude_GPT_shared (non toccato da 7389887)
+[claim] Manca la voce di Claude nel registro condiviso per questa attivita'.
+[evidence] Letto: git diff --name-only b7db83a 7389887 -- docs/claude_GPT_shared e' vuoto. L'ultima voce e' di GPT ('CUDA 64730941 accodato dopo checkout 64730738'). CLAUDE.md: «dopo ogni attivita' ciascuno scrive la sua voce, nelle due sezioni».
+[suggested_fix] Aggiungere la voce nelle due sezioni, nello stesso commit della consegna. Il registro non e' pinnato: non serve rigenerare nulla.
+--------------------------------------------------------------------------------
+[id] F6
+[severity] NOTA
+[where] results/infra/contrastive_comparison_20261116/ (nessuna cartella per 64730941)
+[claim] Le evidenze di 64730941, su cui poggia l'emendamento post hoc, non sono archiviate nel repository.
+[evidence] Letto: il commit non contiene cuda.json, .out o sacct di 64730738 e 64730941. La copia locale cuda_64730941/cuda.json e' re-indentata (203.655 byte, sha 6c77ca1b), non sono i byte remoti (240.852 byte, sha 3bcae089). I byte remoti si ricostruiscono dalle righe 13-4554 di remote_listing_and_cuda.txt: sha 3bcae089 verificato.
+[suggested_fix] Archiviare la copia byte per byte (dal listing, o riscaricata dall'operatore), il .out e il sacct, come in f67acb0 per 64706211. Non archiviare la copia re-indentata come se fosse l'originale.
+--------------------------------------------------------------------------------
+[id] F7
+[severity] NOTA
+[where] results/infra/contrastive_comparison_20261116/releases/bf16_20261118/*.json (pin della review); scripts/contrastive_job.py:67; amendment_bf16_20261118/build_release.py:58
+[claim] Il documento di Claude e' pinnato (5.513 byte, sha eae09818) in tutti i 12 file della release. Qualunque modifica successiva fa fallire il CUDA in partenza.
+[evidence] Letto: a contrastive_job.py:67, checked_file(job['review']) solleva 'input pin mismatch'. build_release.py:58 rifiuta destinazioni gia' esistenti. Per lo stesso motivo una review di GPT non puo' entrare nei pin senza una release nuova.
+[suggested_fix] Fare tutte le correzioni al documento prima di pubblicare (F2-F4), poi rigenerare coorte e release e ricontrollare i pin. Registrare l'approvazione di GPT in file non pinnati: registro, review GPT separata.
+--------------------------------------------------------------------------------
+[id] F8
+[severity] NOTA
+[where] scripts/contrastive_cuda_check.py:157-163
+[claim] I limiti bf16 di gradiente, studente e teacher restano autoreferenziali. Resta un rischio piccolo che il nuovo CUDA fallisca per la stessa ragione su un'altra chiave.
+[evidence] Eseguito sui numeri di 64730941, sui quattro rank: rapporto massimo errore/limite 0,618 per teacher (bf16, CN, update 2; 0,61-0,62 su ogni rank), 0,434 per studente, 0,401 per gradiente. Il controllo non chiama torch.use_deterministic_algorithms.
+[suggested_fix] Nessuna modifica ora. Se il nuovo CUDA fallisse solo su queste chiavi, niente retry cieco: prima leggere il rapporto.
+--------------------------------------------------------------------------------
+[id] F9
+[severity] NOTA
+[where] ramo codex/tokenizer-logcontrast-20261104
+[claim] La punta remota del ramo di GPT non e' stata ricontrollata (niente rete). Se GPT ha pubblicato dopo b7db83a, l'avanzamento del suo ramo non e' piu' un fast-forward.
+[evidence] Letto: il ref locale origin/codex/tokenizer-logcontrast-20261104 e' b7db83a, all'ultimo fetch. I pin reggono una fusione solo se i 117 sorgenti dell'inventario e i file pinnati restano identici.
+[suggested_fix] Prima della consegna eseguire git ls-remote origin codex/tokenizer-logcontrast-20261104. Se il ramo e' avanzato, verificare che i nuovi commit non tocchino sorgenti o file pinnati.
+================================================================================
+VERIFIED_OK
+- (1) Confronto file per file dei 12 file di releases/bf16_20261118 con mmap_20261118 (diff JSON ricorsivo): 148 differenze foglia, tutte nel perimetro. cuda.job: source_sha256, review (path, bytes 3597->5513, sha), compatibility_manifest.sha256 d1695b73->ebabdc1c (bytes 35650 invariati), out. full_*.job: le stesse, piu' cohort (path, sha 30a7ab04->3fdb5e07), config.path (sha invariato), release (path, bytes, sha). split_*.job: come full, piu' resume_config.path. *.release: source_sha256, review_pin, compatibility_manifest.sha256, cohort_sha256, cuda_gate.report. release.json: le stesse, piu' i pin di job e release e quattro voci di consumo (0,934444->1,075556 GPU-ore; 16,128889->17,297778 core-ore; 12,934444->13,075556; 120,662222->121,831111).
+- (1) Identici fra le due release: inputs, roots, mode, config CUDA 5e4aaca8, calibration_checkpoint 0756921a (234.339.066 byte), audit 5c720fad, audit_recovery, calibration_report f57d8731, calibration_summary, status, stage, time_limit_s 1770/1800, world_size 4, workers 6, phase, arm, paired_resume, training_authorized e training_approved false, cuda_gate salvo report, voci di resources non di consumo, build_validation, historical_cohort, submitted false. In bf16 mancano submission_plan.json e queued_cuda_submission_plan.json: sono file dell'operatore, attesi.
+- Tutti i 69 pin locali {path, bytes, sha256} di release e coorte bf16 combaciano con l'albero a 7389887. Nessun riferimento residuo a mmap. Tutte le uscite stanno sotto contrastive_preflight_20261118_bf16.
+- I file di mmap_20261118 vengono tutti da un solo commit (3b5d4be): generati e mai ritoccati, quindi il confronto con il generatore e' valido. build_release.py emendato differisce dal generatore di GPT solo in docstring, REVIEW, NEW_COHORT, NEW_RELEASES, REMOTE e consumi.
+- (2) Le 12 config sono byte-identiche in calibrated_cohort_20261117, _mmap e _bf16. cohort.json cambia solo source_sha256, rispetto sia a mmap sia a 20261117. I lambda 0,11942686122572264 e 0,33044627364850215 sono uguali nelle 12 config e nella ricevuta.
+- (3) Il manifest ha 2 differenze rispetto a 3b5d4be: current_source_sha256 e l'hash di scripts/contrastive_cuda_check.py (e6f08503->85afb3b8). Ricostruito con la logica di build_manifest.py: byte identico (ebabdc1c). Digest fd838f1d ricalcolato in tre modi (regola propria, source_digest(), _inventory_digest); l'inventario coincide con current_sources (117 file).
+- (4) Validazioni sulla copia dell'albero, tutte superate: compatibilita' storica di audit, calibration_run e calibration_receipt; authenticate_calibration; validate_cohort per le 12 config, con la coorte mmap correttamente rifiutata; validate_release per i cinque benchmark (input remoti sostituiti dai loro hash pinnati); coerenza job/release come in contrastive_job.build_command; validate_pair_policy per split CN e CR; controlli del job CUDA (stato, sorgente, review, validate_recipe, binding degli input, out, checkpoint).
+- (4) Lettore del gate _cuda_evidence: accetta un rapporto sintetico con la regola nuova sui numeri di 64730941 (0 fallimenti su 320, margine minimo 0,618); rifiuta il rapporto vecchio e uno con i CRITERIA vecchi. Il test di regressione passa con la regola nuova e fallisce con la vecchia (formula ripristinata, chiave mantenuta). 85 test mirati (6 file) superati sulla copia.
+- (5) Risorse ricostruite dai 9 job del ledger CONTRASTIVE-v2-20261116: 17,297778 core-ore e 1,075556 GPU-ore. Il massimo con 6 celle da 2 GPU-ore e 16 core-ore, 2 checkout (0,533333) e lettura finale (8) fa 13,075556 / 121,831111, entro 14 / 129,333333. Margine 0,924444 GPU-ore: ci sta un altro CUDA fallito in circa 2 minuti, non uno arrivato al limite di 30 minuti (15,075556).
+- (6) Affermazioni verificate di documento e decisioni.md: sha 3bcae089, passed false, inputs_unchanged true, torch 2.2.0a0+git6c8c5ad, A100 64 GB, 7,78 GiB, codice 3b5d4be, fine alle 11:03:15 (dal .out), probe superato, arresti 4 su 4, valori esatti di CN e CR del rank 0, 2^-8 = 0,39%, pannello 513-576 ([0,005; 0,5], p95 <= 1, [0,25; 4]), norme solo diagnostiche (autograd.grad staccato), CRITERIA invariati salvo la chiave nuova, validatore invariato con il file fra i cinque ammessi.
+================================================================================
+NOT_VERIFIED
+- Tempi sacct di 64730738 (36 s) e 64730941 (inizio 11:01:08, 127 s): non c'e' una ricevuta sacct. La fine del .out e le ore dei file sono coerenti.
+- File remoti (input, checkpoint, audit e summary sul cluster): pin invariati rispetto a mmap e usati da 64730941 con inputs_unchanged true, ma non riletti ora.
+- Esecuzione reale sul cluster: CUDA, benchmark, ripresa (validate_resume, R.check_input_files) e lettura finale.
+- Punta remota del ramo di GPT: niente rete.
+- Suite completa dei test: ancora in corso nell'agente principale; io ho eseguito solo gli 85 test mirati.
+- Determinismo del nuovo run bf16.

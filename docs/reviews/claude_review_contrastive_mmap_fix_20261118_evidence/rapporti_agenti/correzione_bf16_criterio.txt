@@ -1,0 +1,71 @@
+Rapporto dell'agente «correzione_bf16_criterio». Review Claude del 18/11/2026. Testo dell'agente: vale la review per ciò che ne ho tratto.
+Percorsi: <archivio> = cartella di lavoro conservata fuori dal repository; <alberi>/<commit> = git archive dei commit.
+
+SOMMARIO
+Nessun rilievo bloccante per la lente criterio e test. Il cambio fa solo ciò che dichiara: tre norme diagnostiche, solo bf16, max(regola precedente, 0,01), mai più stretto, NaN e inf propagati. Sul rapporto vero 64730941 (byte remoti, sha 3bcae089) cambiano esito 8 confronti su 320: contrast_global_grad_nce, bf16, update 2, CN e CR, su ciascuno dei 4 rank. Il rapporto sarebbe passed true. _cuda_evidence del codice nuovo accetta quel rapporto riscritto e rifiuta il vecchio e le varianti miste. 53 test superati (4+17+32). Il test nuovo uccide 12 mutanti su 18. Sopravvivono 'minimo solo su nce' e '0,01 senza max', più quattro mutanti su limiti preesistenti. Dieci righe di test, provate, ne uccidono 17 su 18 senza rigenerare nulla. Due rilievi MINORI (test, ricevuta citata ma assente) e quattro NOTE. Rapporto: <archivio>/agents/bf16-criterio/RAPPORTO.md; JSON: <archivio>/wf/bf16_criterio.json.
+
+================================================================================
+FINDINGS
+--------------------------------------------------------------------------------
+[id] F1
+[severity] MINORE
+[where] tests/cpu/test_contrastive_cuda_check.py:69-95
+[claim] Il test nuovo non protegge due proprietà dichiarate: il minimo vale per tutte e tre le norme diagnostiche, e il limite non è mai più stretto di prima.
+[evidence] Eseguito: 18 mutanti sulla copia (agents/bf16-criterio/mutants.py, mutants_results.json). Il test nuovo ne uccide 12: regola vecchia, minimo anche su FP32 (norme o tutte le metriche), minimo su gradiente o su studente/teacher bf16, 0,1 in CRITERIA o cablato, max sostituito da min, chiave CRITERIA assente (con o senza 0,01 cablato), minimo sommato, 0,005 cablato. Sei sopravvivono all'intero file. M11: minimo solo su contrast_global_grad_nce. M12: limite 0,01 senza max, più stretto quando il riferimento bf16 dista più dell'1% dall'FP32. M3, M14 e M17 allentano limiti fissi preesistenti (perdite FP32 a 0,01, norme FP32 a 1e-3, perdite bf16 a 0,02); li ferma il ricontrollo dei limiti fissi in _cuda_evidence. M15 scambia gli argomenti di max e maschera un NaN solo nel limite bf16; il confronto FP32 fallirebbe comunque. Le righe 83-84 calcolano il vecchio limite a mano: non eseguono la regola vecchia. La prova regge col mutante M0, ucciso.
+[suggested_fix] Dopo la riga 84 aggiungere dieci righe (testo in agents/bf16-criterio/RAPPORTO.md). Le tre norme hanno limite 0,01 nel caso osservato. Caso rnc con riferimento a +2% ed errore 1,5%: deve passare con limite pytest.approx(0,02+1e-5). Dizionario esatto dei limiti FP32 (1e-5, studente e teacher 0,01). Perdite bf16 a 0,01. Provato: uccide 17 mutanti su 18, resta M15. Il file di test è fuori da source_digest e non è pinnato da manifest né release: nessuna rigenerazione.
+--------------------------------------------------------------------------------
+[id] F2
+[severity] MINORE
+[where] docs/reviews/claude_contrastive_bf16_amendment_20261118.md:51
+[claim] Il documento cita come esistente la ricevuta amendment_bf16_20261118/prelaunch_verification.json, che non c'è.
+[evidence] Eseguito: git ls-tree 7389887 elenca in amendment_bf16_20261118/ solo build_release.py. Anche il worktree contiene solo quel file.
+[suggested_fix] Aggiungere la ricevuta con gli esiti della suite; il percorso non è pinnato. Non correggere invece il testo: il documento è pinnato (review eae09818…, 5513 byte) in cuda.job.json, nei job e in release.json. build_release.py rifiuta di riscrivere una release esistente.
+--------------------------------------------------------------------------------
+[id] F3
+[severity] NOTA
+[where] docs/reviews/claude_contrastive_bf16_amendment_20261118.md:19-24,30; docs/decisioni.md:6600
+[claim] Le cifre del collaudo sono del solo rank 0, ma sono presentate come quelle del job.
+[evidence] Eseguito sui byte remoti. FP32 perdite/norme/gradiente: rank 0 5,63e-7, sui 4 rank 7,34e-7 (rank 1, CN, nce, update 2). FP32 studente/teacher: 4,82e-4 contro 7,42e-4 (rank 2, CN, teacher, update 1). bf16 nce, 4 rank contro 1 processo: 0,047%-0,139% contro 0,047%-0,177%. Riferimento bf16 contro FP32: 0,011%-0,105% contro 0,0017%-0,143%. '2 confronti su 80' vale per rank: nel rapporto ne falliscono 8 su 320, gli stessi due su ogni rank. Le conclusioni non cambiano: tutto sotto 2^-8 (circa 0,39%) e FP32 entro 1e-5.
+[suggested_fix] Scrivere 'rank 0', o dare le cifre a 4 rank, in decisioni.md (non pinnato) e nel prompt per GPT. Lasciare com'è il documento pinnato.
+--------------------------------------------------------------------------------
+[id] F4
+[severity] NOTA
+[where] scripts/contrastive_cuda_check.py:156-163
+[claim] In bf16 restano autoreferenziali i limiti di gradiente, studente e teacher. Un nuovo fallimento per caso è poco probabile, ma non escluso.
+[evidence] Eseguito su 64730941. Rapporto errore/limite, peggiore sui 4 rank: teacher 0,62 (CN, rank 0, update 2), studente 0,43, gradiente 0,40. I riferimenti a un processo non coincidono fra le GPU, ma per questi vettori i limiti variano meno dell'1%. Per le norme scalari variavano invece di 20 volte (CR nce, update 2: 2,7e-5-5,9e-4), da cui il fallimento. Dopo le sei celle previste il margine di budget è 14 - 13,075556 = 0,924 GPU-ore, meno di una cella da 2 GPU-ore.
+[suggested_fix] Nessuna modifica ora. Va detto a Simone e a GPT come rischio residuo. Un altro emendamento senza dato sarebbe un nuovo post hoc.
+--------------------------------------------------------------------------------
+[id] F5
+[severity] NOTA
+[where] scripts/contrastive_cuda_check.py:38
+[claim] PROTOCOL resta contrastive-cuda-technical-v1 anche se la regola d'accettazione cambia.
+[evidence] Letto. In pratica non c'è ambiguità: il rapporto contiene la chiave nuova bf16_diagnostic_relative_floor, e _cuda_evidence esige criteria == CRITERIA e il digest della coorte. Nessun altro file confronta PROTOCOL (grep).
+[suggested_fix] Nessuna. Cambiarlo ora muterebbe il digest e obbligherebbe a rigenerare manifest, coorte e release.
+--------------------------------------------------------------------------------
+[id] F6
+[severity] NOTA
+[where] scratchpad mmap_review/cuda_64730941/cuda.json (fuori dal commit)
+[claim] La copia locale del rapporto non coincide byte per byte con quella remota.
+[evidence] Eseguito. Copia locale: 203.655 byte, sha256 6c77ca1b…, indentazione 1. Remoto: 240.852 byte, sha256 3bcae089…, come nel documento. I byte remoti stanno nelle righe 13-4554 di remote_listing_and_cuda.txt. Estratti, hanno sha 3bcae089 e valori identici.
+[suggested_fix] Per archiviare il rapporto usare <archivio>/agents/bf16-criterio/cuda_remote_extracted.json, oppure riscaricarlo. Non usare la copia con indentazione 1.
+================================================================================
+VERIFIED_OK
+- Diff dello script: cambiano solo CRITERIA (chiave nuova 0,01), la docstring e la riga del limite bf16 delle norme (151-153). Il ramo elif si raggiunge solo con precision diversa da 'fp32', e i chiamanti passano solo 'fp32' e 'bf16'. startswith('contrast_global_grad_') prende esattamente le tre norme. max(vecchio, 0,01) non è mai minore del vecchio. Se il vecchio limite è NaN o inf resta tale e il controllo finite fallisce come prima: l'ordine degli argomenti è giusto.
+- Byte del rapporto 64730941 estratti dalla lista remota: sha256 3bcae089…, come nel documento. Valori identici a quelli della copia locale.
+- Regola nuova riapplicata: il nuovo limite è esattamente max(limite salvato, 0,01). Cambiano esito 8 confronti su 320, tutti contrast_global_grad_nce, bf16, update 2, CN e CR, sui 4 rank. Nessun altro cambia. Righe, precisioni e rank passano tutti; stop_checks e inputs_unchanged sono true, quindi passed true. Margine peggiore col nuovo limite: errore 1,77e-3 contro 0,01 (rank 1, CN).
+- Supporto visibile nelle due righe fallite: contrast_rnc_windows 6 e contrast_nce_eligible 8. All'update 2 le metriche di conteggio coincidono fra bf16 e FP32.
+- _cuda_evidence del codice nuovo (coorte calibrated_cohort_20261118_bf16, pin d'ingresso della ricevuta di calibrazione, configurazione da build_review_configs(BASELINE)) accetta lo stesso job riscritto come lo scriverebbe il codice nuovo. Rifiuta il rapporto vero (passed false), le stesse cifre con criteria vecchi o con source vecchio, e i limiti vecchi con i flag forzati a true (errore oltre il limite).
+- CRITERIA sopravvive al giro JSON (dizionari uguali). config_canonical_sha256 (ab50bc11…) e initial_sha256 coincidono con i valori ricalcolati dal lettore. I limiti fissi che il lettore ricontrolla (FP32 tutti 1e-5, studente e teacher 0,01; perdite bf16 0,01) escludono le norme bf16: il minimo nuovo non può farli fallire.
+- Test sulla copia, con wearusfm e gli script importati dalla copia: test_contrastive_cuda_check.py 4 superati, test_contrastive_benchmark_readout.py 17, test_contrastive_source_compat.py 32. Totale 53 su 53.
+- Digest della copia fd838f1d…, uguale a coorte e release. validate_historical_evidence('calibration_receipt') supera col manifest rigenerato, e i file cambiati sono esattamente i cinque ammessi. I pin del documento (eae09818…, 5513 byte) e del manifest (ebabdc1c…) nella release coincidono con la copia.
+- Nessun altro file confronta le chiavi di CRITERIA o il PROTOCOL del collaudo (grep su py, json, sbatch, sh). plan.json e preflight_plan.json non fissano limiti bf16 del collaudo.
+- Alternative (punto 6). La forma scelta, max(regola precedente, CRITERIA[...]) con chiave nuova, è la più semplice e sicura. Un limite fisso a 0,01 sarebbe più stretto quando il riferimento dista più dell'1%. Riusare bf16_loss_relative nasconderebbe il cambio nel rapporto. Togliere le norme dal criterio, o aggiungere un controllo nel lettore, cambierebbe un altro file del digest. Unica preferenza: rafforzare il test (F1), senza rigenerazioni.
+- Worktree non toccato: git status pulito, HEAD 7389887. Tutte le prove girate su copie in agents/bf16-criterio/tree e agents/bf16-criterio/mut.
+================================================================================
+NOT_VERIFIED
+- Riproducibilità sul cluster: nessun job. Il nuovo CUDA darà cifre diverse dal 64730941, perché i riferimenti a un processo non coincidono fra le GPU.
+- La componente queue_identity del supporto nelle due righe fallite: il rapporto non la salva. La deduco dai conteggi identici e da identità che dipendono dai dati.
+- Che lo sbatch passi davvero source_sha256 fd838f1d e la nuova uscita contrastive_preflight_20261118_bf16 a contrastive_cuda_check.py (lente release).
+- build_release.py, le 12 configurazioni e i file di release oltre ai pin controllati (altre lenti).
+- La suite CPU completa: ho eseguito solo i tre file richiesti.
+- L'adeguatezza scientifica di 0,01 oltre all'argomento dell'arrotondamento bf16: spetta alla review di GPT.

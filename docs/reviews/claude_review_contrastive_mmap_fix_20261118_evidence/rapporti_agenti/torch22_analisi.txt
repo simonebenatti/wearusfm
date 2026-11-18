@@ -1,0 +1,73 @@
+Rapporto dell'agente «torch22_analisi». Review Claude del 18/11/2026. Testo dell'agente: vale la review per ciò che ne ho tratto.
+Percorsi: <archivio> = cartella di lavoro conservata fuori dal repository; <alberi>/<commit> = git archive dei commit.
+
+SOMMARIO
+Dimensione torch22. Il torch del cluster, "2.2.0a0+git6c8c5ad", è il tag v2.2.1 (commit 6c8c5ad5ea, letto su GitHub). Non ho trovato incompatibilità con torch 2.2.1 nel codice che girerà per la prima volta: collaudo CUDA 64730941, cinque benchmark e lettura finale. Nessun rilievo BLOCCANTE.
+
+Letto nel sorgente v2.2.1:
+- le sei torch.load con str e mmap=True sono accettate (from_file(f, False, size) più overall_storage);
+- anche le due torch.load con Path senza mmap sono accettate, perché _is_path accetta str e pathlib.Path;
+- fork_rng(devices=[]) non chiama CUDA.
+
+Eseguito:
+- scansione AST di 114 file: 326 API torch/numpy/scipy, tutte presenti in torch 2.4.0 / numpy 1.26.4 con le keyword usate. Le API torch sono tutte <= 2.0, salvo register_pytree_node (già girata in calibrazione) e load(mmap), introdotta in 2.1;
+- 347 test CPU (10 + 296 + 41: contrastivi, DDP gloo, ripresa) con torch 2.4.0 + numpy 1.26.4, cioè la numpy del cluster, e Python 3.10: tutti passati.
+
+Letto: gran parte del percorso del trainer è già girata sul cluster. La calibrazione C0 ha i termini contrastivi nel grafo, quindi sono già girati il backward con gather differenziabile sotto DDP, autograd.grad, clip e i salvataggi. Anche la ripresa DDP a 4 rank è già girata in passato.
+
+Mai girati, ma con sole API di base: opt.step ed EMA con testa contrastiva, ripresa con stato contrastivo, righe 234-288 del collaudo, controller della split, lettore.
+
+Due NOTE: i test locali usano versioni diverse dal cluster; alcune regole strette sono esposte al non determinismo CUDA (fuori dimensione, non verificato).
+
+================================================================================
+FINDINGS
+--------------------------------------------------------------------------------
+[id] T22-1
+[title] Test locali con torch 2.14 e numpy 2.3.5; cluster con torch 2.2.1 e numpy 1.26.4
+[category] preferenza
+[severity] NOTA
+[where] ambiente ~/.venvs/wearusfm-tok (CLAUDE.md, sezione Test); tests/cpu/test_contrastive_mmap_compatibility.py (shim)
+[claim] I test di GPT girano con versioni diverse dal cluster. Un'API di torch >2.2 o di numpy 2.x passerebbe in locale e fallirebbe solo sul cluster, come è successo con mmap+Path. Anche torch 2.4.0 accetta Path con mmap: nessun ambiente locale riproduce il vincolo str, che è coperto solo dallo shim.
+[evidence] ESEGUITO: versioni lette dagli interpreti. venv: torch 2.14.0, numpy 2.3.5 da Anaconda, Python 3.11.14. appTF: torch 2.4.0, numpy 1.26.4, scipy 1.12.0, Python 3.10.13. Numpy del cluster 1.26.4 letta in results/infra/pose_slots_20261102/execution/benchmark.json. ESEGUITO: 10 + 296 + 41 test con torch 2.4.0 + numpy 1.26.4, tutti passati (runs/t240_cuda_mmap.txt, runs/t240_contrastive.txt, runs/t240_ddp.txt). LETTO: in torch 2.4.0, serialization.py:1079-1081 usa _is_path (str o PathLike) nel ramo mmap.
+[suggested_fix] Nessuna per questo rilascio. Per i prossimi: test di pre-rilascio anche con numpy 1.26.x e con il torch più vicino a 2.2 disponibile. In alternativa, un job CPU breve sul cluster con tests/cpu prima delle celle GPU.
+[reproduce] cd trees/3b5d4be && OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$T/src:$T/tests/cpu:$T/scripts:agents/torch22/pylib ~/anaconda3/envs/appTF/bin/python -B -m pytest -q -p no:cacheprovider --basetemp=<nuova> tests/cpu/test_contrastive_*.py tests/cpu/test_rank_contrast.py
+--------------------------------------------------------------------------------
+[id] T22-3
+[title] Regole esatte o strette del collaudo e del lettore contro il non determinismo CUDA (fuori dimensione)
+[category] dubbio
+[severity] NOTA
+[where] scripts/contrastive_benchmark_readout.py:381-383: parità C0/CN/CR sui primi 256 aggiornamenti, rel_tol 1e-4 su total e grad_norm, fra tre job separati. scripts/contrastive_cuda_check.py:144-145: limite bf16 dei gradienti globali scalari = distanza bf16-fp32 del riferimento + 1e-5.
+[claim] I test CPU sono deterministici e non possono mostrare questo rischio. Sul cluster i kernel GPU non sono deterministici: una regola stretta potrebbe fallire senza un difetto del codice. Non è un problema di versione di torch; lo segnalo perché i test locali non lo vedono.
+[evidence] LETTO: docs/decisioni.md:2919-2923, prova del 15/10 sul cluster. In fp32, 1 contro 4 GPU: loss <= 1,5e-7 e gradiente <= 9,7e-7. Citazione: 'La ripetizione identica del riferimento bf16 non e' bit per bit (gradiente fino a 1,2e-3)'. Stima a mano, non eseguita: norme e loss sono poco sensibili al rumore ortogonale; con lr in warmup (5e-8 -> 1,3e-5) la deriva fra job resta piccola. Rischio basso ma non misurato.
+[suggested_fix] Nessuna ora. Se CUDA o la lettura falliscono SOLO su queste regole, misurare prima il rumore di una ripetizione identica, senza concludere sul codice e senza retry ciechi.
+[reproduce] non riproducibile sul Mac (serve CUDA)
+================================================================================
+VERIFIED_OK
+-   [what] Il torch del cluster è il tag v2.2.1
+  [how] LETTO: github.com/pytorch/pytorch/commit/6c8c5ad, cioè 6c8c5ad5eaf47a62fafbb4a2747198cbffbf1ff0 (cherry-pick #119988); releases/tag/v2.2.1 punta allo stesso commit.
+-   [what] Le sei torch.load(str(...), mmap=True) funzionano in 2.2.1, e così le due torch.load con Path senza mmap (contrastive_cuda_check.py:174, run.py:1297)
+  [how] LETTO in v2.2.1 torch/serialization.py: _is_path accetta (str, pathlib.Path). Il ramo mmap richiede isinstance(f, str), poi chiama UntypedStorage.from_file(f, False, size) e _load(..., overall_storage=...) in entrambi i rami. load_tensor affetta overall_storage e passa da restore_location; con map_location='cpu' gli storage salvati da cuda:0 tornano su CPU. Il resto del ramo è equivalente a quello di 2.4.0 (letto), dove i sei siti passano (eseguito, test mmap).
+-   [what] fork_rng(devices=[]) del lettore su nodo CPU
+  [how] LETTO in v2.2.1 torch/random.py: con devices=[] salva e ripristina solo lo stato CPU, senza chiamate CUDA.
+-   [what] Esistenza e keyword di tutte le API torch/numpy/scipy del codice di esecuzione
+  [how] ESEGUITO: api_scan.py (AST, 114 file) e api_check.py con torch 2.4.0, numpy 1.26.4, scipy 1.12. Risultato: 326 API, 0 mancanti, 0 keyword rifiutate. Il controllo è esatto per numpy; per torch è un limite superiore. Le API torch sono tutte <= 2.0, salvo register_pytree_node (2.2, già importata in calibrazione: il log 64701482 riporta l'avviso di transformers che la nomina) e load(mmap) (2.1).
+-   [what] Nessuna API solo numpy 2.x nel percorso
+  [how] ESEGUITO grep di np.bool, astype come funzione, concat, unique_*, trapezoid, sort/argsort stable=, asarray copy=, linalg.vector_norm, .mT: 0 risultati nel percorso. np.array(copy=True) compare solo in harness/gate.
+-   [what] Suite CPU con la numpy del cluster
+  [how] ESEGUITO con torch 2.4.0, numpy 1.26.4 e Python 3.10: 296 test contrastivi, 41 DDP/ripresa e 10 CUDA/mmap, tutti passati. Coprono trajectory/compare_trajectory, lettore, ripresa bit per bit, DDP gloo con rank senza posa, STOP di copertura e numerico, controller della split. Python 3.10 esclude anche sintassi solo 3.12.
+-   [what] Percorsi del trainer già provati sul cluster
+  [how] LETTO: calibrazione 64701482, braccio C0 con pesi 0 ma termini nel grafo (run.py:777, jepa.py:270-275). Sono quindi già girati: backward con _GatherVariable sotto DDP, autograd.grad dei gradienti globali, clip_grad_norm_, torch.save con stato contrastivo, all_gather_object degli RNG, pannelli a 500. Ripresa DDP a 4 rank con torch 2.2.1 nel log pose_b19618_62582916.out (ripresa dal passo 5000, codice 24139ab). Da 24139ab, pretraining_loader.py è invariato; run.py cambia solo nella logica contrastiva, senza nuove API torch.
+-   [what] Le righe mai girate del collaudo CUDA (234-288) usano solo API di base presenti in 2.2.1
+  [how] LETTO: AdamW, zero_grad(set_to_none), clip_grad_norm_, isfinite, autocast('cuda', bf16), linalg.vector_norm(dtype=float64), empty_cache, barrier, all_gather_object, init_process_group('nccl', timeout), destroy_process_group, allow_tf32. L'iniezione del NaN avviene sotto no_grad e non arriva al backward (run.py:756-766).
+-   [what] Hash dei batch confrontati fra rank nel collaudo
+  [how] LETTO: anchor_targets usa power @ bands (BLAS). Lo stesso controllo fra rank, in scripts/ddp_equivalence.py:194-199 al commit d7e2509 (che aveva già power @ bands), è stato superato sul cluster il 15/10 (job 60570656, decisioni.md:2919-2923).
+-   [what] Coerenza della ripresa della split e del lettore
+  [how] LETTO: time_limit_s come float fa round trip esatto via str e JSON. Provenienza e config contrastiva sopravvivono a pickle. Gli RNG per rank vengono ripristinati. alarm_counts restano a 0 anche con la valutazione in più a 544: in calibrazione erank 65,7 e collasso 1,52, lontani dalle soglie 38,4 e 0,05.
+-   [what] Alberi condivisi intatti
+  [how] ESEGUITO find su trees/3b5d4be dopo i test: 0 file __pycache__, .pyc o .pytest_cache e nessun file nuovo.
+================================================================================
+NOT_VERIFIED
+- Esecuzione reale con torch 2.2.1, CUDA 12.1 e NCCL 2.19.1: sul Mac non c'è un ambiente 2.2.1 e la regola vieta ssh.
+- Esito numerico su GPU delle soglie del collaudo e della parità del lettore (T22-3): fuori dimensione.
+- Tempi delle celle (split 544+32 entro 1770 s) e memoria: fuori dimensione.
+- Versione di scipy del cluster: ignota. rankdata e sosfiltfilt sono comunque già girati in calibrazione.

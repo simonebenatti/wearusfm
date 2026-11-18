@@ -1,0 +1,53 @@
+Rapporto dell'agente «torch22_verifica». Review Claude del 18/11/2026. Testo dell'agente: vale la review per ciò che ne ho tratto.
+Percorsi: <archivio> = cartella di lavoro conservata fuori dal repository; <alberi>/<commit> = git archive dei commit.
+
+SOMMARIO
+Verifica avversaria torch22. Confermo la conclusione: nessuna incompatibilita' con torch 2.2.1 nel codice che gira per la prima volta (CUDA 64730941, cinque benchmark, lettura); nessun BLOCCANTE. Prove mie, diverse dalle sue: refs/tags/v2.2.1 -> 6c8c5ad (API GitHub) e version.txt '2.2.0a0'; letture mirate v2.2.1 di serialization.py e random.py; torch.load(Path, mmap=True) accettato da torch 2.4.0, 2.9.1 e 2.14.0 (eseguito); inventario dinamico delle chiamate torch (TorchFunctionMode + setprofile) con torch 2.4.0 + numpy 1.26.4: rispetto alla calibrazione le fasi mai girate aggiungono 17 chiavi, tutte API di base presenti in 2.2.1 (EMA, step e ripresa gia' girati nei training storici con lo stesso torch); emulazione a 4 processi gloo delle righe 243-288 del collaudo e di trainer_stop_checks (mai eseguiti da nessun test): passano con torch 2.4.0 e 2.14, anche con bf16 emulato da autocast CPU. T22-1 confermato; T22-3 parziale (le regole che cita hanno margine; le piu' strette sono gradiente vettoriale e teacher bf16, ~0,52-0,57 del limite sui dati del 15/10). V-5 contestata nella portata (copertura dei test sopravvalutata). Nuovi: N-1 (copertura, chiusa dalla mia esecuzione, NOTA), N-2 (soglie per tensore all'1% della ripresa nel lettore che sollevano eccezione, non caratterizzate su GPU, MINORE), N-3 (build CINECA, NOTA). Rapporto: <archivio>/agents/verifica-torch22/RAPPORTO.md; JSON: <archivio>/wf/verifica_torch22.json.
+
+================================================================================
+VERDICTS
+--------------------------------------------------------------------------------
+[id] T22-1
+[verdict] CONFERMATO
+[severity] NOTA
+[evidence] ESEGUITO mmap_path_check.py: torch.load(pathlib.Path, mmap=True) accettato da torch 2.4.0, 2.9.1, 2.14.0; nessun torch <= 2.3 sul Mac (cercati appTF, pitonenv2, ~/Library/Python/3.9 con 2.8.0, venv). LETTO pip_freeze_62582916.txt (fonte diversa dalla sua): numpy 1.26.4, scipy 1.12.0. ESEGUITO 115 test (cuda_check, mmap, readout, run, job, source_compat, runtime) con torch 2.4.0 + numpy 1.26.4: tutti passati.
+[correction] Nessuna. Aggiungo che nessuna versione locale di torch riproduce il vincolo str: lo copre solo lo shim del test.
+--------------------------------------------------------------------------------
+[id] T22-3
+[verdict] PARZIALE
+[severity] NOTA
+[evidence] Il fatto e' vero (regole strette, non determinismo GPU invisibile ai test CPU). LETTO results/infra/w1gd_equivalence_20261015.json (cluster, 15/10): regola bf16 equivalente DDP <= distanza bf16-fp32 superata 24/24 con rapporti gradiente 0,52-0,57, params 0,31-0,45, teacher 0,38-0,68 (0,57 e 0,52 ai primi due aggiornamenti DDP senza accumulo); ripetizione identica bf16: loss 0 al primo aggiornamento e al massimo 3,67e-6 relativo in 8 (margine >= 27 volte su rel 1e-4). ESEGUITO emu4_bf16cpu.py (4 rank gloo, autocast CPU bf16): gradienti globali scalari 0,08-0,22 del limite, gradiente vettoriale 0,565, student 0,28-0,37, teacher 0,25-0,33. ESEGUITO emu4.py fp32: la regola fp32 piu' delicata e' contrast_global_grad_nce (0,056-0,136 del limite 1e-5 su CPU).
+[correction] Rischio basso confermato, ma le due regole citate non sono le piu' strette: il limite bf16 dei gradienti globali scalari ha margine ampio; le piu' strette sono il gradiente vettoriale bf16 e lo spostamento del teacher bf16 (margine ~1,75 volte). La parita' del lettore a rel 1e-4 resta non misurata oltre 8 aggiornamenti. Le soglie della ripresa nel lettore sono un caso distinto (N-2).
+================================================================================
+NEW_FINDINGS
+--------------------------------------------------------------------------------
+[id] N-1
+[title] trainer_stop_checks e righe 243-288 del collaudo mai eseguiti da un test; la mia emulazione a 4 rank li esegue e passano
+[category] dubbio
+[severity] NOTA
+[where] scripts/contrastive_cuda_check.py:165-196 e 243-288; tests/cpu/test_contrastive_cuda_check.py:20-66
+[claim] Il flusso a 4 rank del collaudo (traiettorie DDP, hash dei fixture, STOP di copertura e NaN sul solo rank 0, rapporto JSON allow_nan=False) non ha test: una rottura logica emergerebbe solo sul cluster. Eseguito da me su CPU: nessuna rottura. Su CPU la regola bf16 fallisce per costruzione (autocast('cuda') si spegne, limite = 1e-5).
+[evidence] LETTO i tre test del file e il test mmap. ESEGUITO emu4.py (4 processi gloo, dati sintetici dei test, nessun checkpoint reale): torch 2.4.0 + numpy 1.26.4 e torch 2.14, nessuna eccezione, stop_checks coverage/numeric True su tutti i rank, hash uguali fra rank, rapporto serializzabile, fp32 entro i limiti; 'bf16' su CPU: teacher 1,1-4,9 volte il limite (artefatto). ESEGUITO emu4_bf16cpu.py: con autocast CPU bf16 tutto passato. ESEGUITO drive22.py: trainer_stop_checks anche a 1 processo con gruppo gloo, passato.
+[suggested_fix] Nessuna per questo collaudo. Al prossimo giro un test CPU a 4 processi gloo delle righe 243-288 con bf16 emulato da autocast CPU (altrimenti fallisce per costruzione).
+--------------------------------------------------------------------------------
+[id] N-2
+[title] Ripresa nel lettore: soglie per tensore all'1% su momenti AdamW e chiavi della coda che sollevano eccezione, mai confrontate con rumore GPU
+[category] dubbio
+[severity] MINORE
+[where] scripts/contrastive_benchmark_readout.py:135-137 (_nested_equal con tolleranza) chiamata a 178-180 per 'optimizer' e 'contrastive_state'; 185 e 373 (student/teacher <= 1% come failure_reason)
+[claim] Full 576 e split 544+32 sono job GPU separati e non deterministici. Se un solo tensore exp_avg/exp_avg_sq o una chiave della coda differisce di oltre l'1%, _nested_equal solleva ValueError: la lettura termina con errore e senza ricevuta, indistinguibile da un difetto del codice. Non dipende dalla versione di torch (fuori dimensione stretta).
+[evidence] LETTO il codice. LETTO w1gd_equivalence_20261015.json: due ripetizioni identiche bf16 sul cluster danno teacher relativo allo spostamento 0,94%, 1,45%, 1,15% ai primi tre aggiornamenti e student 0,40-0,51%: l'1% e' superabile dal solo rumore GPU almeno all'inizio. NON misurato il rumore dei momenti per tensore dopo 576 aggiornamenti. Nei test CPU le riprese sono bit per bit: la soglia non e' mai stata confrontata con rumore reale.
+[suggested_fix] Nessuna modifica ora (checkout congelati). Se la lettura si ferma su 'differs beyond1% numeric bound' o sul limite di ripresa, non concludere sul codice e niente retry ciechi: misurare prima il rumore di una ripetizione GPU. Al prossimo giro valutare di registrare questi casi come failure_reasons e di tarare la soglia per tensore.
+--------------------------------------------------------------------------------
+[id] N-3
+[title] Il torch del cluster e' una build CINECA del tag v2.2.1: patch locali non escluse
+[category] dubbio
+[severity] NOTA
+[where] /leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/torch
+[claim] Tutte le letture 'v2.2.1' (mie e di torch22) assumono il sorgente upstream del tag; l'unico confronto diretto col file installato e' il frammento del ramo mmap.
+[evidence] LETTO cuda_completed_20261117/torch_mmap_source.txt: coincide con l'upstream v2.2.1 (WebFetch). Il resto dell'installazione non e' verificabile senza ssh.
+[suggested_fix] Nessuna; limite della verifica da tenere presente se un errore non torna col sorgente upstream.
+================================================================================
+CONTESTED_OK
+- V-5 / 'Suite CPU con la numpy del cluster': i conteggi dei suoi log tornano (10, 296, 41) e i miei 115 test passano, ma la frase 'include trajectory/compare_trajectory ... STOP di copertura e numerico' sopravvaluta la copertura. LETTO tests/cpu/test_contrastive_cuda_check.py:20-66: prova technical_config, build_batches, trajectory a UN processo in fp32 e compare_trajectory su righe sintetiche; il test mmap valuta solo l'espressione torch.load. Nessun test esegue scripts/contrastive_cuda_check.py:165-196 (trainer_stop_checks) ne' 243-288 (traiettorie DDP, hash, rapporto). Gli STOP sono provati solo a livello di R.train (test_contrastive_runtime). Li ho eseguiti io (emu4.py, emu4_bf16cpu.py, 4 rank gloo, torch 2.4.0 e 2.14): passano. Conclusione di V-5 vera, prova insufficiente per il collaudo.
+- V-11 (non contestata nell'esito, contestata nella prova): usa erank 65,7 e collasso 1,52 della calibrazione, modello mai aggiornato. Prova migliore LETTA in w1cal_c4_20261022/diagnostiche_erank_taglie.json e pilot_posa/collaudo_b_20261028/metrics.jsonl: run 30M addestrati hanno student_erank 65-86 e collapse 1,1-4,8 ai passi 500-5000, lontani da 38,4 e 0,05.

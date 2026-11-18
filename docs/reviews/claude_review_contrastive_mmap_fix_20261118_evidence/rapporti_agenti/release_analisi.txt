@@ -1,0 +1,136 @@
+Rapporto dell'agente «release_analisi». Review Claude del 18/11/2026. Testo dell'agente: vale la review per ciò che ne ho tratto.
+Percorsi: <archivio> = cartella di lavoro conservata fuori dal repository; <alberi>/<commit> = git archive dei commit.
+
+SOMMARIO
+Dimensione release: nessun rilievo BLOCCANTE. Release, coorte, sei job, cinque release dei benchmark, due piani d'invio, ricevute di b7db83a e ledger sono coerenti fra loro e con le evidenze storiche. Eseguito: le 12 config sono byte-identiche e cohort.json cambia solo source_sha256 (ab2d6460 -> 6b421b75). Col codice di 3b5d4be la ricevuta originale si autentica, calibrated_configs ricalcola esattamente le 12 config con i lambda della ricevuta e validate_cohort/validate_recipe passano per i cinque benchmark; la coorte storica viene rifiutata. build_release.py rigenera byte per byte coorte e release. I pin 0756921a e 5c720fad hanno un solo valore in tutti i file. Il launcher di trasporto è lo stesso blob (sha256 d3f128ae) a 93f24c9 e a 3b5d4be; simulato con stub, arriva a python3 solo su un checkout pulito, in sola lettura e allo SHA atteso. Ricevute, stato del submitter e ledger coincidono (64730738, 64730941, afterok). Consuntivo 0,934444 GPU-h / 16,128889 core-h e massimo 12,934444 / 120,662222 rifatti dalle sette ricevute sacct. Rilievi: il margine interno di 30 s è quasi tutto consumato dall'avvio (circa 25 s misurati sulla calibrazione). Il massimo del budget è convenzionale: un TIMEOUT costa fino a +180 s. L'invio dei cinque benchmark non tiene conto dei limiti per utente di boost_qos_dbg. Il piano non scrive l'esito di un checkout fallito (SLURM cancella da solo il CUDA con kill_invalid_depend). L'hash remoto del launcher è dichiarato ma non archiviato. Il pin del manifest è solo documentale e il cancello CUDA->benchmark solo procedurale; il lettore finale ricontrolla il CUDA.
+
+================================================================================
+FINDINGS
+--------------------------------------------------------------------------------
+[id] R-1
+[title] Limite interno di 1770 s contato dall'avvio del trainer: il margine reale sul walltime è di pochi secondi
+[category] dubbio
+[severity] MINORE
+[where] scripts/contrastive_job.py:116,134-136; src/wearusfm/training/run.py:1222,1586; scripts/contrastive_split_benchmark.py:108 (albero 3b5d4be)
+[claim] Caso: un benchmark lento arriva al limite interno. Il trainer conta 1770 s da t_start dentro train(); lo split conta 1770 s dal proprio avvio. Restano fuori launcher, module load, venv, contrastive_job.py (import torch, hash di sorgenti e input), torchrun e costruzione del modello. La cella finirebbe intorno a 1795-1805 s, cioè al walltime o oltre. Dipenderebbe da OverTimeLimit (3 min), che GPT il 17/11 ha detto di non usare come margine. Il CUDA non ha limite interno (solo il probe a 90 s). Nessuna evidenza falsa: contrastive_run.py:301 e lo split rifiutano meno di 576 passi, e cuda.json si scrive solo alla fine. Effetto: una cella fallita (FAILED o TIMEOUT) e fino a +3 min di costo.
+[evidence] ESEGUITO (lettura di ricevute archiviate): calibrazione 64701482, ElapsedRaw 774 s contro elapsed_s 749,159 del summary in calibration_completed_20261117/run, quindi circa 25 s fuori dal cronometro del trainer. LETTO: il codice alle righe citate. NON misurato: il tempo d'avvio dei benchmark sul cluster.
+[suggested_fix] Nessuna correzione obbligatoria per questo giro. Scrivere che il limite è relativo al trainer. Per i training passare un limite calcolato da SLURM_JOB_START_TIME, oppure lasciare una riserva esplicita per l'avvio.
+[reproduce] python3 -c "import json;print(json.load(open('<b7db83a>/results/infra/contrastive_comparison_20261116/calibration_completed_20261117/run/summary.json'))['elapsed_s'])"; confronto con ElapsedRaw 774 in accounting_and_hashes.txt
+--------------------------------------------------------------------------------
+[id] R-2
+[title] Il massimo 12,934444 GPU-h / 120,662222 core-h è convenzionale: un TIMEOUT costa fino a +180 s per cella
+[category] dubbio
+[severity] NOTA
+[where] results/infra/contrastive_comparison_20261116/releases/mmap_20261118/release.json (resources); docs/reviews/contrastive_mmap_release_20261118.md:45-48; compatibility_20261118/build_release.py:145-160
+[claim] Il massimo usa risorse x walltime, come vuole la regola del progetto, ma non è un tetto rigido. OverTimeLimit è 3 min; lo si è già visto sull'audit 64652559 (3787 s su 3600, oltre il tetto di cella di 8 core-h). CUDA positivo e cinque benchmark tutti in TIMEOUT danno 13,934 GPU-h (sotto 14) e 129,462 core-h (sopra 129,333 di 0,129). Tutte e sei le celle in TIMEOUT danno 14,134 GPU-h (sopra 14). Il margine GPU sotto il tetto è 1,0656 GPU-h, cioè 5,3 TIMEOUT da +180 s.
+[evidence] ESEGUITO budget.py (budget.out) dalle sette ricevute sacct: 64652044 30 s x4, 64652383 11 s x4, 64652559 3787 s x8, 64701182 106 s x4, 64701482 774 s x32 e 4 GPU, 64705989 67 s x4, 64706211 67 s x32 e 4 GPU. I valori dichiarati sono riprodotti esattamente.
+[suggested_fix] Una riga nel documento: il massimo è convenzionale e un TIMEOUT costa +180 s per cella. Dopo il TIMEOUT di un benchmark non inviare altre celle senza ricalcolare il residuo.
+[reproduce] python3 -B <archivio>/agents/release/budget.py
+--------------------------------------------------------------------------------
+[id] R-3
+[title] Cinque benchmark previsti in blocco su boost_qos_dbg senza considerare i limiti per utente
+[category] dubbio
+[severity] MINORE
+[where] results/infra/contrastive_comparison_20261116/releases/mmap_20261118/submission_plan.json; docs/contrastive_handoff_20261117.md:18
+[claim] Caso: dopo il CUDA positivo si usano «i cinque comandi del submission_plan.json». Letture registrate: decisioni.md:1395 (03/10) dà MaxJobsPU 2 e MaxSubmitPU 2, e contano anche i job in attesa di dipendenza; la lettura di Claude del 05/11 dà 2 job in esecuzione e 4 sottomessi per utente. Tutte le linee usano lo stesso utente Leonardo. Almeno un invio verrebbe rifiutato (stato rifiutato, ripresentabile solo con --dopo-rifiuto); nessun duplicato è possibile. Il CUDA 64730941 in attesa occupa già un posto dbg dell'utente, finché il checkout aspetta la quota CPU.
+[evidence] LETTO: decisioni.md:1395 a b7db83a, handoff:18, piano afe7cff. ESEGUITO: grep nei documenti e nei risultati GPT della linea 3, nessuna menzione di MaxSubmit o MaxJobs. NON verificati i limiti attuali (niente ssh).
+[suggested_fix] Prima dei benchmark rileggere sacctmgr show qos boost_qos_dbg. Scrivere nel piano l'ordine d'invio (per esempio due alla volta), contando i job dbg delle altre linee.
+[reproduce] grep -rIn 'MaxSubmit\|MaxJobsPU' <b7db83a>/docs/reviews/contrastive_* <b7db83a>/docs/contrastive_* <b7db83a>/results/infra/contrastive_comparison_20261116
+--------------------------------------------------------------------------------
+[id] R-4
+[title] Checkout fallito: SLURM cancella da solo il CUDA (kill_invalid_depend), ma il piano non lo scrive
+[category] dubbio
+[severity] NOTA
+[where] docs/reviews/contrastive_mmap_queue_amendment_20261118.md:6; releases/mmap_20261118/queued_cuda_submission_plan.json
+[claim] Se 64730738 fallisce o va in TIMEOUT, con DependencyParameters = kill_invalid_depend lo scheduler cancella il CUDA (il 28/10: 3 s dopo, Start=None, costo zero). Il CUDA non resta in coda e non va cancellato a mano. Il ledger resta su sottomesso e va riconciliato con sacct. Caso limite: MinJobAge è 30 s. Se la prima valutazione arrivasse dopo la rimozione del record, Slurm considererebbe la dipendenza soddisfatta e il CUDA partirebbe; il launcher lo fermerebbe prima di qualunque Python. Il piano dice solo «impedisce l'esecuzione».
+[evidence] LETTO: results/infra/pilot_posa/b19618_20261028/recovery/scheduler_config.txt e diagnosis_snapshot.json; submission_20261117/dependency_diagnosis.json di GPT (MinJobAge 30, kill_invalid_depend). LETTO anche il sorgente Slurm master su GitHub, src/slurmctld/job_scheduler.c, _foreach_test_job_dependency: «job is gone, dependency lifted», clear_dep = true, poi DEPEND_FULFILLED. ESEGUITO: sim_launcher.sh, con checkout assente uscita 1 e con file scrivibile uscita 2, senza arrivare a module o python3. NON riprodotto il comportamento dello scheduler.
+[suggested_fix] Una riga nel piano: SLURM cancella da solo il CUDA, lo stato va riconciliato da sacct e una cartella incompleta non si riusa.
+[reproduce] bash <archivio>/agents/release/sim_launcher.sh
+--------------------------------------------------------------------------------
+[id] R-5
+[title] Hash del launcher remoto di trasporto dichiarato verificato, senza ricevuta archiviata
+[category] dubbio
+[severity] NOTA
+[where] docs/reviews/contrastive_mmap_queue_amendment_20261118.md:24-25; docs/decisioni.md (18/11, CUDA accodato); results/infra/contrastive_comparison_20261116/mmap_submission_20261118/
+[claim] Le ricevute sono solo queue_snapshot, cuda_state e checkout_state. Il submitter non registra lo sha degli script passati per percorso (script_stdin null). Nel git il file è identico, quindi il rischio è basso. Nota di forma: il source_digest a runtime include il contrastive_preflight_gpu.sbatch del checkout NUOVO, non la copia che SLURM esegue.
+[evidence] ESEGUITO: git rev-parse e sha256 del launcher a 93f24c9, 4fc5152, f09bf85, f67acb0, 3b5d4be, afe7cff, 7e96014 e b7db83a: ovunque blob 4dc96b4a, sha256 d3f128ae, 1478 byte. Nessun .gitattributes a 93f24c9 e a 3b5d4be. LETTO: contrastive_prepare.source_digest.
+[suggested_fix] Archiviare l'uscita di sacct -B -j 64730941 (AccountingStoreFlags=job_script), oppure quella di sha256sum sul cluster.
+[reproduce] git -C <repo> show 93f24c9:scripts/slurm/contrastive_preflight_gpu.sbatch | shasum -a 256
+--------------------------------------------------------------------------------
+[id] R-6
+[title] Il pin compatibility_manifest nei sei job e nelle cinque release non è letto a runtime
+[category] preferenza
+[severity] NOTA
+[where] releases/mmap_20261118/*.json (campo compatibility_manifest); scripts/contrastive_source_compat.py:17,148
+[claim] Il validatore legge il manifest da un percorso fisso del checkout e non ne conosce lo sha (d1695b73). La garanzia viene da EXPECTED_SHA e dal checkout pulito e in sola lettura. «Pinnato nella release» non indica un controllo a runtime.
+[evidence] ESEGUITO: grep -rn compatibility_manifest in scripts/, src/ e tests/ a 3b5d4be, nessuna occorrenza. Lo sha del manifest nel commit coincide con il pin (d1695b73, 35650 byte).
+[suggested_fix] Nessuna correzione tecnica; precisare la formula nel documento.
+[reproduce] grep -rn compatibility_manifest <3b5d4be>/scripts <3b5d4be>/src <3b5d4be>/tests
+--------------------------------------------------------------------------------
+[id] R-7
+[title] submission_plan.json conserva il comando CUDA superato dalla rettifica
+[category] preferenza
+[severity] NOTA
+[where] results/infra/contrastive_comparison_20261116/releases/mmap_20261118/submission_plan.json (afe7cff), voce CONTRAST-CUDA-mmap-20261118
+[claim] Il comando differisce da quello inviato solo per il percorso del launcher e per l'assenza di --dopo. Un nuovo invio sarebbe rifiutato dal submitter, perché l'ID è già sottomesso.
+[evidence] ESEGUITO check_plans.py: l'unica differenza fra afe7cff e 7e96014 è il percorso del launcher; cuda_state.sbatch è il piano accodato più --dependency=afterok:64730738.
+[suggested_fix] Segnare nel piano che il comando CUDA è superato da queued_cuda_submission_plan.json.
+[reproduce] python3 -B <archivio>/agents/release/check_plans.py <b7db83a> ~/wearusfm_local/jobs/ledger.tsv
+--------------------------------------------------------------------------------
+[id] R-8
+[title] Il cancello CUDA -> benchmark è solo procedurale all'invio; il lettore finale lo ricontrolla
+[category] preferenza
+[severity] NOTA
+[where] releases/mmap_20261118/full_*.release.json e split_*.release.json (cuda_gate); scripts/contrastive_job.py; scripts/contrastive_benchmark_readout.py:257
+[claim] Nessun programma dei benchmark legge cuda_gate o cuda.json: un benchmark inviato per errore prima del CUDA partirebbe. Il lettore finale però esige un cuda.json superato, con il source_sha256 della coorte nuova, quattro rank, STOP superati e input uguali. Il tentativo fallito non può entrare. Il rischio è di costo, non di evidenza falsa.
+[evidence] ESEGUITO: grep di cuda_gate, cuda_report e cuda.json in scripts e src a 3b5d4be; compaiono solo nel modo readout. LETTO: _cuda_evidence.
+[suggested_fix] Nessuna correzione per questo giro; il cancello resta all'operatore come da piano.
+[reproduce] grep -rn 'cuda_gate\|cuda_report\|cuda.json' <3b5d4be>/scripts/*.py <3b5d4be>/src
+================================================================================
+VERIFIED_OK
+-   [what] Le 12 config di calibrated_cohort_20261118_mmap sono byte-identiche a quelle di calibrated_cohort_20261117
+  [how] ESEGUITO cmp file per file (b7db83a)
+-   [what] cohort.json: unica differenza source_sha256 ab2d6460 -> 6b421b75; endpoint 576, calibration_sha256 f57d8731, initial_state ba8a8657, tre config C0/CN/CR come il 17/11
+  [how] ESEGUITO diff
+-   [what] Lambda uguali alla ricevuta originale (nce 0.11942686122572264, rnc 0.33044627364850215, passi 257-288); calibrated_configs del codice 3b5d4be ricalcola esattamente le 12 config (576, 544, 5000, 19618)
+  [how] ESEGUITO validate_cohort_local.py su una copia di 3b5d4be, con ricevuta e cartella run archiviate (sha della run uguali al manifest)
+-   [what] validate_cohort e validate_recipe(benchmark) passano per C0/CN/CR full e split; la coorte storica è rifiutata (cohort calibration/source pins differ); validate_recipe(calibration) passa per la config del CUDA
+  [how] ESEGUITO validate_cohort_local.py (torch 2.14, venv wearusfm-tok, -B)
+-   [what] Pin del checkpoint 0756921a (234339066 byte) e dell'audit 5c720fad (20275571 byte): un solo valore completo in tutte le occorrenze (7 e 36), uguale alle ricevute di calibrazione e audit; il summary 7a3b9490 (7497 byte) coincide con l'archive_manifest
+  [how] ESEGUITO grep -rIoh e confronto con accounting_and_hashes.txt, readout.json, accounting_and_integrity.txt e verification.json
+-   [what] build_release.py rigenera byte per byte la coorte (13 file) e la release (12 file)
+  [how] ESEGUITO su una copia di 3b5d4be senza le due cartelle; diff -r vuoto
+-   [what] Tutti i pin interni al repo dei file della release (review, config, coorte, release, ricevuta, manifest, job_files, release_files) risolvono con sha e byte giusti, a 3b5d4be e a b7db83a
+  [how] ESEGUITO diff_jobs.py: 0 incoerenze
+-   [what] Rispetto al 17/11 cambiano solo source_sha256, review, cartella e pin di coorte e release, uscite (nuova radice contrastive_preflight_20261118_mmap), cuda_gate.report e l'aggiunta del manifest; input, radici, audit, ricevuta, summary, checkpoint e config CUDA sono invariati
+  [how] ESEGUITO diff_jobs.py campo per campo
+-   [what] Uscite nuove e distinte (cuda.json, benchmark/C0 CN CR, resume/CN CR); nessun riferimento al cuda.json o al probe di 64706211; i programmi rifiutano uscite esistenti e creano le cartelle genitrici
+  [how] ESEGUITO diff; LETTO contrastive_job.py:70, contrastive_cuda_check.py:223, contrastive_rank_exit.py:126, contrastive_split_benchmark.py:102
+-   [what] Piani: 7 ID logici distinti, tutti via scripts/submit_job.py (sha 814da4bc uguale al repo). Benchmark con --gpu-ore 2, --time=00:30:00, CODE_DIR nuovo, EXPECTED_SHA 3b5d4be, launcher nuovo, job.json giusto e nessun --dopo. Checkout con 4 CPU, 4 min, 2G
+  [how] ESEGUITO check_plans.py
+-   [what] Risorse: il launcher GPU chiede boost_usr_prod, boost_qos_dbg, gpu:4, 32 CPU, 240G, 30 min; il queue_snapshot lo conferma (ReqTRES cpu=32,mem=240G,gres/gpu=4, TimeLimit 00:30:00); validate_allocation e build_command ricontrollano nodo, task, CPU, memoria, 4 GPU e 1800 s
+  [how] LETTO l'header e contrastive_job.py; ESEGUITO il confronto col queue_snapshot
+-   [what] Launcher di trasporto identico: blob 4dc96b4a, sha256 d3f128ae, 1478 byte negli 8 commit da 93f24c9 a b7db83a. Usa solo CODE_DIR ed EXPECTED_SHA (lib, cd, job.json = $CODE_DIR/$1) e mai il proprio percorso
+  [how] ESEGUITO git show | shasum; LETTO lo script riga per riga
+-   [what] I controlli di SHA, pulizia (anche file non tracciati) e sola lettura avvengono prima di module load e di qualunque python3
+  [how] ESEGUITO sim_launcher.sh: python3 è raggiunto solo nel caso pulito. Uscita 2 con SHA diverso, file scrivibile, file non tracciato, job.json assoluto o CODE_DIR fuori dalle campagne; uscita 1 con checkout assente
+-   [what] Il campaign_checkout.sbatch inviato su stdin è uguale al commit (sha eaafc432 a 3b5d4be e su origin/main). Esce con 0 solo dopo worktree add, lock, HEAD = SHA, status vuoto, chmod a-w e verifica
+  [how] ESEGUITO il confronto dello sha con lo state.json; LETTO lo script
+-   [what] Le ricevute checkout_state.json e cuda_state.json sono byte-identiche agli state.json locali del submitter. Le righe 1680-1683 del ledger sono coerenti (64730738, 64730941, afterok:64730738, codice 3b5d4be, comandi uguali). Il queue_snapshot è coerente. Gli ID dei benchmark non sono ancora usati
+  [how] ESEGUITO cmp e check_plans.py sul ledger, in sola lettura
+-   [what] Il ref di deploy leonardo/deploy/contrastive-v2-20261118-mmap punta a 3b5d4be; reflog «update by push»
+  [how] ESEGUITO git for-each-ref e reflog (locali)
+-   [what] Consuntivo 0,934444 GPU-h / 16,128889 core-h e massimo 12,934444 / 120,662222, entro 14 / 129,333333. Coerenti con decisioni.md del 17/11 (12,86 / 119,992222) e del 18/11 e con build_release.py. L'aumento del massimo è esattamente il costo del tentativo fallito
+  [how] ESEGUITO budget.py dalle sette ricevute sacct
+-   [what] Dopo 3b5d4be cambiano solo submission_plan.json, il piano accodato, documenti e ricevute. Nessun cambio in src, scripts, tests, coorte, compatibility_20261118 o documento di release
+  [how] ESEGUITO git diff --stat 3b5d4be b7db83a
+-   [what] I controlli manuali fatti il 17/11 prima del CUDA (sha del job.json, uscite assenti) sono coperti a runtime dal checkout pulito allo SHA e da contrastive_job.py:70
+  [how] LETTO
+================================================================================
+NOT_VERIFIED
+- Stato attuale dei job 64730738 e 64730941 e dei file remoti (launcher vecchio, input, checkpoint, audit, summary), e presenza di 3b5d4be nel repo canonico di Leonardo: niente ssh per regola.
+- Limiti attuali di boost_qos_dbg (MaxSubmitPU, MaxJobsPU) e DependencyParameters di oggi.
+- Durata reale del collaudo CUDA completo e dei benchmark: mai misurata (il tentativo precedente si è fermato a 67 s).
+- Comportamento dello scheduler nel caso limite di MinJobAge: letto nel sorgente Slurm master, non riprodotto.
+- Compatibilità con torch 2.2 e logica interna del validatore di compatibilità (altre dimensioni).
+- La simulazione del launcher usa il bash 3.2 del Mac, non il bash del cluster.

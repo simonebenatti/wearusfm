@@ -8231,6 +8231,19 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Cartelle di lavoro degli agenti fuori dal repository: `~/wearusfm_local/reviews/contrastive_review_20261116/` (nessun dato
   wearable). Prompt per GPT in coda alla review.
 
+### 2026-11-18 | Claude | Review della correzione mmap di GPT (`3b5d4be`) e correzione del criterio bf16 del collaudo CUDA
+- Richiesta: messaggio di GPT passato da Simone il 18/11 («Per Claude: Commit della correzione: `3b5d4be...`»). Review in
+  `docs/reviews/claude_review_contrastive_mmap_fix_20261118.md`, analisi degli agenti nella cartella `_evidence/` accanto.
+- Verdetto: correzione Path/mmap approvata, nessun bloccante; riuso di audit e calibrazione approvato; release e invii approvati.
+- Collaudo CUDA 64730941 (11:01-11:03): FAILED 1:0 con `cuda.json` completo; 312 confronti su 320 superati; fuori limite solo
+  `contrast_global_grad_nce` in bf16 all'update 2, CN e CR su ogni rank: limite autoreferenziale, arrotondamento bf16.
+- Su incarico di Simone (citazione letterale nella review) ho corretto il criterio nel ramo `claude/contrastive-bf16-20261118`,
+  commit `be21629` da `b7db83a`: in bf16 le tre norme diagnostiche hanno limite max(regola precedente, 0,01), post hoc.
+- Nello stesso commit: test di regressione, manifest rigenerato (digest `fd838f1d...`), coorte e release nuove, evidenze del job.
+  Validato in locale: riuso delle evidenze, ricevuta ricalcolata con λ invariati, coorte dei tre bracci; suite completa dei test CPU 2.773 passati.
+- Due agenti indipendenti hanno rivisto la mia correzione: nessun bloccante, correzioni minori applicate. Nessun job da me.
+- Prove fuori dal repository: `~/wearusfm_local/reviews/contrastive_mmap_review_20261118/`. Prompt per GPT dato a Simone.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11172,3 +11185,14 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
   catena che riparte dopo un'eccezione; esito favorevole «irraggiungibile». Una mia nota («clippato a ogni passo») era imprecisa.
 - Limiti miei: nessuna GPU, NCCL, bf16 vero, torch 2.2; modello da 30M solo all'inizializzazione con segnali sintetici, segnali
   veri non usati; QC e validita' della posa supposte valide; integrazione su `main` solo simulata; esempi MATLAB non letti.
+
+### 2026-11-18 | Claude | Correzione mmap e collaudo 64730941: nessun bloccante, tre minori, tre rischi per i prossimi job (per GPT)
+- Da integrare: ramo `claude/contrastive-bf16-20261118`, commit `be21629`, avanzamento semplice da `b7db83a`. La review
+  della correzione spetta a GPT (`CLAUDE.md`); deploy, checkout e invio del solo CUDA, poi i benchmark se il CUDA passa.
+- C-1 e C-2 (MINORE, test): i ganci sull'audit e il ramo storico di `authenticate_calibration` non hanno test che li proteggano;
+  aggiungerli non cambia il digest.
+- C-3 (MINORE): i cinque benchmark su `boost_qos_dbg` vanno inviati a gruppi, per i limiti per utente.
+- Rischio 1: in bf16 gradiente, studente e teacher restano autoreferenziali (scarto/limite massimo 0,40, 0,43 e 0,62 nel 64730941).
+- Rischio 2, da decidere prima del nuovo CUDA: la lettura finale solleva eccezione se un tensore dell'ottimizzatore o della coda
+  differisce oltre l'1% fra run continuo e ripreso, possibile su GPU senza difetti; dopo il CUDA il digest e' congelato.
+- Rischio 3: il checkout nuovo aspetta la quota CPU, occupata dai fit della linea 1 un fit alla volta.
