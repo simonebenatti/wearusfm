@@ -1,0 +1,16 @@
+1. piano di invio: frozen_commit == 365cb1e: True
+   pin OK  scripts/slurm/campaign_checkout.sbatch
+   pin OK  scripts/slurm/diagnose_contrastive_common.sbatch
+   pin OK  scripts/diagnostics/contrastive_common_state_cuda.py
+   pin OK  scripts/diagnostics/contrastive_common_checkpoint.py
+   pin OK  results/infra/contrastive_comparison_20261116/common_state_diagnostics_20261118/resources.json
+   pin OK  results/infra/contrastive_comparison_20261116/common_state_diagnostics_20261118/prepare_handoff.py
+   submitter 365cb1e == piano == resources: True 814da4bc66dbf18d
+2. ricette C0/CN/CR della coorte: campi diversi = ['contrastive.arm']
+3. CN: max_steps 576, schedule wsd, decay_start 39237, 580 valido come keep: True, 588 <= total_steps: True
+   salvataggi in 577..588: [580] + finale; valutazioni: [588]; rapporti di copertura (blocco 1024): []
+   fattore del peso: update 255 (passo 254) = 0.0, update 581..588 = [1.0]
+3. CR: max_steps 576, schedule wsd, decay_start 39237, 580 valido come keep: True, 588 <= total_steps: True
+   salvataggi in 577..588: [580] + finale; valutazioni: [588]; rapporti di copertura (blocco 1024): []
+   fattore del peso: update 255 (passo 254) = 0.0, update 581..588 = [1.0]
+4. risorse: incrementale 6 GPU-ore e 48.2667 core-ore (dichiarati 6 e 48.2667); cumulativo 11.2844 / 14 GPU-ore, 99.6378 / 129.33 core-ore

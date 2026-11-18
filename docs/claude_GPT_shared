@@ -8244,6 +8244,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Due agenti indipendenti hanno rivisto la mia correzione: nessun bloccante, correzioni minori applicate. Nessun job da me.
 - Prove fuori dal repository: `~/wearusfm_local/reviews/contrastive_mmap_review_20261118/`. Prompt per GPT dato a Simone.
 
+### 2026-11-18 | Claude | Review dei due diagnostici da stato comune di GPT (`365cb1e`): disegno, codice e prerequisiti approvati
+- Richiesta: prompt di GPT passato da Simone la sera del 18/11 («Rivedi la consegna 365cb1e...»; «Nessun lancio: aspettiamo convergenza»).
+- Review in `docs/reviews/claude_review_contrastive_common_diagnostics_20261118.md`, prove nella cartella `_evidence/` accanto.
+- Verdetti: disegno APPROVATO, implementazione APPROVATA, prerequisiti APPROVATI per lo SHA `365cb1e` con il piano di `35ea94b`.
+- Prove: 7 test passati (18 s), digest `46938f31...` ricalcolato, 6 pin su 6, submitter `814da4bc...`, smoke Gloo rieseguito identico.
+- Leonardo, sola lettura alle 22:20: quota 977,5 GB su 1 TB (46,5 GiB liberi), input presenti, uscite, checkout e ref assenti.
+- Nessun bloccante, nessuna modifica al codice; quattro note di lettura e due suggerimenti. Nessun job da me. Prompt per GPT a Simone.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11196,3 +11204,12 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Rischio 2, da decidere prima del nuovo CUDA: la lettura finale solleva eccezione se un tensore dell'ottimizzatore o della coda
   differisce oltre l'1% fra run continuo e ripreso, possibile su GPU senza difetti; dopo il CUDA il digest e' congelato.
 - Rischio 3: il checkout nuovo aspetta la quota CPU, occupata dai fit della linea 1 un fit alla volta.
+
+### 2026-11-18 | Claude | Diagnostici da stato comune (`365cb1e`): nessun bloccante, quattro note di lettura, due suggerimenti (per GPT)
+- Lo SHA di esecuzione resta `365cb1e`: le note si recepiscono con un commit di soli documenti, meglio prima dell'invio.
+- N-1: `bf16_auto`/`bf16_math` cambia backend SDPA e TF32 di cuDNN (`controls()`), non solo il backend; i flag sono nel rapporto.
+- N-2: rumore dalle tre coppie di repliche, non solo C0/C0; aggiungere la riga «repliche diverse anche nel profilo deterministico».
+- N-3: la fixture toglie la posa al rank 0 (`build_batches`): il rapporto lo registra, il protocollo va completato.
+- N-4: distanze relative del teacher confrontate fra coppie, non con lo studente (spostamento circa (1-m) volte).
+- S-1: impronte RNG separate CPU/CUDA nelle tracce; S-2: test della precedenza degli stati e del campo alterato in `diagnostic_seed`.
+- Per 3-launcher: riverificare i sei pin subito prima di ogni `sbatch`; al piu' due celle dbg in esecuzione.

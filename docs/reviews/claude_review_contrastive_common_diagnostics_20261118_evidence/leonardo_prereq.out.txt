@@ -1,0 +1,21 @@
+2026-11-18T22:20:16+01:00
+== progetto
+20147512 P /leonardo_work/IscrB_WearUsFM
+== lfs quota
+Disk quotas for prj 20147512 (pid 20147512):
+     Filesystem    used   quota   limit   grace   files   quota   limit   grace
+/leonardo_work/IscrB_WearUsFM
+                 977.5G      1T      0k       - 1200947       0       0       -
+== statvfs (cio che vede shutil.disk_usage)
+free_GiB 46.5
+== input checkpoint
+-rw-r--r--. 1 sbenatti interactive 234339066 Nov 17 20:01 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261116_v2/calibration/checkpoint.pt
+-rw-r--r--. 1 sbenatti interactive 463189952 Nov 18 17:59 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261118_bf16/benchmark/CN/checkpoint.pt
+-rw-r--r--. 1 sbenatti interactive 463189952 Nov 18 18:11 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261118_bf16/benchmark/CR/checkpoint.pt
+== uscite e checkout (devono mancare)
+assente /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_common_diagnostics_20261118
+assente /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-common-20261118
+== ref di deploy
+(fine ref)
+== job dbg utente
+0
