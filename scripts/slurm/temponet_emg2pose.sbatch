@@ -25,10 +25,12 @@
 #     quattro loss (controllo eager/graph e un'epoca breve ciascuna) su boost_qos_dbg, 30 minuti:
 #     sbatch --qos=boost_qos_dbg --time=00:30:00 --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha> temponet_emg2pose.sbatch losssmoke <manifest> <uscite>
 #     sbatch --time=<TRAIN_TIME> --export=ALL,CODE_DIR=<checkout>,EXPECTED_SHA=<sha>,LOSS=<loss>,TRAIN_TIME=<TRAIN_TIME> temponet_emg2pose.sbatch train ...
+#   conferma con altri semi (proposta del 18/11, docs/temponet_emg2pose_loss_seeds_proposal_20261118.md): SEED=<intero> per train (default 0)
 # Le uscite vanno in una cartella NUOVA fuori dal codice; nessun riavvio automatico, nessun nuovo tentativo.
 set -uo pipefail
 MODE="${1:?smoke, losssmoke, train o eval}"; MANIFEST="${2:?manifest del passo 0}"; OUT="${3:?cartella delle uscite}"; MODEL_DIR="${4:-}"
-LOSS="${LOSS:-l1}"; TRAIN_TIME="${TRAIN_TIME:-03:30:00}"
+LOSS="${LOSS:-l1}"; TRAIN_TIME="${TRAIN_TIME:-03:30:00}"; SEED="${SEED:-0}"
+case "$SEED" in ""|*[!0-9]*) echo "SEED deve essere un intero non negativo: $SEED"; exit 2;; esac
 case "$LOSS" in l1|smoothl1|mse|mse_vel) ;; *) echo "LOSS: l1, smoothl1, mse o mse_vel"; exit 2;; esac
 # tempo massimo del training prima dell'ultima epoca: 600 s di margine col limite di 3 ore e 30 (come l'11/11), 900 s con i limiti piu' lunghi
 case "$TRAIN_TIME" in 03:30:00) BUDGET=12000;; 04:30:00) BUDGET=15300;; 05:00:00) BUDGET=17100;; 05:30:00) BUDGET=18900;; 06:00:00) BUDGET=20700;;
@@ -57,7 +59,7 @@ print('GPU:', torch.cuda.get_device_name(0), '| torch', torch.__version__, '| CU
 PY
 COMMON=(--csv "$WORK/data/raw/emg2pose_mini/emg2pose_metadata.csv" --processed-root "$SCRATCH/data/processed/emg2pose"
   --pose-root "$SCRATCH/data/processed/emg2pose_pose" --targets-manifest "$MANIFEST" --cudnn-mode benchmark)
-echo "== $(date -Is) modo $MODE, codice $WEARUSFM_CODE_SHA in $WEARUSFM_CODE_DIR; uscite $OUT$([ "$MODE" = train ] && echo "; loss $LOSS, limite $TRAIN_TIME")"
+echo "== $(date -Is) modo $MODE, codice $WEARUSFM_CODE_SHA in $WEARUSFM_CODE_DIR; uscite $OUT$([ "$MODE" = train ] && echo "; loss $LOSS, limite $TRAIN_TIME, seme $SEED")"
 if [ "$MODE" = smoke ]; then
   python3 scripts/temponet_emg2pose.py train "${COMMON[@]}" --out "$OUT/train" --check-graph --epochs 2 --max-train-recordings 400 \
     --max-val-recordings 60 --max-steps-per-epoch 4000 || exit 1
@@ -71,7 +73,7 @@ elif [ "$MODE" = losssmoke ]; then
   [ "$RC" = 0 ] || exit 1
 elif [ "$MODE" = train ]; then
   python3 scripts/temponet_emg2pose.py train "${COMMON[@]}" --out "$OUT" --check-graph --time-budget-s "$BUDGET" \
-    --train-stride-blocks "${TRAIN_STRIDE:-8}" --loss "$LOSS" || exit 1
+    --train-stride-blocks "${TRAIN_STRIDE:-8}" --loss "$LOSS" --seed "$SEED" || exit 1
 else
   python3 scripts/temponet_emg2pose.py eval "${COMMON[@]}" --out "$OUT" --model-dir "$MODEL_DIR"
   RC=$?
