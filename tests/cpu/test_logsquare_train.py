@@ -33,7 +33,7 @@ def candidate():
 
 def test_registered_command_changes_only_branch_output_dose_and_timeout():
     comparison, cfg = candidate()
-    assert R.config_to_dict(cfg) == R._config_with_defaults(
+    assert R.config_to_dict(cfg) == R.with_legacy_target_windows(
         json.loads((ROOT / 'results/infra/logsquare_review_20261104/config_T100-LQ.json').read_text()))
     guard, records = {'path': '/code/guard.json', 'sha256': 'a' * 64}, Path('/tmp/phase/initial_state')
     for step, cap in ((5000, 5400), (19618, 14400)):

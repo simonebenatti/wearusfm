@@ -132,7 +132,7 @@ def load_teacher_endpoint(pin, expected_config, arm, stats_sha256, signature, so
         states[name] = pin_file({"path": pin[name + "_path"], "sha256": pin[name + "_sha256"]})
     config, receipt, summary = (json.loads(Path(states[name]["path"]).read_text())
                                 for name in ("config", "receipt", "summary"))
-    require(config == expected_config, "source config differs from frozen full recipe")
+    require(R.with_legacy_target_windows(config) == expected_config, "source config differs from frozen full recipe")
     require(summary.get("stopped") == "max_steps" and type(summary.get("steps")) is int and
             summary["steps"] == STEP, "training phase incomplete")
     old = arm == ARMS[0]
@@ -311,7 +311,7 @@ def load_context(plan_path, arm, step, expected_code_sha):
     require(argv[0] == "scripts/train_jepa.py", "wrong trainer executable")
     args = cli.build_parser().parse_args(cli.historical_args(argv[1:]))  # controllo storico: target 25/50
     base = cli.build_config(args)
-    require(R.config_to_dict(base) == R._config_with_defaults(json.loads(Path(states["expected_config"]["path"]).read_text())),
+    require(R.config_to_dict(base) == R.with_legacy_target_windows(json.loads(Path(states["expected_config"]["path"]).read_text())),
             "frozen CLI/config mismatch")
     require(R.config_to_dict(base) == R.config_to_dict(checked["config_30m"]), "base configuration differs from training source contract")
     for arg, key in (("manifest", "manifest"), ("scales", "scales"), ("window_seconds", "windows")):

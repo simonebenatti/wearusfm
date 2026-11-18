@@ -93,7 +93,7 @@ def load_plan(path, root=REPO):
         stored_config = json.loads(Path(states[name]["path"]).read_text())
         stored_config["model"] = {"tokenizer_logsquare": False, "tokenizer_logsquare_eps": 1e-3,
                                   **stored_config["model"]}
-        stored_config = R._config_with_defaults(stored_config)
+        stored_config = R.with_legacy_target_windows(stored_config)  # solo i due campi del 18/11, come per LQ sopra
         require(R.config_to_dict(cfg) == stored_config,
                 "CLI/config mismatch: " + name)
         for arg, key in (("manifest", "manifest"), ("scales", "scales"), ("window_seconds", "windows")):

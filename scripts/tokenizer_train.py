@@ -24,6 +24,9 @@ REPO = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("tokenizer_train_preflight", REPO / "scripts/tokenizer_preflight.py")
 P = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(P)
+CLI_SPEC = importlib.util.spec_from_file_location("tokenizer_train_cli", REPO / "scripts/train_jepa.py")
+CLI = importlib.util.module_from_spec(CLI_SPEC)
+CLI_SPEC.loader.exec_module(CLI)
 PROTOCOL = "tokenizer-training-20261103-v1"
 
 
@@ -85,7 +88,8 @@ def checkpoint_identity(path, cfg, step, data_signature):
     before = P.file_identity(path)
     state = torch.load(path, map_location="cpu", weights_only=False)
     require(state.get("step") == step, "wrong checkpoint step")
-    require(state.get("config") == R.config_to_dict(cfg), "checkpoint configuration mismatch")
+    # Checkpoint di prima del 18/11 senza i due campi dei target = 25/50; nessun altro campo viene completato.
+    require(R.with_legacy_target_windows(state.get("config") or {}) == R.config_to_dict(cfg), "checkpoint configuration mismatch")
     require(state.get("world_size") == 4, "checkpoint world size mismatch")
     require(state.get("stream") == {"num_workers": 6, "segment": cfg.stream_segment, "world_size": 4}, "checkpoint stream mismatch")
     validate_rng(state.get("rank_rng"))
@@ -109,6 +113,7 @@ def command_for(comparison, arm, step, seconds):
     argv = list(comparison["arm_configurations"][arm]["validated_trainer_argv"])
     require(argv.count("--max-steps") == 1 and "--time-limit-s" not in argv, "unexpected phase arguments")
     argv[argv.index("--max-steps") + 1] = str(step)
+    argv = CLI.historical_args(argv)  # campagna nata prima del 18/11: target 25/50 espliciti nel comando
     argv += ["--time-limit-s", str(seconds - 300)]
     return ["torchrun", "--standalone", "--nproc_per_node=4", *argv]
 

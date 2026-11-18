@@ -126,7 +126,7 @@ def check_source_contract(contract_or_path, root=ROOT):
     require(argv[0] == "scripts/train_jepa.py", "unexpected training entry point")
     args = CLI.build_parser().parse_args(CLI.historical_args(argv[1:]))  # controllo storico 30M: target 25/50
     cfg = CLI.build_config(args)
-    require(R.config_to_dict(cfg) == R._config_with_defaults(json.loads(Path(states["config_30m"]["path"]).read_text())),
+    require(R.config_to_dict(cfg) == R.with_legacy_target_windows(json.loads(Path(states["config_30m"]["path"]).read_text())),
             "base CLI/config mismatch")
     require(args.preset == "sanity" and args.distributed and args.num_workers == 6 and cfg.max_steps == STEP,
             "base recipe differs from historical control")

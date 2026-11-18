@@ -13,7 +13,7 @@ import sys
 
 import numpy as np
 import pytest
-from frozen_campaign_support import archive
+from frozen_campaign_support import archive, pre_18_11_config
 import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
@@ -329,8 +329,8 @@ def context(tmp_path, monkeypatch):
     for flag, name in (("--manifest", "manifest"), ("--scales", "scales"), ("--window-seconds", "windows")):
         argv[argv.index(flag) + 1] = inputs[name]["path"]
     argv[argv.index("--pose-root") + 1] = str(tmp_path)
-    cfg = train_jepa.build_config(train_jepa.build_parser().parse_args(argv[1:]))
-    cf = save_json(tmp_path / "config.json", R.config_to_dict(cfg))
+    cfg = train_jepa.build_config(train_jepa.build_parser().parse_args(train_jepa.historical_args(argv[1:])))  # run storico: 25/50
+    cf = save_json(tmp_path / "config.json", pre_18_11_config(R.config_to_dict(cfg)))  # config salvato prima del 18/11
     comparison = save_json(tmp_path / "comparison.json", {"arm_configurations": {"T100-G": {
         "config": cf["path"], "sha256": cf["sha256"], "validated_trainer_argv": argv}}})
     refs = {split: {"path": str(tmp_path / (split + ".npz")), "sha256": "1" * 64, "bytes": 1, **selection}

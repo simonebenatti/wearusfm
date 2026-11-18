@@ -131,7 +131,7 @@ def test_multiscale_slow_scale_one_window_every_100_ms():
     limit = np.full(3, 450.0)
     ref, ok, _ = A._band_logpower(x.astype(np.float32), fs, (np.arange(40) * 4 + 2.0) * 0.025, 500.0, 24, limit)
     assert np.allclose(groups[:, :, 0], ref) and np.array_equal(tg.ms_slow_valid[0].reshape(40, 4)[:, 0], ok)
-    fast, _, _ = A._band_logpower(x.astype(np.float32), fs, (np.arange(160) + 0.5) * 0.025, 100.0, 6, limit, round_half_up=True)
+    fast, _, _ = A._band_logpower(x.astype(np.float32), fs, (np.arange(160) + 0.5) * 0.025, 125.0, 6, limit, round_half_up=True)
     assert np.allclose(tg.ms_fast, fast)
     odd = A.anchor_targets(x[:, :7950], fs, 450.0, multiscale=True)  # 159 patch: l'ultimo gruppo e' incompleto
     assert odd.ms_slow.shape == (3, 159, 24) and odd.ms_slow_valid.shape == (3, 159)

@@ -252,7 +252,7 @@ def child(plan_path, variant, expected_code):
     argv = list(comparison['arm_configurations']['T100-L']['validated_trainer_argv'])
     cfg = cli.build_config(cli.build_parser().parse_args(cli.historical_args(argv[1:] +
                            ['--tokenizer-logsquare', '--tokenizer-logsquare-eps', '.001'])))
-    require(cli.R.config_to_dict(cfg) == cli.R._config_with_defaults(candidate), 'CLI candidate differs from pinned recipe')
+    require(cli.R.config_to_dict(cfg) == cli.R.with_legacy_target_windows(candidate), 'CLI candidate differs from pinned recipe')
     require(not plan['cuda_required'] or torch.cuda.is_available(), 'required CUDA unavailable')
     if variant == 'preflight' and plan['cuda_required']:
         torch.cuda.set_device(0)
@@ -512,7 +512,7 @@ def rank_entry_child(plan_path, expected_code, workspace, started=None):
     argv = list(comparison['arm_configurations']['T100-L']['validated_trainer_argv'])
     cfg = cli.build_config(cli.build_parser().parse_args(cli.historical_args(argv[1:] +
                            ['--tokenizer-logsquare', '--tokenizer-logsquare-eps', '.001'])))
-    require(cli.R.config_to_dict(cfg) == cli.R._config_with_defaults(candidate), 'CLI candidate differs from pinned recipe')
+    require(cli.R.config_to_dict(cfg) == cli.R.with_legacy_target_windows(candidate), 'CLI candidate differs from pinned recipe')
     run_dir, records = workspace / (RANK_VARIANT + '_run'), workspace / (RANK_VARIANT + '_initial_state')
     require(workspace.is_dir() and not run_dir.exists() and not records.exists(), 'new rank-entry workspace required')
     require(guard['new_parameter']['shape'] == [cfg.model.dim, 64], 'guard written for another model width')

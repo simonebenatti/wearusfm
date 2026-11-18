@@ -68,7 +68,7 @@ def context_sha256(plan):
 
 def canonical_config(value):
     """Canonical comparison only; never rewrite the pinned source bytes."""
-    value = copy.deepcopy(value)
+    value = R.with_legacy_target_windows(copy.deepcopy(value))  # config di prima del 18/11: solo i due campi dei target
     model = value['model']
     for key, default in DEFAULTS.items():
         model.setdefault(key, default)
@@ -175,7 +175,8 @@ def load_context(plan_path, step, expected_code_sha, expected_plan_sha256, *, be
     require(E.pin_file(training['preflight_plan'])['sha256'] == preflight_states['plan']['sha256'], 'preflight plan identity mismatch')
     states.update({'preflight_' + k: v for k, v in preflight_states.items()})
     cfg = replace(configs[ARM], max_steps=step)
-    require(R.config_to_dict(configs[ARM]) == json.loads(Path(states['candidate_config']['path']).read_text()), 'candidate config pin differs')
+    require(R.config_to_dict(configs[ARM]) == R.with_legacy_target_windows(json.loads(Path(states['candidate_config']['path']).read_text())),
+            'candidate config pin differs')
     require(cfg.model.dim == 384 and cfg.model.k_latents == 64 and cfg.model.patch_ms == 25 and cfg.model.pose_head and cfg.jepa.jepa_weight == 0, 'unregistered model recipe')
     actual, historical = E.canonical(asdict(cfg.loader)), E.canonical(asdict(R.sanity_config().loader))
     require(all(actual[k] == historical[k] for k in E.PREPROCESSING), 'preprocessing differs from production pose path')

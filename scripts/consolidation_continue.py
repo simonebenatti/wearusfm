@@ -129,10 +129,9 @@ def command_for(receipt, step, run_dir, seconds=10800):
         argv[argv.index(name) + 1] = str(value)
     if step == PHASES[0]:
         argv += ["--branch-from", receipt["checkpoint"]]
-    argv = J.historical_args(argv)  # run storico: target 25/50 espliciti anche nel comando
     args = J.build_parser().parse_args(argv[4:])
     cfg = J.build_config(args)
-    old = R._config_with_defaults(json.loads((BASE / "19618/T100-G/config.json").read_text()))
+    old = json.loads((BASE / "19618/T100-G/config.json").read_text())
     new = R.config_to_dict(cfg)
     T.require({**new, "max_steps": old["max_steps"]} == old, "continuation changed scientific recipe")
     T.require(cfg.schedule.decay_start == 39237 and cfg.schedule.total_steps == 49046, "wrong WSD endpoints")

@@ -30,8 +30,15 @@ def historical_args(argv) -> list[str]:
     `--ms-fast-window-ms 50` se mancano, senza toccare valori gia' scritti. Serve a ricostruire o riprendere run nati prima del
     18/11/2026 (review di Claude del 18/11: gli strumenti delle campagne storiche ricalcolavano la ricetta con i default nuovi)."""
     out = [str(a) for a in argv]
+    options = {o: a.dest for a in build_parser()._actions for o in a.option_strings}
+    given = set()
+    for tok in out:  # abbreviazioni delle opzioni lunghe risolte come argparse (stessa regola di wsd_chain.free_arg_dests)
+        name = tok.split("=", 1)[0]
+        hits = [name] if name in options else [o for o in options if name.startswith("--") and len(name) > 2 and o.startswith(name)]
+        if len(hits) == 1:
+            given.add(options[hits[0]])
     for flag, value in zip(HISTORICAL_TARGET_ARGS[::2], HISTORICAL_TARGET_ARGS[1::2]):
-        if not any(a == flag or a.startswith(flag + "=") for a in out):
+        if options[flag] not in given:
             out += [flag, value]
     return out
 

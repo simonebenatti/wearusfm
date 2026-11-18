@@ -232,10 +232,12 @@ def test_production_config_binding_reconstructs_all_three_full_cli_configs(tmp_p
                 i += 1
         rewritten += ["--root", plan["roots"][0]]
         entry["validated_trainer_argv"] = rewritten
-        cfg = cli.build_config(cli.build_parser().parse_args(rewritten[1:]))
+        cfg = cli.build_config(cli.build_parser().parse_args(cli.historical_args(rewritten[1:])))  # bracci storici: 25/50
         path = tmp_path / f"{name}.json"
         stored = R.config_to_dict(cfg)
-        # Legacy configs may omit only the two fields introduced by LQ.
+        # Legacy configs may omit only the two fields introduced by LQ and the two target windows of 18/11.
+        for key in ("rms_window_ms", "ms_fast_window_ms"):
+            stored["loader"].pop(key)
         stored["model"].pop("tokenizer_logsquare")
         stored["model"].pop("tokenizer_logsquare_eps")
         if missing_old_field is not None and name == "T100-L":

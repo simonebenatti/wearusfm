@@ -387,7 +387,7 @@ def test_child_construction_order_warmup_and_late_environment_inspection(monkeyp
         # Real count_parameters constructs a fresh model without seeding it.
         return sum(parameter.numel() for parameter in construct(model_cfg).parameters())
     cli = SimpleNamespace(R=SimpleNamespace(config_to_dict=lambda value: candidate, count_parameters=warmup,
-                                            _config_with_defaults=lambda value: value),
+                                            with_legacy_target_windows=lambda value: value),
                           build_config=lambda args: cfg, historical_args=lambda args: list(args),
                           build_parser=lambda: SimpleNamespace(parse_args=lambda args: None))
     def imported(relative, name):

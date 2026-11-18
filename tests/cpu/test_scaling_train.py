@@ -57,7 +57,8 @@ def test_complete_source_contract_and_cli_exactly_match_preflight_without_remote
     original = context["comparison"]["arm_configurations"]["T100-G"]["validated_trainer_argv"]
     for flag in ("--preset", "--out-dir", "--max-steps"):
         recovered[recovered.index(flag) + 1] = original[original.index(flag) + 1]
-    assert recovered == original
+    # Campagna nata prima del 18/11: il comando aggiunge solo la ricetta storica esplicita dei target (25/50).
+    assert recovered == M.CLI.historical_args(original)
 
 
 @pytest.mark.parametrize("change", ["missing", "changed", "extra", "reference", "dose", "schedule"])

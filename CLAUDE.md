@@ -16,8 +16,10 @@ del corpus. Nuovo default `loader.ms_fast_window_ms=125`, versione `step1_psd_po
 `step1_psd_power_shape_energy_fast100_v2` sono ritirati prima di qualsiasi training.
 Per una ricetta storica completa: `--rms-window-ms 25 --ms-fast-window-ms 50`; la CLI seleziona la versione precedente.
 Gli strumenti che ricostruiscono run nati prima del 18/11 dai comandi o piani registrati usano `train_jepa.historical_args`
-(o `run.with_historical_targets`) e confrontano le configurazioni salvate dopo `run._config_with_defaults`.
-Un piano nuovo scrive le due finestre in modo esplicito: senza, gli strumenti lo leggono come storico (25/50).
+(o `run.with_historical_targets`) e confrontano le configurazioni salvate dopo `run.with_legacy_target_windows`, che aggiunge
+solo i due campi del 18/11 (`run._config_with_defaults` resta per la ripresa: completa anche altri campi e allenterebbe i confronti).
+Un piano nuovo scrive le due finestre in modo esplicito: senza, il trainer usa i default nuovi ma `calibration_select` lo legge
+come storico (25/50) e rifiuta il run dopo il training.
 Un braccio nuovo confrontato a un solo fattore con bracci storici usa la ricetta storica esplicita, oppure il piano dichiara i
 due fattori in piu' (RMS e spettro rapido).
 **Linea 3, confronto contrastivo C0/CN/CR:** Simone, «sul punto 3 passiamo a 100/100». La linea 3 adotta la ricetta nuova

@@ -132,7 +132,7 @@ def feature_width(model: WearUsFM, feature_set: str) -> int:
 
 def spectral_stats(x: np.ndarray, fs: float, limit: np.ndarray, qc_valid: np.ndarray, guard: int) -> tuple[np.ndarray, np.ndarray]:
     """(32,) e maschera (32,): statistiche storiche50/500ms dello Step1 su un ritaglio filtrato/scalato (C,T).
-    Questa baseline delle sonde resta congelata: il nuovo target di pretraining100ms non cambia le cache stats/mask."""
+    Questa baseline delle sonde resta congelata: il nuovo target di pretraining a 125 ms non cambia le cache stats/mask."""
     from wearusfm.model.anchor_targets import anchor_targets
     from wearusfm.model.spectral_step1 import global_spectral_targets
 

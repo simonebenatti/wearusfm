@@ -203,7 +203,7 @@ def inspect_evidence(plan, artifacts, ranks, expected_config, contract_sha, code
     config = data["config"]
     expected = dict(expected_config)
     expected["max_steps"] = STEPS
-    require(config == expected and config["batch_size"] == 32 and config["accum_steps"] == 1 and
+    require(R.with_legacy_target_windows(config) == expected and config["batch_size"] == 32 and config["accum_steps"] == 1 and
             config["prefetch"] is True and all(config[k] == 500 for k in
             ("eval_every", "pose_grad_every", "fixed_eval_every", "pose_panel_every", "ckpt_every")),
             "production config/cadence differs")
