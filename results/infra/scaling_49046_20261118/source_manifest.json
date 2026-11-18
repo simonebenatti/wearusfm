@@ -1,0 +1,125 @@
+{
+  "date": "2026-11-18",
+  "scope": "Local published evidence only; no remote checkpoint/cache rehash or live job inspection.",
+  "sources": [
+    {
+      "id": "scaling_final",
+      "commit": "2df4ca68119acc067977a8a588c014069b263088",
+      "path": "docs/reviews/gpt_scaling19618_final_results_20261118.md",
+      "sha256": "303cdcf1e71d10f97a8a88d5ddc5131223c6511fdadb5cfe3f13a9f039a74ad5",
+      "bytes": 3882
+    },
+    {
+      "id": "scaling_report19618",
+      "commit": "2df4ca68119acc067977a8a588c014069b263088",
+      "path": "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/compare/report.json",
+      "sha256": "acb43dfdfade0ad87d0378d73124c1e657e91ddc0297f98ab47a5d26dbe630c2",
+      "bytes": 821875
+    },
+    {
+      "id": "scaling_report5000",
+      "commit": "2df4ca68119acc067977a8a588c014069b263088",
+      "path": "results/infra/scaling_300m_20261104/final_stages_20261106/collected_outcome_20261106_1441/report.json",
+      "sha256": "4c10e7bb3007bdb46b5a1ce975b5531700ad9ac0aa0c413442de410c78b0c664",
+      "bytes": 821191
+    },
+    {
+      "id": "scaling_reading19618",
+      "commit": "2df4ca68119acc067977a8a588c014069b263088",
+      "path": "results/infra/scaling_300m_20261104/continuation19618_20261106/endpoint19618_reading.md",
+      "sha256": "58865c1bff332d52221fc18ac55ce7f7af11f1073dff1a87808d221876d34396",
+      "bytes": 4675
+    },
+    {
+      "id": "long30_readout",
+      "commit": "3e007c841c97da5793ed4aac6cfceb41c99a00ee",
+      "path": "docs/reviews/consolidation_long_results_20261107.md",
+      "sha256": "092041843079491d9296b4aed20fe9ecdf5d16d92712e31b3401f26256395569",
+      "bytes": 19325
+    },
+    {
+      "id": "long30_report",
+      "commit": "3e007c841c97da5793ed4aac6cfceb41c99a00ee",
+      "path": "results/infra/consolidation_long_20261105/gpt_review_20261107/scientific_readout.json",
+      "sha256": "4f10f678b385039837c172d195ef1d69d63181ba4f573c7dad73aab26398cd9f",
+      "bytes": 166773
+    },
+    {
+      "id": "temponet_reader_proposal",
+      "commit": "3e007c841c97da5793ed4aac6cfceb41c99a00ee",
+      "path": "docs/reviews/pose_temponet_response_20261118.md",
+      "sha256": "076d35f161703d8de5cf2b7456282337a34139d951a72887dfe6f7b58df90d2b",
+      "bytes": 46271
+    },
+    {
+      "id": "logsquare_readout",
+      "commit": "d9020c20d003854a247eeaff0506b153b229a1d6",
+      "path": "docs/logsquare_scientific_readout_20261107.md",
+      "sha256": "5463b520e30fcf9e8c4453807498418e010a50184dc42d667585053bf9a52a63",
+      "bytes": 12856
+    },
+    {
+      "id": "contrastive_readout",
+      "commit": "d9020c20d003854a247eeaff0506b153b229a1d6",
+      "path": "docs/reviews/contrastive_readout_results_20261118.md",
+      "sha256": "1393034a8eb0c935983c20acd546a068fe9a51fc81bee61b6dfc7ec20658a231",
+      "bytes": 3820
+    },
+    {
+      "id": "target_changes",
+      "commit": "7364f7c50ab2bad914932212229e24693f2b40f3",
+      "path": "docs/target_windows_fix_20261118.md",
+      "sha256": "287084a8b5648334b8827eefc2d8279891d73923ba6c67cf75ae2e7be8aca6f3",
+      "bytes": 9236
+    },
+    {
+      "id": "trainer",
+      "commit": "2df4ca68119acc067977a8a588c014069b263088",
+      "path": "src/wearusfm/training/run.py",
+      "sha256": "c7d8ee87ad4ff3ff7951f545b78b41da5ed6cee6f162429ff0fe503b2397acac",
+      "bytes": 116966
+    },
+    {
+      "id": "historical_wrapper",
+      "commit": "2df4ca68119acc067977a8a588c014069b263088",
+      "path": "scripts/scaling_continue.py",
+      "sha256": "c8ad4d241b4ed490ee444b3434f556ab341986f533e01ccaa6d68f50a6a60a33",
+      "bytes": 49988
+    },
+    {
+      "id": "temponet_raw_report",
+      "commit": "0c29fd9b2e0321625e22697d17ca8dee73e9d948",
+      "path": "results/temponet_emg2pose/eval_20261111/eval.json",
+      "sha256": "39c895b73b9af2eb113e8942d58eabf028092f821a519bde0ee4f8a97a1c0622",
+      "bytes": 52667
+    },
+    {
+      "id": "training19618_summary",
+      "commit": "2df4ca68119acc067977a8a588c014069b263088",
+      "path": "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/training/summary.json",
+      "sha256": "254c382b244fe42f1767fa3e92c6f9d48d9abc501498338a0eae256eb41360c3",
+      "bytes": 2363
+    },
+    {
+      "id": "training19618_receipt",
+      "commit": "2df4ca68119acc067977a8a588c014069b263088",
+      "path": "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/training/receipt.json",
+      "sha256": "beabf80a770089521dc2d676df15f3043ad412957f16f209db4a465ea57615a6",
+      "bytes": 19059
+    },
+    {
+      "id": "training19618_config",
+      "commit": "2df4ca68119acc067977a8a588c014069b263088",
+      "path": "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/training/config.json",
+      "sha256": "12259a2fce64227727e73a4a5d59c9c89976f34c3b3f1854395b74f4dfcf5f8e",
+      "bytes": 3596
+    },
+    {
+      "id": "training19618_accounting",
+      "commit": "2df4ca68119acc067977a8a588c014069b263088",
+      "path": "results/infra/scaling_300m_20261104/continuation19618_20261106/evidence/training/accounting.json",
+      "sha256": "1d290a7d64919ee35210ecea89bf8f24675e109851654ca209321b83d428f272",
+      "bytes": 668
+    }
+  ]
+}

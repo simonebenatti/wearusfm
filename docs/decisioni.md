@@ -7381,3 +7381,26 @@ Esito operativo: pronti per i sei aggregati. Il confronto seguirà dopo aggregat
 
 Sei aggregati COMPLETED 0:0 e accettati. Manifest f23137fe pubblicato, metadata b7f01477 distribuito con checkout 64776444 COMPLETED 0:0. Confronto **64785568 COMPLETED 0:0 in 199 s**, report raccolto e validato. Primari EPN +0,4968 pp IC95 [−0,0383; 1,0382] e E_dyn −0,0002389 IC95 [−0,0023281; 0,0017935], entrambi irrisolti. Riduzione posa relativa 0,0285%, nessun segnale pratico del 2%. P1/P2 non inferiorità sostenuta al margine 1 pp. Verifica locale indipendente dei punti dai conteggi interi, manifest e lettura congelata superata. Consuntivo cumulativo CPU-only 94,732778/351 core-ore. Readout docs/reviews/gpt_scaling19618_final_results_20261118.md, risultati ed evidenze completi nel pacchetto. Lanci terminati, nessun monitor rimasto attivo.
 
+
+
+## 18/11/2026 — Scaling300M: completare lo schedule a49.046 dopo il confronto19k
+
+**Decisione di Simone:** «allora fai quello che dice, ma poi fissiamo che si va a 49.046 o a 50000».
+GPT fissa **49.046**: fine dello schedule già configurato e del controllo30M esistente; 50.000 ne cambierebbe il decay.
+La proposta del launcher di rinviare viene sostituita dalla continuazione mirata già approvata.
+
+Domanda: beneficio aggiuntivo della taglia allo schedule completo, non conferma di un vantaggio già emerso a19k.
+Confronto teacher300M49k−teacher30M49k; primari EPN/E_dyn, criteri e proiezione secondaria invariati.
+Nessuna scelta del checkpoint migliore; niente nuovi target/loss/semi o training del controllo.
+Ricetta storica T100-G, target RMS25/spettro rapido50; nuove finestre RMS100/rapido125 separate.
+Predecay39237 conservato; valutazione intermedia non implicita. Eventuale interazione dose×taglia solo secondaria,
+con supporti e lettori verificati, senza sottrarre IC separati. Nessuna prosecuzione automatica oltre49.046.
+
+Operatore: chat1-30/300 launcher; GPT scientifico pubblica analisi e consegna sul proprio ramo.
+Preparazione di un nuovo wrapper, verifica unica del pacchetto, poi esecuzione con cancelli meccanici senza
+nuovo consenso a ogni invio. Nessun job da questa chat. Stima training96,1GPUh; proposta di prenotazione119GPUh
+più0,4scheduler, 952/955,2coreh associate. Estrazioni/lettori/checkout e preservazione nel preventivo operativo
+separato; nessun riutilizzo tacito del vecchio inviluppo351coreh.
+
+Analisi: `docs/reviews/scaling_19618_crossline_and_49046_20261118.md`.
+Consegna: `docs/scaling_49046_launcher_handoff_20261118.md`.

@@ -178,6 +178,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 18/11/2026 — GPT scientifico: confronto scaling letto, fissata la continuazione a 49.046
+
+Simone, ricevuti gli esiti della catena19k conclusa in 2df4ca68: «allora fai quello che dice, ma poi fissiamo che si va a 49.046 o a 50000». Recepita la decisione di proseguire: endpoint **49.046**, schedule originale, contro il controllo30M49k già concluso. Analisi incrociata delle tre linee e lettura prospettica in `docs/reviews/scaling_19618_crossline_and_49046_20261118.md`; consegna operativa in `docs/scaling_49046_launcher_handoff_20261118.md`. Fonti pubblicate con commit e hash nel manifest `results/infra/scaling_49046_20261118/source_manifest.json`.
+
+La dose5k→19k riduce E_dyn del6,77%/6,80% nei due modelli; la taglia non dà beneficio risolto sui primari. Il30M lungo migliora ancora del6,32% sulla ridge dinamica: ragione per completare la prova300M, non promessa di un guadagno della taglia. Ricetta storica invariata (tokenizer100/GELU; target RMS25/spettro rapido50), primari e soglie conservati; lettura secondaria dell'interazione dose×taglia condizionata a supporti/lettori comparabili. Segmenti proposti19618→39237→49046; stima training96,1GPUh, prenotazione119 più0,4 di margine, valutazione da preventivare separatamente.
+
+Operazioni esclusivamente a **1-30/300 launcher**, come deciso da Simone il17/11. Nuovo wrapper e pacchetto da preparare/revisionare una volta; poi cancelli meccanici senza richieste di consenso per ogni lancio. Nessun deploy, invio, accesso operativo al cluster o monitor da questa chat. Il pacchetto scientifico viene pubblicato sul ramo `codex/scaling-dose49046-20261118` e consegnato direttamente al launcher.
+
 ### 18/11/2026 — launcher: sei aggregati e confronto conclusi
 
 Sei aggregati COMPLETED 0:0 e accettati. Manifest f23137fe pubblicato, metadata b7f01477 distribuito con checkout 64776444 COMPLETED 0:0. Confronto **64785568 COMPLETED 0:0 in 199 s**, report raccolto e validato. Primari EPN +0,4968 pp IC95 [−0,0383; 1,0382] e E_dyn −0,0002389 IC95 [−0,0023281; 0,0017935], entrambi irrisolti. Riduzione posa relativa 0,0285%, nessun segnale pratico del 2%. P1/P2 non inferiorità sostenuta al margine 1 pp. Verifica locale indipendente dei punti dai conteggi interi, manifest e lettura congelata superata. Consuntivo cumulativo CPU-only 94,732778/351 core-ore. Readout docs/reviews/gpt_scaling19618_final_results_20261118.md, risultati ed evidenze completi nel pacchetto. Lanci terminati, nessun monitor rimasto attivo.
@@ -6262,6 +6270,12 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 18/11/2026 — GPT scientifico: limiti della decisione lunga e punti tecnici da chiudere
+
+Non si trasforma l'esito19k irrisolto in una dimostrazione di equivalenza o di inutilità dello scaling. E_dyn resta debole anche nel30M lungo; TEMPONet raw non è confrontabile direttamente con la ridgeFM; TCN sui latenti e contrastiva non hanno ancora un esito downstream. I nuovi target RMS100/spettro125 non appartengono ai checkpoint storici e non vanno incorporati nella ripresa. Un solo seme e popolazioni di sviluppo limitano la generalizzazione.
+
+Il vecchio wrapper è cablato a5000→19618 e al plateau: deve essere versionato e verificato sul decay. I checkpoint300M richiedono circa4,35GiB ciascuno; il vecchio gate8GiB del controllo30M non basta. Il controllo30M49k è documentato ma non riverificato oggi sui byte remoti; riuso delle cache/OOF subordinato alla parità della valutazione. I tetti119GPUh (+margine) riguardano soltanto il training, non estrazioni/lettori. Le351coreh della catena19k sono chiuse, non un budget tacito del nuovo stadio. Nessun nuovo lancio o correzione a un checkout congelato in questa consegna.
 
 ### 18/11/2026 — launcher: sei aggregati e confronto conclusi
 
