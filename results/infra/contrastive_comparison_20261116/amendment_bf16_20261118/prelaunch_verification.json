@@ -1,0 +1,68 @@
+{
+  "kind": "local prelaunch verification, Mac CPU, torch 2.14.0; no job, no cluster file",
+  "author": "Claude, 18/11/2026, on Simone's request; review by GPT required (CLAUDE.md)",
+  "source_sha256": "fd838f1d3bc2038722722e1f62fed4184319376afe7bfd1befc5989e675f99e4",
+  "compatibility_manifest_sha256": "ebabdc1c95c7cea8441c69488095fbb829eec4235c5f44054b52f140363b7647",
+  "review_document_sha256": "99b31caddabb92e86e31f7ff3075ec14c7e45e0cf869774825a912ad4182af15",
+  "historical_evidence_checks": [
+    {
+      "protocol": "contrastive-source-compatibility-20261118-v1",
+      "kind": "audit",
+      "manifest_sha256": "ebabdc1c95c7cea8441c69488095fbb829eec4235c5f44054b52f140363b7647",
+      "historical_source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+      "current_source_sha256": "fd838f1d3bc2038722722e1f62fed4184319376afe7bfd1befc5989e675f99e4",
+      "artifact_sha256": "5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b"
+    },
+    {
+      "protocol": "contrastive-source-compatibility-20261118-v1",
+      "kind": "calibration_run",
+      "manifest_sha256": "ebabdc1c95c7cea8441c69488095fbb829eec4235c5f44054b52f140363b7647",
+      "historical_source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+      "current_source_sha256": "fd838f1d3bc2038722722e1f62fed4184319376afe7bfd1befc5989e675f99e4",
+      "artifact_sha256": {
+        "config.json": "cff2eff02d9d07c2f0783c6370aa442c57cd023602583949748ca60dad241e87",
+        "summary.json": "7a3b9490faf9c51d3012a52fdcfdcc8590853ca1329e3506e6d23de8bce4329f",
+        "metrics.jsonl": "bc332847ac1231009fd5cf9ba983e7f6522faf66a2062cf2cdb9f826550306a7"
+      }
+    },
+    {
+      "protocol": "contrastive-source-compatibility-20261118-v1",
+      "kind": "calibration_receipt",
+      "manifest_sha256": "ebabdc1c95c7cea8441c69488095fbb829eec4235c5f44054b52f140363b7647",
+      "historical_source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+      "current_source_sha256": "fd838f1d3bc2038722722e1f62fed4184319376afe7bfd1befc5989e675f99e4",
+      "artifact_sha256": "4f302517da3b23952d62adfbcb71737aa01043784a4317d5fc312ded95132cf3"
+    }
+  ],
+  "authenticated_calibration": {
+    "weights": {
+      "nce": 0.11942686122572264,
+      "rnc": 0.33044627364850215
+    },
+    "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+    "selected_steps": [
+      257,
+      288
+    ]
+  },
+  "validate_cohort": {
+    "C0": "OK",
+    "CN": "OK",
+    "CR": "OK"
+  },
+  "configs_byte_identical_to_20261117": true,
+  "tests": {
+    "contrastive_and_campaign_subset": "386 passed (tests/cpu/test_contrastive_*.py, test_arms_collaudo.py, test_wsd_chain.py), before the final test strengthening",
+    "after_final_changes": "81 passed (cuda_check, source_compat, historical_calibration, mmap_compatibility, benchmark_readout, run)",
+    "full_suite_tests_cpu": "2773 passed, 1 warning in 1688.00s (0:28:07)",
+    "full_suite_failures": [],
+    "regression_test_against_old_rule": "fails with the previous bf16 diagnostic limit (verified by reintroducing it)",
+    "independent_mutation_check": "17 of 18 criterion mutants killed by the strengthened test (independent agent)"
+  },
+  "cuda_64730941_rechecked_with_new_rule": "8 of 320 comparisons change outcome (contrast_global_grad_nce, bf16, update 2, CN and CR, every rank); report would pass",
+  "not_verified": [
+    "cluster-side pins of checkpoint, audit, inputs and launcher (operator)",
+    "CUDA/NCCL execution of the amended code",
+    "GPU noise of the continuous-versus-resumed comparison in the final readout"
+  ]
+}

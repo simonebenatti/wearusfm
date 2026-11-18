@@ -1,0 +1,50 @@
+{
+  "status": "APPROVED_FOR_PREPARATION",
+  "stage": "benchmark",
+  "source_sha256": "fd838f1d3bc2038722722e1f62fed4184319376afe7bfd1befc5989e675f99e4",
+  "config_sha256": "a4bed2f0d3333fb08ed0f1ad5d5ebae6749d42bfdc5585f931b572d14f7828f6",
+  "world_size": 4,
+  "workers_per_rank": 6,
+  "inputs": {
+    "manifest": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+    "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+    "pose_stats": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+  },
+  "review_pin": {
+    "path": "docs/reviews/claude_contrastive_bf16_amendment_20261118.md",
+    "bytes": 5986,
+    "sha256": "99b31caddabb92e86e31f7ff3075ec14c7e45e0cf869774825a912ad4182af15"
+  },
+  "time_limit_s": 1800,
+  "audit_sha256": "5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b",
+  "audit_recovery": {
+    "path": "results/infra/contrastive_comparison_20261116/releases/audit_recovery_20261117.json",
+    "bytes": 1837,
+    "sha256": "4f87019a9fcd24379fd554ad6f7758dda124088f4a25401a051274df857ed8e8"
+  },
+  "training_authorized": false,
+  "phase": "split",
+  "arm": "CR",
+  "cohort_sha256": "3fdb5e0721540d21f40961fb6cd73decba7d465d89f7874a61b034025b2c70ac",
+  "calibration_sha256": "f57d8731a1434f592a6360547ad604cdedb517cc47e278c5c3839384df000b5e",
+  "cuda_gate": {
+    "required_before_submission": true,
+    "slurm_state": "COMPLETED",
+    "exit_code": "0:0",
+    "report": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261118_bf16/cuda.json",
+    "reader": "scripts/contrastive_benchmark_readout.py:_cuda_evidence",
+    "rank_exit_reader": "scripts/contrastive_rank_exit.py:validate_receipt",
+    "operator_must_archive_and_publish_positive_readout": true
+  },
+  "paired_resume": {
+    "config_sha256": "cd0f8ec0a1beb46e6bd60f6385a5c6f8629367c756c68d47a2eb1c1808f8cb9c",
+    "maximum_resume_time_limit_s": 1770,
+    "total_time_limit_s": 1800
+  },
+  "compatibility_manifest": {
+    "path": "results/infra/contrastive_comparison_20261116/compatibility_20261118/manifest.json",
+    "bytes": 35650,
+    "sha256": "ebabdc1c95c7cea8441c69488095fbb829eec4235c5f44054b52f140363b7647"
+  }
+}

@@ -6593,3 +6593,21 @@ checkout. Nessun sorgente, parametro, risorsa o soglia cambiato. Review tecnica 
 favorevole; nessuna nuova review attribuita a Claude. CUDA 64730941 sottomesso tramite ledger,
 4 GPU/32 CPU/240 GiB/30 minuti, 2 GPU-ore massime. I cinque benchmark non sono sottomessi:
 richiedono ancora il collaudo positivo letto e pubblicato. Nessuna automazione in background.
+
+### 18/11/2026 — Collaudo CUDA 64730941: limite bf16 delle norme diagnostiche emendato da Claude, post hoc
+
+Checkout 64730738 COMPLETED 0:0; CUDA 64730941 FAILED 1:0 in 2 min 7 s con codice 3b5d4be: rapporto completo, passed false.
+Superati probe di uscita, arresti coordinati e tutti i confronti FP32 (scarto massimo 7,34e-7 contro 1e-5 sui quattro
+rank). In bf16 è fuori limite solo contrast_global_grad_nce all'update 2, in CN e CR su ogni rank: 8 confronti su 320; sul
+rank 0 CN 1,388e-3 contro 1,061e-3 e CR 1,394e-3 contro 1,159e-4. Il limite confrontava due arrotondamenti bf16 della stessa
+grandezza. Simone affida la correzione a Claude, alla lettera: «mah , allora per non fare troppi rimpalli sistema tiu il
+problema, poi mi generi un prompt per cxhat gpt cosi lo teniamo aggiornato e poi lo faccio lanciare, coswi risparmio i tuoi
+token per le cose piu utili».
+
+Soglia nuova, scritta dopo il dato e quindi post hoc: in bf16 le tre norme contrast_global_grad_* hanno limite
+max(regola precedente, 0,01), con 0,01 uguale a bf16_loss_relative già fissato prima. Invariati tutti gli altri limiti,
+λ, configurazioni, dati e ricetta. Digest nuovo fd838f1d…, manifest di compatibilità rigenerato, coorte
+calibrated_cohort_20261118_bf16, release releases/bf16_20261118, uscite contrastive_preflight_20261118_bf16. Consumato
+1,075556 GPU-ore / 17,297778 core-ore; massimo con le fasi residue 13,075556 / 121,831111, entro 14 / 129,333333.
+Review della correzione a GPT, come da CLAUDE.md; deployment e invii a GPT, nessun job da Claude. Documento:
+docs/reviews/claude_contrastive_bf16_amendment_20261118.md.

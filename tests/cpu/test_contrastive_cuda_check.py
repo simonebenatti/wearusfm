@@ -64,3 +64,42 @@ def test_reference_rejects_live_process_group_before_any_collective(monkeypatch)
     monkeypatch.setattr(torch.distributed, "is_initialized", lambda: True)
     with pytest.raises(RuntimeError, match="must precede"):
         C.trajectory(None, None, None, R.DistContext(), "cpu", "fp32")
+
+
+def test_bf16_diagnostic_floor_accepts_observed_rounding_and_keeps_every_other_limit():
+    """Regression for CUDA 64730941 (18/11/2026, CR bf16, update 2, contrast_global_grad_nce).
+
+    The one-process bf16 reference was 1.06e-4 from fp32, the four-rank bf16 value 1.39e-3
+    from the reference: both are bf16 rounding (unit roundoff about 3.9e-3). The amended
+    rule (post hoc, Claude) never holds a bf16 diagnostic norm tighter than 1e-2."""
+    assert C.CRITERIA["bf16_diagnostic_relative_floor"] == .01 == C.CRITERIA["bf16_loss_relative"]
+    initial = torch.zeros(1, dtype=torch.float64)
+    fp32, reference, actual = _row(), _row(), _row()
+    reference["metrics"]["contrast_global_grad_nce"] = 1. + 1.06e-4
+    actual["metrics"]["contrast_global_grad_nce"] = (1. + 1.06e-4) * (1. + 1.39e-3)
+    result = C.compare_trajectory([actual], [reference], [fp32], initial, "bf16")
+    row = result["updates"][0]
+    assert result["passed"] and row["limits"]["contrast_global_grad_nce"] == .01
+    old_limit = 1.06e-4 / 1. + C.CRITERIA["bf16_noise_floor"]
+    assert row["errors"]["contrast_global_grad_nce"] > old_limit  # the frozen rule rejected exactly this case
+    assert all(row["limits"][k] == .01 for k in ("contrast_global_grad_base", "contrast_global_grad_nce", "contrast_global_grad_rnc"))
+    high, above = _row(), _row()
+    high["metrics"]["contrast_global_grad_rnc"] = 1.02
+    above["metrics"]["contrast_global_grad_rnc"] = 1.02 * 1.015
+    kept = C.compare_trajectory([above], [high], [fp32], initial, "bf16")  # never tighter than the previous rule
+    assert kept["passed"] and kept["updates"][0]["limits"]["contrast_global_grad_rnc"] == pytest.approx(.02 + 1e-5, rel=1e-12)
+    assert C.compare_trajectory([fp32], [fp32], [fp32], initial, "fp32")["updates"][0]["limits"] == {
+        **dict.fromkeys(("total", "pose", "contrast_nce", "contrast_rnc", "contrast_global_grad_base",
+                         "contrast_global_grad_nce", "contrast_global_grad_rnc", "gradient"), 1e-5), "student": .01, "teacher": .01}
+    assert all(row["limits"][k] == .01 for k in ("total", "pose", "contrast_nce", "contrast_rnc"))
+    # A diagnostic error above the floor still fails, in each of the three norms.
+    for key in ("contrast_global_grad_base", "contrast_global_grad_nce", "contrast_global_grad_rnc"):
+        bad = _row()
+        bad["metrics"][key] = reference["metrics"][key] * 1.011
+        assert not C.compare_trajectory([bad], [reference], [fp32], initial, "bf16")["passed"]
+    # The floor never loosens FP32 nor the bf16 gradient and parameter limits.
+    assert not C.compare_trajectory([actual], [fp32], [fp32], initial, "fp32")["passed"]
+    for key in ("gradient", "student", "teacher"):
+        shifted = _row()
+        shifted[key] = torch.tensor([1.002], dtype=torch.float64)
+        assert not C.compare_trajectory([shifted], [_row()], [_row()], initial, "bf16")["passed"]
