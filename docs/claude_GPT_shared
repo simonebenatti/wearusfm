@@ -178,6 +178,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 18/11/2026 — launcher: preparazione della prova 300M a 49.046
+
+Recepita la decisione scientifica 218afe13, endpoint 49.046 e segmenti 19.618→39.237→49.046. Worktree isolato wearusfm-scaling-49046-launcher, ramo codex/scaling-49046-launcher-20261118. Prima bozza di orchestrazione e otto test CPU iniziali superati, compresa uguaglianza della ripresa in directory nuova attraverso il decay. Copiate le evidenze e i manifest della linea2 per verificare il riuso. Pacchetto IN PREPARAZIONE, non pronto per review/rilascio; nessun deploy o invio. Trainer storico conservato. Stato dettagliato in results/infra/scaling_49046_20261118/launcher/preparation_status.json.
+
+
 ### 18/11/2026 — GPT scientifico: confronto scaling letto, fissata la continuazione a 49.046
 
 Simone, ricevuti gli esiti della catena19k conclusa in 2df4ca68: «allora fai quello che dice, ma poi fissiamo che si va a 49.046 o a 50000». Recepita la decisione di proseguire: endpoint **49.046**, schedule originale, contro il controllo30M49k già concluso. Analisi incrociata delle tre linee e lettura prospettica in `docs/reviews/scaling_19618_crossline_and_49046_20261118.md`; consegna operativa in `docs/scaling_49046_launcher_handoff_20261118.md`. Fonti pubblicate con commit e hash nel manifest `results/infra/scaling_49046_20261118/source_manifest.json`.
@@ -6270,6 +6275,11 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 18/11/2026 — launcher: preparazione della prova 300M a 49.046
+
+Recepita la decisione scientifica 218afe13, endpoint 49.046 e segmenti 19.618→39.237→49.046. Worktree isolato wearusfm-scaling-49046-launcher, ramo codex/scaling-49046-launcher-20261118. Prima bozza di orchestrazione e otto test CPU iniziali superati, compresa uguaglianza della ripresa in directory nuova attraverso il decay. Copiate le evidenze e i manifest della linea2 per verificare il riuso. Pacchetto IN PREPARAZIONE, non pronto per review/rilascio; nessun deploy o invio. Trainer storico conservato. Stato dettagliato in results/infra/scaling_49046_20261118/launcher/preparation_status.json.
+
 
 ### 18/11/2026 — GPT scientifico: limiti della decisione lunga e punti tecnici da chiudere
 

@@ -1,0 +1,112 @@
+{
+  "protocol": "consolidation-t100g-20261104-v1",
+  "complete": true,
+  "step": 49046,
+  "code_sha": "17dd455f8d40d5430f87c2154c571a2f9e683baa",
+  "plan_sha256": "1ce5372071ea99b61da0ec17d5f6a3d367cdeafc1ceb0249012f199e9afca5b1",
+  "checkpoint": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/consolidation_20261104/T100-G/checkpoint_postdecay.pt",
+  "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+  "resume_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+  "summary": {
+    "stopped": "max_steps",
+    "steps": 49046,
+    "elapsed_s": 7536.233420848846,
+    "parameters": 28362013,
+    "device": "cuda:0",
+    "gpu_max_memory_gib": 16.1735897064209,
+    "code": {
+      "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/consolidation-20261104",
+      "sha": "17dd455f8d40d5430f87c2154c571a2f9e683baa"
+    },
+    "environment": {
+      "python": "3.11.6",
+      "torch": "2.2.0a0+git6c8c5ad",
+      "cuda": "12.1",
+      "pip_freeze_file": null,
+      "pip_freeze_sha256": null,
+      "modules_loaded": "profile/base:profile/deeplrn:cuda/12.1:nccl/2.19.1-1--gcc--12.2.0-cuda-12.1:cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1:gcc/12.2.0-binut2.41:openmpi/4.1.6--gcc--12.2.0:bzip2/1.0.8-gp5wcz5:libmd/1.0.4-wja3f5q:libbsd/0.11.7-cgxjopl:expat/2.5.0-bptl3xw:ncurses/6.4-asx3jea:readline/8.2-nyw6mp6:gdbm/1.23-fs6otck:libiconv/1.17-d7yvx2s:xz/5.4.1-hubmwr5:zlib-ng/2.1.4-6htiapk:libxml2/2.10.3-5eeeokp:pigz/2.7-bopr5vp:zstd/1.5.5-gawytfl:tar/1.34-amqus5s:gettext/0.22.3-2g7elif:libffi/3.4.4-6r7brdq:libxcrypt/4.4.35-ss2rzin:sqlite/3.43.2:util-linux-uuid/2.38.1-jkdi7kv:python/3.11.6--gcc--8.5.0:cmake/3.27.7:openjdk/11.0.20.1_1:cineca-ai/4.3.0"
+    },
+    "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+    "world_size": 4,
+    "batch_per_process": 8,
+    "prefetch": true,
+    "prefetch_audit_steps": null,
+    "accum_steps": 1,
+    "micro_batch": 8,
+    "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch",
+    "pose_panel_timing": {
+      "prepare_s": 20.96083550900221,
+      "evaluations_s": [
+        3.4591588098555803,
+        3.441452156752348,
+        3.4502212032675743,
+        3.454464925453067,
+        3.463141046464443,
+        3.4579174630343914,
+        3.457597089931369,
+        3.462923787534237,
+        3.4505392499268055,
+        3.447868935763836,
+        3.5378090292215347,
+        3.445381846278906,
+        3.4659811090677977,
+        3.4608870428055525,
+        3.447206027805805,
+        3.440747084096074,
+        3.4490874521434307,
+        3.4491261057555676,
+        3.4425606317818165,
+        3.4523459132760763
+      ],
+      "total_s": 90.09725241921842
+    }
+  },
+  "persistent_checkpoint": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt",
+    "sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+    "bytes": 454381728,
+    "source": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/consolidation_20261104/T100-G/checkpoint_postdecay.pt",
+    "source_metadata_before_archive": {
+      "mtime_ns": 1793882517000000000,
+      "atime_ns": 1793882523000000000,
+      "ctime_ns": 1793882517000000000
+    },
+    "verified_at_utc": "2026-11-05T12:42:05.910075+00:00",
+    "persistent_storage": "WORK project quota",
+    "scratch_purge_estimate_utc": "2026-12-15T12:41:57+00:00",
+    "purge_estimate_basis": "source mtime + 40 days; conservative estimate, not scheduler guarantee"
+  },
+  "persistent_source": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_step0019618.pt",
+    "sha256": "a31c895061c1f273eaac2d796fc00cf76cffa4318b521a20be4d6ba65b63a056",
+    "bytes": 454381728,
+    "source": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/tokenizer_20261103/T100-G/checkpoint_step0019618.pt",
+    "source_metadata_before_archive": {
+      "mtime_ns": 1793744843000000000,
+      "atime_ns": 1793874972000000000,
+      "ctime_ns": 1793744843000000000
+    },
+    "verified_at_utc": "2026-11-05T10:36:17.400478+00:00",
+    "persistent_storage": "WORK project quota",
+    "scratch_purge_estimate_utc": "2026-12-13T22:27:23+00:00",
+    "purge_estimate_basis": "source mtime + 40 days; conservative estimate, not scheduler guarantee"
+  },
+  "quota_at_start": {
+    "work_root": "/leonardo_work/IscrB_WearUsFM",
+    "checked_at_utc": "2026-11-05T10:36:09.820456+00:00",
+    "project_output": "20147512 P /leonardo_work/IscrB_WearUsFM\n",
+    "quota_output": "Disk quotas for prj 20147512 (pid 20147512):\n     Filesystem  kbytes   quota   limit   grace   files   quota   limit   grace\n/leonardo_work/IscrB_WearUsFM\n                1036460816  1073741824       0       - 1483657       0       0       -\n",
+    "project_id": 20147512,
+    "available_bytes": 38175752192,
+    "available_files": null
+  },
+  "quota_before_archive": {
+    "work_root": "/leonardo_work/IscrB_WearUsFM",
+    "checked_at_utc": "2026-11-05T12:42:03.706172+00:00",
+    "project_output": "20147512 P /leonardo_work/IscrB_WearUsFM\n",
+    "quota_output": "Disk quotas for prj 20147512 (pid 20147512):\n     Filesystem  kbytes   quota   limit   grace   files   quota   limit   grace\n/leonardo_work/IscrB_WearUsFM\n                1036811344  1073741824       0       - 1489917       0       0       -\n",
+    "project_id": 20147512,
+    "available_bytes": 37816811520,
+    "available_files": null
+  }
+}

@@ -1,0 +1,5213 @@
+{
+  "protocol": "consolidation-long-evaluation-20261105-v1",
+  "status": "claude_review_converged",
+  "source_sha256": "77e09626271b1aeded8d7f3df77ef9557115e903a9aca8e280e3f3259527ac88",
+  "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+  "submitter": "scripts/submit_job.py",
+  "ledger": "~/wearusfm_local/jobs",
+  "owner": "claude",
+  "jobs": [
+    {
+      "id": "LONG-G19618-p1-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p1",
+        "--step",
+        "19618",
+        "--task",
+        "p1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629743
+    },
+    {
+      "id": "LONG-G19618-p2-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/p2",
+        "--step",
+        "19618",
+        "--task",
+        "p2"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629744
+    },
+    {
+      "id": "LONG-G19618-pose-train-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-train",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/train",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-train",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/train",
+        "--step",
+        "19618"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629745
+    },
+    {
+      "id": "LONG-G19618-pose-val-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-val",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/val",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-val",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/19618/pose/val",
+        "--step",
+        "19618"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629746
+    },
+    {
+      "id": "LONG-G39237-p1-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p1",
+        "--step",
+        "39237",
+        "--task",
+        "p1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629747
+    },
+    {
+      "id": "LONG-G39237-p2-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p2",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/p2",
+        "--step",
+        "39237",
+        "--task",
+        "p2"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629748
+    },
+    {
+      "id": "LONG-G39237-pose-train-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-train",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/pose/train",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-train",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/pose/train",
+        "--step",
+        "39237"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629749
+    },
+    {
+      "id": "LONG-G39237-pose-val-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-val",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/pose/val",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-val",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/39237/pose/val",
+        "--step",
+        "39237"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629750
+    },
+    {
+      "id": "LONG-G49046-p1-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p1",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p1",
+        "--step",
+        "49046",
+        "--task",
+        "p1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629753
+    },
+    {
+      "id": "LONG-G49046-p2-20261105",
+      "phase": "extract",
+      "stage": "extract-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p2",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/p2",
+        "--step",
+        "49046",
+        "--task",
+        "p2"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629757
+    },
+    {
+      "id": "LONG-G49046-pose-train-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-train",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-train",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train",
+        "--step",
+        "49046"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629758
+    },
+    {
+      "id": "LONG-G49046-pose-val-20261105",
+      "phase": "extract",
+      "stage": "extract-pose-val",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/val",
+      "allocation": {
+        "gpus": 1,
+        "cpus": 8,
+        "memory_gib": 100,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "extract-pose-val",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/val",
+        "--step",
+        "49046"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63629759
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db2-pre-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/pre",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/pre",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63650913
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db2-post-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/post",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/post",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63650917
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db2-pool-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/pool",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db2/pool",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63650922
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db3-pre-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/pre",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/pre",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63650925
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db3-post-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/post",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/post",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "post"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63650928
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db3-pool-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/pool",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db3/pool",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pool"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63650932
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db6-pre-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/pre",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/pre",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pre"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63650934
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db6-post-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/post",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/post",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "post"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63650937
+    },
+    {
+      "id": "LONG-BENCH-ninapro_db6-pool-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/pool",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/ninapro_db6/pool",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pool"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63650938
+    },
+    {
+      "id": "LONG-BENCH-epn612-pre-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/pre",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/pre",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pre"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63650942
+    },
+    {
+      "id": "LONG-BENCH-epn612-post-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/post",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/post",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "post"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63653654
+    },
+    {
+      "id": "LONG-BENCH-epn612-pool-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/pool",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/epn612/pool",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pool"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63653655
+    },
+    {
+      "id": "LONG-BENCH-uci_emg-pre-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/pre",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/pre",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pre"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63657462
+    },
+    {
+      "id": "LONG-BENCH-uci_emg-post-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/post",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/post",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "post"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63657466
+    },
+    {
+      "id": "LONG-BENCH-uci_emg-pool-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/pool",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "benchmark-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/classification/uci_emg/pool",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pool"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63657468
+    },
+    {
+      "id": "LONG-BENCH-pose-20261105",
+      "phase": "benchmark",
+      "stage": "benchmark-pose",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 900
+      },
+      "args": [
+        "--stage",
+        "benchmark-pose",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/benchmarks/pose"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63657489
+    },
+    {
+      "id": "LONG-FIT-G19618-pose-20261105",
+      "phase": "fit",
+      "stage": "fit-pose",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/19618",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 3600
+      },
+      "args": [
+        "--stage",
+        "fit-pose",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/19618",
+        "--step",
+        "19618"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63684760
+    },
+    {
+      "id": "LONG-FIT-G39237-pose-20261105",
+      "phase": "fit",
+      "stage": "fit-pose",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/39237",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 3600
+      },
+      "args": [
+        "--stage",
+        "fit-pose",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/39237",
+        "--step",
+        "39237"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63684842
+    },
+    {
+      "id": "LONG-FIT-G49046-pose-20261105",
+      "phase": "fit",
+      "stage": "fit-pose",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 3600
+      },
+      "args": [
+        "--stage",
+        "fit-pose",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046",
+        "--step",
+        "49046"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63684845
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db2-F0-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db2/F0",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 11700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db2/F0",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "0"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63684847,
+      "amendment": "A1",
+      "shard": "19618/pre/ninapro_db2/folds0"
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db2-F1-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db2/F1",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 12600
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db2/F1",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63687063,
+      "amendment": "A1",
+      "shard": "19618/pre/ninapro_db2/folds1"
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db2-F2-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db2/F2",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 11700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db2/F2",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "2"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63687064,
+      "amendment": "A1",
+      "shard": "19618/pre/ninapro_db2/folds2"
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db2-F3-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db2/F3",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 11700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db2/F3",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63689033,
+      "amendment": "A1",
+      "shard": "19618/pre/ninapro_db2/folds3"
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db2-F0-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db2/F0",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 11700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db2/F0",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "0"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63689035,
+      "amendment": "A1",
+      "shard": "39237/pre/ninapro_db2/folds0"
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db2-F1-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db2/F1",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 12600
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db2/F1",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63693568,
+      "amendment": "A1",
+      "shard": "39237/pre/ninapro_db2/folds1"
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db2-F2-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db2/F2",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 11700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db2/F2",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "2"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63693570,
+      "amendment": "A1",
+      "shard": "39237/pre/ninapro_db2/folds2"
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db2-F3-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db2/F3",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 11700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db2/F3",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63696565,
+      "amendment": "A1",
+      "shard": "39237/pre/ninapro_db2/folds3"
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db2-F0-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db2/F0",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 11700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db2/F0",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "0"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63696566,
+      "amendment": "A1",
+      "shard": "49046/pre/ninapro_db2/folds0"
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db2-F1-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db2/F1",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 12600
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db2/F1",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63699138,
+      "amendment": "A1",
+      "shard": "49046/pre/ninapro_db2/folds1"
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db2-F2-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db2/F2",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 11700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db2/F2",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "2"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63699141,
+      "amendment": "A1",
+      "shard": "49046/pre/ninapro_db2/folds2"
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db2-F3-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db2/F3",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 11700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db2/F3",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63703054,
+      "amendment": "A1",
+      "shard": "49046/pre/ninapro_db2/folds3"
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db2-F01-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/ninapro_db2/F01",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63703055,
+      "amendment": "A1",
+      "shard": "19618/post/ninapro_db2/folds0-1"
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db2-F23-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/ninapro_db2/F23",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63705998,
+      "amendment": "A1",
+      "shard": "19618/post/ninapro_db2/folds2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db2-F01-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/ninapro_db2/F01",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63705999,
+      "amendment": "A1",
+      "shard": "39237/post/ninapro_db2/folds0-1"
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db2-F23-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/ninapro_db2/F23",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63706001,
+      "amendment": "A1",
+      "shard": "39237/post/ninapro_db2/folds2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db2-F01-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/ninapro_db2/F01",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63710942,
+      "amendment": "A1",
+      "shard": "49046/post/ninapro_db2/folds0-1"
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db2-F23-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/ninapro_db2/F23",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63710943,
+      "amendment": "A1",
+      "shard": "49046/post/ninapro_db2/folds2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db2-F0-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db2/F0",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db2/F0",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "0"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63710947,
+      "amendment": "A1",
+      "shard": "39237/pool/ninapro_db2/folds0"
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db2-F1-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db2/F1",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9900
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db2/F1",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63714153,
+      "amendment": "A1",
+      "shard": "39237/pool/ninapro_db2/folds1"
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db2-F2-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db2/F2",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db2/F2",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "2"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63714154,
+      "amendment": "A1",
+      "shard": "39237/pool/ninapro_db2/folds2"
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db2-F3-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db2/F3",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db2/F3",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63714155,
+      "amendment": "A1",
+      "shard": "39237/pool/ninapro_db2/folds3"
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db2-F0-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db2/F0",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db2/F0",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "0"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63717078,
+      "amendment": "A1",
+      "shard": "49046/pool/ninapro_db2/folds0"
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db2-F1-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db2/F1",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9900
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db2/F1",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63717079,
+      "amendment": "A1",
+      "shard": "49046/pool/ninapro_db2/folds1"
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db2-F2-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db2/F2",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db2/F2",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "2"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63717080,
+      "amendment": "A1",
+      "shard": "49046/pool/ninapro_db2/folds2"
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db2-F3-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db2/F3",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db2/F3",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63721212,
+      "amendment": "A1",
+      "shard": "49046/pool/ninapro_db2/folds3"
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db3-F0-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db3/F0",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 8100
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db3/F0",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "0"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63721213,
+      "amendment": "A1",
+      "shard": "19618/pre/ninapro_db3/folds0"
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db3-F1-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db3/F1",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 8100
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db3/F1",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63721214,
+      "amendment": "A1",
+      "shard": "19618/pre/ninapro_db3/folds1"
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db3-F2-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db3/F2",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db3/F2",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "2"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63724977,
+      "amendment": "A1",
+      "shard": "19618/pre/ninapro_db3/folds2"
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db3-F3-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db3/F3",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 7200
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db3/F3",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63724978,
+      "amendment": "A1",
+      "shard": "19618/pre/ninapro_db3/folds3"
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db3-F0-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db3/F0",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 8100
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db3/F0",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "0"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63724979,
+      "amendment": "A1",
+      "shard": "39237/pre/ninapro_db3/folds0"
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db3-F1-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db3/F1",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 8100
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db3/F1",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63728878,
+      "amendment": "A1",
+      "shard": "39237/pre/ninapro_db3/folds1"
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db3-F2-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db3/F2",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db3/F2",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "2"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63728879,
+      "amendment": "A1",
+      "shard": "39237/pre/ninapro_db3/folds2"
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db3-F3-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db3/F3",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 7200
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db3/F3",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63728880,
+      "amendment": "A1",
+      "shard": "39237/pre/ninapro_db3/folds3"
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db3-F0-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db3/F0",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 8100
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db3/F0",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "0"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63731943,
+      "amendment": "A1",
+      "shard": "49046/pre/ninapro_db3/folds0"
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db3-F1-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db3/F1",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 8100
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db3/F1",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63731944,
+      "amendment": "A1",
+      "shard": "49046/pre/ninapro_db3/folds1"
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db3-F2-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db3/F2",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9000
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db3/F2",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "2"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63731945,
+      "amendment": "A1",
+      "shard": "49046/pre/ninapro_db3/folds2"
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db3-F3-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db3/F3",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 7200
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db3/F3",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63734539,
+      "amendment": "A1",
+      "shard": "49046/pre/ninapro_db3/folds3"
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db3-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 13500
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/ninapro_db3/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63734540,
+      "amendment": "A1",
+      "shard": "19618/post/ninapro_db3/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db3-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 13500
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/ninapro_db3/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63736588,
+      "amendment": "A1",
+      "shard": "39237/post/ninapro_db3/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db3-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 13500
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/ninapro_db3/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63736589,
+      "amendment": "A1",
+      "shard": "49046/post/ninapro_db3/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db3-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 12600
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db3/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63739214,
+      "amendment": "A1",
+      "shard": "39237/pool/ninapro_db3/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db3-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 12600
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db3/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63739227,
+      "amendment": "A1",
+      "shard": "49046/pool/ninapro_db3/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db6-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 5400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/ninapro_db6/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63741780,
+      "amendment": "A1",
+      "shard": "19618/pre/ninapro_db6/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db6-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 5400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/ninapro_db6/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63741781,
+      "amendment": "A1",
+      "shard": "39237/pre/ninapro_db6/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db6-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 5400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/ninapro_db6/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63741782,
+      "amendment": "A1",
+      "shard": "49046/pre/ninapro_db6/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db6-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/ninapro_db6/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63741783,
+      "amendment": "A1",
+      "shard": "19618/post/ninapro_db6/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db6-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/ninapro_db6/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63741784,
+      "amendment": "A1",
+      "shard": "39237/post/ninapro_db6/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db6-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 2700
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/ninapro_db6/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63741785,
+      "amendment": "A1",
+      "shard": "49046/post/ninapro_db6/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db6-F01-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db6/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9900
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db6/F01",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63743983,
+      "amendment": "A1",
+      "shard": "39237/pool/ninapro_db6/folds0-1"
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db6-F23-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db6/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9900
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/ninapro_db6/F23",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pool",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63743984,
+      "amendment": "A1",
+      "shard": "39237/pool/ninapro_db6/folds2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db6-F01-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db6/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9900
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db6/F01",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63745042,
+      "amendment": "A1",
+      "shard": "49046/pool/ninapro_db6/folds0-1"
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db6-F23-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db6/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 9900
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/ninapro_db6/F23",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pool",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63745043,
+      "amendment": "A1",
+      "shard": "49046/pool/ninapro_db6/folds2-3"
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-epn612-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 7200
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/epn612/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63745044,
+      "amendment": "A1",
+      "shard": "19618/pre/epn612/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-epn612-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 7200
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/epn612/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63747196,
+      "amendment": "A1",
+      "shard": "39237/pre/epn612/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-epn612-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 7200
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/epn612/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63747197,
+      "amendment": "A1",
+      "shard": "49046/pre/epn612/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G19618-post-epn612-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 4500
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/epn612/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63747198,
+      "amendment": "A1",
+      "shard": "19618/post/epn612/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-post-epn612-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 4500
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/epn612/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "epn612",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63747199,
+      "amendment": "A1",
+      "shard": "39237/post/epn612/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-post-epn612-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 4500
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/epn612/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "epn612",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63747201,
+      "amendment": "A1",
+      "shard": "49046/post/epn612/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-epn612-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 13500
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/epn612/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63751327,
+      "amendment": "A1",
+      "shard": "39237/pool/epn612/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-epn612-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 13500
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/epn612/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63751328,
+      "amendment": "A1",
+      "shard": "49046/pool/epn612/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-uci_emg-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/pre/uci_emg/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63751330,
+      "amendment": "A1",
+      "shard": "19618/pre/uci_emg/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-uci_emg-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pre/uci_emg/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63762237,
+      "amendment": "A1",
+      "shard": "39237/pre/uci_emg/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-uci_emg-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pre/uci_emg/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63762239,
+      "amendment": "A1",
+      "shard": "49046/pre/uci_emg/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G19618-post-uci_emg-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/19618/post/uci_emg/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63762242,
+      "amendment": "A1",
+      "shard": "19618/post/uci_emg/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-post-uci_emg-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/post/uci_emg/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63762272,
+      "amendment": "A1",
+      "shard": "39237/post/uci_emg/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-post-uci_emg-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/post/uci_emg/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63762284,
+      "amendment": "A1",
+      "shard": "49046/post/uci_emg/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-uci_emg-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/39237/pool/uci_emg/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63762294,
+      "amendment": "A1",
+      "shard": "39237/pool/uci_emg/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-uci_emg-F0123-20261105-A1",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 1800
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits_a1/classification/49046/pool/uci_emg/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Amendment A1: decision of Simone recorded in the plan; immutable fit checkout verified; published pins and frozen walltime table; pose fits released first; serial-lane rule respected; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63762307,
+      "amendment": "A1",
+      "shard": "49046/pool/uci_emg/folds0-1-2-3"
+    },
+    {
+      "id": "LONG-COMPARE-classification-20261105",
+      "phase": "aggregate",
+      "stage": "compare-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/comparison/classification",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 3600
+      },
+      "args": [
+        "--stage",
+        "compare-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/comparison/classification"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63766028
+    },
+    {
+      "id": "LONG-COMPARE-pose-20261105",
+      "phase": "aggregate",
+      "stage": "compare-pose",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/comparison/pose",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 3600
+      },
+      "args": [
+        "--stage",
+        "compare-pose",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/comparison/pose"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63766065
+    },
+    {
+      "id": "LONG-SUMMARY-20261105",
+      "phase": "aggregate",
+      "stage": "summary",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/summary",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 2,
+        "memory_gib": 2,
+        "seconds": 600
+      },
+      "args": [
+        "--stage",
+        "summary",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/summary"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": 63767351
+    }
+  ],
+  "caps": {
+    "gpu_hours": 9.0,
+    "allocated_core_hours": 1711.6666666666665,
+    "checkout_count": 4,
+    "checkout_each": {
+      "gpus": 0,
+      "cpus_requested": 1,
+      "cpus_accounting_cap": 2,
+      "memory_gib": 2,
+      "seconds": 600
+    },
+    "classification_fit_expected_core_hours_from_historical": 114.24,
+    "gpu_extraction_expected_hours_from_historical": 3.5933333333333333,
+    "amendment_A1": {
+      "caps_unchanged": true,
+      "classification_fit_jobs": 69,
+      "classification_fit_projected_core_hours": 1115.6588737004697,
+      "classification_fit_allocated_core_hours": 1276.0,
+      "other_future_allocated_core_hours": 41.0,
+      "future_allocated_core_hours": 1317.0,
+      "new_gpu_hours": 0.0,
+      "spent_core_hours": 42.21888888888888,
+      "spent_gpu_hours": 3.373611111111111,
+      "spent_plus_future_core_hours": 1359.2188888888888,
+      "concluded_phases_allocated_core_hours": 134.66666666666666,
+      "conservative_total_core_hours": 1451.6666666666667,
+      "margin_to_cap_core_hours": 259.9999999999998,
+      "compute_jobs": 103,
+      "allocations_with_checkouts": 107,
+      "allocations_left": 77
+    }
+  },
+  "cpu_submission": "at most8 outstanding CPU jobs for the entire user in waves; inspect accepted/completed IDs, no dependency bypass or duplicate; serial user limit10 respected",
+  "phase_checkouts": [
+    {
+      "id": "LONG-checkout-extract-20261105",
+      "name": "consolidation-long-extract-20261105",
+      "code_sha": "7d276c98fc54d66dab1226226eb6c5e447422c69"
+    },
+    {
+      "id": "LONG-checkout-benchmark-20261105",
+      "name": "consolidation-long-benchmark-20261105",
+      "code_sha": "166fb8653b53439507183d76e3e36a79dd28d166"
+    },
+    {
+      "id": "LONG-checkout-fit-20261105",
+      "name": "consolidation-long-fit-20261105",
+      "code_sha": "a70e29e4abb09e6e23fad34ca6b7b9e28874952a"
+    },
+    {
+      "id": "LONG-checkout-aggregate-20261105",
+      "name": "consolidation-long-aggregate-20261105",
+      "code_sha": "d75106304d1592fbea6d81fc4c1220e669cffecf"
+    }
+  ],
+  "phase_source_policy": {
+    "choice": "R-2(i) with amendment A1: exact source identity for every new output; explicit exception limited to the 28 original receipts of the input-compatibility manifest",
+    "frozen_paths": [
+      "src/**/*.py",
+      "scripts/*.py",
+      "scripts/slurm/consolidation_long.sbatch",
+      "scripts/slurm/lib_code_dir.sh"
+    ],
+    "freeze_period": "amended source frozen from the fit checkout through chain completion; GPT development isolated and not merged during the chain",
+    "amendment_A1": {
+      "exception": "the 12 extraction and 16 benchmark receipts written by the original source are read by the amended source through the pinned manifest; fits, comparisons and summary share the amended source and record the manifest pin",
+      "not_allowed": "receipt rewrite; generic accepted-source list; any input not listed; extraction or benchmark by the amended source; a covered source difference outside the closed list",
+      "input_compatibility": {
+        "path": "results/infra/consolidation_long_20261105/amendment_a1/input_compatibility.json",
+        "sha256": "983df48465531014275b6f5f677e6907a1219f26fbeef529b6489ea85c473c95",
+        "bytes": 65919
+      },
+      "original_source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+      "amended_source_sha256": "77e09626271b1aeded8d7f3df77ef9557115e903a9aca8e280e3f3259527ac88",
+      "changed_paths": [
+        "scripts/consolidation_long_common.py",
+        "scripts/consolidation_long_classification_runtime.py",
+        "scripts/consolidation_long_pose_runtime.py",
+        "scripts/slurm/consolidation_long.sbatch"
+      ],
+      "added_paths": [
+        "scripts/consolidation_long_amendment.py"
+      ],
+      "amended_definitions": {
+        "scripts/consolidation_long_common.py": [
+          "validate_plan",
+          "load_context",
+          "begin_output",
+          "verified_extraction"
+        ],
+        "scripts/consolidation_long_classification_runtime.py": [
+          "_benchmarks",
+          "execute"
+        ],
+        "scripts/consolidation_long_pose_runtime.py": [
+          "_manifest",
+          "_read",
+          "_benchmark_gate",
+          "execute"
+        ]
+      },
+      "added_definitions": {
+        "scripts/consolidation_long_common.py": [
+          "import consolidation_long_amendment as A",
+          "verified_input"
+        ],
+        "scripts/consolidation_long_classification_runtime.py": [
+          "amended_gate"
+        ],
+        "scripts/consolidation_long_pose_runtime.py": []
+      },
+      "added_after": {
+        "scripts/consolidation_long_common.py": {
+          "import consolidation_long_amendment as A": "from wearusfm.training.pairing import state_sha256",
+          "verified_input": "finish_output"
+        },
+        "scripts/consolidation_long_classification_runtime.py": {
+          "amended_gate": "resource_gate"
+        },
+        "scripts/consolidation_long_pose_runtime.py": {}
+      },
+      "frozen_text": "in the changed Python files every region outside the amended and added definitions keeps its original bytes (decorators, comments and blank lines included) and the top-level statements keep their original order; in the launcher only the replaced lines differ",
+      "closed_stages": [
+        "extract-classification",
+        "extract-pose-train",
+        "extract-pose-val",
+        "benchmark-classification",
+        "benchmark-pose"
+      ],
+      "decision": {
+        "by": "Simone",
+        "date": "2026-11-06",
+        "question": "Approvi l'eccezione a R-2(i) sui 28 input e la catena emendata A1?",
+        "quote": "S\u00ec, approvo",
+        "scope": "explicit exception to R-2(i) limited to the 28 original receipts of the pinned input-compatibility manifest; amended chain of 69 classification fits, 3 pose fits, 2 comparisons, 1 summary and 2 checkouts within the unchanged caps of 9 GPU-hours and 1711.666667 core-hours; no other experiment, input or retry"
+      }
+    },
+    "invalidation": "any further covered source change is another source: the exception and the 28 inputs are not valid under it without a new review and decision",
+    "action": "stop chain; preserve all artifacts; no receipt rewrite or automatic resubmission",
+    "repeat_requires": "new Claude review, new IDs/outputs, complete new estimate and Simone decision; all twelve extractions and sixteen benchmarks repeated",
+    "additional_extraction_gpu_hours_cap": 9.0,
+    "additional_cpu": "checkout, benchmark and later CPU work must be re-estimated",
+    "additional_cost_in_current_cap": false,
+    "repeat_authorized": false,
+    "original_r2i": {
+      "choice": "R-2(i): exact source identity, no cross-source cache reuse",
+      "frozen_paths": [
+        "src/**/*.py",
+        "scripts/*.py",
+        "scripts/slurm/consolidation_long.sbatch",
+        "scripts/slurm/lib_code_dir.sh"
+      ],
+      "freeze_period": "Claude execution childbranch: before first extraction checkout through chain completion; GPTdevelopment isolated and not merged during the chain",
+      "invalidation": "any covered source change invalidates all twelve extraction receipts under the amended code, including resource-only changes",
+      "action": "stop chain; preserve all artifacts; no receipt rewrite, accepted-source whitelist or automatic resubmission",
+      "repeat_requires": "new Claude review, new IDs/outputs, complete new estimate and Simone decision; all twelve extractions repeated",
+      "additional_extraction_gpu_hours_cap": 9.0,
+      "additional_cpu": "checkout, benchmark and later CPU work must be re-estimated",
+      "additional_cost_in_current_cap": false,
+      "repeat_authorized": false
+    }
+  },
+  "numeric_thread_policy": {
+    "extraction": 1,
+    "classification_cpu": 8,
+    "pose_cpu": 8,
+    "summary": 1,
+    "classification_baseline_comparison": "historical-libraries-plus-openmp8-v1: same versions/dtype and all historical pools unchanged; only extraOpenMP8allowed; exact_match descriptive; oneexactnumeric_sha256 acrossnewbenchmarks/fits"
+  },
+  "first_extraction_quota_rule": "Claude refreshes both filesystem/quota checks immediately before first extraction submission; no automatic lowering oflimits or retentionextension",
+  "classification_numeric_compatibility": {
+    "name": "historical-libraries-plus-openmp8-v1",
+    "equal_fields": [
+      "python",
+      "numpy",
+      "scipy",
+      "sklearn",
+      "features_dtype"
+    ],
+    "historical_pools": "multiset inclusion with exact equality of all six fields",
+    "pool_fields": [
+      "internal_api",
+      "prefix",
+      "version",
+      "num_threads",
+      "architecture",
+      "threading_layer"
+    ],
+    "extra_pools": "only internal_api=openmp and integer num_threads=8",
+    "new_benchmarks_and_fits": "one exact numeric_sha256 across all new cells",
+    "interpretation": "same historical numerical libraries, versions and threads; new process also imports torch; extra OpenMP runtimes do not establish identical fitted predictions"
+  },
+  "numeric_preflight": {
+    "path": "results/infra/consolidation_long_20261105/numeric_preflight_20261105.json",
+    "sha256": "065c6f8079cc05660f904d5200c5003dd5b413b1acff7e4032bc18dadb0f3eb9",
+    "bytes": 14374
+  },
+  "shared_quota_diagnostic": {
+    "path": "results/infra/consolidation_long_20261105/quota_r1b_20261105.json",
+    "sha256": "49f747ffbc08528e62eb335d139aef76214ee54c3e08f5ac9da383d547b30579",
+    "bytes": 1138
+  },
+  "storage_policy": {
+    "artifact_storage": "personal large SCRATCH; all new scientific outputs including caches/OOF/receipts/reports/manifests underoutput_root",
+    "root": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105",
+    "scratch_purge_days": 40,
+    "intended_retention": "less than40days, authorized bySimone05/11evening; owner must complete/export before purge",
+    "authorization_quote": "si puo scrivere sullo scratch grande? no li terremo per piu di 40 giorni, cosi nonabbimao problemi di spazio",
+    "checkpoint_inputs": "durable pinned checkpoints remain in WORK; no movement or modification",
+    "regenerable_artifacts": [
+      "feature caches",
+      "OOF predictions",
+      "ridge coefficients and predictions"
+    ],
+    "regeneration_requires": "pinned WORKcheckpoints plus original data, calibration, frozen code/config and environment; regeneration is a new compute operation, not an automatic retry or promise of future availability",
+    "phase_export": "Claude copies receipts, reports, manifests, audits and SLURMaccounting toMac and commits non-payload metadata at end of eachphase before releasingnext; codeSHAandreviewpins preserved",
+    "large_payload_policy": "cache/OOF/checkpointNPZorPT never committed; optional Macarchive outsideGit, no retention claim beyond SCRATCHpurge without verifiedcopy",
+    "estimated_new_artifacts_bytes": 25769803776,
+    "scratch_minimum_free_bytes_before_first_extraction": 34359738368,
+    "scratch_base_headroom_bytes_before_each_submission": 8589934592,
+    "scratch_check": "fresh filesystem freebytes and inodes; check user/project quota if configured and use tighter availablelimit; include other admitted unfinished outputs tosamefilesystem",
+    "work_outputs": "four immutable code checkouts and SLURMlogs only; phase metadata also exists as tracked localGitblobs published tocanonicalrepo",
+    "work_tracked_blob_reference_commit": "51b4574c1c8377a4a7b7f35934052f71b77ff899",
+    "work_tracked_blob_bytes_at_reference": 87146517,
+    "work_four_checkout_reference_bytes": 348586068,
+    "work_log_reserve_bytes": 134217728,
+    "work_additional_allocation_budget_bytes": 1073741824,
+    "work_base_headroom_bytes": 8589934592,
+    "work_check": "fresh project quota plusinodes; >=8GiBheadroom +1GiBnewcode/log allowance +already-admitted unfinishedWORKoutputs includingFT15; no doublecountbytesalreadywritten",
+    "quota_max_age_seconds": 3600,
+    "first_submission_rule": "Claude refreshes both filesystem/quota checks immediately before first extraction submission; no automatic lowering oflimits or retentionextension",
+    "latest_diagnostic_quota": {
+      "path": "results/infra/consolidation_long_20261105/quota_r1b_20261105.json",
+      "sha256": "49f747ffbc08528e62eb335d139aef76214ee54c3e08f5ac9da383d547b30579",
+      "bytes": 1138
+    },
+    "diagnostic_admission_status": "historical WORK-only block superseded by explicit SCRATCHdecision; fresh SCRATCHandWORKchecks still required fromClaude"
+  },
+  "summary_plan_release": "same fourth frozen code checkout; after comparison reports, publish final plan with real pins; existing SUMMARYjob materializes the exact published JSON outside CODE_DIR with SHA256 verification; no extra job/checkout; wrapper described for fourthreview",
+  "superseded_jobs": [
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db2/F01",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-pre-ninapro_db2-F0-20261105-A1",
+        "LONG-FIT-G19618-pre-ninapro_db2-F1-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db2/F23",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-pre-ninapro_db2-F2-20261105-A1",
+        "LONG-FIT-G19618-pre-ninapro_db2-F3-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db3/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-pre-ninapro_db3-F0-20261105-A1",
+        "LONG-FIT-G19618-pre-ninapro_db3-F1-20261105-A1",
+        "LONG-FIT-G19618-pre-ninapro_db3-F2-20261105-A1",
+        "LONG-FIT-G19618-pre-ninapro_db3-F3-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/ninapro_db6/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-pre-ninapro_db6-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/epn612/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-pre-epn612-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G19618-pre-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/pre/uci_emg/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-pre-uci_emg-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db2/F01",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-post-ninapro_db2-F01-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db2/F23",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-post-ninapro_db2-F23-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db3/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-post-ninapro_db3-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G19618-post-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/ninapro_db6/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-post-ninapro_db6-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G19618-post-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/epn612/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "epn612",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-post-epn612-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G19618-post-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/19618/post/uci_emg/F0123",
+        "--step",
+        "19618",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G19618-post-uci_emg-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db2/F01",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pre-ninapro_db2-F0-20261105-A1",
+        "LONG-FIT-G39237-pre-ninapro_db2-F1-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db2/F23",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pre-ninapro_db2-F2-20261105-A1",
+        "LONG-FIT-G39237-pre-ninapro_db2-F3-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db3/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pre-ninapro_db3-F0-20261105-A1",
+        "LONG-FIT-G39237-pre-ninapro_db3-F1-20261105-A1",
+        "LONG-FIT-G39237-pre-ninapro_db3-F2-20261105-A1",
+        "LONG-FIT-G39237-pre-ninapro_db3-F3-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/ninapro_db6/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pre-ninapro_db6-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/epn612/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pre-epn612-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pre-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pre/uci_emg/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pre-uci_emg-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db2/F01",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-post-ninapro_db2-F01-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db2/F23",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-post-ninapro_db2-F23-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db3/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-post-ninapro_db3-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-post-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/ninapro_db6/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-post-ninapro_db6-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-post-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/epn612/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "epn612",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-post-epn612-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-post-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/post/uci_emg/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-post-uci_emg-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db2/F01",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pool-ninapro_db2-F0-20261105-A1",
+        "LONG-FIT-G39237-pool-ninapro_db2-F1-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db2/F23",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pool-ninapro_db2-F2-20261105-A1",
+        "LONG-FIT-G39237-pool-ninapro_db2-F3-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db3/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pool-ninapro_db3-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/ninapro_db6/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pool-ninapro_db6-F01-20261105-A1",
+        "LONG-FIT-G39237-pool-ninapro_db6-F23-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/epn612/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pool-epn612-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G39237-pool-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/39237/pool/uci_emg/F0123",
+        "--step",
+        "39237",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G39237-pool-uci_emg-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db2/F01",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pre-ninapro_db2-F0-20261105-A1",
+        "LONG-FIT-G49046-pre-ninapro_db2-F1-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db2/F23",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pre",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pre-ninapro_db2-F2-20261105-A1",
+        "LONG-FIT-G49046-pre-ninapro_db2-F3-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db3/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pre-ninapro_db3-F0-20261105-A1",
+        "LONG-FIT-G49046-pre-ninapro_db3-F1-20261105-A1",
+        "LONG-FIT-G49046-pre-ninapro_db3-F2-20261105-A1",
+        "LONG-FIT-G49046-pre-ninapro_db3-F3-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/ninapro_db6/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pre-ninapro_db6-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/epn612/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pre-epn612-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pre-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pre/uci_emg/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pre",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pre-uci_emg-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db2/F01",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-post-ninapro_db2-F01-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db2/F23",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "post",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-post-ninapro_db2-F23-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db3/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-post-ninapro_db3-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-post-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/ninapro_db6/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-post-ninapro_db6-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-post-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/epn612/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "epn612",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-post-epn612-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-post-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/post/uci_emg/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "post",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-post-uci_emg-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db2-F01-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db2/F01",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db2/F01",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pool-ninapro_db2-F0-20261105-A1",
+        "LONG-FIT-G49046-pool-ninapro_db2-F1-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db2-F23-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db2/F23",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db2/F23",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db2",
+        "--view",
+        "pool",
+        "--folds",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pool-ninapro_db2-F2-20261105-A1",
+        "LONG-FIT-G49046-pool-ninapro_db2-F3-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db3-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db3/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db3/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db3",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pool-ninapro_db3-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-ninapro_db6-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db6/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/ninapro_db6/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "ninapro_db6",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pool-ninapro_db6-F01-20261105-A1",
+        "LONG-FIT-G49046-pool-ninapro_db6-F23-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-epn612-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/epn612/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/epn612/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "epn612",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pool-epn612-F0123-20261105-A1"
+      ]
+    },
+    {
+      "id": "LONG-FIT-G49046-pool-uci_emg-F0123-20261105",
+      "phase": "fit",
+      "stage": "fit-classification",
+      "out": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/uci_emg/F0123",
+      "allocation": {
+        "gpus": 0,
+        "cpus": 8,
+        "memory_gib": 30,
+        "seconds": 14400
+      },
+      "args": [
+        "--stage",
+        "fit-classification",
+        "--out",
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/classification/49046/pool/uci_emg/F0123",
+        "--step",
+        "49046",
+        "--dataset",
+        "uci_emg",
+        "--view",
+        "pool",
+        "--folds",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "prerequisites": [
+        "Claude converged; immutable phase checkout verified; published pins/resources; fresh quota; no existing logical ID/output"
+      ],
+      "slurm_job_id": null,
+      "disposition": "superseded by amendment A1; never submitted; not a failed job",
+      "superseded_by": [
+        "LONG-FIT-G49046-pool-uci_emg-F0123-20261105-A1"
+      ]
+    }
+  ],
+  "amendment_A1": {
+    "status": "approved_by_simone",
+    "proposal": {
+      "branch": "codex/consolidation-20261104",
+      "commit": "4bb39d254c26bd3b9666dff0e1b1464f96bfe4db",
+      "document": "docs/consolidation_long_resource_amendment_proposal_20261106.md"
+    },
+    "design_review": {
+      "branch": "worktree-claude-training-engine",
+      "commit": "7ceedbb5d891168f585229e826baf6535f35c1cc",
+      "document": "docs/reviews/claude_review_consolidation_long_resource_amendment_20261106.md",
+      "verdict": "design approved; implementation verifications V-1...V-8; decision of Simone before pin"
+    },
+    "release_order": "three pose fits first, then the 69 classification fits; the pose gate is independent",
+    "lane": "at most two line-2 jobs running or pending in lrd_all_serial, phase checkout and pose fits included, until the common ledger shows a submitted identifier starting with SCALING-compare- (decision of Simone, 2026-11-06: \u00abDue fit per volta\u00bb); afterwards waves within the plan limit of eight outstanding CPU jobs",
+    "superseded_jobs": "the 48 original fit rows are kept under superseded_jobs with their successors; none was reserved in the ledger or submitted"
+  }
+}
