@@ -8062,3 +8062,30 @@ Rettifica di un riassunto. Nella voce del 12/11 qui sopra, punto 4, ho scritto �
 finestre e di istanti per tutti i modelli». Il testo firmato (`docs/temponet_emg2pose_plan.md` a `255fc8e`, righe 304-305) dice:
 «Conviene fissare un solo insieme di finestre e di istanti per tutti i modelli, per esempio quello del contesto piu' lungo, oppure
 dichiarare la differenza». Vale il testo firmato.
+
+### 2026-11-18 — TEMPONet su emg2pose: studio delle loss APPROVATO da Simone; regole e tetto congelati prima del primo job (Claude)
+
+Alla domanda «Approvi i tre bracci, smooth L1, MSE e MSE più velocità, un seme, circa 12 GPU-ore?» Simone risponde «Sì, approvo».
+Piano: `docs/temponet_emg2pose_loss_plan_20261118.md`; codice `0342170`. L'approvazione comprende il collaudo, i tre training e le tre
+valutazioni (regola del 28/10); altri semi o altri bracci non sono approvati. **Tetto dell'attivita': 12,5 GPU-ore di spesa attesa**
+(«circa 12» approvate). Congelati qui, prima del primo job:
+
+1. **Bracci:** B smooth L1 (beta 1 in deviazioni del giunto), C MSE, D MSE della posa + 0,1 x MSE della velocita', tutte sul bersaglio
+   standardizzato con `pose_stats.json`. In D la velocita' e' la differenza fra la posa di una finestra e quella di una compagna che finisce
+   4 blocchi (20 ms) prima nella stessa registrazione, con tutti i blocchi in mezzo validi e la storia intera (altrimenti peso 0); errore
+   diviso per la deviazione per giunto della velocita' sulle coppie valide del training; termine della posa sulle sole finestre di
+   partenza; le due finestre passano insieme nel modello.
+2. **Resto della ricetta invariato** rispetto al braccio A dell'11/11 (L1; training 64169771, valutazione 64169772): dati, finestre, V13,
+   Adam 1e-4 costante, batch 64, 19 epoche, seme 0 con la stessa inizializzazione e lo stesso ordine delle finestre, CUDA graph con controllo
+   eager/graph, modello finale, stessa valutazione (EMA, cancello < 0,9 sulla validazione, test una volta).
+3. **Lettura:** MAE di test con EMA, media fra utenti, per condizione (`user`, `stage`, `user_stage`); Δ = braccio - A. |Δ| ≤ 0,30 gradi:
+   non distinguibile da L1 con un seme; Δ < -0,30: migliore, da confermare con altri semi; Δ > +0,30: peggiore, da confermare. Descrittivi:
+   utenti migliori e peggiori (conteggi interi dai valori per utente), validazione, uscita grezza, curve per epoca, termini della loss di D.
+   Nessuna loss si adotta su un seme solo; un braccio che non passa il cancello si riporta come tale, senza test e senza nuovo tentativo.
+4. **Regole meccaniche sul collaudo** (`losssmoke`, dbg, ≤ 0,5 GPU-ore): (a) se il controllo eager/graph di una loss fallisce, quel braccio
+   non parte; (b) r = ms per passo di `mse_vel` / ms per passo di `l1`, tempo atteso di D = 1,05 x 4.025 + 19 x (357 r + 14) secondi; limite
+   di D = il piu' piccolo `TRAIN_TIME` dello sbatch con tempo massimo (limite - 900 s) ≥ 1,10 x quel tempo; (c) se B + C + D + tre
+   valutazioni (0,31 l'una) + collaudo superano 12,5 GPU-ore attese, D non parte e si torna da Simone.
+5. **Risorse:** B e C 1 GPU, 3 h 30, 8 CPU, 120 GB (≤ 3,5 GPU-ore ciascuno); D 1 GPU, limite dalla regola 4; valutazioni 1 GPU, 45 min
+   (≤ 0,75); checkout su `lrd_all_serial` (0 GPU-ore). Attese: B 3,08, C 3,08, D circa 4,1 con r = 1,5, valutazioni 0,93, collaudo circa 0,25:
+   circa 11,4 GPU-ore. Nessun nuovo tentativo alla cieca.
