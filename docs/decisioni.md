@@ -8062,3 +8062,30 @@ Rettifica di un riassunto. Nella voce del 12/11 qui sopra, punto 4, ho scritto �
 finestre e di istanti per tutti i modelli». Il testo firmato (`docs/temponet_emg2pose_plan.md` a `255fc8e`, righe 304-305) dice:
 «Conviene fissare un solo insieme di finestre e di istanti per tutti i modelli, per esempio quello del contesto piu' lungo, oppure
 dichiarare la differenza». Vale il testo firmato.
+
+### 2026-11-18 — TEMPONet residua su emg2pose: un seme; architettura, risorse e regola di lettura congelate PRIMA del lancio (Claude)
+
+Simone, alla sessione di coordinamento: «apri un tuo fratello e fagli provare una versione della temponet in cui pero inseriamo un residual
+block per ognuno dei 3 blocchi». Poi, a me, sullo schema di [Z20] Fig. 3 col gruppo «x 3» cerchiato: «io i residual li metterei nel x3, in
+ognio blocco cerchiato». Piano: `docs/temponet_emg2pose_residual_plan_20261118.md`. La richiesta copre il lancio di un seme (regola del
+28/10, sotto le 5 GPU-ore); nessun rilancio, nessun altro seme o braccio. Congelati qui, prima di ogni job:
+
+1. **Architettura** (mia lettura dello schema; unico fattore che cambia rispetto alla L1 dell'11/11): un salto attorno a ciascuno dei tre
+   blocchi interi, y = ReLU(BN(AvgPool_2(Conv_5,s(TC2(TC1(x))))) + BN(Conv_1x1(AvgPool_2s(x)))). Il salto ha la proiezione anche nel
+   blocco 1, per l'invarianza alla scala dell'ingresso. I rami del salto si creano per ultimi: col seme 0 i pesi in comune partono uguali alla
+   L1. 74.452 parametri. Il default del codice resta la rete dell'11/11, verificata bit per bit.
+2. **Ricetta e valutazione identiche alla L1** (voce del 10/11, punti 1-8): L1, Adam 1e-4, batch 64, 19 epoche, seme 0, passo 8 blocchi, V13,
+   CUDA graph con controllo eager/graph, modello finale. Bersagli del passo 0 dell'11/11, EMA per giunto, cancello < 0,9, test una volta.
+3. **Risorse:** training 1 GPU, limite **4:00** (nessuna epoca nuova dopo 13.500 s), 8 CPU, 120 GB, ≤ 4,0 GPU-ore. Valutazione 45 min in
+   afterok, ≤ 0,75 GPU-ore. Checkout CPU 10 min. **Tetto 4,75 GPU-ore**, nessun collaudo su dbg.
+   - Il limite sale da 3:30 a 4:00 perche' il salto allunga il passo (stima +15-20%). Con 3:30 le 19 epoche finirebbero con pochi minuti di
+     margine.
+4. **Regola di lettura**, per ogni condizione di test (`user`, `stage`, `user_stage`): Δ = MAE residua − MAE L1 (con EMA, media fra
+   utenti; L1 = 14,55 / 17,67 / 17,60).
+   - |Δ| ≤ 0,3 gradi: non distinguibile con un seme.
+   - Δ < −0,3: segnale di miglioramento, da confermare con piu' semi.
+   - Δ > +0,3: segnale di peggioramento, da confermare con piu' semi.
+
+   Si riportano anche dev. std. fra utenti, cancello, validazione e, come descrittivi, uscita grezza e curva per epoca. Un verdetto per
+   condizione, nessun verdetto complessivo, nessuna scelta dopo il test. Cancello non superato: il test non si guarda e si apre una diagnosi.
+   Training incompleto: non si legge niente. La soglia e' una convenzione comune allo studio delle loss, non un test.
