@@ -178,6 +178,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 18/11/2026 — launcher: raccolta finale lettori, pronti per aggregati
+
+Fit 08 64763083 COMPLETED 0:0, 5751 s. Raccolto intero probe-fit (otto shard), oltre alla ridge 64701180, con report, audit, log, sacct grezzo, accounting e pin OOF. Controllo congelato build_fit_state superato: 420 fit, copertura esatta delle 60 combinazioni cella/dataset/fold, zero warnings, zero raggiungimenti del limite, zero irrisolti, tutti convergenti per criterio. Codice, piano, contesto numerico e hash audit/OOF coerenti. Ridge completa nelle tre celle; selezione alpha riprodotta dal validatore, frontiere risolte, runtime identico ai benchmark. Sei file coefficienti/predizioni riverificati per SHA-256 su Leonardo. Inviluppo cumulativo con fasi residue riservate 101,413889/351 core-ore.
+
+Esito operativo: pronti per i sei aggregati. Il confronto seguirà dopo aggregati accettati e costruzione/pubblicazione dei relativi ingressi, con gate fresco. Nessun aggregato o confronto inviato in questa consegna. La verifica numerica completa delle predizioni posa e delle statistiche appaiate è prevista nel comparatore congelato. Evidenza riproducibile in submissions/p1_reader_release_20261117/verify_all_readers.py e all_readers_verification.json. Le metriche scientifiche finali saranno lette dopo composizione e validazione del confronto.
+
+
 ### 18/11/2026 — launcher: esiti 04–07 verificati e fit 08 inviato
 
 Controlli ogni cinque minuti fino a COMPLETED 0:0 del fit 07 (4723 s). Raccolti in fit04_07_checked i quattro shard, log, sacct grezzo, accounting e pin OOF. Identità codice/piano/contesto numerico e hash audit/OOF coerenti. Totale 224 fit interni, tutti convergenti per criterio, zero warnings, zero raggiungimenti del limite e zero irrisolti. Durate 04–07 rispettivamente 3645/5502/5554/4723 s. Gate fresco superato con sette job COMPLETED 0:0, piani e checkout integri e budget entro 351 core-ore. Evidenze e riga esatta pubblicate in 6e7a7bd5, SHA origin verificato prima dell'invio. Fit **08 sottomesso, job 64763083**, tramite ledger comune, senza retry. Tutti gli otto shard risultano ora inviati. Raccolta canonica dell'intero stadio e lettura finale restano da eseguire dopo conclusione di 08.
@@ -6250,6 +6257,13 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 18/11/2026 — launcher: raccolta finale lettori, pronti per aggregati
+
+Fit 08 64763083 COMPLETED 0:0, 5751 s. Raccolto intero probe-fit (otto shard), oltre alla ridge 64701180, con report, audit, log, sacct grezzo, accounting e pin OOF. Controllo congelato build_fit_state superato: 420 fit, copertura esatta delle 60 combinazioni cella/dataset/fold, zero warnings, zero raggiungimenti del limite, zero irrisolti, tutti convergenti per criterio. Codice, piano, contesto numerico e hash audit/OOF coerenti. Ridge completa nelle tre celle; selezione alpha riprodotta dal validatore, frontiere risolte, runtime identico ai benchmark. Sei file coefficienti/predizioni riverificati per SHA-256 su Leonardo. Inviluppo cumulativo con fasi residue riservate 101,413889/351 core-ore.
+
+Esito operativo: pronti per i sei aggregati. Il confronto seguirà dopo aggregati accettati e costruzione/pubblicazione dei relativi ingressi, con gate fresco. Nessun aggregato o confronto inviato in questa consegna. La verifica numerica completa delle predizioni posa e delle statistiche appaiate è prevista nel comparatore congelato. Evidenza riproducibile in submissions/p1_reader_release_20261117/verify_all_readers.py e all_readers_verification.json. Le metriche scientifiche finali saranno lette dopo composizione e validazione del confronto.
+
 
 ### 18/11/2026 — launcher: esiti 04–07 verificati e fit 08 inviato
 

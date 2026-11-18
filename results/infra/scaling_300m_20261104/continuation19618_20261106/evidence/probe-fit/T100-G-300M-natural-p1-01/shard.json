@@ -1,0 +1,590 @@
+{
+  "protocol": "scaling-probe-19618-20261106-v1",
+  "kind": "shard",
+  "complete": true,
+  "cell": "T100-G-300M-natural",
+  "arm": "T100-G-300M",
+  "readout": "natural",
+  "task": "p1",
+  "step": 19618,
+  "recipe": {
+    "encoder": "teacher",
+    "layer": "pool",
+    "features_dtype": "float32",
+    "pca": false,
+    "scaler": "StandardScaler fitted only on fold train",
+    "solver": "lbfgs",
+    "penalty": "l2",
+    "class_weight": "balanced",
+    "max_iter": 12000,
+    "tol": 0.0001,
+    "seed": 0,
+    "C_grid": [
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0,
+      100.0
+    ],
+    "selection": "max validation balanced accuracy; ties smallest C; refit train only",
+    "k_folds": 4,
+    "fold_seed": 20261015,
+    "val_frac": 0.1,
+    "bootstrap": {
+      "unit": "subject within dataset",
+      "seed": 20261102,
+      "replicates": 2000,
+      "missing_classes": "macro recall over present target classes; no discarded draws"
+    },
+    "checkpoint_step": 19618,
+    "widths": {
+      "T100-G-30M-natural": 768,
+      "T100-G-300M-natural": 1792,
+      "T100-G-300M-matched": 768
+    },
+    "cells": {
+      "T100-G-30M-natural": {
+        "arm": "T100-G-30M",
+        "readout": "natural"
+      },
+      "T100-G-300M-natural": {
+        "arm": "T100-G-300M",
+        "readout": "natural"
+      },
+      "T100-G-300M-matched": {
+        "arm": "T100-G-300M",
+        "readout": "matched"
+      }
+    },
+    "aliases": {
+      "T100-G-30M-matched": "T100-G-30M-natural"
+    },
+    "primary": "natural",
+    "secondary": "fixed independent backbone/local QR projections before train-only StandardScaler"
+  },
+  "plan_content_sha256": "3f6025bb4780612dd64e6d3d0f479f307c6ad62c2cda85312c116d5d4affb9da",
+  "code_sha": "df2de35c05381e7a5a69edde409171b210a3b5d8",
+  "plan_sha256": "4bbfd06515c2a935b09d8befc3686ce1173b84bc7230a6540844827d7a76acf6",
+  "plan_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_plans19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/readers/probe_plan.json",
+  "projection_sha256": "74d1a0f2453592cb134ab104247d05a9a43b2960e43417bc23c31426fa1b9b3d",
+  "resource_verification": {
+    "resource_plan": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_budgets19618_20261106_v1/results/infra/scaling_300m_20261104/continuation19618_20261106/readers/probe_resources.json",
+      "sha256": "6a18f6e9b17abf77b5b7f1dae90a8417860185223993a9c3891b84f44036e968",
+      "bytes": 9037,
+      "inode": 234194342716236712,
+      "mtime_ns": 1794929023000000000,
+      "ctime_ns": 1794929082000000000
+    },
+    "allocation": {
+      "datasets": [
+        "ninapro_db2",
+        "ninapro_db3"
+      ],
+      "folds": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "estimated_seconds_with_margin": 10724.997643116065,
+      "walltime_seconds": 10740,
+      "observed_peak_rss_bytes": 3017842688,
+      "cell": "T100-G-300M-natural",
+      "task": "p1",
+      "cpus": 8,
+      "memory_gib": 30,
+      "shard_name": "T100-G-300M-natural-p1-01"
+    },
+    "estimated_seconds_with_margin": 10724.997643116065,
+    "observed_peak_rss_bytes": 3017842688
+  },
+  "numeric_context": {
+    "python": "3.11.6",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpools": [
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.21.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openblas",
+        "prefix": "libopenblas",
+        "version": "0.3.23.dev",
+        "num_threads": 8,
+        "architecture": "SkylakeX",
+        "threading_layer": "pthreads"
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libgomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libgomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      },
+      {
+        "internal_api": "openmp",
+        "prefix": "libomp",
+        "version": null,
+        "num_threads": 8,
+        "architecture": null,
+        "threading_layer": null
+      }
+    ],
+    "features_dtype": "float32"
+  },
+  "numeric_sha256": "1ac8481eb8b53fbdd423404a927cca02e908197f16ed6494268b56e5ddc24b1c",
+  "datasets": {
+    "ninapro_db2": {
+      "folds": [
+        {
+          "fold": 0,
+          "train": [
+            "s02",
+            "s04",
+            "s05",
+            "s06",
+            "s07",
+            "s08",
+            "s11",
+            "s17",
+            "s20",
+            "s22",
+            "s23",
+            "s24",
+            "s25",
+            "s26",
+            "s27",
+            "s29",
+            "s30",
+            "s31",
+            "s34",
+            "s36",
+            "s39"
+          ],
+          "val": [
+            "s10",
+            "s18",
+            "s28"
+          ],
+          "held": [
+            "s01",
+            "s03",
+            "s14",
+            "s19",
+            "s32",
+            "s35",
+            "s37",
+            "s38"
+          ],
+          "c": 0.1,
+          "val_bacc": 0.2279320634204899,
+          "held_bacc": 0.20281008481270438,
+          "train_bacc": 0.6471371963943936,
+          "val_scores": {
+            "0.001": 0.19957475500046978,
+            "0.01": 0.21826284494107193,
+            "0.1": 0.2279320634204899,
+            "1.0": 0.22230231972431688,
+            "10.0": 0.19847451464827506,
+            "100.0": 0.1885485385853902
+          },
+          "n_train": 24609,
+          "n_val": 4046,
+          "n_held": 9889,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "f747a80b38a99a8962d0a0e7f7a511e0c08fadb0ae26fd10725cb3a5d61a01c9",
+          "scaler_sha256": "3524dc06afe3d8e32ccbbdcaf9fe9651ed676f1916a058ef7fb90fde2435a053"
+        },
+        {
+          "fold": 1,
+          "train": [
+            "s04",
+            "s05",
+            "s07",
+            "s10",
+            "s11",
+            "s14",
+            "s17",
+            "s18",
+            "s19",
+            "s24",
+            "s25",
+            "s26",
+            "s27",
+            "s28",
+            "s29",
+            "s31",
+            "s35",
+            "s36",
+            "s37",
+            "s38",
+            "s39"
+          ],
+          "val": [
+            "s01",
+            "s03",
+            "s32"
+          ],
+          "held": [
+            "s02",
+            "s06",
+            "s08",
+            "s20",
+            "s22",
+            "s23",
+            "s30",
+            "s34"
+          ],
+          "c": 0.1,
+          "val_bacc": 0.24918566572037332,
+          "held_bacc": 0.16379108238645435,
+          "train_bacc": 0.6259705144659585,
+          "val_scores": {
+            "0.001": 0.21810794610527098,
+            "0.01": 0.24236919380739463,
+            "0.1": 0.24918566572037332,
+            "1.0": 0.23829791061887395,
+            "10.0": 0.22459697327025485,
+            "100.0": 0.21693180728572778
+          },
+          "n_train": 26702,
+          "n_val": 3368,
+          "n_held": 8474,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "3b4120b2a5d3d8a61d50d18a401404df0a3ce13f51bf32eb313af653d52405cd",
+          "scaler_sha256": "8ff61b402c92b774fa636ded36eee6a5fd3c1bf746c4d293163611df7e20adec"
+        },
+        {
+          "fold": 2,
+          "train": [
+            "s01",
+            "s02",
+            "s03",
+            "s06",
+            "s08",
+            "s14",
+            "s19",
+            "s20",
+            "s22",
+            "s23",
+            "s24",
+            "s27",
+            "s28",
+            "s29",
+            "s30",
+            "s32",
+            "s34",
+            "s35",
+            "s36",
+            "s37",
+            "s38"
+          ],
+          "val": [
+            "s11",
+            "s17",
+            "s39"
+          ],
+          "held": [
+            "s04",
+            "s05",
+            "s07",
+            "s10",
+            "s18",
+            "s25",
+            "s26",
+            "s31"
+          ],
+          "c": 0.1,
+          "val_bacc": 0.18989379128096595,
+          "held_bacc": 0.18125502762218118,
+          "train_bacc": 0.6644155954334475,
+          "val_scores": {
+            "0.001": 0.17218482211923195,
+            "0.01": 0.18578386672568337,
+            "0.1": 0.18989379128096595,
+            "1.0": 0.17981613773702587,
+            "10.0": 0.16777446513161498,
+            "100.0": 0.16371477420587083
+          },
+          "n_train": 24113,
+          "n_val": 4398,
+          "n_held": 10033,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "2ce87c7abfc083693cb97268cdb13440966942a686b53512f1c1cdc7c6321d0f",
+          "scaler_sha256": "8990937a8ca847b0728b65121079edf38e2980c579f451142d494ae0d2c89ef0"
+        },
+        {
+          "fold": 3,
+          "train": [
+            "s01",
+            "s02",
+            "s03",
+            "s04",
+            "s05",
+            "s06",
+            "s07",
+            "s08",
+            "s10",
+            "s14",
+            "s18",
+            "s20",
+            "s22",
+            "s23",
+            "s25",
+            "s26",
+            "s30",
+            "s31",
+            "s32",
+            "s34",
+            "s35"
+          ],
+          "val": [
+            "s19",
+            "s37",
+            "s38"
+          ],
+          "held": [
+            "s11",
+            "s17",
+            "s24",
+            "s27",
+            "s28",
+            "s29",
+            "s36",
+            "s39"
+          ],
+          "c": 0.1,
+          "val_bacc": 0.19248819663998107,
+          "held_bacc": 0.20568544198864858,
+          "train_bacc": 0.6568142009980258,
+          "val_scores": {
+            "0.001": 0.16951694595389855,
+            "0.01": 0.18931276145297007,
+            "0.1": 0.19248819663998107,
+            "1.0": 0.18771869241623357,
+            "10.0": 0.1814402478483565,
+            "100.0": 0.17326502488058682
+          },
+          "n_train": 24594,
+          "n_val": 3802,
+          "n_held": 10148,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "787a60a3095f05b36d3b42f9a9cc0282485f8db0b7b6b3a9420d7f59bf1f46e2",
+          "scaler_sha256": "e55fbdc64625be6ec01ed783620df1c0b99371f462bd5128a0216f5b3922cb85"
+        }
+      ]
+    },
+    "ninapro_db3": {
+      "folds": [
+        {
+          "fold": 0,
+          "train": [
+            "s01",
+            "s02",
+            "s05",
+            "s06",
+            "s11"
+          ],
+          "val": [
+            "s10"
+          ],
+          "held": [
+            "s03",
+            "s04"
+          ],
+          "c": 0.01,
+          "val_bacc": 0.02711952612586253,
+          "held_bacc": 0.02860946238779333,
+          "train_bacc": 0.5217692374793427,
+          "val_scores": {
+            "0.001": 0.02504907673398457,
+            "0.01": 0.02711952612586253,
+            "0.1": 0.022527780825591887,
+            "1.0": 0.019132529046719415,
+            "10.0": 0.0177902585765489,
+            "100.0": 0.013626957642530503
+          },
+          "n_train": 6206,
+          "n_val": 1224,
+          "n_held": 2404,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "458a4ad67431fde6506de6486ba02ae6b6c1d5440db3f14fbc7e5a5a32b960d7",
+          "scaler_sha256": "d7083613b40929b9b70548369de8e75950ed7408e70e901b8ef3ea2de2111b89"
+        },
+        {
+          "fold": 1,
+          "train": [
+            "s02",
+            "s03",
+            "s04",
+            "s05",
+            "s11"
+          ],
+          "val": [
+            "s01"
+          ],
+          "held": [
+            "s06",
+            "s10"
+          ],
+          "c": 0.1,
+          "val_bacc": 0.03872143553583997,
+          "held_bacc": 0.024473825617110798,
+          "train_bacc": 0.7149752366651729,
+          "val_scores": {
+            "0.001": 0.02755489975130758,
+            "0.01": 0.0290178715559602,
+            "0.1": 0.03872143553583997,
+            "1.0": 0.0352737636324894,
+            "10.0": 0.03367886730075096,
+            "100.0": 0.037885648515842425
+          },
+          "n_train": 6105,
+          "n_val": 950,
+          "n_held": 2779,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "95599c9d2b024790c8430d5672364f8ef929e84f8806f07d5e4af4f4e781924c",
+          "scaler_sha256": "2e4e49b864f581c7a5cf4c0244d84ba28cb4982b9116d1e7bdeae9ad8af98661"
+        },
+        {
+          "fold": 2,
+          "train": [
+            "s02",
+            "s04",
+            "s05",
+            "s06",
+            "s10"
+          ],
+          "val": [
+            "s03"
+          ],
+          "held": [
+            "s01",
+            "s11"
+          ],
+          "c": 100.0,
+          "val_bacc": 0.03759957877082988,
+          "held_bacc": 0.051072733773292925,
+          "train_bacc": 0.9985195206023775,
+          "val_scores": {
+            "0.001": 0.022810729643027782,
+            "0.01": 0.02254453620913248,
+            "0.1": 0.017251869691976167,
+            "1.0": 0.01733865070156108,
+            "10.0": 0.013635344247589144,
+            "100.0": 0.03759957877082988
+          },
+          "n_train": 6948,
+          "n_val": 819,
+          "n_held": 2067,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "2dbad213746494e2df5912c745d4b11af6f38c744a9c74f9974737a994386e98",
+          "scaler_sha256": "e74268090d5701a4691687b897249cbe6b71f0652bb14eba57942aaec43d0c90"
+        },
+        {
+          "fold": 3,
+          "train": [
+            "s01",
+            "s03",
+            "s04",
+            "s10",
+            "s11"
+          ],
+          "val": [
+            "s06"
+          ],
+          "held": [
+            "s02",
+            "s05"
+          ],
+          "c": 1.0,
+          "val_bacc": 0.03511345887328539,
+          "held_bacc": 0.02586639946339098,
+          "train_bacc": 0.9491739868477855,
+          "val_scores": {
+            "0.001": 0.032126968927495586,
+            "0.01": 0.034626334823833184,
+            "0.1": 0.029680871091628945,
+            "1.0": 0.03511345887328539,
+            "10.0": 0.03331106217099324,
+            "100.0": 0.019053620610372343
+          },
+          "n_train": 5695,
+          "n_val": 1555,
+          "n_held": 2584,
+          "dropped_val_windows": 0,
+          "dropped_held_windows": 0,
+          "scoring_warnings": {
+            "held": [],
+            "train": []
+          },
+          "roles_sha256": "2bfc5e5c3c41292cd1750dd46bd2e3cfa04984f642869fc4b48a76548e31a934",
+          "scaler_sha256": "54f801567b9efdfe7bb173b0c22f4594362d6d3159fed5fb2547d488cf9a525a"
+        }
+      ]
+    }
+  },
+  "audit_summary": {
+    "fits": 56,
+    "convergence_warnings": 0,
+    "reached_limit": 0,
+    "converged_by_criterion": true,
+    "unresolved_fits": []
+  },
+  "audit": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p1-01/audit.jsonl",
+  "audit_sha256": "8f79025efa7d5eb6e9f69cd2ad224411428e8e56832118b5928498e4304f6495",
+  "oof": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_300m_20261104/evaluation19618_v1/cpu/probe_fits/T100-G-300M-natural-p1-01/shard.oof.npz",
+  "oof_sha256": "730d1c982ac0f89c7355aa128be830b23428c00651b6c7f39701eb44702d9d83"
+}
