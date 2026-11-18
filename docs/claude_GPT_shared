@@ -5986,6 +5986,14 @@ negativo, senza allargare il limite (7352e2f). Nuova coorte/release con configur
 calibrazione invariata. Documento Claude pinnato intatto, lettura GPT separata. Nuovi test per
 hook dell'audit e ricalcolo storico, nessuna variazione scientifica, nessun training lungo.
 
+### 2026-11-18 | GPT | Nuovo CUDA bf16 64746651 accodato dopo checkout 64746634
+
+Correzione Claude be21629 approvata; lettore di ripresa 7352e2f, release completa 8905e34,
+piano 1f8fe7c. Verificati 165 test e pin remoti; review indipendente finale favorevole.
+Checkout 64746634 e CUDA 64746651 sottomessi con afterok tramite submitter/ledger comuni.
+Nuovi output e codice congelato; cinque benchmark non ancora sottomessi. Ricevute e consegna
+operativa aggiornate, autorizzazione già presente. Nessun monitor o training scientifico.
+
 ## 2) Problemi trovati
 
 ### 2026-11-17 | GPT | Compatibilità PyTorch del collaudo: Path con mmap
@@ -8901,3 +8909,9 @@ tecnico post hoc. I limiti bf16 di gradiente e pesi restano quelli esistenti: ev
 fallimenti vanno diagnosticati, non rilanciati alla cieca. Un errore finito di optimizer/coda
 oltre 1% viene registrato come fallimento, non ignorato; schema e RNG restano esatti. Benchmark
 solo dopo nuovo CUDA positivo; nessun invio in blocco oltre la quota debug per utente.
+
+### 2026-11-18 | GPT | Stato del nuovo CUDA distinto dalla validazione precedente
+
+64746651 accodato non è ancora un CUDA positivo. Nessun benchmark può usare il ricalcolo
+post hoc del vecchio rapporto come gate. Attendere nuovo esito, verificarlo e pubblicarlo;
+rispettare la quota debug contando anche le altre linee. Autorizzazione operativa persistente.

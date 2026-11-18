@@ -6634,3 +6634,14 @@ linee. Se la quota CPU è occupata, CUDA accodato con afterok usando launcher im
 esistente byte-identico, CODE_DIR nuovo. Nessun monitor. Massimo 13,075556 GPU-ore /
 121,831111 core-ore, entro 14 / 129,333333. Review GPT in
 docs/reviews/gpt_contrastive_bf16_review_20261118.md; hash remoti archiviati.
+
+### 18/11/2026 — Nuovo CUDA bf16 sottomesso: 64746651
+
+Review tecnica indipendente favorevole e 165 test mirati passati. Release congelata
+8905e346b03e5d173cccc124aa40032bf588a191 pubblicata su origin e deploy Leonardo, SHA verificati;
+comandi in 1f8fe7c. Checkout 64746634 (4 CPU, 2 GiB, 240 s) e CUDA 64746651 (4 GPU, 32 CPU,
+240 GiB, 30 min) sottomessi tramite ledger comune; CUDA afterok:64746634. Launcher di trasporto
+immutabile e byte-identico verificato, CODE_DIR/EXPECTED_SHA nuovi. La quota CPU è occupata
+da linea 1, nessun intervento sui suoi job. Ricevute archiviate in bf16_submission_20261118/.
+Cinque benchmark ancora non sottomessi: richiedono nuovo CUDA positivo letto e pubblicato,
+poi invii a gruppi secondo quota utente. Nessun monitor o automazione in background.

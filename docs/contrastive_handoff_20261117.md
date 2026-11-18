@@ -8,6 +8,21 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**18/11, nuovo CUDA sottomesso: 64746651**, `CONTRAST-CUDA-bf16-20261118`,
+con afterok sul checkout **64746634**, `CONTRAST-CHECKOUT-bf16-20261118`.
+Release congelata **8905e346b03e5d173cccc124aa40032bf588a191**, source
+**46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320**.
+Piano comandi 1f8fe7c, `releases/bf16_20261118/submission_plan.json`; ricevute in
+`bf16_submission_20261118/`. Non duplicare nessuno dei due job. Checkout può attendere
+quota CPU linea 1; CUDA partirà da solo dopo successo e ricontrolli SHA/pulizia/readonly.
+Output: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261118_bf16/cuda.json`.
+Log: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/contrastive_gpu_64746651.out`.
+**Cinque benchmark NON sottomessi**. Dopo CUDA COMPLETED 0:0 raccogliere rapporto e probe,
+verificare con lettori congelati, pubblicare esito positivo e inviare le cinque celle a gruppi
+secondo piano e quota di tutti i job dell'utente (MaxJobsPU=2, MaxSubmitPU=4 da ricontrollare).
+Nessun consenso ulteriore per questa catena; nessun monitor/automazione, nessun training lungo.
+I vecchi CUDA 64706211 e 64730941 restano falliti; gli snapshot seguenti sono cronologia.
+
 **18/11, nuova review bf16:** 64730941 è concluso FAILED 1:0, rapporto completo;
 correzione mmap riuscita, otto scarti diagnostici bf16 fuori regola. Claude be21629 acquisito
 in fast-forward e review GPT favorevole. Ulteriore commit 7352e2f conserva come rapporti
