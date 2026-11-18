@@ -275,7 +275,10 @@ def calibration_report(run_dir, baseline_path=BASELINE):
         raise ValueError("calibration performed optimizer updates or has inconsistent queue/config")
     provenance = c.get("provenance", {})
     if provenance.get("source_sha256") != source_digest():
-        raise ValueError("calibration execution sources differ from this frozen reader/runner")
+        # Preserve the actual execution identity. Only the exact historical run
+        # covered by the reviewed Path/string compatibility amendment is reusable.
+        from contrastive_source_compat import validate_historical_evidence
+        validate_historical_evidence("calibration_run", folder)
     input_bindings = provenance.get("input_sha256")
     if (not isinstance(input_bindings, dict) or set(input_bindings) != {"manifest", "scales", "window_seconds", "pose_stats"} or
             any(not isinstance(v, str) or len(v) != 64 or any(c not in "0123456789abcdef" for c in v) for v in input_bindings.values())):
@@ -345,7 +348,7 @@ def calibration_report(run_dir, baseline_path=BASELINE):
               "coverage": coverage, "initial_state_sha256": sha, "optimizer_updates": 0,
               "historical_gradient_multiplier": multiplier,
               "world_size": WORLD_SIZE, "workers_per_rank_required": WORKERS_PER_RANK,
-              "run_code": code, "source_sha256": source_digest(), "reader_provenance": _reader_provenance(),
+              "run_code": code, "source_sha256": provenance["source_sha256"], "reader_provenance": _reader_provenance(),
               "input_sha256": input_bindings,
               "inputs": {name: _pin(folder / name, folder) for name in ("config.json", "summary.json", "metrics.jsonl")},
               "baseline": _pin(baseline_path)}
@@ -365,7 +368,14 @@ def authenticate_calibration(receipt, run_dir):
     if receipt.get("status") != "PASSED_FOR_REVIEW" or receipt.get("failure_reasons") != []:
         raise ValueError("calibration receipt did not pass every frozen gate")
     measured = calibration_report(run_dir)
-    if _jsonable(receipt) != measured:
+    comparable = copy.deepcopy(measured)
+    if receipt.get("source_sha256") != source_digest():
+        from contrastive_source_compat import validate_historical_evidence
+        validate_historical_evidence("calibration_receipt", receipt)
+        # The complete historical receipt is pinned, including its old reader.
+        # Recompute all measured fields; the current reader has a distinct identity.
+        comparable["reader_provenance"] = receipt["reader_provenance"]
+    if _jsonable(receipt) != comparable:
         raise ValueError("calibration receipt differs from authenticated recalculation")
     return measured
 

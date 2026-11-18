@@ -1,0 +1,49 @@
+{
+  "status": "PASSED",
+  "source_sha256": "6b421b7525a5af45d0371382c104c38bc7bb76ca1cba0acf81ca050f6fe754aa",
+  "historical_evidence_checks": [
+    {
+      "protocol": "contrastive-source-compatibility-20261118-v1",
+      "kind": "audit",
+      "manifest_sha256": "d1695b73cf74dff64d8a3d9a56df4bc9303a607eff1329b323d2683f6702f77a",
+      "historical_source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+      "current_source_sha256": "6b421b7525a5af45d0371382c104c38bc7bb76ca1cba0acf81ca050f6fe754aa",
+      "artifact_sha256": "5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b"
+    },
+    {
+      "protocol": "contrastive-source-compatibility-20261118-v1",
+      "kind": "calibration_run",
+      "manifest_sha256": "d1695b73cf74dff64d8a3d9a56df4bc9303a607eff1329b323d2683f6702f77a",
+      "historical_source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+      "current_source_sha256": "6b421b7525a5af45d0371382c104c38bc7bb76ca1cba0acf81ca050f6fe754aa",
+      "artifact_sha256": {
+        "config.json": "cff2eff02d9d07c2f0783c6370aa442c57cd023602583949748ca60dad241e87",
+        "summary.json": "7a3b9490faf9c51d3012a52fdcfdcc8590853ca1329e3506e6d23de8bce4329f",
+        "metrics.jsonl": "bc332847ac1231009fd5cf9ba983e7f6522faf66a2062cf2cdb9f826550306a7"
+      }
+    },
+    {
+      "protocol": "contrastive-source-compatibility-20261118-v1",
+      "kind": "calibration_receipt",
+      "manifest_sha256": "d1695b73cf74dff64d8a3d9a56df4bc9303a607eff1329b323d2683f6702f77a",
+      "historical_source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+      "current_source_sha256": "6b421b7525a5af45d0371382c104c38bc7bb76ca1cba0acf81ca050f6fe754aa",
+      "artifact_sha256": "4f302517da3b23952d62adfbcb71737aa01043784a4317d5fc312ded95132cf3"
+    }
+  ],
+  "benchmark_releases_validated": [
+    "full_C0",
+    "full_CN",
+    "full_CR",
+    "split_CN",
+    "split_CR"
+  ],
+  "cuda_recipe_and_fixed_checkpoint_pin_valid": true,
+  "tests_distinct_passed": 150,
+  "test_commands": "118 existing/integrated tests + 32 helper mutation tests; 7 historical tests also repeated",
+  "bash_n_launchers": 3,
+  "benchmark_condition": "only after complete positive CUDA readout published",
+  "remote_rechecked_original_checkpoint_sha256": "0756921a0e59c0d93cf5821793a8457f6becee7e55a7b68ea5ab1ec80e17d50a",
+  "remote_rechecked_audit_sha256": "5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b",
+  "training_authorized": false
+}

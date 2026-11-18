@@ -8,6 +8,16 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**18/11, correzione pronta per rilancio autorizzato:** sei conversioni Path/string applicate;
+150 test distinti passati. Manifest rigoroso di compatibilità in `compatibility_20261118/`,
+digest corrente `6b421b7525a5af45d0371382c104c38bc7bb76ca1cba0acf81ca050f6fe754aa`.
+Audit e calibrazione restano invariati e attribuiti al produttore storico ab2d6460…;
+nuova coorte byte-identica e release concrete in `releases/mmap_20261118/`.
+Simone autorizza nuovo CUDA e poi cinque benchmark se superato, senza nuovi consensi.
+Nuovi checkout/ID/output, nessun riuso di cuda.json del tentativo fallito, nessun audit rifatto.
+Riferimento: `docs/reviews/contrastive_mmap_release_20261118.md`. Invii da registrare con ricevute;
+le voci sotto restano cronologia, non sono l'istruzione di fermare la rettifica autorizzata.
+
 **Aggiornamento CUDA concluso:** 64706211 FAILED 1:0 dopo 67 s, prima dei confronti
 numerici: `torch.load(Path, mmap=True)` non è compatibile con il PyTorch del cluster,
 che richiede una stringa. Probe di uscita dei quattro rank superato, ma `cuda.json`

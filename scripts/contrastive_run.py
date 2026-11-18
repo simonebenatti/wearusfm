@@ -91,7 +91,10 @@ def validate_cohort(path, calibration_path, calibration_run_dir, config_path):
 def validate_audit(path, inputs, calibration_config):
     report = _read(path)
     expected = {name: sha(value) for name, value in inputs.items()}
-    if report.get("source_sha256") != source_digest() or report.get("inputs") != expected:
+    if report.get("source_sha256") != source_digest():
+        from contrastive_source_compat import validate_historical_evidence
+        validate_historical_evidence("audit", path)
+    if report.get("inputs") != expected:
         raise ValueError("audit provenance/data pins differ")
     if (report.get("steps") != 1024 or report.get("world_size") != 4 or report.get("workers_per_rank") != 6
             or report.get("config_sha256") != hashlib.sha256(json.dumps(calibration_config, sort_keys=True, separators=(",", ":")).encode()).hexdigest()):
@@ -217,7 +220,7 @@ def validate_resume(release, out_dir, cohort):
             c.get("provenance", {}).get("calibration_sha256") != cohort["calibration_sha256"] or
             c.get("config", {}).get("arm") != release["arm"] or (Path(out_dir)/"STOP").exists()):
         raise ValueError(f"resume requires the successful matching {prior_step}-update split")
-    state = torch.load(checkpoint, map_location="cpu", weights_only=False, mmap=True)
+    state = torch.load(str(checkpoint), map_location="cpu", weights_only=False, mmap=True)
     if (type(state.get("step")) is not int or state["step"] != prior_step or state.get("world_size") != 4 or
             state.get("contrastive_initial_sha256") != cohort["initial_state_sha256"] or
             state.get("contrastive_provenance") != c.get("provenance") or

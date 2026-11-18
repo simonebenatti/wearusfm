@@ -231,7 +231,7 @@ def main(argv=None):
     batches = build_batches(configs["CN"], args.manifest, args.root, scales, windows)
     torch.manual_seed(base.seed)
     initial_model = attach_contrastive_head(WearUsFM(base.model))
-    saved = torch.load(args.calibration_checkpoint, map_location="cpu", weights_only=False, mmap=True)
+    saved = torch.load(str(args.calibration_checkpoint), map_location="cpu", weights_only=False, mmap=True)
     initial = saved["student"]
     if (saved.get("step") != 512 or saved.get("optimizer", {}).get("state") or
             state_sha256(initial) != saved.get("contrastive_initial_sha256") or state_sha256(saved["teacher"]) != state_sha256(initial)):

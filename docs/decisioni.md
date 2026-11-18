@@ -6559,3 +6559,19 @@ evidenze originali intatte e pin verificati; nessun retry cieco o audit automati
 Riferimento docs/reviews/contrastive_cuda_failure_20261117.md, archivio cuda_completed_20261117/.
 Costo CUDA 0,074444 GPU-ore / 0,595556 core-ore; checkout 0,074444 core-ore. Totale consumato
 0,934444 GPU-ore / 16,128889 core-ore, incluso audit in timeout. Nessun monitor o training nuovo.
+
+### 18/11/2026 — Correzione Path/mmap e riuso esatto delle evidenze autorizzati
+
+Simone autorizza correzione, aggiornamento dei riferimenti, nuovo CUDA e cinque benchmark solo
+se superato, senza un nuovo consenso operativo. Applicate le sei conversioni str(path), senza
+cambiare i contenuti caricati; aggiunto controllo stretto della compatibilità dei sorgenti per
+riusare soltanto audit e calibrazione originali. Il digest corrente resta reale e distinto da
+ab2d6460…; il vecchio produttore non viene rietichettato. Coorte nuova, configurazioni e λ identici,
+manifest completo old/new e hash esatti delle evidenze, ricevute storiche intatte.
+
+Nuovi checkout/ID/output per il collaudo e i benchmark; nessuna ripetizione dell'audit o calibrazione.
+Il tentativo fallito 64706211 resta nel consuntivo: massimo totale con le fasi residue
+12,934444 GPU-ore / 120,662222 core-ore, entro 14 / 129,333333. Prima del lancio sono richiesti
+regressioni, review tecnica indipendente e release pubblicata; dopo CUDA, lettura e pubblicazione
+positiva prima dei cinque benchmark. Nessun training scientifico o monitor. Protocollo operativo:
+docs/reviews/contrastive_mmap_release_20261118.md. Autorità: istruzione diretta di Simone del 18/11.

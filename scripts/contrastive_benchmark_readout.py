@@ -152,8 +152,8 @@ def _nested_equal(a, b, path='state', floating_tolerance=None):
 
 
 def compare_resume(full_path, resumed_path, cfg, initial_sha, initial):
-    a = torch.load(full_path, map_location='cpu', weights_only=False, mmap=True)
-    b = torch.load(resumed_path, map_location='cpu', weights_only=False, mmap=True)
+    a = torch.load(str(full_path), map_location='cpu', weights_only=False, mmap=True)
+    b = torch.load(str(resumed_path), map_location='cpu', weights_only=False, mmap=True)
     if a['step'] != 576 or b['step'] != 576:
         raise ValueError('resume comparison needs576-update complete checkpoints')
     if state_sha256(initial) != initial_sha:
@@ -225,7 +225,7 @@ def _run_evidence(folder, arm, cohort, expected_cfg, provenance):
         expected = .2*sum(r[k] for k in ANCHORS)+r['pose']+wn*r['contrast_nce']+wr*r['contrast_rnc']
         if not math.isclose(r['total'], expected, rel_tol=1e-5, abs_tol=1e-6):
             raise ValueError('weighted objective composition differs')
-    checkpoint = torch.load(folder/'checkpoint.pt', map_location='cpu', weights_only=False, mmap=True)
+    checkpoint = torch.load(str(folder/'checkpoint.pt'), map_location='cpu', weights_only=False, mmap=True)
     if (type(checkpoint.get('step')) is not int or checkpoint['step'] != 576 or checkpoint.get('world_size') != 4 or
             checkpoint.get('config') != cfg or checkpoint.get('contrastive_initial_sha256') != cohort['initial_state_sha256'] or
             checkpoint.get('contrastive_provenance') != provenance or len(checkpoint.get('rank_rng', [])) != 4 or
@@ -246,7 +246,7 @@ def _run_evidence(folder, arm, cohort, expected_cfg, provenance):
 
 
 def _initial_from_calibration(run_dir, receipt):
-    saved = torch.load(Path(run_dir)/'checkpoint.pt', map_location='cpu', weights_only=False, mmap=True)
+    saved = torch.load(str(Path(run_dir)/'checkpoint.pt'), map_location='cpu', weights_only=False, mmap=True)
     if (saved.get('step') != 512 or saved.get('optimizer', {}).get('state') or
             saved.get('config') != _read(Path(run_dir)/'config.json') or
             any(state_sha256(saved[part]) != receipt['initial_state_sha256'] for part in ('student', 'teacher'))):
@@ -314,7 +314,10 @@ def read_preflight(cohort_path, full_dirs, resumed_dirs, cuda_path, *, cpu_audit
     panel = _coverage({'expected_datasets': audit.get('expected_datasets'), 'coverage_completed_blocks': [],
                        'coverage_partial_block': audit.get('calibration_panel'), 'config': calibration_cfg['contrastive']})
     canonical_calibration = hashlib.sha256(json.dumps(calibration_cfg, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
-    if (audit.get('passed') is not True or not panel['passed'] or audit.get('source_sha256') != cohort['source_sha256'] or
+    if audit.get('source_sha256') != cohort['source_sha256']:
+        from contrastive_source_compat import validate_historical_evidence
+        validate_historical_evidence('audit', cpu_audit_path)
+    if (audit.get('passed') is not True or not panel['passed'] or
             audit.get('inputs') != input_pins or audit.get('steps') != 1024 or audit.get('world_size') != 4 or
             audit.get('workers_per_rank') != 6 or audit.get('config_sha256') != canonical_calibration):
         raise ValueError('CPU audit missing, failed or from different inputs/config/source')

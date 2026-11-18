@@ -5953,6 +5953,15 @@ Patch minima di sei conversioni individuata, NON applicata ai sorgenti congelati
 e seguito tecnico in docs/reviews/contrastive_cuda_failure_20261117.md. Consuntivo cumulativo
 0,934444 GPU-ore / 16,128889 core-ore. Nessun retry o monitor in background.
 
+### 2026-11-18 | GPT | Correzione Path/mmap e provenienza esatta per il rilancio
+
+Applicate sei conversioni di percorso senza modifica del calcolo. Nuovo validatore del manifest
+old/new per riusare soltanto le evidenze esatte di audit e calibrazione; produttore e lettore
+restano distinti, λ e selezione invariati. Nuova coorte e nuove release, nessun alias del digest.
+Simone autorizza rilancio CUDA e cinque benchmark subordinati al suo esito positivo. Documenti:
+docs/reviews/contrastive_mmap_release_20261118.md, risultati compatibility_20261118. Nessuna
+nuova review attribuita a Claude; verifica tecnica indipendente prima del deploy. Nessun monitor.
+
 ## 2) Problemi trovati
 
 ### 2026-11-17 | GPT | Compatibilità PyTorch del collaudo: Path con mmap
@@ -8839,3 +8848,10 @@ La calibrazione lascia fermi tutti i pesi; dopo il primo passo lo storico usato 
 li cambia, quindi non si pretende identità delle loss nei primi otto passi. Nessun benchmark prima del
 collaudo CUDA/NCCL e del probe di uscita di un rank validi. Totale massimo con consuntivo corrente
 12,86 GPU-ore / 119,992222 core-ore, entro i tetti 14 / 129,333333. Nessun monitor in background.
+
+### 2026-11-18 | GPT | Il recupero non cambia le ricevute storiche
+
+Il difetto Path/mmap è di compatibilità del lettore, ma modifica il digest di esecuzione.
+La rettifica ammessa valida i vecchi e nuovi sorgenti e l'intera evidenza storica; non estende
+la compatibilità a vecchi CUDA o benchmark. Il fallimento 64706211 resta fallimento. I nuovi
+confronti numerici devono passare integralmente con sorgenti correnti prima dei benchmark.
