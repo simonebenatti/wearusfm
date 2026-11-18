@@ -7354,3 +7354,8 @@ Validazione e tre benchmark posa raccolti/accettati; classificazione DB2/DB3 30M
 
 Presa in carico esclusiva della consegna 432d0fa. Riconciliazione ledger/scheduler completata, DB6 64669464 COMPLETED 0:0. Tutti i 15 benchmark classificazione COMPLETED 0:0, raccolti con sacct grezzo, accounting, report e log. Costruttori congelati accettano i risultati e producono otto shard, 143,6 core-ore di prenotazione fit con margine. Inviluppo cumulativo prudenziale prima del checkout budgets 181,279445/351 core-ore, comprese fasi successive riservate. Metadata budgets 1a0ba5c distribuito, checkout 64692577 COMPLETED 0:0 in 102 s e raccolto. Ridge 64701180 e fit 01/02/03 64701397/64701400/64701404 sottomessi dopo gate pubblicati, ricevute su origin in 33d1e56 con SHA verificato. Restano cinque shard da inviare a tranche. Controlli ogni cinque minuti, come richiesto da Simone. Nessun retry di calcolo. Numerica df2de35, criteri e tetto 351 conservati.
 
+
+### 18/11/2026 — launcher: ripresa e fit 04–07 sottomessi
+
+Ridge 64701180 e fit 01–03 64701397/64701400/64701404 risultano COMPLETED 0:0, rispettivamente 292/1626/1476/3986 s. L'attesa locale era stata interrotta, il ledger conferma cinque shard ancora assenti prima della ripresa. Gate fresco superato e pubblicato in d5ea964 con SHA remoto verificato. Inviati fit 04–07 **64730416/64730417/64730419/64730421**, una catena afterok, massimo quattro job della linea. Resta fit 08 da inviare dopo completamento della tranche, con nuovo gate e senza nuovo consenso. Ricevute comuni affiancate alle righe. Benchmark e budget già accettati, nessun ampliamento del perimetro.
+
