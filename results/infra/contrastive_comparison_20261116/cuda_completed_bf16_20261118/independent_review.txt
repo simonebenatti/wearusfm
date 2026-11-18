@@ -1,0 +1,4 @@
+Review indipendente audit_timeout_review, 18/11/2026, prima dei benchmark.
+Eseguiti _cuda_evidence e validate_receipt sui file raccolti. Hash cuda 979f4429a4b931013a5ae5f4e1e7b8d83b970c35b115bae768d75b276a0771f5 e probe d0a751150a5ea23fff0538f60f7e86396e33f59b910ffc5fb37881c604fdfd78 verificati.
+320/320 confronti nei limiti. FP32 massimo loss/norme/gradiente 6,39367e-7 contro 1e-5; displacement massimo 7,42277e-4 contro 0,01. bf16 norme diagnostiche massimo 0,00189551 contro 0,01; massimo rapporto errore/limite 0,612407 (teacher bf16, 0,0348451/0,0568986, criterio dinamico congelato). STOP coverage/numeric positivi su tutti i 4 rank. Probe: 4 worker inizializzati, 12,32085 s, launcher 1 atteso, nessun timeout o processo residuo.
+Source, config/checkpoint/coorte/ingressi coerenti; inputs_unchanged=true. Nessun blocco ai cinque benchmark dopo pubblicazione. Nessuna evidenza di efficacia scientifica.

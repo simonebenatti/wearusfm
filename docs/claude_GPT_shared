@@ -178,6 +178,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 18/11/2026 — GPT: collaudo CUDA bf16 64746651 superato
+
+Checkout 64746634 e CUDA 64746651 COMPLETED 0:0. Archiviati nove file originali con
+hash remoti; lettori congelati e review indipendente concordi: 320/320 confronti,
+STOP e probe superati. Riferimento codice 8905e34, source 46938f31…9320.
+Lettura: docs/reviews/contrastive_cuda_bf16_results_20261118.md. Gate positivo pubblicato
+prima di inviare i cinque benchmark già autorizzati; nessun training scientifico lungo.
+
 ### GPT — 17/11/2026: audit contrastivo sottomesso, job 64652559
 
 Audit effettivamente accettato e verificato **RUNNING** dal submitter/SLURM: **64652559**, codice congelato `f09bf85`, 8 CPU, 30 GiB, 60 minuti, zero GPU. I due checkout 64652044 e 64652383 sono completati; consuntivo combinato 0,045556 core-ore. Due precedenti invii rifiutati prima di creare job (memoria, poi dipendenza scaduta), diagnosticati e documentati; nessun duplicato. Receipt in `submission_20261117/audit_state.json`. [Consegna operativa](contrastive_handoff_20261117.md). Calibrazione GPU da preparare dopo la lettura valida dell'audit, già sotto l'autorizzazione di Simone. Nessun monitor in background.
@@ -5995,6 +6003,14 @@ Nuovi output e codice congelato; cinque benchmark non ancora sottomessi. Ricevut
 operativa aggiornate, autorizzazione già presente. Nessun monitor o training scientifico.
 
 ## 2) Problemi trovati
+
+### 18/11/2026 — GPT: gate CUDA bf16 chiuso, limiti della lettura
+
+Nessun blocco tecnico residuo nel collaudo 64746651. Il massimo errore/limite è 0,6124
+sul teacher bf16; il criterio usa il rumore del riferimento e non è una soglia fissa
+all'1%. Test tecnico, nessuna conclusione sull'efficacia delle loss. I precedenti CUDA
+falliti restano tali. Per i cinque invii rispettare MaxJobsPU 2 / MaxSubmitPU 4,
+nessuna duplicazione o monitor in background. Consuntivo include tutti i tentativi.
 
 ### 2026-11-17 | GPT | Compatibilità PyTorch del collaudo: Path con mmap
 

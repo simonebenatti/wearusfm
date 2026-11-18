@@ -1,0 +1,108 @@
+{
+  "protocol": "contrastive-rank-exit-v1",
+  "passed": true,
+  "source_sha256": "46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320",
+  "host": "lrdn0049.leonardo.local",
+  "world_size": 4,
+  "all_workers_initialized": true,
+  "workers": [
+    {
+      "cuda_initialized": true,
+      "nccl_initialized": true,
+      "pgid": 2934598,
+      "pid": 2934598,
+      "ppid": 2934580,
+      "rank": 0,
+      "start_token": "Wed Nov 18 14:09:19 2026",
+      "stat": "Ssl",
+      "world_size": 4
+    },
+    {
+      "cuda_initialized": true,
+      "nccl_initialized": true,
+      "pgid": 2934599,
+      "pid": 2934599,
+      "ppid": 2934580,
+      "rank": 1,
+      "start_token": "Wed Nov 18 14:09:19 2026",
+      "stat": "Ssl",
+      "world_size": 4
+    },
+    {
+      "cuda_initialized": true,
+      "nccl_initialized": true,
+      "pgid": 2934600,
+      "pid": 2934600,
+      "ppid": 2934580,
+      "rank": 2,
+      "start_token": "Wed Nov 18 14:09:19 2026",
+      "stat": "Ssl",
+      "world_size": 4
+    },
+    {
+      "cuda_initialized": true,
+      "nccl_initialized": true,
+      "pgid": 2934601,
+      "pid": 2934601,
+      "ppid": 2934580,
+      "rank": 3,
+      "start_token": "Wed Nov 18 14:09:19 2026",
+      "stat": "Ssl",
+      "world_size": 4
+    }
+  ],
+  "tracked_processes": [
+    {
+      "pid": 2934580,
+      "ppid": 2934577,
+      "pgid": 2934580,
+      "stat": "Rs",
+      "start_token": "Wed Nov 18 14:09:17 2026"
+    },
+    {
+      "pid": 2934598,
+      "ppid": 2934580,
+      "pgid": 2934598,
+      "stat": "Rs",
+      "start_token": "Wed Nov 18 14:09:19 2026"
+    },
+    {
+      "pid": 2934599,
+      "ppid": 2934580,
+      "pgid": 2934599,
+      "stat": "Rs",
+      "start_token": "Wed Nov 18 14:09:19 2026"
+    },
+    {
+      "pid": 2934600,
+      "ppid": 2934580,
+      "pgid": 2934600,
+      "stat": "Rs",
+      "start_token": "Wed Nov 18 14:09:19 2026"
+    },
+    {
+      "pid": 2934601,
+      "ppid": 2934580,
+      "pgid": 2934601,
+      "stat": "Rs",
+      "start_token": "Wed Nov 18 14:09:19 2026"
+    }
+  ],
+  "launcher_pid": 2934580,
+  "launcher_returncode": 1,
+  "sentinel": "WEARUSFM_INTENTIONAL_RANK_ZERO_EXCEPTION_20261116",
+  "timed_out": false,
+  "elapsed_s": 12.320853755809367,
+  "completion_limit_s": 60,
+  "cleanup_limit_s": 20,
+  "remaining_processes": [],
+  "failure": null,
+  "stdout_sha256": "4867d4bd5c3a5da9ab21bf53152fe92f5da3ff12b8272c3a6e134952f3cbe52d",
+  "stderr_sha256": "10b75d6b60ddf18396e2b0150deb429b61635c3002f30fca0777672109903fbd",
+  "worker_evidence_sha256": {
+    "worker_0.json": "35f94ebd831ed7e8fecb2f95d82ef48c5e3c1288980cbaa2a604cc3aea50691c",
+    "worker_1.json": "8dd61616018491e933ef523d1712fd1e3ac4413ca2b4e4b887b200286423366d",
+    "worker_2.json": "c57409248e57b6951c36bb97bdc516dbf6f02f29433047b1ab7753d9e138fd86",
+    "worker_3.json": "97079146d67ed2318eb0a68dbb83e2c9d9ea9a16647535a4d0dc0c7532c8d246"
+  }
+}

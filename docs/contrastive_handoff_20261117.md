@@ -8,6 +8,14 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**18/11, CUDA 64746651 SUPERATO**, COMPLETED 0:0, 141 s; checkout 64746634 COMPLETED 0:0, 53 s.
+320/320 confronti, STOP e probe validi; lettori congelati e review indipendente concordi.
+Rapporto e hash in `cuda_completed_bf16_20261118/`, lettura in
+`docs/reviews/contrastive_cuda_bf16_results_20261118.md`.
+Gate positivo pubblicato prima dei cinque invii, che seguono il piano congelato 8905e34.
+Le ricevute degli invii aggiorneranno questo stato. Non duplicare job. Nessun training lungo.
+Gli snapshot seguenti sono cronologia.
+
 **18/11, nuovo CUDA sottomesso: 64746651**, `CONTRAST-CUDA-bf16-20261118`,
 con afterok sul checkout **64746634**, `CONTRAST-CHECKOUT-bf16-20261118`.
 Release congelata **8905e346b03e5d173cccc124aa40032bf588a191**, source

@@ -1,0 +1,106 @@
+{
+  "status": "PASSED_FOR_BENCHMARK_SUBMISSION",
+  "job_id": 64746651,
+  "checkout_job_id": 64746634,
+  "cuda_elapsed_s": 141,
+  "checkout_elapsed_s": 53,
+  "comparisons": 320,
+  "passed_comparisons": 320,
+  "source_sha256": "46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320",
+  "frozen_commit": "8905e346b03e5d173cccc124aa40032bf588a191",
+  "initial_sha256": "ba8a86579992a0eeb2a8072c67eef30b699465ad091671b50123c0073173fa2f",
+  "files": [
+    {
+      "file": "cuda.json",
+      "sha256": "979f4429a4b931013a5ae5f4e1e7b8d83b970c35b115bae768d75b276a0771f5",
+      "bytes": 239840
+    },
+    {
+      "file": "cuda.json.rank_exit_probe/report.json",
+      "sha256": "d0a751150a5ea23fff0538f60f7e86396e33f59b910ffc5fb37881c604fdfd78",
+      "bytes": 2894
+    },
+    {
+      "file": "cuda.json.rank_exit_probe/stderr.log",
+      "sha256": "10b75d6b60ddf18396e2b0150deb429b61635c3002f30fca0777672109903fbd",
+      "bytes": 5242
+    },
+    {
+      "file": "cuda.json.rank_exit_probe/stdout.log",
+      "sha256": "4867d4bd5c3a5da9ab21bf53152fe92f5da3ff12b8272c3a6e134952f3cbe52d",
+      "bytes": 50
+    },
+    {
+      "file": "cuda.json.rank_exit_probe/worker_0.json",
+      "sha256": "35f94ebd831ed7e8fecb2f95d82ef48c5e3c1288980cbaa2a604cc3aea50691c",
+      "bytes": 189
+    },
+    {
+      "file": "cuda.json.rank_exit_probe/worker_1.json",
+      "sha256": "8dd61616018491e933ef523d1712fd1e3ac4413ca2b4e4b887b200286423366d",
+      "bytes": 189
+    },
+    {
+      "file": "cuda.json.rank_exit_probe/worker_2.json",
+      "sha256": "c57409248e57b6951c36bb97bdc516dbf6f02f29433047b1ab7753d9e138fd86",
+      "bytes": 189
+    },
+    {
+      "file": "cuda.json.rank_exit_probe/worker_3.json",
+      "sha256": "97079146d67ed2318eb0a68dbb83e2c9d9ea9a16647535a4d0dc0c7532c8d246",
+      "bytes": 189
+    },
+    {
+      "file": "contrastive_gpu_64746651.out",
+      "sha256": "b75ac8ba76c3088c4aec865628751e11264bd65b3038a3d7a3eea18c6b096350",
+      "bytes": 4395
+    }
+  ],
+  "maximum_relative_errors": {
+    "fp32": {
+      "total": 1.785369450601679e-07,
+      "pose": 8.599954873844321e-08,
+      "contrast_nce": 9.051008952171934e-08,
+      "contrast_rnc": 2.3661562985838436e-07,
+      "contrast_global_grad_base": 2.671476332517218e-08,
+      "contrast_global_grad_nce": 6.393666801888169e-07,
+      "contrast_global_grad_rnc": 2.626010898488108e-07,
+      "gradient": 5.419602600272938e-07,
+      "student": 0.00015640971778432776,
+      "teacher": 0.0007422772479892997
+    },
+    "bf16": {
+      "total": 1.614752947576706e-05,
+      "pose": 8.599954873844321e-08,
+      "contrast_nce": 7.917204921596065e-05,
+      "contrast_rnc": 8.637184760503882e-06,
+      "contrast_global_grad_base": 7.49106104125734e-05,
+      "contrast_global_grad_nce": 0.0018955127068743171,
+      "contrast_global_grad_rnc": 0.00022142155631732545,
+      "gradient": 0.002521162874598202,
+      "student": 0.0327820230986168,
+      "teacher": 0.03484506986671757
+    }
+  },
+  "largest_error_over_limit": {
+    "rank": 2,
+    "arm": "CN",
+    "precision": "bf16",
+    "update": 2,
+    "metric": "teacher",
+    "error": 0.03484506986671757,
+    "limit": 0.056898550905480454,
+    "ratio": 0.6124069824660737
+  },
+  "rank_exit_elapsed_s": 12.320853755809367,
+  "rank_exit_remaining_processes": [],
+  "all_stop_checks_passed": true,
+  "cuda_gpu_hours": 0.15666666666666668,
+  "cuda_core_hours": 1.2533333333333334,
+  "checkout_core_hours": 0.058888888888888886,
+  "total_consumed_gpu_hours": 1.2322222222222223,
+  "total_consumed_core_hours": 18.610000000000003,
+  "actual_plus_remaining_max_gpu_hours": 11.232222222222223,
+  "actual_plus_remaining_max_core_hours": 106.87666666666667,
+  "training_approved": false
+}

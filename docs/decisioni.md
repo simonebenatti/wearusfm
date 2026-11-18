@@ -6645,3 +6645,13 @@ immutabile e byte-identico verificato, CODE_DIR/EXPECTED_SHA nuovi. La quota CPU
 da linea 1, nessun intervento sui suoi job. Ricevute archiviate in bf16_submission_20261118/.
 Cinque benchmark ancora non sottomessi: richiedono nuovo CUDA positivo letto e pubblicato,
 poi invii a gruppi secondo quota utente. Nessun monitor o automazione in background.
+
+### 18/11/2026 — GPT: CUDA bf16 superato, cinque benchmark ammessi
+
+Il nuovo CUDA 64746651 è COMPLETED 0:0: 320/320 confronti entro criteri congelati,
+STOP e probe validi, hash verificati. Review indipendente concorde. Nessun criterio
+modificato a posteriori in questa lettura; i precedenti fallimenti restano agli atti.
+Lettura e consuntivo in docs/reviews/contrastive_cuda_bf16_results_20261118.md.
+Si procede sotto l'autorizzazione già ricevuta ai soli cinque benchmark tecnici
+C0/CN/CR 576 e CN/CR 544+32 tramite submitter e ledger, gruppi secondo quota 2/4.
+Massimo residuo più consumato 11,232222 GPU-ore / 106,876667 core-ore; nessun training lungo.
