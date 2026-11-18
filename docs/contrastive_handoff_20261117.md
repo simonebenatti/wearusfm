@@ -8,6 +8,20 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**18/11, lettura CPU finale completata con esito negativo controllato.**
+Checkout **64775502** COMPLETED 0:0; lettore **64775571** FAILED 2:0 dopo
+aver scritto il rapporto completo, come previsto per un gate negativo. Stato:
+`FAILED_REQUIRES_REVIEW`, `training_approved=false`; rapporto SHA256
+`deb6b8178362e23512f105d95b3859c28945d9ffa5356a653f1c8cad67c929fc`.
+Passano i rapporti delle componenti attive (CN 0,2261; CR 0,0834; rapporto
+CN/CR 2,7106), ma falliscono la parità di `grad_norm` nei primi 256 update a
+peso contrastivo zero e i limiti numerici dei confronti continuo/ripreso.
+Nessun training lungo è rilasciato, nessun retry e nessuna soglia è cambiata.
+Il confronto di ripresa usa due run indipendenti che divergono già prima del
+restart: dimostra stati finali diversi, non isola la ripresa come causa.
+Rapporto, log e lettura in `benchmarks_completed_bf16_20261118/` e
+`docs/reviews/contrastive_readout_results_20261118.md`.
+
 **Consegna automatica a 3-launcher non riuscita:** il tool ha rifiutato l'ID individuato
 perché la chat è di tipo ChatGPT, non una chat Codex raggiungibile; anche l'accesso UI
 all'app è vietato dalla piattaforma. Nessun messaggio consegnato e nessun nuovo job inviato.

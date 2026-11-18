@@ -7,3 +7,14 @@ JobID|State|ExitCode|ElapsedRaw|AllocCPUS|AllocTRES
 64772690|COMPLETED|0:0|759|32|billing=32,cpu=32,gres/gpu=4,mem=240G,node=1
 fine: max_steps, passo 576
 {"status": "PAIRED_BENCHMARK_COMPLETE", "arm": "CR", "steps": 576}
+
+2026-11-18T20:05:00+01:00
+JobID|State|ExitCode|ElapsedRaw|AllocCPUS|ReqMem
+64775502|COMPLETED|0:0|61|4|8G
+64775571|FAILED|2:0|124|8|30G
+lettura: rapporto completo negativo, non crash
+report_status: FAILED_REQUIRES_REVIEW
+training_approved: false
+report_sha256: deb6b8178362e23512f105d95b3859c28945d9ffa5356a653f1c8cad67c929fc
+log_sha256: ec58c42a9e66dd6234a759060392cfe97659fe9f769ee06d48c03892b82e9a35
+consuntivo_catena: 5.284444 GPU-ore, 51.371111 core-ore
