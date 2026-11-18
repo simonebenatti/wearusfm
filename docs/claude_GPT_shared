@@ -8880,6 +8880,17 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Suite CPU completa sul codice `18f2b69`: 3.435 passati, nessun fallimento.
 - Consuntivo: 3,510 GPU-ore sul tetto di 4,75; checkout 0,039 core-ore. Nessun job aperto.
 
+### 2026-11-18 | Claude | TEMPONet su emg2pose: proposta di un training lungo (100 epoche) per la firma di Simone; nessun job | Ramo `claude/temponet-residual-419618`
+
+- Simone: «19 epoche di training? non ono poxhine? soliamernte si fanno 100 almeno». Poi «Sì, preparala», alla domanda «Preparo una
+  proposta con un training piu' lungo?». Documento `docs/temponet_emg2pose_long_training_proposal_20261118.md`.
+- Un solo fattore, 100 epoche invece di 19; ricetta e valutazione come la L1. Si valutano sul test i checkpoint 19, 50 e 100 dello
+  stesso run, dichiarati prima e tutti riportati. Il confronto principale e' fra l'epoca 100 e la 19 dello stesso run, con la regola
+  ±0,3 gradi dello studio delle loss.
+- Opzioni: A, rete senza salti, al massimo 15,25 GPU-ore (consigliata); B, A piu' la residua, al massimo 32,5 GPU-ore. Restano 658.634
+  ore locali del progetto (`saldo -b`, 18/11 alle 23:26). Il job deve finire prima della manutenzione totale del 23-25/11.
+- Codice da aggiungere solo dopo l'approvazione: `EPOCHS` e due limiti nello sbatch, `--checkpoint` nella valutazione.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13027,3 +13038,10 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   per il limite di 3:30: col senno di poi bastava. Il limite di 4:00 non e' costato nulla in piu', perche' si conta il tempo usato.
 - Con un caricamento di 1.938 s (2.190 l'11/11) il job sarebbe finito 679 s prima del limite di 3:30. L'epoca 19 sarebbe partita
   circa 530 s prima dei 12.000 s.
+
+### 2026-11-18 | Claude | Training lungo di TEMPONet: tre sguardi al test da decidere prima | Ramo `claude/temponet-residual-419618`
+
+- La proposta valuta sul test tre checkpoint dello stesso run: epoche 19, 50 e 100. La regola del 10/11 dice «test una volta».
+- Qui gli sguardi sarebbero tre, dichiarati prima, tutti riportati e senza scelta fra loro. L'alternativa e' il solo modello finale, che
+  perde pero' il confronto dentro lo stesso run.
+- La scelta e' di Simone (decisione 2 della proposta) e va registrata prima del lancio.
