@@ -6,16 +6,14 @@
 
 ### Linea 3: lanci alla chat 3-launcher — istruzione del 18/11/2026
 
-Simone: «ora i lanci li faccoamo gestire alla tua chat sorella 3-launcher».
-Per la linea log-quadratica/contrastiva, GPT scientifico prepara e pubblica piani,
-SHA, pin, risorse e comandi; la chat **3-launcher** esegue gli invii tramite il
-submitter e ledger comuni. Chiarimento diretto successivo di Simone: «3 launcher sei tu».
-Questa chat assume quindi l'esecuzione dei lanci della linea 3; nessuna delega esterna
-necessaria e nessun nuovo consenso per la catena già autorizzata.
-Questa istruzione successiva sostituisce, per la linea 3, gli invii diretti e la
-precedente delega a semplicione. Le autorizzazioni già date restano valide;
-nessun nuovo consenso operativo. Nessuna duplicazione dei cinque benchmark già
-sottomessi. Letture, analisi, review, commit e push restano autonomi in questa chat.
+Simone ha assegnato due ruoli distinti per la linea log-quadratica/contrastiva.
+**GPT scientifico** formula le ipotesi, prepara codice, protocolli, criteri e
+pacchetti di esecuzione. Interpreta i rapporti e propone a Simone il seguito.
+**3-launcher** gestisce i lanci e i controlli operativi su Leonardo: verifica
+checkout e pin, usa submitter e ledger comuni, controlla coda, esiti e risorse,
+raccoglie log e rapporti e ne restituisce percorsi e hash.
+La regola vale anche quando le due chat leggono lo stesso worktree. Le
+autorizzazioni operative già date restano valide per la catena concordata.
 
 ### Sottomissioni affidate a semplicione — istruzione successiva del 28/10/2026
 
