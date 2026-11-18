@@ -1,0 +1,39 @@
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/temponet-emg2pose-loss-0342170 @ 0342170a2edaa9160a67e4c03e7f121fd40a87b6
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+GPU: NVIDIA A100-SXM-64GB | torch 2.2.0a0+git6c8c5ad | CUDA 12.1
+== 2026-11-18T18:57:31+01:00 modo train, codice 0342170a2edaa9160a67e4c03e7f121fd40a87b6 in /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/temponet-emg2pose-loss-0342170; uscite /leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/loss_20261118/train_mse; loss mse, limite del training 04:30:00
+training: 17136 registrazioni, 61.7 GiB in 1833 s, 21039763 finestre, 328746 passi per epoca; validazione 4376498 finestre; k = 0
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+controllo eager/graph: differenza massima 0, 18.74 ms contro 14.60 ms per passo
+epoca 1: train MSE (std) 0.8913, 1.082 ms per passo, validazione grezza 16.219 gradi, 356 + 14 s
+epoca 2: train MSE (std) 0.8692, 1.081 ms per passo, validazione grezza 16.070 gradi, 355 + 13 s
+epoca 3: train MSE (std) 0.8628, 1.081 ms per passo, validazione grezza 16.060 gradi, 355 + 14 s
+epoca 4: train MSE (std) 0.8590, 1.081 ms per passo, validazione grezza 16.132 gradi, 355 + 14 s
+epoca 5: train MSE (std) 0.8563, 1.081 ms per passo, validazione grezza 16.149 gradi, 355 + 14 s
+epoca 6: train MSE (std) 0.8541, 1.081 ms per passo, validazione grezza 16.090 gradi, 355 + 14 s
+epoca 7: train MSE (std) 0.8526, 1.081 ms per passo, validazione grezza 16.147 gradi, 355 + 14 s
+epoca 8: train MSE (std) 0.8512, 1.081 ms per passo, validazione grezza 15.997 gradi, 355 + 14 s
+epoca 9: train MSE (std) 0.8500, 1.081 ms per passo, validazione grezza 15.953 gradi, 355 + 14 s
+epoca 10: train MSE (std) 0.8490, 1.081 ms per passo, validazione grezza 15.950 gradi, 355 + 14 s
+epoca 11: train MSE (std) 0.8481, 1.081 ms per passo, validazione grezza 15.951 gradi, 355 + 14 s
+epoca 12: train MSE (std) 0.8473, 1.081 ms per passo, validazione grezza 15.979 gradi, 355 + 14 s
+epoca 13: train MSE (std) 0.8467, 1.081 ms per passo, validazione grezza 15.967 gradi, 355 + 14 s
+epoca 14: train MSE (std) 0.8461, 1.081 ms per passo, validazione grezza 16.015 gradi, 355 + 14 s
+epoca 15: train MSE (std) 0.8454, 1.081 ms per passo, validazione grezza 16.040 gradi, 355 + 14 s
+epoca 16: train MSE (std) 0.8449, 1.081 ms per passo, validazione grezza 16.002 gradi, 355 + 14 s
+epoca 17: train MSE (std) 0.8444, 1.081 ms per passo, validazione grezza 15.906 gradi, 355 + 14 s
+epoca 18: train MSE (std) 0.8439, 1.081 ms per passo, validazione grezza 16.302 gradi, 355 + 14 s
+epoca 19: train MSE (std) 0.8435, 1.081 ms per passo, validazione grezza 15.999 gradi, 355 + 14 s
+fine: ok in 10339 s, memoria massima 78.2 GB
+5.5M	/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/loss_20261118/train_mse

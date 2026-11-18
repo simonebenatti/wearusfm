@@ -8858,6 +8858,20 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - D inviato con limite 05:00:00 (emendamento in `docs/decisioni.md`) e la sua valutazione in `afterok`; ID nel ledger. Spesa attesa
   dello studio circa 11,1 GPU-ore, esposizione massima circa 16,4.
 
+### 2026-11-18 | Claude | Studio delle loss di TEMPONet: esito di B (smooth L1) e C (MSE) con la regola congelata; D in corso | Ramo `claude/temponet-db8-20261109`
+
+- Training B 64776546 e C 64776581 dal checkout `0342170`, `COMPLETED 0:0` in 10.392 e 10.339 s (caricamento 1.833 s), 19 epoche,
+  controllo eager/graph a differenza 0. Valutazioni 64776551 e 64776582 `COMPLETED 0:0` in 21 min; cancello superato (0,840 e 0,862;
+  A 0,831).
+- Test con EMA, media fra utenti, Δ rispetto ad A (L1, 14,55 / 17,67 / 17,60), regola di `docs/decisioni.md`:
+  - B smooth L1: user 14,75 (+0,20), stage 17,73 (+0,06), user_stage 17,67 (+0,07). Non distinguibile da L1 con un seme in tutte e tre.
+  - C MSE: user 15,05 (+0,50), stage 18,15 (+0,47), user_stage 18,15 (+0,55). Peggiore di L1 in tutte e tre, da confermare con altri
+    semi.
+  - Utenti migliori / peggiori rispetto ad A: B 1/19, 58/100, 7/13; C 0/20, 8/150, 2/18. Descrittivo: con un seme il modello e' lo
+    stesso per tutti gli utenti, quindi i conteggi non separano l'effetto della loss da quello del seme.
+- Raccolti sul Mac report, storie e log (senza checkpoint) in `results/temponet_emg2pose/loss_study_20261118/`; confronto in
+  `confronto_bc/`. D (training 64777099, valutazione 64777100) e' in corso; il certificato ssh e' stato rinnovato da Simone alle 21:50.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
