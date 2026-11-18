@@ -9,8 +9,10 @@
 Simone: «ora i lanci li faccoamo gestire alla tua chat sorella 3-launcher».
 Per la linea log-quadratica/contrastiva, GPT scientifico prepara e pubblica piani,
 SHA, pin, risorse e comandi; la chat **3-launcher** esegue gli invii tramite il
-submitter e ledger comuni. Identità verificata nell'app: chat
-`6afdde9b-b61c-83eb-a0e7-df812aa34a03`, titolo esatto `3-launcher`.
+submitter e ledger comuni. La chat individuata nell'app con titolo esatto `3-launcher`, ID
+`6afdde9b-b61c-83eb-a0e7-df812aa34a03`, è di tipo ChatGPT: il tool di invio restituisce
+«No Codex thread found». Destinazione Codex da chiarire, senza creare duplicati o
+sostituirsi all'operatore. Prompt pronto in docs/prompt_3_launcher_contrastive_readout_20261118.md.
 Questa istruzione successiva sostituisce, per la linea 3, gli invii diretti e la
 precedente delega a semplicione. Le autorizzazioni già date restano valide;
 nessun nuovo consenso operativo. Nessuna duplicazione dei cinque benchmark già

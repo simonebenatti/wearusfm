@@ -8,6 +8,14 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**Consegna automatica a 3-launcher non riuscita:** il tool ha rifiutato l'ID individuato
+perché la chat è di tipo ChatGPT, non una chat Codex raggiungibile; anche l'accesso UI
+all'app è vietato dalla piattaforma. Nessun messaggio consegnato e nessun nuovo job inviato.
+Pacchetto pubblicato e verificato, comandi a 2a57d4a7, esecuzione congelata 0c3c5293.
+Prompt pronto: `docs/prompt_3_launcher_contrastive_readout_20261118.md`.
+Chiesto a Simone solo l'ID/link della chat Codex corretta, non un nuovo consenso.
+Gli ID di checkout/readout restano da sottomettere esclusivamente da 3-launcher.
+
 **Pacchetto CPU pronto per 3-launcher:** checkout congelato
 `0c3c52936e8b7e9166f351ff8003b40dfe40427e`; comandi concreti e pin in
 `results/infra/contrastive_comparison_20261116/releases/readout_bf16_20261118/submission_plan.json`.

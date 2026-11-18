@@ -6684,3 +6684,12 @@ CPU in releases/readout_bf16_20261118, sorgenti 46938f31…9320 invariati.
 Prima lettura negativa per parità grad_norm nei 256 update a peso nullo; rapporti attivi
 nei limiti. CPU necessaria per completare checkpoint e riprese, senza nuovi criteri.
 Nessun training lungo rilasciato. Consegna docs/reviews/contrastive_readout_release_20261118.md.
+
+### 18/11/2026 — GPT: pacchetto CPU pubblicato, consegna inter-chat bloccata
+
+Pacchetto 0c3c5293 e comandi 2a57d4a7 pubblicati su origin con verifica SHA remoto.
+Tentato invio autorizzato alla chat 3-launcher individuata: tool restituisce
+«No Codex thread found»; il target è di tipo ChatGPT e l'accesso UI all'app è vietato.
+Nessuna consegna riuscita, nessun nuovo job inviato da GPT. Salvato prompt completo in
+docs/prompt_3_launcher_contrastive_readout_20261118.md. Chiesto solo il target Codex
+corretto; restano validi tutte le autorizzazioni e il pacchetto tecnico già approvato.
