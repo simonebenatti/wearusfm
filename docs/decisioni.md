@@ -8173,3 +8173,29 @@ Consuntivo (tempo trascorso, 1 GPU per job): collaudi 0:04:58 + 0:02:05; B 2:53:
 0:16:28. In tutto 37.877 s = **10,52 GPU-ore** (circa 84 ore locali), sulle circa 12 approvate e sotto il tetto di 12,5. Due checkout
 CPU su `lrd_all_serial`: 2 min 3 s e 40 s. Nessun nuovo tentativo. Attivita' conclusa; risultati, collaudi e log in
 `results/temponet_emg2pose/loss_study_20261118/` (confronto in `confronto/`).
+
+### 2026-11-18 — TEMPONet su emg2pose: conferma con altri semi del confronto L1 / MSE APPROVATA da Simone; regola e tetto congelati prima del primo job (Claude)
+
+Alla domanda «Approvi la conferma con i semi 1 e 2, circa 13 GPU-ore?» Simone risponde «Sì, approvo». Proposta
+`docs/temponet_emg2pose_loss_seeds_proposal_20261118.md`, approvata nella versione `d0bf277`. L'approvazione comprende 4 training e 4
+valutazioni (regola del 28/10); smooth L1 e residua con altri semi non sono approvate.
+
+**Verifica prima del lancio**: workflow `wf_27ae4d80-d4f`, critico e controllo indipendente dei conti. Il critico dice «DA RIVEDERE»
+con due bloccanti: la regola contava il seme 0, cioe' il risultato da confermare (ramo «migliore» impossibile, probabilita' vera 1/4 e
+non 1/8, soglia effettiva sui semi nuovi circa 0,20); e la dichiarazione dei costi era incompleta. Corretti qui, prima di ogni job; i job e
+il costo non cambiano. **Tetto dell'attivita': 14 GPU-ore spese e 1 core-ora.** Congelati qui:
+
+1. **Bracci:** L1 e MSE con i semi 1 e 2, dal checkout `temponet-emg2pose-seeds-d0bf277` (64789455, `COMPLETED 0:0`), `SEED`
+   esplicito, `TRAIN_TIME=04:30:00`; valutazioni in `afterok` con limite 0:45. Tutto il resto come A e C.
+2. **Lettura**, per condizione, con i `mean_over_users_deg` non arrotondati e Δ_s = MSE_s - L1_s, **solo sui semi 1 e 2**: MSE peggiore
+   confermato se Δ_1 > 0, Δ_2 > 0 e media > +0,30 gradi; MSE migliore confermato se Δ_1 < 0, Δ_2 < 0 e media < -0,30; non leggibile se
+   a uno dei quattro bracci nuovi manca il test; altrimenti non confermato. Seme 0 e media dei tre semi sono descrittivi. Si legge con
+   `scripts/temponet_emg2pose_seeds_compare.py`.
+3. **Controlli alla raccolta**, prima della lettura, fatti dallo script: per ogni braccio `run.json` ok, con il seme e la loss attesi;
+   `train_loss` dell'`eval.json` uguale; checkpoint valutato nella cartella del training. Il seme del training si legge dal `run.json`:
+   `args.seed` dell'`eval.json` e' quello della chiamata di valutazione.
+4. **Fallimenti tecnici**: nessun nuovo invio senza Simone.
+5. **Baseline**: resta quella firmata il 12/11, seme 0; cambiarla richiede una nuova firma.
+6. **Risorse**: 4 training con 1 GPU, 8 CPU, 120 GB, limite 4:30 (≤ 4,5 GPU-ore ciascuno); 4 valutazioni con 1 GPU, limite 0:45 (≤ 0,75).
+   Attese circa 13-13,4 GPU-ore (circa 104-107 ore locali); esposizione massima 21 GPU-ore (168 ore locali). Checkout su
+   `lrd_all_serial`: 1 CPU, limite 10 min, 41 s. Saldo alle 23:59: residuo 658.634 ore locali, senza ancora i job del 18/11.

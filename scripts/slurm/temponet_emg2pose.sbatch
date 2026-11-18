@@ -29,7 +29,7 @@
 # Le uscite vanno in una cartella NUOVA fuori dal codice; nessun riavvio automatico, nessun nuovo tentativo.
 set -uo pipefail
 MODE="${1:?smoke, losssmoke, train o eval}"; MANIFEST="${2:?manifest del passo 0}"; OUT="${3:?cartella delle uscite}"; MODEL_DIR="${4:-}"
-LOSS="${LOSS:-l1}"; TRAIN_TIME="${TRAIN_TIME:-03:30:00}"; SEED="${SEED:-0}"
+LOSS="${LOSS:-l1}"; TRAIN_TIME="${TRAIN_TIME:-03:30:00}"; SEED="${SEED-0}"  # vuota = errore, non seme 0 (review del 18/11)
 case "$SEED" in ""|*[!0-9]*) echo "SEED deve essere un intero non negativo: $SEED"; exit 2;; esac
 case "$LOSS" in l1|smoothl1|mse|mse_vel) ;; *) echo "LOSS: l1, smoothl1, mse o mse_vel"; exit 2;; esac
 # tempo massimo del training prima dell'ultima epoca: 600 s di margine col limite di 3 ore e 30 (come l'11/11), 900 s con i limiti piu' lunghi

@@ -8885,6 +8885,19 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   0,10) a spese della posa.
 - Nessuna loss si adotta su un seme; nessun job aperto.
 
+### 2026-11-18 | Claude | TEMPONet su emg2pose: conferma con i semi 1 e 2 del confronto L1 / MSE approvata; regola corretta dopo la review, invii | Ramo `claude/temponet-db8-20261109`
+
+- Simone: «Sì, preparala», poi «Sì, approvo» alla conferma con i semi 1 e 2 (circa 13 GPU-ore). Proposta
+  `docs/temponet_emg2pose_loss_seeds_proposal_20261118.md` (`d0bf277`, con `SEED` nello sbatch).
+- Review prima del lancio (workflow `wf_27ae4d80-d4f`): il critico dice «DA RIVEDERE». Primo bloccante: la regola contava il seme 0,
+  cioe' il risultato da confermare, e ora si legge solo sui semi 1 e 2. Secondo bloccante: costi e tetto incompleti, ora completati.
+  Minori corretti: una `SEED` vuota nel ramo e' un errore; c'e' un controllo del seme dal `run.json` alla raccolta
+  (`scripts/temponet_emg2pose_seeds_compare.py`); la baseline firmata resta quella del seme 0. Regola e tetto (14 GPU-ore) congelati in
+  `docs/decisioni.md` prima del primo job.
+- Deploy `deploy/temponet-emg2pose-seeds-20261118` = `d0bf277`; checkout 64789455 `COMPLETED 0:0`. Al primo tentativo avevo scritto a
+  mano uno SHA completo sbagliato: il push e' stato rifiutato senza creare ref, poi e' stato rifatto con lo SHA risolto da `git rev-parse`.
+- Invii: L1 e MSE con i semi 1 e 2 e valutazioni in `afterok`; ID nel ledger (`TEMPONET-E2P-seeds-*-20261118`).
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
