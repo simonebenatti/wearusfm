@@ -8,6 +8,19 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**18/11, CUDA ACCODATO: 64730941**, `CONTRAST-CUDA-mmap-20261118`, afterok:64730738.
+Checkout 64730738 in attesa quota CPU; CUDA partirà soltanto dopo il suo completamento riuscito.
+Codice congelato **3b5d4be2bda36bdc601ae3c50ae9b8ace696f16e**, runtime source **6b421b75…754aa**.
+Rettifica operativa pubblicata in 7e96014: file sbatch storico immutabile byte-identico,
+CODE_DIR e EXPECTED_SHA nuovi; controlli SHA/pulizia/readonly all'avvio. Non duplicare nessuno dei due job.
+Ricevute in mmap_submission_20261118, comando in queued_cuda_submission_plan.json.
+**Cinque benchmark NON sottomessi**: dopo CUDA COMPLETED 0:0 raccogliere/validare rapporto e probe,
+archiviare e pubblicare esito positivo; quindi usare i cinque comandi del submission_plan.json.
+La loro autorizzazione persiste. Nessun monitor/automazione creato; nessun training scientifico autorizzato.
+Output CUDA: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261118_mmap/cuda.json`.
+Log: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/contrastive_gpu_64730941.out`.
+Le voci seguenti sono snapshot precedenti.
+
 **18/11, checkout sottomesso:** 64730738, `CONTRAST-CHECKOUT-mmap-20261118`,
 4 CPU, 2 GiB, 4 minuti, inizialmente PENDING per QOSMaxCpuPerUserLimit.
 Congelato a **3b5d4be2bda36bdc601ae3c50ae9b8ace696f16e**, pubblicato su origin e

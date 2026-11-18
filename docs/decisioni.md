@@ -6582,3 +6582,14 @@ Release 3b5d4be pubblicata e verificata; comandi in afe7cff. Checkout 64730738 s
 con submitter/ledger comuni: 4 CPU, 2 GiB, 240 s. Stato iniziale PENDING,
 QOSMaxCpuPerUserLimit, quota occupata da altra campagna. Nessun duplicato o intervento
 sugli altri job. Ricevuta in mmap_submission_20261118/checkout_state.json.
+
+### 18/11/2026 — CUDA accodato: 64730941 dopo checkout 64730738
+
+Per non attendere la quota CPU con un monitor, pubblicata rettifica operativa 7e96014:
+CUDA sottomesso con afterok sul checkout, che verifica SHA/pulizia/readonly prima del successo;
+il launcher ricontrolla gli stessi vincoli. File sbatch preesistente e immutabile, byte-identico
+al nuovo, hash remoto d3f128ae…128f verificato. CODE_DIR/EXPECTED_SHA sempre 3b5d4be del nuovo
+checkout. Nessun sorgente, parametro, risorsa o soglia cambiato. Review tecnica indipendente
+favorevole; nessuna nuova review attribuita a Claude. CUDA 64730941 sottomesso tramite ledger,
+4 GPU/32 CPU/240 GiB/30 minuti, 2 GPU-ore massime. I cinque benchmark non sono sottomessi:
+richiedono ancora il collaudo positivo letto e pubblicato. Nessuna automazione in background.

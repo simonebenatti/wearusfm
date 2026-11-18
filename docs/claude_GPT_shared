@@ -5968,6 +5968,15 @@ Correzione 3b5d4be2bda36bdc601ae3c50ae9b8ace696f16e, piano afe7cff, SHA origin e
 verificati. Checkout 64730738 sottomesso tramite ledger comune; PENDING per quota CPU
 utente occupata. Nessun job CUDA/benchmark sottomesso in questo snapshot, nessun duplicato.
 
+### 2026-11-18 | GPT | CUDA 64730941 accodato dopo checkout 64730738
+
+Autorizzazione di Simone eseguita tramite submitter/ledger: CUDA afterok:64730738, codice 3b5d4be,
+4 GPU, 32 CPU, 240 GiB, 30 minuti. Accodamento operativo documentato in 7e96014, launcher immutabile
+byte-identico e pin remoto verificato; esecuzione esclusivamente dal nuovo CODE_DIR. Ricevute in
+mmap_submission_20261118. Cinque benchmark ancora non sottomessi, gate CUDA positivo da leggere.
+Nessun monitor o automazione; nessun training scientifico. SHA della correzione comunicato a Simone
+per eventuale review aggiuntiva di Claude, senza attribuirgli un'approvazione non ricevuta.
+
 ## 2) Problemi trovati
 
 ### 2026-11-17 | GPT | Compatibilità PyTorch del collaudo: Path con mmap
@@ -8867,3 +8876,10 @@ confronti numerici devono passare integralmente con sorgenti correnti prima dei 
 QOSMaxCpuPerUserLimit sul checkout 64730738 è un vincolo di allocazione: non attesta un
 fallimento del codice. Non abbassare risorse o duplicare il job per aggirarlo. La prosecuzione
 CUDA/benchmark resta già autorizzata e subordinata ai gate pubblicati.
+
+### 2026-11-18 | GPT | Checkout in coda: gate mantenuto con afterok
+
+La quota CPU occupata non giustifica duplicare il checkout. CUDA può essere accodato in sicurezza:
+checkout e launcher applicano i controlli prima dell'esecuzione. sbatch legge subito il launcher,
+perciò si usa la copia storica già esistente, identica e pinnata, mentre CODE_DIR è quello nuovo.
+I benchmark richiedono invece la lettura scientifico-tecnica del rapporto CUDA e non sono accodati.

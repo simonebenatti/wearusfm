@@ -1,0 +1,45 @@
+{
+ "id": "CONTRAST-CUDA-mmap-20261118",
+ "creato": "2026-11-18T10:10:28+01:00",
+ "agente": "gpt",
+ "campagna": "CONTRASTIVE-v2-20261116",
+ "gpu_ore_stimate": 2.0,
+ "codice_sha": "3b5d4be2bda36bdc601ae3c50ae9b8ace696f16e",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONTRAST-CUDA-mmap-20261118",
+  "--comment=wearusfm:CONTRAST-CUDA-mmap-20261118",
+  "--dependency=afterok:64730738",
+  "--time=00:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261118-mmap,EXPECTED_SHA=3b5d4be2bda36bdc601ae3c50ae9b8ace696f16e",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-benchmarks/scripts/slurm/contrastive_preflight_gpu.sbatch",
+  "results/infra/contrastive_comparison_20261116/releases/mmap_20261118/cuda.job.json"
+ ],
+ "dopo": "CONTRAST-CHECKOUT-mmap-20261118",
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-18T10:10:28+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-18T10:10:28+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-18T10:10:30+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 64730941,
+   "uscita": 0,
+   "stdout": "64730941\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  }
+ ],
+ "job_slurm": 64730941,
+ "uscita": 0,
+ "stdout": "64730941\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}
