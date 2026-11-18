@@ -7821,3 +7821,8 @@ submitter/ledger comuni,nessun retrySLURMautomatico. Protocollo in
 30MT100-G49k,TEMPONetraw adattata,loss/supporti comuni. Gli adattatori,il significato dei
 tempi e il costo dei fit richiedono ancora collaudo/review prima dell'esecuzione scientifica.
 Non sono autorizzati implicitamente pretraining suSEEDS,nuova loss o un quarto braccio.
+
+Seguito operativo: codiceb8c0718 pubblicato e verificato; acquisizione approvata dalcritico,
+70testverdi. Sottomessi64759644→64759680→64759758, soloCPU e dipendenzeafterok.
+Primojob in attesaQOSMaxCpuPerUserLimit; dati completi e audit ancora da raccogliere.
+Nessuna modifica dei job delle altre linee né lancio dei tre bracci scientifici.

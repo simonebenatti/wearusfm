@@ -64,3 +64,31 @@ bracci con soggetti separati15/5/5 e checkpoint30M T100-G49k prespecificato. Il 
 richiede ancora gli adattatori SEEDS, una convenzione temporale comune verificata,
 il collaudo della memoria con134canali e la ricetta/costo di ottimizzazione. Questa
 acquisizione non afferma che quei fit siano già pronti o già eseguiti.
+
+## Sottomissioni e seguito
+
+Codice congelato **b8c0718133963436b48eb2972e9ce1d4910cffea**, pubblicato suorigin e sul
+riferimento remoto `deploy/seeds-acquisition-20261118`, senza aggiornaremain.
+Review `docs/reviews/seeds_acquisition_review_20261118.md`: favorevole all'acquisizione,
+70test verdi; confronto scientifico ancora da qualificare.
+
+| Fase | Job | Stato iniziale verificato |
+|---|---:|---|
+| Checkout |64759644|PENDING, QOSMaxCpuPerUserLimit|
+| Download |64759680|PENDING, Dependency sul checkout|
+| Audit completo |64759758|PENDING, Dependency sul download|
+
+L'invio audit ha perso la rispostaSSH; la riconciliazione del submitter ha trovato il job
+esistente e salvato la ricevuta. Nessuna risottomissione. Tutte le ricevute sono in
+`results/infra/seeds_20261118/submission/`. La coda non consuma le core-ore prenotate.
+
+Alla conclusione leggere accounting parent, log e JSON:
+`$WORK/wearusfm_runs/results/seeds_20261118/download_64759680.json` e
+`$WORK/wearusfm_runs/results/seeds_20261118/audit_64759758.json`.
+Verificare statusdownloadcomplete,5880file verificati, manifestSHA
+`fcfb6308b5155fdd14e63109b200a2208c88326c602e8a963c746b76e14856d7`,
+auditfull_dataset_passtrue,5850trial+25calibrazioni,COMPLETED0:0 e consuntivi.
+UnFAILED/TIMEOUT/hashdifforme richiede diagnosi, non riavvio automatico. Riportare anche
+le durate e le anomalie senza descrivere i soli checksum come prova di allineamento.
+Raccogliere gli aggregati sulMac e aggiornare registro/risultati concommit/push.
+Nessun monitor persistente o automazione di completamento è stato creato.

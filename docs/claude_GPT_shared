@@ -8480,6 +8480,18 @@ Protocollo15/5/5 separa persone intere; checkpoint30MT100-G49k dichiarato prima 
 nessun training scientifico lanciato. Dettagli: docs/seeds_acquisition_execution_20261118.md,
 docs/seeds_benchmark_protocol_20261118.md, results/infra/seeds_20261118/.
 
+### 2026-11-18 | GPT coordinamento | SEEDS: catena sottomessa | Codiceb8c0718133963436b48eb2972e9ce1d4910cffea
+
+Review indipendente favorevole dopo correzione walltime seriale4h verificata dal scheduler;
+70testCPU verdi e un trial+calibrazione reale integri. OriginSHA verificato e refdeploy isolato
+pubblicato suLeonardo. Submitter/ledger comuni: checkout64759644,download64759680,
+audit64759758, dipendenzeafterok in catena. Nessun nuovo fit o GPU, nessuna automazione.
+Snapshot iniziale: checkoutPENDING QOSMaxCpuPerUserLimit, altriPENDING Dependency.
+La rispostaSSH dell'invio audit era ambigua; riconciliazione standard ha trovato64759758,
+registrato come sottomesso senza un secondo invio. Ricevute e stato in
+results/infra/seeds_20261118/submission/. Download completo non ancora iniziato allo snapshot;
+audit completo non ancora disponibile. Limite12,167coreh totali,0GPUh.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12482,3 +12494,11 @@ montaggio misto può costare molta memoria; benchmarkbatch1 prima del fine-tunin
 Il protocollo prepara3bracci,non dimostra già causalmente il valore del pretraining senza
 il distinto controlloFMda zero. Testpredittivo SEEDS sigillato; nessuna metrica test usata
 per definire split,checkpoint o architettura. Stato completo download/audit ancora da leggere.
+
+### 2026-11-18 | GPT coordinamento | SEEDS: attesa risorse, non esito scientifico | Codiceb8c0718
+
+Il primo job64759644 attendeQOSMaxCpuPerUserLimit; download64759680 e audit64759758 sono
+in dipendenza. Non forzare la coda, cancellare altri job o creare duplicati. Il payload resta
+non attestato finché download e audit non sonoCOMPLETED0:0 e i report non concordano con
+manifest/hash. L'uscita0:0 mostrata da sacct perPENDING non significa job completato.
+AmbiguitàSSH dell'audit risolta tramite riconciliazione, nessun invio doppio.
