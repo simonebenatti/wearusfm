@@ -1,0 +1,43 @@
+{
+  "frozen_commit": "3b5d4be2bda36bdc601ae3c50ae9b8ace696f16e",
+  "source_sha256": "6b421b7525a5af45d0371382c104c38bc7bb76ca1cba0acf81ca050f6fe754aa",
+  "amendment": {
+    "path": "docs/reviews/contrastive_mmap_queue_amendment_20261118.md",
+    "bytes": 2068,
+    "sha256": "585d4d41e494155c0621fcf54cbb67c5b1d8de0473bf4ae71f0cb3b9fa20247a"
+  },
+  "logical_id": "CONTRAST-CUDA-mmap-20261118",
+  "command": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+    "--id",
+    "CONTRAST-CUDA-mmap-20261118",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "CONTRASTIVE-v2-20261116",
+    "--gpu-ore",
+    "2",
+    "--dopo",
+    "CONTRAST-CHECKOUT-mmap-20261118",
+    "--",
+    "--time=00:30:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261118-mmap,EXPECTED_SHA=3b5d4be2bda36bdc601ae3c50ae9b8ace696f16e",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-benchmarks/scripts/slurm/contrastive_preflight_gpu.sbatch",
+    "results/infra/contrastive_comparison_20261116/releases/mmap_20261118/cuda.job.json"
+  ],
+  "dependency_logical_id": "CONTRAST-CHECKOUT-mmap-20261118",
+  "dependency_slurm_id": 64730738,
+  "dependency_type": "afterok",
+  "checkout_verification": "versioned checkout success includes SHA/clean/read-only; CUDA launcher rechecks SHA/clean before execution",
+  "benchmarks_submitted": false,
+  "benchmark_gate": "complete positive CUDA and probe archived/validated/published before five submissions",
+  "resources_unchanged": true,
+  "training_approved": false,
+  "launcher_transport": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-benchmarks/scripts/slurm/contrastive_preflight_gpu.sbatch",
+    "sha256": "d3f128ae4dc1ea7565aa4603069f5578260f261268430b4c262b02c2d619128f",
+    "byte_identical_to_frozen_new_launcher": true,
+    "runtime_code_dir_unchanged": true
+  }
+}

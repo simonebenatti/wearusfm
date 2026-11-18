@@ -8,6 +8,14 @@ Lavorare in `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-logcontr
 
 ## Stato attuale
 
+**18/11, checkout sottomesso:** 64730738, `CONTRAST-CHECKOUT-mmap-20261118`,
+4 CPU, 2 GiB, 4 minuti, inizialmente PENDING per QOSMaxCpuPerUserLimit.
+Congelato a **3b5d4be2bda36bdc601ae3c50ae9b8ace696f16e**, pubblicato su origin e
+`deploy/contrastive-v2-20261118-mmap` su Leonardo, entrambi verificati.
+Comandi esatti in `releases/mmap_20261118/submission_plan.json` (commit afe7cff).
+Non duplicare il checkout; verificare completamento e poi CUDA secondo piano.
+Nessuno dei sei job GPU è ancora sottomesso in questo snapshot.
+
 **18/11, correzione pronta per rilancio autorizzato:** sei conversioni Path/string applicate;
 150 test distinti passati. Manifest rigoroso di compatibilità in `compatibility_20261118/`,
 digest corrente `6b421b7525a5af45d0371382c104c38bc7bb76ca1cba0acf81ca050f6fe754aa`.

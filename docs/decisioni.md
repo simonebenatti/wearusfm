@@ -6575,3 +6575,10 @@ Il tentativo fallito 64706211 resta nel consuntivo: massimo totale con le fasi r
 regressioni, review tecnica indipendente e release pubblicata; dopo CUDA, lettura e pubblicazione
 positiva prima dei cinque benchmark. Nessun training scientifico o monitor. Protocollo operativo:
 docs/reviews/contrastive_mmap_release_20261118.md. Autorità: istruzione diretta di Simone del 18/11.
+
+### 18/11/2026 — Checkout mmap sottomesso, quota CPU occupata
+
+Release 3b5d4be pubblicata e verificata; comandi in afe7cff. Checkout 64730738 sottomesso
+con submitter/ledger comuni: 4 CPU, 2 GiB, 240 s. Stato iniziale PENDING,
+QOSMaxCpuPerUserLimit, quota occupata da altra campagna. Nessun duplicato o intervento
+sugli altri job. Ricevuta in mmap_submission_20261118/checkout_state.json.
