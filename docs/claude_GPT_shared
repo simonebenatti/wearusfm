@@ -8918,6 +8918,21 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Rettifica della voce precedente. I «101 passati nei file di TEMPONet» comprendevano `test_db8_classical_baselines.py` (11 test). Ora
   sono 102 con quel file e 91 senza.
 
+### 2026-11-18 | Claude | TEMPONet su emg2pose, training lungo: checkout (64790540), due training e sei valutazioni inviati | Codice 32c5123
+
+- Deploy: `deploy/temponet-emg2pose-long-20261118` = `32c5123` su Leonardo. Checkout `temponet-emg2pose-long-32c5123`, job 64790540,
+  `COMPLETED 0:0` in 19 s.
+- Inviati alle 23:56:
+  - training senza salti `TEMPONET-E2P-LONG-train-plain-20261118` = 64790588: 100 epoche, limite 13:00;
+  - training residuo `TEMPONET-E2P-LONG-train-res-20261118` = 64790605: 100 epoche, limite 15:00;
+  - valutazioni in afterok (45 min l'una): senza salti 64790591 (epoca 19), 64790603 (50) e 64790604 (100); residua 64790608 (19),
+    64790609 (50) e 64790610 (100).
+
+  Uscite in `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/long_20261118/`. Tetto 32,5 GPU-ore.
+- Rettifica delle voci precedenti. Non e' vero che il certificato era «scaduto alle 23:01». Nell'agente c'era gia' un certificato nuovo,
+  valido dalle 21:50 del 18/11 alle 09:50 del 19/11, con un altro seriale. Le letture delle 23:26 sono passate con quello.
+- La raccolta si fa dopo il rinnovo: i training finiscono verso mezzogiorno del 19/11, dopo la scadenza delle 09:50.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B

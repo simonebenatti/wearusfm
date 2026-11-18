@@ -1,7 +1,7 @@
 # TEMPONet su emg2pose: training lungo (proposta, 18/11/2026)
 
 **Stato:** APPROVATA da Simone il 18/11 («Approvo B»), regole congelate in `docs/decisioni.md` (voce del 18/11). Codice: `EPOCHS`,
-limiti 13:00 e 15:00 e `CHECKPOINT` nello sbatch, `--checkpoint` nella valutazione, con test CPU. Nessun job ancora.
+limiti 13:00 e 15:00 e `CHECKPOINT` nello sbatch, `--checkpoint` nella valutazione, con test CPU. Critico APPROVATO; inviati il 18/11 alle 23:56 dal codice `32c5123`.
 
 ## Domanda
 
@@ -78,9 +78,12 @@ Il costo massimo e' calcolato sui limiti richiesti.
 
 | ID logico | cosa | risorse |
 |---|---|---|
-| `TEMPONET-E2P-LONG-checkout-20261118` | checkout di campagna congelato | CPU, 10 min |
-| `TEMPONET-E2P-LONG-train-plain-20261118` | 100 epoche, `ARCH=plain`, `EPOCHS=100`, `TRAIN_TIME=13:00:00` | 1 GPU, 13 h |
-| `TEMPONET-E2P-LONG-train-res-20261118` | 100 epoche, `ARCH=residual`, `EPOCHS=100`, `TRAIN_TIME=15:00:00` | 1 GPU, 15 h |
+| `TEMPONET-E2P-LONG-checkout-20261118` = 64790540 | checkout `temponet-emg2pose-long-32c5123` | CPU, 10 min; `COMPLETED 0:0` |
+| `TEMPONET-E2P-LONG-train-plain-20261118` = 64790588 | 100 epoche, `ARCH=plain`, `EPOCHS=100`, `TRAIN_TIME=13:00:00` | 1 GPU, 13 h |
+| `TEMPONET-E2P-LONG-train-res-20261118` = 64790605 | 100 epoche, `ARCH=residual`, `EPOCHS=100`, `TRAIN_TIME=15:00:00` | 1 GPU, 15 h |
 | `TEMPONET-E2P-LONG-eval-{plain,res}-e{19,50,100}-20261118` | sei valutazioni in afterok (`CHECKPOINT=epoch_19.pt`, `epoch_50.pt`; modello finale) | 1 GPU, 45 min l'una |
 
 Uscite in `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/long_20261118/{plain,residual}/{train,eval_e19,eval_e50,eval_e100}`.
+
+Valutazioni (afterok, 45 min): senza salti 64790591 (e19), 64790603 (e50), 64790604 (e100); residua 64790608 (e19), 64790609 (e50),
+64790610 (e100). Inviate il 18/11 alle 23:56 dal codice `32c5123`.
