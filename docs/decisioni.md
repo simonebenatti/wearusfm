@@ -6693,3 +6693,22 @@ Tentato invio autorizzato alla chat 3-launcher individuata: tool restituisce
 Nessuna consegna riuscita, nessun nuovo job inviato da GPT. Salvato prompt completo in
 docs/prompt_3_launcher_contrastive_readout_20261118.md. Chiesto solo il target Codex
 corretto; restano validi tutte le autorizzazioni e il pacchetto tecnico già approvato.
+
+### 18/11/2026 — GPT: diagnosi delle norme contrastive, nessun allentamento dei criteri
+
+Simone ha consegnato il prompt operativo a 3-launcher e chiede di distinguere
+variabilità bf16 da errore di codice. Analisi locale delle dieci coppie dei cinque
+benchmark: deriva anche fra due esecuzioni della medesima ricetta, prima del riavvio.
+Nei 32 passi prima di 544, mediana dello scarto delle norme CN 3,22%, CR 12,97%;
+dopo il riavvio 2,43% / 13,14%. Il confronto delle riprese non isola quindi l'effetto
+del restart. Prova indipendente CPU del trainer a peso zero: quattro varianti di
+12 update bit-identiche. Nessun difetto di calcolo dimostrato; bf16 plausibile,
+causa non identificata. La tolleranza corrente resta vincolante.
+
+La lettura CPU di 3-launcher, 64775571, conclude FAILED 2:0 con rapporto completo
+FAILED_REQUIRES_REVIEW (sha256 deb6b817…c929fc). Falliscono parità iniziale e limiti
+numerici delle riprese; passano i rapporti delle componenti attive. Gli stati finali
+differiscono, non solo le norme riportate. Nessun retry e nessun training rilasciato.
+Analisi, numeri, limiti e proposta di diagnostico da stato/batch comuni in
+docs/reviews/contrastive_gradient_parity_diagnostic_20261118.md; nessun nuovo job
+da GPT scientifico, nessun cambio ai 117 sorgenti, ricette, lambda o soglie.

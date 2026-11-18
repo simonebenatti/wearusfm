@@ -1,0 +1,138 @@
+{
+  "status": "FAILED_REQUIRES_REVIEW",
+  "training_approved": false,
+  "source_sha256": "46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320",
+  "initial_state_sha256": "ba8a86579992a0eeb2a8072c67eef30b699465ad091671b50123c0073173fa2f",
+  "ratio_CN_over_CR": 2.7105683460757457,
+  "report_path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_preflight_20261118_bf16/preflight_readout.json",
+  "report_bytes": 1094229,
+  "report_sha256": "deb6b8178362e23512f105d95b3859c28945d9ffa5356a653f1c8cad67c929fc",
+  "failure_reason_count": 3071,
+  "failure_reason_examples": [
+    "CN: 4GPU resume numerical bound failed",
+    "CN: resume student: relative displacement 0.032484632331012932 exceeds 0.01",
+    "CN: resume teacher: relative displacement 0.020466268881545187 exceeds 0.01",
+    "CN: resume optimizer.state.0.exp_avg: relative error 0.044368543453863603 exceeds 0.01",
+    "CR: resume contrastive_state.queue.entries.5977.key: relative error 0.020766394008519724 exceeds 0.01",
+    "CR: resume contrastive_state.queue.entries.5978.key: relative error 0.010087200186419258 exceeds 0.01",
+    "CN: zero-weight256-update parity failed",
+    "CR: zero-weight256-update parity failed"
+  ],
+  "arms": {
+    "C0": {
+      "resume": {},
+      "ratios": {
+        "nce": {
+          "active": false,
+          "median": 0.20872581396005913,
+          "p95": 0.3261721952883692,
+          "within_screening_bounds": true
+        },
+        "rnc": {
+          "active": false,
+          "median": 0.8240657997909602,
+          "p95": 1.6109722299064628,
+          "within_screening_bounds": false
+        }
+      }
+    },
+    "CN": {
+      "resume": {
+        "passed": false,
+        "relative_to_full_displacement": {
+          "student": 0.03248463233101293,
+          "teacher": 0.020466268881545187
+        },
+        "floating_state_error_count": 1688,
+        "floating_state_error_max": 0.18837051984887979,
+        "error_examples": {
+          "optimizer.state.252.exp_avg": {
+            "relative_error": 0.18837051984887979,
+            "bound": 0.01
+          },
+          "optimizer.state.253.exp_avg": {
+            "relative_error": 0.17543183806064322,
+            "bound": 0.01
+          },
+          "optimizer.state.48.exp_avg": {
+            "relative_error": 0.1154748457376799,
+            "bound": 0.01
+          },
+          "optimizer.state.110.exp_avg": {
+            "relative_error": 0.10579847309539867,
+            "bound": 0.01
+          },
+          "optimizer.state.248.exp_avg": {
+            "relative_error": 0.10294083507741376,
+            "bound": 0.01
+          }
+        },
+        "full_sha256": "668bb2119d728126c7250903882376099e5be607bfe253a0552c44dedc7eddd5",
+        "resumed_sha256": "8a2ff55083a05c8a829a33db0e1bd200d67b5600ef026bc6f3955034b2638bda"
+      },
+      "ratios": {
+        "nce": {
+          "active": true,
+          "median": 0.22606428126856937,
+          "p95": 0.43111931102155676,
+          "within_screening_bounds": true
+        },
+        "rnc": {
+          "active": false,
+          "median": 0.8324605537014659,
+          "p95": 1.6726956657659813,
+          "within_screening_bounds": false
+        }
+      }
+    },
+    "CR": {
+      "resume": {
+        "passed": false,
+        "relative_to_full_displacement": {
+          "student": 0.060120989731808724,
+          "teacher": 0.023365508379116145
+        },
+        "floating_state_error_count": 1375,
+        "floating_state_error_max": 2.1242336076957242,
+        "error_examples": {
+          "optimizer.state.29.exp_avg": {
+            "relative_error": 2.1242336076957242,
+            "bound": 0.01
+          },
+          "optimizer.state.32.exp_avg": {
+            "relative_error": 1.9732881059286933,
+            "bound": 0.01
+          },
+          "optimizer.state.50.exp_avg": {
+            "relative_error": 1.9267500546025893,
+            "bound": 0.01
+          },
+          "optimizer.state.47.exp_avg": {
+            "relative_error": 1.5383069694294316,
+            "bound": 0.01
+          },
+          "optimizer.state.20.exp_avg": {
+            "relative_error": 1.2089574654676551,
+            "bound": 0.01
+          }
+        },
+        "full_sha256": "574220fa015a341a5caa9786a65085fb960f40ba144f8b4b39ac5dad347b31c8",
+        "resumed_sha256": "135dfd70aa7e4834e3f8e98ba0e8177c80a7168d618dfb1c68c93506e56b63e1"
+      },
+      "ratios": {
+        "nce": {
+          "active": false,
+          "median": 0.16907355620733833,
+          "p95": 0.2820310616067772,
+          "within_screening_bounds": true
+        },
+        "rnc": {
+          "active": true,
+          "median": 0.08340106295266686,
+          "p95": 0.21403073122405875,
+          "within_screening_bounds": true
+        }
+      }
+    }
+  }
+}

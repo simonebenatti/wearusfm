@@ -1,0 +1,41 @@
+{
+  "torch": "2.14.0",
+  "platform": "CPU single-thread, synthetic real loader/trainer",
+  "steps": 12,
+  "global_diagnostics_updates": [
+    4,
+    8,
+    12
+  ],
+  "dropout": 0.4,
+  "activation_checkpointing": true,
+  "window_ms": 100.0,
+  "tokenizer_activation": "gelu",
+  "results": {
+    "C0": {
+      "states_and_optimizer_rng_queue_exact": true,
+      "loss_grad_clip_metrics_exact": true,
+      "projector_gradients_zero": true
+    },
+    "CN": {
+      "states_and_optimizer_rng_queue_exact": true,
+      "loss_grad_clip_metrics_exact": true,
+      "projector_gradients_zero": true
+    },
+    "CR": {
+      "states_and_optimizer_rng_queue_exact": true,
+      "loss_grad_clip_metrics_exact": true,
+      "projector_gradients_zero": true
+    },
+    "C0_no_diagnostics": {
+      "states_and_optimizer_rng_queue_exact": true,
+      "loss_grad_clip_metrics_exact": true,
+      "projector_gradients_zero": true
+    }
+  },
+  "duration_s": 46.818615958996816,
+  "limitations": [
+    "small 16-dim/4-slot model, CPU FP32; does not reproduce A100 bf16/NCCL nondeterminism",
+    "coverage warmup does not complete and production stream data absent"
+  ]
+}

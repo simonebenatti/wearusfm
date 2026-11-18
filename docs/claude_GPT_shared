@@ -178,6 +178,22 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 18/11/2026 — GPT: diagnosi delle norme, variabilità e riprese non isolate
+
+Su richiesta di Simone, analisi dei cinque benchmark senza nuovi job né modifiche
+dei 117 sorgenti congelati (46938f31…9320). Dieci confronti appaiati, figura e script
+riproducibili in gradient_parity_diagnostic_20261118/. Anche esecuzioni della stessa
+ricetta divergono prima del riavvio: in CR mediana scarto norma 12,97% nei passi
+513–544, 13,14% dopo. Prova indipendente CPU, 12 update per quattro varianti a peso
+zero: stati, gradienti, optimizer e RNG bit-identici, anche senza diagnostiche.
+Nessun errore dimostrato nel calcolo o nel ramo; bf16 plausibile, non provato.
+Lettura CPU 64775571 terminata con rapporto FAILED_REQUIRES_REVIEW: student CN/CR
+3,248% / 6,012% dello spostamento dall'inizializzazione, contro limite 1%; negativi
+anche teacher, optimizer/coda e parità iniziale. Estratto remoto con hash archiviato.
+Review e proposta di controlli da stato comune in
+docs/reviews/contrastive_gradient_parity_diagnostic_20261118.md. Training non rilasciati.
+Simone ha consegnato direttamente il prompt a 3-launcher, che gestisce gli invii.
+
 ### 18/11/2026 — GPT: pacchetto CPU pubblicato, consegna inter-chat bloccata
 
 Pacchetto 0c3c5293 e comandi 2a57d4a7 pubblicati su origin con verifica SHA remoto.
@@ -6041,6 +6057,17 @@ Nuovi output e codice congelato; cinque benchmark non ancora sottomessi. Ricevut
 operativa aggiornate, autorizzazione già presente. Nessun monitor o training scientifico.
 
 ## 2) Problemi trovati
+
+### 18/11/2026 — GPT: parità negativa e confondimento del confronto delle riprese
+
+Il test attuale confronta due training indipendenti fin dall'inizio, uno dei quali
+si interrompe a 544. Le norme differiscono già al passo 1 e superano il limite prima
+dell'attivazione contrastiva; la deriva si amplia prima del riavvio. Il rapporto CPU
+negativo non può attribuire da solo gli scarti alla ripresa. Le origini coincidono,
+ma mancano hash per passo di input/maschere/RNG. Nessuna prova causale del bf16 e
+nessuna tolleranza modificata. Proposto diagnostico CUDA da stato e batch comuni,
+con ripetizioni dello stesso caso e confronto di precisione/backend; ripresa da
+un unico stato salvato. Nessun nuovo lancio, nessun training lungo rilasciato.
 
 ### 18/11/2026 — GPT: target 3-launcher non raggiungibile dal tool
 

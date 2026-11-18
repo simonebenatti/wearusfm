@@ -1,0 +1,26 @@
+Review interna indipendente, 18/11/2026
+Revisore: /root/audit_timeout_review
+Perimetro: diagnosi numerica, codice a peso zero, prova CPU, tabelle risultati e
+sezione della lettura CPU nel documento contrastive_gradient_parity_diagnostic_20261118.md.
+
+APPROVATO nel perimetro diagnostico, nessun blocco residuo. Non è approvazione del training.
+
+Controllati contro results.json: scarti delle norme prima/dopo restart CN e CR,
+componenti della base e di RnC, loss totale, invarianti e limiti dichiarati.
+Script e risultato della prova CPU archiviati identici agli originali eseguiti.
+Prova CPU: 12 update per quattro varianti, veri loader/trainer su dati sintetici,
+modello piccolo; student, teacher, optimizer, RNG, queue e metriche bit-identici.
+
+Recepite due correzioni editoriali: “eventuale effetto del riavvio”, non errore;
+math.isclose(rel_tol=1e-4, abs_tol=1e-6). Precisato CPU senza autocast e frontend FP64.
+
+Aggiornamento CPU: formula student/teacher corretta, differenza L2 dei parametri
+divisa per lo spostamento del continuo dall'inizializzazione. Percentuali corrette:
+CN 3,248/2,047%; CR 6,012/2,337%. Il rapporto completo implica che i controlli esatti
+eseguiti prima del return di compare_resume non hanno fallito. Questo non attesta
+input o RNG intermedi e non isola il contributo del riavvio. FAILED 2:0 è l'uscita
+prevista di un rapporto completo negativo. Non sono dimostrati né bug di calcolo
+né causalità del bf16; corretta la proposta di confronto da stato e batch comuni.
+
+Il rapporto CPU è stato letto, non ricalcolato localmente dai checkpoint remoti.
+Nessuna nuova suite ampia, modifica del runtime, soglia, lambda o sottomissione.
