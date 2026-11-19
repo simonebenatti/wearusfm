@@ -4,7 +4,6 @@
   "all15_predictions_GiB": 3.316640853881836,
   "cache_and_three_reference_bytes": 5720939041,
   "central_positions_P160": 148,
-  "claude_1260000_max_updates_superseded": "11 target/head combinations*6LR*300*(30+30)+15*300*60=1458000, geometrybound1477800",
   "control_cv_fits_initial": 48,
   "control_cv_fits_max": 72,
   "frozen_cache_total_bytes": 5068390194,
@@ -40,5 +39,17 @@
   "updates_nominal_max": 1458000,
   "updates_upper_bound_initial": 537600,
   "updates_upper_bound_max": 1477800,
-  "val_prediction_FP32_bytes_per_head_full160": 237414400
+  "val_prediction_FP32_bytes_per_head_full160": 237414400,
+  "revision_20261119": {
+    "reachable_lrs": 5,
+    "formal_gate_lrs": 6,
+    "reachable_trajectories": 125,
+    "reachable_updates_nominal": 1260000,
+    "reachable_updates_upper": 1276500,
+    "reachable_held_evaluations": 33440,
+    "formal_gate_updates_upper": 1477800,
+    "calibration_combinations_per_outer": 1936,
+    "interpretation": "old1,260,000 was reachable nominal maximum, not same quantity as formal1,458,000; gate deliberately retains six-LR upper bound"
+  },
+  "reachable_vs_formal_maximum": "1,260,000 is reachable nominal maximum (5LR); 1,458,000 is formal conservative maximum (6LR). Not the same count; no prior arithmetic error implied."
 }

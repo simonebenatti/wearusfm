@@ -1,10 +1,14 @@
 {
   "authorization": {
-    "budget_authorized": false,
-    "future_signature_scope": "section10: implementation, one operational-package review, then benchmark and gated chain within caps; no renewed per-job permission for same signed scope",
-    "runtime_authorized": false,
-    "scope": "documentation revision, commit and origin push only",
-    "user_quote": "va bene, procedi con la revisione documentale, committa e pusha tutto e poi preparami il prompt per l'ultima review di claude. per ora niente codice o lanci"
+    "scope": "conditional complete frozen-head comparison after actual Claude review and gates; no new experiment or automatic retry",
+    "user_quote": "chiudi con Claude la review sulle teste di regressione e appena siete allineati lancia il confronto sul 30M congelato a 49.046 passi, sempre chje non sia gia partito",
+    "source_thread": "01a1a72c-1ad9-7cd3-b1ad-0f8b77ac0d52",
+    "date": "2026-11-19",
+    "scope_approved": true,
+    "runtime_authorized": true,
+    "budget_authorized": "within unchanged proposed caps, conditional on gates; no invented numerical quotation",
+    "submission_released": false,
+    "future_signature_scope": "no second approval for the same reviewed chain; new scope, retry or exceeded cap needs decision"
   },
   "caches": {
     "train": {
@@ -26,20 +30,43 @@
   "checkpoint_step": 49046,
   "code_plan": {
     "base_branch": "codex/pose-temponet-proposal-20261117",
-    "current_code_changes": false,
+    "current_code_changes": "separate implementation worktree; this proposal does not certify runtime",
     "future_runtime_directory": "scripts/pose_temponet/",
     "no_top_level_scripts_py": true,
     "one_operational_package_review_before_futurelaunch": true,
-    "original_base_commit": "cfa6462f261fa7e70afb9dc13684d4436756ad65"
+    "original_base_commit": "cfa6462f261fa7e70afb9dc13684d4436756ad65",
+    "implementation_branch": "codex/pose-temponet-implementation-20261119",
+    "protocol_id_required_in_all_outputs": true
   },
   "evaluation": {
     "bootstrap_replicates": 2000,
     "bootstrap_seed": 20261102,
     "bootstrap_unit": "user",
     "candidate": {
-      "iff": "all qualitygates and L0/MLP/L13/TCNpost admitted; contrasts1,4,5 eachbeneficio_pratico_risolto; neither2nor3 deterioramento_pratico",
-      "missing_or_unresolved_comparator": "candidacy not established; dependentcontrasts unlabelled",
-      "scope": "centered dynamics reader of thischeckpoint only; no automatic adoption, pretrainingclaim orlevelB",
+      "required_common_gates": [
+        "integrity",
+        "historical_R1",
+        "resources",
+        "positive_controls"
+      ],
+      "required_unalarmed_comparators": [
+        "L0",
+        "MLP",
+        "L13"
+      ],
+      "required_benefit_contrasts": [
+        1,
+        4,
+        5
+      ],
+      "veto_labels": {
+        "2": "deterioramento_pratico",
+        "3": "deterioramento_pratico"
+      },
+      "TCN_alarm_alone_veto": false,
+      "mixed_case": "candidate with resolved-better MLP/L13 (upper99<0) but point harm below2%; report gain/CI; not noninferiority",
+      "objective_tradeoff": "under common MSE selection with S2 tradeoff on named comparator; no superiority over dynamic optimum",
+      "scope": "centered dynamics development reader; no automatic adoption, pretraining claim or levelB",
       "trained_head_point_threshold_necessary": 0.7630564046643697
     },
     "ci": "percentile99 per contrast; five Bonferroni intervals for nominal simultaneous95, exploratory approximation",
@@ -65,12 +92,22 @@
     },
     "historical_reference_gate": {
       "absolute_tolerance": 1e-12,
-      "alignment": "cache pred[:,6:154] same validvaluesas historicaltrainedhead148 payload; indexidentity not onlymaskhash",
+      "alignment": "cache pred[:,6:154] and historical148 values equal after float64 cast on valid support; original dtype may differ",
       "dynamic_valid_elements": 20119920,
       "dynamic_windows": 8327,
       "post_ridge_E_dyn": 0.7859020004638595,
-      "timing": "before newcontrasts, never used to tuneheads",
-      "trained_head_E_dyn": 0.7786289843513977
+      "timing": "before neural fits and again before contrasts; never tune heads",
+      "trained_head_E_dyn": 0.7786289843513977,
+      "dynamic_windows_selected": 8329,
+      "dynamic_window_joint_pairs": 166540,
+      "users": 15,
+      "failure": "technical_failure; stop without fits/contrasts; preserve evidence and diagnose",
+      "receipt_field_mapping": {
+        "dynamic_windows_selected": "groups.dynamic.n_selected_windows",
+        "dynamic_windows": "groups.dynamic.centered.n_windows",
+        "dynamic_window_joint_pairs": "groups.dynamic.centered.n_window_joints",
+        "dynamic_valid_elements": "groups.dynamic.centered.n_valid_elements"
+      }
     },
     "monte_carlo_border": {
       "distance_pp": 0.1,
@@ -93,7 +130,8 @@
       },
       {
         "condition": "upper99<2",
-        "label": "beneficio_2pct_non_sostenuto"
+        "label": "beneficio_2pct_non_sostenuto",
+        "interpretation": "report direction and amplitude; not equivalence"
       },
       {
         "condition": "otherwise",
@@ -101,7 +139,7 @@
       }
     ],
     "practical_improvement_percent": 2,
-    "practical_readout_recommendation": "all qualitygates and L0/MLP/L13/TCNpost admitted; contrasts1,4,5 eachbeneficio_pratico_risolto; neither2nor3 deterioramento_pratico; centered dynamics reader of thischeckpoint only; no automatic adoption, pretrainingclaim orlevelB",
+    "practical_readout_recommendation": "exact conjunction of candidate.required_common_gates/comparators/benefit_contrasts and absence of candidate.veto_labels; directional alarm policy; preserve mixed and S2 qualifiers",
     "prespecified_family": [
       "TCN_post vs L0",
       "TCN_post vs MLP",
@@ -113,10 +151,18 @@
     "reading_limits": "development15alreadyconsulted; simulationcoverage97/85-91 not universal; singleencoder; no guaranteednominalcoverage; MSE/dynamics tradeoffflagretained",
     "readout_failures": "qualityfailures precede scientificlabels; noncandidacy may beinconclusive, not automaticallynegative; noautomaticsearch",
     "secondary_seed_aggregation": "report correlation, variance ratio, level and MAE per seed plus arithmetic mean of seed metrics; never correlation of averaged moments presented as mean correlation",
-    "secondary_worsening": "positive MAE/level delta is estimatedworsening; lower95>0 is resolvedworsening; no noninferioritymargin",
+    "secondary_worsening": "delta candidate minus comparator; positive estimated worsening, lower95>0 resolved worsening; no new noninferiority margin",
     "seed_aggregation": "mean per-user seed-specific moment/SSE accumulators; never average predictions; then metric and bootstrap",
     "seed_uncertainty": "sample SD of three seedmetrics separatefrom paireduserbootstrap; no hierarchicalbootstrap; s-vs-s forcontrasts1..3; ninecrosses onlydescriptive",
-    "val_reads": "one final locked evaluation batch for all frozen selected models; no tuning/retraining on15users"
+    "val_reads": "one final locked evaluation batch for all frozen selected models; no tuning/retraining on15users",
+    "descriptive_reading": {
+      "L0_worse": "differences of dose/loss/FP16; contrasts1..3 only between these recipes",
+      "L0_better": "report refit effect, including1doesnotpass4and5pass; not specificTCN gain",
+      "L13_worse_than_L0": "report context cost under chosen MSE recipe and diagnostics; no retuning on15",
+      "width_caution": "MLP/TCN differ in hiddenwidth despite matched weights; not pure temporal attribution",
+      "L13_caution": "classes not nested",
+      "bootstrap": "same draws across heads,seeds,references; report all five contrasts; new segment metric separate proposal"
+    }
   },
   "executable": false,
   "fit": {
@@ -139,8 +185,9 @@
       "lr_trigger": "pooled-MSE winner at current grid boundary; apply the single outward value for that side and reselect; no other values",
       "max_additions_per_side": 1,
       "max_lrs": 6,
-      "unresolved": "selectedLR still at expanded boundary, OR selected duration is first quarter-epoch checkpoint, OR minimum MSE or E_dyn of selectedLR in last5 at maximum horizon; unselected-LR boundaries reported only",
-      "upper_lr": 0.01
+      "unresolved": "selected upper expanded edge OR selected lower expanded edge with relative best-MSE gain over nearest LR >0.005 OR selected first-quarter checkpoint OR selectedLR MSE/E_dyn earliest minimum in final5 epochs of max horizon",
+      "upper_lr": 0.01,
+      "lower_edge_relative_mse_gain_threshold": 0.005
     },
     "failure_states": [
       "controllo_non_calibrato",
@@ -157,14 +204,15 @@
         1.0
       ],
       "step0": "diagnostic only, not selectable",
-      "steps": "ceil(fraction*steps_per_epoch), deduplicate; same fraction in refit"
+      "steps": "ceil(fraction*steps_per_epoch), deduplicate; same fraction in refit",
+      "deduplication": "deduplicate synchronized fold-step pair; retain greatest exposure fraction among aliases, including epoch1"
     },
     "initial_epochs": 150,
     "internal_dynamic_threshold": {
       "definition": "mean per-joint population temporal variance using valid full160 targets (>=2 each); threshold max(median_supported_window_variance,1e-12)",
       "external_historical_threshold_used": false,
       "held": "apply corresponding fitting threshold; pool centered SSE/targetSS acrossfolds",
-      "source": "fitting users only per direction; real targets for real fits, synthetic forcontrols"
+      "source": "real targets for real fits; clean y_star for synthetic pose_var/threshold only; observed y for all synthetic MSE/E_dyn accumulators; fitting-side only"
     },
     "internal_evaluation": "eval, no_grad, FP32 each epoch and quarter-first-epoch checkpoints; save full MSE and E_dyn curves, no per-epoch external predictions",
     "internal_fold_evaluations_max": 40128,
@@ -196,16 +244,18 @@
       "torch_interop_threads": 1
     },
     "objective_tradeoff": {
-      "consequence": "retain MSE selection, publish both epochs/curves; restrict interpretation of contrast3 and any negative TCN conclusion; no extra development inference",
+      "consequence": "MSE selection and labels/admission unchanged; name objective_tradeoff for affected L0/MLP/L13; optimization alarm on same head takes precedence; no superiority over dynamic optimum claimed",
       "epoch_distance_gt": 5,
       "relative_E_dyn_regret_percent_ge": 2,
       "same_selected_lr_only": true,
-      "zero_minimum": "positive selected error over zero minimum gives infinite regret"
+      "zero_minimum": "positive selected error over zero minimum gives infinite regret",
+      "is_optimization_alarm": false,
+      "minimum": "pooled internal E_dyn over admitted checkpoints at selected LR, step0 excluded"
     },
     "optimizer": "AdamW",
     "paired_fold_checkpointing": "advance bothfolds to synchronized exposure checkpoints, preserve independentoptimizer/RNG, save pair onimprovedpooledMSE plus currentpair; never independentbestepochs, no needallstates",
     "precision": "FP32, autocast off, TF32 off",
-    "refit": "fresh full40 initialization at pooled-MSE selected LR and duration, including fractional first epoch; never automatically 300; no development early stopping",
+    "refit": "fresh full40 initialization at pooled-MSE selected LR and duration, including fractional first epoch; never automatically 300; no development early stopping; selection manifest locked BEFORE refit",
     "refit_seeds": [
       0,
       1,
@@ -227,7 +277,29 @@
     "updates_upper_bound_initial": 537600,
     "updates_upper_bound_max": 1477800,
     "weight_decay": 0.01,
-    "weight_decay_applies_to": "matrix/kernel weights only; no bias or LN"
+    "weight_decay_applies_to": "matrix/kernel weights only; no bias or LN",
+    "optimization_alarm_consequences": {
+      "controls": "alarms alone do not stop passing heads; failed required gate + alarm => optimization_unresolved; failed without alarm => recipe_not_admitted",
+      "real": "continue planned fits; TCN alarm suppresses negative/null conclusions about TCN, not measured benefit; comparator alarm suppresses pro-TCN claims including absence of candidacy veto",
+      "candidate_requires_unalarmed": [
+        "L0",
+        "MLP",
+        "L13"
+      ],
+      "TCN_post_alarm_alone_veto": false
+    },
+    "technical_failure": {
+      "causes": [
+        "NaN/Inf even exploratory LR",
+        "OOM",
+        "deterministic operation error",
+        "TIMEOUT/incomplete fit",
+        "support or pin mismatch",
+        "historical R1 failure"
+      ],
+      "consequence": "stop phase; no scientific contrasts; preserve evidence; diagnose before new decision; no blind retry or reduced matrix"
+    },
+    "evaluation_batch_windows": 32
   },
   "heads": {
     "L0": {
@@ -303,7 +375,7 @@
       "T",
       "epsilon"
     ],
-    "input": "fixed gamma1 beta0 LayerNorm; dimension384 or13*384; learnable affine LN can be absorbed",
+    "input": "fixed LN gamma1 beta0 eps1e-5 computed float64 directly from FP16 cache; neural LN stays FP32; mathematical design reference, not bit-exact lowerbound of FP32forward",
     "intercept": "free",
     "kind": "weighted unregularized least squares, descriptive",
     "mask_groups": "each design/factorization multiplied by distinct weight/maskpatterns acrossjoints; no assumption all20equal",
@@ -315,7 +387,13 @@
     "solver": "stable blockedQR/TSQR thenSVD ofR; no rankfromGram eigenvalues",
     "solver_storage": "blockQR with RHS, sequentialpattern solves within24GiB; no naiveinverse; timingrequired",
     "train_objective_comparison": "full fitting eval/no_grad at selected frozenweights, same perwindowweighting; not runningepochloss",
-    "weights": "m_itj/q_i; q_i=sum over all valid t,j of eachwindow"
+    "weights": "m_itj/q_i; q_i=sum over all valid t,j of eachwindow",
+    "normal_residual_formula": "norm(Xw.T@(yw-Xw@beta)) <= 1e-6*norm(Xw,2)*norm(yw); zero RHS requires zero residual; per design/pattern/base and combined RHS",
+    "ridge_stationarity": "centered A,b: A.T@(A@beta-b)+alpha*beta; intercept unpenalized; do not apply unpenalized WLS residual",
+    "expected_rank_sanity": {
+      "L0": 384,
+      "L13": 4980
+    }
   },
   "model": "T100-G 30M",
   "new_head_common": {
@@ -378,7 +456,7 @@
   ],
   "outputs": {
     "collect_to_git": "reports, receipts, manifests, scientific readout only; NPZ/PT persist WORK",
-    "execution_owner": "Claude executionbranch, GPT doesnotrewrite",
+    "execution_owner": "2-TCN head launcher",
     "input_duplication": false,
     "persistent_cap_gib": 8,
     "proposed_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117",
@@ -392,39 +470,193 @@
         0.4,
         0.6,
         0.8,
-        1.0
+        1.0,
+        1.2,
+        1.4,
+        1.6,
+        1.8,
+        2.0,
+        2.2,
+        2.4,
+        2.6,
+        2.8,
+        3.0
       ],
       "aggregation": "pool innerSSE/targetSS, not meanratios; nonpositive/nonfinite denominator =>nondiagnostic",
-      "baseline": "weightedLS L0 internalpredictions",
+      "baseline": "ridge L0 on observed targets for E_cal; distinct WLS L0 on clean y_star for temporal margin",
       "choice": "temporal minimumdistance togain0.08 thenreal_E thena then sigma; linearclosestreal_E thenlower sigma",
       "linear_a": 0,
       "no_pair": "control_non_calibrated; stop, no new grid/seed",
       "population": "20 fittingouter users only; alternating sorted2inner10userfolds; outerheldexcluded",
       "preferred_temporal_gain": 0.08,
       "real_E_dyn_abs_tolerance": 0.05,
-      "real_reference": "E_dyn of weightedLS L0 on real targets from innerfolds only",
+      "real_reference": "E_real: ridge internal E_dyn on real targets, threshold from fitting inner real targets",
       "sigma_grid": [
-        1,
+        0.0,
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.95,
+        1.0,
+        1.05,
+        1.1,
+        1.15,
+        1.2,
+        1.25,
+        1.3,
+        1.35,
+        1.4,
+        1.45,
         1.5,
-        2,
+        1.55,
+        1.6,
+        1.65,
+        1.7,
+        1.75,
+        1.8,
+        1.85,
+        1.9,
+        1.95,
+        2.0,
+        2.05,
+        2.1,
+        2.15,
+        2.2,
+        2.25,
+        2.3,
+        2.35,
+        2.4,
+        2.45,
         2.5,
-        3
+        2.55,
+        2.6,
+        2.65,
+        2.7,
+        2.75,
+        2.8,
+        2.85,
+        2.9,
+        2.95,
+        3.0,
+        3.05,
+        3.1,
+        3.15,
+        3.2,
+        3.25,
+        3.3,
+        3.35,
+        3.4,
+        3.45,
+        3.5,
+        3.55,
+        3.6,
+        3.65,
+        3.7,
+        3.75,
+        3.8,
+        3.85,
+        3.9,
+        3.95,
+        4.0,
+        4.05,
+        4.1,
+        4.15,
+        4.2,
+        4.25,
+        4.3,
+        4.35,
+        4.4,
+        4.45,
+        4.5,
+        4.55,
+        4.6,
+        4.65,
+        4.7,
+        4.75,
+        4.8,
+        4.85,
+        4.9,
+        4.95,
+        5.0,
+        5.05,
+        5.1,
+        5.15,
+        5.2,
+        5.25,
+        5.3,
+        5.35,
+        5.4,
+        5.45,
+        5.5,
+        5.55,
+        5.6,
+        5.65,
+        5.7,
+        5.75,
+        5.8,
+        5.85,
+        5.9,
+        5.95,
+        6.0
       ],
-      "sufficient_statistics_reuse": "fixeddesigns/weights/masks/rankpolicy, linearcombinations ofprojectedRHSbasis, no25factorizations",
+      "sufficient_statistics_reuse": "combine RHS predictions only within fixed alpha; select alpha afterwards; for fixed a, masks independent of sigma allow quadratic accumulators; benchmark full1936 combinations and maximum alpha grid",
       "temporal_oracle_gain_range_fraction": [
         0.06,
         0.1
       ],
-      "threshold": "computed from fittinginner synthetic targets for eachpair; afterselection outerfittingthreshold fixedforgate"
+      "threshold": "synthetic pose_var/threshold from fitting y_star; all metric accumulators on observed y; real fitting inner threshold for E_real",
+      "combination_count_per_outer": 1936,
+      "ridge": {
+        "objective": "sum per-window MSE plus alpha*sum(weight^2); intercept unpenalized; alpha not scaled by sample count",
+        "alpha_exponents_initial": [
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "max_extensions_per_side": 3,
+        "bounds": [
+          1e-05,
+          10000000.0
+        ],
+        "selection": "minimum pooled inner MSE; exact tie smaller alpha",
+        "boundary": "unresolved final edge: E_real non_calibrated; synthetic candidate excluded; if none remain non_calibrated",
+        "solver": "weighted centering then TSQR/SVD; singular filter s/(s^2+alpha) and recovered free intercept"
+      },
+      "quantities": {
+        "E_real": "ridge real on real",
+        "E_cal": "ridge observed y fitted and evaluated on y",
+        "E_cleanLS": "WLS on y_star evaluated on observed y",
+        "E_oracle": "y_star evaluated on observed y"
+      },
+      "temporal_band_uses": "E_cleanLS both inner and outer"
     },
     "count": 2,
-    "failure": "all noncalibrated/nondiagnostic/failedpositive/unresolvedoptimization outcomes stop before realneuralfits, preserveevidence; noautomatictargetsearch orscientificnegative",
+    "failure": "stop before real fits for noncalibrated/nondiagnostic or failed required neural condition; passing heads may retain optimization alarms; failed head with alarm unresolved, otherwise not admitted; S2 alone never stops",
     "folds": 2,
     "gates": {
       "evaluation": "both outerfolds separately and pooled; every required condition mustpass; no bootstrap claim",
       "linear": {
         "baseline": "fittingouter weightedjointmean constant",
-        "formula": "(E_constant-E_head)/(E_constant-E_oracle)",
+        "formula": "(E_constant-E_head)/(E_constant-E_ridge)",
         "heads": [
           "L0",
           "MLP",
@@ -435,11 +667,22 @@
           "E_dyn"
         ],
         "min_fraction": 0.9,
-        "nonpositive_margin": "non_diagnostic"
+        "nonpositive_margin": "non_diagnostic",
+        "closed_form_diagnostic": {
+          "formula": "(E_constant-E_ridge)/(E_constant-E_oracle)",
+          "min_fraction": 0.9,
+          "metric": [
+            "perwindow_MSE",
+            "E_dyn"
+          ],
+          "scope": "each outer fold and pooled",
+          "failure": "control_non_diagnostic before neural fits"
+        },
+        "ridge": "inner-selected alpha refitted on20 outer-fitting users, same sum-penalty convention"
       },
       "temporal": {
-        "baseline": "weightedLS L0 on fittingouter with selectedsynthetictarget; neuralL0/MLP descriptive",
-        "formula": "(E_LS-E_TCN)/(E_LS-E_oracle)",
+        "baseline": "WLS L0 fitted on clean y_star in outer fitting, evaluated on observed y",
+        "formula": "(E_cleanLS-E_TCN)/(E_cleanLS-E_oracle)",
         "gap_outside_range": "non_diagnostic, not TCN failure",
         "head": "TCN_post",
         "metric": "E_dyn",
@@ -447,7 +690,9 @@
         "oracle_gap_fraction_required": [
           0.06,
           0.1
-        ]
+        ],
+        "MLP": "descriptive only; close/better MLP does not stop chain but does not qualify temporal-context-specific gain",
+        "closed_form_timing": "outer band checked before any neural control fit"
       }
     },
     "generator": {
@@ -468,10 +713,27 @@
       "TCN_post"
     ],
     "refits": 0,
-    "training_recipe": "same fit policy as real; seed0; no external users"
+    "training_recipe": "same fit policy as real; seed0; no external users",
+    "state_order": [
+      "control_non_calibrated",
+      "control_non_diagnostic_closed_form",
+      "required_head_pass_or_optimization_unresolved_or_recipe_not_admitted"
+    ],
+    "pre_neural_diagnostics": [
+      "T per-layer active-unit fractions on outer fitting",
+      "WLS L0 fraction of T variation inaccessible instantaneously",
+      "WLS L13 recovered temporal margin",
+      "maximum admissible grid gain; no extra threshold"
+    ],
+    "limitations": [
+      "same outer held selects and qualifies, optimistic",
+      "pooled mixes two worlds with own scales",
+      "synthetic level composition may differ; controls do not certify S2 mechanism",
+      "clean WLS does not guarantee same band inner/outer"
+    ]
   },
-  "previous_proposal_commit": "c15aac9bcf291f4ca2e7757dd248ff61045040df",
-  "protocol": "pose-temponet-frozen-encoder-readout-20261117-v2",
+  "previous_proposal_commit": "3e007c841c97da5793ed4aac6cfceb41c99a00ee",
+  "protocol": "pose-temponet-frozen-encoder-readout-20261117-v3",
   "references": {
     "post_ridge_coefficients": {
       "bytes": 59367,
@@ -495,8 +757,8 @@
   "resource_proposal": {
     "a_priori_timing": "analog4.1..18.5ms/update only;max1.4778M gives1.68..7.59GPUh update-only; doubled3.37..15.19 beforeeval/I/O, not newhead measurement",
     "benchmark_gpu_hours_cap": 0.5,
-    "budget_name": "lettore posa TCN v2",
-    "budget_status": "PROPOSED_NOT_AUTHORIZED",
+    "budget_name": "lettore posa TCN v3",
+    "budget_status": "SCOPE_APPROVED_20261119_GATE_AND_REVIEW_REQUIRED",
     "cpu_only_core_hours_cap": 80,
     "cpu_ram_gib": 24,
     "fit_initial_updates_upper": 537600,
@@ -532,7 +794,8 @@
       "sharedseriallane",
       "actualAllocTRESbillingfirstjob",
       "fullresource andpackinggate",
-      "calibration/positivecontrols before realneuralfits"
+      "calibration/positivecontrols before realneuralfits",
+      "shared serial lane rechecked before each CPU phase"
     ],
     "overhead_policy": "SUM(requestedwalltime+180seconds)*resources <=eachphase; reserve not automaticretries; no doublecount",
     "phases": [
@@ -656,26 +919,30 @@
     "vram_requirement_gib": null,
     "vram_status": "not measured",
     "wls_jobs": 2,
-    "wls_requested_walltime_max": "03:57:00"
+    "wls_requested_walltime_max": "03:57:00",
+    "calibration_combinations_per_outer": 1936
   },
   "review": {
     "approval_of_revision_not_yet_received": true,
     "claude_followup_commit": "8d34f9c6525dc73be02448598cfccfbd4e0a1a61",
     "claude_initial_commit": "32e54526637da2ee825ab75c2507612956633cb0",
-    "response_path": "docs/reviews/pose_temponet_response_20261118.md",
-    "status": "REVIEW_REQUIRED"
+    "response_path": "docs/reviews/pose_temponet_response_20261119.md",
+    "status": "REVIEW_REQUIRED",
+    "claude_latest_commit": "ee118a25"
   },
   "review_materials": {
     "protocol_path": "docs/pose_temponet_frozen_protocol_20261117.md",
-    "response_path": "docs/reviews/pose_temponet_response_20261118.md",
+    "response_path": "docs/reviews/pose_temponet_response_20261119.md",
     "validation_status": "documentary checks only, no neuraltest"
   },
-  "revision_date": "2026-11-18",
+  "revision_date": "2026-11-19",
   "roles_proposed": {
-    "final_decision": "Simone",
+    "scientific_owner_and_code": "GPT 2-schedule lungo e TCN head",
+    "review": "Claude actual review",
+    "only_operator": "2-TCN head launcher",
+    "coordination": "coordinamento handles direct contact with Claude",
     "no_change_to_other_lines": true,
-    "review_and_only_operator": "Claude",
-    "scientific_owner_and_code": "GPT consolidamento"
+    "final_decision": "Simone; scope approval 2026-11-19"
   },
   "runtime_implemented": false,
   "scratch_dependencies": {
@@ -702,7 +969,7 @@
       "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
       "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
     },
-    "refresh": "12Novrefresh reportedbyClaude not reverified; 3Decrefresh not promised; no independencefromSCRATCHclaimed",
+    "refresh": "Claude47ca96e documents12Nov refresh; expiry from22Dec; hashes rechecked before each opening phase;3Dec refresh not promised",
     "source_manifest": "results/infra/tokenizer_evaluation_20261103/extraction_plan_19618.json"
   },
   "source_provenance": {

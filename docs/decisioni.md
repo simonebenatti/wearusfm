@@ -6770,3 +6770,13 @@ I due testi contengono le regole proposte della voce precedente; questi pin le r
 Stato REVIEW_REQUIRED, review finale Claude e firma di Simone ancora assenti. Il commit di pin aggiunge solo questo record,
 il manifest e le voci di registro; nessun cambiamento ai contenuti scientifici di `62348ab`.
 Verifica documentale:22 controlli passati; nessun test runtime, accesso al cluster, benchmark, fit, deploy o job.
+
+### 2026-11-19 | GPT | TCN frozen v3: chiusura documentale proposta di ee118a25, mandato agli invii
+
+Simone in coordinamento: «chiudi con Claude la review sulle teste di regressione e appena siete allineati lancia il confronto sul 30M congelato a 49.046 passi, sempre chje non sia gia partito».
+Verificati ledger/coda: nessun job di questa prova; TEMPONet raw distinta. Il mandato comprende preparazione e invii dopo review/gate, senza secondo via, entro tetti invariati 24 GPUh / 80 coreh CPU-only / 272 coreh allocate. Non si attribuisce a Simone una citazione numerica mai pronunciata.
+Revisione da 3e007c8, protocollo pose-temponet-frozen-encoder-readout-20261117-v3 ancora REVIEW_REQUIRED. Ridge inner per E_real/E_cal; temporale WLS su y* e banda 6–10%, TCN recupero 50%; lineare ridge≥90% costante→oracolo poi teste≥90% costante→ridge. Sigma 0:0,05:6, a 0,2:0,2:3: 1.936 combinazioni per outer, benchmark da rifare; MLP temporale solo descrittiva.
+LR basso esteso allarme solo oltre 0,5% relativo; altri allarmi invariati. S-2 compromesso; nei controlli allarme non blocca una testa che passa, nei reali conseguenze direzionali. Candidata: benefici 1/4/5, L0/MLP/L13 ammessi, niente deterioramento pratico 2/3; casi misti/S-2 espliciti. Soglia dinamica finale 0,2574231028556824, cinque IC99 appaiati/2.000 repliche seed20261102, pareggi epoca precoce poi LR piccolo invariati. E_dyn≤0,7630564046643697 necessario. MAE/livello IC95 descrittivi; dati di sviluppo, nessun valore generale del FM.
+R-1 float64 e conteggi 8329/8327/166540/20119920; technical_failure ferma la fase. Prove e pin da pubblicare; 25 controlli documentali passati, nessun test runtime dichiarato.
+Protocollo sha256 77f7614ea1d7601e5e9c642a2dc3e429350661d549d3b32a34d8db3473876013; proposal.json sha256 171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906. SHA contenuti nel successivo delivery_pin_20261119.json. Risposta: docs/reviews/pose_temponet_response_20261119.md.
+GPT prepara codice nel ramo separato codex/pose-temponet-implementation-20261119; Claude rilegge realmente e poi rivede il pacchetto operativo; unico operatore 2-TCN head launcher. Nessun sorgente FM toccato e nessun invio oggi.

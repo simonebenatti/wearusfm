@@ -1,16 +1,19 @@
-# TCN ispirata a TEMPONet con ramo lineare — proposta revisionata18/11/2026
+# TCN frozen: proposta v3 del 19/11/2026
 
-**REVIEW_REQUIRED. Non eseguibile: nessun codice, benchmark, job o deploy autorizzato.** Questa revisione documentale sostituisce c15aac9, dopo review Claude32e5452 e seguito8d34f9c.
+ID `pose-temponet-frozen-encoder-readout-20261117-v3`. **REVIEW_REQUIRED**.
+La review documentale di Claude richiesta riguarda il diff da `3e007c8`, dopo `ee118a25`.
+Simone ha approvato il seguito del confronto nella chat coordinamento il 19/11; restano la vera
+convergenza, la review del pacchetto operativo e i cancelli prima dei rispettivi invii.
 
-- `proposal.json`: IDv2, cinque teste, ricerca finita, due controlli positivi train-only, WLS descrittiva, criteri e tetti proposti.
-- `analytic_checks.json`: soli conti verificabili;103 traiettorie iniziali/max147, massimo prudente1.477.800 aggiornamenti, non misure di training.
-- `raw_source_identity.json`: provenienza immutata; chiavi dei report raw ora complete.
-- `design_review.txt`: letture storiche conservate, con avviso di superamento e nuova verifica documentale.
+- `proposal.json`: architetture, dati, criteri, calibrazione, ammissione e risorse.
+- `delivery_pin_20261118.json`: consegna storica v2, conservata; non è il pin della v3.
+- `delivery_pin_20261119.json`: pin della consegna v3 dopo il commit dei contenuti.
+- `document_checks_20261119.json`: verifiche documentali; nessuna misura A100 o sui latenti reali.
+- `analytic_checks.json`: distingue massimo raggiungibile e limite prudente del gate.
+- `raw_source_identity.json`: provenienza della TEMPONet raw, senza importare quel ramo.
 
-Protocollo: `docs/pose_temponet_frozen_protocol_20261117.md`;13 rilievi e50note: `docs/reviews/pose_temponet_response_20261118.md`. Prompt aggiornato: `docs/prompt_claude_pose_temponet_review_20261117.md`.
-
-Ramo affine in MLP/TCNpost/TCNpre:73.000/72.904/72.904 parametri. Quattro LR iniziali/max6,150→300, selezioneMSE,3semi rifit. Due controlli positivi devono passare prima dei fit reali; nessun esito negativo dell'encoder da un controllo fallito.
-
-**Tetto proposto24GPUh,80coreh CPU-only,272coreh allocate**, max8GiB output. Il benchmark deve ammettere anche tutte le estensioni. Nessun saldo/quota/hash remoto verificato oggi; input principaliWORK ma tre prerequisiti ancoraSCRATCH, dichiarati e pinnati. Vecchio tetto4/12/44 superato, non un'autorizzazione aggiuntiva.
-
-Nessuna modifica a src/, scripts/, tests/ o config; nessun dato wearable, pesi o predizioni aggiunti al repository.
+Fonti: `docs/pose_temponet_frozen_protocol_20261117.md`,
+`docs/reviews/pose_temponet_response_20261119.md`. I riferimenti della v2 restano storici.
+Runtime separato: `codex/pose-temponet-implementation-20261119`, file sotto scripts/pose_temponet.
+Operatori: GPT scientifico prepara, Claude rivede, 2-TCN head launcher invia dopo i cancelli.
+Nessun nuovo training del FM, loss o estrazione; cinque teste sulle cache T100-G 49.046.
