@@ -13,9 +13,9 @@ Nessun nuovo monitor/automazione o mittente concorrente.
 | Job | Stato attestato | Risorse |
 |---|---|---|
 |64835246 checkout-code |COMPLETED0:0, raccolto;18s/0,01coreh |2CPU/4G/5min |
-|64837401 train-predecay |accettato11:46:56Europe/Rome; sottomesso |4GPU/32CPU/480G/19h45 |
+|64837401 train-predecay |PENDING(Priority), letto11:53:31Europe/Rome |4GPU/32CPU/480G/19h45 |
 
-Non inferire RUNNING dal solo invio. Secondo segmento non sottomesso. Primo run:
+Squeue e sacct usciti0: PENDING(Priority), nessunGPU ancora allocato, log ancora assenti come atteso. Non inferire RUNNING dal solo invio. Secondo segmento non sottomesso. Primo run:
 `/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_49046_20261118/T100-G-300M-39237`.
 Ricevute/log del wrapper:
 `/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/training/39237`.
