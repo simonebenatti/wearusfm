@@ -1,3 +1,7 @@
+# Linea3, incarico del19/11/2026
+
+Simone affida a questa chat l’implementazione RMS100/fast125 e la preparazione per3-launcher; invii, checkout e controlli Leonardo spettano esclusivamente a **3-launcher**. Base438c8d65, review94f50942, decisionefaa4a8d7. Prima consegna dopo review: audit nuovo; calibrazione condizionata a sacctCOMPLETED0:0 entro7200s; training lunghi dopo collaudo e preventivo misurato. Questo blocco prevale sulle assegnazioni operative storiche sottostanti.
+
 # WearUsFM
 
 ## Target RMS e spettro breve dei prossimi training — Simone, 18/11/2026

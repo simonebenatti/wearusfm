@@ -90,5 +90,5 @@ print(json.dumps({'tampered_rejected':rejected}))
 def test_historical_audit_does_not_qualify_new_sources(tmp_path):
     path=tmp_path/'audit.json'
     path.write_bytes(gzip.decompress((BASE/'audit_completed_20261117/audit.json.gz').read_bytes()))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="current execution source inventory"):
         validate_historical_evidence('audit',path)

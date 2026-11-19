@@ -1,0 +1,25 @@
+{
+  "status": "LOCAL_CPU_PASSED_REVIEW_REQUIRED",
+  "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+  "tests_passed": 465,
+  "elapsed_s": 102.59,
+  "receipt": {
+    "path": "results/infra/contrastive_targets_20261118/amendment_20261119/validation_final/local_validation.json",
+    "sha256": "36d1d4d44d71bc7516f044f24c231283a8a9ef047268c656f661ec4e429bc2dc"
+  },
+  "prior_attempts": {
+    "restricted": "449 passed, four obsolete fixture failures corrected, six multiprocessing permissions failures; original log retained in validation/",
+    "pre_compat": "460 passed; relative-output receipt writer failed after tests. Log retained in validation_pre_compat/. Final run includes five additional Torch2.2 API compatibility tests."
+  },
+  "torch22_test": "Legacy API simulated on local newer Torch; no actual CUDA or Torch2.2 execution claimed",
+  "bash_n": {
+    "passed": true,
+    "files": [
+      "scripts/slurm/contrastive_preflight_cpu.sbatch",
+      "scripts/slurm/contrastive_preflight_gpu.sbatch",
+      "scripts/slurm/campaign_checkout.sbatch"
+    ]
+  },
+  "historical_and_fm_sources_changed": [],
+  "jobs_submitted": false
+}

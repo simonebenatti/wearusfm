@@ -198,15 +198,31 @@ def compare_resume(full_path, resumed_path, cfg, initial_sha, initial):
             'full_sha256': sha(full_path), 'resumed_sha256': sha(resumed_path)}
 
 
-def _run_evidence(folder, arm, cohort, expected_cfg, provenance):
+def _run_evidence(folder, arm, cohort, expected_cfg, provenance, first_update=1, expected_phase="full"):
     folder = Path(folder)
     summary, cfg = _read(folder/'summary.json'), _read(folder/'config.json')
     records = [_loads(line) for line in (folder/'metrics.jsonl').read_text().splitlines() if line.strip()]
     if (cfg != expected_cfg or any(type(summary.get(k)) is not int or summary[k] != value for k, value in
             (("steps", 576), ("world_size", 4), ("workers_per_rank", 6), ("batch_per_process", 8), ("accum_steps", 1))) or
             summary.get('stopped') != 'max_steps' or (folder/'STOP').exists() or
-            any(type(r.get('step')) is not int for r in records) or [r['step'] for r in records] != list(range(1, 577))):
+            any(type(r.get('step')) is not int for r in records) or [r['step'] for r in records] != list(range(first_update, 577))):
         raise ValueError('incomplete/unmatched benchmark '+arm)
+    from contrastive_numeric_profile import assert_numeric_flags
+    numeric = []
+    for rank in range(4):
+        file = folder/f'numeric_profile.rank{rank}.json'
+        row = _read(file)
+        if (row.get('rank') != rank or row.get('world_size') != 4 or
+                row.get('source_sha256') != cohort['source_sha256'] or
+                row.get('config_canonical_sha256') != hashlib.sha256(json.dumps(cfg,sort_keys=True,separators=(',', ':')).encode()).hexdigest() or
+                row.get('phase') != expected_phase):
+            raise ValueError('production numeric profile rank/source/config mismatch')
+        assert_numeric_flags(row.get('flags', {}))
+        numeric.append(row)
+    if any(row['flags'] != numeric[0]['flags'] for row in numeric[1:]):
+        raise ValueError('production numeric flags differ across ranks')
+    if type(summary.get('gpu_max_memory_gib')) not in (int,float) or not math.isfinite(summary['gpu_max_memory_gib']) or summary['gpu_max_memory_gib'] <= 0:
+        raise ValueError('missing full-batch peak GPU memory measurement')
     c = summary.get('contrastive', {})
     if (c.get('initial_sha256') != cohort['initial_state_sha256'] or c.get('config') != cfg['contrastive'] or
             c.get('provenance') != provenance or c.get('optimizer_updates') != 576 or c.get('queue_last_step') != 575):
@@ -253,6 +269,7 @@ def _run_evidence(folder, arm, cohort, expected_cfg, provenance):
     if engine.coverage_reports != c.get('coverage_completed_blocks') or engine.coverage_report() != c.get('coverage_partial_block'):
         raise ValueError('benchmark coverage checkpoint differs from summary')
     pins = {name: sha(folder/name) for name in ('config.json', 'summary.json', 'metrics.jsonl', 'checkpoint.pt', 'origin_sessions.json')}
+    pins.update({f'numeric_profile.rank{rank}.json': sha(folder/f'numeric_profile.rank{rank}.json') for rank in range(4)})
     return summary, cfg, records, pins
 
 
@@ -280,6 +297,8 @@ def _cuda_evidence(path, cohort, input_pins, calibration_config):
     if len(ranks) != 4 or {r.get('rank') for r in ranks} != set(range(4)):
         raise ValueError('CUDA report missing four-rank evidence')
     for rank in ranks:
+        from contrastive_numeric_profile import assert_numeric_flags
+        assert_numeric_flags(rank.get('numeric_profile', {}))
         if rank.get('passed') is not True or rank.get('stop_checks') != {'coverage': True, 'numeric': True, 'passed': True}:
             raise ValueError('CUDA rank/STOP checks failed')
         if set(rank.get('arms', {})) != {'CN', 'CR'}:
@@ -304,9 +323,75 @@ def _cuda_evidence(path, cohort, input_pins, calibration_config):
     return cuda
 
 
-def read_preflight(cohort_path, full_dirs, resumed_dirs, cuda_path, *, cpu_audit_path, calibration_path, calibration_run_dir, rank_exit_path=None):
-    if set(full_dirs) != set(ARMS) or set(resumed_dirs) != {'CN', 'CR'}:
-        raise ValueError('require full C0/CN/CR and resumed CN/CR')
+def trajectory_drift(control, candidate):
+    """Keep the original 256 scalar comparisons as descriptive evidence only."""
+    if any([r.get('step') for r in rows] != list(range(1, 257)) for rows in (control, candidate)):
+        raise ValueError('trajectory drift requires exactly updates 1..256')
+    fields = {}
+    for key in ('total', 'grad_norm'):
+        rows = []
+        for a, b in zip(control, candidate):
+            if any(type(v) not in (int, float) or not math.isfinite(v) for v in (a.get(key), b.get(key))):
+                raise ValueError('trajectory drift requires finite loss/norm')
+            rows.append({'step': a['step'], 'control': a[key], 'candidate': b[key],
+                         'absolute_difference': abs(a[key]-b[key]),
+                         'relative_to_control': abs(a[key]-b[key])/max(abs(a[key]), 1e-30),
+                         'within_historical_tolerance': math.isclose(a[key], b[key], rel_tol=1e-4, abs_tol=1e-6)})
+        fields[key] = {'updates': rows, 'outside_count': sum(not r['within_historical_tolerance'] for r in rows)}
+    return {'descriptive_only': True, 'rel_tol': 1e-4, 'abs_tol': 1e-6, 'fields': fields,
+            'interpretation': 'Longitudinal drift of independent trajectories, not the decisive zero-weight neutrality gate.'}
+
+
+def numeric_context_across_runs(full_dirs, resumed_dirs):
+    """Require one actual numerical context across seven independently launched runs.
+
+    This includes recorded reduction and runtime flags, not only the minimum
+    math/TF32 contract. Missing evidence cannot qualify any comparison. The
+    subsequent per-run reader still authenticates source, config and phase.
+    """
+    from contrastive_numeric_profile import assert_numeric_flags, NumericProfileUnavailable
+    runs = {**{arm: Path(path) for arm, path in full_dirs.items()},
+            **{name: Path(path) for name, path in resumed_dirs.items()}}
+    if set(runs) != {'C0', 'CN', 'CR', 'CN_A', 'CN_B', 'CR_A', 'CR_B'}:
+        raise ValueError('numeric context requires all seven full/reload runs')
+    contexts, evidence, missing, differences = {}, {}, [], []
+    for name in sorted(runs):
+        evidence[name] = {}
+        for rank in range(4):
+            key = name + '/rank' + str(rank)
+            path = runs[name]/f'numeric_profile.rank{rank}.json'
+            if not path.is_file():
+                missing.append(key + ': missing profile receipt')
+                continue
+            row = _read(path)
+            evidence[name][path.name] = sha(path)
+            flags = row.get('flags')
+            if not isinstance(flags, dict) or not flags or flags.get('profile') is None:
+                missing.append(key + ': missing effective profile flags')
+                continue
+            contexts[key] = flags
+            try:
+                assert_numeric_flags(flags)
+            except NumericProfileUnavailable as exc:
+                missing.append(key + ': required profile unavailable: ' + str(exc))
+    reference_key = next(iter(contexts), None)
+    reference = contexts.get(reference_key)
+    if reference is not None:
+        for key, flags in contexts.items():
+            changed = sorted(field for field in reference.keys() | flags.keys()
+                             if reference.get(field) != flags.get(field))
+            if changed:
+                differences.append({'reference': reference_key, 'compared': key, 'fields': changed})
+    status = 'FAILED' if differences else 'INCONCLUSIVE' if missing else 'PASSED'
+    return {'status': status, 'required_runs': sorted(runs), 'required_rank_receipts': 28,
+            'profile_receipts_sha256': evidence, 'reference_context': reference_key,
+            'effective_flags': reference, 'differences': differences, 'missing': missing,
+            'training_approved': False}
+
+
+def read_preflight(cohort_path, full_dirs, resumed_dirs, cuda_path, *, cpu_audit_path, calibration_path, calibration_run_dir, rank_exit_path=None, cpu_audit_sacct_path=None):
+    if set(full_dirs) != set(ARMS) or set(resumed_dirs) != {'CN_A', 'CN_B', 'CR_A', 'CR_B'}:
+        raise ValueError('require full C0/CN/CR and two fresh reloads for each CN/CR')
     from contrastive_run import validate_cohort
     from contrastive_prepare import BASELINE, build_review_configs
     cohort, receipt = _read(cohort_path), _read(calibration_path)
@@ -332,6 +417,8 @@ def read_preflight(cohort_path, full_dirs, resumed_dirs, cuda_path, *, cpu_audit
             audit.get('inputs') != input_pins or audit.get('steps') != 1024 or audit.get('world_size') != 4 or
             audit.get('workers_per_rank') != 6 or audit.get('config_sha256') != canonical_calibration):
         raise ValueError('CPU audit missing, failed or from different inputs/config/source')
+    from contrastive_release import validate_audit_accounting
+    accounting = validate_audit_accounting(cpu_audit_path, cpu_audit_sacct_path, expected_source=cohort['source_sha256'])
     cuda = _cuda_evidence(cuda_path, cohort, input_pins, calibration_cfg)
     from contrastive_rank_exit import validate_receipt
     reported_rank_exit = cuda.get('rank_exit_report_path')
@@ -349,16 +436,30 @@ def read_preflight(cohort_path, full_dirs, resumed_dirs, cuda_path, *, cpu_audit
     evidence_paths = {'cohort_path': str(Path(cohort_path).resolve()), 'full_dirs': {k: str(Path(v).resolve()) for k, v in full_dirs.items()},
                       'resumed_dirs': {k: str(Path(v).resolve()) for k, v in resumed_dirs.items()}, 'cuda_path': str(Path(cuda_path).resolve()),
                       'cpu_audit_path': str(Path(cpu_audit_path).resolve()), 'calibration_path': str(Path(calibration_path).resolve()),
-                      'calibration_run_dir': str(Path(calibration_run_dir).resolve()), 'rank_exit_path': str(rank_exit_path.resolve())}
+                      'calibration_run_dir': str(Path(calibration_run_dir).resolve()), 'rank_exit_path': str(rank_exit_path.resolve()),
+                      'cpu_audit_sacct_path': str(Path(cpu_audit_sacct_path).resolve())}
     result = {'schema': 1, 'status': 'PASSED_FOR_REVIEW', 'failure_reasons': [], 'training_approved': False,
               'source_sha256': cohort['source_sha256'], 'calibration_sha256': cohort['calibration_sha256'],
               'initial_state_sha256': cohort['initial_state_sha256'], 'cohort_sha256': sha(cohort_path),
               'cuda_report_sha256': sha(cuda_path), 'cpu_audit_sha256': sha(cpu_audit_path),
               'rank_exit_report_sha256': sha(rank_exit_path),
               'calibration_checkpoint_sha256': sha(Path(calibration_run_dir)/'checkpoint.pt'),
-              'benchmark_summaries': {}, 'arms': {}, 'evidence_paths': evidence_paths,
+              'benchmark_summaries': {}, 'arms': {}, 'evidence_paths': evidence_paths, 'audit_accounting': accounting,
+              'trajectory_drift_descriptive': {}, 'inconclusive_reasons': [],
               'initial_calibration_description': initial_calibration_description(calibration_run_dir),
               'training_allocations_gpu_hours': {}, 'training_allocations_gpu_hours_by_phase': {}, 'ratio_rule': RATIO_RULE}
+    numerical = numeric_context_across_runs(full_dirs, resumed_dirs)
+    result['numeric_context_across_runs'] = numerical
+    if numerical['status'] != 'PASSED':
+        if numerical['status'] == 'FAILED':
+            result['failure_reasons'].append('effective numerical flags differ between full/reload runs or ranks')
+            result['status'] = 'FAILED_REQUIRES_REVIEW'
+        else:
+            result['inconclusive_reasons'].append('required full/reload numerical profile is missing or unavailable')
+            result['status'] = 'INCONCLUSIVE_REQUIRES_REVIEW'
+        # No metric comparison or training resource projection from an
+        # unqualified or mixed numerical context.
+        return result
     streams = {}
     for arm, folder in full_dirs.items():
         summary, cfg, records, pins = _run_evidence(folder, arm, cohort, expected[arm], provenance)
@@ -367,23 +468,30 @@ def read_preflight(cohort_path, full_dirs, resumed_dirs, cuda_path, *, cpu_audit
         if active and not ratios[active]['within_screening_bounds']:
             result['failure_reasons'].append(arm+': measured intervention outside preregistered bounds')
         allocation = measured_allocation(summary, records)
-        result['arms'][arm] = {'ratios': ratios, 'resources': allocation, 'evidence_sha256': pins}
+        result['arms'][arm] = {'ratios': ratios, 'resources': allocation, 'evidence_sha256': pins,
+                               'full_batch_gpu_peak_gib': summary['gpu_max_memory_gib'], 'numeric_profile': 'bf16_math_tf32_off'}
         result['training_allocations_gpu_hours'][arm] = allocation['allocated_gpu_hours']
         result['training_allocations_gpu_hours_by_phase'][arm] = dict(zip(('5000', '19618'), (4*s/3600 for s in allocation['phase_allocation_seconds'])))
         result['benchmark_summaries'][arm] = pins['summary.json']
         streams[arm] = (records, pins['origin_sessions.json'])
-        if arm in resumed_dirs:
-            resumed = Path(resumed_dirs[arm])
-            _, _, resumed_records, resumed_pins = _run_evidence(resumed, arm, cohort, expected[arm], provenance)
-            if (resumed_pins['origin_sessions.json'] != pins['origin_sessions.json'] or
-                    [r['origin'] for r in resumed_records] != [r['origin'] for r in records]):
-                raise ValueError('resumed stream differs from uninterrupted stream')
-            check = compare_resume(Path(folder)/'checkpoint.pt', resumed/'checkpoint.pt', config_from_dict(cfg), cohort['initial_state_sha256'], initial)
-            check['evidence_sha256'] = resumed_pins
+        if arm in ('CN', 'CR'):
+            from contrastive_target_resume import compare_three_paths
+            paths = {'continuous': Path(folder), 'reload_a': Path(resumed_dirs[arm+'_A']),
+                     'reload_b': Path(resumed_dirs[arm+'_B'])}
+            reload_pins = {}
+            for phase in ('reload_a', 'reload_b'):
+                _, _, reload_records, rp = _run_evidence(paths[phase], arm, cohort, expected[arm], provenance, first_update=545, expected_phase=phase.replace('reload_', 'resume_'))
+                if [r['origin'] for r in reload_records] != [r['origin'] for r in records[544:]]:
+                    raise ValueError('reloaded stream differs from continuous suffix')
+                reload_pins[phase] = rp
+            check = compare_three_paths(paths, config_from_dict(cfg), cohort['initial_state_sha256'], initial,
+                                        sha(Path(folder)/'checkpoint_step0000544.pt'), ranks=4)
+            check['evidence_sha256'] = reload_pins
             result['arms'][arm]['resume'] = check
-            if not check['passed']:
-                result['failure_reasons'].append(arm+': 4GPU resume numerical bound failed')
-                result['failure_reasons'].extend(arm+': resume '+reason for reason in check['failure_reasons'])
+            if check.get('status') == 'INCONCLUSIVE':
+                result['inconclusive_reasons'].append(arm+': common-checkpoint comparison inconclusive')
+            elif not check.get('passed'):
+                result['failure_reasons'].append(arm+': common-checkpoint historical bounds or invariants failed')
     ratio = result['arms']['CN']['ratios']['nce']['median']/max(result['arms']['CR']['ratios']['rnc']['median'], 1e-30)
     result['ratio_CN_over_CR'] = ratio
     if not RATIO_RULE['between_min'] <= ratio <= RATIO_RULE['between_max']:
@@ -391,10 +499,30 @@ def read_preflight(cohort_path, full_dirs, resumed_dirs, cuda_path, *, cpu_audit
     for arm in ('CN', 'CR'):
         if streams['C0'][1] != streams[arm][1] or [r['origin'] for r in streams['C0'][0]] != [r['origin'] for r in streams[arm][0]]:
             raise ValueError('matched-arm window stream or session mapping differs')
-        for a, b in zip(streams['C0'][0][:256], streams[arm][0][:256]):
-            if any(not math.isclose(a[k], b[k], rel_tol=1e-4, abs_tol=1e-6) for k in ('total', 'grad_norm')):
-                result['failure_reasons'].append(arm+': zero-weight256-update parity failed'); break
-    if result['failure_reasons']: result['status'] = 'FAILED_REQUIRES_REVIEW'
+        result['trajectory_drift_descriptive'][arm] = trajectory_drift(streams['C0'][0][:256], streams[arm][0][:256])
+    parity_path = Path(full_dirs['C0'])/'zero_weight_parity.json'
+    if not parity_path.is_file():
+        result['inconclusive_reasons'].append('missing required production zero-weight profile')
+    else:
+        from contrastive_target_parity import validate_parity_report
+        parity = _read(parity_path)
+        cfg = _read(Path(full_dirs['C0'])/'config.json')
+        canonical_cfg = hashlib.sha256(json.dumps(cfg,sort_keys=True,separators=(',', ':')).encode()).hexdigest()
+        if (parity.get('source_sha256') != cohort['source_sha256'] or parity.get('config_sha256') != canonical_cfg or
+                parity.get('summary_sha256') != sha(Path(full_dirs['C0'])/'summary.json') or
+                parity.get('initial_state_sha256') != cohort['initial_state_sha256'] or parity.get('provenance') != provenance):
+            raise ValueError('zero-weight parity receipt is not bound to the full control run')
+        assessment = validate_parity_report(parity)
+        result['zero_weight_parity'] = {'sha256': sha(parity_path), 'assessment': assessment, 'report': parity}
+        status = assessment if isinstance(assessment, str) else assessment.get('status')
+        if status == 'INCONCLUSIVE':
+            result['inconclusive_reasons'].append('production zero-weight comparison lacks required profile/support')
+        elif status != 'PASSED':
+            result['failure_reasons'].append('production zero-weight gradients/invariants not byte-identical')
+    if result['failure_reasons']:
+        result['status'] = 'FAILED_REQUIRES_REVIEW'
+    elif result['inconclusive_reasons']:
+        result['status'] = 'INCONCLUSIVE_REQUIRES_REVIEW'
     return result
 
 
@@ -403,7 +531,7 @@ def authenticate_preflight(receipt_path):
     if receipt.get('status') != 'PASSED_FOR_REVIEW' or receipt.get('failure_reasons') != [] or receipt.get('training_approved') is not False:
         raise ValueError('preflight receipt did not pass every frozen gate')
     paths = receipt.get('evidence_paths')
-    required = {'cohort_path', 'full_dirs', 'resumed_dirs', 'cuda_path', 'cpu_audit_path', 'calibration_path', 'calibration_run_dir', 'rank_exit_path'}
+    required = {'cohort_path', 'full_dirs', 'resumed_dirs', 'cuda_path', 'cpu_audit_path', 'calibration_path', 'calibration_run_dir', 'rank_exit_path', 'cpu_audit_sacct_path'}
     if not isinstance(paths, dict) or set(paths) != required:
         raise ValueError('preflight receipt missing complete evidence paths')
     actual = read_preflight(**paths)
@@ -422,6 +550,7 @@ def main():
     ap.add_argument('--resumed', action='append', required=True, help='ARM=run_directory')
     ap.add_argument('--cuda-report', type=Path, required=True)
     ap.add_argument('--cpu-audit', type=Path, required=True)
+    ap.add_argument('--cpu-audit-sacct', type=Path, required=True, help='authenticated audit accounting JSON with pinned sacct TSV')
     ap.add_argument('--calibration-report', type=Path, required=True)
     ap.add_argument('--calibration-run-dir', type=Path, required=True)
     ap.add_argument('--out', type=Path, required=True)
@@ -432,7 +561,7 @@ def main():
             raise ValueError('unique ARM=path entries required')
         return dict(rows)
     report = read_preflight(a.cohort, mapping(a.full), mapping(a.resumed), a.cuda_report,
-                            cpu_audit_path=a.cpu_audit, calibration_path=a.calibration_report, calibration_run_dir=a.calibration_run_dir)
+                            cpu_audit_path=a.cpu_audit, calibration_path=a.calibration_report, calibration_run_dir=a.calibration_run_dir, cpu_audit_sacct_path=a.cpu_audit_sacct)
     a.out.parent.mkdir(parents=True, exist_ok=True)
     with a.out.open('x') as f: json.dump(report, f, indent=2, allow_nan=False)
     if report['status'] != 'PASSED_FOR_REVIEW': raise SystemExit(2)

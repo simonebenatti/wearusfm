@@ -178,6 +178,26 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 19/11/2026 — GPT | Linea 3: implementata la nuova coorte RMS100/fast125, in review
+
+Su mandato di Simone ripresa la consegna `438c8d65` nel worktree `wearusfm-contrastive-targets`.
+Recepite la review Claude `94f50942` e la decisione scientifica `faa4a8d7`, conservate nel ramo.
+Parità: stati vivi di C0 prima di 128/256, due backward per C0/CN/CR con input e RNG ripristinati,
+gradienti ridotti byte-identici e supporto per entrambe le loss. Ripresa: un checkpoint 544 per CN/CR,
+continuo fino a 576 e due processi distribuiti nuovi sullo stesso file; tutte le tre coppie con soglie
+storiche, tracce per rank e distanze dal fork separate. Profilo bf16/math con TF32 spento, registrato
+e confrontato fra i sette run. Non sono risultati CUDA: il codice locale prepara quei controlli.
+
+Review di release legata a commit, sorgenti e due piani; audit nuovo COMPLETED 0:0 entro 7.200 s
+obbligatorio per calibrare. M-1 e N-1–N-7 rendicontati nel documento di risposta. Preventivo:
+**17 allocazioni, 18 GPUh / 169,6 coreh**, compresi sei checkout da 4 CPU / 2 GiB / 4 minuti.
+**465 test CPU passati in 102,59 s**, ricevuta riproducibile in
+`results/infra/contrastive_targets_20261118/amendment_20261119/validation_final/`;
+SHA dei contenuti e dei piani nel successivo `delivery_pin.json`. Prontuario e prompt Claude pubblicati.
+Stato **REVIEW_REQUIRED**. Nessun job, deploy o controllo su Leonardo da GPT; operatore unico
+**3-launcher**. Dopo review la prima release è il solo audit; training lungo ancora subordinato
+al collaudo e al preventivo misurato.
+
 ### 18/11/2026 — Simone ha inoltrato a 3-launcher il prompt dei due diagnostici
 
 Consegna `35ea94ba`, codice di esecuzione `365cb1e2`. Simone conferma che GPT
@@ -9396,6 +9416,22 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 19/11/2026 — GPT | Linea 3: limiti e correzioni nell'integrazione del nuovo preflight
+
+I diagnostici storici sono conclusi e restano invariati; non qualificano la nuova ricetta 100/125.
+Le vecchie 256 loss e norme descrivono la deriva, mentre la parità ora confronta stati comuni.
+Supporto o profilo assente rende inconcluso il confronto; qualunque violazione mantiene il blocco.
+Il test locale del continuo e di due processi nuovi è CPU: CUDA/NCCL, memoria e tempo a batch 32
+restano da misurare. C0−T100-G è descrittivo e cambia anche i due target.
+
+Nell'integrazione corretti due rischi: hash del config semantico distinto dai byte delle diverse
+serializzazioni JSON; confronto dei flag numerici anche fra allocazioni, non solo fra rank.
+Occorre un sesto checkout dopo CUDA, perché i full ne richiedono la ricevuta pinnata: aggiornati
+matrice e preventivo prima della review. Consumo effettivo storico **6,086667 GPUh / 57,827778 coreh**
+separato dai massimi; saldo di progetto e quota correnti non letti da questa chat. Documentati
+margine SLURM, manutenzione 23–25/11, N-6 (default implicito di target_version) e N-7 (run_frozen
+verifica lo storico, non la punta). La nuova review del codice è ancora necessaria.
 
 ### 18/11/2026 — Chiarito il riferimento alla chat nel worktree condiviso
 

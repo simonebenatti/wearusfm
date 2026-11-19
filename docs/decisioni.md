@@ -8271,3 +8271,41 @@ vecchie ricevute rifiutate, costi ricalcolati. Non sostituisce la review di Clau
 Main integrato fino a `f546c9e4`, con review unica di `0d91297` e sue prove.
 Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,066667 coreh;
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
+
+
+### 2026-11-19 — Linea 3: nuova coorte 100/125 e controlli da stato comune (REVIEW_REQUIRED)
+
+Mandato di Simone: «Ti affido l’implementazione dell’emendamento RMS100/fast125 e la preparazione
+ del pacchetto per 3-launcher». La consegna parte da `438c8d65`, recepisce la review `94f50942`
+e attua la decisione scientifica `faa4a8d7`; non modifica i risultati o le soglie downstream storiche.
+Riferimento: `docs/contrastive_targets_execution_20261119.md`, risposta punto per punto in
+`docs/reviews/contrastive_targets_response_20261119.md`.
+
+- Parità prospettica: batch misto globale 32, stato vivo C0 prima di 128 e 256, due backward per
+  braccio, bf16/math/TF32 spento; riduzioni identiche per byte. Supporto o profilo mancante è
+  inconclusivo. Le tolleranze storiche sulle 256 traiettorie rimangono descrittive.
+- Ripresa: continuo CN/CR da un unico fork 544 fino a 576 e due reload nuovi degli stessi byte;
+  soglia storica dell'1% per tutte le tre coppie, buffer esatti e vincoli per singolo tensore.
+  Distanze dal movimento dopo 544 pubblicate separatamente.
+- Release: review nuova legata a sorgenti e ai due piani; prima fase solo audit. La calibrazione
+  richiede audit nuovo COMPLETED, 0:0 ed Elapsed non superiore a 7.200 s. Nessuna eccezione TIMEOUT.
+- Preventivo proposto: 11 celle e 6 checkout, **18 GPUh / 169,6 coreh** richieste. Sei checkout
+  necessari perché la ricevuta CUDA va pinnata prima dei full, con codice immutabile.
+  Margine esterno SLURM conservativo: inviluppo 21,6 GPUh / 202,4 coreh, senza estendere i gate.
+  Consumo storico effettivo 6,086667 GPUh / 57,827778 coreh; vecchi massimi e residuo aritmetico
+  distinti nel piano. Nessun saldo corrente inventato; verifica di progetto/quota e manutenzione
+  del 23–25 novembre a carico di 3-launcher prima degli invii.
+- M-1 e N-1–N-7 trattati con test negativi, pin di validazione e limiti dichiarati. I test CPU
+  locali non sostituiscono le misure CUDA. C0−T100-G rimane descrittivo con target diversi.
+
+Sorgenti e piani restano **REVIEW_REQUIRED**. Simone: «Gli invii e i controlli su Leonardo
+spettano a 3-launcher». Nessuna operazione remota da questa consegna. Dopo review si prepara
+la release audit; calibrazione e seguito richiedono le rispettive ricevute. Training lunghi
+non rilasciati, subordinati al collaudo e al preventivo misurato. Identità e verifica locale
+sono in `results/infra/contrastive_targets_20261118/amendment_20261119/`.
+
+Verifica locale finale del 19/11: **465 test passati in 102,59 s**, launcher validati e
+piani rigenerati identici. Ricevuta con comandi/hash in `amendment_20261119/validation_final/`;
+resoconto dei due tentativi precedenti conservati in `amendment_20261119/verification.json`.
+Aggiunta compatibilità con le API CUDA di PyTorch 2.2, provata simulandole sul Mac;
+nessuna esecuzione su CUDA o sul cluster dichiarata.

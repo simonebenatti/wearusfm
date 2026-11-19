@@ -1,0 +1,252 @@
+{
+  "schema": "contrastive-local-validation-v2",
+  "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+  "historical_artifacts_changed_from_base": [],
+  "base_commit": "438c8d65",
+  "date": "2026-11-19",
+  "cwd": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets",
+  "environment": {
+    "PYTHONPATH": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/src:/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/scripts",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "producer": "scripts/contrastive_local_validation.py",
+  "cuda_tested": false,
+  "runs": [
+    {
+      "command": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "-o",
+        "tmp_path_retention_policy=none",
+        "tests/cpu/test_contrastive_audit.py",
+        "tests/cpu/test_contrastive_benchmark_readout.py",
+        "tests/cpu/test_contrastive_callsite_oracle.py",
+        "tests/cpu/test_contrastive_common_checkpoint.py",
+        "tests/cpu/test_contrastive_common_state_cuda.py",
+        "tests/cpu/test_contrastive_compare.py",
+        "tests/cpu/test_contrastive_core.py",
+        "tests/cpu/test_contrastive_cuda_check.py",
+        "tests/cpu/test_contrastive_diagnostics.py",
+        "tests/cpu/test_contrastive_historical_calibration.py",
+        "tests/cpu/test_contrastive_historical_callsites.py",
+        "tests/cpu/test_contrastive_job.py",
+        "tests/cpu/test_contrastive_memory.py",
+        "tests/cpu/test_contrastive_mmap_compatibility.py",
+        "tests/cpu/test_contrastive_numeric_profile.py",
+        "tests/cpu/test_contrastive_prepare.py",
+        "tests/cpu/test_contrastive_rank_exit.py",
+        "tests/cpu/test_contrastive_release.py",
+        "tests/cpu/test_contrastive_run.py",
+        "tests/cpu/test_contrastive_runtime.py",
+        "tests/cpu/test_contrastive_source_compat.py",
+        "tests/cpu/test_contrastive_target_parity.py",
+        "tests/cpu/test_contrastive_target_resume.py",
+        "tests/cpu/test_contrastive_targets_guards.py",
+        "tests/cpu/test_contrastive_targets_plan.py",
+        "tests/cpu/test_contrastive_targets_readout.py",
+        "tests/cpu/test_ms_fast_target_window.py",
+        "tests/cpu/test_rms_target_window.py",
+        "tests/cpu/test_target_windows_fix.py"
+      ],
+      "returncode": 0,
+      "elapsed_s": 103.86424020800041,
+      "log": {
+        "path": "results/infra/contrastive_targets_20261118/amendment_20261119/validation_final/pytest.log",
+        "bytes": 592,
+        "sha256": "b90d18baa0940c4567ad709071a9c52f8f855f5bc3bd32787dc77833c8f99191"
+      }
+    }
+  ],
+  "test_files": [
+    {
+      "path": "tests/cpu/test_contrastive_audit.py",
+      "bytes": 4654,
+      "sha256": "cf7afaba593609814a7a634c66bfd9bd46f118fe5d8a97fd6a16ae7c2df0cf4f"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_benchmark_readout.py",
+      "bytes": 20322,
+      "sha256": "25570b0598e7e8de05d683d9a8e178599b1665d309001775d3da2cc5faa0de2e"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_callsite_oracle.py",
+      "bytes": 4419,
+      "sha256": "c03b21ce9cc2b825718dfd51292f89d94f58ff2b7183bc6238473af91f1703a1"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_common_checkpoint.py",
+      "bytes": 2985,
+      "sha256": "589faf778329ee40722463dc38af3cbd48fdbd6cc0191df01af5191a7e9dcc47"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_common_state_cuda.py",
+      "bytes": 5260,
+      "sha256": "03b7a55149a0aa5fc9426b89073f320357093314282b9fd652e12012f6ffc8e5"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_compare.py",
+      "bytes": 14658,
+      "sha256": "54205415e71744103c60337ac84d38d8ab0e01c464decbd7b4b9bc8dde85ea9e"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_core.py",
+      "bytes": 7220,
+      "sha256": "316c92039dd1b0508c602878584c80ead66a7b6b6b5786d75e09666b60744ff5"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_cuda_check.py",
+      "bytes": 6267,
+      "sha256": "64817e92bcf2351d615c1c87312dd4dd0d0337039ef4b6b580f05408479cec13"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_diagnostics.py",
+      "bytes": 5069,
+      "sha256": "c84eb1911d7b0dfe2e3d5856d37d63f40dff0bad5dc763c564ae872e964b4816"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_historical_calibration.py",
+      "bytes": 4232,
+      "sha256": "49088166ac44572462925a0fd47ac0c9ac7ac4fe97b7326b457043c07be18953"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_historical_callsites.py",
+      "bytes": 7421,
+      "sha256": "455c49ff948539771bf67be26a25685d251332e3d7a1f44d044032cb403329b8"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_job.py",
+      "bytes": 9959,
+      "sha256": "c59398563fd5b6bedcb50d5d535e677b5250b96df4055ff7cabf9907c819c32c"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_memory.py",
+      "bytes": 11310,
+      "sha256": "e4101fcc2c77d9233a4c5aedce4105185a6bc9c05a8fa722ef359127e4bf1ca6"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_mmap_compatibility.py",
+      "bytes": 4814,
+      "sha256": "2cb4668e7d0fdbec8807c78fa98a95a1a383915a9c786d8819ab5ea29b798297"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_numeric_profile.py",
+      "bytes": 4037,
+      "sha256": "2d490476b3bfb86e4193fec2f9b30c2e2a4ef3d915434500ca63e01598c96ed4"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_prepare.py",
+      "bytes": 14357,
+      "sha256": "d99aa2f4a303f3d3c88b3184b1cef9c2f576a740a5bd433cd2b2835de4bdd30a"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_rank_exit.py",
+      "bytes": 6099,
+      "sha256": "4ba14d1a9e304d50fcde862da9ddb77395e626182711e3aa371798f69020c2f4"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_release.py",
+      "bytes": 8117,
+      "sha256": "490f53f3f7992a4cfc59818d948810e85dc588112d957465f061f026536d3e16"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_run.py",
+      "bytes": 11162,
+      "sha256": "a393bc3f8ab1b6f84a6d115ec2dec325ae9c351d3f655421bd481e6dd12538fb"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_runtime.py",
+      "bytes": 20288,
+      "sha256": "8532fbd3b01395a9c4477a58cd7e5da1b549c2bdc2dae1ecc8dc45e98e2abb42"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_source_compat.py",
+      "bytes": 11277,
+      "sha256": "eba697bc870f80722192037b455e0a080692c385c24776e2c29c8e6ec473b9c5"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_target_parity.py",
+      "bytes": 10025,
+      "sha256": "0bf4ac17a1c0a1ac1a9a52ee3bb9f9435e8e904f4884f333290051b3c7e8ec39"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_target_resume.py",
+      "bytes": 10269,
+      "sha256": "0fc5f41edadd6c8f777a37328057b45532dbbb9b1ae675561d83b2e1fa83afae"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_targets_guards.py",
+      "bytes": 5089,
+      "sha256": "c64688c68c54daf0f7a26ef45afe0c82b989344229bc274c359b0d9c2a686e4e"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_targets_plan.py",
+      "bytes": 2876,
+      "sha256": "eaabefea6abadce43bafea8b0d6b76e9957d086865e83d7aa398209b00494633"
+    },
+    {
+      "path": "tests/cpu/test_contrastive_targets_readout.py",
+      "bytes": 15607,
+      "sha256": "c373416f30c3d3afc95043cb5583877d28267d08ac96c505c1edb794189c0009"
+    },
+    {
+      "path": "tests/cpu/test_ms_fast_target_window.py",
+      "bytes": 6852,
+      "sha256": "c7e9c76469ecba7376b5ce36b2a1d64afc64a9ccdcfe416590046eb5cf18b152"
+    },
+    {
+      "path": "tests/cpu/test_rms_target_window.py",
+      "bytes": 4899,
+      "sha256": "57df0cd6adb8c9939e172423267f46da55d1e8d25a6fe2bc188c1f2a95de9e3b"
+    },
+    {
+      "path": "tests/cpu/test_target_windows_fix.py",
+      "bytes": 7952,
+      "sha256": "ffbe1be4d45e3fb371c50a1f0c6341ed61906d1926c12fad3eb9d8c79ba949a2"
+    }
+  ],
+  "historical_logs": [
+    {
+      "path": "results/infra/contrastive_targets_20261118/full_suite/collection.log",
+      "bytes": 367983,
+      "sha256": "382e47ac97f4b2c3a09d1ebd4194280594de13c4bbefd66848540968d6f6b49d"
+    },
+    {
+      "path": "results/infra/contrastive_targets_20261118/full_suite/cpu_ddp.log",
+      "bytes": 99,
+      "sha256": "fa184fcbcb98ee77b702e2c63034dd19a1ad0671149d5dd7b78d558e876e6ec6"
+    },
+    {
+      "path": "results/infra/contrastive_targets_20261118/full_suite/cpu_part0.log",
+      "bytes": 163614,
+      "sha256": "34bbd08ac500b6d7d86afddbe7647b6c8b9fed1370ff9704fb5ac12bca27ef0b"
+    },
+    {
+      "path": "results/infra/contrastive_targets_20261118/full_suite/cpu_part1.log",
+      "bytes": 68734,
+      "sha256": "f96cc78571e71e4282407ada7b0f603686a80719f27a56acf86ab3d7cb54d354"
+    },
+    {
+      "path": "results/infra/contrastive_targets_20261118/full_suite/cpu_part2.log",
+      "bytes": 115811,
+      "sha256": "bea43c5f2e0e2fd3f8a83d5635bdc628ab83eef21fffc3a4814f1f8b63f82680"
+    },
+    {
+      "path": "results/infra/contrastive_targets_20261118/full_suite/cpu_part3.log",
+      "bytes": 83704,
+      "sha256": "c20cb5c6ecfe069d8fb1826c4b5e176ca7ed77d64bb0c991aadcfe02bb044557"
+    },
+    {
+      "path": "results/infra/contrastive_targets_20261118/full_suite/recovery_remaining.log",
+      "bytes": 532,
+      "sha256": "2a64dfd30d46220349bea724b04cefc775cee38cc6a68541b208e69ceb72a2c9"
+    }
+  ],
+  "historical_scope": "Existing 18/11 logs retained and pinned, not rerun by this command. Undocumented old121-test selection superseded by explicit current full contrastive test list."
+}

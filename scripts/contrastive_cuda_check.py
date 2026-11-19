@@ -204,7 +204,8 @@ def trainer_stop_checks(cfg, manifest, roots, scales, windows, output, ctx, devi
     return {"coverage": bool(coverage_ok), "numeric": bool(numeric_ok), "passed": bool(coverage_ok and numeric_ok)}
 
 
-def main(argv=None):
+def _main(argv=None):
+    from contrastive_numeric_profile import assert_numeric_profile
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("config", "manifest", "scales", "window-seconds", "calibration-checkpoint"):
         parser.add_argument("--" + name, type=Path, required=True)
@@ -277,7 +278,7 @@ def main(argv=None):
                                                      args.out.with_suffix(""), ctx, device)
         own_passed = report["stop_checks"]["passed"] and all(p["passed"] for arm in report["arms"].values() for p in arm.values())
         ranks = [None] * ctx.world_size
-        torch.distributed.all_gather_object(ranks, {"rank": ctx.rank, "passed": own_passed, "arms": report["arms"], "stop_checks": report["stop_checks"]})
+        torch.distributed.all_gather_object(ranks, {"rank": ctx.rank, "passed": own_passed, "arms": report["arms"], "stop_checks": report["stop_checks"], "numeric_profile": assert_numeric_profile(require_cuda=True)})
         report["ranks"] = ranks
         after_pins = {name: hashlib.sha256(getattr(args, name).read_bytes()).hexdigest() for name in pins}
         report["inputs_unchanged"] = after_pins == pins and hashlib.sha256(args.rank_exit_report.read_bytes()).hexdigest() == rank_exit_sha256 and hashlib.sha256(
@@ -294,6 +295,12 @@ def main(argv=None):
         return 0 if report["passed"] else 1
     finally:
         torch.distributed.destroy_process_group()
+
+
+def main(argv=None):
+    from contrastive_numeric_profile import numeric_profile
+    with numeric_profile(require_cuda=True):
+        return _main(argv)
 
 
 if __name__ == "__main__":

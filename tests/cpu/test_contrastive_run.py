@@ -41,7 +41,7 @@ def test_paired_recipes_only_use_authenticated_shared_weights(tmp_path, arm):
         bad["contrastive"][field] = value
         with pytest.raises(ValueError): runner.validate_recipe(bad, "training", report, folder)
     for endpoint in (544, 576):
-        cfg["max_steps"] = endpoint
+        cfg = P.calibrated_configs(report, folder, endpoint)[arm]
         assert runner.validate_recipe(cfg, "benchmark", report, folder).max_steps == endpoint
     cfg["max_steps"] = 64
     with pytest.raises(ValueError, match="frozen split"):
@@ -69,6 +69,9 @@ def release_fixture(tmp_path, monkeypatch):
     # This fixture validates release mechanics on tiny files; the real scientific
     # input pins have their own negative regression below.
     monkeypatch.setattr(runner, "validate_input_bindings", lambda value: None)
+    import contrastive_release as release_checks
+    monkeypatch.setattr(release_checks, "validate_review_binding", lambda value: None)
+    monkeypatch.setattr(release_checks, "validate_audit_accounting", lambda *args: None)
     audit = {"steps": 1024, "world_size": 4, "workers_per_rank": 6, "passed": True,
              "source_sha256": runner.source_digest(), "inputs": pins,
              "expected_datasets": summary["contrastive"]["expected_datasets"],
@@ -80,7 +83,7 @@ def release_fixture(tmp_path, monkeypatch):
     release = {"status": "APPROVED_FOR_PREPARATION", "stage": "calibration",
                "source_sha256": runner.source_digest(), "config_sha256": runner.sha(config_path),
                "world_size": 4, "workers_per_rank": 6, "inputs": pins,
-               "review_pin": "reviewed-commit", "time_limit_s": 900., "audit_sha256": runner.sha(audit_path)}
+               "review_pin": "reviewed-commit", "package_review": {"fixture": True, "review_commit": "reviewed-commit"}, "audit_sacct": {"fixture": True}, "time_limit_s": 900., "audit_sha256": runner.sha(audit_path)}
     return release, config_path, inputs, audit_path
 
 

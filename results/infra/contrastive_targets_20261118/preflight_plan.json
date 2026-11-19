@@ -1,29 +1,29 @@
 {
-  "protocol": "contrastive-target-windows-preflight-20261118-v1",
+  "protocol": "contrastive-target-windows-preflight-20261119-v2",
   "status": "REVIEW_REQUIRED",
   "executable": false,
   "submission_authorized": false,
   "training_authorized": false,
   "science_plan": {
     "path": "results/infra/contrastive_targets_20261118/plan.json",
-    "sha256": "6081832627cee150a8bdfe85f319ae999de879a5171f4c71aaf2f4757a7a72ca"
+    "sha256": "b03c0bc679f7247d703635d7065c9fc7bda4a292f2c8c106e29004e0527e021a"
   },
-  "source_sha256": "643a8937e83353345adff81999292d9d380fb06fdae73fa733deb8e147968ffb",
+  "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
   "cells": [
     {
       "id": "CONTRAST-AUDIT-targets-v3-20261118",
       "mode": "audit",
       "arm": null,
+      "repeat": null,
       "gpus": 0,
       "cpus": 8,
       "memory_gib": 30,
       "seconds": 7200,
-      "gpu_hours": 0.0,
+      "gpu_hours": 0,
       "core_hours": 16.0,
       "depends": [
         "new_review",
-        "new_checkout",
-        "diagnostic_resolution"
+        "audit_checkout"
       ],
       "status": "REVIEW_REQUIRED",
       "code_sha": null,
@@ -33,6 +33,7 @@
       "id": "CONTRAST-CALIB-targets-v3-20261118",
       "mode": "calibration",
       "arm": null,
+      "repeat": null,
       "gpus": 4,
       "cpus": 32,
       "memory_gib": 240,
@@ -50,6 +51,7 @@
       "id": "CONTRAST-CUDA-targets-v3-20261118",
       "mode": "cuda",
       "arm": null,
+      "repeat": null,
       "gpus": 4,
       "cpus": 32,
       "memory_gib": 240,
@@ -67,6 +69,7 @@
       "id": "CONTRAST-BENCH-C0-targets-v3-20261118",
       "mode": "full",
       "arm": "C0",
+      "repeat": null,
       "gpus": 4,
       "cpus": 32,
       "memory_gib": 240,
@@ -85,6 +88,7 @@
       "id": "CONTRAST-BENCH-CN-targets-v3-20261118",
       "mode": "full",
       "arm": "CN",
+      "repeat": null,
       "gpus": 4,
       "cpus": 32,
       "memory_gib": 240,
@@ -103,6 +107,7 @@
       "id": "CONTRAST-BENCH-CR-targets-v3-20261118",
       "mode": "full",
       "arm": "CR",
+      "repeat": null,
       "gpus": 4,
       "cpus": 32,
       "memory_gib": 240,
@@ -118,9 +123,10 @@
       "release": null
     },
     {
-      "id": "CONTRAST-RESUME-CN-targets-v3-20261118",
-      "mode": "split",
+      "id": "CONTRAST-RELOAD-CN-A-targets-v3-20261118",
+      "mode": "resume",
       "arm": "CN",
+      "repeat": "a",
       "gpus": 4,
       "cpus": 32,
       "memory_gib": 240,
@@ -128,17 +134,17 @@
       "gpu_hours": 2.0,
       "core_hours": 16.0,
       "depends": [
-        "cuda",
-        "calibration_accepted"
+        "full_CN"
       ],
       "status": "REVIEW_REQUIRED",
       "code_sha": null,
       "release": null
     },
     {
-      "id": "CONTRAST-RESUME-CR-targets-v3-20261118",
-      "mode": "split",
-      "arm": "CR",
+      "id": "CONTRAST-RELOAD-CN-B-targets-v3-20261118",
+      "mode": "resume",
+      "arm": "CN",
+      "repeat": "b",
       "gpus": 4,
       "cpus": 32,
       "memory_gib": 240,
@@ -146,8 +152,43 @@
       "gpu_hours": 2.0,
       "core_hours": 16.0,
       "depends": [
-        "cuda",
-        "calibration_accepted"
+        "full_CN"
+      ],
+      "status": "REVIEW_REQUIRED",
+      "code_sha": null,
+      "release": null
+    },
+    {
+      "id": "CONTRAST-RELOAD-CR-A-targets-v3-20261118",
+      "mode": "resume",
+      "arm": "CR",
+      "repeat": "a",
+      "gpus": 4,
+      "cpus": 32,
+      "memory_gib": 240,
+      "seconds": 1800,
+      "gpu_hours": 2.0,
+      "core_hours": 16.0,
+      "depends": [
+        "full_CR"
+      ],
+      "status": "REVIEW_REQUIRED",
+      "code_sha": null,
+      "release": null
+    },
+    {
+      "id": "CONTRAST-RELOAD-CR-B-targets-v3-20261118",
+      "mode": "resume",
+      "arm": "CR",
+      "repeat": "b",
+      "gpus": 4,
+      "cpus": 32,
+      "memory_gib": 240,
+      "seconds": 1800,
+      "gpu_hours": 2.0,
+      "core_hours": 16.0,
+      "depends": [
+        "full_CR"
       ],
       "status": "REVIEW_REQUIRED",
       "code_sha": null,
@@ -157,14 +198,15 @@
       "id": "CONTRAST-READOUT-targets-v3-20261118",
       "mode": "readout",
       "arm": null,
+      "repeat": null,
       "gpus": 0,
       "cpus": 8,
       "memory_gib": 30,
       "seconds": 3600,
-      "gpu_hours": 0.0,
+      "gpu_hours": 0,
       "core_hours": 8.0,
       "depends": [
-        "all_five_benchmarks"
+        "all_three_full_and_four_reloads"
       ],
       "status": "REVIEW_REQUIRED",
       "code_sha": null,
@@ -172,28 +214,122 @@
     }
   ],
   "checkouts": {
-    "count": 4,
+    "count": 6,
     "cpus": 4,
-    "memory_gib": 30,
+    "memory_gib": 2,
     "seconds_each": 240,
-    "core_hours": 1.0666666666666667
+    "core_hours": 1.6,
+    "stages": [
+      "audit",
+      "calibration",
+      "cuda",
+      "full",
+      "reloads",
+      "readout"
+    ],
+    "logical_ids": [
+      "CONTRAST-CHECKOUT-audit-targets-v3-20261118",
+      "CONTRAST-CHECKOUT-calibration-targets-v3-20261118",
+      "CONTRAST-CHECKOUT-cuda-targets-v3-20261118",
+      "CONTRAST-CHECKOUT-full-targets-v3-20261118",
+      "CONTRAST-CHECKOUT-reloads-targets-v3-20261118",
+      "CONTRAST-CHECKOUT-readout-targets-v3-20261118"
+    ],
+    "mandatory_sbatch_overrides": [
+      "--cpus-per-task=4",
+      "--mem=2G",
+      "--time=00:04:00"
+    ],
+    "reason": "separate immutable metadata releases after audit, calibration, CUDA receipt, full checkpoint, final receipts"
   },
   "resources": {
-    "gpu_hours_cap": 14.0,
-    "core_hours_cap": 137.06666666666666,
-    "measured_new_recipe_seconds": null
+    "gpu_hours_cap": 18.0,
+    "core_hours_cap": 169.6,
+    "local_hours_cap_assuming_billing_equals_cpus": 169.6,
+    "allocation_wall_hours_sum": 7.9,
+    "measured_new_recipe_seconds": null,
+    "historical_actual": {
+      "gpu_hours": 6.086666666666667,
+      "core_hours": 57.82777777777778,
+      "local_hours": 57.82777777777778,
+      "diagnostics_gpu_hours": 0.8022222222222222,
+      "diagnostics_core_hours": 6.456666666666667
+    },
+    "historical_reserved_cap": {
+      "gpu_hours": 14,
+      "core_hours": 129.33333333333334
+    },
+    "historical_unspent_not_new_authorization": {
+      "gpu_hours": 7.913333333333333,
+      "core_hours": 71.50555555555556
+    },
+    "cumulative_actual_plus_new_requested_max": {
+      "gpu_hours": 24.086666666666666,
+      "core_hours": 227.42777777777778
+    },
+    "old_unexecuted_target_proposal": {
+      "gpu_hours": 14,
+      "core_hours": 137.06666666666666,
+      "consumed": false
+    },
+    "new_increment_vs_old_target_proposal": {
+      "gpu_hours": 4.0,
+      "core_hours": 32.53333333333333
+    },
+    "slurm_extra_allowance": {
+      "OverTimeLimit_s": 180,
+      "KillWait_s": 180,
+      "conservative_sum_per_allocation_s": 360,
+      "extra_gpu_hours": 3.5999999999999996,
+      "extra_core_hours": 32.8,
+      "new_envelope_including_allowance": {
+        "gpu_hours": 21.6,
+        "core_hours": 202.39999999999998
+      },
+      "not_scientifically_accepted_runtime": "audit beyond7200s rejected even if COMPLETED"
+    },
+    "project_balance": {
+      "value": null,
+      "status": "3-launcher must refresh actual balance and pending reservations before submission",
+      "remainder_formula": "fresh local-hour balance minus requested phase maximum and pending campaign writes/reservations"
+    },
+    "new_cohort_consumed": {
+      "gpu_hours": 0,
+      "core_hours": 0,
+      "basis": "no submission by this delivery"
+    },
+    "long_training_budget": null
   },
   "fresh_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118",
   "mandatory_audit_sbatch_override": [
     "--time=02:00:00"
   ],
+  "audit_sacct_gate": {
+    "State": "COMPLETED",
+    "ExitCode": "0:0",
+    "ElapsedRaw_max": 7200,
+    "AllocCPUS": 8,
+    "TimelimitRaw": 120
+  },
+  "operator": "3-launcher",
   "required_before_first_submission": [
-    "publish and present resource proposal to Simone",
-    "single package review and source pins",
-    "resolve historical bf16/initial-parity/resume failures with separately prepared common-state diagnostics",
-    "check ledger, quota, maintenance, available balance; no duplicates"
+    "new operational code review bound to actual source and both plans",
+    "fresh ledger/quota/balance and pending writes checked by 3-launcher",
+    "first executable delivery is audit only"
   ],
-  "failure_policy": "Any failed gate stops descendants; no retry, time extension, lambda clipping or threshold relaxation. Archived audit TIMEOUT exception is not inherited.",
-  "old_evidence": "Retained under contrastive_comparison_20261116, invalid for target100/125 execution",
-  "training_release": "Absent; measured benchmark and separate training budget required"
+  "maintenance": {
+    "timezone": "Europe/Rome",
+    "start": "2026-11-23T08:00:00+01:00",
+    "end": "2026-11-25T08:00:00+01:00",
+    "source": "archived project operational instruction; launcher must refresh reservations",
+    "rule": "no expected completion guaranteed across closure; queue after restart if phase cannot fit; no implicit retry"
+  },
+  "storage": {
+    "minimum_new_headroom_gib": 12,
+    "pending_writes_additive": true,
+    "verified_now": false
+  },
+  "failure_policy": "Failed or inconclusive gate stops descendants; no retry/time/backend/lambda/threshold change.",
+  "old_evidence": "historical files retained unchanged; not qualification evidence for100/125",
+  "training_release": "Absent; full-batch math time/memory, successful preflight, measured training budget required"
 }

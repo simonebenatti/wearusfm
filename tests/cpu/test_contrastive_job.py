@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 import contrastive_job as J
 import contrastive_run as runner
+import contrastive_release as release_checks
 
 
 @pytest.fixture
@@ -22,30 +23,39 @@ def job_env(tmp_path, monkeypatch):
     monkeypatch.setattr(J, "source_digest", lambda: "a" * 64)
     monkeypatch.setattr(J, "validate_input_bindings", lambda _: None)
     monkeypatch.setattr(runner, "validate_recipe", lambda *args: None)
+    monkeypatch.setattr(release_checks, "validate_review_binding", lambda value: None)
+    monkeypatch.setattr(release_checks, "validate_audit_accounting", lambda *args: None)
+    preflight = tmp_path / "preflight.json"
+    monkeypatch.setattr(release_checks, "PREFLIGHT", preflight)
     def pin(name, payload=None):
         path = tmp_path / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps({} if payload is None else payload))
         return {"path": str(path), "sha256": runner.sha(path)}
     def build(mode):
-        job = {"mode": mode, "status": "APPROVED_FOR_PREFLIGHT", "source_sha256": "a" * 64,
+        preflight.write_text(json.dumps({"fresh_root": str(work / "wearusfm_runs"), "cells": [{"id": "test-" + mode, "mode": mode, "arm": "CN" if mode == "resume" else None, "repeat": "a" if mode == "resume" else None, "seconds": J.ALLOCATED_SECONDS.get(mode, 1800)}]}))
+        job = {"id": "test-" + mode, "arm": "CN" if mode == "resume" else None, "repeat": "a" if mode == "resume" else None, "package_review": {"fixture": True}, "mode": mode, "status": "APPROVED_FOR_PREFLIGHT", "source_sha256": "a" * 64,
                "review": pin(mode + "/review.json"), "out": str(work / "wearusfm_runs" / mode),
                "config": pin(mode + "/config.json"), "roots": list(map(str, roots)),
                "inputs": {key: pin(mode + "/" + key + ".json") for key in ("manifest", "scales", "window_seconds", "pose_stats")},
-               "audit": pin(mode + "/audit.json"), "cohort": pin(mode + "/cohort.json"),
+               "audit_sacct": pin(mode + "/audit_accounting.json"), "audit": pin(mode + "/audit.json"), "cohort": pin(mode + "/cohort.json"),
                "calibration_report": pin(mode + "/calibration.json"),
                "calibration_summary": pin(mode + "/cal/summary.json"),
                "cuda_report": pin(mode + "/cuda.json"), "resume_config": pin(mode + "/full.json")}
+        job["package_review"]["review"] = job["review"]
         job["calibration_checkpoint"] = pin(mode + "/checkpoint.pt")
+        job["fork_checkpoint"] = pin(mode + "/common/checkpoint_step0000544.pt")
+        job["continuous_summary"] = pin(mode + "/common/summary.json")
         release = {"status": "APPROVED_FOR_PREPARATION", "stage": "calibration" if mode == "calibration" else "benchmark",
-                   "phase": mode, "source_sha256": job["source_sha256"], "config_sha256": job["config"]["sha256"],
-                   "time_limit_s": 1800 if mode == "split" else 1770,
+                   "phase": "resume_a" if mode == "resume" else mode, "source_sha256": job["source_sha256"], "config_sha256": job["config"]["sha256"],
+                   "time_limit_s": 1770, "cuda_report": job["cuda_report"], "package_review": job["package_review"], "audit_sacct": job["audit_sacct"],
+                   "fork_checkpoint": job["fork_checkpoint"], "continuous_summary": job["continuous_summary"],
                    "inputs": {k: v["sha256"] for k, v in job["inputs"].items()},
                    "audit_sha256": job["audit"]["sha256"], "cohort_sha256": job["cohort"]["sha256"],
                    "calibration_sha256": job["calibration_report"]["sha256"]}
         job["release"] = pin(mode + "/release.json", release)
         job["full"] = {arm: pin(mode + "/full/" + arm + "/summary.json") for arm in ("C0", "CN", "CR")}
-        job["resumed"] = {arm: pin(mode + "/resumed/" + arm + "/summary.json") for arm in ("CN", "CR")}
+        job["resumed"] = {arm: pin(mode + "/resumed/" + arm + "/summary.json") for arm in ("CN_A", "CN_B", "CR_A", "CR_B")}
         return job
     return build, pin
 
@@ -53,21 +63,20 @@ def job_env(tmp_path, monkeypatch):
 @pytest.mark.parametrize("mode,kind,seconds,script", [("audit", "cpu", 7200, "contrastive_audit.py"),
     ("readout", "cpu", 3600, "contrastive_benchmark_readout.py"), ("cuda", "gpu", 1800, "contrastive_cuda_check.py"),
     ("calibration", "gpu", 1800, "contrastive_run.py"), ("full", "gpu", 1800, "contrastive_run.py"),
-    ("split", "gpu", 1800, "contrastive_split_benchmark.py")])
+    ("resume", "gpu", 1800, "contrastive_run.py")])
 def test_stage_commands_use_frozen_absolute_scripts_and_fixed_resources(job_env, mode, kind, seconds, script):
     job = job_env[0](mode)
     command = J.build_command(job, kind, seconds)
     assert str(ROOT / "scripts" / script) in command
-    assert "--nproc_per_node=4" in command if mode in {"cuda", "calibration", "full"} else "--nproc_per_node=4" not in command
+    assert "--nproc_per_node=4" in command if mode in {"cuda", "calibration", "full", "resume"} else "--nproc_per_node=4" not in command
     assert "--stage" not in command or command[command.index("--stage") + 1] != "training"
-    if mode == "split": assert command[command.index("--total-time-limit-s") + 1] == "1800"
 
 
 @pytest.mark.parametrize("mode,kind,seconds", [
     ("audit", "cpu", 3600), ("audit", "cpu", 7199), ("audit", "cpu", 7201),
     ("audit", "gpu", 7200), ("readout", "cpu", 1800), ("readout", "cpu", 7200),
     ("readout", "gpu", 3600), ("cuda", "gpu", 7200), ("calibration", "gpu", 3600),
-    ("full", "cpu", 1800), ("split", "gpu", 7200),
+    ("full", "cpu", 1800), ("resume", "gpu", 7200),
 ])
 def test_stage_allocations_cannot_be_swapped_or_extended(job_env, mode, kind, seconds):
     with pytest.raises(ValueError, match="allocation"):
@@ -124,7 +133,7 @@ def test_calibration_evidence_requires_the_actual_summary_file(job_env):
 
 def test_readout_requires_all_full_arms_and_both_resumed_arms(job_env):
     job = job_env[0]("readout")
-    job["resumed"].pop("CR")
+    job["resumed"].pop("CR_B")
     with pytest.raises(ValueError, match="arm set"):
         J.build_command(job, "cpu", 3600)
 
@@ -169,3 +178,10 @@ def test_failed_rank_probe_prevents_receipt_acceptance(job_env, monkeypatch):
     with pytest.raises(RuntimeError, match="rank probe failed"):
         J.prepare_cuda_probe(job_env[0]("cuda"))
     assert observed == []
+
+
+def test_benchmark_job_requires_its_exact_cuda_prerequisite(job_env):
+    job = job_env[0]("full")
+    job.pop("cuda_report")
+    with pytest.raises(ValueError, match="CUDA prerequisite"):
+        J.build_command(job, "gpu", 1800)

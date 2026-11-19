@@ -1,3 +1,5 @@
+> **Storico 25/50.** Per la nuova coorte RMS100/fast125 usare [consegna del19/11](contrastive_targets_execution_20261119.md) e i nuovi piani. Tempi, review, eccezione TIMEOUT e release sotto non autorizzano nuovi invii.
+
 # Collaudo del confronto contrastivo — revisione del 16/11/2026
 
 **Aggiornamento operativo 17/11:** Simone ha affidato a GPT il rilascio e il lancio di questo giro. La [release operativa](reviews/contrastive_preflight_release_20261117.md) supera l'attesa della nuova review di Claude per il solo collaudo, mantenendo tutti i gate e i tetti. Il testo seguente conserva la proposta del 16/11.

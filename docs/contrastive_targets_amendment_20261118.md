@@ -1,3 +1,5 @@
+> **Emendamento operativo del19/11:** [controlli da stato comune e nuovo preventivo](contrastive_targets_execution_20261119.md). Diagnostici storici conclusi; la tabella sotto conserva la proposta iniziale da14GPUh, sostituita dalla matrice nuova da18GPUh.
+
 # Linea 3: nuova coorte con RMS100 e spettro rapido125
 
 18/11/2026. **REVIEW_REQUIRED, nessun invio, nessun deploy e nessuna λ nuova misurata.**

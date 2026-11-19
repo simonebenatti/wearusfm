@@ -3,7 +3,7 @@
   "status": "REVIEW_REQUIRED",
   "executable": false,
   "training_authorized_by_this_file": false,
-  "scope": "New RMS100/fast125 preparation; no submissions; old artifacts remain historical only",
+  "scope": "RMS100/fast125 new cohort; common-state parity and paired checkpoint restarts; operational review required",
   "reference_recipe": {
     "path": "results/infra/tokenizer_execution_20261103/19618/T100-G/config.json",
     "sha256": "f9d0318462fd30a5592087ef72c63d3036a88ff1d07fc0dad8624e36253c2cfa",
@@ -100,6 +100,19 @@
       "100",
       "--ms-fast-window-ms",
       "125"
+    ],
+    "numeric_profile": {
+      "name": "bf16_math_tf32_off",
+      "autocast_dtype": "bfloat16",
+      "sdpa": "math_only",
+      "matmul_tf32": false,
+      "cudnn_tf32": false,
+      "measure_production_batch_before_training_adoption": true
+    },
+    "benchmark_keep_checkpoints": [
+      544,
+      5000,
+      19618
     ]
   },
   "nce": {
@@ -338,14 +351,99 @@
     "historical_comparison": "C0 vs historical T100-G also changes RMS and fast spectrum target supports; cannot attribute difference to contrastive scaffolding or precision alone",
     "old_receipts_reusable": false,
     "required_new_evidence": [
-      "audit",
+      "audit_completed_within_7200s",
       "calibration",
       "lambda_CN",
       "lambda_CR",
       "cuda_check",
-      "five_benchmarks",
+      "three_full_benchmarks",
+      "four_checkpoint_reloads",
       "benchmark_readout"
     ],
-    "known_unresolved_gate": "Historical bf16 initial/resume parity failed; common-state diagnostics remain separate prerequisite. New recipe does not clear failures."
+    "known_unresolved_gate": "Historical diagnostics concluded and read in faa4a8d7; old negative gates remain historical. New production parity, restart and throughput/memory receipts remain required."
+  },
+  "numerical_amendment": {
+    "id": "contrastive-common-production-20261119-v2",
+    "status": "REVIEW_REQUIRED",
+    "science_decision_commit": "faa4a8d7",
+    "preparation_review_commit": "94f50942",
+    "neutrality": {
+      "updates_before": [
+        128,
+        256
+      ],
+      "state": "live C0 control before each update",
+      "global_batch": 32,
+      "mixed_production_stream": true,
+      "backwards_per_arm": 2,
+      "arms": [
+        "C0",
+        "CN",
+        "CR"
+      ],
+      "required_profile": "bf16_math_tf32_off",
+      "criterion": "reduced gradients byte-identical within and between arms and ranks",
+      "restore": [
+        "student",
+        "teacher",
+        "queue",
+        "batch",
+        "masks",
+        "CPU_RNG_per_rank",
+        "CUDA_RNG_per_rank"
+      ],
+      "support": "both contrastive losses supported; absent required support/profile is inconclusive",
+      "trajectory_1_256": {
+        "relative_tolerance": 0.0001,
+        "absolute_tolerance": 1e-06,
+        "role": "descriptive_only"
+      },
+      "stream_and_zero_weight_invariants": "mandatory"
+    },
+    "resume": {
+      "arms": [
+        "CN",
+        "CR"
+      ],
+      "fork_update": 544,
+      "end_update": 576,
+      "continuous_saves_then_stays_live": true,
+      "fresh_reloads_per_arm": 2,
+      "same_checkpoint_bytes": true,
+      "three_pairs": [
+        "continuous/reload_a",
+        "continuous/reload_b",
+        "reload_a/reload_b"
+      ],
+      "trace_per_rank_per_update": [
+        "batch",
+        "microbatch",
+        "CPU_RNG",
+        "CUDA_RNG",
+        "active_support"
+      ],
+      "boundary": "student/teacher/optimizer/queue exact; separate rank CPU/CUDA RNG",
+      "student_teacher_bound": 0.01,
+      "parameter_denominator": "full displacement from initialization of first member",
+      "buffers": "exact",
+      "Adam_and_queue_float_bound_per_tensor": 0.01,
+      "metadata_counters_order": "exact",
+      "fork_displacement": "separate descriptive distances from 544",
+      "failure": "any violated historical bound blocks; absent profile/support inconclusive"
+    },
+    "release": {
+      "first_phase": "audit_only_after_new_code_review",
+      "audit_state": "COMPLETED",
+      "audit_exit_code": "0:0",
+      "audit_elapsed_max_s": 7200,
+      "review_binds": [
+        "reviewed_source_commit",
+        "source_sha256",
+        "science_plan_file_sha256",
+        "preflight_plan_file_sha256"
+      ],
+      "historical_review_sufficient": false,
+      "training": "separate measured budget and successful preflight required"
+    }
   }
 }

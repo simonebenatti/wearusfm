@@ -99,19 +99,33 @@ def test_read_preflight_invokes_and_obeys_historical_audit_guard(audit_evidence,
         raise AfterAuditGate
 
     monkeypatch.setattr(B, "_cuda_evidence", after_audit)
+    # The amended audit accounting gate follows the historical-source guard.
+    # Isolate it here; its State/ExitCode/Elapsed checks have separate tests.
+    import contrastive_release
+    accounting_calls = []
+    accounting_path = path.parent / "audit-sacct.json"
+
+    def accounting(audit_path, sacct_path, *, expected_source):
+        accounting_calls.append((audit_path, sacct_path, expected_source))
+        return {"passed": True}
+
+    monkeypatch.setattr(contrastive_release, "validate_audit_accounting", accounting)
     calls = _legacy_guard(monkeypatch, reject=reject)
     expected_error = ValueError if reject else AfterAuditGate
     with pytest.raises(expected_error, match="legacy artifact pin rejected" if reject else None):
         B.read_preflight(
             cohort_path,
             {arm: path.parent / arm for arm in B.ARMS},
-            {arm: path.parent / (arm + "-resumed") for arm in ("CN", "CR")},
+            {arm + "_" + replica: path.parent / (arm + "-resumed-" + replica)
+             for arm in ("CN", "CR") for replica in ("A", "B")},
             path.parent / "cuda.json",
             cpu_audit_path=path,
             calibration_path=receipt_path,
             calibration_run_dir=path.parent / "calibration-run",
+            cpu_audit_sacct_path=accounting_path,
         )
     assert calls == [("audit", path)]
+    assert accounting_calls == ([] if reject else [(path, accounting_path, CURRENT_SOURCE)])
 
 
 def test_pinned_historical_receipt_still_requires_authenticated_recalculation(tmp_path):

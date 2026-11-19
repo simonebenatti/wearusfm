@@ -14,8 +14,9 @@ import torch
 
 ROOT = Path(__file__).resolve().parents[2]
 SITES = (
-    ("contrastive_cuda_check.py", "main", 0),
+    ("contrastive_cuda_check.py", "_main", 0),
     ("contrastive_run.py", "validate_resume", 0),
+    ("contrastive_target_resume.py", "checkpoint", 0),
     ("contrastive_benchmark_readout.py", "compare_resume", 0),
     ("contrastive_benchmark_readout.py", "compare_resume", 1),
     ("contrastive_benchmark_readout.py", "_run_evidence", 0),
@@ -34,10 +35,11 @@ def _load_calls(tree):
     )
 
 
-def test_all_six_production_mmap_sites_are_covered():
+def test_all_production_mmap_sites_are_covered():
     actual = []
-    for filename in sorted({row[0] for row in SITES}):
-        module = ast.parse((ROOT / "scripts" / filename).read_text())
+    for path in sorted((ROOT / "scripts").glob("contrastive_*.py")):
+        filename = path.name
+        module = ast.parse(path.read_text())
         for function in module.body:
             if isinstance(function, ast.FunctionDef):
                 for index, call in enumerate(_load_calls(function)):
@@ -85,7 +87,7 @@ def test_production_load_accepts_cluster_contract_and_preserves_checkpoint(
     context = {
         "torch": SimpleNamespace(load=load_with_torch22_filename_contract),
         "args": SimpleNamespace(calibration_checkpoint=checkpoint),
-        "checkpoint": checkpoint, "full_path": checkpoint, "resumed_path": checkpoint,
+        "path": checkpoint, "checkpoint": checkpoint, "full_path": checkpoint, "resumed_path": checkpoint,
         "folder": tmp_path, "run_dir": tmp_path, "Path": Path,
     }
     actual = eval(compile(expression, filename, "eval"), context)

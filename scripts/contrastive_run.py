@@ -6,6 +6,7 @@ Scientific training remains blocked until a measured, reviewed resource receipt 
 from __future__ import annotations
 import argparse
 import copy
+from contextlib import ExitStack
 import hashlib
 import json
 import math
@@ -82,6 +83,8 @@ def validate_cohort(path, calibration_path, calibration_run_dir, config_path):
     split_expected = copy.deepcopy(expected.get(raw.get("contrastive", {}).get("arm")))
     if not found and endpoint == 576 and type(raw.get("max_steps")) is int and raw["max_steps"] in (544, 5000, 19618) and split_expected:
         split_expected["max_steps"] = raw["max_steps"]
+        if raw["max_steps"] in (5000, 19618):
+            split_expected["schedule"]["keep_checkpoints"] = [5000, 19618]
         found = raw == split_expected
     if not found:
         raise ValueError("config is not a member of the common calibrated cohort")
@@ -175,6 +178,10 @@ def validate_release(release, stage, config_path, input_paths, calibration_path=
     validate_input_bindings(pins)
     if not release.get("review_pin"):
         raise ValueError("release must identify the converged review")
+    from contrastive_release import validate_review_binding
+    validate_review_binding(release.get("package_review"))
+    if release["review_pin"] != release["package_review"]["review_commit"]:
+        raise ValueError("release review commit differs from its bound package review")
     limit = release.get("time_limit_s")
     if type(limit) not in (int, float) or not math.isfinite(limit) or not 0 < limit or time_limit_s != limit:
         raise ValueError("missing/mismatched bounded time allocation")
@@ -182,6 +189,10 @@ def validate_release(release, stage, config_path, input_paths, calibration_path=
         raise ValueError("CPU audit receipt missing or changed")
     raw = _read(config_path)
     validate_audit(audit_path, input_paths, build_review_configs(_read(BASELINE))["calibration"])
+    from contrastive_release import validate_audit_accounting
+    if not release.get("audit_sacct"):
+        raise ValueError("calibration requires completed new audit accounting")
+    validate_audit_accounting(audit_path, release["audit_sacct"])
     cohort = None
     if stage != "calibration":
         if calibration_path is None or release.get("calibration_sha256") != sha(calibration_path):
@@ -194,9 +205,13 @@ def validate_release(release, stage, config_path, input_paths, calibration_path=
         if release.get("arm") != raw["contrastive"]["arm"]:
             raise ValueError("release arm differs from common cohort member")
     if stage == "benchmark":
+        from contrastive_release import validate_cuda_prerequisite
+        validate_cuda_prerequisite(release.get("cuda_report"), cohort, pins, calibration_run_dir)
         phase = release.get("phase")
-        if phase not in ("full", "split", "resume") or raw["max_steps"] != (544 if phase == "split" else 576):
-            raise ValueError("benchmark phase must be full576, split544 or resume576")
+        if phase not in ("full", "resume_a", "resume_b") or raw["max_steps"] != 576:
+            raise ValueError("benchmark phase must be full576 or common544 resume_a/resume_b")
+        if phase != "full" and release.get("arm") not in ("CN", "CR"):
+            raise ValueError("only CN/CR have active common-checkpoint resume tests")
     if stage == "training":
         if release.get("phase") not in ("initial", "resume") or raw["max_steps"] != (5000 if release["phase"] == "initial" else 19618):
             raise ValueError("training phase must be initial5000 or explicit resume19618")
@@ -227,6 +242,28 @@ def validate_resume(release, out_dir, cohort):
             state.get("contrastive_state", {}).get("queue", {}).get("last_step") != prior_step - 1 or
             len(state.get("rank_rng", [])) != 4):
         raise ValueError("resume checkpoint state disagrees with the successful four-rank split")
+
+
+def validate_target_fork(release, cfg, cohort):
+    """A reload is tied to the sole checkpoint emitted by its completed full run."""
+    from contrastive_release import checked_pin
+    from contrastive_target_resume import validate_fork
+    checkpoint = checked_pin(release["fork_checkpoint"])
+    summary_path = checked_pin(release["continuous_summary"])
+    summary = _read(summary_path)
+    contrastive = summary.get("contrastive", {})
+    if (summary.get("steps") != 576 or summary.get("stopped") != "max_steps" or
+            summary.get("world_size") != 4 or contrastive.get("config", {}).get("arm") != release["arm"] or
+            contrastive.get("initial_sha256") != cohort["initial_state_sha256"] or
+            checkpoint.parent != summary_path.parent or checkpoint.name != "checkpoint_step0000544.pt" or
+            (checkpoint.parent / "STOP").exists()):
+        raise ValueError("common544 source requires its complete matching continuous576 run")
+    provenance = {"source_sha256": source_digest(), "calibration_sha256": cohort["calibration_sha256"],
+                  "cohort_sha256": release["cohort_sha256"], "input_sha256": release["inputs"]}
+    if contrastive.get("provenance") != provenance:
+        raise ValueError("common544 source provenance differs from released cohort")
+    validate_fork(checkpoint, release["fork_checkpoint"]["sha256"], cfg, provenance, cohort["initial_state_sha256"])
+    return checkpoint
 
 
 def main():
@@ -275,7 +312,12 @@ def main():
     R.check_input_files(a.manifest, a.window_seconds, cfg.nested, release["inputs"]["manifest"])
     if any(not root.is_dir() for root in a.root):
         raise ValueError("missing data root")
-    if release.get("phase") == "resume":
+    target_resume = release.get("stage") == "benchmark" and release.get("phase") in ("resume_a", "resume_b")
+    if target_resume:
+        validate_target_fork(release, cfg, cohort)
+        if a.out_dir.exists():
+            raise ValueError("each common-checkpoint restart requires a fresh output directory")
+    elif release.get("phase") == "resume":
         validate_resume(release, a.out_dir, cohort)
     elif a.out_dir.exists():
         raise ValueError("new phase requires a new output directory; continuation must be explicit")
@@ -293,11 +335,38 @@ def main():
                       "cohort_sha256": sha(a.cohort) if a.cohort else None, "input_sha256": release["inputs"]}
         if provenance["source_sha256"] != release["source_sha256"]:
             raise ValueError("execution sources changed after release validation")
-        summary = R.train(cfg, a.manifest, a.root, a.out_dir, scales=_read(a.scales)["scales"],
-            window_s=_read(a.window_seconds)["window_s"], device=f"cuda:{ctx.local_rank}",
-            num_workers=6, time_limit_s=a.time_limit_s, dist=ctx, log=lambda m: print(m, flush=True),
-            expected_contrastive_initial_sha256=cohort["initial_state_sha256"] if cohort else None,
-            contrastive_provenance=provenance)
+        from contrastive_numeric_profile import numeric_profile
+        with ExitStack() as stack:
+            flags = stack.enter_context(numeric_profile(require_cuda=True))
+            if target_resume:
+                from contrastive_target_resume import prepare_reload
+                if ctx.is_main:
+                    prepare_reload(Path(release["fork_checkpoint"]["path"]), release["fork_checkpoint"]["sha256"],
+                                   a.out_dir, cfg, provenance, cohort["initial_state_sha256"],
+                                   phase="reload_" + release["phase"][-1])
+                torch.distributed.barrier()
+                if sha(a.out_dir / "checkpoint.pt") != release["fork_checkpoint"]["sha256"]:
+                    raise ValueError("reload checkpoint bytes changed after common-fork copy")
+            if a.stage == "benchmark" and raw["contrastive"]["arm"] in ("CN", "CR"):
+                from contrastive_target_resume import trace_resume_updates
+                a.out_dir.mkdir(parents=True, exist_ok=True)
+                phase = "continuous" if release["phase"] == "full" else "reload_" + release["phase"][-1]
+                stack.enter_context(trace_resume_updates(a.out_dir / f"trace-{ctx.rank}.jsonl", phase))
+            if a.stage == "benchmark" and release["phase"] == "full" and raw["contrastive"]["arm"] == "C0":
+                from contrastive_target_parity import observe_control
+                stack.enter_context(observe_control(a.out_dir))
+            a.out_dir.mkdir(parents=True, exist_ok=True)
+            with (a.out_dir / f"numeric_profile.rank{ctx.rank}.json").open("x") as stream:
+                json.dump({"flags": flags, "source_sha256": provenance["source_sha256"],
+                           "config_sha256": sha(a.config),
+                           "config_canonical_sha256": hashlib.sha256(json.dumps(R.config_to_dict(cfg), sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
+                           "phase": release.get("phase"),
+                           "rank": ctx.rank, "world_size": ctx.world_size}, stream, indent=2, allow_nan=False)
+            summary = R.train(cfg, a.manifest, a.root, a.out_dir, scales=_read(a.scales)["scales"],
+                window_s=_read(a.window_seconds)["window_s"], device=f"cuda:{ctx.local_rank}",
+                num_workers=6, time_limit_s=a.time_limit_s, dist=ctx, log=lambda m: print(m, flush=True),
+                expected_contrastive_initial_sha256=cohort["initial_state_sha256"] if cohort else None,
+                contrastive_provenance=provenance)
         if summary.get("steps") != cfg.max_steps or summary.get("stopped") != "max_steps":
             raise RuntimeError("phase incomplete: inspect summary/STOP, do not silently retry")
     finally:

@@ -11,7 +11,7 @@ import torch  # trainer import order
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from contrastive_prepare import ROOT, _read, source_digest, validate_input_bindings
 
-GPU_MODES = {'cuda', 'calibration', 'full', 'split'}
+GPU_MODES = {'cuda', 'calibration', 'full', 'resume'}
 MODES = GPU_MODES | {'audit', 'readout'}
 # The 100/125 ms recipe needs a two-hour audit; the readout keeps its one-hour allocation.
 ALLOCATED_SECONDS = {**{mode: 1800 for mode in GPU_MODES}, 'audit': 7200, 'readout': 3600}
@@ -66,10 +66,23 @@ def build_command(job, kind, allocated_seconds):
             kind != ('gpu' if mode in GPU_MODES else 'cpu') or
             allocated_seconds != ALLOCATED_SECONDS.get(mode)):
         raise ValueError('wrong mode, release, source or allocation')
+    from contrastive_release import validate_review_binding, validate_audit_accounting
+    validate_review_binding(job.get('package_review'))
+    if job.get('review') != job['package_review'].get('review'):
+        raise ValueError('job review differs from its bound package review')
     checked_file(job['review'])
+    from contrastive_release import PREFLIGHT
+    preflight = _read(PREFLIGHT)
+    cells = [cell for cell in preflight['cells'] if cell['id'] == job.get('id')]
+    if (len(cells) != 1 or cells[0]['mode'] != mode or cells[0].get('arm') != job.get('arm')
+            or cells[0].get('repeat') != job.get('repeat') or cells[0]['seconds'] != allocated_seconds):
+        raise ValueError('job differs from the reviewed fixed preflight cell')
+    if mode != 'audit':
+        validate_audit_accounting(checked_file(job['audit']), checked_file(job['audit_sacct']))
     out = Path(job['out']).resolve()
     results = Path(os.environ['WORK']).resolve() / 'wearusfm_runs'
-    if not out.is_relative_to(results) or out.exists():
+    cohort_root = Path(preflight['fresh_root']).resolve()
+    if not out.is_relative_to(results) or not out.is_relative_to(cohort_root) or out == cohort_root or out.exists():
         raise ValueError('fresh output below WORK/wearusfm_runs required')
     python = [sys.executable]
     torchrun = [sys.executable, '-m', 'torch.distributed.run', '--standalone', '--nproc_per_node=4']
@@ -77,9 +90,10 @@ def build_command(job, kind, allocated_seconds):
         command = python + [script('contrastive_benchmark_readout.py'), '--cohort', str(checked_file(job['cohort'])),
                             '--cuda-report', str(checked_file(job['cuda_report'])), '--out', str(out),
                             '--cpu-audit', str(checked_file(job['audit'])),
+                            '--cpu-audit-sacct', str(checked_file(job['audit_sacct'])),
                             '--calibration-report', str(checked_file(job['calibration_report'])),
                             '--calibration-run-dir', str(calibration_directory(job['calibration_summary']))]
-        for key, arms in (('full', ('C0','CN','CR')), ('resumed', ('CN','CR'))):
+        for key, arms in (('full', ('C0','CN','CR')), ('resumed', ('CN_A','CN_B','CR_A','CR_B'))):
             if set(job[key]) != set(arms): raise ValueError('readout arm set differs')
             for arm in arms:
                 summary = checked_file(job[key][arm])
@@ -115,25 +129,32 @@ def build_command(job, kind, allocated_seconds):
     release = checked_file(job['release'])
     stage = 'calibration' if mode == 'calibration' else 'benchmark'
     payload = _read(release)
-    expected_time = 1800 if mode == 'split' else 1770
+    expected_time = 1770
+    expected_phase = 'resume_' + str(job.get('repeat', '')).lower() if mode == 'resume' else mode
     if (payload.get('status') != 'APPROVED_FOR_PREPARATION' or payload.get('stage') != stage or
             payload.get('config_sha256') != job['config']['sha256'] or
             payload.get('source_sha256') != job['source_sha256'] or payload.get('time_limit_s') != expected_time or
             payload.get('inputs') != {k: job['inputs'][k]['sha256'] for k in inputs} or
             payload.get('audit_sha256') != job['audit']['sha256'] or
-            (mode != 'calibration' and payload.get('phase') != mode)):
+            (mode != 'calibration' and payload.get('phase') != expected_phase)):
         raise ValueError('job stage/config/time/input pins differ from the execution release')
+    if payload.get('package_review') != job['package_review'] or payload.get('audit_sacct') != job['audit_sacct']:
+        raise ValueError('job review/audit accounting differs from execution release')
     common += ['--audit-report', str(checked_file(job['audit']))]
     if mode != 'calibration':
+        if payload.get('cuda_report') != job.get('cuda_report') or not job.get('cuda_report'):
+            raise ValueError('benchmark requires its pinned CUDA prerequisite')
+        checked_file(job['cuda_report'])
         common += ['--cohort', str(checked_file(job['cohort'])),
                    '--calibration-report', str(checked_file(job['calibration_report'])),
                    '--calibration-run-dir', str(calibration_directory(job['calibration_summary']))]
         if payload.get('cohort_sha256') != job['cohort']['sha256'] or payload.get('calibration_sha256') != job['calibration_report']['sha256']:
             raise ValueError('job cohort/calibration pins differ from the execution release')
-    if mode == 'split':
-        return python + [script('contrastive_split_benchmark.py'), '--split-config', str(config),
-                         '--resume-config', str(checked_file(job['resume_config'])), '--release', str(release),
-                         '--out-dir', str(out), '--total-time-limit-s', '1800', '--'] + common
+    if mode == 'resume':
+        if job.get('repeat') not in ('a', 'b') or payload.get('fork_checkpoint') != job.get('fork_checkpoint') or payload.get('continuous_summary') != job.get('continuous_summary'):
+            raise ValueError('resume requires the reviewed repeat and exact common checkpoint')
+        checked_file(job['fork_checkpoint'])
+        checked_file(job['continuous_summary'])
     return torchrun + [script('contrastive_run.py'), '--config', str(config), '--release', str(release),
                        '--stage', stage, '--out-dir', str(out), '--time-limit-s', '1770'] + common
 

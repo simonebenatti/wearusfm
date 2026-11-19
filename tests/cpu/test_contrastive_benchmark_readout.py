@@ -212,7 +212,7 @@ def test_resume_report_collection_never_softens_exact_or_nonfinite_checks(tmp_pa
 
 def test_receipt_authentication_recomputes_evidence_and_rejects_adjusted_budget(tmp_path, monkeypatch):
     paths = {'cohort_path': '/cohort', 'full_dirs': {}, 'resumed_dirs': {}, 'cuda_path': '/cuda',
-             'cpu_audit_path': '/audit', 'calibration_path': '/calibration', 'calibration_run_dir': '/calrun', 'rank_exit_path': '/rankexit'}
+             'cpu_audit_path': '/audit', 'calibration_path': '/calibration', 'calibration_run_dir': '/calrun', 'rank_exit_path': '/rankexit', 'cpu_audit_sacct_path': '/audit_sacct'}
     original = {'status': 'PASSED_FOR_REVIEW', 'failure_reasons': [], 'training_approved': False,
                 'evidence_paths': paths, 'training_allocations_gpu_hours': {'C0': 5., 'CN': 6., 'CR': 7.}}
     calls = []
@@ -235,7 +235,7 @@ def _run_folder(tmp_path):
     cfg = R.config_to_dict(replace(R.small_config(), max_steps=576, batch_size=32, contrastive=contrastive['contrastive']))
     provenance = {'source_sha256': 's'*64, 'calibration_sha256': 'c'*64, 'cohort_sha256': 'b'*64,
                   'input_sha256': {'pose_stats': 'p'*64}}
-    cohort = {'initial_state_sha256': 'i'*64}
+    cohort = {'initial_state_sha256': 'i'*64, 'source_sha256': provenance['source_sha256']}
     engine = B.ContrastiveRuntime(cfg['contrastive'])
     engine.expected_datasets = ('A',)
     engine.queue.commit(torch.ones(1, 2), [WindowIdentity('A', 'subject', 'session', None, 0, 1000, 1000.)], step=0)
@@ -248,7 +248,7 @@ def _run_folder(tmp_path):
              'stream': {'num_workers': 6, 'segment': cfg['stream_segment'], 'world_size': 4},
              'pose_stats_sha256': 'p'*64, 'contrastive_state': engine.state_dict(),
              'student': {'weight': torch.ones(2)}, 'teacher': {'weight': torch.ones(2)}}
-    summary = {'steps': 576, 'world_size': 4, 'workers_per_rank': 6, 'batch_per_process': 8, 'accum_steps': 1, 'stopped': 'max_steps',
+    summary = {'steps': 576, 'world_size': 4, 'workers_per_rank': 6, 'batch_per_process': 8, 'accum_steps': 1, 'stopped': 'max_steps', 'gpu_max_memory_gib': 5.,
                'contrastive': {'initial_sha256': cohort['initial_state_sha256'], 'config': cfg['contrastive'], 'provenance': provenance,
                                'optimizer_updates': 576, 'queue_last_step': 575, 'expected_datasets': ['A'],
                                'coverage_completed_blocks': [], 'coverage_partial_block': engine.coverage_report(),
@@ -265,6 +265,13 @@ def _run_folder(tmp_path):
         (tmp_path/name).write_text(json.dumps(value))
     (tmp_path/'metrics.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
     torch.save(state, tmp_path/'checkpoint.pt')
+    from contrastive_numeric_profile import numeric_profile
+    canonical = hashlib.sha256(json.dumps(cfg, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    with numeric_profile(require_cuda=False) as flags:
+        for rank in range(4):
+            (tmp_path/f'numeric_profile.rank{rank}.json').write_text(json.dumps({
+                'rank': rank, 'world_size': 4, 'source_sha256': cohort['source_sha256'], 'phase': 'full',
+                'config_sha256': B.sha(tmp_path/'config.json'), 'config_canonical_sha256': canonical, 'flags': flags}))
     return cfg, provenance, cohort
 
 
@@ -272,7 +279,7 @@ def _run_folder(tmp_path):
 def test_run_evidence_rejects_recipe_provenance_metrics_and_checkpoint_mismatch(tmp_path, mutation):
     cfg, provenance, cohort = _run_folder(tmp_path)
     result = B._run_evidence(tmp_path, 'CN', cohort, cfg, provenance)
-    assert len(result[2]) == 576 and len(result[3]) == 5
+    assert len(result[2]) == 576 and len(result[3]) == 9
     if mutation == 'config':
         changed = copy.deepcopy(cfg)
         changed['lr'] *= 2
@@ -315,6 +322,10 @@ def test_cuda_receipt_binds_calibration_config_and_complete_numeric_checks(tmp_p
               'pose_stats_sha256': inputs['pose_stats'], 'config_canonical_sha256': canonical,
               'ranks': [{'rank': rank, 'passed': True, 'stop_checks': {'coverage': True, 'numeric': True, 'passed': True},
                          'arms': {'CN': copy.deepcopy(precisions), 'CR': copy.deepcopy(precisions)}} for rank in range(4)]}
+    from contrastive_numeric_profile import numeric_profile
+    with numeric_profile(require_cuda=False) as flags:
+        for row in report['ranks']:
+            row['numeric_profile'] = flags
     path = tmp_path/'cuda.json'
     path.write_text(json.dumps(report))
     assert B._cuda_evidence(path, cohort, inputs, calibration_cfg)['passed']

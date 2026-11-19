@@ -1,3 +1,5 @@
+> **Storico 25/50.** Per la nuova coorte RMS100/fast125 usare [consegna del19/11](contrastive_targets_execution_20261119.md) e i nuovi piani. Tempi, review, eccezione TIMEOUT e release sotto non autorizzano nuovi invii.
+
 # Confronto contrastivo — consegna operativa del 17/11/2026
 
 ## Autorità e perimetro

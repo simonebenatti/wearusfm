@@ -401,6 +401,8 @@ def calibrated_configs(receipt, run_dir, endpoint=576):
     for arm in ("C0", "CN", "CR"):
         cfg = configs[arm]
         cfg["max_steps"] = endpoint
+        if endpoint in (544, 576):
+            cfg["schedule"]["keep_checkpoints"] = sorted(set(cfg["schedule"]["keep_checkpoints"]) | {544})
         cfg["contrastive"].update({name + "_weight": measured["weights"][name] for name in ("nce", "rnc")})
         result[arm] = cfg
     return result
@@ -450,6 +452,8 @@ def main():
                 for endpoint, suffix in ((544, "split"), (5000, "5000"), (19618, "19618")):
                     candidate = copy.deepcopy(cfg)
                     candidate["max_steps"] = endpoint
+                    if endpoint in (5000, 19618):
+                        candidate["schedule"]["keep_checkpoints"] = [5000, 19618]
                     (a.out / (arm + "." + suffix + ".config.json")).write_text(json.dumps(candidate, indent=2, allow_nan=False) + "\n")
         report = {"schema": 1, "status": "CALIBRATED_COHORT_FOR_REVIEW", "training_approved": False,
                   "endpoint": a.endpoint, "calibration_sha256": _pin(a.receipt)["sha256"],
