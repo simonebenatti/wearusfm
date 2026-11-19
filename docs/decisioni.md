@@ -7415,3 +7415,10 @@ Endpoint e ricetta218afe13 invariati. Due segmenti19618→39237→49046, batch32
 Il controllo30M49k è verificato realmente contro la configurazione storica. Cache linea2 inventariate; manca un adattatore certificato ai validatori scaling. Si propone nel pacchetto la riestrazione simmetrica di entrambe le taglie dai pesi esistenti, senza training30M. Costo del controllo7GPUh richieste esplicitamente incluso e sottoposto alla stessa review.
 
 In assenza di certificazione completa inter-dose, lettura dose×taglia soltanto descrittiva, comparableFalse, nessunIC d'interazione o criterio nuovo. Primari49k e lettori/soglie invariati. Dettagli e comandi in docs/scaling_49046_execution_20261119.md. Nessun job49k inviato; i pin futuri nasceranno solo dalle ricevute complete. Primo errore reale/TIMEOUT/costo fuori piano: stop senza retry automatico.
+
+
+## 19/11/2026 — Review finale49k favorevole e avvio del checkout
+
+Ricevuta review unica f6ba1c925e9619d096eea8d68371b1f8811a36a3, APPROVATO sul codice87da975bc0fd4824684e166659bb996e118ff107, nessuna modifica richiesta. Simone ha già autorizzato l'esecuzione dopo review senza nuovo consenso. Codice eseguito87da975b congelato; nuovi commit solo documenti/evidenze nel perimetro approvato.
+
+Dopo gatefresco positivo, pubblicato deploy/scaling_49046_code_20261118_v1. Checkout64835246 sottomesso11:32:05Europe/Rome,2CPU/4G/5min,0GPUh. Budget invariato. Il primo training attende la raccolta verificata di questo checkout; il secondo attende la raccolta del primo segmento. Nessun invio concorrente o automazione. La precedente lettura bloccata dal socketSSH della sandbox è conservata e distinta da un retry di job; nessun job era stato inviato in quel passaggio.
