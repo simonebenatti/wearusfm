@@ -6277,6 +6277,10 @@ Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
 
+### 19/11/2026 — Rettifica sul permesso dell’app: stato non equivale a richiesta identificata
+
+Alla domanda di Simone su quale permesso fosse pendente, nuova lettura della chat launcher: active senza waitingOnApproval; il successivo comando SSH di sola lettura (quota, partizione, QoS, scheduler) risulta completato. La precedente vista mostrava solo l’indicatore waitingOnApproval, senza testo o identità della richiesta: non permetteva di affermare che fosse necessario un intervento manuale di Simone, né di identificare con certezza l’operazione bloccata. Chiarito all’utente e al launcher; nessuna nuova autorizzazione scientifica richiesta. In futuro riportare comando e motivo esposti dal tool, distinguendo un controllo automatico da una richiesta all’utente quando possibile, senza dedurli dal solo indicatore. La preparazione del pacchetto49k continua; review definitiva ancora da eseguire sul commit pubblicato.
+
 ### 19/11/2026 — GPT: errori della bozza49.046 segnalati prima del rilascio
 
 Pre-review su file di lavoro ancora non pubblicati: variabile raw del predecessore sovrascritta da sacct; collegamento checkout/piano estrazioni incoerente; contratto residuo estrazioni19k e protocollo budget ridge non allineati; controller con riferimenti EVIDENCE_DIRS/stadi training/documenti code ancora da collegare. Segnalati anche la necessità di applicare effettivamente la finalizzazione P1-r2 e di provare la parità delle quattro celle prima di certificare l'interazione dose×taglia. Non sono errori di job già inviati: il pacchetto è in preparazione, nessun via tecnico rilasciato. La verifica del controllo30M49k e di quota/retention resta parte del piano operativo. Questi rilievi anticipati saranno chiusi rispetto al commit finale, senza trasformare la correzione della bozza in un nuovo consenso scientifico.
