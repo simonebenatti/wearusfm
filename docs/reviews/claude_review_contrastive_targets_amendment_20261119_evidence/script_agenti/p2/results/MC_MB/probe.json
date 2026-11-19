@@ -1,0 +1,36 @@
+{
+ "source_digest": "8e834e394dd195a406ef93226ea90d896fb8202c9a5e1f4d0e8f7e8304b6b11e",
+ "expected_calibration_windows": [
+  100.0,
+  125.0,
+  "step1_psd_power_shape_energy_fast125_v3"
+ ],
+ "calibration_report(hist run)": {
+  "accepted": true,
+  "result": [
+   "PASSED_FOR_REVIEW",
+   {
+    "nce": 0.11942686122572264,
+    "rnc": 0.33044627364850215
+   }
+  ]
+ },
+ "calibrated_configs(hist receipt) -> new arms": {
+  "accepted": true,
+  "result": {
+   "CN_windows": [
+    100.0,
+    125.0,
+    "step1_psd_power_shape_energy_fast125_v3"
+   ],
+   "CN_weights": [
+    0.11942686122572264,
+    0.33044627364850215
+   ]
+  }
+ },
+ "validate_audit(hist audit, new calibration recipe)": {
+  "accepted": false,
+  "error": "ValueError: audit stream/config differs from the calibration recipe"
+ }
+}

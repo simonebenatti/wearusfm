@@ -1,0 +1,20 @@
+{
+ "source_digest": "8ba8b20242c83964bd7219348fa5b291ebe71e458d0f4dc9a6a165ae6f6ea277",
+ "expected_calibration_windows": [
+  100.0,
+  125.0,
+  "step1_psd_power_shape_energy_fast125_v3"
+ ],
+ "calibration_report(hist run)": {
+  "accepted": false,
+  "error": "ValueError: calibration run config differs from the frozen 512-batch recipe"
+ },
+ "calibrated_configs(hist receipt) -> new arms": {
+  "accepted": false,
+  "error": "ValueError: calibration run config differs from the frozen 512-batch recipe"
+ },
+ "validate_audit(hist audit, new calibration recipe)": {
+  "accepted": true,
+  "result": true
+ }
+}

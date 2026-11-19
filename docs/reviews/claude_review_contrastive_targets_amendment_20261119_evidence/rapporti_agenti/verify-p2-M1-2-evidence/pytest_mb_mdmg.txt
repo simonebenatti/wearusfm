@@ -1,0 +1,890 @@
+........................................................................ [ 21%]
+.....................................F.................................. [ 42%]
+........................................................................ [ 64%]
+...................................................................FFFFF [ 85%]
+FFFFF........FF.FFFF...FFF.......................                        [100%]
+=================================== FAILURES ===================================
+______________ test_historical_audit_does_not_qualify_new_sources ______________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/skep2_p2m1/bt_mb_mdmg/test_historical_audit_does_not0')
+
+    def test_historical_audit_does_not_qualify_new_sources(tmp_path):
+        path=tmp_path/'audit.json'
+        path.write_bytes(gzip.decompress((BASE/'audit_completed_20261117/audit.json.gz').read_bytes()))
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/cpu/test_contrastive_historical_calibration.py:93: Failed
+_ test_exact_evidence_returns_distinct_historical_and_current_identities[audit] _
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e8bdee0>, repin_current=<function scene.<locals>.repin_current at 0x13e8bd760>)
+kind = 'audit'
+
+    @pytest.mark.parametrize("kind", ["audit", "calibration_run", "calibration_receipt"])
+    def test_exact_evidence_returns_distinct_historical_and_current_identities(scene, kind):
+        payload = {"audit": scene.audit, "calibration_run": scene.run, "calibration_receipt": scene.receipt}[kind]
+>       result = C.validate_historical_evidence(kind, payload)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_source_compat.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+_ test_exact_evidence_returns_distinct_historical_and_current_identities[calibration_run] _
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e8bcfe0>, repin_current=<function scene.<locals>.repin_current at 0x13e8bd300>)
+kind = 'calibration_run'
+
+    @pytest.mark.parametrize("kind", ["audit", "calibration_run", "calibration_receipt"])
+    def test_exact_evidence_returns_distinct_historical_and_current_identities(scene, kind):
+        payload = {"audit": scene.audit, "calibration_run": scene.run, "calibration_receipt": scene.receipt}[kind]
+>       result = C.validate_historical_evidence(kind, payload)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_source_compat.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+_ test_exact_evidence_returns_distinct_historical_and_current_identities[calibration_receipt] _
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e8bf880>, repin_current=<function scene.<locals>.repin_current at 0x13e8be160>)
+kind = 'calibration_receipt'
+
+    @pytest.mark.parametrize("kind", ["audit", "calibration_run", "calibration_receipt"])
+    def test_exact_evidence_returns_distinct_historical_and_current_identities(scene, kind):
+        payload = {"audit": scene.audit, "calibration_run": scene.run, "calibration_receipt": scene.receipt}[kind]
+>       result = C.validate_historical_evidence(kind, payload)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_source_compat.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+________ test_copied_audit_bytes_can_relocate_without_changing_identity ________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7c0e0>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c180>)
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/skep2_p2m1/bt_mb_mdmg/test_copied_audit_bytes_can_re0')
+
+    def test_copied_audit_bytes_can_relocate_without_changing_identity(scene, tmp_path):
+        copy_path = tmp_path / "relocated.json"
+        copy_path.write_bytes(scene.audit.read_bytes())
+>       assert C.validate_historical_evidence("audit", copy_path) == C.validate_historical_evidence("audit", scene.audit)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_source_compat.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+___________ test_any_historical_evidence_mutation_is_rejected[audit] ___________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e8bccc0>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c220>)
+kind = 'audit'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+        with pytest.raises(ValueError, match="historical .* changed"):
+>           C.validate_historical_evidence(evidence_kind, payload)
+
+tests/cpu/test_contrastive_source_compat.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e8bccc0>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c220>)
+kind = 'audit'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+>       with pytest.raises(ValueError, match="historical .* changed"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'historical .* changed'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:120: AssertionError
+________ test_any_historical_evidence_mutation_is_rejected[config.json] ________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7c5e0>, repin_current=<function scene.<locals>.repin_current at 0x13ec7cae0>)
+kind = 'config.json'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+        with pytest.raises(ValueError, match="historical .* changed"):
+>           C.validate_historical_evidence(evidence_kind, payload)
+
+tests/cpu/test_contrastive_source_compat.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7c5e0>, repin_current=<function scene.<locals>.repin_current at 0x13ec7cae0>)
+kind = 'config.json'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+>       with pytest.raises(ValueError, match="historical .* changed"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'historical .* changed'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:120: AssertionError
+_______ test_any_historical_evidence_mutation_is_rejected[summary.json] ________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7ca40>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c900>)
+kind = 'summary.json'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+        with pytest.raises(ValueError, match="historical .* changed"):
+>           C.validate_historical_evidence(evidence_kind, payload)
+
+tests/cpu/test_contrastive_source_compat.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7ca40>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c900>)
+kind = 'summary.json'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+>       with pytest.raises(ValueError, match="historical .* changed"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'historical .* changed'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:120: AssertionError
+_______ test_any_historical_evidence_mutation_is_rejected[metrics.jsonl] _______
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7cc20>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c400>)
+kind = 'metrics.jsonl'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+        with pytest.raises(ValueError, match="historical .* changed"):
+>           C.validate_historical_evidence(evidence_kind, payload)
+
+tests/cpu/test_contrastive_source_compat.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7cc20>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c400>)
+kind = 'metrics.jsonl'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+>       with pytest.raises(ValueError, match="historical .* changed"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'historical .* changed'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:120: AssertionError
+__________ test_any_historical_evidence_mutation_is_rejected[receipt] __________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7cfe0>, repin_current=<function scene.<locals>.repin_current at 0x13ec7ca40>)
+kind = 'receipt'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+        with pytest.raises(ValueError, match="historical .* changed"):
+>           C.validate_historical_evidence(evidence_kind, payload)
+
+tests/cpu/test_contrastive_source_compat.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7cfe0>, repin_current=<function scene.<locals>.repin_current at 0x13ec7ca40>)
+kind = 'receipt'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+>       with pytest.raises(ValueError, match="historical .* changed"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'historical .* changed'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:120: AssertionError
+_____ test_any_historical_evidence_mutation_is_rejected[reader_provenance] _____
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e85c860>, repin_current=<function scene.<locals>.repin_current at 0x13e85d260>)
+kind = 'reader_provenance'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+        with pytest.raises(ValueError, match="historical .* changed"):
+>           C.validate_historical_evidence(evidence_kind, payload)
+
+tests/cpu/test_contrastive_source_compat.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e85c860>, repin_current=<function scene.<locals>.repin_current at 0x13e85d260>)
+kind = 'reader_provenance'
+
+    @pytest.mark.parametrize("kind", ["audit", "config.json", "summary.json", "metrics.jsonl", "receipt", "reader_provenance"])
+    def test_any_historical_evidence_mutation_is_rejected(scene, kind):
+        if kind == "audit":
+            scene.audit.write_bytes(scene.audit.read_bytes() + b" ")
+            evidence_kind, payload = "audit", scene.audit
+        elif kind in C.RUN_FILES:
+            path = scene.run / kind
+            path.write_bytes(path.read_bytes() + b" ")
+            evidence_kind, payload = "calibration_run", scene.run
+        else:
+            changed = copy.deepcopy(scene.receipt)
+            if kind == "receipt": changed["weights"]["nce"] += .001
+            else: changed["reader_provenance"]["scope"] = "new reader"
+            evidence_kind, payload = "calibration_receipt", changed
+>       with pytest.raises(ValueError, match="historical .* changed"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'historical .* changed'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:120: AssertionError
+____ test_repinning_a_changed_scientific_source_does_not_expand_permission _____
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e8bd3a0>, repin_current=<function scene.<locals>.repin_current at 0x13e8bf920>)
+
+    def test_repinning_a_changed_scientific_source_does_not_expand_permission(scene):
+        scene.repin_current("src/wearusfm/fm.py", b"scientific behavior changed\n")
+        with pytest.raises(ValueError, match="five reviewed paths"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:164: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e8bd3a0>, repin_current=<function scene.<locals>.repin_current at 0x13e8bf920>)
+
+    def test_repinning_a_changed_scientific_source_does_not_expand_permission(scene):
+        scene.repin_current("src/wearusfm/fm.py", b"scientific behavior changed\n")
+>       with pytest.raises(ValueError, match="five reviewed paths"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'five reviewed paths'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:163: AssertionError
+_______________ test_exactly_all_five_reviewed_paths_must_differ _______________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e8bfd80>, repin_current=<function scene.<locals>.repin_current at 0x13e8bc4a0>)
+
+    def test_exactly_all_five_reviewed_paths_must_differ(scene):
+        name = "scripts/contrastive_run.py"
+        scene.repin_current(name, ("historical: " + name + "\n").encode())
+        with pytest.raises(ValueError, match="five reviewed paths"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:171: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e8bfd80>, repin_current=<function scene.<locals>.repin_current at 0x13e8bc4a0>)
+
+    def test_exactly_all_five_reviewed_paths_must_differ(scene):
+        name = "scripts/contrastive_run.py"
+        scene.repin_current(name, ("historical: " + name + "\n").encode())
+>       with pytest.raises(ValueError, match="five reviewed paths"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'five reviewed paths'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:170: AssertionError
+_______ test_scientific_plan_is_required_and_physically_pinned[missing] ________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e8bcd60>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c040>)
+mutation = 'missing'
+
+    @pytest.mark.parametrize("mutation", ["missing", "changed"])
+    def test_scientific_plan_is_required_and_physically_pinned(scene, mutation):
+        if mutation == "missing":
+            scene.manifest["frozen_documents"] = {}
+            scene.save()
+        else:
+            (scene.root / C.PLAN_RELATIVE_PATH).write_text('{"scientific_recipe":"changed"}')
+        with pytest.raises(ValueError, match="frozen (scientific plan|document)"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13e8bcd60>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c040>)
+mutation = 'missing'
+
+    @pytest.mark.parametrize("mutation", ["missing", "changed"])
+    def test_scientific_plan_is_required_and_physically_pinned(scene, mutation):
+        if mutation == "missing":
+            scene.manifest["frozen_documents"] = {}
+            scene.save()
+        else:
+            (scene.root / C.PLAN_RELATIVE_PATH).write_text('{"scientific_recipe":"changed"}')
+>       with pytest.raises(ValueError, match="frozen (scientific plan|document)"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'frozen (scientific plan|document)'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:191: AssertionError
+_______ test_scientific_plan_is_required_and_physically_pinned[changed] ________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7d620>, repin_current=<function scene.<locals>.repin_current at 0x13ec7d260>)
+mutation = 'changed'
+
+    @pytest.mark.parametrize("mutation", ["missing", "changed"])
+    def test_scientific_plan_is_required_and_physically_pinned(scene, mutation):
+        if mutation == "missing":
+            scene.manifest["frozen_documents"] = {}
+            scene.save()
+        else:
+            (scene.root / C.PLAN_RELATIVE_PATH).write_text('{"scientific_recipe":"changed"}')
+        with pytest.raises(ValueError, match="frozen (scientific plan|document)"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7d620>, repin_current=<function scene.<locals>.repin_current at 0x13ec7d260>)
+mutation = 'changed'
+
+    @pytest.mark.parametrize("mutation", ["missing", "changed"])
+    def test_scientific_plan_is_required_and_physically_pinned(scene, mutation):
+        if mutation == "missing":
+            scene.manifest["frozen_documents"] = {}
+            scene.save()
+        else:
+            (scene.root / C.PLAN_RELATIVE_PATH).write_text('{"scientific_recipe":"changed"}')
+>       with pytest.raises(ValueError, match="frozen (scientific plan|document)"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'frozen (scientific plan|document)'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:191: AssertionError
+_________ test_lazy_source_digest_cannot_alias_the_historical_identity _________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7d8a0>, repin_current=<function scene.<locals>.repin_current at 0x13ec7dbc0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x12c6b8910>
+
+    def test_lazy_source_digest_cannot_alias_the_historical_identity(scene, monkeypatch):
+        monkeypatch.setattr(sys.modules["contrastive_prepare"], "source_digest", lambda: scene.manifest["historical_source_sha256"])
+        with pytest.raises(ValueError, match="actual source_digest"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:198: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7d8a0>, repin_current=<function scene.<locals>.repin_current at 0x13ec7dbc0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x12c6b8910>
+
+    def test_lazy_source_digest_cannot_alias_the_historical_identity(scene, monkeypatch):
+        monkeypatch.setattr(sys.modules["contrastive_prepare"], "source_digest", lambda: scene.manifest["historical_source_sha256"])
+>       with pytest.raises(ValueError, match="actual source_digest"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'actual source_digest'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:197: AssertionError
+______________ test_lazy_reader_must_come_from_the_same_checkout _______________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7d800>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c400>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11dcdb650>
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/skep2_p2m1/bt_mb_mdmg/test_lazy_reader_must_come_fro0')
+
+    def test_lazy_reader_must_come_from_the_same_checkout(scene, monkeypatch, tmp_path):
+        monkeypatch.setattr(sys.modules["contrastive_prepare"], "ROOT", tmp_path / "other_checkout")
+        with pytest.raises(ValueError, match="different checkout"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7d800>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c400>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11dcdb650>
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/skep2_p2m1/bt_mb_mdmg/test_lazy_reader_must_come_fro0')
+
+    def test_lazy_reader_must_come_from_the_same_checkout(scene, monkeypatch, tmp_path):
+        monkeypatch.setattr(sys.modules["contrastive_prepare"], "ROOT", tmp_path / "other_checkout")
+>       with pytest.raises(ValueError, match="different checkout"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'different checkout'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:203: AssertionError
+_________ test_manifest_cannot_read_frozen_documents_outside_checkout __________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7c900>, repin_current=<function scene.<locals>.repin_current at 0x13ec7db20>)
+
+    def test_manifest_cannot_read_frozen_documents_outside_checkout(scene):
+        scene.manifest["frozen_documents"]["../outside.json"] = {"sha256": "f" * 64}
+        scene.save()
+        with pytest.raises(ValueError, match="repository-relative"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:217: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7c900>, repin_current=<function scene.<locals>.repin_current at 0x13ec7db20>)
+
+    def test_manifest_cannot_read_frozen_documents_outside_checkout(scene):
+        scene.manifest["frozen_documents"]["../outside.json"] = {"sha256": "f" * 64}
+        scene.save()
+>       with pytest.raises(ValueError, match="repository-relative"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'repository-relative'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:216: AssertionError
+______________ test_missing_pinned_calibration_file_fails_closed _______________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7d120>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c5e0>)
+
+    def test_missing_pinned_calibration_file_fails_closed(scene):
+        (scene.run / "metrics.jsonl").unlink()
+        with pytest.raises(ValueError, match="unreadable file"):
+>           C.validate_historical_evidence("calibration_run", scene.run)
+
+tests/cpu/test_contrastive_source_compat.py:223: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7d120>, repin_current=<function scene.<locals>.repin_current at 0x13ec7c5e0>)
+
+    def test_missing_pinned_calibration_file_fails_closed(scene):
+        (scene.run / "metrics.jsonl").unlink()
+>       with pytest.raises(ValueError, match="unreadable file"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'unreadable file'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:222: AssertionError
+_____________ test_unsupported_kind_and_payload_types_are_rejected _____________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7ce00>, repin_current=<function scene.<locals>.repin_current at 0x13ec7dc60>)
+
+    def test_unsupported_kind_and_payload_types_are_rejected(scene):
+        with pytest.raises(ValueError, match="unsupported evidence kind"):
+            C.validate_historical_evidence("arbitrary", scene.audit)
+        with pytest.raises(ValueError, match="file path"):
+>           C.validate_historical_evidence("audit", {})
+
+tests/cpu/test_contrastive_source_compat.py:230: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:162: in validate_historical_evidence
+    _require(set(current) - set(old) == {HELPER_PATH, "src/wearusfm/harness/backbone_depth.py", "src/wearusfm/harness/finetuning.py"} and not set(old) - set(current),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'only the compatibility helper may be added; no source may be removed'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: only the compatibility helper may be added; no source may be removed
+
+scripts/contrastive_source_compat.py:26: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x13ec7ce00>, repin_current=<function scene.<locals>.repin_current at 0x13ec7dc60>)
+
+    def test_unsupported_kind_and_payload_types_are_rejected(scene):
+        with pytest.raises(ValueError, match="unsupported evidence kind"):
+            C.validate_historical_evidence("arbitrary", scene.audit)
+>       with pytest.raises(ValueError, match="file path"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'file path'
+E        Input: 'historical evidence compatibility: only the compatibility helper may be added; no source may be removed'
+
+tests/cpu/test_contrastive_source_compat.py:229: AssertionError
+=========================== short test summary info ============================
+FAILED tests/cpu/test_contrastive_historical_calibration.py::test_historical_audit_does_not_qualify_new_sources
+FAILED tests/cpu/test_contrastive_source_compat.py::test_exact_evidence_returns_distinct_historical_and_current_identities[audit]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_exact_evidence_returns_distinct_historical_and_current_identities[calibration_run]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_exact_evidence_returns_distinct_historical_and_current_identities[calibration_receipt]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_copied_audit_bytes_can_relocate_without_changing_identity
+FAILED tests/cpu/test_contrastive_source_compat.py::test_any_historical_evidence_mutation_is_rejected[audit]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_any_historical_evidence_mutation_is_rejected[config.json]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_any_historical_evidence_mutation_is_rejected[summary.json]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_any_historical_evidence_mutation_is_rejected[metrics.jsonl]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_any_historical_evidence_mutation_is_rejected[receipt]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_any_historical_evidence_mutation_is_rejected[reader_provenance]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_repinning_a_changed_scientific_source_does_not_expand_permission
+FAILED tests/cpu/test_contrastive_source_compat.py::test_exactly_all_five_reviewed_paths_must_differ
+FAILED tests/cpu/test_contrastive_source_compat.py::test_scientific_plan_is_required_and_physically_pinned[missing]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_scientific_plan_is_required_and_physically_pinned[changed]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_lazy_source_digest_cannot_alias_the_historical_identity
+FAILED tests/cpu/test_contrastive_source_compat.py::test_lazy_reader_must_come_from_the_same_checkout
+FAILED tests/cpu/test_contrastive_source_compat.py::test_manifest_cannot_read_frozen_documents_outside_checkout
+FAILED tests/cpu/test_contrastive_source_compat.py::test_missing_pinned_calibration_file_fails_closed
+FAILED tests/cpu/test_contrastive_source_compat.py::test_unsupported_kind_and_payload_types_are_rejected
+20 failed, 317 passed in 80.24s (0:01:20)

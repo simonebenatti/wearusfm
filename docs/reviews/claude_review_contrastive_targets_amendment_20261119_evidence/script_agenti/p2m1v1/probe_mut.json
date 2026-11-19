@@ -1,0 +1,33 @@
+{
+ "root": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p2m1v1/mut",
+ "source_digest": "6ae38678e7a1dd07c64959f3145ff3929cafc8ac5ac5a2e5560e5f569dbadd10",
+ "audit_config_sha256": "ab50bc1165dcc4b964183039cbd06ea6838028832a7ec49d8bb2bf3758a02816",
+ "new_calibration_canonical_sha256": "7471e6085d9e06dd62494b63a9f74305250c4dfbe582c42d9a62fae37391f636",
+ "new_calibration_matches_published_review_config": true,
+ "recipe_windows_new": [
+  100.0,
+  125.0,
+  "step1_psd_power_shape_energy_fast125_v3"
+ ],
+ "A_exact_historical_validate_audit": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "B_relabelled_validate_audit": {
+  "accepted": true,
+  "value": "accepted"
+ },
+ "B2_control_new_config_validate_audit": {
+  "accepted": true,
+  "value": "accepted"
+ },
+ "C_relabelled_read_preflight": {
+  "accepted": false,
+  "error": "AfterAuditGate: reached CUDA evidence: audit gate passed"
+ },
+ "C2_control_new_config_read_preflight": {
+  "accepted": false,
+  "error": "AfterAuditGate: reached CUDA evidence: audit gate passed"
+ },
+ "guard_calls_during_C": []
+}

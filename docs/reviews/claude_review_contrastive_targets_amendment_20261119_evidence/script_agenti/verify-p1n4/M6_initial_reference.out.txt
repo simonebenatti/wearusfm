@@ -1,0 +1,32 @@
+............F........................................................... [ 22%]
+........................................................................ [ 45%]
+........................................................................ [ 68%]
+........................................................................ [ 91%]
+..........................                                               [100%]
+=================================== FAILURES ===================================
+___ test_first_eight_historical_comparison_is_descriptive_without_a_new_gate ___
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M6_initial_reference/test_first_eight_historical_co0')
+
+    def test_first_eight_historical_comparison_is_descriptive_without_a_new_gate(tmp_path):
+        reference = json.loads(B.HISTORICAL_INITIAL_REFERENCE.read_text())
+        rows = [{'step': i+1, **{key: 2.*series[i] for key, series in reference['historical_first8'].items()}} for i in range(8)]
+        (tmp_path/'metrics.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
+>       report = B.initial_calibration_description(tmp_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_benchmark_readout.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M6_initial_reference/test_first_eight_historical_co0')
+
+    def initial_calibration_description(run_dir):
+        """Predeclared descriptive comparison; never changes weights or pass/fail."""
+        if sha(HISTORICAL_INITIAL_REFERENCE) != HISTORICAL_INITIAL_SHA256:
+>           raise ValueError('historical first-eight reference changed')
+E           ValueError: historical first-eight reference changed
+
+scripts/contrastive_benchmark_readout.py:98: ValueError
+=========================== short test summary info ============================
+FAILED tests/cpu/test_contrastive_benchmark_readout.py::test_first_eight_historical_comparison_is_descriptive_without_a_new_gate
+1 failed, 313 passed in 107.35s (0:01:47)

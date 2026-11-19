@@ -1,0 +1,491 @@
+........................................................................ [ 22%]
+........................................................................ [ 45%]
+......................................................F................. [ 68%]
+.FFF...FFF..F................FFF.....F.................................. [ 91%]
+..........................                                               [100%]
+=================================== FAILURES ===================================
+_______ test_calibration_report_selects_same_first32_informative_batches _______
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_calibration_report_select0')
+
+    def test_calibration_report_selects_same_first32_informative_batches(tmp_path):
+        folder = tmp_path / "run"
+        cfg, summary, records = fixture_run(folder)
+        records[256]["contrast_global_grad_rnc"] = 0.
+        records[257]["contrast_global_grad_nce"] = 0.
+        write_run(folder, cfg, summary, records)
+>       report = P.calibration_report(folder)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:162: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+_ test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[weight] _
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_calibration_reports_scien0')
+kind = 'weight'
+
+    @pytest.mark.parametrize("kind", ["weight", "support", "coverage"])
+    def test_calibration_reports_scientific_gate_failure_without_clamp_or_extension(tmp_path, kind):
+        folder = tmp_path / "run"
+        cfg, summary, records = fixture_run(folder)
+        if kind == "weight":
+            for r in records[256:]: r["contrast_global_grad_nce"] = 1e-3
+        elif kind == "support":
+            for r in records[256:]: r["contrast_rnc_windows"] = 0
+            summary["contrastive"]["coverage_partial_block"].update(rnc_active_fraction=0., passed=False)
+        else:
+            block = summary["contrastive"]["coverage_partial_block"]
+            for r in records[256:282]: r["contrast_rnc_windows"] = 0
+            block["rnc_active_fraction"] = 230 / 256
+            block["passed"] = False
+        write_run(folder, cfg, summary, records)
+>       report = P.calibration_report(folder)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:212: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+_ test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[support] _
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_calibration_reports_scien1')
+kind = 'support'
+
+    @pytest.mark.parametrize("kind", ["weight", "support", "coverage"])
+    def test_calibration_reports_scientific_gate_failure_without_clamp_or_extension(tmp_path, kind):
+        folder = tmp_path / "run"
+        cfg, summary, records = fixture_run(folder)
+        if kind == "weight":
+            for r in records[256:]: r["contrast_global_grad_nce"] = 1e-3
+        elif kind == "support":
+            for r in records[256:]: r["contrast_rnc_windows"] = 0
+            summary["contrastive"]["coverage_partial_block"].update(rnc_active_fraction=0., passed=False)
+        else:
+            block = summary["contrastive"]["coverage_partial_block"]
+            for r in records[256:282]: r["contrast_rnc_windows"] = 0
+            block["rnc_active_fraction"] = 230 / 256
+            block["passed"] = False
+        write_run(folder, cfg, summary, records)
+>       report = P.calibration_report(folder)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:212: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+_ test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[coverage] _
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_calibration_reports_scien2')
+kind = 'coverage'
+
+    @pytest.mark.parametrize("kind", ["weight", "support", "coverage"])
+    def test_calibration_reports_scientific_gate_failure_without_clamp_or_extension(tmp_path, kind):
+        folder = tmp_path / "run"
+        cfg, summary, records = fixture_run(folder)
+        if kind == "weight":
+            for r in records[256:]: r["contrast_global_grad_nce"] = 1e-3
+        elif kind == "support":
+            for r in records[256:]: r["contrast_rnc_windows"] = 0
+            summary["contrastive"]["coverage_partial_block"].update(rnc_active_fraction=0., passed=False)
+        else:
+            block = summary["contrastive"]["coverage_partial_block"]
+            for r in records[256:282]: r["contrast_rnc_windows"] = 0
+            block["rnc_active_fraction"] = 230 / 256
+            block["passed"] = False
+        write_run(folder, cfg, summary, records)
+>       report = P.calibration_report(folder)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:212: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+_________ test_receipt_is_recomputed_not_trusted_and_all_arms_share_it _________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_receipt_is_recomputed_not0')
+
+    def test_receipt_is_recomputed_not_trusted_and_all_arms_share_it(tmp_path):
+        run = tmp_path / "run"
+        fixture_run(run)
+>       receipt = P.calibration_report(run)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:227: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+_______________ test_quota_exemption_keeps_counts_in_global_gate _______________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_quota_exemption_keeps_cou0')
+
+    def test_quota_exemption_keeps_counts_in_global_gate(tmp_path):
+        run = tmp_path / "run"
+        cfg, summary, records = fixture_run(run)
+        block = summary["contrastive"]["coverage_partial_block"]
+        for row in records[256:]:
+            row["contrast_nce_eligible"] -= row["contrast_nce_eligible__capgmyo"]
+            row["contrast_nce_eligible__capgmyo"] = 0
+        block["datasets"]["capgmyo"].update(eligible=0, fraction=0.)
+        block["nce_fraction"] = (8192 - block["datasets"]["capgmyo"]["queries"]) / 8192
+        write_run(run, cfg, summary, records)
+>       report = P.calibration_report(run)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+____ test_extreme_finite_norms_produce_failed_json_receipt_without_infinity ____
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_extreme_finite_norms_prod0')
+
+    def test_extreme_finite_norms_produce_failed_json_receipt_without_infinity(tmp_path):
+        run = tmp_path / "run"
+        cfg, summary, records = fixture_run(run)
+        for r in records[256:]: r.update(contrast_global_grad_base=1e308, contrast_global_grad_nce=1e-308)
+        write_run(run, cfg, summary, records)
+>       receipt = P.calibration_report(run)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:264: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+__ test_calibration_receipt_is_identical_after_evidence_directory_relocation ___
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_calibration_receipt_is_id0')
+
+    def test_calibration_receipt_is_identical_after_evidence_directory_relocation(tmp_path):
+        import shutil
+        original = tmp_path / "cluster_checkout_output"
+        fixture_run(original)
+>       receipt = P.calibration_report(original)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:288: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+________ test_paired_recipes_only_use_authenticated_shared_weights[C0] _________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_paired_recipes_only_use_a0')
+arm = 'C0'
+
+    @pytest.mark.parametrize("arm", ["C0", "CN", "CR"])
+    def test_paired_recipes_only_use_authenticated_shared_weights(tmp_path, arm):
+>       folder, report = measured(tmp_path)
+                         ^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_run.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_contrastive_run.py:21: in measured
+    return folder, P.calibration_report(folder)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+________ test_paired_recipes_only_use_authenticated_shared_weights[CN] _________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_paired_recipes_only_use_a1')
+arm = 'CN'
+
+    @pytest.mark.parametrize("arm", ["C0", "CN", "CR"])
+    def test_paired_recipes_only_use_authenticated_shared_weights(tmp_path, arm):
+>       folder, report = measured(tmp_path)
+                         ^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_run.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_contrastive_run.py:21: in measured
+    return folder, P.calibration_report(folder)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+________ test_paired_recipes_only_use_authenticated_shared_weights[CR] _________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_paired_recipes_only_use_a2')
+arm = 'CR'
+
+    @pytest.mark.parametrize("arm", ["C0", "CN", "CR"])
+    def test_paired_recipes_only_use_authenticated_shared_weights(tmp_path, arm):
+>       folder, report = measured(tmp_path)
+                         ^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_run.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_contrastive_run.py:21: in measured
+    return folder, P.calibration_report(folder)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+___________ test_generator_cohort_binds_all_arms_and_every_endpoint ____________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M5_gradient_reference/test_generator_cohort_binds_al0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x150b73950>
+
+    def test_generator_cohort_binds_all_arms_and_every_endpoint(tmp_path, monkeypatch):
+>       folder, receipt = measured(tmp_path)
+                          ^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_run.py:133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_contrastive_run.py:21: in measured
+    return folder, P.calibration_report(folder)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:343: in calibration_report
+    multiplier = historical_gradient_multiplier()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+scripts/contrastive_prepare.py:88: in historical_gradient_multiplier
+    evidence = policy_reference("calibration", "historical_reference")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+section = 'calibration', name = 'historical_reference'
+
+    def policy_reference(section, name):
+        pin = _read(PLAN).get(section, {}).get(name)
+        if not isinstance(pin, dict) or not isinstance(pin.get("path"), str):
+            raise ValueError("missing frozen policy reference: " + name)
+        path = ROOT / pin["path"]
+        if path.is_absolute() and not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("policy reference must be repository-relative")
+        if _pin(path)["sha256"] != pin.get("sha256"):
+>           raise ValueError("policy reference hash changed: " + name)
+E           ValueError: policy reference hash changed: historical_reference
+
+scripts/contrastive_prepare.py:83: ValueError
+=========================== short test summary info ============================
+FAILED tests/cpu/test_contrastive_prepare.py::test_calibration_report_selects_same_first32_informative_batches
+FAILED tests/cpu/test_contrastive_prepare.py::test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[weight]
+FAILED tests/cpu/test_contrastive_prepare.py::test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[support]
+FAILED tests/cpu/test_contrastive_prepare.py::test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[coverage]
+FAILED tests/cpu/test_contrastive_prepare.py::test_receipt_is_recomputed_not_trusted_and_all_arms_share_it
+FAILED tests/cpu/test_contrastive_prepare.py::test_quota_exemption_keeps_counts_in_global_gate
+FAILED tests/cpu/test_contrastive_prepare.py::test_extreme_finite_norms_produce_failed_json_receipt_without_infinity
+FAILED tests/cpu/test_contrastive_prepare.py::test_calibration_receipt_is_identical_after_evidence_directory_relocation
+FAILED tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[C0]
+FAILED tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[CN]
+FAILED tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[CR]
+FAILED tests/cpu/test_contrastive_run.py::test_generator_cohort_binds_all_arms_and_every_endpoint
+12 failed, 302 passed in 99.45s (0:01:39)

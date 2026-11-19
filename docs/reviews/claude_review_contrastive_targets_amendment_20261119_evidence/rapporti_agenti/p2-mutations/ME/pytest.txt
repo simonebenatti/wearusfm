@@ -1,0 +1,40 @@
+..........................................F............................. [ 43%]
+........................................................................ [ 87%]
+....................                                                     [100%]
+=================================== FAILURES ===================================
+___ test_calibration_rejects_inconsistent_or_incomplete_measurement[source] ____
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p2/bt_ME/test_calibration_rejects_incon15')
+kind = 'source'
+
+    @pytest.mark.parametrize("kind", ["step", "optimizer", "student", "teacher", "workers", "world", "dataset", "metric", "config", "nan", "code_missing", "code_short", "code_nonhex", "float_step", "metric_coverage", "source", "float_summary", "input_binding"])
+    def test_calibration_rejects_inconsistent_or_incomplete_measurement(tmp_path, kind):
+        folder = tmp_path / "run"
+        cfg, summary, records = fixture_run(folder)
+        if kind == "step": summary["steps"] = 511
+        elif kind == "optimizer": summary["contrastive"]["optimizer_updates"] = 1
+        elif kind == "student": summary["contrastive"]["final_student_sha256"] = "b" * 64
+        elif kind == "teacher": summary["contrastive"]["final_teacher_sha256"] = "b" * 64
+        elif kind == "workers": summary["workers_per_rank"] = 4
+        elif kind == "world": summary["world_size"] = 2
+        elif kind == "dataset": summary["contrastive"]["expected_datasets"].append("C")
+        elif kind == "metric": records[257]["step"] = 257
+        elif kind == "config": cfg["lr"] *= 2
+        elif kind == "nan": records[257]["contrast_global_grad_nce"] = float("nan")
+        elif kind == "code_missing": summary.pop("code")
+        elif kind == "code_short": summary["code"]["sha"] = "f" * 39
+        elif kind == "code_nonhex": summary["code"]["sha"] = "x" * 40
+        elif kind == "float_step": records[257]["step"] = 258.
+        elif kind == "metric_coverage": records[257]["contrast_nce_eligible"] -= 1
+        elif kind == "source": summary["contrastive"]["provenance"]["source_sha256"] = "0" * 64
+        elif kind == "float_summary": summary["steps"] = 512.
+        elif kind == "input_binding": summary["contrastive"]["provenance"]["input_sha256"].pop("manifest")
+        write_run(folder, cfg, summary, records)
+>       with pytest.raises(ValueError): P.calibration_report(folder)
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/cpu/test_contrastive_prepare.py:194: Failed
+=========================== short test summary info ============================
+FAILED tests/cpu/test_contrastive_prepare.py::test_calibration_rejects_inconsistent_or_incomplete_measurement[source]
+1 failed, 163 passed in 14.48s
+pytest_rc=1

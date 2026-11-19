@@ -1,0 +1,427 @@
+........F............................................................... [ 43%]
+.............................FFFF.................FFFF...FFF............ [ 87%]
+....................                                                     [100%]
+=================================== FAILURES ===================================
+______________ test_historical_audit_does_not_qualify_new_sources ______________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p2/bt_MD_MB/test_historical_audit_does_not0')
+
+    def test_historical_audit_does_not_qualify_new_sources(tmp_path):
+        path=tmp_path/'audit.json'
+        path.write_bytes(gzip.decompress((BASE/'audit_completed_20261117/audit.json.gz').read_bytes()))
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/cpu/test_contrastive_historical_calibration.py:93: Failed
+_ test_exact_evidence_returns_distinct_historical_and_current_identities[audit] _
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12ba41580>, repin_current=<function scene.<locals>.repin_current at 0x12ba41d00>)
+kind = 'audit'
+
+    @pytest.mark.parametrize("kind", ["audit", "calibration_run", "calibration_receipt"])
+    def test_exact_evidence_returns_distinct_historical_and_current_identities(scene, kind):
+        payload = {"audit": scene.audit, "calibration_run": scene.run, "calibration_receipt": scene.receipt}[kind]
+>       result = C.validate_historical_evidence(kind, payload)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_source_compat.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:184: in validate_historical_evidence
+    _require(changed == ALLOWED_CHANGED_SOURCES, "changed execution sources differ from the five reviewed paths")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'changed execution sources differ from the five reviewed paths'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: changed execution sources differ from the five reviewed paths
+
+scripts/contrastive_source_compat.py:45: ValueError
+_ test_exact_evidence_returns_distinct_historical_and_current_identities[calibration_run] _
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12b938a40>, repin_current=<function scene.<locals>.repin_current at 0x12b938b80>)
+kind = 'calibration_run'
+
+    @pytest.mark.parametrize("kind", ["audit", "calibration_run", "calibration_receipt"])
+    def test_exact_evidence_returns_distinct_historical_and_current_identities(scene, kind):
+        payload = {"audit": scene.audit, "calibration_run": scene.run, "calibration_receipt": scene.receipt}[kind]
+>       result = C.validate_historical_evidence(kind, payload)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_source_compat.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:184: in validate_historical_evidence
+    _require(changed == ALLOWED_CHANGED_SOURCES, "changed execution sources differ from the five reviewed paths")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'changed execution sources differ from the five reviewed paths'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: changed execution sources differ from the five reviewed paths
+
+scripts/contrastive_source_compat.py:45: ValueError
+_ test_exact_evidence_returns_distinct_historical_and_current_identities[calibration_receipt] _
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12b939080>, repin_current=<function scene.<locals>.repin_current at 0x12b939260>)
+kind = 'calibration_receipt'
+
+    @pytest.mark.parametrize("kind", ["audit", "calibration_run", "calibration_receipt"])
+    def test_exact_evidence_returns_distinct_historical_and_current_identities(scene, kind):
+        payload = {"audit": scene.audit, "calibration_run": scene.run, "calibration_receipt": scene.receipt}[kind]
+>       result = C.validate_historical_evidence(kind, payload)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_source_compat.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:184: in validate_historical_evidence
+    _require(changed == ALLOWED_CHANGED_SOURCES, "changed execution sources differ from the five reviewed paths")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'changed execution sources differ from the five reviewed paths'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: changed execution sources differ from the five reviewed paths
+
+scripts/contrastive_source_compat.py:45: ValueError
+________ test_copied_audit_bytes_can_relocate_without_changing_identity ________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12b939300>, repin_current=<function scene.<locals>.repin_current at 0x12b9393a0>)
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p2/bt_MD_MB/test_copied_audit_bytes_can_re0')
+
+    def test_copied_audit_bytes_can_relocate_without_changing_identity(scene, tmp_path):
+        copy_path = tmp_path / "relocated.json"
+        copy_path.write_bytes(scene.audit.read_bytes())
+>       assert C.validate_historical_evidence("audit", copy_path) == C.validate_historical_evidence("audit", scene.audit)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_source_compat.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:184: in validate_historical_evidence
+    _require(changed == ALLOWED_CHANGED_SOURCES, "changed execution sources differ from the five reviewed paths")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'changed execution sources differ from the five reviewed paths'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: changed execution sources differ from the five reviewed paths
+
+scripts/contrastive_source_compat.py:45: ValueError
+_______ test_scientific_plan_is_required_and_physically_pinned[missing] ________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12b93a520>, repin_current=<function scene.<locals>.repin_current at 0x12b93aa20>)
+mutation = 'missing'
+
+    @pytest.mark.parametrize("mutation", ["missing", "changed"])
+    def test_scientific_plan_is_required_and_physically_pinned(scene, mutation):
+        if mutation == "missing":
+            scene.manifest["frozen_documents"] = {}
+            scene.save()
+        else:
+            (scene.root / C.PLAN_RELATIVE_PATH).write_text('{"scientific_recipe":"changed"}')
+        with pytest.raises(ValueError, match="frozen (scientific plan|document)"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:184: in validate_historical_evidence
+    _require(changed == ALLOWED_CHANGED_SOURCES, "changed execution sources differ from the five reviewed paths")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'changed execution sources differ from the five reviewed paths'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: changed execution sources differ from the five reviewed paths
+
+scripts/contrastive_source_compat.py:45: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12b93a520>, repin_current=<function scene.<locals>.repin_current at 0x12b93aa20>)
+mutation = 'missing'
+
+    @pytest.mark.parametrize("mutation", ["missing", "changed"])
+    def test_scientific_plan_is_required_and_physically_pinned(scene, mutation):
+        if mutation == "missing":
+            scene.manifest["frozen_documents"] = {}
+            scene.save()
+        else:
+            (scene.root / C.PLAN_RELATIVE_PATH).write_text('{"scientific_recipe":"changed"}')
+>       with pytest.raises(ValueError, match="frozen (scientific plan|document)"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'frozen (scientific plan|document)'
+E        Input: 'historical evidence compatibility: changed execution sources differ from the five reviewed paths'
+
+tests/cpu/test_contrastive_source_compat.py:191: AssertionError
+_______ test_scientific_plan_is_required_and_physically_pinned[changed] ________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12b93a840>, repin_current=<function scene.<locals>.repin_current at 0x12b93a5c0>)
+mutation = 'changed'
+
+    @pytest.mark.parametrize("mutation", ["missing", "changed"])
+    def test_scientific_plan_is_required_and_physically_pinned(scene, mutation):
+        if mutation == "missing":
+            scene.manifest["frozen_documents"] = {}
+            scene.save()
+        else:
+            (scene.root / C.PLAN_RELATIVE_PATH).write_text('{"scientific_recipe":"changed"}')
+        with pytest.raises(ValueError, match="frozen (scientific plan|document)"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:184: in validate_historical_evidence
+    _require(changed == ALLOWED_CHANGED_SOURCES, "changed execution sources differ from the five reviewed paths")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'changed execution sources differ from the five reviewed paths'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: changed execution sources differ from the five reviewed paths
+
+scripts/contrastive_source_compat.py:45: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12b93a840>, repin_current=<function scene.<locals>.repin_current at 0x12b93a5c0>)
+mutation = 'changed'
+
+    @pytest.mark.parametrize("mutation", ["missing", "changed"])
+    def test_scientific_plan_is_required_and_physically_pinned(scene, mutation):
+        if mutation == "missing":
+            scene.manifest["frozen_documents"] = {}
+            scene.save()
+        else:
+            (scene.root / C.PLAN_RELATIVE_PATH).write_text('{"scientific_recipe":"changed"}')
+>       with pytest.raises(ValueError, match="frozen (scientific plan|document)"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'frozen (scientific plan|document)'
+E        Input: 'historical evidence compatibility: changed execution sources differ from the five reviewed paths'
+
+tests/cpu/test_contrastive_source_compat.py:191: AssertionError
+_________ test_lazy_source_digest_cannot_alias_the_historical_identity _________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12ba7a840>, repin_current=<function scene.<locals>.repin_current at 0x12ba78360>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x12bacfd90>
+
+    def test_lazy_source_digest_cannot_alias_the_historical_identity(scene, monkeypatch):
+        monkeypatch.setattr(sys.modules["contrastive_prepare"], "source_digest", lambda: scene.manifest["historical_source_sha256"])
+        with pytest.raises(ValueError, match="actual source_digest"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:198: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:184: in validate_historical_evidence
+    _require(changed == ALLOWED_CHANGED_SOURCES, "changed execution sources differ from the five reviewed paths")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'changed execution sources differ from the five reviewed paths'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: changed execution sources differ from the five reviewed paths
+
+scripts/contrastive_source_compat.py:45: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12ba7a840>, repin_current=<function scene.<locals>.repin_current at 0x12ba78360>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x12bacfd90>
+
+    def test_lazy_source_digest_cannot_alias_the_historical_identity(scene, monkeypatch):
+        monkeypatch.setattr(sys.modules["contrastive_prepare"], "source_digest", lambda: scene.manifest["historical_source_sha256"])
+>       with pytest.raises(ValueError, match="actual source_digest"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'actual source_digest'
+E        Input: 'historical evidence compatibility: changed execution sources differ from the five reviewed paths'
+
+tests/cpu/test_contrastive_source_compat.py:197: AssertionError
+______________ test_lazy_reader_must_come_from_the_same_checkout _______________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12ba7afc0>, repin_current=<function scene.<locals>.repin_current at 0x12ba79da0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x12b722390>
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p2/bt_MD_MB/test_lazy_reader_must_come_fro0')
+
+    def test_lazy_reader_must_come_from_the_same_checkout(scene, monkeypatch, tmp_path):
+        monkeypatch.setattr(sys.modules["contrastive_prepare"], "ROOT", tmp_path / "other_checkout")
+        with pytest.raises(ValueError, match="different checkout"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:184: in validate_historical_evidence
+    _require(changed == ALLOWED_CHANGED_SOURCES, "changed execution sources differ from the five reviewed paths")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'changed execution sources differ from the five reviewed paths'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: changed execution sources differ from the five reviewed paths
+
+scripts/contrastive_source_compat.py:45: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12ba7afc0>, repin_current=<function scene.<locals>.repin_current at 0x12ba79da0>)
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x12b722390>
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p2/bt_MD_MB/test_lazy_reader_must_come_fro0')
+
+    def test_lazy_reader_must_come_from_the_same_checkout(scene, monkeypatch, tmp_path):
+        monkeypatch.setattr(sys.modules["contrastive_prepare"], "ROOT", tmp_path / "other_checkout")
+>       with pytest.raises(ValueError, match="different checkout"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'different checkout'
+E        Input: 'historical evidence compatibility: changed execution sources differ from the five reviewed paths'
+
+tests/cpu/test_contrastive_source_compat.py:203: AssertionError
+_________ test_manifest_cannot_read_frozen_documents_outside_checkout __________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12ba7a3e0>, repin_current=<function scene.<locals>.repin_current at 0x12ba782c0>)
+
+    def test_manifest_cannot_read_frozen_documents_outside_checkout(scene):
+        scene.manifest["frozen_documents"]["../outside.json"] = {"sha256": "f" * 64}
+        scene.save()
+        with pytest.raises(ValueError, match="repository-relative"):
+>           C.validate_historical_evidence("audit", scene.audit)
+
+tests/cpu/test_contrastive_source_compat.py:217: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:184: in validate_historical_evidence
+    _require(changed == ALLOWED_CHANGED_SOURCES, "changed execution sources differ from the five reviewed paths")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'changed execution sources differ from the five reviewed paths'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: changed execution sources differ from the five reviewed paths
+
+scripts/contrastive_source_compat.py:45: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12ba7a3e0>, repin_current=<function scene.<locals>.repin_current at 0x12ba782c0>)
+
+    def test_manifest_cannot_read_frozen_documents_outside_checkout(scene):
+        scene.manifest["frozen_documents"]["../outside.json"] = {"sha256": "f" * 64}
+        scene.save()
+>       with pytest.raises(ValueError, match="repository-relative"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'repository-relative'
+E        Input: 'historical evidence compatibility: changed execution sources differ from the five reviewed paths'
+
+tests/cpu/test_contrastive_source_compat.py:216: AssertionError
+______________ test_missing_pinned_calibration_file_fails_closed _______________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12b93a980>, repin_current=<function scene.<locals>.repin_current at 0x12b93ae80>)
+
+    def test_missing_pinned_calibration_file_fails_closed(scene):
+        (scene.run / "metrics.jsonl").unlink()
+        with pytest.raises(ValueError, match="unreadable file"):
+>           C.validate_historical_evidence("calibration_run", scene.run)
+
+tests/cpu/test_contrastive_source_compat.py:223: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:184: in validate_historical_evidence
+    _require(changed == ALLOWED_CHANGED_SOURCES, "changed execution sources differ from the five reviewed paths")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'changed execution sources differ from the five reviewed paths'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: changed execution sources differ from the five reviewed paths
+
+scripts/contrastive_source_compat.py:45: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12b93a980>, repin_current=<function scene.<locals>.repin_current at 0x12b93ae80>)
+
+    def test_missing_pinned_calibration_file_fails_closed(scene):
+        (scene.run / "metrics.jsonl").unlink()
+>       with pytest.raises(ValueError, match="unreadable file"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'unreadable file'
+E        Input: 'historical evidence compatibility: changed execution sources differ from the five reviewed paths'
+
+tests/cpu/test_contrastive_source_compat.py:222: AssertionError
+_____________ test_unsupported_kind_and_payload_types_are_rejected _____________
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12b939c60>, repin_current=<function scene.<locals>.repin_current at 0x12b939b20>)
+
+    def test_unsupported_kind_and_payload_types_are_rejected(scene):
+        with pytest.raises(ValueError, match="unsupported evidence kind"):
+            C.validate_historical_evidence("arbitrary", scene.audit)
+        with pytest.raises(ValueError, match="file path"):
+>           C.validate_historical_evidence("audit", {})
+
+tests/cpu/test_contrastive_source_compat.py:230: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_source_compat.py:184: in validate_historical_evidence
+    _require(changed == ALLOWED_CHANGED_SOURCES, "changed execution sources differ from the five reviewed paths")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'changed execution sources differ from the five reviewed paths'
+
+    def _require(condition, message):
+        if not condition:
+>           raise ValueError("historical evidence compatibility: " + message)
+E           ValueError: historical evidence compatibility: changed execution sources differ from the five reviewed paths
+
+scripts/contrastive_source_compat.py:45: ValueError
+
+During handling of the above exception, another exception occurred:
+
+scene = namespace(root=PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a98924...ve=<function scene.<locals>.save at 0x12b939c60>, repin_current=<function scene.<locals>.repin_current at 0x12b939b20>)
+
+    def test_unsupported_kind_and_payload_types_are_rejected(scene):
+        with pytest.raises(ValueError, match="unsupported evidence kind"):
+            C.validate_historical_evidence("arbitrary", scene.audit)
+>       with pytest.raises(ValueError, match="file path"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'file path'
+E        Input: 'historical evidence compatibility: changed execution sources differ from the five reviewed paths'
+
+tests/cpu/test_contrastive_source_compat.py:229: AssertionError
+=========================== short test summary info ============================
+FAILED tests/cpu/test_contrastive_historical_calibration.py::test_historical_audit_does_not_qualify_new_sources
+FAILED tests/cpu/test_contrastive_source_compat.py::test_exact_evidence_returns_distinct_historical_and_current_identities[audit]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_exact_evidence_returns_distinct_historical_and_current_identities[calibration_run]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_exact_evidence_returns_distinct_historical_and_current_identities[calibration_receipt]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_copied_audit_bytes_can_relocate_without_changing_identity
+FAILED tests/cpu/test_contrastive_source_compat.py::test_scientific_plan_is_required_and_physically_pinned[missing]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_scientific_plan_is_required_and_physically_pinned[changed]
+FAILED tests/cpu/test_contrastive_source_compat.py::test_lazy_source_digest_cannot_alias_the_historical_identity
+FAILED tests/cpu/test_contrastive_source_compat.py::test_lazy_reader_must_come_from_the_same_checkout
+FAILED tests/cpu/test_contrastive_source_compat.py::test_manifest_cannot_read_frozen_documents_outside_checkout
+FAILED tests/cpu/test_contrastive_source_compat.py::test_missing_pinned_calibration_file_fails_closed
+FAILED tests/cpu/test_contrastive_source_compat.py::test_unsupported_kind_and_payload_types_are_rejected
+12 failed, 152 passed in 15.75s
+pytest_rc=1

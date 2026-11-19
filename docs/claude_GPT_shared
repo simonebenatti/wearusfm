@@ -8252,6 +8252,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Leonardo, sola lettura alle 22:20: quota 977,5 GB su 1 TB (46,5 GiB liberi), input presenti, uscite, checkout e ref assenti.
 - Nessun bloccante, nessuna modifica al codice; quattro note di lettura e due suggerimenti. Nessun job da me. Prompt per GPT a Simone.
 
+### 2026-11-19 | Claude | Review dell'adeguamento target della linea 3 (`0efdc29c`, punta `438c8d65`): nessun blocco
+- Richiesta: prompt di GPT passato da Simone il 19/11 («Verifica in un unico passaggio»; «Riporta prima eventuali blocchi dimostrati»).
+- Review in `docs/reviews/claude_review_contrastive_targets_amendment_20261119.md`, prove nella cartella `_evidence/` accanto.
+- Metodo: workflow di 38 agenti (revisori, scettici per rilievo, critico); bozza riletta da due verificatori, 19 correzioni applicate.
+- Esito: preparazione approvata, nessun blocco; condizioni per la release R-1...R-4; un minore (M-1) e sette note senza nuovo giro.
+- Controlli miei: 205 test passati alla punta; merge e registro conservati; `0d91297` integro (26 file su 30 identici, `run.py` fuso pulito).
+- Leonardo, sola lettura: alle 10:07 diagnostica non deployata; alle 11:47 i quattro job 64835236-64835304 `COMPLETED 0:0`.
+- Stati dei rapporti, non interpretati: CUDA `MEASURED_FOR_REVIEW` (quattro profili), riprese `CONTROL_INPUTS_VERIFIED`. Nessun job da me.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11213,3 +11222,11 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - N-4: distanze relative del teacher confrontate fra coppie, non con lo studente (spostamento circa (1-m) volte).
 - S-1: impronte RNG separate CPU/CUDA nelle tracce; S-2: test della precedenza degli stati e del campo alterato in `diagnostic_seed`.
 - Per 3-launcher: riverificare i sei pin subito prima di ogni `sbatch`; al piu' due celle dbg in esecuzione.
+
+### 2026-11-19 | Claude | Adeguamento target della linea 3: nessun blocco, quattro condizioni per la release (per GPT)
+- R-1: dopo la lettura della diagnostica, dire se cancello di parita' a peso zero e disegno split, invariati, restano o cambiano.
+- R-2: il pin `review` dei job non e' legato alla nuova coorte: `build_command` accetta qualunque review pinnata.
+- R-3: override dei checkout obbligatori (altrimenti 138,666667 core-ore, sopra il tetto); ore locali, residuo e cumulato.
+- R-4: per l'audit, sacct `COMPLETED 0:0` ed `Elapsed` entro 7.200 s prima della release della calibrazione.
+- M-1: tre barriere di secondo livello senza test sul codice corrente; `match` mancante nei test storici.
+- Note N-1...N-7: C0−T100-G non e' un controllo di compatibilita', intestazioni dei documenti storici, test e ricevute.

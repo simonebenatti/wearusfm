@@ -1,0 +1,952 @@
+{
+ "workflow": "wf_ef170e8f-84d",
+ "agenti": 38,
+ "dimensioni": [
+  {
+   "dim": "p1-storico-celle",
+   "punto": "1",
+   "esito": "PUNTO 1: il T100-G storico non viene reinterpretato e tutte le celle nuove hanno 100/125 esplicito (diff e388a1de..0efdc29c, verificato a 438c8d65). Esito: nessun BLOCCANTE, nessun MINORE, quattro NOTE non bloccanti.",
+   "verifiche_positive": [
+    {
+     "claim": "config_from_dict applica la lettura storica stretta e non modifica l'input",
+     "evidence": "scripts/contrastive_prepare.py:46 `copy.deepcopy(R.with_legacy_target_windows(data))`. src/wearusfm/training/run.py:220-227 aggiunge solo loader.rms_window_ms=25 e loader.ms_fast_window_ms=50 se mancano: un valore presente vince e target_version non viene toccato. Il test test_missing_target_windows_are_historical_not_current_loader_defaults verifica che il baseline resti invariato (`original == baseline()`)."
+    },
+    {
+     "claim": "T100-G storico letto come 25/50/v1, file intatto",
+     "evidence": "tmp/p1/scripts/a_roundtrip.py: T100-G (sha f9d03184..., nessuna M/D da 8905e346) da' (25.0, 50.0, step1_psd_power_shape_energy_v1). Gli unici campi aggiunti sono le due finestre e i default FMConfig tokenizer_logsquare=False/eps=0.001, gia' presenti in tutti i config storici della coorte. La guardia prepare.py:115-117 rifiuta un baseline gia' 100/125, con v3 o senza target_version (tmp/p1/scripts/a_synthetic.py)."
+    },
+    {
+     "claim": "Tutti gli artefatti storici della linea 3 letti come 25/50/v1",
+     "evidence": "a_roundtrip.py e a_runs.py: 4 config di review storici, 36 config delle coorti 17/11, 18/11 mmap e 18/11 bf16, 6 config.json di run (calibrazione 17/11, 3 benchmark e 2 riprese bf16). Tutti senza i due campi e con tv v1, tutti letti come (25,50,v1); unica differenza l'aggiunta dei due campi."
+    },
+    {
+     "claim": "Casi con un solo campo coerenti con la regola del 18/11",
+     "evidence": "a_synthetic.py: solo rms=100 da' (100,50,v1), coerente con 'campo spettrale assente = 50 ms'. Le combinazioni incoerenti (fast125+v1, 25/50+v3) sono fermate dalla guardia del trainer run.py:1246-1249. fast=100/v2 solleva gia' in LoaderConfig.__post_init__."
+    },
+    {
+     "claim": "I quattro config nuovi hanno solo le tre differenze dichiarate",
+     "evidence": "tmp/p1/scripts/b_diff.py: review_configs/{C0,CN,CR,calibration} contro contrastive_comparison_20261116/configs/*: per ogni file solo +loader.rms_window_ms=100, +loader.ms_fast_window_ms=125 e target_version v1 -> fast125_v3. Nessun campo nuovo e nessun default cambiato dal merge di main. Contro la coorte bf16 cambiano in piu' solo lambda null e max_steps 19618. Il config.json della calibrazione 17/11 coincide con la review storica; la calibrazione nuova differisce solo nei 3 campi."
+    },
+    {
+     "claim": "I config salvati sono rigenerabili byte per byte",
+     "evidence": "tmp/p1/scripts/b_regen.py: build_review_configs(T100-G) coincide byte per byte con i 4 file; sha256 e bytes coincidono con review_configs/preparation.json. Invertendo i 3 campi dichiarati si ottengono esattamente i config storici."
+    },
+    {
+     "claim": "Il plan nuovo aggiunge solo campi dichiarati",
+     "evidence": "tmp/p1/scripts/b_plan_diff.py: rispetto a contrastive_comparison_20261116/plan.json solo aggiunte dichiarate (finestre, target_cli_args, target_version, amendment, target_recipe_amendment, interpretazione del moltiplicatore, decisione target_windows). input_sha256 e riferimenti di copertura e gradiente invariati. sha 60818326... = pin di preflight_plan; PLAN punta al nuovo (prepare.py:30)."
+    },
+    {
+     "claim": "Ogni modalita' del dispatcher usa il config JSON pinnato",
+     "evidence": "Audit e CUDA chiamano validate_recipe(...,'calibration') (contrastive_job.py:90-92; contrastive_audit.py:163). Calibrazione e full passano da contrastive_run.validate_recipe (run.py:29-51) e dalla release. Split: validate_pair_policy (contrastive_split_benchmark.py:52-68) ammette solo il cambio di max_steps, poi entrambe le fasi in contrastive_run. Il readout ricalcola l'atteso da build_review_configs (readout.py:314,321). Nessun train_jepa CLI, LoaderConfig() di default, _config_with_defaults, historical_args o with_historical_targets nei contrastive_*.py, nei diagnostici o negli sbatch (grep)."
+    },
+    {
+     "claim": "validate_recipe accetta il nuovo e rifiuta lo storico",
+     "evidence": "tmp/p1/scripts/c_dispatch.py: la calibrazione nuova passa come (100,125,v3). Sono rifiutati con 'configuration differs from the frozen comparison recipe' la calibrazione storica, la nuova senza finestre, la nuova senza ms_fast e la nuova con tv v1."
+    },
+    {
+     "claim": "Fixture CUDA e config di split/ripresa conservano 100/125/v3",
+     "evidence": "c_dispatch.py: technical_config(base nuova, CN/CR) (cuda_check.py:50-60) e le config degli stop-check (173-197) restano (100,125,v3); cambiano solo min/max_window_s=1/4. build_batches usa cfg.loader (cuda_check.py:63-64). calibrated_configs per 544/576/5000/19618 e il comando calibrated-configs (prepare.py:394-406, 444-453; auth simulata) producono 12 file, tutti (100,125,v3)."
+    },
+    {
+     "claim": "Gli artefatti storici sono letti solo in forma storica",
+     "evidence": "Il trainer passa a anchor_targets le finestre di cfg.loader (pretraining_loader.py:641-643) e scrive config_to_dict(cfg) (run.py:1481,1496). La ripresa confronta anche le finestre (run.py:840-845; firma dati in spectral_calibration._loader_signature). Il checkpoint T100-G non viene caricato (reference_recipe.checkpoint_reuse=false; grep). gradient_reference.json resta un prior; initial_historical_reference.json e' descrittivo senza pass/fail (readout.py:95-111)."
+    },
+    {
+     "claim": "I diagnostici fusi a HEAD si fermano senza eseguire",
+     "evidence": "Il digest a 0efdc29c e a 438c8d65 e' 643a8937... (= preflight_plan.source_sha256), diverso da SOURCE 46938f31... (contrastive_common_checkpoint.py:36,277; contrastive_common_state_cuda.py:238). Digest di 365cb1e ricalcolato = 46938f31...; in 365cb1e LoaderConfig non ha i campi finestra (lettura storica fissa). Nel percorso di training il merge cambia solo finestre e versione dei target (git diff 8905e346..438c8d65)."
+    },
+    {
+     "claim": "I lettori congelati riproducono lo storico e nessuna ricevuta e' stata toccata",
+     "evidence": "pytest -rA: 10 passed, compresi i test run_frozen a 8905e346 (digest atteso 46938f31...). `git diff --name-status --diff-filter=MDRT 8905e346 438c8d65 -- results/infra/contrastive_comparison_20261116/ .../T100-G/` e' vuoto: solo aggiunte. Il diff della consegna non tocca la cartella. Nessun test rimosso (funzioni 4->6, 3->3, 11->12, 13->18)."
+    },
+    {
+     "claim": "Test mirati verdi",
+     "evidence": "I 4 file toccati: 86 passed in 7,86 s. run, benchmark_readout, audit, cuda_check, source_compat, mmap_compatibility, callsite_oracle: 91 passed in 18,77 s. Comando pytest del contesto con basetemp sotto tmp, poi cancellato; clone pulito a 438c8d65."
+    }
+   ],
+   "non_verificato": [
+    "Esecuzione reale su Leonardo/CUDA (loader e calcolo dei target 100/125 su dati veri, audit di 2 h): nessun dato o job sul Mac.",
+    "La ricetta 100/125 in se' (arrotondamenti, bin FFT, versione v3) del commit 0d91297, rivista separatamente.",
+    "I job JSON e le release della nuova coorte non esistono ancora (release null). Verificati solo i percorsi di codice e una coorte sintetica; al rilascio vanno controllati i pin di config, checkpoint di calibrazione, review e input.",
+    "Suite CPU completa: non eseguita per il disco; eseguiti 177 test in 11 file contrastivi.",
+    "Comportamento dei diagnostici a 365cb1e su checkpoint reali: ricalcolato solo il digest dei sorgenti.",
+    "Strumenti di valutazione dopo il training (estrazioni, lettori di posa, contrastive_compare, statistiche congelate 50/500 di fm_features): non sono celle del preflight.",
+    "Punti 2-6, salvo le sovrapposizioni citate (rifiuto delle vecchie calibrazioni e audit, digest, plan)."
+   ],
+   "rilievi": [
+    {
+     "id": "P1-N1",
+     "severity": "NOTA",
+     "title": "validate_recipe accetta un config senza target_version",
+     "detail": "contrastive_run.validate_recipe confronta il config ricostruito, non il file. with_legacy_target_windows completa solo le finestre e RunConfig.target_version ha default v3 (src/wearusfm/training/run.py:114). Un file nuovo senza target_version quindi passa; uno senza finestre viene rifiutato. La ricetta effettiva e' quella giusta, ma il file non e' quello rivisto. A valle lo fermano i pin esatti: audit config_sha256 (run.py:99-101, readout.py:327-334), CUDA config_canonical_sha256 (readout.py:274), uguaglianza del file nella coorte (run.py:76) e config_sha256 della release. Nel caso peggiore si spreca un'allocazione di audit o CUDA. Comportamento preesistente, non toccato dalla consegna.",
+     "evidence": "scripts/contrastive_run.py:47-50 a 438c8d65. Output di c_dispatch.py: `validate_recipe(new calibration senza target_version) OK step1_psd_power_shape_energy_fast125_v3`.",
+     "reproduction": "Dalla radice della copia: OMP_NUM_THREADS=1 ... PYTHONPATH=<clone>/src:<clone>/tests/cpu:<clone>/scripts ~/.venvs/wearusfm-tok/bin/python -B /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p1/scripts/c_dispatch.py <clone> <dir_out>",
+     "fix": "Facoltativo: in validate_recipe richiedere anche `_jsonable(raw) == expected` (o la presenza di target_version), cosi' il controllo diventa sul file come gia' fanno coorte e release.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P1-N2",
+     "severity": "NOTA",
+     "title": "with_legacy_target_windows non completa target_version",
+     "detail": "Un config anteriore al 07/10 (commit 0e8ba050, nascita del campo) senza target_version diventerebbe 25/50 con v3 di default: combinazione incoerente. La guardia del trainer (run.py:1248) e build_review_configs (prepare.py:115-117) la rifiutano. Nella linea 3 non e' raggiungibile: T100-G e tutti gli artefatti storici hanno v1 esplicito. Il comportamento e' quello documentato ('aggiunge solo i due campi').",
+     "evidence": "Output di a_synthetic.py: `storico senza target_version -> (25.0, 50.0, 'step1_psd_power_shape_energy_fast125_v3') trainer_guard_ok=False`.",
+     "reproduction": "~/.venvs/wearusfm-tok/bin/python -B /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p1/scripts/a_synthetic.py <clone> (stesso PYTHONPATH)",
+     "fix": "Nessuna azione richiesta per la linea 3. Volendo, documentarlo nella docstring di config_from_dict.",
+     "survives": false,
+     "upheld": 0,
+     "voti": [
+      {
+       "confutato": true,
+       "gravita": "NESSUNO"
+      }
+     ]
+    },
+    {
+     "id": "P1-N3",
+     "severity": "NOTA",
+     "title": "Test storici di manomissione vacui a HEAD",
+     "detail": "test_modified_historical_receipt_is_rejected[weight|selection|reader|source] e test_historical_metadata_must_be_byte_exact restano sul lettore corrente. Passano perche' calibration_report rifiuta gia' anche la ricevuta storica NON modificata con 'calibration run config differs', prima di arrivare alla logica di manomissione. Nel lettore congelato sono coperti solo la manomissione dell'audit e quella del source del summary. Sul percorso nuovo la manomissione resta coperta dal test sintetico test_contrastive_prepare.py:224-237.",
+     "evidence": "tests/cpu/test_contrastive_historical_calibration.py:53-66. Output di d_vacuous.py: none, weight, selection, reader e source sono tutti rifiutati con 'calibration run config differs from the frozen 512-batch recipe'; lo stesso vale per il metrics.jsonl manomesso.",
+     "reproduction": "~/.venvs/wearusfm-tok/bin/python -B /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p1/scripts/d_vacuous.py <clone> <tmpdir> (stesso PYTHONPATH)",
+     "fix": "Spostarli in run_frozen a 8905e346, oppure rinominarli come 'ricevuta storica rifiutata a HEAD' asserendo il messaggio atteso.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P1-N4",
+     "severity": "NOTA",
+     "title": "run_frozen legge le evidenze di 8905e346, non la copia corrente",
+     "detail": "frozen_campaign_support.archive estrae FROZEN_PATHS dal commit 8905e346, comprese results/infra/contrastive_comparison_20261116 e la config T100-G. I test dimostrano che l'analisi vecchia si riproduce a 8905e346, ma non rileverebbero una riscrittura successiva delle ricevute a HEAD. Oggi l'integrita' e' garantita dal git diff, che non mostra modifiche, cancellazioni o rinomine.",
+     "evidence": "tests/cpu/frozen_campaign_support.py:16-21 (`git archive sha`). `git diff --name-status --diff-filter=MDRT 8905e346 438c8d65 -- results/infra/contrastive_comparison_20261116/ results/infra/tokenizer_execution_20261103/19618/T100-G/` -> vuoto.",
+     "reproduction": "git -C <clone> diff --name-status --diff-filter=MDRT 8905e346 438c8d65 -- results/infra/contrastive_comparison_20261116/",
+     "fix": "Facoltativo: nei test congelati confrontare anche i byte di HEAD delle evidenze usate con quelli di 8905e346.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "dim": "p2-nessuna-eredita",
+   "punto": "2",
+   "esito": "P2: nessuna accettazione automatica di vecchi audit, λ, calibrazioni o benchmark per la nuova coorte (HEAD 438c8d65, consegna e388a1de..0efdc29c). Nessun blocco dimostrato. Il codice corrente rifiuta ogni evidenza storica provata (audit 64652559, run e ricevuta di calibrazione, coorte bf16, 19 job, 16 release, benchmark, CUDA, rank-exit, ricevuta preflight) con almeno due barriere indipendenti: la guardia sorgenti e il confronto della ricetta 100/125. Per job e release vale in più il controllo di source_sha256. Rapporto incrementale: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/reports/p2-nessuna-eredita.md; prove delle mutazioni in .../rev_targets/reports/p2-mutations/",
+   "verifiche_positive": [
+    {
+     "claim": "(a) Nei tre file nuovi gli unici riferimenti alla coorte storica sono due riferimenti di politica in plan.json. preflight_plan.json la cita solo come testo, preparation.json mai.",
+     "evidence": "plan.json:166-169 -> review_response/gradient_reference.json (ed4e5b5c); plan.json:201-204 -> review_response/coverage_manifest_reference.json (b0d96443); preflight_plan.json:197 'old_evidence ... invalid for target100/125 execution'; preparation.json contiene solo la baseline T100-G di tokenizer_execution_20261103 (f9d03184) e i review_configs nuovi. Gli hash a 64 cifre condivisi con contrastive_comparison_20261116 sono soltanto i 4 input dati (input_sha256 identico al piano storico), la baseline e i due riferimenti."
+    },
+    {
+     "claim": "(a) coverage_manifest_reference è una politica indipendente dai target.",
+     "evidence": "Quote = sum(weight/window_seconds) da manifest e durate; esenzione capgmyo derivata da batch, max_age e min_negatives. Lo usano solo build_review_configs (contrastive_prepare.py:136-138) e validate_input_bindings (99-109)."
+    },
+    {
+     "claim": "(a) gradient_reference.json storico fa da coefficiente prespecificato (prior), non da evidenza che qualifica la coorte. Entra nella formula di λ, quindi solo indirettamente nel cancello di ampiezza [1e-4,1], applicato ai gradienti nuovi.",
+     "evidence": "contrastive_prepare.py:87-96: pin sha tramite policy_reference, intervalli 513..19618 e 1..8, coerenza del moltiplicatore. 343-350: λ = 0,1·0,1179564·mediana, fuori [1e-4,1] -> failure. Dichiarato prior in plan.json:149, plan.json:186, limitations e amendment:42-44. initial_historical_reference.json resta descrittivo (contrastive_benchmark_readout.py:95-111, nessun failure_reason). I blocchi resources del piano non sono letti da alcun codice."
+    },
+    {
+     "claim": "(b) Nel checkout nuovo l'eccezione di compatibilità storica non vale più.",
+     "evidence": "source_digest() = 643a8937..., uguale a preflight_plan.json:11. validate_historical_evidence su audit (sha 5c720fad = pin), run di calibrazione e ricevuta canonica (canonical 4f302517 = pin) -> 'current execution source inventory/pins differ' (contrastive_source_compat.py:162). Sonda /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p2/probe_b.py, output .../rev_targets/reports/p2-probe_b.out.json, voci 1a, 2a, 2b."
+    },
+    {
+     "claim": "(b) L'audit storico non qualifica la ricetta nuova, nemmeno rietichettato.",
+     "evidence": "validate_audit(audit storico, calibrazione 100/125) viene fermato dalla guardia (contrastive_run.py:94-96). Con source_sha256 rietichettato -> 'audit stream/config differs from the calibration recipe' (99-101). Controllo: lo stesso audit rietichettato passerebbe con il config 25/50, quindi questa barriera distingue la ricetta. Voci 1b-1d."
+    },
+    {
+     "claim": "(b) La calibrazione storica (λ 0,11942686 e 0,33044627) e la sua ricevuta non autorizzano i bracci nuovi.",
+     "evidence": "calibration_report, authenticate_calibration e calibrated_configs -> 'calibration run config differs from the frozen 512-batch recipe' (contrastive_prepare.py:273-274). Con config rietichettato 100/125 e provenienza vecchia interviene la guardia (288-292). Voci 2c-2f."
+    },
+    {
+     "claim": "(b) Job e release storici vengono rifiutati, e una release nuova non può agganciare audit o calibrazione/coorte vecchi.",
+     "evidence": "19 *.job.json storici (audit, calibration, cuda, benchmarks_20261117, mmap, bf16, readout_bf16) -> build_command 'wrong mode, release, source or allocation' (contrastive_job.py:64-68). 16 *.release.json -> 'release source/config pins differ' (contrastive_run.py:168-169). Release di calibrazione nuova con audit vecchio -> guardia. Release benchmark nuova con audit nuovo sintetico ma ricevuta e coorte bf16 -> 'calibration run config differs'. Voci 3a-3h."
+    },
+    {
+     "claim": "(b) Benchmark, CUDA, rank-exit e ricevuta preflight bf16_20261118 vengono rifiutati.",
+     "evidence": "_run_evidence(C0 bf16 25/50/v1, ricetta nuova con λ vecchie) -> 'incomplete/unmatched benchmark C0' (readout:205-209). _cuda_evidence(cuda.json bf16) -> 'different source/cohort/inputs' (271-278). read_preflight con tutte le evidenze bf16 -> errore di config. authenticate_preflight(preflight_readout.json) -> 'did not pass every frozen gate': la ricevuta era FAILED_REQUIRES_REVIEW (ripresa CN 0,0325 > 0,01). Le 3 ricevute rank-exit storiche sono rifiutate da validate_receipt. Voci 4a-4e."
+    },
+    {
+     "claim": "(b) Nessuna eccezione speciale si applica da sola a un audit nuovo: il TIMEOUT di 64652559 esiste solo come documento.",
+     "evidence": "releases/audit_recovery_20261117.json (APPROVED_EXACT_AUDIT_RECOVERY, exception_scope 'no general exception for future failed jobs'). grep di audit_recovery, APPROVED_EXACT e slurm_state negli script contrastivi, in src e nei test: nessun lettore. preflight_plan.json:196 la dichiara non ereditata."
+    },
+    {
+     "claim": "(c) I quattro test nominati passano. Due esercitano il vero percorso di produzione che rifiuta; il terzo copre la guardia sorgenti.",
+     "evidence": "A HEAD: 4 passed in 3,76 s. Mutazioni nel clone temporaneo (164 casi in 8 file): MA (via la ricetta 100/125) e MC (confronto config che ignora finestre e versione) fanno fallire test_unmodified_historical_calibration_does_not_qualify_new_targets e test_old_calibration_cannot_authorize_new_target_recipe. Con MC+MB (whitelist allargata) la calibrazione storica diventa accettata, con CN 100/125/v3 e λ vecchie, e falliscono i tre test non congelati. MB e MD+MB (audit storico accettato) fanno fallire test_historical_audit_does_not_qualify_new_sources. Log in .../rev_targets/reports/p2-mutations/."
+    },
+    {
+     "claim": "(d) Nella cartella nuova non è stata copiata alcuna autorizzazione esecutiva, ricevuta, λ o ID vecchio.",
+     "evidence": "grep ricorsivo in results/infra/contrastive_targets_20261118, compresi full_suite e log: nessun APPROVED_FOR_PREFLIGHT/PREPARATION/TRAINING, APPROVED_EXACT, PASSED_FOR_REVIEW o CALIBRATED_COHORT. Nessuna λ 0,1194/0,3304. Nessun ID 6465*-6478*: l'unico '6478' compare dentro l'hash di scales. Nessuno degli hash f57d8731, 4f302517, 5c720fad, 46938f31, ab2d6460, 6b421b75, ba8a8657. Celle REVIEW_REQUIRED con code_sha e release null, fresh_root nuova, review_configs con nce/rnc_weight null. Le λ storiche non compaiono in scripts/ né in src/, solo nel test congelato."
+    }
+   ],
+   "non_verificato": [
+    "Esecuzioni reali su Leonardo o CUDA: il main di contrastive_cuda_check e la lettura con checkpoint.pt (assenti nel repo) sono verificati solo leggendo il codice.",
+    "validate_input_bindings con i file dati reali: nelle sonde 3c-3e è neutralizzato e in probe_mut l'hash fisico è sostituito dai pin dell'audit; i dati non dipendono dai target.",
+    "Il futuro builder della release della nuova coorte, che non esiste ancora: un'eventuale copia di autorizzazioni o ricevute vecchie in quella release non è verificabile.",
+    "Ledger comune (univocità degli ID logici) e stato SLURM.",
+    "Suite CPU completa, esclusa per lo spazio disco: eseguiti 8 file (164 casi) a HEAD e per ogni mutazione, e i 337 test contrastivi solo con MD+MG+MF.",
+    "Se initial_state_sha256 della nuova coorte coincida con quello storico (stesso modello e seme). Non distinguerebbe le coorti, ma lo fanno i pin di source, calibrazione, coorte e config.",
+    "Punti 1 e 3-6 della review e la diagnostica da stato comune."
+   ],
+   "rilievi": [
+    {
+     "id": "P2-M1",
+     "severity": "MINORE",
+     "title": "Nessun test copre la barriera di ricetta dell'audit",
+     "detail": "Con il codice attuale l'audit storico è fermato per primo dalla guardia sorgenti. La seconda barriera, che lo lega alla ricetta 100/125 (config_sha256 in validate_audit e in read_preflight), non è coperta da nessun test. test_historical_audit_does_not_qualify_new_sources chiama solo validate_historical_evidence e usa pytest.raises(ValueError) senza match. Scenario: whitelist allargata (esclusa dall'emendamento, ma possibile per una futura correzione non scientifica) e barriera tolta. L'audit 25/50 qualifica allora la ricetta nuova e fallisce solo quel test, per la whitelist e non per la ricetta. Oggi non produce accettazioni.",
+     "evidence": "contrastive_run.py:99-101; contrastive_benchmark_readout.py:331-334. reports/p2-mutations/MD/pytest.txt e MG/pytest.txt: '164 passed'. all_contrastive_MD_MG_MF.txt: '337 passed in 88.58s'. MD_MB/probe.json: validate_audit(audit storico, calibrazione 100/125) accepted:true; falliscono solo test_historical_audit_does_not_qualify_new_sources e 11 test sintetici di compat legati alla whitelist.",
+     "reproduction": "S=/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets; git clone -q --shared $S/clone $S/tmp/p2/mut && git -C $S/tmp/p2/mut checkout -q --detach 438c8d65; $S/tmp/p2/run_mutation.sh MD MD (164 passed); $S/tmp/p2/run_mutation.sh MD_MB MD,MB (audit accettato). Per 337/337: python -B $S/tmp/p2/mutate.py $S/tmp/p2/mut MD,MG,MF, poi pytest tests/cpu/test_contrastive_*.py tests/cpu/test_rank_contrast.py. Script anche in $S/reports/p2-mutations/.",
+     "fix": "Aggiungere un test sul codice corrente: audit storico reale con source_sha256 rietichettato al digest corrente e pin di input coerenti. validate_audit deve sollevare con match 'audit stream/config differs' e read_preflight con 'different inputs/config/source'. Aggiungere inoltre match='current execution source inventory' a test_historical_audit_does_not_qualify_new_sources.",
+     "survives": true,
+     "upheld": 2,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "MINORE"
+      },
+      {
+       "confutato": false,
+       "gravita": "MINORE"
+      }
+     ]
+    },
+    {
+     "id": "P2-N1",
+     "severity": "NOTA",
+     "title": "I test storici sulla ricevuta non esercitano il codice corrente",
+     "detail": "test_pinned_historical_receipt_still_requires_authenticated_recalculation gira solo nel tree congelato 8905e346 (git archive). Resta verde con tutte le 11 mutazioni provate, e il suo commento 'Current 100/125 sources must not inherit that exception' non è verificato. La guardia della ricevuta nel codice corrente (contrastive_prepare.py:383-388) non ha test: togliendola (MF) restano verdi 337/337 test contrastivi. test_modified_historical_receipt_is_rejected[weight/selection/reader/source] ora si ferma alla barriera di config: togliendo il confronto ricevuta/ricalcolo (MH) resta verde. La copertura resta solo nel test sintetico test_receipt_is_recomputed_not_trusted_and_all_arms_share_it. Oggi è innocuo, perché calibration_report rifiuta prima (config e guardia del run).",
+     "evidence": "tests/cpu/test_contrastive_historical_callsites.py:117-163; tests/cpu/frozen_campaign_support.py:16-31. reports/p2-mutations/MF/pytest.txt '164 passed'; MH/pytest.txt '1 failed' (solo test_receipt_is_recomputed...). test_pinned... non compare in nessun elenco FAILED dei 12 run.",
+     "reproduction": "S=/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets; $S/tmp/p2/run_mutation.sh MF MF; $S/tmp/p2/run_mutation.sh MH MH (dopo aver ricreato $S/tmp/p2/mut come in P2-M1).",
+     "fix": "Correggere il commento: il test conserva il reader storico, non verifica il codice corrente. Se si vuole la proprietà sul codice corrente, aggiungere un test sintetico: run con config 100/125 e source corrente, ricevuta con source diverso, authenticate_calibration deve sollevare per la guardia. Annotare che i test parametrizzati storici ora verificano la barriera di ricetta.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P2-N2",
+     "severity": "NOTA",
+     "title": "La non-eredità del TIMEOUT è solo dichiarata",
+     "detail": "Nessun lettore controlla lo stato SLURM o la durata dell'audit, e contrastive_job.py non passa all'audit un limite interno. Leonardo ha OverTimeLimit di 3 min. Un audit nuovo che superi 7.200 s ma finisca nel margine scrive un report che validate_audit e read_preflight accettano. È il caso di 64652559: 3.787 s su 3.600, batch COMPLETED 0:0, job TIMEOUT. Il rifiuto dipende dall'operatore, che deve controllare sacct prima della release di calibrazione.",
+     "evidence": "preflight_plan.json:196; docs/contrastive_targets_amendment_20261118.md:35; contrastive_job.py:103-104 (comando audit senza tempo); contrastive_audit.py:148-193 (nessun controllo di durata); results/infra/contrastive_comparison_20261116/audit_completed_20261117/accounting_and_integrity.txt e slurm.out ('OverTimeLimit = 3 min').",
+     "reproduction": "Lettura del codice. Nella copia: grep -rn 'audit_recovery\\|APPROVED_EXACT\\|slurm_state' scripts/contrastive_*.py src tests/cpu/test_contrastive_*.py -> nessun risultato.",
+     "fix": "Nella release di audit e calibrazione richiedere sacct State=COMPLETED. In alternativa registrare elapsed_s nel report dell'audit e far rifiutare ai lettori un audit oltre 7.200 s.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P2-N3",
+     "severity": "NOTA",
+     "title": "Provenienza verificata sul contenuto dei file, non sul produttore",
+     "detail": "Esempio: rietichettatura deliberata del run di calibrazione storico (config.json a 100/125, summary.provenance.source_sha256 al digest corrente). calibration_report la accetta come PASSED_FOR_REVIEW con le λ vecchie, perché summary.code.sha è controllato solo nel formato. contrastive_cuda_check.py:242-246 accetta qualunque checkpoint strutturalmente fisso (passo 512, niente ottimizzatore, teacher=student), senza legarlo al run della calibrazione nuova. La lettura rifiuta a valle: il config del checkpoint deve coincidere con config.json (readout:259-265) e il checkpoint è pinnato (344-345). Non è un'eredità automatica, ma un pin sbagliato verrebbe scoperto solo dopo i job CUDA e benchmark.",
+     "evidence": "reports/p2-probe_b.out.json, voce '2g calibration_report(config AND source relabelled: deliberate forgery)': accepted:true, PASSED_FOR_REVIEW con λ 0,11942686/0,33044627. contrastive_prepare.py:277-280; contrastive_cuda_check.py:242-246; contrastive_benchmark_readout.py:259-265, 344-345.",
+     "reproduction": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python -B /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p2/probe_b.py <clone> <tmp>/work, con PYTHONPATH della copia; vedere la voce 2g.",
+     "fix": "Nella release nuova pinnare solo artefatti prodotti dai job nuovi sotto fresh_root e verificare code.sha = SHA del checkout congelato. Facoltativo: far confrontare a cuda_check il config incorporato nel checkpoint con la ricetta di calibrazione.",
+     "survives": false,
+     "upheld": 0,
+     "voti": [
+      {
+       "confutato": true,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P2-N4",
+     "severity": "NOTA",
+     "title": "La riga di autorizzazione del 16/11 è copiata nel piano nuovo",
+     "detail": "plan.json:303-308 copia testualmente scientific_decisions del piano storico. Inclusa la riga 'authorization': 'Simone authorizes launches after convergence; this file is not a deployment release'. Nessun codice la legge. Il piano aggiunge target_windows.execution 'Prepare and present new costs before any launch', e preflight_plan richiede di presentare il preventivo a Simone. Resta implicito se l'autorizzazione copra la coorte 25/50 o anche la nuova.",
+     "evidence": "Confronto dei due plan.json: status, D1, D2, D3 e authorization identici, target_windows nuovo. grep di 'scientific_decisions|authoriz' negli script contrastivi e nei build_release storici: nessun lettore.",
+     "reproduction": "python3 -c che carica scientific_decisions dai due plan.json e confronta le chiavi.",
+     "fix": "Precisare che è l'autorizzazione del 16/11 per il protocollo e che i lanci della nuova coorte richiedono l'approvazione del preventivo nuovo.",
+     "survives": false,
+     "upheld": 0,
+     "voti": [
+      {
+       "confutato": true,
+       "gravita": "NOTA"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "dim": "p3-confronti",
+   "punto": "3",
+   "esito": "PUNTO 3. CN-C0 e CR-C0 sono appaiati nella ricetta nuova 100/125/v3. C0-T100-G è dichiarato con i due fattori in più. Il protocollo statistico v2 è invariato. Nessun BLOCCANTE: un MINORE (il comparatore finale non lega i bracci alla coorte o alla ricetta) e due NOTE. Rapporto incrementale: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/reports/p3-confronti.md",
+   "verifiche_positive": [
+    {
+     "claim": "(a) Ogni differenza fra plan nuovo e plan storico è dichiarata nell'emendamento: scope; arms.{C0,CN,CR}.{rms_window_ms=100, ms_fast_window_ms=125, target_cli_args}; common.{rms_window_ms, ms_fast_window_ms, target_version=fast125_v3, target_cli_args}; calibration.historical_multiplier_interpretation; due voci nuove in limitations (le prime cinque identiche); scientific_decisions.target_windows (citazioni coerenti con CLAUDE.md); amendment e target_recipe_amendment. Il plan storico non è modificato nella consegna.",
+     "evidence": "Script /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p3_plandiff.py (old plan, new plan): solo le voci CHANGED/ADDED elencate. Documento: righe 11-30. `git diff e388a1de..438c8d65 -- results/infra/contrastive_comparison_20261116/plan.json` è vuoto."
+    },
+    {
+     "claim": "(a) Protocollo statistico invariato: l'intera sezione evaluation è identica fra i due piani (pairs CN-C0/CR-C0/CN-CR, endpoint E_dyn/p1/epn612, descrittivi p2/uci_emg, pesi P1 8/13-3/13-2/13 e P2 1/2-1/2, bootstrap 100000/20261116/famiglia 9/alfa 0,05/0,99444, margini, reading, regola Monte Carlo 3SE, 420 fit). Restano invariati anche activation, coverage, nce, rnc e la formula e i gate di calibrazione.",
+     "evidence": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p3_compare_consts.py: evaluation_identical_old_new True e ogni costante True."
+    },
+    {
+     "claim": "(a) Il comparatore resta quello del protocollo v2: scripts/contrastive_compare.py e il suo test non cambiano dall'ultimo commit del plan storico, e le costanti codificate coincidono con plan.evaluation.",
+     "evidence": "`git diff --stat c680e95d..438c8d65 -- scripts/contrastive_compare.py tests/cpu/test_contrastive_compare.py` è vuoto. contrastive_compare.py:25-39 (PROTOCOL, PAIRS, N_BOOT, SEED, FAMILY_SIZE, ALPHA, MARGINS, MC_BOUNDARY_SE) controllate dallo script p3_compare_consts.py."
+    },
+    {
+     "claim": "(b) I lettori correnti del piano puntano al plan nuovo. contrastive_prepare.PLAN è usato da policy_reference, validate_input_bindings e _reader_provenance, e lo importano job, audit, run, readout, cuda e split. contrastive_source_compat punta al plan storico solo per validare evidenze storiche. Il pin del piano e il source digest coincidono a HEAD.",
+     "evidence": "scripts/contrastive_prepare.py:30,76,107,219. scripts/contrastive_source_compat.py:18. sha256(plan.json)=6081832627cee150… = preflight_plan.science_plan.sha256. source_digest() a 438c8d65 = 643a8937e833… = preflight_plan.source_sha256 e local_validation."
+    },
+    {
+     "claim": "(b) I tre bracci e la calibrazione hanno target identici 100/125/fast125_v3. Fra C0, CN e CR l'unica differenza è contrastive.arm. Dalla baseline T100-G (ripristinata 25/50/v1) il codice attuale rigenera i config committati byte per byte; i pin di preparation.json coincidono.",
+     "evidence": "Script /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p3_repro.py: 'equal to committed: True' per C0/CN/CR/calibration, 'baseline restored 25.0 50.0 step1_psd_power_shape_energy_v1'. contrastive_prepare.py:115-117 e 133-135. Diff dei config: C0 vs CN e C0 vs CR differiscono solo per contrastive.arm."
+    },
+    {
+     "claim": "(b) La parità di ricetta fra bracci è imposta fino al training. La calibrazione deve coincidere con il config generato. Il benchmark readout confronta il config grezzo di ogni braccio con quello atteso da calibrated_configs. Il training passa da validate_recipe e validate_cohort, cioè un bundle di tre bracci dallo stesso receipt. Il trainer rifiuta un target_version incoerente con ms_fast. Un benchmark C0 con config storico (campi assenti, v1) viene rifiutato.",
+     "evidence": "contrastive_prepare.py:273. contrastive_benchmark_readout.py:205-209 e 392-396. contrastive_run.py:46-50 e 66-87. run.py:1248-1249. Script /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p3_bench_mixed.py sulla fixture _run_folder: 'historical 25/50 C0 benchmark rejected: incomplete/unmatched benchmark C0'."
+    },
+    {
+     "claim": "(c) C0-T100-G è dichiarato con i due fattori in più e non è mai un cancello né una stima dell'effetto contrastivo. Nessun codice lo calcola (ARMS=C0/CN/CR). La 'parità iniziale' fallita nello storico è C0 vs CN/CR, non T100-G. Il confronto dei primi otto update con lo storico è solo descrittivo: nessun 'passed' e interpretazione aggiornata.",
+     "evidence": "plan.json:300 (limitations) e 338 (historical_comparison). Emendamento righe 27-30. contrastive_compare.py:26. contrastive_benchmark_readout.py:95-111 e il test test_first_eight_historical_comparison_is_descriptive_without_a_new_gate. preflight_readout.json storico: 'CN/CR: zero-weight256-update parity failed'."
+    },
+    {
+     "claim": "(c) La dichiarazione dei fattori è esatta. Il config T100-G e il C0 nuovo differiscono solo per il blocco contrastive (impalcatura), loader.rms_window_ms e ms_fast_window_ms (assenti, poi 100/125), target_version (v1, poi fast125_v3) e due campi LQ serializzati inerti. amp_bf16 è uguale. I fattori di ricetta in più sono quindi proprio RMS e spettro rapido, e la versione segue la finestra.",
+     "evidence": "Diff con flatten di results/infra/tokenizer_execution_20261103/19618/T100-G/config.json contro review_configs/C0.config.json (eseguito in questa review)."
+    },
+    {
+     "claim": "Il prior storico di λ (control30m 25/50) entra nella formula come coefficiente prespecificato ed è dichiarato come prior, non come misura. Lo stesso valore vale per entrambe le λ, quindi non sbilancia CN-C0 rispetto a CR-C0.",
+     "evidence": "contrastive_prepare.py:87-96 e 343-348. plan.calibration.historical_multiplier_interpretation. review_response/gradient_reference.json, source control30m."
+    },
+    {
+     "claim": "Lo storico non contiene release APPROVED_FOR_TRAINING né checkpoint C0/CN/CR a 19.618: non esistono bracci storici da mescolare con la coorte nuova.",
+     "evidence": "`grep -rl APPROVED_FOR_TRAINING results/infra/contrastive_comparison_20261116` non trova nulla. Il preflight bf16 è FAILED_REQUIRES_REVIEW."
+    },
+    {
+     "claim": "I test mirati passano a HEAD.",
+     "evidence": "pytest tests/cpu/test_contrastive_compare.py, test_contrastive_prepare.py e test_contrastive_benchmark_readout.py: 101 passed in 6,29 s (basetemp temporaneo poi cancellato)."
+    }
+   ],
+   "non_verificato": [
+    "Strumenti del confronto finale per la nuova coorte (estrazioni, lettore posa, aggregati delle probe, costruttore del manifest): non esistono ancora nel repository, quindi non si può verificare il legame alla coorte al momento del confronto, ma solo l'assenza di controlli nel comparatore.",
+    "Esecuzione reale su Leonardo e contenuto degli input dati (manifest, scales, window_seconds, pose_stats): nessun job e nessun accesso remoto, per regola.",
+    "Rifiuto delle vere ricevute storiche di audit e calibrazione con i file reali: richiede gli input su Leonardo. Verificato solo da codice e fixture; tema del punto 2.",
+    "Suite CPU completa (vietata dal vincolo di disco): eseguiti solo i tre file del punto 3, 101 test.",
+    "Punti 1, 2, 4, 5 e 6 oltre alle sovrapposizioni citate (preventivo, durata dell'audit, diagnostica bf16, test dei reader storici congelati)."
+   ],
+   "rilievi": [
+    {
+     "id": "P3-M1",
+     "severity": "MINORE",
+     "title": "Il comparatore finale non lega i tre bracci alla coorte calibrata né alla ricetta target",
+     "detail": "contrastive_compare.from_manifest controlla solo protocol, step e which, la griglia completa e la coerenza dello SHA del checkpoint fra celle posa e audit dello stesso braccio. Non legge config, cohort.json, target_version, finestre o emendamento. Con il protocollo v2 invariato, l'uscita di una coorte 100/125 non si distingue per protocollo da una 25/50, e un manifest misto verrebbe accettato: per esempio un C0 a ricetta storica, o il T100-G etichettato C0. Oggi il rischio pratico è basso: le guardie a calibrazione, benchmark e training impongono bracci omogenei, nello storico non ci sono checkpoint di bracci a 19.618, e il manifest e gli estrattori del confronto sono consegne future. Il difetto non ha effetto sul preflight in review.",
+     "evidence": "scripts/contrastive_compare.py:333-360 (from_manifest) e 280-321 (compare): nessuna occorrenza di rms_window, ms_fast, target_version, amendment, cohort o config (grep con exit 1). L'uscita riporta protocol 'contrastive-comparison-20261116-v2' senza emendamento.",
+     "reproduction": "PYTHONPATH=clone/src:clone/tests/cpu:clone/scripts ~/.venvs/wearusfm-tok/bin/python -B /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p3_mixed_recipe.py clone/tests/cpu. Output: griglia con C0 annotato 25/50/v1 e CN/CR 100/125/v3 accettata; 'output protocol: contrastive-comparison-20261116-v2'; 'output mentions amendment/recipe/target: []'.",
+     "fix": "Nella release futura del confronto il manifest deve fissare cohort.json e config/checkpoint di ogni braccio. Va verificato con validate_cohort o un controllo equivalente che i tre checkpoint a 19.618 vengano dallo stesso bundle, con la stessa terna (100, 125, fast125_v3) per tutti, e l'uscita deve registrare amendment=contrastive-target-windows-20261118-v1. Non serve un nuovo giro sul preflight.",
+     "survives": false,
+     "upheld": 0,
+     "voti": [
+      {
+       "confutato": true,
+       "gravita": "NOTA"
+      },
+      {
+       "confutato": true,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P3-N1",
+     "severity": "NOTA",
+     "title": "I campi target dichiarati nel plan non sono letti né controllati dal codice",
+     "detail": "arms.*.rms_window_ms e ms_fast_window_ms, common.target_version, target_cli_args e target_recipe_amendment.new_recipe sono solo documentali: build_review_configs codifica 100 e 125 e ricava la versione da target_version_for_fast_window(125). Oggi piano e config coincidono (verificato), ma nessun test fermerebbe una divergenza futura.",
+     "evidence": "grep di target_cli_args, target_recipe_amendment e contrastive-target-windows in scripts, src e tests: nessun lettore. contrastive_prepare.py:133-135. Nessun test confronta plan.common o plan.arms con l'uscita di build_review_configs.",
+     "reproduction": "grep -rn -e target_cli_args -e target_recipe_amendment scripts src tests (nessuna occorrenza). Script p3_repro.py: i config generati hanno 100/125/v3, uguali alle dichiarazioni del plan.",
+     "fix": "Facoltativo: un test CPU che legga plan.json e richieda che (rms, fast, target_version) di common e arms coincidano con i quattro config di build_review_configs.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P3-N2",
+     "severity": "NOTA",
+     "title": "Il protocollo chiama ancora C0-T100-G «controllo descrittivo di compatibilità»",
+     "detail": "Il par. 6 del protocollo storico definisce C0-T100-G a 19.618 «controllo descrittivo di compatibilità». L'intestazione aggiunta dice che per la nuova coorte prevale l'emendamento, e l'emendamento afferma che quel confronto non isola più l'infrastruttura. Non dice però in modo esplicito che, nella nuova coorte, il confronto perde il ruolo di controllo di compatibilità. Nessun codice o cancello lo usa: è una questione di chiarezza.",
+     "evidence": "docs/contrastive_comparison_protocol_20261116.md:132. docs/contrastive_targets_amendment_20261118.md:27-29. plan.json:338.",
+     "reproduction": "grep -n 'compatib' docs/contrastive_comparison_protocol_20261116.md docs/contrastive_targets_amendment_20261118.md",
+     "fix": "Una frase nell'emendamento: per la nuova coorte C0-T100-G a 19.618 è soltanto una lettura descrittiva di una differenza a più fattori (impalcatura contrastiva, RMS 100, spettro rapido 125/v3). Non è un controllo di compatibilità, un cancello o una stima dell'effetto.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "dim": "p4-lambda",
+   "punto": "4",
+   "esito": "PUNTO 4: il coefficiente storico di λ è dichiarato come prior, entrambe le λ vanno ricalcolate e i cancelli restano invariati. Esito: nessun BLOCCANTE e nessun MINORE, una sola NOTA. Il coefficiente k=0,1179564123141922 è quello pinnato da D-3, non viene ricalcolato né sostituito ed è dichiarato prior nel piano e nell'emendamento. Le λ dei config preparatori sono null. Il solo punto in cui le λ entrano nei config è calibrated_configs, che rifà il calcolo da un run di calibrazione con config 100/125/v3 e digest dei sorgenti corrente. La calibrazione storica 64701482 viene rifiutata. La regola dei rapporti dei benchmark e l'intervallo [1e-4, 1] sono invariati. Il confronto dei primi otto valori con lo storico è solo descrittivo. Rapporto incrementale: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/reports/p4-lambda.md",
+   "verifiche_positive": [
+    {
+     "claim": "(a) k è la costante prespecificata da D-3: viene letta dal file pinnato, non ricalcolata dai gradienti nuovi né sostituita",
+     "evidence": "contrastive_prepare.py:87-96 legge plan.calibration.historical_reference del piano nuovo (riga 30): review_response/gradient_reference.json, sha ed4e5b5c… identico allo shasum locale. Richiede reference_updates [513,19618] e initial_updates [1,8]. Calcola 3,5140269780276796/29,790894018271878 e lo confronta col campo multiplier (rel_tol 1e-14). La funzione è invariata da c680e95d (git log -S). D-3 è registrata in docs/decisioni.md:7835. Eseguita a HEAD restituisce 0.1179564123141922."
+    },
+    {
+     "claim": "(a) Formula, selezione e intervallo come da piano: 0,1·k·mediana(base/termine) sui primi 32 batch congiuntamente informativi dei passi 257-512, [1e-4, 1] estremi inclusi, nessun clipping",
+     "evidence": "contrastive_prepare.py:343-353; plan.json:149 (lambda_formula) e allowed_lambda. check_new.py, che usa la fixture dei test: con λ=1 la ricevuta è PASSED e calibrated_configs la accetta; con λ=1,0001 la ricevuta è FAILED_REQUIRES_REVIEW, riporta 1.0001 senza clip, e calibrated_configs la rifiuta ('calibration receipt did not pass every frozen gate')."
+    },
+    {
+     "claim": "(a) Una λ fuori intervallo ferma l'intera coorte",
+     "evidence": "authenticate_calibration (contrastive_prepare.py:375-392) richiede PASSED_FOR_REVIEW e failure_reasons vuoto, e ricalcola tutta la ricevuta. calibrated_configs (394-409) genera C0/CN/CR da un'unica ricevuta. Difesa ulteriore: ContrastiveConfig.__post_init__ (contrastive_objectives.py:58-63) rifiuta pesi null, non finiti o fuori [1e-4, 1]."
+    },
+    {
+     "claim": "(a) k è dichiarato come prior, non come misura dell'attenuazione con 100/125",
+     "evidence": "plan.json:186 (historical_multiplier_interpretation) e :301 (limitazione); docs/contrastive_targets_amendment_20261118.md:42-47. Il diff JSON fra piano storico e nuovo nella sezione /calibration mostra solo l'aggiunta di quella chiave."
+    },
+    {
+     "claim": "(b) Nei config preparatori le λ sono null, con 100/125/v3 espliciti",
+     "evidence": "review_configs C0/CN/CR: nce_weight=rnc_weight=null, rms 100, fast 125, target_version step1_psd_power_shape_energy_fast125_v3. La calibrazione (braccio C0, calibration_only, pesi 1/1 inerti) differisce da C0 solo per max_steps 512, pesi e calibration_only. I quattro file salvati sono identici a quelli prodotti da build_review_configs. plan.json:162 frozen_weights CN/CR null."
+    },
+    {
+     "claim": "(b) L'unico ingresso delle λ misurate è calibrated_configs, che ricalcola tutto da una calibrazione della nuova ricetta",
+     "evidence": "calibrated_configs è usato dalla CLI calibrated-configs (cohort.json con calibration_sha256, source_sha256 e initial_state_sha256), da contrastive_run.validate_recipe:46-50 (il config di benchmark o training deve coincidere col config calibrato del braccio), da validate_cohort:66 e da readout.read_preflight. Tutti passano da calibration_report, che richiede config.json uguale alla ricetta di calibrazione nuova (contrastive_prepare.py:270-274) e source_sha256 uguale a source_digest(); altrimenti chiama l'helper compat, che a HEAD fallisce."
+    },
+    {
+     "claim": "(b) La calibrazione storica 64701482 non qualifica la nuova coorte",
+     "evidence": "tmp/p4/check_hist.py sulle evidenze in calibration_completed_20261117: calibration_report, authenticate_calibration e calibrated_configs rifiutano con 'calibration run config differs from the frozen 512-batch recipe'. Con il config riscritto a 100/125/v3 e il digest vecchio arriva 'historical evidence compatibility: current execution source inventory/pins differ'. Il test test_unmodified_historical_calibration_does_not_qualify_new_targets passa. Il reader congelato 8905e346 riproduce le λ vecchie solo nel proprio checkout."
+    },
+    {
+     "claim": "(b) La ricevuta nuova pinna il piano nuovo, i file del run e il digest corrente",
+     "evidence": "check_new.py: reader_provenance.plan = contrastive_targets_20261118/plan.json, sha 6081832627ce… (uguale al pin in preflight_plan.science_plan). inputs pinna config.json, summary.json e metrics.jsonl. source_digest a HEAD vale 643a8937…, uguale a preflight_plan.source_sha256. Dopo 0efdc29c i tre script e src/ non cambiano (git diff --stat 0efdc29c..438c8d65 vuoto)."
+    },
+    {
+     "claim": "(b) Ogni braccio applica solo la propria λ",
+     "evidence": "I tre config calibrati portano la stessa coppia (λN, λR). ContrastiveConfig.weights (contrastive_objectives.py:102-105) applica λN solo a CN e λR solo a CR. check_new.py al passo 600: C0 (0,0), CN (λN,0), CR (0,λR)."
+    },
+    {
+     "claim": "(b) Le λ storiche non sono riusate",
+     "evidence": "git grep '11942686|33044627' le trova solo in documenti, review e ricevute storiche; assenti da codice, piano nuovo, preflight_plan e review_configs. plan.target_recipe_amendment ha old_receipts_reusable=false e required_new_evidence comprende lambda_CN e lambda_CR."
+    },
+    {
+     "claim": "(c) La regola dei rapporti è invariata rispetto al piano storico e al readout",
+     "evidence": "benchmark_ratio_rule è identico nei due piani: pannello [513,576], mediana in [0,005; 0,5], p95 ≤ 1, rapporto CN/CR in [0,25; 4]. Readout: RATIO_RULE alla riga 22 introdotto in c680e95d e mai modificato (git log -L). component_ratios alle righe 41-62 (64 update, ρ=λ·||g||/||g_base||). Cancello sul solo termine attivo alla 367, rapporto CN/CR alle 387-390. Il diff c680e95d..438c8d65 del readout non tocca queste righe. Coerenti il protocollo §5 (righe 104-110) e D-3."
+    },
+    {
+     "claim": "(d) Il confronto dei primi otto valori con lo storico è solo descrittivo e nessun cancello ne richiede l'uguaglianza",
+     "evidence": "Usi trovati con git grep: readout righe 24-25, 95-111 e 360 (campo descrittivo del risultato); test_contrastive_benchmark_readout.py:80-85 (con valori doppi dello storico mean_ratios vale 2 e non c'è errore); il file di riferimento storico e la ricevuta bf16 storica. Nessun uso in calibrazione, run, cuda_check, audit o preflight. La funzione solleva errori solo per integrità (sha del riferimento, update 1-8 presenti, valori finiti). Già nella ricevuta bf16 storica l'update 1 differiva dallo storico in tutti e sei i campi."
+    },
+    {
+     "claim": "Test eseguiti sui file pertinenti",
+     "evidence": "test_contrastive_prepare.py e test_contrastive_benchmark_readout.py: 69 passati. test_contrastive_historical_calibration.py e test_contrastive_historical_callsites.py (reader congelato con run_frozen): 14 passati. Basetemp cancellati; la copia git è pulita."
+    }
+   ],
+   "non_verificato": [
+    "Valori reali delle nuove λ con 100/125: se cadranno in [1e-4, 1] e nei cancelli dei rapporti si saprà solo da calibrazione e benchmark, nessun job lanciato.",
+    "Calcolo interno di g_base sulle ancore 100/125 nel trainer (jepa/run): verificato solo indirettamente, tramite l'uguaglianza del config di calibrazione con la ricetta nuova.",
+    "Costruttore della release futura, che oggi non esiste (release null): non verificabile se pinnerà fresh_root e solo ricevute nuove.",
+    "Ricalcolo di gradient_reference.json dalla sorgente control30m/metrics.jsonl, che sta sul Mac fuori dalla copia: controllati solo sha e coerenza interna dei due valori medi.",
+    "Suite CPU completa (esclusa per istruzione), test_contrastive_run.py e test_contrastive_job.py (di competenza di altri punti).",
+    "Interni di contrastive_audit.py e produzione di config_sha256 nell'audit (punto 2)."
+   ],
+   "rilievi": [
+    {
+     "id": "P4-N1",
+     "severity": "NOTA",
+     "title": "Radice d'uscita nuova solo dichiarata, non verificata dal codice",
+     "detail": "preflight_plan.json dichiara fresh_root=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118, ma nessun controllo la applica. calibration_report è volutamente indipendente dalla posizione delle evidenze. Il dispatcher richiede soltanto un output nuovo sotto $WORK/wearusfm_runs. Le evidenze storiche restano escluse grazie al contenuto (config 100/125/v3, digest dei sorgenti, helper compat che fallisce), quindi oggi non c'è riuso possibile. Però la condizione 'radice d'uscita nuova' chiesta per la ricevuta di calibrazione non è un cancello meccanico.",
+     "evidence": "scripts/contrastive_job.py:71-73 ('fresh output below WORK/wearusfm_runs required'); scripts/contrastive_prepare.py:266-274; tests/cpu/test_contrastive_prepare.py:284-293 (test_calibration_receipt_is_identical_after_evidence_directory_relocation); preflight_plan.json, campo fresh_root.",
+     "reproduction": "git -C clone grep -n 'contrastive_targets_20261118\\|fresh_root' -- scripts src trova solo scripts/contrastive_prepare.py:30 (PLAN).",
+     "fix": "Nessuna modifica al codice per il punto 4. Nella release nuova pinnare out e calibration_summary dei job sotto fresh_root, oppure aggiungere quel controllo al costruttore della release o al preflight.",
+     "survives": false,
+     "upheld": 0,
+     "voti": [
+      {
+       "confutato": true,
+       "gravita": "NOTA"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "dim": "p5-preventivo",
+   "punto": "5",
+   "esito": "PUNTO 5 — Preventivo: 13 allocazioni, 14 GPU-ore e 137,066667 core-ore; audit da 2 h coerente col dispatcher (HEAD 438c8d65, consegna e388a1de..0efdc29c). Esito: nessun BLOCCANTE. Un MINORE: i checkout sono dichiarati a 30 GiB, mentre il launcher e tutta la storia usano 2 GiB. Quattro NOTE operative. Rapporto incrementale: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/reports/p5-preventivo.md",
+   "verifiche_positive": [
+    {
+     "claim": "Totali del preventivo esatti e uguali alla tabella dell'emendamento: 9 celle + 4 checkout = 13 allocazioni, 14 GPUh, 137,066667 coreh. I campi gpu_hours e core_hours di ogni cella valgono GPU (o CPU) x secondi / 3600.",
+     "evidence": "Ricalcolo con Fraction da results/infra/contrastive_targets_20261118/preflight_plan.json: audit 0/16, sei celle GPU 2/16 ciascuna, lettura 0/8, checkout 4x4x240/3600 = 16/15. Totale GPUh 14, coreh 2056/15 = 137,0666..., uguali a resources.gpu_hours_cap e core_hours_cap (righe 182-183). La tabella di docs/contrastive_targets_amendment_20261118.md:61-70 coincide riga per riga. La convenzione delle coreh coincide con il billing storico: billing=8 per 8 CPU/30G (64652559), billing=32 per 4 GPU (64771457...)."
+    },
+    {
+     "claim": "Il source_sha256 del preflight corrisponde al codice della punta del ramo.",
+     "evidence": "contrastive_prepare.source_digest() calcolato nella copia a 438c8d65 = 643a8937e833...ffb, uguale a preflight_plan.json source_sha256 e a local_validation.json. Da 0efdc29c a 438c8d65 entrano solo scripts/diagnostics/* e scripts/slurm/diagnose_contrastive_common.sbatch, che restano fuori dai glob del digest (contrastive_prepare.py:194-197)."
+    },
+    {
+     "claim": "Il dispatcher ammette esattamente 7200 s per l'audit, 3600 per la lettura e 1800 per le celle GPU. Gli scambi di tipo e le estensioni vengono rifiutati, e la guardia è coperta dai test.",
+     "evidence": "scripts/contrastive_job.py:17 ALLOCATED_SECONDS, :64-68 uguaglianza per modo e kind. pytest tests/cpu/test_contrastive_job.py: 29 passed. Con -k 'fixed_resources or swapped_or_extended': 17 passed (audit-cpu-7200 accettato; audit 3600/7199/7201/gpu, readout 1800/7200/gpu, cuda 7200, calibration 3600, full-cpu e split 7200 rifiutati). Mutazioni in un clone temporaneo: audit portato a 3600 dà 3 failed, readout a 7200 dà 3 failed, '!=' sostituito da '<' dà 6 failed."
+    },
+    {
+     "claim": "Il launcher CPU tiene il default di 1 h e ricava i secondi da scontrol. Con l'override --time=02:00:00 l'audit riceve 7200 s, e il submitter comune accetta l'override.",
+     "evidence": "scripts/slurm/contrastive_preflight_cpu.sbatch:8 --time=01:00:00 e :20-22 parsing di TimeLimit; parsing simulato: 02:00:00 dà 7200, 01:00:00 dà 3600, 00:30:00 dà 1800, 2:00:00 dà 7200, UNLIMITED dà 0. Il parsing è identico nel launcher GPU (righe 22-24). L'override è prescritto in preflight_plan.json:187-189. scripts/submit_job.py:199-204 passa gli argomenti a sbatch e vieta solo -J, --job-name e --comment."
+    },
+    {
+     "claim": "Un audit inviato senza override fallisce subito, prima di leggere dati. Una lettura inviata con 2 h fallisce. Una cella GPU con un altro tempo fallisce.",
+     "evidence": "main() chiama build_command (che controlla i secondi) prima di validate_allocation e prima di ogni accesso ai dati (contrastive_job.py:161-162). CLI eseguita in un clone temporaneo con job minimi: 'audit cpu 3600' dà 'ValueError: wrong mode, release, source or allocation' in 1,07 s; 'audit 7200' supera il controllo (si ferma poi su KeyError 'review' del job minimo); 'readout 7200' viene rifiutato; 'readout 3600' supera il controllo. Il launcher GPU ha --time=00:30:00, pari al massimo di boost_qos_dbg."
+    },
+    {
+     "claim": "Le risorse delle celle coincidono con launcher e limiti di Leonardo: 30 GiB = 30.720 MiB, entro 30.800; 8 CPU; 2 h entro le 4 h di lrd_all_serial; celle GPU da 30 min su dbg.",
+     "evidence": "Launcher CPU: 8 CPU, 30G, lrd_all_serial. validate_allocation (contrastive_job.py:141-149) richiede 8 CPU e 30*1024 MiB. Launcher GPU: 4 GPU, 32 CPU, 240G, boost_qos_dbg, 00:30:00; validate_allocation richiede 32 CPU, 245.760 MiB e 4 GPU. Limiti QoS registrati: docs/claude_GPT_shared:11841-11842 (MaxTRESPerJob cpu=8, mem=30800M; MaxWall 4 h) e il rifiuto storico a 32 GiB (preflight storico, operational_correction)."
+    },
+    {
+     "claim": "Con i target 100/125 il costo dell'audit cambia solo tramite anchor_targets; il contenuto non dipende dai target. 7200 s bastano con ampio margine.",
+     "evidence": "I due campi sono usati solo in pretraining_loader.py:641-643 (ricerca con git grep su src). L'audit usa identità, qc, visible e posa (contrastive_audit.py:33-93), mentre identities_from_batch usa righe, finestre e fs. Il nuovo calibration.config differisce dallo storico solo per rms_window_ms, ms_fast_window_ms e target_version. L'RMS si calcola con somme cumulative (costo indipendente dalla finestra); ms_fast materializza (C,P,n) con n=round(0,125 fs) invece di 0,05 fs. Misura sintetica sul Mac (tmp/p5_scripts/mix_targets.py, mix dell'audit 64652559, finestre da 2,5 s): CPU dei target 373 s contro 448 s su 32.768 finestre (x1,20, +74 s); DB10 a 1926 Hz pesa x2,05 per la FFT di lunghezza 241, numero primo. Storico (accounting_and_integrity.txt): 3787 s di wall, TotalCPU 2138 s, MaxRSS 21,5 GiB. Durata attesa ~3.900-4.000 s; per superare 7.200 s servirebbe circa 2,9 volte l'attesa I/O storica. Limite superiore con tutta la CPU x2,05 e lo stesso I/O: 6.032 s. I transitori di ms_fast aggiungono meno di 0,1 GiB contro 8,5 GiB liberi."
+    },
+    {
+     "claim": "I tetti di 1800, 3600 e 240 s per celle GPU, lettura e checkout hanno ampio margine sulle durate storiche. Il loader non limita le celle GPU.",
+     "evidence": "sacct storici: calibrazione 774 s (64701482), cuda bf16 141 s (64746651), benchmark 661/683/769 s, split 775/759 s (accounting.txt di benchmarks_completed_bf16_20261118: fine a max_steps 576), checkout 36-61 s. La lettura 64775571 ha scritto il rapporto completo, negativo, in 124 s. Le scadenze interne GPU sono 1770 s e 1800-30 s (contrastive_job.py:118, 136-138; contrastive_split_benchmark.py:108)."
+    },
+    {
+     "claim": "Il totale di 14 GPUh supera la soglia di autonomia di 5 GPUh e il piano richiede la presentazione a Simone. Non ci sono frazionamenti né release implicite; gli ID nuovi non collidono.",
+     "evidence": "preflight_plan.json: status REVIEW_REQUIRED, executable, submission_authorized e training_authorized tutti false, required_before_first_submission. Gli ID 'targets-v3' compaiono 0 volte nel ledger comune ~/wearusfm_local/jobs/ledger.tsv (lettura del 19/11, file aggiornato alle 00:00); nel repository compaiono solo nel nuovo piano."
+    }
+   ],
+   "non_verificato": [
+    "Pesi del billing di lrd_all_serial per la memoria (TRESBillingWeights o MAX_TRES): non leggibili senza Leonardo, quindi l'effetto sul costo di checkout a 30 GiB resta indeterminato.",
+    "Durata reale dell'audit 100/125 su Leonardo: stimata solo con segnali sintetici sul Mac e con il mix di dataset dell'audit storico; I/O Lustre reale e rapporto di velocità Mac/Ice Lake non misurati.",
+    "Distribuzione reale di fs, canali (montaggio virtuale) e durate delle finestre nello stream: approssimata da docs/inventario_corpus.md e dai conteggi di 64652559.",
+    "Durata delle celle GPU con la ricetta 100/125: non misurata; attesa invariata perché il loader non è il collo di bottiglia.",
+    "Saldo del conto, quota, stato delle code e delle manutenzioni al momento del rilascio; ledger letto solo nella copia del 19/11 alle 00:00.",
+    "Suite CPU completa: non eseguita, per istruzione. Eseguiti solo test_contrastive_job.py (29), test_contrastive_audit.py e test_contrastive_source_compat.py (38), più le mutazioni mirate."
+   ],
+   "rilievi": [
+    {
+     "id": "P5-M1",
+     "severity": "MINORE",
+     "title": "Checkout dichiarati a 30 GiB contro i 2 GiB del launcher e di tutti i checkout storici",
+     "detail": "Il preventivo da presentare dichiara i 4 checkout a '4 CPU, 30 GiB'. Il launcher campaign_checkout.sbatch ha come default 1 CPU, 2G e 10 min. Tutti i checkout contrastivi storici e il piano della diagnostica usano 4 CPU, 2 GiB e 240 s. Le coreh non cambiano se il billing conta solo le CPU: il dato è compatibile con billing=4 (4 CPU/2G) e billing=8 (8 CPU/30G), ma il peso della memoria non è determinabile da qui. Applicati alla lettera, 30 GiB occupano tutta la memoria per utente della corsia seriale (30.800 MiB): il checkout resterebbe in attesa dietro ogni job seriale dello stesso utente Leonardo (linee 1 e 2). Se il billing pesasse la memoria, i checkout costerebbero fino al doppio (+1,07 coreh oltre 137,07). Non è bloccante: 30 GiB restano entro il limite per job e l'effetto sul costo non è dimostrato. Resta però una risorsa dichiarata diversa da quella praticata.",
+     "evidence": "preflight_plan.json:174-180 ('checkouts': cpus 4, memory_gib 30, seconds_each 240); docs/contrastive_targets_amendment_20261118.md:69 ('Checkout |4|4 CPU,30 GiB|4 min|0|1,066667|'); scripts/slurm/campaign_checkout.sbatch:5-7 (--cpus-per-task=1, --mem=2G, --time=00:10:00); releases/audit_mem30_submission_plan_20261117.json:22-24, calibration_submission_plan_20261117.json:23-25, cuda_benchmarks_submission_plan_20261117.json:22-24, releases/readout_bf16_20261118/submission_plan.json:29-31 (tutti --cpus-per-task=4 --time=00:04:00 --mem=2G); releases/readout_bf16_20261118/resources.json:7 memory_gib 2; common_state_diagnostics_20261118/resources.json:13 requested_gib 2; sacct 64730738 e 64746634: billing=4,cpu=4,mem=2G.",
+     "reproduction": "python3 -c \"import json; print(json.load(open('results/infra/contrastive_targets_20261118/preflight_plan.json'))['checkouts'])\" restituisce memory_gib 30; grep -n -- '--mem' scripts/slurm/campaign_checkout.sbatch restituisce 6:#SBATCH --mem=2G; grep -rn -- '--mem=2G' results/infra/contrastive_comparison_20261116/releases/*.json trova 4 piani storici.",
+     "fix": "Dichiarare i checkout a 4 CPU, 2 GiB e 240 s (coreh invariate, 1,066667), coerenti con launcher, storia e piano della diagnostica. In alternativa motivare i 30 GiB e ricalcolare il costo con il billing reale.",
+     "survives": true,
+     "upheld": 2,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      },
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P5-N1",
+     "severity": "NOTA",
+     "title": "L'audit non ha una scadenza interna né un gate meccanico su TIMEOUT: il rapporto è tutto o niente",
+     "detail": "Il dispatcher usa allocated_seconds solo per la validazione e non lo passa all'audit. contrastive_audit.py non ha un'opzione di tempo, scrive il rapporto solo alla fine e non stampa avanzamenti. Un audit che supera circa 7.380 s (7.200 più OverTimeLimit di 3 min) termina in TIMEOUT, probabilmente senza rapporto. validate_audit controlla contenuto, config e sorgente, non lo stato SLURM né la durata. La regola 'eccezione TIMEOUT non ereditata' resta quindi solo procedurale, affidata alla raccolta (come verification.json per 64652559). Con la stima (~3.900-4.000 s, limite superiore 6.032 s) il rischio è basso.",
+     "evidence": "scripts/contrastive_job.py:104 (solo --steps 1024), :67; scripts/contrastive_audit.py:151-158 (argomenti), :186-188 (scrittura finale); scripts/contrastive_run.py:91-108 (validate_audit senza stato o tempo); audit_completed_20261117/slurm.out (nessuna riga di avanzamento); accounting_and_integrity.txt (OverTimeLimit = 3 min, KillWait = 180 sec).",
+     "reproduction": "grep -n 'add_argument' scripts/contrastive_audit.py: nessuna opzione di tempo; git grep -n -E 'TIMEOUT|ElapsedRaw|elapsed_seconds' -- scripts/contrastive_*.py: nessun risultato.",
+     "fix": "Nella release della calibrazione richiedere esplicitamente per l'audit sacct State=COMPLETED, ExitCode 0:0 ed Elapsed ≤ 7200, letti alla raccolta. Facoltativo in una revisione futura (cambia il digest): una riga di avanzamento ogni 128 passi.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P5-N2",
+     "severity": "NOTA",
+     "title": "Il 'Totale massimo' somma i limiti richiesti e non comprende la tolleranza SLURM",
+     "detail": "Il vecchio audit ha consumato 3787 s contro 3600 (8,4156 coreh contro 8) grazie a OverTimeLimit e KillWait. Lo stesso margine esiste per ogni job (+180 s, più fino a 180 s di KillWait). Per l'audit nuovo lo sforamento massimo vale 0,4-0,8 coreh. Le celle GPU sono protette dalle scadenze interne (1770 s; split 1800-30 s) e dalle durate storiche (141-775 s), quindi uno sforamento è improbabile. Va solo detto che il 'massimo' è riferito ai limiti richiesti.",
+     "evidence": "accounting_and_integrity.txt di audit_completed_20261117; releases/audit_recovery_20261117.json (elapsed 3787, audit_actual_core_hours 8,4156); contrastive_job.py:118, 136-138; contrastive_split_benchmark.py:108.",
+     "reproduction": "cat results/infra/contrastive_comparison_20261116/audit_completed_20261117/accounting_and_integrity.txt | tail -4",
+     "fix": "Una frase nell'emendamento: tetto sui limiti richiesti; ogni TIMEOUT o sforamento si registra come tale e ferma la catena, come già prevede failure_policy.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P5-N3",
+     "severity": "NOTA",
+     "title": "Vincoli di coda e semantica dell'override da scrivere nella release",
+     "detail": "(1) boost_qos_dbg ammette al più 2 job in esecuzione e 4 sottomessi per utente: dopo la cuda i 5 benchmark sono eleggibili insieme ma non si possono sottomettere tutti; servono ondate che contino anche gli altri job dbg dello stesso utente. (2) Per 2 h l'audit da 8 CPU e 30 GiB satura la corsia seriale per utente (cpu=8, 30.800 MiB, 2 job), condivisa con le linee 1 e 2 sullo stesso utente Leonardo. (3) La manutenzione totale va dal 23/11 alle 08:00 al 25/11 alle 08:00: un audit da 2 h non partito entro circa le 05:50 del 23/11 resta PENDING. (4) Senza override l'audit fallisce subito e costa pochi secondi, ma il piano non chiarisce se questo rifiuto pre-esecuzione conti come 'gate fallito' (nessun retry) o come errore d'invio da ripresentare con un ID nuovo.",
+     "evidence": "cuda_completed_bf16_20261118/remote_evidence.txt:18-19 'boost_qos_dbg|2|4'; preflight_plan.json celle 4-8, depends ['cuda','calibration_accepted']; docs/claude_GPT_shared:11841-11842; docs/logsquare_cpu_execution_20261107.md:78; CLAUDE.md (manutenzioni); preflight_plan.json failure_policy.",
+     "reproduction": "sed -n 18,19p results/infra/contrastive_comparison_20261116/cuda_completed_bf16_20261118/remote_evidence.txt",
+     "fix": "Nel piano d'invio: ondate di al più 4 sottomessi e 2 in esecuzione; finestra dell'audit rispetto alla manutenzione; avviso agli operatori delle linee 1 e 2; una riga che classifichi il rifiuto del dispatcher come errore d'invio, ripresentabile con un nuovo ID logico.",
+     "survives": false,
+     "upheld": 0,
+     "voti": [
+      {
+       "confutato": true,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P5-N4",
+     "severity": "NOTA",
+     "title": "Mancano il residuo del budget e il cumulato della linea 3",
+     "detail": "CLAUDE.md chiede che ogni richiesta di conferma indichi quanto resta del budget del passo. Il preventivo presenta solo il nuovo tetto, 14 GPUh e 137,066667 coreh, separato dal vecchio tetto di campagna (14/129,33). Aggiungendo il consuntivo della vecchia catena (5,284444 GPUh / 51,371111 coreh) e il tetto della diagnostica (6 / 48,266667), la linea 3 arriverebbe a ≤ 25,284444 GPUh e 236,704444 coreh di preflight, training escluso. Il piano rinvia la verifica del saldo a prima del primo invio.",
+     "evidence": "docs/contrastive_targets_amendment_20261118.md:61-70; preflight_plan.json required_before_first_submission ('available balance'); benchmarks_completed_bf16_20261118/accounting.txt ('consuntivo_catena: 5.284444 GPU-ore, 51.371111 core-ore'); common_state_diagnostics_20261118/submission_plan.json:186-195.",
+     "reproduction": "python3 -c \"print(5.284444+6+14, 51.371111+48.266667+137.066667)\" restituisce 25.284444 236.704445",
+     "fix": "Nella presentazione a Simone aggiungere il cumulato della linea 3, il residuo del budget e il saldo del conto letto prima del rilascio.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "dim": "p6-diagnostica",
+   "punto": "6",
+   "esito": "PUNTO 6: il cambio dei target non sana la parità e la ripresa bf16. La diagnostica da stato comune va conclusa nel proprio checkout (365cb1e2) prima del nuovo rilascio, senza retry ciechi né soglie nuove implicite. Esito: nessun BLOCCANTE, nessun MINORE, tre NOTE.",
+   "verifiche_positive": [
+    {
+     "claim": "Il cancello della diagnostica è dichiarato in modo esplicito e coerente in tutti i documenti della consegna.",
+     "evidence": "@438c8d65:\n- preflight_plan.json:23-27: l'audit dipende da new_review, new_checkout e diagnostic_resolution.\n- preflight_plan.json:190-195: \"resolve historical bf16/initial-parity/resume failures with separately prepared common-state diagnostics\".\n- preflight_plan.json:196: failure_policy \"no retry, time extension, lambda clipping or threshold relaxation\".\n- plan.json:349: known_unresolved_gate.\n- docs/contrastive_targets_amendment_20261118.md:49-52 («Non si ripete alla cieca la matrice negativa. Nessuna soglia viene allentata qui»).\n- results/infra/contrastive_targets_20261118/README.md:16-17 (non eseguirli da questo checkout come sostituto).\n- Voce GPT del registro del 18/11 (docs/claude_GPT_shared:14310-14315).\n- Tutte le altre celle dipendono dall'audit in modo transitivo."
+    },
+    {
+     "claim": "Il cancello è solo procedurale, ma per ora basta: dalla consegna non può partire nessun job.",
+     "evidence": "- preflight_plan.json:3-6: REVIEW_REQUIRED, executable=false, submission_authorized=false; ogni cella ha code_sha=null e release=null.\n- Nella nuova cartella non c'è alcun file APPROVED_FOR_PREFLIGHT o APPROVED_FOR_PREPARATION (`git grep` vuoto).\n- scripts/contrastive_job.py:64-69 accetta solo job APPROVED_FOR_PREFLIGHT, con source_sha256 uguale al digest del checkout, review pinnata e uscita nuova (:72). Un rilascio richiede quindi un commit nuovo e una review.\n- Nessun codice legge preflight_plan.json o diagnostic_resolution (`git grep` su scripts, src e tests)."
+    },
+    {
+     "claim": "Il merge 65bc6022 conserva identici tutti i file della diagnostica e i loro pin.",
+     "evidence": "- I blob di 365cb1e2/35ea94ba, 65bc6022 e 438c8d65 coincidono per: scripts/diagnostics/contrastive_common_state_cuda.py (3cf7cc57), contrastive_common_checkpoint.py (f38cdce6), scripts/slurm/diagnose_contrastive_common.sbatch (328ca4a7), i due test (0e67c753, 28df7927) e i cinque file di common_state_diagnostics_20261118 (submission_plan 335480d3 da 35ea94ba). Nessun file in più.\n- Gli sha256 pinnati in submission_plan.json coincidono con i blob di 365cb1e2 e della punta: checkout eaafc432, sbatch ae789993, driver 456d062e e 56dccbf0, resources 8076cfee, handoff 8c3bacbf, submitter 814da4bc, cinque file storici.\n- submission_plan.json:2 fissa frozen_commit 365cb1e2; il sbatch alla riga 18 fissa CODE_DIR=contrastive-common-20261118."
+    },
+    {
+     "claim": "Il digest atteso dalla diagnostica (46938f31) non corrisponde al nuovo albero (643a8937).",
+     "evidence": "- Ricalcolato dai blob git con tmp/p6/digest_from_git.py, che riproduce l'algoritmo di contrastive_prepare.py:192-201.\n- 8905e346, 09eeaf93, 365cb1e2, 35ea94ba, d9020c20 e db66b507: 46938f31… (= SOURCE in contrastive_common_checkpoint.py:36 e source_sha256 di cohort.json e cuda.job.json).\n- e388a1de: c3aaae78…\n- 0efdc29c, 65bc6022, afb89b45 e 438c8d65: 643a8937… (= preflight_plan.source_sha256; la funzione reale alla punta dà lo stesso valore)."
+    },
+    {
+     "claim": "Lanciata dal nuovo albero, la diagnostica fallisce in modo pulito, senza misure miste; nel proprio checkout supera il controllo.",
+     "evidence": "- Prova tmp/p6/probe_diag.py sulla copia @438c8d65:\n  - cuda.read_inputs → ValueError \"Frozen source digest differs\", primo controllo, prima di input e checkpoint (contrastive_common_state_cuda.py:237-239);\n  - checkpoint.run → ValueError \"frozen production source digest mismatch\" (contrastive_common_checkpoint.py:277-278);\n  - nessun file scritto.\n- Nel driver reale:\n  - CUDA: il profilo bf16_auto finisce \"failed\", break (:445-446), status FAILED_REQUIRES_REVIEW con completed_profiles vuoto (:487-488);\n  - ripresa: failure.json.\n- Controllo positivo su clone temporaneo @365cb1e2: digest = SOURCE; i due driver si fermano solo su FileNotFoundError dei percorsi di Leonardo.\n- Rilanci e requeue non sovrascrivono nulla: sbatch:42 rifiuta un'uscita esistente e i driver usano exist_ok=False."
+    },
+    {
+     "claim": "Le uscite della diagnostica non possono qualificare la nuova coorte; anche le vecchie ricevute CUDA restano escluse.",
+     "evidence": "- contrastive_benchmark_readout.py:266-276 (_cuda_evidence) richiede passed=True, protocol e CRITERIA del modulo e source_sha256 uguale a quello della coorte, senza percorso di compatibilità. Il report diagnostico ha protocol zero-weight-fixed-state-20261118 e nessun campo passed.\n- Radici d'uscita distinte: contrastive_common_diagnostics_20261118 e contrastive_targets_20261118.\n- I job storici bf16 (APPROVED_FOR_PREFLIGHT, sorgente 46938f31) vengono rifiutati da build_command in un checkout con digest 643a8937."
+    },
+    {
+     "claim": "Nessuna soglia nuova o allentata. Elenco completo delle costanti cambiate fra 8905e346/09eeaf93 e 438c8d65.",
+     "evidence": "- contrastive_cuda_check.py: byte-identico (blob d23bf2e2) su 8905e346, 09eeaf93 e 438c8d65. CRITERIA:39-41 invariati, compreso bf16_diagnostic_relative_floor .01.\n- contrastive_benchmark_readout.py, unica modifica la stringa 'interpretation' (:111). Invariati:\n  - RATIO_RULE e RESUME_RELATIVE_DISPLACEMENT=.01 (:22-23);\n  - _nested_equal .01 (:186);\n  - parità a peso zero rel 1e-4 / abs 1e-6 su 256 update (:394-396);\n  - limiti fissi .01/1e-5 (:299-303).\n- contrastive_job.py: solo ALLOCATED_SECONDS (:17). Audit da 3600 a 7200 s (limite di risorsa dichiarato); lettura 3600 e GPU 1800 invariati; 1770/1800 della release invariati.\n- contrastive_prepare.py: PLAN punta al nuovo piano; baseline verificata 25/50/v1; bracci e calibrazione a 100/125/v3.\n- Il vecchio plan.json è invariato (blob d2711fed). Il nuovo piano differisce solo per aggiunte (finestre, emendamento, interpretazione del prior) e per i testi di scope e limitations (tmp/p6/jsondiff.py).\n- La lettura con CPU usa il TimeLimit reale (contrastive_preflight_cpu.sbatch:20-22): l'override di 2 h dà 7200, coerente col dispatcher."
+    },
+    {
+     "claim": "I test dei cancelli e della diagnostica passano alla punta.",
+     "evidence": "- pytest @438c8d65 su test_contrastive_common_state_cuda.py e test_contrastive_common_checkpoint.py: 7 passati in 13,72 s.\n- test_contrastive_benchmark_readout.py, test_contrastive_cuda_check.py e test_contrastive_job.py: 59 passati in 7,61 s.\n- Copia rimasta pulita, basetemp cancellate."
+    },
+    {
+     "claim": "La condizione dei fallimenti storici resta nella nuova coorte, quindi il cancello è necessario. Il merge di main non tocca DDP, bf16 o il percorso di ripresa.",
+     "evidence": "- review_configs/C0.config.json:144 ha amp_bf16=true, come calibrated_cohort_20261118_bf16/C0.config.json:142.\n- La lettura storica è FAILED_REQUIRES_REVIEW per \"CN/CR: 4GPU resume numerical bound failed\" e \"CN/CR: zero-weight256-update parity failed\" (benchmarks_completed_bf16_20261118/preflight_readout.json).\n- Diff di run.py 09eeaf93..438c8d65: solo import, helper e guardie delle finestre target; il loader cambia solo il calcolo dei target."
+    },
+    {
+     "claim": "db66b507 tocca solo documenti; le regole di lettura sono coerenti con N-1...N-4 e con il codice congelato.",
+     "evidence": "- `git diff --name-only db66b507^ db66b507`: cinque file sotto docs/. submission_plan, resources, driver e sbatch hanno blob invariati; il digest resta 46938f31.\n- N-1: bf16_auto/bf16_math letto come backend SDPA più TF32, cuDNN compreso. controls() spegne TF32 solo fuori da bf16_auto (:73-75); src non imposta TF32.\n- N-2: le tre coppie di repliche ci sono (COMPARE :41-49). C'è la riga «differiscono anche nel profilo deterministico» e i profili completati restano leggibili.\n- N-3: rank 0 senza posa. build_batches mette batch.pose[:2]=None e split_batch divide in blocchi contigui.\n- N-4: teacher letto sulla propria scala. _tensor_distance(a[key], b[key], boundary[key]) normalizza per ||a − stato a 580|| dello stesso modello, studente e teacher separati."
+    }
+   ],
+   "non_verificato": [
+    "Stato su Leonardo (ref deploy/contrastive-common-20261118, checkout contrastive-common-20261118, invio o esito delle tre celle, ledger reale): ssh non consentito, e la copia del ledger nel repo è precedente.",
+    "La dichiarazione di db66b507 secondo cui alle 22:26 UTC il ledger non aveva prenotazioni per i quattro ID, cioè che le note sono state scritte prima di ogni invio.",
+    "Il comportamento reale della diagnostica su CUDA, NCCL, bf16 e profilo deterministico: sul Mac non ci sono GPU.",
+    "I worktree locali wearusfm-logcontrast e wearusfm-gpt-science (percorso vietato): non ho rieseguito il confronto `prepare_handoff.py --dry-run` con il piano di 35ea94ba né il pin del submitter in locale.",
+    "Rapporto fra budget (punto 5): la diagnostica consuma il tetto storico di CONTRASTIVE-v2 (14 GPU-ore / 129,33 core-ore, cumulativo massimo 11,28 / 99,64 dopo la diagnostica, resources.json). Il nuovo preventivo di 14 GPU-ore / 137,07 core-ore è presentato come proposta nuova, ma non dichiara quale campagna o conto userà nel ledger.",
+    "La suite CPU completa (esclusa dalle istruzioni): eseguiti solo i 7 test diagnostici e i 59 dei cancelli.",
+    "Il riordino di docs/claude_GPT_shared in 438c8d65 (tolto un titolo duplicato, 23 righe aggiunte, un blocco spostato): fuori dal punto 6, non verificato voce per voce."
+   ],
+   "rilievi": [
+    {
+     "id": "P6-N1",
+     "severity": "NOTA",
+     "title": "Il cancello diagnostic_resolution è solo procedurale e non dice quali artefatti lo chiudono",
+     "detail": "Il cancello è esplicito, ma non nomina il commit congelato 365cb1e2, il piano 35ea94ba, la scheda di lettura di db66b507, i tre report.json, né il tipo di registrazione (risoluzione o emendamento). Nessun codice lo controlla.\n\nOggi basta: piano non eseguibile, nessuna release, e il dispatcher richiede job approvati in un commit nuovo con review pinnata.\n\nIl cancello però resta affidato alla rilettura. C'è un precedente di rilascio senza la rilettura di Claude: decisioni.md:7846, «se tu sei a posto per questo giro lanci tu».\n\nSe la risoluzione cambia precisione, determinismo o backend (i config nuovi hanno amp_bf16=true come la coorte fallita), i tetti di 30 minuti per cella GPU e le 14 GPU-ore non sono più fondati e vanno ricalcolati prima del rilascio.",
+     "evidence": "@438c8d65:\n- preflight_plan.json:26 (\"diagnostic_resolution\", etichetta senza riferimenti) e :190-195.\n- scripts/contrastive_job.py:62-69: controlla status, digest, allocazione e pin della review; nessun campo per la diagnostica.\n- `git grep 'diagnostic_resolution\\|preflight_plan'` su scripts/contrastive_* non trova nulla.\n- review_configs/C0.config.json:144: amp_bf16 true.",
+     "reproduction": "cd clone && git grep -n 'diagnostic_resolution\\|required_before_first_submission' 438c8d65 -- scripts src tests  (nessun risultato nel codice contrastivo)",
+     "fix": "Nella nuova release (file job o release) pinnare:\n- gli sha256 dei tre report: cuda, resume_CN, resume_CR;\n- la voce di decisione o emendamento registrata;\n- db66b507.\nIl revisore della release verifica questi pin; facoltativo un controllo in build_command.\nAggiungere a preflight_plan una clausola: se la risoluzione cambia precisione, determinismo o codice, rigenerare config, digest, tetti e preventivo e ripresentarli a Simone.",
+     "survives": false,
+     "upheld": 0,
+     "voti": [
+      {
+       "confutato": true,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P6-N2",
+     "severity": "NOTA",
+     "title": "La punta contiene i documenti diagnostici in versione pre-approvazione: db66b507 non è integrato",
+     "detail": "Il merge 65bc6022 (22:12) integra la diagnostica fino a d9020c20, come dichiarato. db66b507 (23:29: approvazione di Claude e lettura fissata prima dei dati) è arrivato dopo e non è antenato di 438c8d65, anche se afb89b45 e 438c8d65 sono delle 23:45-23:47.\n\nChi legge solo questo ramo trova il protocollo ancora REVIEW_REQUIRED, il prompt di 3-launcher superato e nessuna scheda di lettura.\n\nNessun effetto sull'esecuzione: pin identici e diagnostica lanciata da 365cb1e2.",
+     "evidence": "- @438c8d65, docs/contrastive_common_diagnostics_20261118.md:3: «Stato della consegna: **REVIEW_REQUIRED**» (blob 6149836e; in db66b507 è 2dfed33b).\n- docs/prompt_3_launcher_common_diagnostics_20261118.md: blob 566efddc, contro 0d8e5a21 in db66b507.\n- docs/reviews/contrastive_common_diagnostics_readout_20261118.md assente alla punta.\n- `git merge-base --is-ancestor db66b507 438c8d65` → falso.",
+     "reproduction": "cd clone && git merge-base --is-ancestor db66b507 438c8d65 || echo NOT; sed -n 3p docs/contrastive_common_diagnostics_20261118.md; ls docs/reviews/contrastive_common_diagnostics_readout_20261118.md",
+     "fix": "Prima del nuovo rilascio integrare db66b507 nel ramo (merge di soli documenti, pin invariati), oppure citarlo per SHA nel cancello di preflight_plan.",
+     "survives": false,
+     "upheld": 0,
+     "voti": [
+      {
+       "confutato": true,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P6-N3",
+     "severity": "NOTA",
+     "title": "La scheda di db66b507 ha perso la regola generale per un profilo CUDA mancante",
+     "detail": "db66b507 sostituisce «Le coppie che richiedono il profilo mancante restano inconclusive» con una regola valida solo quando manca il profilo deterministico.\n\norchestrate() si ferma al primo profilo «failed» e mette FAILED_REQUIRES_REVIEW anche quando tre profili sono completi. Restano quindi due casi senza una regola scritta:\n- un fallimento di bf16_math o fp32_math, dopo il quale gli altri profili non girano;\n- la lettura dei tre profili completi sotto lo status FAILED_REQUIRES_REVIEW.\n\nÈ coerente con N-2, ma meno completa del testo precedente.",
+     "evidence": "- db66b507^ docs/contrastive_common_diagnostics_20261118.md:20 contro db66b507 :22 (riga «Un profilo fallisce…»).\n- scripts/diagnostics/contrastive_common_state_cuda.py:445-446 (break) e :487-488 (status).",
+     "reproduction": "cd clone && git show db66b507^:docs/contrastive_common_diagnostics_20261118.md | grep -n 'Un profilo fallisce'; git show db66b507:docs/contrastive_common_diagnostics_20261118.md | grep -n 'Un profilo fallisce'",
+     "fix": "Nella scheda di lettura, prima della lettura, tenere entrambe le frasi: le coppie che richiedono un profilo mancante restano inconclusive; se manca solo il profilo deterministico, i tre profili completi si leggono anche con status FAILED_REQUIRES_REVIEW. Correzione di soli documenti, da segnare come scritta prima dei dati, senza un nuovo giro.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "dim": "p7-test-suite",
+   "punto": "test",
+   "esito": "p7: test della consegna e ricevuta della suite CPU (copia a 438c8d65, consegna e388a1de..0efdc29c). Nessun blocco dimostrato. Due MINORE: due mutazioni passano inosservate dai test, il ritorno di PLAN al piano storico e il testo del readout. Due NOTE sulla ricevuta e su un test. Rapporto incrementale: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/reports/p7-test-suite.md. Cartelle temporanee p7 cancellate; la copia git resta pulita a 438c8d65.",
+   "verifiche_positive": [
+    {
+     "claim": "(a) I test della consegna e i test che usano direttamente i moduli modificati passano a 438c8d65.",
+     "evidence": "Insieme diretto di 9 file: prepare 43, job 29, historical_calibration 9, historical_callsites 5, benchmark_readout 26, mmap_compatibility 7, run 14, source_compat 32, target_windows_fix 8. Esito «173 passed in 14.72s» (16 s di orologio), 0 falliti, rc=0. Comando: OMP/OPENBLAS/MKL=1, PYTHONPATH=clone/{src,tests/cpu,scripts}, pytest -q -p no:cacheprovider --basetemp=tmp/p7-direct, sui 9 file."
+    },
+    {
+     "claim": "(a) Passano anche i test degli script che importano contrastive_prepare (chiamanti indiretti).",
+     "evidence": "test_contrastive_{audit,cuda_check,rank_exit,common_checkpoint,common_state_cuda}.py: «32 passed in 21.44s» (23 s di orologio). Gli altri test_contrastive_* (compare, core, memory, runtime, diagnostics, callsite_oracle) non importano i moduli modificati."
+    },
+    {
+     "claim": "(b) La guardia che verifica la baseline 25/50/v1 in build_review_configs è protetta componente per componente.",
+     "evidence": "M1a, raise sostituito da pass: 3 falliti (test_review_builder_rejects_a_nonhistorical_baseline[rms_window_ms-100.0], [ms_fast_window_ms-125.0], test_review_builder_rejects_a_nonhistorical_target_version). Togliendo dal confronto la versione (M1b), l'RMS (M1c) o lo spettro rapido (M1d): 1 fallito ciascuna, il test del componente tolto."
+    },
+    {
+     "claim": "(b) L'assegnazione 100/125/v3 è protetta su base, calibrazione e singolo braccio.",
+     "evidence": "Mutazioni RMS 25 (M2a), fast 50 (M2b), versione v1 (M2c), solo la calibrazione con RMS 25 (M2d), solo CN con fast 50 (M2e): 1 fallito ciascuna, sempre test_review_configs_share_recipe_and_training_weights_are_not_executable. Tutto riportato a 25/50/v1 (M2f): 3 falliti, compresi test_old_calibration_cannot_authorize_new_target_recipe e test_unmodified_historical_calibration_does_not_qualify_new_targets."
+    },
+    {
+     "claim": "(b) with_legacy_target_windows in config_from_dict è protetta. La sostituzione con R._config_with_defaults non cambia il comportamento, quindi non è una lacuna di test.",
+     "evidence": "M3a, d = copy.deepcopy(data): 41 falliti (30 in prepare, 1 in historical_calibration, 10 in run). M3b (_config_with_defaults): 173+32 passati. I riempimenti di _config_with_defaults coincidono con i default delle dataclass, tranne model.spectral_branches ([] contro (), poi convertito da _tuples) e le due finestre (25/50 in entrambi gli helper)."
+    },
+    {
+     "claim": "(b) Le allocazioni del dispatcher sono protette: audit 7200, lettura 3600, GPU 1800, controllo del kind.",
+     "evidence": "Falliti in test_contrastive_job.py per mutazione. Audit a 3600: 3. Regola vecchia 1800/3600: 3. Accetta un'allocazione più corta: 4. Accetta una più lunga: 6. Lettura a 7200: 3. Controllo del kind tolto: 3 (audit-gpu-7200, readout-gpu-3600, full-cpu-1800). GPU a 3600: 10."
+    },
+    {
+     "claim": "(c) Gli sha256 delle evidenze dichiarate corrispondono ai file e local_validation.full_cpu_suite coincide con verification.json.",
+     "evidence": "Corrispondono tutti e 5: cpu_suite.json, collection.log, disk_affected_files.json, recovery_remaining.json, recovery_remaining.xml. Tutti i campi di local_validation.full_cpu_suite sono uguali a quelli di verification.json. I tail di cpu_suite.json coincidono con le ultime righe di cpu_part0-3.log e cpu_ddp.log."
+    },
+    {
+     "claim": "(c) Ogni FAILED o ERROR dei log originali sta in un file rieseguito e poi è passato. Il totale di 3723 test distinti su 233 file è coerente.",
+     "evidence": "collection.log: 3723 nodi unici in 233 file, cioè tutti i tests/cpu/test_*.py di 65bc6022; i gruppi coprono i 233 file una volta sola. Per parte, passati + falliti + errori di setup = raccolti: 854, 876, 951, 1036, 6. Nodi non passati: 131 (5 FAILED, 126 ERROR al setup, 114 ERROR al teardown sugli stessi nodi), tutti nei 13 file del recupero (= disk_affected_files.json). recovery_remaining.xml: 263 testcase, cioè tutti i raccolti dei 13 file; 263 passati, 0 errori, fallimenti o skip. Distinti passati ricostruiti: 3723. `pytest --collect-only tests/cpu` a 438c8d65 dà 3723 node id identici a collection.log."
+    },
+    {
+     "claim": "(c) I fallimenti originali dipendono dal disco pieno.",
+     "evidence": "Parti 0-2: tutti i 233 blocchi d'errore citano ENOSPC/Errno 28. Parte 3: 12 errori di setup «OSError: could not create numbered dir ... after 10 tries» (creazione di tmp_path fallita)."
+    },
+    {
+     "claim": "(c) Fra 65bc6022 e 438c8d65 non cambiano sorgenti né test, e l'identità del codice resta la stessa.",
+     "evidence": "git diff --name-only 65bc6022..438c8d65 -- src scripts tests configs: vuoto; cambiano solo docs/ e results/infra/{contrastive_targets,target_windows_integration}_20261118/. Fra 0efdc29c e 438c8d65 non cambia nessun file del perimetro di source_digest. source_digest() a 438c8d65 = 643a8937e833…, uguale a local_validation.source_sha256 e a preflight_plan.source_sha256."
+    },
+    {
+     "claim": "I config pubblicati coincidono con il generatore e il piano dichiara 100/125/v3. Le ricevute storiche non sono riscritte.",
+     "evidence": "`contrastive_prepare.py prepare --out tmp`: C0, CN, CR e calibration byte-identici a review_configs/*.json; preparation.json differisce solo nei path, con sha256 e bytes uguali. In plan.json common e arms sono 100/125/v3 con target_cli_args espliciti. e388a1de..438c8d65 sotto contrastive_comparison_20261116/ aggiunge solo common_state_diagnostics_20261118/* e non modifica file esistenti. A sorgenti correnti audit, calibration_run e calibration_receipt storici sono respinti con «current execution source inventory/pins differ»."
+    },
+    {
+     "claim": "Le celle di preflight_plan.json sono coerenti con il dispatcher.",
+     "evidence": "I secondi delle 9 celle coincidono con ALLOCATED_SECONDS per modo: audit 7200, calibration/cuda/full/split 1800, readout 3600. mandatory_audit_sbatch_override = ['--time=02:00:00']."
+    }
+   ],
+   "non_verificato": [
+    "Suite CPU completa non rieseguita sul Mac, come da regola: i conteggi sono ricostruiti dai log e confermati con il solo --collect-only.",
+    "Non verificabile che la suite originale e il recupero siano girati davvero su un checkout pulito a 65bc6022: la cartella di lavoro di GPT è fuori perimetro. Verificata solo l'identità del codice fra 65bc6022 e 438c8d65.",
+    "Test multiprocesso/DDP (test_ddp_equivalence, contrastive_memory, contrastive_runtime) non rieseguiti.",
+    "Dispatcher sbatch su Leonardo (lettura del TimeLimit con l'override --time=02:00:00) non eseguito: solo coerenza statica fra preflight_plan, sbatch e ALLOCATED_SECONDS.",
+    "Test che usano il reader congelato (run_frozen su 8905e346) non mutati: archiviano il commit congelato, quindi per costruzione le mutazioni del working tree non li raggiungono.",
+    "Non ricostruito a quale insieme corrispondano i 121 targeted_tests di local_validation.",
+    "Punti scientifici 2-4 e 6 della richiesta (λ, attribuzione dei confronti, diagnostica bf16): fuori dal perimetro di p7."
+   ],
+   "rilievi": [
+    {
+     "id": "P7-F1",
+     "severity": "MINORE",
+     "title": "Il passaggio di PLAN al nuovo piano non è protetto da alcun test",
+     "detail": "Riportando PLAN al piano storico tutti i test restano verdi. PLAN lo legge solo contrastive_prepare: righe 76 (policy_reference), 107 (input_sha256) e 219 (_reader_provenance). Nei due piani coverage, input_sha256 e il pin calibration.historical_reference sono identici. L'unico effetto sarebbe quindi la provenienza: una nuova ricevuta di calibrazione pinnerebbe in reader_provenance.plan il piano storico, che non contiene l'emendamento dei target. Nessun test lega poi plan.json (common/arms 100/125/v3) né preflight_plan.json al generatore o al dispatcher. Oggi concordano (verificato), ma un loro scostamento passerebbe inosservato.",
+     "evidence": "scripts/contrastive_prepare.py:30 `PLAN = ROOT / \"results/infra/contrastive_targets_20261118/plan.json\"` e righe 76/107/219 a 438c8d65. `grep -rn contrastive_targets_20261118 tests/` non trova nulla.",
+     "reproduction": "git clone -q --shared <clone> tmp/x; git -C tmp/x checkout -q --detach 438c8d65. Sostituire la riga 30 con `PLAN = ROOT / \"results/infra/contrastive_comparison_20261116/plan.json\"`. Eseguire il comando pytest del contesto sui 9 file diretti («173 passed») e sui 5 indiretti («32 passed»).",
+     "fix": "Aggiungere un test che verifichi P.PLAN == P.ROOT/'results/infra/contrastive_targets_20261118/plan.json' e che P._reader_provenance()['plan']['sha256'] sia lo sha del nuovo piano. In aggiunta, un test che confronti plan['common'] e plan['arms'][*] (finestre e versione) con build_review_configs, e i secondi delle celle di preflight_plan con contrastive_job.ALLOCATED_SECONDS.",
+     "survives": true,
+     "upheld": 2,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      },
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P7-F2",
+     "severity": "MINORE",
+     "title": "Il testo descrittivo del readout non è protetto da alcun test",
+     "detail": "Riportando la stringa 'interpretation' al vecchio «Only update 1 may match exactly; ...», la suite diretta resta verde. test_first_eight_historical_comparison_is_descriptive_without_a_new_gate controlla solo descriptive_only e l'assenza di 'passed'. Il carattere puramente descrittivo, senza gate, è dunque protetto. Un ritorno al testo vecchio farebbe però affermare al report una corrispondenza esatta al primo update, falsa con 100/125.",
+     "evidence": "scripts/contrastive_benchmark_readout.py:111 a 438c8d65; tests/cpu/test_contrastive_benchmark_readout.py:79-85, che non legge 'interpretation'.",
+     "reproduction": "Nel clone temporaneo a 438c8d65, sostituire alla riga 111 la stringa con quella di e388a1de (`git show e388a1de:scripts/contrastive_benchmark_readout.py`). pytest sui 9 file diretti: «173 passed».",
+     "fix": "Nel test aggiungere un'asserzione su report['interpretation']: che citi RMS100/fast125 e che anche il primo update possa differire. In alternativa, confrontarla con una costante del modulo.",
+     "survives": true,
+     "upheld": 2,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      },
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P7-F3",
+     "severity": "NOTA",
+     "title": "La ricevuta della suite non pinna i log originali e il conteggio mirato non ha comando",
+     "detail": "verification.json pinna 5 file ma non cpu_part0-3.log, cpu_ddp.log e recovery_remaining.log. Sono proprio i log con gli elenchi FAILED/ERROR da cui deriva il perimetro del recupero, e sono legati solo dal commit git. I tail pinnati in cpu_suite.json coincidono con i log. local_validation.targeted_tests ({passed: 121, seconds: 12.52}) non indica comando né file, quindi non è riproducibile come tale; la suite completa lo supera.",
+     "evidence": "results/infra/contrastive_targets_20261118/full_suite/verification.json:24-30 (evidence_sha256 con 5 voci); local_validation.json:78-81.",
+     "reproduction": "python3 -c \"import json;print(list(json.load(open('results/infra/contrastive_targets_20261118/full_suite/verification.json'))['evidence_sha256']))\" elenca 5 file; ls full_suite/ ne mostra altri 6 non pinnati.",
+     "fix": "Aggiungere gli sha256 dei sei log alla ricevuta, o a una ricevuta successiva. Per targeted_tests, registrare comando ed elenco dei file oppure togliere il campo.",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    },
+    {
+     "id": "P7-F4",
+     "severity": "NOTA",
+     "title": "Il test nuovo sul vecchio audit non controlla il motivo del rifiuto",
+     "detail": "test_historical_audit_does_not_qualify_new_sources usa pytest.raises(ValueError) senza match. Oggi il motivo del rifiuto è quello voluto, «current execution source inventory/pins differ» (verificato), ma qualunque ValueError, per esempio un file illeggibile o malformato, soddisferebbe il test.",
+     "evidence": "tests/cpu/test_contrastive_historical_calibration.py:90-94 a 438c8d65.",
+     "reproduction": "Chiamare validate_historical_evidence('audit', <audit.json decompresso>) a 438c8d65: ValueError «historical evidence compatibility: current execution source inventory/pins differ».",
+     "fix": "pytest.raises(ValueError, match='current execution source inventory').",
+     "survives": true,
+     "upheld": 1,
+     "voti": [
+      {
+       "confutato": false,
+       "gravita": "NOTA"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "critico": {
+  "gaps": [
+   {
+    "point": "2 e richiesta finale (non copiare autorizzazioni vecchie)",
+    "gap": "Il pin `review` dei job non è legato alla nuova coorte. `contrastive_job.build_command` (contrastive_job.py:64-69) controlla solo tre cose: lo stato `APPROVED_FOR_PREFLIGHT` scritto nel job, il digest delle sorgenti e lo sha del file di review. L'audit, prima cella, non ha release (righe 103-104). Sonda eseguita: job audit nuovo con `review` = `docs/reviews/contrastive_preflight_release_20261117.md` (rilascio del 17/11, «APPROVED_FOR_PREFLIGHT ... per questo giro») e config di calibrazione nuova. I pin di review e config sono accettati; lo stop avviene solo sugli input, assenti sul Mac ma identici allo storico su Leonardo. P2 e P6 parlano di cancello procedurale, ma nessuno ha provato che un'autorizzazione vecchia passa il dispatcher.",
+    "why_it_matters": "Il divieto di copiare autorizzazioni vecchie e le dipendenze new_review/diagnostic_resolution dell'audit sono solo procedurali. Un job scritto con la vecchia review partirebbe (16 core-ore) prima della diagnostica. Le ricevute vecchie invece sono rifiutate meccanicamente.",
+    "how_to_check": "sed -n 62,69p scripts/contrastive_job.py; sed -n 103,104p scripts/contrastive_job.py; eseguire con il PYTHONPATH della consegna la sonda /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/critico/old_review_pin.py <clone> <dir WORK temporanea>. Esito atteso: 'pins accepted' per review e config, poi FileNotFoundError sugli input. Al rilascio: controllare che `review` citi preflight_plan 6081832… e sorgenti 643a8937…, oppure aggiungere il legame nel dispatcher."
+   },
+   {
+    "point": "6 (e 5)",
+    "gap": "La matrice del nuovo preflight è identica a quella fallita: stesse 9 celle (modo, braccio) e stesse dipendenze, salvo i tre prerequisiti procedurali dell'audit. contrastive_split_benchmark.py è invariato da 8905e346. Le due riprese restano due training indipendenti confrontati con i benchmark completi. GPT stesso ha dichiarato confuso questo disegno: registro r.9422-9431, «confronta due training indipendenti fin dall'inizio», norme diverse già al passo 1, proposta «ripresa da un unico stato salvato». Nessun revisore ha verificato quale esito della diagnostica permetta di riusare il disegno split. Emendamento e preflight dicono solo «risoluzione o emendamento esplicito».",
+    "why_it_matters": "Se la diagnostica conferma deriva fra training indipendenti (bf16/NCCL), le celle split (4 GPUh, 32 core-ore) ripeterebbero la matrice negativa, cioè il retry cieco escluso dal punto 6. Anche il preventivo di 13 allocazioni non è definitivo finché il disegno non è confermato.",
+    "how_to_check": "python3: confrontare (mode, arm, depends) delle celle di results/infra/contrastive_comparison_20261116/preflight_plan.json e del nuovo preflight_plan.json; risultato atteso: stesse 9 celle, depends diverse solo per l'audit. git diff --stat 8905e346 438c8d65 -- scripts/contrastive_split_benchmark.py (vuoto). sed -n 9422,9431p docs/claude_GPT_shared; sed -n 6p docs/contrastive_common_diagnostics_20261118.md. La release deve dire se il test split resta o cambia."
+   },
+   {
+    "point": "3",
+    "gap": "L'appaiamento CN−C0/CR−C0 è verificato solo sui config: unica differenza contrastive.arm. La parità numerica a peso zero nei primi 256 update è il cancello fallito nello storico (registro r.9440-9447: CN 146 e CR 135 norme del gradiente oltre rtol 1e-4/atol 1e-6, scarti fino a 0,725%/0,314%). I nuovi config hanno ancora amp_bf16=true, come T100-G. P3 cita il fallimento solo come fatto storico e non lo pone come condizione del punto 3.",
+    "why_it_matters": "Finché la parità non è risolta, CN−C0 e CR−C0 nella nuova ricetta non sono appaiati sul piano numerico. Una differenza fra bracci potrebbe includere il percorso numerico, non solo l'intervento contrastivo. Il punto 3 è quindi condizionato alla chiusura del punto 6.",
+    "how_to_check": "sed -n 9440,9447p docs/claude_GPT_shared; python3 -c \"import json;print({a:json.load(open(f'results/infra/contrastive_targets_20261118/review_configs/{a}.config.json'))['amp_bf16'] for a in ('C0','CN','CR')})\"; leggere failure_reasons in results/infra/contrastive_comparison_20261116/benchmarks_completed_bf16_20261118/preflight_readout.json."
+   },
+   {
+    "point": "5",
+    "gap": "Checkout: oltre alla memoria (P5-M1), anche CPU e tempo dipendono da override non dichiarati. campaign_checkout.sbatch:5-7 ha di default 1 CPU, 2G e 10 min. Tutti i checkout storici della linea sono stati inviati con --cpus-per-task=4 --mem=2G --time=00:04:00 (uno con 00:05:00). Il preflight dichiara 4 CPU/30 GiB/240 s, ma mandatory_audit_sbatch_override contiene solo l'override dell'audit.",
+    "why_it_matters": "Il tetto di 1,066667 core-ore dei checkout vale solo con tutti e tre gli override. Con 4 CPU e il tempo di default (600 s), i quattro checkout valgono 2,666667 core-ore: il totale sale a 138,666667, sopra 137,066667. Con 4 CPU e 30G non esiste contabilità storica del billing.",
+    "how_to_check": "grep '^#SBATCH' scripts/slurm/campaign_checkout.sbatch; git grep -o -e '--time=00:0[45]:00' -e '--cpus-per-task=4' -e '--mem=2G' -- 'results/infra/contrastive_comparison_20261116/*checkout*state.json'; calcolo: 4 checkout x 4 CPU x 600 s / 3600 = 2,666667. Dichiarare nel preflight gli override dei checkout e 2 GiB."
+   },
+   {
+    "point": "5",
+    "gap": "Il preventivo non dichiara le ore locali né il residuo del budget del passo, entrambi richiesti da CLAUDE.md:263. P5-N4 copre solo il residuo e il cumulato della linea 3. Nella contabilità storica il billing coincide con le CPU: celle GPU billing=32 (16 ore locali per cella), audit 8 CPU/30G billing=8, checkout 4 CPU/2G billing=4. Quindi 137,066667 core-ore equivalgono alle ore locali solo se i checkout restano a 2G.",
+    "why_it_matters": "Senza ore locali e residuo, la richiesta di conferma a Simone (14 GPUh, sopra la soglia di 5) non rispetta la regola del progetto. Con i checkout a 30 GiB, come dichiarato, l'equivalenza non è dimostrata.",
+    "how_to_check": "grep -n 'ore locali' CLAUDE.md; grep -n -i 'ore locali\\|residu' docs/contrastive_targets_amendment_20261118.md results/infra/contrastive_targets_20261118/preflight_plan.json (nessuna riga); git grep -o 'billing=[0-9]*,cpu=[0-9]*[^ |]*' -- results/infra/contrastive_comparison_20261116 | sort | uniq -c. Sul cluster, sola lettura dell'operatore: saldo -b e scontrol show partition lrd_all_serial | grep -o 'TRESBillingWeights=[^ ]*'."
+   },
+   {
+    "point": "1-2 (ricevuta di validazione locale)",
+    "gap": "local_validation.json non è riproducibile. Nessuno script del repository genera i 18 controlli ('C0cli_explicit', 'distinctjobids', 'caps', 'releaseclosed', ...) né il blocco independent_preparation_review; git log --all -S storedconfigmatchesgenerator trova solo 0efdc29c, cioè il JSON stesso. P7-F3 segnala solo i 121 test mirati senza comando. I revisori hanno rifatto quasi tutti i controlli in modo indipendente. 'cli_explicit' resta dichiarativo: i target_cli_args non sono letti dal codice. È comunque coerente con train_jepa.py:201-212, che porta 125 a fast125_v3 (verificato leggendo il codice).",
+    "why_it_matters": "Una ricevuta PASSED_LOCAL_PREPARATION_ONLY senza produttore non si può rieseguire al rilascio. Non deve sostituire le verifiche dei revisori come evidenza.",
+    "how_to_check": "git log --all --oneline -S storedconfigmatchesgenerator; git grep -n 'releaseclosed\\|cli_explicit\\|PASSED_LOCAL_PREPARATION_ONLY' -- scripts src tests (vuoto); sed -n 201,212p scripts/train_jepa.py."
+   },
+   {
+    "point": "1-2 (documenti operativi)",
+    "gap": "Solo il protocollo ha ricevuto l'intestazione che rimanda alla nuova ricetta. Non citano l'emendamento: docs/contrastive_preflight_execution_20261116.md (comandi, audit da 1 h, eccezione audit_recovery), docs/contrastive_handoff_20261117.md e docs/prompt_3_launcher_contrastive_readout_20261118.md, con zero occorrenze di amendment, 100/125 o fast125. Nessun revisore li ha controllati per i punti 1-2.",
+    "why_it_matters": "L'operatore 3-launcher lavora da questi documenti. Il rischio è basso, perché i job vecchi sono rifiutati per sorgenti e ALLOCATED_SECONDS. Resta però il rischio che un prompt storico sembri applicabile alla nuova coorte.",
+    "how_to_check": "for f in docs/contrastive_preflight_execution_20261116.md docs/contrastive_handoff_20261117.md docs/prompt_3_launcher_contrastive_readout_20261118.md; do grep -c 'contrastive_targets_amendment\\|100/125\\|fast125' $f; done (0 0 0); git diff --stat e388a1de 0efdc29c -- docs/ (il protocollo è l'unico documento storico toccato)."
+   },
+   {
+    "point": "6 (stato su Leonardo)",
+    "gap": "Nessun revisore ha visto lo stato reale. La lettura dell'orchestratore delle 10:07 (rev_targets/leonardo_state.out.txt, non riverificata) non mostra ref deploy/contrastive-common-*, né il checkout wearusfm_campaigns/contrastive-common-20261118. Mancano anche le uscite contrastive_common_diagnostics_20261118 e contrastive_targets_20261118. Quindi la diagnostica non è ancora stata deployata o eseguita, e dalla consegna non è partito nulla.",
+    "why_it_matters": "La condizione del punto 6 (diagnostica conclusa nel proprio checkout a 365cb1e2, prima del rilascio) è ancora tutta da soddisfare. Va riletta prima del rilascio insieme al ledger, anche per escludere invii duplicati.",
+    "how_to_check": "Sola lettura, da parte dell'operatore: ssh leonardo 'git -C $WORK/wearusfm for-each-ref --format=\"%(refname) %(objectname:short)\" refs/heads/deploy; ls -d $WORK/wearusfm_campaigns/contrastive-common-20261118 $WORK/wearusfm_runs/results/contrastive_common_diagnostics_20261118'; grep -E 'common|targets-v3' ~/wearusfm_local/jobs/ledger.tsv. Verificare che il checkout della diagnostica sia a 365cb1e2."
+   },
+   {
+    "point": "2 (copertura dei test)",
+    "gap": "Il titolo di P2-M1 ('barriera di ricetta dell'audit') è più stretto dell'esito delle mutazioni di P2. Sono senza test tre barriere di secondo livello: config_sha256 in validate_audit (contrastive_run.py:99-101), lo stesso controllo in read_preflight (contrastive_benchmark_readout.py:331-334) e la guardia della ricevuta in authenticate_calibration. Con le mutazioni MD+MG+MF applicate insieme passano tutti i 337 test contrastivi.",
+    "why_it_matters": "Una regressione su una di queste barriere non sarebbe vista da nessun test: il rifiuto delle evidenze vecchie poggerebbe sulla sola guardia delle sorgenti. Conviene un'unica correzione dei test, senza un nuovo giro di review.",
+    "how_to_check": "cat /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/reports/p2-mutations/all_contrastive_MD_MG_MF.txt (337 passed); sed -n 97,101p scripts/contrastive_run.py; sed -n 329,334p scripts/contrastive_benchmark_readout.py."
+   }
+  ],
+  "overall": "Nessun blocco nuovo. I sette revisori coprono tutti e sei i punti richiesti. Restano nove lacune.\n\nLe prime tre riguardano ciò che il rilascio deve dichiarare e controllare:\n- Il dispatcher accetta come `review` anche il rilascio del 17/11 (sonda eseguita). Quindi il divieto di riusare autorizzazioni vecchie e le dipendenze dell'audit sono solo procedurali.\n- La matrice del nuovo preflight è identica a quella fallita. Comprende il disegno split che GPT stesso ha dichiarato confuso il 18/11; nessuno ha fissato quale esito della diagnostica permetta di riusarlo.\n- L'appaiamento del punto 3 è dimostrato solo sui config: la parità numerica a peso zero resta il cancello aperto del punto 6.\n\nCorrezioni del preventivo:\n- I checkout richiedono override di CPU, memoria e tempo non dichiarati. Con 4 CPU e il tempo di default il totale sale a 138,67 core-ore, sopra il tetto.\n- Mancano le ore locali e il residuo del budget (CLAUDE.md:263). Le core-ore coincidono con le ore locali solo con i checkout a 2G.\n\nNote di riproducibilità e documentazione:\n- local_validation.json non ha uno script che lo generi.\n- I documenti operativi vecchi non rimandano all'emendamento.\n- Lo stato su Leonardo non è stato visto da nessun revisore. La lettura delle 10:07 mostra la diagnostica non ancora deployata e nessun invio.\n- Il titolo di P2-M1 è più stretto delle tre barriere senza test.\n\nHo chiuso con prove alcune voci rimaste non verificate:\n- Il riordino del registro in 438c8d65 è un puro spostamento, con le voci conservate testualmente.\n- I moduli contrastivi sono invariati da 8905e346: nessuna soglia nuova e whitelist non ampliata.\n- authenticate_preflight ricalcola dalle evidenze, e le riprese passano dallo stesso controllo del config.\n- Nessun codice legge i costi storici del piano.\n- scales non dipende dai target.\n- Le istantanee storiche hanno Requeue=0.\n\nRapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/reports/critico-completezza.md. La copia git è pulita a 438c8d65."
+ }
+}

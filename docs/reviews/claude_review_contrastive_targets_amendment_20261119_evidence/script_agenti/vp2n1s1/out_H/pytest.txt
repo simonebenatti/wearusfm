@@ -1,0 +1,29 @@
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 64%]
+.......F................................................................ [ 85%]
+.................................................                        [100%]
+=================================== FAILURES ===================================
+_________ test_receipt_is_recomputed_not_trusted_and_all_arms_share_it _________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/vp2n1s1/bt_H/test_receipt_is_recomputed_not0')
+
+    def test_receipt_is_recomputed_not_trusted_and_all_arms_share_it(tmp_path):
+        run = tmp_path / "run"
+        fixture_run(run)
+        receipt = P.calibration_report(run)
+        configs = P.calibrated_configs(receipt, run)
+        assert set(configs) == {"C0", "CN", "CR"}
+        assert len({(c["contrastive"]["nce_weight"], c["contrastive"]["rnc_weight"]) for c in configs.values()}) == 1
+        for mutate in (lambda r: r["weights"].update(nce=.9), lambda r: r["failure_reasons"].append("bad"),
+                       lambda r: r.update(initial_state_sha256="b" * 64)):
+            bad = copy.deepcopy(receipt)
+            mutate(bad)
+>           with pytest.raises(ValueError): P.authenticate_calibration(bad, run)
+E           Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/cpu/test_contrastive_prepare.py:235: Failed
+=========================== short test summary info ============================
+FAILED tests/cpu/test_contrastive_prepare.py::test_receipt_is_recomputed_not_trusted_and_all_arms_share_it
+1 failed, 336 passed in 92.18s (0:01:32)
+pytest_rc=1

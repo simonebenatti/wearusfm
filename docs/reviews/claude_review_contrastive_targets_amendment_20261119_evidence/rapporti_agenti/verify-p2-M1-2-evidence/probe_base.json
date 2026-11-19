@@ -1,0 +1,44 @@
+{
+ "root": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/skep2_p2m1/mut",
+ "source_digest": "643a8937e83353345adff81999292d9d380fb06fdae73fa733deb8e147968ffb",
+ "calibration_recipe": {
+  "rms": 100.0,
+  "fast": 125.0,
+  "version": "step1_psd_power_shape_energy_fast125_v3",
+  "canonical_sha256": "7471e6085d9e06dd62494b63a9f74305250c4dfbe582c42d9a62fae37391f636"
+ },
+ "historical_audit": {
+  "bytes_sha256": "5c720fadbcb12fd5458bc0e19cd03f28fec30ad5973ca72739f01bf1b3d7547b",
+  "source_sha256": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+  "config_sha256": "ab50bc1165dcc4b964183039cbd06ea6838028832a7ec49d8bb2bf3758a02816"
+ },
+ "A_validate_audit_hist_real_guard": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "B_validate_audit_relabel": {
+  "accepted": false,
+  "error": "ValueError: audit stream/config differs from the calibration recipe"
+ },
+ "B2_validate_audit_hist_guard_accepts": {
+  "accepted": false,
+  "error": "ValueError: audit stream/config differs from the calibration recipe"
+ },
+ "historical_calibration_config_canonical_sha256": "ab50bc1165dcc4b964183039cbd06ea6838028832a7ec49d8bb2bf3758a02816",
+ "C_control_relabel_vs_historical_config": {
+  "accepted": true,
+  "returned_passed": true
+ },
+ "D_read_preflight_hist_real_guard": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "E_read_preflight_relabel": {
+  "accepted": false,
+  "error": "ValueError: CPU audit missing, failed or from different inputs/config/source"
+ },
+ "E2_read_preflight_hist_guard_accepts": {
+  "accepted": false,
+  "error": "ValueError: CPU audit missing, failed or from different inputs/config/source"
+ }
+}

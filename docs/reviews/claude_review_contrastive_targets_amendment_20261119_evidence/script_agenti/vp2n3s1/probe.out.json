@@ -1,0 +1,99 @@
+{"status": "CALIBRATED_COHORT_FOR_REVIEW", "training_approved": false}
+{
+ "hist_code": {
+  "dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-v2-20261117-calibration",
+  "sha": "4fc515257b1965a7ac1aabad22df3ade6b651b1a"
+ },
+ "hist_provenance_source": "ab2d6460bfe090e4adba8cfd480b726077005c4ed6ae10db7ebbd5909ddf808b",
+ "current_source": "643a8937e83353345adff81999292d9d380fb06fdae73fa733deb8e147968ffb",
+ "A0 unmodified historical run": {
+  "accepted": false,
+  "error": "ValueError: calibration run config differs from the frozen 512-batch recipe"
+ },
+ "A1 config relabelled only": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "A2 source relabelled only": {
+  "accepted": false,
+  "error": "ValueError: calibration run config differs from the frozen 512-batch recipe"
+ },
+ "A3 config+source relabelled (2g)": {
+  "accepted": true,
+  "result": {
+   "status": "PASSED_FOR_REVIEW",
+   "weights": {
+    "nce": 0.11942686122572264,
+    "rnc": 0.33044627364850215
+   },
+   "run_code_sha": "4fc515257b1965a7ac1aabad22df3ade6b651b1a",
+   "initial_state_sha256": "ba8a86579992a0eeb2a8072c67eef30b699465ad091671b50123c0073173fa2f"
+  }
+ },
+ "A4 config+source relabelled, code.sha = 40 x \"0\"": {
+  "accepted": true,
+  "result": {
+   "status": "PASSED_FOR_REVIEW",
+   "weights": {
+    "nce": 0.11942686122572264,
+    "rnc": 0.33044627364850215
+   },
+   "run_code_sha": "0000000000000000000000000000000000000000",
+   "initial_state_sha256": "ba8a86579992a0eeb2a8072c67eef30b699465ad091671b50123c0073173fa2f"
+  }
+ },
+ "C1 authenticate_calibration(forged receipt, forged run)": {
+  "accepted": true,
+  "result": "PASSED_FOR_REVIEW"
+ },
+ "C2 calibrated_configs CN/CR weights": {
+  "accepted": true,
+  "result": {
+   "C0": [
+    0.11942686122572264,
+    0.33044627364850215,
+    100.0,
+    125.0,
+    "step1_psd_power_shape_energy_fast125_v3"
+   ],
+   "CN": [
+    0.11942686122572264,
+    0.33044627364850215,
+    100.0,
+    125.0,
+    "step1_psd_power_shape_energy_fast125_v3"
+   ],
+   "CR": [
+    0.11942686122572264,
+    0.33044627364850215,
+    100.0,
+    125.0,
+    "step1_psd_power_shape_energy_fast125_v3"
+   ]
+  }
+ },
+ "C3 validate_cohort(cohort from forged receipt, CN member)": {
+  "accepted": true,
+  "result": "CALIBRATED_COHORT_FOR_REVIEW"
+ },
+ "D1 _initial_from_calibration: checkpoint embeds historical 25/50 config, config.json forged 100/125": {
+  "accepted": false,
+  "error": "ValueError: calibration checkpoint is not the authenticated fixed initial state"
+ },
+ "D2 CONTROL _initial_from_calibration: checkpoint embeds the same 100/125 config": {
+  "accepted": true,
+  "result": [
+   "w"
+  ]
+ },
+ "E1 model section identical": true,
+ "E2 seed identical": [
+  0,
+  0
+ ],
+ "E3 top-level/loader keys that differ": [
+  "loader.ms_fast_window_ms",
+  "loader.rms_window_ms",
+  "target_version"
+ ]
+}

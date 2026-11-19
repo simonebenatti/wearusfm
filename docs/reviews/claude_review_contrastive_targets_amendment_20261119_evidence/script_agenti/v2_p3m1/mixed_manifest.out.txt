@@ -1,0 +1,15 @@
+A mixed-recipe cells, plain v2 manifest: ACCEPTED protocol=contrastive-comparison-20261116-v2 decision_valid=True reading=practically_equivalent_on_decision_endpoints
+   top-level keys mention recipe: ['arms']
+   input_pins keys: ['classification', 'pose', 'protocol', 'step', 'which']
+   'contrastive-target-windows-20261118-v1' in output: False
+B extra keys amendment/cohort/configs (C0 config deliberately 25/50): ACCEPTED protocol=contrastive-comparison-20261116-v2 decision_valid=True reading=practically_equivalent_on_decision_endpoints
+   top-level keys mention recipe: ['arms']
+   input_pins keys: ['amendment', 'classification', 'cohort', 'configs', 'pose', 'protocol', 'step', 'which']
+   'contrastive-target-windows-20261118-v1' in output: True
+   echoed amendment: contrastive-target-windows-20261118-v1 | cohort pin echoed: True
+C pose cell arm=T100-G under key C0: REJECTED ValueError: incomplete/mixed-dose/nonteacher pose cell
+D audit rows arm=T100-G under key C0: REJECTED ValueError: audit identity differs
+E C0 and CN pinned to the same checkpoint sha: ACCEPTED protocol=contrastive-comparison-20261116-v2 decision_valid=True reading=practically_equivalent_on_decision_endpoints
+   top-level keys mention recipe: ['arms']
+   input_pins keys: ['classification', 'pose', 'protocol', 'step', 'which']
+   'contrastive-target-windows-20261118-v1' in output: False

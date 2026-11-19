@@ -1,0 +1,19 @@
+diff --git a/scripts/contrastive_prepare.py b/scripts/contrastive_prepare.py
+index 597e4ab1..3998687b 100644
+--- a/scripts/contrastive_prepare.py
++++ b/scripts/contrastive_prepare.py
+@@ -381,11 +381,14 @@ def authenticate_calibration(receipt, run_dir):
+     measured = calibration_report(run_dir)
+     comparable = copy.deepcopy(measured)
+     if receipt.get("source_sha256") != source_digest():
++        __import__("pathlib").Path('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/vp2n1s1/out_ZINSTR/mark.txt').open("a").write("%s %s\n" % ('BRANCH', __import__("os").environ.get("PYTEST_CURRENT_TEST", "?")))
+         from contrastive_source_compat import validate_historical_evidence
+         validate_historical_evidence("calibration_receipt", receipt)
+         # The complete historical receipt is pinned, including its old reader.
+         # Recompute all measured fields; the current reader has a distinct identity.
+         comparable["reader_provenance"] = receipt["reader_provenance"]
++    if receipt.get("source_sha256") != source_digest():
++        __import__("pathlib").Path('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/vp2n1s1/out_ZINSTR/mark.txt').open("a").write("%s %s\n" % ('COMPARE_FOREIGN_SOURCE', __import__("os").environ.get("PYTEST_CURRENT_TEST", "?")))
+     if _jsonable(receipt) != comparable:
+         raise ValueError("calibration receipt differs from authenticated recalculation")
+     return measured

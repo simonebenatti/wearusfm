@@ -1,0 +1,20 @@
+{
+ "source_digest": "e8449f5cd848008a05c32b117dde6a20887574505e3af10db5b6015052523f7a",
+ "expected_calibration_windows": [
+  100.0,
+  125.0,
+  "step1_psd_power_shape_energy_fast125_v3"
+ ],
+ "calibration_report(hist run)": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "calibrated_configs(hist receipt) -> new arms": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "validate_audit(hist audit, new calibration recipe)": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ }
+}

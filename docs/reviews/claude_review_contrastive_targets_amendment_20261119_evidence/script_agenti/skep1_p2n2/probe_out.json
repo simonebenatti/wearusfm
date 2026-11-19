@@ -1,0 +1,35 @@
+{
+ "historical_top_keys": [
+  "calibration_panel",
+  "config_sha256",
+  "coverage_completed_blocks",
+  "coverage_partial_block",
+  "descriptor_budget",
+  "expected_datasets",
+  "inputs",
+  "origin_support_sha256",
+  "passed",
+  "records",
+  "scope",
+  "source_sha256",
+  "steps",
+  "workers_per_rank",
+  "world_size"
+ ],
+ "historical_time_like_top_keys": [],
+ "historical_time_like_record_keys": [],
+ "new_calibration_loader": {
+  "rms_window_ms": 100.0,
+  "ms_fast_window_ms": 125.0
+ },
+ "new_calibration_target_version": [
+  "step1_psd_power_shape_energy_fast125_v3"
+ ],
+ "validate_audit_new_no_time": "ACCEPTED passed=True",
+ "validate_audit_new_timeout_markers": "ACCEPTED passed=True",
+ "fixture_config_equals_new_calibration_config": true,
+ "validate_release_calibration_with_timeout_audit": "ACCEPTED",
+ "read_preflight_audit_gate_timeout_audit": "ACCEPTED (audit gate passed; stopped at _cuda_evidence)",
+ "control_validate_audit_wrong_config": "REJECTED: audit stream/config differs from the calibration recipe",
+ "control_read_preflight_wrong_config": "REJECTED: CPU audit missing, failed or from different inputs/config/source"
+}

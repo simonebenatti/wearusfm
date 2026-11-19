@@ -1,0 +1,224 @@
+[
+ {
+  "errors": [
+   {
+    "quote": "la review pinnata al rilascio e' quella del pacchetto nuovo e cita `preflight_plan.json` `6081832...` e i sorgenti `643a8937...` (e nel prompt: «preflight 6081832..., sorgenti 643a8937...»)",
+    "problem": "6081832627cee150... non e' lo sha256 di preflight_plan.json. E' quello di results/infra/contrastive_targets_20261118/plan.json, il piano scientifico che preflight_plan.json pinna come science_plan.sha256. Lo sha256 di preflight_plan.json e' ea2cef0fad2101df... sia a 0efdc29c sia a 438c8d65. L'errore viene dal how_to_check della lacuna 1 del critico. Il digest dei sorgenti 643a8937 e' giusto.",
+    "correct": "«cita `plan.json` `6081832...` (cioe' preflight_plan.json `ea2cef0f...`) e i sorgenti `643a8937...`»; da correggere anche nel prompt per GPT.",
+    "proof": "git show 438c8d65:results/infra/contrastive_targets_20261118/preflight_plan.json | shasum -a 256 -> ea2cef0fad2101df...; lo stesso per plan.json -> 6081832627cee150...; preflight_plan.json righe 7-10: science_plan {path: .../plan.json, sha256: 6081832...}.",
+    "severity": "ERRORE"
+   },
+   {
+    "quote": "conforme come cancello; diagnostica non ancora lanciata (tabella, punto 6); nel prompt: «(non ancora deployata ne' lanciata)»",
+    "problem": "La lettura delle 10:07 era corretta, ma la frase e' al presente ed e' superata. La bozza e' stata salvata alle 11:23:41. Il ledger comune registra poi gli invii di GPT al commit 365cb1e2, tutti `sottomesso`: CONTRAST-CHECKOUT-common-20261118 = 64835236 (11:32:01), CONTRAST-COMMON-cuda-20261118 = 64835286 (11:32:20), resume-CN = 64835297 (11:32:26) e resume-CR = 64835304 (11:32:28). Il checkout presuppone il push del ref di deploy. Lo stato su Leonardo non l'ho verificato (niente ssh).",
+    "correct": "Datare la frase («alle 10:07 non deployata») e aggiungere che alle 11:32 GPT ha inviato il checkout e le tre celle diagnostiche (ID sopra). Prima di pubblicare, rileggere ledger e stato.",
+    "proof": "grep -n 'CONTRAST-COMMON\\|CONTRAST-CHECKOUT-common' ~/wearusfm_local/jobs/ledger.tsv -> righe 1793-1802 (prenotato/sottomesso, agente gpt, SHA 365cb1e2...); data di modifica della bozza: 19/11 11:23:41.",
+    "severity": "ERRORE"
+   },
+   {
+    "quote": "Tutti i checkout storici della linea sono partiti con `--cpus-per-task=4 --mem=2G --time=00:04:00`.",
+    "problem": "Il primo checkout della campagna, CONTRAST-CHECKOUT-AUDIT-v2-20261117 (job 64652044), e' stato inviato con `--time=00:05:00`. 4 CPU e 2G valgono per tutti. Il critico lo segnalava («uno con 00:05:00»), la bozza ha ripreso la versione del revisore P5.",
+    "correct": "«Tutti con `--cpus-per-task=4 --mem=2G`; tutti con `--time=00:04:00` tranne il primo (64652044, `00:05:00`).»",
+    "proof": "results/infra/contrastive_comparison_20261116/submission_20261117/checkout_state.json:14 `--time=00:05:00` (anche releases/audit_submission_plan_20261117.json:23 e lo state locale ~/wearusfm_local/jobs/CONTRAST-CHECKOUT-AUDIT-v2-20261117/state.json). Gli altri cinque state.json (M30, CALIB, BENCH, bf16, mmap) e il checkout readout hanno 00:04:00.",
+    "severity": "ERRORE"
+   },
+   {
+    "quote": "l'audit, la calibrazione 64701482 (λ 0,1194 e 0,3304) e la ricevuta canonica, alla guardia delle sorgenti; (e in M-1: «Oggi le evidenze vecchie sono fermate prima dalla guardia delle sorgenti, che e' testata.»)",
+    "problem": "Per l'audit e' vero: validate_audit chiama prima la guardia. Per la calibrazione no. Sul percorso reale calibration_report controlla la ricetta (contrastive_prepare.py:273-274) prima della guardia delle sorgenti (:288). calibration_report, authenticate_calibration e calibrated_configs rifiutano quindi run e ricevuta storici con «calibration run config differs from the frozen 512-batch recipe», e la guardia della ricevuta non viene mai chiamata. La guardia rifiuta la calibrazione solo se invocata direttamente.",
+    "correct": "«l'audit alla guardia delle sorgenti; run e ricevuta della calibrazione 64701482 alla barriera di ricetta (contrastive_prepare.py:273-274; la guardia li rifiuta se chiamata direttamente)». Correggere allo stesso modo la frase di M-1.",
+    "proof": "rapporti_agenti/p2-probe_b.out.json: voci 2a/2b (guardia diretta, «source inventory/pins differ») e 2c/2d/2e (percorso reale, «calibration run config differs»); verify-p2-nessuna-eredita-P2-N1-1.md: «guard_calls=[] (la guardia non viene mai chiamata)»; codice contrastive_prepare.py:266-290.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Il revisore le ha disattivate tutte e tre insieme e i 337 test contrastivi passano ancora; due scettici confermano.",
+    "problem": "I due scettici di P2-M1 hanno riprodotto solo le due barriere dell'audit, config_sha256 in validate_audit e in read_preflight (X1+X2 e MD+MG, 337 passati). La guardia della ricevuta (MF) l'ha riprodotta un terzo scettico, quello di P2-N1 (F da sola, 337 passati). Nessuno scettico ha riapplicato le tre mutazioni insieme.",
+    "correct": "«...passano ancora; due scettici confermano le due barriere dell'audit, un terzo la guardia della ricevuta.»",
+    "proof": "verify-p2-nessuna-eredita-P2-M1-1.md (X1, X2, X1+X2: 337 passed); P2-M1-2.md (MD+MG: 337 passed); P2-N1-1.md (F: 337 passed); script_agenti/p2/results/all_contrastive_MD_MG_MF.txt (337 passed, eseguito solo dal revisore).",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Un audit oltre 7.200 s ma dentro l'OverTimeLimit verrebbe accettato. E' cio' che accadde a 64652559: 3.787 s su 3.600.",
+    "problem": "3.787 - 3.600 = 187 s, piu' dei 180 s di OverTimeLimit (3 min). audit.json e' stato scritto alle 09:10:55, 186 s oltre il limite delle 09:07:49. Il job e' quindi finito dentro il margine complessivo di SLURM (OverTimeLimit piu' KillWait, o la latenza del controllo), non dentro l'OverTimeLimit.",
+    "correct": "«Un audit oltre 7.200 s ma dentro il margine di SLURM (OverTimeLimit 3 min piu' KillWait 180 s) verrebbe accettato: 64652559, 3.787 s su 3.600.»",
+    "proof": "results/infra/contrastive_comparison_20261116/audit_completed_20261117/accounting_and_integrity.txt: start 08:07:49, end 09:10:56, ElapsedRaw 3787, Timelimit 60; mtime di audit.json 09:10:55; OverTimeLimit = 3 min; KillWait = 180 sec.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Mio codice delle finestre: `0d91297` e' antenato di main e della punta, e i 26 file che tocca sono identici byte per byte in entrambi.",
+    "problem": "0d91297 tocca 30 file, non 26. 26 sono identici in main e alla punta. Gli altri 4 no: CLAUDE.md (cambiato alla punta da d9020c20), docs/claude_GPT_shared e docs/decisioni.md (voci successive) e src/wearusfm/training/run.py. run.py e' identico in main, ma alla punta contiene le modifiche di 0d91297 fuse con il codice contrastivo (+111/-14 rispetto a main). L'ascendenza e' corretta.",
+    "correct": "«...dei 30 file che tocca, 26 sono identici byte per byte in main e alla punta; alla punta run.py contiene le sue modifiche fuse con il codice contrastivo; CLAUDE.md, registro e decisioni hanno voci successive.»",
+    "proof": "git show --name-only --format= 0d912977 | wc -l -> 30; confronto dei blob 0d912977/main(f546c9e4)/438c8d65 per file -> 26 SAME; git diff 0d912977 main -- src/wearusfm/training/run.py vuoto; git diff --stat main 438c8d65 -- src/wearusfm/training/run.py -> 111+/14-.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "**Registro:** il registro della punta conserva ogni riga dei commit precedenti; cambia solo l'ordine.",
+    "problem": "Rispetto a afb89b45, 438c8d65 toglie una riga, il titolo doppio «## 2) Problemi trovati» (2 occorrenze prima, 1 alla punta), e aggiunge 23 righe: due voci GPT nuove e la nota editoriale. Sono conservate le voci, non ogni riga; il critico diceva «voci conservate testualmente».",
+    "correct": "«conserva testualmente ogni voce dei commit precedenti; sposta il blocco delle attivita', toglie il titolo doppio della sezione 2 e aggiunge due voci nuove.»",
+    "proof": "Multinsieme delle righe di docs/claude_GPT_shared, afb89b45 vs 438c8d65: 1 riga mancante ('## 2) Problemi trovati'), 23 aggiunte; grep -c '^## 2) Problemi trovati': 2 a afb89b45, 1 a 438c8d65; nota editoriale alla riga 14317 della punta.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Ho verificato da solo le quattro piu' rilevanti (R-1...R-3, N-3), senza un secondo giro di scettici. (e nel Metodo: «le quattro lacune del critico che entrano qui sotto»)",
+    "problem": "N-3 non e' una lacuna del critico: e' il rilievo P6-N3 del revisore del punto 6, gia' confermato da uno scettico (NON CONFUTATO). Nessuna delle nove lacune del critico riguarda db66b507. Inoltre nella review entrano piu' di quattro lacune del critico: matrice, appaiamento e stato di Leonardo (R-1), pin di review (R-2), checkout e ore locali (R-3), local_validation (N-5), documenti operativi (N-2), titolo di P2-M1 (M-1).",
+    "correct": "Nominare le quattro lacune del critico verificate da solo (fra R-1, R-2, R-3, N-2, N-5) e presentare N-3 come rilievo di P6 confermato da uno scettico.",
+    "proof": "sintesi_workflow.json: critico.gaps (9 voci, nessuna su db66b507); dimensione p6, P6-N3 survives true, upheld 1; rapporti_agenti/verify-p6-diagnostica-P6-N3-1.md («NON CONFUTATO (nel nucleo)»).",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "**Cumulato della linea 3, training escluso:** GPU-ore: 5,284444 + 6 + 14 = 25,284444; core-ore: 51,371111 + 48,266667 + 137,066667 = 236,704445.",
+    "problem": "Le somme sono esatte, ma gli addendi coprono solo la campagna CONTRASTIVE-v2-20261116: catena storica, diagnostica e nuovo preflight. La linea 3 e' «Log-quadratico e contrastiva» (tabella di CLAUDE.md) e comprende anche job non di training della parte log-quadratica. Nel ledger: LOGSQ-preflight-20261104 (2 GPU-ore stimate), LOGSQ-initdiag-run-20261105 (1), LOGSQ-infer-5000 (0,5), LOGSQ-pose-5000 (0,83), estrazioni a 19.618 (2,25), piu' i job CPU logsquare-cpu-a/b.",
+    "correct": "«Cumulato del confronto contrastivo della linea 3 (campagna CONTRASTIVE-v2-20261116), training escluso: ...»",
+    "proof": "benchmarks_completed_bf16_20261118/accounting.txt («consuntivo_catena: 5.284444 GPU-ore, 51.371111 core-ore»); common_state_diagnostics_20261118/resources.json (before_diagnostics_used, incremental_cap 6/48,266667); ~/wearusfm_local/jobs/ledger.tsv, campagne logsquare-*.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "C0−T100-G non e' calcolato da nessun codice: compare solo nelle limitazioni dichiarate.",
+    "problem": "La prima parte e' vera. Il confronto pero' compare anche in plan.json target_recipe_amendment.historical_comparison, nell'emendamento (righe 27-29) e nel protocollo, par. 6 riga 132, dove resta un «controllo descrittivo di compatibilità» da riportare. Quest'ultimo e' proprio il punto di N-1 della stessa bozza.",
+    "correct": "«...non e' calcolato da nessun codice; compare solo come lettura descrittiva dichiarata (limitazioni ed emendamento del piano, documento di emendamento, protocollo par. 6).»",
+    "proof": "plan.json: limitations[5] e target_recipe_amendment.historical_comparison; docs/contrastive_targets_amendment_20261118.md:27-29; docs/contrastive_comparison_protocol_20261116.md:132; rapporti_agenti/p3-confronti.md sezione (c).",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Ogni differenza fra i piani e' un'aggiunta dichiarata.",
+    "problem": "Il campo `scope` e' riscritto, non aggiunto: da «Design and implementation for Claude review, no submissions» a «New RMS100/fast125 preparation; no submissions; old artifacts remain historical only». Tutte le altre differenze sono aggiunte (finestre, target_cli_args, target_version, amendment, target_recipe_amendment, due limitazioni, interpretazione del moltiplicatore, decisione target_windows).",
+    "correct": "«Ogni differenza fra i piani e' dichiarata: aggiunte piu' il testo descrittivo di `scope`.»",
+    "proof": "Diff campo per campo di results/infra/contrastive_comparison_20261116/plan.json e results/infra/contrastive_targets_20261118/plan.json -> CHANGED /scope; p3-confronti.md: «CHANGED scope (testo descrittivo)».",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "**`438c8d65`:** aggiunge solo evidenze.",
+    "problem": "Il commit non tocca codice, ma non aggiunge solo evidenze. Aggiunge anche docs/prompt_claude_contrastive_targets_20261118.md (il prompt per Claude) e voci in docs/decisioni.md e nel registro, riordina il registro e modifica local_validation.json: `\"full_cpu_suite\": \"pending\"` diventa il blocco completo, con l'aggiunta di independent_preparation_review.",
+    "correct": "«`438c8d65`: non tocca codice; aggiunge le evidenze della suite, il prompt per Claude e le voci di registro e decisioni; aggiorna local_validation.json.»",
+    "proof": "git diff --name-status afb89b45 438c8d65 (M docs/claude_GPT_shared, M docs/decisioni.md, A docs/prompt_claude_contrastive_targets_20261118.md, A full_suite/*, M local_validation.json); git show 438c8d65 -- results/infra/contrastive_targets_20261118/local_validation.json.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "| 1. Storico non reinterpretato, 100/125 esplicito | conforme | N-6, N-7 | ... | 2. Nessuna accettazione di evidenze vecchie | ... | R-2, R-4, M-1 |",
+    "problem": "N-2 e' etichettata «(punti 1 e 2)», ma non compare ne' nella riga 1 ne' nella riga 2 della tabella dell'Esito.",
+    "correct": "Aggiungere N-2 alle righe 1 e 2 (riga 1: N-2, N-6, N-7; riga 2: R-2, R-4, M-1, N-2).",
+    "proof": "Bozza: tabella dell'Esito (righe 38-39) e intestazione di N-2 (riga 138: «N-2 (punti 1 e 2)»).",
+    "severity": "IMPRECISIONE"
+   }
+  ],
+  "checked_count": 140,
+  "summary": "I checked about 140 factual claims in the draft against the read-only clone at 438c8d65, the evidence folder and the local ledger, using my own commands. I found 3 ERRORE and 11 IMPRECISIONE; nothing else was wrong.\n\nERRORE:\n1. The SHA 6081832... in R-2 and in the GPT prompt is the sha256 of plan.json, not of preflight_plan.json, whose sha256 is ea2cef0f....\n2. \"Diagnostica non ancora lanciata\" (Esito table) and \"non ancora deployata ne' lanciata\" (prompt) are now out of date. After the draft was saved (11:23:41), the common ledger records GPT's submissions at 11:32: checkout 64835236, cuda 64835286, resume-CN 64835297, resume-CR 64835304. The 10:07 reading was correct at the time. I did not check Leonardo itself (no ssh).\n3. Not all historical checkouts used --time=00:04:00: 64652044 used 00:05:00.\n\nIMPRECISIONE:\n- On the real reader path, the historical calibration 64701482 is stopped by the recipe check (contrastive_prepare.py:273-274), not by the source guard. This affects point 2 and M-1.\n- The two P2-M1 skeptics confirmed only the two audit barriers; a third skeptic (P2-N1) confirmed the receipt guard.\n- 64652559 ran 187 s over its limit, more than the 180 s OverTimeLimit.\n- 0d91297 touches 30 files, not 26; at the tip run.py also carries the contrastive code.\n- The registry at the tip drops one duplicate heading and adds 23 lines, so not every line is kept.\n- N-3 is not one of the critic's gaps; it is reviewer finding P6-N3, already confirmed by one skeptic.\n- The \"cumulato della linea 3\" covers only the CONTRASTIVE-v2-20261116 campaign, not the log-quadratic part of line 3.\n- C0−T100-G appears in more places than the limitations; the protocol's par. 6 still calls it a compatibility control.\n- The `scope` field of the plan was rewritten, not added.\n- 438c8d65 also adds the prompt and registry entries and updates local_validation.json.\n- N-2 is missing from rows 1 and 2 of the Esito table.\n\nConfirmed: every other number, line reference, SHA and quote, including R-1, R-3 (except the checkout time) and R-4, M-1, N-1 to N-7, digest 643a8937 against 46938f31 (recomputed at 365cb1e2), and the 47 historical configs read as 25/50/v1. I re-ran 173 + 32 tests (all passed) and the collect-only: 3,723 tests in 233 files, identical to collection.log. The clone is still clean and the basetemp folders are deleted. The full report is in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/factcheck-1.md."
+ },
+ {
+  "errors": [
+   {
+    "quote": "la review pinnata al rilascio e' quella del pacchetto nuovo e cita `preflight_plan.json` `6081832...` e i sorgenti `643a8937...` (R-2); nel Prompt: «legare il pin review dei job al pacchetto nuovo (preflight 6081832..., sorgenti 643a8937...)»",
+    "problem": "6081832... e' l'impronta di plan.json, non di preflight_plan.json.",
+    "correct": "plan.json 6081832627cee150... (pinnato in preflight_plan.json come science_plan.sha256); preflight_plan.json ea2cef0fad2101df...; sorgenti 643a8937...",
+    "proof": "shasum -a 256 alla punta: plan.json = 6081832627cee150a8bdfe85f319ae999de879a5171f4c71aaf2f4757a7a72ca, preflight_plan.json = ea2cef0fad2101dfc78655a1de644b49aaac551564878c56156000b77e098455, uguali in 0efdc29c, 65bc6022, afb89b45 e 438c8d65; preflight_plan.json:8-9 \"science_plan\": {path plan.json, sha256 6081832...}; p3-confronti.md:37 «preflight_plan.science_plan.sha256 == sha256(plan.json) = 6081832...».",
+    "severity": "ERRORE"
+   },
+   {
+    "quote": "Mio codice delle finestre: `0d91297` e' antenato di main e della punta, e i 26 file che tocca sono identici byte per byte in entrambi.",
+    "problem": "0d91297 tocca 30 file, 26 dei quali in src/scripts/tests. Uno di questi, src/wearusfm/training/run.py, che contiene with_legacy_target_windows, alla punta non e' identico ne' a main ne' a 0d91297, perche' contiene anche le modifiche contrastive della linea 3.",
+    "correct": "0d91297 e' antenato di main e della punta. 25 dei 26 file di codice (piu' docs/target_windows_fix_20261118.md) sono identici byte per byte in main e alla punta. run.py alla punta contiene tutte le modifiche di 0d91297 (il patch inverso si applica) piu' quelle contrastive.",
+    "proof": "Per ogni file di `git show --name-only 0d912977` (30 file) ho confrontato i blob con rev-parse: run.py 0d=main Y, main=tip N. `git diff 0d912977 438c8d65 -- src/wearusfm/training/run.py` mostra il campo `contrastive`, config_to_dict e _accumulate_terms (da db5ac41b, c680e95d, e388a1de). `git apply --check -R` del diff 0d912977^..0d912977 su run.py della punta: riesce. Differiscono anche CLAUDE.md, docs/claude_GPT_shared e docs/decisioni.md.",
+    "severity": "ERRORE"
+   },
+   {
+    "quote": "**Lacune del critico.** Ho verificato da solo le quattro piu' rilevanti (R-1...R-3, N-3), senza un secondo giro di scettici. (e nel Metodo: «le quattro lacune del critico che entrano qui sotto»)",
+    "problem": "N-3 non e' una lacuna del critico: e' il rilievo P6-N3 del revisore del punto 6, gia' confermato da uno scettico. D'altra parte nella bozza entrano tutte e nove le lacune del critico, non solo quattro.",
+    "correct": "Lacune del critico: 1 diventa R-2; 2, 3 e 8 diventano R-1; 4 e 5 diventano R-3; 6 diventa N-5; 7 diventa N-2; 9 diventa M-1. N-3 viene da P6-N3, confermato da uno scettico (NON CONFUTATO).",
+    "proof": "sintesi_workflow.json critico.gaps (9 voci): nessuna riguarda db66b507. Nello stesso file P6-N3 ha survives=True e upheld=1 su 1 voto. rapporti_agenti/verify-p6-diagnostica-P6-N3-1.md, Esito: «NON CONFUTATO (nel nucleo), gravita' NOTA». critico-completezza.md, lacune 1-9.",
+    "severity": "ERRORE"
+   },
+   {
+    "quote": "19 job e 16 release storici;",
+    "problem": "I job storici rifiutati dal dispatcher sono 21, non 19. Il numero 19 viene dal rapporto p2, la cui lista pero' somma a 21.",
+    "correct": "21 job e 16 release storici, tutti rifiutati.",
+    "proof": "p2-probe_b.out.json: 21 voci «3a build_command(...)», tutte accepted=False («wrong mode, release, source or allocation»), e 16 voci «3b validate_release». `git ls-tree` di contrastive_comparison_20261116/releases: 21 file *.job.json. La lista di p2-nessuna-eredita.md:18 (audit 1, calibration 1, cuda 1, benchmarks_20261117 5, mmap 6, bf16 6, readout_bf16 1) somma 21.",
+    "severity": "ERRORE"
+   },
+   {
+    "quote": "**Registro:** il registro della punta conserva ogni riga dei commit precedenti; cambia solo l'ordine.",
+    "problem": "Non tutte le righe sono conservate: e' stato tolto il titolo duplicato «## 2) Problemi trovati» (da 2 occorrenze a 1). Inoltre non cambia solo l'ordine: sono state aggiunte 23 righe.",
+    "correct": "Le voci sono conservate testualmente e spostate. Sono stati tolti il titolo duplicato «## 2) Problemi trovati» e aggiunte 23 righe.",
+    "proof": "Confronto per multiinsieme delle righe di docs/claude_GPT_shared fra afb89b45 (14.295 righe) e 438c8d65 (14.317): 1 riga mancante («## 2) Problemi trovati», titoli alle righe 6397 e 10180 in afb89b45, solo alla 9398 alla punta) e 23 righe in piu'. Lo stesso risulta da critico-completezza.md:56-57.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "l'audit, la calibrazione 64701482 (λ 0,1194 e 0,3304) e la ricevuta canonica, alla guardia delle sorgenti; (e in M-1: «Oggi le evidenze vecchie sono fermate prima dalla guardia delle sorgenti, che e' testata.»)",
+    "problem": "Nel percorso di codice la calibrazione storica (calibration_report, authenticate_calibration, calibrated_configs) si ferma prima alla barriera di ricetta, che viene prima della guardia delle sorgenti. La guardia rifiuta run e ricevuta solo se chiamata direttamente. Per l'audit l'affermazione e' vera.",
+    "correct": "Il codice corrente ferma l'audit alla guardia delle sorgenti. Ferma la calibrazione 64701482 alla barriera di ricetta («calibration run config differs from the frozen 512-batch recipe»), anch'essa testata con match. La guardia delle sorgenti rifiuta comunque run e ricevuta canonica se chiamata da sola.",
+    "proof": "contrastive_prepare.py:272-274: controllo del config prima della guardia (288-292). authenticate_calibration chiama calibration_report alla r.381, prima della guardia sulla ricevuta (383-385). p2-probe_b.out.json: 2c, 2d e 2e danno «calibration run config differs...»; 2a e 2b (guardia chiamata direttamente) danno «current execution source inventory/pins differ». Test: test_unmodified_historical_calibration_does_not_qualify_new_targets con match='calibration run config differs'.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Il revisore le ha disattivate tutte e tre insieme e i 337 test contrastivi passano ancora; due scettici confermano.",
+    "problem": "I due scettici di P2-M1 hanno riprodotto solo le due barriere config_sha256 (validate_audit e read_preflight). Nessuno dei due ha provato la guardia della ricevuta in authenticate_calibration (mutazione MF).",
+    "correct": "Il revisore p2 ha disattivato le tre barriere insieme (MD+MG+MF): 337 test passati. I due scettici confermano le due barriere config_sha256 (337 passati). La terza resta provata solo dal revisore, e il critico la cita nella lacuna 9.",
+    "proof": "verify-p2-nessuna-eredita-P2-M1-1.md: mutazioni X1 (contrastive_run.py:100) e X2 (readout:333), «337 passed». verify-...-P2-M1-2.md: «Mutazione MD+MG ... 337 passed». In entrambi nessuna mutazione di authenticate_calibration. p2-mutations/all_contrastive_MD_MG_MF.txt: «337 passed in 88.58s».",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Tutti i checkout storici della linea sono partiti con `--cpus-per-task=4 --mem=2G --time=00:04:00`.",
+    "problem": "Non tutti: il primo checkout, CONTRAST-CHECKOUT-AUDIT-v2-20261117, e' partito con --time=00:05:00. Il critico lo segnala.",
+    "correct": "6 dei 7 checkout storici con 4 CPU, 2G e 00:04:00. CONTRAST-CHECKOUT-AUDIT-v2-20261117 con 4 CPU, 2G e 00:05:00.",
+    "proof": "releases/audit_submission_plan_20261117.json e submission_20261117/checkout_state.json: --time=00:05:00. Gli altri sei piani e stati (AUDIT-M30, CALIB, BENCH, bf16, mmap, readout): --time=00:04:00. docs/reviews/contrastive_preflight_release_20261117.md:11: «checkout CPU (4 CPU, 5 minuti...». critico-completezza.md, lacuna 4: «(uno con 00:05:00...)».",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Un audit oltre 7.200 s ma dentro l'OverTimeLimit verrebbe accettato. E' cio' che accadde a 64652559: 3.787 s su 3.600.",
+    "problem": "64652559 ha superato il limite di 187 s, cioe' 7 s oltre l'OverTimeLimit di 3 minuti (180 s). Non e' quindi finito dentro l'OverTimeLimit, ma nella finestra successiva di KillWait.",
+    "correct": "Un audit oltre 7.200 s ma entro la tolleranza di SLURM (OverTimeLimit 3 min piu' KillWait 180 s) verrebbe accettato. 64652559 ha registrato 3.787 s su 3.600 (TIMEOUT), 7 s oltre i tre minuti di OverTimeLimit.",
+    "proof": "audit_completed_20261117/accounting_and_integrity.txt r.1: «64652559|TIMEOUT|...|3787|60|...»; r.7 «KillWait = 180 sec», r.9 «OverTimeLimit = 3 min». docs/reviews/contrastive_audit_results_20261117.md:53-55: «...perché la conclusione sia avvenuta sette secondi oltre quei tre minuti».",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "| 1. Storico non reinterpretato, 100/125 esplicito | conforme | N-6, N-7 | ... | 2. Nessuna accettazione di evidenze vecchie | ... | R-2, R-4, M-1 |",
+    "problem": "La tabella dell'Esito non e' coerente con le note: N-2 e' etichettata «(punti 1 e 2)» ma non compare ne' nella riga 1 ne' nella riga 2.",
+    "correct": "Riga 1: N-2, N-6, N-7. Riga 2: R-2, R-4, M-1, N-2.",
+    "proof": "Bozza r.38-39 (tabella) contro r.138 «**N-2 (punti 1 e 2).**».",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Il puntatore `PLAN` al piano nuovo (`contrastive_prepare.py:30`) e il testo descrittivo del readout non sono protetti da test: riportati ai valori vecchi, la suite resta verde.",
+    "problem": "Nessuno ha rieseguito la suite completa con le mutazioni M7 e M6, solo sottoinsiemi; per il resto ci si basa su grep. Gli stessi scettici scrivono che la suite completa non e' stata verificata.",
+    "correct": "Riportati ai valori vecchi, i test contrastivi e mirati restano verdi (173+32, fino a 322 casi). Nessun altro test legge PLAN o quel testo (grep).",
+    "proof": "p7-test-suite.md: M7 e M6 «173 + 32 passed». verify-p7-...-F1-1.md r.12-13 e r.29 «Non verificato: suite completa». F1-2 r.6-7: 322 casi; r.40 «non verificato: suite completa». F2-1: 173, 32 e 229 casi. F2-2: 314 casi.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "core-ore: 51,371111 + 48,266667 + 137,066667 = 236,704445.",
+    "problem": "La somma e' fatta sugli addendi arrotondati: il valore esatto arrotondato a sei decimali e' 236,704444.",
+    "correct": "236,704444 core-ore (25,284444 GPU-ore e' corretto).",
+    "proof": "common_state_diagnostics_20261118/resources.json: before_diagnostics_used.core_hours 51.37111111111111, incremental_cap.core_hours 48.266666666666666; preflight core_hours_cap 137.06666666666666. Somma 236.70444444. p5-preventivo.md, Esito: «236,704444 coreh».",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Ogni differenza fra i piani e' un'aggiunta dichiarata.",
+    "problem": "Non ci sono solo aggiunte: il campo `scope` di plan.json e' stato riscritto. Le limitazioni invece sono state solo estese con due voci.",
+    "correct": "Le differenze fra i piani sono aggiunte dichiarate (finestre, CLI, target_version, amendment, target_recipe_amendment, interpretazione del moltiplicatore, decisione target_windows, due limitazioni) e la riscrittura del testo di `scope`.",
+    "proof": "Confronto per chiavi dei due plan.json alla punta: removed=[], changed=['scope','limitations']. scope era «Design and implementation for Claude review, no submissions», ora «New RMS100/fast125 preparation; no submissions; old artifacts remain historical only».",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "e il testo descrittivo del readout (`:111`) [N-4]; «Una λ fuori da [1e-4, 1] ferma la coorte (`:349`).» [Verifiche, punto 4]",
+    "problem": "Riferimenti di riga senza file. «:111» segue «contrastive_prepare.py:30», ma in quel file la riga 111 e' vuota. Il punto 4 non nomina alcun file: l'ultimo nominato e' contrastive_compare.py, dove la riga 349 e' un'altra cosa.",
+    "correct": "scripts/contrastive_benchmark_readout.py:111 (stringa 'interpretation') e scripts/contrastive_prepare.py:349 (controllo dell'intervallo di λ).",
+    "proof": "Riga 111 di readout alla punta: 'interpretation': 'Descriptive historical reference only...'. Riga 111 di prepare: vuota. prepare:348-349: formula e controllo `1e-4 <= weights[name] <= 1`. Riga 349 di compare: lettura della griglia di classificazione.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "**`438c8d65`:** aggiunge solo evidenze.",
+    "problem": "Oltre alle evidenze, il commit aggiunge il prompt di review e voci in decisioni.md, riordina il registro e modifica un file esistente, local_validation.json. Resta vero che non tocca codice ne' test.",
+    "correct": "438c8d65 non tocca src, scripts e tests. Aggiunge le evidenze di full_suite e README, docs/prompt_claude_contrastive_targets_20261118.md (+34 righe) e 12 righe di docs/decisioni.md, riordina docs/claude_GPT_shared e aggiorna local_validation.json.",
+    "proof": "`git show --numstat 438c8d65`: docs/prompt_claude_contrastive_targets_20261118.md 34/0, docs/decisioni.md 12/0, docs/claude_GPT_shared 3319/3297, local_validation.json 45/1: «\"full_cpu_suite\": \"pending\"» sostituito e aggiunto independent_preparation_review.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Senza questa decisione le cinque celle di training (10 GPU-ore) ripeterebbero una matrice negativa prevedibile",
+    "problem": "Le cinque celle non sono di training ma di benchmark (tre completi e due riprese). Il preflight non contiene training: «training_release: Absent».",
+    "correct": "le cinque celle di benchmark (tre complete e due di ripresa, 10 GPU-ore)",
+    "proof": "preflight_plan.json: celle CONTRAST-BENCH-{C0,CN,CR} con mode full e CONTRAST-RESUME-{CN,CR} con mode split, 2 GPU-ore ciascuna; r.198 \"training_release\": \"Absent; measured benchmark and separate training budget required\". Emendamento r.66-67: «Tre benchmark completi», «Due riprese».",
+    "severity": "IMPRECISIONE"
+   }
+  ],
+  "checked_count": 115,
+  "summary": "Ho trovato 4 errori e 12 imprecisioni sulle circa 115 affermazioni controllate; il resto della bozza corrisponde alle fonti.\n\nErrori:\n- **Impronta del piano (R-2 e Prompt per GPT):** 6081832... e' l'impronta di plan.json. Quella di preflight_plan.json e' ea2cef0f....\n- **I 26 file di 0d91297:** non sono tutti identici. src/wearusfm/training/run.py alla punta contiene anche le modifiche contrastive; le modifiche di 0d91297 pero' ci sono tutte.\n- **N-3 tra le lacune del critico:** non ne fa parte. Viene dal revisore del punto 6 (P6-N3) ed e' stato confermato da uno scettico.\n- **Job storici rifiutati:** sono 21, non 19.\n\nImprecisioni, in breve:\n- il registro perde un titolo duplicato e ha 23 righe in piu';\n- la calibrazione storica si ferma prima alla barriera di ricetta, non alla guardia delle sorgenti;\n- i due scettici di M-1 hanno provato due barriere su tre;\n- un checkout storico e' partito con 00:05:00;\n- 64652559 ha superato l'OverTimeLimit di 7 s;\n- 236,704445 va corretto in 236,704444;\n- la tabella dell'Esito non riporta N-2;\n- con le mutazioni di N-4 sono stati rieseguiti solo sottoinsiemi di test, non la suite;\n- il campo `scope` del piano e' stato riscritto;\n- i riferimenti «:111» e «:349» non dicono a quale file si riferiscono;\n- 438c8d65 aggiunge anche documenti oltre alle evidenze;\n- le «celle di training» di R-1 sono celle di benchmark.\n\nVerificato e corretto il resto: citazioni letterali (prompt, CLAUDE.md, registro, protocollo r.132, db66b507 r.22, commento del test), righe di codice citate, tetti e somme del preventivo, billing, OverTimeLimit e KillWait, stima dell'audit, nove celle e dipendenze, il controllo di parita' alla r.395, i config nuovi, la sonda del critico (rieseguita), lo stato di Leonardo alle 10:07 e il ledger.\n\nHo rieseguito i test: 173 + 32 = 205 passati e 337 test contrastivi raccolti. La raccolta alla punta da' 3.723 test su 233 file, identici alla ricevuta. Ho contato 131 test non passati nel primo giro, tutti nei 13 file rieseguiti dove passano 263 su 263.\n\nLa copia git e' rimasta pulita e ho cancellato basetemp e cartelle temporanee. L'esito e' scritto in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/factcheck-2.md."
+ }
+]

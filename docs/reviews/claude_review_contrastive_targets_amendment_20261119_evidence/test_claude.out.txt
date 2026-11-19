@@ -1,0 +1,13 @@
+Esecuzione di Claude, 19/11/2026, copia git pulita alla punta 438c8d65 (origin/codex/contrastive-target-windows-20261118).
+Comando: OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=<copia>/src:<copia>/tests/cpu:<copia>/scripts ~/.venvs/wearusfm-tok/bin/python -B -m pytest -q -p no:cacheprovider --basetemp=<cartella nuova> <file>
+
+Diretti (9 file): test_contrastive_prepare.py test_contrastive_job.py test_contrastive_historical_calibration.py
+test_contrastive_historical_callsites.py test_contrastive_benchmark_readout.py test_contrastive_mmap_compatibility.py
+test_contrastive_run.py test_contrastive_source_compat.py test_target_windows_fix.py
+173 passed in 12.02s
+
+Indiretti (5 file): test_contrastive_audit.py test_contrastive_cuda_check.py test_contrastive_rank_exit.py
+test_contrastive_common_checkpoint.py test_contrastive_common_state_cuda.py
+32 passed in 17.41s
+
+Totale: 205 passati, 0 falliti. Stessi conteggi del revisore dei test (rapporti_agenti/p7-test-suite.md).

@@ -1,0 +1,24 @@
+{
+ "root": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/p2m1v1/mut_W",
+ "source_digest": "0a4edb6ca86f2eb5e9600122f0a1aaa44eb33f3588d2fd15b5cc563350b04eee",
+ "audit_inputs_equal_new_plan_pins": true,
+ "D0_compat_guard_exact_audit": {
+  "accepted": true,
+  "value": [
+   "artifact_sha256",
+   "current_source_sha256",
+   "historical_source_sha256",
+   "kind",
+   "manifest_sha256",
+   "protocol"
+  ]
+ },
+ "D1_validate_audit_exact_bytes_new_recipe": {
+  "accepted": false,
+  "error": "ValueError: audit stream/config differs from the calibration recipe"
+ },
+ "D2_read_preflight_exact_bytes_new_recipe": {
+  "accepted": false,
+  "error": "ValueError: CPU audit missing, failed or from different inputs/config/source"
+ }
+}

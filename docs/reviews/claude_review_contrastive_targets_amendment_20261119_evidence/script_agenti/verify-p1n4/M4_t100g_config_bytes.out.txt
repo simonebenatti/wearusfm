@@ -1,0 +1,514 @@
+........................................................................ [ 22%]
+..............................F......................................... [ 45%]
+.................................................F....F................. [ 68%]
+.FFF...FFF..F...............FFFF....FF.................................. [ 91%]
+..........................                                               [100%]
+=================================== FAILURES ===================================
+_____ test_unmodified_historical_calibration_does_not_qualify_new_targets ______
+
+    def test_unmodified_historical_calibration_does_not_qualify_new_targets():
+        receipt=json.loads((CAL/'calibration_report.json').read_text())
+        with pytest.raises(ValueError, match='calibration run config differs'):
+>           P.authenticate_calibration(receipt,CAL/'run')
+
+tests/cpu/test_contrastive_historical_calibration.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_prepare.py:381: in authenticate_calibration
+    measured = calibration_report(run_dir)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/contrastive_comparison_20261116/calibration_completed_20261117/run')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+
+During handling of the above exception, another exception occurred:
+
+    def test_unmodified_historical_calibration_does_not_qualify_new_targets():
+        receipt=json.loads((CAL/'calibration_report.json').read_text())
+>       with pytest.raises(ValueError, match='calibration run config differs'):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'calibration run config differs'
+E        Input: 'historical baseline hash changed'
+
+tests/cpu/test_contrastive_historical_calibration.py:49: AssertionError
+___________ test_old_calibration_cannot_authorize_new_target_recipe ____________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_old_calibration_cannot_au0')
+
+    def test_old_calibration_cannot_authorize_new_target_recipe(tmp_path):
+        folder = tmp_path / "run"
+        cfg, summary, records = fixture_run(folder)
+        # Historical payloads omit both fields and carry the original version.
+        del cfg["loader"]["rms_window_ms"]
+        del cfg["loader"]["ms_fast_window_ms"]
+        cfg["target_version"] = P.LEGACY_TARGET_VERSION
+        write_run(folder, cfg, summary, records)
+        with pytest.raises(ValueError, match="calibration run config differs"):
+>           P.calibration_report(folder)
+
+tests/cpu/test_contrastive_prepare.py:146: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_old_calibration_cannot_au0/run')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_old_calibration_cannot_au0')
+
+    def test_old_calibration_cannot_authorize_new_target_recipe(tmp_path):
+        folder = tmp_path / "run"
+        cfg, summary, records = fixture_run(folder)
+        # Historical payloads omit both fields and carry the original version.
+        del cfg["loader"]["rms_window_ms"]
+        del cfg["loader"]["ms_fast_window_ms"]
+        cfg["target_version"] = P.LEGACY_TARGET_VERSION
+        write_run(folder, cfg, summary, records)
+>       with pytest.raises(ValueError, match="calibration run config differs"):
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'calibration run config differs'
+E        Input: 'historical baseline hash changed'
+
+tests/cpu/test_contrastive_prepare.py:145: AssertionError
+_______ test_calibration_report_selects_same_first32_informative_batches _______
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_calibration_report_select0')
+
+    def test_calibration_report_selects_same_first32_informative_batches(tmp_path):
+        folder = tmp_path / "run"
+        cfg, summary, records = fixture_run(folder)
+        records[256]["contrast_global_grad_rnc"] = 0.
+        records[257]["contrast_global_grad_nce"] = 0.
+        write_run(folder, cfg, summary, records)
+>       report = P.calibration_report(folder)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:162: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_calibration_report_select0/run')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+_ test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[weight] _
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_calibration_reports_scien0')
+kind = 'weight'
+
+    @pytest.mark.parametrize("kind", ["weight", "support", "coverage"])
+    def test_calibration_reports_scientific_gate_failure_without_clamp_or_extension(tmp_path, kind):
+        folder = tmp_path / "run"
+        cfg, summary, records = fixture_run(folder)
+        if kind == "weight":
+            for r in records[256:]: r["contrast_global_grad_nce"] = 1e-3
+        elif kind == "support":
+            for r in records[256:]: r["contrast_rnc_windows"] = 0
+            summary["contrastive"]["coverage_partial_block"].update(rnc_active_fraction=0., passed=False)
+        else:
+            block = summary["contrastive"]["coverage_partial_block"]
+            for r in records[256:282]: r["contrast_rnc_windows"] = 0
+            block["rnc_active_fraction"] = 230 / 256
+            block["passed"] = False
+        write_run(folder, cfg, summary, records)
+>       report = P.calibration_report(folder)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:212: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_calibration_reports_scien0/run')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+_ test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[support] _
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_calibration_reports_scien1')
+kind = 'support'
+
+    @pytest.mark.parametrize("kind", ["weight", "support", "coverage"])
+    def test_calibration_reports_scientific_gate_failure_without_clamp_or_extension(tmp_path, kind):
+        folder = tmp_path / "run"
+        cfg, summary, records = fixture_run(folder)
+        if kind == "weight":
+            for r in records[256:]: r["contrast_global_grad_nce"] = 1e-3
+        elif kind == "support":
+            for r in records[256:]: r["contrast_rnc_windows"] = 0
+            summary["contrastive"]["coverage_partial_block"].update(rnc_active_fraction=0., passed=False)
+        else:
+            block = summary["contrastive"]["coverage_partial_block"]
+            for r in records[256:282]: r["contrast_rnc_windows"] = 0
+            block["rnc_active_fraction"] = 230 / 256
+            block["passed"] = False
+        write_run(folder, cfg, summary, records)
+>       report = P.calibration_report(folder)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:212: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_calibration_reports_scien1/run')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+_ test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[coverage] _
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_calibration_reports_scien2')
+kind = 'coverage'
+
+    @pytest.mark.parametrize("kind", ["weight", "support", "coverage"])
+    def test_calibration_reports_scientific_gate_failure_without_clamp_or_extension(tmp_path, kind):
+        folder = tmp_path / "run"
+        cfg, summary, records = fixture_run(folder)
+        if kind == "weight":
+            for r in records[256:]: r["contrast_global_grad_nce"] = 1e-3
+        elif kind == "support":
+            for r in records[256:]: r["contrast_rnc_windows"] = 0
+            summary["contrastive"]["coverage_partial_block"].update(rnc_active_fraction=0., passed=False)
+        else:
+            block = summary["contrastive"]["coverage_partial_block"]
+            for r in records[256:282]: r["contrast_rnc_windows"] = 0
+            block["rnc_active_fraction"] = 230 / 256
+            block["passed"] = False
+        write_run(folder, cfg, summary, records)
+>       report = P.calibration_report(folder)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:212: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_calibration_reports_scien2/run')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+_________ test_receipt_is_recomputed_not_trusted_and_all_arms_share_it _________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_receipt_is_recomputed_not0')
+
+    def test_receipt_is_recomputed_not_trusted_and_all_arms_share_it(tmp_path):
+        run = tmp_path / "run"
+        fixture_run(run)
+>       receipt = P.calibration_report(run)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:227: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_receipt_is_recomputed_not0/run')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+_______________ test_quota_exemption_keeps_counts_in_global_gate _______________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_quota_exemption_keeps_cou0')
+
+    def test_quota_exemption_keeps_counts_in_global_gate(tmp_path):
+        run = tmp_path / "run"
+        cfg, summary, records = fixture_run(run)
+        block = summary["contrastive"]["coverage_partial_block"]
+        for row in records[256:]:
+            row["contrast_nce_eligible"] -= row["contrast_nce_eligible__capgmyo"]
+            row["contrast_nce_eligible__capgmyo"] = 0
+        block["datasets"]["capgmyo"].update(eligible=0, fraction=0.)
+        block["nce_fraction"] = (8192 - block["datasets"]["capgmyo"]["queries"]) / 8192
+        write_run(run, cfg, summary, records)
+>       report = P.calibration_report(run)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_quota_exemption_keeps_cou0/run')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+____ test_extreme_finite_norms_produce_failed_json_receipt_without_infinity ____
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_extreme_finite_norms_prod0')
+
+    def test_extreme_finite_norms_produce_failed_json_receipt_without_infinity(tmp_path):
+        run = tmp_path / "run"
+        cfg, summary, records = fixture_run(run)
+        for r in records[256:]: r.update(contrast_global_grad_base=1e308, contrast_global_grad_nce=1e-308)
+        write_run(run, cfg, summary, records)
+>       receipt = P.calibration_report(run)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:264: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_extreme_finite_norms_prod0/run')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+__ test_calibration_receipt_is_identical_after_evidence_directory_relocation ___
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_calibration_receipt_is_id0')
+
+    def test_calibration_receipt_is_identical_after_evidence_directory_relocation(tmp_path):
+        import shutil
+        original = tmp_path / "cluster_checkout_output"
+        fixture_run(original)
+>       receipt = P.calibration_report(original)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_prepare.py:288: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_calibration_receipt_is_id0/cluster_checkout_output')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+_________ test_review_configs_cannot_accidentally_be_training_recipes __________
+
+    def test_review_configs_cannot_accidentally_be_training_recipes():
+        cfg = recipes()
+>       assert runner.validate_recipe(cfg["calibration"], "calibration").contrastive["calibration_only"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_run.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = {'accum_steps': 1, 'alarm': {'collapse_ratio_min': 0.05, 'erank_fraction_min': 0.1, 'erank_min': 38.4, 'patience': 3}, 'amp_bf16': True, 'batch_size': 32, ...}
+stage = 'calibration', calibration = None, calibration_run_dir = None
+
+    def validate_recipe(raw, stage, calibration=None, calibration_run_dir=None):
+        if stage not in ("calibration", "benchmark", "training"):
+            raise ValueError("unknown comparison stage")
+        if sha(BASELINE) != BASELINE_SHA256:
+>           raise ValueError("historical baseline changed")
+E           ValueError: historical baseline changed
+
+scripts/contrastive_run.py:33: ValueError
+________ test_paired_recipes_only_use_authenticated_shared_weights[C0] _________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_paired_recipes_only_use_a0')
+arm = 'C0'
+
+    @pytest.mark.parametrize("arm", ["C0", "CN", "CR"])
+    def test_paired_recipes_only_use_authenticated_shared_weights(tmp_path, arm):
+>       folder, report = measured(tmp_path)
+                         ^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_run.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_contrastive_run.py:21: in measured
+    return folder, P.calibration_report(folder)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_paired_recipes_only_use_a0/calibration')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+________ test_paired_recipes_only_use_authenticated_shared_weights[CN] _________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_paired_recipes_only_use_a1')
+arm = 'CN'
+
+    @pytest.mark.parametrize("arm", ["C0", "CN", "CR"])
+    def test_paired_recipes_only_use_authenticated_shared_weights(tmp_path, arm):
+>       folder, report = measured(tmp_path)
+                         ^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_run.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_contrastive_run.py:21: in measured
+    return folder, P.calibration_report(folder)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_paired_recipes_only_use_a1/calibration')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+________ test_paired_recipes_only_use_authenticated_shared_weights[CR] _________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_paired_recipes_only_use_a2')
+arm = 'CR'
+
+    @pytest.mark.parametrize("arm", ["C0", "CN", "CR"])
+    def test_paired_recipes_only_use_authenticated_shared_weights(tmp_path, arm):
+>       folder, report = measured(tmp_path)
+                         ^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_run.py:36: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_contrastive_run.py:21: in measured
+    return folder, P.calibration_report(folder)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_paired_recipes_only_use_a2/calibration')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+____________ test_recipe_only_is_explicitly_not_release_validation _____________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_recipe_only_is_explicitly0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x16bc51290>
+capsys = <_pytest.capture.CaptureFixture object at 0x16bc508d0>
+
+    def test_recipe_only_is_explicitly_not_release_validation(tmp_path, monkeypatch, capsys):
+        cfg = tmp_path / "cfg.json"
+        cfg.write_text(json.dumps(recipes()["calibration"]))
+        monkeypatch.setattr(sys, "argv", ["contrastive_run", "--stage", "calibration", "--config", str(cfg), "--recipe-only"])
+>       runner.main()
+
+tests/cpu/test_contrastive_run.py:127: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/contrastive_run.py:255: in main
+    cfg = validate_recipe(raw, a.stage, calibration, a.calibration_run_dir)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = {'accum_steps': 1, 'alarm': {'collapse_ratio_min': 0.05, 'erank_fraction_min': 0.1, 'erank_min': 38.4, 'patience': 3}, 'amp_bf16': True, 'batch_size': 32, ...}
+stage = 'calibration', calibration = None, calibration_run_dir = None
+
+    def validate_recipe(raw, stage, calibration=None, calibration_run_dir=None):
+        if stage not in ("calibration", "benchmark", "training"):
+            raise ValueError("unknown comparison stage")
+        if sha(BASELINE) != BASELINE_SHA256:
+>           raise ValueError("historical baseline changed")
+E           ValueError: historical baseline changed
+
+scripts/contrastive_run.py:33: ValueError
+___________ test_generator_cohort_binds_all_arms_and_every_endpoint ____________
+
+tmp_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_generator_cohort_binds_al0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x16ae15fd0>
+
+    def test_generator_cohort_binds_all_arms_and_every_endpoint(tmp_path, monkeypatch):
+>       folder, receipt = measured(tmp_path)
+                          ^^^^^^^^^^^^^^^^^^
+
+tests/cpu/test_contrastive_run.py:133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/cpu/test_contrastive_run.py:21: in measured
+    return folder, P.calibration_report(folder)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+run_dir = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/bt-M4_t100g_config_bytes/test_generator_cohort_binds_al0/calibration')
+baseline_path = PosixPath('/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_targets/tmp/verify-p1n4/clone/results/infra/tokenizer_execution_20261103/19618/T100-G/config.json')
+
+    def calibration_report(run_dir, baseline_path=BASELINE):
+        """Read measured evidence; PASSED_FOR_REVIEW does not authorize a training."""
+        folder, baseline_path = Path(run_dir), Path(baseline_path)
+        if _pin(baseline_path)["sha256"] != BASELINE_SHA256:
+>           raise ValueError("historical baseline hash changed")
+E           ValueError: historical baseline hash changed
+
+scripts/contrastive_prepare.py:270: ValueError
+=========================== short test summary info ============================
+FAILED tests/cpu/test_contrastive_historical_calibration.py::test_unmodified_historical_calibration_does_not_qualify_new_targets
+FAILED tests/cpu/test_contrastive_prepare.py::test_old_calibration_cannot_authorize_new_target_recipe
+FAILED tests/cpu/test_contrastive_prepare.py::test_calibration_report_selects_same_first32_informative_batches
+FAILED tests/cpu/test_contrastive_prepare.py::test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[weight]
+FAILED tests/cpu/test_contrastive_prepare.py::test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[support]
+FAILED tests/cpu/test_contrastive_prepare.py::test_calibration_reports_scientific_gate_failure_without_clamp_or_extension[coverage]
+FAILED tests/cpu/test_contrastive_prepare.py::test_receipt_is_recomputed_not_trusted_and_all_arms_share_it
+FAILED tests/cpu/test_contrastive_prepare.py::test_quota_exemption_keeps_counts_in_global_gate
+FAILED tests/cpu/test_contrastive_prepare.py::test_extreme_finite_norms_produce_failed_json_receipt_without_infinity
+FAILED tests/cpu/test_contrastive_prepare.py::test_calibration_receipt_is_identical_after_evidence_directory_relocation
+FAILED tests/cpu/test_contrastive_run.py::test_review_configs_cannot_accidentally_be_training_recipes
+FAILED tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[C0]
+FAILED tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[CN]
+FAILED tests/cpu/test_contrastive_run.py::test_paired_recipes_only_use_authenticated_shared_weights[CR]
+FAILED tests/cpu/test_contrastive_run.py::test_recipe_only_is_explicitly_not_release_validation
+FAILED tests/cpu/test_contrastive_run.py::test_generator_cohort_binds_all_arms_and_every_endpoint
+16 failed, 298 passed in 89.37s (0:01:29)

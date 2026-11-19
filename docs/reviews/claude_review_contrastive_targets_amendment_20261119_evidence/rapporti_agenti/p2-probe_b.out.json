@@ -1,0 +1,266 @@
+{
+ "source_digest_current": "643a8937e83353345adff81999292d9d380fb06fdae73fa733deb8e147968ffb",
+ "preflight_source_matches_current": true,
+ "new_cal_windows": [
+  100.0,
+  125.0,
+  "step1_psd_power_shape_energy_fast125_v3"
+ ],
+ "hist_audit_sha_equals_compat_pin": true,
+ "hist_audit_config_sha_equals_hist_cal_config": true,
+ "hist_audit_config_sha_equals_new_cal_config": false,
+ "1a compat_guard(audit)": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "1b validate_audit(hist audit, new calibration)": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "1c validate_audit(relabelled source, new calibration)": {
+  "accepted": false,
+  "error": "ValueError: audit stream/config differs from the calibration recipe"
+ },
+ "1d CONTROL validate_audit(relabelled source, historical 25/50 calibration)": {
+  "accepted": true,
+  "result": true
+ },
+ "hist_receipt_weights": {
+  "nce": 0.11942686122572264,
+  "rnc": 0.33044627364850215
+ },
+ "hist_receipt_canonical_sha_equals_compat_pin": true,
+ "2a compat_guard(calibration_run)": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "2b compat_guard(calibration_receipt canonical)": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "2c calibration_report(hist run)": {
+  "accepted": false,
+  "error": "ValueError: calibration run config differs from the frozen 512-batch recipe"
+ },
+ "2d authenticate_calibration(hist receipt, hist run)": {
+  "accepted": false,
+  "error": "ValueError: calibration run config differs from the frozen 512-batch recipe"
+ },
+ "2e calibrated_configs(hist receipt)": {
+  "accepted": false,
+  "error": "ValueError: calibration run config differs from the frozen 512-batch recipe"
+ },
+ "2f calibration_report(config relabelled to 100/125, old provenance)": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "2g calibration_report(config AND source relabelled: deliberate forgery)": {
+  "accepted": true,
+  "result": "PASSED_FOR_REVIEW weights={\"nce\": 0.11942686122572264, \"rnc\": 0.33044627364850215}"
+ },
+ "3a build_command(releases/audit.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/benchmarks_20261117/full_C0.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/benchmarks_20261117/full_CN.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/benchmarks_20261117/full_CR.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/benchmarks_20261117/split_CN.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/benchmarks_20261117/split_CR.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/bf16_20261118/cuda.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/bf16_20261118/full_C0.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/bf16_20261118/full_CN.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/bf16_20261118/full_CR.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/bf16_20261118/split_CN.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/bf16_20261118/split_CR.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/calibration.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/cuda.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/mmap_20261118/cuda.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/mmap_20261118/full_C0.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/mmap_20261118/full_CN.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/mmap_20261118/full_CR.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/mmap_20261118/split_CN.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/mmap_20261118/split_CR.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3a build_command(releases/readout_bf16_20261118/readout.job.json)": {
+  "accepted": false,
+  "error": "ValueError: wrong mode, release, source or allocation"
+ },
+ "3b validate_release(releases/benchmarks_20261117/full_C0.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/benchmarks_20261117/full_CN.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/benchmarks_20261117/full_CR.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/benchmarks_20261117/split_CN.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/benchmarks_20261117/split_CR.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/bf16_20261118/full_C0.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/bf16_20261118/full_CN.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/bf16_20261118/full_CR.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/bf16_20261118/split_CN.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/bf16_20261118/split_CR.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/calibration.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/mmap_20261118/full_C0.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/mmap_20261118/full_CN.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/mmap_20261118/full_CR.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/mmap_20261118/split_CN.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3b validate_release(releases/mmap_20261118/split_CR.release.json)": {
+  "accepted": false,
+  "error": "ValueError: release source/config pins differ"
+ },
+ "3c validate_release(NEW calibration release pinning OLD audit)": {
+  "accepted": false,
+  "error": "ValueError: historical evidence compatibility: current execution source inventory/pins differ"
+ },
+ "3d CONTROL validate_audit(synthetic new audit)": {
+  "accepted": true,
+  "result": true
+ },
+ "3e validate_release(NEW benchmark release, new audit, OLD receipt+bf16 cohort)": {
+  "accepted": false,
+  "error": "ValueError: calibration run config differs from the frozen 512-batch recipe"
+ },
+ "3f validate_cohort(bf16 cohort)": {
+  "accepted": false,
+  "error": "ValueError: calibration run config differs from the frozen 512-batch recipe"
+ },
+ "3g validate_recipe(bf16 C0 config, calibration stage)": {
+  "accepted": false,
+  "error": "ValueError: configuration differs from the frozen comparison recipe"
+ },
+ "3h validate_recipe(hist calibration config)": {
+  "accepted": false,
+  "error": "ValueError: configuration differs from the frozen comparison recipe"
+ },
+ "hist_bench_C0_windows": [
+  25.0,
+  50.0,
+  "step1_psd_power_shape_energy_v1"
+ ],
+ "4a _run_evidence(bf16 C0 benchmark, new C0 recipe)": {
+  "accepted": false,
+  "error": "ValueError: incomplete/unmatched benchmark C0"
+ },
+ "4b _cuda_evidence(bf16 cuda.json, new cohort/source)": {
+  "accepted": false,
+  "error": "ValueError: CUDA/NCCL check missing, failed or from different source/cohort/inputs"
+ },
+ "bf16_preflight_status": [
+  "FAILED_REQUIRES_REVIEW",
+  [
+   "CN: 4GPU resume numerical bound failed",
+   "CN: resume student: relative displacement 0.032484632331012932 exceeds 0.01",
+   "CN: resume teacher: relative displacement 0.020466268881545187 exceeds 0.01"
+  ]
+ ],
+ "4c read_preflight(all bf16_20261118 evidence, local copies)": {
+  "accepted": false,
+  "error": "ValueError: calibration run config differs from the frozen 512-batch recipe"
+ },
+ "4d authenticate_preflight(bf16 preflight_readout, local paths)": {
+  "accepted": false,
+  "error": "ValueError: preflight receipt did not pass every frozen gate"
+ },
+ "4e authenticate_preflight(bf16 preflight_readout, archived remote paths)": {
+  "accepted": false,
+  "error": "ValueError: preflight receipt did not pass every frozen gate"
+ }
+}
