@@ -8907,6 +8907,21 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Tetto superato, voce nella sezione 2. Esito e consuntivo in `docs/decisioni.md`; dati in
   `results/temponet_emg2pose/seeds_study_20261118/`.
 
+### 2026-11-19 | Claude | Rilettura della revisione v3 della proposta TCN: convergenza documentale sul protocollo v3 (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: revisione v3 di GPT (`pose-temponet-frozen-encoder-readout-20261117-v3`, ramo `codex/pose-temponet-proposal-20261117`):
+  contenuti `455b3220`, consegna con gli hash `0e56c8b1`, base del diff `3e007c8`. Risponde alla mia review `ee118a25`. Due
+  messaggi di GPT incollati da Simone il 19/11, coerenti fra loro, chiedevano la rilettura mirata di BL, OB e minori, senza job
+  né agenti; Simone: «se si megia ed esegui» (letto come: unire le due richieste in una sola rilettura).
+- Review in `docs/reviews/claude_review_pose_temponet_v3_20261119.md`, fatta da sola, senza agenti. SHA-256 di protocollo,
+  proposta e risposta rifatti: coincidono col pin. Punta del ramo di GPT ricontrollata prima del commit: `0e56c8b1`.
+- Esito: **Convergenza documentale sul protocollo v3**, senza blocchi residui. BL-1 (ridge come ancora, E_cal su `y`, E_cleanLS su
+  `y*`, tutto valutato su `y`, ridge al 90% del margine costante→oracolo e teste al 90% del margine costante→ridge), BL-2 (MLP
+  descrittiva in P, J e DEC) e BL-3 (tolleranza dello 0,5% sul bordo inferiore; S-2 compromesso) sono chiusi; chiusi anche
+  OB-1...OB-5 e le sei minori. Tre ritocchi di testo senza un nuovo giro (voce nella sezione 2).
+- La convergenza non rilascia invii: restano la review del pacchetto operativo (codice, test, piano eseguibile) e i gate.
+  Operatore della prova: 2-TCN head launcher. Prompt per GPT nella sezione 5 della review, consegnato a Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13051,3 +13066,15 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   di 14 (attese circa 13). La velocita' per passo non e' cambiata.
 - Nessuna regola per fermare job in corso. Da riferire a Simone. Per i prossimi preventivi: caricamento contato almeno doppio con piu'
   job in parallelo, oppure invii scaglionati.
+
+### 2026-11-19 | Claude | Revisione TCN v3: tre ritocchi di testo da fare senza un nuovo giro (nessuno blocca)
+
+- DEC:6779 dice «altri allarmi invariati», ma la voce del 18/11 (DEC:6747) chiamava S-2 «Allarme» ed elencava solo il bordo
+  finale: scrivere una volta l'elenco completo di P:69 (ultime 5 epoche dell'orizzonte massimo, primo quarto di epoca, bordo
+  superiore dopo l'estensione, bordo inferiore oltre lo 0,5%).
+- §10, riga «Criteri»: aggiungere che con 15 utenti la copertura può essere più bassa e che, senza bootstrap a due livelli, il «no»
+  resta condizionato ai tre semi (oggi solo in P:124 e P:139).
+- P:135: «delta candidato meno controllo positivo» si legge come il controllo positivo sintetico; scrivere «delta = candidato −
+  comparatore», come J `evaluation.secondary_worsening`.
+- Facoltativi: «controllo_non_calibrato» in P:86 e P:90; lettura della TCN di P:72 anche in J `objective_tradeoff.consequence`;
+  parole attaccate fuori dal §10. Li ricontrollo alla review del pacchetto operativo.
