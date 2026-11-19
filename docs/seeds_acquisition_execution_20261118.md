@@ -125,3 +125,16 @@ non si sommano le prenotazioni inutilizzate dell'audit cancellato. Nota contabil
 lo scheduler ha allocato2CPU al checkout, pur richiedendone1; il consuntivo usa le
 2CPU effettive. Preventivo e diagnosi sono pubblicati prima dei nuovi invii tramite
 submitter/ledger comuni. Nessuna nuova scelta scientifica, fit o pretraining suSEEDS.
+
+**Invii del19/11 confermati:** download **64827659**, giàRUNNING nello snapshot delle
+10:33CET; audit **64828230**, sottomesso con `afterok:64827659`. Piano e diagnosi
+pubblicati prima degli invii nel commitf7fc04df, SHAoriginverificato. Ricevute dei nuovi
+IDlogici e stato in `results/infra/seeds_20261118/recovery_20261119/`.
+
+Il prossimo controllo deve leggere i soli nuovi report
+`$WORK/wearusfm_runs/results/seeds_20261118/download_64827659.json` e
+`$WORK/wearusfm_runs/results/seeds_20261118/audit_64828230.json`, insieme a log e
+accounting dei parent. Il download deve certificare5.880file verificati e lo stesso
+manifest; l'audit deve essere completo, noncampione. Non duplicare i due job, non
+confondere il download riuscito con una verifica cinematica già conclusa e non
+avviare i fit dal solo esito di acquisizione. Nessuna automazione persistente.

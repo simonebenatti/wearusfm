@@ -1,0 +1,42 @@
+{
+ "id": "SEEDS-audit-resume-20261119",
+ "creato": "2026-11-19T10:33:04+01:00",
+ "agente": "gpt",
+ "campagna": "seeds-20261118",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "b8c0718133963436b48eb2972e9ce1d4910cffea",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SEEDS-audit-resume-20261119",
+  "--comment=wearusfm:SEEDS-audit-resume-20261119",
+  "--dependency=afterok:64827659",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/seeds-acquisition-20261118,EXPECTED_SHA=b8c0718133963436b48eb2972e9ce1d4910cffea"
+ ],
+ "dopo": "SEEDS-download-resume-20261119",
+ "script_stdin": "scripts/slurm/seeds_audit.sbatch",
+ "script_stdin_sha256": "c4276c4bcf92366085abf903256d6837ab8eec506956f2e1af8e4db8ed1cdfa6",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-19T10:33:04+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-19T10:33:04+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-19T10:33:46+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 64828230,
+   "uscita": 0,
+   "stdout": "64828230\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 64828230,
+ "uscita": 0,
+ "stdout": "64828230\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

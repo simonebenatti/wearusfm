@@ -192,6 +192,11 @@ Tetto ripresa12coreh, consuntivo precedente0,456111coreh,0GPUh. Evidenze e preve
 in results/infra/seeds_20261118/recovery_20261119. Nessun fit dei tre bracci né modifica
 ai job delle altre linee; SEEDS resta completamente esterno al pretraining.
 
+Seguito eseguito dopo pubblicazionef7fc04df verificata suorigin: download64827659
+sottomesso eRUNNING; audit64828230 sottomessoafterok:64827659. Ricevute dei nuovi ID
+nel medesimo percorso. Il dataset completo e l'audit restano da raccogliere; nessun
+fit lanciato e nessun monitor persistente. Codice congelato sempreb8c0718.
+
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
 
 - Letti `docs/decisioni.md`, `scripts/slurm/window_seconds.sbatch`, `scripts/window_seconds.py` e il consumo di `window_s` nel dataloader; controllati su Leonardo accounting SLURM, log e JSON del job, senza modifiche remote o nuovi job.
@@ -8519,6 +8524,10 @@ strutturale. Nessuna certificazione di completezza o allineamento scientifico.
 Nota risorse: checkout allocato a2CPU dallo scheduler contro1richiesta; consuntivo
 corretto0,027222coreh per checkout e0,428889 per download. Nuovo massimo complessivo
 consuntivo+riserva12,456111coreh, senza contare due volte i job cancellati.
+
+Ripresa ora affidata a64827659→64828230; non risottomettere64759680/64759758 e non
+certificare completezza prima dei nuovi report. Eventuali altri errori richiedono
+diagnosi; il recupero corrente non autorizza retry ciechi.
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
 

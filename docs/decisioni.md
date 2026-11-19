@@ -7836,3 +7836,7 @@ stesso codiceb8c0718 e manifest: verifica/riuso degli integri, scaricamento dei4
 mancanti, nuovo auditafterok, IDunivoci nel submitter/ledger. Nessun retrycieco,
 correzione del dato o cambiamento scientifico; nessun fit. Massimo consuntivato più
 residuo12,456111coreh,0GPUh; evidenze e preventivo pubblicati prima degli invii.
+
+Invii confermati dopo commitf7fc04df:64827659downloadRUNNING e64828230auditafterok,
+ricevute pubblicate sullo stesso ramo. Completa acquisizione e audit ancora pendenti;
+nessun job del confrontoFMcongelato/FT/TEMPONet avviato.

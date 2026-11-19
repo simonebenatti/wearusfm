@@ -1,0 +1,41 @@
+{
+ "id": "SEEDS-download-resume-20261119",
+ "creato": "2026-11-19T10:27:17+01:00",
+ "agente": "gpt",
+ "campagna": "seeds-20261118",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "b8c0718133963436b48eb2972e9ce1d4910cffea",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=SEEDS-download-resume-20261119",
+  "--comment=wearusfm:SEEDS-download-resume-20261119",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/seeds-acquisition-20261118,EXPECTED_SHA=b8c0718133963436b48eb2972e9ce1d4910cffea"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/seeds_download.sbatch",
+ "script_stdin_sha256": "c5954c72538c9233ffd725c5a1db6e7df967de5cbab24ff64ee6adfc2da773a1",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-19T10:27:17+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-19T10:27:17+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-19T10:27:18+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 64827659,
+   "uscita": 0,
+   "stdout": "64827659\n",
+   "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 64827659,
+ "uscita": 0,
+ "stdout": "64827659\n",
+ "stderr": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}
