@@ -8470,6 +8470,12 @@ scientifico non pubblicato. Nessun job, nuova misura, merge, modifica scientific
 
 Sintesi richiesta da Simone in `docs/reviews/stato_posa_20261119.md`. Integrati scaling finale a 19.618 (`2df4ca68`), lungo 30M, TEMPONet con tre semi (`f9b215c4`), review TCN, collaudi contrastivi e nuove finestre delle ancore. Alle 10:03 CET due training TEMPONet a 100 epoche in esecuzione e sei letture in dipendenza. SEEDS con 1.049 file integri dopo il primo tentativo, diagnosi e seguito sul ramo dedicato. Priorità proposta per la posa: confrontare i lettori sulle cache esistenti del 30M lungo, usando controlli che distinguono contesto e non linearità.
 
+### 2026-11-19 | Coordinamento e chat 2 | Test delle teste sul 30M congelato a 49.046 passi
+
+Simone inoltra personalmente la richiesta di review a Claude e ha autorizzato il lancio dopo il verdetto favorevole e le verifiche operative previste dal protocollo `0e56c8b1`. La chat «2-schedule lungo e TCN head» prepara il pacchetto. La chat «2-TCN head launcher» è l’unico operatore su Leonardo.
+
+Verifica locale del coordinamento su `wearusfm-pose-heads`, base `0e56c8b1`, prima del congelamento del codice. Superati 104 test dei nuovi moduli e 67 test esistenti della posa nello schedule lungo, anche in un’unica esecuzione (171 in 7,77 s). Suite: `tests/cpu/test_pose_temponet_*.py`, `test_consolidation_long_pose.py` e `test_consolidation_long_pose_runtime.py`. Impronta dei 19 file Python dei nuovi moduli e delle suite (SHA256 dell’elenco ordinato «sha256  percorso», righe con LF) uguale prima e dopo: `7c6a35d5a2884b49ae26912180472ac91421e144ed0a0a9bd27786b5db08e3c6`. Alle 10:52 CET il confronto frozen attendeva la review e la verifica dell’intero flusso. I job TEMPONet in coda riguardavano l’EMG grezzo.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
