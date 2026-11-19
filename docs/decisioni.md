@@ -8199,3 +8199,39 @@ il costo non cambiano. **Tetto dell'attivita': 14 GPU-ore spese e 1 core-ora.** 
 6. **Risorse**: 4 training con 1 GPU, 8 CPU, 120 GB, limite 4:30 (≤ 4,5 GPU-ore ciascuno); 4 valutazioni con 1 GPU, limite 0:45 (≤ 0,75).
    Attese circa 13-13,4 GPU-ore (circa 104-107 ore locali); esposizione massima 21 GPU-ore (168 ore locali). Checkout su
    `lrd_all_serial`: 1 CPU, limite 10 min, 41 s. Saldo alle 23:59: residuo 658.634 ore locali, senza ancora i job del 18/11.
+
+### 2026-11-19 — TEMPONet su emg2pose, conferma con i semi del confronto L1 / MSE: ESITO, CONSUNTIVO e tetto SUPERATO (Claude)
+
+Otto job `COMPLETED 0:0`: training 64790729, 64790731, 64790733, 64790735 e valutazioni 64790730, 64790732, 64790734, 64790736. Controlli
+della raccolta superati (seme e loss dai `run.json`, `train_loss`, checkpoint); controllo eager/graph a differenza 0; cancello superato in
+tutti i bracci (L1 0,831-0,834, MSE 0,858-0,862).
+
+Lettura con la regola congelata (solo i semi 1 e 2): **MSE peggiore di L1, confermato in tutte e tre le condizioni.**
+
+| Condizione | Δ seme 0 | Δ seme 1 | Δ seme 2 | media semi 1-2 | L1, media ± dev. su 3 semi | MSE, media ± dev. su 3 semi |
+|---|---|---|---|---|---|---|
+| user | +0,50 | +0,44 | +0,45 | +0,44 | 14,57 ± 0,02 | 15,04 ± 0,01 |
+| stage | +0,47 | +0,43 | +0,40 | +0,42 | 17,72 ± 0,05 | 18,15 ± 0,04 |
+| user_stage | +0,55 | +0,47 | +0,52 | +0,50 | 17,64 ± 0,06 | 18,16 ± 0,02 |
+
+Descrittivi, senza soglia:
+- deviazione dei Δ sui tre semi 0,033-0,037 gradi;
+- utenti peggiori con MSE, seme per seme: 20, 18, 19 su 20 (user); 150, 149, 147 su 158 (stage); 18, 18, 19 su 20 (user_stage);
+- la deviazione della L1 fra semi (0,02-0,06) e' un ordine di grandezza, con due gradi di liberta': la soglia di 0,30 non si ricalibra su
+  questo.
+
+La baseline firmata resta quella del seme 0.
+
+**Consuntivo e tetto superato.** I tempi trascorsi:
+- training 3:42:10, 3:37:24, 3:37:37 e 3:51:48;
+- valutazioni 0:29:45, 0:34:32, 0:35:33 e 0:28:47;
+- in tutto 61.057 s = **16,96 GPU-ore** (circa 136 ore locali), contro circa 13 attese e il **tetto di 14**: superato di 2,96 GPU-ore (+21%).
+
+La causa e' il caricamento dei dati, salito a 3.576-4.522 s contro i 1.833 del 18/11. La velocita' per passo e' la stessa, 1,085 ms.
+Anche le valutazioni sono piu' lente, 29-36 minuti contro 21. Lettura di Claude: quattro job che caricano 62 GiB ciascuno insieme, piu' i
+due job lunghi della sessione `temponet-residual`, partiti nello stesso momento.
+
+Non c'era una regola per fermare job gia' in corso, e fermarli avrebbe buttato le ore gia' spese. Il superamento va riferito a Simone. Per
+i prossimi lotti: nel preventivo il caricamento va contato almeno doppio quando piu' job partono insieme, oppure gli invii vanno
+scaglionati. Checkout: 41 s su `lrd_all_serial`. Attivita' conclusa, nessun job aperto. Dati in
+`results/temponet_emg2pose/seeds_study_20261118/` (confronto in `confronto/`).

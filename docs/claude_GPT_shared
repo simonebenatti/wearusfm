@@ -8898,6 +8898,15 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   mano uno SHA completo sbagliato: il push e' stato rifiutato senza creare ref, poi e' stato rifatto con lo SHA risolto da `git rev-parse`.
 - Invii: L1 e MSE con i semi 1 e 2 e valutazioni in `afterok`; ID nel ledger (`TEMPONET-E2P-seeds-*-20261118`).
 
+### 2026-11-19 | Claude | Conferma con i semi conclusa: MSE peggiore di L1 confermato in tutte e tre le condizioni (circa +0,4-0,5 gradi); tetto superato (16,96 su 14 GPU-ore) | Ramo `claude/temponet-db8-20261109`
+
+- Otto job `COMPLETED 0:0` dal checkout `d0bf277`; controlli di seme, loss e checkpoint superati con
+  `scripts/temponet_emg2pose_seeds_compare.py`.
+- Media dei semi 1 e 2 di Δ = MSE - L1: +0,44 / +0,42 / +0,50 (user / stage / user_stage), positiva in ogni seme. Lettura congelata:
+  confermato. L1 su tre semi 14,57 ± 0,02 / 17,72 ± 0,05 / 17,64 ± 0,06; deviazione dei Δ 0,033-0,037.
+- Tetto superato, voce nella sezione 2. Esito e consuntivo in `docs/decisioni.md`; dati in
+  `results/temponet_emg2pose/seeds_study_20261118/`.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13034,3 +13043,11 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   mirata prima di D. B e C non ne dipendono.
 - Incidente operativo: durante il push del ref di deploy la connessione ssh condivisa e' caduta (login01 con carico 120). Il ref era gia'
   arrivato: il secondo push ha risposto «Everything up-to-date» e `ls-remote` lo conferma.
+
+### 2026-11-19 | Claude | Conferma con i semi di TEMPONet: tetto di 14 GPU-ore superato di 2,96 per il caricamento piu' lento
+
+- Il caricamento dei 62 GiB di training e' salito a 3.576-4.522 s contro i 1.833 del 18/11; i quattro training sono partiti insieme
+  ai job lunghi della sessione `temponet-residual`. Le valutazioni sono passate da 21 a 29-36 minuti. Spesa 16,96 GPU-ore su un tetto
+  di 14 (attese circa 13). La velocita' per passo non e' cambiata.
+- Nessuna regola per fermare job in corso. Da riferire a Simone. Per i prossimi preventivi: caricamento contato almeno doppio con piu'
+  job in parallelo, oppure invii scaglionati.
