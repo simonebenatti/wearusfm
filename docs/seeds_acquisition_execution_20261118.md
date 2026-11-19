@@ -138,3 +138,21 @@ accounting dei parent. Il download deve certificare5.880file verificati e lo ste
 manifest; l'audit deve essere completo, noncampione. Non duplicare i due job, non
 confondere il download riuscito con una verifica cinematica già conclusa e non
 avviare i fit dal solo esito di acquisizione. Nessuna automazione persistente.
+
+### Esito della ripresa: limite richieste OSF, nessun ulteriore invio
+
+Il controllo successivo corregge lo statoRUNNING sopra: **64827659 FAILED1:0** dopo383s,
+**64828230 CANCELLED** prima di partire. La ripresa ha riusato i1.049file integri e
+scaricato altri207: **1.256/5.880file verificati**,12.733.870.349byte. L'oggetto che
+aveva dato502 è stato superato conhashvalidi. Ora due trial disubj06 hanno restituito
+**HTTP429 Too Many Requests** per tre tentativi ciascuno, senza ricevere byte.
+
+Questo è un limite di frequenza imposto dalla fonte: **ulteriori invii fermi**.
+Prima di un'altra ripresa serve una correzione operativa verificata del downloader:
+ritmo globale più lento, concorrenza ridotta e rispetto di `Retry-After`, senza
+aggirare il limite né cambiare fonte o hash. Il codice attuale ritenta dopo1e2s:
+troppo presto per il limite osservato. Nessuna modifica è stata ancora applicata,
+nessun terzo download inviato. Ricevuta/log e diagnosi finale nel medesimo percorso.
+
+Consuntivo dell'intera acquisizione finora **0,668889coreh,0GPUh**; nessun auditMAT
+completo eseguito. Il download parziale non certifica disponibilità del benchmark.

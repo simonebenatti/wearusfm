@@ -7840,3 +7840,8 @@ residuo12,456111coreh,0GPUh; evidenze e preventivo pubblicati prima degli invii.
 Invii confermati dopo commitf7fc04df:64827659downloadRUNNING e64828230auditafterok,
 ricevute pubblicate sullo stesso ramo. Completa acquisizione e audit ancora pendenti;
 nessun job del confrontoFMcongelato/FT/TEMPONet avviato.
+
+Esito successivo:64827659FAILED perHTTP429 e64828230CANCELLED; totale1.256file
+integri,0,668889coreh consumate,0GPUh. Nessun terzoinvio: prima correggere e verificare
+pacingglobale/Retry-After per rispettare il limiteOSF. Il precedente502 è recuperato,
+ma il dataset completo e l'audit restano indisponibili.

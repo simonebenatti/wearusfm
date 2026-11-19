@@ -1,0 +1,106 @@
+{
+  "checked_utc": "2026-11-19T09:37:10.439831+00:00",
+  "jobs": [
+    {
+      "job": 64759644,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 49,
+      "alloc_cpus": 2
+    },
+    {
+      "job": 64759680,
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 772,
+      "alloc_cpus": 2
+    },
+    {
+      "job": 64759758,
+      "state": "CANCELLED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 0,
+      "alloc_cpus": 0
+    },
+    {
+      "job": 64827659,
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 383,
+      "alloc_cpus": 2
+    },
+    {
+      "job": 64828230,
+      "state": "CANCELLED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 0,
+      "alloc_cpus": 0
+    }
+  ],
+  "cpu_core_hours_actual_total": 0.6688888888888889,
+  "gpu_hours_actual": 0,
+  "dataset_complete": false,
+  "audit_run": false,
+  "frozen_manifest_sha256": "fcfb6308b5155fdd14e63109b200a2208c88326c602e8a963c746b76e14856d7",
+  "verified_files": 1256,
+  "total_files": 5880,
+  "remaining_files": 4624,
+  "bytes_verified": 12733870349,
+  "files_by_status": {
+    "verified_existing": 1049,
+    "downloaded_verified": 207,
+    "failed": 2
+  },
+  "failed_files": [
+    {
+      "path": "subj06/detop_exp01_subj06_Sess1_13_01.mat",
+      "status": "failed",
+      "attempts": [
+        {
+          "attempt": 1,
+          "bytes_read": 0,
+          "error": "HTTPError: HTTP Error 429: Too Many Requests"
+        },
+        {
+          "attempt": 2,
+          "bytes_read": 0,
+          "error": "HTTPError: HTTP Error 429: Too Many Requests"
+        },
+        {
+          "attempt": 3,
+          "bytes_read": 0,
+          "error": "HTTPError: HTTP Error 429: Too Many Requests"
+        }
+      ],
+      "error": "HTTPError: HTTP Error 429: Too Many Requests",
+      "network_bytes": 0,
+      "elapsed_seconds": 4.05073912255466
+    },
+    {
+      "path": "subj06/detop_exp01_subj06_Sess1_13_06.mat",
+      "status": "failed",
+      "attempts": [
+        {
+          "attempt": 1,
+          "bytes_read": 0,
+          "error": "HTTPError: HTTP Error 429: Too Many Requests"
+        },
+        {
+          "attempt": 2,
+          "bytes_read": 0,
+          "error": "HTTPError: HTTP Error 429: Too Many Requests"
+        },
+        {
+          "attempt": 3,
+          "bytes_read": 0,
+          "error": "HTTPError: HTTP Error 429: Too Many Requests"
+        }
+      ],
+      "error": "HTTPError: HTTP Error 429: Too Many Requests",
+      "network_bytes": 0,
+      "elapsed_seconds": 4.038957575336099
+    }
+  ],
+  "prior_502_object_status": "downloaded_verified",
+  "next_action": "No immediate resubmission. Respect HTTP429 by adding global request pacing and Retry-After handling; review operational change before any further recovery."
+}

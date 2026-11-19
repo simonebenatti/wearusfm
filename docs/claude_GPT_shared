@@ -197,6 +197,14 @@ sottomesso eRUNNING; audit64828230 sottomessoafterok:64827659. Ricevute dei nuov
 nel medesimo percorso. Il dataset completo e l'audit restano da raccogliere; nessun
 fit lanciato e nessun monitor persistente. Codice congelato sempreb8c0718.
 
+Rettifica dello stato successiva nello stesso19/11:64827659FAILED1:0 dopo383s,
+64828230CANCELLED. Recuperati altri207file, totale1.256/5.880integri e12.733.870.349byte;
+superato l'oggetto502. Dueoggetti disubj06 ricevonoHTTP429TooManyRequests. Invii ora
+fermi: va prima corretta e verificata la gestione del rate limit, con ritmo globale
+più lento eRetry-After; nessun terzojob né codice cambiato in questa diagnosi.
+Consuntivo totale0,668889coreh,0GPUh. Evidenze inrate_limit_diagnosis.json e ricevuta
+download_64827659.json; nessun audit completo o fit disponibile.
+
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
 
 - Letti `docs/decisioni.md`, `scripts/slurm/window_seconds.sbatch`, `scripts/window_seconds.py` e il consumo di `window_s` nel dataloader; controllati su Leonardo accounting SLURM, log e JSON del job, senza modifiche remote o nuovi job.
@@ -8528,6 +8536,11 @@ consuntivo+riserva12,456111coreh, senza contare due volte i job cancellati.
 Ripresa ora affidata a64827659→64828230; non risottomettere64759680/64759758 e non
 certificare completezza prima dei nuovi report. Eventuali altri errori richiedono
 diagnosi; il recupero corrente non autorizza retry ciechi.
+
+Secondo problema effettivamente osservato:HTTP429TooManyRequests su duefile al
+nuovo invio64827659; retry1/2s del downloader inadeguati al throttlingOSF. Dati
+completi ancora indisponibili,1.256fileintegri preservati. Ulteriori invii fermi
+in attesa di pacing/backoff corretto e revisionato; non aggirare il limite.
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
 
