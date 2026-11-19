@@ -1,0 +1,39 @@
+{
+  "checked_utc": "2026-11-19T09:25:30.990132+00:00",
+  "accounting_source": "sacct parent JobIDRaw,State,ExitCode,ElapsedRaw,AllocCPUS read 2026-11-19",
+  "jobs": [
+    {
+      "job": 64759644,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 49,
+      "alloc_cpus": 2
+    },
+    {
+      "job": 64759680,
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 772,
+      "alloc_cpus": 2
+    },
+    {
+      "job": 64759758,
+      "state": "CANCELLED",
+      "exit_code": "0:0",
+      "elapsed_seconds": 0,
+      "alloc_cpus": 0
+    }
+  ],
+  "cpu_core_hours_actual": 0.4561111111111111,
+  "gpu_hours_actual": 0,
+  "download_completed_files": 1049,
+  "download_total_files": 5880,
+  "remaining_files": 4831,
+  "bytes_verified": 10651199162,
+  "total_bytes": 59737275276,
+  "failure": "HTTP502 at source endpoint, three attempts, zero response bytes",
+  "object_verified_against_original_manifest": true,
+  "scientific_status": "not_audited_full_dataset",
+  "frozen_code": "b8c0718133963436b48eb2972e9ce1d4910cffea",
+  "manifest_sha256": "fcfb6308b5155fdd14e63109b200a2208c88326c602e8a963c746b76e14856d7"
+}

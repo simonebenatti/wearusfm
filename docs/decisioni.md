@@ -7826,3 +7826,13 @@ Seguito operativo: codiceb8c0718 pubblicato e verificato; acquisizione approvata
 70testverdi. Sottomessi64759644→64759680→64759758, soloCPU e dipendenzeafterok.
 Primojob in attesaQOSMaxCpuPerUserLimit; dati completi e audit ancora da raccogliere.
 Nessuna modifica dei job delle altre linee né lancio dei tre bracci scientifici.
+
+### 2026-11-19 — SEEDS: ripresa dopo diagnosi della fonte
+
+Download64759680 fallito perHTTP502, dopo1.049file verificati; audit64759758 cancellato
+per dipendenza. Lo stesso oggetto è disponibile il19/11 e coincide con versione,size,
+SHA256 eMD5 congelati. Si procede al recupero dell'acquisizione già approvata sullo
+stesso codiceb8c0718 e manifest: verifica/riuso degli integri, scaricamento dei4.831
+mancanti, nuovo auditafterok, IDunivoci nel submitter/ledger. Nessun retrycieco,
+correzione del dato o cambiamento scientifico; nessun fit. Massimo consuntivato più
+residuo12,456111coreh,0GPUh; evidenze e preventivo pubblicati prima degli invii.

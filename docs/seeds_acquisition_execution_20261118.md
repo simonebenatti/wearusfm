@@ -92,3 +92,36 @@ UnFAILED/TIMEOUT/hashdifforme richiede diagnosi, non riavvio automatico. Riporta
 le durate e le anomalie senza descrivere i soli checksum come prova di allineamento.
 Raccogliere gli aggregati sulMac e aggiornare registro/risultati concommit/push.
 Nessun monitor persistente o automazione di completamento è stato creato.
+
+## Recupero diagnosticato del 19/11/2026
+
+Il checkout64759644 è COMPLETED0:0; il download64759680 è FAILED1:0 dopo772s.
+L'audit64759758 è CANCELLED prima di partire per la dipendenza fallita.
+La ricevuta registra **1.049/5.880 file integri,10.651.199.162byte**. L'unico errore
+è HTTP502 per `subj05/detop_exp01_subj05_Sess2_05_01.mat`: tre risposte502 in5,28s,
+zero byte ricevuti. Nessun errore di checksum e nessuna evidenza di dati corrotti.
+
+Il19/11 lo stesso oggettoOSF `vw2cq`, versione1, è stato riscaricato con un controllo
+mirato sulMac:13.010.647byte, SHA256 eMD5 identici al manifest congelato. Anche i
+metadati ufficiali correnti coincidono. Evidenze, ricevuta originale e log in
+`results/infra/seeds_20261118/recovery_20261119/`. Il payload diagnostico resta fuoriGit.
+
+È quindi motivata una **ripresa dell'acquisizione già approvata**, senza modifiche
+al downloader, al manifest o ai criteri. Si riusa il checkout congelato b8c0718,
+verificato pulito suLeonardo con lo stesso hash del manifest; non esistono altri jobSEEDS
+attivi. Il downloader rilegge gli hash dei1.049 file completi e li salta; scarica i
+**4.831 mancanti,49.086.076.114byte**, compreso l'oggetto temporaneamente indisponibile.
+I file completi non vengono sovrascritti. Un nuovo errore richiede un'altra diagnosi,
+senza retrySLURM automatici. I32 test del downloader sono stati rieseguiti: tutti verdi.
+
+| Ripresa | ID logico | Risorse | Tetto |
+|---|---|---|---:|
+| Download mancante e verifica dei presenti | SEEDS-download-resume-20261119 |2CPU,4GiB,4h|8coreh|
+| Audit completo, afterok della ripresa | SEEDS-audit-resume-20261119 |2CPU,16GiB,2h|4coreh|
+
+Consuntivo precedente0,456111coreh, **massimo complessivo consuntivato più residuo
+12,456111coreh**, zeroGPUh. Si estende di0,289444coreh il vecchio tetto12,166667;
+non si sommano le prenotazioni inutilizzate dell'audit cancellato. Nota contabile:
+lo scheduler ha allocato2CPU al checkout, pur richiedendone1; il consuntivo usa le
+2CPU effettive. Preventivo e diagnosi sono pubblicati prima dei nuovi invii tramite
+submitter/ledger comuni. Nessuna nuova scelta scientifica, fit o pretraining suSEEDS.

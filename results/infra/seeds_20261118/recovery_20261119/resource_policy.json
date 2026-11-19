@@ -1,0 +1,32 @@
+{
+  "frozen_code": "b8c0718133963436b48eb2972e9ce1d4910cffea",
+  "reuse_checkout": "seeds-acquisition-20261118",
+  "reason": "sourceHTTP502; object now downloaded and SHA256/MD5/size verified against same manifest",
+  "prior_cpu_core_hours_actual": 0.4561111111111111,
+  "recovery_cpu_core_hours_max": 12,
+  "campaign_actual_plus_remaining_cap_core_hours": 12.456111111111111,
+  "gpu_hours_max": 0,
+  "download_missing_files": 4831,
+  "download_missing_bytes": 49086076114,
+  "jobs": [
+    {
+      "id": "SEEDS-download-resume-20261119",
+      "cpus": 2,
+      "memory_gib": 4,
+      "minutes_max": 240,
+      "cpu_core_hours_max": 8
+    },
+    {
+      "id": "SEEDS-audit-resume-20261119",
+      "cpus": 2,
+      "memory_gib": 16,
+      "minutes_max": 120,
+      "cpu_core_hours_max": 4,
+      "depends_on": "SEEDS-download-resume-20261119"
+    }
+  ],
+  "parallel_http_connections_max": 4,
+  "transport_retries_max": 2,
+  "slurm_automatic_retries": 0,
+  "no_training": true
+}

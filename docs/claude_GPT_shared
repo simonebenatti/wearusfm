@@ -178,6 +178,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-19 — GPT SEEDS: diagnosi HTTP502 e ripresa mirata preparata
+
+Riferimento codice congelato b8c0718133963436b48eb2972e9ce1d4910cffea; ricevute e
+documenti sul ramo codex/seeds-benchmark-20261118. Download64759680 FAILED1:0 dopo772s:
+1.049file integri su5.880,10.651.199.162byte. Un solo oggetto ha dato treHTTP502,
+zero byte; audit64759758 cancellato prima di partire. Il19/11 metadati e download
+mirato dell'oggetto coincidono con versione,size,SHA256 eMD5 congelati: errore
+transitorio, non corruzione dimostrata. Checkout remoto pulito e hashmanifestverificato;
+32testdownloaderverdi. Preparata ripresa dei4.831mancanti e auditafterok sullo stesso
+codice, con riuso previa verifica degli integri; IDnuovi nel ledger, nessun retrycieco.
+Tetto ripresa12coreh, consuntivo precedente0,456111coreh,0GPUh. Evidenze e preventivo
+in results/infra/seeds_20261118/recovery_20261119. Nessun fit dei tre bracci né modifica
+ai job delle altre linee; SEEDS resta completamente esterno al pretraining.
+
 ### 2026-10-07 | GPT | Job 59425316 | Codice locale esaminato: a3eda5014445f107ee5616be3ad0b7d0f2841e79
 
 - Letti `docs/decisioni.md`, `scripts/slurm/window_seconds.sbatch`, `scripts/window_seconds.py` e il consumo di `window_s` nel dataloader; controllati su Leonardo accounting SLURM, log e JSON del job, senza modifiche remote o nuovi job.
@@ -8493,6 +8507,18 @@ results/infra/seeds_20261118/submission/. Download completo non ancora iniziato 
 audit completo non ancora disponibile. Limite12,167coreh totali,0GPUh.
 
 ## 2) Problemi trovati
+
+### 2026-11-19 — GPT SEEDS: acquisizione incompleta, fonte ora verificata
+
+Il download64759680 si è fermato per HTTP502 sull'oggettoOSFvw2cq;1.049/5.880file
+verificati non costituiscono un dataset completo o un auditMAT. Oggetto recuperabile:
+controllo mirato del19/11 concorde con tutti gli hash e versione1 del manifest.
+Il nuovo audit va vincolato alla ripresa riuscita; il precedente64759758 non ha
+prodotto risultati. Restano da verificare tutti i payload e il successivo audit
+strutturale. Nessuna certificazione di completezza o allineamento scientifico.
+Nota risorse: checkout allocato a2CPU dallo scheduler contro1richiesta; consuntivo
+corretto0,027222coreh per checkout e0,428889 per download. Nuovo massimo complessivo
+consuntivo+riserva12,456111coreh, senza contare due volte i job cancellati.
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
 
