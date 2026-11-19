@@ -1,0 +1,677 @@
+{
+  "arm": "CN",
+  "source_sha256": "46938f319181d408ee852cfaacfdc92cc5e44eaa1cfa770825ad96956eec9320",
+  "fork_sha256": "b21dad389ee22330cc51fe264bf9ec43b2e1676e214e5ec37a2b5560d6eff489",
+  "seed": {
+    "source_sha256": "668bb2119d728126c7250903882376099e5be607bfe253a0552c44dedc7eddd5",
+    "seed_sha256": "afa5aa0b3bbb02e9909030054c9151b0032c574c58fd16963d65a5bd0c753d6a",
+    "source_payload_sha256": "cd21a20a0c2cc22e19b8c78a009b22f59d8a953a5b9b2b30985294d0be1d4bac",
+    "extra_keep_checkpoint": 580
+  },
+  "training_approved": false,
+  "status": "CONTROL_INPUTS_VERIFIED",
+  "final_rng_metadata_queue_identity_exact": true,
+  "any_numeric_or_metric_difference": true,
+  "model_denominator": "L2 displacement of left state from common step 580, floor 1e-12",
+  "calculation": "reload_a__reload_b measures descriptive fresh-process repeatability",
+  "historical_one_percent_gate_applied": false,
+  "steps": [
+    580,
+    588
+  ],
+  "boundary_state_or_rng_mismatches": [],
+  "pairs": {
+    "continuous__reload_a": {
+      "input_rng_boundary_differences": [],
+      "final_exact": {
+        "optimizer": false,
+        "contrastive_state": false,
+        "config": true,
+        "data_signature": true,
+        "stream": true,
+        "alarm_counts": true,
+        "contrastive_initial_sha256": true,
+        "contrastive_provenance": true,
+        "pose_stats_sha256": true,
+        "rank_rng": true,
+        "optimizer_groups": true,
+        "optimizer_steps": true,
+        "contrastive_metadata": true,
+        "queue_metadata": true
+      },
+      "model_relative_to_left_displacement_from_fork": {
+        "student": 0.024691165171109482,
+        "teacher": 0.0010388757165699942
+      },
+      "optimizer_moments_relative_to_left": {
+        "exp_avg": 0.0026836672193057544,
+        "exp_avg_sq": 2.018599338178836e-05
+      },
+      "queue_identities_in_order_equal": true,
+      "queue_keys_relative_to_left": 0.001069197953810039,
+      "first_exact_metric_difference": {
+        "step": 581,
+        "fields": [
+          "total",
+          "grad_norm",
+          "contrast_projector_grad_norm",
+          "grad_clip_factor"
+        ]
+      },
+      "step_metrics": [
+        {
+          "step": [
+            581,
+            581
+          ],
+          "total": [
+            2.4275746922402233,
+            2.427574896386132
+          ],
+          "grad_norm": [
+            4.28809024655449,
+            4.288101051643415
+          ],
+          "contrast_projector_grad_norm": [
+            0.17449382828948432,
+            0.1744938282894955
+          ],
+          "grad_clip_factor": [
+            0.23320404714045065,
+            0.2332034595165965
+          ]
+        },
+        {
+          "step": [
+            582,
+            582
+          ],
+          "total": [
+            2.9021371883920164,
+            2.902068074977677
+          ],
+          "grad_norm": [
+            6.345898595830171,
+            6.347109133817121
+          ],
+          "contrast_projector_grad_norm": [
+            0.1682616002243481,
+            0.16794575401119127
+          ],
+          "grad_clip_factor": [
+            0.15758209572669352,
+            0.15755204123906483
+          ]
+        },
+        {
+          "step": [
+            583,
+            583
+          ],
+          "total": [
+            2.717223159295153,
+            2.7171736326494633
+          ],
+          "grad_norm": [
+            7.084848018326818,
+            7.084122687892031
+          ],
+          "contrast_projector_grad_norm": [
+            0.15907895317485812,
+            0.15957757733307848
+          ],
+          "grad_clip_factor": [
+            0.14114628816500194,
+            0.14116073987667802
+          ]
+        },
+        {
+          "step": [
+            584,
+            584
+          ],
+          "total": [
+            3.0852823761671195,
+            3.0852830690192525
+          ],
+          "grad_norm": [
+            11.957011960724955,
+            11.95626036355542
+          ],
+          "contrast_projector_grad_norm": [
+            0.19349905026118916,
+            0.19391717287851307
+          ],
+          "grad_clip_factor": [
+            0.08363293465664225,
+            0.08363819200928066
+          ]
+        },
+        {
+          "step": [
+            585,
+            585
+          ],
+          "total": [
+            2.9652799415338125,
+            2.9653916044200637
+          ],
+          "grad_norm": [
+            3.813880285110818,
+            3.8140773069646503
+          ],
+          "contrast_projector_grad_norm": [
+            0.30112693363506904,
+            0.3012535521458735
+          ],
+          "grad_clip_factor": [
+            0.26220015449985307,
+            0.262186610159674
+          ]
+        },
+        {
+          "step": [
+            586,
+            586
+          ],
+          "total": [
+            3.302430670624591,
+            3.302480923094942
+          ],
+          "grad_norm": [
+            5.69086689921203,
+            5.692193686543672
+          ],
+          "contrast_projector_grad_norm": [
+            0.1885911001718361,
+            0.188654747798102
+          ],
+          "grad_clip_factor": [
+            0.17572015260776214,
+            0.17567919418553815
+          ]
+        },
+        {
+          "step": [
+            587,
+            587
+          ],
+          "total": [
+            2.6865852223841675,
+            2.6866136772942397
+          ],
+          "grad_norm": [
+            7.41681170962635,
+            7.418531768810767
+          ],
+          "contrast_projector_grad_norm": [
+            0.26194645357571517,
+            0.2622574301354128
+          ],
+          "grad_clip_factor": [
+            0.134828823913932,
+            0.13479756253174416
+          ]
+        },
+        {
+          "step": [
+            588,
+            588
+          ],
+          "total": [
+            2.8319326219985825,
+            2.831935543116032
+          ],
+          "grad_norm": [
+            8.138180888047089,
+            8.144188599954541
+          ],
+          "contrast_projector_grad_norm": [
+            0.15145151314445804,
+            0.15128679049738789
+          ],
+          "grad_clip_factor": [
+            0.12287758330227642,
+            0.12278694037188453
+          ]
+        }
+      ]
+    },
+    "continuous__reload_b": {
+      "input_rng_boundary_differences": [],
+      "final_exact": {
+        "optimizer": false,
+        "contrastive_state": false,
+        "config": true,
+        "data_signature": true,
+        "stream": true,
+        "alarm_counts": true,
+        "contrastive_initial_sha256": true,
+        "contrastive_provenance": true,
+        "pose_stats_sha256": true,
+        "rank_rng": true,
+        "optimizer_groups": true,
+        "optimizer_steps": true,
+        "contrastive_metadata": true,
+        "queue_metadata": true
+      },
+      "model_relative_to_left_displacement_from_fork": {
+        "student": 0.02452119013297983,
+        "teacher": 0.0010387707273215902
+      },
+      "optimizer_moments_relative_to_left": {
+        "exp_avg": 0.0027607276116695992,
+        "exp_avg_sq": 2.091866865706607e-05
+      },
+      "queue_identities_in_order_equal": true,
+      "queue_keys_relative_to_left": 0.0010602712518354665,
+      "first_exact_metric_difference": {
+        "step": 581,
+        "fields": [
+          "total",
+          "grad_norm",
+          "contrast_projector_grad_norm",
+          "grad_clip_factor"
+        ]
+      },
+      "step_metrics": [
+        {
+          "step": [
+            581,
+            581
+          ],
+          "total": [
+            2.4275746922402233,
+            2.427574936619267
+          ],
+          "grad_norm": [
+            4.28809024655449,
+            4.2880701528879515
+          ],
+          "contrast_projector_grad_norm": [
+            0.17449382828948432,
+            0.1744938282894955
+          ],
+          "grad_clip_factor": [
+            0.23320404714045065,
+            0.2332051399220964
+          ]
+        },
+        {
+          "step": [
+            582,
+            582
+          ],
+          "total": [
+            2.9021371883920164,
+            2.9020931289579552
+          ],
+          "grad_norm": [
+            6.345898595830171,
+            6.345057151105087
+          ],
+          "contrast_projector_grad_norm": [
+            0.1682616002243481,
+            0.16811827317217407
+          ],
+          "grad_clip_factor": [
+            0.15758209572669352,
+            0.15760299335142078
+          ]
+        },
+        {
+          "step": [
+            583,
+            583
+          ],
+          "total": [
+            2.717223159295153,
+            2.7172342016350095
+          ],
+          "grad_norm": [
+            7.084848018326818,
+            7.083103050954282
+          ],
+          "contrast_projector_grad_norm": [
+            0.15907895317485812,
+            0.1593015812853366
+          ],
+          "grad_clip_factor": [
+            0.14114628816500194,
+            0.14118106044853793
+          ]
+        },
+        {
+          "step": [
+            584,
+            584
+          ],
+          "total": [
+            3.0852823761671195,
+            3.085307868426363
+          ],
+          "grad_norm": [
+            11.957011960724955,
+            11.956022949319562
+          ],
+          "contrast_projector_grad_norm": [
+            0.19349905026118916,
+            0.19375445678963862
+          ],
+          "grad_clip_factor": [
+            0.08363293465664225,
+            0.0836398528372607
+          ]
+        },
+        {
+          "step": [
+            585,
+            585
+          ],
+          "total": [
+            2.9652799415338125,
+            2.965265795973654
+          ],
+          "grad_norm": [
+            3.813880285110818,
+            3.813096527569163
+          ],
+          "contrast_projector_grad_norm": [
+            0.30112693363506904,
+            0.3011804623108171
+          ],
+          "grad_clip_factor": [
+            0.26220015449985307,
+            0.26225404806038227
+          ]
+        },
+        {
+          "step": [
+            586,
+            586
+          ],
+          "total": [
+            3.302430670624591,
+            3.3024855291011557
+          ],
+          "grad_norm": [
+            5.69086689921203,
+            5.688334211219812
+          ],
+          "contrast_projector_grad_norm": [
+            0.1885911001718361,
+            0.1883798667563913
+          ],
+          "grad_clip_factor": [
+            0.17572015260776214,
+            0.17579839068308875
+          ]
+        },
+        {
+          "step": [
+            587,
+            587
+          ],
+          "total": [
+            2.6865852223841675,
+            2.6865780408709363
+          ],
+          "grad_norm": [
+            7.41681170962635,
+            7.416507071179117
+          ],
+          "contrast_projector_grad_norm": [
+            0.26194645357571517,
+            0.2618758166203564
+          ],
+          "grad_clip_factor": [
+            0.134828823913932,
+            0.13483436210639443
+          ]
+        },
+        {
+          "step": [
+            588,
+            588
+          ],
+          "total": [
+            2.8319326219985825,
+            2.8319326768153905
+          ],
+          "grad_norm": [
+            8.138180888047089,
+            8.14615252529413
+          ],
+          "contrast_projector_grad_norm": [
+            0.15145151314445804,
+            0.15133525631531747
+          ],
+          "grad_clip_factor": [
+            0.12287758330227642,
+            0.12275733812925302
+          ]
+        }
+      ]
+    },
+    "reload_a__reload_b": {
+      "input_rng_boundary_differences": [],
+      "final_exact": {
+        "optimizer": false,
+        "contrastive_state": false,
+        "config": true,
+        "data_signature": true,
+        "stream": true,
+        "alarm_counts": true,
+        "contrastive_initial_sha256": true,
+        "contrastive_provenance": true,
+        "pose_stats_sha256": true,
+        "rank_rng": true,
+        "optimizer_groups": true,
+        "optimizer_steps": true,
+        "contrastive_metadata": true,
+        "queue_metadata": true
+      },
+      "model_relative_to_left_displacement_from_fork": {
+        "student": 0.025161438356503262,
+        "teacher": 0.0010722965178552276
+      },
+      "optimizer_moments_relative_to_left": {
+        "exp_avg": 0.0025940011962145037,
+        "exp_avg_sq": 1.952776270410225e-05
+      },
+      "queue_identities_in_order_equal": true,
+      "queue_keys_relative_to_left": 0.001057439327942434,
+      "first_exact_metric_difference": {
+        "step": 581,
+        "fields": [
+          "total",
+          "grad_norm",
+          "grad_clip_factor"
+        ]
+      },
+      "step_metrics": [
+        {
+          "step": [
+            581,
+            581
+          ],
+          "total": [
+            2.427574896386132,
+            2.427574936619267
+          ],
+          "grad_norm": [
+            4.288101051643415,
+            4.2880701528879515
+          ],
+          "contrast_projector_grad_norm": [
+            0.1744938282894955,
+            0.1744938282894955
+          ],
+          "grad_clip_factor": [
+            0.2332034595165965,
+            0.2332051399220964
+          ]
+        },
+        {
+          "step": [
+            582,
+            582
+          ],
+          "total": [
+            2.902068074977677,
+            2.9020931289579552
+          ],
+          "grad_norm": [
+            6.347109133817121,
+            6.345057151105087
+          ],
+          "contrast_projector_grad_norm": [
+            0.16794575401119127,
+            0.16811827317217407
+          ],
+          "grad_clip_factor": [
+            0.15755204123906483,
+            0.15760299335142078
+          ]
+        },
+        {
+          "step": [
+            583,
+            583
+          ],
+          "total": [
+            2.7171736326494633,
+            2.7172342016350095
+          ],
+          "grad_norm": [
+            7.084122687892031,
+            7.083103050954282
+          ],
+          "contrast_projector_grad_norm": [
+            0.15957757733307848,
+            0.1593015812853366
+          ],
+          "grad_clip_factor": [
+            0.14116073987667802,
+            0.14118106044853793
+          ]
+        },
+        {
+          "step": [
+            584,
+            584
+          ],
+          "total": [
+            3.0852830690192525,
+            3.085307868426363
+          ],
+          "grad_norm": [
+            11.95626036355542,
+            11.956022949319562
+          ],
+          "contrast_projector_grad_norm": [
+            0.19391717287851307,
+            0.19375445678963862
+          ],
+          "grad_clip_factor": [
+            0.08363819200928066,
+            0.0836398528372607
+          ]
+        },
+        {
+          "step": [
+            585,
+            585
+          ],
+          "total": [
+            2.9653916044200637,
+            2.965265795973654
+          ],
+          "grad_norm": [
+            3.8140773069646503,
+            3.813096527569163
+          ],
+          "contrast_projector_grad_norm": [
+            0.3012535521458735,
+            0.3011804623108171
+          ],
+          "grad_clip_factor": [
+            0.262186610159674,
+            0.26225404806038227
+          ]
+        },
+        {
+          "step": [
+            586,
+            586
+          ],
+          "total": [
+            3.302480923094942,
+            3.3024855291011557
+          ],
+          "grad_norm": [
+            5.692193686543672,
+            5.688334211219812
+          ],
+          "contrast_projector_grad_norm": [
+            0.188654747798102,
+            0.1883798667563913
+          ],
+          "grad_clip_factor": [
+            0.17567919418553815,
+            0.17579839068308875
+          ]
+        },
+        {
+          "step": [
+            587,
+            587
+          ],
+          "total": [
+            2.6866136772942397,
+            2.6865780408709363
+          ],
+          "grad_norm": [
+            7.418531768810767,
+            7.416507071179117
+          ],
+          "contrast_projector_grad_norm": [
+            0.2622574301354128,
+            0.2618758166203564
+          ],
+          "grad_clip_factor": [
+            0.13479756253174416,
+            0.13483436210639443
+          ]
+        },
+        {
+          "step": [
+            588,
+            588
+          ],
+          "total": [
+            2.831935543116032,
+            2.8319326768153905
+          ],
+          "grad_norm": [
+            8.144188599954541,
+            8.14615252529413
+          ],
+          "contrast_projector_grad_norm": [
+            0.15128679049738789,
+            0.15133525631531747
+          ],
+          "grad_clip_factor": [
+            0.12278694037188453,
+            0.12275733812925302
+          ]
+        }
+      ]
+    }
+  },
+  "final_checkpoint_sha256": {
+    "continuous": "60cc397b51d6f6b5e6c0e26833618d771ac7f046b7f74a9c3794bec9b90693f4",
+    "reload_a": "7a4800aa827dc4187e3cc0678954dcd5054cf7c05fa376396acd16806e8c5a40",
+    "reload_b": "83111f2a97ae885d3fdbe8b22bf45bca432d2b62efb44ae64997f35f44831fb8"
+  }
+}

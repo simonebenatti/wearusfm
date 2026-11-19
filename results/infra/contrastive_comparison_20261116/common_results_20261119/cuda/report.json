@@ -1,0 +1,463 @@
+{
+  "protocol": "zero-weight-fixed-state-20261118",
+  "training_approved": false,
+  "fixture": {
+    "global_batch": 8,
+    "dataset": "emg2pose",
+    "update": 255,
+    "queue": "calibration keys shifted by 258 steps, negative insertion times removed",
+    "optimizer_updates": 0,
+    "muscle_dropout": 0.4,
+    "removed_pose_rank": 0,
+    "rnc_and_nce_weights": 0,
+    "mixed_dataset_batch32_replayed": false
+  },
+  "cases": [
+    "C0a",
+    "CNa",
+    "CRa",
+    "CRb",
+    "CNb",
+    "C0b"
+  ],
+  "completed_profiles": [
+    "bf16_auto",
+    "bf16_math",
+    "fp32_math",
+    "bf16_math_deterministic"
+  ],
+  "failures": {},
+  "cross_profile": {
+    "fp32_math_bf16_math": {
+      "groups": {
+        "tokenizer": {
+          "left_norm": 0.9855446880002513,
+          "right_norm": 0.9851999507889206,
+          "difference_norm": 0.006795753645474524,
+          "relative_vector_difference": 0.006895429226313065,
+          "cosine": 0.9999762794083586
+        },
+        "ALL": {
+          "left_norm": 36.04033547972407,
+          "right_norm": 36.01404590394074,
+          "difference_norm": 0.20535058632147488,
+          "relative_vector_difference": 0.0056977989685196755,
+          "cosine": 0.9999840219359779
+        },
+        "identity": {
+          "left_norm": 22.842117158183452,
+          "right_norm": 22.80742078776296,
+          "difference_norm": 0.12383727541948061,
+          "relative_vector_difference": 0.005421444718188676,
+          "cosine": 0.9999864369937833
+        },
+        "local": {
+          "left_norm": 4.71933034003998,
+          "right_norm": 4.717896137579921,
+          "difference_norm": 0.035172136804442554,
+          "relative_vector_difference": 0.007452781278316827,
+          "cosine": 0.9999722657746609
+        },
+        "pool": {
+          "left_norm": 11.480545147260772,
+          "right_norm": 11.474561503192366,
+          "difference_norm": 0.07947541913645303,
+          "relative_vector_difference": 0.006922617185597294,
+          "cosine": 0.9999761620853509
+        },
+        "backbone.blocks.0": {
+          "left_norm": 8.586648437160207,
+          "right_norm": 8.58108999511749,
+          "difference_norm": 0.06298666786389671,
+          "relative_vector_difference": 0.007335419439243723,
+          "cosine": 0.9999732880408251
+        },
+        "backbone.blocks.1": {
+          "left_norm": 6.5075870588209375,
+          "right_norm": 6.505958625593916,
+          "difference_norm": 0.04748666494399152,
+          "relative_vector_difference": 0.007297123267774659,
+          "cosine": 0.9999734006489401
+        },
+        "backbone.blocks.2": {
+          "left_norm": 5.760314427680842,
+          "right_norm": 5.758646917539304,
+          "difference_norm": 0.03837485450132103,
+          "relative_vector_difference": 0.006661937465932935,
+          "cosine": 0.9999778447811044
+        },
+        "backbone.blocks.3": {
+          "left_norm": 4.945783103751625,
+          "right_norm": 4.945040436979243,
+          "difference_norm": 0.03209101507705737,
+          "relative_vector_difference": 0.0064885609424955824,
+          "cosine": 0.9999789574029107
+        },
+        "backbone.blocks.4": {
+          "left_norm": 4.383116394703854,
+          "right_norm": 4.3816311126374465,
+          "difference_norm": 0.029168435555833414,
+          "relative_vector_difference": 0.0066547252979815485,
+          "cosine": 0.9999779072436911
+        },
+        "backbone.blocks.5": {
+          "left_norm": 4.2252746955455995,
+          "right_norm": 4.222752745303184,
+          "difference_norm": 0.0271565391432238,
+          "relative_vector_difference": 0.006427165356101692,
+          "cosine": 0.9999795116722073
+        },
+        "backbone.blocks.6": {
+          "left_norm": 3.7765516539426502,
+          "right_norm": 3.7751158144888337,
+          "difference_norm": 0.023677821597323664,
+          "relative_vector_difference": 0.006269693563599072,
+          "cosine": 0.9999804102987987
+        },
+        "backbone.blocks.7": {
+          "left_norm": 3.4947455332325785,
+          "right_norm": 3.4933707824864584,
+          "difference_norm": 0.02188379178926909,
+          "relative_vector_difference": 0.006261912800565758,
+          "cosine": 0.9999804639115313
+        },
+        "backbone": {
+          "left_norm": 0.28334869208489705,
+          "right_norm": 0.28334721582595424,
+          "difference_norm": 0.0013593320319785888,
+          "relative_vector_difference": 0.004797382412378686,
+          "cosine": 0.9999884925146124
+        },
+        "decoder": {
+          "left_norm": 13.472352750526483,
+          "right_norm": 13.475522713655577,
+          "difference_norm": 0.06912550071760756,
+          "relative_vector_difference": 0.0051297083004845844,
+          "cosine": 0.9999868676257312
+        },
+        "anchor_heads": {
+          "left_norm": 14.051930262571977,
+          "right_norm": 14.050240755752263,
+          "difference_norm": 0.05424848357839639,
+          "relative_vector_difference": 0.003860571648500844,
+          "cosine": 0.9999925543260535
+        },
+        "pose_head": {
+          "left_norm": 2.4071547702836793,
+          "right_norm": 2.4073965727549655,
+          "difference_norm": 0.012566900226110077,
+          "relative_vector_difference": 0.005220120510402167,
+          "cosine": 0.9999863788470451
+        },
+        "contrastive_head": {
+          "left_norm": 0.0,
+          "right_norm": 0.0,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": null
+        }
+      },
+      "grad_presence_changed": [],
+      "post_backward_rng_equal_by_rank": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    "bf16_auto_bf16_math": {
+      "groups": {
+        "tokenizer": {
+          "left_norm": 0.9851476341972804,
+          "right_norm": 0.9851999507889206,
+          "difference_norm": 0.0006039526599741364,
+          "relative_vector_difference": 0.0006130254670541832,
+          "cosine": 0.999999813499923
+        },
+        "ALL": {
+          "left_norm": 36.013372015452724,
+          "right_norm": 36.01404590394074,
+          "difference_norm": 0.024780326608493546,
+          "relative_vector_difference": 0.0006880739441102901,
+          "cosine": 0.9999997634477648
+        },
+        "identity": {
+          "left_norm": 22.80719679172768,
+          "right_norm": 22.80742078776296,
+          "difference_norm": 0.020927263608789968,
+          "relative_vector_difference": 0.0009175637966051046,
+          "cosine": 0.9999995790824349
+        },
+        "local": {
+          "left_norm": 4.717626611748786,
+          "right_norm": 4.717896137579921,
+          "difference_norm": 0.002656944866918921,
+          "relative_vector_difference": 0.0005631630687575542,
+          "cosine": 0.9999998430465395
+        },
+        "pool": {
+          "left_norm": 11.47399998322843,
+          "right_norm": 11.474561503192366,
+          "difference_norm": 0.005527841658950325,
+          "relative_vector_difference": 0.00048174752973457075,
+          "cosine": 0.9999998851514086
+        },
+        "backbone.blocks.0": {
+          "left_norm": 8.58070450067043,
+          "right_norm": 8.58108999511749,
+          "difference_norm": 0.004352402386741362,
+          "relative_vector_difference": 0.0005072085701487589,
+          "cosine": 0.9999998723730701
+        },
+        "backbone.blocks.1": {
+          "left_norm": 6.5056760287149356,
+          "right_norm": 6.505958625593916,
+          "difference_norm": 0.0034043756039345845,
+          "relative_vector_difference": 0.0005232704048473419,
+          "cosine": 0.9999998640315063
+        },
+        "backbone.blocks.2": {
+          "left_norm": 5.758476831498567,
+          "right_norm": 5.758646917539304,
+          "difference_norm": 0.0030235682020757684,
+          "relative_vector_difference": 0.0005250483742746556,
+          "cosine": 0.9999998625942252
+        },
+        "backbone.blocks.3": {
+          "left_norm": 4.944899438824777,
+          "right_norm": 4.945040436979243,
+          "difference_norm": 0.0026327803545917404,
+          "relative_vector_difference": 0.0005324082559373401,
+          "cosine": 0.999999858673192
+        },
+        "backbone.blocks.4": {
+          "left_norm": 4.381526314407683,
+          "right_norm": 4.3816311126374465,
+          "difference_norm": 0.002373050826995959,
+          "relative_vector_difference": 0.0005415907377852131,
+          "cosine": 0.9999998536222622
+        },
+        "backbone.blocks.5": {
+          "left_norm": 4.222658771189028,
+          "right_norm": 4.222752745303184,
+          "difference_norm": 0.00227968297280361,
+          "relative_vector_difference": 0.0005398570814592967,
+          "cosine": 0.9999998545215543
+        },
+        "backbone.blocks.6": {
+          "left_norm": 3.7750372374637604,
+          "right_norm": 3.7751158144888337,
+          "difference_norm": 0.0020327406347742487,
+          "relative_vector_difference": 0.0005384578208097942,
+          "cosine": 0.9999998552451962
+        },
+        "backbone.blocks.7": {
+          "left_norm": 3.4933180334558216,
+          "right_norm": 3.4933707824864584,
+          "difference_norm": 0.001912639838609943,
+          "relative_vector_difference": 0.0005475055348257631,
+          "cosine": 0.9999998502305849
+        },
+        "backbone": {
+          "left_norm": 0.28334357306427194,
+          "right_norm": 0.28334721582595424,
+          "difference_norm": 2.3189758392392463e-05,
+          "relative_vector_difference": 8.184219606603352e-05,
+          "cosine": 0.9999999967335261
+        },
+        "decoder": {
+          "left_norm": 13.475407385994615,
+          "right_norm": 13.475522713655577,
+          "difference_norm": 0.006567728961832271,
+          "relative_vector_difference": 0.0004873821299100173,
+          "cosine": 0.9999998812649361
+        },
+        "anchor_heads": {
+          "left_norm": 14.050129513495529,
+          "right_norm": 14.050240755752263,
+          "difference_norm": 0.0051022361006491926,
+          "relative_vector_difference": 0.0003631422542393306,
+          "cosine": 0.9999999340946729
+        },
+        "pose_head": {
+          "left_norm": 2.4073482904320262,
+          "right_norm": 2.4073965727549655,
+          "difference_norm": 0.0019337617575365326,
+          "relative_vector_difference": 0.0008032584990031713,
+          "cosine": 0.9999996775825436
+        },
+        "contrastive_head": {
+          "left_norm": 0.0,
+          "right_norm": 0.0,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": null
+        }
+      },
+      "grad_presence_changed": [],
+      "post_backward_rng_equal_by_rank": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    "bf16_math_bf16_math_deterministic": {
+      "groups": {
+        "tokenizer": {
+          "left_norm": 0.9851999507889206,
+          "right_norm": 0.9851999507889206,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0
+        },
+        "ALL": {
+          "left_norm": 36.01404590394074,
+          "right_norm": 36.01404590394074,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0000000000000002
+        },
+        "identity": {
+          "left_norm": 22.80742078776296,
+          "right_norm": 22.80742078776296,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 0.9999999999999998
+        },
+        "local": {
+          "left_norm": 4.717896137579921,
+          "right_norm": 4.717896137579921,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0
+        },
+        "pool": {
+          "left_norm": 11.474561503192366,
+          "right_norm": 11.474561503192366,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 0.9999999999999998
+        },
+        "backbone.blocks.0": {
+          "left_norm": 8.58108999511749,
+          "right_norm": 8.58108999511749,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0
+        },
+        "backbone.blocks.1": {
+          "left_norm": 6.505958625593916,
+          "right_norm": 6.505958625593916,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0
+        },
+        "backbone.blocks.2": {
+          "left_norm": 5.758646917539304,
+          "right_norm": 5.758646917539304,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0
+        },
+        "backbone.blocks.3": {
+          "left_norm": 4.945040436979243,
+          "right_norm": 4.945040436979243,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0000000000000002
+        },
+        "backbone.blocks.4": {
+          "left_norm": 4.3816311126374465,
+          "right_norm": 4.3816311126374465,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0
+        },
+        "backbone.blocks.5": {
+          "left_norm": 4.222752745303184,
+          "right_norm": 4.222752745303184,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0000000000000002
+        },
+        "backbone.blocks.6": {
+          "left_norm": 3.7751158144888337,
+          "right_norm": 3.7751158144888337,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0
+        },
+        "backbone.blocks.7": {
+          "left_norm": 3.4933707824864584,
+          "right_norm": 3.4933707824864584,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 0.9999999999999999
+        },
+        "backbone": {
+          "left_norm": 0.28334721582595424,
+          "right_norm": 0.28334721582595424,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0
+        },
+        "decoder": {
+          "left_norm": 13.475522713655577,
+          "right_norm": 13.475522713655577,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0
+        },
+        "anchor_heads": {
+          "left_norm": 14.050240755752263,
+          "right_norm": 14.050240755752263,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 0.9999999999999999
+        },
+        "pose_head": {
+          "left_norm": 2.4073965727549655,
+          "right_norm": 2.4073965727549655,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": 1.0
+        },
+        "contrastive_head": {
+          "left_norm": 0.0,
+          "right_norm": 0.0,
+          "difference_norm": 0.0,
+          "relative_vector_difference": 0.0,
+          "cosine": null
+        }
+      },
+      "grad_presence_changed": [],
+      "post_backward_rng_equal_by_rank": [
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  },
+  "cases_without_loss_support": {
+    "bf16_auto": [],
+    "bf16_math": [],
+    "fp32_math": [],
+    "bf16_math_deterministic": []
+  },
+  "post_backward_rng_disagreements": {
+    "bf16_auto": [],
+    "bf16_math": [],
+    "fp32_math": [],
+    "bf16_math_deterministic": []
+  },
+  "cross_profile_rng_disagreements": [],
+  "reduced_gradient_disagreements": {
+    "bf16_auto": [],
+    "bf16_math": [],
+    "fp32_math": [],
+    "bf16_math_deterministic": []
+  },
+  "status": "MEASURED_FOR_REVIEW"
+}

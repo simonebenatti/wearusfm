@@ -178,6 +178,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 19/11/2026 — 3-launcher: diagnostici conclusi e raccolti
+
+Checkout 64835236 e celle 64835286/64835297/64835304 tutti COMPLETED 0:0.
+Raccolti 121 artefatti non-checkpoint e verificati tutti gli SHA remoti.
+Rapporti CUDA MEASURED_FOR_REVIEW, CN/CR CONTROL_INPUTS_VERIFIED; nessun rilascio
+training. Consuntivo 0,802222 GPU-ore / 6,456667 core-ore. Numeri operativi,
+hash dei tre rapporti, confronto precisione e prime divergenze in
+docs/reviews/launcher_common_diagnostics_20261119.md. Evidenze in
+common_results_20261119/. Consegna alla chat scientifica per lettura.
+
 ### 19/11/2026 — 3-launcher: diagnostici approvati sottomessi
 
 Consegna db66b507, review Claude 0afd0864, piano 35ea94ba e codice 365cb1e2.
@@ -6095,6 +6105,15 @@ operativa aggiornate, autorizzazione già presente. Nessun monitor o training sc
 Claude ha approvato il codice `365cb1e` e il piano `35ea94b` nella review `0afd0864`. Protocollo e scheda di lettura recepiscono N-1–N-4 prima della lettura dei dati. 3-launcher usa il piano di esecuzione approvato, verifica i sei pin a ogni invio e rispetta il limite condiviso di due celle debug in esecuzione.
 
 ## 2) Problemi trovati
+
+### 19/11/2026 — 3-launcher: risultati da interpretare dalla chat scientifica
+
+Input e RNG coincidono; differenze numeriche presenti a 581 anche fra i due
+reload. Scarto student reload/reload: CN 2,516144%, CR 3,398036% dello spostamento
+del seguito. Repliche CUDA bf16 auto differiscono circa 0,028–0,030% del vettore
+gradiente; repliche math coincidono. Questi sono dati dei rapporti raccolti,
+nessuna attribuzione scientifica o modifica tecnica da 3-launcher.
+Training lunghi e nuova coorte RMS100/fast125 restano fermi.
 
 ### 19/11/2026 — 3-launcher: raccolta diagnostici ancora aperta
 
