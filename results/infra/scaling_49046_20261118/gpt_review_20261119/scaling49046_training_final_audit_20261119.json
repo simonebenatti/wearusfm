@@ -1,0 +1,25 @@
+{
+  "commit": "87da975bc0fd4824684e166659bb996e118ff107",
+  "review_scope": "training continuation only",
+  "checks": {
+    "generated_canonical_mirror_plans_and_all_execution_pins": "PASS",
+    "frozen_scientific_sources": 103,
+    "independent_lr_update_numbering": {
+      "19619": 0.0001,
+      "39237": 0.0001,
+      "39238": 0.0001,
+      "39239": 9.998980528086451e-05,
+      "49046": 1.0194719135492303e-08
+    },
+    "second_segment_resolve_previous_original_regression": "PASS",
+    "second_segment_submitted_only_after_collection_no_early_dependency": "PASS",
+    "control_actual_identity_record": "PASS"
+  },
+  "source_hashes": {
+    "scripts/scaling_continue.py": "c8ad4d241b4ed490ee444b3434f556ab341986f533e01ccaa6d68f50a6a60a33",
+    "scripts/scaling_continue49046.py": "94b44783b084d9b81e719b86a2508ec4d95bbd566d977b304a5b821b53e0030c",
+    "scripts/scaling_preflight.py": "0a3224190957986425cd17e24001a3b8bcc7ba98fa1c190d45bbcc1e48531e04",
+    "scripts/scaling_train.py": "d641c375cbeeb80bf275afef185dfb4f695938b22d908626cb9b829ddc8440ac",
+    "scripts/slurm/scaling_continue49046.sbatch": "f700a5ce62f94640a06fd62cecf27489822e0748e6e80ac5c5aaedb0e1f2f92f"
+  }
+}

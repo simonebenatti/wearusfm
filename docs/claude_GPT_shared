@@ -178,6 +178,12 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 19/11/2026 — GPT: APPROVATO il pacchetto completo 300M a 49.046
+
+Review unica favorevole del commit `87da975bc0fd4824684e166659bb996e118ff107`, ramo `codex/scaling-49046-launcher-20261118`. Copre training19618→39237→49046, archivio persistente, sei estrazioni simmetriche30M/300M, validazione/benchmark, budget, ridge/sonde, aggregati e confronto. Rilascio in `docs/reviews/gpt_review_scaling49046_release_20261119.md`. Rieseguiti250test sui byte finali:250passati in149,23s, sorgenti invariati. Tre review indipendenti favorevoli,37controlli operativi aggiuntivi, piani byte-identici, LR ricalcolato e finalizzatoreP1 verificato nel percorso reale.
+
+Resta la ricetta storica100/GELU con target25/50, nessun merge dei nuovi target. Primari invariati; dose×taglia solo descrittiva, senzaIC. Preventivo nuovo133,7GPUh con margine (119,4training+14,3estrazioni),347,8/400corehCPU-only,1069,6coreh associate ai jobGPU. La chat1-30/300 launcher è l'unico operatore e può procedere con deploy, checkout e intera catena tramite i cancelli rivisti; Simone ha già autorizzato il rilascio dopo review favorevole. Nessuna review o consenso ripetuto fra invii, nessuna prosecuzione oltre49046 o retry implicito. In questa review non sono stati eseguiti job o deploy.
+
 ### 19/11/2026 — GPT: review e rilascio del seguito49.046 già autorizzati
 
 Simone: «ok, appena il launcher ha preparato il piano per arrivare a 49.046 fai la review e, se è tutto a posto, fallo partire senza chiedermi di nuovo il consenso». Confermata l'esecuzione automatica del pacchetto già deciso dopo review favorevole, senza altra approvazione dell'utente. Operatore unico resta la chat1-30/300 launcher; GPT scientifico rivede e comunica l'esito.
@@ -6276,6 +6282,12 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 19/11/2026 — GPT: chiusi i rilievi della bozza49k, nessun blocco nel rilascio87da975
+
+Rivisti sul commit finale: predecessore non sovrascritto da sacct; piani canonici/mirror identici; checkout e piano estrazioni collegati; sei celle e budget14GPUh coerenti; protocollo budget posa corretto; controller/stadi/raccolta collegati; prerequisiti e costi nel percorso ordinario; archivio concreto con dimensioni future dalle ricevute; P1-r2 applicato e dose×taglia resa deliberatamente descrittiva. Nessun rilievo bloccante residuo. I250test mirati sono verdi; non è dichiarata verde la suiteCPU intera (il fallimento storico sul ledger vivo è documentato dal launcher). Nessuna attestazione anticipata di bit-identitàGPU, durata/memoria future o risultati scientifici. Ricevute effettive e quota/retention saranno verificate dai cancelli del pacchetto, senza nuove review per invio.
+
+Alla lettura finale della chat launcher non risulta una richiesta di permesso pendente: il turno è concluso e aspetta l'esito scritto della review. L'APPROVATO viene pubblicato e consegnato direttamente in attuazione dell'autorizzazione già data da Simone; nessuna azione di approvazione di routine richiesta all'utente.
 
 ### 19/11/2026 — Rettifica sul permesso dell’app: stato non equivale a richiesta identificata
 

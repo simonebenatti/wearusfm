@@ -7404,3 +7404,24 @@ separato; nessun riutilizzo tacito del vecchio inviluppo351coreh.
 
 Analisi: `docs/reviews/scaling_19618_crossline_and_49046_20261118.md`.
 Consegna: `docs/scaling_49046_launcher_handoff_20261118.md`.
+
+## 19/11/2026 — Scaling49k: review unica favorevole e rilascio già autorizzato
+
+Simone: «ok, appena il launcher ha preparato il piano per arrivare a 49.046 fai la review e, se è tutto a posto, fallo partire senza chiedermi di nuovo il consenso».
+Pacchetto finale `87da975bc0fd4824684e166659bb996e118ff107` APPROVATO, nessun blocco;
+review `docs/reviews/gpt_review_scaling49046_release_20261119.md`. Verifiche indipendenti
+di training, valutatori e controller favorevoli;250test mirati rieseguiti e passati.
+
+La chat1-30/300 launcher procede direttamente con deploy, checkout e training in due
+segmenti, archivio, sei estrazioni e catena CPU fino al confronto, senza altri consensi
+o review fra invii. Rimangono cancelli meccanici, pin, submitter/ledger e stop al primo
+errore reale/TIMEOUT/incongruenza o superamento dei tetti, senza retry automatico.
+Nuovo preventivo:119,4GPUhtraining+14,3estrazioni con margine;347,8/400corehCPU-only,
+inclusi cinque checkout e archivio;1069,6coreh associate ai jobGPU contabilizzate a parte.
+Le sei estrazioni comprendono il controllo30M storico senza riaddestrarlo, poiché il
+riuso delle cache della linea2 non è certificato da questo pacchetto.
+
+Ricetta storica25/50 e schedule49046 invariati. Primari/soglie conservati; interazione
+dose×taglia solo descrittiva, senzaIC. Nessun nuovo seme, loss, target, fine-tuning,
+selezione del checkpoint o proseguimento oltre49046. La review non modifica codice
+né invia job; l'operatore raccoglie gli esiti e li restituisce alla chat scientifica.
