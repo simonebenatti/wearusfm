@@ -1,0 +1,35 @@
+........................................................................ [  8%]
+........................................................................ [ 16%]
+........................................................................ [ 24%]
+........................................................................ [ 32%]
+........................................................................ [ 40%]
+............F........................................................... [ 48%]
+........................................................................ [ 57%]
+........................................................................ [ 65%]
+........................................................................ [ 73%]
+........................................................................ [ 81%]
+........................................................................ [ 89%]
+........................................................................ [ 97%]
+..................                                                       [100%]
+=================================== FAILURES ===================================
+_______ test_logical_ids_and_outputs_are_unique_new_and_outside_the_code _______
+
+    def test_logical_ids_and_outputs_are_unique_new_and_outside_the_code():
+        resources = {"protocol": S.C.RESOURCE_PROTOCOL, "shards": [
+            {"cell": c, "task": t, "datasets": list(d), "folds": [0, 1, 2, 3], "cpus": 8, "memory_gib": 30, "walltime_seconds": 3600 + 60 * n,
+             "shard_name": f"{c}-{t}-01"} for n, (c, (t, d)) in enumerate(itertools.product(S.CELLS, S.TASKS.items()))]}
+        table = [j for stage in STATIC for j in S.jobs(stage)] + S.jobs("probe-fit", resources) + S.jobs("probe-aggregate", resources)
+        ids, outs = [j["id"] for j in table], [j["out"] for j in table]
+        assert len(set(ids)) == len(ids) == 3 + 1 + 3 + 15 + 1 + 1 + 6 + 6 and len(set(outs)) == len(outs)
+        assert all((i.endswith("-20261106") or i == S.RELAUNCH["id"]) and "19618" in i for i in ids)
+        assert S.RELAUNCH["id"].endswith("-20261116") and S.RELAUNCH["replaces"]["id"] not in ids
+        known = (Path.home() / "wearusfm_local/jobs/ledger.tsv")
+        if known.exists():  # a logical ID of this chain is in the common ledger only once sent, with its receipt in the package
+            sent = {p.stem: json.loads(p.read_text()) for p in (PACKAGE / "submissions").glob("*.json")}
+>           assert not [i for i in ids if i in known.read_text() and i not in sent]
+E           AssertionError: assert not ['SCALING-19618-pose-validate-20261106', 'SCALING-19618-pose-bench-30m-natural-20261106', 'SCALING-19618-pose-bench-30...19618-probe-bench-30m-natural-ninapro-db2-20261106', 'SCALING-19618-probe-bench-30m-natural-ninapro-db3-20261106', ...]
+
+tests/cpu/test_scaling_plans19618.py:187: AssertionError
+=========================== short test summary info ============================
+FAILED tests/cpu/test_scaling_plans19618.py::test_logical_ids_and_outputs_are_unique_new_and_outside_the_code
+1 failed, 881 passed in 382.71s (0:06:22)

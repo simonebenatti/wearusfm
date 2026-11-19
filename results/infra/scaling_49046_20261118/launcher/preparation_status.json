@@ -1,23 +1,21 @@
 {
-  "status": "IN_PREPARATION_NOT_RELEASED",
+  "status": "READY_FOR_SINGLE_TECHNICAL_REVIEW_NOT_DEPLOYED",
   "scientific_commit": "218afe134c97f2162211062aac2b06e3d410300b",
-  "review_ready": false,
+  "review_ready": true,
   "deploy_allowed": false,
   "jobs_submitted": [],
-  "completed": [
-    "isolated historical worktree",
-    "read scientific handoff and endpoint",
-    "copied line2 evidence and manifests",
-    "draft two-segment wrapper",
-    "8 initial CPU tests passed including exact resume across decay"
-  ],
-  "pending": [
-    "complete wrapper and predecessor binding tests",
-    "complete launcher and immutable plans",
-    "complete evaluation derivation and dose interaction",
-    "finish remote checkpoint verification and metadata inventory",
-    "decide/prove control cache and OOF reuse",
-    "storage and full budget gates",
-    "full package tests and unique technical review"
-  ]
+  "release_tests": {
+    "passed": 250,
+    "failed": 0,
+    "source_bound": true
+  },
+  "additional_regressions": {
+    "passed": 881,
+    "failed": 1,
+    "same_failure_on_accepted_19k_branch": true,
+    "report": "baseline_ledger_test_failure.json"
+  },
+  "broad_suite_interrupted": true,
+  "review_request": "docs/prompt_review_scaling49046_20261119.md",
+  "next_action": "single technical review by scientific chat; execute authorised chain only after favourable outcome"
 }

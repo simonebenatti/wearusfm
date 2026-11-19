@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+from datetime import datetime, timezone
 
 NUMPY_BEFORE_TORCH = 'numpy' in sys.modules
 import torch  # The original training entry point imports torch before NumPy.
@@ -29,6 +30,9 @@ CONTROL_SHA256 = 'bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a4
 INITIAL_SHA256 = 'd7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e'
 IDENTITY_FILES = C.IDENTITY_FILES
 MARKER = 'CONTINUATION49046.json'
+EXECUTION_SOURCES = {'scripts/scaling_continue49046.py', 'scripts/scaling_continue.py',
+                     'scripts/scaling_train.py', 'scripts/scaling_preflight.py',
+                     'scripts/slurm/scaling_continue49046.sbatch'}
 
 
 def segment(plan):
@@ -79,6 +83,8 @@ def validate_plan(plan, context):
     require(plan.get('control_checkpoint', {}).get('sha256') == CONTROL_SHA256,
             'wrong 30M terminal control')
     require(plan.get('minimum_free_bytes') == 20 * 2**30, 'storage reserve must cover checkpoint copies')
+    require(plan.get('protected_until_utc') == '2026-12-19T00:00:00Z', 'retention horizon differs')
+    M.pin_schema(plan.get('resource_policy'))
     previous = plan['previous']
     for name in ('run_dir', 'receipt_dir'):
         path = Path(plan[name])
@@ -90,17 +96,16 @@ def validate_plan(plan, context):
     require(set(previous['files']) >= {'checkpoint.pt', checkpoint_name(start), *IDENTITY_FILES},
             'incomplete source inventory')
     if start == 19618:
-        require(previous['files']['checkpoint.pt']['sha256'] == INITIAL_SHA256,
+        require(previous['files']['checkpoint.pt']['sha256'] == INITIAL_SHA256 and
+                previous['files'][checkpoint_name(start)]['sha256'] == INITIAL_SHA256,
                 'wrong accepted 19618 checkpoint')
     else:
-        require(plan.get('predecessor_plan_sha256') and previous.get('receipt'),
+        require(M.digest(plan.get('predecessor_plan_sha256')) and previous.get('receipt'),
                 'second segment requires its predecessor receipt and plan identity')
     for pin in (plan['source_contract'], plan['control_checkpoint'], previous['receipt']):
         M.pin_schema(pin)
     sources = plan.get('execution_source_sha256')
-    require(isinstance(sources, dict) and sources and
-            'scripts/scaling_continue49046.py' in sources and
-            'scripts/scaling_continue.py' in sources, 'missing wrapper source pins')
+    require(isinstance(sources, dict) and set(sources) == EXECUTION_SOURCES, 'missing exact wrapper source pins')
     for path, sha in sources.items():
         require(M.digest(sha), 'invalid source digest')
         M._contained_source(path, ROOT)
@@ -117,6 +122,11 @@ def resolve_previous(plan, code):
             'second segment source must be derived from its first receipt')
     pin = P.file_identity(raw['receipt']['path'])
     receipt = json.loads(Path(pin['path']).read_text())
+    job = os.environ.get('SCALING_PREDECESSOR_JOB', '')
+    require(job.isdigit() and receipt.get('slurm_job_id') == job, 'predecessor job differs from submitted dependency')
+    accounting = subprocess.check_output(['sacct','-n','-P','-X','-j',job,'--format=JobIDRaw,State,ExitCode'],text=True)
+    rows = [line.split('|')[:3] for line in accounting.strip().splitlines()]
+    require(rows == [[job,'COMPLETED','0:0']], 'predecessor job did not complete successfully')
     require(receipt.get('code_sha') == code and receipt.get('plan_sha256') == plan['predecessor_plan_sha256'],
             'predecessor release differs')
     require(receipt.get('checkpoint') == str(Path(raw['run_dir'])/'checkpoint_predecay.pt'),
@@ -150,6 +160,11 @@ def previous_receipt(plan, receipt):
     require(receipt.get('resume_checkpoint') == str(Path(plan['previous']['run_dir'])/'checkpoint.pt') and
             receipt.get('resume_checkpoint_sha256') == plan['previous']['files']['checkpoint.pt']['sha256'],
             'predecessor resume checkpoint differs')
+    if start == 19618:
+        require(receipt.get('slurm_job_id') == '63979977', 'wrong accepted 19618 source job')
+    require(receipt.get('checkpoint') == str(Path(plan['previous']['run_dir'])/checkpoint_name(start)) and
+            receipt.get('checkpoint_sha256') == plan['previous']['files'][checkpoint_name(start)]['sha256'],
+            'predecessor native checkpoint differs')
     if start == 39237:
         require(receipt.get('start_step') == 19618 and receipt.get('additional_steps') == 19619 and
                 receipt.get('plan_sha256') == plan['predecessor_plan_sha256'] and
@@ -234,6 +249,12 @@ def execute(plan_path, expected_code, out):
         require(shutil_disk_free(path.parent)>=plan['minimum_free_bytes'], 'insufficient checkpoint space')
     states = dict(context['states'])
     states['plan'] = plan_state
+    states['resource_policy'] = M.resolve_pin(plan['resource_policy'])
+    policy = json.loads(Path(states['resource_policy']['path']).read_text())
+    expected_segments = [{'start_step':a,'end_step':b,'walltime_seconds':w,'trainer_time_limit_seconds':w-1800} for a,b,w in SEGMENTS]
+    require(policy.get('protocol') == 'scaling49046-resources-20261118-v1' and policy['training']['segments'] == expected_segments and
+            policy['training']['gpu_hours_requested'] == 119 and policy['training']['gpus'] == 4 and
+            policy['training']['cpus'] == 32, 'training resource freeze differs')
     for name,sha in plan['execution_source_sha256'].items():
         states['source:'+name]=M.resolve_pin({'path':str(ROOT/name),'sha256':sha})
     states.update(C.previous_states(plan['previous']))
@@ -257,6 +278,9 @@ def execute(plan_path, expected_code, out):
     require(old_named['trained_state_sha256']==old_resume['trained_state_sha256'], 'source native/resume states differ')
     before=C.optimizer_mapping(torch.load(source/'checkpoint.pt',map_location='cpu',weights_only=False),previous_cfg,C.PARAMETERS)
     identity_sets=verify_identity_sets(cfg,argv,plan)
+    retention=C.check_retention([v['path'] for v in states.values() if 'path' in v],
+        datetime.fromisoformat(plan['protected_until_utc'].replace('Z','+00:00')),
+        datetime.now(timezone.utc),wall)
     P.check_unchanged(states)
     out.mkdir(parents=True,exist_ok=False)
     seeded=C.seed_run_dir(plan['previous'],run)
@@ -264,7 +288,8 @@ def execute(plan_path, expected_code, out):
               'plan_sha256':plan_state['sha256'],'slurm_job_id':job}
     P.write_json(run/MARKER,{**identity,'seeded_files':seeded})
     P.write_json(out/'launch.json',{**identity,'trainer_argv':argv,'identity_sets':identity_sets,
-        'import_order':{'numpy_loaded_before_torch':NUMPY_BEFORE_TORCH},'verified_inputs':states})
+        'import_order':{'numpy_loaded_before_torch':NUMPY_BEFORE_TORCH},
+        'earliest_scratch_expiry':retention.isoformat() if retention else None,'verified_inputs':states})
     command=[sys.executable,'-m','torch.distributed.run','--standalone','--nproc_per_node=4',
              str(ROOT/'scripts/scaling_continue49046.py'),'worker','--plan',plan_state['path'],
              '--expected-code-sha',code,'--launch-sha256',R.sha256_file(out/'launch.json')]

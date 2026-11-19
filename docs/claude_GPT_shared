@@ -178,6 +178,15 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 19/11/2026 — GPT launcher: pacchetto operativo49.046 per review unica
+
+Completati wrapper19618→39237→49046, piani e lancio dei due segmenti in nuove directory, conservazione persistente dei tre checkpoint, derivazione valutatori e catena con prerequisiti/gate→lines/ledger/quote/budget nel percorso ordinario. Nessun deploy o job49k inviato. Codice scientifico storico218afe13 immutato. Riferimento della consegna: `docs/scaling_49046_execution_20261119.md` e prompt review omonimo; SHA del codice nella storia del commit che pubblica la voce. Confermata autorizzazione19/11: dopo review favorevole esecuzione senza altro consenso a Simone.
+
+Controllo30M49k realmente verificato con checkpoint_identity/config/firma dati/optimizer/RNG, SHA bfa6141f…, trained-state f69ac998…. Scelta esplicita: sei estrazioni simmetriche dai checkpoint esistenti (nessun training30M), perché adapter di schema/provenienza/runtime della linea2 non certificato qui. Training119GPUh richieste/119,4 col margine; estrazioni14/14,3; CPU-only347,8 su400, CPU allegateGPU1069,6 con margine separate. Quota45,95GiB libera nella lettura19/11, gateWORK30GiB e SCRATCH20GiB; archivio tre pesi≈13,06GiB, orizzonteSCRATCH19/12. Il secondo segmento parte dopo raccolta del primo, non accodato in anticipo.
+
+Corrette le segnalazioni anticipate: stdout sacct non sovrascrive il piano; doppio checkpoint nel launcher; percorso corretto del piano metadata; protocollo budget posa; EVIDENCE_DIRS/stadi/ownershipdocumenti; finalizzazioneP1-r2 con log raccolti; prerequisiti e conto; piani training canonici con mirror byteuguali attestati. Il secondario dose×taglia resta descrittivo, senzaIC, per assenza di certificatore completo inter-dose. Verifica finale250test passati sui byte finali e hash in `launcher/verification.json`. Giro aggiuntivo881passati/1fallimento storico del test che incrocia ledgerlive e vecchi path19k, riprodotto anche su2df4ca68 e registrato; non dichiarata suite intera verde. Review interna del critico documentata, review unica esterna ancora necessaria. Catalogo56ID univoci e inutilizzati verificato; pin futuri hash/dimensioni solo dalle ricevute effettive.
+
+
 ### 18/11/2026 — launcher: preparazione della prova 300M a 49.046
 
 Recepita la decisione scientifica 218afe13, endpoint 49.046 e segmenti 19.618→39.237→49.046. Worktree isolato wearusfm-scaling-49046-launcher, ramo codex/scaling-49046-launcher-20261118. Prima bozza di orchestrazione e otto test CPU iniziali superati, compresa uguaglianza della ripresa in directory nuova attraverso il decay. Copiate le evidenze e i manifest della linea2 per verificare il riuso. Pacchetto IN PREPARAZIONE, non pronto per review/rilascio; nessun deploy o invio. Trainer storico conservato. Stato dettagliato in results/infra/scaling_49046_20261118/launcher/preparation_status.json.
@@ -6275,6 +6284,13 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 19/11/2026 — GPT launcher: chiusura dei difetti di incastro49.046
+
+La bozza non rilasciata aveva difetti operativi, corretti prima di qualsiasi job: variabile predecessore sovrascritta da sacct, piano metadata cercato nel checkout sbagliato, guardia a checkpoint singolo contro piano a due taglie, protocolli budget posa disallineati, stadi/EVIDENCE_DIRS/ownershipdocumenti mancanti, prerequisiti non attivi nel percorso ordinario, archivio solo riservato e non implementato. Corretta anche la doppia fonte dei piani con canonico+mirror byteuguali e attestati. Regressioni mirate incluse. Nessun run49k da rifare perché nessuno è stato inviato.
+
+Le sufficienti aggregate non certificano parità inter-dose: helper ora sempre descrittivo, comparableFalse e senzaIC. Scelta dichiarata di nuove estrazioni30M dai pesi già esistenti, non giudizio negativo sulle feature linea2. Limiti: singolo seme, sviluppo, prova bit-identica soloCPU, costi e memoria futuri soggetti ai gate reali. Nessun retry cieco e nessuna nuova domanda scientifica introdotta. Review esterna attesa sul commit completo.
+
 
 ### 18/11/2026 — launcher: preparazione della prova 300M a 49.046
 

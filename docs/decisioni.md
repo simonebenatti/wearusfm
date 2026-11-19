@@ -7404,3 +7404,14 @@ separato; nessun riutilizzo tacito del vecchio inviluppo351coreh.
 
 Analisi: `docs/reviews/scaling_19618_crossline_and_49046_20261118.md`.
 Consegna: `docs/scaling_49046_launcher_handoff_20261118.md`.
+
+
+## 19/11/2026 — Linea1: rilascio operativo49.046 sottoposto alla review unica
+
+Recepita l'istruzione di Simone19/11 alla chat scientifica: «appena il launcher ha preparato il piano per arrivare a49.046 fai la review e, se è tutto a posto, fallo partire senza chiedermi di nuovo il consenso». Il launcher completa il pacchetto su ramo separato; nessun deploy/invio prima dell'esito tecnico favorevole. Un solo operatore, nessun runner o monitor nuovo.
+
+Endpoint e ricetta218afe13 invariati. Due segmenti19618→39237→49046, batch32/4GPU/accum1; secondo invio dopo raccolta del primo. Risorse training119/119,4GPUh e952/955,2coreh allegate; valutazione sei estrazioni14/14,3GPUh,112/114,4coreh allegate. TettoCPU-only400, massimo di fase aggregato347,8 inclusi cinque checkout e archivio2,1coreh con margine, riserva52,2 senza estensione dei tetti di fase. Nessun residuo del vecchio351 riutilizzato. QuotaWORK effettiva riletta19/11 e gate30GiB; minimoSCRATCH20GiB; tre checkpoint copiati persistentementeWORK e verificati; orizzonteSCRATCH19/12.
+
+Il controllo30M49k è verificato realmente contro la configurazione storica. Cache linea2 inventariate; manca un adattatore certificato ai validatori scaling. Si propone nel pacchetto la riestrazione simmetrica di entrambe le taglie dai pesi esistenti, senza training30M. Costo del controllo7GPUh richieste esplicitamente incluso e sottoposto alla stessa review.
+
+In assenza di certificazione completa inter-dose, lettura dose×taglia soltanto descrittiva, comparableFalse, nessunIC d'interazione o criterio nuovo. Primari49k e lettori/soglie invariati. Dettagli e comandi in docs/scaling_49046_execution_20261119.md. Nessun job49k inviato; i pin futuri nasceranno solo dalle ricevute complete. Primo errore reale/TIMEOUT/costo fuori piano: stop senza retry automatico.

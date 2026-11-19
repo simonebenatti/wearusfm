@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-11-19",
+  "command": "ssh leonardo -o ProxyCommand=none -o ControlMaster=no -o ControlPath=none -o ConnectTimeout=15 'module load profile/deeplrn >/dev/null 2>&1; module load cineca-ai/4.3.0 >/dev/null 2>&1; source /leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/activate; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python3 -c '\\''import torch\nimport sys,json,os,time\nfrom pathlib import Path\nfrom dataclasses import replace\nroot=Path('\\''\\'\\'''\\''/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_300m_evaluation19618_20261106_v1'\\''\\'\\'''\\'')\nos.chdir(root);sys.path[:0]=[str(root/'\\''\\'\\'''\\''src'\\''\\'\\'''\\''),str(root/'\\''\\'\\'''\\''scripts'\\''\\'\\'''\\'')]\nimport scaling_train as M\nfrom wearusfm.training import run as R\ncontext=M.check_source_contract(root/'\\''\\'\\'''\\''results/infra/scaling_300m_20261104/training_source_contract.json'\\''\\'\\'''\\'')\ncfg=replace(context['\\''\\'\\'''\\''config_30m'\\''\\'\\'''\\''],max_steps=49046)\ninputs=context['\\''\\'\\'''\\''contract'\\''\\'\\'''\\'']['\\''\\'\\'''\\''inputs'\\''\\'\\'''\\'']\nscales=json.loads(Path(inputs['\\''\\'\\'''\\''scales'\\''\\'\\'''\\'']['\\''\\'\\'''\\''path'\\''\\'\\'''\\'']).read_text())['\\''\\'\\'''\\''scales'\\''\\'\\'''\\'']\nwindow=json.loads(Path(inputs['\\''\\'\\'''\\''windows'\\''\\'\\'''\\'']['\\''\\'\\'''\\''path'\\''\\'\\'''\\'']).read_text())['\\''\\'\\'''\\''window_s'\\''\\'\\'''\\'']\nsignature=json.loads(json.dumps(R.calibration_signature(cfg,inputs['\\''\\'\\'''\\''manifest'\\''\\'\\'''\\'']['\\''\\'\\'''\\''path'\\''\\'\\'''\\''],scales,window)))\npath='\\''\\'\\'''\\''/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt'\\''\\'\\'''\\''\nresult=M.T.checkpoint_identity(path,cfg,49046,signature)\nprint(json.dumps({'\\''\\'\\'''\\''complete'\\''\\'\\'''\\'':True,'\\''\\'\\'''\\''check'\\''\\'\\'''\\'':'\\''\\'\\'''\\''actual_control_checkpoint_identity'\\''\\'\\'''\\'','\\''\\'\\'''\\''expected_config_sha256'\\''\\'\\'''\\'':__import__('\\''\\'\\'''\\''hashlib'\\''\\'\\'''\\'').sha256(json.dumps(R.config_to_dict(cfg),sort_keys=True).encode()).hexdigest(),'\\''\\'\\'''\\''result'\\''\\'\\'''\\'':result}))\n'\\'''",
+  "exit_code": 0,
+  "raw_stdout": "{\"complete\": true, \"check\": \"actual_control_checkpoint_identity\", \"expected_config_sha256\": \"aace789f8eac8195672f3f1cca340efa3c874f94d6705aee601666a87bb94b74\", \"result\": {\"path\": \"/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt\", \"sha256\": \"bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490\", \"bytes\": 454381728, \"inode\": 270223032981710049, \"mtime_ns\": 1793882524000000000, \"ctime_ns\": 1793882525000000000, \"trained_state_sha256\": \"f69ac99800ba6ac071e508751a2411b62b29f78245642c8b9f0cabadf88e2cc4\"}}\n",
+  "result": {
+    "complete": true,
+    "check": "actual_control_checkpoint_identity",
+    "expected_config_sha256": "aace789f8eac8195672f3f1cca340efa3c874f94d6705aee601666a87bb94b74",
+    "result": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt",
+      "sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+      "bytes": 454381728,
+      "inode": 270223032981710050,
+      "mtime_ns": 1793882524000000000,
+      "ctime_ns": 1793882525000000000,
+      "trained_state_sha256": "f69ac99800ba6ac071e508751a2411b62b29f78245642c8b9f0cabadf88e2cc4"
+    }
+  }
+}

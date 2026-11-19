@@ -1,0 +1,19 @@
+{
+  "status": "checkpoint_assertions_passed_metadata_stage_failed",
+  "collector_commit": "b9ba5cd9f727ae8426fceca23f87dea2b66c2ee9",
+  "collector_sha256": "a48bf0ef519053ec5b3fe7ec2df37264d9551c97083b05951bbe7926cee9b650",
+  "evidence": "The collector reached acquire line43 (metadata subprocess return-code assertion) after the full loop completed. Each of the two streams asserted SSH exit0, exact byte count and exact SHA256 before entering that metadata stage. The metadata failure was the 2MB JSON size bound, after checkpoint hashing. Metadata was collected separately with a16MB bound and Python3.6 compatible subprocess options.",
+  "hashing_location": "Mac",
+  "verified": [
+    {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+      "sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+      "bytes": 4673783740
+    },
+    {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt",
+      "sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+      "bytes": 454381728
+    }
+  ]
+}

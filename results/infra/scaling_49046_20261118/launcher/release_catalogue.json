@@ -1,0 +1,128 @@
+{
+  "scope": "reserved logical IDs only; not a generated fit budget or submission manifest",
+  "maximum_jobs": 56,
+  "ids": [
+    "SCALING-49046-code-checkout-20261118",
+    "SCALING-49046-extraction-checkout-20261118",
+    "SCALING-49046-plans-checkout-20261118",
+    "SCALING-49046-budgets-checkout-20261118",
+    "SCALING-49046-inputs-checkout-20261118",
+    "SCALING-49046-train-39237-20261118",
+    "SCALING-49046-train-49046-20261118",
+    "SCALING-49046-archive-20261118",
+    "SCALING-49046-extract-30m-pose-20261118",
+    "SCALING-49046-extract-30m-p1-20261118",
+    "SCALING-49046-extract-30m-p2-20261118",
+    "SCALING-49046-extract-300m-pose-20261118",
+    "SCALING-49046-extract-300m-p1-20261118",
+    "SCALING-49046-extract-300m-p2-20261118",
+    "SCALING-49046-pose-validate-20261118",
+    "SCALING-49046-pose-bench-30m-natural-20261118",
+    "SCALING-49046-pose-bench-300m-natural-20261118",
+    "SCALING-49046-pose-bench-300m-matched-20261118",
+    "SCALING-49046-probe-bench-30m-natural-ninapro-db2-20261118",
+    "SCALING-49046-probe-bench-30m-natural-ninapro-db3-20261118",
+    "SCALING-49046-probe-bench-30m-natural-ninapro-db6-20261118",
+    "SCALING-49046-probe-bench-30m-natural-epn612-20261118",
+    "SCALING-49046-probe-bench-30m-natural-uci-emg-20261118",
+    "SCALING-49046-probe-bench-300m-natural-ninapro-db2-20261118",
+    "SCALING-49046-probe-bench-300m-natural-ninapro-db3-20261118",
+    "SCALING-49046-probe-bench-300m-natural-ninapro-db6-20261118",
+    "SCALING-49046-probe-bench-300m-natural-epn612-20261118",
+    "SCALING-49046-probe-bench-300m-natural-uci-emg-20261118",
+    "SCALING-49046-probe-bench-300m-matched-ninapro-db2-20261118",
+    "SCALING-49046-probe-bench-300m-matched-ninapro-db3-20261118",
+    "SCALING-49046-probe-bench-300m-matched-ninapro-db6-20261118",
+    "SCALING-49046-probe-bench-300m-matched-epn612-20261118",
+    "SCALING-49046-probe-bench-300m-matched-uci-emg-20261118",
+    "SCALING-49046-pose-ridge-20261118",
+    "SCALING-49046-compare-20261118",
+    "SCALING-49046-probe-aggregate-01-20261118",
+    "SCALING-49046-probe-aggregate-02-20261118",
+    "SCALING-49046-probe-aggregate-03-20261118",
+    "SCALING-49046-probe-aggregate-04-20261118",
+    "SCALING-49046-probe-aggregate-05-20261118",
+    "SCALING-49046-probe-aggregate-06-20261118",
+    "SCALING-49046-probe-fit-01-20261118",
+    "SCALING-49046-probe-fit-02-20261118",
+    "SCALING-49046-probe-fit-03-20261118",
+    "SCALING-49046-probe-fit-04-20261118",
+    "SCALING-49046-probe-fit-05-20261118",
+    "SCALING-49046-probe-fit-06-20261118",
+    "SCALING-49046-probe-fit-07-20261118",
+    "SCALING-49046-probe-fit-08-20261118",
+    "SCALING-49046-probe-fit-09-20261118",
+    "SCALING-49046-probe-fit-10-20261118",
+    "SCALING-49046-probe-fit-11-20261118",
+    "SCALING-49046-probe-fit-12-20261118",
+    "SCALING-49046-probe-fit-13-20261118",
+    "SCALING-49046-probe-fit-14-20261118",
+    "SCALING-49046-probe-fit-15-20261118"
+  ],
+  "all_ids_absent_from_shared_ledger_at_preparation": true,
+  "shared_ledger_sha256": "1b3fc57b3c5829241426f5db0e89b7c21fd8c9b442940cb4667862c28e983d51",
+  "resources": {
+    "stages": {
+      "archive": {
+        "jobs": 1,
+        "requested_core_hours": 2.0,
+        "core_hours_with_scheduler_margin": 2.1,
+        "cap_with_scheduler_margin": 2.1
+      },
+      "checkout": {
+        "jobs": 5,
+        "requested_core_hours": 0.8333333333333334,
+        "core_hours_with_scheduler_margin": 1.3333333333333333,
+        "cap_with_scheduler_margin": 1.3333333333333333
+      },
+      "pose-validate": {
+        "jobs": 1,
+        "requested_core_hours": 1.0,
+        "core_hours_with_scheduler_margin": 1.1,
+        "cap_with_scheduler_margin": 1.1
+      },
+      "pose-benchmark": {
+        "jobs": 3,
+        "requested_core_hours": 4.0,
+        "core_hours_with_scheduler_margin": 5.2,
+        "cap_with_scheduler_margin": 5.2
+      },
+      "probe-benchmark": {
+        "jobs": 15,
+        "requested_core_hours": 70.66666666666667,
+        "core_hours_with_scheduler_margin": 76.66666666666667,
+        "cap_with_scheduler_margin": 76.66666666666667
+      },
+      "pose-ridge": {
+        "jobs": 1,
+        "requested_core_hours": 8.0,
+        "core_hours_with_scheduler_margin": 8.4,
+        "cap_with_scheduler_margin": 8.4
+      },
+      "probe-aggregate": {
+        "jobs": 6,
+        "requested_core_hours": 2.0,
+        "core_hours_with_scheduler_margin": 2.6,
+        "cap_with_scheduler_margin": 2.6
+      },
+      "compare": {
+        "jobs": 1,
+        "requested_core_hours": 4.0,
+        "core_hours_with_scheduler_margin": 4.4,
+        "cap_with_scheduler_margin": 4.4
+      },
+      "probe-fit": {
+        "jobs": 15,
+        "requested_core_hours": 240.0,
+        "core_hours_with_scheduler_margin": 246.0,
+        "cap_with_scheduler_margin": 246
+      }
+    },
+    "core_hours_with_scheduler_margin": 347.8,
+    "cap": 400,
+    "within_stage_caps": true,
+    "within_total_cap": true
+  },
+  "review_required": true,
+  "jobs_submitted": []
+}

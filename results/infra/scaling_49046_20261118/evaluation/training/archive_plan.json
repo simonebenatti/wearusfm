@@ -1,0 +1,27 @@
+{
+  "protocol": "scaling49046-preservation-20261118-v1",
+  "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/scaling_49046_20261118/archive",
+  "minimum_work_free_bytes": 32212254720,
+  "checkpoints": [
+    {
+      "step": 19618,
+      "source": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_300m_20261104/T100-G-300M-19618-from5000-v3/checkpoint_step0019618.pt",
+      "sha256": "d7ebe9d87a08882ae0c1c836b62988ea21c7f1246998a5f82613878a0499387e",
+      "name": "checkpoint_19618.pt"
+    },
+    {
+      "step": 39237,
+      "source": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_49046_20261118/T100-G-300M-39237/checkpoint_predecay.pt",
+      "receipt": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/training/39237/receipt.json",
+      "name": "checkpoint_39237.pt",
+      "plan_sha256": "8272d33e8f1b46cb3ddddeda0febac3b85595f597b50b4b1fd293fc6a7501d2a"
+    },
+    {
+      "step": 49046,
+      "source": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_49046_20261118/T100-G-300M-49046/checkpoint_postdecay.pt",
+      "receipt": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/training/49046/receipt.json",
+      "name": "checkpoint_49046.pt",
+      "plan_sha256": "b4f593225167a016e1937ebd8b6161efe93e395b3dabbc0943b028cd2de98d48"
+    }
+  ]
+}

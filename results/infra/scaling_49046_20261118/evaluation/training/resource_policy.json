@@ -1,0 +1,67 @@
+{
+  "protocol": "scaling49046-resources-20261118-v1",
+  "training": {
+    "segments": [
+      {
+        "start_step": 19618,
+        "end_step": 39237,
+        "walltime_seconds": 71100,
+        "trainer_time_limit_seconds": 69300
+      },
+      {
+        "start_step": 39237,
+        "end_step": 49046,
+        "walltime_seconds": 36000,
+        "trainer_time_limit_seconds": 34200
+      }
+    ],
+    "gpus": 4,
+    "cpus": 32,
+    "gpu_hours_requested": 119,
+    "gpu_hours_with_scheduler_margin": 119.4,
+    "associated_core_hours_requested": 952,
+    "associated_core_hours_with_margin": 955.2,
+    "scheduler_margin_seconds_per_job": 180
+  },
+  "evaluation": {
+    "extraction_jobs": 6,
+    "extractions_gpu_hours_requested": 14,
+    "extractions_gpu_hours_with_margin": 14.3,
+    "extractions_associated_core_hours_with_margin": 114.4,
+    "reader_cpu_only_cap_core_hours": 400,
+    "reader_probe_fit_max_shards": 15,
+    "reader_probe_fit_max_seconds_per_shard": 10800,
+    "reader_probe_fit_requested_core_hours_cap": 240,
+    "reader_probe_fit_with_margin_core_hours_cap": 246,
+    "three_views": [
+      "T100-G-30M-natural",
+      "T100-G-300M-natural",
+      "T100-G-300M-matched"
+    ],
+    "checkout_cpu_only_included": true,
+    "cpu_only_worst_case_core_hours_with_margin": 347.8,
+    "cpu_only_reserve_core_hours": 52.2,
+    "checkpoint_archive_jobs": 1,
+    "checkpoint_archive_core_hours_with_margin": 2.1
+  },
+  "storage": {
+    "checkpoint_bytes": 4673783740,
+    "minimum_free_run_bytes": 21474836480,
+    "persistent_archive_reserved_bytes": 21474836480,
+    "work_minimum_free_before_deploy_bytes": 32212254720,
+    "protected_until_utc": "2026-12-19T00:00:00Z",
+    "archive_location": "WORK",
+    "archive_includes": [
+      19618,
+      39237,
+      49046
+    ],
+    "scratch_40day_expiry_rule": true,
+    "old_source_refresh_date": "2026-11-12",
+    "new_caches_retained_for_days": 40,
+    "stop_if_horizon_expires": true
+  },
+  "closed_previous_cpu_chain_core_hours": 94.732778,
+  "previous_budget_reused": false,
+  "status": "PROPOSED_TECHNICAL_REVIEW_REQUIRED"
+}

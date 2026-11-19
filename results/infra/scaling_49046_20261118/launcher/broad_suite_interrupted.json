@@ -1,0 +1,9 @@
+{
+  "status": "incomplete_interrupted",
+  "exit_code": 130,
+  "scope": "all42 tests/cpu/test_scaling*.py files",
+  "reason": "No progress observed in historical test_resume_in_new_directory_equals_uninterrupted_run[num_workers=2]; metrics.jsonl still empty before first update. Interrupted the local test process group with Ctrl-C. No failure diagnosis claimed for production or GPU.",
+  "proof_gpu": false,
+  "subsequent_check": "bounded targeted release and19618 regression suite with600s timeout",
+  "no_jobs_submitted": true
+}
