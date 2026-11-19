@@ -6741,3 +6741,7 @@ Le ricevute saranno analizzate prima di decidere sui training lunghi.
 ### 18/11/2026 — Lettura fissata dopo la review dei diagnostici da stato comune
 
 Claude ha approvato l’esecuzione di `365cb1e` con il piano di `35ea94b` (review `0afd0864`). Le quattro precisazioni sulla lettura e le responsabilità di 3-launcher sono recepite. La decisione sui training contrastivi resta successiva ai rapporti CUDA e di ripresa CN/CR. [Scheda di lettura](reviews/contrastive_common_diagnostics_readout_20261118.md)
+
+### 19/11/2026 — Lettura dei diagnostici e proposta sul confronto contrastivo
+
+La ripetizione da stato comune mostra variabilità numerica bf16 automatica in tutti i bracci. Il ripristino ricostruisce gli invarianti verificati e lo scarto fra due riprese è comparabile a quello tra continuo e ripresa. GPT propone per la nuova coorte la prova a peso zero su stati comuni e batch misti di 32 e la biforcazione a 544 con due riprese, con profilo numerico fissato e risorse da misurare. Proposta per Simone, gate storico `FAILED_REQUIRES_REVIEW`, training e invii sospesi. [Analisi e regole proposte](reviews/contrastive_common_diagnostics_science_20261119.md)

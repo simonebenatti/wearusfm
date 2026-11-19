@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 19/11/2026 — GPT | Lettura scientifica dei diagnostici da stato comune | Evidenze 8e38eb71
+
+Verificati i 121 hash e le tracce sui quattro rank. A peso zero i quattro scarti tra bracci bf16 automatici cadono nel campo delle repliche. Nei profili math i gradienti coincidono. Nelle prove a pesi attivi le due riprese si discostano fra loro già a 581 e a 588 danno la maggiore distanza dello studente in CN e CR. Lettura e proposta R-1 per RMS100/fast125 in `docs/reviews/contrastive_common_diagnostics_science_20261119.md`.
+
 ### 19/11/2026 — 3-launcher: diagnostici conclusi e raccolti
 
 Checkout 64835236 e celle 64835286/64835297/64835304 tutti COMPLETED 0:0.
@@ -6105,6 +6109,10 @@ operativa aggiornate, autorizzazione già presente. Nessun monitor o training sc
 Claude ha approvato il codice `365cb1e` e il piano `35ea94b` nella review `0afd0864`. Protocollo e scheda di lettura recepiscono N-1–N-4 prima della lettura dei dati. 3-launcher usa il piano di esecuzione approvato, verifica i sei pin a ogni invio e rispetta il limite condiviso di due celle debug in esecuzione.
 
 ## 2) Problemi trovati
+
+### 19/11/2026 — GPT | Portata del risultato e gate della prossima coorte | Codice 365cb1e
+
+Su un batch da otto si isola variabilità del calcolo automatico. Il confronto auto/math varia SDPA e TF32 di cuDNN insieme. Sul checkpoint comune si osservano differenze di bucket DDP tra continuo e reload e variabilità anche tra reload equivalenti. Il gate storico resta FAILED_REQUIRES_REVIEW. Proposti confronti a stato comune sul batch di produzione e biforcazione effettiva a 544 per la nuova coorte. Preventivo e release restano da approvare.
 
 ### 19/11/2026 — 3-launcher: risultati da interpretare dalla chat scientifica
 
