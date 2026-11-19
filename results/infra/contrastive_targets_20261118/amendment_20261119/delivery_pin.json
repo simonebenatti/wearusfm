@@ -1,0 +1,39 @@
+{
+  "status": "REVIEW_REQUIRED",
+  "content_commit": "fbfde797b48644744c36547533acf0e8a7793535",
+  "base_commit": "438c8d65cf3b60a92af4f602869aa29bb328efca",
+  "review_input_commit": "94f5094224bde9cc076c093ef37e57f3f83dc49c",
+  "science_decision_commit": "faa4a8d7e5235d7c216fa2018651fabebbcbf6a5",
+  "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+  "science_plan_sha256": "b03c0bc679f7247d703635d7065c9fc7bda4a292f2c8c106e29004e0527e021a",
+  "preflight_plan_sha256": "e4b3959112db86dac806978cf65307d97694da68b64096120487e8f568c6dd92",
+  "plans": [
+    {
+      "path": "results/infra/contrastive_targets_20261118/plan.json",
+      "sha256": "b03c0bc679f7247d703635d7065c9fc7bda4a292f2c8c106e29004e0527e021a",
+      "bytes": 14862
+    },
+    {
+      "path": "results/infra/contrastive_targets_20261118/preflight_plan.json",
+      "sha256": "e4b3959112db86dac806978cf65307d97694da68b64096120487e8f568c6dd92",
+      "bytes": 9082
+    }
+  ],
+  "validation": {
+    "path": "results/infra/contrastive_targets_20261118/amendment_20261119/validation_final/local_validation.json",
+    "sha256": "36d1d4d44d71bc7516f044f24c231283a8a9ef047268c656f661ec4e429bc2dc",
+    "bytes": 9629
+  },
+  "tests_passed": 465,
+  "requested_resources": {
+    "allocations": 17,
+    "gpu_hours": 18,
+    "core_hours": 169.6
+  },
+  "operator": "3-launcher",
+  "first_release_after_review": "audit_only",
+  "jobs_submitted": false,
+  "diff_command": "git diff 438c8d65 fbfde797b48644744c36547533acf0e8a7793535",
+  "diff_stat": "46 files changed, 5524 insertions(+), 100 deletions(-)",
+  "logs_policy": "Raw pytest logs retain original whitespace and hashes; diff --check excludes *.log."
+}
