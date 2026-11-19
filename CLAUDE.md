@@ -4,6 +4,8 @@
 
 Simone nella chat coordinamento: «chiudi con Claude la review sulle teste di regressione e appena siete allineati lancia il confronto sul 30M congelato a 49.046 passi, sempre chje non sia gia partito». GPT scientifico della chat 2 prepara scienza e codice; Claude rivede; chat **2-TCN head launcher** è l'unico operatore della nuova prova sulle cache, con submitter/ledger comuni. Questa disposizione supera il solo fermo documentale del 18/11 e la proposta di assegnare a Claude anche gli invii TCN. Review effettiva e cancelli restano necessari, nessun secondo consenso per la stessa catena approvata. EPN15/lungo già conclusi e TEMPONet raw sono attività distinte.
 
+Il 19/11 Simone ha precisato che il contatto con Claude passa esclusivamente da lui: GPT prepara i prompt, non contatta Claude direttamente. Review documentale v3 convergente (`ad9f5141`); il pacchetto operativo resta in review prima degli invii.
+
 ## Architettura di lavoro
 - L'agente gira sul Mac. Leonardo e' remoto, raggiungibile con `ssh leonardo`.
 - Non editare mai file sotto $WORK via ssh: niente sed, niente heredoc, niente vim.

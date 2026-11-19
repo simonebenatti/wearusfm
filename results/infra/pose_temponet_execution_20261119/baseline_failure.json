@@ -1,0 +1,34 @@
+{
+  "baseline": "0e56c8b1c67f8257e800f6cd51bafacac28971b4",
+  "method": "git archive --format=tar 0e56c8b1 src scripts tests/cpu/test_consolidation_long_common.py results/infra/consolidation_long_20261105/plan.json; extract only regular files to independent directory; run the single historical test with PYTHONPATH=src:scripts",
+  "result": "1 failed in 2.17s: test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned line126 DID NOT RAISE ValueError matching Claude",
+  "cause": "test expects the historical long-evaluation plan to be unreviewed; the committed plan already records convergence",
+  "matched_files": [
+    {
+      "path": "src/wearusfm/model/patch_tokens.py",
+      "base_sha256": "6107faf2a15a009c2d43cf59927186c52eeb29bcce2426e820adb694f4d85e43",
+      "current_sha256": "6107faf2a15a009c2d43cf59927186c52eeb29bcce2426e820adb694f4d85e43",
+      "identical": true
+    },
+    {
+      "path": "scripts/consolidation_long_common.py",
+      "base_sha256": "547586041275cf01a9122a4de8b02d8557bd5114862aca3907742f2162083f1a",
+      "current_sha256": "547586041275cf01a9122a4de8b02d8557bd5114862aca3907742f2162083f1a",
+      "identical": true
+    },
+    {
+      "path": "tests/cpu/test_consolidation_long_common.py",
+      "base_sha256": "2b33cb1bf682a269ccd90c230554712db23bd6ef5d8f0bbc0805dc6c437ea61c",
+      "current_sha256": "2b33cb1bf682a269ccd90c230554712db23bd6ef5d8f0bbc0805dc6c437ea61c",
+      "identical": true
+    },
+    {
+      "path": "results/infra/consolidation_long_20261105/plan.json",
+      "base_sha256": "22975a40ba100cf8df49b18a442c5b0a755d7c8dfd4eeb5e088651b5d3c6615f",
+      "current_sha256": "22975a40ba100cf8df49b18a442c5b0a755d7c8dfd4eeb5e088651b5d3c6615f",
+      "identical": true
+    }
+  ],
+  "historical_source_files_modified": false,
+  "resolution": "documented pre-existing test/plan expectation mismatch; no changes to closed historical campaign"
+}

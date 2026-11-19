@@ -6005,6 +6005,21 @@ GPT prepara codice nel ramo separato codex/pose-temponet-implementation-20261119
 
 Contenuti 455b3220256990ef20f97756aeda845334e163c5; pin SHA256 in delivery_pin_20261119.json. Rilettura Claude ancora richiesta, nessuna convergenza presunta.
 
+
+### 2026-11-19 | GPT | Convergenza documentale TCN v3: review effettiva di Claude
+
+Letta direttamente la review `ad9f5141`, `docs/reviews/claude_review_pose_temponet_v3_20261119.md`, sul ramo `claude/temponet-db8-20261109`: convergenza documentale, nessun blocco residuo su BL-1…3, OB-1…5 e sei minori. La review riguarda `0e56c8b1`/contenuti `455b3220`; non certifica il runtime.
+Applicati i tre ritocchi ammessi senza nuova review del disegno. Elenco completo degli allarmi: minimo MSE **o** E_dyn nelle ultime cinque epoche dell'orizzonte massimo; checkpoint scelto al primo quarto di epoca; bordo superiore dopo l'estensione; bordo inferiore esteso solo se guadagno MSE relativo oltre 0,5% rispetto al vicino. S-2 è un compromesso fra obiettivi, **non** un allarme. La tabella §10 esplicita che con 15 utenti la copertura può essere inferiore e il «no» è condizionato ai tre semi; il delta di MAE/livello è candidato meno comparatore.
+Il JSON scientifico rimane byte-identico alla proposta rivista (sha256 `171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906`). Il nuovo pacchetto operativo è ancora in preparazione e richiede la review tecnica prevista; autorizzazione di calcolo già ricevuta, nessun nuovo consenso per la stessa catena. Contatto con Claude esclusivamente tramite Simone; unico operatore `2-TCN head launcher`. Nessun job/deploy di questa prova.
+
+
+### 2026-11-19 | GPT | Implementazione TCN frozen e consegna operativa per review
+
+Preparato `codex/pose-temponet-implementation-20261119`, base `0e56c8b1`: pacchetto isolato `scripts/pose_temponet`, due launcher nuovi e piano di 24 allocazioni (18 GPU, 6 CPU-only). Entry point `python -m pose_temponet`; produzione senza override di dose/LR/semi. Il FM e i programmi storici sono byte-identici. Review documentale effettiva Claude `ad9f5141`; review operativa ancora REVIEW_REQUIRED, nessun job/deploy.
+Teste, controlli positivi y/y*, WLS/ridge, selezione paired-fold, rifit e lock quindici stati, inferenza e cinque IC99 implementati. Ricevute/hash, contesto numerico, gate risorse/calibrazione, sorgenti storici separati, no-overwrite e dipendenze verificate anche con sacct completato. Benchmark solo train, nessuna stima CUDA locale.
+Verifica finale: 204 test nuovi passati (35,35 s), 125 storici passati; un'asserzione storica sullo stato non ancora rivisto del vecchio piano lungo fallisce anche sull'export isolato della base. Evidenza in `results/infra/pose_temponet_execution_20261119/baseline_failure.json`; nessuna modifica alla campagna chiusa per nasconderla. Shell syntax e diff check puliti. Prove indipendenti su WLS/ridge e IC dai dati grezzi; parità bit-identica della TCN fra storage host FP16 e precedente FP32 a tre update. I gate sui dati veri restano da eseguire.
+Tetti 24 GPUh, 80 coreh CPU-only, 272 coreh totali invariati; walltime dei 16 gruppi neurali non dichiarati prima del benchmark. Solo l'operatore `2-TCN head launcher` eseguirà la catena dopo review favorevole/gate; contatto con Claude tramite Simone. Prompt e prontuario operativi nel ramo. Il pin successivo lega commit e hash dei contenuti.
+
 ## 2) Problemi trovati
 
 ### 2026-11-18 | GPT consolidamento | Verifiche concluse e limiti della consegna TCN v2 | Fonte 62348ab
@@ -8903,3 +8918,12 @@ la candidata scelta; nessun errore dei run correnti dedotto dalla discussione.
 ### 2026-11-19 | GPT | TCN: tre blocchi e correzioni di Claude disposti, convergenza ancora da leggere
 
 BL-1/2/3 e OB-1…5 recepiti con alternative esplicite della review, più tutte le minori/note. Nessuna finta approvazione: REVIEW_REQUIRED fino alla risposta di Claude. La banda clean-LS non è garantita stabile fra popolazioni inner/outer; resta il gate outer. LN float64 per forme chiuse e FP32 per teste: nessun lower bound bit-esatto del forward neurale. Gate CPU deve proiettare 1.936 combinazioni, non le 30 vecchie. Eventuale superamento tetti o guasto ferma la fase.
+
+### 2026-11-19 | GPT | TCN: blocchi documentali chiusi, runtime ancora da verificare
+
+Review effettiva `ad9f5141`: BL-1…3, OB-1…5 e sei minori chiusi. I tre ritocchi testuali richiesti sono applicati. Nessuna equivalenza fra convergenza del protocollo, correttezza del codice e superamento dei controlli positivi: le ultime due restano verifiche distinte. Si conserva la possibilità di fermarsi per calibrazione non diagnostica, ottimizzazione irrisolta o risorse insufficienti senza un verdetto negativo sull'encoder.
+
+### 2026-11-19 | GPT | Test e limiti della nuova catena TCN
+
+Risolti durante l'integrazione: storage host FP32 non necessario; finestre con supporto centrale vuoto gestite dal benchmark come dal fitting; memoria simultanea dei pattern WLS proiettata prima delle allocazioni; attraversamento ripetuto delle ricevute evitato senza perdere i controlli di ciclo/hash/stato. Fixture delle ricevute aggiornate al controllo effettivo del commit, senza allentare la guardia produttiva. Tutti i 204 test nuovi verdi.
+Un failure storico riprodotto sulla base: `test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned` attende ancora un rifiuto Claude su un piano già convergente. Non è una regressione TCN; test e programma storici invariati. Nessuna prova locale certifica velocità A100, controlli positivi sulle cache o vantaggio scientifico: review operativa e gate reali restano necessari.

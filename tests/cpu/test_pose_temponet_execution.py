@@ -1,0 +1,82 @@
+"""Complete cell graph, inclusive allocation and non-submitting command generation."""
+import copy
+from pathlib import Path
+import sys
+
+import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]/"scripts"))
+from pose_temponet import execution as E
+
+
+def measured_pack(jobs):
+    return [{"stage": j["stage"], "head": j["head"], "world": j["world"],
+             "requested_seconds": 1800, "cpus": 8, "gpus": 1, "host_ram_gib": 32}
+            for j in jobs if j["stage"] in ("controls", "selection", "refit")]
+
+
+def test_graph_has_no_duplicate_cells_and_keeps_global_scientific_dependencies():
+    jobs = E.job_graph()
+    assert len(jobs) == 24
+    assert sum(j["resources"]["gpus"] for j in jobs) == 18
+    assert sum(not j["resources"]["gpus"] for j in jobs) == 6
+    bystage = {s: [j for j in jobs if j["stage"] == s] for s in {j["stage"] for j in jobs}}
+    assert len(bystage["controls"]) == 6
+    assert len(bystage["selection"]) == len(bystage["refit"]) == 5
+    for j in bystage["selection"]:
+        assert set(j["after"]) == {c["id"] for c in bystage["controls"]}
+    for j in bystage["refit"]:
+        assert set(j["after"]) == {c["id"] for c in bystage["selection"]}
+    assert set(bystage["locked_inference"][0]["after"]) == {c["id"] for c in bystage["refit"]}
+    assert sum(j["resource_release"] for j in jobs) == 3
+
+
+def test_measured_pack_cannot_drop_a_control_or_change_a_comparator():
+    jobs = E.job_graph(); pack = measured_pack(jobs)
+    ready = E.apply_training_pack(jobs, pack)
+    assert all(j["resource_release"] for j in ready)
+    assert all(a["after"] == b["after"] for a, b in zip(jobs, ready))
+    with pytest.raises(ValueError, match="complete frozen matrix"):
+        E.apply_training_pack(jobs, pack[:-1])
+    pack[0]["head"] = "unapproved"
+    with pytest.raises(ValueError, match="complete frozen matrix"):
+        E.apply_training_pack(jobs, pack)
+
+
+def test_overhead_counts_toward_twenty_hour_phase_cap():
+    jobs = E.job_graph(); pack = measured_pack(jobs)
+    for p in pack: p["requested_seconds"] = 4500  # 16*4500=20h without grace
+    with pytest.raises(ValueError, match="phase/campaign"):
+        E.apply_training_pack(jobs, pack)
+    jobs[3]["resources"]["requested_seconds"] = 14400
+    with pytest.raises(ValueError, match="inclusive lane"):
+        E.validate_graph(jobs)
+
+
+def test_commands_require_releases_and_use_only_common_submitter():
+    jobs = E.job_graph(); plan = {"jobs": jobs, "submission_released": False}
+    kwargs = dict(checkout_sha="a"*40, plan_path="/work/p.json", plan_sha256="b"*64)
+    with pytest.raises(ValueError, match="not released"):
+        E.submit_command(plan, jobs[0], **kwargs)
+    plan["submission_released"] = True
+    cmd = E.submit_command(plan, jobs[0], **kwargs)
+    assert cmd[:2] == ["python3", "scripts/submit_job.py"]
+    assert "scripts/slurm/pose_temponet_checkout.sbatch" in cmd
+    assert "--time=00:12:00" in cmd and "--no-requeue" in cmd
+    assert any("TCN_PLAN_SHA256="+"b"*64 in s for s in cmd)
+    cmd = E.submit_command(plan, jobs[2], **kwargs)
+    assert "--dopo" in cmd and jobs[0]["id"] in cmd and "--gres=gpu:1" in cmd
+    with pytest.raises(ValueError, match="not released"):
+        E.submit_command(plan, jobs[5], **kwargs)
+
+
+def test_dependency_override_never_silently_omits_a_prerequisite():
+    jobs=E.job_graph(); plan={"submission_released":True}
+    kwargs=dict(checkout_sha="a"*40,plan_path="/work/p.json",plan_sha256="b"*64)
+    with pytest.raises(ValueError,match="every predecessor"):
+        E.submit_command(plan,jobs[1],after_slurm={},**kwargs)
+    cmd=E.submit_command(plan,jobs[1],after_slurm={jobs[0]["id"]:"12345"},**kwargs)
+    assert "--dependency=afterok:12345" in cmd and "--dopo" not in cmd
+    broken=copy.deepcopy(jobs);broken[1]["after"]=["unknown"]
+    with pytest.raises(ValueError,match="dependency"):
+        E.validate_graph(broken)

@@ -1,0 +1,32 @@
+{
+  "suite": "historical pose dependencies",
+  "command": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--tb=short",
+    "tests/cpu/test_pose_dynamics.py",
+    "tests/cpu/test_tokenizer_pose_readout.py",
+    "tests/cpu/test_consolidation_long_pose.py",
+    "tests/cpu/test_consolidation_long_pose_runtime.py",
+    "tests/cpu/test_consolidation_long_common.py"
+  ],
+  "returncode": 1,
+  "elapsed_seconds": 4.729040166,
+  "files": [
+    "tests/cpu/test_pose_dynamics.py",
+    "tests/cpu/test_tokenizer_pose_readout.py",
+    "tests/cpu/test_consolidation_long_pose.py",
+    "tests/cpu/test_consolidation_long_pose_runtime.py",
+    "tests/cpu/test_consolidation_long_common.py"
+  ],
+  "stdout_sha256": "895bf3d0a63ec4498270ef1176489f542736493a248d3af61b3171b3e5f50d7d",
+  "preexisting_failure": "test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned",
+  "baseline_commit": "0e56c8b1c67f8257e800f6cd51bafacac28971b4",
+  "baseline_reproduction": "independent git archive of src/scripts/test/plan; same DID NOT RAISE at line126; plan is already reviewed",
+  "source_sha256": "cdb3fe9c8b97f626da661de7783cc4091ba2833335d28d38f46b1cdb18dc6aa8",
+  "verification_date": "2026-11-19"
+}
