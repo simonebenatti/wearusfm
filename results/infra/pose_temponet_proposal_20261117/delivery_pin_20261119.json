@@ -1,0 +1,42 @@
+{
+  "status": "REVIEW_REQUIRED",
+  "protocol": "pose-temponet-frozen-encoder-readout-20261117-v3",
+  "content_commit": "455b3220256990ef20f97756aeda845334e163c5",
+  "diff_base": "3e007c841c97da5793ed4aac6cfceb41c99a00ee",
+  "review_to_address": "ee118a25",
+  "claude_final_review_commit": null,
+  "human_scope_approved": "2026-11-19 coordinamento direct user request; see proposal.authorization",
+  "submission_released": false,
+  "checks_passed": 25,
+  "files": {
+    "docs/pose_temponet_frozen_protocol_20261117.md": {
+      "sha256": "77f7614ea1d7601e5e9c642a2dc3e429350661d549d3b32a34d8db3473876013",
+      "bytes": 44830
+    },
+    "docs/reviews/pose_temponet_response_20261119.md": {
+      "sha256": "4910d956c9ba8f2c1ff71eb1606d77712ebca1579aec607c4010f7b0a60ddcb4",
+      "bytes": 15461
+    },
+    "docs/prompt_claude_pose_temponet_review_20261119.md": {
+      "sha256": "c7c77ff5d2d91710b6c26755cab586b0f251123751cf9d069a576ff406eace60",
+      "bytes": 3131
+    },
+    "results/infra/pose_temponet_proposal_20261117/proposal.json": {
+      "sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+      "bytes": 38867
+    },
+    "results/infra/pose_temponet_proposal_20261117/analytic_checks.json": {
+      "sha256": "ed1b570bdf359a1426b56baa571e1f53ab09c5a2369605657ffcf8d14a800348",
+      "bytes": 1973
+    },
+    "results/infra/pose_temponet_proposal_20261117/document_checks_20261119.json": {
+      "sha256": "97157a5a1da2184342f4a888cebb0a184dbca749e1587a4ae8661a5a24785c2d",
+      "bytes": 1053
+    },
+    "results/infra/pose_temponet_proposal_20261117/README.md": {
+      "sha256": "ee3473adfe1628f30278a90630f9f135013823b25a7c5050c81724cbe1e3d28e",
+      "bytes": 1355
+    }
+  },
+  "publication_note": "pin metadata only; science documents identical to content commit; runtime prepared separately"
+}

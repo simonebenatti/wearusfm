@@ -6780,3 +6780,5 @@ LR basso esteso allarme solo oltre 0,5% relativo; altri allarmi invariati. S-2 c
 R-1 float64 e conteggi 8329/8327/166540/20119920; technical_failure ferma la fase. Prove e pin da pubblicare; 25 controlli documentali passati, nessun test runtime dichiarato.
 Protocollo sha256 77f7614ea1d7601e5e9c642a2dc3e429350661d549d3b32a34d8db3473876013; proposal.json sha256 171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906. SHA contenuti nel successivo delivery_pin_20261119.json. Risposta: docs/reviews/pose_temponet_response_20261119.md.
 GPT prepara codice nel ramo separato codex/pose-temponet-implementation-20261119; Claude rilegge realmente e poi rivede il pacchetto operativo; unico operatore 2-TCN head launcher. Nessun sorgente FM toccato e nessun invio oggi.
+
+Pin dei contenuti della revisione TCN v3: `455b3220256990ef20f97756aeda845334e163c5`; SHA256 di protocollo e proposta registrati sopra e nel delivery_pin_20261119.json. Stato REVIEW_REQUIRED, invii non ancora rilasciati.
