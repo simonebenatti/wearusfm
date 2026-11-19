@@ -1,0 +1,288 @@
+{
+  "schema": "pose-temponet-runtime-delivery-v1",
+  "date": "2026-11-19",
+  "branch": "codex/pose-temponet-implementation-20261119",
+  "base_commit": "0e56c8b1c67f8257e800f6cd51bafacac28971b4",
+  "content_commit": "6283b5bd1e36d4a92b96bedbde764aaf9e108dde",
+  "source_sha256": "cdb3fe9c8b97f626da661de7783cc4091ba2833335d28d38f46b1cdb18dc6aa8",
+  "status": "REVIEW_REQUIRED",
+  "submission_released": false,
+  "documentary_review_commit": "ad9f5141711ba60ea1014bd9ba842af168ff0a37",
+  "operational_review_commit": null,
+  "tests": {
+    "new_passed": 204,
+    "historical_passed": 125,
+    "historical_preexisting_failed": 1,
+    "baseline_reproduced": true,
+    "cuda_tested": false
+  },
+  "resources": {
+    "allocations": 24,
+    "gpu_allocations": 18,
+    "cpu_only_allocations": 6,
+    "gpu_hours_cap": 24,
+    "cpu_only_core_hours_cap": 80,
+    "total_core_hours_cap": 272,
+    "neural_walltimes_pending_benchmark": 16
+  },
+  "operator": "2-TCN head launcher",
+  "claude_contact": "via Simone only",
+  "files": [
+    {
+      "path": "CLAUDE.md",
+      "bytes": 21622,
+      "sha256": "08373a15fce5a7cb57bf26095ef8a3e05ba8cfdc8a80d150cc4fb5112b68745c"
+    },
+    {
+      "path": "docs/claude_GPT_shared",
+      "bytes": 888876,
+      "sha256": "8498c8e984338d52b9574acdb36540981b985f5a940bfd4db90786ba64eb3f94"
+    },
+    {
+      "path": "docs/decisioni.md",
+      "bytes": 673403,
+      "sha256": "eabfa5857034daade58a401f0e0ad808f52c2f390fab9c550d2cc4e55be18501"
+    },
+    {
+      "path": "docs/pose_temponet_execution_20261119.md",
+      "bytes": 11349,
+      "sha256": "858003cacf9d68ba6856cb69d25dce6e0483058509632cd43d47b52e592100b6"
+    },
+    {
+      "path": "docs/pose_temponet_frozen_protocol_20261117.md",
+      "bytes": 45034,
+      "sha256": "03758e42a743d962d57da7791840424c6c3dfed1048f27a216c2c0aada2f27b1"
+    },
+    {
+      "path": "docs/prompt_claude_pose_temponet_runtime_review_20261119.md",
+      "bytes": 4542,
+      "sha256": "d4474c718705cc82a16d894903cdc3029bdfdf126e56b5a67a4376b65f26dc22"
+    },
+    {
+      "path": "docs/reviews/claude_review_pose_temponet_v3_20261119.md",
+      "bytes": 13178,
+      "sha256": "25a8d513eb115ab8156dafdf1005a500c6f7e43c609045d2dea4a4c04b81cb48"
+    },
+    {
+      "path": "docs/reviews/pose_temponet_runtime_evidence_20261119/producer_train.json",
+      "bytes": 342030,
+      "sha256": "27297241e4bf0f12a61edb2e5cf5d8cef28262f6f26caee44f98af263b3a1f36"
+    },
+    {
+      "path": "docs/reviews/pose_temponet_runtime_evidence_20261119/producer_val.json",
+      "bytes": 3258392,
+      "sha256": "1321038a8e0f50da56e57543c9b5a662c391af523d7094c6984cad1a396a755c"
+    },
+    {
+      "path": "results/infra/pose_temponet_execution_20261119/README.md",
+      "bytes": 1482,
+      "sha256": "6875283f9b150550d7e0237de716cb6a236a7d43dac39eeb42f4d5a6057a6f47"
+    },
+    {
+      "path": "results/infra/pose_temponet_execution_20261119/baseline_failure.json",
+      "bytes": 1905,
+      "sha256": "5205b78c89e4d18ac42cb8bd246a457c9c3457612704d2524b0df812ac05f620"
+    },
+    {
+      "path": "results/infra/pose_temponet_execution_20261119/plan.json",
+      "bytes": 58932,
+      "sha256": "050233bb8a3f48386e0be2af12afa22677e0db6333508772103be3808b454c08"
+    },
+    {
+      "path": "results/infra/pose_temponet_execution_20261119/tests_historical.json",
+      "bytes": 1277,
+      "sha256": "96c02d0e071bf24a7cf5bf91e239a812db9ad9304f14c3529cf1acc164ad8abe"
+    },
+    {
+      "path": "results/infra/pose_temponet_execution_20261119/tests_historical.txt",
+      "bytes": 794,
+      "sha256": "895bf3d0a63ec4498270ef1176489f542736493a248d3af61b3171b3e5f50d7d"
+    },
+    {
+      "path": "results/infra/pose_temponet_execution_20261119/tests_runtime.json",
+      "bytes": 2237,
+      "sha256": "b373fac83ca064ee3258ef66c45dbd16f42daabdd43a4b1718af501f0871fd19"
+    },
+    {
+      "path": "results/infra/pose_temponet_execution_20261119/tests_runtime.txt",
+      "bytes": 261,
+      "sha256": "ee8ac3dc1a3f8a7591d3ee3ee46a6a0c29e5e03af91038125d8d154d7042d00d"
+    },
+    {
+      "path": "scripts/pose_temponet/__init__.py",
+      "bytes": 83,
+      "sha256": "089a3a51cac857f4048038661e5b0b73c055c88566eb01ee2464967efd62566e"
+    },
+    {
+      "path": "scripts/pose_temponet/__main__.py",
+      "bytes": 10006,
+      "sha256": "f370368fbfc3bb53e9a26259aea8d5be3707057e917068a95666a366ea33ce67"
+    },
+    {
+      "path": "scripts/pose_temponet/benchmark.py",
+      "bytes": 38587,
+      "sha256": "c668cf059e012fdf2191ed0222ce9ad728d9a2b29481a43eb02872a8d5bae1e4"
+    },
+    {
+      "path": "scripts/pose_temponet/controls.py",
+      "bytes": 37969,
+      "sha256": "0408b9ff07de59c546f1de3ecd896fbaffd921e6f54a2ba8a53633ff5f2da3de"
+    },
+    {
+      "path": "scripts/pose_temponet/data.py",
+      "bytes": 8091,
+      "sha256": "90de1b86e4254aaa8c792656901667c4172686131246f53f1c56eec4c216acad"
+    },
+    {
+      "path": "scripts/pose_temponet/execution.py",
+      "bytes": 10170,
+      "sha256": "d0b1abb70fc6e0e84a814f57727ad939296ebcf5860c8b21ed6ec8d6c37d5e0d"
+    },
+    {
+      "path": "scripts/pose_temponet/heads.py",
+      "bytes": 5790,
+      "sha256": "2f31edf076a285ea23a82ffe0aa958ce3f84b41b2c77d0a4bc753332ad84472a"
+    },
+    {
+      "path": "scripts/pose_temponet/linear.py",
+      "bytes": 20479,
+      "sha256": "140683ec0642698bdd991ccb993a4b6002f08b172d16852cf76edd03fb93daed"
+    },
+    {
+      "path": "scripts/pose_temponet/metrics.py",
+      "bytes": 11299,
+      "sha256": "d1546d766f6f37fd8972af3842a83f6dfdda843be127d888c4a2fdee05148496"
+    },
+    {
+      "path": "scripts/pose_temponet/provenance.py",
+      "bytes": 36873,
+      "sha256": "5fc618b9fc46528afe2a2511c7b543cdd909cbe433c2deaf339a4c099aba247c"
+    },
+    {
+      "path": "scripts/pose_temponet/report.py",
+      "bytes": 20261,
+      "sha256": "614a23a685dcb1ed9aa4c838637c295410c4fd8b1f54a1c9db324e2b21d00fb6"
+    },
+    {
+      "path": "scripts/pose_temponet/resources.py",
+      "bytes": 15746,
+      "sha256": "933a9267bc5414ca022c7d9ec46d9343d0765b0433be14efc10c31568925afb2"
+    },
+    {
+      "path": "scripts/pose_temponet/runner.py",
+      "bytes": 22846,
+      "sha256": "86ebf462f48dc9fd208a98a569d4d596bbfd8ae1ac8ac7954a9bb73faec41c71"
+    },
+    {
+      "path": "scripts/pose_temponet/selection.py",
+      "bytes": 9795,
+      "sha256": "28dfc4dd6241614daa4185caf48a4d96c1671f756457c51f864a04e681dd7457"
+    },
+    {
+      "path": "scripts/pose_temponet/train.py",
+      "bytes": 33697,
+      "sha256": "d9117ad79c789c218a90281cab0199c0c28c07933bd08c1c15f9d551d37fd781"
+    },
+    {
+      "path": "scripts/pose_temponet/workflow.py",
+      "bytes": 29850,
+      "sha256": "ad4f8504ee37b40e6137fedaff0a5ce62dcb2f70b0a4b168498beb0ab8e7b13f"
+    },
+    {
+      "path": "scripts/slurm/pose_temponet.sbatch",
+      "bytes": 1058,
+      "sha256": "2378e44173ac99d617615886443794aad7c72a32b34fc373bf12cbbe8cd017c9"
+    },
+    {
+      "path": "scripts/slurm/pose_temponet_checkout.sbatch",
+      "bytes": 750,
+      "sha256": "a8961e6a4fc4eebe2dcf7ea6f432b0c1203e4ebb05cc4630e584349ce821b2de"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_benchmark.py",
+      "bytes": 10063,
+      "sha256": "0a1e2e050024d4dbda40ea0392b88514af11c8a16de8193951cd937a060292a3"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_cli.py",
+      "bytes": 3219,
+      "sha256": "eb6efc24bbc8f4982b3d822cdeff97b9d04413e5bfd0d8c2f95357864ca8d0a0"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_cli_guards.py",
+      "bytes": 3333,
+      "sha256": "2778ab9cd690b61986b84ba6ba0c690c9797fcd6235bcb42f034192bfb562b67"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_controls.py",
+      "bytes": 10556,
+      "sha256": "fe744dbf78ab4175425a9fcdef88b898fe10add344b65ad0bca0586647b32b23"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_data.py",
+      "bytes": 5699,
+      "sha256": "20c9a98229f58d3120a4cbf2b47c006d47e5cc16182126c573b0ecb838e847a2"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_execution.py",
+      "bytes": 3893,
+      "sha256": "743996999e8f5ec236269a5bf30dad49adec9276ddd3cc4cbef28c9e0c82c190"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_heads.py",
+      "bytes": 5342,
+      "sha256": "86587add9d3e06ac74ee0a77a97b2a04f585f924e2df48860e54fc3a136a971d"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_linear.py",
+      "bytes": 6509,
+      "sha256": "dc0d7abb08ba82f4883e8593f26eb87de2c4da9202e06ca81fa9476d6c30df65"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_metrics.py",
+      "bytes": 6517,
+      "sha256": "db82f1179d2c2eed74c158d21d71fa89b2f73c392e1a531f49e508417ce28882"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_provenance.py",
+      "bytes": 14610,
+      "sha256": "e4e0acf100a3a4bc88cf9223dad4af779ab78ea51c9dcc51e11c83b203163325"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_report.py",
+      "bytes": 11886,
+      "sha256": "f5a41bb604041fc5b1aa9e038a2563c4f23f4145a994e6762d1cc2b758dd7b25"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_resources.py",
+      "bytes": 8321,
+      "sha256": "08fd96713e167176558ff601b24256384739e79781244b00911ac62ab61f3d5e"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_runner.py",
+      "bytes": 11634,
+      "sha256": "57d3666c4c9e4de79ec6cc71b43634c160f639b86f3031b19b741852e31a9b26"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_scientific_integration.py",
+      "bytes": 9321,
+      "sha256": "0bfed7e2eeaaeeece5dd99af417fe4a44963214553038a022b8ddc13c95af8d5"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_selection.py",
+      "bytes": 4813,
+      "sha256": "64dd6e72354a5f7bcfcb1c201bfa025405a31734bac69ba379a481ed8e7a409d"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_train.py",
+      "bytes": 11095,
+      "sha256": "66c4289ed56553949984f7ebb0f9584ebe3de97d082619bae2b9826ae6b97f33"
+    },
+    {
+      "path": "tests/cpu/test_pose_temponet_workflow.py",
+      "bytes": 16763,
+      "sha256": "e3999ae9f0546cf7cd17fc6f6a98bfd7953e473d151a7c6b12f76ddd0abc7bab"
+    }
+  ],
+  "scope": "Runtime implementation review only. No submission or deployment by this delivery. Actual favorable operational review and measured global gates required before the already authorized chain."
+}
