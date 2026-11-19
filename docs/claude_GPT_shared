@@ -8922,6 +8922,27 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - La convergenza non rilascia invii: restano la review del pacchetto operativo (codice, test, piano eseguibile) e i gate.
   Operatore della prova: 2-TCN head launcher. Prompt per GPT nella sezione 5 della review, consegnato a Simone.
 
+### 2026-11-19 | Claude | Review operativa del pacchetto TCN frozen `2f98211`: DA RIVEDERE prima del primo invio, quattro blocchi di runtime (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: pacchetto eseguibile di GPT del confronto delle teste di posa sul teacher T100-G 30M a 49.046 passi, ramo
+  `codex/pose-temponet-implementation-20261119`, consegna `2f982114`, codice `6283b5bd`, base `0e56c8b1`; richiesta di GPT
+  incollata da Simone il 19/11. SHA rivisto `2f982114719dc2abd723bdbf0147d7fef34a731c`: rispetto a `6283b5bd` cambia solo il pin,
+  e i 245 sorgenti sono identici.
+- Review in `docs/reviews/claude_review_pose_temponet_runtime_20261119.md`; prove, script, driver della catena e risultati in
+  `docs/reviews/claude_review_pose_temponet_runtime_20261119_evidence/`.
+- Metodo:
+  - test sul Mac: 204 nuovi passati; 5 file storici con 125 passati e 1 fallito preesistente; suite completa 2.569 passati su
+    2.570, con lo stesso fallimento;
+  - cinque revisori, ciascuno con un controllore avversario: 130 controlli, 23 rilievi (21 confermati, 1 incerto, 1 confutato);
+  - prova della catena intera dei 24 stadi con le funzioni vere, con B-4 corretto e B-2 aggirato in una copia, e lettura statica
+    del collegamento;
+  - rilettura della bozza contro le fonti: 33 segnalazioni, corrette.
+- Esito: **DA RIVEDERE prima del primo invio**. Quattro blocchi (B-1...B-4, voce nella sezione 2), sei importanti (I-1...I-6) e
+  alcune minori; il resto corrisponde al protocollo v3. Va corretto tutto in una revisione, perché dopo il primo invio un cambio
+  dei sorgenti invalida tutte le ricevute.
+- Seguito: GPT corregge con un test per ciascun punto, compreso il test della catena con le funzioni vere; io rileggo solo il diff,
+  senza agenti. Nessun lancio da parte mia; operatore 2-TCN head launcher. Prompt per GPT nella sezione 8, consegnato a Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13078,3 +13099,17 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   comparatore», come J `evaluation.secondary_worsening`.
 - Facoltativi: «controllo_non_calibrato» in P:86 e P:90; lettura della TCN di P:72 anche in J `objective_tradeoff.consequence`;
   parole attaccate fuori dal §10. Li ricontrollo alla review del pacchetto operativo.
+
+### 2026-11-19 | Claude | Pacchetto TCN frozen `2f98211`: quattro blocchi di runtime e sei importanti prima del primo invio
+
+- B-1 `pose_temponet.sbatch:14` sostituisce `PYTHONPATH` dopo `module load cineca-ai`, che su Leonardo fornisce numpy e torch
+  (log del 06/11 in `f58f5ff`): tutti i job morirebbero al primo import. Anteporre.
+- B-2 i walltime misurati sono in secondi; Slurm arrotonda al minuto e `runner._allocation` pretende la stringa esatta: dopo
+  preflight, benchmark e WLS i job dei controlli rifiuterebbero l'allocazione. Arrotondare al minuto.
+- B-3 `--agente gpt_tcn_launcher` non è fra le scelte di `submit_job.py`: nessun comando stampato è usabile. Usare `gpt`.
+- B-4 `runner._progress` chiama `pair.curve()`, che pretende una curva completa: ogni ricerca si ferma al passo zero. Leggere
+  `pair.points`. I test non lo vedevano perché sostituiscono `run_selection`.
+- I-1 controllo in forma chiusa non diagnostico registrato come `technical_failure` nei sei job GPU; I-2 benchmark su un percorso
+  di valutazione diverso dai fit; I-3 salvataggi misurati senza riscaldamento (il gate può fermare una catena fattibile); I-4
+  diagnostico L13 che mescola fit su `y` e base su `y*`; I-5 checkout di campagna creato prima di verificare il commit del piano;
+  I-6 gate della quota WORK fermo alla misura del rilascio.
