@@ -8476,6 +8476,12 @@ Simone inoltra personalmente la richiesta di review a Claude e ha autorizzato il
 
 Verifica locale del coordinamento su `wearusfm-pose-heads`, base `0e56c8b1`, prima del congelamento del codice. Superati 104 test dei nuovi moduli e 67 test esistenti della posa nello schedule lungo, anche in un’unica esecuzione (171 in 7,77 s). Suite: `tests/cpu/test_pose_temponet_*.py`, `test_consolidation_long_pose.py` e `test_consolidation_long_pose_runtime.py`. Impronta dei 19 file Python dei nuovi moduli e delle suite (SHA256 dell’elenco ordinato «sha256  percorso», righe con LF) uguale prima e dopo: `7c6a35d5a2884b49ae26912180472ac91421e144ed0a0a9bd27786b5db08e3c6`. Alle 10:52 CET il confronto frozen attendeva la review e la verifica dell’intero flusso. I job TEMPONet in coda riguardavano l’EMG grezzo.
 
+### 2026-11-19 | Coordinamento e chat 2 | Convergenza sul protocollo e consegna operativa delle teste
+
+Claude ha chiuso i tre blocchi e le cinque osservazioni obbligatorie sul protocollo v3 nel commit `ad9f5141` (`claude/temponet-db8-20261109`). La chat 2 ha recepito i tre ritocchi testuali e pubblicato il codice `6283b5bd` e la consegna `2f982114` su `codex/pose-temponet-implementation-20261119`. La verifica indipendente del coordinamento ha confermato i 51 file del manifest e le 24 allocazioni mostrate dal comando pubblico di ispezione. Il pacchetto riporta 204 test nuovi superati, 125 test storici superati e un test storico fallito anche sulla base `0e56c8b1`, che assume uno stato di review ormai superato.
+
+Il prompt per la review operativa è stato consegnato a Simone. Il launcher ha i riferimenti e il mandato per eseguire la prova dopo il verdetto favorevole sul codice e i controlli prescritti. Il primo invio previsto è il controllo sui dati e sui risultati storici (R-1), seguito dai benchmark di costo prima di addestrare le teste.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
