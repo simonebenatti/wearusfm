@@ -178,6 +178,15 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 19/11/2026 — 3-launcher: diagnostici approvati sottomessi
+
+Consegna db66b507, review Claude 0afd0864, piano 35ea94ba e codice 365cb1e2.
+Rigenerazione piano/cmp, sei pin, submitter, ledger e quota verificati prima di
+ogni invio. Checkout 64835236 COMPLETED 0:0, HEAD corretto; CUDA 64835286 e
+CN 64835297 RUNNING; CR 64835304 PENDING QOSMaxJobsPerUserLimit. Ricevute in
+common_submission_20261119/, nota in reviews/launcher_common_diagnostics_20261119.md.
+Nessuna modifica tecnica o scientifica; raccolta rapporti da completare.
+
 ### 18/11/2026 — Simone ha inoltrato a 3-launcher il prompt dei due diagnostici
 
 Consegna `35ea94ba`, codice di esecuzione `365cb1e2`. Simone conferma che GPT
@@ -6086,6 +6095,14 @@ operativa aggiornate, autorizzazione già presente. Nessun monitor o training sc
 Claude ha approvato il codice `365cb1e` e il piano `35ea94b` nella review `0afd0864`. Protocollo e scheda di lettura recepiscono N-1–N-4 prima della lettura dei dati. 3-launcher usa il piano di esecuzione approvato, verifica i sei pin a ogni invio e rispetta il limite condiviso di due celle debug in esecuzione.
 
 ## 2) Problemi trovati
+
+### 19/11/2026 — 3-launcher: raccolta diagnostici ancora aperta
+
+Due celle debug attive e terza in coda secondo quota, nessun errore osservato
+all'invio. Spazio libero circa 46 GiB per riserva 14 GiB; checkout consumato
+0,038889 core-ore. Esiti e hash rapporti non ancora disponibili. Non duplicare
+64835286/64835297/64835304; mantenere ferme le nuove coorti e i training lunghi
+in attesa della lettura scientifica.
 
 ### 18/11/2026 — Chiarito il riferimento alla chat nel worktree condiviso
 
