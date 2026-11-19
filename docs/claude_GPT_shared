@@ -8466,6 +8466,10 @@ testaFM;DB8 non replica7,585vs6,89. Contrastivadf36272 ancora proposta globale p
 non obiettivo temporale già pronto. Scaling19k allenato nella consegnaClaude11/11 ma report
 scientifico non pubblicato. Nessun job, nuova misura, merge, modifica scientifica o rilancio.
 
+### 2026-11-19 | GPT coordinamento | Stato della ricerca sulla posa
+
+Sintesi richiesta da Simone in `docs/reviews/stato_posa_20261119.md`. Integrati scaling finale a 19.618 (`2df4ca68`), lungo 30M, TEMPONet con tre semi (`f9b215c4`), review TCN, collaudi contrastivi e nuove finestre delle ancore. Alle 10:03 CET due training TEMPONet a 100 epoche in esecuzione e sei letture in dipendenza. SEEDS con 1.049 file integri dopo il primo tentativo, diagnosi e seguito sul ramo dedicato. Priorità proposta per la posa: confrontare i lettori sulle cache esistenti del 30M lungo, usando controlli che distinguono contesto e non linearità.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -12455,3 +12459,7 @@ TEMPONet è già osservato. La contrastiva globale del07/11 ha obiettivi classif
 priorità sul movimento richiede diversa domanda prima di implementarla. Nessun difetto nuovo
 nei risultati verificati. Candidati di testa/loss restano separati; questa sintesi non cambia
 criteri o autorizzazioni. Dati e limiti nel report del16/11.
+
+### 2026-11-19 | GPT coordinamento | Interpretazione delle misure di posa
+
+La varianza predetta del 23,9% equivale al 49% circa in deviazione standard. Gli utenti del pannello FM sono di sviluppo e la posa era supervisionata nel pretraining. La MAE di TEMPONet e l’errore dinamico del FM usano supporti e metriche diversi. Un miglioramento della MAE con L1 su TEMPONet giustifica una prova separata con testa fissa sul FM. Restano aperti la convergenza del protocollo TCN, i controlli da stato comune della contrastiva e il confronto su un dataset esterno.
