@@ -17,6 +17,7 @@ SEEDS = (0, 1, 2)
 GROUPS = ("all", "dynamic", "static")
 REFERENCES = ("historical_post_ridge", "historical_trained_head")
 COMPARATORS = ("L0", "MLP", "L13", *REFERENCES)
+CANDIDATE_E_DYN_MAX = 0.7630564046643697
 COMMON_GATES = ("integrity", "historical_R1", "resources", "positive_controls")
 BENEFIT = "beneficio_pratico_risolto"
 HARM = "deterioramento_pratico"
@@ -187,13 +188,15 @@ def directional_reading(label, candidate_alarm, comparator_alarm):
             "may_use_absence_of_practical_veto":not comparator_alarm}
 
 
-def candidacy(contrasts, assessments, common_gates):
+def candidacy(contrasts, assessments, common_gates, *, candidate_e_dyn):
     common = all(common_gates.get(k) is True for k in COMMON_GATES)
     comparators = all(not assessments[h]["optimization_unresolved"] for h in ("L0","MLP","L13"))
     required = all(contrasts[str(i)]["statistical_label"] == BENEFIT for i in (1,4,5))
     vetoes = [i for i in (2,3) if contrasts[str(i)]["statistical_label"] == HARM]
     all_evaluable = all(contrasts[str(i)]["relative_E_dyn"]["evaluable"] for i in range(1,6))
-    candidate = common and comparators and required and not vetoes and all_evaluable
+    absolute_value = _finite(candidate_e_dyn) if candidate_e_dyn is not None else None
+    absolute_passed = absolute_value is not None and absolute_value <= CANDIDATE_E_DYN_MAX
+    candidate = common and comparators and required and not vetoes and all_evaluable and absolute_passed
     mixed = [COMPARATORS[i-1] for i in (2,3)
              if contrasts[str(i)]["relative_E_dyn"]["ci"] is not None and
              contrasts[str(i)]["relative_E_dyn"]["ci"][1] < 0 and
@@ -209,6 +212,7 @@ def candidacy(contrasts, assessments, common_gates):
     if candidate and assessments["TCN_post"]["optimization_unresolved"]:
         qualifiers.append("Allarme TCN-post: beneficio misurato conservato; letture nulle/negative sospese")
     return {"candidate":candidate,"name":name,"qualifiers":qualifiers,
+            "absolute_E_dyn":{"value":absolute_value,"maximum":CANDIDATE_E_DYN_MAX,"passed":absolute_passed},
             "required_benefit_contrasts_passed":required,"comparators_admitted":comparators,
             "practical_veto_contrasts":vetoes,"common_gates_passed":common,"all_contrasts_evaluable":all_evaluable,
             "mixed_better_comparators":mixed,"S2_comparators":tradeoffs,
@@ -345,7 +349,8 @@ def _aggregate(cells, references, assessments, common_gates):
             "references":{h:{g:{k:_finite(v) for k,v in _points(a).items()} for g,a in value.items()}
                           for h,value in averaged.items() if h in REFERENCES},
             "contrasts":contrasts,"descriptive":descriptive,
-            "candidacy":candidacy(contrasts,assessments,common_gates),
+            "candidacy":candidacy(contrasts,assessments,common_gates,
+                                  candidate_e_dyn=_points(averaged["TCN_post"]["dynamic"])["E_dyn"]),
             "historical_pre_ridge":{"E_dyn":1.0321280032044744,"paired_CI":None,"summary_anchor_only":True,
                                     "TCN_pre_relative_gain_percent":_finite(_gain(
                                         _points(averaged["TCN_pre"]["dynamic"])["E_dyn"],1.0321280032044744)),

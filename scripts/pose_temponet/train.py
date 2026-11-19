@@ -607,6 +607,8 @@ def _run_refits(factory: Factory, full_train: TensorTrainingSet, selected_report
                                 device=device, _recipe=recipe)
         if seed == 0 and trajectory.initial_sha256 not in report["initial_sha256_per_fold"]:
             raise ValueError("refit seed-zero initialization differs from CV")
+        print(json.dumps({"event": "refit_initialization", "seed": seed, "fold": 2,
+                          "initial_sha256": trajectory.initial_sha256, "updates": trajectory.updates}), flush=True)
         trajectory.train_to_step(math.ceil(selected["exposure"] * trajectory.steps_per_epoch))
         states[seed] = trajectory.state()
         if fitting_evaluator is not None:

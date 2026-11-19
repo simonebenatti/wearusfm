@@ -178,6 +178,32 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 19/11/2026 — GPT | TCN frozen: correzioni della review runtime 527f8da
+
+Verifica finale: **263 test TCN passati in 157,84 s**, inclusa la catena dei 24 stadi;
+**125 test storici passati e un fallimento preesistente**, identico alla baseline già
+registrata e alla review Claude. Nessuna nuova regressione. Tre launcher con `bash -n`
+valido; proposta scientifica, grafo dei 24 job e sorgenti FM/TEMPONet raw invariati.
+Ricevuta e comandi riproducibili in `revision_runtime/validation/local_validation.json`.
+
+Recepita la review di **Claude 2**, che segue schedule lungo e TCN, sul commit `2f982114`.
+B-1–B-4 corretti: ambiente PYTHONPATH preservato, walltime arrotondati al minuto prima
+ dei costi, agente submitter valido, callback di avanzamento compatibile con curve incomplete.
+I-1–I-6 corretti: stato e artefatto del gate combinato, blocco prima dei job dei controlli,
+benchmark sul percorso produttivo, snapshot in memoria separati dagli artefatti, diagnostico
+WLS su bersaglio pulito, pin verificati prima del checkout e quota aggiornata dopo i benchmark.
+Minori rendicontate in `docs/reviews/pose_temponet_runtime_response_20261119.md`.
+Il test dei 24 stadi attraversa controlli, selezioni e rifit reali, poi inferenza, metriche e
+raccolta; ambiente e dati sono sintetici, ammissione finale dei controlli forzata e dichiarata.
+
+Nuovo piano e identità da `prepare-plan`; ricetta scientifica v3 e proposta JSON invariati.
+Prontuario aggiornato, compreso `commands --stage controls --closed-reference-gate-output`.
+Ricevuta dei test e pin in `results/infra/pose_temponet_execution_20261119/revision_runtime/`.
+Stato **REVIEW_REQUIRED**; nessun job, deploy o accesso a Leonardo. Operatore unico **2-TCN head launcher**.
+Simone ha chiarito che prompt e consegne della linea 2 vanno qui per Claude 2; quelli della
+linea 3 stanno nella chat 3. La consegna RMS100/fast125 già pubblicata è stata trasferita lì,
+senza duplicarla o riaprire gli invii.
+
 ### 2026-11-18 | GPT consolidamento | Pin della consegna TCN v2 per ultima review | Fonte 62348ab
 
 Contenuto `62348abdae9c7f92856f573e04d057c9a3153c42`, successore documentale di c15aac9. Manifest delivery_pin_20261118.json con SHA256 dei testi;22 controlli documentali passati. Nuova voce decisioni.md con SHAcommit e hash di protocollo/proposta. REVIEW_REQUIRED; nessun codice/lancio. Il prompt aggiornato chiede la sola rilettura delle parti cambiate prima della decisione di Simone.
@@ -6021,6 +6047,21 @@ Verifica finale: 204 test nuovi passati (35,35 s), 125 storici passati; un'asser
 Tetti 24 GPUh, 80 coreh CPU-only, 272 coreh totali invariati; walltime dei 16 gruppi neurali non dichiarati prima del benchmark. Solo l'operatore `2-TCN head launcher` eseguirà la catena dopo review favorevole/gate; contatto con Claude tramite Simone. Prompt e prontuario operativi nel ramo. Il pin successivo lega commit e hash dei contenuti.
 
 ## 2) Problemi trovati
+
+### 19/11/2026 — GPT | TCN: blocchi del runner e limiti espliciti delle verifiche
+
+I test precedenti sostituivano le ricerche nel runner e non avrebbero visto B-4; aggiunta
+la catena completa con funzioni vere. Non è una prova CUDA o sui dati originali: i gate
+scientifici e di risorse rimangono necessari prima dei fit. Il test esegue il vero
+qualify_controls, ne conserva l'esito e forza soltanto l'ammissione della ricetta abbreviata.
+
+La quota del rilascio non vale per i fit: evidenza nuova successiva ai due benchmark.
+Il gate combinato negativo è ora conservato prima di qualsiasi comando GPU. Il benchmark
+misura la prima lettura applicativa ma non controlla la page cache del sistema operativo.
+Modello CPU dei nodi seriali da verificare dall'operatore; nessun rinfresco SCRATCH durante
+uno stadio. ID e checkout restano fissi: tentativi ulteriori richiedono decisione e nuova
+consegna. Il fallimento storico del test sul piano del lungo è conservato come limite della
+base; nessuna correzione estranea o promozione della ricetta TCN.
 
 ### 2026-11-18 | GPT consolidamento | Verifiche concluse e limiti della consegna TCN v2 | Fonte 62348ab
 

@@ -84,7 +84,7 @@ def validate_graph(jobs):
         seconds = r["requested_seconds"]
         if r["gpus"] not in (0, 1) or r["cpus"] not in (2, 8) or r["grace_seconds"] != GRACE:
             raise ValueError("allocation differs from frozen profile")
-        if seconds is not None and (type(seconds) is not int or seconds <= 0 or
+        if seconds is not None and (type(seconds) is not int or seconds <= 0 or seconds % 60 or
                                    seconds + GRACE > (86400 if r["gpus"] else 14400)):
             raise ValueError("job exceeds inclusive lane walltime")
         identifiers.add(j["id"]); outputs.add(j["output_directory"]); seen.add(j["id"])
@@ -108,6 +108,9 @@ def apply_training_pack(jobs, pack):
             row = rows[key]
             if any(row.get(k, v) != v for k, v in (("cpus", 8), ("gpus", 1), ("host_ram_gib", 32))):
                 raise ValueError("training pack changes allocation")
+            seconds = row.get("requested_seconds")
+            if type(seconds) is not int or seconds <= 0 or seconds % 60:
+                raise ValueError("training pack must publish positive whole-minute walltimes")
             j["resources"]["requested_seconds"] = row["requested_seconds"]
         j["resource_release"] = True
     validate_graph(out)
@@ -149,6 +152,34 @@ def verify_completed_predecessors(plan, proofs):
     return accepted
 
 
+def verify_closed_form_release(plan, proofs, completed):
+    """Both calibrated folds must qualify before any neural control is queued.
+
+    An optional ``calibration`` pin in each completed proof points to a local
+    mirror; its bytes must match the artifact authenticated by that receipt.
+    """
+    from . import controls, provenance as P
+    identifiers = [j["id"] for j in plan["jobs"] if j["stage"] == "wls_calibration"]
+    P.require(len(identifiers) == 2 and set(identifiers) <= completed,
+              "both closed-form controls must complete before neural control submission")
+    values = []
+    for identifier in identifiers:
+        proof = proofs[identifier]
+        receipt = P.verified_receipt(proof["receipt"], plan, stage="wls_calibration", verify_artifacts=False,
+                                     receipt_mirror_dir=Path(proof["receipt"]["path"]).parent)
+        original = receipt["artifacts"]["calibration"]
+        pin = proof.get("calibration", original)
+        P.require(all(pin.get(k) == original.get(k) for k in ("sha256", "bytes")),
+                  "mirrored calibration differs from the authenticated artifact")
+        values.append(P.read_json_pin(pin))
+    P.require(sorted(v["outer_fold"] for v in values) == [0, 1], "calibrated folds differ")
+    gate = controls.combine_reference_folds(values)
+    if gate["status"] != "diagnostic":
+        raise controls.GateNotPassed("closed-form controls did not qualify; no neural job released",
+                                    status=gate["status"], gate=gate)
+    return gate
+
+
 def submit_command(plan, job, *, checkout_sha, plan_path, plan_sha256,
                    code_dir=CODE_DIR, after_slurm=None, completed_proofs=None):
     """Return argv only. The operator checks ledger, SLURM and reviews first.
@@ -162,19 +193,21 @@ def submit_command(plan, job, *, checkout_sha, plan_path, plan_sha256,
         raise ValueError("reviews/resources have not released this job")
     r = job["resources"]
     seconds = r["requested_seconds"]
-    if seconds is None:
-        raise ValueError("unmeasured allocation")
+    if type(seconds) is not int or seconds <= 0 or seconds % 60:
+        raise ValueError("unmeasured or non-minute allocation")
     time = "%02d:%02d:%02d" % (seconds//3600, seconds//60%60, seconds%60)
-    command = ["python3", "scripts/submit_job.py", "--id", job["id"], "--agente", "gpt_tcn_launcher",
+    command = ["python3", "scripts/submit_job.py", "--id", job["id"], "--agente", "gpt",
                "--campagna", CAMPAIGN, "--gpu-ore", str((seconds+GRACE)*r["gpus"]/3600)]
     completed = verify_completed_predecessors(plan, completed_proofs or {})
+    if job["stage"] == "controls":
+        verify_closed_form_release(plan, completed_proofs or {}, completed)
     remaining = [p for p in job["after"] if p not in completed]
     if after_slurm is None:
         for predecessor in remaining:
             command += ["--dopo", predecessor]
     elif set(after_slurm) != set(remaining) or any(not str(v).isdigit() for v in after_slurm.values()):
         raise ValueError("explicit dependencies must cover every predecessor")
-    launcher = "pose_temponet_checkout.sbatch" if job["stage"] == "preflight" else "pose_temponet.sbatch"
+    launcher = "pose_temponet_checkout.sbatch" if job["stage"] == "preflight" else "pose_temponet_dispatch.sbatch"
     export = (f"ALL,CODE_DIR={code_dir},EXPECTED_SHA={checkout_sha},TCN_PLAN={plan_path},"
               f"TCN_PLAN_SHA256={plan_sha256},TCN_JOB_ID={job['id']}")
     if job["stage"] == "preflight":

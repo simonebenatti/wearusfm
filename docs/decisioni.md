@@ -6795,3 +6795,31 @@ Preparato `codex/pose-temponet-implementation-20261119`, base `0e56c8b1`: pacche
 Teste, controlli positivi y/y*, WLS/ridge, selezione paired-fold, rifit e lock quindici stati, inferenza e cinque IC99 implementati. Ricevute/hash, contesto numerico, gate risorse/calibrazione, sorgenti storici separati, no-overwrite e dipendenze verificate anche con sacct completato. Benchmark solo train, nessuna stima CUDA locale.
 Verifica finale: 204 test nuovi passati (35,35 s), 125 storici passati; un'asserzione storica sullo stato non ancora rivisto del vecchio piano lungo fallisce anche sull'export isolato della base. Evidenza in `results/infra/pose_temponet_execution_20261119/baseline_failure.json`; nessuna modifica alla campagna chiusa per nasconderla. Shell syntax e diff check puliti. Prove indipendenti su WLS/ridge e IC dai dati grezzi; parità bit-identica della TCN fra storage host FP16 e precedente FP32 a tre update. I gate sui dati veri restano da eseguire.
 Tetti 24 GPUh, 80 coreh CPU-only, 272 coreh totali invariati; walltime dei 16 gruppi neurali non dichiarati prima del benchmark. Solo l'operatore `2-TCN head launcher` eseguirà la catena dopo review favorevole/gate; contatto con Claude tramite Simone. Prompt e prontuario operativi nel ramo. Il pin successivo lega commit e hash dei contenuti.
+
+
+### 2026-11-19 — TCN frozen: revisione runtime dopo Claude 2, REVIEW_REQUIRED
+
+La review `527f8dae716398203f8f2d7413d93494f020e185` sulla consegna `2f982114` ha trovato
+quattro blocchi e sei rilievi importanti. Correzioni implementate in un unico diff incrementale,
+con risposta punto per punto in `docs/reviews/pose_temponet_runtime_response_20261119.md`.
+Nessuna modifica della ricetta scientifica v3, dei target o delle loss; nessun invio.
+
+I walltime sono minuti interi anche nel preventivo; i job dei controlli richiedono un gate
+combinato salvato prima di emettere comandi. Quota corrente nuovamente pinnata dopo i benchmark.
+I costi separano snapshot in memoria e artefatti finali; scoring del benchmark uguale ai fit.
+Il diagnostico del margine temporale usa y* nel fit e y nella valutazione; candidatura e
+seconda parità R-1 esplicite nel rapporto. La catena di test usa runner e ricerche reali,
+con ambiente/dati simulati e ammissione del controllo abbreviato forzata e dichiarata.
+
+Restano i tetti già fissati: **24 GPUh, 80 coreh CPU-only, 272 coreh complessive**, con
+20 GPUh massime per controlli/selezioni/rifit; il preventivo eseguibile dipenderà dai benchmark.
+**REVIEW_REQUIRED**, rilettura del solo diff da Claude 2 prima del rilascio. Operatore
+**2-TCN head launcher**; nessuna esecuzione di questa chat sul cluster.
+Simone: «claude ha la chat 2 sia per lo schedule lungo che per la tcn»; qui si consegnano
+solo i prompt per Claude 2, mentre i prompt della linea 3 compaiono nella chat 3.
+
+Verifica finale: **263 test TCN passati in 157,84 s**, inclusa la catena dei 24 stadi;
+**125 test storici passati e un fallimento preesistente**, identico alla baseline già
+registrata e alla review Claude. Nessuna nuova regressione. Tre launcher con `bash -n`
+valido; proposta scientifica, grafo dei 24 job e sorgenti FM/TEMPONet raw invariati.
+Ricevuta e comandi riproducibili in `revision_runtime/validation/local_validation.json`.

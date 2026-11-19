@@ -1,5 +1,11 @@
 # Pacchetto eseguibile TCN frozen — 19/11/2026
 
+**Revisione corrente dopo Claude 527f8da:** `revision_runtime/`, 263 test TCN passati,
+125 storici passati e lo stesso fallimento di baseline. I file `tests_runtime` e
+`tests_historical` nella radice descrivono la consegna precedente, conservata.
+Prompt corrente: `docs/prompt_claude_pose_temponet_runtime_followup_20261119.md`.
+Stato sempre REVIEW_REQUIRED, nessun invio.
+
 Protocollo documentale convergente con Claude `ad9f5141`; review del codice e
 del piano operativo ancora richiesta. Nessun invio o deploy.
 

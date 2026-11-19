@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+from datetime import datetime
 import hashlib
 import json
 import os
@@ -32,6 +33,8 @@ def parser():
     resources.add_argument("--plan", type=Path, required=True)
     resources.add_argument("--cpu-receipt", type=Path, required=True)
     resources.add_argument("--gpu-receipt", type=Path, required=True)
+    resources.add_argument("--operator-checks", type=Path, required=True,
+                           help="fresh quota/lane checks taken after both benchmarks completed")
     resources.add_argument("--output", type=Path, required=True)
     materialize = commands.add_parser("materialize-plan")
     materialize.add_argument("--commit", required=True)
@@ -50,6 +53,8 @@ def parser():
     commands_parser.add_argument("--stage", action="append", required=True, choices=P.STAGES)
     commands_parser.add_argument("--completed-prerequisites", type=Path,
                                  help="pinned local receipt and sacct proofs for already completed predecessors")
+    commands_parser.add_argument("--closed-reference-gate-output", type=Path,
+                                 help="new local JSON artifact, required before generating controls commands")
     return p
 
 
@@ -66,8 +71,52 @@ def _operator_checks(path):
     P.require(checks["work_free_bytes"] >= 12*1024**3+checks["pending_write_bytes"], "WORK quota gate fails")
     for key in ("no_duplicate_jobs", "serial_lane_checked", "reservations_checked", "balance_checked"):
         P.require(checks.get(key) is True, "operator check missing: "+key)
-    P.require(isinstance(checks.get("observed_at"), str) and checks["observed_at"], "operator evidence needs a timestamp")
+    _timestamp(checks.get("observed_at"), "operator evidence")
     return checks, pin
+
+
+def _timestamp(value, name):
+    P.require(isinstance(value, str) and bool(value), name+" needs a timestamp")
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as error:
+        raise ValueError(name+" has an invalid timestamp") from error
+    P.require(parsed.tzinfo is not None and parsed.utcoffset() is not None,
+              name+" needs a timezone-aware timestamp")
+    return parsed
+
+
+def refresh_operator_checks(plan, operator_path, cpu_pin, gpu_pin):
+    """Bind fresh accounting to authenticated benchmark completion times."""
+    checks, evidence = _operator_checks(operator_path)
+    observed = _timestamp(checks["observed_at"], "operator evidence")
+    benchmarks = {}
+    for stage, pin in (("cpu_benchmark", cpu_pin), ("gpu_benchmark", gpu_pin)):
+        receipt = P.verified_receipt(pin, plan, stage=stage, verify_artifacts=False,
+                                     receipt_mirror_dir=Path(pin["path"]).parent)
+        finished = receipt.get("details", {}).get("finished_at")
+        P.require(observed > _timestamp(finished, stage),
+                  "operator checks must be newer than both completed benchmarks")
+        benchmarks[stage] = {"receipt_sha256": receipt["receipt_sha256"], "finished_at": finished}
+    out = copy.deepcopy(plan)
+    out["operator_checks"], out["operator_evidence"] = checks, evidence
+    out["resource_operator_freshness"] = {"observed_at": checks["observed_at"], "benchmarks": benchmarks}
+    return out
+
+
+def persist_closed_reference_gate(plan, plan_pin, proofs, output):
+    """Archive the combined result, including a negative gate, before any send."""
+    from .controls import GateNotPassed
+    completed = E.verify_completed_predecessors(plan, proofs)
+    envelope = {"schema": "pose-head-closed-reference-release-v1", "phase_plan": plan_pin,
+                "completed_prerequisites": proofs}
+    try:
+        gate = E.verify_closed_form_release(plan, proofs, completed)
+    except GateNotPassed as error:
+        P.require(isinstance(error.gate, dict), "combined control failure lacks its measured gate")
+        _write(output, {**envelope, "status": error.status, "gate": error.gate})
+        raise
+    return _write(output, {**envelope, "status": gate["status"], "gate": gate})
 
 
 def release_plan(plan, *, review_commit, review_path, reviewed_code_sha, operator_checks):
@@ -77,6 +126,10 @@ def release_plan(plan, *, review_commit, review_path, reviewed_code_sha, operato
     P.require(not Path(review_path).is_absolute() and ".." not in Path(review_path).parts,
               "review path must be repository relative")
     raw = subprocess.check_output(["git", "show", review_commit+":"+review_path], cwd=P.ROOT)
+    review_text = raw.decode("utf-8")
+    P.require(any(re.search(r"(?<![0-9a-f])"+re.escape(identity)+r"(?![0-9a-f])", review_text)
+                  for identity in (reviewed_code_sha, plan["reader"]["source_sha256"])),
+              "operational review must name the full reviewed code SHA or source SHA256")
     # Every source byte must be exactly the code snapshot that Claude reviewed.
     for path, digest in plan["reader"]["source_manifest"].items():
         old = subprocess.check_output(["git", "show", reviewed_code_sha+":"+path], cwd=P.ROOT)
@@ -146,11 +199,20 @@ def main(argv=None):
     elif args.command == "resource-plan":
         from .runner import measured_plan
         plan = P.load_plan(args.plan, require_review=True)
-        result = measured_plan(plan, P.file_pin(args.cpu_receipt.absolute()), P.file_pin(args.gpu_receipt.absolute()))
+        cpu_pin, gpu_pin = P.file_pin(args.cpu_receipt.absolute()), P.file_pin(args.gpu_receipt.absolute())
+        plan = refresh_operator_checks(plan, args.operator_checks, cpu_pin, gpu_pin)
+        result = measured_plan(plan, cpu_pin, gpu_pin)
         value = _write(args.output, result)
     elif args.command == "materialize-plan":
         value = materialize_plan(args.commit, args.repository_path, args.sha256, args.output)
     elif args.command == "commands":
+        P.require("controls" not in args.stage or args.closed_reference_gate_output is not None,
+                  "controls commands require --closed-reference-gate-output")
+        P.require(re.fullmatch(r"[0-9a-f]{40}", args.plan_commit) is not None,
+                  "full plan commit SHA required before command generation")
+        relative = Path(args.plan_repository_path)
+        P.require(relative.parts and not relative.is_absolute() and ".." not in relative.parts,
+                  "plan path must be repository relative")
         plan = P.load_plan(args.plan, require_review=True)
         pin = P.file_pin(args.plan.absolute())
         committed = subprocess.check_output(["git", "show", args.plan_commit+":"+args.plan_repository_path], cwd=P.ROOT)
@@ -158,6 +220,10 @@ def main(argv=None):
         path = str(Path(P.OUTPUT_ROOT)/"manifests"/(pin["sha256"]+".json"))
         completed = (P.read_json_pin(P.file_pin(args.completed_prerequisites.absolute()))
                      if args.completed_prerequisites else {})
+        # Do this before printing even the first command of a mixed stage list.
+        # A rejected gate remains an immutable local artifact for the operator.
+        if "controls" in args.stage:
+            persist_closed_reference_gate(plan, pin, completed, args.closed_reference_gate_output)
         for job in plan["jobs"]:
             if job["stage"] in args.stage:
                 command = E.submit_command(plan, job, checkout_sha=args.checkout_sha, plan_path=path,

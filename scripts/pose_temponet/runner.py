@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+from datetime import datetime, timezone
 import gc
 import json
 import os
@@ -15,8 +16,7 @@ import torch
 from . import controls, data, execution, heads, metrics, provenance as P, report, resources, train, workflow
 
 
-class GateNotPassed(ValueError):
-    """A measured gate stopped the phase, without a scientific verdict."""
+GateNotPassed = controls.GateNotPassed
 
 
 def _plain(value):
@@ -99,7 +99,6 @@ def _calibrations(receipts):
     rows = _stage_receipts(receipts, "wls_calibration")
     P.require(len(rows) == 2, "both calibrated folds must exist")
     values = sorted([_torch_artifact(r, "calibration_state") for r in rows], key=lambda x: x["outer_fold"])
-    P.require(controls.combine_reference_folds(values)["status"] == "diagnostic", "closed-form controls are not diagnostic")
     return values
 
 
@@ -183,10 +182,14 @@ def _allocation(job):
 
 
 def _progress(pair):
-    curve = pair.curve()
-    if curve.points:
-        print(json.dumps({"event": "selection_checkpoint", "lr": curve.lr,
-                          "point": _plain(asdict(curve.points[-1]))}, allow_nan=False), flush=True)
+    # The curve is deliberately incomplete at intermediate checkpoints.
+    # pair.curve() validates a completed horizon and must not run here.
+    if pair.points:
+        record = {"event": "selection_checkpoint", "lr": pair.lr,
+                  "point": _plain(asdict(pair.points[-1]))}
+        if pair.points[-1].exposure == 0:
+            record["initial_sha256_per_fold"] = {str(t.fold): t.initial_sha256 for t in pair.trajectories}
+        print(json.dumps(record, allow_nan=False), flush=True)
 
 
 def _save_results(root, directory, results, artifacts):
@@ -234,13 +237,20 @@ def run_stage(plan, logical_id, *, source_root=P.ROOT):
                       "allocations differ from measured packing")
         if stage in ("controls", "selection", "refit", "locked_inference", "metrics"):
             calibrated = _calibrations(receipts)
-            gates.update(closed_references=True, calibration=True)
+            closed_gate = workflow.combined_closed_form_gate(calibrated)
+            artifacts["combined_gate"] = P.atomic_json(directory/"combined_gate.json", _plain(closed_gate), root=root)
+            gates.update(closed_references=closed_gate["status"] == "diagnostic",
+                         calibration=all(c["calibration"]["status"] == "calibrated" for c in calibrated))
+            if not gates["closed_references"]:
+                raise GateNotPassed("closed-form controls: "+closed_gate["status"],
+                                    status=closed_gate["status"], gate=closed_gate)
         if stage in ("selection", "refit", "locked_inference", "metrics"):
             positive_gate = _control_gate(receipts, calibrated)
             artifacts["positive_gate"] = P.atomic_json(directory/"positive_gate.json", positive_gate, root=root)
             gates["positive_controls"] = positive_gate["status"] == "passed"
             if not gates["positive_controls"]:
-                raise GateNotPassed("positive controls: "+positive_gate["status"])
+                raise GateNotPassed("positive controls: "+positive_gate["status"],
+                                    status=positive_gate["status"], gate=positive_gate)
         if stage in ("refit", "locked_inference", "metrics"):
             selections = {_json_artifact(r, "selection")["head"]: _json_artifact(r, "selection")
                           for r in _stage_receipts(receipts, "selection")}
@@ -257,8 +267,8 @@ def run_stage(plan, logical_id, *, source_root=P.ROOT):
             from . import benchmark
             P.check_release(plan, stage, gates=gates,source_root=source_root)
             loader = lambda: P.read_verified_inputs(plan, "train", stage=stage)
-            cache = loader()
-            kwargs = {"input_loader": loader, "output_dir": directory/"cost_only",
+            cache, first_load = benchmark._load_measurement(loader, _input_identity(plan))
+            kwargs = {"input_loader": loader, "input_measurement": first_load, "output_dir": directory/"cost_only",
                       "allowed_train_users": plan["producers"]["train"]["users"],
                       "input_identity": _input_identity(plan)}
             if stage == "gpu_benchmark":
@@ -283,7 +293,9 @@ def run_stage(plan, logical_id, *, source_root=P.ROOT):
             artifacts["calibration"] = P.atomic_json(directory/"calibration.json", _plain(summary), root=root)
             details["calibration_status"] = result["calibration"]["status"]
             if result["calibration"]["status"] != "calibrated":
-                raise GateNotPassed("control_non_calibrated: stop before neural controls")
+                status = result["calibration"]["status"]
+                raise GateNotPassed(status+": stop before neural controls", status=status,
+                                    gate={"status": status, "calibration": result["calibration"]})
         elif stage in ("controls", "selection", "refit"):
             P.check_release(plan, stage, gates=gates,source_root=source_root)
             cache = P.read_verified_inputs(plan, "train", stage=stage)
@@ -338,6 +350,8 @@ def run_stage(plan, logical_id, *, source_root=P.ROOT):
             old = {"historical_post_ridge": data.read_predictions(plan["inputs"]["post_ridge_predictions"]),
                    "historical_trained_head": data.read_predictions(plan["inputs"]["trained_head_predictions"])}
             parity = metrics.historical_reference_gate(cache, old["historical_post_ridge"], old["historical_trained_head"])
+            artifacts["historical_R1"] = P.atomic_json(directory/"historical_R1.json", _plain(parity), root=root)
+            details["historical_R1"] = _plain(parity)
             P.require(parity["passed"], "historical parity changed before contrasts")
             references = {h: {"complete": True, "analysis": metrics.evaluate(v, cache, batch_windows=32)} for h,v in old.items()}
             del old
@@ -364,6 +378,7 @@ def run_stage(plan, logical_id, *, source_root=P.ROOT):
                     del prediction
             final = report.aggregate(cells, references, assessments=selections,
                                      common_gates={k: gates[k] for k in report.COMMON_GATES})
+            final["historical_R1"] = _plain(parity)
             artifacts["report"] = P.atomic_json(directory/"report.json", final, root=root)
             P.require(final["complete"], "aggregate technical_failure")
         elif stage == "collection":
@@ -377,12 +392,18 @@ def run_stage(plan, logical_id, *, source_root=P.ROOT):
         else:
             raise ValueError("unimplemented stage")
         details["elapsed_seconds"] = time.perf_counter()-started
+        details["finished_at"] = datetime.now(timezone.utc).isoformat()
         receipt = P.make_receipt(plan, logical_id, numeric=numeric,source_root=source_root,
                     predecessors=[pins[x] for x in job["after"]], artifacts=artifacts, gates=gates, details=details)
         return P.write_receipt(plan, receipt)
     except Exception as error:
-        details.update(elapsed_seconds=time.perf_counter()-started, error_type=type(error).__name__, error=str(error))
+        details.update(elapsed_seconds=time.perf_counter()-started, error_type=type(error).__name__, error=str(error),
+                       finished_at=datetime.now(timezone.utc).isoformat())
         try:
+            if isinstance(error, GateNotPassed):
+                details["gate_status"] = error.status
+                if error.gate is not None:
+                    artifacts["failed_gate"] = P.atomic_json(directory/"failed_gate.json", _plain(error.gate), root=root)
             receipt = P.make_receipt(plan, logical_id, numeric=numeric,source_root=source_root,
                         predecessors=[pins[x] for x in job["after"]], artifacts=artifacts, gates=gates,
                         details=details, status="gate_failed" if isinstance(error,GateNotPassed) else "technical_failure")

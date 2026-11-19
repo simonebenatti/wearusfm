@@ -9,7 +9,10 @@ decisioni, limiti degli IC nella tabella §10, delta candidato meno comparatore.
 Il JSON scientifico rivisto resta byte-identico, sha256
 `171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906`.
 
-**Questa consegna operativa è REVIEW_REQUIRED.** Il codice è implementato e
+**Questa consegna operativa è REVIEW_REQUIRED.** La review runtime di Claude
+`527f8dae716398203f8f2d7413d93494f020e185` ha richiesto le correzioni documentate in
+`docs/reviews/pose_temponet_runtime_response_20261119.md`; questa revisione non è ancora
+un verdetto favorevole del revisore. Il codice è implementato e
 testato sul Mac; benchmark A100, gate sui dati reali e confronti non sono ancora
 eseguiti. Le misure locali su fixture non autorizzano stime di tempo su Leonardo.
 Il pin della consegna e la ricevuta dei test stanno in
@@ -82,7 +85,9 @@ prerequisiti con hash: assenza, scadenza o cambiamento fermano la fase.
 | Inventario e raccolta | 1 | 2 CPU, 24 GiB, 12 min | rapporto completo |
 
 Sono **18 job GPU e 6 CPU-only**. Il checkout è incluso nel primo job, non è
-una venticinquesima allocazione. Ogni preventivo conteggia 180 s oltre al walltime
+una venticinquesima allocazione. I walltime richiesti sono arrotondati per eccesso al minuto, come SLURM;
+il confronto dell’allocazione e il preventivo usano gli stessi minuti.
+Ogni preventivo conteggia 180 s oltre al walltime
 richiesto: i 3 h 57 min seriali diventano 4 h inclusive. Tetti immutati:
 24 GPUh, 80 coreh CPU-only, 272 coreh totali; massimo 20 GPUh per controlli,
 selezioni e rifit, 1 GPUh inferenza, 64 coreh WLS/calibrazione.
@@ -100,6 +105,14 @@ Valutazione e training hanno batch 32; l'ultimo batch resta. Storage host FP16
 dei latenti e cast FP32 per minibatch. Benchmark solo train: anche l'I/O dei
 riferimenti finali è proiettato dai byte pinnati usando la cache train come proxy.
 La memoria val si misura con un surrogato train della geometria prescritta.
+La lettura I/O misurata è il primo caricamento applicativo del runner, non una seconda
+lettura intenzionalmente calda. Lo stato della page cache del sistema operativo non è
+controllato: la ricevuta lo dichiara e non chiama questa misura una prova di disco freddo.
+La valutazione misurata usa lo stesso `workflow._score_model` dei fit. L'identità del
+dataset e lo stato vengono riscaldati prima dei dieci campioni: snapshot in memoria e
+scrittura/lettura degli artefatti finali hanno costi separati. Le scritture su disco non
+sono moltiplicate per tutte le epoche come se il trainer le effettuasse.
+La fase metrics include I/O proiettato, le due valutazioni dei riferimenti R-1 e batch 32.
 Due caricamenti della cache finale permettono di trattenere una vista per volta.
 Le predizioni salvate sono `[N,148,20]`; il preventivo usa prudentemente 160
 istanti e contabilizza anche stati, curve e controlli. Limite persistente 8 GiB.
@@ -108,6 +121,12 @@ Un gate negativo ferma globalmente WLS/fit prima degli invii pertinenti. Nessun
 aumento automatico, nuovo seme, LR fuori regola o retry. La riserva non autorizza
 tentativi aggiuntivi. L'operatore rilegge la corsia seriale prima di ogni fase CPU
 e conta le scritture pendenti delle altre linee nella soglia WORK di 12 GiB.
+La misura usata da `resource-plan` deve essere successiva al completamento di entrambi
+i benchmark, con data, fuso orario e prova originale pinnata. Non si ricicla quella del rilascio.
+Prima del rilascio l'operatore confronta anche il modello CPU dei due nodi seriali:
+il pin `cpu8` include il modello. Se differiscono, si prepara una regola per classe di nodo
+prima di qualsiasi invio dipendente; non si elimina il campo per far passare il confronto.
+Nessuna lettura dei nodi è stata fatta da questa consegna locale.
 
 ## Sequenza dell'operatore dopo la review
 
@@ -129,7 +148,10 @@ e conta le scritture pendenti delle altre linee nella soglia WORK di 12 GiB.
    l'operatore pubblica il riferimento nuovo `deploy/pose-temponet-20261119`;
    non sposta main né un checkout in uso. Checkout in
    `$WORK/wearusfm_campaigns/pose_temponet_20261119`, detached e non scrivibile.
-   Il wrapper usa `campaign_checkout.sbatch` preso proprio dallo SHA congelato.
+   Prima di creare il checkout, il wrapper verifica SHA completo del piano, percorso
+   relativo sicuro e hash del piano nel commit pubblicato. Solo allora usa
+   `campaign_checkout.sbatch` preso dallo SHA congelato. Per gli stadi successivi,
+   lo script su stdin verifica `EXPECTED_SHA` ed esegue il launcher nel checkout.
 4. `commands` stampa le righe complete di `scripts/submit_job.py`; non le
    esegue. Specificare `--plan`, `--checkout-sha`, `--plan-commit`,
    `--plan-repository-path` e `--stage preflight`. I launcher materializzano il
@@ -140,7 +162,9 @@ e conta le scritture pendenti delle altre linee nella soglia WORK di 12 GiB.
    benchmark con `--stage cpu_benchmark --stage gpu_benchmark`. Le dipendenze
    afterok restano per i job ancora noti a SLURM.
 6. Raccogliere ricevute, log e `sacct -X -n -P --format=JobIDRaw,State,ExitCode`
-   dei benchmark; verificare gli hash remoti. `resource-plan` legge le copie
+   dei benchmark; verificare gli hash remoti e acquisire una nuova evidenza operatore
+   con `observed_at` successivo ai due `details.finished_at`. Passarla con
+   `--operator-checks <JSON>` a `resource-plan`, che legge le copie
    locali, ricalcola il gate completo e lega nel piano i pin delle due ricevute,
    i contesti numerici CPU/GPU e i tempi di tutti i sedici gruppi neurali. Se
    fallisce non pubblicare un piano eseguibile dei fit.
@@ -150,6 +174,13 @@ e conta le scritture pendenti delle altre linee nella soglia WORK di 12 GiB.
    invariata. Non servono una nuova ricetta o un nuovo checkout.
 8. Procedere per le fasi della tabella. Il controller rilegge i predecessori,
    gli artefatti e i gate: una dipendenza SLURM soddisfatta da sola non basta.
+   Prima di emettere i job dei controlli, fornire anche i pin delle due `calibration.json`
+   nelle prove dei predecessori WLS, tramite campo `calibration`; le copie locali devono
+   coincidere con gli artefatti pinnati dalle ricevute. Il gate combinato deve essere diagnostico. Per `commands --stage controls`
+   è obbligatorio `--closed-reference-gate-output <NUOVO_JSON_LOCALE>`: il gate con i
+   suoi pin viene salvato prima di qualsiasi comando, anche quando fallisce; il file
+   non viene sovrascritto. Con gate negativo non viene emessa nessuna riga di invio.
+   Nel runtime il gate è salvato e un esito negativo rimane un gate scientifico, non un guasto tecnico.
    Nessuna selezione reale prima di tutti i controlli; nessuna inferenza prima
    di tutte le selezioni e dei quindici pesi congelati.
 
@@ -170,12 +201,19 @@ artefatti già scritti e l'errore originario; non genera contrasti con celle
 incomplete. TIMEOUT, guasto, non finiti o determinismo non supportato fermano la
 fase. Le traiettorie conservano optimizer/RNG per le estensioni interne approvate;
 questa capacità non autorizza un rilancio di job o una terza dose.
+Gli ID logici, il checkout e la radice degli output restano fissi. Un tentativo aggiuntivo
+richiede una decisione e una nuova consegna con ID/checkout nuovi; non è stato introdotto
+un meccanismo di retry né il riuso automatico di una destinazione esistente.
+Non rinfrescare i file su SCRATCH mentre gira uno stadio TCNH: cambiare date/stato dei file
+attiva le guardie. Un rinfresco fra stadi, a contenuti invariati, è compatibile con i pin.
 
 Lettura finale: cinque IC99 appaiati prescritti, tre semi aggregati come
 accumulatori e non ensemble, pannelli all/dynamic/static, tutti i giunti,
 MAE/livello e compromesso S-2. Gli allarmi reali hanno la direzione prevista;
 nessuna promozione automatica del FM o modifica della loss. Il rapporto rende
-espliciti anche i diagnostici WLS e i controlli positivi train-only.
+espliciti anche i diagnostici WLS e i controlli positivi train-only. La condizione assoluta
+`E_dyn <= 0.7630564046643697` è verificata e registrata insieme alla candidatura;
+la seconda parità R-1, prima dei contrasti, lascia un artefatto esplicito.
 
 Alla chiusura raccogliere report, ricevute, inventario, log, stato unico per ID e
 contabilità `sacct -X` per tutte le 24 allocazioni effettivamente eseguite.

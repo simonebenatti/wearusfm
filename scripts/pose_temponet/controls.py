@@ -24,6 +24,15 @@ LINEAR_HEAD_RECOVERY = 0.90
 TEMPORAL_HEAD_RECOVERY = 0.50
 
 
+class GateNotPassed(ValueError):
+    """A measured scientific/operational gate, distinct from a runtime failure."""
+
+    def __init__(self, message, *, status=None, gate=None):
+        super().__init__(message)
+        self.status = status
+        self.gate = gate
+
+
 def _require(condition, message):
     if not condition:
         raise ValueError(message)
@@ -94,7 +103,12 @@ def normalize_component(component, support, fit_indices, *, crop=6):
     mean = np.sum(y*weight, axis=(0, 1))/total
     variance = np.sum((y-mean)**2*weight, axis=(0, 1))/total
     scale = np.sqrt(variance)
-    _require((scale > 1e-8).all(), "control_non_calibrated: degenerate teacher component")
+    if not (scale > 1e-8).all():
+        raise GateNotPassed("control_non_calibrated: degenerate teacher component",
+                            status="control_non_calibrated",
+                            gate={"status": "control_non_calibrated", "reason": "degenerate_teacher_component",
+                                  "std": scale.tolist(), "minimum_std": 1e-8,
+                                  "fitting_windows": len(fit)})
     return (value-mean)/scale, {"mean": mean.tolist(), "std": scale.tolist(),
                               "weight_sum": total.tolist(), "fitting_windows": len(fit)}
 
@@ -608,11 +622,18 @@ def _outer_linear_diagnostics(data, components, fit, held, selected, l0_factor, 
                 world_statistics[world][split] = {"statistics": stats, "normal_residuals": diag}
         pred_t, _ = factor.predict_mixture(fit, {"T": 1.})
         t_statistics = selection_statistics(pred_t, _metric_panel(data, fit, components["T"], components["T"]), 0.)
-        temporal_fit_error = statistic_values(world_statistics["temporal"]["fitting"]["statistics"])["E_dyn"]
+        # This margin measures accessibility of the clean teacher, not fitting
+        # of the realized noise. Both predictions are scored on the same noisy y.
+        clean_pred, clean_diag = factor.predict_mixture(fit, {"L": 1., "T": selected["temporal"]["a"]})
+        clean_statistics = selection_statistics(clean_pred, fit_panel, threshold)
+        temporal_fit_error = statistic_values(clean_statistics)["E_dyn"]
         result[name] = {"real": real_statistics, "real_normal_residuals": real_normals,
                         "worlds": world_statistics, "T_fitting_statistics": t_statistics,
                         "T_unread_fraction_fitting": statistic_values(t_statistics)["E_dyn"],
                         "temporal_margin_recovery_fitting": _recovery(baseline, temporal_fit_error, oracle),
+                        "temporal_margin_clean_fit_statistics": clean_statistics,
+                        "temporal_margin_clean_normal_residuals": clean_diag,
+                        "temporal_margin_fit_target": "clean_y_star", "temporal_margin_score_target": "observed_y",
                         "descriptive_only": True}
         if name == "L13":
             del factor

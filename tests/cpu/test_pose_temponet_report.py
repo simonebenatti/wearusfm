@@ -147,19 +147,19 @@ def decisions():
 def test_candidate_requires_1_4_5_and_admitted_comparators_but_tcn_alarm_keeps_benefit():
     contrasts,assessments,gates = decisions()
     assessments["TCN_post"]["optimization_unresolved"] = True
-    assert R.candidacy(contrasts,assessments,gates)["candidate"]
+    assert R.candidacy(contrasts,assessments,gates,candidate_e_dyn=.7)["candidate"]
     for i in (1,4,5):
         change = copy.deepcopy(contrasts)
         change[str(i)]["statistical_label"] = R.INCONCLUSIVE
-        assert not R.candidacy(change,assessments,gates)["candidate"]
+        assert not R.candidacy(change,assessments,gates,candidate_e_dyn=.7)["candidate"]
     for comparator in ("L0","MLP","L13"):
         change = copy.deepcopy(assessments)
         change[comparator]["optimization_unresolved"] = True
-        assert not R.candidacy(contrasts,change,gates)["candidate"]
+        assert not R.candidacy(contrasts,change,gates,candidate_e_dyn=.7)["candidate"]
     for i in (2,3):
         change = copy.deepcopy(contrasts)
         change[str(i)]["statistical_label"] = R.HARM
-        assert not R.candidacy(change,assessments,gates)["candidate"]
+        assert not R.candidacy(change,assessments,gates,candidate_e_dyn=.7)["candidate"]
 
 
 def test_mixed_candidate_and_s2_are_named_without_claiming_noninferiority():
@@ -168,7 +168,7 @@ def test_mixed_candidate_and_s2_are_named_without_claiming_noninferiority():
                       "relative_E_dyn":{"evaluable":True,"point":-1.,"ci":[-1.5,-.5]}}
     assessments["L13"]["objective_tradeoff"] = True
     assessments["TCN_post"]["optimization_unresolved"] = True
-    result = R.candidacy(contrasts,assessments,gates)
+    result = R.candidacy(contrasts,assessments,gates,candidate_e_dyn=.7)
     assert result["candidate"] and result["mixed_better_comparators"] == ["L13"]
     assert result["name"] == "candidata, con L13 risolti migliori ma stima sotto il 2%"
     assert any("non inferiorità" in q for q in result["qualifiers"])
@@ -229,3 +229,17 @@ def test_undefined_bootstrap_replicates_are_not_discarded():
     result = R._interval(1.,np.array([0.,np.nan,2.]),99)
     assert not result["evaluable"] and result["ci"] is None
     assert result["undefined_replicates"] == 1 and result["replicates_discarded"] == 0
+
+
+@pytest.mark.parametrize("value,passed", [
+    (.7630564046643697, True),
+    (float(np.nextafter(.7630564046643697, np.inf)), False),
+    (.77, False), (None, False), (float("nan"), False), (float("inf"), False),
+])
+def test_absolute_candidate_threshold_is_explicit_even_when_all_contrasts_pass(value, passed):
+    contrasts, assessments, gates = decisions()
+    result = R.candidacy(contrasts, assessments, gates, candidate_e_dyn=value)
+    assert result["candidate"] is passed
+    assert result["absolute_E_dyn"]["passed"] is passed
+    assert result["absolute_E_dyn"]["maximum"] == .7630564046643697
+    assert result["absolute_E_dyn"]["value"] == (value if value is not None and np.isfinite(value) else None)

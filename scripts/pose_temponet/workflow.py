@@ -25,6 +25,15 @@ WORLDS = ("linear", "temporal")
 BATCH = 32
 
 
+def combined_closed_form_gate(calibrations):
+    """One shared gate for both outer folds, usable before allocating a GPU.
+
+    Hash-verified calibration JSON summaries suffice; component arrays are not
+    needed. Keep the per-fold and pooled records in the published artifact.
+    """
+    return controls.combine_reference_folds(calibrations)
+
+
 def _require(condition, message):
     if not condition:
         raise ValueError(message)

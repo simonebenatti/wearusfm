@@ -11,7 +11,7 @@ module purge
 module load profile/deeplrn
 module load cineca-ai/4.3.0
 source "$WORK/venv_wearusfm/bin/activate"
-export PYTHONPATH="$CODE_DIR/src:$CODE_DIR/scripts"
+export PYTHONPATH="$CODE_DIR/src:$CODE_DIR/scripts${PYTHONPATH:+:$PYTHONPATH}"
 export PYTHONDONTWRITEBYTECODE=1
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:?}"
 export OPENBLAS_NUM_THREADS="$OMP_NUM_THREADS" MKL_NUM_THREADS="$OMP_NUM_THREADS"

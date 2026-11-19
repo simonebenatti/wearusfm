@@ -1,0 +1,37 @@
+{
+  "status": "REVIEW_REQUIRED",
+  "source_sha256": "027bb7876b372ceb537610322c11f1903c8c2224abfca27484c403bbc297d732",
+  "runtime_passed": 263,
+  "runtime_elapsed_s": 157.84,
+  "historical_passed": 125,
+  "historical_failed": 1,
+  "historical_failure": "preexisting on reviewed baseline; same test and failure message, no new regression",
+  "validation": {
+    "path": "results/infra/pose_temponet_execution_20261119/revision_runtime/validation/local_validation.json",
+    "sha256": "8325ade1d0e9777b0e0670c061cfb9443012c40ca5dc77e8bbbe91f62e9c95d4",
+    "bytes": 7927
+  },
+  "plan": {
+    "path": "results/infra/pose_temponet_execution_20261119/plan.json",
+    "sha256": "9cca9b7d4f7feafdc3a316fe611dd9b396c6c34f6766b5e10605b8be17b73d94",
+    "bytes": 59053
+  },
+  "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+  "proposal_and_24_job_graph_unchanged": true,
+  "fm_and_raw_temponet_changed": [],
+  "bash_n_passed": [
+    "scripts/slurm/pose_temponet.sbatch",
+    "scripts/slurm/pose_temponet_checkout.sbatch",
+    "scripts/slurm/pose_temponet_dispatch.sbatch"
+  ],
+  "e2e": {
+    "stages": 24,
+    "true_runner_search_refit_inference_metrics_collection": true,
+    "cuda": false,
+    "synthetic_inputs": true,
+    "positive_control_admission_forced_and_declared": true,
+    "closed_form_calibration_and_gate_real": true
+  },
+  "no_jobs": true,
+  "no_remote_operations": true
+}

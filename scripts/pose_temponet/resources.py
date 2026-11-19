@@ -73,7 +73,7 @@ def _receipt(receipt, kind):
 
 def _cell(cell):
     result = {}
-    for metric in ("train", "eval", "save", "load_state"):
+    for metric in ("train", "eval", "save", "load_state", "artifact_write", "artifact_read"):
         samples = cell.get(metric + "_seconds")
         _require(isinstance(samples, list) and len(samples) == 10,
                  f"ten measured {metric} samples after warmup required")
@@ -85,12 +85,15 @@ def _cell(cell):
         _require(type(cell.get(key)) is int and cell[key] > 0, f"missing {key}")
         result[key] = cell[key]
     result["startup"] = _number(cell.get("startup_seconds"), "startup", positive=True)
+    result["artifact_write_bytes"] = _number(cell.get("artifact_write_bytes"), "state artifact bytes", positive=True)
     return result
 
 
 def _job(name, phase, raw_seconds, *, gpus=0, cpus=8, margin=2., requested_cap=None):
     _number(raw_seconds, name, positive=True)
-    requested = max(1, math.ceil(margin * raw_seconds))
+    # SLURM stores a minute-granularity TimeLimit. Publish that exact value,
+    # including its cost, rather than relying on an implicit scheduler round-up.
+    requested = 60 * math.ceil(max(1, math.ceil(margin * raw_seconds)) / 60)
     allocation = requested + OVERHEAD_SECONDS
     return {"name": name, "phase": phase, "requested_seconds": requested,
             "overhead_seconds": OVERHEAD_SECONDS, "allocation_seconds": allocation,
@@ -150,10 +153,12 @@ def gate_and_pack(cpu_receipt, gpu_receipt, *, work_free_bytes, pending_write_by
             raw = load
             for fold in (0, 1):
                 c = cells[head][f"fold{fold}"]
-                # Current + best state at every score: conservative even when
-                # an implementation need not write both. Resume load at 150.
+                # Current/best snapshots are in-memory operations. The final
+                # artifact retains two states per fold/LR (24 per search),
+                # rather than performing a filesystem write at every epoch.
                 raw += MAX_LRS * (MAX_EPOCHS*c["train"] + MAX_EVALS*c["eval"]
-                                 + 2*MAX_EVALS*c["save"] + 2*c["load_state"] + c["startup"])
+                                 + 2*MAX_EVALS*c["save"] + 2*c["load_state"] + c["startup"]
+                                 + 2*c["artifact_write"])
                 raw += c["eval"] * shape["fold_windows"][fold] / c["eval_windows"]
             name = f"select-{head}-" + ("real" if group == 0 else ("linear" if group == 1 else "temporal"))
             job = _job(name, "neural", raw, gpus=1, requested_cap=24*3600-180)
@@ -161,8 +166,8 @@ def gate_and_pack(cpu_receipt, gpu_receipt, *, work_free_bytes, pending_write_by
                        world=None if group == 0 else ("linear" if group == 1 else "temporal"))
             training_jobs.append(job)
         c = cells[head]["full"]
-        raw = load + 3*(MAX_EPOCHS*c["train"] + c["eval"] + MAX_EPOCHS*c["save"]
-                       + c["load_state"] + c["startup"])
+        raw = load + 3*(MAX_EPOCHS*c["train"] + c["eval"] + c["save"]
+                       + c["load_state"] + c["startup"] + c["artifact_write"])
         job = _job(f"refit-{head}", "neural", raw, gpus=1, requested_cap=24*3600-180)
         job.update(stage="refit", head=head, world=None)
         training_jobs.append(job)
@@ -181,7 +186,8 @@ def gate_and_pack(cpu_receipt, gpu_receipt, *, work_free_bytes, pending_write_by
         _require(len(batches.get("full_seconds", [])) == 10 and len(batches.get("last_seconds", [])) == 10
                  and batches.get("last_size") == 18548 % 32 and full_batch > 0 and last_batch > 0,
                  "ten full/actual-last batch timings required")
-        final_raw += 3*(18548//32 * full_batch + last_batch + c["load_state"] + c["startup"])
+        final_raw += 3*(18548//32 * full_batch + last_batch + c["artifact_read"]
+                       + c["load_state"] + c["startup"])
     predicted_bytes = 15*18548*160*20*4
     final_raw += write * max(1., predicted_bytes/write_bytes)
     infer_job = _job("final-inference", "inference", final_raw, gpus=1, requested_cap=3600-180)
@@ -246,5 +252,6 @@ def gate_and_pack(cpu_receipt, gpu_receipt, *, work_free_bytes, pending_write_by
                            "allocated_core_hours": total_core_hours, "gpu_jobs": gpu_jobs, "cpu_jobs": cpu_jobs,
                            "gpu_host_bytes": gpu_host, "cpu_host_bytes": cpu_host,
                            "vram_bytes": vram, "prediction_bytes": predicted_bytes},
-            "policy": {"factor": 2., "overhead_seconds_per_job": 180, "packing": "paired-selection-and-three-refit-seeds",
+            "policy": {"factor": 2., "overhead_seconds_per_job": 180, "walltime_quantum_seconds": 60,
+                       "packing": "paired-selection-and-three-refit-seeds",
                        "maximum_lrs": 6, "maximum_epochs": 300, "readout_only": True}}

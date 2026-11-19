@@ -29,6 +29,8 @@ def receipts():
         for part, n, held in (("fold0", 953, 954), ("fold1", 954, 953), ("full", 1907, 1907)):
             cell = {"train_seconds": [.1]*10, "eval_seconds": [.01]*10,
                     "save_seconds": [.001]*10, "load_state_seconds": [.001]*10,
+                    "artifact_write_seconds": [.002]*10, "artifact_read_seconds": [.002]*10,
+                    "artifact_write_bytes": 1024,
                     "startup_seconds": .01, "warmup_epochs": 1, "timed_epochs": 10,
                     "train_windows": n, "eval_windows": held}
             if part == "full":
@@ -95,6 +97,9 @@ def test_pack_all_groups_and_exact_inclusive_cpu_allocations():
     lambda c,g: c.update(test_only=True),
     lambda c,g: g["memory"].pop("peak_vram_bytes"),
     lambda c,g: g["io"].pop("reference_read_seconds"),
+    lambda c,g: g["cells"]["TCN_post"]["fold0"].pop("artifact_write_seconds"),
+    lambda c,g: g["cells"]["TCN_post"]["full"].pop("artifact_read_seconds"),
+    lambda c,g: g["cells"]["TCN_post"]["full"].pop("artifact_write_bytes"),
 ])
 def test_no_missing_or_partial_measurement_gets_optimistic_default(damage):
     cpu,gpu=receipts(); damage(cpu,gpu)
@@ -136,13 +141,24 @@ def test_memory_quota_and_output_boundaries_are_independent():
     assert not gate(persistent_output_bytes=GIB)["gates"]["persistent_output"]
 
 
-def test_full_and_partial_inference_batches_are_charged_and_two_cache_loads():
+def test_full_and_partial_inference_batches_are_charged_and_two_cache_loads(monkeypatch):
+    import math
+    from pose_temponet import resources
+    observed = []
+    original = resources._job
+    def capture(name, phase, raw_seconds, **kwargs):
+        if phase == "inference":
+            observed.append(raw_seconds)
+        return original(name, phase, raw_seconds, **kwargs)
+    monkeypatch.setattr(resources, "_job", capture)
     cpu,gpu=receipts()
     before=next(j for j in gate(cpu,gpu)["jobs"] if j["phase"]=="inference")["projected_required_seconds"]
     gpu["io"]["input_load_seconds"]+=10
     after=next(j for j in gate(cpu,gpu)["jobs"] if j["phase"]=="inference")["projected_required_seconds"]
     scale=max(18548/1907,5*GIB/(300*1024**2))
-    assert after-before == pytest.approx(2*2*10*scale,abs=1)
+    assert observed[1]-observed[0] == pytest.approx(2*10*scale)
+    assert before == 60*math.ceil(math.ceil(2*observed[0])/60)
+    assert after == 60*math.ceil(math.ceil(2*observed[1])/60)
     gpu["cells"]["TCN_pre"]["full"]["inference_batches"]["last_seconds"]=[600.]*10
     assert not gate(cpu,gpu)["gates"]["inference_gpu_hours"]
 

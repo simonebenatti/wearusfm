@@ -19,7 +19,7 @@ from typing import Callable
 import numpy as np
 import torch
 
-from . import controls, data as data_api, heads, linear, metrics, resources, train
+from . import controls, data as data_api, heads, linear, metrics, resources, train, workflow, provenance as P
 
 SCHEMA = "pose-temponet-cost-v1"
 
@@ -118,7 +118,64 @@ def _load_measurement(loader: Callable, input_identity):
     # rather than timing a synthetic in-memory stand-in.
     identity = hashlib.sha256(controls.canonical(loaded["meta"]).encode()).hexdigest()
     return loaded, {"input_load_seconds": elapsed, "input_bytes": _array_bytes(loaded),
-                    "population_sha256": identity, "source_identity": input_identity}
+                    "population_sha256": identity, "source_identity": input_identity,
+                    "load_scope": "first_application_load", "os_page_cache_controlled": False}
+
+
+def _input_io(data, loader, input_identity, input_measurement):
+    """Reuse the first runtime load; never time a silent second warm reload."""
+    if input_measurement is None:
+        loaded, evidence = _load_measurement(loader, input_identity)
+        if controls.canonical(loaded["meta"]) != controls.canonical(data["meta"]):
+            raise ValueError("timed loader population differs")
+        # Direct callers supplied an already loaded cache; this is not cold IO.
+        evidence["load_scope"] = "direct_caller_reload"
+        return evidence
+    evidence = dict(input_measurement)
+    expected = hashlib.sha256(controls.canonical(data["meta"]).encode()).hexdigest()
+    if (evidence.get("population_sha256") != expected or evidence.get("source_identity") != input_identity or
+            evidence.get("input_bytes") != _array_bytes(data) or evidence.get("input_load_seconds", 0) <= 0 or
+            evidence.get("load_scope") != "first_application_load"):
+        raise ValueError("first-load evidence differs from measured cache")
+    return evidence
+
+
+def _scoring_bundle(data, folds):
+    """Only a cost adapter; evaluations run the exact production implementation."""
+    full = np.arange(len(data["meta"]))
+    populations = (*folds, full)
+    target = np.asarray(data["target"])
+    variance = metrics.dynamic_variance(target, data["mask"])
+    thresholds = tuple(metrics.training_threshold(target[ix], data["mask"][ix]) for ix in populations)
+    support = data_api.central_support(data["mask"], data_api.lengths_for(data), data.get("key_time_valid"))
+    return workflow.FoldBundle(data, "real", tuple(populations), (folds[1], folds[0], full),
+                               (target,)*3, (target,)*3, (variance,)*3, thresholds, support, {})
+
+
+def _production_score(model, bundle, fold, held, depth, device="cuda", *, include_clean=False):
+    return workflow._score_model(model, bundle, fold, held, depth, device, include_clean=include_clean)
+
+
+def _prediction_batch(model, data, depth, rows, device="cuda"):
+    """Same input/cast/crop/finite path as the locked production inference."""
+    was_training = model.training
+    model.eval()
+    try:
+        with torch.no_grad(), torch.autocast(device_type=torch.device(device).type, enabled=False):
+            x = torch.from_numpy(data_api.view_inputs(data, depth, rows)).to(device)
+            values = model(x)[:, data_api.CROP:-data_api.CROP].detach().cpu().numpy()
+            if not np.isfinite(values).all():
+                raise ValueError("nonfinite cost prediction")
+            return values
+    finally:
+        model.train(was_training)
+
+
+def _read_state_artifact(pin):
+    check = P.verify_pin(pin)
+    value = torch.load(pin["path"], map_location="cpu", weights_only=False)
+    P.unchanged({pin["path"]: check["state"]})
+    return value
 
 
 def _dataset(data, indices, depth):
@@ -215,7 +272,7 @@ def _validation_surrogate(data, n_validation=18548):
 
 
 def benchmark_gpu(data, *, input_loader, output_dir, reference_byte_count, reference_proxy_path, allowed_train_users,
-                  input_identity, folds=None):
+                  input_identity, folds=None, input_measurement=None):
     """Measure all 5 heads × 2 folds/full, 1 excluded warmup + 10 epochs.
 
     Requires the actual CUDA device and production data; CPU fixtures cannot
@@ -228,16 +285,14 @@ def benchmark_gpu(data, *, input_loader, output_dir, reference_byte_count, refer
     folds, population = _validate_train(data, allowed_train_users, input_identity, folds)
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=False)
-    loaded, io = _load_measurement(input_loader, input_identity)
-    if controls.canonical(loaded["meta"]) != controls.canonical(data["meta"]):
-        raise ValueError("timed loader population differs")
-    del loaded
+    io = _input_io(data, input_loader, input_identity, input_measurement)
     gc.collect()
     fixed_host = _rss()
     validation_bytes, surrogate_peak = _validation_surrogate(data)
     torch.cuda.reset_peak_memory_stats()
     cells = {}
     full = np.arange(population["train_windows"])
+    bundle = _scoring_bundle(data, folds)
     last_prediction = None
     for name in heads.HEADS:
         cells[name] = {}
@@ -245,53 +300,67 @@ def benchmark_gpu(data, *, input_loader, output_dir, reference_byte_count, refer
         for part, fit, held, fold in (("fold0", folds[0], folds[1], 0),
                                       ("fold1", folds[1], folds[0], 1), ("full", full, full, 2)):
             dataset_started = time.perf_counter()
-            fitting, validation = _dataset(data, fit, depth), _dataset(data, held, depth)
-            panel = data_api.subset(data, held)
-            panel["pose_var"] = metrics.dynamic_variance(panel["target"], panel["mask"])
-            threshold = metrics.training_threshold(np.asarray(data["target"])[fit], np.asarray(data["mask"])[fit])
+            fitting = _dataset(data, fit, depth)
+            # The first state hashes the immutable dataset once; charge that
+            # startup cost once rather than multiplying it by every checkpoint.
+            fitting.identity
             dataset_seconds = time.perf_counter()-dataset_started
             # Factory, optimizer and initial host-to-device placement are timed.
             trajectory, startup = _timed(lambda: train.Trajectory(
                 lambda seed, f: heads.make_head(name, seed), fitting,
                 lr=1e-3, seed=0, fold=fold, device="cuda"), cuda=True)
             trajectory.train_to_step(trajectory.steps_per_epoch)
-            _eval_model(trajectory.model, validation, panel, threshold)
+            _production_score(trajectory.model, bundle, fold, held, depth, include_clean=True)
+            warm_state = trajectory.state()
+            trajectory.restore(warm_state)
+            warm_pin = P.atomic_torch(output_dir/f"cost-{name}-{part}-warm.pt", warm_state, root=output_dir)
+            _read_state_artifact(warm_pin)
             torch.cuda.synchronize()
             record = {"startup_seconds": startup+dataset_seconds, "warmup_epochs": 1, "timed_epochs": 10,
-                      "train_windows": fitting.size, "eval_windows": len(validation.features),
+                      "train_windows": fitting.size, "eval_windows": len(held),
+                      "evaluation_path": "workflow._score_model", "evaluation_includes_clean_control_score": True,
+                      "dataset_identity_warmed": True,
+                      "save_scope": "in_memory_state_capture", "load_state_scope": "in_memory_restore",
                       "excluded_fitting_windows": fitting.excluded_windows,
                       "steps_per_epoch": trajectory.steps_per_epoch,
-                      **{key+"_seconds": [] for key in ("train", "eval", "save", "load_state")}}
-            checkpoint = output_dir/f"cost-{name}-{part}.pt"
+                      **{key+"_seconds": [] for key in ("train", "eval", "save", "load_state", "artifact_write", "artifact_read")}}
+            artifact_sizes = []
             for epoch in range(10):
                 _, seconds = _timed(lambda: trajectory.train_to_step((epoch+2)*trajectory.steps_per_epoch), cuda=True)
                 record["train_seconds"].append(seconds)
-                (last_prediction, _), seconds = _timed(
-                    lambda: _eval_model(trajectory.model, validation, panel, threshold), cuda=True)
+                _, seconds = _timed(
+                    lambda: _production_score(trajectory.model, bundle, fold, held, depth, include_clean=True), cuda=True)
                 record["eval_seconds"].append(seconds)
-                digest, seconds = _timed(lambda: train.save_checkpoint(checkpoint, trajectory.state()), cuda=True)
+                state, seconds = _timed(trajectory.state, cuda=True)
                 record["save_seconds"].append(seconds)
-                _, seconds = _timed(lambda: trajectory.restore(train.load_checkpoint(checkpoint, expected_sha256=digest)), cuda=True)
+                _, seconds = _timed(lambda: trajectory.restore(state), cuda=True)
                 record["load_state_seconds"].append(seconds)
+                checkpoint = output_dir/f"cost-{name}-{part}-{epoch}.pt"
+                pin, seconds = _timed(lambda: P.atomic_torch(checkpoint, state, root=output_dir))
+                record["artifact_write_seconds"].append(seconds)
+                artifact_sizes.append(pin["bytes"])
+                _, seconds = _timed(lambda: _read_state_artifact(pin))
+                record["artifact_read_seconds"].append(seconds)
             if part == "full":
                 batches = {"full_seconds": [], "last_seconds": [], "last_size": 18548 % 32}
                 for _ in range(10):
                     for size, key in ((32, "full_seconds"), (18548 % 32, "last_seconds")):
-                        positions = torch.arange(size) % fitting.size
-                        def infer_batch():
-                            with torch.no_grad():
-                                x, _, _ = fitting.batch(positions, torch.device("cuda"))
-                                return trajectory.model(x).detach().cpu().numpy()
-                        _, seconds = _timed(infer_batch, cuda=True)
+                        rows = np.arange(size) % len(data["meta"])
+                        _, seconds = _timed(lambda: _prediction_batch(trajectory.model, data, depth, rows), cuda=True)
                         batches[key].append(seconds)
                 record["inference_batches"] = batches
-            record["checkpoint_file_bytes"] = checkpoint.stat().st_size
+            record["checkpoint_file_bytes"] = max(artifact_sizes)
+            record["artifact_write_bytes"] = max(artifact_sizes)
             record["curve_record_bytes"] = len(json.dumps(trajectory.epoch_losses[-1], sort_keys=True).encode())
             record["statistics"] = {key: {"median": float(np.median(record[key+"_seconds"])),
                                                  "p95": resources.percentile95(record[key+"_seconds"])}
-                                    for key in ("train", "eval", "save", "load_state")}
+                                    for key in ("train", "eval", "save", "load_state", "artifact_write", "artifact_read")}
             cells[name][part] = record
-            del fitting, validation, panel, trajectory
+            if name == heads.HEADS[-1] and part == "full":
+                last_prediction = np.concatenate([_prediction_batch(trajectory.model, data, depth, full[start:start+32])
+                                                  for start in range(0, len(full), 32)])
+            del fitting, trajectory, warm_state, state
+
             gc.collect()
     prediction_path = output_dir/"cost-prediction.npz"
     _, write_seconds = _timed(lambda: np.savez_compressed(prediction_path, prediction=last_prediction))
@@ -529,7 +598,7 @@ def _scan_full_grid(panels):
             "cost_only": True, "choice_published": False}
 
 
-def _report_measurement(data, *, output_dir, block_windows=32):
+def _report_measurement(data, *, output_dir, block_windows=32, input_load_seconds=0.):
     """Measure historical moment accumulation + the real 2,000-draw aggregator.
 
     Exactly fifteen *training* users form the cost surrogate. No new held
@@ -543,7 +612,21 @@ def _report_measurement(data, *, output_dir, block_windows=32):
     # accumulation is separately scaled to the actual final population.
     ids = [next(i for i, row in enumerate(data["meta"]) if row["user"] == user) for user in selected_users]
     full_prediction = np.asarray(data["target"], dtype=np.float32)*.75
-    _, accumulation = _timed(lambda: metrics.evaluate(full_prediction, data, dynamic_threshold=metrics.THRESHOLD, per_joint=True))
+    _, accumulation = _timed(lambda: metrics.evaluate(full_prediction, data, dynamic_threshold=metrics.THRESHOLD, per_joint=True, batch_windows=32))
+    # R1 re-evaluates both historical predictions (no per-joint breakdown).
+    # The synthetic scores are not parity evidence; only this exact cost path is used.
+    _, r1_seconds = _timed(lambda: [metrics.evaluate(full_prediction[:, 6:-6].astype(np.float64), data)
+                                    for _ in range(2)])
+    # Actual hash-verified compressed prediction reads, projected to 15+2 files.
+    proxy = Path(output_dir)/"cost-metrics-input.npz"
+    proxy_pin = P.atomic_npz(proxy, {"prediction": full_prediction[:, 6:-6]}, root=Path(output_dir))
+    def read_prediction_proxy():
+        check = P.verify_pin(proxy_pin)
+        with np.load(proxy, allow_pickle=False) as archive:
+            result = archive["prediction"]
+        P.unchanged({str(proxy): check["state"]})
+        return result
+    _, prediction_read_seconds = _timed(read_prediction_proxy)
     del full_prediction
     # Both dynamic and static groups must be populated in an ordinary report;
     # use two actual windows per user if present, and repeat the same train
@@ -555,7 +638,7 @@ def _report_measurement(data, *, output_dir, block_windows=32):
     panel["meta"] = [dict(data["meta"][i], cost_repeat=j%2) for j, i in enumerate(ids)]
     panel["pose_var"] = np.tile([0., metrics.THRESHOLD*2], 15)
     prediction = np.asarray(panel["target"], dtype=np.float32)*.75
-    analysis, surrogate_seconds = _timed(lambda: metrics.evaluate(prediction, panel, dynamic_threshold=metrics.THRESHOLD, per_joint=True))
+    analysis, surrogate_seconds = _timed(lambda: metrics.evaluate(prediction, panel, dynamic_threshold=metrics.THRESHOLD, per_joint=True, batch_windows=32))
     cell = {"complete": True, "analysis": analysis}
     cells = {head: {str(seed): cell for seed in (0, 1, 2)} for head in heads.HEADS}
     references = {name: cell for name in report.REFERENCES}
@@ -568,15 +651,20 @@ def _report_measurement(data, *, output_dir, block_windows=32):
     encoded = json.dumps(result, sort_keys=True, allow_nan=False)
     _, serialization = _timed(lambda: path.write_text(encoded))
     # Seventeen reports: fifteen new readouts and two historical references.
-    projected = accumulation * (18548/len(data["meta"])) * 17 + aggregate_seconds + serialization + surrogate_seconds
+    ratio = 18548/len(data["meta"])
+    input_io_projection = max(1., ratio)*input_load_seconds + ratio*17*prediction_read_seconds
+    projected = ratio*(accumulation*17 + r1_seconds) + aggregate_seconds + serialization + surrogate_seconds + input_io_projection
     return {"moment_seconds": accumulation, "moment_windows": len(data["meta"]), "report_cells": 17,
+            "batch_windows": 32, "historical_R1_evaluations": 2, "historical_R1_seconds": r1_seconds,
+            "prediction_read_seconds": prediction_read_seconds, "prediction_read_bytes": proxy_pin["bytes"],
+            "input_io_projection_seconds": input_io_projection, "input_io_is_train_only_projection": True,
             "bootstrap_seconds": aggregate_seconds, "bootstrap_replicates": 2000,
             "serialization_seconds": serialization, "serialization_bytes": path.stat().st_size,
             "projected_seconds": projected, "train_only_surrogate": True}
 
 
 def benchmark_cpu(data, *, input_loader, output_dir, allowed_train_users, input_identity,
-                  folds=None, block_windows=32):
+                  folds=None, block_windows=32, input_measurement=None):
     """Measure all actual mask patterns, full feature widths, 2×1,936 scans.
 
     The full-width TSQR sample is not a scientific reference. Factors are
@@ -589,10 +677,7 @@ def benchmark_cpu(data, *, input_loader, output_dir, allowed_train_users, input_
     folds, population = _validate_train(data, allowed_train_users, input_identity, folds)
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=False)
-    loaded, io = _load_measurement(input_loader, input_identity)
-    if controls.canonical(loaded["meta"]) != controls.canonical(data["meta"]):
-        raise ValueError("timed loader population differs")
-    del loaded
+    io = _input_io(data, input_loader, input_identity, input_measurement)
     gc.collect()
     baseline_rss = _rss()
     features, real, mask, support = controls._data_arrays(data)
@@ -638,9 +723,10 @@ def benchmark_cpu(data, *, input_loader, output_dir, allowed_train_users, input_
         fold_projection.append(projected)
         del components, basis, panels
         gc.collect()
-    report_cost = _report_measurement(data, output_dir=output_dir)
+    report_cost = _report_measurement(data, output_dir=output_dir, input_load_seconds=io["input_load_seconds"])
     result = _base_receipt("cpu", population, input_identity, numeric)
     result.update(io=io, folds=records, fold_projection_seconds=fold_projection,
+                  persistent_cost_bytes=sum(p.stat().st_size for p in output_dir.iterdir() if p.is_file()),
                   report=report_cost, report_projection_seconds=report_cost["projected_seconds"],
                   all_patterns_measured=True, all_alphas_measured=True,
                   grid_combinations_measured=grid_counts,
