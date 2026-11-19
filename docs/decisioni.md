@@ -7422,3 +7422,10 @@ In assenza di certificazione completa inter-dose, lettura dose×taglia soltanto 
 Ricevuta review unica f6ba1c925e9619d096eea8d68371b1f8811a36a3, APPROVATO sul codice87da975bc0fd4824684e166659bb996e118ff107, nessuna modifica richiesta. Simone ha già autorizzato l'esecuzione dopo review senza nuovo consenso. Codice eseguito87da975b congelato; nuovi commit solo documenti/evidenze nel perimetro approvato.
 
 Dopo gatefresco positivo, pubblicato deploy/scaling_49046_code_20261118_v1. Checkout64835246 sottomesso11:32:05Europe/Rome,2CPU/4G/5min,0GPUh. Budget invariato. Il primo training attende la raccolta verificata di questo checkout; il secondo attende la raccolta del primo segmento. Nessun invio concorrente o automazione. La precedente lettura bloccata dal socketSSH della sandbox è conservata e distinta da un retry di job; nessun job era stato inviato in quel passaggio.
+
+
+## 19/11/2026 — Primo training49k64837401 accettato dopo checkout verificato
+
+Checkout64835246 COMPLETED0:0 in18s,2CPU,0,01coreh; prova raccolta. Tutti i cancelli train-predecay superati, incluso il piano canonico e la quota42,6216GiB sopra30. Primo segmento300M19.618→39.237 sottomesso11:46:56Europe/Rome:64837401,4GPU/32CPU/480G,19h45,79GPUh richieste, codice congelato87da975b. Ricevuta/riga/gate pubblicati; nessun risultato scientifico ancora prodotto da questa consegna. Budget e ricetta invariati.
+
+Il seguito39.237→49.046 rimane già autorizzato ma attende raccolta verificata del segmento1; nessun job duplicato, secondo segmento, runner o automazione nuova. L'esecuzione fino al confronto segue il piano approvato senza ulteriori review o consensi di routine, con stop al primo errore reale/TIMEOUT/costo fuori piano.

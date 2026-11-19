@@ -1,0 +1,125 @@
+{
+  "protocol": "scaling-gate-49046-20261118-v1",
+  "stage": "train-predecay",
+  "read_at_utc": "2026-11-19T10:38:49Z",
+  "passed": true,
+  "checks": [
+    [
+      "checkout code: expected HEAD and clean tree",
+      true
+    ],
+    [
+      "document resource_policy: remote bytes equal to the published ones",
+      true
+    ],
+    [
+      "document training_predecay: remote bytes equal to the published ones",
+      true
+    ],
+    [
+      "files pinned inside the checkouts are in their commits (3)",
+      true
+    ],
+    [
+      "outputs of the jobs still to submit are absent",
+      true
+    ],
+    [
+      "jobs already in the ledger were submitted by this line",
+      true
+    ],
+    [
+      "jobs already submitted are COMPLETED 0:0 (0)",
+      true
+    ],
+    [
+      "checkouts used were collected COMPLETED 0:0 (1)",
+      true
+    ],
+    [
+      "free space on $WORK at least 30 GiB",
+      true
+    ],
+    [
+      "cross-stage predecessors COMPLETED 0:0",
+      true
+    ],
+    [
+      "fixed campaign resource budget",
+      true
+    ],
+    [
+      "a tranche of at least one job is admitted (1 of 1 to submit)",
+      true
+    ]
+  ],
+  "facts": {
+    "serial_jobs": 0,
+    "serial_room": 10,
+    "line_jobs": 0,
+    "work_free_gib": 42.6215934753418,
+    "to_submit": [
+      "SCALING-49046-train-39237-20261118"
+    ],
+    "line_limit": 4,
+    "submittable_now": 1,
+    "tranche": [
+      "SCALING-49046-train-39237-20261118"
+    ]
+  },
+  "commits": {
+    "code": "87da975bc0fd4824684e166659bb996e118ff107"
+  },
+  "documents": {
+    "training_predecay": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_code_20261118_v1/results/infra/scaling_49046_20261118/evaluation/training/training_39237.json",
+      "sha256": "8272d33e8f1b46cb3ddddeda0febac3b85595f597b50b4b1fd293fc6a7501d2a",
+      "bytes": 15594
+    },
+    "resource_policy": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_code_20261118_v1/results/infra/scaling_49046_20261118/evaluation/training/resource_policy.json",
+      "sha256": "6b1af5622e9ff7dd8a46d4b1d2b1caff5b298e06ecab6bc32224d1d8a4c8053d",
+      "bytes": 2094
+    }
+  },
+  "submitted": {},
+  "operator": {
+    "commit": "87da975bc0fd4824684e166659bb996e118ff107",
+    "files": {
+      "scripts/scaling_plans49046.py": "cb94cc62356db9df17d312eaf02d73f225a1033c2551480d4741c866f4b95410",
+      "scripts/scaling_operations49046.py": "e0e8c586ac015e8c76f0f5a6aaa2196adfc51c3e53b3940244383cf7b3e2a0e6",
+      "scripts/scaling_terminal_builders.py": "f9a399df4b7403c4f7d8bd0301c1e633a3cb552162c9b8ee00999f7b2608d41f",
+      "scripts/scaling_build49046.py": "a26fa77443770c0b5bfeb46dadee811b2c94a65361e346e2d465c7fc1401f807",
+      "results/infra/scaling_49046_20261118/evaluation/training/training_39237.json": "8272d33e8f1b46cb3ddddeda0febac3b85595f597b50b4b1fd293fc6a7501d2a",
+      "results/infra/scaling_49046_20261118/evaluation/training/training_49046.json": "b4f593225167a016e1937ebd8b6161efe93e395b3dabbc0943b028cd2de98d48",
+      "results/infra/scaling_49046_20261118/evaluation/training/resource_policy.json": "6b1af5622e9ff7dd8a46d4b1d2b1caff5b298e06ecab6bc32224d1d8a4c8053d",
+      "results/infra/scaling_49046_20261118/evaluation/training/archive_plan.json": "ed8933068cb813b8036ee6fcd387259e5db3367c66def1868218962e3ba54797",
+      "results/infra/scaling_49046_20261118/launcher/training_39237.json": "8272d33e8f1b46cb3ddddeda0febac3b85595f597b50b4b1fd293fc6a7501d2a",
+      "results/infra/scaling_49046_20261118/launcher/training_49046.json": "b4f593225167a016e1937ebd8b6161efe93e395b3dabbc0943b028cd2de98d48",
+      "results/infra/scaling_49046_20261118/launcher/archive_plan.json": "ed8933068cb813b8036ee6fcd387259e5db3367c66def1868218962e3ba54797",
+      "scripts/submit_job.py": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+      "scripts/slurm/campaign_checkout.sbatch": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+      "scripts/slurm/lib_code_dir.sh": "0f961f459516f146ffe935d757f71f054e5b5ee62b4c68e88ff34153d708ee19",
+      "scripts/scaling_continue49046.py": "94b44783b084d9b81e719b86a2508ec4d95bbd566d977b304a5b821b53e0030c",
+      "scripts/scaling_preserve49046.py": "3fff1267f12b88666bca58ab6da44f83342ad39724ae663af8968de8a2fc59dd",
+      "scripts/scaling_finalize49046.py": "0765475ba62f6016493840a746b47b8169113c7bce4757b5a24bf58e6cd41460",
+      "scripts/scaling_dose_interaction.py": "0d5ae3e32858a21c288d6dffb500159a83ff210bf083cfac64965f8bd74a5ea8",
+      "scripts/scaling_derive49046.py": "c4015defd67a74a524d0a3a464161727501aac2eccf72b6245bcfe2cc5e783c7",
+      "scripts/scaling_evaluation49046.py": "3720836c6a01d3239ba0af2d513eb2f3a1830f6307cb026ec5ca1010fe476890",
+      "scripts/scaling_probe49046.py": "5c572bdee1c76e39ebcf4a0b07fdd60eae11dcc6c4085fa6e5bcb426ae250217",
+      "scripts/scaling_pose_readout49046.py": "ae197b5f85988779f0020bf965324d64825a38a6c9981c0e8fc524a948bd7a95",
+      "scripts/scaling_compare49046.py": "cda3ddd7bbcf63d1fd74d58b27ac85ab19447a5ee6e6da2ae36eb61dfbc5aa07",
+      "scripts/scaling_reading49046.py": "8c957f74aa8c016bf3594d1b1a063a1fa0fa6c21c723dd017eced30f5026c3d8",
+      "scripts/slurm/scaling_evaluation49046.sbatch": "e335d7adde52637eb47e4b5a7e521138b5471655a46826e362c66331f415090b",
+      "scripts/slurm/scaling_readers49046.sbatch": "78cd1ac05df536a3e1b811ee081d898d64945721b6e418aa6275f93e3c6bd566",
+      "scripts/slurm/scaling_continue49046.sbatch": "f700a5ce62f94640a06fd62cecf27489822e0748e6e80ac5c5aaedb0e1f2f92f",
+      "scripts/slurm/scaling_preserve49046.sbatch": "7bdd7d31d90ca83e68710f33a59dd66c75bb16529d706cd51c71451108726677",
+      "results/infra/scaling_49046_20261118/launcher/evaluation_freeze.json": "29a0caeb4e9d19e1b5f550f953087fb21a9ded719b86bfb18890695333896402",
+      "results/infra/scaling_49046_20261118/launcher/resource_policy.json": "6b1af5622e9ff7dd8a46d4b1d2b1caff5b298e06ecab6bc32224d1d8a4c8053d"
+    }
+  },
+  "operational_inputs": {
+    "dependencies": {},
+    "evidence_sha256": {}
+  }
+}

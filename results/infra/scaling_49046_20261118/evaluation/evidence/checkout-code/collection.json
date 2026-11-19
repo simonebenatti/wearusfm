@@ -1,0 +1,37 @@
+{
+  "stage": "checkout-code",
+  "remote_time_utc": "2026-11-19T10:38:02Z",
+  "jobs": {
+    "SCALING-49046-code-checkout-20261118": {
+      "job_slurm": "64835246",
+      "local": "code",
+      "elapsed_seconds": 18,
+      "core_hours": 0.01,
+      "gpu_hours": 0.0,
+      "folder": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_code_20261118_v1",
+      "listing": [
+        ".claude",
+        ".git",
+        ".gitignore",
+        "CLAUDE.md",
+        "bench",
+        "docs",
+        "pyproject.toml",
+        "results",
+        "scripts",
+        "splits",
+        "src",
+        "tests",
+        "third_party"
+      ]
+    }
+  },
+  "files": {
+    "code/slurm_log.txt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/campaign_checkout_64835246.out",
+      "sha256": "2964d1b6f27e3c7360515b458f5c8234a9bb8f1cadeeac62d1154afe8c13b9d9",
+      "bytes": 3503,
+      "stored": "plain"
+    }
+  }
+}
