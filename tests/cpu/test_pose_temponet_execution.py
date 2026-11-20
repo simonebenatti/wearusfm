@@ -15,6 +15,16 @@ def measured_pack(jobs):
             for j in jobs if j["stage"] in ("controls", "selection", "refit")]
 
 
+def test_second_delivery_never_reuses_the_identity_of_the_failed_first_preflight():
+    ids = [j["id"] for j in E.job_graph()]
+    assert len(set(ids)) == 24 and all(i.startswith("TCNH-") and i.endswith("-20261120") for i in ids)
+    assert E.job_id("preflight") == "TCNH-preflight-20261120" != "TCNH-preflight-20261119"
+    assert E.CAMPAIGN == "pose_temponet_20261120"
+    assert E.CODE_DIR == "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261120"
+    # Diagnostic IDs already in the common ledger for this date use another stage token.
+    assert not {"TCNH-CPU-inventory-login08-20261120","TCNH-CPU-inventory-login13-20261120"} & set(ids)
+
+
 def test_graph_has_no_duplicate_cells_and_keeps_global_scientific_dependencies():
     jobs = E.job_graph()
     assert len(jobs) == 24

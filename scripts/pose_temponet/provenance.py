@@ -20,6 +20,9 @@ import tarfile
 import uuid
 
 from . import data as D
+# After data: it already loads the historical producer modules, so the order in
+# which the numerical libraries are imported stays exactly as before.
+from wearusfm.harness.pose_eval import _SAFE_RE as _STORAGE_UNSAFE
 
 ROOT = Path(__file__).resolve().parents[2]
 PROTOCOL = "pose-temponet-frozen-encoder-readout-20261117-v3"
@@ -265,6 +268,30 @@ def git_artifact(pin, *, source_root=ROOT):
     return raw
 
 
+def storage_directory(user):
+    """Directory that the historical producer reads for one cache user ID.
+
+    Same rule as wearusfm.harness.pose_eval.recordings_for and the emg2pose
+    ingest: "u" followed by the ID, every unsafe character replaced by "_".
+    """
+    require(isinstance(user,str) and user, "invalid cache user ID")
+    return "u"+_STORAGE_UNSAFE.sub("_",user)
+
+
+def cache_user(directory):
+    """Cache user ID of one producer storage directory, only where it is unique.
+
+    The cache metadata stores the ID, the producer file list stores the
+    directory. Every replaced character becomes "_": a directory without "_"
+    has exactly one preimage. Any other name fails closed instead of guessing.
+    """
+    require(isinstance(directory,str) and re.fullmatch(r"u[0-9A-Za-z.@-]+",directory) is not None,
+            "producer storage directory has no unique cache user ID")
+    user = directory[1:]
+    require(storage_directory(user) == directory, "producer storage directory does not round-trip")
+    return user
+
+
 def historical_producer(receipt, *, split, cache_pin, stats_sha256):
     require(split in ("train","val"), "wrong producer split")
     require(receipt["complete"] is True and receipt["checkpoint_unchanged"] is True and
@@ -275,11 +302,14 @@ def historical_producer(receipt, *, split, cache_pin, stats_sha256):
             receipt["which"] == "teacher" and receipt["checkpoint_step"] == 49046, "wrong historical producer")
     artifact = receipt["artifacts"]["cache"]
     require(all(artifact[k] == cache_pin[k] for k in ("sha256","bytes")), "cache not covered by historical receipt")
-    users = set()
+    directories = set()
     for filename in receipt["raw_inputs"]["file_states"]:
         parts = Path(filename).parts
         if "emg2pose" in parts:
-            users.add(parts[parts.index("emg2pose")+1])
+            directories.add(parts[parts.index("emg2pose")+1])
+    # The receipt lists storage directories ("u"+ID); cache metadata and every
+    # consumer of this list (benchmark, controls, folds) use the ID itself.
+    users = sorted(cache_user(directory) for directory in directories)
     details = receipt["details"]
     expected_users = 40 if split == "train" else 15
     require(len(users) == details["n_users"] == expected_users and
@@ -291,7 +321,8 @@ def historical_producer(receipt, *, split, cache_pin, stats_sha256):
     producer.update(pose_stats_sha256=stats,checkpoint_pose_stats_sha256=stats)
     require(all(_hex(producer[k],40 if k == "code_sha" else 64) for k in D.PRODUCER_FIELDS
                 if k.endswith("sha256") or k == "code_sha"), "malformed historical producer digest")
-    return {"metadata":producer,"users":sorted(users),"details":copy.deepcopy(details),
+    return {"metadata":producer,"users":users,"storage_directories":sorted(directories),
+            "details":copy.deepcopy(details),
             "original_cache":copy.deepcopy(artifact),"preservation_policy":"path moved to WORK; hash and bytes identical"}
 
 
@@ -436,7 +467,10 @@ def read_verified_inputs(plan, split, *, stage, depth=None):
     producer = plan["producers"][split]
     data = D.read_cache_pin(allowed["cache_"+split],producer=producer["metadata"],
                             reference_pin=allowed["target_reference_"+split],depth=depth)
-    require(sorted({m["user"] for m in data["meta"]}) == producer["users"], "cache user population differs from original producer")
+    cache_users = sorted({m["user"] for m in data["meta"]})
+    require(cache_users == producer["users"], "cache user population differs from original producer")
+    require(sorted(storage_directory(user) for user in cache_users) == producer["storage_directories"],
+            "cache users do not map onto the producer storage directories")
     verification = data["input_verification"]
     for key in ("targets","key_time_valid_sha256","dim","n_recordings","n_users","n_windows"):
         require(verification[key] == producer["details"][key], "historical cache details changed: "+key)

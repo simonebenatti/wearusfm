@@ -1,9 +1,11 @@
 """Fail-closed review, source, filesystem and receipt-chain tests; no cluster I/O."""
 import copy
+import hashlib
 import json
 import io
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -14,9 +16,11 @@ import pytest
 import torch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/"scripts"))
-from pose_temponet import provenance as P
+from pose_temponet import controls as C, provenance as P
 
 REPO = Path(__file__).resolve().parents[2]
+# IDs read from meta_json of the two pinned caches on Leonardo (provenance inside the file).
+REAL_CACHE_USERS = json.loads((REPO/"tests/cpu/data/pose_temponet_cache_users_20261120.json").read_text())
 
 
 @pytest.fixture
@@ -88,6 +92,88 @@ def test_real_original_producers_and_documentary_review_remain_distinct_from_rea
     assert plan["inputs"]["cache_train"]["path"].startswith("/leonardo_work/")
     with pytest.raises(ValueError,match="explicitly released"):
         P.validate_plan(plan,source_root=repo,require_review=True)
+
+
+def test_real_producer_users_are_the_ids_stored_in_the_real_caches(prepared):
+    """Preflight 64931573 compared storage directories ("u"+ID) with cache IDs."""
+    _,plan = prepared
+    for split,count in (("train",40),("val",15)):
+        real = REAL_CACHE_USERS[split]
+        producer = plan["producers"][split]
+        assert hashlib.sha256(json.dumps(real["users"]).encode()).hexdigest() == real["users_json_sha256"]
+        assert real["cache_pin_sha256"] == plan["inputs"]["cache_"+split]["sha256"]
+        assert real["windows"] == plan["inputs"]["cache_"+split]["windows"]
+        assert len(real["users"]) == count and producer["users"] == real["users"]
+        assert producer["storage_directories"] == ["u"+user for user in real["users"]]
+        assert not set(producer["users"]) & set(producer["storage_directories"])
+
+
+def test_storage_directory_maps_back_only_where_the_id_is_unique(monkeypatch):
+    assert P.storage_directory("03d49b393e") == "u03d49b393e"
+    assert P.cache_user("u03d49b393e") == "03d49b393e"
+    assert P.cache_user("uu1.a@b-c") == "u1.a@b-c"
+    # An unsafe character and a literal underscore share one directory: no unique ID.
+    assert P.storage_directory("ab/cd") == P.storage_directory("ab_cd") == "uab_cd"
+    for name in ("03d49b393e","u","","uab_cd","uab cd","Uabc",None,"u03d49b393e/x"):
+        with pytest.raises(ValueError,match="no unique cache user ID"):
+            P.cache_user(name)
+    with pytest.raises(ValueError,match="invalid cache user ID"):
+        P.storage_directory("")
+    # If the producer naming rule drifted, the stored directory no longer round-trips.
+    monkeypatch.setattr(P,"_STORAGE_UNSAFE",re.compile(r"[^0-9a-f]"))
+    with pytest.raises(ValueError,match="does not round-trip"):
+        P.cache_user("uABC")
+
+
+def test_producer_with_ambiguous_storage_directory_is_refused(prepared):
+    repo,plan = prepared
+    proposal = json.loads((repo/plan["proposal"]["path"]).read_text())
+    receipt = json.loads((repo/P.HISTORICAL_RECEIPTS["train"]["local_copy"]).read_text())
+    arguments = {"split":"train","cache_pin":plan["inputs"]["cache_train"],"stats_sha256":proposal["stats_sha256"]}
+    expected = {k:v for k,v in plan["producers"]["train"].items() if k != "receipt"}
+    assert P.historical_producer(receipt,**arguments) == expected
+    first = expected["storage_directories"][0]
+    states = receipt["raw_inputs"]["file_states"]
+    receipt["raw_inputs"]["file_states"] = {name.replace("/"+first+"/","/"+first[:4]+"_"+first[5:]+"/"):state
+                                            for name,state in states.items()}
+    assert len(receipt["raw_inputs"]["file_states"]) == len(states)
+    with pytest.raises(ValueError,match="no unique cache user ID"):
+        P.historical_producer(receipt,**arguments)
+
+
+def test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout(prepared,monkeypatch):
+    _,plan = prepared
+    producer = plan["producers"]["train"]
+    real = REAL_CACHE_USERS["train"]["users"]
+    served = {}
+    monkeypatch.setattr(P,"verify_pin",lambda pin,**kwargs:{"pin":pin,"state":{}})
+    monkeypatch.setattr(P,"unchanged",lambda states:None)
+    monkeypatch.setattr(P.D,"read_cache_pin",lambda pin,**kwargs:served["data"])
+    def cache(users):
+        return {"meta":[{"user":user} for user in users for _ in range(2)],
+                "input_verification":copy.deepcopy(producer["details"])}
+    served["data"] = cache(real)
+    data = P.read_verified_inputs(plan,"train",stage="preflight")
+    assert data is served["data"]
+    # The same list is the allow-list of benchmark, calibration, controls and folds.
+    half = len(data["meta"])//2
+    partition = C.validate_outer_partition(data["meta"],range(half),range(half,2*half),producer["users"])
+    assert sorted(partition["fitting_users"]+partition["held_users"]) == real
+    with pytest.raises(ValueError,match="non-training users"):
+        C.validate_outer_partition(data["meta"],range(half),range(half,2*half),producer["storage_directories"])
+    # The exact failure of preflight 64931573: directory names offered as IDs.
+    served["data"] = cache(producer["storage_directories"])
+    with pytest.raises(ValueError,match="cache user population differs"):
+        P.read_verified_inputs(plan,"train",stage="preflight")
+    served["data"] = cache(real[:-1]+["ffffffffff"])
+    with pytest.raises(ValueError,match="cache user population differs"):
+        P.read_verified_inputs(plan,"train",stage="preflight")
+    # IDs alone are not enough when the plan's directory list disagrees with them.
+    drifted = copy.deepcopy(plan)
+    drifted["producers"]["train"]["storage_directories"] = ["u"+user for user in real[:-1]]+["uffffffffff"]
+    served["data"] = cache(real)
+    with pytest.raises(ValueError,match="do not map onto the producer storage directories"):
+        P.read_verified_inputs(drifted,"train",stage="preflight")
 
 
 def test_each_source_category_and_launcher_enters_new_reader_identity(prepared):

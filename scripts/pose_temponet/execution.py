@@ -7,7 +7,10 @@ from pathlib import Path
 
 from .heads import HEADS
 
-CAMPAIGN = "pose_temponet_20261119"
+# Second delivery. The 20261119 IDs and checkout belong to the first preflight
+# (64931573, technical failure) and are never reused.
+DELIVERY = "20261120"
+CAMPAIGN = "pose_temponet_" + DELIVERY
 CODE_DIR = "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/" + CAMPAIGN
 LOG_ROOT = "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs"
 CONTROL_HEADS = ("L0", "MLP", "TCN_post")
@@ -19,7 +22,7 @@ def job_id(stage, *, head=None, world=None, fold=None):
     token = stage.replace("_", "-")
     parts = ["TCNH", token]
     parts.extend(str(x) for x in (world, head, fold) if x is not None)
-    parts.append("20261119")
+    parts.append(DELIVERY)
     value = "-".join(parts)
     if len(value) > 64 or not re.fullmatch(r"[A-Za-z0-9._-]+", value):
         raise ValueError("invalid logical job ID")
