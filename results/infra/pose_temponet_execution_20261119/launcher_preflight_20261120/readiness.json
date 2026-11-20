@@ -1,0 +1,51 @@
+{
+  "balance": {
+    "consumed_local_hours": 1344018,
+    "remaining_local_hours": 655982,
+    "total_local_hours": 2000000
+  },
+  "code_commit": "01252b6c3023c49046b312e003b7915d8f3f6119",
+  "delivery_pin_artifacts_verified": 3,
+  "duplicate_check": {
+    "campaign_checkout_exists": false,
+    "campaign_output_exists": false,
+    "local_ledger_matching_TCNH": 0,
+    "user_queue_matching_TCNH": 0
+  },
+  "jobs_submitted": 0,
+  "observed_at": "2026-11-20T10:31:17+01:00",
+  "package_commit": "aa3c8047ab8078d5dcc4e061537c3e5b35189bc8",
+  "quota": {
+    "free_GiB": 41.416038513183594,
+    "free_bytes": 44470132736,
+    "gate_12GiB_plus_pending": true,
+    "pending_other_writes_basis": "Conservative reservation: scaling archive three300M checkpoints plus temporary copy about17.4GiB, round20GiB as published handoff, plus4GiB metadata/operational writes. Only active userqueue is scaling39237 PENDING. Not measured futureusage.",
+    "pending_other_writes_reserved_bytes": 25769803776,
+    "project_id": 20147512,
+    "soft_quota_KiB": 1073741824,
+    "used_KiB": 1030313960
+  },
+  "release_plan_executed": false,
+  "required_next_action": "Obtain existing trusted per-node CPUmodel evidence or reviewed operator procedure for reading it within approved allocations before release-plan. User execution authorization remains valid; no new scientific approval needed.",
+  "reservations_created": 0,
+  "review_commit": "85f0d62159d0ac5337857540a14466b3875bebf1",
+  "review_path": "docs/reviews/claude_review_pose_temponet_runtime_rereview_20261120.md",
+  "review_sha256": "5ca96c2636f918403a4e522b2b2040692b2b7cc99778ed93ae9b8a009765538c",
+  "review_verdict_read_in_full": "APPROVATO",
+  "serial_node_inventory": {
+    "cpu_model_each_verified": false,
+    "direct_ssh_result": "Permission denied(publickey,gssapi-keyex,gssapi-with-mic) from login07; same with agentforwarding requested",
+    "local_proxyjump_result": "Server accepted certificate then closed connection before authentication/command; no lscpu output",
+    "nodes": [
+      "login08",
+      "login13"
+    ],
+    "public_login07_only": "Intel(R) Xeon(R) Platinum8358CPU@2.60GHz; not proof for login08/login13",
+    "reason_blocking_release": "Execution doc and favorable review require comparing actual CPUmodel of both serialnodes before release. Scheduler topology does not state CPUmodel. No sourcechange, extraallocation or weakening of numericpin performed.",
+    "same_slurm_configuration_group": "NodeName=login[01-16] in live /var/spool/slurmd/conf-cache/slurm.conf",
+    "topology_each": "x86_64;2sockets;32cores/socket;2threads/core;128CPUs;514000MBRAM"
+  },
+  "source_files_verified": 246,
+  "source_sha256": "027bb7876b372ceb537610322c11f1903c8c2224abfca27484c403bbc297d732",
+  "state": "OPERATIONAL_PREREQUISITE_UNVERIFIED_NO_SUBMISSION"
+}

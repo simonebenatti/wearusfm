@@ -178,6 +178,19 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-20 | GPT launcher TCN | Review favorevole acquisita, rilascio fermo al controllo CPU dei due nodi seriali
+
+Letta review Claude85f0d62 sul codice01252b6c/consegnaaa3c8047:APPROVATO. Verificati246sorgenti e3artefattipinnati;
+source027bb7876b372ceb537610322c11f1903c8c2224abfca27484c403bbc297d732. Nuovo worktree operativo separato,
+nessuna modifica ai sorgenti o al worktree scientifico. Duplicati assenti,quotaWORK41,416GiB con riserva prudente24GiB
+peraltrelinee:gate12+24passa. Saldo655.982orelocali. Seriale/Boostercompatibili,manutenzione23–25/11confermata.
+
+Non ancora verificato il modelloCPU di login08/login13 richiesto prima della release:topologiaSLURMuguale e gruppo
+configurazionecomune,ma né campo modello né accessoSSH diretto riuscito. Login07misurato8358nonattesta gli altri.
+Nessunrelease-plan,deploy,IDprenotato o job inviato. AutorizzazioneSimonevalida:nessun nuovo consenso richiesto.
+[Prove e spiegazione](reviews/tcn_launcher_readiness_20261120.md);richiesta una prova per-nodo affidabile o una procedura
+operativa per raccoglierla nelleallocazioni già approvate,senza allentarepin o introdurrejobaggiuntivi.
+
 ### 19/11/2026 — GPT | TCN frozen: correzioni della review runtime 527f8da
 
 Verifica finale: **263 test TCN passati in 157,84 s**, inclusa la catena dei 24 stadi;
@@ -6047,6 +6060,14 @@ Verifica finale: 204 test nuovi passati (35,35 s), 125 storici passati; un'asser
 Tetti 24 GPUh, 80 coreh CPU-only, 272 coreh totali invariati; walltime dei 16 gruppi neurali non dichiarati prima del benchmark. Solo l'operatore `2-TCN head launcher` eseguirà la catena dopo review favorevole/gate; contatto con Claude tramite Simone. Prompt e prontuario operativi nel ramo. Il pin successivo lega commit e hash dei contenuti.
 
 ## 2) Problemi trovati
+
+### 2026-11-20 | GPT launcher TCN | Prerequisito hardware della review non attestabile via SSH ai nodi seriali
+
+Reviewfavorevole85f0d62:ilmodelloCPUdeidue nodiseriali va confrontatoprima delrilascio. Due accessi dal loginpubblico
+fallisconoPermissiondenied;dalMacviaProxyilcomando nonvieneeseguito. Nessun cambiocredenziali,nessun bypassdei pin.
+`login[01-16]`haun'unicatopologia inconfSlurm,ma nonunmodellodichiarato:non trattato come provadelrequisito.
+Catenaancorainteramentenonsottomessa. Stato readiness e dettagli in reviews/tcn_launcher_readiness_20261120.md.
+Non è una nuova richiesta di autorizzazione:la catena è già approvata; mancaun'evidenza tecnica.
 
 ### 19/11/2026 — GPT | TCN: blocchi del runner e limiti espliciti delle verifiche
 
