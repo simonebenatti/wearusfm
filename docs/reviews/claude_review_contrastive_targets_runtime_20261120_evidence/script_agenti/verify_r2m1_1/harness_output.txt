@@ -1,0 +1,93 @@
+{"torch": "2.14.0"}
+{"scenario": "H1 calibration, rank 2 late 3 s", "agent_store": false, "delays_s": [0, 0, 3, 0], "eps_s": 0.4, "out_contents": ["numeric_profile.rank1.json", "numeric_profile.rank3.json"], "ranks": [{"rank": 0, "start": 0.0, "check": 0.001, "out_existed": false, "status": "DistStoreError: Timed out after 13 seconds waiting for clients. 3/4 clients joined.", "at": 13.438}, {"rank": 1, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 0.436, "mkdir": 0.464, "status": "main() completed"}, {"rank": 2, "start": 0.0, "check": 3.011, "out_existed": true, "status": "ValueError: new phase requires a new output directory; continuation must be explicit", "at": 3.011}, {"rank": 3, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 0.436, "mkdir": 0.464, "status": "main() completed"}]}
+{"scenario": "H2 benchmark full CN, rank 2 late 3 s", "agent_store": false, "delays_s": [0, 0, 3, 0], "eps_s": 0.4, "out_contents": ["numeric_profile.rank1.json", "numeric_profile.rank3.json"], "ranks": [{"rank": 0, "start": 0.0, "check": 0.001, "out_existed": false, "status": "DistStoreError: Timed out after 13 seconds waiting for clients. 3/4 clients joined.", "at": 13.442}, {"rank": 1, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 0.435, "mkdir": 0.465, "status": "main() completed"}, {"rank": 2, "start": 0.0, "check": 3.01, "out_existed": true, "status": "ValueError: new phase requires a new output directory; continuation must be explicit", "at": 3.01}, {"rank": 3, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 0.435, "mkdir": 0.465, "status": "main() completed"}]}
+{"scenario": "H3 benchmark full CN, rank 0 late 3 s", "agent_store": false, "delays_s": [3, 0, 0, 0], "eps_s": 0.4, "out_contents": ["numeric_profile.rank0.json", "numeric_profile.rank1.json", "numeric_profile.rank2.json", "numeric_profile.rank3.json"], "ranks": [{"rank": 0, "start": 0.0, "check": 3.011, "out_existed": false, "init_returned": 6.077, "mkdir": 6.101, "status": "main() completed"}, {"rank": 1, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 4.711, "mkdir": 4.744, "status": "main() completed"}, {"rank": 2, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 6.072, "mkdir": 6.1, "status": "main() completed"}, {"rank": 3, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 3.888, "mkdir": 3.918, "status": "main() completed"}]}
+{"scenario": "H4 benchmark full CN, no lag", "agent_store": false, "delays_s": [0, 0, 0, 0], "eps_s": 0.4, "out_contents": ["numeric_profile.rank0.json", "numeric_profile.rank1.json", "numeric_profile.rank2.json", "numeric_profile.rank3.json"], "ranks": [{"rank": 0, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 0.429, "mkdir": 0.441, "status": "main() completed"}, {"rank": 1, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 0.429, "mkdir": 0.441, "status": "main() completed"}, {"rank": 2, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 0.429, "mkdir": 0.441, "status": "main() completed"}, {"rank": 3, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 0.429, "mkdir": 0.441, "status": "main() completed"}]}
+[rank1]:[W1120 03:54:38.552134000 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=18, addr=[localhost]:49882, remote=[localhost]:49880): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /Users/runner/work/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:794 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 52 (0x103b6fd08 in libc10.dylib)
+frame #1: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 80 (0x103b71270 in libc10.dylib)
+frame #2: void c10d::tcputil::recvBytes<long long>(int, long long*, unsigned long) + 336 (0x122d0bc44 in libtorch_cpu.dylib)
+frame #3: long long c10d::detail::TCPClient::receiveValue<long long>() + 40 (0x122d0b97c in libtorch_cpu.dylib)
+frame #4: c10d::TCPStore::incrementValueBy(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 192 (0x122d09c20 in libtorch_cpu.dylib)
+frame #5: c10d::TCPStore::add(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 312 (0x122d0372c in libtorch_cpu.dylib)
+frame #6: c10d::PrefixStore::add(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 56 (0x122ca6410 in libtorch_cpu.dylib)
+frame #7: c10d::PrefixStore::add(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 56 (0x122ca6410 in libtorch_cpu.dylib)
+frame #8: pybind11::handle pybind11::cpp_function::call_impl<long long, pybind11::gil_scoped_release, pybind11::detail::argument_loader<c10d::Store*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long>, c10d::Store*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long>(pybind11::detail::function_call&, pybind11::detail::function_ref<long long (c10d::Store*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long)>) + 140 (0x106381b44 in libtorch_python.dylib)
+frame #9: pybind11::cpp_function::dispatcher(_object*, _object* const*, unsigned long, _object*) + 3320 (0x105778f40 in libtorch_python.dylib)
+frame #10: cfunction_vectorcall_FASTCALL_KEYWORDS + 76 (0x1025cb8d8 in python3.11)
+frame #11: _PyEval_EvalFrameDefault + 190916 (0x1026b47e4 in python3.11)
+frame #12: _PyFunction_Vectorcall + 472 (0x10256711c in python3.11)
+frame #13: _PyEval_EvalFrameDefault + 207824 (0x1026b89f0 in python3.11)
+frame #14: _PyEval_Vector + 456 (0x102683764 in python3.11)
+frame #15: PyEval_EvalCode + 244 (0x102683508 in python3.11)
+frame #16: run_mod + 144 (0x10271f00c in python3.11)
+frame #17: PyRun_SimpleStringFlags + 140 (0x102721810 in python3.11)
+frame #18: pymain_run_command + 156 (0x1027406a4 in python3.11)
+frame #19: Py_RunMain + 244 (0x10273fe74 in python3.11)
+frame #20: main + 60 (0x1024fd488 in python3.11)
+frame #21: start + 6992 (0x18e0904e4 in dyld)
+
+[rank3]:[W1120 03:54:38.561517000 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=17, addr=[localhost]:49881, remote=[localhost]:49880): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /Users/runner/work/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:794 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 52 (0x10239fd08 in libc10.dylib)
+frame #1: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 80 (0x1023a1270 in libc10.dylib)
+frame #2: void c10d::tcputil::recvBytes<long long>(int, long long*, unsigned long) + 336 (0x12153bc44 in libtorch_cpu.dylib)
+frame #3: long long c10d::detail::TCPClient::receiveValue<long long>() + 40 (0x12153b97c in libtorch_cpu.dylib)
+frame #4: c10d::TCPStore::incrementValueBy(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 192 (0x121539c20 in libtorch_cpu.dylib)
+frame #5: c10d::TCPStore::add(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 312 (0x12153372c in libtorch_cpu.dylib)
+frame #6: c10d::PrefixStore::add(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 56 (0x1214d6410 in libtorch_cpu.dylib)
+frame #7: c10d::PrefixStore::add(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 56 (0x1214d6410 in libtorch_cpu.dylib)
+frame #8: pybind11::handle pybind11::cpp_function::call_impl<long long, pybind11::gil_scoped_release, pybind11::detail::argument_loader<c10d::Store*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long>, c10d::Store*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long>(pybind11::detail::function_call&, pybind11::detail::function_ref<long long (c10d::Store*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long)>) + 140 (0x104bb1b44 in libtorch_python.dylib)
+frame #9: pybind11::cpp_function::dispatcher(_object*, _object* const*, unsigned long, _object*) + 3320 (0x103fa8f40 in libtorch_python.dylib)
+frame #10: cfunction_vectorcall_FASTCALL_KEYWORDS + 76 (0x100e078d8 in python3.11)
+frame #11: _PyEval_EvalFrameDefault + 190916 (0x100ef07e4 in python3.11)
+frame #12: _PyFunction_Vectorcall + 472 (0x100da311c in python3.11)
+frame #13: _PyEval_EvalFrameDefault + 207824 (0x100ef49f0 in python3.11)
+frame #14: _PyEval_Vector + 456 (0x100ebf764 in python3.11)
+frame #15: PyEval_EvalCode + 244 (0x100ebf508 in python3.11)
+frame #16: run_mod + 144 (0x100f5b00c in python3.11)
+frame #17: PyRun_SimpleStringFlags + 140 (0x100f5d810 in python3.11)
+frame #18: pymain_run_command + 156 (0x100f7c6a4 in python3.11)
+frame #19: Py_RunMain + 244 (0x100f7be74 in python3.11)
+frame #20: main + 60 (0x100d39488 in python3.11)
+frame #21: start + 6992 (0x18e0904e4 in dyld)
+
+[rank2]:[W1120 03:54:38.555765000 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=17, addr=[localhost]:49884, remote=[localhost]:49880): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /Users/runner/work/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:794 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 52 (0x1057fbd08 in libc10.dylib)
+frame #1: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>) + 80 (0x1057fd270 in libc10.dylib)
+frame #2: void c10d::tcputil::recvBytes<long long>(int, long long*, unsigned long) + 336 (0x3047afc44 in libtorch_cpu.dylib)
+frame #3: long long c10d::detail::TCPClient::receiveValue<long long>() + 40 (0x3047af97c in libtorch_cpu.dylib)
+frame #4: c10d::TCPStore::incrementValueBy(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 192 (0x3047adc20 in libtorch_cpu.dylib)
+frame #5: c10d::TCPStore::add(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 312 (0x3047a772c in libtorch_cpu.dylib)
+frame #6: c10d::PrefixStore::add(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 56 (0x30474a410 in libtorch_cpu.dylib)
+frame #7: c10d::PrefixStore::add(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long) + 56 (0x30474a410 in libtorch_cpu.dylib)
+frame #8: pybind11::handle pybind11::cpp_function::call_impl<long long, pybind11::gil_scoped_release, pybind11::detail::argument_loader<c10d::Store*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long>, c10d::Store*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long>(pybind11::detail::function_call&, pybind11::detail::function_ref<long long (c10d::Store*, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, long long)>) + 140 (0x10800db44 in libtorch_python.dylib)
+frame #9: pybind11::cpp_function::dispatcher(_object*, _object* const*, unsigned long, _object*) + 3320 (0x107404f40 in libtorch_python.dylib)
+frame #10: cfunction_vectorcall_FASTCALL_KEYWORDS + 76 (0x1042578d8 in python3.11)
+frame #11: _PyEval_EvalFrameDefault + 190916 (0x1043407e4 in python3.11)
+frame #12: _PyFunction_Vectorcall + 472 (0x1041f311c in python3.11)
+frame #13: _PyEval_EvalFrameDefault + 207824 (0x1043449f0 in python3.11)
+frame #14: _PyEval_Vector + 456 (0x10430f764 in python3.11)
+frame #15: PyEval_EvalCode + 244 (0x10430f508 in python3.11)
+frame #16: run_mod + 144 (0x1043ab00c in python3.11)
+frame #17: PyRun_SimpleStringFlags + 140 (0x1043ad810 in python3.11)
+frame #18: pymain_run_command + 156 (0x1043cc6a4 in python3.11)
+frame #19: Py_RunMain + 244 (0x1043cbe74 in python3.11)
+frame #20: main + 60 (0x104189488 in python3.11)
+frame #21: start + 6992 (0x18e0904e4 in dyld)
+
+{"scenario": "H5 reload resume_a CN, rank 2 late 3 s", "agent_store": false, "delays_s": [0, 0, 3, 0], "eps_s": 0.4, "out_contents": ["checkpoint.pt", "numeric_profile.rank0.json", "start.json"], "ranks": [{"rank": 0, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 3.448, "mkdir": 3.469, "status": "main() completed"}, {"rank": 1, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 0.436, "status": "DistNetworkError: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?", "at": 3.497}, {"rank": 2, "start": 0.0, "check": 3.011, "out_existed": false, "init_returned": 3.432, "status": "DistNetworkError: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?", "at": 3.497}, {"rank": 3, "start": 0.0, "check": 0.001, "out_existed": false, "init_returned": 0.436, "status": "DistNetworkError: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?", "at": 3.497}]}
+Traceback (most recent call last):
+  File "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_runtime/tmp/verify_r2m1_1/main_harness.py", line 187, in <module>
+    run("H6 reload resume_a CN, agent store (torch>=2.4), rank 2 late 3 s",
+  File "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_runtime/tmp/verify_r2m1_1/main_harness.py", line 165, in run
+    logs = sorted((queue.get(timeout=90) for _ in procs), key=lambda row: row["rank"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_runtime/tmp/verify_r2m1_1/main_harness.py", line 165, in <genexpr>
+    logs = sorted((queue.get(timeout=90) for _ in procs), key=lambda row: row["rank"])
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/simonebenatti/anaconda3/lib/python3.11/multiprocessing/queues.py", line 114, in get
+    raise Empty
+_queue.Empty

@@ -8261,6 +8261,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Leonardo, sola lettura: alle 10:07 diagnostica non deployata; alle 11:47 i quattro job 64835236-64835304 `COMPLETED 0:0`.
 - Stati dei rapporti, non interpretati: CUDA `MEASURED_FOR_REVIEW` (quattro profili), riprese `CONTROL_INPUTS_VERIFIED`. Nessun job da me.
 
+### 2026-11-20 | Claude | Review del pacchetto operativo RMS100/fast125 (`fbfde797`): codice senza blocchi, release ferma per G-1
+- Richiesta: prompt di GPT passato da Simone il 19/11 («Pubblica in un solo passaggio i blocchi con prova riproducibile e le altre note»).
+- Review in `docs/reviews/claude_review_contrastive_targets_runtime_20261120.md` (ASCII puro per R3-N2), prove nella cartella `_evidence/`.
+- Metodo: workflow di 85 agenti (sette revisori, scettici per rilievo, critico); bozza riletta da due verificatori, correzioni applicate.
+- Esito: nessun blocco tecnico; 17 minori e 27 note; ricevuta riprodotta (465 test); impronte del pacchetto ricalcolate da me.
+- Blocco G-1, tre scettici su tre: faa4a8d7 e tetto da 18 GPU-ore senza firma di Simone. Blocco di release non emesso.
+- Blocco gia' provato con `bind-review` in un clone temporaneo (locali UTF-8 e C); la review senza blocco e' rifiutata.
+- Evidenze: esclusa una review sintetica che il parser accettava con le impronte vere; nessuno dei 328 file pubblicati passa.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11230,3 +11239,9 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - R-4: per l'audit, sacct `COMPLETED 0:0` ed `Elapsed` entro 7.200 s prima della release della calibrazione.
 - M-1: tre barriere di secondo livello senza test sul codice corrente; `match` mancante nei test storici.
 - Note N-1...N-7: C0−T100-G non e' un controllo di compatibilita', intestazioni dei documenti storici, test e ricevute.
+
+### 2026-11-20 | Claude | Pacchetto RMS100/fast125: G-1 e misure prima delle fasi GPU (per GPT)
+- G-1: serve la firma di Simone su profilo bf16 math, nuova parita', ripresa da 544 e tetto 18/169,6; poi il blocco di release.
+- P-1...P-8: barriera di init, controllo prima di sbatch, `--dopo` solo verso job in coda, override dei checkout, prova CPU di `main`.
+- M-a, M-b e M-d cambiano il digest (discendenza, ID SLURM, braccio, impronte delle tracce, osservatore): ora o con i training.
+- M-c (test) e le note, compresa G-2 su CLAUDE.md, si correggono senza cambiare il digest.

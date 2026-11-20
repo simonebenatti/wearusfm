@@ -1,0 +1,161 @@
+[
+ {
+  "checked_count": 150,
+  "summary": "Ho controllato con comandi miei circa 150 affermazioni della bozza. Ho trovato 1 ERRORE e 10 IMPRECISIONI; i valori del blocco e i numeri principali sono tutti corretti.\n\nCosa torna:\n- Perimetro: 46 file fra 438c8d65 e fbfde797; 0efa4d45 aggiunge solo delivery_pin.json; sorgenti, test e piani identici fra i due commit.\n- Tabella del blocco: schema, reviewed_commit, source_sha256 (ricalcolato da me su 125 file: 40d39f56...), plan b03c0bc6... (14.862 byte), preflight e4b39591... (9.082 byte). I valori sono uguali a fbfde797 e a 0efa4d45.\n- Citazioni letterali di faa4a8d7, del prompt e di decisioni.md (19/11 e 17/11).\n- Tetti 18/169,6 e inviluppo 21,6/202,4; consumato 6,086667/57,827778; cumulato 24,086667/227,427778; 17 allocazioni, 7,9 h.\n- P-3, P-4 (default del checkout 1 CPU per 10 min; 4 CPU per 10 min danno 172 core-ore), P-6 (6,4 h in serie, cinque rilasci intermedi, dbg con al piu' due job) e P-8 (+7%).\n- Workflow: 85 agenti = 7 revisori + 77 scettici + 1 critico; G-1 confermato 3 su 3; 18 minori e 26 note sopravvissuti, con la gravita' originale.\n- Tutte e 10 le chiamate torch.load con mmap passano str(...).\n- Le copie di 94f5094 e faa4a8d7 hanno lo stesso blob dell'originale.\n- La bozza e' ASCII puro e non contiene la sequenza vietata.\n\nProblemi da correggere:\n- ERRORE: l'intestazione dice che tutte le correzioni cambiano il digest, e lo ripetono l'Esito e il prompt. Vale per M-a, M-b e M-d, non per M-c (quasi solo test) ne' per M-e (CLAUDE.md), che sono fuori dall'inventario di source_digest.\n- M-e / G-2: entrambi gli scettici lo declassano a NOTA e respingono la frase sull'ambiguita' di d9020c20.\n- R4-M1 ha avuto un voto diviso 1 a 1: non e' stato confutato da tutti gli scettici.\n- In R3-N1 la correzione proposta non copre il caso della review non favorevole con un esempio APPROVED.\n- Le lacune del critico 2, 5, 6, 13 e 15 non compaiono nella bozza.\n- La lettura su Leonardo copre solo le API del profilo numerico.\n- La frase sul locale non UTF-8 e' troppo larga: con Latin-1 e con C/POSIX non fallisce.\n- In P-1 il rank 0 aspetta tutti i rank in init_process_group, e nei reload la corsa non c'e'.\n- In P-7 i bucket si ricostruiscono dalla terza iterazione (update 547), non dalla seconda.\n- expected_job_id lo passano i test: manca solo nei chiamanti di produzione.\n- M-1 e' un rilievo minore, non una nota.\n\nEsito scritto anche in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_runtime/tmp/factcheck-runtime-1.md",
+  "errors": [
+   {
+    "quote": "Rilievi minori (correzioni di codice: cambiano il digest)",
+    "problem": "L'intestazione dice che tutti i punti M-a...M-e cambiano source_sha256. Lo ripetono l'Esito a r.52 ('Gli altri chiedono modifiche al codice, che cambiano il digest dei sorgenti.') e il prompt a r.283 ('(giro breve, cambia il digest)'). Pero' M-e corregge CLAUDE.md e M-c consiste quasi solo in test sotto tests/cpu: entrambi sono fuori dall'inventario di source_digest, quindi non cambiano il digest ne' invalidano il binding.",
+    "correct": "Rilievi minori (correzioni di codice e di test): M-a, M-b e M-d cambiano il digest dei sorgenti. M-c lo cambia solo se tocca scripts/contrastive_*.py (lo strumento di R5-6, un eventuale generatore per R5-7); i test aggiunti sono fuori inventario. M-e (CLAUDE.md) non lo cambia.",
+    "proof": "contrastive_prepare.py:192-201 (source_digest) e contrastive_release.py:58-64 (source_paths): l'inventario comprende src/wearusfm/**/*.py, scripts/contrastive_*.py, scripts/slurm/contrastive*.sbatch, scripts/train_jepa.py e scripts/slurm/lib_code_dir.sh (125 file; il mio ricalcolo da' 40d39f56...). tests/ e CLAUDE.md ne sono esclusi. workflow_result.json, G-3: 'I test sono fuori dal digest, quindi la correzione non richiede una nuova review'. Entrambi gli scettici di G-2: CLAUDE.md non entra in source_digest e correggerlo non cambia source_sha256.",
+    "severity": "ERRORE"
+   },
+   {
+    "quote": "E' lo stesso tipo di ambiguita' corretto in `d9020c20`",
+    "problem": "M-e presenta G-2 come rilievo minore. Entrambi gli scettici lo declassano a NOTA (severity_if_real NOTA, 2 su 2) e respingono tre tesi della frase. (1) d9020c20 correggeva l'attribuzione dei lanci; il nuovo blocco li assegna per nome ed 'esclusivamente' a 3-launcher, e 'questa chat' resta solo per implementazione e preparazione. (2) 'in un file letto da tutti gli agenti': il blocco esiste solo a fbfde797/0efa4d45; su origin/main, origin/worktree-claude-training-engine e faa4a8d7 la prima riga e' '# WearUsFM'. (3) 'senza limitarlo alla linea 3' tace che il titolo H1 'Linea3, incarico del19/11/2026' lo limita. Con la gravita' degli scettici i minori sopravvissuti sarebbero 17 e le note 27.",
+    "correct": "M-e, CLAUDE.md (G-2, declassato a NOTA da entrambi gli scettici). Il blocco in testa usa 'questa chat'; la frase sulla precedenza non nomina la linea 3, lo fa solo il titolo. I lanci sono gia' attribuiti per nome a 3-launcher, quindi non e' l'ambiguita' sui lanci corretta in d9020c20. Il rischio riguarda un'integrazione su main del testo cosi' com'e'. Correzione: nominare la chat (worktree wearusfm-contrastive-targets) e limitare la precedenza alla linea 3.",
+    "proof": "workflow_result.json, G-2, voti [NOTA, NOTA]. Voto 1: 'Non e' la stessa ambiguita' di d9020c20. d9020c20 correggeva l'attribuzione dei LANCI' e 'Oggi il file non e' letto da tutti gli agenti'. Voto 2: 'Il blocco e' un H1 a se''. git show fbfde797:CLAUDE.md, righe 1-3. git show d9020c20 -- docs/claude_GPT_shared: 'poteva attribuire i lanci sia a GPT scientifico sia a 3-launcher'. git show origin/main:CLAUDE.md | head -1 da' '# WearUsFM'.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "9 rilievi sono stati confutati dagli scettici",
+    "problem": "Fra i 9 rilievi che non sopravvivono, R4-M1 non e' stato confutato dagli scettici: un voto lo conferma (MINORE), l'altro lo confuta (NOTA). Cade solo per la regola di maggioranza stretta del workflow. Gli altri 8 sono confutati da tutti i loro scettici.",
+    "correct": "9 rilievi non sopravvivono alla verifica: 8 confutati da tutti i loro scettici, R4-M1 con voto diviso 1 a 1. Il contenuto di R4-M1 (preventivo non presentato a Simone) e' ripreso da G-1.",
+    "proof": "workflow_result.json: R4-M1 ha votes [refuted False MINORE, refuted True NOTA], upheld 1, survives False. workflow_script.js:126: 'survives: vs.length > 0 && upheld >= Math.floor(vs.length / 2) + 1'. Confutati all'unanimita': R1-M2 e R3-M2 (2 su 2); R1-N1, R1-N3, R1-N4, R4-N2, R4-N6 e R6-4 (1 su 1).",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Una review non favorevole con un esempio APPROVED verrebbe presa per approvazione: ancorare la regex e rifiutare i duplicati",
+    "problem": "La frase presenta l'ancoraggio della regex e il rifiuto dei duplicati come rimedio per la review non favorevole. Lo scettico di R3-N1 ha provato che la correzione proposta (^...$ con MULTILINE e object_pairs_hook) accetta ancora una review non favorevole con un esempio APPROVED a colonna 0. Quel caso lo evita solo la regola di non riportare esempi, ed e' un limite dichiarato dal prontuario.",
+    "correct": "il parser accetta piu' del formato documentato (regex non ancorata, chiavi duplicate): ancorare la regex e rifiutare i duplicati. Resta a parte il caso di una review non favorevole con un esempio APPROVED: verrebbe presa per approvazione anche con la regex ancorata, e lo evita solo l'assenza di esempi nel file (limite dichiarato nel prontuario, righe 123-131).",
+    "proof": "workflow_result.json, R3-N1, voto dello scettico: 'La correzione proposta (^...$ con MULTILINE e object_pairs_hook), provata in memoria, accetta ancora la review non favorevole con esempio APPROVED a colonna 0: quel caso lo copre solo la regola nessun esempio'. Lo stesso voto: 'il caso della review non favorevole e' un limite dichiarato del progetto'. Codice in contrastive_release.py:26 e 90-103.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Sono riportate in P-1...P-8 senza un secondo giro di scettici.",
+    "problem": "Delle 15 lacune del critico, sette sono in P-1...P-8: 1 in P-8, 3 e 12 in P-5, 4 in P-7, 7 in P-2, 11 in P-6, 14 in P-1. La 9 e' in G-1. La 8 (release e accounting senza generatore) e la 10 (consumo GPU non letto con sacct, full nell'OverTimeLimit accettato) compaiono solo come note vicine (R3-N3, R5-7, R6-7). Le lacune 2, 5, 6, 13 e 15 non compaiono nella bozza. P-3 e P-4 vengono da note verificate (R4-N3, R4-N8), non dal critico.",
+    "correct": "Lacune del critico. Le sette operative sono in P-1, P-2 e P-5...P-8; l'ambito di G-1 riprende la lacuna 9. Nessuna ha avuto un secondo giro di scettici. Non sono riportate: il forward in bf16 math non deterministico con gradiente unico (2); il supporto ai punti 127/255 e 544-575, leggibile dall'audit (5); l'audit entro 7.200 s, margine stimato 1,6-1,9 volte (6); le ricevute senza numpy/scipy, cuDNN, NCCL, driver e host (13); le API di torch fuori dalla sonda (15).",
+    "proof": "workflow_result.json, critic.gaps (15 voci), e reports/critico-completezza.md, sezione Esito. Nella bozza numpy, scipy, cuDNN, fork_rng, AdamW, is_bf16, index_add, eligible, 4.470, OverTimeLimit e generatore hanno 0 occorrenze.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "le API usate esistono nel torch 2.2.0a0 di Leonardo, o sono gestite con `getattr`/`hasattr`: lettura sul login node del 19/11",
+    "problem": "La lettura su Leonardo copre solo le API del profilo numerico. Il pacchetto usa anche torch.load(mmap=True, weights_only=False), torch.random.fork_rng(devices=[]), la patch di torch.optim.AdamW.__init__ e torch.cuda.is_bf16_supported, che la sonda non legge (lacuna 15 del critico). Inoltre is_autocast_enabled('cuda') in 2.2 solleva TypeError ed e' gestita con except TypeError, non con getattr/hasattr.",
+    "correct": "le API del profilo numerico esistono nel torch 2.2.0a0 di Leonardo, o sono gestite con getattr/hasattr e con il ramo TypeError di is_autocast_enabled (lettura del 19/11). torch.load con mmap e weights_only, fork_rng(devices=[]), la patch di AdamW.__init__ e is_bf16_supported non sono nella sonda.",
+    "proof": "leonardo_torch_api.out.txt elenca solo autocast, algoritmi deterministici, precisione matmul, SDPA e riduzioni bf16, con la riga 'is_autocast_enabled(cuda) TypeError'. contrastive_numeric_profile.py:25-30 (except TypeError), :54 e :120 (hasattr). Lacuna 15 del critico: 'Il file di sonda ... copre solo le API del profilo numerico'. git grep: contrastive_target_resume.py:58, :146, :308; contrastive_benchmark_readout.py:168; contrastive_numeric_profile.py:97.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "un carattere non ASCII potrebbe far fallire ogni job con un locale non UTF-8.",
+    "problem": "Un locale non UTF-8 non basta. Con C/POSIX Python 3.11 passa da solo in modalita' UTF-8. Con Latin-1 la decodifica riesce (caratteri sbagliati solo fuori dal blocco, che e' ASCII) e il binding passa. Il fallimento richiede una codifica di locale ASCII diversa da C/POSIX (per esempio en_US.US-ASCII su macOS), una codifica multibyte non UTF-8 oppure PYTHONUTF8=0. Lo scettico giudica 'sovrastimata per Leonardo' la frase sul fallimento di ogni job.",
+    "correct": "un carattere non ASCII farebbe fallire bind-review e ogni job con una codifica di locale ASCII diversa da C/POSIX o con una multibyte non UTF-8 (con C/POSIX Python 3.11 legge in UTF-8; con Latin-1 la lettura riesce).",
+    "proof": "contrastive_release.py:116: 'declared = review_payload(review.read_text())'. workflow_result.json, R3-N2, detail: 'Con C/POSIX (UTF-8 mode automatico di Python 3.11) e con locali UTF-8 funziona'. Voto: 'Con Latin-1 la decodifica da' caratteri sbagliati, ma il blocco e' ASCII: rc 0' e 'Su glibc gli unici codeset ASCII sono C e POSIX'.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Ogni rank controlla che la cartella d'uscita non esista prima di `init_process_group`, ma nessuna sincronizzazione lo separa dal `mkdir` di un altro rank.",
+    "problem": "Entrambi gli scettici di R2-M1 hanno letto i sorgenti di torch v2.2.1, che corrisponde alla build 2.2.0a0+git6c8c5ad, e correggono il meccanismo. Con torchrun --standalone il rank 0 ospita il TCPStore e non esce da init_process_group finche' tutti i rank non si sono connessi, cioe' dopo i loro controlli. La corsa resta solo fra rank non zero, in calibrazione, full e training. Nei reload non esiste: il rank 0 fa mkdir dopo init, gli altri dopo la barriera di riga 347.",
+    "correct": "Ogni rank controlla che la cartella d'uscita non esista prima di init_process_group. Il rank 0 esce da init solo dopo che tutti si sono connessi, ma nessuna sincronizzazione separa il controllo di un rank dal mkdir di un altro rank non zero. In calibrazione, full e training un rank in ritardo puo' quindi fallire e far perdere la cella; nei reload la corsa non c'e'.",
+    "proof": "workflow_result.json, R2-M1. Voto 1: 'Il rank 0 non esce da init_process_group finche' tutti e 4 i rank non hanno passato il controllo' e 'Nei reload la corsa non esiste'. Voto 2: 'Solo i rank 1-3 ... possono creare la cartella prima del controllo di un altro rank non zero' e 'Nei reload il rischio con 2.2.1 e' nullo'. Codice in contrastive_run.py:318-332 e 341-358.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "nei reload si ricostruiscono alla seconda iterazione: gli update 545-546 hanno un ordine di riduzione diverso.",
+    "problem": "Le due meta' della frase si contraddicono: con la ricostruzione alla seconda iterazione (546), solo 545 avrebbe l'ordine iniziale. I dati mostrano la ricostruzione alla terza iterazione dopo il fork, indice 2 nelle tracce DDP. Nel test CPU di R2, con fork a 4, arriva all'update 7; nella diagnostica, con fork a 580, a 583. Quindi 545 e 546 usano i bucket iniziali e la ricostruzione arriva a 547.",
+    "correct": "nei reload si ricostruiscono dalla terza iterazione dopo il fork (indice 2 nelle tracce DDP, update 547): gli update 545-546 hanno un ordine di riduzione diverso.",
+    "proof": "reports/r2-ripresa.md:16: 'nel continuo bucket gia' ricostruiti (iteration 4), nei reload ricostruzione solo dall'update 7 (iteration 2)', con fork a 4 e primo update dopo il fork al 5. faa4a8d7:docs/reviews/contrastive_common_diagnostics_science_20261119.md: 'Nei reload la ricostruzione compare nelle tracce a 583', con fork a 580.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "`expected_job_id` non e' passato da nessun chiamante",
+    "problem": "I test lo passano (tests/cpu/test_contrastive_release.py:111 e :114). Manca solo nei chiamanti di produzione, come dice R3-M3 stesso.",
+    "correct": "`expected_job_id` non e' passato da nessun chiamante di produzione (make_job, dispatcher, runtime, lettura finale)",
+    "proof": "git grep -n expected_job_id 0efa4d45 -- scripts src tests trova solo contrastive_release.py:155 e :172 e test_contrastive_release.py:111 e :114. I chiamanti senza il parametro sono contrastive_release.py:242, contrastive_job.py:81, contrastive_run.py:195 e contrastive_benchmark_readout.py:421. workflow_result.json, R3-M3: 'il parametro expected_job_id non e' passato da nessun chiamante di produzione'.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "risponde alle condizioni R-1...R-4 e alle note M-1 e N-1...N-7 della mia review del 19/11",
+    "problem": "Nella review 94f5094 M-1 non e' una nota: sta nella sezione 'Rilievo minore'. Le note sono solo N-1...N-7.",
+    "correct": "risponde alle condizioni R-1...R-4, al rilievo minore M-1 e alle note N-1...N-7 della mia review del 19/11",
+    "proof": "git show 94f5094:docs/reviews/claude_review_contrastive_targets_amendment_20261119.md: riga 59 '## Condizioni per il rilascio', riga 139 '## Rilievo minore', riga 141 '**M-1 (punto 2, test). ...', riga 161 '## Note'.",
+    "severity": "IMPRECISIONE"
+   }
+  ]
+ },
+ {
+  "errors": [
+   {
+    "quote": "Gli altri chiedono modifiche al codice, che cambiano il digest dei sorgenti.",
+    "problem": "Questa frase non vale per tutto il resto dei rilievi. Lo stesso errore si ripete nel titolo '## Rilievi minori (correzioni di codice: cambiano il digest)' e nel prompt per GPT ('Correzioni di codice, da decidere se ora (giro breve, cambia il digest)', dove compaiono anche M-c e M-e). tests/ e CLAUDE.md non entrano nell'inventario di source_digest. Quasi tutto M-c (test) e M-e (CLAUDE.md) quindi non cambiano il digest. Diverse note chiedono solo testo nei documenti.",
+    "correct": "Cambiano il digest solo le correzioni in src/wearusfm, scripts/contrastive_*.py, scripts/slurm/contrastive*.sbatch, train_jepa.py e lib_code_dir.sh: M-a, M-b, M-d nel readout, R5-6 nello strumento di validazione e un eventuale generatore di R5-7. Non lo cambiano i test di M-c (R3-M4, R5-1...R5-5, R6-3, G-3), la correzione di CLAUDE.md (M-e) e le note solo documentali (R4-N1, R4-N4, R4-N5, G-4, G-5, G-7, R1-N6). Si possono quindi fare subito senza cambiare source_sha256.",
+    "proof": "git show fbfde797:scripts/contrastive_prepare.py r.192-201: source_digest include solo src/wearusfm/**/*.py, scripts/contrastive_*.py, scripts/slurm/contrastive*.sbatch, scripts/train_jepa.py e scripts/slurm/lib_code_dir.sh (125 file, digest ricalcolato 40d39f56). workflow_result.json, G-3 detail: 'I test sono fuori dal digest, quindi la correzione non richiede una nuova review'. Voti G-2: 'CLAUDE.md e' fuori da source_digest'. Fix delle note: R1-N6 'Nessuna modifica al codice'; R4-N1 il README; R4-N4 e R4-N5 il prontuario; G-4 'submit_job.py e' fuori dal digest'.",
+    "severity": "ERRORE"
+   },
+   {
+    "quote": "risponde alle condizioni R-1...R-4 e alle note M-1 e N-1...N-7",
+    "problem": "Nella review 94f5094, M-1 e' un rilievo minore, non una nota.",
+    "correct": "risponde alle condizioni R-1...R-4, al rilievo minore M-1 e alle note N-1...N-7",
+    "proof": "Messaggio di git show 94f5094: 'Un minore (M-1, tre barriere senza test) e sette note senza nuovo giro'. Review 94f5094, r.139-141: sezione '## Rilievo minore' con M-1.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "in un file letto da tutti gli agenti, e \"Questo blocco prevale sulle assegnazioni operative storiche sottostanti\", senza limitarlo alla linea 3. E' lo stesso tipo di ambiguita' corretto in `d9020c20`",
+    "problem": "G-2 e' contato fra i 18 minori, ma i due scettici lo valutano NOTA. Respingono anche le tesi che la bozza riprende. L'ambiguita' di d9020c20 riguardava i lanci, che ora sono assegnati per nome a 3-launcher. Il blocco ha il titolo H1 'Linea3' ed esiste solo sul ramo della linea 3, non su main.",
+    "correct": "G-2 sopravvive, ma i due scettici lo valutano NOTA: 'questa chat' copre solo implementazione e preparazione, mentre invii e controlli su Leonardo sono assegnati per nome a 3-launcher. Il blocco sta sotto il titolo H1 'Linea3, incarico del 19/11/2026' ed esiste solo su codex/contrastive-target-windows-20261118. Resta un problema di chiarezza da correggere prima dell'integrazione su main: nominare la chat (worktree wearusfm-contrastive-targets) e scrivere 'della linea 3' nella frase sulla precedenza. Con la gravita' degli scettici i conteggi sono 17 minori e 27 note.",
+    "proof": "workflow_result.json, G-2: severity_if_real [NOTA, NOTA]. Voto 1: '1) Non e' la stessa ambiguita' di d9020c20' e '2) Oggi il file non e' letto da tutti gli agenti'. Voto 2: 'Perche' la tesi centrale non regge: 1. L'ambiguita' chiusa da d9020c20 riguardava i lanci'. git show fbfde797:CLAUDE.md r.1: '# Linea3, incarico del19/11/2026'. Sui rami origin/main e faa4a8d7 la r.1 di CLAUDE.md e' '# WearUsFM'.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "le API usate esistono nel torch 2.2.0a0 di Leonardo, o sono gestite con `getattr`/`hasattr`",
+    "problem": "La lettura del 19/11 copre solo le API del profilo numerico. Il critico (gap 14) segnala API usate dal pacchetto che la sonda non ha letto. Anche il ramo TypeError di is_autocast_enabled non passa da getattr/hasattr.",
+    "correct": "le API del profilo numerico esistono nel torch 2.2.0a0 di Leonardo o sono gestite (getattr/hasattr e ramo TypeError): lettura sul login node del 19/11. Non sono state lette sul cluster torch.load(mmap=True, weights_only=False), torch.random.fork_rng(devices=[]), la patch di torch.optim.AdamW.__init__ e torch.cuda.is_bf16_supported prima di set_device (critico, gap 14).",
+    "proof": "leonardo_torch_api.out.txt contiene solo API di autocast, SDPA, TF32 e determinismo. workflow_result.json, critic.gaps[14]: 'copre solo le API del profilo numerico. Fuori dalla sonda restano torch.load(mmap=True, weights_only=False) ..., torch.random.fork_rng(devices=[]), la patch di torch.optim.AdamW.__init__ e torch.cuda.is_bf16_supported'. git grep a fbfde797: contrastive_target_resume.py:146 (AdamW.__init__) e :308, contrastive_benchmark_readout.py:168 (fork_rng).",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Sono riportate in P-1...P-8 senza un secondo giro di scettici.",
+    "problem": "Il critico ha 15 lacune, ma solo sei finiscono nelle misure P (gap 0, 3, 6, 10, 11, 13) e il gap 8 finisce in G-1. Mancano i gap 1, 4, 5, 7, 12 e 14. Il gap 1 chiedeva esplicitamente di scrivere un presupposto nella review. P-3 e P-4 vengono invece da R4-N3 e R4-N8, gia' verificati dagli scettici.",
+    "correct": "Le lacune del critico riportate qui (gap 0, 3, 6, 10, 11 e 13) sono in P-1, P-2 e P-5...P-8, senza un secondo giro di scettici; il gap 8 e' in G-1. Non sono riportati: il gap 1 (forward non deterministico in bf16_math; la parita' per byte regge solo finche' le somme atomiche entrano in modo lineare), il gap 4 (supporto ai punti prescritti leggibile dall'audit), il gap 5 (durata dell'audit, margine stimato 1,6-1,9x), il gap 7 (release e accounting scritti a mano), il gap 12 (numpy/scipy, cuDNN e NCCL non registrati nelle ricevute) e il gap 14 (API torch fuori dalla sonda).",
+    "proof": "workflow_result.json, critic.gaps: 15 voci. Corrispondenze: P-1 = gap 13, P-2 = gap 6, P-5 = gap 11, P-6 = gap 10, P-7 = gap 3, P-8 = gap 0. Il gap 1 dice 'Il presupposto va scritto nella review'. I temi dei gap 1, 4, 5, 7, 12 e 14 non compaiono nella bozza.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Sopravvivono alla verifica 18 rilievi minori e 26 note",
+    "problem": "Le note sopravvissute sono 26, ma la bozza ne cita 25: R6-8 non compare da nessuna parte.",
+    "correct": "Aggiungere R6-8 (la proiezione delle risorse include gli osservatori) accanto a R1-M1, in M-d e in P-8.",
+    "proof": "workflow_result.json: R6-8 e' NOTA, survives True, upheld 1/1. grep 'R6-8' nella bozza: nessuna occorrenza. Gli id di note citati (sezione Note piu' R4-N3, R4-N7, R4-N8 e R5-9 nelle misure P) sono 25.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "le affermazioni della risposta di GPT corrispondono al codice e ai test.",
+    "problem": "G-6, nota sopravvissuta che la bozza stessa elenca, contraddice proprio l'affermazione di GPT su R-4: il legame con l'ID SLURM e' solo dichiarato (anche R3-M3).",
+    "correct": "le affermazioni della risposta di GPT corrispondono al codice e ai test, salvo R-4. La risposta dice che validate_audit_accounting lega 'audit, report, sorgenti, ID e TSV sacct', ma l'ID SLURM e' solo dichiarato dall'operatore (G-6, R3-M3).",
+    "proof": "git show fbfde797:docs/reviews/contrastive_targets_response_20261119.md r.13: 'validate_audit_accounting lega audit, report, sorgenti, ID e TSV sacct'. workflow_result.json, G-6: 'La risposta dice che il gate lega ID e TSV sacct. In realta' il legame fra rapporto di audit e allocazione e' una dichiarazione dell'operatore'. R3-M3: MINORE, confermato 2 su 2.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "Nessuno porta a un esito attribuito male.",
+    "problem": "Questo e' contraddetto da due rilievi sopravvissuti. Per R2-N1 l'esito della singola coppia attribuisce male il problema nella ricevuta pubblicata. Per R3-N1 una review non favorevole verrebbe presa per approvazione, come la bozza stessa scrive nelle Note.",
+    "correct": "Nessuno altera lo stato complessivo dei cancelli. Pero' R2-N1 attribuisce male l'esito della singola coppia, e R3-N1 farebbe prendere per approvazione una review non favorevole che contiene un esempio APPROVED.",
+    "proof": "workflow_result.json, R2-N1 detail: 'Lo stato globale resta corretto (FAILED_REQUIRES_REVIEW) ... ma l'esito per coppia attribuisce male il problema a chi legge la tabella'. Lo scettico aggiunge che il campo entra nella ricevuta autenticata. R3-N1 detail: 'una review non favorevole che contenga un esempio APPROVED con gli hash correnti verrebbe accettata come approvazione'. Bozza, Note: 'Una review non favorevole con un esempio APPROVED verrebbe presa per approvazione'.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "`expected_job_id` non e' passato da nessun chiamante",
+    "problem": "Il rilievo dice 'nessun chiamante di produzione': il test lo passa.",
+    "correct": "`expected_job_id` non e' passato da nessun chiamante di produzione (lo passa solo test_contrastive_release.py:111)",
+    "proof": "workflow_result.json, R3-M3 detail: 'il parametro expected_job_id non e' passato da nessun chiamante di produzione'. Voto 2: 'expected_job_id compare solo nella definizione (release:155 e 172) e nei test (test_contrastive_release.py:111 e 114)'.",
+    "severity": "IMPRECISIONE"
+   },
+   {
+    "quote": "un carattere non ASCII potrebbe far fallire ogni job con un locale non UTF-8.",
+    "problem": "La frase e' troppo generale. Con un locale ISO8859-1 bind-review riesce. Con C/POSIX Python 3.11 attiva da solo la modalita' UTF-8. Il guasto e' stato riprodotto solo con un locale ASCII esplicito come en_US.US-ASCII.",
+    "correct": "un carattere non ASCII potrebbe far fallire ogni job con un locale a codifica ASCII che non attiva la modalita' UTF-8 di Python, per esempio en_US.US-ASCII su macOS. Con C/POSIX Python 3.11 passa a UTF-8, e con ISO8859-1 la lettura riesce.",
+    "proof": "workflow_result.json, R3-N2, voto e riproduzione dello scettico: 'LC_ALL=C: utf8_mode=1, rc 0', 'en_US.ISO8859-1: rc 0', 'xx_XX.US-ASCII (locale inesistente, emula glibc): utf8_mode=1, rc 0' e 'Su glibc gli unici codeset ASCII sono C e POSIX'. Fallisce solo con 'LC_ALL=en_US.US-ASCII: ... UnicodeDecodeError'.",
+    "severity": "IMPRECISIONE"
+   }
+  ],
+  "checked_count": 165,
+  "summary": "Ho verificato con comandi miei circa 165 affermazioni della bozza: SHA, impronte, dimensioni, conteggi, risorse, citazioni, id e gravita' dei rilievi, numero di agenti. Le fonti sono la copia git a 0efa4d45 (source_digest ricalcolato dagli oggetti git), workflow_result.json, i rapporti dei revisori e la sonda torch.\n\nRisultano corretti:\n- i valori del blocco (fbfde797, 40d39f56, b03c0bc6 di 14862 B, e4b39591 di 9082 B);\n- i 46 file, e il pin che aggiunge solo delivery_pin.json;\n- 85 agenti, cioe' 7 revisori, 77 voti di scettici e 1 critico;\n- 18 minori e 26 note sopravvissuti, 9 rilievi confutati, G-1 confermato 3 su 3;\n- tutte le citazioni (prompt di GPT, Simone, faa4a8d7);\n- le risorse: 18/169,6; 21,6/202,4; 6,086667/57,827778; 24,086667/227,427778; 14/129,333333; 172 core-ore; 7,9 h; 6,4 h;\n- 25/39 e 30/40 mutazioni sopravvissute, +7%, 465 test in 102,84 s contro 102,59 s;\n- le copie byte per byte e i percorsi str nei torch.load con mmap;\n- la bozza e' ASCII pura e non contiene il recinto vietato.\n\nHo trovato 1 ERRORE e 9 IMPRECISIONI.\n- ERRORE: la bozza dice che tutte le correzioni non operative cambiano il digest dei sorgenti. Test e CLAUDE.md sono fuori dall'inventario, quindi M-c e M-e non lo cambiano, e diverse note sono solo documentali.\n- IMPRECISIONI:\n  - M-1 chiamato nota, mentre era un rilievo minore;\n  - G-2 tenuto fra i minori con tesi che entrambi gli scettici respingono (per loro e' NOTA);\n  - la compatibilita' torch estesa a tutte le API, mentre la sonda copre solo il profilo numerico;\n  - lacune del critico dette tutte riportate, ma ne mancano sei;\n  - R6-8 non citato;\n  - risposta di GPT detta conforme, salvo G-6 che la contraddice;\n  - 'nessun esito attribuito male', contraddetto da R2-N1 e R3-N1;\n  - due precisazioni minori: 'nessun chiamante di produzione' e la frase sul locale.\n\nL'esito e' scritto anche in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_runtime/tmp/factcheck-runtime-2.md."
+ }
+]

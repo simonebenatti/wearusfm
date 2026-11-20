@@ -1,0 +1,21 @@
+torch 2.2.0a0+git6c8c5ad
+is_autocast_enabled True
+get_autocast_dtype False
+get_autocast_gpu_dtype True
+is_deterministic_algorithms_warn_only_enabled True
+get_float32_matmul_precision True
+set_float32_matmul_precision True
+are_deterministic_algorithms_enabled True
+is_autocast_enabled(cuda) TypeError: torch.is_autocast_enabled() takes no arguments (1 given)
+is_autocast_enabled() False gpu dtype torch.float16
+backends.cuda.math_sdp_enabled True
+backends.cuda.flash_sdp_enabled True
+backends.cuda.mem_efficient_sdp_enabled True
+backends.cuda.cudnn_sdp_enabled False
+backends.cuda.enable_math_sdp True
+backends.cuda.enable_flash_sdp True
+backends.cuda.enable_mem_efficient_sdp True
+backends.cuda.enable_cudnn_sdp False
+allow_bf16_reduced_precision_reduction True
+use_deterministic_algorithms warn_only True
+default: matmul tf32 False cudnn tf32 True precision highest math/flash/mem True True True

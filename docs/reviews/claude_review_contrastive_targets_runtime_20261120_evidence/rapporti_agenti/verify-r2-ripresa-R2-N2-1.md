@@ -1,0 +1,34 @@
+# verify-r2-ripresa-R2-N2-1 — scettico n. 1 sul rilievo R2-N2 (fbfde797)
+
+Inizio: 2026-11-20 03:44
+Rilievo: la suite copre solo la ripresa a un rank; validate_target_fork e il percorso del runner non testati; tracce trace-*.ddp.jsonl scritte ma non lette/pinnate/riassunte.
+
+## 03:50 riproduzione dei fatti (comandi miei)
+- tests/cpu/test_contrastive_target_resume.py (copia a 0efa4d45, = fbfde797 per questo file): 18 passed in 16,07 s, con un tracciatore di righe mio (plugin pytest in rev_runtime/tmp/n2v1_plugin, sys.settrace; coverage non installato). Copia rimasta pulita.
+- Righe MAI eseguite nel processo del test (scripts/contrastive_target_resume.py a fbfde797): 78-82 (controllo rank_rng di validate_fork per ranks>1), 195-200 (scrittura delle tracce DDP; la 194 valuta hasattr(None, ...) = False), 379 (ramo ranks>1 del controllo RNG None). Le 362-363 girano solo nel ramo else (ranks=1).
+- Uscite del fixture: trace-0.ddp.jsonl di continuo, reload_a, reload_b = 0 byte; metrics.jsonl agli update 3-4 senza alcuna chiave contrast_global_grad_* (pannello denso spento nella finestra: ContrastiveConfig default grad_every=500, grad_steps (256,512,...), grad_dense 0/0). global_gradients gira solo nella calibrazione (calibration_only=True, update 1-4).
+- Ricetta di produzione: contrastive_prepare.py:137 grad_dense_start 513, grad_dense_end 576 -> tutti i 32 update ripresi 545-576 calcolano global_gradients (autograd.grad + all_reduce esplicito) dentro _accumulate_terms.
+- grep -rn 'validate_target_fork' tests/cpu: nessun risultato (exit 1). La riproduzione del rilievo dice «restituisce solo i pin del job»: impreciso, i pin fork_checkpoint/continuous_summary in test_contrastive_job.py:47-52 si trovano con un altro grep; la sostanza (funzione non testata) e' confermata.
+- prepare_reload E' usata nei test (test_contrastive_target_resume.py:110,140) ma solo direttamente con ranks=1; il percorso del runner contrastive_run.py:341-349 (prepare_reload sul rank 0, barrier, SHA per rank) non e' eseguito da alcun test (contrastive_run.py non compare nel tracciato; il main richiede 4 rank CUDA a :329-330).
+- *.ddp.jsonl: unici lettori nel repo sono storici (results/.../common_state_diagnostics_20261118/smoke_gloo.py:47); nessun lettore in scripts/contrastive_benchmark_readout.py ne' in compare_three_paths (evidence_sha256 lega trace-{rank}.jsonl, non .ddp.jsonl).
+## 04:05 mutazioni (clone temporaneo rev_runtime/tmp/n2v1_mut a 0efa4d45, script n2v1_plugin/mutate.py)
+Cinque mutazioni insieme, poi le 29 file di test della ricevuta validation_final (stesso elenco del comando registrato):
+- M1 validate_fork: `if ranks > 1:` -> `if False:` (nessun controllo rank_rng per 4 rank);
+- M2 compare_three_paths:362: RNG atteso al confine sempre quello del rank 0 (in produzione darebbe falsi errori di confine sui rank 1-3);
+- M3 validate_target_fork:258: `checkpoint.name != "checkpoint_step0000544.pt"` -> `==` (rifiuterebbe il fork giusto e accetterebbe qualsiasi altro nome);
+- M4 ramo DDP 194-200: RuntimeError appena raggiunto;
+- M5 runner contrastive_run.py:347: barrier sostituita da RuntimeError.
+Esito: **465 passed in 102,26 s** (rc=0), stesso conteggio della ricevuta. Tutti i file di test che importano contrastive_run/contrastive_target_resume (8) sono nell'elenco; nessun altro test li nomina. Quindi nessun test di tests/cpu esercita questi percorsi: il vuoto di copertura e' reale.
+Nota a parziale attenuazione del titolo: tests/cpu/test_training_ddp.py:134 prova la ripresa del trainer generico a 2 processi gloo con rank_rng (non contrastiva, non usa il modulo nuovo). Il titolo «la suite copre solo la ripresa a un rank» vale per la ripresa contrastiva e per il modulo nuovo, non per il trainer in generale.
+## 04:15 tentativi di confutazione
+- Dichiarazioni nei documenti: prontuario docs/contrastive_targets_execution_20261119.md:195 («Nessuna CPU locale certifica CUDA/NCCL ...: quelli restano gate sul cluster»), risposta R-1 «Test con trainer CPU reale e due processi nuovi» (contrastive_targets_response_20261119.md:10, :23), registro «Il test locale del continuo e di due processi nuovi e' CPU». Descrivono correttamente il test a un rank e non promettono test a 4 rank: nessuna affermazione falsa, ma neppure una dichiarazione che il percorso multi-rank del modulo nuovo resta senza test locale (la logica rank_rng/DDP/barrier e' provabile con gloo, come fece GPT per i diagnostici storici, docs/contrastive_common_diagnostics_20261118.md:47, smoke_gloo.py; per il modulo nuovo nessuna evidenza analoga in amendment_20261119/).
+- Copertura altrove: CUDA oracle (contrastive_cuda_check.py) non esercita ripresa/tracce; la prima esecuzione dei rami ranks>1 e del percorso del runner sarebbe nei full CN/CR e nei reload su Leonardo. test_training_ddp.py:134 copre solo la ripresa del trainer generico a 2 rank.
+- Tracce DDP: per progetto osservazioni facoltative fuori dal cancello (commento storico scripts/diagnostics/contrastive_common_checkpoint.py:130-131 «optional backend observations are separate from the input/RNG gate»); il piano plan.json:418 trace_per_rank_per_update non le richiede; nessun lettore enumera le cartelle, quindi il file in piu' e' innocuo. Questa parte e' un suggerimento, non un difetto.
+- Rischio reale: nessun difetto nel codice attuale (lettura mia di validate_target_fork, prepare_reload e del runner coerente con le verifiche esterne di r2; API _get_ddp_logging_data e campi identici a quelli gia' usati su Leonardo dai diagnostici 365cb1e2). Il vuoto protegge da regressioni, non nasconde un errore dimostrato.
+- Fattibilita' della correzione: su CPU validate_fork (righe 80-81) e compare_three_paths (378-379) esigono cuda_rng/impronte CUDA per ranks>1, che il trainer CPU salva None (run.py:1594): un test gloo a 4 rank richiede monkeypatch di questi due punti (come la patch R2_CPU_SIM di r2).
+
+## Esito
+- refuted = false. Fatti riprodotti e rafforzati: righe 78-82, 195-200, 379 mai eseguite; tracce .ddp.jsonl di 0 byte; pannello denso assente agli update 3-4; cinque mutazioni nei percorsi indicati sopravvivono a tutte le 465 prove (102,26 s).
+- Imprecisioni del rilievo, non sostanziali: (1) `grep -rn validate_target_fork tests/cpu` non restituisce nulla (non «i pin del job»); (2) prepare_reload e' usata direttamente nei test a un rank (test_contrastive_target_resume.py:110,140), senza test resta solo il percorso del runner contrastive_run.py:341-349; (3) il titolo vale per la ripresa contrastiva, non per il trainer generico (test_training_ddp.py:134).
+- Gravita': NOTA confermata (vuoto di copertura e suggerimento sulle tracce DDP, nessun effetto sulla catena dimostrato).
+- Pulizia: rimossi n2v1_mut, n2v1_bt_resume, n2v1_bt_mut; restano solo gli script piccoli in rev_runtime/tmp/n2v1_plugin (20 KB). Copia di riferimento pulita a 0efa4d45.

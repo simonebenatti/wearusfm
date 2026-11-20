@@ -1,0 +1,143 @@
+{
+ "baseline": {
+  "gate": {
+   "status": "PASSED",
+   "errors": [],
+   "inconclusive": [],
+   "within_and_between_byte_identical": true
+  },
+  "n_unique": 1,
+  "manual_pair_breakdown": {
+   "C0a/C0b": true,
+   "CNa/CNb": true,
+   "CRa/CRb": true,
+   "C0a/CNa": true,
+   "C0a/CRa": true,
+   "C0b/CNb": true,
+   "C0b/CRb": true,
+   "ranks_agree_per_case": {
+    "C0a": true,
+    "CNa": true,
+    "CRa": true,
+    "CRb": true,
+    "CNb": true,
+    "C0b": true
+   }
+  }
+ },
+ "within_only_C0b_repeatability": {
+  "gate": {
+   "status": "FAILED",
+   "errors": [
+    "reduced gradients are not byte-identical within/between arms/ranks"
+   ],
+   "inconclusive": [],
+   "within_and_between_byte_identical": false
+  },
+  "n_unique": 2,
+  "manual_pair_breakdown": {
+   "C0a/C0b": false,
+   "CNa/CNb": true,
+   "CRa/CRb": true,
+   "C0a/CNa": true,
+   "C0a/CRa": true,
+   "C0b/CNb": false,
+   "C0b/CRb": false,
+   "ranks_agree_per_case": {
+    "C0a": true,
+    "CNa": true,
+    "CRa": true,
+    "CRb": true,
+    "CNb": true,
+    "C0b": true
+   }
+  }
+ },
+ "between_only_CN_neutrality": {
+  "gate": {
+   "status": "FAILED",
+   "errors": [
+    "reduced gradients are not byte-identical within/between arms/ranks"
+   ],
+   "inconclusive": [],
+   "within_and_between_byte_identical": false
+  },
+  "n_unique": 2,
+  "manual_pair_breakdown": {
+   "C0a/C0b": true,
+   "CNa/CNb": true,
+   "CRa/CRb": true,
+   "C0a/CNa": false,
+   "C0a/CRa": true,
+   "C0b/CNb": false,
+   "C0b/CRb": true,
+   "ranks_agree_per_case": {
+    "C0a": true,
+    "CNa": true,
+    "CRa": true,
+    "CRb": true,
+    "CNb": true,
+    "C0b": true
+   }
+  }
+ },
+ "ranks_only_rank2": {
+  "gate": {
+   "status": "FAILED",
+   "errors": [
+    "reduced gradients are not byte-identical within/between arms/ranks"
+   ],
+   "inconclusive": [],
+   "within_and_between_byte_identical": false
+  },
+  "n_unique": 2,
+  "manual_pair_breakdown": {
+   "C0a/C0b": true,
+   "CNa/CNb": true,
+   "CRa/CRb": true,
+   "C0a/CNa": true,
+   "C0a/CRa": true,
+   "C0b/CNb": true,
+   "C0b/CRb": true,
+   "ranks_agree_per_case": {
+    "C0a": false,
+    "CNa": false,
+    "CRa": false,
+    "CRb": false,
+    "CNb": false,
+    "C0b": false
+   }
+  }
+ },
+ "within_and_between_mixed": {
+  "gate": {
+   "status": "FAILED",
+   "errors": [
+    "reduced gradients are not byte-identical within/between arms/ranks"
+   ],
+   "inconclusive": [],
+   "within_and_between_byte_identical": false
+  },
+  "n_unique": 3,
+  "manual_pair_breakdown": {
+   "C0a/C0b": true,
+   "CNa/CNb": false,
+   "CRa/CRb": false,
+   "C0a/CNa": false,
+   "C0a/CRa": true,
+   "C0b/CNb": true,
+   "C0b/CRb": false,
+   "ranks_agree_per_case": {
+    "C0a": true,
+    "CNa": true,
+    "CRa": true,
+    "CRb": true,
+    "CNb": true,
+    "C0b": true
+   }
+  }
+ }
+}
+IDENTICAL_GATE_OUTPUT_ACROSS_FAILURE_MODES: True
+PAIRS_USED_IN_ASSESS_POINT: False
+NAMES_USED_IN_ASSESS_POINT: ['CASES', 'MATCH_FIELDS', 'NumericProfileUnavailable', 'UPDATES', 'any', 'append', 'assert_numeric_flags', 'bool', 'float', 'get', 'int', 'isfinite', 'isinstance', 'len', 'list', 'math', 'range', 'set', 'sorted', 'str', 'tuple', 'type']

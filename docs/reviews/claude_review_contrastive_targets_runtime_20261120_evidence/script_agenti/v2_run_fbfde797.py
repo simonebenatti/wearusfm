@@ -1,0 +1,1875 @@
+"""Ciclo di training su piu' passi (passo 6, sanity JEPA; poi finestra 1): dataloader vero -> `WearUsFM` -> `training.jepa`, con diagnostiche,
+allarmi, checkpoint e ripresa. La logica e' qui (provabile su CPU); il comando e' `scripts/train_jepa.py`.
+
+**Valori firmati da Simone il 03/10/2026** (`docs/fogli_firma_d9_d10.md`), nel preset `sanity_config()`: sanity su emg2qwerty (17); frazione
+nascosta 0,5 (15); soglie d'allarme (16): collasso da query sotto 0,05 o rango effettivo sotto il 10% della dimensione per 3 valutazioni di fila,
+valutate ogni 500 passi su un batch fisso; peso delle ancore 0,2 e momento EMA 0,996 (18); dropout del muscolo 0,4 (19); target (b) (20); patch
+25 ms, contesto 1-4 s, maschere D10 a tubi (10-12); salti spezzati (8); filtro nel dataloader (13).
+
+**Scelte di AG, da confermare (non firmate):** taglia del modello del sanity (~30M parametri, i default di lavoro della finestra 1: K = 64, encoder
+locale a 2 livelli); AdamW con lr 3e-4, warmup lineare di 1.000 passi poi costante (lo schedule vero e' D14), weight decay 0,05, clip del gradiente
+1,0; batch di 32 finestre; batch di validazione per le diagnostiche estratto con un seme fisso dal pretraining (non dal test, che resta intatto);
+**ancora RVQ spenta** finche' il tokenizer congelato non e' collegato al ciclo (su Leonardo). Su GPU: **bf16** (autocast; il front-end resta in
+float64) e **activation checkpointing** per blocco (v10 §5.5): senza, il preset chiedeva ~190 GB (review del 03/10, job 59276285).
+"""
+
+from __future__ import annotations
+
+import copy
+import gzip
+import hashlib
+import json
+import math
+import os
+import sys
+import queue
+import shutil
+import threading
+import time
+import weakref
+from contextlib import nullcontext
+from dataclasses import asdict, dataclass, field, fields, is_dataclass, replace
+from pathlib import Path
+
+import numpy as np
+import torch
+
+from wearusfm.data import pretraining_loader as L
+from wearusfm.data import pretraining_manifest as PM
+from wearusfm.data import rvq_codes as RC
+from wearusfm.data import virtual_montage as VM
+from wearusfm.model.anchors import N_RVQ_CODES
+from wearusfm.model.fm import FMConfig, WearUsFM
+from wearusfm.model.spectral_targets import RETIRED_TARGET_VERSIONS, TARGET_VERSION, target_version_for_fast_window
+from wearusfm.model.spectral_step1 import READOUT_VERSION
+from wearusfm.training.spectral_calibration import calibration_signature, read_calibration, sha256_file
+from wearusfm.model.query_decoder import probe_query_collapse
+from wearusfm.training.jepa import JEPAConfig, effective_rank, ema_update, jepa_loss_terms, jepa_losses, loss_counts, make_teacher, masked_query_radius
+
+
+# soglia assoluta del rango effettivo per la ripetizione di C4 e i run della finestra 1 (Simone, 23/10/2026: «firmo,»; decisioni.md): la
+# passano i pianificatori con `--erank-min`; il default di `AlarmRule` resta None (le configurazioni gia' fatte non cambiano)
+W1_ERANK_MIN = 38.4
+
+
+@dataclass(frozen=True)
+class AlarmRule:
+    collapse_ratio_min: float = 0.05  # firmata (16)
+    erank_fraction_min: float = 0.10  # firmata (16)
+    patience: int = 3  # valutazioni di fila (16)
+    # FIRMATA da Simone il 23/10/2026 (C4 fermata al 300M; decisioni.md): soglia assoluta del rango effettivo, al posto di erank_fraction_min x
+    # dim, per la ripetizione di C4 e la finestra 1 (`--erank-min 38.4`). Nei primi 1.500 passi il rango delle diagnostiche non cresce in
+    # proporzione alla larghezza (~67-87 a 30M, 100M e 300M; piu' avanti il 100M sta sopra il 30M, con un altro batch): al 300M la soglia
+    # proporzionale (89,6) sta sopra i valori iniziali di tutte le taglie. Vale per il batch diagnostico attuale. None = la regola firmata (16).
+    erank_min: float | None = None
+
+
+@dataclass(frozen=True)
+class Schedule:
+    """Forma del learning rate, in aggiornamenti dell'optimizer (decisione del 09/10/2026: mai in micro-batch). Il warmup lineare e' sempre
+    `RunConfig.warmup_steps`.
+    - "constant": warmup e poi il picco fino alla fine (il sanity e il pilota A/B, come sono stati collaudati);
+    - "wsd" (D14, firmata il 04/10/2026): warmup, fase stabile al picco, **decay lineare a zero sul `decay_fraction` finale** di
+      `total_steps`. Il decay comincia all'aggiornamento `decay_start` = total_steps - round(decay_fraction * total_steps); lì si salva il
+      checkpoint pre-decay. `keep_checkpoints`: passi della fase stabile in cui tenere una copia del checkpoint, da cui partono i rami di
+      decay del pilot sulle epoche e la continuazione a 2D (`train(..., branch_from=...)`)."""
+    kind: str = "constant"
+    total_steps: int | None = None
+    decay_fraction: float = 0.2
+    keep_checkpoints: tuple[int, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.kind not in ("constant", "wsd"):
+            raise ValueError(f"schedule {self.kind!r}: 'constant' o 'wsd'")
+        if self.kind == "wsd":
+            if not self.total_steps or self.total_steps < 1 or not 0.0 < self.decay_fraction <= 1.0:
+                raise ValueError("wsd: servono total_steps >= 1 e 0 < decay_fraction <= 1")
+            if any(not 0 < s <= self.decay_start for s in self.keep_checkpoints):
+                raise ValueError(f"wsd: i checkpoint da tenere stanno nella fase stabile (0, {self.decay_start}]: {self.keep_checkpoints}")
+        elif self.total_steps is not None or self.keep_checkpoints:
+            raise ValueError("constant: total_steps e keep_checkpoints valgono solo per 'wsd'")
+
+    @property
+    def decay_start(self) -> int | None:
+        return None if self.kind != "wsd" else self.total_steps - int(round(self.decay_fraction * self.total_steps))
+
+
+@dataclass(frozen=True)
+class RunConfig:
+    model: FMConfig
+    jepa: JEPAConfig
+    loader: L.LoaderConfig
+    datasets: tuple[str, ...] | None  # None = tutto il pretraining del manifest
+    batch_size: int
+    lr: float
+    warmup_steps: int
+    weight_decay: float
+    grad_clip: float
+    max_steps: int
+    eval_every: int
+    ckpt_every: int
+    seed: int
+    alarm: AlarmRule = field(default_factory=AlarmRule)
+    amp_bf16: bool = True  # autocast bf16, solo su CUDA (v10 §5.5)
+    target_version: str = TARGET_VERSION
+    readout_version: str = READOUT_VERSION
+    keep_calibration: str | None = None
+    keep_calibration_sha256: str | None = None
+    keep_grad_every: int = 0  # optional diagnostic, NOT additional optimizer steps
+    # R3, emendamento 1 (E4, firmato il 26/10/2026): ogni N passi, norme dei gradienti del termine di posa pesato e delle ancore pesate sui
+    # parametri condivisi dell'encoder e il loro coseno (`shared_grad_pose`, `shared_grad_anchors`, `shared_grad_cos`); diagnostica, nessun
+    # aggiornamento in piu'. Nel contratto DDP: sul micro-batch finale del processo 0, gradiente locale. 0 = spenta
+    pose_grad_every: int = 0
+    pairing_audit: bool = False  # opt-in fresh-run audit; no data-stream resume guarantee
+    # passi per segmento dello stream dei dati (`pretraining_loader.batch_stream`): la ripresa rigioca a secco al piu' un segmento per worker
+    stream_segment: int = 1200
+    schedule: Schedule = field(default_factory=Schedule)
+    # micro-batch per processo e per aggiornamento (accumulo dei gradienti, contratto delle loss): il batch del processo si divide in
+    # `accum_steps` parti contigue (`pretraining_loader.split_batch`); un solo clipping, optimizer ed EMA per aggiornamento
+    accum_steps: int = 1
+    # rami spettrali (`FMConfig.spectral_branches`): batch del training, con un generatore proprio, per le statistiche d'ingresso dei rami; si
+    # calibrano una volta all'inizio di un run nuovo, poi stanno nel checkpoint
+    branch_calibration_batches: int = 16
+    # diagnostica dei rami (step 2C della proposta): encoder raw congelato dal teacher di `init_from`; si allenano solo rami e loro teste, col solo
+    # termine dei rami sul readout (`jepa.branch_weight` > 0, `jepa.keep_weight` = 0)
+    freeze_encoder: bool = False
+    # pilot dei rami (review GPT del 21/10, R3): i monitor e l'allarme di collasso dei rami anche con l'obiettivo vecchio (PWl); sempre accesi con
+    # l'obiettivo mascherato (PWm) e con gli strati finali fissi (PWf). Senza gradiente: la perdita e il training non cambiano.
+    branch_monitor: bool = False
+    # diagnostiche della stabilita' (GPT e Claude, 14/10/2026, dopo il collaudo dello step 2C; Simone: «implementa i punti 1 e 2»). Non cambiano
+    # il training (RNG, pesi e metriche del passo restano bit per bit quelli di un run senza):
+    # - ogni `fixed_eval_every` aggiornamenti (0 = spenta), e al passo 0 di un run nuovo, le loss del training su un insieme FISSO di
+    #   `fixed_eval_batches` batch del training (generatore proprio), senza gradiente e in eval, in `fixed_eval.jsonl`: una salita li' e'
+    #   regressione del modello, non composizione dei batch;
+    # - `log_batch_origin`: in `metrics.jsonl` l'origine di ogni finestra ("origin": [sessione, trial, inizio]; le sessioni, nell'ordine del
+    #   manifest, in `origin_sessions.json`), per legare le oscillazioni della loss ai dati.
+    fixed_eval_every: int = 0
+    fixed_eval_batches: int = 8
+    log_batch_origin: bool = False
+    # pannello della posa (collaudo lungo (B) di R3, 28/10/2026): ogni `pose_panel_every` aggiornamenti (0 = spento), e al passo 0 di un run
+    # nuovo, l'errore della testa di posa su un insieme FISSO di finestre di emg2pose con la posa: `pose_panel_users` utenti del training x
+    # `pose_panel_recordings` sessioni x `pose_panel_windows` finestre, da un generatore proprio (`_pose_panel_set`), senza gradiente e in
+    # eval, con l'errore di ogni finestra in `pose_panel.jsonl` e l'identita' in `pose_panel_set.json`. Non cambia il training (come il
+    # pannello fisso). Sta nel config: un run col pannello e uno senza non sono lo stesso run (la ricetta di R3 lo dichiara)
+    pose_panel_every: int = 0
+    pose_panel_users: int = 32
+    pose_panel_recordings: int = 2
+    pose_panel_windows: int = 4
+    # prefetch (Simone, 15/10/2026: «vai con la 1, il prefetch sulla GPU», dopo l'attesa sui dati al 30M sopra il 2% di D6a): il batch
+    # successivo preso dal DataLoader, preparato e copiato sul dispositivo in un thread (`_Prefetcher`) mentre gira il passo corrente. Non
+    # cambia il training: stessi batch, stessi valori, stesso ordine. `prefetch_audit` (verifica): a fine passo gli ingressi sul dispositivo
+    # confrontati bit per bit con quelli preparati di nuovo dal batch sulla CPU; costa una copia all'indietro per passo
+    prefetch: bool = False
+    prefetch_audit: bool = False
+    # asse dei soggetti (D16, firmata il 03/10/2026): '0.125' / '0.25' / '0.5' / '1' = la frazione che il manifest derivato deve dichiarare
+    # (`scripts/build_nested_manifests.py`: soggetti del sottoinsieme firmato in `splits/v1/splits_v1.json`, base sulle ore campionabili,
+    # D9 sul sottoinsieme; '1' = il derivato al 100%); None = un manifest non derivato (v1.1). Guardia in due sensi nel loader
+    nested: str | None = None
+    contrastive: dict | None = None  # global C0/CN/CR objectives, queue policy and train-only calibration
+
+
+# campi aggiunti dopo i primi checkpoint, coi valori che avevano implicitamente: un checkpoint di prima equivale a uno nuovo con questi valori
+_LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_encoder": False, "fixed_eval_every": 0, "fixed_eval_batches": 8,
+                   "pose_grad_every": 0, "pose_panel_every": 0, "pose_panel_users": 32, "pose_panel_recordings": 2, "pose_panel_windows": 4,
+                   "log_batch_origin": False, "prefetch": False, "prefetch_audit": False, "nested": None, "branch_monitor": False}
+BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5,
+                       "branch_objective": "readout", "branch_freeze_output": False,  # pilot dei rami del 20/10
+                       "window_ms": None}  # finestra del kernel: assente = patch storica
+
+
+def _environment(out_dir: Path) -> dict:
+    """Versioni di Python, torch e CUDA, piu' nome e SHA-256 dell'ultimo `pip_freeze_*.txt` scritto dal launcher nella cartella del run
+    (`scripts/slurm/train_ddp.sbatch`); None dove manca. Solo lettura, nessun comando esterno."""
+    freezes = sorted(Path(out_dir).glob("pip_freeze_*.txt"), key=lambda p: p.stat().st_mtime)
+    env = {"python": sys.version.split()[0], "torch": torch.__version__, "cuda": getattr(torch.version, "cuda", None),
+           "pip_freeze_file": freezes[-1].name if freezes else None,
+           "pip_freeze_sha256": hashlib.sha256(freezes[-1].read_bytes()).hexdigest() if freezes else None,
+           "modules_loaded": os.environ.get("LOADEDMODULES")}
+    return env
+
+
+def _config_with_defaults(d: dict) -> dict:
+    out = {**_LATER_DEFAULTS, **d}
+    if isinstance(out.get("model"), dict):
+        out["model"] = {**BRANCH_MODEL_FIELDS, "tokenizer_activation": "identity",
+                        "tokenizer_logsquare": False, "tokenizer_logsquare_eps": 1e-3, **out["model"]}
+    if isinstance(out.get("jepa"), dict):
+        # region_target: R2, 24/10; pose_weight: R3, 26/10 (la posa e' spenta nei config precedenti)
+        out["jepa"] = {"branch_weight": 0.0, "jepa_weight": 1.0, "region_target": False, "pose_weight": 0.0,
+                       "masked_loss_radius": None, **out["jepa"]}
+    if isinstance(out.get("model"), dict):
+        out["model"] = {"pose_head": False, **out["model"]}  # R3, 26/10
+    if isinstance(out.get("loader"), dict):
+        # Campo assente nei checkpoint storici = RMS da 25 ms, NON il nuovo default da 100 ms.
+        out["loader"] = {"pose_root": None, "pose_unprompted": True, "rms_window_ms": L.AT.LEGACY_RMS_WINDOW_MS,
+                         "ms_fast_window_ms": L.AT.LEGACY_MS_FAST_WINDOW_MS,
+                         **out["loader"]}  # R3, 26/10; RMS, 18/11
+    if isinstance(out.get("alarm"), dict):
+        out["alarm"] = {"erank_min": None, **out["alarm"]}  # soglia assoluta del rango (firmata il 23/10): assente = regola (16)
+    return out
+
+
+def with_historical_targets(cfg: RunConfig) -> RunConfig:
+    """La ricetta dei target dei run nati prima del 18/11/2026 (RMS 25 ms, spettro rapido 50 ms, versione v1), per i costruttori delle
+    campagne storiche che non passano dalla riga di comando (review di Claude del 18/11)."""
+    return replace(cfg, loader=replace(cfg.loader, rms_window_ms=L.AT.LEGACY_RMS_WINDOW_MS,
+                                       ms_fast_window_ms=L.AT.LEGACY_MS_FAST_WINDOW_MS),
+                   target_version=target_version_for_fast_window(L.AT.LEGACY_MS_FAST_WINDOW_MS))
+
+
+def with_legacy_target_windows(d: dict) -> dict:
+    """Config salvato prima del 18/11/2026: aggiunge solo i due campi nati quel giorno (`loader.rms_window_ms` = 25,
+    `loader.ms_fast_window_ms` = 50) se mancano. A differenza di `_config_with_defaults`, che serve alla ripresa, non completa
+    nessun altro campo: i confronti esatti degli strumenti storici restano stretti come prima (review di Claude del 18/11)."""
+    if not isinstance(d.get("loader"), dict):
+        return d
+    return {**d, "loader": {"rms_window_ms": L.AT.LEGACY_RMS_WINDOW_MS, "ms_fast_window_ms": L.AT.LEGACY_MS_FAST_WINDOW_MS,
+                            **d["loader"]}}
+
+
+def wsd_warmup_steps(steps_at_d: int) -> int:
+    """D14: warmup lineare sul 2% dei passi a D, almeno 1.000. Nel pilot e nella continuazione a 2D il warmup resta quello di D per tutti i
+    rami: si calcola una volta e si passa esplicito."""
+    return max(1000, int(round(0.02 * steps_at_d)))
+
+
+def with_wsd(cfg: RunConfig, total_steps: int, *, warmup_steps: int, keep_checkpoints: tuple[int, ...] = (),
+             decay_fraction: float = 0.2) -> RunConfig:
+    """Lo schedule WSD di D14 su `total_steps` aggiornamenti; il run finisce li' (`max_steps` = `total_steps`). Checkpoint con nome:
+    `checkpoint_predecay.pt` (a `decay_start`), `checkpoint_postdecay.pt` (a `total_steps`), `checkpoint_step<N>.pt` (fase stabile)."""
+    out = replace(cfg, warmup_steps=warmup_steps, max_steps=total_steps,
+                  schedule=Schedule("wsd", total_steps, decay_fraction, tuple(sorted(set(keep_checkpoints)))))
+    _check_wsd(out)
+    return out
+
+
+def sanity_config(max_steps: int = 20000) -> RunConfig:
+    return RunConfig(
+        model=FMConfig(dim=384, n_heads=6, k_latents=64, local_layers=2, backbone_layers=8, decoder_layers=2, muscle_dropout=0.4,
+                       grad_checkpoint=True),
+        jepa=JEPAConfig(target="b", anchor_weight=0.2, ema_momentum=0.996),
+        loader=L.signed_config((20.0, 450.0)),
+        datasets=("emg2qwerty",), batch_size=32, lr=3e-4, warmup_steps=1000, weight_decay=0.05, grad_clip=1.0, max_steps=max_steps,
+        eval_every=500, ckpt_every=500, seed=0)
+
+
+# Rung della ladder (v10 §10.4: «larghezza condivisa scalata ovunque; profondita' scalata soprattutto nel backbone; K fisso»). FIRMATI da
+# Simone il 09/10/2026 («firmo i preset»): la larghezza e' quella della tabella di v10 (640, 896; teste da 64), la profondita' del backbone quella
+# che centra il nominale con i nostri blocchi, che hanno due attenzioni (tempo e latenti) piu' l'MLP, ~16 d^2 parametri invece dei ~12 d^2
+# di un blocco standard: 12 blocchi a 640 ~ 16 standard, 18 a 896 ~ 24 standard, cioe' il bordo basso dei layer di v10. Il 30M e' il preset
+# del sanity. Conteggi (con l'ancora multi-scala): 30M 28,3 M; 100M 104,8 M; 300M 292,0 M. Ripartizione backbone / encoder locale /
+# Perceiver: 67/13/6%, 75/9/5%, 79/10/3% (v10 prescrive 75-85 / 8-15 / 5-10: il Perceiver resta sotto a 300M perche' i suoi blocchi sono
+# fissi). Il resto della configurazione (picco del learning rate, batch) e' quello del sanity finche' la calibrazione della finestra 1 non lo
+# fissa (D14: «il batch dei rung maggiori lo fissa la calibrazione»).
+LADDER = {
+    "30m": dict(dim=384, n_heads=6, local_layers=2, backbone_layers=8, decoder_layers=2),
+    "100m": dict(dim=640, n_heads=10, local_layers=2, backbone_layers=12, decoder_layers=2),
+    "300m": dict(dim=896, n_heads=14, local_layers=3, backbone_layers=18, decoder_layers=2),
+}
+
+
+def ladder_config(rung: str, max_steps: int = 20000) -> RunConfig:
+    """Il preset del sanity con l'architettura del rung `rung` (LADDER); stesse regole di dati, maschere, ancore e ottimizzatore."""
+    base = sanity_config(max_steps)
+    return replace(base, model=replace(base.model, **LADDER[rung]))
+
+
+def with_window1_rules(cfg: RunConfig) -> RunConfig:
+    """Le decisioni del 04/10/2026, dalla finestra 1: quote nel tempo (1), perdita per finestra (2), nessun target delle ancore entro 100 ms dal
+    bordo di un tratto (3) («approvo tutto»); ancora multi-scala («ok per l'ancora multi-scala nella finestra 1»); montaggi virtuali dalle griglie
+    HD coi parametri del foglio D6a (firmato il 05/10/2026). Il preset del sanity resta quello collaudato. L'ancora RVQ non c'e' (decisione del
+    04/10): `with_rvq` non va applicato."""
+    return replace(cfg, jepa=replace(cfg.jepa, loss_per_window=True), model=replace(cfg.model, multiscale_anchor=True),
+                   loader=replace(cfg.loader, time_weighted=True, anchor_edge_guard_s=0.1, multiscale_anchor=True, virtual=VM.VirtualSpec()))
+
+
+def with_rvq(cfg: RunConfig, codes_root: str | Path) -> RunConfig:
+    """Ancora RVQ accesa (D5b): testa RVQ da 8192 codici e codici precalcolati dal dataloader."""
+    return replace(cfg, model=replace(cfg.model, rvq_codes=N_RVQ_CODES), loader=replace(cfg.loader, rvq_codes_root=str(codes_root)))
+
+
+def with_spectral_keep(cfg: RunConfig, calibration: str | Path, weight: float) -> RunConfig:
+    """Both A (weight=0) and B instantiate the SAME head, preserving encoder initialization."""
+    return replace(cfg, model=replace(cfg.model, keep_readout=True), jepa=replace(cfg.jepa, keep_weight=weight),
+                   keep_calibration=str(calibration), keep_calibration_sha256=sha256_file(calibration))
+
+
+def with_spectral_branches(cfg: RunConfig, kinds: tuple[str, ...], *, weight: float = 0.0, wavelet_learnable: bool = False,
+                           alpha: float = 0.5, freeze_encoder: bool = False, calibration_batches: int = 16) -> RunConfig:
+    """Rami spettrali (step 2-3, Simone 13/10/2026) sopra una configurazione con la testa dello Step 1 (`with_spectral_keep`): stessi target e
+    calibrazione. La keep dello Step 1 sulla testa raw resta com'e' (`keep_weight`); il termine dei rami ha il suo peso (`weight` ->
+    `jepa.branch_weight`; parere GPT d5c53c1). Il controllo B e' il modello SENZA rami (con rami a peso 0 l'embedding conterrebbe rami non
+    allenati: e' un altro controllo). `freeze_encoder` = la diagnostica a encoder congelato (solo il termine dei rami)."""
+    return replace(cfg, model=replace(cfg.model, spectral_branches=tuple(kinds), wavelet_learnable=wavelet_learnable, branch_alpha=alpha),
+                   jepa=replace(cfg.jepa, branch_weight=weight), freeze_encoder=freeze_encoder, branch_calibration_batches=calibration_batches)
+
+
+def config_to_dict(cfg: RunConfig) -> dict:
+    value = asdict(cfg)
+    if value["contrastive"] is None:
+        del value["contrastive"]
+    return json.loads(json.dumps(value, default=list))
+
+
+# --- dati ----------------------------------------------------------------------------------------------------------------------------
+
+def load_index(manifest: Path, roots: list[Path], datasets: tuple[str, ...] | None, nested: str | None = "*") -> L.ManifestIndex:
+    """`nested`: la frazione D16 che il manifest deve dichiarare (None = non derivato); "*" (default, strumenti) accetta quella dichiarata."""
+    if nested not in (None, "*") and nested not in PM.DERIVED_FRACTIONS:
+        raise ValueError(f"nested {nested!r}: una di {PM.DERIVED_FRACTIONS} (D16) o None")
+    idx = L.ManifestIndex.load(manifest, roots, nested)
+    if datasets is not None:
+        keep = [i for i, r in enumerate(idx.rows) if r["dataset"] in datasets]
+        if not keep:
+            raise ValueError(f"nessuna riga di pretraining per {datasets}")
+        w = idx.weights[keep]
+        idx = L.ManifestIndex([idx.rows[i] for i in keep], w / w.sum(), idx.roots, idx.params)
+    return idx
+
+
+def check_derived_binding(params: dict, cfg: "RunConfig", window_s: dict | None) -> None:
+    """Un manifest derivato (D16) vale col sampler e con le durate con cui e' stato verificato: quote e tetto si controllano sulla
+    distribuzione pesata nel tempo con quelle durate e quella configurazione delle finestre (review del critico, 16/10/2026). Errore se il
+    loader non pesa nel tempo, se mancano le durate o se la configurazione delle finestre e' diversa da quella della costruzione."""
+    inputs = params.get("derived_inputs") or {}
+    if cfg.datasets is not None:  # filtrare e rinormalizzare cambierebbe quote e tetto verificati (critico, seconda review del 16/10)
+        raise ValueError(f"manifest derivato: si usa su tutti i suoi dataset (--datasets all), non su {list(cfg.datasets)}")
+    if not cfg.loader.time_weighted:
+        raise ValueError("manifest derivato: serve il sampler pesato nel tempo (loader.time_weighted, --window1-rules) con cui e' verificato")
+    if window_s is None:
+        raise ValueError("manifest derivato: servono le durate delle finestre (--window-seconds) con cui e' stato costruito")
+    have = {f: getattr(cfg.loader, f) for f in PM.WINDOW_CONFIG_FIELDS}
+    if inputs.get("window_config") != have:
+        raise ValueError(f"manifest derivato costruito con la configurazione delle finestre {inputs.get('window_config')}, il loader ha {have}")
+
+
+def check_input_files(manifest: Path, window_seconds: Path | None, nested: str | None, manifest_sha256: str | None = None) -> None:
+    """Identita' dei file d'ingresso prima del training (review del critico, 16/10/2026): `manifest_sha256` (dal piano, facoltativo) = SHA
+    del file del manifest; con un derivato (`nested`) servono le durate e lo SHA del loro file e' quello registrato nella costruzione
+    (`derived_inputs.window_seconds_sha256`)."""
+    if manifest_sha256 is not None and sha256_file(manifest) != manifest_sha256:
+        raise ValueError(f"{manifest}: SHA-256 {sha256_file(manifest)} diverso da quello del piano {manifest_sha256}")
+    if nested is None:
+        return
+    if window_seconds is None:
+        raise ValueError("manifest derivato: servono le durate delle finestre (--window-seconds) con cui e' stato costruito")
+    doc = json.loads((gzip.open if str(manifest).endswith(".gz") else open)(manifest, "rb").read())
+    want = (doc.get("params", {}).get("derived_inputs") or {}).get("window_seconds_sha256")
+    if sha256_file(window_seconds) != want:
+        raise ValueError(f"{window_seconds}: SHA-256 {sha256_file(window_seconds)} diverso da quello con cui e' costruito il manifest ({want})")
+
+
+class BatchStream(torch.utils.data.IterableDataset):
+    """Batch del dataloader nei processi di torch: un `PretrainLoader` per worker e lo stream di `pretraining_loader.batch_stream`, che da'
+    al batch di indice b (= il passo che lo consuma) lo stesso contenuto in un run continuo e in uno ripreso da `start` (a parita' di worker,
+    processi e segmento). Con DDP ogni processo (`rank`) ha il suo stream."""
+
+    def __init__(self, index: L.ManifestIndex, cfg: L.LoaderConfig, batch_size: int, seed: int, scales: dict, window_s: dict | None = None,
+                 rank: int | None = None, start: int = 0, segment: int = 1200):
+        self.index, self.cfg, self.batch_size, self.seed, self.scales, self.window_s = index, cfg, batch_size, seed, scales, window_s
+        self.rank, self.start, self.segment = rank, start, segment
+
+    def __iter__(self):
+        info = torch.utils.data.get_worker_info()
+        wid, n = (info.id, info.num_workers) if info is not None else (0, 1)
+        loader = L.PretrainLoader(self.index, self.cfg, dict(self.scales), self.window_s)
+        yield from L.batch_stream(loader, self.batch_size, seed=self.seed, start=self.start, worker=wid, n_workers=n, segment=self.segment,
+                                  rank=self.rank)
+
+
+class _Shared:
+    """Un array grande in viaggio dal worker al processo principale come tensore torch, cioe' in memoria condivisa invece che copiato
+    dentro il pickle (collaudo GPU del 12/10/2026: ~25 ms per passo di sola ricezione, due terzi per i target delle ancore)."""
+
+    __slots__ = ("t",)
+
+    def __init__(self, t: torch.Tensor):
+        self.t = t
+
+
+SHARED_MIN_BYTES = 64 * 1024
+
+
+def _to_shared(x):
+    """Nel worker (`collate_fn` del DataLoader): gli array numpy numerici da almeno `SHARED_MIN_BYTES` diventano `_Shared`, ovunque nel
+    batch (segnali, target delle ancore, maschere...). Stessi valori, stesso dtype e forma; il resto resta com'e'."""
+    if isinstance(x, np.ndarray):
+        return _Shared(torch.from_numpy(np.ascontiguousarray(x))) if x.dtype.kind in "biuf" and x.nbytes >= SHARED_MIN_BYTES else x
+    if isinstance(x, list):
+        return [_to_shared(v) for v in x]
+    if isinstance(x, tuple):
+        return tuple(_to_shared(v) for v in x)
+    if isinstance(x, dict):
+        return {k: _to_shared(v) for k, v in x.items()}
+    if is_dataclass(x) and not isinstance(x, type):
+        y = copy.copy(x)  # niente __init__/__post_init__ di nuovo: si sostituiscono solo i campi
+        for f in fields(x):
+            object.__setattr__(y, f.name, _to_shared(getattr(x, f.name)))
+        return y
+    return x
+
+
+def _from_shared(x):
+    """Nel processo principale: l'inverso esatto di `_to_shared` (array numpy che condividono la memoria dei tensori ricevuti)."""
+    if isinstance(x, _Shared):
+        return x.t.numpy()
+    if isinstance(x, list):
+        return [_from_shared(v) for v in x]
+    if isinstance(x, tuple):
+        return tuple(_from_shared(v) for v in x)
+    if isinstance(x, dict):
+        return {k: _from_shared(v) for k, v in x.items()}
+    if is_dataclass(x) and not isinstance(x, type):
+        y = copy.copy(x)
+        for f in fields(x):
+            object.__setattr__(y, f.name, _from_shared(getattr(x, f.name)))
+        return y
+    return x
+
+
+def _ddp_wrap(student: WearUsFM, cfg: RunConfig, ctx: DistContext, device):
+    """Lo studente in DDP. `find_unused_parameters` solo se il modello ha teste che in un passo possono restare fuori dal grafo: la testa
+    RVQ (chiamata solo se ci sono finestre RVQ) e la testa keep (mai chiamata col peso 0, braccio A). Le teste delle ancore restano sempre
+    nel grafo (senza target la perdita e' uno zero derivabile). Senza quelle teste il flag costa un attraversamento del grafo per passo per
+    niente (avviso di DDP nel collaudo del 12/10/2026); un parametro inutilizzato con il flag spento fa fermare DDP con un errore."""
+    from torch.nn.parallel import DistributedDataParallel
+    unused = bool(cfg.model.rvq_codes) or bool(cfg.model.keep_readout)
+    return DistributedDataParallel(_Objective(student), device_ids=[ctx.local_rank] if str(device).startswith("cuda") else None,
+                                   find_unused_parameters=unused)
+
+
+# --- allarmi e diagnostiche -----------------------------------------------------------------------------------------------------------
+
+class AlarmMonitor:
+    def __init__(self, rule: AlarmRule, dim: int):
+        self.rule, self.dim = rule, dim
+        self.low_collapse = 0
+        self.low_rank = 0
+
+    def update(self, collapse_ratio: float, erank: float) -> str | None:
+        self.low_collapse = self.low_collapse + 1 if not collapse_ratio >= self.rule.collapse_ratio_min else 0  # NaN conta come allarme
+        floor = self.rule.erank_min if self.rule.erank_min is not None else self.rule.erank_fraction_min * self.dim
+        self.low_rank = self.low_rank + 1 if not erank >= floor else 0
+        if self.low_collapse >= self.rule.patience:
+            return f"collasso da query: rapporto sotto {self.rule.collapse_ratio_min} per {self.low_collapse} valutazioni"
+        if self.low_rank >= self.rule.patience:
+            if self.rule.erank_min is not None:
+                return f"rango effettivo sotto {self.rule.erank_min:g} per {self.low_rank} valutazioni"
+            return f"rango effettivo sotto {self.rule.erank_fraction_min:.0%} della dimensione per {self.low_rank} valutazioni"
+        return None
+
+
+@torch.no_grad()
+def diagnostics(student: WearUsFM, teacher: WearUsFM, val: tuple, n_probe: int = 16) -> dict:
+    """Su un batch fisso, senza maschera: collasso da query (stesse query di sonda su tutti i campioni: identita' dei primi canali del primo
+    campione a istanti fissi) per studente e teacher, e rango effettivo delle uscite del backbone mediate sui latenti, per istante valido."""
+    inp, _, _ = val
+    was = student.training
+    student.eval()
+    out = {}
+    for name, model in (("student", student), ("teacher", teacher)):
+        enc = model.encode(inp, None)
+        p = int(enc.key_time_valid.sum(dim=1).min())
+        n_ch = min(inp.counts[0], n_probe)
+        dev = enc.z.device
+        probe_t = torch.linspace(0, max(p - 1, 0), steps=n_probe, device=dev).round().long()
+        probe_q = enc.ids[torch.arange(n_probe, device=dev) % n_ch]
+        out[f"{name}_collapse"] = probe_query_collapse(model.decoder, enc.z, probe_q, probe_t, enc.key_time_valid)
+        zt = enc.z.mean(dim=2)[enc.key_time_valid]  # (istanti validi, d)
+        out[f"{name}_erank"] = effective_rank(zt)
+    student.train(was)
+    return out
+
+
+# --- piu' processi (DDP) -------------------------------------------------------------------------------------------------------------
+# Decisione del 09/10/2026 (`docs/decisioni.md`, «Lavoro in parallelo»; `docs/contratto_loss_distribuite.md`): un processo per GPU, batch
+# globale = `batch_size` finestre divise fra i processi, un solo aggiornamento per passo. Con un processo solo e senza accumulo nulla cambia
+# (`jepa_losses`, nessuna operazione collettiva). Con DDP o con l'accumulo le loss seguono il contratto (`_accumulate_terms`): numeratori
+# locali e denominatori globali sommati su processi e micro-batch prima di ogni backward, metriche come somme / conteggi globali.
+
+
+@dataclass(frozen=True)
+class DistContext:
+    """Il processo dentro un training DDP. `world_size` = 1: il percorso di sempre."""
+    rank: int = 0
+    world_size: int = 1
+    local_rank: int = 0
+
+    @property
+    def active(self) -> bool:
+        return self.world_size > 1
+
+    @property
+    def is_main(self) -> bool:
+        return self.rank == 0
+
+
+def dist_from_env() -> DistContext:
+    """Dalle variabili di torchrun (RANK, WORLD_SIZE, LOCAL_RANK); senza, un processo solo."""
+    return DistContext(int(os.environ.get("RANK", 0)), int(os.environ.get("WORLD_SIZE", 1)), int(os.environ.get("LOCAL_RANK", 0)))
+
+
+class _Objective(torch.nn.Module):
+    """Lo studente dentro un modulo il cui forward calcola le loss: DDP sincronizza i gradienti solo attraverso il forward del modulo che
+    avvolge, mentre `jepa_loss_terms` chiama `encode`, `decode` e le teste dello studente. Il teacher resta fuori: nessun gradiente, nessuna
+    sincronizzazione dei buffer."""
+
+    def __init__(self, student: WearUsFM):
+        super().__init__()
+        self.student = student
+
+    def forward(self, compute):
+        return compute(self.student)
+
+
+def _any_flag(ctx: DistContext, device, *flags: bool) -> list[bool]:
+    """Ogni decisione di arresto vale per tutti i processi: basta che un processo la prenda (MAX)."""
+    if not ctx.active:
+        return [bool(f) for f in flags]
+    t = torch.tensor([1.0 if f else 0.0 for f in flags], device=device)
+    torch.distributed.all_reduce(t, op=torch.distributed.ReduceOp.MAX)
+    return [bool(v > 0) for v in t.tolist()]
+
+
+def _merge_records(parts: list[dict]) -> dict:
+    """Il record di un passo dai record dei processi. Finestre, classi, montaggi virtuali e sessioni saltate si sommano; l'attesa sui dati e'
+    la massima (il passo aspetta il processo piu' lento), con la media a parte; la durata del passo e' la massima. Le loss non passano di qui:
+    sono somme e conteggi globali (`_accumulate_terms`)."""
+    out = dict(parts[0])
+    if "origin" in parts[0]:  # le finestre di tutti i processi, nell'ordine dei rank
+        out["origin"] = [o for p in parts for o in p["origin"]]
+    out["windows"] = sum(p["windows"] for p in parts)
+    out["skipped_sessions"] = sum(p["skipped_sessions"] for p in parts)
+    out["virtual"] = sum(p["virtual"] for p in parts)
+    out["classes"] = {c: sum(p["classes"][c] for p in parts) for c in parts[0]["classes"]}
+    out["t_data_s"] = max(p["t_data_s"] for p in parts)
+    out["t_data_s_mean"] = sum(p["t_data_s"] for p in parts) / len(parts)
+    out["t_step_s"] = max(p["t_step_s"] for p in parts)
+    return out
+
+
+# --- loss col contratto (DDP e accumulo) -----------------------------------------------------------------------------------------------
+
+@dataclass
+class _Micro:
+    """Un micro-batch sul dispositivo: ingressi del modello e argomenti delle loss."""
+
+    inp: object
+    visible: torch.Tensor
+    kinds: torch.Tensor
+    anchor_targets: list
+    rvq_on: torch.Tensor | None
+    rvq_codes: object  # lookup puro nei codici congelati (nessuna estrazione casuale), o None
+    codes: torch.Tensor | None = None  # i codici impacchettati dietro `rvq_codes`
+    regions: torch.Tensor | None = None  # regioni delle maschere (target per regione, R2), se il batch le porta
+    pose: tuple | None = None  # (target (S, P, 20), maschera (S, P, 20), deviazioni (S, 20)) di posa (R3); None senza finestre di posa
+
+
+def _pose_tensors(batch: L.PretrainBatch, device) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor] | None:
+    """I target di posa del batch (R3) riempiti alla larghezza del batch (P_max, la stessa di `visible`), sul dispositivo, con le deviazioni per
+    giunto usate per ogni finestra (per il pannello fisso: errore nell'unita' degli angoli, per lato se la standardizzazione e' per lato). None
+    se il loader non porta la posa o se nessuna finestra del micro-batch ne ha (la testa si calcola lo stesso, `jepa.pose_terms`)."""
+    from wearusfm.data.pose_targets import N_JOINTS
+
+    if batch.pose is None or all(item is None for item in batch.pose):
+        return None
+    n, p_max = len(batch.pose), max(batch.n_patches)
+    target = np.zeros((n, p_max, N_JOINTS), dtype=np.float32)
+    mask = np.zeros((n, p_max, N_JOINTS), dtype=bool)
+    std = np.ones((n, N_JOINTS), dtype=np.float32)
+    for s, item in enumerate(batch.pose):
+        if item is not None:
+            t, m, sd = item
+            if t.shape[0] != batch.n_patches[s] or m.shape != t.shape or sd.shape != (N_JOINTS,):
+                raise ValueError(f"posa del campione {s}: {t.shape} / {sd.shape} per {batch.n_patches[s]} patch")
+            target[s, :t.shape[0]] = t
+            mask[s, :m.shape[0]] = m
+            std[s] = sd
+    return torch.from_numpy(target).to(device), torch.from_numpy(mask).to(device), torch.from_numpy(std).to(device)
+
+
+def _prepare(batch: L.PretrainBatch, device, dtype: torch.dtype | None = None) -> _Micro:
+    """Come il percorso a un processo; `dtype` solo per i test d'equivalenza sulla CPU (segnali in float64 per un modello in float64)."""
+    inp, visible, rvq_on = _to_device(*L.to_model_inputs(batch), device)
+    if dtype is not None:
+        inp.signals = [x.to(dtype) for x in inp.signals]
+    codes_t = torch.from_numpy(RC.pack_codes(batch.rvq_codes)).to(device) if batch.rvq_codes is not None else None
+    return _Micro(inp, visible, torch.as_tensor(batch.kind).to(device), batch.anchor_targets, rvq_on if codes_t is not None else None,
+                  (lambda c, w: codes_t[c, w]) if codes_t is not None else None, codes_t,
+                  regions=torch.as_tensor(batch.region).to(device) if batch.region is not None else None, pose=_pose_tensors(batch, device))
+
+
+def _stage(batch: L.PretrainBatch, accum_steps: int, device) -> list[_Micro]:
+    """Il batch sul dispositivo, in `accum_steps` micro-batch (uno senza accumulo: il batch intero)."""
+    return [_prepare(mb, device) for mb in L.split_batch(batch, accum_steps)]
+
+
+def _micro_tensors(micros: list[_Micro]) -> list[torch.Tensor]:
+    """I tensori dei micro-batch sul dispositivo, in un ordine fisso (i target delle ancore restano sulla CPU)."""
+    out = []
+    for m in micros:
+        out += [*m.inp.signals, *m.inp.codes.values(), *m.inp.sets.values(), m.inp.qc_valid, m.visible, m.kinds]
+        out += [t for t in (m.rvq_on, m.codes, m.regions) if t is not None]
+        if m.pose is not None:
+            out += list(m.pose)
+    return out
+
+
+def _micro_digest(micros: list[_Micro]) -> str:
+    """SHA-256 di tipo, forma e byte dei tensori dei micro-batch (`RunConfig.prefetch_audit`)."""
+    h = hashlib.sha256()
+    for t in _micro_tensors(micros):
+        h.update(f"{t.dtype}{tuple(t.shape)}".encode())
+        h.update(t.detach().reshape(-1).cpu().view(torch.uint8).numpy().tobytes())
+    return h.hexdigest()
+
+
+class _Prefetcher:
+    """Il batch successivo pronto mentre gira il passo corrente (`RunConfig.prefetch`). Un thread fa quello che il ciclo faceva all'inizio del
+    passo -- `next` del DataLoader, ricostruzione dalla memoria condivisa, micro-batch e copia sul dispositivo (su CUDA in uno stream proprio)
+    -- e consegna (batch, micro-batch) nell'ordine dello stream, uno avanti. Nel thread non c'e' alcuna estrazione casuale (lo stream ha i suoi
+    generatori; preparazione e copia sono deterministiche): cambia solo quando i dati sono pronti, non quali sono.
+    Su CUDA lo stream del passo aspetta l'evento della copia e i tensori si registrano su quello stream (`record_stream`), cosi' l'allocatore
+    non riusa la loro memoria per la copia successiva finche' il passo li usa. Un'eccezione del thread si rilancia al passo che aspettava il
+    batch."""
+
+    def __init__(self, fetch, stage, device):
+        self._device = torch.device(device)
+        stream = torch.cuda.Stream(device=self._device) if self._device.type == "cuda" else None
+        self._queue, self._stop = queue.Queue(maxsize=1), threading.Event()
+        # il thread non tiene riferimenti al prefetcher: se il ciclo esce con un'eccezione, la raccolta del prefetcher lo ferma
+        self._thread = threading.Thread(target=_Prefetcher._run, args=(fetch, stage, self._device, stream, self._queue, self._stop),
+                                        name="wearusfm-prefetch", daemon=True)
+        weakref.finalize(self, self._stop.set)
+        self._thread.start()
+
+    @staticmethod
+    def _run(fetch, stage, device, stream, q, stop):
+        def put(item):
+            while not stop.is_set():
+                try:
+                    q.put(item, timeout=0.1)
+                    return
+                except queue.Full:
+                    pass
+
+        try:
+            if stream is not None:
+                torch.cuda.set_device(device)  # il dispositivo corrente e' per thread
+            while not stop.is_set():
+                batch = fetch()
+                if stream is None:
+                    put((batch, stage(batch), None))
+                    continue
+                with torch.cuda.stream(stream):
+                    micros = stage(batch)
+                    ready = torch.cuda.Event()
+                    ready.record(stream)
+                put((batch, micros, ready))
+        except BaseException as e:  # noqa: BLE001 -- consegnata al ciclo, che la rilancia
+            put(e)
+
+    def next(self):
+        item = self._queue.get()
+        if isinstance(item, BaseException):
+            raise item
+        batch, micros, ready = item
+        if ready is not None:
+            main = torch.cuda.current_stream(self._device)
+            main.wait_event(ready)
+            for t in _micro_tensors(micros):
+                t.record_stream(main)
+        return batch, micros
+
+    def close(self) -> None:
+        self._stop.set()
+        self._thread.join(timeout=60)
+
+
+def _keys_hash(*dicts) -> float:
+    """Un numero per l'insieme delle chiavi (48 bit: esatto in float64), da confrontare fra processi con un solo all_reduce."""
+    text = "|".join(",".join(sorted(d)) for d in dicts)
+    return float(int.from_bytes(hashlib.sha256(text.encode()).digest()[:6], "little"))
+
+
+def _all_max(ctx: DistContext, device, values: list[float]) -> list[float]:
+    if not ctx.active:
+        return list(values)
+    t = torch.tensor(values, dtype=torch.float64, device=device)
+    torch.distributed.all_reduce(t, op=torch.distributed.ReduceOp.MAX)
+    return t.tolist()
+
+
+def _keys_differ(ctx: DistContext, device, h: float) -> bool:
+    """Vero su TUTTI i processi se almeno uno ha un insieme di chiavi diverso (max(h) != min(h))."""
+    mx, mn = _all_max(ctx, device, [h, -h])
+    return mx != h or -mn != h
+
+
+SHARED_PREFIXES = ("tokenizer", "identity", "local", "pool", "backbone")  # i moduli condivisi dell'encoder (come `keep_grad_every`)
+
+
+def _shared_params(student) -> list:
+    return [p for name, p in student.named_parameters() if p.requires_grad and name.split(".")[0] in SHARED_PREFIXES]
+
+
+def _shared_grad_stats(components: dict, shared: list) -> dict:
+    """Norme (float) dei gradienti di ogni componente della perdita sui parametri condivisi e coseno fra `pose` e `anchors` (E4). Con
+    `retain_graph`: il backward del passo segue intatto. Un gradiente assente vale zero."""
+    flat = {}
+    for name, value in components.items():
+        grads = torch.autograd.grad(value, shared, retain_graph=True, allow_unused=True)
+        flat[name] = torch.cat([(g if g is not None else torch.zeros_like(p)).detach().float().reshape(-1) for g, p in zip(grads, shared)])
+    out = {f"shared_grad_{k}": float(v.norm()) for k, v in flat.items()}
+    if "pose" in flat and "anchors" in flat:
+        den = float(flat["pose"].norm() * flat["anchors"].norm())
+        out["shared_grad_cos"] = float(torch.dot(flat["pose"], flat["anchors"])) / den if den > 0 else 0.0
+    return out
+
+
+def _accumulate_terms(model, student, teacher, micros: list[_Micro], cfg: RunConfig, ctx: DistContext, device, amp,
+                      grad_diag: bool = False, contrastive=None):
+    """Forward e backward di un aggiornamento col contratto delle loss distribuite (DDP e/o accumulo; `docs/contratto_loss_distribuite.md`,
+    consegna di GPT del 12/10/2026). Prima di ogni backward: conteggi `loss_counts` di tutti i micro-batch, sommati e ridotti fra i processi
+    (denominatori globali D_c). Per micro-batch: forward (`no_sync` su tutti tranne l'ultimo), confronto dei conteggi del forward coi
+    precalcolati, chiavi uguali fra micro-batch e processi, perdita finita; poi backward di `backward_loss(D, R)`: DDP media sui processi e il
+    gradiente e' quello della media sul batch globale, senza dividere per i micro-batch. Ogni controllo vale per tutti i processi (un
+    all_reduce). Ritorna (motivo d'arresto o None, metriche): le metriche sono somme e conteggi globali (numeratori, diagnostiche, contatori)."""
+    keep_active = student.spectral_keep.target_active if cfg.jepa.keep_weight > 0 or cfg.jepa.branch_weight > 0 else None
+    pre = [loss_counts(m.inp, m.visible, cfg.jepa, m.anchor_targets, m.rvq_on, m.rvq_codes, model_cfg=student.cfg,
+                       keep_target_active=keep_active, regions=m.regions, pose_valid=m.pose[1] if m.pose is not None else None)
+           for m in micros]
+    if contrastive is not None:
+        if len(micros) != 1:
+            raise ValueError("global contrastive objectives require accum_steps=1")
+        pre[0].update(contrastive.counts(device))
+    keys = sorted(pre[0])
+    if any(sorted(p) != keys for p in pre):
+        raise RuntimeError(f"componenti delle loss diverse fra i micro-batch: {[sorted(p) for p in pre]}")
+    if _keys_differ(ctx, device, _keys_hash(keys)):
+        return "componenti delle loss diverse fra i processi", {}
+    den = torch.stack([sum(p[k] for p in pre) for k in keys]).to(device=device, dtype=torch.int64)
+    if ctx.active:
+        torch.distributed.all_reduce(den)
+    global_den = dict(zip(keys, den))
+    if int(global_den["jepa"]) == 0:
+        return "nessun target JEPA nel batch globale", {}
+    sums: dict[tuple[str, str], torch.Tensor] = {}
+    weight, first_hash, grad_stats = {}, None, {}
+    for i, m in enumerate(micros):
+        last = i == len(micros) - 1
+        with nullcontext() if model is None or last else model.no_sync():
+
+            def compute(s, m=m):
+                encoded = []
+                terms = jepa_loss_terms(s, teacher, m.inp, m.visible, cfg.jepa, anchor_targets=m.anchor_targets, rvq_on=m.rvq_on,
+                                       rvq_codes=m.rvq_codes, kinds=m.kinds, regions=m.regions, pose=m.pose,
+                                       capture_encoded=(lambda a, b: encoded.extend((a, b))) if contrastive is not None else None)
+                return contrastive.attach(terms, s, teacher, m, *encoded) if contrastive is not None else terms
+
+            with amp:
+                terms = model(compute) if model is not None else compute(student)
+            # struttura, conteggi e finitezza verificati e decisi insieme da tutti i processi PRIMA del backward. La perdita si costruisce
+            # solo con una struttura valida: una chiave mancante su un processo farebbe sollevare `backward_loss` prima dello stop
+            # coordinato (review GPT del 14/10/2026). La sua finitezza entra negli stessi flag: numeratori finiti non bastano, perche' il
+            # prodotto per il peso e per il numero di processi puo' andare in overflow prima della divisione per i conteggi, con gradienti
+            # finiti che il controllo della norma non vede (review GPT del 15/10/2026, 4f052b0)
+            h = _keys_hash(terms.num, terms.log_num, terms.log_den, terms.log_sum)
+            first_hash = h if first_hash is None else first_hash
+            mismatch = sorted(terms.den) != keys or sorted(terms.num) != keys or sorted(terms.weight) != keys or \
+                any(not torch.equal(terms.den[k], pre[i][k].to(terms.den[k].device)) for k in keys)
+            loss = None if mismatch else terms.backward_loss(global_den, world_size=ctx.world_size)
+            finite = mismatch or (all(bool(torch.isfinite(v).all()) for v in terms.num.values()) and bool(torch.isfinite(loss).all()))
+            flags = _all_max(ctx, device, [float(mismatch), float(not finite), float(h != first_hash), h, -h])
+            if flags[0]:
+                return "conteggi del forward diversi da quelli precalcolati", {}
+            if flags[1]:
+                return (contrastive.failure_reason if contrastive is not None and contrastive.failure_reason else "perdita non finita"), {}
+            if flags[2] or flags[3] != h or -flags[4] != h:
+                return "diagnostiche delle loss con chiavi diverse fra micro-batch o processi", {}
+            if grad_diag and last and "pose" in terms.num:  # E4: gradiente locale del micro-batch finale, prima del backward del passo
+                ws = ctx.world_size
+                comps = {"pose": terms.weight["pose"] * terms.num["pose"] * ws / global_den["pose"].clamp(min=1),
+                         "anchors": sum(terms.weight[k] * terms.num[k] * ws / global_den[k].clamp(min=1) for k in terms.num
+                                        if k not in ("pose", "jepa", "keep", "keep_branches", "contrast_nce", "contrast_rnc"))}
+                grad_stats = _shared_grad_stats(comps, _shared_params(student))
+            if contrastive is not None and contrastive.cfg.wants_gradients(contrastive.step):
+                grad_stats.update(contrastive.global_gradients(terms, global_den, _shared_params(student)))
+            loss.backward()
+        weight = terms.weight
+        for group, d in (("num", terms.num), ("log_num", terms.log_num), ("log_den", terms.log_den), ("log_sum", terms.log_sum)):
+            for k, v in d.items():
+                sums[group, k] = sums.get((group, k), 0) + v.detach().to(torch.float64)
+    names = sorted(sums)
+    vec = torch.stack([sums[n].reshape(()) for n in names]).to(device)
+    if ctx.active:
+        torch.distributed.all_reduce(vec)
+    red = dict(zip(names, vec.tolist()))
+    out = {k: red["num", k] / max(int(global_den[k]), 1) for k in keys}
+    out["total"] = sum(weight[k] * out[k] for k in keys)
+    diag = {k: red["log_num", k] / red["log_den", k] for (g, k) in names if g == "log_num" and red.get(("log_den", k), 0) > 0}
+    diag.update({k: red["log_sum", k] for (g, k) in names if g == "log_sum"})
+    if set(diag) & set(out):
+        raise RuntimeError(f"diagnostiche con lo stesso nome di una componente: {sorted(set(diag) & set(out))}")
+    out.update(diag)
+    out.update(grad_stats)  # E4: vuoto quando spenta
+    return None, out
+
+
+# --- ciclo ---------------------------------------------------------------------------------------------------------------------------
+
+def _check_wsd(cfg: RunConfig) -> None:
+    """Un run WSD troppo corto per la forma firmata si rifiuta: il decay non comincia prima della fine del warmup e ha almeno un passo."""
+    s = cfg.schedule
+    if cfg.max_steps > s.total_steps:
+        raise ValueError(f"wsd: max_steps {cfg.max_steps} oltre total_steps {s.total_steps} (dopo il decay il learning rate e' 0)")
+    if s.total_steps - s.decay_start < 1:
+        raise ValueError(f"wsd: total_steps {s.total_steps} troppo corto, nessun passo di decay con decay_fraction {s.decay_fraction}")
+    if s.decay_start < cfg.warmup_steps:
+        raise ValueError(f"wsd: il decay comincerebbe (passo {s.decay_start}) prima della fine del warmup ({cfg.warmup_steps} passi): "
+                         "run troppo corto per lo schedule di D14")
+
+
+# variazioni ammesse alla ripresa dallo stesso checkpoint (review GPT del 14/10/2026): estendere il run, registrare l'origine dei batch (solo
+# log), il prefetch e la sua verifica (cambiano solo quando arrivano i dati) e il percorso del file di calibrazione (il suo SHA resta nella
+# ricetta). Tutto il resto -- seme, batch, accumulo, loader, dataset,
+# ottimizzazione, modello, loss, diagnostiche che leggono dati -- deve coincidere: per cambiarlo serve un run nuovo o un ramo (`branch_from`)
+RESUME_OPERATIONAL = ("max_steps", "log_batch_origin", "keep_calibration", "prefetch", "prefetch_audit")
+
+
+def _check_resume_recipe(cfg: RunConfig, state: dict) -> None:
+    old, new = _config_with_defaults(state.get("config", {})), config_to_dict(cfg)
+    differ = sorted(k for k in set(old) | set(new) if k not in RESUME_OPERATIONAL and old.get(k) != new.get(k))
+    if differ:
+        raise ValueError(f"ripresa con una ricetta diversa da quella del checkpoint in {differ}: alla ripresa cambiano solo "
+                         f"{list(RESUME_OPERATIONAL)}; per il resto un run nuovo o un ramo (branch_from)")
+
+
+def _check_data_signature(state: dict, signature: dict, say) -> None:
+    """Gli ingressi dello stream (manifest, scale, durate, loader, dataset) uguali a quelli del checkpoint; un checkpoint di prima del 15/10
+    non li registra e si riprende con un avviso."""
+    old = state.get("data_signature")
+    if old is None:
+        say("checkpoint senza la firma dei dati (codice precedente al 15/10/2026): manifest, scale e durate non verificabili alla ripresa")
+    elif old != signature:
+        changed = sorted(k for k in set(old) | set(signature) if old.get(k) != signature.get(k))
+        raise ValueError(f"ripresa con dati diversi da quelli del checkpoint in {changed}: run nuovo")
+
+
+def _check_branch(cfg: RunConfig, state: dict, source: Path) -> None:
+    """Un ramo (pilot sulle epoche, continuazione a 2D; D14) e' identico a un run fatto da zero con lo schedule nuovo solo se: tutto il resto
+    della configurazione e' uguale (stesso warmup e stesso picco compresi), il checkpoint e' della fase stabile del run d'origine e cade
+    anche nella fase stabile del ramo, e lo stream dei dati del checkpoint e' ripetibile."""
+    old, new = _config_with_defaults(state.get("config", {})), config_to_dict(cfg)  # checkpoint di prima dell'accumulo: un micro-batch
+    differ = sorted(k for k in set(old) | set(new) if k not in ("schedule", "max_steps") and old.get(k) != new.get(k))
+    if differ:
+        raise ValueError(f"ramo da {source}: configurazione diversa dall'origine in {differ}; cambiano solo schedule e max_steps")
+    step = int(state["step"])
+    src = Schedule(**{**old["schedule"], "keep_checkpoints": tuple(old["schedule"].get("keep_checkpoints", ()))}) if old.get("schedule") \
+        else Schedule()
+    if src.kind == "wsd" and step > src.decay_start:
+        raise ValueError(f"ramo da {source}: il checkpoint (passo {step}) e' dentro il decay dell'origine (da {src.decay_start})")
+    if cfg.schedule.kind != "wsd" or step > cfg.schedule.decay_start:
+        raise ValueError(f"ramo da {source}: serve uno schedule wsd il cui decay cominci dopo il passo {step} del checkpoint")
+    if state.get("stream") is None:
+        raise ValueError(f"ramo da {source}: checkpoint senza lo stato dello stream, la sequenza dei batch non si ripete")
+
+
+def _lr_at(step: int, cfg: RunConfig) -> float:
+    """Learning rate dell'aggiornamento `step` (0 = il primo). Warmup lineare; con "wsd", dall'aggiornamento `decay_start` il fattore scende
+    linearmente: 1 - (step - decay_start) / passi di decay, cioe' 1 al primo aggiornamento del decay e 1 / passi di decay all'ultimo (dopo,
+    a `total_steps`, sarebbe 0: il run finisce li')."""
+    lr = cfg.lr * min(1.0, (step + 1) / max(1, cfg.warmup_steps))
+    s = cfg.schedule
+    if s.kind == "wsd" and step >= s.decay_start:
+        n_decay = s.total_steps - s.decay_start
+        lr *= max(0.0, 1.0 - (step - s.decay_start) / max(1, n_decay))
+    return lr
+
+
+def _to_device(inp, visible, rvq_on, device):
+    inp.signals = [x.to(device) for x in inp.signals]
+    inp.codes = {k: v.to(device) for k, v in inp.codes.items()}
+    inp.sets = {k: v.to(device) for k, v in inp.sets.items()}
+    inp.qc_valid = inp.qc_valid.to(device)
+    return inp, visible.to(device), rvq_on.to(device)
+
+
+BRANCH_CALIBRATION_SEED = 4242
+FIXED_EVAL_SEED = 5151
+
+
+def _session_key(row: dict) -> str:
+    return f"{row['dataset']}/{row['subject']}/{row['session']}"
+
+
+def _write_or_check(path: Path, obj, what: str) -> None:
+    """Scrive `obj` (JSON) in un run nuovo; alla ripresa deve coincidere con quello gia' scritto."""
+    if path.exists():
+        if json.loads(path.read_text()) != obj:
+            raise ValueError(f"{what} diverso da quello del run ({path}): per cambiarlo serve un run nuovo")
+        return
+    path.write_text(json.dumps(obj))
+
+
+def _fixed_eval_set(index, cfg: RunConfig, scales: dict, window_s: dict | None) -> tuple[list, dict]:
+    """L'insieme fisso della diagnostica di stabilita': `fixed_eval_batches` batch del training (stessa distribuzione) da un generatore proprio,
+    come il batch delle diagnostiche (lo stream dei batch del training non cambia), e la sua identita': sessione, trial, inizio e fine di ogni
+    finestra e l'hash del CONTENUTO di ogni batch (segnali normalizzati, fs, QC, maschere, target: `pairing.batch_sha256`), cosi' che scale,
+    dati o preprocessing diversi alla ripresa cambino l'identita' anche a finestre uguali (review GPT del 14/10/2026)."""
+    from wearusfm.training.pairing import batch_sha256
+
+    loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
+    rng = np.random.default_rng([cfg.seed, FIXED_EVAL_SEED])
+    batches = [loader.batch(min(cfg.batch_size, 32), rng) for _ in range(cfg.fixed_eval_batches)]
+    windows = [[_session_key(r), None if w.trial is None else int(w.trial), int(w.start), int(w.stop)]
+               for b in batches for r, w in zip(b.rows, b.windows)]
+    return batches, {"seed": [cfg.seed, FIXED_EVAL_SEED], "windows": windows, "batch_sha256": [batch_sha256(b) for b in batches]}
+
+
+def _pool_terms(parts: list[dict], weight: dict[str, float]) -> dict:
+    """Le metriche di piu' batch con numeratori e conteggi, come il contratto delle loss distribuite (review GPT del 14/10/2026): componente
+    = somma dei numeratori / somma dei conteggi (assente se nessun batch ha quel target), totale = somma pesata delle componenti, diagnostiche
+    = somma di log_num / somma di log_den sui soli batch dove lo strato c'e' (un batch senza quello strato non e' una loss zero), contatori
+    (log_sum) sommati. `parts`: per batch, dizionari num, den, log_num, log_den, log_sum di valori float."""
+    tot = {g: {} for g in ("num", "den", "log_num", "log_den", "log_sum")}
+    for p in parts:
+        for g in tot:
+            for k, v in p.get(g, {}).items():
+                tot[g][k] = tot[g].get(k, 0.0) + float(v)
+    out = {k: tot["num"][k] / tot["den"][k] for k in tot["num"] if tot["den"].get(k, 0.0) > 0}
+    out["total"] = sum(weight[k] * v for k, v in out.items() if k in weight)
+    diag = {k: tot["log_num"][k] / tot["log_den"][k] for k in tot["log_num"] if tot["log_den"].get(k, 0.0) > 0}
+    diag.update(tot["log_sum"])
+    diag.update({f"{k}_count": v for k, v in tot["den"].items()})
+    if set(diag) & set(out):
+        raise RuntimeError(f"diagnostiche con lo stesso nome di una componente: {sorted(set(diag) & set(out))}")
+    return {**out, **diag}
+
+
+def _fixed_eval_losses(student: WearUsFM, teacher: WearUsFM, batches: list, cfg: RunConfig, device, amp) -> dict:
+    """Le loss del training sull'insieme fisso, con numeratori e conteggi di tutti i batch (`_pool_terms`): la stessa funzione del passo
+    (`readout_objectives` a encoder congelato, totale = branch_weight x termine dei rami; altrimenti `jepa_loss_terms`, totale = somma pesata
+    delle componenti; l'obiettivo mascherato del pilot non ha pannello, `train` lo rifiuta), senza gradiente, studente e teacher in eval
+    (niente dropout del muscolo: valori ripetibili). Lo stato casuale di CPU e GPU torna quello di prima e i modi train/eval pure: il training
+    prosegue bit per bit come senza questa diagnostica."""
+    parts, weight = [], {}
+    modes = (student.training, teacher.training)
+    student.eval()
+    teacher.eval()
+    devices = [torch.cuda.current_device()] if str(device).startswith("cuda") else []
+
+    def values(d):
+        return {k: float(v.detach()) for k, v in d.items()}
+
+    try:
+        with torch.random.fork_rng(devices=devices), torch.no_grad(), amp:
+            for b in batches:
+                inp, visible, rvq_on = _to_device(*L.to_model_inputs(b), device)
+                if cfg.freeze_encoder:
+                    from wearusfm.model.spectral_branches import readout_objectives
+                    _, _, num, den, log_num, log_den = readout_objectives(student, inp, b.anchor_targets, keep=False,
+                                                                          terms=True)["keep_branches"]
+                    parts.append({"num": {"keep_branches": float(num)}, "den": {"keep_branches": float(den)},
+                                  "log_num": values(log_num), "log_den": values(log_den)})
+                    weight = {"keep_branches": cfg.jepa.branch_weight}
+                else:
+                    codes_t = torch.from_numpy(RC.pack_codes(b.rvq_codes)).to(device) if b.rvq_codes is not None else None
+                    t = jepa_loss_terms(student, teacher, inp, visible, cfg.jepa, anchor_targets=b.anchor_targets,
+                                        kinds=torch.as_tensor(b.kind).to(device), rvq_on=rvq_on if codes_t is not None else None,
+                                        rvq_codes=(lambda c, w, ct=codes_t: ct[c, w]) if codes_t is not None else None,
+                                        regions=torch.as_tensor(b.region).to(device) if b.region is not None else None,
+                                        pose=_pose_tensors(b, device), pose_std_log=True)
+                    parts.append({"num": values(t.num), "den": values(t.den), "log_num": values(t.log_num), "log_den": values(t.log_den),
+                                  "log_sum": values(t.log_sum)})
+                    weight = dict(t.weight)
+    finally:
+        student.train(modes[0])
+        teacher.train(modes[1])
+    return {"batches": len(parts), **_pool_terms(parts, weight)}
+
+
+POSE_PANEL_SEED = 7272
+
+
+def _pose_panel_set(index, cfg: RunConfig, scales: dict, window_s: dict | None) -> tuple[list, dict]:
+    """Pannello bilanciato del training: registrazioni attive distinte, finestre da 4 s non sovrapposte con posa valida.
+
+    Per ogni registrazione, visita gli inizi ammessi in ordine temporale e tiene la prima finestra valida che non si sovrappone alle
+    precedenti; poi estrae senza reinserimento dal reticolo ottenuto. Utenti e registrazioni sono visitati in ordine casuale indipendente
+    dal training, fino alle quote esatte. L'ammissibilita' dipende solo dai dati, mai dagli errori del modello. I difetti dei file restano
+    errori; la sola insufficienza di supporto viene registrata e consente di provare la registrazione/utente successivo."""
+    from wearusfm.data import pose_targets as PT
+    from wearusfm.training.pairing import batch_sha256
+
+    loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
+    selection_cfg = replace(cfg.loader, min_window_s=4.0, max_window_s=4.0)
+    by_user: dict[str, list] = {}
+    seen = set()
+    for r, p in zip(index.rows, loader.probs):
+        key = _session_key(r)
+        if PT.PoseStore.applies(r) and p > 0 and key not in seen:
+            by_user.setdefault(str(r["subject"]), []).append(r)
+            seen.add(key)
+    users = sorted(u for u, rs in by_user.items() if len(rs) >= cfg.pose_panel_recordings)
+    if len(users) < cfg.pose_panel_users:
+        raise ValueError(f"pannello della posa: {len(users)} utenti di emg2pose con almeno {cfg.pose_panel_recordings} sessioni nel manifest, "
+                         f"chiesti {cfg.pose_panel_users}")
+    rng = np.random.default_rng([cfg.seed, POSE_PANEL_SEED])
+    selected, excluded = {}, []
+    for u in rng.permutation(users).tolist():
+        rows = sorted(by_user[u], key=_session_key)
+        records = []
+        for i in rng.permutation(len(rows)).tolist():
+            row = rows[i]
+            view = loader.view(row)
+            candidates, last_stop = [], {}
+            for cand in L.admissible_starts(view, selection_cfg):
+                for k in cand[5]:
+                    start = max(int(round(cand[3] + int(k) * selection_cfg.align_ms / 1000.0 * view.fs)), cand[1])
+                    if start < last_stop.get(cand[0], -1):
+                        continue
+                    win = L.window_at(view, selection_cfg, cand, int(k))
+                    if win is not None and loader.pose_store.window(row, view, win, cfg.loader.patch_ms)[1].any():
+                        candidates.append(win)
+                        last_stop[win.trial] = win.stop
+            if len(candidates) < cfg.pose_panel_windows:
+                excluded.append({"user": u, "recording": _session_key(row), "eligible_windows": len(candidates)})
+                continue
+            windows = [candidates[j] for j in sorted(rng.choice(len(candidates), cfg.pose_panel_windows, replace=False).tolist())]
+            records.append((row, view, windows))
+            if len(records) == cfg.pose_panel_recordings:
+                break
+        if len(records) == cfg.pose_panel_recordings:
+            selected[u] = records
+        else:
+            excluded.append({"user": u, "eligible_recordings": len(records)})
+        if len(selected) == cfg.pose_panel_users:
+            break
+    if len(selected) < cfg.pose_panel_users:
+        raise ValueError(f"pannello della posa: {len(selected)} utenti di emg2pose con supporto valido sufficiente, "
+                         f"chiesti {cfg.pose_panel_users}; esclusioni: {excluded}")
+    chosen = sorted(selected)
+    batches, recordings = [], []
+    for u in chosen:
+        for row, view, windows in sorted(selected[u], key=lambda item: _session_key(item[0])):
+            batches.append(loader.materialize([(row, view, w) for w in windows], rng))
+            csv = view.meta.get("csv_row") or {}
+            recordings.append({"recording": _session_key(row), "user": u, "session": csv.get("session"),
+                               "side": csv.get("side"), "stage": csv.get("stage"), "unprompted": PT.PoseStore.unprompted(view)})
+    windows = [[_session_key(r), None if w.trial is None else int(w.trial), int(w.start), int(w.stop)]
+               for b in batches for r, w in zip(b.rows, b.windows)]
+    return batches, {"schema_version": 1, "seed": [cfg.seed, POSE_PANEL_SEED], "users": chosen, "windows": windows,
+                     "window_s": 4.0, "sampling": "nonoverlapping_pose_valid", "mask_strategy": "training_mask_fixed",
+                     "window_users": [str(r["subject"]) for b in batches for r in b.rows],
+                     "n_valid": [int(p[1].sum()) for b in batches for p in b.pose],
+                     "n_valid_per_joint": [p[1].sum(axis=0).tolist() for b in batches for p in b.pose],
+                     "pose_stats_sha256": loader.pose_store.stats_sha256, "recordings": recordings, "excluded": excluded,
+                     "batch_sha256": [batch_sha256(b) for b in batches]}
+
+
+def _pose_temporal_variance(pred, valid):
+    """Varianza temporale per giunto, poi media dei giunti con almeno due istanti validi; bias diversi fra giunti danno zero."""
+    n = valid.sum(dim=1)
+    mean = (pred * valid).sum(dim=1) / n.clamp(min=1)
+    var = ((pred - mean[:, None, :]).square() * valid).sum(dim=1) / n.clamp(min=1)
+    has = n >= 2
+    return (var * has).sum(dim=1) / has.sum(dim=1).clamp(min=1)
+
+
+def _pose_panel_errors(student: WearUsFM, batches: list, cfg: RunConfig, device, amp) -> dict:
+    """L'errore della testa di posa sul pannello, finestra per finestra: predizione dello studente in eval sulla maschera del batch
+    (`student.encode` + `pose_head(latent_mean(z))`, come nel passo), elementi validi = maschera dei target e patch esistenti (`pose_time_valid`,
+    come `pose_terms`). Per finestra: MSE e MAE standardizzati, MSE del predittore costante (0 = la media del train standardizzata, cioe' la
+    testa all'inizio), varianza temporale per giunto delle predizioni, utente e sessione. Aggregati: medie fra le finestre con almeno un
+    elemento valido. Senza gradiente, studente in eval, stato casuale e modo ripristinati: il training prosegue bit per bit come senza."""
+    from wearusfm.model.pose_head import latent_mean
+    from wearusfm.training.jepa import pose_time_valid
+
+    per_window = []
+    mode = student.training
+    student.eval()
+    devices = [torch.cuda.current_device()] if str(device).startswith("cuda") else []
+    try:
+        with torch.random.fork_rng(devices=devices), torch.no_grad(), amp:
+            for b in batches:
+                inp, visible, _ = _to_device(*L.to_model_inputs(b), device)
+                pose = _pose_tensors(b, device)
+                enc = student.encode(inp, visible)
+                pred = student.pose_head(latent_mean(enc.z)).float()  # (S, P, J)
+                if pose is None:
+                    target, valid = torch.zeros_like(pred), torch.zeros_like(pred, dtype=torch.bool)
+                else:
+                    target = pose[0].float()
+                    valid = pose[1] & pose_time_valid(enc.patch_valid, inp.counts)[..., None]
+                n = valid.sum(dim=(1, 2))
+                err2 = ((pred - target).pow(2) * valid).sum(dim=(1, 2))
+                err1 = ((pred - target).abs() * valid).sum(dim=(1, 2))
+                const = (target.pow(2) * valid).sum(dim=(1, 2))
+                joint_n = valid.sum(dim=1)
+                joint_mae = ((pred - target).abs() * valid).sum(dim=1) / joint_n.clamp(min=1)
+                joint_mean = (pred * valid).sum(dim=1) / joint_n.clamp(min=1)
+                mae_rad = (joint_mae * joint_n * pose[2]).sum(dim=1) / n.clamp(min=1) if pose is not None else n * 0.0
+                const_mae = (target.abs() * valid).sum(dim=(1, 2)) / n.clamp(min=1)
+                var_pred = _pose_temporal_variance(pred, valid)
+                for s, (r, w) in enumerate(zip(b.rows, b.windows)):
+                    k = int(n[s])
+                    per_window.append({"user": str(r["subject"]), "session": _session_key(r),
+                                       "window": [None if w.trial is None else int(w.trial), int(w.start), int(w.stop)], "n_valid": k,
+                                       "mse": float(err2[s]) / k if k else None, "mae": float(err1[s]) / k if k else None,
+                                       "mse_const": float(const[s]) / k if k else None, "mae_const": float(const_mae[s]) if k else None,
+                                       "mae_rad": float(mae_rad[s]) if k else None, "pred_var": float(var_pred[s]) if k else None,
+                                       "valid_fraction": k / valid[s].numel(), "n_valid_per_joint": joint_n[s].tolist(),
+                                       "n_valid_patches": int(valid[s].any(dim=-1).sum()),
+                                       "n_joints_temporal": int((joint_n[s] >= 2).sum()),
+                                       "mae_per_joint": [float(v) if c else None for v, c in zip(joint_mae[s], joint_n[s])],
+                                       "pred_mean_per_joint": [float(v) if c else None for v, c in zip(joint_mean[s], joint_n[s])]})
+    finally:
+        student.train(mode)
+    ok = [w for w in per_window if w["n_valid"] > 0]
+
+    def mean(key):
+        return float(np.mean([w[key] for w in ok])) if ok else None
+
+    return {"n_windows": len(per_window), "n_windows_valid": len(ok), "n_users": len({w["user"] for w in ok}),
+            "mse": mean("mse"), "mae": mean("mae"), "mae_rad": mean("mae_rad"), "mse_const": mean("mse_const"),
+            "mae_const": mean("mae_const"), "pred_var": mean("pred_var"),
+            "pred_var_definition": "temporal_per_joint_mean_ddof0_min_two", "per_window": per_window}
+
+
+def _ema_trainable(teacher: torch.nn.Module, student: torch.nn.Module, momentum: float) -> None:
+    """EMA sui soli parametri allenati dello studente (pilot dei rami): gli strati fissi del teacher restano uguali bit per bit; buffer copiati
+    come in `jepa.ema_update`."""
+    for pt, ps in zip(teacher.parameters(), student.parameters()):
+        if ps.requires_grad:
+            pt.mul_(momentum).add_(ps.detach(), alpha=1.0 - momentum)
+    for bt, bs in zip(teacher.buffers(), student.buffers()):
+        bt.copy_(bs)
+
+
+def _fmt(v, spec: str) -> str:
+    """Un numero del messaggio di avanzamento; None o non finito -> «non definita»."""
+    if v is None or (isinstance(v, float) and not math.isfinite(v)):
+        return "non definita"
+    return format(float(v), spec)
+
+
+def _json_value(v):
+    """Un valore delle metriche nel record JSON: tensori a numeri, NaN a None."""
+    if isinstance(v, torch.Tensor):
+        v = v.detach().cpu().tolist()
+    if isinstance(v, float) and not math.isfinite(v):
+        return None
+    return v
+
+
+def _load_branch_state(student: WearUsFM, path: Path) -> dict:
+    """Il passo 0 dei rami (tensori dei rami, statistiche d'ingresso, teste) dallo studente di un `checkpoint_init.pt` del 2C (pilot dei rami,
+    protocollo `rami_pilota_v1`): stessa inizializzazione per costruzione. Si chiama dopo la calibrazione (stesso percorso del 2C) e registra
+    se la calibrazione del run coincideva."""
+    from wearusfm.model.spectral_branches import BRANCH_PREFIXES
+
+    src = torch.load(path, map_location="cpu", weights_only=False)["student"]
+    old = ("spectral_branches.", "branch_heads.")  # i predittori dell'obiettivo nuovo non ci sono nel 2C
+    mine = student.state_dict()
+    want = sorted(k for k in mine if k.startswith(old))
+    have = sorted(k for k in src if k.startswith(BRANCH_PREFIXES))
+    if want != have:
+        raise ValueError(f"{path}: rami e teste diversi da quelli del modello ({sorted(set(want) ^ set(have))[:5]})")
+    bad = [k for k in want if mine[k].shape != src[k].shape or mine[k].dtype != src[k].dtype]
+    if bad:
+        raise ValueError(f"{path}: forme o tipi diversi in {bad[:5]}")
+    stats = [k for k in want if k.startswith("spectral_branches.") and not k.endswith(("weight", "bias"))]
+    reproduced = {"all": all(torch.equal(mine[k].cpu(), src[k]) for k in want), "input_stats": all(torch.equal(mine[k].cpu(), src[k]) for k in stats)}
+    with torch.no_grad():
+        for k in want:
+            mine[k].copy_(src[k])  # i tensori di state_dict condividono la memoria con parametri e buffer
+    return {"from": str(path), "sha256": sha256_file(path), "tensors": len(want), "calibration_reproduced": reproduced}
+
+
+def _calibrate_branches(student: WearUsFM, cfg: RunConfig, index, scales: dict | None, window_s: dict | None, device) -> dict:
+    """Statistiche d'ingresso dei rami spettrali da `branch_calibration_batches` batch del training (il corpus del pretraining), con un
+    generatore proprio: lo stream dei batch del training non cambia. Uguali su tutti i processi (stesso seme). Ritorna la provenienza."""
+    from wearusfm.training.pairing import state_sha256
+
+    loader = L.PretrainLoader(index, cfg.loader, dict(scales or {}), window_s)
+    rng = np.random.default_rng([cfg.seed, BRANCH_CALIBRATION_SEED])
+    per_batch = min(cfg.batch_size, 32)
+
+    def batches():
+        for _ in range(cfg.branch_calibration_batches):
+            yield _to_device(*L.to_model_inputs(loader.batch(per_batch, rng)), device)[0]
+
+    frames = student.spectral_branches.calibrate(batches())
+    return {"batches": cfg.branch_calibration_batches, "windows_per_batch": per_batch, "seed": [cfg.seed, BRANCH_CALIBRATION_SEED],
+            "valid_frames": frames, "stats_sha256": state_sha256(dict(student.spectral_branches.named_buffers()))}
+
+
+def _load_frozen_encoder(student: WearUsFM, cfg: RunConfig, init_from: Path | None) -> dict:
+    """`freeze_encoder`: l'encoder raw dal TEACHER (EMA, quello delle sonde P1/P2) di `init_from`, un modello senza rami con la stessa
+    configurazione (a parte rami, testa dello Step 1 e activation checkpointing). Rami e teste restano nuovi; la testa dello Step 1 si ricalibra.
+    Ogni altra chiave deve caricarsi esattamente."""
+    from wearusfm.model.spectral_branches import BRANCH_PREFIXES
+
+    if init_from is None:
+        raise ValueError("freeze_encoder: serve init_from (il checkpoint dell'encoder da congelare)")
+    state = torch.load(init_from, map_location="cpu", weights_only=False)
+    src = _config_with_defaults(state.get("config", {})).get("model", {})
+    if src.get("spectral_branches"):
+        raise ValueError("freeze_encoder: init_from ha gia' dei rami spettrali; si parte da un encoder senza rami")
+    mine = config_to_dict(cfg)["model"]
+    skip = set(BRANCH_MODEL_FIELDS) | {"keep_readout", "grad_checkpoint"}
+    differ = sorted(k for k in set(src) | set(mine) if k not in skip and src.get(k) != mine.get(k))
+    if differ:
+        raise ValueError(f"freeze_encoder: configurazione del modello diversa da init_from in {differ}")
+    missing, unexpected = student.load_state_dict(state["teacher"], strict=False)
+    bad = [k for k in missing if not k.startswith(BRANCH_PREFIXES + ("spectral_keep.",))] + list(unexpected)
+    if bad:
+        raise ValueError(f"freeze_encoder: chiavi non caricate da init_from: {bad[:5]}")
+    return {"init_from": str(init_from), "sha256": sha256_file(init_from), "step": int(state["step"]), "weights": "teacher"}
+
+
+def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, scales: dict | None = None, device: str = "cpu",
+          num_workers: int = 0, time_limit_s: float | None = None, log=print, window_s: dict | None = None,
+          init_from: Path | None = None, dist: DistContext | None = None, branch_from: Path | None = None,
+          branch_state_from: Path | None = None, expected_contrastive_initial_sha256: str | None = None,
+          contrastive_provenance: dict | None = None) -> dict:
+    """Allena fino a `max_steps`, al limite di tempo o a un allarme; riprende da `out_dir/checkpoint.pt` se c'e'. Scrive `metrics.jsonl`,
+    `checkpoint.pt` e `summary.json` in `out_dir` (fuori dal repo). Uno stop numerico preserva l'ultimo checkpoint gia' salvato;
+    il passo difettoso non aggiorna optimizer/EMA e non viene contato.
+    Con `dist` attivo (DDP, un processo per GPU, gruppo gia' inizializzato): `cfg.batch_size` e' il batch GLOBALE, diviso fra i processi;
+    file, log e diagnostiche solo dal processo 0; ogni decisione di arresto vale per tutti; checkpoint col generatore casuale di ogni processo.
+    Con DDP o `cfg.accum_steps` > 1 le loss seguono il contratto delle loss distribuite (`_accumulate_terms`)."""
+    t_start = time.time()
+    ctx = dist or DistContext()
+    say = log if ctx.is_main else (lambda m: None)
+    if cfg.target_version in RETIRED_TARGET_VERSIONS:
+        raise ValueError(f"target_version {cfg.target_version} ritirata il 18/11/2026 prima di ogni training: usare 125 ms o 50 ms")
+    if cfg.target_version != target_version_for_fast_window(cfg.loader.ms_fast_window_ms):
+        raise ValueError("target_version incompatible with loader.ms_fast_window_ms")
+    if cfg.readout_version != READOUT_VERSION:
+        raise ValueError("readout_version incompatible with this code")
+    masked_query_radius(cfg.jepa, cfg.model)  # valida prima di caricare dati o costruire il modello
+    if cfg.keep_grad_every < 0:
+        raise ValueError("keep_grad_every must be nonnegative")
+    if cfg.pose_grad_every < 0 or (cfg.pose_grad_every and cfg.jepa.pose_weight <= 0):
+        raise ValueError("pose_grad_every: non negativo e solo col termine di posa (pose_weight > 0)")
+    if cfg.model.keep_readout and torch.device(device).type not in ("cpu", "cuda"):
+        raise ValueError("Step 1 supports CPU/CUDA only")
+    if cfg.jepa.keep_weight > 0 and not (cfg.model.keep_readout and cfg.loader.multiscale_anchor):
+        raise ValueError("keep requires a registered head and multiscale targets")
+    if cfg.model.spectral_branches and not cfg.loader.multiscale_anchor:
+        raise ValueError("rami spettrali: servono i target multiscala dello Step 1 (loader.multiscale_anchor)")
+    if cfg.jepa.branch_weight > 0 and not cfg.model.spectral_branches:
+        raise ValueError("branch_weight > 0 senza rami spettrali")
+    if cfg.branch_calibration_batches < 1:
+        raise ValueError("branch_calibration_batches almeno 1")
+    if cfg.fixed_eval_every < 0 or cfg.fixed_eval_batches < 1:
+        raise ValueError("fixed_eval_every >= 0 (0 = spenta) e fixed_eval_batches >= 1")
+    if cfg.fixed_eval_every and cfg.model.branch_objective != "readout":  # ultrareview del 22/10, rilievo 1
+        raise ValueError("pannello fisso: misura la loss di readout dei rami, non l'obiettivo mascherato del pilot (fixed_eval_every 0)")
+    if cfg.pose_panel_every < 0 or min(cfg.pose_panel_users, cfg.pose_panel_recordings, cfg.pose_panel_windows) < 1:
+        raise ValueError("pose_panel_every >= 0 (0 = spento) e pose_panel_users, pose_panel_recordings, pose_panel_windows >= 1")
+    if cfg.pose_panel_every and (cfg.jepa.pose_weight <= 0 or not cfg.loader.pose_root or not cfg.model.pose_head):
+        raise ValueError("pannello della posa: solo col termine di posa (pose_weight > 0, loader.pose_root e model.pose_head)")
+    if cfg.nested == "*":  # nel training la frazione e' sempre esplicita: None o una di DERIVED_FRACTIONS (load_index la valida)
+        raise ValueError("nested '*': nel training la frazione D16 va dichiarata (None o una delle frazioni)")
+    if cfg.freeze_encoder:
+        if not cfg.model.spectral_branches or cfg.jepa.branch_weight <= 0 or cfg.jepa.keep_weight != 0:
+            raise ValueError("freeze_encoder: diagnostica dei rami spettrali, servono spectral_branches, branch_weight > 0 e keep_weight 0 "
+                             "(la testa raw e' congelata)")
+        if ctx.active or cfg.accum_steps > 1 or cfg.keep_grad_every or cfg.pairing_audit or branch_from is not None:
+            raise NotImplementedError("freeze_encoder: un processo, senza accumulo, keep_grad_every, pairing_audit o branch_from")
+    if (cfg.model.branch_objective != "readout" or cfg.model.branch_freeze_output or cfg.branch_monitor or branch_state_from is not None) \
+            and not cfg.freeze_encoder:
+        raise ValueError("obiettivo dei rami, strati fissi, monitor dei rami e passo 0 caricato: solo a encoder congelato (pilot dei rami, "
+                         "raw congelato)")
+    if ctx.active:
+        if not torch.distributed.is_initialized():
+            raise ValueError("DDP: il gruppo dei processi va inizializzato prima (scripts/train_jepa.py --distributed)")
+        if (torch.distributed.get_rank(), torch.distributed.get_world_size()) != (ctx.rank, ctx.world_size):
+            raise ValueError("DDP: rank e world_size diversi da quelli del gruppo dei processi")
+        if cfg.batch_size % ctx.world_size:
+            raise ValueError(f"DDP: batch globale {cfg.batch_size} non divisibile per {ctx.world_size} processi")
+        if cfg.pairing_audit or cfg.keep_grad_every:
+            raise NotImplementedError("DDP: pairing_audit e keep_grad_every non ancora supportati (contratto, punto 4)")
+        if str(device).startswith("cuda"):
+            device = f"cuda:{ctx.local_rank}"
+            torch.cuda.set_device(ctx.local_rank)
+    per_process = cfg.batch_size // ctx.world_size
+    if cfg.accum_steps < 1 or per_process % cfg.accum_steps:
+        raise ValueError(f"accumulo: {per_process} finestre per processo non divisibili in {cfg.accum_steps} micro-batch")
+    if cfg.accum_steps > 1 and (cfg.pairing_audit or cfg.keep_grad_every):
+        raise NotImplementedError("accumulo: pairing_audit e keep_grad_every non supportati")
+    contrastive = None
+    if cfg.contrastive is not None:
+        from wearusfm.training.contrastive_objectives import ContrastiveRuntime
+        if cfg.accum_steps != 1 or cfg.freeze_encoder or cfg.model.spectral_branches:
+            raise ValueError("contrastive requires accum_steps=1 and unfrozen plain encoder")
+        if not cfg.loader.pose_root or not cfg.model.pose_head or cfg.jepa.pose_weight <= 0:
+            raise ValueError("matched contrastive experiment requires base pose supervision in all arms")
+        if init_from is not None or branch_from is not None or branch_state_from is not None:
+            raise ValueError("contrastive experiment starts fresh or resumes its own run; no warm-start/branch")
+        contrastive = ContrastiveRuntime(cfg.contrastive)
+    use_terms = ctx.active or cfg.accum_steps > 1 or contrastive is not None
+    ckpt = out_dir / "checkpoint.pt"
+    if cfg.pairing_audit and (out_dir.exists() or init_from is not None):
+        raise ValueError("pairing audit requires a NEW uninterrupted run (no resume/warm-start)")
+    if cfg.schedule.kind == "wsd":
+        _check_wsd(cfg)
+    resume_state = torch.load(ckpt, map_location="cpu", weights_only=False) if ckpt.exists() else None
+    if contrastive is not None and contrastive.cfg.calibration_only and resume_state is not None:
+        raise ValueError("train-only calibration must start fresh; never resume a calibration as training")
+    default_schedule = json.loads(json.dumps(asdict(Schedule()), default=list))  # i checkpoint di prima del WSD: schedule costante
+    if resume_state is not None and resume_state.get("config", {}).get("schedule", default_schedule) != config_to_dict(cfg)["schedule"]:
+        raise ValueError("ripresa con uno schedule diverso da quello del checkpoint: per cambiarlo si fa un ramo in una cartella nuova "
+                         "(branch_from)")
+    branch = None
+    if resume_state is None and branch_from is not None:  # un ramo: lo stato completo di un checkpoint della fase stabile, cartella nuova
+        if init_from is not None or cfg.pairing_audit:
+            raise ValueError("branch_from esclude init_from e pairing_audit")
+        resume_state = torch.load(branch_from, map_location="cpu", weights_only=False)
+        _check_branch(cfg, resume_state, branch_from)
+        branch = {"from": str(branch_from), "sha256": sha256_file(branch_from), "step": int(resume_state["step"])}
+    if resume_state is not None and cfg.loader.multiscale_anchor:
+        previous = resume_state.get("config", {})
+        if previous.get("target_version") != cfg.target_version:
+            raise ValueError("PSD target definition changed: use a NEW run directory, not resume")
+    if resume_state is not None and (cfg.model.keep_readout or resume_state.get("config", {}).get("model", {}).get("keep_readout")):
+        previous = _config_with_defaults(resume_state["config"])
+        if any(previous.get(k) != config_to_dict(cfg).get(k) for k in ("target_version", "readout_version", "keep_calibration_sha256", "model", "jepa",
+                                                                       "branch_calibration_batches", "freeze_encoder")):
+            raise ValueError("Step 1 resume identity changed: use a NEW run directory")
+    stream = {"num_workers": num_workers, "segment": cfg.stream_segment, "world_size": ctx.world_size}
+    if resume_state is not None and resume_state.get("stream") is not None and resume_state["stream"] != stream:
+        raise ValueError(f"ripresa con uno stream diverso ({stream}) da quello del checkpoint ({resume_state['stream']}): la sequenza dei batch "
+                         "non sarebbe la stessa (contratto, punto 4). Stessi worker, processi e segmento, oppure un run nuovo")
+    if resume_state is not None and int(resume_state.get("world_size", 1)) != ctx.world_size:
+        raise ValueError(f"ripresa con {ctx.world_size} processi da un checkpoint di {resume_state.get('world_size', 1)}: non prevista "
+                         "(nessuna ripresa elastica, contratto punto 4)")
+    calibration = None
+    if cfg.model.keep_readout:
+        if not cfg.keep_calibration or sha256_file(cfg.keep_calibration) != cfg.keep_calibration_sha256:
+            raise ValueError("missing/changed keep calibration file")
+        calibration = read_calibration(cfg.keep_calibration, calibration_signature(cfg, manifest, scales, window_s))
+        if init_from is not None and not cfg.freeze_encoder:  # freeze_encoder: caricamento controllato chiave per chiave (_load_frozen_encoder)
+            raise ValueError("Step 1 warm-start not enabled: use paired NEW runs (no unchecked strict=False)")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    amp = torch.autocast("cuda", dtype=torch.bfloat16, enabled=cfg.amp_bf16 and str(device).startswith("cuda"))
+    stop_file = out_dir / "STOP"
+    if stop_file.exists():  # un allarme o uno stop numerico hanno fermato il run: i job successivi della catena non riprendono
+        reason = stop_file.read_text().strip()
+        say(f"run fermato in precedenza ({reason}): nessun passo")
+        return {"stopped": f"fermato in precedenza: {reason}", "steps": None, "elapsed_s": 0.0}
+    # ricetta e dati della ripresa (review GPT del 14/10/2026): dopo lo STOP, che vince su tutto, e prima di creare modelli o scrivere file
+    data_signature = json.loads(json.dumps(calibration_signature(cfg, manifest, scales, window_s)))  # registrata in ogni checkpoint
+    # R3: le statistiche di standardizzazione della posa (`pose_stats.json`) sono un ingresso dei dati come manifest e scale: SHA nel
+    # checkpoint, verificato alla ripresa e al ramo (critico del 26/10, rilievo 1: non nel config, che resta l'identita' del run)
+    pose_sha = None
+    if cfg.loader.pose_root:
+        from wearusfm.data.pose_targets import STATS_FILE
+        pose_sha = hashlib.sha256((Path(cfg.loader.pose_root) / STATS_FILE).read_bytes()).hexdigest()
+    if resume_state is not None:
+        if branch is None:  # un ramo ha la sua guardia (_check_branch: cambiano solo schedule e max_steps)
+            _check_resume_recipe(cfg, resume_state)
+        _check_data_signature(resume_state, data_signature, say)
+        old_pose_sha = resume_state.get("pose_stats_sha256")
+        if (old_pose_sha or pose_sha) and old_pose_sha != pose_sha:
+            raise ValueError(f"statistiche della posa diverse da quelle del checkpoint ({old_pose_sha} contro {pose_sha}): run nuovo")
+    if cfg.loader.multiscale_anchor != cfg.model.multiscale_anchor:
+        raise ValueError("ancora multi-scala a meta': servono insieme le teste (model) e i target (loader); vedi with_window1_rules")
+    if bool(cfg.loader.rvq_codes_root) != bool(cfg.model.rvq_codes):
+        raise ValueError("ancora RVQ a meta': servono insieme la testa (model.rvq_codes) e i codici (loader.rvq_codes_root); vedi with_rvq")
+    torch.manual_seed(cfg.seed)  # stessa inizializzazione su tutti i processi
+    index = load_index(manifest, roots, cfg.datasets, cfg.nested)
+    if cfg.nested is not None:
+        check_derived_binding(index.params, cfg, window_s)
+    student = WearUsFM(cfg.model)
+    if contrastive is not None:
+        from wearusfm.training.contrastive_objectives import attach_contrastive_head
+        attach_contrastive_head(student)
+    student.to(device)
+    contrastive_initial_sha = None
+    if contrastive is not None:
+        from wearusfm.training.pairing import state_sha256
+        contrastive.expected_datasets = tuple(sorted({r["dataset"] for r, w in zip(index.rows, index.weights) if w > 0}))
+        contrastive_initial_sha = state_sha256(student.state_dict())
+        if expected_contrastive_initial_sha256 is not None and contrastive_initial_sha != expected_contrastive_initial_sha256:
+            raise ValueError("contrastive initial state differs from pinned calibration")
+        if contrastive.cfg.coverage_quotas is not None:
+            probs = L.time_weighted_probs(index, window_s or {}) if cfg.loader.time_weighted else index.weights
+            quotas = {}
+            for row, probability in zip(index.rows, probs):
+                if probability > 0:
+                    quotas[row["dataset"]] = quotas.get(row["dataset"], 0.) + float(probability)
+            pinned = contrastive.cfg.coverage_quotas
+            if cfg.batch_size != contrastive.cfg.coverage_global_batch_size or set(quotas) != set(pinned) or any(
+                    not math.isclose(q, pinned[d], rel_tol=1e-9, abs_tol=1e-12) for d, q in quotas.items()):
+                raise ValueError("contrastive coverage quotas differ from manifest/window sampling")
+    frozen_init = branch_calibration = None
+    if cfg.freeze_encoder and resume_state is None:
+        frozen_init = _load_frozen_encoder(student, cfg, init_from)
+    if calibration is not None and resume_state is None:
+        student.spectral_keep.fit_target_stats(calibration[0], calibration[1])
+        for head in student.branch_heads.values() if student.branch_heads is not None else ():
+            head.fit_target_stats(calibration[0], calibration[1])  # stessi target per tutte le teste
+    if student.spectral_branches is not None and resume_state is None:
+        branch_calibration = _calibrate_branches(student, cfg, index, scales, window_s, device)
+    branch_state = None
+    if branch_state_from is not None:
+        if resume_state is not None:
+            raise NotImplementedError("passo 0 dei rami caricato: nessuna ripresa (un job per run, come il 2C)")
+        branch_state = _load_branch_state(student, branch_state_from)
+    if cfg.freeze_encoder:
+        from wearusfm.model.spectral_branches import freeze_branch_layers, freeze_raw
+        freeze_raw(student)
+        freeze_branch_layers(student)  # pilot dei rami: `output` e `combine` fissi, teste del vecchio obiettivo fisse con l'obiettivo nuovo
+    teacher = make_teacher(student).to(device)
+    # i parametri che si allenano (senza rami, tutti: la lista di sempre)
+    opt = torch.optim.AdamW([p for p in student.parameters() if p.requires_grad], lr=cfg.lr, weight_decay=cfg.weight_decay)
+    step, monitor = 0, AlarmMonitor(cfg.alarm, cfg.model.dim)
+    if resume_state is not None:
+        state = resume_state  # load_state_dict porta pesi e momenti sul dispositivo dei parametri
+        student.load_state_dict(state["student"])
+        teacher.load_state_dict(state["teacher"])
+        opt.load_state_dict(state["optimizer"])
+        step = int(state["step"])
+        if contrastive is not None:
+            if "contrastive_state" not in state:
+                raise ValueError("checkpoint missing contrastive queue state")
+            if state.get("contrastive_initial_sha256") != contrastive_initial_sha:
+                raise ValueError("contrastive initial reference changed on resume")
+            if state.get("contrastive_provenance") != contrastive_provenance:
+                raise ValueError("contrastive calibration/source/cohort provenance changed on resume")
+            contrastive.load_state_dict(state["contrastive_state"], step)
+        monitor.low_collapse, monitor.low_rank = state["alarm_counts"]
+        if ctx.active:  # il generatore di questo processo
+            mine = state["rank_rng"][ctx.rank]
+            torch.set_rng_state(mine["torch_rng"].cpu())
+            if mine.get("cuda_rng") is not None and str(device).startswith("cuda"):
+                torch.cuda.set_rng_state(mine["cuda_rng"].cpu(), torch.device(device))
+        else:
+            torch.set_rng_state(state["torch_rng"].cpu())  # map_location porta anche lo stato casuale sulla GPU: set_rng_state vuole la CPU
+            if torch.cuda.is_available() and state.get("cuda_rng") is not None:
+                torch.cuda.set_rng_state_all([r.cpu() for r in state["cuda_rng"]])
+        say(f"ramo da {branch['from']} al passo {step}" if branch else f"ripresa dal passo {step}")
+    else:
+        if init_from is not None and not cfg.freeze_encoder:  # pesi di un altro run (studente e teacher), ottimizzatore e passi da zero
+            state = torch.load(init_from, map_location="cpu", weights_only=False)
+            student.load_state_dict(state["student"])
+            teacher.load_state_dict(state["teacher"])
+            say(f"pesi iniziali da {init_from} (passo {state['step']} di quel run); ottimizzatore e passi da zero")
+        if ctx.active:  # dropout del muscolo: un generatore diverso per processo (i dati sono gia' diversi)
+            torch.manual_seed(cfg.seed * 1_000_003 + ctx.rank + 1)
+    if student.branch_heads is not None:  # calibrazione dei target uguale per tutte le teste, anche in un checkpoint ripreso
+        from wearusfm.model.spectral_branches import check_head_calibration
+        check_head_calibration(student)
+    model = None
+    if ctx.active:
+        model = _ddp_wrap(student, cfg, ctx, device)
+        for t in teacher.state_dict().values():  # il teacher del processo 0 su tutti (lo studente lo allinea DDP)
+            torch.distributed.broadcast(t, src=0)
+    if cfg.pairing_audit:
+        from wearusfm.training.pairing import state_sha256
+        (out_dir / "pairing.json").write_text(json.dumps({
+            "student_initial_sha256": state_sha256(student.state_dict()),
+            "teacher_initial_sha256": state_sha256(teacher.state_dict()),
+            "seed": cfg.seed, "num_workers": num_workers, "resume": False,
+        }, indent=2))
+    def payload(extra: dict) -> dict:
+        return {"student": student.state_dict(), "teacher": teacher.state_dict(), "optimizer": opt.state_dict(), "step": step,
+                "alarm_counts": (monitor.low_collapse, monitor.low_rank), "config": config_to_dict(cfg),
+                "torch_rng": torch.get_rng_state(), "cuda_rng": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
+                "stream": stream, "data_signature": data_signature, "pose_stats_sha256": pose_sha,
+                **({"contrastive_state": contrastive.state_dict(), "contrastive_initial_sha256": contrastive_initial_sha,
+                    "contrastive_provenance": contrastive_provenance}
+                   if contrastive is not None else {}), **extra}
+
+    init_sha = None
+    if cfg.freeze_encoder and resume_state is None:  # un processo solo (controllato sopra)
+        # step 2C: il controllo «rami non allenati» e' lo stesso modello al passo 0, rami calibrati e teste mai allenate
+        init_ckpt = out_dir / "checkpoint_init.pt"
+        torch.save(payload({}), init_ckpt.with_suffix(".tmp"))
+        init_ckpt.with_suffix(".tmp").replace(init_ckpt)
+        init_sha = sha256_file(init_ckpt)
+    if ctx.is_main:
+        (out_dir / "config.json").write_text(json.dumps(config_to_dict(cfg), indent=1))
+        if pose_sha is not None:  # R3: provenienza delle statistiche di standardizzazione (fuori dal config, che resta l'identita' del run)
+            (out_dir / "pose_provenance.json").write_text(json.dumps({"pose_root": cfg.loader.pose_root, "pose_stats_sha256": pose_sha,
+                                                                     "pose_unprompted": cfg.loader.pose_unprompted}, indent=1))
+        if branch is not None:  # da dove parte il ramo (D14: pilot sulle epoche, continuazione a 2D)
+            (out_dir / "branch.json").write_text(json.dumps(branch, indent=1))
+        if frozen_init is not None or branch_calibration is not None:  # rami spettrali: encoder congelato e calibrazione (solo all'inizio)
+            (out_dir / "spectral_branches.json").write_text(json.dumps({"frozen_init": frozen_init, "calibration": branch_calibration,
+                                                                        "init_checkpoint_sha256": init_sha, "branch_state": branch_state},
+                                                                       indent=1))
+    scales = dict(scales or {})
+    val = None
+    if ctx.is_main:  # diagnostiche solo sul processo 0
+        val_loader = L.PretrainLoader(index, cfg.loader, dict(scales), window_s)
+        val = _to_device(*L.to_model_inputs(val_loader.batch(min(cfg.batch_size, 16), np.random.default_rng([cfg.seed, 999]))), device)
+    fixed = None  # diagnostiche della stabilita' (RunConfig.fixed_eval_every, log_batch_origin), solo sul processo 0 per i file
+    if ctx.is_main and cfg.fixed_eval_every:
+        fixed, ident = _fixed_eval_set(index, cfg, scales, window_s)
+        _write_or_check(out_dir / "fixed_eval_set.json", ident, "insieme fisso della diagnostica di stabilita'")
+    panel, panel_sha = None, None  # contenuti solo sul processo 0; errori di inizializzazione condivisi prima del training
+    panel_prepare_s, panel_evaluations_s = 0.0, []
+    panel_error = None
+    if ctx.is_main and cfg.pose_panel_every:
+        try:
+            panel_start = time.perf_counter()
+            panel, ident = _pose_panel_set(index, cfg, scales, window_s)
+            _write_or_check(out_dir / "pose_panel_set.json", ident, "insieme fisso del pannello della posa")
+            panel_sha = hashlib.sha256(json.dumps(ident, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+            panel_prepare_s = time.perf_counter() - panel_start
+        except Exception as exc:
+            panel_error = f"pannello della posa: {type(exc).__name__}: {exc}"
+    if ctx.active and cfg.pose_panel_every:
+        box = [panel_error]
+        torch.distributed.broadcast_object_list(box, src=0)
+        panel_error = box[0]
+    if panel_error is not None:
+        raise ValueError(panel_error)
+    session_pos = {}
+    if cfg.log_batch_origin:
+        keys = [_session_key(r) for r in index.rows]
+        session_pos = {k: i for i, k in reversed(list(enumerate(keys)))}  # la prima posizione di ogni sessione
+        if ctx.is_main:
+            _write_or_check(out_dir / "origin_sessions.json", keys, "elenco delle sessioni dell'origine dei batch")
+    if resume_state is not None and resume_state.get("stream") is None:
+        say("checkpoint senza lo stato dello stream (codice precedente al 09/10/2026): la ripresa non ripete la sequenza dei batch")
+    data = torch.utils.data.DataLoader(BatchStream(index, cfg.loader, per_process, cfg.seed, scales, window_s,
+                                                   rank=ctx.rank if ctx.active else None, start=step, segment=cfg.stream_segment),
+                                       batch_size=None, num_workers=num_workers, persistent_workers=num_workers > 0,
+                                       # un generatore proprio: creare l'iteratore estrae un seme, e dal generatore globale sposterebbe il
+                                       # dropout del muscolo nei run ripresi (lo stream usa i suoi semi espliciti, non questo)
+                                       generator=torch.Generator().manual_seed(cfg.seed),
+                                       # con i worker, gli array grandi viaggiano in memoria condivisa (`_to_shared` / `_from_shared`)
+                                       collate_fn=_to_shared if num_workers > 0 else None)
+    metrics = (out_dir / "metrics.jsonl").open("a") if ctx.is_main else None
+    fixed_log = (out_dir / "fixed_eval.jsonl").open("a") if fixed is not None else None
+    panel_log = (out_dir / "pose_panel.jsonl").open("a") if panel is not None else None
+    masked_metrics = branch_alarm = None
+    masked_normalized_undefined = 0
+    if cfg.model.branch_objective == "masked" or cfg.model.branch_freeze_output or cfg.branch_monitor:
+        if resume_state is not None:
+            raise NotImplementedError("monitor dei rami del pilot: nessuna ripresa (l'allarme ha un riferimento dai primi passi)")
+        from wearusfm.model.branch_masking import MONITORS as BRANCH_MONITORS, CollapseAlarm
+        from wearusfm.model.spectral_branches import SCALES as BRANCH_SCALES
+        branch_alarm = CollapseAlarm(expected=[f"masked_{k}_{name}_{m}" for k in cfg.model.spectral_branches for name, *_ in BRANCH_SCALES
+                                               for m in BRANCH_MONITORS])
+
+    def fixed_eval(at_step: int) -> None:
+        fixed_log.write(json.dumps({"step": at_step, **_fixed_eval_losses(student, teacher, fixed, cfg, device, amp),
+                                    **({"objective_scope": "base_only_no_contrastive_no_memory_update"} if contrastive is not None else {})}) + "\n")
+        fixed_log.flush()
+
+    if fixed is not None and resume_state is None:  # il punto di partenza della curva
+        fixed_eval(0)
+
+    def panel_eval(at_step: int) -> None:
+        panel_start = time.perf_counter()
+        errors = _pose_panel_errors(student, panel, cfg, device, amp)
+        panel_evaluations_s.append(time.perf_counter() - panel_start)
+        panel_log.write(json.dumps({"step": at_step, "panel_sha256": panel_sha,
+                                    "elapsed_s": panel_evaluations_s[-1], **errors}, allow_nan=False) + "\n")
+        panel_log.flush()
+
+    if panel is not None and resume_state is None:  # la testa a zero: il predittore costante, riferimento della discesa
+        panel_eval(0)
+    reason, it = "max_steps", iter(data)
+    numerical_failure = False
+
+    def fetch():
+        return _from_shared(next(it)) if num_workers > 0 else next(it)
+
+    prefetcher = _Prefetcher(fetch, lambda b: _stage(b, cfg.accum_steps, device), device) if cfg.prefetch else None
+    audited = 0
+
+    def save(names: tuple[str, ...] = ()):
+        """checkpoint.pt (la ripresa) e, se `names`, copie con nome che restano (pre-decay e fase stabile dello schedule WSD)."""
+        extra = {}
+        if ctx.active:  # tutti i processi partecipano; scrive solo il processo 0
+            mine = {"torch_rng": torch.get_rng_state(),
+                    "cuda_rng": torch.cuda.get_rng_state(torch.device(device)) if str(device).startswith("cuda") else None}
+            rank_rng = [None] * ctx.world_size
+            torch.distributed.all_gather_object(rank_rng, mine)
+            extra = {"rank_rng": rank_rng, "world_size": ctx.world_size}
+        if ctx.is_main:
+            torch.save(payload(extra), ckpt.with_suffix(".tmp"))
+            ckpt.with_suffix(".tmp").replace(ckpt)
+            for name in names:
+                tmp = out_dir / (name + ".tmp")
+                shutil.copyfile(ckpt, tmp)
+                tmp.replace(out_dir / name)
+        if ctx.active:
+            torch.distributed.barrier()
+
+    while step < cfg.max_steps:
+        out_of_time, = _any_flag(ctx, device, time_limit_s is not None and time.time() - t_start > time_limit_s)
+        if out_of_time:
+            reason = "limite di tempo"
+            break
+        t0 = time.time()
+        # col prefetch il batch e' gia' sul dispositivo e `t_data` e' l'attesa che resta; senza, preparazione e copia stanno nel passo
+        batch, micros = prefetcher.next() if prefetcher is not None else (fetch(), None)
+        t_data = time.time() - t0
+        if batch.index != step:  # l'ordine dei worker del DataLoader deve ricomporre la sequenza degli indici
+            raise RuntimeError(f"batch di indice {batch.index} al passo {step}: stream fuori sequenza")
+        if cfg.pairing_audit:
+            from wearusfm.training.pairing import batch_sha256
+            batch_hash = batch_sha256(batch)  # CPU data BEFORE any conversion/device transfer
+        for g in opt.param_groups:
+            g["lr"] = _lr_at(step, cfg)
+        student.train()
+        opt.zero_grad(set_to_none=True)
+        if micros is None:
+            micros = _stage(batch, cfg.accum_steps, device)
+        if contrastive is not None:
+            contrastive.prepare(batch, step)
+        if use_terms:  # DDP e/o accumulo: il contratto delle loss distribuite
+            failure, loss_values = _accumulate_terms(model, student, teacher, micros, cfg, ctx, device, amp,
+                                                      grad_diag=bool(cfg.pose_grad_every and cfg.jepa.pose_weight > 0 and (step + 1) % cfg.pose_grad_every == 0),
+                                                      contrastive=contrastive)
+            if failure is not None:  # deciso insieme da tutti i processi, prima del backward che l'avrebbe usato
+                reason = f"{failure} al passo {step}"
+                numerical_failure = True
+                break
+        else:  # un processo senza accumulo: il percorso di sempre, sul micro-batch unico (il batch intero)
+            m = micros[0]
+            with amp:
+                if cfg.freeze_encoder and cfg.model.branch_objective == "masked":  # pilot dei rami: predizione locale mascherata
+                    from wearusfm.model.branch_masking import batch_spans, masked_branch_objective
+                    ml, masked_metrics = masked_branch_objective(student, teacher, student.branch_predictors, m.inp,
+                                                                 batch_spans(m.inp, cfg.seed, step + 1))
+                    losses = {"total": cfg.jepa.branch_weight * ml, "masked": ml}
+                elif cfg.freeze_encoder:  # diagnostica dei rami: solo il termine dei rami sul readout, encoder congelato
+                    from wearusfm.model.spectral_branches import readout_objectives
+                    kb, kb_metrics = readout_objectives(student, m.inp, batch.anchor_targets, keep=False)["keep_branches"]
+                    # col suo peso, come nel training congiunto (review GPT del 14/10: senza, branch_weight non controllava il backward)
+                    losses = {"total": cfg.jepa.branch_weight * kb, "keep_branches": kb, **kb_metrics}
+                    masked_metrics = None
+                    if branch_alarm is not None and branch_alarm.wants(step + 1):  # PWf, PWl: i monitor del PWm, senza gradiente
+                        from wearusfm.model.branch_masking import batch_spans, branch_monitors
+                        masked_metrics = branch_monitors(teacher, m.inp, batch_spans(m.inp, cfg.seed, step + 1))
+                else:
+                    losses = jepa_losses(student, teacher, m.inp, m.visible, cfg.jepa, anchor_targets=batch.anchor_targets, kinds=m.kinds,
+                                         rvq_on=m.rvq_on, rvq_codes=m.rvq_codes, regions=m.regions, pose=m.pose)
+            if not bool(torch.isfinite(losses["total"])):
+                reason = f"perdita non finita al passo {step}"
+                numerical_failure = True
+                break
+            if (cfg.jepa.keep_weight > 0 or cfg.jepa.branch_weight > 0) and cfg.keep_grad_every and step % cfg.keep_grad_every == 0:
+                # Weighted gradient magnitudes on SHARED encoder params; loss sizes alone do not prove dominance. Con i rami il loro termine e'
+                # una componente a se' (parere GPT d5c53c1: contributi dei rami separati, sui parametri raw condivisi)
+                shared = [p for name, p in student.named_parameters() if p.requires_grad and
+                          name.split(".")[0] in ("tokenizer", "identity", "local", "pool", "backbone")]
+                # pesata come nel totale (rilievo del critico su b1238a1): col peso 1 la stessa espressione di prima
+                w_jepa = cfg.jepa.jepa_weight
+                components = {"jepa": losses["jepa"] if w_jepa == 1.0 else w_jepa * losses["jepa"]}
+                for part, weight in (("keep", cfg.jepa.keep_weight), ("keep_branches", cfg.jepa.branch_weight)):
+                    if weight > 0:
+                        components[part] = weight * losses[part]
+                anchors = losses["total"]
+                for value in list(components.values()):  # in ordine, come (totale - jepa) - keep dello Step 1
+                    anchors = anchors - value
+                components["anchors"] = anchors
+                for name, component in components.items():
+                    grads = torch.autograd.grad(component, shared, retain_graph=True, allow_unused=True)
+                    squares = [g.detach().float().square().sum() for g in grads if g is not None]
+                    losses["shared_grad_" + name] = torch.stack(squares).sum().sqrt() if squares else losses["total"].new_zeros(())
+            if cfg.pose_grad_every and cfg.jepa.pose_weight > 0 and (step + 1) % cfg.pose_grad_every == 0:  # E4, un processo (passo del record)
+                pose_c = cfg.jepa.pose_weight * losses["pose"]
+                jepa_c = losses["jepa"] if cfg.jepa.jepa_weight == 1.0 else cfg.jepa.jepa_weight * losses["jepa"]
+                anchors_c = losses["total"] - pose_c - jepa_c
+                for k, v in _shared_grad_stats({"pose": pose_c, "anchors": anchors_c}, _shared_params(student)).items():
+                    losses[k] = losses["total"].new_tensor(v)
+            losses["total"].backward()
+            loss_values = {k: float(v.detach()) for k, v in losses.items()}
+        if contrastive is not None:
+            # Pre-clipping gradient of the projector, including the actual arm weight.
+            loss_values["contrast_projector_grad_norm"] = math.sqrt(sum(
+                float(torch.linalg.vector_norm(p.grad.detach(), dtype=torch.float64)) ** 2
+                for p in student.contrastive_head.parameters() if p.grad is not None))
+            contrastive_failure = contrastive.before_update()
+            if contrastive_failure is not None:
+                reason = contrastive_failure
+                numerical_failure = True
+                opt.zero_grad(set_to_none=True)
+                break
+        gnorm = torch.nn.utils.clip_grad_norm_(student.parameters(), cfg.grad_clip)  # uguale su tutti i processi dopo la riduzione
+        # Loss finita non implica gradienti finiti. Gestione esplicita per registrare lo STOP anche senza un'eccezione del clipping.
+        if not torch.isfinite(gnorm):
+            reason = f"gradienti non finiti al passo {step} (norma: {float(gnorm)})"
+            numerical_failure = True
+            opt.zero_grad(set_to_none=True)
+            break  # niente optimizer, EMA, incremento del passo o metriche di un aggiornamento non eseguito
+        calibration_only = contrastive is not None and contrastive.cfg.calibration_only
+        if not calibration_only:
+            opt.step()
+        if calibration_only:
+            pass  # fixed initial student AND teacher; only the training-data queue advances
+        elif cfg.freeze_encoder and (cfg.model.branch_freeze_output or cfg.model.branch_objective != "readout"):
+            # pilot dei rami: EMA sui soli parametri allenati, gli strati fissi restano uguali al passo 0 bit per bit anche nel teacher
+            for name in ("spectral_branches", "branch_heads"):
+                _ema_trainable(getattr(teacher, name), getattr(student, name), cfg.jepa.ema_momentum)
+        elif cfg.freeze_encoder:  # EMA solo su rami e teste: il raw del teacher resta quello di init_from bit per bit (m a + (1 - m) a != a)
+            for name in ("spectral_branches", "branch_heads"):
+                ema_update(getattr(teacher, name), getattr(student, name), cfg.jepa.ema_momentum)
+        else:
+            ema_update(teacher, student, cfg.jepa.ema_momentum)
+        if contrastive is not None:
+            contrastive.commit()  # pre-update teacher keys, once after successful step
+        if cfg.prefetch_audit:  # gli ingressi del passo, a fine passo, uguali bit per bit a quelli preparati di nuovo dal batch sulla CPU
+            differ, = _any_flag(ctx, device, _micro_digest(micros) != _micro_digest(_stage(batch, cfg.accum_steps, "cpu")))
+            if differ:  # su tutti i processi; come un errore numerico: nessun checkpoint e STOP per la catena
+                reason = f"verifica del prefetch: ingressi sul dispositivo diversi dal batch al passo {step}"
+                numerical_failure = True
+                break
+            audited += 1
+        step += 1
+        rec = {"step": step, "lr": _lr_at(step - 1, cfg), "grad_norm": float(gnorm), "t_data_s": t_data, "t_step_s": time.time() - t0,
+               "windows": len(batch.signals), "skipped_sessions": batch.skipped_sessions}
+        if contrastive is not None:
+            rec["contrastive_calibration_only"] = calibration_only
+            rec["grad_clip_factor"] = min(1., cfg.grad_clip / max(float(gnorm), 1e-12))
+        if not ctx.active:
+            rec.update(loss_values)  # un processo solo: il record di sempre, stesso ordine dei campi
+        if masked_metrics is not None:  # pilot dei rami: perdite per ramo e scala, normalizzate, copertura, monitor
+            rec.update({k: _json_value(v) for k, v in masked_metrics.items()})
+            if "masked_normalized" in rec and rec["masked_normalized"] is None:  # non definita (riferimento costante a varianza nulla)
+                masked_normalized_undefined += 1
+            branch_alarm_reason = branch_alarm.update(step, masked_metrics)
+            if branch_alarm_reason:
+                rec["alarm"] = branch_alarm_reason
+                metrics.write(json.dumps(rec) + "\n")
+                reason = "allarme: " + branch_alarm_reason
+                break
+        # origine e topologia presentata (D9 decisione 1): finestre per classe di quota e quante presentate come montaggio virtuale (D6a)
+        rec["classes"] = {c: sum(r.get("quota_class") == c for r in batch.rows) for c in ("A", "B", "C")}
+        rec["virtual"] = sum(p != "full" for p in batch.presented or [])
+        if cfg.log_batch_origin:  # [sessione (posizione in origin_sessions.json), trial, inizio] per finestra
+            rec["origin"] = [[session_pos[_session_key(r)], None if w.trial is None else int(w.trial), int(w.start)]
+                             for r, w in zip(batch.rows, batch.windows)]
+        if ctx.active:  # il record del passo dai record di tutti i processi, sul processo 0
+            parts = [None] * ctx.world_size if ctx.is_main else None
+            torch.distributed.gather_object(rec, parts, dst=0)
+            rec = {**(_merge_records(parts) if ctx.is_main else rec), **loss_values}  # loss: gia' globali, uguali su ogni processo
+        if cfg.pairing_audit:
+            rec["batch_sha256"] = batch_hash
+        if step % cfg.eval_every == 0 or step == cfg.max_steps:
+            alarm = None
+            if ctx.is_main:
+                with amp:
+                    d = diagnostics(student, teacher, val)
+                # anche le varianze assolute (review del 03/10): rapporto e rango non vedono un'uscita quasi costante, le varianze si'
+                rec.update({"student_collapse_ratio": d["student_collapse"]["ratio"], "teacher_collapse_ratio": d["teacher_collapse"]["ratio"],
+                            "student_erank": d["student_erank"], "teacher_erank": d["teacher_erank"],
+                            "student_var_samples": d["student_collapse"]["var_between_samples"],
+                            "student_var_queries": d["student_collapse"]["var_between_queries"],
+                            "teacher_var_samples": d["teacher_collapse"]["var_between_samples"]})
+                alarm = monitor.update(min(d["student_collapse"]["ratio"], d["teacher_collapse"]["ratio"]), d["student_erank"])
+            if ctx.active:  # la decisione del processo 0 vale per tutti
+                box = [alarm]
+                torch.distributed.broadcast_object_list(box, src=0)
+                alarm = box[0]
+            if alarm:
+                if ctx.is_main:
+                    rec["alarm"] = alarm
+                    metrics.write(json.dumps(rec) + "\n")
+                reason = "allarme: " + alarm
+                break
+        if ctx.is_main:
+            metrics.write(json.dumps(rec) + "\n")
+            metrics.flush()
+        if fixed is not None and step % cfg.fixed_eval_every == 0:
+            fixed_eval(step)
+        if panel is not None and step % cfg.pose_panel_every == 0:
+            panel_eval(step)
+        names = ()
+        if cfg.schedule.kind == "wsd":  # D14: il checkpoint pre-decay e quelli della fase stabile da cui partono i rami
+            names = (("checkpoint_predecay.pt",) if step == cfg.schedule.decay_start else ()) + \
+                    ((f"checkpoint_step{step:07d}.pt",) if step in cfg.schedule.keep_checkpoints else ()) + \
+                    (("checkpoint_postdecay.pt",) if step == cfg.schedule.total_steps else ())
+        if step % cfg.ckpt_every == 0 or names:
+            save(names)
+        if step % 50 == 0 or step == 1:
+            mem = f", memoria GPU max {torch.cuda.max_memory_allocated() / 2**30:.1f} GiB" if str(device).startswith("cuda") else ""
+            if cfg.freeze_encoder and "masked" in rec:  # pilot dei rami: perdita mascherata e normalizzata (1 = predittore costante)
+                # una misura non definita si scrive come tale (review GPT del 21/10, R1): non e' un errore e non vale come superata
+                part = f"rami mascherati {_fmt(rec['masked'], '.4f')} (normalizzata {_fmt(rec.get('masked_normalized'), '.3f')})"
+            else:
+                part = f"rami {rec['keep_branches']:.4f}" if cfg.freeze_encoder else f"jepa {rec['jepa']:.4f}"  # congelato: solo i rami
+            say(f"passo {step}: totale {rec['total']:.4f}, {part}, {rec['t_step_s']:.2f} s/passo (dati {rec['t_data_s']:.2f} s){mem}")
+    if prefetcher is not None:
+        prefetcher.close()
+    if not numerical_failure:
+        save()  # su errore numerico non sovrascrivere l'ultimo checkpoint valido, neppure con RNG avanzato nel passo fallito
+    if metrics is not None:
+        metrics.close()
+    if fixed_log is not None:
+        fixed_log.close()
+    if panel_log is not None:
+        panel_log.close()
+    if ctx.is_main and (reason.startswith("allarme") or numerical_failure):
+        stop_file.write_text(reason + "\n")  # stop definitivo per i job successivi della catena
+    gpu_mem = torch.cuda.max_memory_allocated() / 2**30 if str(device).startswith("cuda") else None
+    if ctx.active and gpu_mem is not None:  # la memoria massima fra i processi
+        t = torch.tensor([gpu_mem], device=device)
+        torch.distributed.all_reduce(t, op=torch.distributed.ReduceOp.MAX)
+        gpu_mem = float(t.item())
+    summary = {"stopped": reason, "steps": step, "elapsed_s": time.time() - t_start, "parameters": sum(p.numel() for p in student.parameters()),
+               "device": device, "gpu_max_memory_gib": gpu_mem,
+               "workers_per_rank": num_workers,
+               # provenienza del codice, dai launcher (scripts/slurm/lib_code_dir.sh, 09/10/2026); None se il run non e' partito da un launcher
+               "code": {"dir": os.environ.get("WEARUSFM_CODE_DIR"), "sha": os.environ.get("WEARUSFM_CODE_SHA")},
+               # ambiente (docs/pilot_posa_v1.md §3 (d)): versioni e il `pip freeze` che il launcher scrive nella cartella del run
+               "environment": _environment(out_dir), "pose_stats_sha256": pose_sha}
+    if ctx.active:
+        summary.update({"world_size": ctx.world_size, "batch_per_process": per_process})
+    if cfg.prefetch or cfg.prefetch_audit:
+        summary.update({"prefetch": cfg.prefetch, "prefetch_audit_steps": audited if cfg.prefetch_audit else None})
+    if use_terms:
+        summary.update({"accum_steps": cfg.accum_steps, "micro_batch": per_process // cfg.accum_steps,
+                        "loss_reduction": "contratto: numeratori locali / conteggi globali su processi e micro-batch"})
+    if contrastive is not None:
+        from wearusfm.training.pairing import state_sha256
+        summary["contrastive"] = {"config": cfg.contrastive, "queue_last_step": contrastive.queue.last_step,
+                                  "expected_datasets": list(contrastive.expected_datasets),
+                                  "rnc_reduction": "replicated global loss, differentiable SUM gather plus DDP mean",
+                                  "optimizer_updates": 0 if contrastive.cfg.calibration_only else step,
+                                  "initial_sha256": contrastive_initial_sha,
+                                  "provenance": contrastive_provenance,
+                                  "final_student_sha256": state_sha256(student.state_dict()),
+                                  "final_teacher_sha256": state_sha256(teacher.state_dict()),
+                                  "coverage_completed_blocks": contrastive.coverage_reports,
+                                  "coverage_partial_block": contrastive.coverage_report(),
+                                  "coverage_failed_block": contrastive.failed_coverage_report}
+    if cfg.model.spectral_branches:
+        prov = out_dir / "spectral_branches.json"
+        summary["spectral_branches"] = {"kinds": list(cfg.model.spectral_branches), "freeze_encoder": cfg.freeze_encoder,
+                                        "trainable_parameters": sum(p.numel() for p in student.parameters() if p.requires_grad),
+                                        "objective": cfg.model.branch_objective, "freeze_output": cfg.model.branch_freeze_output,
+                                        "collapse_reference": branch_alarm.reference() if branch_alarm is not None else None,
+                                        "collapse_monitor": branch_alarm.report() if branch_alarm is not None else None,
+                                        "masked_normalized_undefined": masked_normalized_undefined if cfg.model.branch_objective == "masked"
+                                        else None,
+                                        **(json.loads(prov.read_text()) if prov.exists() else {})}
+    if ctx.is_main:
+        if panel is not None:
+            summary["pose_panel_timing"] = {"prepare_s": panel_prepare_s, "evaluations_s": panel_evaluations_s,
+                                            "total_s": panel_prepare_s + sum(panel_evaluations_s)}
+        (out_dir / "summary.json").write_text(json.dumps(summary, indent=1))
+    say(f"fine: {reason}, passo {step}")
+    return summary
+
+
+def small_config(**overrides) -> RunConfig:
+    """Una configurazione minuscola per le prove (stessi valori firmati per maschere, ancore, EMA e target)."""
+    base = sanity_config(max_steps=4)
+    model = replace(base.model, dim=16, n_heads=4, k_latents=4, local_layers=1, backbone_layers=1, decoder_layers=1)
+    return replace(base, model=model, batch_size=3, eval_every=2, ckpt_every=2, warmup_steps=2, **overrides)
+
+
+def count_parameters(cfg: FMConfig) -> int:
+    return sum(p.numel() for p in WearUsFM(cfg).parameters())

@@ -1,0 +1,135 @@
+"""Temporary skeptic probes (not part of the repository): do the untested
+compare_three_paths/validate_fork/prepare_reload rejections actually fire?"""
+import contextlib
+import json
+
+import pytest
+import torch
+
+from test_contrastive_target_resume import C, common_paths  # noqa: F401  (module fixture)
+
+
+@contextlib.contextmanager
+def edited(edits):
+    originals = {}
+    try:
+        for path, change in edits:
+            originals.setdefault(path, path.read_bytes())
+            rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+            change(rows)
+            path.write_text("".join(json.dumps(row) + "\n" for row in rows))
+        yield
+    finally:
+        for path, data in originals.items():
+            path.write_bytes(data)
+
+
+def _compare(paths, cfg, initial_sha, initial, fork_sha):
+    return C.compare_three_paths(paths, cfg, initial_sha, initial, fork_sha, ranks=1, fork_step=2, end_step=4)
+
+
+def test_boundary_state_mismatch_on_one_reload(common_paths):
+    paths, cfg, initial_sha, initial, fork_sha, _ = common_paths
+    def change(rows): rows[0]["boundary"]["student"] = "0" * 64
+    with edited([(paths["reload_b"] / "trace-0.jsonl", change)]):
+        result = _compare(paths, cfg, initial_sha, initial, fork_sha)
+    assert not result["passed"] and result["status"] == "FAILED_REQUIRES_REVIEW"
+    assert result["boundary_mismatches"] == [{"phase": "reload_b", "rank": 0, "field": "student"}]
+
+
+def test_rng_boundary_common_shift_only_caught_by_boundary(common_paths):
+    paths, cfg, initial_sha, initial, fork_sha, _ = common_paths
+    def change(rows): rows[0]["rng_cpu_before_sha256"] = "0" * 64
+    with edited([(paths[phase] / "trace-0.jsonl", change) for phase in C.PHASES]):
+        result = _compare(paths, cfg, initial_sha, initial, fork_sha)
+    assert all(not p["input_rng_counter_order_differences"] for p in result["pairs"].values())
+    assert {(m["phase"], m["field"]) for m in result["boundary_mismatches"]} == {
+        (phase, "rng_cpu_before_sha256") for phase in C.PHASES}
+    assert not result["passed"] and result["status"] == "FAILED_REQUIRES_REVIEW"
+
+
+def test_start_json_wrong_phase(common_paths):
+    paths, cfg, initial_sha, initial, fork_sha, _ = common_paths
+    path = paths["reload_a"] / "start.json"
+    original = path.read_bytes()
+    try:
+        record = json.loads(original)
+        record["phase"] = "reload_b"
+        path.write_text(json.dumps(record))
+        with pytest.raises(ValueError, match="immutable fork bytes"):
+            _compare(paths, cfg, initial_sha, initial, fork_sha)
+    finally:
+        path.write_bytes(original)
+
+
+def test_endpoint_stop_marker(common_paths):
+    paths, cfg, initial_sha, initial, fork_sha, _ = common_paths
+    stop = paths["reload_a"] / "STOP"
+    try:
+        stop.write_text("failed")
+        with pytest.raises(ValueError, match="mismatched common-fork endpoint"):
+            _compare(paths, cfg, initial_sha, initial, fork_sha)
+    finally:
+        stop.unlink()
+
+
+def test_row_invariant_rank_label(common_paths):
+    paths, cfg, initial_sha, initial, fork_sha, _ = common_paths
+    def change(rows): rows[1]["rank"] = 1
+    with edited([(paths["reload_a"] / "trace-0.jsonl", change)]):
+        with pytest.raises(ValueError, match="invalid runtime restart trace invariants"):
+            _compare(paths, cfg, initial_sha, initial, fork_sha)
+
+
+def test_changed_weights_consistent_everywhere(common_paths):
+    paths, cfg, initial_sha, initial, fork_sha, _ = common_paths
+    def change(rows):
+        for row in rows:
+            if row.get("update", row.get("step")) > 2:
+                row["contrast_rnc_weight"] = row["contrast_rnc_weight"] * 2 + 1.
+    edits = [(paths[phase] / name, change) for phase in C.PHASES for name in ("trace-0.jsonl", "metrics.jsonl")]
+    with edited(edits):
+        with pytest.raises(ValueError, match="inactive or changed weights"):
+            _compare(paths, cfg, initial_sha, initial, fork_sha)
+
+
+def test_trace_disagrees_with_metrics(common_paths):
+    paths, cfg, initial_sha, initial, fork_sha, _ = common_paths
+    def change(rows): rows[0]["contrast_rnc_windows"] = rows[0]["contrast_rnc_windows"] + 1
+    with edited([(paths["reload_a"] / "trace-0.jsonl", change)]):
+        with pytest.raises(ValueError, match="disagrees with production metrics"):
+            _compare(paths, cfg, initial_sha, initial, fork_sha)
+
+
+def _fork_state():
+    raw = {"max_steps": 576, "schedule": {"keep_checkpoints": [544]}, "contrastive": {"arm": "CN"}}
+    state = {"step": 544, "world_size": 4, "config": raw, "contrastive_initial_sha256": "i",
+             "contrastive_provenance": {"p": 1}, "contrastive_state": {"queue": {"last_step": 543}},
+             "rank_rng": [{"torch_rng": torch.get_rng_state(), "cuda_rng": torch.ones(4, dtype=torch.uint8)}
+                          for _ in range(4)]}
+    return raw, state
+
+
+def test_validate_fork_four_ranks_requires_cuda_rng(tmp_path):
+    raw, state = _fork_state()
+    path = tmp_path / "fork.pt"
+    torch.save(state, path)
+    C.validate_fork(path, C.file_sha(path), raw, {"p": 1}, "i")
+    state["rank_rng"][3]["cuda_rng"] = None
+    path.unlink()
+    torch.save(state, path)
+    with pytest.raises(ValueError, match="separate CPU/CUDA RNG"):
+        C.validate_fork(path, C.file_sha(path), raw, {"p": 1}, "i")
+
+
+def test_prepare_reload_rejects_non_identical_copy(tmp_path, monkeypatch):
+    raw, state = _fork_state()
+    path = tmp_path / "fork.pt"
+    torch.save(state, path)
+    real = C.shutil.copyfileobj
+    def truncated(src, dst):
+        real(src, dst)
+        dst.write(b"x")
+    monkeypatch.setattr(C.shutil, "copyfileobj", truncated)
+    with pytest.raises(ValueError, match="not byte-identical"):
+        C.prepare_reload(path, C.file_sha(path), tmp_path / "reload", raw, {"p": 1}, "i", phase="reload_a")
