@@ -69,3 +69,24 @@ Controllo hardware ora soddisfatto. Evidenzaoperatore aggiornata11:01:21+01:00,q
 `release-plan` completato con review85f0d62159d0ac5337857540a14466b3875bebf1,codice01252b6c e sorgenti invariati.
 Piano rilasciato `plan_released_20261120.json`,sha256e3f5b119b19af08274d2df0744ef3772323f4325bcb4d50e72804b56235ef261.
 Segue pubblicazione dei soli metadati e invio del preflight tramite ledgercomune; nessun ulteriorevia richiesto.
+
+## Esito del primo preflight e consegna della diagnosi
+
+Job64931573 **FAILED1:0** dopo73s su2CPU:0,040556coreh,zeroGPUh. Inclusi i due inventari:treallocazioni,
+**0,043333coreh totali**,zeroGPUh. Nessun benchmark o fit neurale inviato. Ricevuta e log raccolti byteperbyte,
+SHA256remoti verificati,contabilitàarchiviata. Checkoutcreato e piano materializzato restano intatti,come il ledger.
+
+Errore `cache user population differs from original producer`. Diagnosi indipendente sui soli `meta_json.npy`
+delle duecache:train1907finestre/40utenti,val18548/15;uguaglianzadirettafalsa,uguaglianzaaggiungendo ilprefissocartella
+`u` esatta suentrambi. Nessun nuovo score o apertura dei latenti/target da questa diagnosi. Ilproduttorestorico
+crea lecartelle con `u`+`_SAFE_RE.sub('_',user)` ma conserva l'IDsenza `u` inmeta_json.
+
+Concordanza con notaClaude629fdaed,copiata testualmente nel ramo con loSHAoriginale nel JSONdell'esito.
+**Correggere alla fonte `historical_producer`**, non eliminare il confronto di riga439:la lista entrainbenchmark,
+calibrazioni,controlli efold. La correzione deve preservareunamappaturaesatta alla cartellaoriginale,con test
+su entrambe lericevute reali esulformato vero dei metadati.
+
+Consegna alresponsabile scientifico/codice:nuovaidentitàsorgenti,piano,ID echeckout;diffminimo e riletturabreveClaude.
+PerL3-9ilnuovotentativo èunadecisione distinta; nessun rilancioautomatico,nessuna sovrascrittura o uso delvecchiocheckout.
+Ildifetto èdi rappresentazioneidentificativi,non prova didaticambiati o popolazionidiverse. La paritàR-1 e gli altri
+gate restanoda eseguire nelnuovopreflight.

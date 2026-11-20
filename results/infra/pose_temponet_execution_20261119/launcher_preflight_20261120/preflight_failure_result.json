@@ -1,0 +1,29 @@
+{
+  "allocated_cpus": 2,
+  "benchmark_jobs_submitted": 0,
+  "claude_diagnosis_commit": "629fdaed2112ffa30b4639d3398b754500dc5050",
+  "claude_diagnosis_path": "docs/reviews/claude_note_pose_temponet_preflight_users_20261120.md",
+  "claude_diagnosis_sha256": "c2ae0d5586da2639b27ac2df20f43ea1887bcd2e194669aa9e17ce6c6d5414d9",
+  "core_hours": 0.04055555555555555,
+  "diagnosis_file": "user_format_diagnosis.json",
+  "diagnosis_independently_confirmed": true,
+  "elapsed_seconds": 73,
+  "exit_code": "1:0",
+  "gpu_hours": 0,
+  "inventory_jobs": [
+    64931087,
+    64931101
+  ],
+  "job_id": "TCNH-preflight-20261119",
+  "neural_fit_jobs_submitted": 0,
+  "old_checkout_modified": false,
+  "old_ledger_id_reused": false,
+  "recovery": "Code owner normalizes IDs at historical_producer, covers downstreamconsumers and regressiontests; new source/plan/IDs/checkout and incrementalreview; decision for newattempt underL3-9; noautomaticretry",
+  "root_cause": "storage-directory user prefix u compared with cache user IDs without prefix; exact populations match after storage-name mapping for bothsplits",
+  "scientific_recipe_changed": false,
+  "slurm_job_id": 64931573,
+  "slurm_state": "FAILED",
+  "status": "STOPPED_AFTER_PREFLIGHT_TECHNICAL_FAILURE",
+  "total_actual_allocations": 3,
+  "total_core_hours_including_inventory": 0.043333333333333335
+}

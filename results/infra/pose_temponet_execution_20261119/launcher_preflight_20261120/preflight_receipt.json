@@ -1,0 +1,131 @@
+{
+  "artifacts": {},
+  "code_sha": "c531e76c72c609ea22339b4a7393be71a8b53169",
+  "complete": false,
+  "details": {
+    "allocation": {
+      "cpus": 2,
+      "gpus": 0,
+      "nodes": 1,
+      "scontrol": "JobId=64931573 JobName=TCNH-preflight-20261119 UserId=sbenatti(127686) GroupId=interactive(25200) MCS_label=N/A Priority=138394 Nice=0 Account=iscrb_wearusfm QOS=normal JobState=RUNNING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:44 TimeLimit=00:12:00 TimeMin=N/A SubmitTime=2026-11-20T11:04:27 EligibleTime=2026-11-20T11:04:27 AccrueTime=2026-11-20T11:04:27 StartTime=2026-11-20T11:04:36 EndTime=2026-11-20T11:16:37 Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-20T11:04:36 Scheduler=Main Partition=lrd_all_serial AllocNode:Sid=login07-interconnect-1:2048723 ReqNodeList=(null) ExcNodeList=(null) NodeList=login13 BatchHost=login13 NumNodes=1 NumCPUs=2 NumTasks=1 CPUs/Task=2 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=2,mem=24G,node=1,billing=2,gres/tmpfs=10737418240 AllocTRES=cpu=2,mem=24G,node=1,billing=2,gres/tmpfs=10737418240 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=2 MinMemoryNode=24G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null) Command=(null) WorkDir=/leonardo/home/userexternal/sbenatti Comment=wearusfm:TCNH-preflight-20261119  StdErr=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-preflight-20261119_64931573.out StdIn=/dev/null StdOut=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-preflight-20261119_64931573.out TresPerNode=gres/tmpfs:10g TresPerTask=cpu=2",
+      "slurm_job_id": "64931573"
+    },
+    "elapsed_seconds": 23.615366810932755,
+    "error": "cache user population differs from original producer",
+    "error_type": "ValueError",
+    "finished_at": "2026-11-20T10:05:44.758759+00:00"
+  },
+  "execution_sha256": "6e025927221328fd045611f5335007b461990ffc537ae9b7abf8a27fdb51fd06",
+  "gates": {},
+  "job_id": "TCNH-preflight-20261119",
+  "numeric_context": {
+    "cuda": "12.1",
+    "flags": {
+      "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+      "cudnn_benchmark": false,
+      "cudnn_deterministic": false,
+      "cudnn_tf32": true,
+      "deterministic": false,
+      "deterministic_warn_only": false,
+      "matmul_tf32": false
+    },
+    "hardware": {
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "kind": "cpu",
+      "machine": "x86_64"
+    },
+    "numpy": "1.26.4",
+    "python": "3.11.6",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpools": [
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 2,
+        "prefix": "libopenblas",
+        "threading_layer": "pthreads",
+        "version": "0.3.21.dev"
+      },
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 2,
+        "prefix": "libopenblas",
+        "threading_layer": "pthreads",
+        "version": "0.3.23.dev"
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 2,
+        "prefix": "libgomp",
+        "threading_layer": null,
+        "version": null
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 2,
+        "prefix": "libgomp",
+        "threading_layer": null,
+        "version": null
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 2,
+        "prefix": "libomp",
+        "threading_layer": null,
+        "version": null
+      }
+    ],
+    "threads": {
+      "environment": {
+        "MKL_NUM_THREADS": "2",
+        "OMP_NUM_THREADS": "2",
+        "OPENBLAS_NUM_THREADS": "2"
+      },
+      "interop": 128,
+      "intraop": 2
+    },
+    "torch": "2.2.0a0+git6c8c5ad"
+  },
+  "numeric_sha256": "d5490afb699664cd52e754b943a7a3ac5d6590993c0189b4b1b565232647f3ed",
+  "phase_plan_sha256": "7552cc89550a44a2e01daaad9d6899c9706057bbd77ad499bd838b0125054479",
+  "predecessors": [],
+  "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+  "protocol": "pose-temponet-frozen-encoder-readout-20261117-v3",
+  "receipt_sha256": "af23605179b106252aa37f1848fddfba7c577a1232fe9653a85b698a8f418c00",
+  "recipe_sha256": "e4b971f04beed2f82ab068fc86dc20e9e72ce02796e66b14dfbb3941e3409856",
+  "review": {
+    "documentary": {
+      "artifact": {
+        "bytes": 13178,
+        "local_copy": "docs/reviews/claude_review_pose_temponet_v3_20261119.md",
+        "path": "docs/reviews/claude_review_pose_temponet_v3_20261119.md",
+        "sha256": "25a8d513eb115ab8156dafdf1005a500c6f7e43c609045d2dea4a4c04b81cb48"
+      },
+      "commit": "ad9f5141711ba60ea1014bd9ba842af168ff0a37",
+      "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+      "status": "claude_review_converged"
+    },
+    "operational": {
+      "artifact": {
+        "bytes": 10492,
+        "local_copy": "docs/reviews/claude_review_pose_temponet_runtime_rereview_20261120.md",
+        "path": "docs/reviews/claude_review_pose_temponet_runtime_rereview_20261120.md",
+        "sha256": "5ca96c2636f918403a4e522b2b2040692b2b7cc99778ed93ae9b8a009765538c"
+      },
+      "commit": "85f0d62159d0ac5337857540a14466b3875bebf1",
+      "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+      "reviewed_code_sha": "01252b6c3023c49046b312e003b7915d8f3f6119",
+      "source_sha256": "027bb7876b372ceb537610322c11f1903c8c2224abfca27484c403bbc297d732",
+      "status": "claude_review_converged"
+    }
+  },
+  "reviewed_code_sha": "01252b6c3023c49046b312e003b7915d8f3f6119",
+  "source_sha256": "027bb7876b372ceb537610322c11f1903c8c2224abfca27484c403bbc297d732",
+  "stage": "preflight",
+  "status": "technical_failure"
+}
