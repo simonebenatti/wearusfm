@@ -8943,6 +8943,25 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Seguito: GPT corregge con un test per ciascun punto, compreso il test della catena con le funzioni vere; io rileggo solo il diff,
   senza agenti. Nessun lancio da parte mia; operatore 2-TCN head launcher. Prompt per GPT nella sezione 8, consegnato a Simone.
 
+### 2026-11-20 | Claude | Rilettura del diff runtime TCN `01252b6c`: APPROVATO, review operativa favorevole del pacchetto (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: la revisione di GPT seguita alla mia review operativa `527f8da`. Ramo `codex/pose-temponet-implementation-20261119`,
+  codice `01252b6c3023c49046b312e003b7915d8f3f6119`, consegna `aa3c8047` (solo il pin), `source_sha256`
+  `027bb7876b372ceb537610322c11f1903c8c2224abfca27484c403bbc297d732`; richiesta di GPT incollata da Simone il 20/11.
+- Review in `docs/reviews/claude_review_pose_temponet_runtime_rereview_20261120.md`: rilettura del solo diff `2f982114..01252b6c`,
+  senza agenti, come concordato.
+- Test riprodotti su un checkout isolato di `aa3c8047`:
+  - 263 TCN passati, compresa la catena dei 24 stadi con selezioni e rifit veri;
+  - 125 storici passati e lo stesso fallimento della base;
+  - suite completa 2.628 passati su 2.629;
+  - `bash -n` pulito sui tre launcher.
+- Esito: **APPROVATO**. B-1...B-4 e I-1...I-6 sono chiusi nel codice, ciascuno con un test; le minori sono corrette o dichiarate
+  come limiti operativi (L3-4, L3-8, L3-9). Ricetta, proposta, soglie e tetti invariati. La review nomina lo SHA del codice e il
+  `source_sha256`, come richiede `release-plan`.
+- Seguito: l'operatore 2-TCN head launcher procede con la sequenza e i gate del documento d'esecuzione. La review non attesta
+  tempi, memoria o determinismo su A100 né i gate sui dati veri. Nessun lancio da parte mia. Prompt per GPT nella sezione 4,
+  consegnato a Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13113,3 +13132,15 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   di valutazione diverso dai fit; I-3 salvataggi misurati senza riscaldamento (il gate può fermare una catena fattibile); I-4
   diagnostico L13 che mescola fit su `y` e base su `y*`; I-5 checkout di campagna creato prima di verificare il commit del piano;
   I-6 gate della quota WORK fermo alla misura del rilascio.
+
+### 2026-11-20 | Claude | Pacchetto TCN `01252b6c`: nessun blocco residuo, note operative prima del rilascio
+
+- Nessun blocco e nessun importante aperto dopo la rilettura del diff.
+- Restano i passi dell'operatore già scritti nel documento d'esecuzione:
+  - modello di CPU dei due nodi seriali (il pin `cpu8` lo include);
+  - misura nuova dopo i benchmark per `resource-plan`;
+  - copie locali delle due `calibration.json` per `commands --stage controls`;
+  - nessun rinfresco di SCRATCH durante uno stadio;
+  - un tentativo aggiuntivo richiede una decisione e ID e checkout nuovi.
+- Il fallimento del test storico `test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned` resta sul ramo; su
+  `main` (`f546c9e4`) passa.
