@@ -59,3 +59,13 @@ zeroGPUh e massimo0,266667coreh includendo180s/job e dueCPUallocate prudenziali.
 operativaCPUdi3coreh, senza aumentare il tetto80coreh CPU-only o272coreh globale. Numero e costo vanno esplicitati
 nel consuntivo, senza contarli come due fit. Nessun retry o risottomissione automatica. Il piano e lo script di inventario
 sono nella directory delle prove, distinti dal piano eseguibile immutato della matrice scientifica.
+
+## Chiusura del prerequisito, 20/11 alle11:01CET
+
+Inventari64931087(login08) e64931101(login13) COMPLETED0:0: **entrambi Intel Xeon Platinum8358@2.60GHz**.
+Logcopiati e verificati perSHA256, contabilitàsacctarchiviata:2s×2CPU+3s×2CPU=**0,002778coreh**,zeroGPUh.
+Il tentativoSSHnon era la procedura necessaria:avrei dovuto passare prima alle misureSLURM, senza insistere sulcertificato.
+Controllo hardware ora soddisfatto. Evidenzaoperatore aggiornata11:01:21+01:00,quota41,407GiB e riservaaltrui24GiB;
+`release-plan` completato con review85f0d62159d0ac5337857540a14466b3875bebf1,codice01252b6c e sorgenti invariati.
+Piano rilasciato `plan_released_20261120.json`,sha256e3f5b119b19af08274d2df0744ef3772323f4325bcb4d50e72804b56235ef261.
+Segue pubblicazione dei soli metadati e invio del preflight tramite ledgercomune; nessun ulteriorevia richiesto.

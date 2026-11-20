@@ -1,0 +1,51 @@
+{
+ "id": "TCNH-CPU-inventory-login13-20261120",
+ "creato": "2026-11-20T10:58:34+01:00",
+ "agente": "gpt",
+ "campagna": "pose_temponet_20261119",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": null,
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=TCNH-CPU-inventory-login13-20261120",
+  "--comment=wearusfm:TCNH-CPU-inventory-login13-20261120",
+  "--account=IscrB_WearUsFM",
+  "--partition=lrd_all_serial",
+  "--nodes=1",
+  "--nodelist=login13",
+  "--ntasks=1",
+  "--cpus-per-task=1",
+  "--mem=1G",
+  "--time=00:01:00",
+  "--no-requeue",
+  "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-CPU-inventory-login13-20261120_%j.out",
+  "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-CPU-inventory-login13-20261120_%j.out"
+ ],
+ "dopo": null,
+ "script_stdin": "results/infra/pose_temponet_execution_20261119/launcher_preflight_20261120/cpu_inventory.sbatch",
+ "script_stdin_sha256": "efda6a567723b22394b72cd42730b1dd977202852ee331debc5e82e94ab0ab7a",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-20T10:58:34+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-20T10:58:34+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-20T10:58:35+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 64931101,
+   "uscita": 0,
+   "stdout": "64931101\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 64931101,
+ "uscita": 0,
+ "stdout": "64931101\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

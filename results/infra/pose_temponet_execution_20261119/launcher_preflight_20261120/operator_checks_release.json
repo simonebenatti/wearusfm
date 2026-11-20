@@ -1,0 +1,44 @@
+{
+  "balance_checked": true,
+  "cpu_inventory_core_hours": 0.002777777777777778,
+  "cpu_inventory_jobs": {
+    "login08": 64931087,
+    "login13": 64931101
+  },
+  "cpu_inventory_reserve_debit": "CPU-only operational reserve3coreh; included in80coreh total",
+  "cpu_inventory_reserved_core_hours": 0.26666666666666666,
+  "cpu_models": {
+    "login08": {
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "hostname": "login08.leonardo.local",
+      "kind": "serial_cpu_inventory",
+      "machine": "x86_64",
+      "requested_cpus": "1",
+      "slurm_job_id": "64931087",
+      "slurm_job_nodelist": "login08"
+    },
+    "login13": {
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "hostname": "login13.leonardo.local",
+      "kind": "serial_cpu_inventory",
+      "machine": "x86_64",
+      "requested_cpus": "1",
+      "slurm_job_id": "64931101",
+      "slurm_job_nodelist": "login13"
+    }
+  },
+  "cpu_models_match": true,
+  "no_duplicate_jobs": true,
+  "no_refresh_during_stage": true,
+  "observed_at": "2026-11-20T11:01:21+01:00",
+  "pending_write_basis": "24GiB conservative scaling archive+metadata reserve, as readiness.json; no other active user writes in queue except scaling run onSCRATCH",
+  "pending_write_bytes": 25769803776,
+  "reservations_checked": true,
+  "serial_lane_checked": true,
+  "sources": [
+    "release_operator_read.txt",
+    "cpu_login08.out",
+    "cpu_login13.out"
+  ],
+  "work_free_bytes": 44460445696
+}

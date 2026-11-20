@@ -178,6 +178,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-20 | GPT launcher TCN | Modelli CPU verificati, review acquisita e release completata
+
+Inventari64931087/login08 e64931101/login13 COMPLETED0:0,2s/3s su2CPUallocate:0,002778coreh totali,zeroGPUh.
+EntrambiIntelXeonPlatinum8358@2.60GHz;logSHA verificati e sacct in launcher_preflight_20261120.
+Superatoprecendenteostacolo:avrei dovutousareprimaSLURM invece diinsisteresuSSH/certificato.
+`release-plan` con review85f0d62159d0ac5337857540a14466b3875bebf1,codice01252b6c,sorgenti246identici;
+piano plan_released_20261120.json sha256e3f5b119b19af08274d2df0744ef3772323f4325bcb4d50e72804b56235ef261.
+Evidenza11:01:21+01:00,quota41,407GiB,riservaaltrelinee24GiB,duplicatiassenti.
+Tettoinvariato24GPUh/80CPU-only/272coreh;dueinventari extragrafosono contabilizzati nella riservaoperativaCPU.
+Proseguecatenaautorizzata,solooperatorelauncher,nessuna nuova firma o modificascientifica.
+
 ### 2026-11-20 | GPT launcher TCN | Inventario CPU tramite due job seriali richiesto per completare il controllo
 
 Simone: «e come si fa a complertarlo? lo fai tu ?». Previsti due inventarihardwaredi1minuto,nodi08/13,
@@ -6068,6 +6079,12 @@ Verifica finale: 204 test nuovi passati (35,35 s), 125 storici passati; un'asser
 Tetti 24 GPUh, 80 coreh CPU-only, 272 coreh totali invariati; walltime dei 16 gruppi neurali non dichiarati prima del benchmark. Solo l'operatore `2-TCN head launcher` eseguirà la catena dopo review favorevole/gate; contatto con Claude tramite Simone. Prompt e prontuario operativi nel ramo. Il pin successivo lega commit e hash dei contenuti.
 
 ## 2) Problemi trovati
+
+### 2026-11-20 | GPT launcher TCN | Chiuso prerequisito CPU e corretta la diagnosi operativa
+
+CPUnodes08/13 misurateviajobSLURM,modelli8358uguali. Il problemaSSHnonrichiedevafermaredocumentalmente
+la catena finoaun'altraprovaumana:letturehardwarefatteviacorsiaseriale e registrate. Nessuna conclusionecausaledi
+certificatoscaduto;nessun indebolimentodeipin. Gatequota/hardware passati;runtime e ricetta rivisti immutati.
 
 ### 2026-11-20 | GPT launcher TCN | Prerequisito hardware della review non attestabile via SSH ai nodi seriali
 
