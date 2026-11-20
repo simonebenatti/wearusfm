@@ -48,3 +48,43 @@ CONTRASTIVE-targets-v3-20261118, 8 CPU / 30 GiB / 120 min. Un solo invio.
 Stdout integrale ed evidenze in audit_execution_20261120/.
 Rapporto atteso: `$WORK/wearusfm_runs/results/contrastive_targets_20261118/audit.json`.
 Esito, hash, accounting autenticato e consuntivo finale restano da raccogliere.
+
+## Raccolta conclusiva
+
+Audit **64937087 COMPLETED 0:0**, 4.022 s (1 h 07 min 02 s), 8 CPU, limite
+120 minuti. Rapporto positivo: **1.024 passi / 1.024 record**, copertura globale
+e pannello superati. Frazione query InfoNCE ammissibili: 99,8006% sui 768 update
+attivi della copertura; 99,8413% sui 256 update del pannello. RnC attivo nel
+100% degli update in entrambi. CapgMyo resta esente secondo la regola già firmata;
+nessuna nuova esenzione. Si tratta di disponibilità di candidati e supporto,
+come dichiarato nel rapporto: non è una misura di qualità del modello.
+
+Config canonica, quattro pin degli input, digest sorgenti e numero di record
+confrontati con il job congelato: tutti coincidenti. Rapporto remoto originale
+20.275.571 byte; SHA256
+`eb7cbdf49ffdd00148647e82c5f51768edbd17b5ef515d960a1f6edec35754d3`.
+Archiviato senza modifiche in audit_execution_20261120/audit.json.gz;
+SHA256 gzip `41472b53ff924b26f73ffc859e0e560c553f873915055fd8d1ba0029926bb9de`.
+
+Ricevuta sacct: audit.sacct.tsv, 92 byte, SHA256
+`8d2c71fbcbe883cf906b8349d5b104882307a26e859cc95629bf295f1c413cfe`.
+Contiene intestazione e unica riga dell'allocazione 64937087. Creato
+audit_accounting.json, schema contrastive-audit-accounting-v1, SHA256
+`594d72932f2ca15440ee4bf1255a0abe035467933703efcd23309a6e14a32726`.
+Comando check-audit del codice congelato eseguito con esito zero e ricevuta
+accounting_validation.json. Sorgenti locali scripts/src byte-identici alla
+versione eseguita. Nessuna eccezione di timeout o scostamento dai limiti.
+
+| Risorsa | Richiesto | Effettivo | Residuo rispetto al richiesto | Inviluppo con margine |
+|---|---:|---:|---:|---:|
+| GPU-ore | 0 | 0 | 0 | 0 |
+| Checkout core-ore | 0,266667 | 0,052222 | 0,214445 | 0,666667 |
+| Audit core-ore | 16 | 8,937778 | 7,062222 | 16,8 |
+| Totale core-ore | 16,266667 | **8,99** | 7,276667 | 17,466667 |
+
+Billing osservato uguale alle CPU allocate, quindi addebito incrementale
+locale 8,99 ore. Il saldo alla sottomissione meno questa fase effettiva è
+655.973,01 ore, prima dei nuovi consumi delle altre linee; non è un saldo
+corrente misurato. Cumulativo linea 3 storico più nuova fase: 6,086667 GPU-ore
+e 66,817778 core-ore. Report, log e ricevute raccolti: consegna conclusa.
+Nessuna calibrazione GPU inviata; la release successiva resta alla chat scientifica.
