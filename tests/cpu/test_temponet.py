@@ -165,3 +165,16 @@ def test_residual_forward_backward():
     assert all(float(s.conv.weight.grad.abs().sum()) > 0 for s in m.skips)
     with torch.no_grad():
         assert m.eval()(torch.randn(3, 16, 256)).shape == (3, 20)
+
+
+@pytest.mark.parametrize("residual", [False, True])
+def test_embed_is_the_input_of_the_head(residual):
+    # merge del 20/11: forward = out(head(embed(x))); senza salti embed = features(x).flatten(1), come prima
+    torch.manual_seed(0)
+    m = TEMPONet(out_dim=20, causal=False, residual=residual).eval()
+    x = torch.randn(5, 16, 256)
+    with torch.no_grad():
+        e = m.embed(x)
+        assert e.shape == (5, 64 * 4) and torch.equal(m.out(m.head(e)), m(x))
+        if not residual:
+            assert torch.equal(e, m.features(x).flatten(1))

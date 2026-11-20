@@ -9,6 +9,12 @@ Due modi.
   - Finestre: finiscono all'ultimo campione dei blocchi validi a 200 Hz, ogni 8 blocchi; si raccolgono dalla RAM in un thread, a blocchi di
     passi, in memoria bloccata.
   - Validazione grezza per epoca, solo descrittiva: istanti a 50 Hz sui blocchi validi. Si usa il modello finale.
+  - Loss (`--loss`, studio del 18/11/2026, `docs/temponet_emg2pose_loss_plan_20261118.md`): `l1` e' la ricetta di riferimento, invariata;
+    `smoothl1` (beta 1 in unita' standardizzate) e `mse` cambiano solo la funzione; `mse_vel` = MSE della posa + `--vel-weight` x MSE della
+    velocita', come il Transformer di emg2pose di [S26] (arXiv 2610.32674, Tab. S1: errori divisi per la deviazione dei bersagli del training).
+    La velocita' e' la differenza fra la posa di una finestra e quella di una compagna che finisce `--vel-lag-blocks` blocchi prima, nella
+    stessa registrazione; le due finestre passano insieme nel modello (BatchNorm sulle 2 x batch finestre), il termine della posa usa solo le
+    finestre di partenza, le coppie senza compagna valida hanno peso 0.
 - `eval` (passo 3): finestre e bersagli ufficiali del passo 0; alpha dell'EMA per giunto sulla validazione; cancello sulla validazione; poi, solo
   se passa, il test, una volta. Con `--val-only` (collaudo) il test non si calcola.
 
@@ -38,6 +44,10 @@ import temponet_db8 as T  # noqa: E402  (CUDNN_MODES, GRAPH_TOLERANCE, GRAPH_WAR
 from wearusfm.harness import emg2pose_regression as R  # noqa: E402
 
 EVAL_BATCH = 8192
+LOSSES = ("l1", "smoothl1", "mse", "mse_vel")
+LOSS_NAMES = {"l1": "L1", "smoothl1": "smooth L1", "mse": "MSE", "mse_vel": "MSE + velocita'"}
+SMOOTH_L1_BETA = 1.0  # in unita' standardizzate (deviazioni del giunto): il default di PyTorch
+STATS_CHUNK = 1 << 20  # righe per blocco nel calcolo della deviazione della velocita'
 
 
 def max_rss_gb() -> float:
@@ -100,11 +110,29 @@ class HostStore:
         return out
 
 
-def block_index(store: HostStore, pose_root: str | Path, stride_blocks: int):
-    """Finestre sui blocchi validi a 200 Hz (regola di `R.train_blocks`): fine globale (N,), fattore (N,), bersaglio (N, 20) float16 in radianti."""
+def partner_blocks(valid: np.ndarray, j: np.ndarray, lag_blocks: int, window: int = R.WINDOW):
+    """Compagne per la velocita' dei blocchi j di `R.train_blocks`: il blocco j - lag se tutti i blocchi da j - lag a j sono validi e la
+    finestra che finisce nel blocco j - lag ha window - 1 campioni di storia nella registrazione; altrimenti j stesso con maschera False.
+    -> (blocchi delle compagne, maschera)."""
+    if lag_blocks < 1:
+        raise ValueError("lag_blocks deve essere almeno 1")
+    v = np.asarray(valid, dtype=bool)
+    j = np.asarray(j, dtype=np.int64)
+    jp = j - lag_blocks
+    jp0 = np.maximum(jp, 0)
+    bad = np.concatenate([[0], np.cumsum(~v)])  # bad[k] = blocchi non validi in [0, k)
+    ok = (jp >= 0) & (R.block_end(jp0) >= window - 1) & (bad[j + 1] - bad[jp0] == 0)
+    return np.where(ok, jp, j), ok
+
+
+def block_index(store: HostStore, pose_root: str | Path, stride_blocks: int, lag_blocks: int = 0):
+    """Finestre sui blocchi validi a 200 Hz (regola di `R.train_blocks`): fine globale (N,), fattore (N,), bersaglio (N, 20) float16 in radianti.
+    Con `lag_blocks` > 0 c'e' un quarto elemento, le compagne per la velocita' (`partner_blocks`): (fine globale (N,), bersaglio (N, 20)
+    float16, maschera (N,) float32). La compagna e' nella stessa registrazione: il fattore e' lo stesso."""
     import torch
 
     ends, rid, ys = [], [], []
+    pends, pys, pmask = [], [], []
     for i, d in enumerate(store.dirs):
         p = Path(pose_root) / d.parent.name / d.name
         blocks = np.load(p / "pose_200hz_f16.npy", mmap_mode="r")
@@ -115,19 +143,49 @@ def block_index(store: HostStore, pose_root: str | Path, stride_blocks: int):
         ends.append(store.offset[i] + R.block_end(j))
         rid.append(np.full(j.size, i, dtype=np.int64))
         ys.append(np.asarray(blocks[j], dtype=np.float16))
+        if lag_blocks > 0:
+            jp, ok = partner_blocks(valid, j, lag_blocks)
+            pends.append(store.offset[i] + R.block_end(jp))
+            pys.append(np.asarray(blocks[jp], dtype=np.float16))
+            pmask.append(ok.astype(np.float32))
     ends_t = torch.from_numpy(np.concatenate(ends))
     rid_t = torch.from_numpy(np.concatenate(rid))
-    return ends_t, store.factor[rid_t], torch.from_numpy(np.concatenate(ys))
+    out = (ends_t, store.factor[rid_t], torch.from_numpy(np.concatenate(ys)))
+    if lag_blocks <= 0:
+        return out
+    return out + ((torch.from_numpy(np.concatenate(pends)), torch.from_numpy(np.concatenate(pys)), torch.from_numpy(np.concatenate(pmask))),)
+
+
+def velocity_std(ys, pair) -> tuple[np.ndarray, int]:
+    """Deviazione per giunto (radianti, della popolazione, in due passate) della velocita' bersaglio, cioe' bersaglio - bersaglio della compagna,
+    sulle coppie valide del training: ((D,), numero di coppie valide)."""
+    _, pys, mask = pair
+    keep = mask.numpy() > 0
+    n = int(keep.sum())
+    if n < 2:
+        raise ValueError("coppie valide insufficienti per la deviazione della velocita'")
+
+    def diffs():
+        for a in range(0, len(ys), STATS_CHUNK):
+            k = keep[a : a + STATS_CHUNK]
+            yield ys[a : a + STATS_CHUNK].numpy()[k].astype(np.float64) - pys[a : a + STATS_CHUNK].numpy()[k].astype(np.float64)
+
+    mean = sum(d.sum(axis=0) for d in diffs()) / n
+    sd = np.sqrt(sum(np.square(d - mean).sum(axis=0) for d in diffs()) / n)
+    if not (np.isfinite(sd).all() and (sd > 0).all()):
+        raise ValueError(f"deviazione della velocita' non positiva: {sd}")
+    return sd, n
 
 
 class Feeder:
     """Blocchi di `k` passi raccolti da un thread in due buffer (in memoria bloccata su GPU); il thread principale li copia sulla GPU e
-    rilascia il buffer quando la copia e' finita."""
+    rilascia il buffer quando la copia e' finita. Con `pair` (quarto elemento di `block_index`) raccoglie anche finestre, bersagli e maschere
+    delle compagne (bxp, byp, bm)."""
 
-    def __init__(self, store: HostStore, ends, fw, ys, batch: int, k: int, pin: bool):
+    def __init__(self, store: HostStore, ends, fw, ys, batch: int, k: int, pin: bool, pair=None):
         import torch
 
-        self.store, self.ends, self.fw, self.ys, self.batch, self.k = store, ends, fw, ys, batch, k
+        self.store, self.ends, self.fw, self.ys, self.batch, self.k, self.pair = store, ends, fw, ys, batch, k, pair
         n = batch * k
 
         def buf(shape, dtype):
@@ -137,6 +195,10 @@ class Feeder:
         self.bx = [buf((n, R.WINDOW, R.N_CHANNELS), torch.int16) for _ in range(2)]
         self.bf = [buf((n,), torch.float32) for _ in range(2)]
         self.by = [buf((n, R.N_JOINTS), torch.float16) for _ in range(2)]
+        if pair is not None:
+            self.bxp = [buf((n, R.WINDOW, R.N_CHANNELS), torch.int16) for _ in range(2)]
+            self.byp = [buf((n, R.N_JOINTS), torch.float16) for _ in range(2)]
+            self.bm = [buf((n,), torch.float32) for _ in range(2)]
         self.free: queue.Queue = queue.Queue()
         self.ready: queue.Queue = queue.Queue()
         for b in (0, 1):
@@ -156,6 +218,11 @@ class Feeder:
                     self.store.gather(self.ends[sel], out=self.bx[b][:m])
                     self.bf[b][:m].copy_(self.fw[sel])
                     self.by[b][:m].copy_(self.ys[sel])
+                    if self.pair is not None:
+                        pe, py, pm = self.pair
+                        self.store.gather(pe[sel], out=self.bxp[b][:m])
+                        self.byp[b][:m].copy_(py[sel])
+                        self.bm[b][:m].copy_(pm[sel])
                     self.gather_seconds += time.time() - t
                     self.ready.put((b, c))
                 self.ready.put(None)
@@ -180,25 +247,35 @@ class Feeder:
 
 # --- modello e passo --------------------------------------------------------------------------------------------------------------------
 
-def build(seed: int, device, lr: float, dropout: float = 0.5, residual: bool = False):
+def build(seed: int, device, lr: float, dropout: float = 0.5, loss: str = "l1", residual: bool = False):
+    """Modello, ottimizzatore e funzione di loss sul bersaglio standardizzato (per `mse_vel` e' il termine della posa; la velocita' la aggiunge
+    `Stepper`). La loss non cambia l'inizializzazione: la funzione non ha parametri. `residual`: TEMPONet con un salto per blocco."""
     import torch
     from torch import nn
 
     from wearusfm.model.temponet import TEMPONet
 
+    loss_fns = {"l1": nn.L1Loss, "smoothl1": lambda: nn.SmoothL1Loss(beta=SMOOTH_L1_BETA), "mse": nn.MSELoss, "mse_vel": nn.MSELoss}
+    if loss not in loss_fns:
+        raise ValueError(f"loss sconosciuta: {loss}")
     torch.manual_seed(seed)
     model = TEMPONet(in_channels=R.N_CHANNELS, window=R.WINDOW, out_dim=R.N_JOINTS, causal=False, dropout=dropout,
                      residual=residual).to(device)  # V13: simmetrico; residual: un salto per blocco (`--arch residual`)
     opt = torch.optim.Adam(model.parameters(), lr=lr, capturable=device.type == "cuda")
-    return model, opt, nn.L1Loss()
+    return model, opt, loss_fns[loss]()
 
 
 class Stepper:
     """Passo di training su buffer statici (finestre int16, fattori, bersagli in radianti), in eager o in un CUDA graph (schema di
     `temponet_db8.Stepper`: GRAPH_WARMUP passi veri in eager su uno stream laterale, poi cattura e replay). Ingresso = int16 x fattore,
-    bersaglio standardizzato con media e deviazione per giunto."""
+    bersaglio standardizzato con media e deviazione per giunto.
 
-    def __init__(self, model, opt, loss_fn, mu, sd, batch: int, use_graph: bool, device):
+    Con `vel` = (peso, deviazione della velocita' per giunto in radianti), loss `mse_vel`: anche finestre, bersagli e maschere delle compagne
+    (stesso fattore della finestra di partenza). Loss = MSE della posa sulle finestre di partenza + peso x somma delle maschere x errore
+    quadratico della velocita' / (numero di coppie valide x giunti); velocita' predetta = (z - z_compagna) x sd, bersaglio = y - y_compagna,
+    errore diviso per la deviazione della velocita'. `parts` accumula i due termini."""
+
+    def __init__(self, model, opt, loss_fn, mu, sd, batch: int, use_graph: bool, device, vel=None):
         import torch
 
         self.model, self.opt, self.loss_fn, self.use_graph = model, opt, loss_fn, use_graph
@@ -211,11 +288,48 @@ class Stepper:
         self.graph = None
         self.side = torch.cuda.Stream(device) if use_graph else None
         self.done = 0
+        self.vel = vel is not None
+        if self.vel:
+            self.vel_weight = float(vel[0])
+            self.sd_v = torch.as_tensor(vel[1], dtype=torch.float32, device=device)
+            self.xpb = torch.zeros_like(self.xb)
+            self.ypb = torch.zeros_like(self.yb)
+            self.mb = torch.zeros(batch, dtype=torch.float32, device=device)
+            self.parts = torch.zeros(2, dtype=torch.float64, device=device)
+            self._parts = None
 
     def _loss(self):
         x = self.xb.permute(0, 2, 1).contiguous().float() * self.fb[:, None, None]
         y = (self.yb.float() - self.mu) / self.sd
-        return self.loss_fn(self.model(x), y)
+        if not self.vel:
+            return self.loss_fn(self.model(x), y)
+        import torch
+
+        xp = self.xpb.permute(0, 2, 1).contiguous().float() * self.fb[:, None, None]
+        z = self._pair_forward(torch.cat([x, xp]))
+        za, zp = z[: x.shape[0]], z[x.shape[0] :]
+        pose = self.loss_fn(za, y)
+        dv = ((za - zp) * self.sd - (self.yb.float() - self.ypb.float())) / self.sd_v
+        vel = (self.mb[:, None] * dv.square()).sum() / (self.mb.sum().clamp(min=1.0) * R.N_JOINTS)
+        self._parts = torch.stack([pose.detach(), vel.detach()])
+        return pose + self.vel_weight * vel
+
+    def _pair_forward(self, x2):
+        """Forward di finestre e compagne concatenate (BatchNorm sulle 2 x batch finestre) con UNA maschera del dropout per coppia, ripetuta
+        sulle due meta': la differenza fra le uscite di una coppia non contiene il rumore del dropout (review del 18/11, emendamento 3 in
+        `docs/decisioni.md`). Stesse operazioni di `TEMPONet.forward` e di `_Dense`; con il dropout spento coincide con `model(x2)`."""
+        import torch
+
+        m = self.model
+        h = m.embed(x2)  # i tre blocchi, con i salti se la rete e' residua (merge del 20/11: prima m.features(x2).flatten(1))
+        half = x2.shape[0] // 2
+        for d in m.head:
+            h = d.relu(d.bn(d.fc(h)))
+            p = float(d.drop.p)
+            if m.training and p > 0:
+                keep = (torch.rand((half, h.shape[1]), device=h.device) >= p).to(h.dtype) / (1.0 - p)
+                h = h * torch.cat([keep, keep])
+        return m.out(h)
 
     def _eager(self):
         self.opt.zero_grad(set_to_none=True)
@@ -223,13 +337,19 @@ class Stepper:
         loss.backward()
         self.opt.step()
         self.total.add_(loss.detach())
+        if self.vel:
+            self.parts.add_(self._parts)
 
-    def step(self, x, f, y) -> None:
+    def step(self, x, f, y, xp=None, yp=None, m=None) -> None:
         import torch
 
         self.xb.copy_(x)
         self.fb.copy_(f)
         self.yb.copy_(y)
+        if self.vel:
+            self.xpb.copy_(xp)
+            self.ypb.copy_(yp)
+            self.mb.copy_(m)
         if not self.use_graph:
             self._eager()
         elif self.graph is None and self.done < T.GRAPH_WARMUP:
@@ -246,6 +366,8 @@ class Stepper:
                     loss.backward()
                     self.opt.step()
                     self.total.add_(loss.detach())
+                    if self.vel:
+                        self.parts.add_(self._parts)
             self.graph.replay()
         self.done += 1
 
@@ -254,31 +376,67 @@ class Stepper:
         self.total.zero_()
         return v
 
+    def take_parts(self) -> tuple[float, float]:
+        """Somme dei termini di posa e di velocita' (non pesato) dall'ultima lettura (solo `mse_vel`)."""
+        v = self.parts.tolist()
+        self.parts.zero_()
+        return v[0], v[1]
 
-def graph_check(xs, fs, ys, mu, sd, batch: int, device, lr: float, residual: bool = False) -> dict:
-    """Stessi pesi iniziali (seme 777), stessi batch, dropout 0, cuDNN deterministico: len(xs) passi eager contro graph."""
+
+def graph_check(xs, fs, ys, mu, sd, batch: int, device, lr: float, loss: str = "l1", pair=None, vel=None, residual: bool = False) -> dict:
+    """Stessi pesi iniziali (seme 777), stessi batch, dropout 0, cuDNN deterministico: len(xs) passi eager contro graph. Per `mse_vel`
+    pair = (finestre, bersagli, maschere) delle compagne, impilate come xs, e vel come in `Stepper`. `residual`: la rete del training."""
     import torch
 
     saved = (torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark)
     torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = True, False
-    out, params = {"steps": len(xs)}, {}
+    out, params = {"steps": len(xs), "loss": loss}, {}
     for mode in ("eager", "graph"):
-        model, opt, loss_fn = build(777, device, lr, dropout=0.0, residual=residual)
+        model, opt, loss_fn = build(777, device, lr, dropout=0.0, loss=loss, residual=residual)
         model.train()
-        st = Stepper(model, opt, loss_fn, mu, sd, batch, mode == "graph", device)
+        st = Stepper(model, opt, loss_fn, mu, sd, batch, mode == "graph", device, vel=vel)
+        extra = (lambda i: (pair[0][i], pair[1][i], pair[2][i])) if pair is not None else (lambda i: ())
         for i in range(T.GRAPH_WARMUP + 1):
-            st.step(xs[i], fs[i], ys[i])
+            st.step(xs[i], fs[i], ys[i], *extra(i))
         torch.cuda.synchronize()
         t0 = time.time()
         for i in range(T.GRAPH_WARMUP + 1, len(xs)):
-            st.step(xs[i], fs[i], ys[i])
+            st.step(xs[i], fs[i], ys[i], *extra(i))
         torch.cuda.synchronize()
         out[f"{mode}_ms_per_step"] = 1000 * (time.time() - t0) / (len(xs) - T.GRAPH_WARMUP - 1)
         out[f"{mode}_loss_sum"] = st.take_total()
+        if st.vel:
+            out[f"{mode}_pose_vel_sums"] = list(st.take_parts())
         params[mode] = [p.detach().clone() for p in model.parameters()] + [b.detach().clone() for b in model.buffers()]
     out["max_abs_param_diff"] = max(float((a.double() - b.double()).abs().max()) for a, b in zip(params["eager"], params["graph"]))
+    if vel is not None:
+        out["dropout_check"] = dropout_check(xs, fs, ys, mu, sd, batch, device, vel, residual=residual)
     torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = saved
     return out
+
+
+DROPOUT_CHECK_VEL_MAX = 1e-8  # termine della velocita' ammesso con compagna = finestra e maschera condivisa
+
+
+def dropout_check(xs, fs, ys, mu, sd, batch: int, device, vel, steps: int = 4, residual: bool = False) -> dict:
+    """Solo `mse_vel`, nel CUDA graph che usera' il training (dropout 0,5): compagna = finestra stessa e lr 0, cosi' i pesi non cambiano.
+    Con la maschera condivisa il termine della velocita' deve essere nullo a ogni replay; il termine della posa deve cambiare fra un replay e
+    l'altro con lo stesso ingresso (la maschera si rinnova). -> esito e valori."""
+    import torch
+
+    model, opt, loss_fn = build(778, device, 0.0, dropout=0.5, loss="mse_vel", residual=residual)
+    model.train()
+    st = Stepper(model, opt, loss_fn, mu, sd, batch, True, device, vel=vel)
+    ones = torch.ones(batch, dtype=torch.float32, device=device)
+    pose, velv = [], []
+    for _ in range(T.GRAPH_WARMUP + steps):
+        st.step(xs[0], fs[0], ys[0], xs[0], ys[0], ones)
+        p, v = st.take_parts()
+        pose.append(p)
+        velv.append(v)
+    replay_pose = pose[T.GRAPH_WARMUP + 1 :]  # passi dopo la cattura, stesso ingresso e stessi pesi
+    ok = max(abs(v) for v in velv) <= DROPOUT_CHECK_VEL_MAX and len(set(replay_pose)) == len(replay_pose)
+    return {"passed": bool(ok), "pose_parts": pose, "vel_parts": velv, "vel_max_allowed": DROPOUT_CHECK_VEL_MAX}
 
 
 def predict(model, store: HostStore, ends, fw, device, batch: int = EVAL_BATCH) -> np.ndarray:
@@ -340,9 +498,21 @@ def run_train(args) -> int:
     run["arch"] = args.arch or "plain"
     residual = run["arch"] == "residual"
     run["parameters"] = count_parameters(TEMPONet(in_channels=R.N_CHANNELS, window=R.WINDOW, out_dim=R.N_JOINTS, causal=False, residual=residual))
+    run["loss_definition"] = {"l1": "L1 sul bersaglio standardizzato", "smoothl1": f"smooth L1 (beta {SMOOTH_L1_BETA}) sul bersaglio standardizzato",
+                              "mse": "MSE sul bersaglio standardizzato",
+                              "mse_vel": f"MSE della posa + {args.vel_weight} x MSE della velocita' standardizzata, compagna a "
+                                         f"{args.vel_lag_blocks} blocchi"}[args.loss]
     (out / "run.json").write_text(json.dumps(run, indent=1))
     store = HostStore(train_rows, args.processed_root, k)
-    ends, fw, ys = block_index(store, args.pose_root, args.train_stride_blocks)
+    lag = args.vel_lag_blocks if args.loss == "mse_vel" else 0
+    index = block_index(store, args.pose_root, args.train_stride_blocks, lag)
+    ends, fw, ys = index[:3]
+    pair = index[3] if lag else None
+    vel = None
+    if pair is not None:
+        sd_v, n_pairs = velocity_std(ys, pair)
+        vel = (args.vel_weight, sd_v)
+        run.update({"vel_sd_rad": [float(v) for v in sd_v], "vel_pairs_valid": n_pairs, "vel_pairs_fraction": n_pairs / len(ends)})
     vstore = HostStore(val_rows, args.processed_root, k)
     vends, vfw, vys = block_index(vstore, args.pose_root, R.VAL_EPOCH_STRIDE_BLOCKS)
     n = len(ends)
@@ -363,7 +533,11 @@ def run_train(args) -> int:
         xs = store.gather(ends[sel]).to(device).view(60, args.batch, R.WINDOW, R.N_CHANNELS)
         fs = fw[sel].to(device).view(60, args.batch)
         yv = ys[sel].to(device).view(60, args.batch, R.N_JOINTS)
-        check = graph_check(xs, fs, yv, mu, sd, args.batch, device, args.lr, residual=residual)
+        pv = None
+        if pair is not None:
+            pv = (store.gather(pair[0][sel]).to(device).view(60, args.batch, R.WINDOW, R.N_CHANNELS),
+                  pair[1][sel].to(device).view(60, args.batch, R.N_JOINTS), pair[2][sel].to(device).view(60, args.batch))
+        check = graph_check(xs, fs, yv, mu, sd, args.batch, device, args.lr, loss=args.loss, pair=pv, vel=vel, residual=residual)
         (out / "graph_check.json").write_text(json.dumps(check, indent=1))
         print(f"controllo eager/graph: differenza massima {check['max_abs_param_diff']:.3g}, {check['eager_ms_per_step']:.2f} ms contro "
               f"{check['graph_ms_per_step']:.2f} ms per passo", flush=True)
@@ -371,14 +545,23 @@ def run_train(args) -> int:
             run["status"] = "controllo eager/graph fallito: nessun training"
             (out / "run.json").write_text(json.dumps(run, indent=1))
             return 1
-    model, opt, loss_fn = build(args.seed, device, args.lr, residual=residual)
+        if "dropout_check" in check:
+            print(f"controllo della maschera condivisa: {'superato' if check['dropout_check']['passed'] else 'FALLITO'}", flush=True)
+            if not check["dropout_check"]["passed"]:
+                run["status"] = "controllo della maschera condivisa del dropout fallito: nessun training"
+                (out / "run.json").write_text(json.dumps(run, indent=1))
+                return 1
+    model, opt, loss_fn = build(args.seed, device, args.lr, loss=args.loss, residual=residual)
     eval_model = T.denormalizer(model, mu_t.to(device), sd_t.to(device))
-    stepper = Stepper(model, opt, loss_fn, mu, sd, args.batch, use_graph, device)
-    feeder = Feeder(store, ends, fw, ys, args.batch, args.chunk_steps, pin=device.type == "cuda")
+    stepper = Stepper(model, opt, loss_fn, mu, sd, args.batch, use_graph, device, vel=vel)
+    feeder = Feeder(store, ends, fw, ys, args.batch, args.chunk_steps, pin=device.type == "cuda", pair=pair)
     chunk = args.batch * args.chunk_steps
     gx = torch.empty((chunk, R.WINDOW, R.N_CHANNELS), dtype=torch.int16, device=device)
     gf = torch.empty(chunk, dtype=torch.float32, device=device)
     gy = torch.empty((chunk, R.N_JOINTS), dtype=torch.float16, device=device)
+    if pair is not None:
+        gxp, gyp = torch.empty_like(gx), torch.empty_like(gy)
+        gm = torch.empty(chunk, dtype=torch.float32, device=device)
     gen = torch.Generator().manual_seed(args.seed)
     vys_np = vys.float().numpy()
     deadline = t_start + args.time_budget_s if args.time_budget_s > 0 else float("inf")
@@ -393,6 +576,10 @@ def run_train(args) -> int:
             gx[:m].copy_(feeder.bx[b][:m], non_blocking=True)
             gf[:m].copy_(feeder.bf[b][:m], non_blocking=True)
             gy[:m].copy_(feeder.by[b][:m], non_blocking=True)
+            if pair is not None:
+                gxp[:m].copy_(feeder.bxp[b][:m], non_blocking=True)
+                gyp[:m].copy_(feeder.byp[b][:m], non_blocking=True)
+                gm[:m].copy_(feeder.bm[b][:m], non_blocking=True)
             if device.type == "cuda":
                 ev = torch.cuda.Event()
                 ev.record()
@@ -400,7 +587,10 @@ def run_train(args) -> int:
             feeder.release(b)
             for i in range(c):
                 s0, s1 = i * args.batch, (i + 1) * args.batch
-                stepper.step(gx[s0:s1], gf[s0:s1], gy[s0:s1])
+                if pair is None:
+                    stepper.step(gx[s0:s1], gf[s0:s1], gy[s0:s1])
+                else:
+                    stepper.step(gx[s0:s1], gf[s0:s1], gy[s0:s1], gxp[s0:s1], gyp[s0:s1], gm[s0:s1])
         if device.type == "cuda":
             torch.cuda.synchronize()
         train_loss = stepper.take_total() / steps
@@ -409,14 +599,18 @@ def run_train(args) -> int:
         t_train = time.time() - t0
         vpred = predict(eval_model, vstore, vends, vfw, device)
         val_mae = float(np.abs(vpred.astype(np.float64) - vys_np).mean() * R.RAD2DEG)
-        row = {"epoch": epoch + 1, "train_l1_std": train_loss, "steps": steps, "train_seconds": round(t_train, 1),
-               "ms_per_step": round(1000 * t_train / steps, 4), "val_seconds": round(time.time() - t0 - t_train, 1), "val_mae_raw_deg": val_mae,
-               "gather_seconds_total": round(feeder.gather_seconds, 1)}
+        row = {"epoch": epoch + 1, f"train_{args.loss}_std": train_loss}
+        if pair is not None:
+            p_sum, v_sum = stepper.take_parts()
+            row.update({"train_pose_mse_std": p_sum / steps, "train_vel_mse_std": v_sum / steps})
+        row.update({"steps": steps, "train_seconds": round(t_train, 1), "ms_per_step": round(1000 * t_train / steps, 4),
+                    "val_seconds": round(time.time() - t0 - t_train, 1), "val_mae_raw_deg": val_mae,
+                    "gather_seconds_total": round(feeder.gather_seconds, 1)})
         history.append(row)
         (out / "history.json").write_text(json.dumps(history, indent=1))
         torch.save(eval_model.state_dict(), out / "checkpoints" / f"epoch_{epoch + 1:02d}.pt")
-        print(f"epoca {epoch + 1}: train L1 (std) {train_loss:.4f}, {row['ms_per_step']:.3f} ms per passo, validazione grezza {val_mae:.3f} gradi, "
-              f"{row['train_seconds']:.0f} + {row['val_seconds']:.0f} s", flush=True)
+        print(f"epoca {epoch + 1}: train {LOSS_NAMES[args.loss]} (std) {train_loss:.4f}, {row['ms_per_step']:.3f} ms per passo, validazione grezza "
+              f"{val_mae:.3f} gradi, {row['train_seconds']:.0f} + {row['val_seconds']:.0f} s", flush=True)
         if time.time() > deadline and epoch + 1 < args.epochs:
             run["status"] = f"incompleto: tempo esaurito dopo l'epoca {epoch + 1}"
             break
@@ -506,9 +700,9 @@ def run_eval(args) -> int:
         ckpt = Path(args.model_dir) / "model_final.pt" if train_run.get("status") == "ok" else last()  # ultima epoca per numero, non per nome
     eval_model.load_state_dict(torch.load(ckpt, map_location=device))
     t0 = time.time()
-    report = {"kind": "temponet_emg2pose_eval_v1", "args": vars(args), "code_sha": os.environ.get("WEARUSFM_CODE_SHA"),
+    report = {"kind": "temponet_emg2pose_eval_v1", "args": {k: v for k, v in vars(args).items() if k not in ("loss", "vel_weight", "vel_lag_blocks")}, "code_sha": os.environ.get("WEARUSFM_CODE_SHA"),
               "slurm_job_id": os.environ.get("SLURM_JOB_ID"), "checkpoint": str(ckpt), "train_status": train_run.get("status"), "k": k,
-              "arch": arch}
+              "train_loss": train_run["args"].get("loss", "l1"), "arch": arch}
     mu_dev = torch.tensor(mu, dtype=torch.float32, device=device)
     Pv, Yv, meta_v, info_v = collect("val", manifest, targets_dir, args, eval_model, k, device)
     alphas, mae_grid = R.tune_alpha_windows(Pv, Yv)
@@ -599,9 +793,14 @@ def main(argv=None) -> int:
                     help="train: architettura (default plain, la rete di [Z21]); eval: si legge da run.json del training, se data deve coincidere")
     ap.add_argument("--checkpoint", default=None,
                     help="eval: checkpoint di un'epoca in <model-dir>/checkpoints (es. epoch_19.pt) invece del modello finale")
+    ap.add_argument("--loss", choices=LOSSES, default="l1", help="train: l1 (riferimento), smoothl1, mse, mse_vel")
+    ap.add_argument("--vel-weight", type=float, default=0.1, help="train, mse_vel: peso del termine della velocita'")
+    ap.add_argument("--vel-lag-blocks", type=int, default=4, help="train, mse_vel: distanza della compagna in blocchi da 5 ms")
     args = ap.parse_args(argv)
     if args.mode == "eval" and not args.model_dir:
         ap.error("eval richiede --model-dir")
+    if args.loss == "mse_vel" and (args.vel_lag_blocks < 1 or not args.vel_weight > 0):
+        ap.error("mse_vel richiede --vel-lag-blocks >= 1 e --vel-weight > 0")
     return run_train(args) if args.mode == "train" else run_eval(args)
 
 

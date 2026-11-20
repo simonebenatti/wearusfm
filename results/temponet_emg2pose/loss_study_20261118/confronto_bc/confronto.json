@@ -1,0 +1,107 @@
+{
+ "threshold_deg": 0.3,
+ "arms": {
+  "smoothl1": {
+   "train_loss": "smoothl1",
+   "val_ema_deg": 15.277943538217624,
+   "val_ema_deg_reference": 15.11613880116176,
+   "gate_ratio": 0.8398671977846457,
+   "gate_passed": true,
+   "conditions": {
+    "user": {
+     "arm_deg": 14.746294679737517,
+     "arm_sd_deg": 1.6105968337628394,
+     "reference_deg": 14.5474740458899,
+     "delta_deg": 0.1988206338476175,
+     "reading": "non distinguibile da L1 con un seme",
+     "per_user": {
+      "users": 20,
+      "better": 1,
+      "worse": 19,
+      "equal": 0,
+      "only_in_one": 0
+     }
+    },
+    "stage": {
+     "arm_deg": 17.73339987326949,
+     "arm_sd_deg": 1.5975163170932114,
+     "reference_deg": 17.6746762412975,
+     "delta_deg": 0.05872363197198993,
+     "reading": "non distinguibile da L1 con un seme",
+     "per_user": {
+      "users": 158,
+      "better": 58,
+      "worse": 100,
+      "equal": 0,
+      "only_in_one": 0
+     }
+    },
+    "user_stage": {
+     "arm_deg": 17.6704448696099,
+     "arm_sd_deg": 1.845600692649702,
+     "reference_deg": 17.602026235046008,
+     "delta_deg": 0.06841863456389063,
+     "reading": "non distinguibile da L1 con un seme",
+     "per_user": {
+      "users": 20,
+      "better": 7,
+      "worse": 13,
+      "equal": 0,
+      "only_in_one": 0
+     }
+    }
+   }
+  },
+  "mse": {
+   "train_loss": "mse",
+   "val_ema_deg": 15.68185034700411,
+   "val_ema_deg_reference": 15.11613880116176,
+   "gate_ratio": 0.8620709766383291,
+   "gate_passed": true,
+   "conditions": {
+    "user": {
+     "arm_deg": 15.048690300529643,
+     "arm_sd_deg": 1.6780142747576274,
+     "reference_deg": 14.5474740458899,
+     "delta_deg": 0.5012162546397434,
+     "reading": "peggiore di L1, da confermare con altri semi",
+     "per_user": {
+      "users": 20,
+      "better": 0,
+      "worse": 20,
+      "equal": 0,
+      "only_in_one": 0
+     }
+    },
+    "stage": {
+     "arm_deg": 18.148930286425674,
+     "arm_sd_deg": 1.6192956711108617,
+     "reference_deg": 17.6746762412975,
+     "delta_deg": 0.4742540451281734,
+     "reading": "peggiore di L1, da confermare con altri semi",
+     "per_user": {
+      "users": 158,
+      "better": 8,
+      "worse": 150,
+      "equal": 0,
+      "only_in_one": 0
+     }
+    },
+    "user_stage": {
+     "arm_deg": 18.148704641407075,
+     "arm_sd_deg": 1.7769944478245698,
+     "reference_deg": 17.602026235046008,
+     "delta_deg": 0.5466784063610675,
+     "reading": "peggiore di L1, da confermare con altri semi",
+     "per_user": {
+      "users": 20,
+      "better": 2,
+      "worse": 18,
+      "equal": 0,
+      "only_in_one": 0
+     }
+    }
+   }
+  }
+ }
+}

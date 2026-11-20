@@ -1,0 +1,40 @@
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/temponet-emg2pose-loss-584d4ab @ 584d4ab2924b6f7488cc3313d7bf1af504f20a08
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+GPU: NVIDIA A100-SXM-64GB | torch 2.2.0a0+git6c8c5ad | CUDA 12.1
+== 2026-11-18T19:01:38+01:00 modo losssmoke, codice 584d4ab2924b6f7488cc3313d7bf1af504f20a08 in /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/temponet-emg2pose-loss-584d4ab; uscite /leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/loss_20261118/smoke_v2
+training: 400 registrazioni, 1.4 GiB in 16 s, 457727 finestre, 7151 passi per epoca; validazione 137473 finestre; k = 0
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+controllo eager/graph: differenza massima 0, 18.88 ms contro 14.62 ms per passo
+epoca 1: train L1 (std) 0.7745, 1.124 ms per passo, validazione grezza 17.209 gradi, 8 + 1 s
+fine: ok in 43 s, memoria massima 3.34 GB
+training: 400 registrazioni, 1.4 GiB in 2 s, 457727 finestre, 7151 passi per epoca; validazione 137473 finestre; k = 0
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+controllo eager/graph: differenza massima 0, 18.35 ms contro 14.60 ms per passo
+epoca 1: train smooth L1 (std) 0.4095, 1.126 ms per passo, validazione grezza 17.360 gradi, 8 + 1 s
+fine: ok in 17 s, memoria massima 3.4 GB
+training: 400 registrazioni, 1.4 GiB in 2 s, 457727 finestre, 7151 passi per epoca; validazione 137473 finestre; k = 0
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+controllo eager/graph: differenza massima 0, 18.32 ms contro 14.58 ms per passo
+epoca 1: train MSE (std) 0.9779, 1.122 ms per passo, validazione grezza 17.641 gradi, 8 + 1 s
+fine: ok in 16 s, memoria massima 3.37 GB
+training: 400 registrazioni, 1.4 GiB in 2 s, 457727 finestre, 7151 passi per epoca; validazione 137473 finestre; k = 0
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+controllo eager/graph: differenza massima 0, 35.15 ms contro 28.63 ms per passo
+controllo della maschera condivisa: superato
+epoca 1: train MSE + velocita' (std) 1.1731, 1.551 ms per passo, validazione grezza 18.308 gradi, 11 + 1 s
+fine: ok in 22 s, memoria massima 4.04 GB
+1.9M	/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/loss_20261118/smoke_v2

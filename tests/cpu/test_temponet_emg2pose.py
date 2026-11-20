@@ -242,7 +242,8 @@ def test_host_store_gather_and_feeder_chunks(tmp_path):
     assert seen == 7
 
 
-def test_stepper_matches_a_plain_loop_on_scaled_input_and_standardized_target():
+@pytest.mark.parametrize("loss", ["l1", "smoothl1", "mse"])
+def test_stepper_matches_a_plain_loop_on_scaled_input_and_standardized_target(loss):
     import torch
 
     rng = np.random.default_rng(3)
@@ -251,11 +252,11 @@ def test_stepper_matches_a_plain_loop_on_scaled_input_and_standardized_target():
     y = torch.from_numpy(rng.normal(0.7, 0.4, size=(3, 4, 20)).astype(np.float16))
     mu, sd = np.full(20, 0.7), np.full(20, 0.4)
     cpu = torch.device("cpu")
-    m1, o1, l1 = TE.build(5, cpu, 1e-3, dropout=0.0)
+    m1, o1, l1 = TE.build(5, cpu, 1e-3, dropout=0.0, loss=loss)
     st = TE.Stepper(m1, o1, l1, mu, sd, 4, False, cpu)
     for i in range(3):
         st.step(x[i], f[i], y[i])
-    m2, o2, l2 = TE.build(5, cpu, 1e-3, dropout=0.0)
+    m2, o2, l2 = TE.build(5, cpu, 1e-3, dropout=0.0, loss=loss)
     total = 0.0
     for i in range(3):
         xi = x[i].permute(0, 2, 1).float() * f[i][:, None, None]
@@ -293,6 +294,240 @@ def test_train_then_eval_end_to_end_on_cpu(tmp_path, monkeypatch):
     assert t["conditions"]["user"]["ema"]["n_users"] == 1 and t["conditions"]["stage"]["ema"]["n_users"] == 1
     assert t["conditions"]["user_stage"]["ema"]["mean_over_users_deg"] is None and t["conditions"]["user"]["reading"]
     assert "| user | 1 |" in (ev2 / "eval.md").read_text()
+
+
+# --- studio delle loss (18/11/2026) -----------------------------------------------------------------------------------------------------
+
+def test_partner_blocks_need_contiguous_validity_and_history():
+    valid = np.ones(100, bool)
+    valid[40] = False
+    valid[46] = False
+    j = R.train_blocks(valid, n_samples=1000, stride_blocks=8)
+    assert j.tolist() == [32, 48, 56, 64, 72, 80, 88, 96]
+    jp, ok = TE.partner_blocks(valid, j, 4)
+    assert ok.tolist() == [True, False, True, True, True, True, True, True]  # 48: il blocco 46, fra 44 e 48, non e' valido
+    assert jp.tolist() == [28, 48, 52, 60, 68, 76, 84, 92]
+    jp8, ok8 = TE.partner_blocks(valid, j, 8)  # 32 -> 24: 10 x 24 + 9 = 249 < 255, senza storia; 48 -> 40 non valido
+    assert ok8.tolist() == [False, False, True, True, True, True, True, True] and jp8.tolist() == [32, 48, 48, 56, 64, 72, 80, 88]
+    with pytest.raises(ValueError):
+        TE.partner_blocks(valid, j, 0)
+
+
+def test_block_index_with_partners_keeps_the_anchors(tmp_path):
+    import torch
+
+    csv, proc, pose, _ = _dataset(tmp_path)
+    rows = [r for r in R.read_rows(csv) if r["split"] == "train"]
+    st = TE.HostStore(rows, proc, 3)
+    e, fw, ys = TE.block_index(st, pose, 8)
+    e2, fw2, ys2, (pe, py, pm) = TE.block_index(st, pose, 8, 4)
+    assert torch.equal(e, e2) and torch.equal(fw, fw2) and torch.equal(ys, ys2)
+    ok = pm.numpy() > 0
+    assert 0 < ok.sum() < len(ok)  # il tratto nullo di tr1 (campioni 9.000-9.099) toglie qualche compagna
+    np.testing.assert_array_equal(pe.numpy()[ok], e.numpy()[ok] - 4 * R.BLOCK)
+    np.testing.assert_array_equal(pe.numpy()[~ok], e.numpy()[~ok])
+    np.testing.assert_array_equal(py.numpy()[~ok], ys.numpy()[~ok])
+    for i, d in enumerate(st.dirs):
+        blocks = np.load(pose / d.parent.name / d.name / "pose_200hz_f16.npy")
+        sel = (e.numpy() >= st.offset[i]) & (e.numpy() < st.offset[i] + st.n[i])
+        local = pe.numpy()[sel] - st.offset[i]
+        assert (local >= R.WINDOW - 1).all() and ((local + 1) % R.BLOCK == 0).all()  # stessa registrazione, storia intera, fine di un blocco
+        np.testing.assert_array_equal(py.numpy()[sel], blocks[(local + 1) // R.BLOCK - 1])
+
+
+def test_velocity_std_matches_numpy(monkeypatch):
+    import torch
+
+    rng = np.random.default_rng(4)
+    ys = torch.from_numpy(rng.normal(0.7, 0.4, size=(50, 20)).astype(np.float16))
+    pys = torch.from_numpy(rng.normal(0.7, 0.4, size=(50, 20)).astype(np.float16))
+    mask = torch.from_numpy((rng.random(50) < 0.7).astype(np.float32))
+    monkeypatch.setattr(TE, "STATS_CHUNK", 7)  # piu' blocchi
+    sd, n = TE.velocity_std(ys, (None, pys, mask))
+    k = mask.numpy() > 0
+    assert n == int(k.sum())
+    np.testing.assert_allclose(sd, (ys.numpy()[k].astype(np.float64) - pys.numpy()[k].astype(np.float64)).std(axis=0), rtol=1e-12)
+    with pytest.raises(ValueError):
+        TE.velocity_std(ys, (None, ys, torch.ones(50)))  # velocita' nulla
+
+
+def test_build_losses_share_the_initialization():
+    import torch
+
+    cpu = torch.device("cpu")
+    ref, _, l1 = TE.build(5, cpu, 1e-3)
+    assert isinstance(l1, torch.nn.L1Loss)
+    for loss, cls in {"smoothl1": torch.nn.SmoothL1Loss, "mse": torch.nn.MSELoss, "mse_vel": torch.nn.MSELoss}.items():
+        m, _, fn = TE.build(5, cpu, 1e-3, loss=loss)
+        assert isinstance(fn, cls)
+        for a, b in zip(ref.state_dict().values(), m.state_dict().values()):
+            assert torch.equal(a, b)
+    assert TE.build(5, cpu, 1e-3, loss="smoothl1")[2].beta == TE.SMOOTH_L1_BETA == 1.0
+    with pytest.raises(ValueError):
+        TE.build(5, cpu, 1e-3, loss="huber")
+
+
+def _pair_batches(seed, steps, batch):
+    import torch
+
+    rng = np.random.default_rng(seed)
+    x = torch.from_numpy(rng.integers(-3000, 3000, size=(steps, batch, 256, 16)).astype(np.int16))
+    xp = torch.from_numpy(rng.integers(-3000, 3000, size=(steps, batch, 256, 16)).astype(np.int16))
+    f = torch.from_numpy(rng.uniform(0.01, 0.02, size=(steps, batch)).astype(np.float32))
+    y = rng.normal(0.7, 0.4, size=(steps, batch, 20))
+    yp = y + rng.normal(0.0, 0.03, size=y.shape)
+    return x, xp, f, torch.from_numpy(y.astype(np.float16)), torch.from_numpy(yp.astype(np.float16))
+
+
+VEL_STATS = (np.full(20, 0.7), np.linspace(0.2, 0.6, 20), np.linspace(0.01, 0.05, 20))  # mu, sd della posa, sd della velocita'
+
+
+def test_mse_vel_loss_and_gradient_match_an_independent_formula():
+    import torch
+
+    x, xp, f, y, yp = _pair_batches(6, 1, 4)
+    m = torch.tensor([1.0, 0.0, 1.0, 1.0])
+    mu, sd, sd_v = VEL_STATS
+    cpu = torch.device("cpu")
+    m1, o1, l1 = TE.build(5, cpu, 1e-3, dropout=0.0, loss="mse_vel")
+    st = TE.Stepper(m1, o1, l1, mu, sd, 4, False, cpu, vel=(0.1, sd_v))
+    for buf, val in ((st.xb, x[0]), (st.fb, f[0]), (st.yb, y[0]), (st.xpb, xp[0]), (st.ypb, yp[0]), (st.mb, m)):
+        buf.copy_(val)
+    zs = []
+
+    def keep(module, inputs, output):
+        output.retain_grad()
+        zs.append(output)
+
+    m1.out.register_forward_hook(keep)  # uscita dell'ultimo strato = z (il passo di mse_vel non chiama model.forward)
+    loss = st._loss()
+    loss.backward()
+    sd_t, sdv_t = torch.tensor(sd), torch.tensor(sd_v)
+
+    def reference(z):  # formula per coppia, in float64
+        pose = ((z[:4] - (y[0].double() - torch.tensor(mu)) / sd_t) ** 2).mean()
+        terms = [((((z[b] - z[4 + b]) * sd_t - (y[0, b].double() - yp[0, b].double())) / sdv_t) ** 2).mean() for b in range(4) if m[b] > 0]
+        vel = torch.stack(terms).mean()  # media sulle 3 coppie valide e sui 20 giunti
+        return pose, vel
+
+    # 1) la formula, sulle stesse uscite z del modello in float32 (il modello entra solo attraverso z)
+    zr = zs[0].detach().double().requires_grad_()
+    pose, vel = reference(zr)
+    (pose + 0.1 * vel).backward()
+    assert float(loss.detach()) == pytest.approx(float((pose + 0.1 * vel).detach()), rel=1e-6)
+    np.testing.assert_allclose(st._parts.numpy(), [float(pose.detach()), float(vel.detach())], rtol=1e-6)
+    torch.testing.assert_close(zs[0].grad.double(), zr.grad, rtol=1e-4, atol=1e-9)
+    # 2) le due finestre passano insieme nel modello (BatchNorm sulle 8 finestre): gradiente dei parametri contro il modello in float64
+    m2, _, _ = TE.build(5, cpu, 1e-3, dropout=0.0, loss="mse_vel")
+    m2.double()
+    z = m2(torch.cat([x[0].permute(0, 2, 1).double() * f[0].double()[:, None, None], xp[0].permute(0, 2, 1).double() * f[0].double()[:, None, None]]))
+    pose2, vel2 = reference(z)
+    (pose2 + 0.1 * vel2).backward()
+    assert float(loss.detach()) == pytest.approx(float((pose2 + 0.1 * vel2).detach()), rel=1e-4)
+    for p1, p2 in zip(m1.parameters(), m2.parameters()):  # float32 contro float64 attraverso BatchNorm a 8 finestre: errore relativo in norma
+        assert float((p1.grad.double() - p2.grad).norm() / p2.grad.norm()) < 1e-3
+
+
+def test_stepper_mse_vel_matches_a_plain_loop():
+    import torch
+
+    x, xp, f, y, yp = _pair_batches(7, 3, 4)
+    m = torch.tensor([[1.0, 0.0, 1.0, 1.0], [0.0, 0.0, 0.0, 0.0], [1.0, 1.0, 1.0, 1.0]])  # al secondo passo nessuna coppia valida
+    mu, sd, sd_v = VEL_STATS
+    cpu = torch.device("cpu")
+    m1, o1, l1 = TE.build(5, cpu, 1e-3, dropout=0.0, loss="mse_vel")
+    st = TE.Stepper(m1, o1, l1, mu, sd, 4, False, cpu, vel=(0.1, sd_v))
+    for i in range(3):
+        st.step(x[i], f[i], y[i], xp[i], yp[i], m[i])
+    m2, o2, l2 = TE.build(5, cpu, 1e-3, dropout=0.0, loss="mse_vel")
+    mu_t, sd_t, sdv_t = (torch.tensor(a, dtype=torch.float32) for a in (mu, sd, sd_v))
+    total, parts = 0.0, [0.0, 0.0]
+    for i in range(3):
+        z = m2(torch.cat([x[i].permute(0, 2, 1).float() * f[i][:, None, None], xp[i].permute(0, 2, 1).float() * f[i][:, None, None]]))
+        pose = l2(z[:4], (y[i].float() - mu_t) / sd_t)
+        dv = ((z[:4] - z[4:]) * sd_t - (y[i].float() - yp[i].float())) / sdv_t
+        vel = (m[i][:, None] * dv.square()).sum() / (m[i].sum().clamp(min=1.0) * 20)
+        loss = pose + 0.1 * vel
+        o2.zero_grad(set_to_none=True)
+        loss.backward()
+        o2.step()
+        total += float(loss.detach())
+        parts = [parts[0] + float(pose.detach()), parts[1] + float(vel.detach())]
+    for a, b in zip(m1.state_dict().values(), m2.state_dict().values()):
+        assert torch.equal(a, b)
+    assert st.take_total() == pytest.approx(total)
+    np.testing.assert_allclose(st.take_parts(), parts, rtol=1e-6)
+    assert st.take_parts() == (0.0, 0.0)  # azzerati dalla lettura
+
+
+def test_pair_forward_shares_the_dropout_mask():
+    import torch
+
+    x, xp, f, y, yp = _pair_batches(8, 1, 4)
+    mu, sd, sd_v = VEL_STATS
+    cpu = torch.device("cpu")
+    xa = x[0].permute(0, 2, 1).float() * f[0][:, None, None]
+    xb = xp[0].permute(0, 2, 1).float() * f[0][:, None, None]
+    # dropout spento: uguale al forward del modello
+    m0, o0, l0 = TE.build(5, cpu, 1e-3, dropout=0.0, loss="mse_vel")
+    st0 = TE.Stepper(m0, o0, l0, mu, sd, 4, False, cpu, vel=(0.1, sd_v))
+    m0.train()
+    assert torch.equal(st0._pair_forward(torch.cat([xa, xb])), m0(torch.cat([xa, xb])))
+    # dropout 0,5: una maschera per coppia (keep = rand >= p, scala 1 / (1 - p)), nuova a ogni chiamata
+    m1, o1, l1 = TE.build(5, cpu, 1e-3, dropout=0.5, loss="mse_vel")
+    st1 = TE.Stepper(m1, o1, l1, mu, sd, 4, False, cpu, vel=(0.1, sd_v))
+    m1.train()
+    z_same = st1._pair_forward(torch.cat([xa, xa]))
+    assert torch.equal(z_same[:4], z_same[4:])  # compagna = finestra: velocita' predetta esattamente nulla
+    torch.manual_seed(11)
+    z = st1._pair_forward(torch.cat([xa, xb]))
+    torch.manual_seed(11)
+    h = m1.features(torch.cat([xa, xb])).flatten(1)
+    for d in m1.head:
+        h = d.relu(d.bn(d.fc(h)))
+        keep = (torch.rand((4, h.shape[1])) >= 0.5).float() * 2.0
+        h = h * torch.cat([keep, keep])
+    assert torch.equal(z, m1.out(h))
+    assert not torch.equal(st1._pair_forward(torch.cat([xa, xb])), z)  # maschera rinnovata
+    # il termine della velocita' con compagna = finestra e' zero anche col dropout
+    for buf, val in ((st1.xb, x[0]), (st1.fb, f[0]), (st1.yb, y[0]), (st1.xpb, x[0]), (st1.ypb, y[0]), (st1.mb, torch.ones(4))):
+        buf.copy_(val)
+    st1._loss()
+    assert float(st1._parts[1]) == 0.0 and float(st1._parts[0]) > 0.0
+
+
+@pytest.mark.parametrize("loss", ["l1", "smoothl1", "mse", "mse_vel"])
+def test_train_with_the_other_losses_then_eval_on_cpu(tmp_path, loss):
+    csv, proc, pose, manifest = _dataset(tmp_path)
+    common = ["--csv", str(csv), "--processed-root", str(proc), "--pose-root", str(pose), "--targets-manifest", str(manifest), "--device", "cpu"]
+    run = tmp_path / "run"
+    assert TE.main(["train", *common, "--out", str(run), "--epochs", "1", "--batch", "16", "--chunk-steps", "3", "--max-steps-per-epoch", "5",
+                    "--loss", loss]) == 0
+    r = json.loads((run / "run.json").read_text())
+    assert r["status"] == "ok" and r["args"]["loss"] == loss and r["parameters"] == 71_412 and r["loss_definition"]
+    h = json.loads((run / "history.json").read_text())[0]
+    assert np.isfinite(h[f"train_{loss}_std"]) and np.isfinite(h["val_mae_raw_deg"])
+    if loss == "mse_vel":
+        assert len(r["vel_sd_rad"]) == 20 and min(r["vel_sd_rad"]) > 0 and 0 < r["vel_pairs_fraction"] < 1
+        assert h["train_mse_vel_std"] == pytest.approx(h["train_pose_mse_std"] + 0.1 * h["train_vel_mse_std"])
+    else:
+        assert "vel_sd_rad" not in r and "train_pose_mse_std" not in h and "train_vel_mse_std" not in h
+    if loss == "l1":
+        assert "train_l1_std" in h
+        del r["args"]["loss"]  # come il run.json del braccio A (11/11), senza il campo
+        (run / "run.json").write_text(json.dumps(r))
+    ev = tmp_path / "eval_val"
+    assert TE.main(["eval", *common, "--out", str(ev), "--model-dir", str(run), "--val-only"]) == 0
+    e = json.loads((ev / "eval.json").read_text())
+    assert e["train_loss"] == loss and "loss" not in e["args"] and "vel_weight" not in e["args"]
+
+
+def test_mse_vel_needs_a_positive_lag_and_weight(tmp_path):
+    base = ["train", "--csv", "x", "--processed-root", "x", "--pose-root", "x", "--targets-manifest", "x", "--out", str(tmp_path / "o"),
+            "--loss", "mse_vel"]
+    for extra in (["--vel-lag-blocks", "0"], ["--vel-weight", "0"]):
+        with pytest.raises(SystemExit):
+            TE.main(base + extra)
 
 
 @pytest.mark.parametrize("fmt", ["pax", "gnu"])

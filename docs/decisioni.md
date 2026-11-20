@@ -8063,6 +8063,179 @@ finestre e di istanti per tutti i modelli». Il testo firmato (`docs/temponet_em
 «Conviene fissare un solo insieme di finestre e di istanti per tutti i modelli, per esempio quello del contesto piu' lungo, oppure
 dichiarare la differenza». Vale il testo firmato.
 
+### 2026-11-18 — TEMPONet su emg2pose: studio delle loss APPROVATO da Simone; regole e tetto congelati prima del primo job (Claude)
+
+Alla domanda «Approvi i tre bracci, smooth L1, MSE e MSE più velocità, un seme, circa 12 GPU-ore?» Simone risponde «Sì, approvo».
+Piano: `docs/temponet_emg2pose_loss_plan_20261118.md`; codice `0342170`. L'approvazione comprende il collaudo, i tre training e le tre
+valutazioni (regola del 28/10); altri semi o altri bracci non sono approvati. **Tetto dell'attivita': 12,5 GPU-ore di spesa attesa**
+(«circa 12» approvate). Congelati qui, prima del primo job:
+
+1. **Bracci:** B smooth L1 (beta 1 in deviazioni del giunto), C MSE, D MSE della posa + 0,1 x MSE della velocita', tutte sul bersaglio
+   standardizzato con `pose_stats.json`. In D la velocita' e' la differenza fra la posa di una finestra e quella di una compagna che finisce
+   4 blocchi (20 ms) prima nella stessa registrazione, con tutti i blocchi in mezzo validi e la storia intera (altrimenti peso 0); errore
+   diviso per la deviazione per giunto della velocita' sulle coppie valide del training; termine della posa sulle sole finestre di
+   partenza; le due finestre passano insieme nel modello.
+2. **Resto della ricetta invariato** rispetto al braccio A dell'11/11 (L1; training 64169771, valutazione 64169772): dati, finestre, V13,
+   Adam 1e-4 costante, batch 64, 19 epoche, seme 0 con la stessa inizializzazione e lo stesso ordine delle finestre, CUDA graph con controllo
+   eager/graph, modello finale, stessa valutazione (EMA, cancello < 0,9 sulla validazione, test una volta).
+3. **Lettura:** MAE di test con EMA, media fra utenti, per condizione (`user`, `stage`, `user_stage`); Δ = braccio - A. |Δ| ≤ 0,30 gradi:
+   non distinguibile da L1 con un seme; Δ < -0,30: migliore, da confermare con altri semi; Δ > +0,30: peggiore, da confermare. Descrittivi:
+   utenti migliori e peggiori (conteggi interi dai valori per utente), validazione, uscita grezza, curve per epoca, termini della loss di D.
+   Nessuna loss si adotta su un seme solo; un braccio che non passa il cancello si riporta come tale, senza test e senza nuovo tentativo.
+4. **Regole meccaniche sul collaudo** (`losssmoke`, dbg, ≤ 0,5 GPU-ore): (a) se il controllo eager/graph di una loss fallisce, quel braccio
+   non parte; (b) r = ms per passo di `mse_vel` / ms per passo di `l1`, tempo atteso di D = 1,05 x 4.025 + 19 x (357 r + 14) secondi; limite
+   di D = il piu' piccolo `TRAIN_TIME` dello sbatch con tempo massimo (limite - 900 s) ≥ 1,10 x quel tempo; (c) se B + C + D + tre
+   valutazioni (0,31 l'una) + collaudo superano 12,5 GPU-ore attese, D non parte e si torna da Simone.
+5. **Risorse:** B e C 1 GPU, 3 h 30, 8 CPU, 120 GB (≤ 3,5 GPU-ore ciascuno); D 1 GPU, limite dalla regola 4; valutazioni 1 GPU, 45 min
+   (≤ 0,75); checkout su `lrd_all_serial` (0 GPU-ore). Attese: B 3,08, C 3,08, D circa 4,1 con r = 1,5, valutazioni 0,93, collaudo circa 0,25:
+   circa 11,4 GPU-ore. Nessun nuovo tentativo alla cieca.
+
+### 2026-11-18 — TEMPONet su emg2pose, studio delle loss: esito della review e del collaudo; emendamenti PRIMA dei training (Claude)
+
+**Verifica prima del lancio** (regola del 16/10): `critico` e quattro lenti con verificatori avversari sul codice `0342170` e sul piano
+(workflow `wf_d4e7c261-7db`). Il critico conclude «DA RIVEDERE». Ha un rilievo bloccante, solo per D: con maschere del dropout
+indipendenti fra finestra e compagna, il termine della velocita' misura per circa l'80% la differenza fra due maschere (stima su CPU col
+modello L1 dell'11/11, un utente di test). B e C non hanno rilievi bloccanti. I minori sono qui sotto.
+
+**Collaudo** `TEMPONET-E2P-loss-smoke-20261118` = 64775154 (dbg, `COMPLETED 0:0`, 4 min 58 s, circa 0,08 GPU-ore). Esiti:
+- controllo eager/graph con differenza 0 per le quattro loss;
+- ms per passo dalla `history.json`: l1 1,137, smoothl1 1,141, mse 1,131, mse_vel 1,541;
+- 457.727 finestre per ogni loss, come il collaudo dell'11/11;
+- per l1, somme eager e graph del controllo uguali bit per bit a quelle del collaudo dell'11/11 (50,52579802274704): il percorso L1 e'
+  identico anche sulla GPU.
+
+Emendamenti, scritti prima di inviare B, C e D:
+1. **r** = `ms_per_step` della `history.json` di `mse_vel` diviso quello di `l1`, nello stesso collaudo. E' la sola misura coerente con i
+   357 s per epoca della formula. La scelta e' scritta DOPO aver visto il collaudo, quindi e' post hoc. L'altra misura, quella del
+   controllo eager/graph in cuDNN deterministico, darebbe r = 1,963, limite di D 06:00:00 e spesa attesa 12,1: anche cosi' sotto il tetto
+   congelato. Se nessun `TRAIN_TIME` della tabella soddisfa la regola 4(b), D non parte.
+2. **B e C con limite 04:30:00** (tempo massimo 15.300 s) invece di 3:30, per non perdere un braccio se il caricamento rallenta di un
+   terzo. A ricetta normale il tempo massimo non scatta, quindi il training e' lo stesso.
+3. **D si corregge prima del lancio**: una sola maschera del dropout per finestra e compagna, nel solo percorso `mse_vel`. D parte solo dal
+   commit corretto, dopo un nuovo collaudo (controllo eager/graph e r rimisurato) e una verifica mirata del critico sulla correzione. Le
+   regole 4(b) e 4(c) si applicano al nuovo r.
+4. **Lettura**: Δ si calcola senza arrotondare, da `test.conditions.<cond>.ema.mean_over_users_deg` dell'`eval.json` del braccio e di
+   `results/temponet_emg2pose/eval_20261111/eval.json` (A, codice `0c19c4b`, identico a `ee118a2` nei file usati). Nel confronto la loss del
+   braccio si legge da `train_loss`; `args.loss` dell'`eval.json` e' quello della chiamata di valutazione.
+5. **Fallimenti tecnici** (TIMEOUT, run «incompleto», guasto del nodo, controllo eager/graph fallito): nessun nuovo invio senza Simone.
+   Una loss che un collaudo non ha provato non parte.
+6. **Costi**. Spesa attesa con r = 1,355: B 3,08 + C 3,08 + D 3,80 + valutazioni 0,93 + collaudi circa 0,17 = circa 11,1 GPU-ore, circa 89
+   ore locali (fattore 8). Esposizione massima con i limiti (B 4,5, C 4,5, D dal nuovo collaudo, tre valutazioni 0,75): circa 16 GPU-ore,
+   da riferire a Simone. Saldo del progetto letto alle 18:55 con `saldo -b`: 1.341.366 ore locali consumate su 2.000.000, residuo 658.634.
+   Checkout `TEMPONET-E2P-loss-checkout-20261118` = 64774804: `lrd_all_serial`, limite 10 min, `COMPLETED 0:0` in 2 min 3 s, 0 GPU-ore.
+
+### 2026-11-18 — TEMPONet su emg2pose, studio delle loss: braccio D corretto, secondo collaudo, limite e costo PRIMA del lancio di D (Claude)
+
+- Codice corretto `584d4ab`: una maschera del dropout condivisa per finestra e compagna (emendamento 3). Checkout
+  `temponet-emg2pose-loss-584d4ab` = 64776710, `COMPLETED 0:0` in 40 s.
+- Secondo collaudo `TEMPONET-E2P-loss-smoke-20261118-v2` = 64776819 (dbg, `COMPLETED 0:0`, 2 min 5 s, circa 0,035 GPU-ore). Esiti:
+  - controllo eager/graph con differenza 0 per le quattro loss;
+  - controllo della maschera condivisa nel CUDA graph superato: con compagna = finestra e lr 0, termine della velocita' esattamente 0
+    nei 7 passi; il termine della posa cambia fra i replay. Con lr 0 Adam `capturable` non cambia i pesi: il denominatore diventa
+    -inf e l'aggiornamento ±0. Quindi le variazioni vengono dalle maschere;
+  - l1 con le stesse somme del controllo del primo collaudo e dell'11/11;
+  - MSE della velocita' alla prima epoca 1,52, contro 2,50 con le maschere indipendenti.
+- r = 1,551 / 1,1243 = 1,380 (emendamento 1). Tempo atteso di D = 1,05 x 4.025 + 19 x (357 x 1,380 + 14) = 13.849 s, circa 3,85 ore.
+- **Limite di D: 05:00:00** (tempo massimo 17.100 s), piu' largo di quanto dia la regola 4(b). La regola darebbe 04:30:00, con 66 s di
+  margine sul fattore 1,10. Vale la stessa ragione dell'emendamento 2, un caricamento piu' lento; la spesa attesa non cambia.
+- Regola 4(c): spesa attesa B 3,08 + C 3,08 + D 3,85 + tre valutazioni 0,93 + due collaudi 0,12 = circa 11,1 GPU-ore ≤ 12,5: D parte,
+  con la verifica mirata del critico sulla correzione. Esposizione massima con i limiti: 4,5 + 4,5 + 5,0 + 2,25 + 0,12 = circa 16,4
+  GPU-ore.
+- Verifica mirata del critico sulla correzione `584d4ab`: **APPROVATO**, con tre minori. (1) Il controllo della maschera non guarda i NaN
+  ne' l'invarianza dei pesi. Nel collaudo i 14 valori sono finiti, e nel torch 2.2 di Leonardo
+  (`.../cineca-ai-env/lib/python3.11/site-packages/torch/optim/adam.py`, righe 538-563) il ramo `capturable` con lr 0 e' lo stesso
+  verificato sul Mac: i pesi non cambiano. (2) Gli `eval.json` prodotti da `584d4ab` (braccio D) non hanno `args.loss`, `vel_weight` e
+  `vel_lag_blocks`; quelli di B e C (`0342170`) hanno `args.loss` = l1, che e' quello della chiamata di valutazione. La loss si legge sempre
+  da `train_loss`. (3) La voce del registro e' scritta prima dell'invio di D.
+
+### 2026-11-18 — TEMPONet su emg2pose, studio delle loss: ESITO e CONSUNTIVO (Claude)
+
+Tutti i job `COMPLETED 0:0`, cancello superato in tutti i bracci (A 0,831; B 0,840; C 0,862; D 0,888). Test con EMA, media fra utenti,
+Δ rispetto ad A con la regola congelata (punto 3 e emendamento 4):
+
+| Braccio | user | stage | user_stage | Lettura |
+|---|---|---|---|---|
+| A L1 (11/11) | 14,55 | 17,67 | 17,60 | riferimento |
+| B smooth L1 | 14,75 (+0,20) | 17,73 (+0,06) | 17,67 (+0,07) | non distinguibile da L1 con un seme |
+| C MSE | 15,05 (+0,50) | 18,15 (+0,47) | 18,15 (+0,55) | peggiore di L1, da confermare con altri semi |
+| D MSE + 0,1 velocita' | 15,64 (+1,09) | 18,53 (+0,85) | 18,45 (+0,85) | peggiore di L1, da confermare con altri semi |
+
+Descrittivi, senza soglia:
+- utenti migliori / peggiori rispetto ad A (user, stage, user_stage): B 1/19, 58/100, 7/13; C 0/20, 8/150, 2/18; D 0/20, 1/157, 0/20.
+  Con un seme il modello e' lo stesso per tutti gli utenti, quindi questi conteggi non separano la loss dal seme;
+- D rispetto a C: +0,59 / +0,38 / +0,30;
+- guadagno dell'EMA (grezza - EMA, user): A 0,31, B 0,24, C 0,21, D 0,10;
+- in D l'MSE standardizzato della velocita' resta circa 1,2 dalla prima all'ultima epoca (1,16 -> 1,20), mentre quello della posa scende
+  (0,91 -> 0,86; C 0,84).
+Nessuna loss si adotta: la ricetta di riferimento resta L1. Una conferma con altri semi sarebbe una proposta nuova.
+
+Consuntivo (tempo trascorso, 1 GPU per job): collaudi 0:04:58 + 0:02:05; B 2:53:31 + 0:21:00; C 2:52:37 + 0:21:45; D 3:38:53 +
+0:16:28. In tutto 37.877 s = **10,52 GPU-ore** (circa 84 ore locali), sulle circa 12 approvate e sotto il tetto di 12,5. Due checkout
+CPU su `lrd_all_serial`: 2 min 3 s e 40 s. Nessun nuovo tentativo. Attivita' conclusa; risultati, collaudi e log in
+`results/temponet_emg2pose/loss_study_20261118/` (confronto in `confronto/`).
+
+### 2026-11-18 — TEMPONet su emg2pose: conferma con altri semi del confronto L1 / MSE APPROVATA da Simone; regola e tetto congelati prima del primo job (Claude)
+
+Alla domanda «Approvi la conferma con i semi 1 e 2, circa 13 GPU-ore?» Simone risponde «Sì, approvo». Proposta
+`docs/temponet_emg2pose_loss_seeds_proposal_20261118.md`, approvata nella versione `d0bf277`. L'approvazione comprende 4 training e 4
+valutazioni (regola del 28/10); smooth L1 e residua con altri semi non sono approvate.
+
+**Verifica prima del lancio**: workflow `wf_27ae4d80-d4f`, critico e controllo indipendente dei conti. Il critico dice «DA RIVEDERE»
+con due bloccanti: la regola contava il seme 0, cioe' il risultato da confermare (ramo «migliore» impossibile, probabilita' vera 1/4 e
+non 1/8, soglia effettiva sui semi nuovi circa 0,20); e la dichiarazione dei costi era incompleta. Corretti qui, prima di ogni job; i job e
+il costo non cambiano. **Tetto dell'attivita': 14 GPU-ore spese e 1 core-ora.** Congelati qui:
+
+1. **Bracci:** L1 e MSE con i semi 1 e 2, dal checkout `temponet-emg2pose-seeds-d0bf277` (64789455, `COMPLETED 0:0`), `SEED`
+   esplicito, `TRAIN_TIME=04:30:00`; valutazioni in `afterok` con limite 0:45. Tutto il resto come A e C.
+2. **Lettura**, per condizione, con i `mean_over_users_deg` non arrotondati e Δ_s = MSE_s - L1_s, **solo sui semi 1 e 2**: MSE peggiore
+   confermato se Δ_1 > 0, Δ_2 > 0 e media > +0,30 gradi; MSE migliore confermato se Δ_1 < 0, Δ_2 < 0 e media < -0,30; non leggibile se
+   a uno dei quattro bracci nuovi manca il test; altrimenti non confermato. Seme 0 e media dei tre semi sono descrittivi. Si legge con
+   `scripts/temponet_emg2pose_seeds_compare.py`.
+3. **Controlli alla raccolta**, prima della lettura, fatti dallo script: per ogni braccio `run.json` ok, con il seme e la loss attesi;
+   `train_loss` dell'`eval.json` uguale; checkpoint valutato nella cartella del training. Il seme del training si legge dal `run.json`:
+   `args.seed` dell'`eval.json` e' quello della chiamata di valutazione.
+4. **Fallimenti tecnici**: nessun nuovo invio senza Simone.
+5. **Baseline**: resta quella firmata il 12/11, seme 0; cambiarla richiede una nuova firma.
+6. **Risorse**: 4 training con 1 GPU, 8 CPU, 120 GB, limite 4:30 (≤ 4,5 GPU-ore ciascuno); 4 valutazioni con 1 GPU, limite 0:45 (≤ 0,75).
+   Attese circa 13-13,4 GPU-ore (circa 104-107 ore locali); esposizione massima 21 GPU-ore (168 ore locali). Checkout su
+   `lrd_all_serial`: 1 CPU, limite 10 min, 41 s. Saldo alle 23:59: residuo 658.634 ore locali, senza ancora i job del 18/11.
+
+### 2026-11-19 — TEMPONet su emg2pose, conferma con i semi del confronto L1 / MSE: ESITO, CONSUNTIVO e tetto SUPERATO (Claude)
+
+Otto job `COMPLETED 0:0`: training 64790729, 64790731, 64790733, 64790735 e valutazioni 64790730, 64790732, 64790734, 64790736. Controlli
+della raccolta superati (seme e loss dai `run.json`, `train_loss`, checkpoint); controllo eager/graph a differenza 0; cancello superato in
+tutti i bracci (L1 0,831-0,834, MSE 0,858-0,862).
+
+Lettura con la regola congelata (solo i semi 1 e 2): **MSE peggiore di L1, confermato in tutte e tre le condizioni.**
+
+| Condizione | Δ seme 0 | Δ seme 1 | Δ seme 2 | media semi 1-2 | L1, media ± dev. su 3 semi | MSE, media ± dev. su 3 semi |
+|---|---|---|---|---|---|---|
+| user | +0,50 | +0,44 | +0,45 | +0,44 | 14,57 ± 0,02 | 15,04 ± 0,01 |
+| stage | +0,47 | +0,43 | +0,40 | +0,42 | 17,72 ± 0,05 | 18,15 ± 0,04 |
+| user_stage | +0,55 | +0,47 | +0,52 | +0,50 | 17,64 ± 0,06 | 18,16 ± 0,02 |
+
+Descrittivi, senza soglia:
+- deviazione dei Δ sui tre semi 0,033-0,037 gradi;
+- utenti peggiori con MSE, seme per seme: 20, 18, 19 su 20 (user); 150, 149, 147 su 158 (stage); 18, 18, 19 su 20 (user_stage);
+- la deviazione della L1 fra semi (0,02-0,06) e' un ordine di grandezza, con due gradi di liberta': la soglia di 0,30 non si ricalibra su
+  questo.
+
+La baseline firmata resta quella del seme 0.
+
+**Consuntivo e tetto superato.** I tempi trascorsi:
+- training 3:42:10, 3:37:24, 3:37:37 e 3:51:48;
+- valutazioni 0:29:45, 0:34:32, 0:35:33 e 0:28:47;
+- in tutto 61.057 s = **16,96 GPU-ore** (circa 136 ore locali), contro circa 13 attese e il **tetto di 14**: superato di 2,96 GPU-ore (+21%).
+
+La causa e' il caricamento dei dati, salito a 3.576-4.522 s contro i 1.833 del 18/11. La velocita' per passo e' la stessa, 1,085 ms.
+Anche le valutazioni sono piu' lente, 29-36 minuti contro 21. Lettura di Claude: quattro job che caricano 62 GiB ciascuno insieme, piu' i
+due job lunghi della sessione `temponet-residual`, partiti nello stesso momento.
+
+Non c'era una regola per fermare job gia' in corso, e fermarli avrebbe buttato le ore gia' spese. Il superamento va riferito a Simone. Per
+i prossimi lotti: nel preventivo il caricamento va contato almeno doppio quando piu' job partono insieme, oppure gli invii vanno
+scaglionati. Checkout: 41 s su `lrd_all_serial`. Attivita' conclusa, nessun job aperto. Dati in
+`results/temponet_emg2pose/seeds_study_20261118/` (confronto in `confronto/`).
+
 ### 2026-11-18 — TEMPONet residua su emg2pose: un seme; architettura, risorse e regola di lettura congelate PRIMA del lancio (Claude)
 
 Simone, alla sessione di coordinamento: «apri un tuo fratello e fagli provare una versione della temponet in cui pero inseriamo un residual

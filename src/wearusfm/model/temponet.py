@@ -183,15 +183,20 @@ class TEMPONet(nn.Module):
                 ch_in, length = c, block_length
             self.relu = nn.ReLU()
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        if x.ndim != 3 or x.shape[1] != self.in_channels or x.shape[2] != self.window:
-            raise ValueError(f"ingresso atteso (batch, {self.in_channels}, {self.window}), ricevuto {tuple(x.shape)}")
+    def embed(self, x: torch.Tensor) -> torch.Tensor:
+        """Uscita dei tre blocchi appiattita, (batch, canali x lunghezza): con i salti se la rete e' residua. Per chi applica la testa a parte
+        (es. il forward a coppie della loss con la velocita' in `scripts/temponet_emg2pose.py`); senza controllo della forma."""
         if not self.residual:
-            return self.out(self.head(self.features(x).flatten(1)))
+            return self.features(x).flatten(1)
         f = self.features
         for i, skip in enumerate(self.skips):
             x = self.relu(f[3 * i + 2](f[3 * i + 1](f[3 * i](x))) + skip(x))
-        return self.out(self.head(x.flatten(1)))
+        return x.flatten(1)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if x.ndim != 3 or x.shape[1] != self.in_channels or x.shape[2] != self.window:
+            raise ValueError(f"ingresso atteso (batch, {self.in_channels}, {self.window}), ricevuto {tuple(x.shape)}")
+        return self.out(self.head(self.embed(x)))
 
 
 def count_parameters(model: nn.Module) -> int:
