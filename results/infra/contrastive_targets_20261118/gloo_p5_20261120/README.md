@@ -1,0 +1,5 @@
+# P-5 · prova locale su quattro processi Gloo
+
+I due script chiamano l’ingresso reale `scripts/contrastive_run.py:main` con un modello di piccole dimensioni e dati sintetici. Il primo esercita l’osservatore di parità del controllo C0. Il secondo esegue CN in continuo e due riprese in processi nuovi dal checkpoint comune. Per la prova locale si riducono il numero di update e il modello, si sostituisce il dispositivo con CPU e si adattano le verifiche sui pin sintetici e sullo stato RNG al dispositivo effettivo. Le verifiche di release sui dati veri si eseguono separatamente. Queste prove misurano l’orchestrazione e la scrittura delle ricevute. Il confronto CUDA a batch e modello di campagna ha criteri propri.
+
+Dalla radice del worktree, con il Python del progetto e `OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1`, avviare i due script passando a ciascuno `--evidence` con una propria cartella di uscita nuova. I quattro processi devono poter comunicare sulla rete locale. Leggere l’output delle prove e le ricevute prima del rilascio della calibrazione GPU.
