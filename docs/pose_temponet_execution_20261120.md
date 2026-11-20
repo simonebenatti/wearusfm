@@ -114,13 +114,19 @@ d'esempio del 19/11 che leggono il vecchio piano non funzionano più con i sorge
 7. **Generare la riga del preflight** con `commands --stage preflight` e inviarla una sola volta con `scripts/submit_job.py`.
    L'ID è `TCNH-preflight-20261120`.
 
-Due precisazioni sulle fasi successive:
+Quattro precisazioni sulle fasi successive:
 - Le copie locali delle ricevute per `resource-plan` e per `--completed-prerequisites` vanno raccolte in una sola cartella con il
   nome `<ID>.json`, per esempio `TCNH-preflight-20261120.json` accanto alle due dei benchmark. `verified_receipt` cerca ogni
   predecessore con quel nome. Dopo il primo tentativo la ricevuta era stata archiviata come `preflight_receipt.json`: una copia
   con un altro nome può restare, ma non sostituisce quella.
 - Il consuntivo finale conta anche il primo tentativo: 24 allocazioni della catena più le 3 già fatte (due inventari e il
   preflight fallito), cioè 27, e le 0,0433 core-ore già spese vanno negli stessi tetti. Zero GPU-ore finora.
+- Il pin numerico `gpu8` nasce dal benchmark GPU e comprende nome, capacità e memoria della scheda e il modello di CPU di quel
+  nodo. Ogni stadio GPU successivo pretende lo stesso digest. Prima del primo invio dipendente conviene leggere gli stessi valori
+  su un secondo nodo di `boost_usr_prod`, come già fatto per i due nodi seriali: se differissero vale la regola per classe di
+  nodo del documento del 19/11. Finora nessuno l'ha verificato.
+- Tre degli otto input pinnati stanno su SCRATCH (i due riferimenti dei target e `pose_stats.json`). Come già scritto il 19/11,
+  nessun rinfresco di SCRATCH mentre un job TCN legge gli input: il prossimo è previsto il 03/12.
 
 ## Verifiche fatte sul Mac
 
@@ -136,8 +142,14 @@ Due precisazioni sulle fasi successive:
   - `tests/cpu/test_pose_temponet_preflight_real_layout.py` esegue il corpo vero di `provenance.preflight`, senza sostituire
     niente, su file piccoli scritti nel formato reale: ID veri, ricevute vere con le loro cartelle, `config_json` vero, chiavi dei
     metadati vere, scrittore e lettori storici. Con la lista della prima consegna riproduce lo stesso errore del job 64931573.
+    Lo stesso file fa leggere quei dati a ogni stadio successivo con il lettore vero e verifica che benchmark, calibrazione e
+    fold accettino la lista del piano e rifiutino i nomi delle cartelle;
+  - la riga di invio del preflight nomina la campagna nuova in `--campagna`, in `CAMPAIGN` e in `CODE_DIR`;
+  - le costanti della parità R-1 sono quelle della proposta approvata e la tolleranza è esattamente 1e-12;
+  - un piano con le liste riscritte è rifiutato da `validate_plan`, anche con l'identità di esecuzione ricalcolata.
 - Otto mutazioni di prova della correzione: ciascuna fa fallire almeno un test nuovo
-  (`results/infra/pose_temponet_execution_20261120/mutation_check/`).
+  (`results/infra/pose_temponet_execution_20261120/mutation_check/`). Il revisore dei test ne ha provate altre 37: i test che ha
+  proposto per quelle sopravvissute sono stati aggiunti.
 - Letture in sola lettura su Leonardo dei file pinnati, senza aprire gli array interi
   (`results/infra/pose_temponet_execution_20261120/real_input_headers/`, 93 controlli su 93):
   - forme, tipi e configurazione dei sette `.npz` corrispondono a quello che il codice pretende: cache `float16` 160 × 384,
@@ -146,9 +158,13 @@ Due precisazioni sulle fasi successive:
   - l'hash dei metadati veri è uguale a `details.targets.metadata` delle due ricevute storiche;
   - in train 53 finestre su 1.907 non hanno posa valida. Le prime finestre dei primi 15 utenti in ordine, che il benchmark CPU
     usa per misurare il costo del rapporto, hanno tutte posa valida su 20 giunti.
-- Review indipendente del commit `5d6fb2dc` (`results/infra/pose_temponet_execution_20261120/independent_review/`): due revisori
-  hanno concluso, senza blocchi e senza richieste sui sorgenti; i loro punti sui documenti sono applicati qui. Altri due sono
-  stati fermati prima della fine: il loro lavoro è stato sostituito dalle prove di mutazione e dalle letture elencate sopra.
+- Review indipendente (`results/infra/pose_temponet_execution_20261120/independent_review/`): quattro revisori, tutti conclusi,
+  nessun blocco e nessuna richiesta sui sorgenti. Due hanno lavorato sul commit `5d6fb2dc`, due sulla punta `0e548bf8` dopo
+  essere stati rilanciati. I loro punti sui documenti e sui test sono applicati. Per il preflight, il revisore dei dati veri ha
+  trovato che:
+  - il gate R-1 usa le stesse funzioni dello stesso modulo, identico byte per byte, del job storico, e in simulazione alla
+    dimensione reale di val dà un risultato identico bit per bit;
+  - la lettura di val arriva a circa 9 GiB di picco e l'intero preflight dovrebbe durare circa 3 minuti.
 
 ## Limiti noti, che non cambiano con questa consegna
 
@@ -161,7 +177,8 @@ Due precisazioni sulle fasi successive:
 ## Che cosa resta da vedere solo nel job
 
 - I digest degli array delle cache e la parità R-1 a 1e-12 sono calcolati sui dati interi. Sul Mac non si possono riprodurre: li
-  decide il preflight.
-- Tempo e memoria della lettura di val nel preflight: mai misurati sui dati veri. La stima sul codice sta nei 24 GB e nei 12
-  minuti richiesti, ma è una stima.
+  decide il preflight. Nessun test locale esegue la parità sugli array veri.
+- Tempo e memoria della lettura di val nel preflight: mai misurati sui dati veri in questa catena. La stima del revisore, circa
+  9 GiB e circa 3 minuti, sta larga nei 24 GB e nei 12 minuti richiesti; il job storico con lo stesso lettore sullo stesso file
+  misurò 8,86 GiB.
 - Tempi, memoria e determinismo su A100: li decidono i benchmark e i gate, come nella prima consegna.

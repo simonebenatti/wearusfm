@@ -1,0 +1,37 @@
+numpy 2.3.5 | baseline peak RSS GiB after imports 0.261
+preflight passed: True True | total seconds 5.03 | peak RSS GiB 1.214
+  P.verify_pin(hash)                                 0.05 s   peak-so-far 0.276 GiB   bytes 99783291
+  P.verify_pin(hash)                                 0.03 s   peak-so-far 0.276 GiB   bytes 50015609
+  P.verify_pin(hash)                                 0.00 s   peak-so-far 0.276 GiB   bytes 25
+  P.verify_pin(hash)                                 0.24 s   peak-so-far 0.278 GiB   bytes 497298948
+  P.verify_pin(hash)                                 0.12 s   peak-so-far 0.278 GiB   bytes 248462073
+  P.verify_pin(hash)                                 0.00 s   peak-so-far 0.278 GiB   bytes 59604
+  P.verify_pin(hash)                                 0.02 s   peak-so-far 0.282 GiB   bytes 45497447
+  P.verify_pin(hash)                                 0.01 s   peak-so-far 0.282 GiB   bytes 25685226
+    P.verify_pin(hash)                                 0.00 s   peak-so-far 0.282 GiB   bytes 25
+      R.verify_file(hash)                                0.05 s   peak-so-far 0.282 GiB   bytes 99783291
+      R.verify_file(hash)                                0.02 s   peak-so-far 0.282 GiB   bytes 50015609
+      read_targets                                       0.02 s   peak-so-far 0.291 GiB   
+        H.validate_cache                                   0.07 s   peak-so-far 0.467 GiB   
+      H.read_cache(inflate+validate)                     0.46 s   peak-so-far 0.467 GiB   
+        H.validate_cache                                   0.07 s   peak-so-far 0.467 GiB   
+      D.validate_cache(=H.validate_cache+central)        0.07 s   peak-so-far 0.467 GiB   
+    read_cache_pin                                     0.63 s   peak-so-far 0.467 GiB   
+  read_verified_inputs                               0.63 s   peak-so-far 0.467 GiB   
+    P.verify_pin(hash)                                 0.00 s   peak-so-far 0.467 GiB   bytes 25
+      R.verify_file(hash)                                0.24 s   peak-so-far 0.467 GiB   bytes 497298948
+      R.verify_file(hash)                                0.12 s   peak-so-far 0.467 GiB   bytes 248462073
+      read_targets                                       0.13 s   peak-so-far 0.467 GiB   
+        H.validate_cache                                   0.46 s   peak-so-far 1.167 GiB   
+      H.read_cache(inflate+validate)                     2.39 s   peak-so-far 1.167 GiB   
+        H.validate_cache                                   0.37 s   peak-so-far 1.214 GiB   
+      D.validate_cache(=H.validate_cache+central)        0.38 s   peak-so-far 1.214 GiB   
+    read_cache_pin                                     3.27 s   peak-so-far 1.214 GiB   
+  read_verified_inputs                               3.27 s   peak-so-far 1.214 GiB   
+    R.verify_file(hash)                                0.02 s   peak-so-far 1.214 GiB   bytes 45497447
+  read_predictions                                   0.19 s   peak-so-far 1.214 GiB   
+    R.verify_file(hash)                                0.01 s   peak-so-far 1.214 GiB   bytes 25685226
+  read_predictions                                   0.12 s   peak-so-far 1.214 GiB   
+  historical_reference_gate                          0.35 s   peak-so-far 1.214 GiB   
+windows {'train': 400, 'val': 2000} | cache bytes {'train': 99783291, 'val': 497298948} | reference bytes {'train': 50015609, 'val': 248462073}
+hashed bytes 1933544867 in 0.94 s = 2063 MB/s

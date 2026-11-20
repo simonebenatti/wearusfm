@@ -12,15 +12,19 @@ per incarico di Simone; la rilettura indipendente del diff è di GPT.
 - `delivery_pin.json`: SHA del codice, `source_sha256`, hash dei file della consegna.
 - `validate.py` e `validation/`: tutti i file di test TCN e i 5 file storici, con la verifica che `plan.json` sia esattamente ciò
   che `prepare-plan` ricava dai sorgenti.
-- `mutation_check/`: otto mutazioni di prova della correzione, ciascuna fermata da almeno un test nuovo.
+- `mutation_check/`: otto mutazioni di prova della correzione, ciascuna fermata da almeno un test nuovo. Le altre 37 del revisore
+  dei test sono in `independent_review/review2_tests/`.
 - `real_input_headers/`: letture in sola lettura dei file pinnati su Leonardo, fatte il 20/11 senza aprire gli array interi, e il
   loro confronto con ciò che il lettore pretende (`check_headers.py`, `check_headers.txt`):
   - `headers.json`: intestazioni e configurazione dei sette `.npz`;
   - `meta_stats.json`: unicità, tipi e hash dei metadati delle finestre;
   - `train_support.json`: finestre di train con e senza posa valida.
-- `independent_review/`: esiti dei due revisori indipendenti che hanno concluso (`review_logic.json`, `review_delivery.json`),
-  lo script della prova del preflight su file in formato reale, e gli script lasciati da un terzo revisore fermato prima della
-  fine (`partial_realdata/`, senza esito).
+- `independent_review/`: i quattro revisori indipendenti, tutti conclusi senza blocchi.
+  - `review_logic.json` e `review_delivery.json`: sul commit `5d6fb2dc`; con `review_logic_preflight_dryrun.py`, la prova del
+    preflight su file in formato reale da cui è nato il test `test_pose_temponet_preflight_real_layout.py`;
+  - `review2_realdata.json` e `review2_tests.json`: sulla punta `0e548bf8`, dopo il rilancio chiesto da Simone; note, script e
+    log dei due revisori in `review2_realdata/` e `review2_tests/`;
+  - `partial_realdata/`: script lasciati dalla prima istanza del revisore dei dati veri, fermata alla pausa senza esito.
 
 Istruzioni operative: `docs/pose_temponet_execution_20261120.md`, che aggiorna `docs/pose_temponet_execution_20261119.md`.
 Documento di consegna, con lo SHA del codice per `release-plan`: `docs/reviews/claude_delivery_pose_temponet_users_fix_20261120.md`.

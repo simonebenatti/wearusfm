@@ -34,9 +34,10 @@ Incarico. Simone, il 20/11, dopo la mia diagnosi `629fdaed`:
 | --- | --- |
 | `scripts/pose_temponet/provenance.py` | `storage_directory` e `cache_user`; `historical_producer` restituisce gli ID della cache in `users` e le cartelle in `storage_directories`; `read_verified_inputs` verifica entrambi |
 | `scripts/pose_temponet/execution.py` | `DELIVERY = "20261120"` per campagna e suffisso degli ID |
-| `tests/cpu/test_pose_temponet_provenance.py` | quattro test nuovi |
-| `tests/cpu/test_pose_temponet_execution.py` | un test nuovo sull'identità della consegna |
-| `tests/cpu/test_pose_temponet_preflight_real_layout.py` | tre test nuovi: il corpo vero del preflight su file in formato reale |
+| `tests/cpu/test_pose_temponet_provenance.py` | sei test nuovi |
+| `tests/cpu/test_pose_temponet_execution.py` | due test nuovi: identità della consegna e riga di invio del preflight |
+| `tests/cpu/test_pose_temponet_preflight_real_layout.py` | sei test nuovi: il corpo vero del preflight e i lettori degli stadi successivi su file in formato reale |
+| `tests/cpu/test_pose_temponet_metrics.py` | due test nuovi: costanti e tolleranza della parità R-1 |
 | `tests/cpu/data/pose_temponet_cache_users_20261120.json`, `…cache_layout_20261120.json` | ID, configurazione e chiavi dei metadati delle due cache vere |
 | `results/infra/pose_temponet_execution_20261120/` | piano rigenerato, validazione, mutazioni, prove sui file veri, review indipendente |
 | `docs/pose_temponet_execution_20261120.md` | istruzioni aggiornate per l'operatore; un rimando in testa al documento del 19/11 |
@@ -55,7 +56,7 @@ launcher, radice degli output.
 ## Verifiche
 
 Test, sul Mac (`results/infra/pose_temponet_execution_20261120/validation/local_validation.json`):
-- i 21 file TCN: 271 passati su 271, in 162 s;
+- i 21 file TCN: 279 passati su 279, in 177 s;
 - i 5 file storici: 125 passati e 1 fallito, lo stesso fallimento già presente sulla base
   (`test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned`);
 - `plan.json` è esattamente l'uscita di `prepare-plan` sui sorgenti.
@@ -64,7 +65,9 @@ La suite completa del repository non è stata rieseguita: fuori dal pacchetto TC
 launcher sono identici a quelli già approvati.
 
 Mutazioni (`mutation_check/`): otto modifiche di prova della correzione, per esempio il ritorno al comportamento della prima
-consegna o la rimozione di uno dei due confronti. Ognuna fa fallire almeno un test nuovo.
+consegna o la rimozione di uno dei due confronti. Ognuna fa fallire almeno un test nuovo. Il revisore dei test ne ha provate
+altre 37: 22 fermate, 15 sopravvissute, nessuna delle quali indica un difetto del codice consegnato. I test che ha proposto per
+chiudere quei vuoti sono stati aggiunti.
 
 Dati veri, in sola lettura su Leonardo (`real_input_headers/`, 93 controlli su 93):
 - gli ID delle due cache sono uguali alla lista che il codice nuovo ricava dalle due ricevute; i miei elenchi hanno gli stessi
@@ -73,16 +76,33 @@ Dati veri, in sola lettura su Leonardo (`real_input_headers/`, 93 controlli su 9
 - i metadati delle finestre sono unici e il loro hash è uguale a quello delle ricevute storiche;
 - le prime finestre dei 15 utenti usati dal benchmark CPU hanno posa valida.
 
-Review indipendente del commit `5d6fb2dc` (`independent_review/`), quattro revisori senza accesso al cluster:
-- LOGIC, concluso: nessun blocco e nessun importante. Conferma l'unicità del ritorno cartella → ID (nessun controesempio su
-  25.260 stringhe esaustive e 200.000 casuali), la coerenza di tutti i punti che usano `producers`, il rifiuto dei piani vecchi,
-  l'ordine degli import e il contesto numerico invariati. Ha eseguito il corpo vero del preflight su file in formato reale: è
-  diventato il test `test_pose_temponet_preflight_real_layout.py`.
-- DELIVERY, concluso: nessun blocco. Ha provato in locale rilascio, generazione del comando e i due wrapper, anche con i resti
-  del primo tentativo nella radice degli output. Due punti importanti e sei fra minori e note, tutti di documentazione o
-  procedura: applicati in `docs/pose_temponet_execution_20261120.md`.
-- REAL-DATA e TESTS: fermati prima della fine, quando Simone ha chiesto la pausa. Non hanno un esito. Ho sostituito il loro
-  lavoro con le prove di mutazione e con le letture sui dati veri; del primo restano gli script in `partial_realdata/`.
+Review indipendente (`independent_review/`), quattro revisori senza accesso al cluster. Hanno concluso tutti e quattro: nessun
+blocco, nessun punto importante sui sorgenti.
+- LOGIC, sul commit `5d6fb2dc`: conferma l'unicità del ritorno cartella → ID (nessun controesempio su 25.260 stringhe esaustive
+  e 200.000 casuali), la coerenza di tutti i punti che usano `producers`, il rifiuto dei piani vecchi, l'ordine degli import e
+  il contesto numerico invariati. Ha eseguito il corpo vero del preflight su file in formato reale: è diventato il test
+  `test_pose_temponet_preflight_real_layout.py`.
+- DELIVERY, sul commit `5d6fb2dc`: ha provato in locale rilascio, generazione del comando e i due wrapper, anche con i resti del
+  primo tentativo nella radice degli output. Due punti importanti e sei fra minori e note, tutti di documentazione o procedura:
+  applicati in `docs/pose_temponet_execution_20261120.md`.
+- REAL-DATA, sulla punta `0e548bf8`. Una prima istanza era stata fermata alla pausa chiesta da Simone; rilanciata su sua
+  richiesta, ha concluso:
+  - il gate R-1 chiama le stesse tre funzioni dello stesso modulo, identico byte per byte, usato dal job storico; le costanti
+    sono uguali bit per bit alla ricevuta storica archiviata; il file `trained_head.predictions.npz` contiene esattamente
+    `pred[:, 6:-6].astype(float64)` della cache val pinnata;
+  - alla dimensione reale di val i due percorsi danno un `E_dyn` identico bit per bit, con numpy 1.26.4 e 2.3.5. La
+    perturbazione più grande che è riuscito a produrre è 4,4e-16, contro una tolleranza di 1e-12;
+  - la lettura di val arriva a circa 9 GiB di picco (il job storico con lo stesso lettore sullo stesso file ne misurò 8,86) e
+    l'intero preflight dovrebbe durare circa 3 minuti: 24 GB e 12 minuti bastano;
+  - su una cache train simulata di dimensione reale, con 53 finestre vuote e la prima finestra di `76bfc2d385` vuota, sono
+    andati a buon fine i primi passi dei due benchmark, il ramo della calibrazione WLS per il fold 0 e una cella di training e
+    valutazione per ogni testa.
+  Un minore e quattro note, nessuno chiede di cambiare i sorgenti. Non ha eseguito a dimensione reale: il benchmark GPU
+  completo, il diagnostico L13 a 4.992 colonne dentro la WLS, il fold 1 della WLS e gli stadi successivi.
+- TESTS, sulla punta `0e548bf8`, anch'esso rilanciato: gli otto test nuovi di allora proteggono la correzione per le ragioni
+  giuste, senza blocchi di eccezione vuoti e senza dipendenze dall'ordine. Il test sul formato reale non sostituisce davvero
+  niente tranne le costanti di parità. Le due fixture coincidono con tutte le prove indipendenti del repository (52 controlli).
+  Sette minori e quattro note, tutti vuoti di copertura dei test: i suoi otto test sono stati aggiunti in questa consegna.
 
 ## Per l'operatore
 
@@ -95,8 +115,14 @@ Sequenza completa in `docs/pose_temponet_execution_20261120.md`. In breve:
 
 ## Limiti
 
-- I digest degli array e la parità R-1 a 1e-12 si vedono solo nel job, come tempo e memoria della lettura di val.
+- I digest degli array e la parità R-1 sui dati veri si vedono solo nel job. Nessun test locale esegue la parità sugli array
+  veri: nei test le costanti sono ricalcolate sui dati sintetici.
 - `benchmark._report_measurement` usa la prima finestra dei primi 15 utenti: sui dati veri ha posa valida, ma il codice non lo
   garantisce da solo.
 - `validate_plan` non lega gli ID dei job alla consegna: nessun comando produce un piano ibrido, e l'ID vecchio sarebbe fermato
   all'esecuzione.
+- Il pin numerico `gpu8` comprende nome, capacità e memoria della scheda e il modello di CPU del nodo del benchmark GPU. Se due
+  nodi di `boost_usr_prod` dessero valori diversi, gli stadi GPU successivi si fermerebbero. Non è stato verificato: è un
+  sospetto, e si chiude con una lettura su due nodi prima del primo invio dipendente, come già fatto per i due nodi seriali.
+- Tre degli otto input pinnati stanno su SCRATCH. Un rinfresco di SCRATCH durante i primi minuti di un job TCN cambierebbe le
+  date dei file e farebbe scattare la guardia sugli input: prossimo rinfresco previsto il 03/12.

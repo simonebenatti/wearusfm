@@ -44,8 +44,8 @@
     },
     {
       "path": "tests/cpu/test_pose_temponet_execution.py",
-      "sha256": "31206a1567cd2ecfd1d32cd33c693ddf4dd8c6b026d0e76e91ee6eedaae89ef3",
-      "bytes": 4558
+      "sha256": "5212bd53aaae479e93ecf70fc9b8bf718aa84f156ea923ab6f1645d5cee49556",
+      "bytes": 5614
     },
     {
       "path": "tests/cpu/test_pose_temponet_heads.py",
@@ -59,8 +59,8 @@
     },
     {
       "path": "tests/cpu/test_pose_temponet_metrics.py",
-      "sha256": "db82f1179d2c2eed74c158d21d71fa89b2f73c392e1a531f49e508417ce28882",
-      "bytes": 6517
+      "sha256": "d8a3484c139c66f916fbb2176636205e599b7406861ea348e125f0b35a2d6769",
+      "bytes": 8677
     },
     {
       "path": "tests/cpu/test_pose_temponet_operational.py",
@@ -69,13 +69,13 @@
     },
     {
       "path": "tests/cpu/test_pose_temponet_preflight_real_layout.py",
-      "sha256": "73afe3aecacb691c0094f501cf5d5b5439843d211bb1ec928ae7ceb5ddfc2174",
-      "bytes": 10656
+      "sha256": "a737d080abe3f02a6d46793a37bd49f4d35ee732fa81503818f9d75783fc8992",
+      "bytes": 15018
     },
     {
       "path": "tests/cpu/test_pose_temponet_provenance.py",
-      "sha256": "754a261c06692b3a3bc4d2bfda98f7e1aa1aed47f8dd4b53ba2542b185ea769a",
-      "bytes": 19750
+      "sha256": "53d594cabc8f1b80943216bc853819841c0afd88917615b3a732cd093541d44b",
+      "bytes": 22242
     },
     {
       "path": "tests/cpu/test_pose_temponet_report.py",
@@ -179,15 +179,15 @@
         "tests/cpu/test_pose_temponet_workflow.py"
       ],
       "returncode": 0,
-      "elapsed_s": 163.2201972079929,
+      "elapsed_s": 178.59126829198794,
       "log": {
         "path": "results/infra/pose_temponet_execution_20261120/validation/runtime.log",
-        "sha256": "eb51783f2beca4c280ad6690473ddb82752501b92b6524244a3e8f41b5c72de9",
+        "sha256": "9caab3c712a0d071429c57d9f840f8dad223640b3ac8fd0e6417d012f6538550",
         "bytes": 352
       },
       "failures": [],
       "errors": [],
-      "summary": "271 passed in 161.98s (0:02:41)",
+      "summary": "279 passed in 176.70s (0:02:56)",
       "expected_baseline_failure_only": false,
       "accepted": true
     },
@@ -210,17 +210,17 @@
         "tests/cpu/test_consolidation_long_common.py"
       ],
       "returncode": 1,
-      "elapsed_s": 4.775971875002142,
+      "elapsed_s": 5.0410334169864655,
       "log": {
         "path": "results/infra/pose_temponet_execution_20261120/validation/historical.log",
-        "sha256": "eb6aedb01be7a3e521df3007fc658f1090ffbb6cb0cd1b0ef3102ce53a420f0b",
+        "sha256": "3bdf88d35a28a324bc96952b2674c4d1d4b2bc9a5af1ebba0a0c412f046495bb",
         "bytes": 794
       },
       "failures": [
         "tests/cpu/test_consolidation_long_common.py::test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned"
       ],
       "errors": [],
-      "summary": "1 failed, 125 passed in 4.06s",
+      "summary": "1 failed, 125 passed in 4.26s",
       "expected_baseline_failure_only": true,
       "accepted": true
     }

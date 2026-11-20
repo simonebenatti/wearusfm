@@ -1,0 +1,146 @@
+"""Reviewer TESTS, own tree only: the tests that the surviving mutations say are missing. Do they pass on the delivered code?"""
+import copy
+import json
+from pathlib import Path
+import sys
+
+import numpy as np
+import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]/"scripts"))
+from pose_temponet import benchmark as B, controls as C, data as D, execution as E, metrics as M
+from pose_temponet import provenance as P, runner as R, workflow as W
+from test_pose_temponet_preflight_real_layout import real_layout, USERS, DETAILS  # noqa: F401
+from test_pose_temponet_provenance import prepared, REAL_CACHE_USERS  # noqa: F401
+
+REPO = Path(__file__).resolve().parents[2]
+
+
+def test_gap_validate_plan_rejects_rewritten_user_lists_even_with_recomputed_identity(prepared):
+    repo, plan = prepared
+    for split in ("train", "val"):
+        for field in ("users", "storage_directories"):
+            bad = copy.deepcopy(plan)
+            if field == "users":  # the first delivery's content
+                bad["producers"][split]["users"] = list(bad["producers"][split]["storage_directories"])
+            else:
+                bad["producers"][split]["storage_directories"][0] = "uffffffffff"
+            bad["execution_sha256"] = P.execution_identity(bad)
+            with pytest.raises(ValueError, match="^historical producer identity was rewritten$"):
+                P.validate_plan(bad, source_root=repo)
+
+
+def test_gap_cache_with_one_user_missing_is_refused(prepared, monkeypatch):
+    _, plan = prepared
+    real = REAL_CACHE_USERS["train"]["users"]
+    monkeypatch.setattr(P, "verify_pin", lambda pin, **kwargs: {"pin": pin, "state": {}})
+    monkeypatch.setattr(P, "unchanged", lambda states: None)
+    served = {"meta": [{"user": user} for user in real[:-1] for _ in range(2)],
+              "input_verification": copy.deepcopy(plan["producers"]["train"]["details"])}
+    monkeypatch.setattr(P.D, "read_cache_pin", lambda pin, **kwargs: served)
+    with pytest.raises(ValueError, match="^cache user population differs from original producer$"):
+        P.read_verified_inputs(plan, "train", stage="preflight")
+
+
+def test_gap_preflight_applies_user_and_detail_checks_to_val(real_layout):
+    plan = real_layout
+    bad = copy.deepcopy(plan)
+    bad["producers"]["val"]["users"] = list(bad["producers"]["val"]["storage_directories"])
+    with pytest.raises(ValueError, match="^cache user population differs from original producer$"):
+        P.preflight(bad)
+    for key in DETAILS:
+        bad = copy.deepcopy(plan)
+        bad["producers"]["val"]["details"][key] = "x"
+        with pytest.raises(ValueError, match="^historical cache details changed: "+key+"$"):
+            P.preflight(bad)
+
+
+def test_gap_later_stages_read_the_real_layout_and_consumers_accept_the_plan_users(real_layout):
+    plan = real_layout
+    result = json.loads(P.canonical_bytes(P.preflight(plan)))  # as the next job reads it from the receipt
+    allowed = plan["producers"]["train"]["users"]
+    identity = R._input_identity(plan)
+    for stage in P.TRAIN_STAGES:
+        cache = P.read_verified_inputs(plan, "train", stage=stage)
+        assert {"pre", "lat"} <= set(cache) and "features" not in cache
+        folds = D.alternating_user_folds(cache, result["train"]["folds"])
+        if stage in ("cpu_benchmark", "gpu_benchmark"):
+            got, population = B._validate_train(cache, allowed, identity)
+            assert population["fold_windows"] == [40, 40] and population["train_windows"] == 80
+            with pytest.raises(ValueError, match="exactly the declared training users"):
+                B._validate_train(cache, plan["producers"]["train"]["storage_directories"], identity)
+        if stage == "wls_calibration":
+            fit = np.asarray([i for i, m in enumerate(cache["meta"]) if m["user"] in set(folds[0])])
+            held = np.asarray([i for i, m in enumerate(cache["meta"]) if m["user"] not in set(folds[0])])
+            partition = C.validate_outer_partition(cache["meta"], fit, held, allowed)
+            assert partition["fitting_users"] == folds[0] and partition["held_users"] == folds[1]
+        if stage in ("selection", "refit"):
+            bundle = W.prepare_real_folds(cache, allowed_train_users=allowed, source_identity=identity,
+                                          expected_folds=result["train"]["folds"])
+            assert bundle.manifest["users"] == USERS["train"]["users"] and bundle.manifest["user_folds"] == folds
+            with pytest.raises(ValueError, match="train population differs from the allowed users"):
+                W.prepare_real_folds(cache, allowed_train_users=plan["producers"]["train"]["storage_directories"],
+                                     source_identity=identity, expected_folds=result["train"]["folds"])
+        with pytest.raises(ValueError, match="not permitted to open val"):
+            P.read_verified_inputs(plan, "val", stage=stage)
+    for stage, depth in (("locked_inference", "post"), ("locked_inference", "pre"), ("metrics", "post")):
+        cache = P.read_verified_inputs(plan, "val", stage=stage, depth=depth)
+        assert cache["feature_depth"] == depth and "lat" not in cache and "pre" not in cache
+        assert sorted({m["user"] for m in cache["meta"]}) == USERS["val"]["users"]
+        assert not set(USERS["val"]["users"]) & set(allowed)
+    # the metrics stage repeats the parity gate on the val cache it reads itself
+    cache = P.read_verified_inputs(plan, "val", stage="metrics", depth="post")
+    cache.pop("features", None)
+    parity = M.historical_reference_gate(cache, D.read_predictions(plan["inputs"]["post_ridge_predictions"]),
+                                         D.read_predictions(plan["inputs"]["trained_head_predictions"]))
+    assert parity == result["historical_R1"]
+
+
+def test_gap_parity_constants_are_the_approved_proposal_values():
+    proposal = json.loads((REPO/"results/infra/pose_temponet_proposal_20261117/proposal.json").read_text())
+    gate = proposal["evaluation"]["historical_reference_gate"]
+    assert M.HISTORICAL_REFERENCE == {
+        "post_ridge_E_dyn": gate["post_ridge_E_dyn"], "trained_head_E_dyn": gate["trained_head_E_dyn"],
+        "dynamic_selected_windows": gate["dynamic_windows_selected"], "dynamic_centered_windows": gate["dynamic_windows"],
+        "dynamic_centered_elements": gate["dynamic_valid_elements"],
+        "dynamic_window_joint_pairs": gate["dynamic_window_joint_pairs"], "dynamic_users": gate["users"]}
+    assert gate["absolute_tolerance"] == 1e-12
+
+
+def test_gap_parity_tolerance_is_exactly_1e_12(monkeypatch):
+    from test_pose_temponet_data import fixture
+    data, _ = fixture()
+    ridge = data["target"][:, 6:-6].astype(float)*.2
+    head = data["pred"][:, 6:-6].astype(float)
+    rows = [M.evaluate(a, data)["groups"]["dynamic"] for a in (ridge, head)]
+    expected = {"post_ridge_E_dyn": rows[0]["centered"]["centered_mse_ratio"],
+                "trained_head_E_dyn": rows[1]["centered"]["centered_mse_ratio"],
+                "dynamic_selected_windows": rows[0]["n_selected_windows"], "dynamic_centered_windows": rows[0]["centered"]["n_windows"],
+                "dynamic_centered_elements": rows[0]["centered"]["n_valid_elements"],
+                "dynamic_window_joint_pairs": rows[0]["centered"]["n_window_joints"], "dynamic_users": rows[0]["centered"]["n_users"]}
+    monkeypatch.setattr(M, "HISTORICAL_REFERENCE", {**expected, "post_ridge_E_dyn": expected["post_ridge_E_dyn"]+5e-13})
+    assert M.historical_reference_gate(data, ridge, head)["passed"]
+    monkeypatch.setattr(M, "HISTORICAL_REFERENCE", {**expected, "post_ridge_E_dyn": expected["post_ridge_E_dyn"]+3e-12})
+    with pytest.raises(ValueError, match="historical E_dyn parity failed: post_ridge"):
+        M.historical_reference_gate(data, ridge, head)
+
+
+def test_gap_preflight_command_names_the_new_campaign_everywhere():
+    jobs = E.job_graph()
+    command = E.submit_command({"submission_released": True}, jobs[0], checkout_sha="a"*40,
+                               plan_path=P.OUTPUT_ROOT+"/manifests/"+"b"*64+".json", plan_sha256="b"*64)
+    assert command[command.index("--id")+1] == "TCNH-preflight-20261120"
+    assert command[command.index("--campagna")+1] == "pose_temponet_20261120"
+    export = dict(item.split("=", 1) for item in next(w for w in command if w.startswith("--export="))[9:].split(",")[1:])
+    work = "/leonardo_work/IscrB_WearUsFM"
+    assert export["CAMPAIGN"] == "pose_temponet_20261120" and export["TCN_JOB_ID"] == "TCNH-preflight-20261120"
+    assert export["CODE_DIR"] == work+"/wearusfm_campaigns/"+export["CAMPAIGN"]  # the rule of pose_temponet_checkout.sbatch
+    assert export["CAMPAIGN_SHA"] == export["EXPECTED_SHA"] == "a"*40
+    assert "--script-stdin" in command and command[command.index("--script-stdin")+1] == "scripts/slurm/pose_temponet_checkout.sbatch"
+    assert any(w == "--time=00:12:00" for w in command) and "--mem=24G" in command and "--cpus-per-task=2" in command
+
+
+def test_gap_runner_hands_the_plan_users_to_the_benchmarks():
+    import inspect
+    source = inspect.getsource(R.run_stage)
+    assert source.count('plan["producers"]["train"]["users"]') == 3 and "storage_directories" not in source

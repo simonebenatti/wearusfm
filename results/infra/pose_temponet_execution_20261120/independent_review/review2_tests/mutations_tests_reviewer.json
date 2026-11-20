@@ -1,0 +1,959 @@
+[
+ {
+  "id": "P1",
+  "mutation": "historical_producer returns storage_directories unsorted (reverse order)",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_first_delivery_user_list_fails_exactly_like_job_64931573",
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_real_read_path_refuses_drifted_directories_and_each_changed_detail",
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_unpatched_preflight_completes_on_the_real_cache_layout",
+   "tests/cpu/test_pose_temponet_provenance.py::test_real_producer_users_are_the_ids_stored_in_the_real_caches",
+   "tests/cpu/test_pose_temponet_provenance.py::test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout"
+  ],
+  "summary": "2 failed, 29 passed, 3 errors in 14.98s",
+  "reasons": [
+   "E   ValueError: cache users do not map onto the producer storage directories",
+   "E   ValueError: cache users do not map onto the producer storage directories",
+   "E   ValueError: cache users do not map onto the producer storage directories",
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_provenance.py:107: AssertionError: assert ['ufba9f08c33...fa40c92', ...] == ['u03d49b393e...385c3cd', ...]",
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/scripts/pose_temponet/provenance.py:70: ValueError: cache users do not map onto the producer storage directories"
+  ],
+  "seconds": 16.1,
+  "caught": true
+ },
+ {
+  "id": "P2",
+  "mutation": "historical_producer returns users unsorted (reverse order)",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_first_delivery_user_list_fails_exactly_like_job_64931573",
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_real_read_path_refuses_drifted_directories_and_each_changed_detail",
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_unpatched_preflight_completes_on_the_real_cache_layout",
+   "tests/cpu/test_pose_temponet_provenance.py::test_real_producer_users_are_the_ids_stored_in_the_real_caches",
+   "tests/cpu/test_pose_temponet_provenance.py::test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout"
+  ],
+  "summary": "2 failed, 29 passed, 3 errors in 13.50s",
+  "reasons": [
+   "E   ValueError: cache user population differs from original producer",
+   "E   ValueError: cache user population differs from original producer",
+   "E   ValueError: cache user population differs from original producer",
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_provenance.py:106: AssertionError: assert (40 == 40 and ['fba9f08c33'...fa40c92', ...] == ['03d49b393e'...385c3cd', ...]",
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/scripts/pose_temponet/provenance.py:70: ValueError: cache user population differs from original producer"
+  ],
+  "seconds": 14.2,
+  "caught": true
+ },
+ {
+  "id": "P4",
+  "mutation": "read_verified_inputs first check compares sets instead of sorted lists",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "34 passed in 16.20s",
+  "reasons": [],
+  "seconds": 17.1,
+  "caught": false
+ },
+ {
+  "id": "P5",
+  "mutation": "read_verified_inputs second check compares sets (ignores order and duplicates)",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "34 passed in 15.88s",
+  "reasons": [],
+  "seconds": 16.9,
+  "caught": false
+ },
+ {
+  "id": "P6",
+  "mutation": "first check weakened to subset (a cache with fewer users passes it)",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "34 passed in 15.42s",
+  "reasons": [],
+  "seconds": 16.1,
+  "caught": false
+ },
+ {
+  "id": "P6b",
+  "mutation": "both user checks weakened to subset",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "34 passed in 14.38s",
+  "reasons": [],
+  "seconds": 15.0,
+  "caught": false
+ },
+ {
+  "id": "P7",
+  "mutation": "first user check skipped for the val split",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "34 passed in 16.05s",
+  "reasons": [],
+  "seconds": 16.6,
+  "caught": false
+ },
+ {
+  "id": "P7b",
+  "mutation": "both user checks skipped for the val split",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_real_read_path_refuses_drifted_directories_and_each_changed_detail"
+  ],
+  "summary": "1 failed, 33 passed in 14.24s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_preflight_real_layout.py:162: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 14.8,
+  "caught": true
+ },
+ {
+  "id": "P7c",
+  "mutation": "both user checks skipped for the train split",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_first_delivery_user_list_fails_exactly_like_job_64931573",
+   "tests/cpu/test_pose_temponet_provenance.py::test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout"
+  ],
+  "summary": "2 failed, 32 passed in 14.49s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_provenance.py:166: Failed: DID NOT RAISE <class 'ValueError'>",
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_preflight_real_layout.py:152: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 15.1,
+  "caught": true
+ },
+ {
+  "id": "P8a",
+  "mutation": "six details comparisons skipped entirely",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_real_read_path_refuses_drifted_directories_and_each_changed_detail"
+  ],
+  "summary": "1 failed, 33 passed in 14.20s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_preflight_real_layout.py:167: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 14.8,
+  "caught": true
+ },
+ {
+  "id": "P8b",
+  "mutation": "details comparison reduced: targets dropped",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_real_read_path_refuses_drifted_directories_and_each_changed_detail"
+  ],
+  "summary": "1 failed, 33 passed in 13.94s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_preflight_real_layout.py:167: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 14.5,
+  "caught": true
+ },
+ {
+  "id": "P8c",
+  "mutation": "details comparison reduced: key_time_valid_sha256 dropped",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_real_read_path_refuses_drifted_directories_and_each_changed_detail"
+  ],
+  "summary": "1 failed, 33 passed in 13.83s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_preflight_real_layout.py:167: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 14.4,
+  "caught": true
+ },
+ {
+  "id": "P8d",
+  "mutation": "details comparison reduced to the three counts and dim (both digests dropped)",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_real_read_path_refuses_drifted_directories_and_each_changed_detail"
+  ],
+  "summary": "1 failed, 33 passed in 13.78s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_preflight_real_layout.py:167: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 14.4,
+  "caught": true
+ },
+ {
+  "id": "P8e",
+  "mutation": "details comparison skipped for the val split only",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "34 passed in 14.23s",
+  "reasons": [],
+  "seconds": 14.8,
+  "caught": false
+ },
+ {
+  "id": "P9",
+  "mutation": "cache_user uses re.match instead of re.fullmatch",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_provenance.py::test_producer_with_ambiguous_storage_directory_is_refused",
+   "tests/cpu/test_pose_temponet_provenance.py::test_storage_directory_maps_back_only_where_the_id_is_unique"
+  ],
+  "summary": "2 failed, 32 passed in 14.54s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_provenance.py:118: Failed: DID NOT RAISE <class 'ValueError'>",
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_provenance.py:140: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 15.1,
+  "caught": true
+ },
+ {
+  "id": "P10",
+  "mutation": "cache_user regex restricted to lowercase hex",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_provenance.py::test_storage_directory_maps_back_only_where_the_id_is_unique"
+  ],
+  "summary": "1 failed, 33 passed in 14.36s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/scripts/pose_temponet/provenance.py:70: ValueError: producer storage directory has no unique cache user ID"
+  ],
+  "seconds": 14.9,
+  "caught": true
+ },
+ {
+  "id": "P11",
+  "mutation": "storage_directory uses another rule (emg2qwerty regex, no @)",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_provenance.py::test_storage_directory_maps_back_only_where_the_id_is_unique"
+  ],
+  "summary": "1 failed, 33 passed in 14.61s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/scripts/pose_temponet/provenance.py:70: ValueError: producer storage directory does not round-trip"
+  ],
+  "seconds": 15.2,
+  "caught": true
+ },
+ {
+  "id": "P12",
+  "mutation": "storage_directory accepts empty and non-string IDs",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_provenance.py::test_storage_directory_maps_back_only_where_the_id_is_unique"
+  ],
+  "summary": "1 failed, 33 passed in 14.87s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_provenance.py:120: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 15.4,
+  "caught": true
+ },
+ {
+  "id": "P13",
+  "mutation": "historical_producer no longer checks the number of user directories",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "34 passed in 14.27s",
+  "reasons": [],
+  "seconds": 14.8,
+  "caught": false
+ },
+ {
+  "id": "P14",
+  "mutation": "validate_plan stops comparing the producer entry with the receipt",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "34 passed in 14.37s",
+  "reasons": [],
+  "seconds": 14.9,
+  "caught": false
+ },
+ {
+  "id": "P15",
+  "mutation": "validate_plan ignores users and storage_directories when comparing the producer entry",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "34 passed in 14.46s",
+  "reasons": [],
+  "seconds": 15.0,
+  "caught": false
+ },
+ {
+  "id": "P16",
+  "mutation": "preflight returns before reading val (no val read, no R-1 gate)",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_unpatched_preflight_completes_on_the_real_cache_layout"
+  ],
+  "summary": "1 failed, 33 passed in 14.01s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_preflight_real_layout.py:142: KeyError: 'observed'"
+  ],
+  "seconds": 14.8,
+  "caught": true
+ },
+ {
+  "id": "P16b",
+  "mutation": "preflight reads val through D.read_cache_pin only (no user and no details check on val)",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "34 passed in 14.17s",
+  "reasons": [],
+  "seconds": 14.7,
+  "caught": false
+ },
+ {
+  "id": "P16c",
+  "mutation": "preflight runs the R-1 gate on the train split instead of val",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_unpatched_preflight_completes_on_the_real_cache_layout"
+  ],
+  "summary": "1 failed, 33 passed in 14.29s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/scripts/pose_temponet/data.py:20: ValueError: historical prediction support is not crop6"
+  ],
+  "seconds": 14.9,
+  "caught": true
+ },
+ {
+  "id": "P17",
+  "mutation": "R-1 tolerance loosened from 1e-12 to 1e-6",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout",
+   "metrics"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "42 passed in 14.73s",
+  "reasons": [],
+  "seconds": 15.4,
+  "caught": false
+ },
+ {
+  "id": "P17b",
+  "mutation": "R-1 E_dyn comparison removed",
+  "tests": [
+   "provenance",
+   "execution",
+   "preflight_real_layout",
+   "metrics"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_metrics.py::test_reference_gate_rejects_shift_even_with_identical_shape_and_counts"
+  ],
+  "summary": "1 failed, 41 passed in 14.84s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_metrics.py:109: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 15.5,
+  "caught": true
+ },
+ {
+  "id": "E1",
+  "mutation": "job_id drops the delivery suffix for one stage (collection keeps 20261119)",
+  "tests": [
+   "execution",
+   "operational"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_execution.py::test_second_delivery_never_reuses_the_identity_of_the_failed_first_preflight"
+  ],
+  "summary": "1 failed, 45 passed in 2.91s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_execution.py:20: AssertionError: assert (24 == 24 and False)"
+  ],
+  "seconds": 3.4,
+  "caught": true
+ },
+ {
+  "id": "E2",
+  "mutation": "CAMPAIGN diverges from the ID suffix (literal 20261119)",
+  "tests": [
+   "execution",
+   "operational",
+   "cli"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_execution.py::test_second_delivery_never_reuses_the_identity_of_the_failed_first_preflight"
+  ],
+  "summary": "1 failed, 48 passed in 7.45s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_execution.py:22: AssertionError: assert 'pose_temponet_20261119' == 'pose_temponet_20261120'"
+  ],
+  "seconds": 7.9,
+  "caught": true
+ },
+ {
+  "id": "E3",
+  "mutation": "CODE_DIR diverges from CAMPAIGN",
+  "tests": [
+   "execution",
+   "operational",
+   "cli"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_execution.py::test_second_delivery_never_reuses_the_identity_of_the_failed_first_preflight"
+  ],
+  "summary": "1 failed, 48 passed in 7.70s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_execution.py:23: AssertionError: assert '/leonardo_wo...onet_20261119' == '/leonardo_wo...onet_20261120'"
+  ],
+  "seconds": 8.1,
+  "caught": true
+ },
+ {
+  "id": "E4",
+  "mutation": "submit_command records the old campaign in the ledger (--campagna)",
+  "tests": [
+   "execution",
+   "operational",
+   "cli",
+   "cli_guards"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "59 passed in 9.98s",
+  "reasons": [],
+  "seconds": 10.4,
+  "caught": false
+ },
+ {
+  "id": "E5",
+  "mutation": "preflight export passes the old campaign name to the checkout wrapper",
+  "tests": [
+   "execution",
+   "operational",
+   "cli",
+   "cli_guards"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "59 passed in 9.97s",
+  "reasons": [],
+  "seconds": 10.4,
+  "caught": false
+ },
+ {
+  "id": "P18",
+  "mutation": "R-1 constants altered (E_dyn last digits, users 15 -> 16)",
+  "tests": [
+   "benchmark",
+   "cli",
+   "cli_guards",
+   "controls",
+   "data",
+   "execution",
+   "heads",
+   "linear",
+   "metrics",
+   "operational",
+   "preflight_real_layout",
+   "provenance",
+   "report",
+   "resources",
+   "runner",
+   "runtime_fixes",
+   "scientific_integration",
+   "selection",
+   "train",
+   "workflow"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "270 passed in 55.89s",
+  "reasons": [],
+  "seconds": 56.9,
+  "caught": false
+ },
+ {
+  "id": "P14all",
+  "mutation": "validate_plan stops comparing the producer entry with the receipt (20 TCN files, all but e2e_chain)",
+  "tests": [
+   "benchmark",
+   "cli",
+   "cli_guards",
+   "controls",
+   "data",
+   "execution",
+   "heads",
+   "linear",
+   "metrics",
+   "operational",
+   "preflight_real_layout",
+   "provenance",
+   "report",
+   "resources",
+   "runner",
+   "runtime_fixes",
+   "scientific_integration",
+   "selection",
+   "train",
+   "workflow"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "270 passed in 53.79s",
+  "reasons": [],
+  "seconds": 54.7,
+  "caught": false
+ },
+ {
+  "id": "R1a",
+  "mutation": "runner gives the benchmarks the storage directories as allowed users",
+  "tests": [
+   "runner",
+   "runtime_fixes",
+   "benchmark",
+   "resources",
+   "e2e_chain"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "58 passed in 118.85s (0:01:58)",
+  "reasons": [],
+  "seconds": 119.6,
+  "caught": false
+ },
+ {
+  "id": "R1b",
+  "mutation": "runner gives calibration the storage directories as allowed users",
+  "tests": [
+   "runner",
+   "e2e_chain"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_e2e_chain.py::test_all_24_stages_use_real_selection_refits_inference_and_report"
+  ],
+  "summary": "1 failed, 12 passed in 16.57s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/scripts/pose_temponet/controls.py:38: ValueError: control input contains non-training users"
+  ],
+  "seconds": 17.1,
+  "caught": true
+ },
+ {
+  "id": "P4+gaptests",
+  "mutation": "read_verified_inputs first check compares sets instead of sorted lists",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "8 passed in 8.90s",
+  "reasons": [],
+  "seconds": 9.3,
+  "caught": false
+ },
+ {
+  "id": "P5+gaptests",
+  "mutation": "read_verified_inputs second check compares sets (ignores order and duplicates)",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "8 passed in 9.48s",
+  "reasons": [],
+  "seconds": 10.0,
+  "caught": false
+ },
+ {
+  "id": "P6+gaptests",
+  "mutation": "first check weakened to subset (a cache with fewer users passes it)",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_cache_with_one_user_missing_is_refused"
+  ],
+  "summary": "1 failed, 7 passed in 9.53s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:41: AssertionError:"
+  ],
+  "seconds": 10.0,
+  "caught": true
+ },
+ {
+  "id": "P6b+gaptests",
+  "mutation": "both user checks weakened to subset",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_cache_with_one_user_missing_is_refused"
+  ],
+  "summary": "1 failed, 7 passed in 9.52s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:41: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 10.0,
+  "caught": true
+ },
+ {
+  "id": "P7+gaptests",
+  "mutation": "first user check skipped for the val split",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_preflight_applies_user_and_detail_checks_to_val"
+  ],
+  "summary": "1 failed, 7 passed in 8.47s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:49: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 8.9,
+  "caught": true
+ },
+ {
+  "id": "P8e+gaptests",
+  "mutation": "details comparison skipped for the val split only",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_preflight_applies_user_and_detail_checks_to_val"
+  ],
+  "summary": "1 failed, 7 passed in 8.00s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:54: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 8.4,
+  "caught": true
+ },
+ {
+  "id": "P13+gaptests",
+  "mutation": "historical_producer no longer checks the number of user directories",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 0,
+  "failed": [],
+  "summary": "8 passed in 9.59s",
+  "reasons": [],
+  "seconds": 10.0,
+  "caught": false
+ },
+ {
+  "id": "P14+gaptests",
+  "mutation": "validate_plan stops comparing the producer entry with the receipt",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_validate_plan_rejects_rewritten_user_lists_even_with_recomputed_identity"
+  ],
+  "summary": "1 failed, 7 passed in 8.96s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:29: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 9.4,
+  "caught": true
+ },
+ {
+  "id": "P15+gaptests",
+  "mutation": "validate_plan ignores users and storage_directories when comparing the producer entry",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_validate_plan_rejects_rewritten_user_lists_even_with_recomputed_identity"
+  ],
+  "summary": "1 failed, 7 passed in 9.07s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:29: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 9.5,
+  "caught": true
+ },
+ {
+  "id": "P16b+gaptests",
+  "mutation": "preflight reads val through D.read_cache_pin only (no user and no details check on val)",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_preflight_applies_user_and_detail_checks_to_val"
+  ],
+  "summary": "1 failed, 7 passed in 7.68s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:49: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 8.1,
+  "caught": true
+ },
+ {
+  "id": "P17+gaptests",
+  "mutation": "R-1 tolerance loosened from 1e-12 to 1e-6",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_parity_tolerance_is_exactly_1e_12"
+  ],
+  "summary": "1 failed, 7 passed in 9.15s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:124: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 9.6,
+  "caught": true
+ },
+ {
+  "id": "P18+gaptests",
+  "mutation": "R-1 constants altered (E_dyn last digits, users 15 -> 16)",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_parity_constants_are_the_approved_proposal_values"
+  ],
+  "summary": "1 failed, 7 passed in 9.12s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:102: AssertionError: assert {'dynamic_cen...ers': 16, ...} == {'dynamic_cen...ers': 15, ...}"
+  ],
+  "seconds": 9.5,
+  "caught": true
+ },
+ {
+  "id": "E4+gaptests",
+  "mutation": "submit_command records the old campaign in the ledger (--campagna)",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_preflight_command_names_the_new_campaign_everywhere"
+  ],
+  "summary": "1 failed, 7 passed in 9.04s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:133: AssertionError: assert 'pose_temponet_20261119' == 'pose_temponet_20261120'"
+  ],
+  "seconds": 9.4,
+  "caught": true
+ },
+ {
+  "id": "E5+gaptests",
+  "mutation": "preflight export passes the old campaign name to the checkout wrapper",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_preflight_command_names_the_new_campaign_everywhere"
+  ],
+  "summary": "1 failed, 7 passed in 9.40s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:136: AssertionError: assert ('pose_temponet_20261119' == 'pose_temponet_20261120'"
+  ],
+  "seconds": 9.8,
+  "caught": true
+ },
+ {
+  "id": "R1a+gaptests",
+  "mutation": "runner gives the benchmarks the storage directories as allowed users",
+  "tests": [
+   "test_wf2_reviewer_gaps"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_wf2_reviewer_gaps.py::test_gap_runner_hands_the_plan_users_to_the_benchmarks"
+  ],
+  "summary": "1 failed, 7 passed in 9.86s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_wf2_reviewer_gaps.py:146: assert (2 == 3)"
+  ],
+  "seconds": 10.4,
+  "caught": true
+ },
+ {
+  "id": "A0",
+  "mutation": "first-delivery behaviour (author's mutation a), here ONLY against the real_layout file the author did not mutation-check",
+  "tests": [
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_first_delivery_user_list_fails_exactly_like_job_64931573",
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_real_read_path_refuses_drifted_directories_and_each_changed_detail",
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_unpatched_preflight_completes_on_the_real_cache_layout"
+  ],
+  "summary": "3 errors in 8.40s",
+  "reasons": [
+   "E   ValueError: cache user population differs from original producer",
+   "E   ValueError: cache user population differs from original producer",
+   "E   ValueError: cache user population differs from original producer"
+  ],
+  "seconds": 8.9,
+  "caught": true
+ },
+ {
+  "id": "A1",
+  "mutation": "author's mutation b (second check removed) ONLY against the real_layout file",
+  "tests": [
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_real_read_path_refuses_drifted_directories_and_each_changed_detail"
+  ],
+  "summary": "1 failed, 2 passed in 8.95s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_preflight_real_layout.py:162: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 9.4,
+  "caught": true
+ },
+ {
+  "id": "A2",
+  "mutation": "author's mutation f (first check removed) ONLY against the real_layout file",
+  "tests": [
+   "preflight_real_layout"
+  ],
+  "returncode": 1,
+  "failed": [
+   "tests/cpu/test_pose_temponet_preflight_real_layout.py::test_first_delivery_user_list_fails_exactly_like_job_64931573"
+  ],
+  "summary": "1 failed, 2 passed in 9.65s",
+  "reasons": [
+   "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/wf2_tests_tree/tests/cpu/test_pose_temponet_preflight_real_layout.py:152: Failed: DID NOT RAISE <class 'ValueError'>"
+  ],
+  "seconds": 10.1,
+  "caught": true
+ }
+]

@@ -1,0 +1,24 @@
+numpy 2.3.5 | python 3.11.14 | arrays float32 bool float32 float64 float64
+post_ridge: historical E_dyn 0.8911610782699846 | evaluate 0.8911610782699846 | abs diff 0.000e+00 | counts equal True (11832, 11817, 32504780, 236340, 15) | per-user sums bitwise equal True | all three groups' centered blocks equal True | support hash equal True | seconds hist 1.4 new 1.2
+   batch_windows=1      E_dyn 0.891161078269985 abs diff vs historical 4.441e-16 counts equal True
+   batch_windows=7      E_dyn 0.8911610782699848 abs diff vs historical 2.220e-16 counts equal True
+   batch_windows=32     E_dyn 0.8911610782699846 abs diff vs historical 0.000e+00 counts equal True
+   batch_windows=128    E_dyn 0.8911610782699844 abs diff vs historical 2.220e-16 counts equal True
+   batch_windows=1000   E_dyn 0.8911610782699844 abs diff vs historical 2.220e-16 counts equal True
+   batch_windows=18548  E_dyn 0.8911610782699844 abs diff vs historical 2.220e-16 counts equal True
+   shuffled window order    E_dyn 0.8911610782699847 abs diff vs historical 1.110e-16 counts equal True
+   time axis reversed       E_dyn 0.8911610782699846 abs diff vs historical 0.000e+00 counts equal True
+   aggregate-formula E_dyn  0.8911610782699845 abs diff vs historical 1.110e-16
+trained_head: historical E_dyn 0.7615891451150004 | evaluate 0.7615891451150004 | abs diff 0.000e+00 | counts equal True (11832, 11817, 32504780, 236340, 15) | per-user sums bitwise equal True | all three groups' centered blocks equal True | support hash equal True | seconds hist 1.2 new 1.1
+   batch_windows=1      E_dyn 0.7615891451150004 abs diff vs historical 0.000e+00 counts equal True
+   batch_windows=7      E_dyn 0.7615891451150008 abs diff vs historical 3.331e-16 counts equal True
+   batch_windows=32     E_dyn 0.7615891451150005 abs diff vs historical 1.110e-16 counts equal True
+   batch_windows=128    E_dyn 0.7615891451150003 abs diff vs historical 1.110e-16 counts equal True
+   batch_windows=1000   E_dyn 0.7615891451150003 abs diff vs historical 1.110e-16 counts equal True
+   batch_windows=18548  E_dyn 0.7615891451150003 abs diff vs historical 1.110e-16 counts equal True
+   shuffled window order    E_dyn 0.7615891451150004 abs diff vs historical 0.000e+00 counts equal True
+   time axis reversed       E_dyn 0.7615891451150004 abs diff vs historical 0.000e+00 counts equal True
+   aggregate-formula E_dyn  0.7615891451150005 abs diff vs historical 1.110e-16
+   float32 input (cast by evaluate) E_dyn 0.7615891451150004 abs diff 0.000e+00
+historical_reference_gate at real size: passed True | seconds 2.7 | peak RSS GiB before/after 3.41 3.41
+shifted head prediction refused: historical trained-head crop indices/values differ
