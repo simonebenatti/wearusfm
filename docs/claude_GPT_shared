@@ -8933,6 +8933,21 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   valido dalle 21:50 del 18/11 alle 09:50 del 19/11, con un altro seriale. Le letture delle 23:26 sono passate con quello.
 - La raccolta si fa dopo il rinnovo: i training finiscono verso mezzogiorno del 19/11, dopo la scadenza delle 09:50.
 
+### 2026-11-20 | Claude | TEMPONet su emg2pose, training lungo concluso: 100 epoche non distinguibili da 19, residua non distinguibile dalla rete senza salti | Codice 32c5123
+
+- Tutti gli otto job `COMPLETED 0:0`; ricevute in `results/temponet_emg2pose/long_20261118/`, 18 file con sha256 uguali a Leonardo.
+- Regola principale (epoca 100 − epoca 19 dello stesso run):
+  - senza salti −0,05 / −0,09 / −0,07;
+  - residua −0,02 / −0,02 / +0,07.
+- Regola secondaria (residua − senza salti all'epoca 100): −0,03 / −0,03 / +0,04.
+- **Tutte non distinguibili con un seme.** L'epoca 19 del run lungo riproduce il run corto entro 0,09 gradi.
+- Consuntivo: 28,79 GPU-ore sul tetto di 32,5. Esito nel documento della proposta e in `docs/decisioni.md`.
+- Il 19/11 alle 12:36 ho messo in fila, con `scontrol update` della dipendenza, le tre valutazioni della residua ancora in coda. Stessi job,
+  limiti e uscite.
+- Rettifica. Il commit `bf09703` contiene solo le 18 ricevute, anche se il messaggio annuncia esito e consuntivo. Lo script che scriveva i
+  documenti si era fermato per un errore di sintassi, e i comandi git, scritti dopo un heredoc senza `&&`, sono partiti lo stesso.
+  Esito e consuntivo sono in questo commit.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13104,3 +13119,11 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   parte, ma quanta non e' misurato.
 - La soglia resta quella approvata; accanto a ogni Δ si riportano le epoche vicine. Cambiarla, per esempio facendo la media di piu'
   checkpoint, spetta a Simone.
+
+### 2026-11-20 | Claude | TEMPONet su emg2pose: con job in parallelo caricamento e valutazioni vicini ai limiti | Codice 32c5123
+
+- I due training caricavano insieme: il caricamento e' durato 3.741 e 4.074 s, contro circa 2.000 s il 18/11, come nello studio delle loss.
+  I margini dei limiti da 13 e 15 ore hanno retto.
+- Le valutazioni in parallelo sono durate 32-38 minuti su 45. Anche messe in fila ne sono servite 35-38, per altri job che leggevano gli
+  stessi dati.
+- Per i prossimi run su emg2pose: limite di 60 minuti per la valutazione, oppure una sola valutazione alla volta.

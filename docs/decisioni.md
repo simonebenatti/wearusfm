@@ -8152,3 +8152,23 @@ Mia interpretazione: l'opzione B della proposta com'e', cioe' coi tre checkpoint
 
 Emendamento prima del lancio, dalla review del critico (nessun dato dei run lunghi esiste): tolta l'etichetta «sovra-adattamento» e
 l'inciso sullo scopo dell'opzione B; aggiunti i due descrittivi del punto 6. Soglie, confronti e tetto invariati.
+
+### 2026-11-20 — TEMPONet su emg2pose, training lungo: ESITO e CONSUNTIVO (Claude)
+
+Eseguito con le regole congelate nelle voci del 18/11 (approvazione ed emendamento), codice `32c5123`. Dettagli in
+`docs/temponet_emg2pose_long_training_proposal_20261118.md`, «Esito»; ricevute in `results/temponet_emg2pose/long_20261118/`, sha256 uguali
+a Leonardo.
+
+1. **Job:** tutti `COMPLETED 0:0`. Training senza salti 64790588 in 12 h 00 min; training residuo 64790605 in 13 h 38 min; sei valutazioni.
+   Cancello superato a tutti i checkpoint.
+2. **Regola principale** (Δ = MAE all'epoca 100 − MAE all'epoca 19, stesso run):
+   - senza salti −0,050 / −0,095 / −0,068 (`user` / `stage` / `user_stage`);
+   - residua −0,023 / −0,018 / +0,072.
+
+   **Non distinguibile con un seme in tutte e sei le letture:** le 19 epoche bastano.
+3. **Regola secondaria** (residua − senza salti, all'epoca 100): −0,029 / −0,032 / +0,037. **Non distinguibile con un seme.**
+4. Descrittivi nel documento. Nessuna scelta presa dopo il test, nessun rilancio.
+5. **Operazione dichiarata:** il 19/11 alle 12:36 le tre valutazioni della residua, ancora in coda, sono state messe in fila (afterany)
+   per non leggere i dati in parallelo. Stessi job, limiti e uscite.
+
+**Consuntivo:** **28,79 GPU-ore sul tetto di 32,5** (230 ore locali con billing 8); checkout 0,011 core-ore.

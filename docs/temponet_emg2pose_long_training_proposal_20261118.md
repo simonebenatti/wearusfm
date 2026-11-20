@@ -1,7 +1,7 @@
 # TEMPONet su emg2pose: training lungo (proposta, 18/11/2026)
 
 **Stato:** APPROVATA da Simone il 18/11 («Approvo B»), regole congelate in `docs/decisioni.md` (voce del 18/11). Codice: `EPOCHS`,
-limiti 13:00 e 15:00 e `CHECKPOINT` nello sbatch, `--checkpoint` nella valutazione, con test CPU. Critico APPROVATO; inviati il 18/11 alle 23:56 dal codice `32c5123`.
+limiti 13:00 e 15:00 e `CHECKPOINT` nello sbatch, `--checkpoint` nella valutazione, con test CPU. Critico APPROVATO; inviati il 18/11 alle 23:56 dal codice `32c5123`; conclusi il 19/11, esito sotto.
 
 ## Domanda
 
@@ -87,3 +87,39 @@ Uscite in `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/long_20
 
 Valutazioni (afterok, 45 min): senza salti 64790591 (e19), 64790603 (e50), 64790604 (e100); residua 64790608 (e19), 64790609 (e50),
 64790610 (e100). Inviate il 18/11 alle 23:56 dal codice `32c5123`.
+
+## Esito (regole del 18/11 applicate come congelate)
+
+- **Job:** tutti `COMPLETED 0:0`.
+  - Training senza salti: 12 h 00 min. Training residuo: 13 h 38 min.
+  - Valutazioni: 32-38 min l'una, tranne una da 15. Erano vicine al limite di 45 min per la lettura in parallelo degli stessi dati.
+  - Ricevute in `results/temponet_emg2pose/long_20261118/`: 18 file, sha256 uguali a Leonardo.
+- **Cancello:** superato a tutti i checkpoint. Senza salti 0,832 / 0,836 / 0,831; residua 0,828 / 0,834 / 0,828 (epoche 19 / 50 / 100).
+- **Test, MAE con EMA.** Δ a piena precisione, in gradi:
+
+| | `user` | `stage` | `user_stage` |
+|---|---|---|---|
+| senza salti, epoca 19 / 50 / 100 | 14,56 / 14,60 / 14,51 | 17,69 / 17,76 / 17,60 | 17,60 / 17,74 / 17,53 |
+| **regola principale**, Δ (100 − 19) | −0,050 | −0,095 | −0,068 |
+| residua, epoca 19 / 50 / 100 | 14,50 / 14,57 / 14,48 | 17,58 / 17,66 / 17,57 | 17,49 / 17,69 / 17,57 |
+| **regola principale**, Δ (100 − 19) | −0,023 | −0,018 | +0,072 |
+| **regola secondaria**, residua − senza salti all'epoca 100 | −0,029 | −0,032 | +0,037 |
+
+  **Tutte e nove le letture: non distinguibile con un seme.** Con un seme, 100 epoche non danno niente di misurabile rispetto a 19, ne'
+  per la rete senza salti ne' per la residua; all'epoca 100 la residua non si distingue dalla rete senza salti.
+- **Descrittivi:**
+  - differenza dei guadagni (residua − senza salti): +0,03, +0,08 e +0,14;
+  - epoca 19 del run lungo contro il run corto: senza salti +0,01 / +0,02 / −0,00, residua −0,05 / −0,03 / −0,09;
+  - l'epoca 50 e' un po' peggio della 19 in tutte e sei le letture, fino a 0,20 gradi: segno di oscillazione fra checkpoint;
+  - validazione grezza delle epoche vicine: solo l'epoca 18 e' piu' alta in tutti e due i run (15,94 e 15,96), le epoche 19, 50 e 100
+    stanno nella norma;
+  - loss di training: da 0,7077 a 0,7026 senza salti e da 0,7050 a 0,7003 la residua. La validazione grezza media scende di 0,13 e 0,14
+    gradi dalle epoche 1-19 alle 82-100.
+- **Consuntivo:** **28,79 GPU-ore sul tetto di 32,5** (230 ore locali con billing 8).
+  - Training: 12,01 + 13,64. Valutazioni: 1,67 + 1,47. Checkout: 0,011 core-ore.
+  - Il caricamento dei dati e' durato il doppio del 18/11 (3.741 e 4.074 s), perche' i due training caricavano insieme.
+- **Operazione dichiarata.** Il 19/11 alle 12:36, dopo le valutazioni della rete senza salti (32-36 min in parallelo), ho messo in fila le
+  tre valutazioni della residua, ancora in coda.
+  - Ordine 19, 100, 50, con `scontrol update ... Dependency=afterok:<training>,afterany:<precedente>`.
+  - Stessi job, limiti e uscite; nessun rilancio.
+- Nessuna scelta presa dopo il test.
