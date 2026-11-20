@@ -9097,6 +9097,33 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   disposizione vera; nuovi ID e checkout (L3-9); mia rilettura del solo diff; nuovo tentativo su decisione di Simone. Nessun lancio
   da parte mia.
 
+### 2026-11-20 | Claude | Ramo d'integrazione TEMPONet residua + studio delle loss: script e sbatch uniti a mano, suite CPU completa passata; nessun job | Ramo `claude/temponet-residual-loss-merge-20261120`
+
+- Richiesta di Simone: «lo puoi fare tu ?», citando «Per integrarlo con lo studio delle loss vanno unite a mano le parti dello
+  script e dello sbatch che i due rami modificano entrambi.»
+- Ramo nuovo da `97bb3166` (punta di `claude/temponet-residual-419618`), con due merge `--no-ff`, senza rebase né squash.
+  `03f768ac` unisce `claude/temponet-db8-20261109` a `85f0d621`; `326ffee0` porta `629fdaed`, la nota TCN arrivata alle 11:15
+  (solo documenti). I due rami d'origine non cambiano.
+- Script `scripts/temponet_emg2pose.py`: `build`, `graph_check` e `dropout_check` ricevono sia `loss` sia `residual`. `run.json`
+  registra architettura, parametri e definizione della loss; la valutazione rilegge l'architettura da `run.json`; `eval.json` ha
+  `arch` e `train_loss`. Restano `--checkpoint` e le opzioni delle loss.
+- Sbatch: `ARCH`, `LOSS`, `SEED`, `EPOCHS` e `CHECKPOINT`, ciascuno con il suo controllo; modi `smoke`, `losssmoke`, `train` ed
+  `eval`. La tabella dei limiti unisce le due: 03:30, 04:00, 04:30, 05:00, 05:30, 06:00, 13:00 e 15:00. `--arch "$ARCH"` è in
+  tutte e cinque le chiamate a Python.
+- Documenti: nei conflitti di `decisioni.md` e del registro entrambi i rami avevano solo aggiunto voci; le ho tenute tutte,
+  testualmente. `decisioni.md`: 212 voci (titoli `###`) della base + 4 della residua + 6 delle loss = 222. Registro: 1133 + 14 +
+  14 = 1161, poi 1163 con `629fdaed`.
+- Un conflitto che git non segnala (sezione 2) è corretto con `TEMPONet.embed()`. La rete senza salti resta identica bit per bit a
+  `ee118a25`: stato con i semi 0, 5 e 777, uscite in training e in valutazione.
+- Test: nei file di TEMPONet 120, cioè i 102 della residua, 14 in più dal ramo delle loss e 4 nuovi. Suite CPU completa su
+  `03f768ac`: 3475 passati e un avviso già noto (`test_pose_objective.py`), in 31 min 30 s. Gli ID raccolti sono l'unione dei due
+  genitori (3457 e 3439, 3424 in comune) più i 4 nuovi; manca solo l'ID senza parametri del test dello stepper, che il ramo delle
+  loss ripete per `l1`, `smoothl1` e `mse`. `326ffee0` non cambia codice né test.
+- Prova con `git merge-tree` contro `origin/main` (`f546c9e4`): conflitti solo in `claude_GPT_shared` e `decisioni.md`. I moduli
+  che TEMPONet importa non cambiano su `main` dalla base comune `e114a788`.
+- Seguito: il merge su `main` lo fa GPT come integratore; eventuali commit successivi del ramo delle loss si uniscono a parte.
+  Nessun job.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13345,3 +13372,17 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   la cartella. Test con la disposizione vera e sulle due ricevute vere contro `cache_users.json`.
 - I test non l'hanno visto: quello sulla ricevuta vera conta solo gli utenti; le fixture li chiamano `u0`, `u1`, ...; la catena dei
   24 stadi simula il preflight. Non l'ha visto neanche la mia rilettura `85f0d62`.
+
+### 2026-11-20 | Claude | Merge residua + loss: il forward a coppie della loss con la velocità saltava i salti della rete residua; corretto nel ramo d'integrazione
+
+- `Stepper._pair_forward`, aggiunto dal ramo delle loss per `mse_vel`, ricalcolava il forward come `m.features(x2).flatten(1)`
+  seguito dalla testa. Con `--arch residual --loss mse_vel` avrebbe addestrato senza errori un'altra rete, senza i salti. Allo
+  stesso modo `dropout_check`, nuovo nel ramo delle loss, avrebbe controllato la rete senza salti. Git non segnala nessuno dei due:
+  i rami toccano righe diverse.
+- Correzione nel ramo d'integrazione: `TEMPONet.embed()` dà l'ingresso della testa per entrambe le architetture, e `forward` e
+  `_pair_forward` lo usano; `dropout_check` riceve `residual` da `graph_check`. Tre test nuovi, quattro casi:
+  - `test_embed_is_the_input_of_the_head`, per entrambe le architetture;
+  - `test_pair_forward_of_the_residual_network_goes_through_the_skips`: il percorso di prima dà un'uscita diversa;
+  - `test_residual_network_trains_with_the_velocity_loss`: training e valutazione completi.
+- Nessun run ha usato questa combinazione: lo studio delle loss usava la rete senza salti, la residua solo L1. Per l'integrazione:
+  il codice che ricostruisce il forward a pezzi deve passare da `embed`.
