@@ -8270,6 +8270,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Blocco gia' provato con `bind-review` in un clone temporaneo (locali UTF-8 e C); la review senza blocco e' rifiutata.
 - Evidenze: esclusa una review sintetica che il parser accettava con le impronte vere; nessuno dei 328 file pubblicati passa.
 
+### 2026-11-20 | Claude | Firma di Simone su faa4a8d7 e sul tetto: blocco di release emesso per `fbfde797`
+- Firma in chat con me, risposta letta alle 09:57: alla domanda «Firmi la proposta faa4a8d7 e il tetto di 18 GPU-ore?» Simone ha risposto «Sì, firmo entrambi».
+- Lettura mia: copre la proposta faa4a8d7 nel suo insieme (bf16 math con TF32 spento, parità sugli stati vivi a 128/256, ripresa da 544) e il tetto di 18 GPU-ore e 169,6 core-ore (inviluppo 21,6 e 202,4).
+- G-1 chiuso. La review `docs/reviews/claude_review_contrastive_targets_runtime_20261120.md`, in ASCII, contiene ora l'unico blocco di release, con i valori verificati il 20/11.
+- Prova: in un clone temporaneo di `0efa4d45`, `bind-review` dal commit di questa voce supera con locale UTF-8 e C; c591bda, senza blocco, è rifiutata.
+- Scansione: sul mio ramo l'unico file accettato dal parser è la review; sul ramo di GPT a `0efa4d45` nessuno.
+- Ambito: tutte le fasi del preflight, non i training; P-1...P-8 restano condizioni operative. Nessun job da me.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11245,3 +11253,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - P-1...P-8: barriera di init, controllo prima di sbatch, `--dopo` solo verso job in coda, override dei checkout, prova CPU di `main`.
 - M-a, M-b e M-d cambiano il digest (discendenza, ID SLURM, braccio, impronte delle tracce, osservatore): ora o con i training.
 - M-c (test) e le note, compresa G-2 su CLAUDE.md, si correggono senza cambiare il digest.
+
+### 2026-11-20 | Claude | Dopo la firma: cosa resta prima del primo invio della coorte RMS100/fast125 (per GPT e 3-launcher)
+- Registrare in `decisioni.md` la firma di Simone con la citazione letterale (voce della sezione 1 di oggi).
+- Consegna post-review con soli metadati: copia byte per byte della review e `bind-review` con `--review-commit` uguale al commit di questa voce; poi `check-binding` e `contrastive_targets_plan.py --check`.
+- P-1: `TORCH_DIST_INIT_BARRIER=1` nella riga di invio delle celle GPU, senza toccare gli sbatch inventariati; P-2...P-8 come nella review.
+- M-a, M-b e M-d nella release dei training: farli prima del preflight cambierebbe il digest e annullerebbe il blocco.
+- Se la consegna cambia sorgenti, piani o perimetro, torna da me; con soli metadati e controlli meccanici superati non serve un nuovo giro.

@@ -49,12 +49,13 @@ Metodo:
   lega davvero l'ID SLURM dell'audit, che resta solo dichiarato dall'operatore (G-6, R3-M3).
 - **Test.** La ricevuta si riproduce: 465 test passati.
 
-**Un blocco di governance (G-1), confermato da tre scettici su tre.**
-- La proposta scientifica faa4a8d7 e il nuovo tetto di 18 GPU-ore non hanno ancora la firma di Simone.
+**Un blocco di governance (G-1), confermato da tre scettici su tre, chiuso il 20/11 dalla firma di Simone.**
+- Alla prima pubblicazione di questa review (c591bda) la proposta scientifica faa4a8d7 e il nuovo tetto di 18 GPU-ore non
+  avevano la firma di Simone.
 - Il blocco di release non ha un ambito di fase: una volta pubblicato, rende eseguibile tutta la catena GPU, non solo
   l'audit.
-- **Per questo in questa versione il blocco di release NON e' emesso.** Lo aggiungo appena Simone firma, con i valori
-  gia' verificati qui sotto.
+- Per questo la prima versione non emetteva il blocco. Simone ha poi firmato entrambi (citazione in G-1): questa versione
+  contiene l'unico blocco di release, nella sezione "Blocco di release".
 
 **Rilievi minori e note.**
 - **Conteggi.** Sopravvivono alla verifica 17 rilievi minori e 27 note; G-2 e' contato fra le note, come l'hanno valutato i
@@ -65,8 +66,9 @@ Metodo:
   - R2-N1 attribuisce male l'esito della singola coppia nella ricevuta;
   - R3-N1 farebbe prendere per approvazione una review non favorevole che contenga un esempio APPROVED.
 - **Misure operative.** Alcuni rilievi si gestiscono senza toccare il codice: P-1...P-8.
-- **Correzioni che cambiano il digest dei sorgenti:** M-a, M-b e M-d, piu' lo strumento di validazione (R5-6). Vanno fatte
-  ora con un giro breve, oppure nella release dei training, che richiedera' comunque una review nuova.
+- **Correzioni che cambiano il digest dei sorgenti:** M-a, M-b e M-d, piu' lo strumento di validazione (R5-6). Con il
+  blocco emesso su `fbfde797` vanno nella release dei training, che richiedera' comunque una review nuova. Farle prima del
+  preflight richiederebbe una review e un blocco nuovi.
 - **Correzioni che non lo cambiano:** i test di M-c, CLAUDE.md e le note solo documentali.
 
 ## G-1. Blocco di governance: firma di Simone prima del blocco di release
@@ -110,7 +112,21 @@ Le core-ore coincidono con le ore locali, perche' nel billing storico conta solo
 
 Il saldo del progetto va letto da 3-launcher prima del primo invio.
 
-**Valori verificati per il blocco**, da emettere dopo la firma:
+**Firma di Simone, 20/11/2026, in chat con Claude (risposta letta alle 09:57):**
+- domanda di Claude: "Firmi la proposta faa4a8d7 e il tetto di 18 GPU-ore?";
+- risposta di Simone: "Si', firmo entrambi". Nell'originale la i e' accentata; qui e' trascritta in ASCII, come dice la
+  nota sul formato.
+
+Lettura mia: la firma copre la proposta faa4a8d7 nel suo insieme e il tetto, cioe' i quattro punti elencati sopra. Il
+messaggio a cui Simone rispondeva li descriveva cosi':
+- profilo bf16 math con TF32 spento per i tre bracci;
+- parita' sugli stati vivi del C0 agli update 128 e 256;
+- ripresa da un unico fork a 544;
+- tetto di 18 GPU-ore e 169,6 core-ore, inviluppo 21,6 e 202,4, con il saldo del progetto letto da 3-launcher.
+
+La registrazione in `decisioni.md` spetta a GPT, responsabile della linea 3, prima del primo invio.
+
+**Valori verificati per il blocco**, emesso dopo la firma:
 
 | Campo | Valore | Verifica |
 |---|---|---|
@@ -124,14 +140,15 @@ Sono gli stessi a `fbfde797` e a `0efa4d45`, e coincidono con `preflight_plan.js
 
 **Prova del formato:**
 - **Formato atteso:** una sola apertura a colonna 0, la chiusura a colonna 0 e le sei chiavi.
-- **Con il blocco.** In un clone temporaneo, questa stessa review con il blocco inserito supera `bind-review` sia con locale
-  UTF-8 sia con locale C.
-- **Senza blocco.** La versione attuale e' rifiutata ("exactly one ... binding block") anche con locale US-ASCII.
+- **Con il blocco.** In un clone temporaneo di `0efa4d45`, questa versione della review, letta dal suo commit e copiata nel
+  checkout, supera `bind-review` sia con locale UTF-8 sia con locale C.
+- **Senza blocco.** La prima versione (c591bda) e' rifiutata ("exactly one ... binding block").
 
 **Scansione delle evidenze.**
 - **Il file escluso.** Fra le evidenze degli agenti, una review sintetica di uno scettico, con le impronte vere, sarebbe
   stata accettata come approvazione. E' esclusa dalle evidenze pubblicate e resta nell'archivio locale (R3-N1).
-- **Esito.** Nessuno dei 328 file pubblicati passa ora il parser.
+- **Esito.** Nessuno dei 328 file delle evidenze pubblicate passa il parser. Sul mio ramo l'unico file che lo passa e'
+  questa review; sul ramo di GPT a `0efa4d45` nessuno.
 
 ## Misure operative prima delle fasi GPU (senza toccare il codice)
 
@@ -316,18 +333,33 @@ generatore (R5-7); i test aggiunti sono fuori inventario.
 
 ## Blocco di release
 
-Non emesso: in attesa della firma di Simone (G-1). Con la firma registrata, questa sezione conterra' l'unico blocco di
-release, con i valori della tabella in G-1.
+Emesso il 20/11/2026 dopo la firma di Simone (G-1). E' l'unico blocco di questo file e porta i valori della tabella in
+G-1.
+- **Ambito.** Il blocco non ha un ambito di fase: vale per tutte le fasi del preflight di `fbfde797` (audit, calibrazione,
+  CUDA, tre full, quattro reload, lettura), ciascuna con i propri cancelli e ricevute, entro il tetto firmato.
+- **Fuori ambito.** I training restano fuori: richiedono una release e una review nuove.
+- **Condizioni.** Le misure P-1...P-8 restano condizioni operative scritte qui: il codice non le verifica.
+
+```contrastive-release-review
+{
+  "schema": "contrastive-target-release-review-v1",
+  "status": "APPROVED",
+  "reviewed_commit": "fbfde797b48644744c36547533acf0e8a7793535",
+  "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+  "science_plan_sha256": "b03c0bc679f7247d703635d7065c9fc7bda4a292f2c8c106e29004e0527e021a",
+  "preflight_plan_sha256": "e4b3959112db86dac806978cf65307d97694da68b64096120487e8f568c6dd92"
+}
+```
 
 ## Prompt per GPT
 
 ```text
 Review Claude del pacchetto operativo RMS100/fast125 (contenuti fbfde797, pin 0efa4d45): nessun blocco tecnico. La ricevuta si riproduce (465 test) e la risposta a R-1...R-4, M-1, N-1...N-7 corrisponde al codice, salvo l'ID SLURM dell'accounting, solo dichiarato (G-6, R3-M3). File docs/reviews/claude_review_contrastive_targets_runtime_20261120.md sul ramo origin/worktree-claude-training-engine, prove nella cartella _evidence/ accanto (85 agenti con verifica avversaria, bozza riletta da due verificatori).
 
-Blocco di governance G-1: la proposta faa4a8d7 e il tetto di 18 GPU-ore (inviluppo 21,6) non hanno la firma di Simone, e il blocco di release, senza ambito di fase, renderebbe eseguibile tutta la catena GPU. Il blocco non e' quindi emesso: lo aggiungo appena Simone firma. I valori sono gia' verificati: fbfde797b48644744c36547533acf0e8a7793535, sorgenti 40d39f56..., plan b03c0bc6..., preflight e4b39591....
+G-1 chiuso il 20/11. Alla domanda "Firmi la proposta faa4a8d7 e il tetto di 18 GPU-ore?" Simone ha risposto "Si', firmo entrambi" (tetto 18 GPU-ore e 169,6 core-ore, inviluppo 21,6 e 202,4). Il blocco di release e' emesso nella sezione "Blocco di release" di questo file, con i valori verificati: fbfde797b48644744c36547533acf0e8a7793535, sorgenti 40d39f56..., plan b03c0bc6..., preflight e4b39591.... Vale per tutte le fasi del preflight, non per i training. Prima del primo invio: registrare la firma in decisioni.md con la citazione letterale.
 
 Prima delle fasi GPU, senza toccare il codice:
-- P-1: TORCH_DIST_INIT_BARRIER=1 nelle celle GPU, contro la corsa all'avvio fra rank non zero;
+- P-1: TORCH_DIST_INIT_BARRIER=1 nelle celle GPU, contro la corsa all'avvio fra rank non zero. Va nella riga di invio (--export), senza modificare gli sbatch inventariati: contrastive_job.py lancia torchrun con os.execv e l'ambiente passa ai rank;
 - P-2: build_command e validazione sul login node prima di ogni sbatch, con controllo a mano del braccio;
 - P-3: --dopo solo verso job in coda;
 - P-4: override dei checkout nei comandi definitivi;
@@ -336,7 +368,7 @@ Prima delle fasi GPU, senza toccare il codice:
 - P-7: scrivere prima come si legge un fallimento per tensore continuo/reload con A e B concordi;
 - P-8: costi del profilo math misurati alla calibrazione.
 
-Correzioni che cambiano il digest, da decidere se ora (giro breve) o nella release dei training:
+Correzioni che cambiano il digest, nella release dei training (farle prima del preflight richiederebbe una review e un blocco nuovi):
 - M-a: discendenza e inventario, ID SLURM, braccio;
 - M-b: impronte delle tracce;
 - M-d: tempo dell'osservatore.
