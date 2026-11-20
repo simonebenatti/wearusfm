@@ -1,0 +1,17 @@
+
+===== regime: senza componente comune (inizializzazione He, bias zero) =====
+  attivazioni all'inizializzazione, TCN (seme 0, 64 finestre):
+    hidden 1 (larghezza 64): accese 0.498, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.677, rms 0.9813
+    hidden 2 (larghezza 64): accese 0.464, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.583, rms 0.8467
+    hidden 3 (larghezza 64): accese 0.571, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.435, rms 0.9444
+    hidden 4 (larghezza 64): accese 0.517, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.352, rms 0.9712
+    hidden 5 (larghezza 32): accese 0.356, unita' mai accese 0.062, sempre accese 0.0, quota variabile fra posizioni 0.433, rms 0.6046
+  attivazioni all'inizializzazione, MLP (seme 0, 64 finestre):
+    hidden 1 (larghezza 96): accese 0.502, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.674, rms 1.0101
+    hidden 2 (larghezza 96): accese 0.5, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.522, rms 0.9912
+    hidden 3 (larghezza 96): accese 0.486, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.398, rms 0.9889
+    hidden 4 (larghezza 64): accese 0.507, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.376, rms 0.9115
+    hidden 5 (larghezza 32): accese 0.46, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.33, rms 0.8822
+  MLP  LR 0.0001: MSE tenuta fuori epoca 1 = 0.9857, 10 = 0.7678, 25 = 0.6664, ultima (50) = 0.6253; minimo 0.6253 all'epoca 50  [9 s]
+  MLP  LR 0.001: MSE tenuta fuori epoca 1 = 0.8351, 10 = 0.6177, 25 = 0.5910, ultima (50) = 0.5903; minimo 0.5879 all'epoca 42  [7 s]
+  TCN  LR 0.0001: MSE tenuta fuori epoca 1 = 0.9871, 10 = 0.6601, 25 = 0.5177, ultima (50) = 0.4494; minimo 0.4494 all'epoca 50  [92 s]

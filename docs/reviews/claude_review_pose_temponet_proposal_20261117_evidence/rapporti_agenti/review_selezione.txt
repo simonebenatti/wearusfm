@@ -1,0 +1,523 @@
+REVIEW DIMENSIONE 3 - Dati, supporto e selezione (paragrafo 4; verdetto 3)
+Proposta GPT c15aac9 (ramo codex/pose-temponet-proposal-20261117), revisore indipendente, 17/11/2026
+Rapporto scritto a pezzi; legenda prove: ESEGUITO = comando o script lanciato in questa sessione; CALCOLATO = conto rifatto; LETTO = letto in un file; "tentativo precedente" = uscita del tentativo interrotto alle 09:26, non rieseguita.
+
+Abbreviazioni dei percorsi
+- PROT = docs/pose_temponet_frozen_protocol_20261117.md nello snapshot di GPT c15aac9 (copia in sola lettura: .../tcnreview/gpt_c15aac9).
+- PJ = results/infra/pose_temponet_proposal_20261117/proposal.json nello snapshot; AC = analytic_checks.json nella stessa cartella.
+- RIC = ricevute del lungo results/infra/consolidation_long_20261105/execution/receipts/ al commit 2930d7d (letto con git show; le
+  ricevute di estrazione train/val e il benchmark hanno lo stesso sha256 nello snapshot; la ricevuta FIT LONG-FIT-G49046-pose-20261105.json
+  NON e' nello snapshot di GPT, esiste solo a 2930d7d con sha256 b08e6e32..., uguale al pin di PJ source_provenance).
+- MAN = manifest della conservazione su WORK, commit 424f0ec (results/infra/consolidation_long_20261105/preservation/...).
+- Le copie delle ricevute lette da me stanno in work_selezione/exec2930d7d/ (esportate dal tentativo precedente; sha256 rifatti oggi:
+  uguali a git show 2930d7d, vedi voce a-1).
+
+==================================================================================================================================
+(a) CACHE E RIFERIMENTI
+==================================================================================================================================
+
+[a-1] Conteggi, byte, sha256 delle cache e dei riferimenti - REGGE
+[claim] PROT:55 «1.907 finestre / 40 utenti train e 18.548 finestre / 15 utenti val»; PJ caches/references/checkpoint_sha256/
+stats_sha256/source_provenance (PJ righe 2-17, 18, 184-203, 236-247 nella stampa json.tool).
+[evidence]
+- ESEGUITO (shasum -a 256): ricevute LONG-G49046-pose-train (27297241...), -val (1321038a...), LONG-BENCH-pose (7900c6d7...) identiche fra
+  snapshot GPT e 2930d7d; la ricevuta FIT a 2930d7d ha sha256 b08e6e321f38...037c14 = PJ historical_fit_receipt_sha256.
+- ESEGUITO (lettura delle ricevute con inspect_extract.py / inspect_cells.py, rilette prima dell'uso): train n_windows 1907, n_users 40,
+  n_recordings 200; val 18548, 15, 1950; artifacts.cache train 474412856 byte / 30c0b50d...ec7e, val 4593977338 / 36bab32e...ce4f;
+  checkpoint_sha256 bfa6141f...a490 (step 49046, which teacher) e checkpoint_pose_stats_sha256 757f2aee...7e in entrambe le ricevute
+  = PJ checkpoint_sha256 e stats_sha256. Ricevuta FIT: post_ridge.coefficients 59367 / fc9a9fd1..., post_ridge.predictions 418440754 /
+  36fb5f9b..., trained_head.predictions 234048726 / 9dbd52a0... = PJ references.
+- LETTO (git show 424f0ec, MAN copy.sha256/copy.sizes/source.*): i cinque file hanno in copia WORK e in origine SCRATCH gli stessi
+  sha256 e byte di PJ; ricevuta della copia: 354 file, 21.062.138.097 byte, sha256 identici.
+- ESEGUITO: fold_users della ricevuta FIT, 40 utenti distinti, disgiunti dai 15 utenti val del per_user della stessa ricevuta.
+[fix] Nessuno.
+
+[a-2] «4,720 GiB di input»: comprende solo le due cache, non i tre riferimenti - NOTA
+[claim] PROT:55 «Riutilizzo in loco, senza duplicare 4,720 GiB di input»; AC frozen_cache_total_bytes 5068390194; design_review.txt
+«cache4,7203GiB».
+[evidence] CALCOLATO: 474.412.856 + 4.593.977.338 = 5.068.390.194 byte = 4,7203 GiB (solo train.npz + val.npz). I tre riferimenti
+pesano 59.367 + 418.440.754 + 234.048.726 = 652.548.847 byte = 0,6077 GiB; i cinque input riusati in loco sono 5.720.939.041 byte =
+5,3280 GiB. Decompressi, i due file di predizioni valgono 2 x 439.216.640 byte (18.548 x 148 x 20 float64), circa 0,88 GB di RAM in
+piu' nella fase «Riferimenti, metriche e bootstrap».
+[fix] Scrivere «4,720 GiB di cache + 0,608 GiB di riferimenti (5,328 GiB)» e contare le due predizioni float64 nel tetto di RAM della
+fase di metriche (la dimensione dei costi e' di un'altra voce: qui solo la correttezza della cifra).
+
+[a-3] Predizioni storiche salvate per finestra e per patch sullo stesso supporto: SI', ma l'appaiamento non e' ancora pinnato - MINORE
+[claim] PROT:51 «Due riferimenti storici, senza nuovo fitting: ridge post 49k e testa gia' allenata del teacher, con predizioni pinnate
+sullo stesso supporto»; PROT:83-89 contrasti 4 e 5.
+[evidence]
+- LETTO (scripts/consolidation_long_pose_runtime.py:270-282 nello snapshot): per la ridge la predizione salvata e'
+  P.predict_reader(held,...) -> R.predict (scripts/tokenizer_pose_readout.py:263-271), array float64 di forma (N_val, P-12, 20) sul
+  crop6; per la testa storica held["pred"][:, 6:-6].astype(np.float64). Entrambe salvate con np.savez_compressed(prediction=...). Solo
+  per le 18.548 finestre val (nessuna predizione train, che non serve). Con P=160 (voce b-2) la forma e' (18.548, 148, 20).
+- CALCOLATO, coerenza indiretta della forma: 18.548 x 148 x 20 x 8 = 439.216.640 byte grezzi; il file ridge compresso e' il 95,3%
+  (float64 a mantissa piena, comprime poco), quello della testa il 53,3% (float32 convertito in float64: meta' mantissa a zero).
+- LETTO: i file di predizione non contengono utente ne' indice di finestra; l'appaiamento per utente passa dall'ordine delle righe di
+  val.npz (meta_json). La ricevuta FIT pinna anche il contenuto: prediction_sha256 (arrays_hash, include dtype e forma) post_ridge
+  2cd9a800...c96a, trained_head 6eed75d6...5e02; support_sha256 973930475e...1924; targets arrays c907b85b...7cad, metadata
+  960c8328...280a (ESEGUITO, lettura della ricevuta). PJ pinna solo lo sha256 dei file, non questi hash di contenuto.
+- LETTO: l'aggregazione esistente impone gia' l'appaiamento (scripts/consolidation_long_pose.py:301-311: stessi utenti, stessi
+  n_windows/n_window_joints/n_valid_elements e stesso denominatore vary per utente fra le celle, altrimenti errore).
+[fix] Aggiungere a PJ, prima della firma, gli hash di contenuto della ricevuta FIT (support_sha256, targets arrays/metadata/central_mask,
+prediction_sha256 dei due riferimenti, forma attesa (18548,148,20) float64) e un controllo d'ingresso: prima di usare i riferimenti nei
+contrasti 4-5 il nuovo codice ricalcola il supporto da val.npz e riproduce esattamente gli accumulatori per utente della ricevuta FIT
+(per esempio E_dyn dinamico 0,7859020004638595 ridge e 0,7786289843513977 testa). Sono numeri gia' pubblicati: riprodurli non apre
+informazione nuova. Senza questo controllo «appaiato sullo stesso supporto» resta un'affermazione, non un vincolo meccanico.
+
+[a-4] Campi della cache e ponte SCRATCH->WORK delle cache - REGGE, con una nota
+[claim] PROT:55 «con pre, lat, target, maschere, lunghezze, predizioni e statistiche»; PROT:130 «pin dei file e bridge esplicito
+SCRATCH->WORK, non hash riscritti».
+[evidence] LETTO: scripts/consolidation_long_pose.py:159-164 save_cache scrive pre, lat, key_time_valid, pred, target, mask, std,
+pose_var, has_head, dim, n_recordings, meta_json (utente, sessione, fase, lato, stem, registrazione, inizio, fs, n_patches:
+src/wearusfm/harness/pose_eval.py:184-185) e config_json: tutti i campi dichiarati ci sono (le lunghezze stanno in meta_json e
+key_time_valid; le «statistiche» sono std per finestra e pose_var, vedi c-3). In PJ i riferimenti hanno path WORK e source_path SCRATCH;
+le due cache hanno solo il path WORK, senza source_path, ricevuta di estrazione (27297241..., 1321038a...) ne' commit del manifest della
+copia (424f0ec), che sono le prove del ponte.
+[fix] Aggiungere a PJ caches source_path SCRATCH, sha256 delle due ricevute di estrazione e il riferimento a MAN (424f0ec), come gia'
+fatto per i riferimenti.
+
+==================================================================================================================================
+(b) SUPPORTO
+==================================================================================================================================
+
+[b-1] Definizione del supporto identica a quella storica della ridge e di E_dyn - REGGE
+[claim] PROT:59 «Supporto comune: target valido del giunto centrale e 6 <= t e t+6 < N_i, con patch di contesto realmente esistenti
+secondo lunghezze/key_time_valid»; PJ support.centers «6 <= t and t+6 < n_patches», crop 6.
+[evidence] LETTO:
+- scripts/pose_temporal_readout.py:195-200 central_mask = mask[:, 6:-6] & (t + 6 < lengths), t = 6 ... P-7; usato da
+  tokenizer_pose_readout.py:155 (read_targets), :238-239 (statistiche ridge sul crop6), :265-269 (predizioni sul crop6), :276-283
+  (summarize/E_dyn) e da consolidation_long_pose.py:116-120 (_target_view), :264-272 (summarize del lungo).
+- Le feature dipendono solo dalle lunghezze reali, mai dalle maschere di posa: pose_temporal_readout.py:202-209 normalized_inputs.
+- key_time_valid non aggiunge una condizione nuova: consolidation_long_pose.py:131-134 impone key_time_valid == (arange(P) < lengths),
+  altrimenti la cache viene rifiutata; :128 impone 12 < n_patches <= 160.
+- E_dyn usa coppie finestra/giunto con almeno 2 punti validi: scripts/pose_dynamics.py:134-146 (accumulate, min_n=2), chiamato con 2
+  in tokenizer_pose_readout.py:288; PROT:81 «almeno due punti».
+Quindi la definizione proposta coincide con quella storica; in piu' l'aggregazione esistente rifiuta celle con supporto diverso
+(consolidation_long_pose.py:305-311, 431-434), quindi una differenza di supporto verrebbe fermata, non mescolata.
+[fix] Nessuno sul disegno. Nel codice futuro riusare _target_view/central_mask invece di riscriverli (il protocollo PROT:130 prevede
+file nuovi: il test PROT:136-137 «stesso input, target, statistiche» dovrebbe confrontare l'hash del central_mask con
+ec1ee717...b032 sul train e 973930475e...1924 sul val).
+
+[b-2] Nessuna finestra piu' corta di 160 patch in cache - REGGE (e semplifica)
+[claim] PROT:59 e PROT:137 «lunghezze variabili»; AC central_positions_P160 = 148.
+[evidence]
+- ESEGUITO (work_selezione/check_key_time_valid.py, riletto: usa arrays_hash identica a pose_temporal_readout.py:41-47): l'hash di una
+  matrice booleana (N,160) tutta True e' 0065b939...246f per N=1907 e 04749cb0...485c per N=18548, uguali ai key_time_valid_sha256
+  delle ricevute train e val; la controprova con una sola finestra da 159 patch da' un hash diverso. Con il vincolo di
+  consolidation_long_pose.py:131-134 ne segue che tutte le 1.907 + 18.548 finestre hanno n_patches = 160.
+- LETTO (src/wearusfm/harness/pose_eval.py:98-110 fixed_windows): ogni finestra e' costruita con n_patches = need =
+  round(4,0 s / 25 ms) = 160 e le candidate piu' corte sono scartate (w.n_patches >= need).
+- CALCOLATO: 160 - 2 x 6 = 148 centri per finestra, uguale ad AC.
+- ESEGUITO (git show delle ricevute train delle tre dosi a 2930d7d): stessi targets arrays 3fe41f53..., central_mask ec1ee717...,
+  metadata b270cdd3... e key_time_valid 0065b939... per 19618, 39237, 49046; il central_mask train coincide con fit_support_sha256
+  della ridge storica (ricevuta FIT).
+Il ramo «lunghezze variabili» del codice futuro non viene mai esercitato da questi dati: va testato su fixture sintetiche (come PROT:137
+prevede), non dato per verificato dai dati.
+[fix] Dichiarare nel protocollo che in queste cache N_i = 160 per tutte le finestre (prova: hash di key_time_valid) e che quindi il
+supporto e' mask[:, 6:154]; tenere la condizione generale solo come guardia.
+
+[b-3] Conteggi storici (148 centri, 8.327 finestre dinamiche supportate) - REGGE
+[claim] Prompt di Claude 8917e2a (docs/prompt_gpt_temponet_testa_fm_20261116.md:68 e :70) «148 centri» e «8.327 supportate con crop6»; PROT
+li conserva («esattamente il crop6 storico», PROT:37).
+[evidence] ESEGUITO (lettura della ricevuta FIT, gruppo dynamic, post_ridge/pre_ridge/trained_head): n_selected_windows 8.329 (pose_var
+>= 0,2574231028556824), di cui centered n_windows 8.327, n_window_joints 166.540 = 8.327 x 20, n_valid_elements 20.119.920; static
+8.329 selezionate, 8.293 supportate; all 18.548, 16.620 supportate; quindi 18.548 - 8.329 - 8.329 = 1.890 finestre val con pose_var
+non finita e 1.928 finestre val senza nessuna coppia finestra/giunto con almeno 2 centri validi. Le tre celle storiche hanno lo stesso
+support_sha256. Con la definizione proposta (b-1) gli stessi conteggi si riottengono per costruzione.
+Sul train: valid_fit_elements 4.813.620 nel benchmark (ricevuta LONG-BENCH, cache 19618 con target identici, b-2) -> CALCOLATO
+240.681 coppie (finestra, t) valide su 1.907 x 148 = 282.236 posizioni centrali (85,3%); sul val 2.059.728 su 2.745.104 (75,0%,
+contando solo le coppie con almeno 2 punti). Il numero di finestre train senza nessun centro valido non e' nelle ricevute.
+[fix] Nel benchmark train-only (PROT:163) contare e dichiarare le finestre train senza centri supervisionati per fold e in totale, e i
+passi per epoca che ne risultano, prima dei fit (PROT:59 dice gia' che si dichiarano: serve solo il momento, prima della selezione).
+
+==================================================================================================================================
+(c) LOSS E STATISTICHE
+==================================================================================================================================
+
+[c-1] Stessa riduzione della loss di posa del pretraining, su un supporto diverso (crop6 invece della finestra intera) - NOTA
+[claim] PROT:61 «media dell'errore quadratico standardizzato sugli elementi validi di ciascuna finestra, poi media sulle finestre
+supportate»; PJ fit.loss «... crop6 all groups»; PROT:51 «la PoseHead del training MSE media per finestra».
+[evidence] LETTO:
+- src/wearusfm/training/jepa.py:182-205 pose_terms con per_window=True: errore quadratico su valid = mask & time_valid, media dentro ogni
+  finestra con almeno un elemento valido, poi media fra quelle finestre. jepa.py:548-556: la testa legge latent_mean(enc.z) dello
+  student. Il checkpoint usato ha config.jepa loss_per_window true e pose_weight 1.0 (ricevute di estrazione, checkpoint_guard.config).
+- jepa.py:173-179 pose_time_valid: nel pretraining valgono TUTTE le patch esistenti con target valido, non il crop6; le finestre di
+  pretraining vanno da 1 a 4 s (config.loader min_window_s 1.0, max_window_s 4.0 nella stessa ricevuta).
+Quindi la riduzione proposta e' la stessa del pretraining (per finestra, poi fra finestre), ma su 148 centri invece che su tutte le
+patch, su finestre fisse da 4 s e su latenti teacher non mascherati. La proposta dichiara 158 utenti, mascheramento ed EMA (PROT:51) ma
+non la differenza di supporto della loss. Non cambia il disegno: tutte le teste nuove sono allenate e lette sullo stesso crop6,
+coerente con la ridge storica e con la metrica.
+[fix] Aggiungere a PROT:51 «la PoseHead storica e' stata allenata su tutte le patch esistenti con target valido di finestre da 1-4 s;
+le teste nuove sul crop6 di finestre da 4 s».
+
+[c-2] Peso per finestra nella loss/selezione, peso per elemento nella metrica - NOTA (dichiarato in parte)
+[claim] PROT:61 e PROT:68 (loss e selezione per finestra); PROT:81 (E_dyn somma SSE e varianza centrate sugli elementi).
+[evidence] LETTO: pose_dynamics.py:134-146 accumula n x momento per coppia finestra/giunto (peso per elemento valido), mentre la loss
+proposta da' a ogni finestra peso 1 qualunque sia il numero di centri validi (da 1 a 148; b-3: sul train 85,3% delle posizioni centrali
+sono valide, quindi esistono finestre parziali). PROT:51 dichiara la differenza ridge (per elemento) / PoseHead (per finestra), non quella
+fra loss di selezione e metrica primaria.
+[fix] Una riga in PROT §4: la selezione minimizza l'MSE per finestra di tutte le finestre, la decisione usa E_dyn pesata per elemento
+sulle sole dinamiche; vedi anche la voce e-3 (componente centrata contro livello), che e' la differenza piu' rilevante.
+
+[c-3] Statistiche di posa «calcolate sul train158»: da dove vengono - REGGE, con una precisazione
+[claim] PROT:57 «Si conservano la media/deviazione standard della posa calcolate sul train158 e gli indici originali»; PJ stats_sha256
+757f2aee...7e; PJ support.normalization «cached target mean/std from train158 unchanged».
+[evidence] LETTO:
+- src/wearusfm/data/pose_targets.py:127-140 e :148-180: il target in cache e' gia' standardizzato in window_pose con media e deviazione
+  di pose_stats.json ((media dei blocchi validi - mean) / std); la cache salva la deviazione usata per finestra (std (N,20)), non la media.
+- src/wearusfm/ingest/emg2pose_pose.py:22-23 e :365-399: pose_stats.json si calcola sui blocchi validi dello split «train» del CSV
+  (17.136 registrazioni, 158 utenti); i 15 utenti val sono dello split val, quindi fuori dalle statistiche; i 40 utenti del pannello
+  sono dentro (lo dichiara PROT:73).
+- ESEGUITO (lettura ricevute): config per_side false (standardizzazione unica, non per lato), pose_stats_sha256 =
+  checkpoint_pose_stats_sha256 = 757f2aee...7e = PJ stats_sha256.
+La «media» non e' nella cache: e' in pose_stats.json. Per MAE, livello e conversione in radianti basta std (la media si cancella nelle
+differenze), quindi nessun secondario proposto ne ha bisogno.
+[fix] Precisare in PJ che la cache contiene target gia' standardizzati e la sola std per finestra, e che pose_stats.json (sha256
+757f2aee...) resta il pin della media; nessuna nuova statistica di posa o di feature (gia' scritto in PROT:57).
+
+==================================================================================================================================
+(d) FOLD
+==================================================================================================================================
+
+[d-1] Due fold da 20 utenti alternando gli ID ordinati, come la ridge storica - REGGE
+[claim] PROT:67 «Due fold da 20 utenti ciascuno, alternando gli ID train ordinati come nella ridge storica»; PJ fit.cv_folds.
+[evidence]
+- LETTO: scripts/pose_e3_b.py:208-219 cross_validate: users = sorted(per_user); halves = [users[::2], users[1::2]]; ogni meta' si
+  valuta col modello dell'altra, SSE e conteggi sommati sui due fold prima del rapporto. tokenizer_pose_readout.py:252-253 ricostruisce
+  gli stessi fold e li confronta con quelli attesi del piano; :80 lo impone nel piano.
+- ESEGUITO (ricevuta FIT): fold_users di post_ridge e pre_ridge = [u[::2], u[1::2]] con u = sorted(unione), 20 + 20 utenti distinti.
+I fold sono bilanciati per utenti, non per finestre (le finestre per utente variano); il criterio proposto somma le perdite di tutte
+le finestre dei due fold e divide per il totale, quindi lo sbilanciamento non introduce pesi impliciti per fold.
+[fix] Pinnare in PJ le due liste di utenti della ricevuta FIT (non solo la regola) e imporre l'uguaglianza nel codice, come faceva il
+lungo (ctx pose_reader.fold_users).
+
+==================================================================================================================================
+(f) COSE NON SPECIFICATE CHE CAMBIANO I NUMERI
+==================================================================================================================================
+
+[f-1] Valutazione interna: modalita' eval, momento della misura ed epoca 0 non specificati - MINORE
+[claim] PROT:68 «scegliere insieme LR ed epoca minimizzando la media delle MSE per finestra su tutti gli utenti interni held dei due
+fold»; PJ fit.selection.
+[evidence] LETTO: ne' PROT §4 ne' PJ dicono se la MSE held si calcola con dropout spento (eval), senza gradiente, alla fine di ogni epoca
+1...50, e se l'epoca 0 (uscita a zero) e' candidata. Per L0 e L13 (senza dropout) non cambia nulla; per MLP e TCN (dropout 0,1, PROT:33 e
+47) una valutazione in modalita' train aggiungerebbe rumore e un'inflazione della MSE alla curva usata per scegliere l'epoca.
+[fix] Scrivere: valutazione held alla fine di ogni epoca 1...50, model.eval() (dropout spento), no_grad, FP32, stesso supporto crop6;
+epoca 0 non candidata; le 50 x 2 x 2 curve per testa salvate nel manifest di selezione prima di qualunque rifit.
+
+[f-2] Semi e generatori: impostazione corretta, derivazione numerica e determinismo GPU da fissare - MINORE
+[claim] PROT:66 «shuffle per epoca da un generatore dedicato, indipendente da inizializzazione/dropout e identico fra bracci a parita' di
+fold/seme»; PROT:67 «Seme 0 per ogni fit di selezione, pesi iniziali nuovi»; PJ shuffle_rng, cv_seed 0, refit_seeds [0,1,2],
+other_weights_initialization «torch defaults under seed», precision «FP32, autocast off, TF32 off».
+[evidence]
+- LETTO: il seme fissa inizializzazione e dropout (generatore globale), lo shuffle ha un generatore suo «per fold/seme». Non e' scritta
+  la derivazione numerica dei semi dello shuffle (fold 0, fold 1, rifit 0/1/2), ne' esplicitamente che la stessa permutazione vale per
+  i due LR (lo si deduce da «identico fra bracci»).
+- ESEGUITO (esperimento sintetico, CPU): con seme 0 per l'inizializzazione e generatori dedicati per lo shuffle, i miei due rilanci di L0
+  e MLP riproducono cifra per cifra le curve del tentativo precedente (unica differenza i secondi): su CPU la ricetta e' deterministica.
+- LETTO (nota di memoria del progetto reference_cudnn_dilated_deterministic.md, misura del 09/11/2026 su A100 di Leonardo, torch 2.2):
+  con cudnn.deterministic=True le Conv1d dilatate passano a im2col/col2im, circa 13 volte piu' lente (TEMPONet raw batch 64: 14,6 ms
+  contro 1,1 ms per passo). Misura sulla TEMPONet raw, non sulla nuova testa. PROT e PJ non dicono se gli algoritmi deterministici
+  sono richiesti: senza, due esecuzioni dello stesso fit di selezione possono differire nelle ultime cifre e, su una curva piatta,
+  scegliere un'epoca diversa.
+[fix] In PJ: semi dello shuffle derivati in modo dichiarato (per esempio dal seme del protocollo, dal fold e dal seme del rifit), stesse
+permutazioni per i due LR e per tutti i bracci, TCN-pre compresa; politica di determinismo scritta prima del benchmark (deterministico
+con costo misurato, oppure non deterministico dichiarato, con gli artefatti congelati come unico riferimento, mai un rilancio). La
+scelta cambia il costo della TCN di un ordine di grandezza sulla misura raw: va decisa prima del gate di PROT:165.
+
+[f-3] Finestre senza centri supervisionati e ordine dei batch - REGGE
+[claim] PROT:59 «Finestre senza centri supervisionati si dichiarano ed escludono in tutti i bracci allo stesso modo, mai in base alle
+predizioni»; PROT:66 ordine dei minibatch identico fra bracci.
+[evidence] LETTO, coerente con lo storico: la loss del pretraining ignora le finestre senza elementi validi (jepa.py:196-203) e E_dyn le
+coppie con meno di 2 punti (pose_dynamics.py:134-146). Escludendole prima di comporre i batch, l'insieme di finestre e quindi i passi
+per epoca e l'ordine dei batch sono gli stessi in tutti i bracci.
+[fix] Solo una precisazione: l'esclusione avviene prima del batching (cosi' «batch 32» significa 32 finestre supportate).
+
+==================================================================================================================================
+(g) FUGHE D'INFORMAZIONE
+==================================================================================================================================
+
+[g-1] Nulla dei 15 utenti val entra in selezione, normalizzazione o arresto; benchmark train-only - REGGE
+[claim] PROT:57 «Nessuna normalizzazione delle feature stimata sui 15 val»; PROT:67 «I 15 utenti val restano chiusi»; PROT:69 «Nessuna
+selezione del seme o arresto sulla val»; PROT:71 una sola valutazione dopo il congelamento; PROT:163 benchmark «train soltanto».
+[evidence]
+- LETTO: la normalizzazione d'ingresso e' una LayerNorm per patch (statistiche del singolo vettore) con gamma/beta appresi sul train
+  (PROT:29); le statistiche di posa sono del train158, che non contiene i 15 val (c-3); i fold sono solo sui 40 (d-1).
+- ESEGUITO (ricevuta FIT): i 40 utenti dei fold e i 15 utenti val sono disgiunti.
+- LETTO: l'unica grandezza derivata dai val che entra nella prova e' la soglia dinamica 0,2574231028556824, mediana della pose_var dei
+  val (src/wearusfm/harness/pose_eval.py:40 RULE dynamic_split; ESEGUITO: 8.329 dinamiche e 8.329 statiche nella ricevuta, coerente con
+  una mediana). E' una statistica dei soli target, congelata dal 02/11 (docs/pose_temporal_pca_protocol_20261102.md:22) e usata solo
+  nella metrica: la selezione proposta (MSE su tutte le finestre) non la usa.
+- I numeri val gia' noti dei riferimenti (E_dyn dinamico 0,7859020004638595 ridge e 0,7786289843513977 testa, ESEGUITO dalla ricevuta
+  FIT) non compaiono in nessuna regola di selezione, griglia o soglia della proposta (LETTO PROT §3-5, PJ fit/evaluation). La scelta del
+  checkpoint 49.046 e' gia' stata fatta sui val nel lungo (docs/reviews/consolidation_long_results_20261107.md:25 «E_dyn dinamiche
+  0,833->0,779 ... riferimento esplorativo 49.046 per la posa»; docs/decisioni.md:6668; codice scripts/consolidation_long_pose.py:391-408):
+  PROT:73 lo copre dichiarando i 15 val «sviluppo gia' consultato» e l'assenza di conferma indipendente.
+[fix] Nessuno. Se si adotta la diagnostica interna di E_dyn (voce e-3), usare la stessa soglia congelata, senza ricalcolarla sui fold.
+
+==================================================================================================================================
+(h) COERENZA CON LE REGOLE CONGELATE E COL PROMPT DI CLAUDE
+==================================================================================================================================
+
+[h-1] crop6, soglia dinamica, bootstrap - REGGE
+[claim] PROT:37 e 59 (crop6), PROT:79 (soglia), PROT:91 (2.000 repliche, seme 20261102, unita' utente).
+[evidence] LETTO: scripts/tokenizer_pose_readout.py:30-31 (OFFSET 6, SEED 20261102, N_BOOT 2000, THRESHOLD 0,2574231028556824), :45
+(centri 6 <= t e t+6 < n_patches), :49 (min_centered_points 2); scripts/consolidation_long_pose.py:26 (stessi valori ripresi dal lungo);
+docs/pose_temporal_pca_protocol_20261102.md:22 e docs/tokenizer_window_nonlinear_protocol_20261102.md:162 (soglia sulla pose_var
+originale della finestra intera, da non ricalcolare). PJ support e evaluation usano gli stessi valori. Nota: la voce del 17/11 in
+docs/decisioni.md (snapshot, righe 6713-6738) registra le regole come proposte, non congelate: e' corretto, il congelamento avverra'
+dopo la firma.
+[fix] Nessuno.
+
+[h-2] Prompt di Claude §3 domanda 4 (docs/prompt_gpt_temponet_testa_fm_20261116.md:218-226 sul ramo 8917e2a) - REGGE, con un limite
+[claim] PROT:51, 67, 69-73, 110.
+[evidence] LETTO, punto per punto:
+- Parita' delle etichette: 40 utenti per tutte le teste nuove, come la ridge storica (stessi fold, d-1); testa storica con 158 utenti,
+  student mascherato ed EMA, dichiarata (PROT:51); per un futuro confronto da zero 40 utenti, con 158 riportato a parte (PROT:110).
+- Numero di letture val: una sola, dopo il congelamento (PROT:71).
+- Conferma: dichiarato che non c'e' (PROT:73); test ufficiale escluso.
+- Ottimismo dei fold (utenti gia' visti dall'encoder): dichiarato (PROT:73 «selezione del lettore condizionata a quel FM»).
+- Overfitting: la risposta della proposta e' arresto sull'epoca scelta nei fold, dropout 0,1 (solo MLP/TCN) e weight decay 0,01. Il
+  weight decay non regolarizza in pratica: CALCOLATO, con AdamW il fattore per passo e' (1 - lr x 0,01): dopo 3.000 passi (rifit da 50
+  epoche) resta 0,970 a lr 1e-3 e 0,997 a lr 1e-4; dopo 1.500 passi (fold) 0,985 e 0,9985. Il regolarizzatore effettivo di L0 e L13
+  e' quindi solo l'arresto, a granularita' di un'epoca (circa 30 passi nei fold). Per confronto, la ridge storica senza penalita'
+  efficace (alpha 0,01) ha CV 0,7697 contro 0,6561 all'ottimo alpha 1e5 (ESEGUITO, ricevuta FIT): +17,3% (CALCOLATO).
+[fix] Dichiarare che il regolarizzatore effettivo e' l'arresto (non il weight decay) e trattare la granularita' dell'arresto nelle voci
+e-1 ed e-4.
+
+==================================================================================================================================
+(e) RICETTA DI SELEZIONE E BILANCIO DI OTTIMIZZAZIONE
+==================================================================================================================================
+
+Esperimento SINTETICO usato in questa sezione (dichiarato: mostra un meccanismo, non i numeri veri).
+- Script: work_selezione/synth_selection.py (scritto dal tentativo precedente, riletto riga per riga oggi) e work_selezione/
+  synth_temporal.py (mio: importa senza modifiche le funzioni di synth_selection.py e cambia solo il mondo e il numero di thread).
+- Mondo: 384 feature, 20 uscite, finestre da 160 patch salvate in float16, 40 utenti train x 48 finestre = 1.920 (960 per fold:
+  30 passi per epoca; 60 nel rifit), 15 x 48 = 720 finestre val sintetiche; feature = miscele lineari di fattori AR(1) (tempi da 2 a
+  40 patch) piu' firma dell'utente, disturbo della finestra e rumore; bersaglio lineare piu' rumore (mondo «lineare») oppure
+  tanh(2 x media mobile a 7 patch) dei fattori (mondo «temporale»), standardizzato con media/dev. del train; crop6; soglia dinamica =
+  mediana della pose_var dei val sintetici. Teste e ricetta come PROT:29-35 e 61-69 (LN affine, uscita a zero, AdamW (0,9; 0,999),
+  eps 1e-8, weight decay 0,01 solo su matrici/kernel, clipping 1, batch 32 con ultimo batch, shuffle da generatore dedicato, LR 1e-4 e
+  1e-3 costanti, 50 epoche, seme 0, scelta (LR, epoca) sulla MSE per finestra messa in comune sui due fold, pareggi: epoca e poi LR
+  minore, rifit sui 40 con lo stesso numero di epoche). Valutazione held in eval (dropout spento) alla fine di ogni epoca.
+- Calibrazione (tentativo precedente, rieseguita come parte dei miei rilanci): la curva CV della ridge sintetica ha la forma di
+  quella reale: 0,9288 (alpha 1e-2) -> 0,8240 (1e5, ottimo) -> 0,8536 (1e6), contro 0,7697 -> 0,6561 (1e5) -> 0,6709 (1e6) della
+  ridge post 49k (ricevuta FIT).
+
+[e-1] L0 con AdamW arriva alla soluzione ridge entro 50 epoche - REGGE (con una nota sulla granularita')
+[claim] PROT:65-69 (ricetta); domanda (e) del compito.
+[evidence] ESEGUITO (mio rilancio di synth_selection.py --arms L0 e --arms MLP, file attuale; risultati identici cifra per cifra a
+r2_L0.json e r2_MLP.json del tentativo precedente, salvo i secondi):
+- Mondo lineare, L0 lr 1e-4: minimo della MSE CV messa in comune 0,8131 all'epoca 14 (epoca 50: 0,8396), sotto la ridge CV sintetica
+  0,8240; E_dyn CV minimo 0,8090 all'epoca 23 (ridge 0,8136).
+- L0 lr 1e-3: minimo 0,8258 gia' all'epoca 1 (epoca 50: 0,9222): il primo punto di valutazione (30 passi) e' gia' oltre l'ottimo.
+- Scelta: (1e-4, epoca 14). Rifit, lettura sui val sintetici: MSE 0,8472, E_dyn 0,8032 (ridge sintetica sui val: 0,8601 e 0,8167).
+- Mondo temporale (ESEGUITO, synth_temporal.py): L0 lr 1e-4 minimo CV 0,8307 all'epoca 10; lr 1e-3 minimo 0,8414 all'epoca 1; ridge
+  CV 0,8431 (alpha 1e5).
+Meccanismo: con questo bilancio una testa lineare con LN arriva alla ridge (o poco sotto) in 10-14 epoche a lr 1e-4; a lr 1e-3 va in
+overfitting dalla prima epoca, quindi la scelta cade su 1e-4.
+[fix] Nessuno per L0. Il caso «migliore all'epoca 1» (bordo inferiore, qui gia' a lr 1e-3 in entrambi i mondi) va aggiunto ai casi da
+riportare di PROT:75, che cita solo l'ultima epoca e il bordo LR.
+
+[e-2] Rifit con lo stesso numero di epoche: circa il doppio dei passi, non dichiarato - MINORE
+[claim] PROT:69 «Rifit da zero su tutti i 40 utenti con la coppia scelta, semi 0,1,2 e numero di epoche fisso ... il rifit riproduce il
+prefisso della ricetta»; PJ fit.refit «at chosen fixed LR and epoch».
+[evidence]
+- CALCOLATO: nei fold ogni modello vede circa 1.907/2 = 953 finestre, cioe' 30 passi per epoca con batch 32; nel rifit 1.907 finestre,
+  ceil(1.907/32) = 60 passi. A parita' di epoche il rifit fa il doppio dei passi a LR costante: il «prefisso della ricetta» e' tale in
+  epoche, non in passi. PROT non lo dice (nessuna occorrenza di «passi» per epoca in PROT, verificato con grep).
+- ESEGUITO (sintetico, mondo lineare): L0 scelto a (1e-4, epoca 14). Nel rifit: all'epoca 14 (840 passi) MSE val 0,8472 ed E_dyn 0,8032;
+  all'epoca 7 (420 passi, gli stessi dei fold) 0,8337 e 0,8120; oracolo MSE 0,8326 all'epoca 6, oracolo E_dyn 0,8018 all'epoca 11. MLP
+  scelto a (1e-3, epoca 47): all'epoca 47 MSE 0,9114 ed E_dyn 0,9500; all'epoca 24 0,9001 e 0,9567; oracoli 0,8902 (epoca 25) e 0,9456
+  (epoca 38). Con la regola «stesse epoche» la MSE peggiora dell'1,6% (L0) e dell'1,3% (MLP) rispetto alla regola «stessi passi»,
+  mentre E_dyn migliora dell'1,1% (L0) e dello 0,7% (MLP) (CALCOLATO dai valori sopra): la direzione dell'errore dipende dalla metrica.
+Nessuna delle due regole e' sbagliata; quella scelta va scritta con la sua conseguenza, perche' il suo effetto non e' uguale fra le
+teste (piu' forte dove l'ottimo e' stretto).
+[fix] Scrivere in PROT §4: «il rifit usa lo stesso numero di epoche, quindi circa 60 passi per epoca contro circa 30 nei fold (il doppio
+dei passi e dei dati)», con la motivazione (passaggi sui dati, non passi). Non cambiarla dopo i fit.
+
+[e-3] Criterio di selezione (MSE totale per finestra su tutte le finestre) diverso dal primario (E_dyn centrata sulle dinamiche)
+      - BLOCCANTE (era MINORE nella prima stesura; alzato dopo il risultato di L13 qui sotto)
+[claim] PROT:61 e 68 (loss e scelta su MSE per finestra di tutte le finestre); PROT:79-81 (primario E_dyn centrata, solo dinamiche).
+[evidence]
+- ESEGUITO (ricevuta FIT, medie per elemento sui val, gia' pubblicate): nella MSE totale dei lettori storici la parte di livello pesa
+  il 54,4% sulle finestre dinamiche (post ridge: totale 0,905798 = livello 0,492928 + centrata 0,412869) e il 65,9% su tutte le
+  finestre (0,486171 su 0,737815); per la testa storica 54,0% e 66,0%. La MSE con cui si sceglie l'epoca e' quindi dominata dal livello,
+  che E_dyn toglie per costruzione.
+- ESEGUITO (sintetico, L0 e MLP rilanciati da me; TCN LETTO, processo del tentativo precedente con lo stesso script, vedi e-4): l'epoca
+  ottima per la MSE viene prima di quella ottima per E_dyn, e la differenza non e' uguale fra le teste. Mondo lineare: L0 (1e-4) epoca 14
+  contro 23, E_dyn all'epoca scelta 0,8185 contro il minimo 0,8090 (+1,2%); MLP (1e-3) epoca 47 contro 49, 0,9604 contro 0,9584 (+0,2%);
+  TCN scelta (1e-4, 43) con E_dyn 0,9683, mentre il minimo di E_dyn e' 0,9551 a (1e-3, epoca 50) (+1,4%). Mondo temporale: L0 (1e-4)
+  epoca 10 contro 15, 0,9458 contro 0,9428 (+0,3%). Gli scarti sono dell'ordine della soglia pratica del 2% (PROT:95).
+- L13, mondo lineare (LETTO, processo 36605 del tentativo precedente, stesso script; righe di selezione stampate alle 10:37): a lr 1e-4
+  la MSE CV ha il minimo gia' all'epoca 1 (0,8307; all'epoca 50 1,0322), dove E_dyn vale 0,8911, mentre il minimo di E_dyn e' 0,7958
+  all'epoca 22; a lr 1e-3 minimo MSE all'epoca 2 (0,9932), E_dyn minimo 0,8135 all'epoca 10. La scelta proposta e' quindi (1e-4,
+  epoca 1): bordo inferiore di LR ed epoca insieme, con un E_dyn del 12,0% peggiore del suo ottimo (CALCOLATO: 0,8911/0,7958 - 1);
+  al suo ottimo dinamico L13 batterebbe anche L0 (0,7958 contro 0,8090).
+- Verifica ridotta ESEGUITA da me (work_selezione/synth_l13_fold.py: L13 a lr 1e-4, allena il fold 0 e legge il fold 1, 25 epoche,
+  stesse funzioni): MSE held minima all'epoca 1 (0,8420, E_dyn 0,8901), poi sempre in salita (0,8517 all'epoca 2, 0,8897 alla 10, 0,9692
+  alla 25); E_dyn in discesa fino a 0,7955 all'epoca 24; loss train da 0,7721 a 0,4730. Sullo stesso fold L0 ha MSE minima 0,8262
+  (epoca 14) ed E_dyn minima 0,8079. Il criterio proposto fermerebbe L13 all'epoca 1 con un E_dyn dell'11,9% peggiore del suo ottimo
+  (CALCOLATO): il risultato del processo del tentativo precedente si riproduce.
+Allenare e scegliere sulla stessa loss del pretraining e' di per se' una scelta difendibile e protegge il livello (PROT:100). Ma qui
+il livello domina la MSE (54-66% sui dati veri), le teste ad alta capacita' lo sovradattano presto e il criterio le ferma prima che
+imparino la dinamica: la distorsione dipende dalla testa (da +0,2% a +12% nel sintetico) e puo' rovesciare i contrasti 1-3 (in
+particolare TCN/L13), dando una risposta sbagliata sul controllo lineare temporale.
+[fix] Scegliere (LR, epoca) su un criterio allineato al primario, deciso prima dei fit e uguale per tutte le teste: la E_dyn interna
+messa in comune sulle finestre dinamiche dei due fold (soglia congelata, somme come PROT:81), con MSE/livello/MAE riportati come
+secondari e la regola di PROT:100 (nessuna adozione se il livello peggiora) a protezione del livello. Se GPT preferisce tenere la MSE,
+serve almeno una regola scritta prima che dica cosa fare quando l'epoca scelta e' lontana dall'ottimo dinamico interno (per esempio:
+contrasto non interpretabile per quella testa), piu' la pubblicazione delle due curve. In entrambi i casi in docs/decisioni.md prima
+dei fit.
+
+[e-4] Le teste a sei strati (MLP, TCN) non arrivano al loro ottimo con questa ricetta, e la proposta leggerebbe l'esito come negativo
+      - BLOCCANTE
+[claim] PROT:35 (strati interni con inizializzazione Torch standard, ultimo strato a zero); PROT:65-66 (AdamW, weight decay 0,01, LR
+{1e-4, 1e-3} costante, 50 epoche, batch 32); PROT:75 «Se il migliore e' all'ultima epoca o al bordo LR si riporta; non si estende
+automaticamente la ricerca»; PROT:96-98 (deterioramento pratico; inconclusivo: «Il pilot si chiude senza promozione»); PROT:118 (se A
+e' nullo, B «richiede una motivazione nuova»).
+[evidence]
+1. Griglia e bordo. LETTO e CALCOLATO: con due soli LR ogni scelta e' al bordo della griglia, quindi la clausola di PROT:75 scatta sempre e
+   non distingue un ottimo vero da uno fuori griglia; il bordo inferiore (epoca 1) non e' previsto. La ridge storica, riferimento del
+   contrasto 4, aveva invece estensione e blocco: scripts/pose_e3_b.py:190-206 (fino a 3 decadi in piu' per lato),
+   scripts/tokenizer_pose_readout.py:47 e :256 («alpha boundary unresolved; no scientific report»); nel lungo ha usato 2 estensioni verso
+   l'alto per arrivare all'ottimo interno 1e5 (ESEGUITO, ricevuta FIT: extensions upper 2, griglia fino a 1e6). Le teste nuove non hanno
+   l'equivalente.
+2. Inizializzazione. ESEGUITO (work_selezione/init_signal.py, nessun dato del progetto, semi 0, 1, 2): su ingresso normalizzato da LN,
+   con l'inizializzazione Torch standard la varianza che dipende dall'ingresso scende da 0,113-0,114 dopo il primo strato a
+   2,9e-5 - 6,1e-5 all'ultimo strato nascosto (32 unita') di MLP e TCN, cioe' lo 0,6%-2,1% della parte costante dovuta ai bias; il
+   25%-44% di quelle 32 unita' e' spento sul lotto di prova. L'ultimo strato, che parte da zero, legge quindi feature quasi costanti.
+   CALCOLATO (ordine di grandezza): per ottenere la varianza predetta dei lettori storici sulle dinamiche (0,116-0,125, ricevuta FIT)
+   (deviazione 0,34-0,35) da quelle feature servirebbero pesi d'uscita fra circa 2 (unita' perfettamente correlate) e circa 15
+   (indipendenti), secondo testa e seme (dev. 0,0054-0,0078 dell'ultimo strato, 18-24 unita' vive), mentre AdamW sposta un peso di al
+   piu' circa lr per passo: 0,15 a 1e-4 e 1,5 a 1e-3 nei 1.500 passi di un fold. Il segnale deve crescere negli
+   strati interni, e a 1e-4 cresce poco. L0 e L13 non hanno questo problema: leggono direttamente l'ingresso normalizzato.
+3. Sintetico, mondo lineare. ESEGUITO per L0 e MLP (miei rilanci), LETTO per la TCN (processo del tentativo precedente con lo stesso
+   script, terminato alle 10:00 circa, r2_TCN.json):
+   - MLP a 1e-4: minimo della MSE CV all'ultima epoca (0,9173, epoca 50) e minimo di E_dyn pure all'epoca 50 (0,9799). TCN a 1e-4:
+     minimo MSE all'epoca 43, E_dyn all'epoca 46 (0,9678); TCN a 1e-3: minimo di E_dyn all'epoca 50 (0,9551) mentre la MSE ha il
+     minimo all'epoca 28 e la loss train scende a 0,58-0,59 contro 0,92-0,93 held.
+   - Dopo scelta e rifit, E_dyn sui val sintetici: L0 0,8032, ridge 0,8167, MLP 0,9500, TCN 0,9714 (per la TCN l'oracolo di E_dyn del
+     rifit e' all'epoca 50, l'ultima). Tetto teorico (ESEGUITO, synth_oracle.py: bersaglio senza il rumore non prevedibile): 0,7579.
+   - Piu' epoche non bastano: ESEGUITO (synth_budget.py, allena il fold 0 e legge il fold 1) MLP a 1e-3 per 150 epoche: E_dyn held
+     0,9602 all'epoca 50, 0,9603 alla 100, 0,9565 alla 150 (minimo 0,9543), contro L0 0,8079 sullo stesso fold. Un'inizializzazione che
+     conserva il segnale (kaiming_normal_ per ReLU, bias nascosti a zero, uscita sempre a zero) accelera (MLP a 1e-3: minimo E_dyn
+     0,9377 all'epoca 18; a 1e-4 0,9352 ancora all'epoca 50) ma non colma il divario.
+4. Sintetico, mondo temporale: il bersaglio dinamico dipende in modo non lineare da +-3 patch, dentro il campo ricettivo di 13 patch:
+   e' il caso in cui la TCN ha per costruzione informazione in piu'. ESEGUITO (synth_temporal.py):
+   - E_dyn CV: ridge 0,9477; L0 0,9428 (1e-4, epoca 15); TCN 0,9830 (1e-4, minimo all'epoca 46) e 0,9823 (1e-3, epoca 28). Con la scelta
+     proposta (MSE) la TCN e' a (1e-4, epoca 43) con E_dyn CV 0,9833; L0 a (1e-4, epoca 10) con 0,9458.
+   - Tetto teorico sui val dinamici (ESEGUITO, synth_oracle.py): 0,8539, quindi un lettore ideale potrebbe migliorare L0 (0,9357 sui val
+     dopo rifit) dell'8,7% (CALCOLATO).
+   - Analogo del contrasto primario nel CV, alle epoche scelte: 100 x (0,9458 - 0,9833)/0,9458 = -4,0% (CALCOLATO): la regola di PROT:96
+     lo chiamerebbe «deterioramento pratico» se l'intervallo lo seguisse, in un mondo dove la risposta giusta e' l'opposta.
+   - Ricetta completa, rifit e lettura dei val sintetici (ESEGUITO): L0 E_dyn 0,9357 (MSE 0,8545); TCN E_dyn 0,9848 (MSE 0,9190), con
+     l'oracolo di E_dyn del rifit all'epoca 50, l'ultima (0,9834); ridge 0,9562. Analogo del primario: 100 x (0,9357 - 0,9848)/0,9357 =
+     -5,2% (CALCOLATO), mentre il tetto teorico consentirebbe fino a +8,7%.
+   - Non e' (solo) l'inizializzazione: ESEGUITO (synth_tcn_init.py, allena il fold 0 e legge il fold 1, 50 epoche) L0 a 1e-4: E_dyn
+     minimo 0,9413 (epoca 15); TCN standard a 1e-3: 0,9782 (epoca 30), loss train all'epoca 50 0,5875 contro MSE held 0,9115; TCN con
+     inizializzazione che conserva il segnale: 0,9857 a 1e-3 (epoca 8, loss train 0,4994 all'epoca 50) e 0,9766 a 1e-4 (all'epoca 50,
+     l'ultima). Il limite dominante e' la generalizzazione da 20 utenti con regolarizzazione quasi nulla: la TCN impara prima il livello
+     delle finestre di training e poco la dinamica.
+   - L'informazione temporale e' pero' imparabile da 20 utenti da un lettore regolarizzato: ESEGUITO (synth_lag_ridge.py, stesso fold)
+     ridge in forma chiusa con ritardi -6, -4, ..., +6 (2.688 feature): all'alpha migliore per MSE (1e6) MSE 0,8454 ed E_dyn 0,9163,
+     contro la ridge istantanea 0,8557 e 0,9457 (alpha 1e5) e L0 0,9413: +2,7% rispetto a L0 (CALCOLATO), mentre la TCN con la ricetta
+     proposta e' a -3,9% (0,9782). Qui alpha e' scelto sul fold letto (diagnostica di imparabilita', ottimista per la ridge); la
+     conclusione non dipende da questo, perche' anche alpha 1e5 o 1e6 danno E_dyn 0,9113-0,9163. Il divario e' dunque della ricetta
+     della TCN, non dei dati.
+Meccanismo, non numeri veri: con 20-40 utenti, regolarizzazione quasi nulla (h-2), inizializzazione standard, uscita a zero e LR costante
+<= 1e-3, le teste a sei strati imparano poco della parte dinamica e vanno in overfitting sul livello, mentre L0 la impara in 10-25
+epoche. Il contrasto primario TCN-post/L0 misurerebbe soprattutto questo, e PROT:96-98 lo leggerebbe come esito negativo o inconclusivo
+che chiude la prova, con ricadute sulla scelta del livello B (PROT:118). Sui dati veri l'effetto puo' essere minore o maggiore: proprio
+per questo serve una prova prima dei fit, non dopo.
+[fix] Prima del congelamento, tutto sul solo train e uguale per tutte le teste (scelte di GPT, firma di Simone):
+ (i) controllo positivo della ricetta sui latenti veri del train: un bersaglio sintetico ottenuto da una funzione temporale non lineare
+     nota dei latenti lat delle 1.907 finestre (per esempio una TCN casuale con campo ricettivo 13, piu' rumore fissato prima, per esempio
+     tale che la ridge abbia sul bersaglio sintetico la stessa MSE CV della ridge vera, 0,6561), con fold, loss e ricetta identici; la
+     ricetta e' ammessa solo se la TCN batte L0 su E_dyn interna di almeno il 2%. Nessuna lettura val; costo di pochi fit;
+ (ii) regola di convergenza scritta prima e simmetrica a quella della ridge: almeno tre LR (per esempio 1e-4, 3e-4, 1e-3, 3e-3) con
+     un'estensione predichiarata se il migliore e' al bordo, un'estensione unica delle epoche se il migliore cade nelle ultime cinque,
+     l'epoca 1 riportata come bordo inferiore;
+ (iii) regola di lettura: una testa ancora al bordo dopo le estensioni, o che non supera (i), e' «non a convergenza»: i suoi contrasti
+     non si leggono come esito negativo e la prova non si chiude come nulla per quella testa.
+Se il controllo (i) fallisce sui latenti veri, la prova non va lanciata cosi': servono una regolarizzazione effettiva o teste piu'
+piccole, cioe' un cambio della specifica (verdetto 1) da decidere prima, non dopo. Nel sintetico la sola inizializzazione che conserva
+il segnale non basta (punto 4). Il costo cambia: lo ricalcola la voce dei costi.
+
+[e-5] Clipping a norma 1, LR costante senza warmup, ultimo batch conservato - REGGE
+[claim] PROT:65-66.
+[evidence] ESEGUITO nel sintetico (stessa ricetta): nessuna divergenza o NaN in 50 epoche per L0, MLP, TCN ai due LR, ne' nel mondo
+lineare ne' in quello temporale (controllo dei file rerun_L0/rerun_MLP/temporal_L0_TCN/budget_MLP e di r2_TCN del tentativo
+precedente: 3.384 valori di loss e metriche per epoca, tutti finiti); con AdamW il clipping globale riscala
+tutto il gradiente in modo uniforme e la normalizzazione per parametro ne annulla quasi l'effetto. L'ultimo batch piu' piccolo (circa 25 finestre su 32 nei fold) da' a quelle finestre un peso per
+passo 32/25 = 1,28 volte maggiore: trascurabile. LETTO: PROT:138 dichiara gia' che l'uscita a zero annulla i gradienti interni al primo
+passo.
+[fix] Nessuno.
+
+==================================================================================================================================
+STATO DEGLI ESPERIMENTI SINTETICI E PROVENIENZA (cartella work_selezione/)
+==================================================================================================================================
+- Rieseguiti da me oggi (ESEGUITO): synth_selection.py --arms L0 e --arms MLP con --sig-n 0.6 --sig-l 0.7 --sig-g 0.5 (rerun_L0.*,
+  rerun_MLP.*): identici a r2_L0.json e r2_MLP.json del tentativo precedente in tutte le curve (confronto dei dizionari arms senza il
+  campo seconds: uguali).
+- Del tentativo precedente, lasciato finire senza rilancio (LETTO, «tentativo precedente»): r2_TCN.* (processo 36601, «fatto in
+  2566s», terminato verso le 10:00). Stesso file di script (ultima modifica 09:17:25, stesso secondo dell'avvio dei processi; i miei
+  rilanci di L0 e MLP col file attuale riproducono i risultati, quindi lo script e' quello che dice di essere per quelle teste; per la
+  TCN non l'ho rilanciato nel mondo lineare).
+- L13 (processo 36605, tentativo precedente): selezione CV completata alle 10:37 (righe di r2_L13.log usate in e-3, LETTO); il rifit
+  non poteva finire entro le 10:45 (la sola CV dei due LR ha richiesto 4.804 s cumulativi): fermato con kill alle 10:45:02 e dichiarato
+  INCOMPLETO per il rifit (r2_L13.json contiene solo la parte ridge). Il risultato chiave e' stato riprodotto da me su un fold
+  (synth_l13_fold.py, ESEGUITO).
+- Rilancio ridotto mio (ESEGUITO): synth_l13_fold.py (l13_fold.*).
+- Miei (ESEGUITO): init_signal.py (segnale all'inizializzazione), synth_temporal.py (mondo temporale, L0 e TCN con ricetta completa e
+  rifit: temporal_L0_TCN.*), synth_budget.py (MLP a 150 epoche e con inizializzazione che conserva il segnale: budget_MLP.*),
+  synth_oracle.py (tetto teorico di E_dyn; verifica che i dati coincidano con synth_selection.generate: si'), synth_tcn_init.py
+  (TCN con le due inizializzazioni nel mondo temporale: tcn_init_temporal.*), synth_lag_ridge.py (ridge con ritardi:
+  lag_ridge_temporal.log); check_key_time_valid.py e inspect_*.py del tentativo precedente, riletti e rieseguiti.
+- Le teste sintetiche hanno esattamente i parametri della proposta (ESEGUITO: L0 8.468, MLP 65.300, L13 100.628, TCN 65.204).
+
+==================================================================================================================================
+NON VERIFICABILE DA QUI
+==================================================================================================================================
+1. Integrita' attuale dei cinque file su WORK: gli sha256 non sono stati ricalcolati oggi (solo i byte, da Claude con ls -l); nessun
+   accesso a Leonardo.
+2. Contenuto dei NPZ (forma effettiva delle predizioni storiche, finestre per fold, finestre train senza centri validi, passi per epoca
+   reali): solo da codice e ricevute.
+3. Comportamento delle teste vere sui latenti veri: le prove di e-4 sono sintetiche e analitiche; per questo il rimedio (i) e' un
+   controllo sui latenti veri del train.
+4. Costo degli algoritmi deterministici per la nuova TCN su GPU: misurato solo per la TEMPONet raw.
+5. Riproducibilita' bit per bit su GPU dei fit di selezione.
+
+==================================================================================================================================
+VERDETTO DELLA DIMENSIONE 3 (dati, supporto e selezione): DA_RIVEDERE
+==================================================================================================================================
+Regge (con prove): identita' di cache e riferimenti (conteggi, byte, sha256, ricevute, manifest della copia); campi della cache;
+supporto identico allo storico (crop6, 148 centri, tutte le finestre da 160 patch, 8.327 finestre dinamiche supportate, appaiamento
+gia' imposto dal codice del lungo); stessa riduzione della loss del pretraining; statistiche di posa del train158 senza i val; fold
+alternati come la ridge; nessuna fuga dai 15 val; benchmark train-only; regole congelate (crop6, soglia, bootstrap) rispettate;
+risposte alla domanda 4 del prompt di Claude; L0 con AdamW raggiunge la ridge entro 50 epoche (sintetico).
+
+Bloccante 1 (selezione-1 = e-4): con la ricetta proposta (inizializzazione standard, uscita a zero, AdamW a 1e-4 o 1e-3 costante,
+50 epoche, regolarizzazione quasi nulla, due soli LR) le teste a sei strati possono non arrivare al loro ottimo; nel sintetico la TCN
+perde contro L0 anche dove ha per costruzione informazione in piu' (-5,2% dopo il rifit nel mondo temporale, con un tetto teorico di
++8,7% e una ridge con ritardi a +2,7% sullo stesso fold). La proposta non ha ne' un controllo di potenza della ricetta ne' una regola di
+convergenza simmetrica a quella della ridge storica, e leggerebbe l'esito come negativo o inconclusivo che chiude la prova. Rimedio:
+controllo positivo sui latenti veri del train, regola di convergenza e regola di lettura scritte prima dei fit.
+
+Bloccante 2 (selezione-2 = e-3): la scelta di LR ed epoca sulla MSE totale, dominata dal livello (54-66% della MSE dei lettori storici
+sui val), ferma le teste ad alta capacita' prima che imparino la dinamica: nel sintetico L13 verrebbe scelto all'epoca 1 con E_dyn
+0,8901 contro il suo ottimo 0,7955 (+11,9%, rilancio mio; +12,0% nel processo del tentativo precedente), cioe' peggio di L0 quando al
+suo ottimo lo batterebbe. La distorsione dipende dalla testa e puo' rovesciare i contrasti 1-3. Rimedio: scelta su E_dyn interna
+(train-only) con livello/MAE come secondari, oppure una regola scritta prima per i casi di disaccordo.
+
+Minori: a-3 (pin di contenuto e controllo di riproduzione dei riferimenti), e-2 (passi raddoppiati nel rifit, da dichiarare), f-1
+(valutazione held in eval a fine epoca), f-2 (derivazione dei semi e politica di determinismo su GPU).
+Note: a-2 (4,720 GiB sono le sole cache; 5,328 con i riferimenti), a-4 e d-1 (pin del ponte SCRATCH->WORK e delle liste di utenti),
+b-2 e b-3 (dichiarare N = 160 e contare le finestre train senza centri prima dei fit), c-1 e c-2 (supporto e pesi della loss storica
+contro la metrica), h-2 (il weight decay 0,01 non regolarizza: il regolarizzatore effettivo e' l'arresto).
+
+
+Corrispondenza con l'oggetto strutturato: selezione-1 = e-4; selezione-2 = e-3 (con c-2); selezione-3 = a-3; selezione-4 = e-2;
+selezione-5 = f-1; selezione-6 = f-2; selezione-7 = a-2; selezione-8 = a-4 e d-1; selezione-9 = b-2 e b-3; selezione-10 = c-1;
+selezione-11 = h-2 (con la nota di e-1 sul bordo inferiore dell'epoca). Processi del tentativo precedente: 36601 terminato da solo verso
+le 10:00, 36605 fermato alle 10:45:02 (rifit di L13 incompleto). Nessun file del repository, dello snapshot o di altri worktree e'
+stato modificato; nessuna rete, nessun job, nessun ssh.

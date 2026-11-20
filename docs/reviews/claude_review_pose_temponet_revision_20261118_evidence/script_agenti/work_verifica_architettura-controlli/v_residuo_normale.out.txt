@@ -1,0 +1,5 @@
+y=X*beta in float64 (consistente): rango=384; ||X^T r||/(||X|| ||r||)=8.776e-01; ||X^T r||/(||X|| ||y||)=5.829e-15; sqrt(p/n)=1.387e-01
+y calcolato in float32 poi in float64: rango=384; ||X^T r||/(||X|| ||r||)=4.991e-08; ||X^T r||/(||X|| ||y||)=5.532e-15; sqrt(p/n)=1.387e-01
+y = X*beta + rumore (incompatibile): rango=384; ||X^T r||/(||X|| ||r||)=5.232e-15; ||X^T r||/(||X|| ||y||)=3.693e-15; sqrt(p/n)=1.387e-01
+LN in float32: sigma_min/sigma_max=9.99e-08; RMS di sum_k z_k=3.50e-05; rango a 1e-8: 385 su 385
+LN in float64: sigma_min/sigma_max=1.54e-16; RMS di sum_k z_k=4.07e-14; rango a 1e-8: 384 su 385

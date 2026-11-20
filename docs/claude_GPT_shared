@@ -8427,6 +8427,477 @@ Copertura combinata3344casi, nessuno irrisolto o saltato; non è una seconda sui
 Report `docs/reviews/integration_main_20261106.md` e prove in `results/infra/integration_main_20261106/`.
 Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione sul cluster.
 
+### 2026-11-09 | Claude | Baseline TEMPONet: replica su NinaPro DB8 preparata (codice, test, criterio congelato); nessun job ancora | Ramo `claude/temponet-db8-20261109`, base main e114a78
+
+- Mandato di Simone del 09/11 (citazione in `docs/decisioni.md`): «in autonomia testiamo la TCN temponet [...] replichi i risultati per un task
+  di regressione (guarda prevlentemente i lavori di zanghieri e orlandi)». E' la baseline «CNN/TCN da zero» dell'harness v10; attivita' fuori
+  dalle tre linee, codice e operazioni a Claude, worktree separato `.claude/worktrees/claude-temponet`.
+- Fonti lette (postprint IRIS Unibo): Zanghieri et al. COINS 2021 (TEMPONet di regressione su DB8, MAE 6,89 gradi int8, Tab. I), TBioCAS 2020
+  (TEMPONet originale), IWASI 2023 (passo d'inferenza 16 ms, 6,89 ± 2,08), TBioCAS 2024 con Orlandi (HYSER, forza, rete diversa); Krasoulis et
+  al. 2019 e Data Sheet 1 (matrice delle 5 DoA, eq. S2). Codice: nessun repository pubblico della TEMPONet di regressione; letti in sola lettura
+  `pulp-bio/event-based-semg-regression` (caricatore DB8 e matrice DoA degli autori) e `EmbeddedML-EDAGroup/Q-PPG` (TEMPONet PyTorch di Burrello).
+- Reimplementazione: `src/wearusfm/model/temponet.py` (70.917 parametri = i 70,9 kB int8 del paper con la lettura documentata),
+  `src/wearusfm/harness/db8_regression.py` (DoA, finestre, EMA, alpha, metriche), `scripts/temponet_db8_cache.py`, `scripts/temponet_db8.py`,
+  `scripts/temponet_db8_summary.py`, launcher `scripts/slurm/temponet_db8_cache.sbatch` e `temponet_db8.sbatch`; protocollo e undici scelte
+  dichiarate in `docs/temponet_db8_replication.md`.
+- Grandezza primaria e criterio congelati in `docs/decisioni.md` prima di qualunque job: MAE test A3 dopo EMA su 12 soggetti x 5 DoA x 2 fold x
+  3 semi, riferimento 6,89, tolleranza ±0,30. Tetto dell'attivita' 5 GPU-ore e 40 core-ore; ogni job sotto le 5 GPU-ore.
+- Test: 26 nuovi in `tests/cpu` (modello, regressione DB8, catena cache -> training -> sintesi su dati finti), tutti passati; esito della suite
+  completa nella voce successiva. Nessun deploy, nessun job in questa voce.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: checkout e primo job di cache; cache fermata dal controllo dei valori non finiti, corretta | Codice 60b35bd, poi la correzione di questa voce
+
+- Deploy `deploy/temponet-db8-20261109` = 60b35bd; checkout `TEMPONET-DB8-checkout-20261109` = 63985167, COMPLETED 0:0 in 36 s
+  (`$WORK/wearusfm_campaigns/temponet-db8-60b35bd`).
+- Cache `TEMPONET-DB8-cache-20261109` = 63985267: FAILED 1:0 dopo 52 s, 4 minuti di CPU, MaxRSS 18,5 GB; 28 acquisizioni su 36 scritte in
+  `$SCRATCH/wearusfm_runs/temponet_db8/cache_v1` (parziale: non si usa). Causa: il controllo dei valori non finiti di `to_cache_arrays`.
+- Diagnosi in sola lettura degli otto file non scritti (lettura di pochi secondi sul login node, `ulimit -t 300`): l'unico campione non finito
+  di DB8 e' l'ultimo di `S5_E1_A1` (NaN nelle 18 colonne del guanto); gli altri sette sono puliti e non erano stati scritti solo perche' il
+  pool si e' fermato. Gli altri 28 avevano gia' superato il controllo nel job.
+- Correzione: `finite_length`/`trim_raw` in `harness/db8_regression.py` scartano una coda finale non finita di al massimo 1 s e la registrano
+  nel manifest (`n_samples_source`, `trimmed_tail_samples`); un valore non finito interno o una coda piu' lunga restano errori. Tre test nuovi
+  (29 in tutto per la replica, passati). Nessun effetto sul criterio congelato. Prossimi: nuovo deploy e checkout, cache in `cache_v2`.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: cache di DB8 pronta (63985594); ingresso in microvolt deciso sulle statistiche della cache, prima di ogni training | Codice 97bb97a, poi questa voce
+
+- Deploy `deploy/temponet-db8-20261109-v2` = 97bb97a; checkout 63985538 COMPLETED 0:0 (29 s); cache `TEMPONET-DB8-cache-20261109-v2` =
+  63985594 COMPLETED 0:0 in 47 s (4 min 38 s di CPU, MaxRSS 20,3 GB, 8 CPU): 36 acquisizioni, 5,0 GB in
+  `$SCRATCH/wearusfm_runs/temponet_db8/cache_v2`, tagliato un solo campione (S5 A1). Manifest copiato in
+  `results/temponet_db8/cache_v2_manifest.json` (solo statistiche e sha256, nessun segnale).
+- Statistiche: EMG con deviazione standard mediana 12,5 microvolt (5° percentile 3,7; 95° 41,4); canali vuoti degli amputati come
+  nell'ingest (S11 14-16, S12 13-16); nove movimenti, A1/A2 con 10 ripetizioni (S5 A1 piu' corta, 3 per almeno un movimento; A2 fino a 11),
+  A3 con 2.
+- Unita' dell'ingresso: da millivolt a **microvolt**. In millivolt la varianza dopo la prima convoluzione (~0,33 x var(x)) sarebbe ~5e-6 al 5°
+  percentile, sotto l'eps 1e-5 della BatchNorm; il documento lasciava l'unita' da confermare sulla cache. Cambio di scala costante, deciso sui
+  soli dati prima di qualunque training; criterio congelato invariato. 29 test della replica passati.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: collaudo 1 eseguito (63985852); training troppo lento con 4 processi e uscita ancora a zero dopo un'epoca; passo con CUDA graph e collaudo 2 preparati | Codice 985af8e, poi questa voce
+
+- `TEMPONET-DB8-smoke-20261109` = 63985852 (checkout 63985785, `deploy/temponet-db8-20261109-v3` = 985af8e), `boost_qos_dbg`, COMPLETED 0:0
+  in 8 min 15 s (0,14 GPU-ore): soggetti 1-4, seme 0, una epoca per modello, 4 processi sulla stessa GPU. Ricevute in
+  `results/temponet_db8/smoke_20261109/` (JSON e log; modelli e predizioni restano su $WORK).
+- Velocita': ~80 ms per passo per processo (20 ms aggregati), processi al 90-94% di CPU: senza MPS i contesti si alternano sulla GPU e i
+  kernel di TEMPONet sono minuscoli. Il run completo avrebbe richiesto ~20 ore invece di 2.
+- Apprendimento: dopo un'epoca la loss di training (22-25 gradi) coincide con la media dei |DoA| (per S2 25,8 contro 25,3): l'uscita e' ancora
+  vicina a zero. Con Adam a lr 1e-4 ogni peso si sposta al massimo di ~1e-4 per passo e un'epoca a passo 32 sono ~1.100 passi; il modello
+  `full` (doppi passi) e' gia' piu' basso. Lettura sulla sola loss di training, non sul test.
+- Modifiche: passo di training catturato in un CUDA graph (forward, backward e Adam `capturable`), un processo per GPU, controllo eager/graph
+  con dropout 0 e stessi batch (tolleranza 1e-5 sui parametri) e misura dei ms per passo; opzioni `--train-step` (passo delle finestre di
+  training, non dichiarato da [Z21]; validazione e test restano a 16 ms) e `--models`. 31 test della replica passati.
+- Collaudo 2 (prossimo, `boost_qos_dbg`): controllo eager/graph; S1, seme 0, tre modelli, 19 epoche a passo 32; S1 fold1 a passo 4. La scelta
+  del passo di training, se servira', si fara' sulla sola curva di validazione (dati di training) e si registrera' prima del run completo.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: collaudi 2 e 3, causa della lentezza trovata (cuDNN deterministico), emendamento prima del run completo | Codice 5e64f4e, poi questa voce
+
+- Collaudo 2 `TEMPONET-DB8-smoke2-20261109` = 63986820 (codice ff41dc9): controllo eager/graph esatto (differenza 0) ma 18,5 ms per passo in
+  eager e 14,6 col graph; annullato da me dopo 11 min 46 s perche' ridondante col collaudo 3 (nessuna ricevuta: l'unita' si salvava a fine).
+- Collaudo 3 `TEMPONET-DB8-smoke3-20261109` = 63987432 (codice 5e64f4e, cuDNN benchmark), COMPLETED 0:0 in 6 min 2 s. Profilo: con
+  `deterministic=True` le convoluzioni dilatate usano im2col/col2im di PyTorch; senza vincolo 4,1 ms in eager e 1,1 col graph. S1 seme 0 a
+  passo di training 32: 25 s per `fold1` (contro 421 s), validazione grezza ~11,5 dall'epoca 11; `fold1` a passo 4: ~10,3. Ricevute (JSON,
+  profilo) in `results/temponet_db8/smoke3_20261109/`.
+- Emendamento in `docs/decisioni.md` prima del run completo, criterio invariato: passo di training 8 (scelto sulla validazione, non sul test),
+  cuDNN non deterministico, `full` solo col seme 0, job da 3 ore. Speso finora 0,434 GPU-ore e ~0,26 core-ore CPU.
+- Suite CPU completa sul codice 60b35bd (lanciata sul Mac alle 13:55): 3.370 passati, 1 avviso, 44 min 58 s (3.344 di main + 26 nuovi).
+  33 test della replica passati sul codice di questa voce.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: run completo inviato (63988277) col protocollo emendato | Codice 92bceb5
+
+- Deploy `deploy/temponet-db8-20261109-v6` = 92bceb5; checkout `TEMPONET-DB8-checkout-20261109-v6` = 63988203 COMPLETED 0:0 (27 s,
+  `$WORK/wearusfm_campaigns/temponet-db8-92bceb5`).
+- `TEMPONET-DB8-full-20261109` = 63988277, 1 GPU, limite 3 ore, partito alle 14:52 su lrdn0001; cuDNN benchmark, passo di training 8, 12
+  soggetti x semi 0, 1, 2, `full` solo col seme 0, sintesi alla fine. Prime epoche: 4,7 s per 4.475 passi (1,05 ms per passo); stima ~2,5 ore.
+  Uscite in `$WORK/wearusfm_runs/temponet_db8/full_20261109`. Nessun altro job della replica in coda.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: sintesi con normodotati e amputati separati (richiesta di Simone), criterio invariato | Codice di questa voce
+
+- Simone: «si tieni separati normali e amputati» (dopo la domanda sul DB8: 10 normodotati S1-S10, 2 amputati transradiali S11-S12, fonte la
+  pagina ufficiale gia' citata nell'ingest). Aggiunti a `scripts/temponet_db8_summary.py` i gruppi (MAE dei fold con e senza EMA, `full`,
+  accuratezze, alpha, per seme e per DoA) e la marcatura degli amputati nella tabella per soggetto; un test nuovo (34 della replica).
+- Descrittivo: nessun verdetto per gruppo, criterio sui 12 soggetti invariato (voce in `docs/decisioni.md`). La sintesi si rifa' sul Mac sui
+  JSON del run 63988277 (in corso, 27 unita' su 36 alle 16:53); nessun deploy nuovo.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: run completo concluso (63988277), esito NON REPLICATA secondo il criterio; consuntivo | Codice 92bceb5
+
+- `TEMPONET-DB8-full-20261109` = 63988277: COMPLETED 0:0 in 2 h 28 min 21 s (2,47 GPU-ore, MaxRSS 6,7 GB), 36 unita' su 36. Ricevute in
+  `results/temponet_db8/full_20261109/`; sintesi rifatta sul Mac con i gruppi, identica a quella del job sulle chiavi comuni.
+- MAE primaria 8,795 gradi contro 6,89 ± 0,30: **non replicata**. Semi 8,754 / 8,877 / 8,755; dev. std. soggetto x DoA 2,21 (pubblicata 2,08);
+  accuratezze 0,691 e 0,822 (0,814 e 0,900); alpha 0,931 (0,862). Descrittivi: `full` col seme 0 7,778, migliore della media dei fold in 12
+  soggetti su 12; fold2 8,389 e fold1 9,202; normodotati 8,680, amputati 9,373 (S11 7,53, S12 11,22).
+- Consuntivo: 2,907 GPU-ore (23,25 ore locali) e 0,27 core-ore di job solo CPU, dentro il tetto di 5 GPU-ore e 40 core-ore. Nessun job in coda.
+- Nessun nuovo run senza diagnosi registrata (regola della voce del criterio). Ipotesi nel documento della replica; decisione a Simone.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: piano di diagnosi della distanza dal paper (proposta, nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Su richiesta di Simone («Yes, prepare it»): `docs/temponet_db8_diagnosis_plan.md`. Sei ipotesi (modelli finali sulle sessioni unite,
+  pipeline o dati diversi, bersaglio normalizzato, padding, dose di training, int8 esclusa) e quattro passi: 0) domanda agli autori, con bozza
+  per Zanghieri da far inviare a Simone; 1) baseline classiche di Tab. I (WL + SVR RBF e MLP) nei protocolli fold e full, solo CPU (≤ 32
+  core-ore), con lettura a cancelli contro 7,28 ± 0,30; 2) varianti della TCN V1 (bersaglio standardizzato), V3 (padding simmetrico), V13,
+  scelte solo in validazione contro la base gia' disponibile (9,906, run 63988277) con miglioramento minimo 0,20 (≤ 2,5 GPU-ore); 3) conferma
+  sul test una volta sola (≤ 3 o 4,5 GPU-ore), senza riscrivere il verdetto del run 63988277.
+- Serve un nuovo tetto GPU per l'attivita' (12 GPU-ore in tutto; le core-ore restano nel tetto di 40). Soglie e cancelli vincolanti solo
+  dopo l'approvazione, con voce in `docs/decisioni.md` prima del primo job.
+
+### 2026-11-09 | Claude | Baseline TEMPONet, diagnosi: piano approvato da Simone, codice dei passi 1-2 pronto, passo 1 inviato (64001955) | Codice 9584631
+
+- Simone: «Approve the plan» (domanda: piano e tetto di 12 GPU-ore). Cancelli, regola di scelta e tetto congelati in `docs/decisioni.md`
+  (bd06f10) prima di qualunque job. Il passo 0 (domanda agli autori, bozza nel piano) resta a Simone.
+- Codice: `scripts/db8_classical_baselines.py` (WL, SVR RBF con C per DoA scelto in validazione, MLP (100, 100, 100), protocolli fold e full,
+  cancello) e launcher CPU; `--target-norm` (V1), modo `screen` del launcher, `--hide-test-in-log`, `scripts/temponet_db8_screen.py` (solo
+  validazione, regola di scelta). 51 test della replica e della diagnosi passati. Prova locale dei tempi: SVR 3-7 s per fit su 11.500 finestre.
+- Deploy `deploy/temponet-db8-20261109-v7` = 9584631; checkout 64001887 COMPLETED 0:0 (36 s). Passo 1 `TEMPONET-DB8-classical-20261109` =
+  64001955, `lrd_all_serial`, 8 CPU, limite 4 ore (al massimo 32 core-ore), RUNNING su login08. Il passo 2 parte solo dopo il cancello.
+
+### 2026-11-09 | Claude | Baseline TEMPONet, diagnosi: passo 0 chiuso senza risposte degli autori; si procede coi passi 1-3
+
+- Simone: «non rispondono vai avanti». Il passo 0 (domanda agli autori) si chiude senza risposte; i passi 1-3 procedono coi cancelli congelati
+  (`docs/decisioni.md`, bd06f10). Passo 1 (64001955) alle 18:46: 8 soggetti su 12 finiti, ~35 min l'uno; cancello solo sui 12 soggetti.
+
+### 2026-11-09 | Claude | Baseline TEMPONet, diagnosi: passo 1 concluso (64001955), cancello «indizio H1»; passo 2 inviato (64005316) | Codice 9584631
+
+- Passo 1: COMPLETED 0:0 in 57 min 37 s, 7,68 core-ore allocate, 12 soggetti su 12; ricevute in `results/temponet_db8/classical_20261109/`.
+  SVR fold 8,279, SVR full 7,366 (pubblicata 7,28): cancello «indizio H1», i modelli del paper sarebbero allenati sulle sessioni unite.
+  MLP (descrittivo) fold 7,691, full 6,824 (pubblicato 7,14). Limiti: C = 100 (bordo della griglia) in 97 fit su 120; nessun MLP a convergenza.
+- Conseguenza congelata: passo 2 (screening V1, V3, V13 in validazione) inviato come `TEMPONET-DB8-screen-20261109` = 64005316, 1 GPU, limite
+  2 h 30 min; poi passo 3 con `full` come grandezza principale (fold e full x 3 semi). Spesa GPU finora 2,907 ore su 12.
+
+### 2026-11-09 | Claude | Baseline TEMPONet, diagnosi: passo 2 concluso (64005316), scelta V13; passo 3 inviato (64010753) | Codice 5a26a19
+
+- Passo 2: COMPLETED 0:0 in 1 h 52 min 14 s (1,871 GPU-ore), 72 modelli di fold su 72; ricevute di sola validazione in
+  `results/temponet_db8/screen_20261109/` (test chiuso fino al passo 3). Validazione (fold, EMA, seme 0): V0 9,906, V1 9,594, V3 9,941, V13 9,590.
+- Regola congelata: **V13** (guadagno 0,316 sopra la soglia di 0,20). V1 e V13 entro 0,005: il guadagno viene dal bersaglio standardizzato.
+- Passo 3 inviato come `TEMPONET-DB8-confirm-20261109` = 64010753: checkout `temponet-db8-5a26a19` (job 64005365), V13, fold e full x 3 semi,
+  `full` grandezza principale, limite 4 h 30 min. Spesa GPU finora 4,778 ore; col passo 3 al massimo 9,278 su 12.
+
+### 2026-11-10 | Claude | Baseline TEMPONet, diagnosi: passo 3 concluso (64010753), NON REPLICATA anche con V13 e `full` | Codice 5a26a19
+
+- Passo 3 COMPLETED 0:0 alle 00:34 del 10/11, durata 3 h 40 min 4 s (3,668 GPU-ore), 36 unita' su 36.
+- Ricevute in `results/temponet_db8/confirm_20261109/`: unita', `run.json`, sintesi del job e sintesi corretta.
+- MAE `full` con EMA **7,585** (semi 7,651 / 7,507 / 7,597) contro 6,89 ± 0,30: **non replicata** (+0,695); fold 8,509 (V0 8,795).
+  Ricalcolata a parte dalle unita'.
+- Normodotati 7,394, amputati 8,540; accuratezza 0,743 / 0,889; alpha 0,929.
+- Sintesi corretta, solo nella presentazione: con `--primary full` le righe descrittive erano del fold senza etichetta. Test d'uguaglianza
+  sulle ricevute reali; 53 test passati. Voce in `docs/decisioni.md`.
+- Consuntivo dell'attivita': 8,445 GPU-ore su 12, 8,04 core-ore su 40.
+- Il piano e' esaurito: altre varianti solo con una nuova proposta a Simone.
+
+### 2026-11-10 | Claude | Baseline TEMPONet: proposta H5 (schedule del learning rate) preparata, nessun job
+
+- Simone: «Sì, preparala», alla domanda «Preparo una proposta per H5 (dose e schedule del training)?». Documento
+  `docs/temponet_db8_h5_plan.md`.
+- La dose (19 epoche, batch 64) e il learning rate iniziale 1e-4 sono dichiarati da [Z21]. Restano liberi lo schedule («initial learning
+  rate») e il learning rate dell'epoca finale di QAT.
+- Varianti su V13: W1, annealing a coseno sulle 19 epoche; W2, 19 epoche costanti piu' un'epoca a 1e-5.
+- Passo A in validazione (≤ 1,75 GPU-ore): si sceglie una variante solo se migliora di almeno 0,20 la base V13 (9,628, media di due esecuzioni
+  col seme 0). Passo B di conferma (≤ 4,5 GPU-ore) solo in quel caso. Nuovo tetto proposto: 15 GPU-ore in tutto.
+- Curve del passo 3: con V13 la validazione e' piatta dall'epoca 5 e oscilla di ~0,5 fra un'epoca e l'altra. Lo stesso seme ripetuto
+  differisce di 0,076. Per rientrare nella tolleranza servono −0,40 sul `full`: l'esito piu' probabile e' una baseline un po' piu' forte, non la
+  replica.
+
+### 2026-11-10 | Claude | Baseline TEMPONet, H5 approvata: regola congelata, codice f830b9f, passo A inviato (64062336) | Codice f830b9f
+
+- Simone: «Approvo», alla domanda «Approvi la proposta H5 con il nuovo tetto di 15 GPU-ore?». Voce in `docs/decisioni.md` (028616c) prima del
+  primo job: W1 coseno, W2 epoca finale a 1e-5, base V13 9,628, soglia 0,20, tetto 15 GPU-ore.
+- Codice: `--lr-schedule`, `--final-epochs`, `--final-lr` (58132b4). Con uno schedule il learning rate e' un tensore riscritto prima di ogni
+  passo e letto dal CUDA graph; nel PyTorch di Leonardo il ramo capturable foreach lo divide con `_foreach_div_` a tensore, senza conversione
+  in numero. Col learning rate costante il percorso resta quello di prima. Controllo eager/graph con lo schedule compresso nei suoi 60 passi.
+- Correzione prima del lancio (f830b9f): un controllo fallito faceva fallire solo la prima unita' e le altre partivano comunque; ora il run si
+  ferma prima di allenare. Il checkout di 58132b4 (job 64061858) non si usa.
+- Test: 35 TEMPONet e 11 baseline classiche passati; con la regola della diagnosi lo screening da' uscite identiche byte per byte.
+- Checkout `temponet-db8-f830b9f` (job 64062227); passo A inviato come `TEMPONET-DB8-h5screen-20261110` = 64062336, 1 GPU, limite 1 h 45 min.
+  Spesa GPU finora 8,445 ore; col passo A al massimo 10,195 su 15.
+
+### 2026-11-10 | Claude | Baseline TEMPONet, H5: passo A concluso (64062336), nessuna variante sopra la soglia; replica chiusa a 7,585 | Codice f830b9f
+
+- Passo A `COMPLETED 0:0` in 1 h 32 min 18 s (1,538 GPU-ore), 48 modelli di fold su 48. Controllo eager/graph con lo schedule: differenza 0 in
+  W1 (60 valori del learning rate) e in W2 (1e-4 e 1e-5).
+- Validazione (fold, EMA, seme 0): W1 9,566, W2 9,531, base V13 9,628. Guadagno massimo 0,097, sotto la soglia di 0,20: resta V13, il passo B
+  non si fa. Ricevute di sola validazione in `results/temponet_db8/h5_screen_20261110/`; il test dei 48 modelli resta non letto.
+- La replica si chiude a 7,585 (V13, `full`, tre semi): non replicata. Esito in `docs/temponet_db8_h5_plan.md` e `docs/decisioni.md`.
+- Consuntivo dell'attivita': 9,983 GPU-ore su 15, 8,07 core-ore su 40. Il piano H5 e' esaurito.
+
+### 2026-11-10 | Claude | Baseline TEMPONet: conclusioni della replica (proposta, da firmare)
+
+- Simone: «quindi tiriamole conclusioni». Sezione «Conclusioni» in `docs/temponet_db8_replication.md`.
+- Non replicata: 7,585 gradi contro 6,89 (+0,70) con la catena piu' fedele (V13, `full`, 3 semi). La catena regge: la SVR fa 7,37 contro 7,28.
+- Dal primo run: protocollo −1,02, V13 −0,13 a parita' di seme, schedule del learning rate ≤ 0,10 in validazione. Restano +0,70 propri del
+  training della TCN: con la stessa catena l'MLP su WL fa 6,82.
+- Per il progetto: come baseline va riportata la misura nostra, distinta dal valore pubblicato; l'MLP su WL va tenuto accanto; nei confronti
+  su DB8 il protocollo fold/`full` va fissato.
+
+### 2026-11-10 | Claude | Baseline TEMPONet: conclusioni della replica FIRMATE da Simone; attivita' chiusa
+
+- Simone: «Sì, firmo», alla domanda «Firmi queste conclusioni?». Firma registrata in `docs/decisioni.md`; la sezione «Conclusioni» di
+  `docs/temponet_db8_replication.md` (testo di b507712) e' segnata come firmata.
+- Esito firmato: non replicata, 7,585 gradi contro 6,89; catena verificata dalla SVR; come baseline dell'harness si riporta la misura nostra,
+  distinta dal valore pubblicato, con l'MLP su WL accanto.
+- Attivita' chiusa: 9,983 GPU-ore su 15, 8,07 core-ore su 40. Nessun job aperto.
+
+### 2026-11-10 | Claude | TEMPONet su emg2pose: proposta preparata, nessun job
+
+- Simone: «Sì, preparala», alla domanda «Preparo la proposta per TEMPONet su emg2pose?». Documento `docs/temponet_emg2pose_plan.md`.
+- Misura nuova, non replica: nessun risultato pubblicato di TEMPONet su emg2pose (ricerca del 10/11). Riferimento: compito di regressione di
+  emg2pose (arXiv 2412.02725, Tab. 4), vemg2pose 12,2 / 15,2 / 15,8 gradi su utenti nuovi / fasi nuove / entrambi.
+- Protocollo ufficiale letto nel codice di emg2pose: finestre di 10.000 campioni dentro tratti senza fallimenti della cinematica inversa (righe
+  coi 20 angoli a zero); L1 sugli angoli; media e dev. std. fra utenti.
+- TEMPONet con la configurazione finale di DB8 (V13, 20 uscite, 71.412 parametri), un modello per i 158 utenti di training; EMA con alpha dalla
+  validazione; cancello prima del test (rapporto col predittore costante < 0,9 sulla validazione).
+- Passi: CPU per tratti e bersagli ufficiali, collaudo dbg, training col seme 0 (≤ 3,5 GPU-ore), valutazione; facoltativi i semi 1 e 2.
+  Tetto proposto 5 GPU-ore con un seme, 14 con tre. Due scelte a Simone: quando guardare il test e quanti semi.
+
+### 2026-11-10 | Claude | TEMPONet su emg2pose: proposta approvata, codice 9677e59 e 27d53b0, passo 0 e collaudo inviati
+
+- Simone: «Approvo», alla domanda «Approvi la proposta con un seme e il test subito dopo il cancello?». Voce in `docs/decisioni.md`
+  (9c0863b): tetto 5 GPU-ore e 10 core-ore; il passo 4 (semi 1 e 2) non e' approvato.
+- Emendamento prima del primo job (dbbcbf4), dalla rilettura di `test_analysis.py`: la finestra ufficiale comprende il contesto del modello.
+  Quindi 10.255 campioni a passo 10.000, con la fine dei tratti inclusa come in `get_contiguous_ones`. Cancello e letture invariati.
+- Codice: protocollo ufficiale e passo 0 (9677e59); training con l'EMG in RAM, raccolta in un thread e CUDA graph; valutazione con cancello
+  (27d53b0). Test: 13 nuovi, tra cui reimplementazioni letterali di `get_contiguous_ones` e `WindowedEmgDataset`; 71 insieme a DB8 e
+  all'ingest delle pose.
+- Passo 0 `TEMPONET-E2P-targets-20261110` = 64096497 (CPU, checkout `temponet-emg2pose-9677e59`), partito alle 19:03. Collaudo
+  `TEMPONET-E2P-smoke-20261110` = 64097115 in afterok (dbg, checkout `temponet-emg2pose-27d53b0`). Training e valutazione si inviano dopo la
+  lettura del collaudo.
+
+### 2026-11-11 | Claude | TEMPONet su emg2pose: rilancio del passo 0 approvato, in attesa del certificato
+
+- Simone: «Approvo», alla domanda «Approvi il rilancio del passo 0 (≤ 2 core-ore, passo 0 a ≤ 5,7)?». Voce in `docs/decisioni.md`.
+- Codice 0c19c4b, checkout `temponet-emg2pose-0c19c4b` (64120902) gia' pronto. Il certificato ssh e' scaduto alle 07:31 dell'11/11: il
+  rilancio e il collaudo in afterok si inviano dopo il rinnovo.
+- Dopo il rinnovo del certificato (11:20, valido fino alle 23:20): rilancio `TEMPONET-E2P-targets-20261111` = 64165740 (CPU, limite 1 h) e
+  collaudo `TEMPONET-E2P-smoke-20261111` = 64165743 in afterok (dbg, 30 min), entrambi dal checkout `temponet-emg2pose-0c19c4b`.
+
+### 2026-11-11 | Claude | TEMPONet su emg2pose: passo 0 (64165740) e collaudo (64165743) conclusi; training (64169771) e valutazione (64169772) inviati | Codice 0c19c4b
+
+- Passo 0: `COMPLETED 0:0` in 25 min 31 s; 8.117 registrazioni su 8.117, nessun problema, 137,6 GiB letti dal tar (indice in 477 s, poi circa
+  110 MB/s). Finestre ufficiali: validazione 12.468; test 48.299 (utenti nuovi 15.346, fasi nuove 29.146, utenti e fasi nuovi 3.807).
+  Scala: mediana delle deviazioni dei canali 13,15 unita' native, k = 0.
+- Allineamento: sui blocchi validi dell'ingest delle pose, lo scarto fra angolo esatto e media del blocco ha mediana 0,0018 rad (40
+  registrazioni, 318.000 istanti). Il massimo del manifest (2,06 rad) viene dai blocchi dentro il margine di 280 campioni (0,10% degli istanti),
+  che hanno media 0 o parziale. La valutazione usa gli angoli esatti.
+- Collaudo: `COMPLETED 0:0` in 7 min 13 s. Controllo eager/graph con differenza 0; 1,089 ms per passo a regime, quindi passo di training a 8
+  blocchi (regola meccanica, soglia 1,6 ms); 3,4 GB di memoria sul sottoinsieme. La valutazione sulla sola validazione funziona (12.468
+  finestre); il cancello col modello del collaudo e' 0,908, atteso e senza valore.
+- Inviati: training `TEMPONET-E2P-train-20261111` = 64169771 (3 h 30) e valutazione `TEMPONET-E2P-eval-20261111` = 64169772 in afterok
+  (45 min). Consumo finora: 4,58 core-ore su 10 (passo 0: 4,52 su 5,7) e 0,12 GPU-ore su 5.
+
+### 2026-11-11 | Claude | TEMPONet su emg2pose: training (64169771) e valutazione (64169772) conclusi; cancello superato, test letto una volta | Codice 0c19c4b
+
+- **Training:** `COMPLETED 0:0` in 3 h 04 min 46 s.
+  - 19 epoche da 328.746 passi, a 1,085 ms per passo.
+  - Controllo eager/graph: differenza 0.
+  - Memoria massima 78,15 GB.
+  - Validazione grezza per epoca da 16,00 a 15,63 gradi.
+- **Valutazione:** `COMPLETED 0:0` in 18 min 47 s.
+  - Cancello sulla validazione: 15,116 / 18,191 = 0,831 < 0,9, superato.
+  - Alpha dell'EMA per giunto da 0,89 a 0,97.
+- **Test, letto una volta.** MAE con EMA, media ± dev. std. fra utenti:
+  - `user` 14,55 ± 1,54;
+  - `stage` 17,67 ± 1,60;
+  - `user_stage` 17,60 ± 1,76.
+
+  In tutte e tre le condizioni cade fra NeuroPose e SensingDynamics della Tab. 4 di [E24], anche con l'uscita grezza (14,86, 18,06 e 17,97).
+- **Ricevute e documenti:** ricevute in `results/temponet_emg2pose/` (sha256 uguali a Leonardo); esito in `docs/temponet_emg2pose_plan.md`;
+  voce in `docs/decisioni.md`.
+- **Consuntivo:** 3,513 GPU-ore su 5 e 4,583 core-ore su 10. Il passo 4 non e' approvato.
+
+### 2026-11-12 | Claude | TEMPONet su emg2pose: conclusioni scritte per la firma di Simone | Ramo `claude/temponet-db8-20261109`
+
+- Simone: «Sì, scrivile», alla domanda «Scrivo le conclusioni col solo seme 0?». Sezione «Conclusioni» di `docs/temponet_emg2pose_plan.md`,
+  **non ancora firmata**.
+- **In sintesi:** misura nuova col seme 0, non una replica. `user` 14,55 ± 1,54, `stage` 17,67 ± 1,60, `user_stage` 17,60 ± 1,76: fra NeuroPose
+  e SensingDynamics, dietro vemg2pose di 1,8-2,5 gradi.
+- **Aperti:** seme unico (margine di 0,10 su NeuroPose in `user_stage`), contesto non isolato, confronto descrittivo.
+- **Per il progetto:** la misura nostra come baseline «CNN/TCN da zero» dell'harness su emg2pose. Nel confronto col FM, un solo insieme di
+  finestre e di istanti per tutti i modelli: nel codice ufficiale le finestre dipendono dal contesto di ciascun modello.
+- Test CPU rieseguiti prima di scrivere: 15 passati. Nessun job.
+
+### 2026-11-12 | Claude | TEMPONet su emg2pose: conclusioni FIRMATE da Simone; attivita' chiusa | Ramo `claude/temponet-db8-20261109`
+
+- Simone: «Sì, firmo», alla domanda «Firmi queste conclusioni?».
+  - La firma copre la sezione «Conclusioni» di `docs/temponet_emg2pose_plan.md` com'era in 255fc8e.
+  - Voce in `docs/decisioni.md`.
+- Baseline «CNN/TCN da zero» dell'harness su emg2pose: la misura nostra col seme 0, cioe' `user` 14,55, `stage` 17,67 e `user_stage` 17,60.
+  Protocollo ufficiale e seme unico vanno dichiarati.
+- Attivita' chiusa, nessun job aperto: 3,513 GPU-ore su 5 e 4,583 core-ore su 10. Il ramo non e' su `main`: l'integrazione spetta a GPT, se
+  richiesta.
+
+### 2026-11-16 | Claude | TEMPONet su DB8 ed emg2pose: grafici con stima, EMG grezzo e angoli del dataset per Simone (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Simone: «mi fai vedere un output della classificazione, con la stima degli angoli, il segnale emg raw e gli angoli del dataset, prendi una
+  parte in cui ci sono 4 0 5 ripetizioni di unsoggetto». Letta come la regressione di TEMPONet; poi «Su emg2pose» per lo stesso grafico li'.
+- **DB8.** Soggetto S3, mediano fra i normodotati, sul test (A3); modello `full`, seme 0, del run di conferma 64010753, con le predizioni
+  salvate dal run.
+  - Controlli: bersagli uguali alle DoA della cache (differenza 0); l'EMA ricalcolata ridà la MAE registrata (7,618).
+  - Tratti: 59-128,5 s (mov. 3-5) 5,68 gradi con EMA; 171-244 s (mov. 7-9, prese) 9,55, scelto dopo aver visto gli errori.
+- **emg2pose.** La valutazione 64169772 non salva le predizioni. Le ho ricalcolate sul Mac in float32 da `model_final.pt` (sha256
+  d2d4bed9...3582) con il codice 0c19c4b.
+  - Utente 0219627c14: mai visto in training, 11° di 20 in `user`; 88 registrazioni, 470 finestre ufficiali.
+  - Controllo contro `eval.json`, MAE dell'utente: con EMA 14,207819 sia sul Mac sia registrata (differenza 1,8e-7 gradi); grezza 1,4e-7;
+    costante 1e-14.
+- Tre tratti con 5 ripetizioni, numerate dalla salita di un giunto con una regola fissa nello script:
+  1. prese pollice-dita, 7,5-34 s: 13,58 gradi;
+  2. rotazioni del pollice, 44-46,8 s: 18,27 gradi;
+  3. flessioni delle dita, 30,2-36,6 s: 9,27 gradi. Scelto DOPO aver guardato le stime: viene dal secondo dei 167 tratti di 20 s per
+     correlazione fra stima e angolo.
+- Dati, script e immagini in `~/wearusfm_local/plots/` (`temponet_db8_S3_A3_20261116/`, `temponet_emg2pose_20261116/`), fuori dal repo
+  perche' sono dati da wearable. Nessun job; sul ramo cambia solo questo registro.
+
+### 2026-11-16 | Claude | TEMPONet come testa del FM: prompt per GPT coordinamento (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Simone: «ok, adesso prepapariamo unprompt per GPT in cui gli facciamo provare ad usare temponet come testa per la regressine nel
+  FM». E' la sua domanda del 06/11, rimasta ferma su «Dopo la lunga».
+- Prompt `docs/prompt_gpt_temponet_testa_fm_20261116.md`. Parte dalla sintesi di GPT coordinamento `8eba5e4` («La TEMPONet sui
+  latenti è ancora una domanda aperta»). Chiede una proposta di protocollo per la firma di Simone: livello A a encoder congelato,
+  livello B nel pretraining a parte. Affidamento del codice, operatore e budget restano a Simone. Nessun job, nessuna autorizzazione.
+- Fatti raccolti da sei lettori e controllati in due giri di verifica: 47 e 20 rilievi, nessuno bloccante. Applicati tutti, salvo
+  due tagli facoltativi. Fra i fatti messi nel prompt:
+  - il train delle cache del lungo e' lo stesso pannello alle tre dosi: 40 utenti, 200 registrazioni, 1.907 finestre;
+  - i 15 utenti val del FM sono lo split `val` ufficiale, gli stessi di TEMPONet raw;
+  - TEMPONet sui latenti cosi' com'e': T ≥ 38, campo ricettivo 9,45 s sulla griglia di 25 ms, primo blocco a 16 canali (meno dei 20
+    angoli), 76.788-105.460 parametri;
+  - ultimo saldo committato: 09/11, residuo 691.863 ore locali (`fccf88d`), da rileggere.
+
+### 2026-11-17 | Claude | Review della proposta GPT `c15aac9`: TCN come lettore della posa a encoder congelato (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: la proposta di GPT consolidamento `c15aac9` (ramo `codex/pose-temponet-proposal-20261117`, 17/11 alle 08:28, stato
+  REVIEW_REQUIRED), che risponde al prompt di Claude `8917e2a`. Il prompt di GPT per Claude chiedeva sei verdetti separati.
+- Review in `docs/reviews/claude_review_pose_temponet_proposal_20261117.md`; rapporti e script degli agenti in
+  `docs/reviews/claude_review_pose_temponet_proposal_20261117_evidence/`. Hanno lavorato sei revisori e tre verificatori
+  avversari. Tutto sul Mac, senza job: su CPU e, per alcuni micro-benchmark del costo, sulla GPU del Mac (MPS). L'unica lettura su
+  Leonardo è un `ls -l` dei cinque file di input.
+- Verdetti: domanda e architettura, controlli e attribuzione, criteri, costo e consegna APPROVATO CON CORREZIONI; selezione e
+  supporto DA RIVEDERE per un rilievo bloccante (S-1, voce nella sezione 2). In tutto 1 bloccante, 12 minori, 50 note e 1 rilievo
+  rifiutato.
+- Livello e impostazione coincidono con quanto concordato nella chat del 17/11: prima la TCN come lettore sull'encoder congelato,
+  accanto alla ridge e a una PoseHead rifittata; il pretraining con la TCN resta una prova separata e non automatica.
+- Il primo giro di agenti (09:01-09:26) si è fermato per il limite d'uso del modello, senza consegne. Il secondo (09:39-11:34) è
+  ripartito dai suoi script. Tre rilettori hanno confrontato la bozza con le fonti (72 segnalazioni, 6 errori distinti) e un
+  controllore ha verificato le correzioni (altri 15 problemi): tutto corretto prima del commit.
+- Punta del ramo di GPT controllata alle 09:37, alle 11:34 e alle 12:37, subito prima del commit: `c15aac9`.
+- Il prompt per GPT consolidamento è nella sezione 9 della review ed è stato consegnato a Simone.
+
+### 2026-11-17 | Claude | Controproposta di GPT sulla ricetta della TCN (S-1, A-1): accolta, con quattro punti da fissare nella revisione (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: la risposta di GPT consolidamento alla review `32e5452`, incollata in chat da Simone la sera del 17/11. GPT non ha
+  modificato file: il ramo `codex/pose-temponet-proposal-20261117` è ancora a `c15aac9` (controllato alle 19:51).
+- GPT accetta S-1 e propone: Kaiming negli strati nascosti, con bias nascosti e uscita a zero, uguale per MLP e TCN; LR 1e-4, 3e-4,
+  1e-3 e 3e-3, con un'estensione al bordo; 150 epoche e una sola continuazione fino a 300 se il minimo della MSE o dell'errore
+  dinamico interno cade nelle ultime cinque; controlli già nella prima epoca; esito «ottimizzazione non risolta entro il budget».
+  La selezione resta sulla sola MSE, con entrambe le curve pubblicate. Prima dei bersagli veri, due controlli positivi sui soli
+  `lat` di train: un bersaglio lineare noto e uno temporale non lineare noto. Ramo lineare a zero in TCN e MLP, allenato insieme da
+  zero e non dalla testa storica. Convergenza controllata anche per i comparatori. Preventivo da rifare.
+- Claude accoglie l'impianto e due correzioni di GPT alla review (voce nella sezione 2). Restano da fissare nella revisione, prima
+  dei fit:
+  1. controlli positivi: criterio legato al guadagno piantato, rumore tarato sui numeri veri, finestre dinamiche del bersaglio
+     sintetico, criterio anche per il controllo lineare, conseguenza del fallimento;
+  2. la regola di S-2 per l'epoca scelta lontana dall'ottimo dinamico interno, soprattutto per L13, e l'uso della soglia dinamica
+     nel trigger dell'estensione;
+  3. per L0 e L13, che sono lineari, la soluzione in forma chiusa sui fold come riferimento descrittivo della convergenza;
+  4. conseguenza del controllo nella prima epoca, epoche dei rifit dopo un'estensione, ramo lineare in TCN-pre o no, ramo lineare
+     sulla stessa LayerNorm di L0, nuovo oggetto del primario nella tabella del §10 (R-3) e nelle etichette (K-2).
+- Restano dovuti gli altri punti della review: C-1, C-2, C-3, R-1, R-2, P-1, K-1, K-3, le 50 note e la frase sulla dipendenza da
+  SCRATCH.
+- Le prove della review hanno provato un rimedio alla volta: la combinazione proposta da GPT non è stata provata in nessun mondo
+  sintetico. Conto grezzo di Claude dei passi, con tre teste per controllo: circa 531.000 senza estensioni e 1,26 milioni con
+  tutte, contro i 315.000 del conto di S-1. Col fattore 2 del gate sono 1,2-5,5 e 2,9-13 GPU-ore di soli passi, a 4,1 o 18,5 ms per
+  passo. La cifra vera viene dal benchmark.
+- Testo per GPT consegnato a Simone.
+
+### 2026-11-18 | Claude | Rilettura della revisione GPT `3e007c8` della proposta TCN: convergenza documentale non ancora raggiunta, tre blocchi di disegno (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: la revisione di GPT consolidamento `3e007c8` (contenuti in `62348ab`; ramo `codex/pose-temponet-proposal-20261117`,
+  stato REVIEW_REQUIRED). Risponde alla review `32e5452` e al seguito `8d34f9c`. Nel messaggio incollato da Simone il 18/11 GPT
+  chiedeva «l'ultima rilettura delle parti cambiate rispetto a c15aac9», su sei punti e sulle disposizioni dei 13 rilievi e delle
+  50 note.
+- Review in `docs/reviews/claude_review_pose_temponet_revision_20261118.md`; rapporti e script degli agenti in
+  `docs/reviews/claude_review_pose_temponet_revision_20261118_evidence/`. Hanno lavorato sei revisori e tre verificatori avversari,
+  tutto sul Mac su CPU: lettura, conti in forma chiusa, piccoli controlli numerici e controlli dei file, nessun esperimento.
+  L'unica lettura su Leonardo è un `ls -l` di tre file su SCRATCH.
+- Esito: convergenza documentale non ancora raggiunta; la tabella del §10 non è ancora pronta per Simone. I punti 1 e 4
+  convergono con correzioni, il 5 con correzioni obbligatorie, il 6 converge; le disposizioni sono complete e fedeli nel testo e
+  convergono con correzioni. I punti 2 e 3 hanno un blocco. In tutto tre blocchi di disegno (voce nella sezione 2), cinque
+  correzioni obbligatorie brevi (OB-1...OB-5) e le minori della sezione 5; per le note basta una riga di disposizione.
+- Seguito proposto: GPT corregge e pubblica un nuovo SHA. Claude rilegge solo le righe dei blocchi, delle correzioni obbligatorie
+  e delle minori, senza agenti; se reggono, dichiara la convergenza documentale e la tabella va a Simone. Le note si ricontrollano
+  alla review del pacchetto operativo, che viene dopo la firma.
+- Prima del commit la bozza è stata riletta contro le fonti da tre rilettori (48 segnalazioni), controllata da quattro
+  controllori con verificatori (43 segnalazioni, 42 confermate in tutto o in parte, più 3 nuove), poi da un ultimo controllo delle
+  parti cambiate (15 confermate in tutto o in parte, più una nuova) e da un rilettore finale (5 segnalazioni, un errore). Tutto
+  corretto.
+- Punta del ramo di GPT controllata alle 10:27, alle 11:46 e alle 15:21, subito prima del commit: `3e007c8`.
+- Il prompt per GPT consolidamento è nella sezione 10 della review ed è stato consegnato a Simone.
+
+### 2026-11-18 | Claude | TEMPONet su emg2pose: studio delle loss approvato (smooth L1, MSE, MSE + velocita'), codice, review, collaudo e invii di B e C | Ramo `claude/temponet-db8-20261109`
+
+- Richiesta di Simone: «vorrei studiare diversi tipi di loss per la regressione su temponet»; alla domanda «Approvi i tre bracci, smooth
+  L1, MSE e MSE più velocità, un seme, circa 12 GPU-ore?» risponde «Sì, approvo». Piano `docs/temponet_emg2pose_loss_plan_20261118.md`;
+  regole congelate in `docs/decisioni.md` (`2a2f7a6`) prima del collaudo, emendamenti dopo la review e prima dei training.
+- Codice `0342170`: `--loss {l1,smoothl1,mse,mse_vel}`. Le compagne per la velocita' finiscono 20 ms prima nella stessa registrazione;
+  la deviazione della velocita' viene dal training; Stepper, Feeder e controllo eager/graph gestiscono le compagne; sbatch con `LOSS`,
+  `TRAIN_TIME` e il modo `losssmoke`. 27 test CPU. Percorso L1 identico bit per bit a `ee118a2` su CPU
+  (`results/temponet_emg2pose/loss_study_20261118/`) e sulla GPU (somme del controllo eager/graph del collaudo uguali a quelle dell'11/11).
+- Review prima del lancio (workflow `wf_d4e7c261-7db`: critico e quattro lenti con verificatori). Il critico dice «DA RIVEDERE» per un
+  bloccante su D, il dropout con maschere indipendenti (voce nella sezione 2); B e C non hanno bloccanti. I minori sono recepiti negli
+  emendamenti di `docs/decisioni.md`.
+- Deploy `deploy/temponet-emg2pose-loss-20261118` = `0342170`. Checkout `temponet-emg2pose-loss-0342170` = 64774804, `COMPLETED 0:0`.
+  Collaudo 64775154, `COMPLETED 0:0`: controllo eager/graph a differenza 0 per le quattro loss, r = 1,355.
+- Inviati B e C con limite 04:30:00, valutazioni in `afterok`: ID nel ledger (`TEMPONET-E2P-loss-*-20261118`). D parte dopo la
+  correzione, un nuovo collaudo e la verifica mirata del critico.
+- Sessione sorella aperta su richiesta di Simone per la variante a blocchi residui (`temponet-residual`): registra le sue attivita'.
+
+### 2026-11-18 | Claude | Studio delle loss di TEMPONet: braccio D corretto (maschera del dropout condivisa), secondo collaudo, verifica del critico e invio di D | Ramo `claude/temponet-db8-20261109`
+
+- Correzione `584d4ab` del rilievo bloccante (voce nella sezione 2): `Stepper._pair_forward` usa una maschera del dropout per finestra e
+  compagna; `dropout_check` lo verifica nel CUDA graph del training. Ci sono anche gli args degli `eval.json`, il collaudo che prova
+  tutte le loss e 2 test nuovi (29 in tutto); il percorso L1 resta identico su CPU (`check_l1_identity`).
+- Deploy `deploy/temponet-emg2pose-loss-20261118-v2` = `584d4ab`. Checkout `temponet-emg2pose-loss-584d4ab` = 64776710 e secondo collaudo
+  64776819, entrambi `COMPLETED 0:0`: controllo eager/graph a differenza 0 per le quattro loss; controllo della maschera condivisa
+  superato (velocita' esattamente 0 con compagna = finestra, posa diversa fra i replay); MSE della velocita' alla prima epoca da 2,50 a
+  1,52; r = 1,380.
+- Verifica mirata del critico: APPROVATO, tre minori registrati in `docs/decisioni.md`. Il torch 2.2 di Leonardo ha lo stesso ramo di
+  Adam `capturable`: con lr 0 i pesi non cambiano.
+- D inviato con limite 05:00:00 (emendamento in `docs/decisioni.md`) e la sua valutazione in `afterok`; ID nel ledger. Spesa attesa
+  dello studio circa 11,1 GPU-ore, esposizione massima circa 16,4.
+
+### 2026-11-18 | Claude | Studio delle loss di TEMPONet: esito di B (smooth L1) e C (MSE) con la regola congelata; D in corso | Ramo `claude/temponet-db8-20261109`
+
+- Training B 64776546 e C 64776581 dal checkout `0342170`, `COMPLETED 0:0` in 10.392 e 10.339 s (caricamento 1.833 s), 19 epoche,
+  controllo eager/graph a differenza 0. Valutazioni 64776551 e 64776582 `COMPLETED 0:0` in 21 min; cancello superato (0,840 e 0,862;
+  A 0,831).
+- Test con EMA, media fra utenti, Δ rispetto ad A (L1, 14,55 / 17,67 / 17,60), regola di `docs/decisioni.md`:
+  - B smooth L1: user 14,75 (+0,20), stage 17,73 (+0,06), user_stage 17,67 (+0,07). Non distinguibile da L1 con un seme in tutte e tre.
+  - C MSE: user 15,05 (+0,50), stage 18,15 (+0,47), user_stage 18,15 (+0,55). Peggiore di L1 in tutte e tre, da confermare con altri
+    semi.
+  - Utenti migliori / peggiori rispetto ad A: B 1/19, 58/100, 7/13; C 0/20, 8/150, 2/18. Descrittivo: con un seme il modello e' lo
+    stesso per tutti gli utenti, quindi i conteggi non separano l'effetto della loss da quello del seme.
+- Raccolti sul Mac report, storie e log (senza checkpoint) in `results/temponet_emg2pose/loss_study_20261118/`; confronto in
+  `confronto_bc/`. D (training 64777099, valutazione 64777100) e' in corso; il certificato ssh e' stato rinnovato da Simone alle 21:50.
+
+### 2026-11-18 | Claude | Studio delle loss di TEMPONet concluso: L1 resta la migliore; smooth L1 non distinguibile, MSE e MSE + velocita' peggiori (un seme) | Ramo `claude/temponet-db8-20261109`
+
+- D: training 64777099 `COMPLETED 0:0` in 13.111 s, con il controllo della maschera condivisa superato nel job vero; valutazione
+  64777100 `COMPLETED 0:0`, cancello 0,888. Test con EMA: 15,64 / 18,53 / 18,45, cioe' +1,09 / +0,85 / +0,85 rispetto ad A: peggiore di
+  L1 in tutte e tre le condizioni, da confermare con altri semi.
+- Quadro finale con la regola congelata: B non distinguibile; C (+0,50 / +0,47 / +0,55) e D peggiori. Tabella, descrittivi e
+  consuntivo (10,52 GPU-ore) in `docs/decisioni.md`. Confronto in `results/temponet_emg2pose/loss_study_20261118/confronto/`.
+- Lettura di Claude, interpretazione e non verifica: la metrica e' un errore assoluto e la L1 lo ottimizza direttamente; piu' la loss
+  pesa gli errori grandi, piu' la MAE peggiora. In D l'MSE standardizzato della velocita' resta circa 1,2 per tutto il training: con
+  finestre di 128 ms la rete non predice la variazione su 20 ms, e il termine rende le uscite piu' lisce (guadagno dell'EMA da 0,21 a
+  0,10) a spese della posa.
+- Nessuna loss si adotta su un seme; nessun job aperto.
+
+### 2026-11-18 | Claude | TEMPONet su emg2pose: conferma con i semi 1 e 2 del confronto L1 / MSE approvata; regola corretta dopo la review, invii | Ramo `claude/temponet-db8-20261109`
+
+- Simone: «Sì, preparala», poi «Sì, approvo» alla conferma con i semi 1 e 2 (circa 13 GPU-ore). Proposta
+  `docs/temponet_emg2pose_loss_seeds_proposal_20261118.md` (`d0bf277`, con `SEED` nello sbatch).
+- Review prima del lancio (workflow `wf_27ae4d80-d4f`): il critico dice «DA RIVEDERE». Primo bloccante: la regola contava il seme 0,
+  cioe' il risultato da confermare, e ora si legge solo sui semi 1 e 2. Secondo bloccante: costi e tetto incompleti, ora completati.
+  Minori corretti: una `SEED` vuota nel ramo e' un errore; c'e' un controllo del seme dal `run.json` alla raccolta
+  (`scripts/temponet_emg2pose_seeds_compare.py`); la baseline firmata resta quella del seme 0. Regola e tetto (14 GPU-ore) congelati in
+  `docs/decisioni.md` prima del primo job.
+- Deploy `deploy/temponet-emg2pose-seeds-20261118` = `d0bf277`; checkout 64789455 `COMPLETED 0:0`. Al primo tentativo avevo scritto a
+  mano uno SHA completo sbagliato: il push e' stato rifiutato senza creare ref, poi e' stato rifatto con lo SHA risolto da `git rev-parse`.
+- Invii: L1 e MSE con i semi 1 e 2 e valutazioni in `afterok`; ID nel ledger (`TEMPONET-E2P-seeds-*-20261118`).
+
 
 ### 2026-11-18 | GPT — Target RMS100 per i prossimi training, richiesta di Simone
 
@@ -8489,6 +8960,236 @@ Review e prove: `docs/reviews/target_windows_integration_20261118.md`,
 Linea 3 preparata separatamente su `codex/contrastive-target-windows-20261118`: RMS100/fast125
 espliciti, nuove misure ancora da fare, nessun job. TCN e continuazione 300M storiche invariate.
 Su richiesta di Simone liberati 8,43 GiB di temporanei pytest inattivi; dati e checkpoint intatti.
+
+### 2026-11-19 | Claude | Conferma con i semi conclusa: MSE peggiore di L1 confermato in tutte e tre le condizioni (circa +0,4-0,5 gradi); tetto superato (16,96 su 14 GPU-ore) | Ramo `claude/temponet-db8-20261109`
+
+- Otto job `COMPLETED 0:0` dal checkout `d0bf277`; controlli di seme, loss e checkpoint superati con
+  `scripts/temponet_emg2pose_seeds_compare.py`.
+- Media dei semi 1 e 2 di Δ = MSE - L1: +0,44 / +0,42 / +0,50 (user / stage / user_stage), positiva in ogni seme. Lettura congelata:
+  confermato. L1 su tre semi 14,57 ± 0,02 / 17,72 ± 0,05 / 17,64 ± 0,06; deviazione dei Δ 0,033-0,037.
+- Tetto superato, voce nella sezione 2. Esito e consuntivo in `docs/decisioni.md`; dati in
+  `results/temponet_emg2pose/seeds_study_20261118/`.
+
+### 2026-11-19 | Claude | Rilettura della revisione v3 della proposta TCN: convergenza documentale sul protocollo v3 (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: revisione v3 di GPT (`pose-temponet-frozen-encoder-readout-20261117-v3`, ramo `codex/pose-temponet-proposal-20261117`):
+  contenuti `455b3220`, consegna con gli hash `0e56c8b1`, base del diff `3e007c8`. Risponde alla mia review `ee118a25`. Due
+  messaggi di GPT incollati da Simone il 19/11, coerenti fra loro, chiedevano la rilettura mirata di BL, OB e minori, senza job
+  né agenti; Simone: «se si megia ed esegui» (letto come: unire le due richieste in una sola rilettura).
+- Review in `docs/reviews/claude_review_pose_temponet_v3_20261119.md`, fatta da sola, senza agenti. SHA-256 di protocollo,
+  proposta e risposta rifatti: coincidono col pin. Punta del ramo di GPT ricontrollata prima del commit: `0e56c8b1`.
+- Esito: **Convergenza documentale sul protocollo v3**, senza blocchi residui. BL-1 (ridge come ancora, E_cal su `y`, E_cleanLS su
+  `y*`, tutto valutato su `y`, ridge al 90% del margine costante→oracolo e teste al 90% del margine costante→ridge), BL-2 (MLP
+  descrittiva in P, J e DEC) e BL-3 (tolleranza dello 0,5% sul bordo inferiore; S-2 compromesso) sono chiusi; chiusi anche
+  OB-1...OB-5 e le sei minori. Tre ritocchi di testo senza un nuovo giro (voce nella sezione 2).
+- La convergenza non rilascia invii: restano la review del pacchetto operativo (codice, test, piano eseguibile) e i gate.
+  Operatore della prova: 2-TCN head launcher. Prompt per GPT nella sezione 5 della review, consegnato a Simone.
+
+### 2026-11-19 | Claude | Review operativa del pacchetto TCN frozen `2f98211`: DA RIVEDERE prima del primo invio, quattro blocchi di runtime (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: pacchetto eseguibile di GPT del confronto delle teste di posa sul teacher T100-G 30M a 49.046 passi, ramo
+  `codex/pose-temponet-implementation-20261119`, consegna `2f982114`, codice `6283b5bd`, base `0e56c8b1`; richiesta di GPT
+  incollata da Simone il 19/11. SHA rivisto `2f982114719dc2abd723bdbf0147d7fef34a731c`: rispetto a `6283b5bd` cambia solo il pin,
+  e i 245 sorgenti sono identici.
+- Review in `docs/reviews/claude_review_pose_temponet_runtime_20261119.md`; prove, script, driver della catena e risultati in
+  `docs/reviews/claude_review_pose_temponet_runtime_20261119_evidence/`.
+- Metodo:
+  - test sul Mac: 204 nuovi passati; 5 file storici con 125 passati e 1 fallito preesistente; suite completa 2.569 passati su
+    2.570, con lo stesso fallimento;
+  - cinque revisori, ciascuno con un controllore avversario: 130 controlli, 23 rilievi (21 confermati, 1 incerto, 1 confutato);
+  - prova della catena intera dei 24 stadi con le funzioni vere, con B-4 corretto e B-2 aggirato in una copia, e lettura statica
+    del collegamento;
+  - rilettura della bozza contro le fonti: 33 segnalazioni, corrette.
+- Esito: **DA RIVEDERE prima del primo invio**. Quattro blocchi (B-1...B-4, voce nella sezione 2), sei importanti (I-1...I-6) e
+  alcune minori; il resto corrisponde al protocollo v3. Va corretto tutto in una revisione, perché dopo il primo invio un cambio
+  dei sorgenti invalida tutte le ricevute.
+- Seguito: GPT corregge con un test per ciascun punto, compreso il test della catena con le funzioni vere; io rileggo solo il diff,
+  senza agenti. Nessun lancio da parte mia; operatore 2-TCN head launcher. Prompt per GPT nella sezione 8, consegnato a Simone.
+
+### 2026-11-20 | Claude | Rilettura del diff runtime TCN `01252b6c`: APPROVATO, review operativa favorevole del pacchetto (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: la revisione di GPT seguita alla mia review operativa `527f8da`. Ramo `codex/pose-temponet-implementation-20261119`,
+  codice `01252b6c3023c49046b312e003b7915d8f3f6119`, consegna `aa3c8047` (solo il pin), `source_sha256`
+  `027bb7876b372ceb537610322c11f1903c8c2224abfca27484c403bbc297d732`; richiesta di GPT incollata da Simone il 20/11.
+- Review in `docs/reviews/claude_review_pose_temponet_runtime_rereview_20261120.md`: rilettura del solo diff `2f982114..01252b6c`,
+  senza agenti, come concordato.
+- Test riprodotti su un checkout isolato di `aa3c8047`:
+  - 263 TCN passati, compresa la catena dei 24 stadi con selezioni e rifit veri;
+  - 125 storici passati e lo stesso fallimento della base;
+  - suite completa 2.628 passati su 2.629;
+  - `bash -n` pulito sui tre launcher.
+- Esito: **APPROVATO**. B-1...B-4 e I-1...I-6 sono chiusi nel codice, ciascuno con un test; le minori sono corrette o dichiarate
+  come limiti operativi (L3-4, L3-8, L3-9). Ricetta, proposta, soglie e tetti invariati. La review nomina lo SHA del codice e il
+  `source_sha256`, come richiede `release-plan`.
+- Seguito: l'operatore 2-TCN head launcher procede con la sequenza e i gate del documento d'esecuzione. La review non attesta
+  tempi, memoria o determinismo su A100 né i gate sui dati veri. Nessun lancio da parte mia. Prompt per GPT nella sezione 4,
+  consegnato a Simone.
+
+### 2026-11-18 | Claude | TEMPONet residua su emg2pose: codice, test, piano e regola congelata prima del lancio; nessun job ancora | Ramo `claude/temponet-residual-419618`
+
+- Richiesta di Simone alla sessione di coordinamento: «apri un tuo fratello e fagli provare una versione della temponet in cui pero
+  inseriamo un residual block per ognuno dei 3 blocchi». A me, sullo schema di [Z20] Fig. 3 col gruppo «x 3» cerchiato: «io i residual li
+  metterei nel x3, in ognio blocco cerchiato».
+- Architettura, mia lettura: un salto attorno a ciascun blocco intero (le due dilatate, la convoluzione con stride, il pooling e la BN),
+  col ReLU dopo la somma. Il salto e' un AvgPool di 2 x stride, poi una 1x1 senza bias e una BN, anche nel blocco 1. 74.452 parametri
+  (+3.040). Col seme 0 i pesi in comune partono uguali alla L1. Il default resta identico bit per bit a `ee118a2`.
+- Codice in `18f2b69`, piu' in questo commit un commento dello sbatch e i test dello script in un file a parte: modello; `--arch`
+  nello script, scritta in `run.json` e riletta in valutazione; `ARCH` e `TRAIN_TIME` nello sbatch. 17 test CPU nuovi, in `test_temponet.py` e nel nuovo `test_temponet_emg2pose_residual.py`: 87 passati nei file di TEMPONet.
+- Piano `docs/temponet_emg2pose_residual_plan_20261118.md` e regola in `docs/decisioni.md`. Per ogni condizione, |Δ| ≤ 0,3 gradi
+  rispetto alla L1 = non distinguibile con un seme; oltre, segnale da confermare con piu' semi.
+- Critico: nessun problema nel codice e nella regola. «DA RIVEDERE» per la mancanza di questa voce e per quattro minori, tutti corretti
+  in questo commit: margine di 200 s e non 184, precisione di Δ, un commento dello sbatch, un test della logica bash.
+- Job previsti, nessuno inviato: checkout di campagna (CPU), training con limite 4:00, valutazione in afterok di 45 min. Tetto 4,75
+  GPU-ore, nessun collaudo.
+
+### 2026-11-18 | Claude | TEMPONet residua su emg2pose: critico APPROVATO; checkout (64775531), training (64775724) e valutazione (64775725) inviati | Codice 4c8bb84
+
+- Critico, riverifica delle correzioni in `4c8bb84`: «VERDETTO: APPROVATO», 87 test passati.
+- Rettifica della voce precedente. Il primo giro del critico non trovava problemi bloccanti nel codice e nella regola: il «DA RIVEDERE»
+  dipendeva solo dalla mancanza della voce. C'erano in piu' quattro minori, due dei quali sulla regola (precisione di Δ) e sullo sbatch
+  (commento e test), tutti corretti.
+- Rettifica di un mio messaggio al critico. I due test dello script spostati in `test_temponet_emg2pose_residual.py` non sono identici a
+  prima: ho tolto un `monkeypatch` inutilizzato, e il test confronta ora l'elenco delle chiavi dello stato invece della sola lunghezza.
+- Deploy: `deploy/temponet-emg2pose-res-20261118` = `4c8bb84` su Leonardo. Checkout `temponet-emg2pose-res-4c8bb84`, job
+  `TEMPONET-E2P-RES-checkout-20261118` = 64775531, `COMPLETED 0:0` in 1 min 11 s.
+- Inviati alle 18:40:
+  - training `TEMPONET-E2P-RES-train-20261118` = 64775724: 1 GPU, 4:00, `ARCH=residual`, `TRAIN_TIME=04:00:00`;
+  - valutazione `TEMPONET-E2P-RES-eval-20261118` = 64775725, in afterok: 45 min, `ARCH=residual`.
+
+  Uscite in `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/residual_20261118/`. Tetto 4,75 GPU-ore.
+- Raccolta e confronto con la L1, secondo la regola congelata, dopo il rinnovo del certificato (scade alle 23:01 del 18/11).
+
+### 2026-11-18 | Claude | TEMPONet residua su emg2pose: training (64775724) e valutazione (64775725) conclusi; non distinguibile dalla L1 con un seme | Codice 4c8bb84
+
+- Tutti `COMPLETED 0:0`. Training in 3 h 18 min 41 s: 19 epoche a 1,254 ms per passo, controllo eager/graph con differenza 0. Valutazione
+  in 11 min 56 s.
+- Cancello 0,829 < 0,9, superato (L1: 0,831).
+- **Test, letto una volta.** MAE con EMA, residua contro L1:
+
+  | Condizione | residua | L1 | Δ |
+  |---|---|---|---|
+  | `user` | 14,56 ± 1,57 | 14,55 ± 1,54 | +0,01 |
+  | `stage` | 17,62 ± 1,59 | 17,67 ± 1,60 | −0,06 |
+  | `user_stage` | 17,58 ± 1,86 | 17,60 ± 1,76 | −0,02 |
+
+  Secondo la regola congelata: **non distinguibile con un seme in tutte e tre le condizioni**. Rispetto alla Tab. 4 di [E24] resta
+  fra NeuroPose e SensingDynamics.
+- Descrittivi: uscita grezza con Δ −0,001 / −0,076 / −0,038; validazione grezza per epoca piu' bassa della L1 in 18 epoche su 19.
+- Ricevute in `results/temponet_emg2pose/residual_20261118/`, sha256 uguali a Leonardo. Esito nel piano e in `docs/decisioni.md`.
+- Suite CPU completa sul codice `18f2b69`: 3.435 passati, nessun fallimento.
+- Consuntivo: 3,510 GPU-ore sul tetto di 4,75; checkout 0,039 core-ore. Nessun job aperto.
+
+### 2026-11-18 | Claude | TEMPONet su emg2pose: proposta di un training lungo (100 epoche) per la firma di Simone; nessun job | Ramo `claude/temponet-residual-419618`
+
+- Simone: «19 epoche di training? non ono poxhine? soliamernte si fanno 100 almeno». Poi «Sì, preparala», alla domanda «Preparo una
+  proposta con un training piu' lungo?». Documento `docs/temponet_emg2pose_long_training_proposal_20261118.md`.
+- Un solo fattore, 100 epoche invece di 19; ricetta e valutazione come la L1. Si valutano sul test i checkpoint 19, 50 e 100 dello
+  stesso run, dichiarati prima e tutti riportati. Il confronto principale e' fra l'epoca 100 e la 19 dello stesso run, con la regola
+  ±0,3 gradi dello studio delle loss.
+- Opzioni: A, rete senza salti, al massimo 15,25 GPU-ore (consigliata); B, A piu' la residua, al massimo 32,5 GPU-ore. Restano 658.634
+  ore locali del progetto (`saldo -b`, 18/11 alle 23:26). Il job deve finire prima della manutenzione totale del 23-25/11.
+- Codice da aggiungere solo dopo l'approvazione: `EPOCHS` e due limiti nello sbatch, `--checkpoint` nella valutazione.
+
+### 2026-11-18 | Claude | TEMPONet su emg2pose, training lungo: APPROVATO da Simone (opzione B); codice, test e regole congelate; nessun job | Ramo `claude/temponet-residual-419618`
+
+- Simone: «Approvo B», alla domanda «Approvi l'opzione A con i tre checkpoint sul test?» (pulsanti «Sì, approvo A» e «Approvo B»).
+  Mia interpretazione: l'opzione B della proposta com'e', coi tre checkpoint e il tetto di 32,5 GPU-ore.
+- Codice `33cdfe7`:
+  - nello sbatch `EPOCHS` (default 19), i limiti 13:00 e 15:00 e `CHECKPOINT`;
+  - nella valutazione `--checkpoint epoch_NN.pt`.
+
+  I default restano invariati. 14 test CPU nuovi in `test_temponet_emg2pose_long.py`: 101 passati nei file di TEMPONet.
+- Regole in `docs/decisioni.md`. Principale: epoca 100 contro epoca 19 dello stesso run, ±0,3 gradi. Secondaria: residua contro senza
+  salti all'epoca 100.
+- Job previsti: checkout, due training (13:00 e 15:00) e sei valutazioni in afterok; tetto 32,5 GPU-ore. L'invio aspetta il rinnovo del
+  certificato, scaduto alle 23:01 del 18/11.
+
+### 2026-11-18 | Claude | TEMPONet su emg2pose, training lungo: critico APPROVATO, cinque minori corretti prima del lancio; nessun job | Ramo `claude/temponet-residual-419618`
+
+- Critico su `4a81293`: «VERDETTO: APPROVATO», con cinque minori, corretti in questo commit senza un nuovo giro.
+  - Regola: tolta l'etichetta «sovra-adattamento»; aggiunta come descrittivo la validazione grezza delle epoche vicine a 19, 50 e 100.
+  - Regola secondaria: tolto l'inciso sullo scopo dell'opzione B; aggiunta come descrittivo la differenza dei guadagni.
+  - Test: un training incompleto non si valuta, nemmeno con `--checkpoint`; i messaggi d'errore dello sbatch si confrontano per intero.
+  - Ripiego di `--val-only` su un training incompleto: l'ultima epoca si prende per numero e non per nome (con 100 epoche prendeva
+    `epoch_99.pt`).
+
+  Emendamento in `docs/decisioni.md`, prima di ogni dato dei run lunghi: soglie, confronti e tetto invariati.
+- Rettifica della voce precedente. I «101 passati nei file di TEMPONet» comprendevano `test_db8_classical_baselines.py` (11 test). Ora
+  sono 102 con quel file e 91 senza.
+
+### 2026-11-18 | Claude | TEMPONet su emg2pose, training lungo: checkout (64790540), due training e sei valutazioni inviati | Codice 32c5123
+
+- Deploy: `deploy/temponet-emg2pose-long-20261118` = `32c5123` su Leonardo. Checkout `temponet-emg2pose-long-32c5123`, job 64790540,
+  `COMPLETED 0:0` in 19 s.
+- Inviati alle 23:56:
+  - training senza salti `TEMPONET-E2P-LONG-train-plain-20261118` = 64790588: 100 epoche, limite 13:00;
+  - training residuo `TEMPONET-E2P-LONG-train-res-20261118` = 64790605: 100 epoche, limite 15:00;
+  - valutazioni in afterok (45 min l'una): senza salti 64790591 (epoca 19), 64790603 (50) e 64790604 (100); residua 64790608 (19),
+    64790609 (50) e 64790610 (100).
+
+  Uscite in `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/long_20261118/`. Tetto 32,5 GPU-ore.
+- Rettifica delle voci precedenti. Non e' vero che il certificato era «scaduto alle 23:01». Nell'agente c'era gia' un certificato nuovo,
+  valido dalle 21:50 del 18/11 alle 09:50 del 19/11, con un altro seriale. Le letture delle 23:26 sono passate con quello.
+- La raccolta si fa dopo il rinnovo: i training finiscono verso mezzogiorno del 19/11, dopo la scadenza delle 09:50.
+
+### 2026-11-20 | Claude | TEMPONet su emg2pose, training lungo concluso: 100 epoche non distinguibili da 19, residua non distinguibile dalla rete senza salti | Codice 32c5123
+
+- Tutti gli otto job `COMPLETED 0:0`; ricevute in `results/temponet_emg2pose/long_20261118/`, 18 file con sha256 uguali a Leonardo.
+- Regola principale (epoca 100 − epoca 19 dello stesso run):
+  - senza salti −0,05 / −0,09 / −0,07;
+  - residua −0,02 / −0,02 / +0,07.
+- Regola secondaria (residua − senza salti all'epoca 100): −0,03 / −0,03 / +0,04.
+- **Tutte non distinguibili con un seme.** L'epoca 19 del run lungo riproduce il run corto entro 0,09 gradi.
+- Consuntivo: 28,79 GPU-ore sul tetto di 32,5. Esito nel documento della proposta e in `docs/decisioni.md`.
+- Il 19/11 alle 12:36 ho messo in fila, con `scontrol update` della dipendenza, le tre valutazioni della residua ancora in coda. Stessi job,
+  limiti e uscite.
+- Rettifica. Il commit `bf09703` contiene solo le 18 ricevute, anche se il messaggio annuncia esito e consuntivo. Lo script che scriveva i
+  documenti si era fermato per un errore di sintassi, e i comandi git, scritti dopo un heredoc senza `&&`, sono partiti lo stesso.
+  Esito e consuntivo sono in questo commit.
+
+### 2026-11-20 | Claude | Preflight TCN 64931573 fermato sugli utenti della cache: errore di formato del controllo, non utenti diversi (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: `TCNH-preflight-20261119` = 64931573, `FAILED 1:0` dopo 1 min 13 s su login13. Codice
+  `c531e76c72c609ea22339b4a7393be71a8b53169`; errore `cache user population differs from original producer`
+  (`provenance.py:439`). Messaggio di GPT inoltrato da Simone.
+- Nota in `docs/reviews/claude_note_pose_temponet_preflight_users_20261120.md`, con le evidenze nella cartella `_evidence`. Tutto
+  in sola lettura: log, `sacct`, codice e `meta_json` delle due cache su Leonardo.
+- Esito: le popolazioni coincidono, 40 su 40 in train e 15 su 15 in val. La cache scrive l'ID (`03d49b393e`); `historical_producer`
+  prende il nome della cartella processata, che `pose_eval.py:70` crea come `u` + ID (`u03d49b393e`).
+- Seguito: correzione di GPT alla fonte, perché la stessa lista entra in benchmark, calibrazione, controlli e fold; test con la
+  disposizione vera; nuovi ID e checkout (L3-9); mia rilettura del solo diff; nuovo tentativo su decisione di Simone. Nessun lancio
+  da parte mia.
+
+### 2026-11-20 | Claude | Ramo d'integrazione TEMPONet residua + studio delle loss: script e sbatch uniti a mano, suite CPU completa passata; nessun job | Ramo `claude/temponet-residual-loss-merge-20261120`
+
+- Richiesta di Simone: «lo puoi fare tu ?», citando «Per integrarlo con lo studio delle loss vanno unite a mano le parti dello
+  script e dello sbatch che i due rami modificano entrambi.»
+- Ramo nuovo da `97bb3166` (punta di `claude/temponet-residual-419618`), con due merge `--no-ff`, senza rebase né squash.
+  `03f768ac` unisce `claude/temponet-db8-20261109` a `85f0d621`; `326ffee0` porta `629fdaed`, la nota TCN arrivata alle 11:15
+  (solo documenti). I due rami d'origine non cambiano.
+- Script `scripts/temponet_emg2pose.py`: `build`, `graph_check` e `dropout_check` ricevono sia `loss` sia `residual`. `run.json`
+  registra architettura, parametri e definizione della loss; la valutazione rilegge l'architettura da `run.json`; `eval.json` ha
+  `arch` e `train_loss`. Restano `--checkpoint` e le opzioni delle loss.
+- Sbatch: `ARCH`, `LOSS`, `SEED`, `EPOCHS` e `CHECKPOINT`, ciascuno con il suo controllo; modi `smoke`, `losssmoke`, `train` ed
+  `eval`. La tabella dei limiti unisce le due: 03:30, 04:00, 04:30, 05:00, 05:30, 06:00, 13:00 e 15:00. `--arch "$ARCH"` è in
+  tutte e cinque le chiamate a Python.
+- Documenti: nei conflitti di `decisioni.md` e del registro entrambi i rami avevano solo aggiunto voci; le ho tenute tutte,
+  testualmente. `decisioni.md`: 212 voci (titoli `###`) della base + 4 della residua + 6 delle loss = 222. Registro: 1133 + 14 +
+  14 = 1161, poi 1163 con `629fdaed`.
+- Un conflitto che git non segnala (sezione 2) è corretto con `TEMPONet.embed()`. La rete senza salti resta identica bit per bit a
+  `ee118a25`: stato con i semi 0, 5 e 777, uscite in training e in valutazione.
+- Test: nei file di TEMPONet 120, cioè i 102 della residua, 14 in più dal ramo delle loss e 4 nuovi. Suite CPU completa su
+  `03f768ac`: 3475 passati e un avviso già noto (`test_pose_objective.py`), in 31 min 30 s. Gli ID raccolti sono l'unione dei due
+  genitori (3457 e 3439, 3424 in comune) più i 4 nuovi; manca solo l'ID senza parametri del test dello stepper, che il ramo delle
+  loss ripete per `l1`, `smoothl1` e `mse`. `326ffee0` non cambia codice né test.
+- Prova con `git merge-tree` contro `origin/main` (`f546c9e4`): conflitti solo in `claude_GPT_shared` e `decisioni.md`. I moduli
+  che TEMPONet importa non cambiano su `main` dalla base comune `e114a788`.
+- Seguito: il merge su `main` lo fa GPT come integratore; eventuali commit successivi del ramo delle loss si uniscono a parte.
+  Nessun job.
+
+### 2026-11-20 | GPT integratore | Integrazione del ramo TEMPONet residua e loss su main
+
+Merge di `adb35def` su `f546c9e4`. I merge `03f768ac` e `326ffee0` conservano i commit `97bb3166` (residua) e `629fdaed` (studio delle loss e nota sul preflight). Verificati l’uso di `TEMPONet.embed()` nel forward a coppie, l’architettura scelta nel controllo dropout e il percorso storico senza salti. Sul risultato dell’integrazione sono passati 142 test mirati su TEMPONet, DB8 e finestre dei bersagli, e la verifica di sintassi dei cinque script Slurm.
 
 ## 2) Problemi trovati
 
@@ -12449,6 +13150,184 @@ Main integrato non sostituisce i checkout dei job attivi; nessun intervento su c
 ambienti, ledger o riferimenti deploy. D-5 già corretto e verificato; nessun seguito scientifico
 nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main_20261106.md`.
 
+### 2026-11-09 | Claude | Baseline TEMPONet: ambiguita' delle fonti risolte e un limite operativo | Ramo `claude/temponet-db8-20261109`
+
+- COINS 2021 non fissa due dettagli dell'architettura (canali delle tre convoluzioni di un blocco; unita' di FC I: «4x units as Block III's
+  channels»). La lettura alla lettera di FC I darebbe 125.504 pesi contro i 70,9 kB dichiarati; con canali uguali nel blocco e FC I a 64 unita' su
+  4 x 64 ingressi il conteggio e' 70.917 e, con Block III a 192, 481.541 (< 500 k del testo). Adottata questa lettura, con test.
+- I 3,16 MMAC dichiarati tornano solo contando le convoluzioni con stride a stride 1 (3,23 M); a stride applicato sono 2,41 M. Solo osservazione.
+- Krasoulis 2019, Data Sheet 1, eq. S2: la matrice stampata ha 19 righe per 18 DoF (ultima riga tutta a zero); si usano le prime 18 come il
+  codice degli autori.
+- Il protocollo dei fold e altre dieci scelte non sono specificati dal paper: dichiarate prima dei risultati nel documento della replica.
+- Lettura dei `.mat` di DB8 sul login node interrotta da me dopo 4 minuti di CPU su un solo file (limite 10): la lettura passa a un job CPU di
+  cache, una volta sola. Nessun effetto su altri utenti o job.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: un campione NaN nel raw di DB8 (S5_E1_A1, ultimo campione del guanto)
+
+- Il raw ufficiale `S5_E1_A1.mat` ha NaN nelle 18 colonne del guanto all'ultimo campione (indice 2.081.528 su 2.081.529); nessun altro valore
+  non finito nei 36 file. Trattato scartando la coda (un campione), con regola e registrazione nel manifest; la lettura del codice degli autori
+  (`pulp-bio/event-based-semg-regression`) non gestisce i NaN.
+
+### 2026-11-09 | Claude | Baseline TEMPONet: replica non riuscita entro la tolleranza (8,80 contro 6,89 gradi)
+
+- La distanza e' sistematica (tre semi entro 0,12 gradi) e piu' grande della differenza fra i metodi del paper (SVM 7,28, LSTM 7,04). Il
+  modello su due sessioni (7,78) la riduce ma non la chiude. Causa non accertata: dettagli di training non dichiarati da COINS 2021 (passo
+  delle finestre, schedule del learning rate, normalizzazione del bersaglio, modello finale sulle sessioni unite). La via piu' economica per
+  chiarirli e' chiedere il setup agli autori; nessun rilancio fatto o previsto senza una decisione.
+
+### 2026-11-09 | Claude | Baseline TEMPONet, diagnosi: con la stessa catena l'MLP su WL batte la TEMPONet
+
+- MLP su Waveform Length 7,69 (fold) e 6,82 (full) contro TEMPONet 8,80 e 7,78: nel paper e' il contrario (TCN 6,89, MLP 7,14). Il protocollo
+  fold spiega circa un grado anche per la SVR (8,28 contro 7,37), ma la TCN resta sotto le baseline: difetto del suo training da isolare al
+  passo 2. La SVR usa quasi sempre il bordo della griglia di C: i suoi numeri sono un limite superiore.
+
+### 2026-11-09 | Claude | Baseline TEMPONet, diagnosi: il bersaglio standardizzato aiuta in validazione, il padding simmetrico no
+
+- Validazione dei fold (seme 0): bersaglio standardizzato per DoA (V1) −0,31 gradi, migliore di V0 in 11 soggetti su 12; padding simmetrico
+  (V3) +0,04, migliore in 5 su 12; insieme (V13) −0,32. H3 sostenuta in validazione, H4 no. Il guadagno e' piccolo rispetto alla distanza
+  dal paper: quanto passi al test lo misura il passo 3 (64010753).
+
+### 2026-11-10 | Claude | Baseline TEMPONet: la sintesi con `--primary full` mescolava righe del fold sotto la primaria `full` (corretto)
+
+- Nella sintesi del job 64010753, le righe per seme (8,517 / 8,547 / 8,463), per soggetto, per DoA, deviazione standard, accuratezze e alpha
+  erano dei modelli di fold, scritte senza etichetta sotto la primaria `full`. Verdetto e grandezza primaria erano giusti.
+- Causa: il modo `full` aggiunto al passo 3 (5a26a19) cambiava solo la primaria. Il test usava gli stessi valori per fold e `full`, quindi
+  non poteva accorgersene.
+- Correzione: `full_details` e tabelle con le due colonne. Test nuovo con valori diversi. Modo fold identico byte per byte sulla ricevuta
+  del run 63988277.
+
+### 2026-11-10 | Claude | Baseline TEMPONet: restano 0,70 gradi propri del training della TCN
+
+- Il protocollo spiega circa un grado: col modello `full` 7,59 invece di 8,51. V13 toglie altri 0,1-0,3 gradi.
+- Con la stessa catena l'MLP su Waveform Length fa 6,82 e batte la TEMPONet (7,59), mentre nel paper la TCN e' davanti (6,89 contro 7,14).
+- L'alpha dell'EMA scelto e' piu' alto del pubblicato (0,93 contro 0,86): uscite grezze piu' rumorose.
+- Ipotesi rimaste, non verificate: dose e schedule del training (H5) e altri dettagli non dichiarati. Prossimo passo da decidere con Simone.
+
+### 2026-11-10 | Claude | Baseline TEMPONet, H5: lo schedule del learning rate non spiega la distanza
+
+- Il coseno dimezza le oscillazioni della validazione fra epoche (mediana 0,30 contro 0,55 di V13 col seme 0); l'epoca finale a 1e-5 migliora
+  la validazione grezza di 0,07. Dopo l'EMA restano 0,06-0,10 gradi, quanto differiscono due esecuzioni dello stesso seme (0,076).
+- Gli amputati guadagnano di piu' (−0,28 e −0,30) dei normodotati (−0,02 e −0,06): due soggetti, lettura descrittiva.
+- Restano ipotesi non verificate e non ricostruibili dal testo del paper: QAT int8 vera, definizione della metrica o degli istanti di test.
+
+### 2026-11-11 | Claude | TEMPONet su emg2pose: il passo 0 ha letto quasi tutto il tar per la lettura anticipata di Lustre (job 64096497 fallito)
+
+- Il job ha fatto 2.949 registrazioni su 8.117 in 1 h 50, con 226 GB letti e 3 min 24 s di CPU. Causa: scorrendo i membri con `tarfile` sul
+  file normale, la lettura anticipata trascinava i dati dei membri di training saltati. L'ingest delle pose del 27/10 non ne soffriva, perche'
+  leggeva tutti i membri.
+- Correzione: indice del tar con `pread` senza lettura anticipata, una `pread` per membro in 4 thread, HDF5 in memoria; test di uguaglianza
+  dell'indice con `tarfile`. Il rilancio (≤ 2 core-ore) supera il budget del passo 0 (4 core-ore, gia' 3,67 spese): attende una decisione di
+  Simone.
+
+### 2026-11-11 | Claude | TEMPONet su emg2pose: sulle fasi nuove guadagna solo il 10% sul predittore costante; in `user_stage` la categoria e' fragile
+
+- Rapporto col predittore costante (posa media del training): 0,831 sugli utenti nuovi, 0,896 sulle fasi nuove, 0,899 su utenti e fasi nuovi.
+  Il salto da utenti nuovi a fasi nuove (+3,13 gradi) e' simile a quello delle baseline di [E24] (+3,0 / +4,0 / +3,3).
+- In `user_stage` TEMPONet supera NeuroPose di 0,10 gradi, dell'ordine della variabilita' fra semi vista su DB8 (0,07-0,15). Con un seme quella
+  categoria e' fragile; le altre distanze dalle soglie vanno da 0,47 a 1,35 gradi. Lettura dopo il test: nessuna scelta ne dipende.
+- Il contesto corto (128 ms contro 5,9 s di vemg2pose) era il limite atteso, ma questi numeri non lo isolano.
+- Efficienza: circa 28 minuti del training sono andati negli indici delle finestre (lettura delle pose di 19.086 registrazioni). Il dato e'
+  dedotto dalle date dei file. Per altri semi l'indice si potrebbe salvare una volta.
+
+### 2026-11-16 | Claude | TEMPONet su emg2pose: dentro un tratto la stima segue poco il movimento, e il pollice non lo segue
+
+- **Test intero dell'utente 0219627c14** (`user`, 470 finestre), correlazione per giunto fra stima con EMA e angolo: da 0,12 (pollice, IP) a
+  0,68 (anulare, MCP), mediana 0,51. Il rapporto fra le ampiezze (deviazioni standard) va da 0,08 a 0,69, mediana 0,42.
+  - Migliori: le flessioni MCP e PIP delle dita.
+  - Peggiori: il pollice e le abdu-adduzioni.
+- **Dentro un tratto la correlazione scende.** Nei 167 tratti di 20 s senza interruzioni, sui 6 giunti che si muovono di piu', la mediana e' 0,16.
+  - Interpretazione, non verificata: buona parte della correlazione globale verrebbe dalle differenze lente di posa fra registrazioni e fasi.
+  - Prese pollice-dita e rotazioni del pollice: stima quasi piatta. Correlazione da -0,2 a 0,36, ampiezza dal 5 al 57%. Eppure la MAE del
+    tratto delle prese (13,58) e' vicina a quella dell'utente (14,21).
+  - Dove segue (flessioni MCP delle dita insieme): correlazione 0,94-0,97, ampiezza dal 44 al 66%.
+- **Proposta, non decisa:** la MAE da sola nasconde questa differenza. Nel confronto col FM varrebbe la pena aggiungere una misura di
+  inseguimento, per esempio la correlazione per tratto.
+- Rotazioni del pollice, polso sinistro: i canali 3 e 4 sono dominati da una sinusoide a 60,0 Hz, verosimilmente la rete (80-83% della potenza
+  fra 55 e 65 Hz). E' nei dati, non nel modello.
+
+### 2026-11-16 | Claude | Rettifica: il riassunto in decisioni.md delle conclusioni emg2pose irrigidisce la frase sul supporto comune
+
+- Nella voce del 12/11 di `docs/decisioni.md`, punto 4, ho scritto: «nel confronto col FM si usa un solo insieme di finestre e di
+  istanti per tutti i modelli».
+- Il testo firmato (`docs/temponet_emg2pose_plan.md` a `255fc8e`, righe 304-305) dice invece: «Conviene fissare un solo insieme di
+  finestre e di istanti per tutti i modelli, per esempio quello del contesto piu' lungo, oppure dichiarare la differenza».
+- Vale il testo firmato. La voce del 12/11 resta com'e'; la rettifica e' in `docs/decisioni.md`, voce del 16/11. Trovato dai
+  revisori del prompt per GPT.
+
+### 2026-11-17 | Claude | Proposta TCN della posa: la ricetta di allenamento può non far convergere MLP e TCN, e un «no» non sarebbe leggibile (S-1)
+
+- Nella proposta `c15aac9` (§4) le teste si allenano con AdamW, LR 1e-4 o 1e-3 costante, al più 50 epoche, inizializzazione
+  standard, uscita a zero e regolarizzazione quasi nulla. Ogni esito diverso dal beneficio chiude la prova.
+- In due mondi sintetici indipendenti la TCN perde contro L0 anche quando c'è un guadagno da prendere. Nel mondo V, tarato per
+  somigliare ai numeri veri, il primario vale -3,1%; diventa +3,65% con 150 epoche e +2,6% con un'inizializzazione Kaiming, che nel
+  mondo temporale del revisore non basta. Una ridge con ritardi arriva fino a +21,3% (stima ottimista). È un meccanismo, non il
+  numero vero.
+- Prima dei fit servono tutte e tre: controllo positivo sui `lat` di train, regola di convergenza, esito «non a convergenza». I
+  dettagli li sceglie GPT e li firma Simone. Il ramo lineare di A-1 si può aggiungere, ma non le sostituisce. Il costo va
+  ricalcolato: con quattro LR e 150 epoche, nell'analogo peggiore, i soli passi superano già il tetto di fase di 3 GPU-ore.
+
+### 2026-11-17 | Claude | Rettifiche: quattro frasi della chat del 17/11 e il campo ricettivo di TEMPONet nel prompt `8917e2a`
+
+- In chat Claude aveva scritto che, se la TCN non batte la ridge, «il limite è l'encoder e non la testa»; che il lineare «sembra
+  aver già dato quasi tutto»; che una testa capace «fa lei il lavoro»; che lo scarto 0,47-0,90% fra bracci storici è «una stima
+  grezza per eccesso del rumore fra training». GPT le ha corrette e Claude accetta. Un esito nullo chiude questa prova e non prova un
+  limite dell'encoder. Ridge e PoseHead vicine non provano che il lineare sia al massimo. L'assorbimento del compito da parte della
+  testa è un rischio, non una certezza. Lo scarto, con ricette diverse e tre o quattro bracci, non è un limite affidabile del
+  rumore.
+- Nel prompt `8917e2a` Claude aveva scritto «Campo ricettivo 378 passi: sulla griglia di 25 ms sono 9,45 s, piu' della finestra di
+  4 s». I 378 passi valgono per un elemento convoluzionale finale: a T = 160 il flatten unisce due elementi distanti 64 passi
+  (unione nominale 442). La conclusione resta vera per il campo nominale. La correzione è di GPT (`c15aac9`, protocollo §2, riga
+  23), verificata dai revisori.
+- Le voci dei giorni precedenti restano come sono; le rettifiche sono anche nella review del 17/11, sezione 1.
+
+### 2026-11-17 | Claude | Review `32e5452`: tre punti da correggere, due trovati da GPT
+
+- Regola delle epoche (S-1, correzione 2). «un'estensione unica delle epoche se il migliore cade nelle ultime cinque», letta sulla
+  MSE, avrebbe mancato proprio il caso che mostra il problema. Nel mondo V (verificatore, parte 4) la TCN a 1e-3 ha, a 50 epoche, il
+  minimo della MSE all'epoca 43 e quello di E_dyn all'ultima; a 150 epoche il minimo della MSE passa all'epoca 93 e il primario da
+  -3,1% a +3,65%. Il trigger deve guardare anche l'errore dinamico interno. Trovato da GPT, verificato da Claude nelle prove della
+  review.
+- A-1. «TCN e MLP non contengono L0», nel titolo, nella tabella dei verdetti e nel prompt, è sbagliato. Sul dominio limitato dopo la
+  LayerNorm, con bias abbastanza grandi da tenere accese tutte le ReLU (e nella TCN i soli tap centrali), le due reti sono
+  esattamente lineari. Il corpo di A-1 diceva «Possono imitare L0 solo con bias grandi che tengono accese le ReLU». Il punto giusto
+  è che manca un cammino lineare diretto: per questo il ramo lineare serve. Trovato da GPT.
+- Controllo positivo (S-1, correzione 1). L'ammissione «la TCN batte L0 di almeno il 2%» è troppo debole se il guadagno piantato è
+  grande. Nel mondo V la TCN a 150 epoche fa +3,65% e passerebbe, prendendo circa un sesto del guadagno della ridge con ritardi
+  (+21,3%, stima ottimista). Il criterio va legato al guadagno piantato. Trovato da Claude rileggendo la controproposta.
+- La review resta com'è: le correzioni entrano nella revisione di GPT e nella prossima review di Claude.
+
+### 2026-11-18 | Claude | Revisione TCN `3e007c8`: tre blocchi di disegno prima della firma (calibrazione dei controlli positivi, clausola della MLP, allarme del bordo inferiore del LR)
+
+- BL-1. La calibrazione dei controlli positivi si ancora alla WLS L0 non regolarizzata sui sottofold 10/10, e il controllo
+  lineare non verifica che il margine piantato sia recuperabile da una forma chiusa. In un modello in forma chiusa, con E_real
+  0,94, anche la WLS esatta recupera solo l'89,8% del margine (85,8% con l'altra coppia di parametri), e la catena si ferma con
+  «ricetta non ammessa» senza che la causa si legga. È plausibile, non stabilito: E_real non è ancora misurato. Va deciso prima
+  di misurarlo: ancora con una ridge in forma chiusa e verifica di leggibilità del lineare, oppure cancello riferito alla forma
+  chiusa; a oltre 1 nel temporale, con l'intervallo di sigma allargato; E_dyn sempre su y osservato; due grandezze distinte in P:92.
+- BL-2. «MLP non deve vincere il temporale» è un cancello nel protocollo e un descrittivo nel JSON, senza metrica né conseguenza:
+  due implementazioni fedeli danno esiti opposti. Va scelto e scritto uguale ovunque; se diventa un cancello, la review dà le
+  regole delle etichette.
+- BL-3. L'allarme «LR ancora al bordo dopo l'estensione» non ha tolleranza. Sulle teste lineari, dove con LR costante tende a
+  vincere il LR più piccolo, può scattare per differenze di rumore: su L0 toglie il primario, su L13 la candidatura. Revisore e
+  verificatore lo davano minore; Claude lo porta fra i blocchi con il criterio dichiarato nella review. Proposta: una quota
+  relativa di tolleranza per tutte le teste.
+- Rettifiche di Claude. Nella tabella dei verdetti della `32e5452` «La copertura vera degli intervalli è circa 97%» era una
+  simulazione, come dice GPT. Il conto di Claude di 1,26 milioni di aggiornamenti (17/11) era già il massimo raggiungibile, perché
+  con le regole di GPT si arriva al più a 5 LR: la chiave «superseded» di `analytic_checks.json` è inesatta.
+- Nessun job; le correzioni entrano nella revisione di GPT.
+
+### 2026-11-18 | Claude | Studio delle loss di TEMPONet: nel braccio D il termine della velocita' misurava soprattutto il dropout (corretto prima del lancio)
+
+- Problema (critico e lente «dati-formula» della review `wf_d4e7c261-7db`, confermato dal verificatore): in `0342170` finestra e compagna
+  passano insieme nel modello con maschere del dropout 0,5 indipendenti. L'errore della velocita' e' diviso per sd_v, che e' 6-14 volte
+  piu' piccola di sd, quindi il rumore del dropout pesa (sd/sd_v)^2 volte di piu'. Stima su CPU col modello L1 dell'11/11 (un utente di
+  test): la quota del solo dropout e' il 79% del termine della velocita' (84% all'inizializzazione), e il termine pesato vale circa quanto
+  quello della posa o di piu'. D avrebbe ottimizzato soprattutto la coerenza fra due maschere, non «MSE + velocita'».
+- Correzione: una maschera del dropout condivisa fra finestra e compagna, nel solo percorso `mse_vel`; nuovo commit, collaudo e verifica
+  mirata prima di D. B e C non ne dipendono.
+- Incidente operativo: durante il push del ref di deploy la connessione ssh condivisa e' caduta (login01 con carico 120). Il ref era gia'
+  arrivato: il secondo push ha risposto «Everything up-to-date» e `ls-remote` lo conferma.
+
 ### 2026-11-18 | GPT — RMS rimasto a25ms dopo il tokenizer100: corretto per i nuovi training
 
 La precedente estensione a100ms riguardava solo il tokenizer; il target RMS restava a25ms (5campioni a200Hz).
@@ -12521,3 +13400,133 @@ Guardia generica WSD rinviata per assenza di distinzione di schema nuovo/storico
 LQ negli artefatti prima del 04/11 preesistente e conservato. Nessuna reinterpretazione dei run.
 I fallimenti bf16/ripresa della linea 3 restano aperti: il cambio target non li risolve.
 Incidenti locali della suite riportati nella ricevuta completa; nessun sorgente cambiato per farla passare.
+
+### 2026-11-19 | Claude | Conferma con i semi di TEMPONet: tetto di 14 GPU-ore superato di 2,96 per il caricamento piu' lento
+
+- Il caricamento dei 62 GiB di training e' salito a 3.576-4.522 s contro i 1.833 del 18/11; i quattro training sono partiti insieme
+  ai job lunghi della sessione `temponet-residual`. Le valutazioni sono passate da 21 a 29-36 minuti. Spesa 16,96 GPU-ore su un tetto
+  di 14 (attese circa 13). La velocita' per passo non e' cambiata.
+- Nessuna regola per fermare job in corso. Da riferire a Simone. Per i prossimi preventivi: caricamento contato almeno doppio con piu'
+  job in parallelo, oppure invii scaglionati.
+
+### 2026-11-19 | Claude | Revisione TCN v3: tre ritocchi di testo da fare senza un nuovo giro (nessuno blocca)
+
+- DEC:6779 dice «altri allarmi invariati», ma la voce del 18/11 (DEC:6747) chiamava S-2 «Allarme» ed elencava solo il bordo
+  finale: scrivere una volta l'elenco completo di P:69 (ultime 5 epoche dell'orizzonte massimo, primo quarto di epoca, bordo
+  superiore dopo l'estensione, bordo inferiore oltre lo 0,5%).
+- §10, riga «Criteri»: aggiungere che con 15 utenti la copertura può essere più bassa e che, senza bootstrap a due livelli, il «no»
+  resta condizionato ai tre semi (oggi solo in P:124 e P:139).
+- P:135: «delta candidato meno controllo positivo» si legge come il controllo positivo sintetico; scrivere «delta = candidato −
+  comparatore», come J `evaluation.secondary_worsening`.
+- Facoltativi: «controllo_non_calibrato» in P:86 e P:90; lettura della TCN di P:72 anche in J `objective_tradeoff.consequence`;
+  parole attaccate fuori dal §10. Li ricontrollo alla review del pacchetto operativo.
+
+### 2026-11-19 | Claude | Pacchetto TCN frozen `2f98211`: quattro blocchi di runtime e sei importanti prima del primo invio
+
+- B-1 `pose_temponet.sbatch:14` sostituisce `PYTHONPATH` dopo `module load cineca-ai`, che su Leonardo fornisce numpy e torch
+  (log del 06/11 in `f58f5ff`): tutti i job morirebbero al primo import. Anteporre.
+- B-2 i walltime misurati sono in secondi; Slurm arrotonda al minuto e `runner._allocation` pretende la stringa esatta: dopo
+  preflight, benchmark e WLS i job dei controlli rifiuterebbero l'allocazione. Arrotondare al minuto.
+- B-3 `--agente gpt_tcn_launcher` non è fra le scelte di `submit_job.py`: nessun comando stampato è usabile. Usare `gpt`.
+- B-4 `runner._progress` chiama `pair.curve()`, che pretende una curva completa: ogni ricerca si ferma al passo zero. Leggere
+  `pair.points`. I test non lo vedevano perché sostituiscono `run_selection`.
+- I-1 controllo in forma chiusa non diagnostico registrato come `technical_failure` nei sei job GPU; I-2 benchmark su un percorso
+  di valutazione diverso dai fit; I-3 salvataggi misurati senza riscaldamento (il gate può fermare una catena fattibile); I-4
+  diagnostico L13 che mescola fit su `y` e base su `y*`; I-5 checkout di campagna creato prima di verificare il commit del piano;
+  I-6 gate della quota WORK fermo alla misura del rilascio.
+
+### 2026-11-20 | Claude | Pacchetto TCN `01252b6c`: nessun blocco residuo, note operative prima del rilascio
+
+- Nessun blocco e nessun importante aperto dopo la rilettura del diff.
+- Restano i passi dell'operatore già scritti nel documento d'esecuzione:
+  - modello di CPU dei due nodi seriali (il pin `cpu8` lo include);
+  - misura nuova dopo i benchmark per `resource-plan`;
+  - copie locali delle due `calibration.json` per `commands --stage controls`;
+  - nessun rinfresco di SCRATCH durante uno stadio;
+  - un tentativo aggiuntivo richiede una decisione e ID e checkout nuovi.
+- Il fallimento del test storico `test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned` resta sul ramo; su
+  `main` (`f546c9e4`) passa.
+
+### 2026-11-18 | Claude | TEMPONet residua: quattro punti trovati preparando il lancio | Ramo `claude/temponet-residual-419618`
+
+- Disegno del salto. La proposta di partenza, col salto attorno alle sole due dilatate, e' superata dall'indicazione di Simone sullo
+  schema. Nel blocco 1 l'identita' sommerebbe l'EMG grezzo (deviazione mediana dei canali 13,15 unita' native, k = 0) al ramo normalizzato
+  e romperebbe l'invarianza alla scala dell'ingresso. Per questo c'e' una proiezione con BN anche li'.
+- Tempo. Col limite di 3:30 la variante non ha margine: a 1,27 ms per passo l'epoca 19 partirebbe 200 s prima dei 12.000 s, a 1,30 ms
+  22 s prima. Limite 4:00 senza collaudo, stesso tetto di 4,75 GPU-ore.
+- Merge col ramo delle loss. `0342170a` (gia' su Leonardo come `deploy/temponet-emg2pose-loss-20261118`, checkout 64774804) modifica in
+  modo diverso gli stessi file da `ee118a2`: `--loss`/`LOSS` contro `--arch`/`ARCH`, e una tabella di `TRAIN_TIME` da 04:30 a 06:00
+  contro 04:00.
+  - Ho usato gli stessi nomi: `TRAIN_TIME`, `BUDGET`, 900 s di margine oltre 3:30.
+  - All'integrazione vanno uniti i flag e le tabelle, con la riga 04:00:00 -> 13.500 s.
+  - I miei test dello script stanno in un file a parte, per non toccare `test_temponet_emg2pose.py`.
+- Valutazione. Lo sbatch passa sempre `--arch "$ARCH"`: una valutazione della variante inviata senza `ARCH=residual` si ferma con un
+  errore, senza dare un risultato sbagliato.
+
+### 2026-11-18 | Claude | TEMPONet residua: il limite di 4:00 non serviva (passo misurato 1,254 ms) | Codice 4c8bb84
+
+- Il passo misurato della variante e' 1,254 ms, il 15,6% in piu' della L1, dentro la stima del 15-20%. Sta sotto la soglia di 1,304 ms
+  per il limite di 3:30: col senno di poi bastava. Il limite di 4:00 non e' costato nulla in piu', perche' si conta il tempo usato.
+- Con un caricamento di 1.938 s (2.190 l'11/11) il job sarebbe finito 679 s prima del limite di 3:30. L'epoca 19 sarebbe partita
+  circa 530 s prima dei 12.000 s.
+
+### 2026-11-18 | Claude | Training lungo di TEMPONet: tre sguardi al test da decidere prima | Ramo `claude/temponet-residual-419618`
+
+- La proposta valuta sul test tre checkpoint dello stesso run: epoche 19, 50 e 100. La regola del 10/11 dice «test una volta».
+- Qui gli sguardi sarebbero tre, dichiarati prima, tutti riportati e senza scelta fra loro. L'alternativa e' il solo modello finale, che
+  perde pero' il confronto dentro lo stesso run.
+- La scelta e' di Simone (decisione 2 della proposta) e va registrata prima del lancio.
+
+### 2026-11-18 | Claude | Training lungo di TEMPONet: i tre sguardi al test vengono dalla mia lettura di «Approvo B» | Ramo `claude/temponet-residual-419618`
+
+- La decisione 2 della proposta (tre checkpoint sul test oppure solo il modello finale) non ha una risposta esplicita. La domanda legava
+  i tre checkpoint all'opzione A, e Simone ha scelto B.
+- Ho registrato B coi tre checkpoint, come scritto nella proposta. Se Simone intendeva solo il modello finale, la regola principale va
+  cambiata prima del lancio.
+
+### 2026-11-18 | Claude | Training lungo di TEMPONet: fra checkpoint vicini la validazione oscilla quanto la soglia | Ramo `claude/temponet-residual-419618`
+
+- Trovato dal critico nelle ricevute dei run corti. Con learning rate costante, dall'epoca 18 alla 19 la validazione grezza passa da 16,006
+  a 15,627 nella L1 e da 15,982 a 15,571 nella residua: 0,38 e 0,41 gradi, piu' della soglia di 0,3. Inoltre l'epoca 19 e' il minimo
+  della curva in tutti e due i run.
+- Il confronto fra due singoli checkpoint (100 contro 19) puo' quindi dipendere da dove cade un'oscillazione. L'EMA del test ne toglie una
+  parte, ma quanta non e' misurato.
+- La soglia resta quella approvata; accanto a ogni Δ si riportano le epoche vicine. Cambiarla, per esempio facendo la media di piu'
+  checkpoint, spetta a Simone.
+
+### 2026-11-20 | Claude | TEMPONet su emg2pose: con job in parallelo caricamento e valutazioni vicini ai limiti | Codice 32c5123
+
+- I due training caricavano insieme: il caricamento e' durato 3.741 e 4.074 s, contro circa 2.000 s il 18/11, come nello studio delle loss.
+  I margini dei limiti da 13 e 15 ore hanno retto.
+- Le valutazioni in parallelo sono durate 32-38 minuti su 45. Anche messe in fila ne sono servite 35-38, per altri job che leggevano gli
+  stessi dati.
+- Per i prossimi run su emg2pose: limite di 60 minuti per la valutazione, oppure una sola valutazione alla volta.
+
+### 2026-11-20 | Claude | Preflight TCN: la lista degli utenti del produttore storico ha la `u` della cartella, la cache no
+
+- `provenance.historical_producer` ricava gli utenti dai nomi delle cartelle `emg2pose/u<ID>/...`; la cache scrive `<ID>`.
+  Verificato sui dati veri: stessi 40 e 15 utenti, diversi solo per la `u`.
+- Correggere soltanto il controllo di `provenance.py:439` non basta: la stessa lista entra in `benchmark.py:73`, `controls.py:66`
+  (da `runner.py:289`) e `workflow.py:141`. Tutti fallirebbero in modo esplicito; nessuno passa in silenzio.
+- Proposta: `historical_producer` restituisce gli ID nel formato della cache, pretendendo che `"u" + _SAFE_RE.sub("_", ID)` ridia
+  la cartella. Test con la disposizione vera e sulle due ricevute vere contro `cache_users.json`.
+- I test non l'hanno visto: quello sulla ricevuta vera conta solo gli utenti; le fixture li chiamano `u0`, `u1`, ...; la catena dei
+  24 stadi simula il preflight. Non l'ha visto neanche la mia rilettura `85f0d62`.
+
+### 2026-11-20 | Claude | Merge residua + loss: il forward a coppie della loss con la velocità saltava i salti della rete residua; corretto nel ramo d'integrazione
+
+- `Stepper._pair_forward`, aggiunto dal ramo delle loss per `mse_vel`, ricalcolava il forward come `m.features(x2).flatten(1)`
+  seguito dalla testa. Con `--arch residual --loss mse_vel` avrebbe addestrato senza errori un'altra rete, senza i salti. Allo
+  stesso modo `dropout_check`, nuovo nel ramo delle loss, avrebbe controllato la rete senza salti. Git non segnala nessuno dei due:
+  i rami toccano righe diverse.
+- Correzione nel ramo d'integrazione: `TEMPONet.embed()` dà l'ingresso della testa per entrambe le architetture, e `forward` e
+  `_pair_forward` lo usano; `dropout_check` riceve `residual` da `graph_check`. Tre test nuovi, quattro casi:
+  - `test_embed_is_the_input_of_the_head`, per entrambe le architetture;
+  - `test_pair_forward_of_the_residual_network_goes_through_the_skips`: il percorso di prima dà un'uscita diversa;
+  - `test_residual_network_trains_with_the_velocity_loss`: training e valutazione completi.
+- Nessun run ha usato questa combinazione: lo studio delle loss usava la rete senza salti, la residua solo L1. Per l'integrazione:
+  il codice che ricostruisce il forward a pezzi deve passare da `embed`.
+
+### 2026-11-20 | GPT integratore | Risoluzione dei conflitti nei registri TEMPONet
+
+I soli file modificati da entrambi i lati erano `docs/claude_GPT_shared` e `docs/decisioni.md`. Prima di aggiungere questa voce sono stati verificati la molteplicità e l’ordine delle righe di entrambi i genitori, preservando le voci di Claude del 20/11 nelle rispettive sezioni. I 669 file esclusivi del ramo e i 74 esclusivi di main coincidono con le rispettive versioni nel merge. Il dato storico di 3.475 test CPU passati si riferisce a `03f768ac`.

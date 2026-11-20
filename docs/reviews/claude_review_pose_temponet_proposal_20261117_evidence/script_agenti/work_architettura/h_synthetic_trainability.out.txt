@@ -1,0 +1,20 @@
+
+===== regime: senza componente comune =====
+quota di varianza del bersaglio per parte (lineare ist., lineare temp., non lin. ist., non lin. temp., rumore): [0.2, 0.2, 0.2, 0.2, 0.2]
+  attivazioni all'inizializzazione, TCN (seme 0, 64 finestre):
+    hidden 1 (larghezza 64): accese 0.502, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.674, rms 0.4074
+    hidden 2 (larghezza 64): accese 0.525, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.485, rms 0.1727
+    hidden 3 (larghezza 64): accese 0.499, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.341, rms 0.0772
+    hidden 4 (larghezza 64): accese 0.543, unita' mai accese 0.078, sempre accese 0.109, quota variabile fra posizioni 0.136, rms 0.0516
+    hidden 5 (larghezza 32): accese 0.419, unita' mai accese 0.469, sempre accese 0.312, quota variabile fra posizioni 0.013, rms 0.0615
+  attivazioni all'inizializzazione, MLP (seme 0, 64 finestre):
+    hidden 1 (larghezza 96): accese 0.499, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.677, rms 0.4027
+    hidden 2 (larghezza 96): accese 0.481, unita' mai accese 0.0, sempre accese 0.0, quota variabile fra posizioni 0.434, rms 0.1733
+    hidden 3 (larghezza 96): accese 0.552, unita' mai accese 0.01, sempre accese 0.031, quota variabile fra posizioni 0.222, rms 0.0951
+    hidden 4 (larghezza 64): accese 0.436, unita' mai accese 0.219, sempre accese 0.125, quota variabile fra posizioni 0.081, rms 0.0550
+    hidden 5 (larghezza 32): accese 0.398, unita' mai accese 0.438, sempre accese 0.312, quota variabile fra posizioni 0.006, rms 0.0678
+  L0   LR 0.0001: MSE tenuta fuori epoca 1 = 0.8678, 10 = 0.8018, 25 = 0.8040, ultima (50) = 0.8073; minimo 0.8016 all'epoca 9  [5 s]
+  L0   LR 0.001: MSE tenuta fuori epoca 1 = 0.8073, 10 = 0.8170, 25 = 0.8147, ultima (50) = 0.8140; minimo 0.8073 all'epoca 1  [4 s]
+  MLP  LR 0.0001: MSE tenuta fuori epoca 1 = 0.9925, 10 = 0.8606, 25 = 0.7741, ultima (50) = 0.7072; minimo 0.7072 all'epoca 50  [9 s]
+  MLP  LR 0.001: MSE tenuta fuori epoca 1 = 0.9201, 10 = 0.6698, 25 = 0.5954, ultima (50) = 0.5740; minimo 0.5740 all'epoca 50  [7 s]
+  L13  LR 0.0001: MSE tenuta fuori epoca 1 = 0.6091, 10 = 0.6114, 25 = 0.6329, ultima (50) = 0.6693; minimo 0.6047 all'epoca 8  [231 s]

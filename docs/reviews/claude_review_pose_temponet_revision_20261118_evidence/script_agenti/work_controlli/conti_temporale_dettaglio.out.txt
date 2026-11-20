@@ -1,0 +1,14 @@
+E_real=0.8: non calibrati 22 su 81
+E_real=0.9: non calibrati 40 su 81
+E_real=1.0: non calibrati 76 su 81
+(0.8, 'E e g mai insieme') 22
+(0.9, 'E e g mai insieme') 40
+(1.0, 'E e g mai insieme') 49
+(1.0, 'nessun E') 27
+
+esempio fL=0.5 fT=0.6 r=0.4 K=3, E_real=0.8: ammissibili [(0.771, 0.086, 0.8, 1.5), (0.839, 0.078, 1.0, 2)]
+   griglia (E_LS,g,a,sigma) con g in banda: [(0.771, 0.086, 0.8, 1.5), (0.839, 0.078, 1.0, 2)]
+esempio fL=0.5 fT=0.6 r=0.4 K=3, E_real=0.9: ammissibili []
+   griglia (E_LS,g,a,sigma) con g in banda: [(0.771, 0.086, 0.8, 1.5), (0.839, 0.078, 1.0, 2)]
+esempio fL=0.5 fT=0.6 r=0.4 K=3, E_real=1.0: ammissibili []
+   griglia (E_LS,g,a,sigma) con g in banda: [(0.771, 0.086, 0.8, 1.5), (0.839, 0.078, 1.0, 2)]

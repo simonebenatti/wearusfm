@@ -1,0 +1,18 @@
+output_length simbolico vs TN.output_length:
+  T=37  simbolico=0  TN=0
+  T=38  simbolico=1  TN=1
+  T=101  simbolico=1  TN=1
+  T=102  simbolico=2  TN=2
+  T=160  simbolico=2  TN=2
+  T=256  simbolico=4  TN=4
+receptive_field() = 378
+T=4096 causal=True: elemento 32: 378 passi contigui=True [1730..2107]; successivo spostato di 64; unione 442
+T=4096 causal=False: elemento 32: 378 passi contigui=True [1878..2255]; successivo spostato di 64; unione 442
+T=160 causal=True: 2 elementi; dip. elemento0 [0..59] (60), elemento1 [0..123] (124); uscita: 124 passi [0..123]
+T=160 causal=False: 2 elementi; dip. elemento0 [0..159] (160), elemento1 [0..159] (160); uscita: 160 passi [0..159]
+autograd causal=True: passi con gradiente non nullo in almeno un seme: 124, primo 0, ultimo 123; in tutti e 5: 124
+autograd causal=False: passi con gradiente non nullo in almeno un seme: 160, primo 0, ultimo 159; in tutti e 5: 160
+parametri TEMPONet(384,160,20): 80884 out_length 2
+(2, 384, 159) rifiutato: ingresso atteso (batch, 384, 160), ricevuto (2, 38
+(2, 160, 384) rifiutato: ingresso atteso (batch, 384, 160), ricevuto (2, 16
+(2, 384, 161) rifiutato: ingresso atteso (batch, 384, 160), ricevuto (2, 38

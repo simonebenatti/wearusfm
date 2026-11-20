@@ -1,0 +1,156 @@
+riferimenti 130 citazioni 95
+[64] P:90: Calibrazione prima di qualsiasi fit neurale: nei20 utenti fitting outer, due sottofold alterni10/10; riferimenti L0 pesati. Stima interna E_real sui t
+[64] J:405:       "real_reference": "E_dyn of weightedLS L0 on real targets from innerfolds only",
+[65] J:308:     "kind": "weighted unregularized least squares, descriptive",
+[65] P:95: - **Lineare:** per L0, MLP e TCN recupero >=90% del margine costante→oracolo sia su MSE che su E_dyn: `(E_const−E_head)/(E_const−E_oracle)>=0.90`. Cos
+[76] P:96: - **Temporale:** il riferimento LS-L0 fittato sul fitting outer deve ancora dare margine relativo oracolo in[6%,10%] su E_dyn; fuori intervallo → cont
+[101] P:90-96: Calibrazione prima di qualsiasi fit neurale: nei20 utenti fitting outer, due sottofold alterni10/10; riferimenti L0 pesati. Stima interna E_real sui t
+[133] P:94: Qualificazione, sui held outer, per fold e sul pooled (tutte devono passare):
+[133] J:441:         "baseline": "weightedLS L0 on fittingouter with selectedsynthetictarget; neuralL0/MLP descriptive",
+[133] J:444:         "head": "TCN_post",
+[134] DEC:6749: Due controlli sintetici solo train, ciascunoL0/MLP/TCN-post, duefold senza rifit esterni. Generatore osservabile e rumoreAR1 a varianza fissata; calib
+[154] P:104: NaN/Inf, divergenza non finita, OOM, fit incompleto/TIMEOUT, supporti o pin diversi fermano la fase; nessun retry cieco, seme sostitutivo o riduzione 
+[163] P:69: 5. Sul **LR selezionato**, minimo MSE o E_dyn ancora nelle ultime5 epoche dell'orizzonte massimo, oppure LR ancora al bordo dopo l'estensione di quel 
+[163] J:142:       "unresolved": "selectedLR still at expanded boundary, OR selected duration is first quarter-epoch checkpoint, OR minimum MSE or E_dyn of selecte
+[163] J:471:     "training_recipe": "same fit policy as real; seed0; no external users"
+[193] P:72: S-2: per il LR selezionato, **distanza >5 epoche e perdita relativa E_dyn >=2%** rispetto al suo minimo interno → `objective_tradeoff`. Se E_dyn_min=0
+[208] P:98: Se un controllo calibrato/diagnostico non passa: **ricetta non ammessa dal controllo positivo**, causa non attribuita automaticamente a ottimizzazione
+[208] J:421:     "failure": "all noncalibrated/nondiagnostic/failedpositive/unresolvedoptimization outcomes stop before realneuralfits, preserveevidence; noautomat
+[224] P:153: Test futuri necessari: parametri/MAC/RF; identità L0 col ramo g nullo; gradienti dopoavvio senza gate morto; dropout e LN; crop/allineamento e mask; p
+[224] DEC:6747: Ricetta proposta: Kaiming normal fan_in ReLU nei hidden, bias/uscite/ramo affine zero; AdamW e MSE standardizzata per finestra invariati; batch32, shu
+[232] P:122: “Passa” significa esattamente1, non il solo IC sopra zero. Non riusare `practical_assessment` del lungo: regole diverse. **Necessario e sufficiente pe
+[233] J:40:       "iff": "all qualitygates and L0/MLP/L13/TCNpost admitted; contrasts1,4,5 eachbeneficio_pratico_risolto; neither2nor3 deterioramento_pratico",
+[267] R:21: | C-3 — `controlli-4`, minore | Il perimetro dell'esito non è nella tabella del §10 né completo in decisioni.md. | **Accolta.** Esplicitare candidata 
+[267] R:67: | 33 | `selezione-criteri-N3` | La regola della candidata richiede E_dyn ≤ 0,763056: il 2% sotto la testa allenata e il 2,91% sotto la ridge. Va detto
+[356] R:27: | R-2 — `consegna-4`, minore | La voce di congelamento va completata e pinnata. | **Accolta.** La nuova voce deve riportare soglia dinamica, pareggi, 
+[356] DEC:6755: GateR-1 futuro: riprodurre0,7859020004638595 e0,7786289843513977 entro1e-12,8327finestre/20.119.920elementi dinamici, `[6:154]` ugualealla predizione 
+[357] R:19: | C-1 — `controlli-1`, minore | Manca il controllo di sanità della ricetta comune. | **Accolta con precisazione.** L0/ridge e L0/testa storica diventa
+[357] P:126: Descrittivi predefiniti, IC95 appaiati, nessun gate aggiunto: L0 vs ridge e testa storiche (sanità/ricetta, non prova di ottimo lineare); MLP vsL0; L1
+[358] R:46: | 12 | `controlli-6` | TCN contro MLP: scrivere la lettura nei due versi. | **Accolta.** Un vantaggio sostiene questa lettura temporale rispetto alla 
+[359] R:57: | 23 | `selezione-11` | Il weight decay 0,01 quasi non regolarizza: il regolarizzatore effettivo è l'arresto, a passi di un'epoca. | **Accolta con qua
+[359] P:63: AdamW beta0,9/0,999, eps1e-8, weight decay0,01 solo matrici/kernel, no bias/LN; clip norma1, batch32, ultimo batch conservato. FP32, autocast/TF32 off
+[360] R:81: | 47 | `consegna-7` | Livello B: 33,88 GPU-ore valgono per due training a 19.618; a 49.046 sarebbero circa 81-84 GPU-ore prima dell'overhead. Per B ma
+[361] R:51: | 17 | `selezione-5` | Valutazione interna con `model.eval()`, `no_grad` e FP32 alla fine di ogni epoca 1-50. L'epoca 0 è esclusa e le curve vanno nel
+[361] P:70: 6. Rifit reali sui40, semi0/1/2, da zero al LR e durata scelti (non300 automatiche); stessa frazione nella prima epoca tramite ceil(q*S_full). A pari 
+[362] R:54: | 20 | `selezione-8` | Per comodità, rimando a `424f0ec` e liste dei fold in `proposal.json`. | **Accolta.** Conservare liste esplicite e provenance d
+[362] P:57: Loss: MSE standardizzata media sugli elementi validi della singola finestra, poi media delle finestre supportate, **tutte**, non solo dinamiche. Ritar
+[363] R:83: | 49 | `consegna-9` | Serve un ID del protocollo non ambiguo, per esempio `pose-temponet-frozen-encoder-readout-20261117-v1`. | **Accolta.** ID versio
+[363] P:3: Revisione documentale del **18/11/2026**, della proposta `c15aac9`. ID **pose-temponet-frozen-encoder-readout-20261117-v2**. **REVIEW_REQUIRED; runtim
+[364] R:73: | 39 | `costo-7` | Calendario rispetto al fermo del 23-25/11 e controllo della corsia seriale prima di ogni fase CPU. | **Accolta.** Date riportate co
+[364] P:191: Preflight operatore: quotaWORK>=**12GiB+scritture pendenti delle altre linee** (8output+4margine), spazio temporaneo/VRAM, saldo e billing/AllocTRES p
+[365] R:52: | 18 | `selezione-6` | Fissare la derivazione numerica dei semi dello shuffle e la politica di determinismo su GPU. | **Accolta.** Derivazione esplici
+[365] P:44: Ordine di creazione: LN, strati di `g` nell'ordine sopra, ramo affine; quest'ultimo sotto fork_rng per non consumare il flusso del ramo `g`. L0/L13 de
+[375] P:76: L0/L13 sono affini di `z=LN(x,gamma=1,beta=0)`: la LN affine apprendibile si assorbe nei coefficienti. Per ogni fold calcolare un riferimento **minimi
+[375] J:311:     "normal_residual_tolerance": 1e-06,
+[378] P:119: 3. `beneficio_2pct_non_sostenuto`: upper99<2;
+[379] P:151: GateR-1, nel codice futuro **prima dei contrasti**, senza influire sulle scelte: dai file storici pinnati riprodurre ridge **0.7859020004638595** e te
+[381] P:1: # TCN ispirata a TEMPONet con ramo lineare: lettore della posa a encoder congelato
+[381] P:109: Primario: **TCN-post ispirata a TEMPONet con ramo lineare vs L0**, riduzione relativa E_dyn dinamiche. Soglia finale storica `pose_var>=0.257423102855
+[381] P:198: | Oggetto | TCN compatta **ispirata a TEMPONet con ramo lineare**, non classe raw invariata né suoi pesi;72.904parametri |
+[382] prompt:17: 3. **Controlli positivi:** due bersagli sui soli latenti train, teacher osservabile a complessità ridotta, rumore AR1 a varianza univoca, calibrazione
+[382] P:86: Per direzione outer, generatori noti osservano solo z=LN(lat). `L(z)` è un'affine384→20; `T(z)` una TCN congelata della stessa struttura/RF con tutti 
+[389] P:92-94: Una coppia temporale è ammissibile se `abs(E_LS,synth−E_real)<=0.05` e guadagno `(E_LS,synth−E_oracle)/E_LS,synth` in **[0.06,0.10]** sulle predizioni
+[391] P:92: Una coppia temporale è ammissibile se `abs(E_LS,synth−E_real)<=0.05` e guadagno `(E_LS,synth−E_oracle)/E_LS,synth` in **[0.06,0.10]** sulle predizioni
+[393] P:124: Il2% sotto la testa storica richiede point E_dyn<=**0.7630564046643697**, circa2,91% sotto ridge, oltre ai requisiti sugli IC e L0. Non basta arrivare
+[396] P:177: Ordini a priori, non prestazioni misurate:537.600 update iniziali massimi a4,1–18,5ms/update →0,61–2,76GPUh di soli update;1.477.800 massimi →1,68–7,5
+[397] P:68: 4. Se vince il bordo inferiore/superiore della griglia attiva, aggiungere rispettivamente **3e-5/1e-2**, una volta per lato, con la stessa politica150
+[398] P:189: **SCRATCH: dipendenza esplicita.** Le cache/predizioni principali sono suWORK, ma pose_stats.json e i riferimenti B19618 train_subset.npz(257.675.076b
+[399] P:185: GateCPU: misura separata formazione statisticheWLS, fattorizzazione per pattern, RHS/predizione, calibrazione25combinazioni, sintesi/bootstrap e seria
+[518] P:94-96: Qualificazione, sui held outer, per fold e sul pooled (tutte devono passare):
+[546] prompt:18: 4. **Comparatori/S-2:** minimi quadrati pesati per finestra descrittivi, QR stabile a blocchi+SVD e rango dichiarato; non sono l'ottimo di AdamW né de
+---- citazioni: trovate letterali in una fonte?
+[7] LETTERALE   «Simone ha autorizzato questa revisione documentale: per ora niente codice o lanci»
+[38] LETTERALE   «LR ancora al bordo dopo l'estensione»
+[39] LETTERALE   «MLP non deve vincere il temporale»
+[64] LETTERALE   «riferimenti L0 pesati. Stima interna E_real sui target reali»
+[65] LETTERALE   «weighted unregularized least squares»
+[89] LETTERALE   «ricetta non ammessa dal controllo positivo»
+[93] LETTERALE   «controllo non calibrato»
+[109] LETTERALE   «controllo non diagnostico»
+[109] LETTERALE   «ricetta non ammessa»
+[110] LETTERALE   «non diagnostico»
+[113] LETTERALE   «ricetta non ammessa»
+[131] LETTERALE   «MLP non deve vincere il temporale»
+[133] LETTERALE   «tutte devono passare»
+[133] LETTERALE   «MLP non deve vincere il temporale»
+[133] LETTERALE   «neuralL0/MLP descriptive»
+[145] LETTERALE   «controllo non diagnostico»
+[147] LETTERALE   «tutte devono passare»
+[152] LETTERALE   «non diagnostico»
+[154] LETTERALE   «Nessuna vittoria costruita su un comparatore inadeguatamente allenato»
+[161] LETTERALE   «LR ancora al bordo»
+[163] LETTERALE   «oppure LR ancora al bordo dopo l'estensione di quel lato»
+[164] LETTERALE   «Se L0 o TCN-post non è ammissibile, niente promozione primaria»
+[165] LETTERALE   «missing_or_unresolved_comparator»
+[175] LETTERALE   «ottimizzazione non risolta entro il budget»
+[190] LETTERALE   «ottimizzazione non risolta»
+[193] LETTERALE   «non automaticamente non convergenza»
+[216] LETTERALE   «minimo interno»
+[219] LETTERALE   «non calibrato»
+[220] LETTERALE   «non diagnostico»
+[221] LETTERALE   «passa»
+[221] LETTERALE   «ottimizzazione non risolta»
+[221] LETTERALE   «ricetta non ammessa»
+[224] LETTERALE   «allarme»
+[224] LETTERALE   «allarmi aperti»
+[228] non trovata «compromesso S-2»
+[232] LETTERALE   «Se MLP o L13 sono risolti migliori, la TCN non è candidata preferita»
+[233] LETTERALE   «necessario e sufficiente»
+[237] non trovata «con etichetta `deterioramento_pratico` nel contrasto 2 o 3»
+[237] LETTERALE   «risolti migliori»
+[239] LETTERALE   «migliore»
+[259] LETTERALE   «Se L0 o TCN-post non è ammissibile, niente promozione primaria»
+[263] LETTERALE   «Esito negativo/irrisolto»
+[267] LETTERALE   «Esito positivo»
+[273] LETTERALE   «Criteri»
+[274] LETTERALE   «no»
+[275] LETTERALE   «72.904parametri»
+[275] LETTERALE   «gateammissione»
+[275] LETTERALE   «livelloB»
+[275] LETTERALE   «nelFM»
+[276] LETTERALE   «272coreh/orelocali»
+[341] LETTERALE   «Accolta»
+[344] LETTERALE   «49 punti elenco ma 50 ID»
+[346] LETTERALE   «La copertura vera degli intervalli è circa 97%»
+[354] LETTERALE   «Esito positivo»
+[358] LETTERALE   «Il confronto scambia anche larghezza per connessioni temporali»
+[360] LETTERALE   «I-1»
+[361] LETTERALE   «prima dell'inferenza finale»
+[369] LETTERALE   «minore»
+[370] LETTERALE   «note»
+[370] LETTERALE   «facoltativa»
+[375] LETTERALE   «L»
+[377] non trovata «1 no, 4 e 5 sì»
+[378] LETTERALE   «riportando comunque direzione e ampiezza. Non chiamarlo equivalenza.»
+[380] non trovata «stessi valori dopo cast a float64»
+[380] LETTERALE   «stessi dtype»
+[380] non trovata «8.329 finestre dinamiche selezionate, 8.327 con supporto centrato, 166.540 coppie, 20.119.920 elementi, 15 ute»
+[381] non trovata «ramo lineare (affine, con bias)»
+[382] LETTERALE   «costante→oracolo»
+[382] LETTERALE   «costante→teacher»
+[382] LETTERALE   «non calibrato»
+[383] LETTERALE   «Ammessa»
+[383] LETTERALE   «gate di qualità»
+[387] LETTERALE   «minimo interno»
+[397] non trovata «superseded»
+[398] LETTERALE   «not reverified»
+[452] LETTERALE   «Non calibrato»
+[452] LETTERALE   «non diagnostico»
+[454] LETTERALE   «Ricetta non ammessa»
+[499] LETTERALE   «ricetta non ammessa»
+[518] LETTERALE   «MLP non deve vincere il temporale»
+[525] LETTERALE   «tutte devono passare»
+[528] LETTERALE   «LR ancora al bordo dopo l'estensione»
+[532] LETTERALE   «non risolta»
+[541] LETTERALE   «ottimizzazione non risolta»
+[541] LETTERALE   «ricetta non ammessa»
+[543] LETTERALE   «Minimo interno»
+[548] non trovata «Se MLP o L13 sono risolti migliori…»
+[550] non trovata «con etichetta deterioramento_pratico nel contrasto 2 o 3»
+[550] LETTERALE   «risolti migliori»
+[554] non trovata «sotto la selezione MSE comune, con compromesso S-2 sul comparatore»
+[563] LETTERALE   «Esito negativo/irrisolto»
+[565] LETTERALE   «Esito positivo»
+[567] LETTERALE   «Criteri»
+[570] LETTERALE   «minore»
+[577] non trovata «superseded»

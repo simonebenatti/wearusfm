@@ -1,0 +1,89 @@
+===== architettura-controlli
+point_verdicts:
+   {"point": "1 — ramo affine comune a MLP, TCN-post e TCN-pre (inizializzazione, conteggi, interpretazione), con la parte matematica del punto 4 (WLS pesata per finestra)", "verdict": "CONVERGE_CON_CORREZIONI", "reason": "Non resta nessun bloccante. Conteggi, campo ricettivo, prova di contenimento, non identificabilità, inizializzazione, assenza di gate morti, assorbimento della LN, obiettivo WLS e rango da SVD reggono. Prima del congelamento vanno corretti due punti: architettura-5 (la frase della nota 12 nel §5) e architettura-2 (la formula del residuo normale, con un test CPU). Le altre note 
+   {"point": "3 — controlli positivi train-only", "verdict": "BLOCCO", "reason": "Mancano due decisioni di disegno, piccole e senza bisogno di nuovi esperimenti. Primo, controlli-1: l'ancora del rumore è la WLS non regolarizzata a 10 utenti e il lineare non ha diagnosticità, quindi con una E_real plausibile la catena si ferma con una causa illeggibile; servono un proxy regolarizzato, un riferimento regolarizzato in forma chiusa prima dei fit neurali e a > 1 nel temporale. Secondo, controlli-2/S-B: la clausola sulla MLP va definita, con etichetta «non diagnostico», oppure dichiarata descrittiva, u
+architettura-1               REV minore/testo -> VER PARZIALE nota/testo :: Nome del ramo: «lineare» nei titoli e nel §10, «affine» nel §3, nei bracci e nella risposta
+architettura-2               REV minore/disegno -> VER PARZIALE minore/implementazione :: Residuo normale relativo ≤1e-6 senza denominatore: nella lettura di LSQR il cancello scatta sempre sul RHS-bas
+architettura-3               REV nota/implementazione -> VER CONFERMATO nota/implementazione :: «Generatori separati» con nn.Dropout: realizzabile, ma va detto come
+architettura-4               REV nota/implementazione -> VER CONFERMATO nota/implementazione :: Precisione della LN nella WLS e rango atteso
+architettura-5               REV minore/testo -> VER CONFERMATO minore/testo :: Nota 12 accolta ma non riportata: TCN/MLP scambia larghezza con connessioni temporali
+architettura-6               REV nota/testo -> VER PARZIALE nota/testo :: q_i: dire «elementi supportati dopo il crop6»; un divario negativo oltre tolleranza indica una pipeline divers
+architettura-7               REV nota/testo -> VER CONFERMATO nota/testo :: La v2 ha tolto la cautela di c15aac9 su L13 (classi non annidate, capacità diversa)
+controlli-1                  REV bloccante/disegno -> VER PARZIALE bloccante/disegno :: Ancora E_real = WLS non regolarizzata a 10 utenti: la calibrazione fallisce o porta il controllo lineare dove 
+controlli-2                  REV bloccante/testo -> VER CONFERMATO bloccante/disegno :: «MLP non deve vincere il temporale»: cancello nel protocollo, descrittivo nel JSON, senza definizione
+controlli-3                  REV minore/disegno -> VER CONFERMATO minore/disegno :: Griglie troppo rade rispetto alla tolleranza 0,05: «non calibrato» possibile anche con E_real moderata
+controlli-4                  REV minore/disegno -> VER CONFERMATO minore/disegno :: Il guadagno tarato sugli inner a 10 utenti contiene l'errore di stima della LS: sugli outer la banda [6%,10%] 
+controlli-5                  REV nota/disegno -> VER CONFERMATO nota/disegno :: Gli held outer non scelgono (a, sigma), ma scelgono LR ed epoca delle teste di controllo
+controlli-6                  REV nota/disegno -> VER CONFERMATO nota/disegno :: Il mondo sintetico non ha la componente di livello che domina la MSE reale: i controlli non provano il meccani
+controlli-7                  REV nota/disegno -> VER CONFERMATO nota/disegno :: «Uscita teacher non nulla» è controllata solo da std>1e-8: T può essere quasi lineare o avere unità spente
+controlli-8                  REV nota/testo -> VER CONFERMATO nota/testo :: Parole non allineate fra i documenti e precedenza delle etichette
+controlli-9                  REV nota/implementazione -> VER CONFERMATO nota/implementazione :: Dettagli da fissare nel codice e nel manifest dei controlli
+controlli-10                 REV nota/disegno -> VER CONFERMATO nota/disegno :: Due mondi diversi per direzione outer: il pooled è una miscela pesata dalle scale
+controlli-11                 REV nota/implementazione -> VER PARZIALE nota/implementazione :: Le verifiche in forma chiusa dei controlli vanno decise prima dei fit neurali di controllo
+controlli-12                 REV nota/benchmark -> VER CONFERMATO nota/benchmark :: Raggiungibilità del 50% della TCN: non stabilita qui, va misurata
+new_findings:
+   V-architettura-controlli-1 nota implementazione :: Soglia dinamica di E_real non specificata
+seeded_claims:
+   {"claim_id": "S-A", "verdict": "PARZIALE", "severity": "bloccante", "kind": "disegno", "reason": "La parte strutturale regge: il lineare non ha una verifica di raggiungibilità, il temporale sì; le condizioni sono 18. La parte quantitativa no. Con E_real ≈ 0,78 la WLS esatta a 20 utenti usa il 27-51% della tolleranza del 90%, con variabilità campionaria di circa ±10% dell'eccesso: non fallisce per 
+   {"claim_id": "S-B", "verdict": "CONFERMATO", "severity": "bloccante", "kind": "disegno", "reason": "Coincide con controlli-2. La clausola non è definita (riferimento, margine, metrica, fold o pooled) ed è un cancello in P ma un descrittivo in J. In più, la conseguenza naturale è «controllo non diagnostico»: il margine sarebbe leggibile da E[T|z_t].", "evidence": "LETTO P:94-96; J:441 «neuralL0/MLP
+   {"claim_id": "S-C", "verdict": "PARZIALE", "severity": "nota", "kind": "disegno", "reason": "Regge nella direzione: il margine LS→oracolo contiene l'eccesso di stima della LS, che una testa ben regolarizzata può recuperare senza imparare nulla di temporale. L'effetto però è piccolo: con K ≤ 5 vale al massimo il 2-12% del margine, contro la soglia del 50%; diventa moderato solo con K alto (12-23% a
+===== ricetta-criteri
+point_verdicts:
+   {"point": "2 — ricetta finita", "verdict": "CONVERGE_CON_CORREZIONI", "reason": "La ricetta e' finita e implementabile. La combinatoria esatta da' al piu' 5 LR, con una sola continuazione 150->300 per LR. La selezione e' unica sulla MSE pooled, con pareggi definiti. Sono definiti anche le coppie di stati dei fold, la durata dei rifit e la soglia interna solo train, coerente con pose_var storico. Il punto 2 non ha bloccanti propri. Correzioni obbligatorie prima della firma, senza esperimenti: ricetta-12 (allarme del bordo LR inferiore; e' la piu' importante); V-ricetta-criteri-2 (nei controlli 
+   {"point": "5 — criteri completi", "verdict": "CONVERGE_CON_CORREZIONI", "reason": "Reggono e coincidono in P, J e D: formula del gain, quattro etichette ordinate, «passa», regola iff, stati che impediscono il verdetto, descrittivi, MAE/livello, semi, bootstrap con bordo MC, soglia storica e numeri del gate R-1 (rifatti dalla ricevuta pinnata). Prima della firma vanno corretti: criteri-1 (che cosa veta la candidata), V-ricetta-criteri-1 (S-2 su L13/MLP nella candidata), criteri-4 (riga «Esito positivo» del §10), criteri-5 (technical_failure in J), criteri-6/S-E (testo del gate R-1), criteri-2 e
+ricetta-1                    REV minore/disegno -> VER PARZIALE minore/disegno :: Minimo di E_dyn al bordo di 300: compromesso S-2 o «ottimizzazione non risolta»? Il testo dice entrambe le cos
+ricetta-12                   REV minore/disegno -> VER CONFERMATO minore/disegno :: L'allarme «LR ancora al bordo dopo l'estensione» può scattare su L0/L13 per differenze minime
+ricetta-2                    REV minore/testo -> VER CONFERMATO minore/testo :: S-2 chiamato «allarme» mentre gli «allarmi aperti» tolgono etichette e ammissibilità
+ricetta-4                    REV minore/testo -> VER CONFERMATO minore/testo :: Controlli: soglia dinamica ed E_dyn non dicono se si calcolano su y osservato o su y* pulito
+ricetta-6                    REV nota/testo -> VER CONFERMATO nota/testo :: «Massimo 6 LR» non è raggiungibile: il massimo vero è 5 per combinazione
+ricetta-3                    REV nota/disegno -> VER PARZIALE bloccante/testo :: Nei controlli non è detto quali teste fermano la catena con un allarme
+ricetta-5                    REV nota/testo -> VER CONFERMATO nota/testo :: S-2 non dice che cosa succede se il compromesso riguarda L0 o MLP
+ricetta-7                    REV nota/testo -> VER CONFERMATO nota/testo :: Nota selezione-11 accolta con qualificazione, ma il limite del weight decay non è scritto nel protocollo
+ricetta-8                    REV nota/disegno -> VER CONFERMATO nota/disegno :: Un NaN in un LR esplorativo (3e-3 o 1e-2) ferma tutta la fase
+ricetta-9                    REV nota/implementazione -> VER CONFERMATO nota/implementazione :: Dettagli da fissare nel codice e nei test del §8
+ricetta-10                   REV nota/testo -> VER CONFERMATO nota/testo :: Manifest di selezione bloccato prima dell'inferenza, non esplicitamente prima del rifit
+ricetta-11                   REV nota/disegno -> VER CONFERMATO nota/disegno :: Nei controlli lo stesso held outer sceglie LR ed epoca e poi giudica il recupero
+criteri-1                    REV minore/disegno -> VER CONFERMATO minore/disegno :: «Risolti migliori» non definito: contraddice la regola iff della candidata
+criteri-2                    REV minore/testo -> VER PARZIALE minore/testo :: Letture accolte nella risposta (C-1 nei due versi, C-2, controlli-6) assenti da protocollo e JSON
+criteri-3                    REV minore/testo -> VER CONFERMATO minore/testo :: Etichetta 3 senza «direzione e ampiezza» e senza «nessuna equivalenza» (regressione da c15aac9)
+criteri-4                    REV minore/testo -> VER CONFERMATO minore/testo :: Tabella §10, riga «Esito positivo»: mancano clausole che la risposta destina al §10
+criteri-5                    REV minore/testo -> VER PARZIALE minore/testo :: JSON: technical_failure senza cause né conseguenza; gate R-1 senza conseguenza scritta
+criteri-6                    REV minore/testo -> VER CONFERMATO minore/testo :: Testo del gate R-1: «stessi dtype» falso per costruzione; «8.327» senza «con supporto»
+criteri-7                    REV nota/testo -> VER CONFERMATO nota/testo :: MAE e livello: manca il riferimento del delta
+criteri-8                    REV nota/testo -> VER CONFERMATO nota/testo :: «Ammessa» e «gate di qualità» non elencati in un punto solo
+criteri-9                    REV nota/implementazione -> VER CONFERMATO nota/implementazione :: R-1 può verificare anche il bootstrap e conviene eseguirlo prima dell'inferenza bloccata
+criteri-10                   REV nota/testo -> VER CONFERMATO nota/testo :: Frasi del §5 di c15aac9 cadute nella riscrittura; ridge pre solo come punto storico
+criteri-11                   REV nota/testo -> VER CONFERMATO nota/testo :: In PJ la regola è prosa compressa, con i nomi delle etichette attaccati alle parole
+new_findings:
+   V-ricetta-criteri-1 minore disegno :: S-2 su L13 (o MLP) entra nella regola della candidata attraverso il veto
+   V-ricetta-criteri-2 minore disegno :: Nei controlli un allarme aperto ferma la catena anche se la testa supera il cancello
+   V-ricetta-criteri-3 nota testo :: «minimo interno» di S-2 si puo' leggere in due modi
+seeded_claims:
+   {"claim_id": "S-D", "verdict": "PARZIALE", "severity": "minore", "kind": "disegno", "reason": "Il nucleo regge. P:69 rende «non risolta» anche il caso di compromesso, e P:104 toglie le etichette in entrambi i versi, quindi un beneficio misurato della TCN si perde. Un allarme dice che una testa potrebbe fare meglio. Un beneficio gia' misurato resta la prestazione del predittore selezionato e rifitt
+   {"claim_id": "S-E", "verdict": "PARZIALE", "severity": "minore", "kind": "testo", "reason": "Il gate e' coerente con la ricevuta; il sospetto di incoerenza non regge. 8.327 e' groups.dynamic.centered.n_windows: le finestre dinamiche con almeno una coppia finestra-giunto che ha due tempi validi nel ritaglio [6:154]. 8.329 e' groups.dynamic.n_selected_windows, le finestre selezionate dalla soglia. D
+   {"claim_id": "S-F", "verdict": "PARZIALE", "severity": "nota", "kind": "testo", "reason": "Il fatto regge: «ramo lineare» nel titolo, nel §5 e nel §10, «ramo affine» nel §3. La disposizione R-3 (R:22) prometteva «con ramo affine» nel §10. Non e' pero' un difetto da correggere prima del congelamento. L'oggetto e' definito senza ambiguita' (W h + b, con bias, 7.700 parametri) e nel progetto «lineare
+===== costo-consegna
+point_verdicts:
+   {"point": "6 — Preventivo massimo, memoria e dipendenze (dimensione costo)", "verdict": "CONVERGE", "reason": "Dopo la verifica non restano bloccanti né minori. costo-1 scende a nota: il testo dichiara già l'esclusione delle eval, lo sforamento vale solo con 18,5 ms uniformi e il gate misura per testa. Aritmetica, fasi, billing, memoria e pin reggono. S-G è respinta: i file SCRATCH sono rinfrescati fino al 22/12. Restano note facoltative: una frase a Simone su eval held e analogo deterministico, la chiave «superseded» e il sesto LR irraggiungibile, l'elenco dei file aperti (implementazione), l
+   {"point": "Consegna — disposizioni, pin e integrità", "verdict": "CONVERGE_CON_CORREZIONI", "reason": "L'integrità è piena: pin 9/9, 22 controlli su 22, diff solo documentale, commit di pin con soli registro e pin, 49 punti e 50 ID. Restano due correzioni minori di testo prima della firma. consegna-1: la riga «Esito positivo» del §10 non dice pretraining, dati già consultati e MAE/livello. consegna-2: in proposal.json l'arresto NaN/OOM/TIMEOUT c'è solo come etichetta. consegna-4 scende a nota, perché PROT:122 copre C-2 e la sostanza di C-1 c'è. Le altre sono note di testo. Dopo le correzioni v
+costo-1                      REV minore/testo -> VER PARZIALE nota/testo :: La stima a priori esclude le valutazioni held e prende come estremo basso un tempo senza vincolo deterministic
+costo-2                      REV nota/disegno -> VER CONFERMATO nota/disegno :: Con l'ordine dei passi 2-4 il sesto LR non si raggiunge: al massimo 5 LR per combinazione; il gate proietta un
+costo-3                      REV nota/implementazione -> VER CONFERMATO nota/implementazione :: I validatori storici, se riusati invariati, aprono più file di quelli elencati come dipendenze
+costo-4                      REV nota/testo -> VER CONFERMATO nota/testo :: Il condizionale sul rinfresco del 12/11 ha già una prova; manca il controllo per fase se la catena supera il 2
+costo-5                      REV nota/testo -> VER CONFERMATO nota/testo :: Il gate CPU conta 25 combinazioni di calibrazione, ma la griglia ne ha 30 per direzione
+costo-6                      REV nota/testo -> VER PARZIALE nota/testo :: La tabella non segue l'ordine di esecuzione, e la corsia seriale si controlla solo al preflight, non a ogni fa
+costo-7                      REV nota/testo -> VER CONFERMATO nota/testo :: La disposizione della nota 20 manda le liste dei fold in proposal.json, che contiene solo la regola
+consegna-1                   REV minore/testo -> VER CONFERMATO minore/testo :: La tabella del §10 non porta tutto il perimetro di C-3 né la soglia N3
+consegna-2                   REV minore/testo -> VER CONFERMATO minore/testo :: In proposal.json l'arresto tecnico NaN/OOM è solo un'etichetta
+consegna-4                   REV minore/testo -> VER PARZIALE nota/testo :: Due letture accolte nella matrice (C-1 e C-2) non sono scritte nel §5
+consegna-3                   REV nota/testo -> VER CONFERMATO nota/testo :: «costante→teacher» al posto di «costante→oracolo» in decisioni.md e nel prompt
+consegna-5                   REV nota/testo -> VER CONFERMATO nota/testo :: Piccole promesse delle disposizioni assenti dal protocollo, o destinazioni imprecise
+consegna-6                   REV nota/testo -> VER CONFERMATO nota/testo :: Le scelte che la review lasciava a Simone (criteri-3, criteri-6) non compaiono nella tabella §10
+consegna-7                   REV nota/testo -> VER CONFERMATO nota/testo :: L'ID esteso del protocollo manca nel README e in decisioni.md
+consegna-8                   REV nota/testo -> VER CONFERMATO nota/testo :: Parole fuse nel testo che Simone legge, tabella §10 compresa
+consegna-9                   REV nota/testo -> VER CONFERMATO nota/testo :: Pin da rifare dopo le correzioni; nome di un controllo fuorviante
+new_findings:
+   V-costo-consegna-1 nota testo :: La stima a priori del §9 usa un tempo per passo uniforme per tutte le teste, ma il rallentamento deterministico misurato riguarda solo le convoluzioni
+seeded_claims:
+   {"claim_id": "S-G", "verdict": "RESPINTO", "severity": "nota", "kind": "testo", "reason": "I tre file stanno nel perimetro del rinfresco del 12/11 e sono stati toccati quel giorno. Scadono dal 22/12, non prima. Oggi esistono e hanno i byte dei pin. Il condizionale di PROT:189 e il «not reverified» di PJ si possono sostituire con la prova.", "evidence": "LETTO 47ca96e:scripts/slurm/refresh_scratch.
+   {"claim_id": "S-H", "verdict": "PARZIALE", "severity": "nota", "kind": "testo", "reason": "L'aritmetica regge. A 18,5 ms uniformi i soli passi fanno 15,19 GPUh, e con le eval held a batch 32 si arriva a 19,4-27,8 GPUh, contro 20 (18 h utili con 40 job). Come previsione però è debole. Il gate proietta per testa con il p95 misurato. Il rallentamento deterministico riguarda le convoluzioni dilatate, 

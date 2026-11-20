@@ -1,0 +1,36 @@
+=== CONTROLLO LINEARE: E_LS,inner(sigma) sulla griglia, K_dyn=3 ===
+f'=0.2: s1:0.841 s1.5:0.932 s2:0.969 s2.5:0.987 s3:0.997 | salti [0.091, 0.037, 0.018, 0.01] | E_real non calibrabile: <0.791, buchi [], >1.047
+f'=0.3: s1:0.773 s1.5:0.894 s2:0.945 s2.5:0.971 s3:0.986 | salti [0.12, 0.052, 0.026, 0.015] | E_real non calibrabile: <0.723, buchi [(0.823, 0.844)], >1.036
+f'=0.5: s1:0.666 s1.5:0.825 s2:0.901 s2.5:0.941 s3:0.964 | salti [0.159, 0.076, 0.04, 0.023] | E_real non calibrabile: <0.616, buchi [(0.716, 0.775)], >1.014
+f'=0.8: s1:0.551 s1.5:0.740 s2:0.841 s2.5:0.898 s3:0.932 | salti [0.189, 0.101, 0.057, 0.034] | E_real non calibrabile: <0.501, buchi [(0.601, 0.69), (0.79, 0.791)], >0.982
+f'=1.0: s1:0.494 s1.5:0.692 s2:0.806 s2.5:0.872 s3:0.913 | salti [0.199, 0.113, 0.066, 0.041] | E_real non calibrabile: <0.444, buchi [(0.544, 0.642), (0.742, 0.756)], >0.963
+
+=== CONTROLLO LINEARE: scelta di sigma e recupero della WLS esatta sugli held outer ===
+(K_dyn,K_tot) = (2.5,5) 'favorevole', (3.5,7) 'meno favorevole'; soglia del protocollo 0,90 su MSE ed E_dyn
+-- K_dyn=2.5, K_tot=5.0
+E_real=0.80 | f'0.3: s=1 Eor=0.758 Rdyn=0.973 Rmse=0.984 passa | f'0.5: s=1.5 Eor=0.808 Rdyn=0.963 Rmse=0.963 passa | f'0.8: s=2 Eor=0.824 Rdyn=0.959 Rmse=0.935 passa | f'1.0: s=2 Eor=0.789 Rdyn=0.967 Rmse=0.935 passa
+E_real=0.85 | f'0.3: s=1.5 Eor=0.875 Rdyn=0.939 Rmse=0.963 passa | f'0.5: s=1.5 Eor=0.808 Rdyn=0.963 Rmse=0.963 passa | f'0.8: s=2 Eor=0.824 Rdyn=0.959 Rmse=0.935 passa | f'1.0: s=2.5 Eor=0.854 Rdyn=0.949 Rmse=0.898 FALLISCE
+E_real=0.90 | f'0.3: s=1.5 Eor=0.875 Rdyn=0.939 Rmse=0.963 passa | f'0.5: s=2 Eor=0.882 Rdyn=0.935 Rmse=0.935 passa | f'0.8: s=2.5 Eor=0.880 Rdyn=0.936 Rmse=0.898 FALLISCE | f'1.0: s=3 Eor=0.894 Rdyn=0.927 Rmse=0.854 FALLISCE
+E_real=0.95 | f'0.3: s=2 Eor=0.926 Rdyn=0.892 Rmse=0.935 FALLISCE | f'0.5: s=3 Eor=0.944 Rdyn=0.854 Rmse=0.854 FALLISCE | f'0.8: s=3 Eor=0.913 Rdyn=0.908 Rmse=0.854 FALLISCE | f'1.0: s=3 Eor=0.894 Rdyn=0.927 Rmse=0.854 FALLISCE
+E_real=1.00 | f'0.3: s=3 Eor=0.966 Rdyn=0.756 Rmse=0.854 FALLISCE | f'0.5: s=3 Eor=0.944 Rdyn=0.854 Rmse=0.854 FALLISCE | f'0.8: NON CALIBRATO | f'1.0: NON CALIBRATO
+E_real=1.05 | f'0.3: NON CALIBRATO | f'0.5: NON CALIBRATO | f'0.8: NON CALIBRATO | f'1.0: NON CALIBRATO
+-- K_dyn=3.5, K_tot=7.0
+E_real=0.80 | f'0.3: s=1 Eor=0.758 Rdyn=0.962 Rmse=0.977 passa | f'0.5: s=1.5 Eor=0.808 Rdyn=0.949 Rmse=0.949 passa | f'0.8: s=2 Eor=0.824 Rdyn=0.943 Rmse=0.909 passa | f'1.0: s=2 Eor=0.789 Rdyn=0.954 Rmse=0.909 passa
+E_real=0.85 | f'0.3: s=1.5 Eor=0.875 Rdyn=0.915 Rmse=0.949 passa | f'0.5: s=1.5 Eor=0.808 Rdyn=0.949 Rmse=0.949 passa | f'0.8: s=2 Eor=0.824 Rdyn=0.943 Rmse=0.909 passa | f'1.0: s=2.5 Eor=0.854 Rdyn=0.929 Rmse=0.858 FALLISCE
+E_real=0.90 | f'0.3: s=1.5 Eor=0.875 Rdyn=0.915 Rmse=0.949 passa | f'0.5: s=2 Eor=0.882 Rdyn=0.909 Rmse=0.909 passa | f'0.8: s=2.5 Eor=0.880 Rdyn=0.911 Rmse=0.858 FALLISCE | f'1.0: s=3 Eor=0.894 Rdyn=0.897 Rmse=0.795 FALLISCE
+E_real=0.95 | f'0.3: s=2 Eor=0.926 Rdyn=0.848 Rmse=0.909 FALLISCE | f'0.5: s=2.5 Eor=0.921 Rdyn=0.858 Rmse=0.858 FALLISCE | f'0.8: s=3 Eor=0.913 Rdyn=0.872 Rmse=0.795 FALLISCE | f'1.0: s=3 Eor=0.894 Rdyn=0.897 Rmse=0.795 FALLISCE
+E_real=1.00 | f'0.3: s=3 Eor=0.966 Rdyn=0.658 Rmse=0.795 FALLISCE | f'0.5: s=3 Eor=0.944 Rdyn=0.795 Rmse=0.795 FALLISCE | f'0.8: NON CALIBRATO | f'1.0: NON CALIBRATO
+E_real=1.05 | f'0.3: NON CALIBRATO | f'0.5: NON CALIBRATO | f'0.8: NON CALIBRATO | f'1.0: NON CALIBRATO
+
+=== CONTROLLO TEMPORALE: spostamento del guadagno da inner (10 utenti) a outer (20 utenti) ===
+{'tot': 243, 'noncal': 138, 'outer_fuori': 26, 'outer_ok': 79}
+K_dyn=2.0: coppie calibrate 28; g_in medio 0.0750; g_out medio 0.0690; spostamento medio -0.0060; g_out<0,06 in 1 su 28
+K_dyn=3.0: coppie calibrate 29; g_in medio 0.0745; g_out medio 0.0655; spostamento medio -0.0090; g_out<0,06 in 4 su 29
+K_dyn=5.0: coppie calibrate 48; g_in medio 0.0767; g_out medio 0.0617; spostamento medio -0.0150; g_out<0,06 in 21 su 48
+
+K_dyn=2: x_in=0.0139, quota del guadagno inner dovuta alla stima 0.16, g_out atteso=0.0741
+K_dyn=3: x_in=0.0208, quota del guadagno inner dovuta alla stima 0.24, g_out atteso=0.0711
+K_dyn=4: x_in=0.0278, quota del guadagno inner dovuta alla stima 0.32, g_out atteso=0.0681
+K_dyn=6: x_in=0.0417, quota del guadagno inner dovuta alla stima 0.48, g_out atteso=0.0620
+K_dyn=8: x_in=0.0556, quota del guadagno inner dovuta alla stima 0.64, g_out atteso=0.0559
+K_dyn=10: x_in=0.0694, quota del guadagno inner dovuta alla stima 0.80, g_out atteso=0.0496

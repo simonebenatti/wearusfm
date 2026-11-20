@@ -1,0 +1,11 @@
+dati: train (1920, 160, 384) val (720, 160, 384); fold [960, 960]; soglia dinamica 0.2569; dinamiche train 963 val 360; generati in 2.3s
+ridge CV (MSE in comune sui due fold): 1e-2: 0.9288, 1e-1: 0.9288, 1e0: 0.9288, 1e1: 0.9287, 1e2: 0.9282, 1e3: 0.9225, 1e4: 0.8850, 1e5: 0.8240, 1e6: 0.8536, 1e7: 0.9794, 1e8: 1.0192
+ridge migliore alpha 100000 mse 0.8240 E_dyn 0.8136 livello 0.5929
+ridge sui val sintetici: mse 0.8601 E_dyn 0.8167; |w| medio 0.0151 max 0.0699
+  TCN lr=0.0001: CV fatta in 895s, passi/epoca [30, 30]
+  TCN lr=0.001: CV fatta in 1862s, passi/epoca [30, 30]
+  TCN lr=0.0001: minimo CV mse 0.9051 all'epoca 43 (epoca 1: 1.0008, epoca 50: 0.9074); E_dyn CV a quell'epoca 0.9683; minimo E_dyn 0.9678 all'epoca 46
+  TCN lr=0.001: minimo CV mse 0.9122 all'epoca 28 (epoca 1: 0.9969, epoca 50: 0.9231); E_dyn CV a quell'epoca 0.9643; minimo E_dyn 0.9551 all'epoca 50
+  TCN: scelta su MSE = LR 0.0001, epoca 43, 0.9051 (ridge CV 0.8240); scelta su E_dyn = LR 0.001, epoca 50, 0.9551 (ridge CV 0.8136)
+  TCN rifit (LR 0.0001, 60 passi/epoca): val all'epoca scelta 43: mse 0.9179 E_dyn 0.9714; a meta' epoche (22): mse 0.9571 E_dyn 0.9902; oracolo mse 0.9179 all'epoca 43; oracolo E_dyn 0.9692 all'epoca 50; ridge val mse 0.8601 E_dyn 0.8167
+fatto in 2566s

@@ -1,0 +1,11 @@
+{
+ "comando": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ~/.venvs/wearusfm-tok/bin/python check_l1_identity.py <worktree> <cartella con temponet_emg2pose_old.py e temponet_db8.py estratti da ee118a25>",
+ "eseguito": "2026-11-18, Mac, CPU, dati sintetici dei test (train --epochs 2 --batch 16 --chunk-steps 3 --max-steps-per-epoch 7; eval --val-only)",
+ "model_final.pt": true,
+ "checkpoints/epoch_01.pt": true,
+ "checkpoints/epoch_02.pt": true,
+ "history_same_keys": true,
+ "history_same_values": true,
+ "eval_val_same": true,
+ "eval_new_train_loss": "l1"
+}

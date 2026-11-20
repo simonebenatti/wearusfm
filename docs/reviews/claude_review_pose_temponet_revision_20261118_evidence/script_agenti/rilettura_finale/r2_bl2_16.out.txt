@@ -1,0 +1,19 @@
+T C aT aM | corpo | prompt | n.regole corpo/prompt
+1 1 1 1 | ottimizzazione non risolta | ottimizzazione non risolta | 1/1
+1 1 1 0 | passa (allarme TCN registrato) | passa | 1/1
+1 1 0 1 | ottimizzazione non risolta | ottimizzazione non risolta | 1/1
+1 1 0 0 | passa | passa | 1/1
+1 0 1 1 | ottimizzazione non risolta | ottimizzazione non risolta | 1/1
+1 0 1 0 | ottimizzazione non risolta | ottimizzazione non risolta | 1/1
+1 0 0 1 | controllo non diagnostico | controllo non diagnostico | 1/1
+1 0 0 0 | controllo non diagnostico | controllo non diagnostico | 1/1
+0 1 1 1 | ottimizzazione non risolta (TCN, OB-1) | ottimizzazione non risolta (TCN, OB-1) | 1/1
+0 1 1 0 | ottimizzazione non risolta (TCN, OB-1) | ottimizzazione non risolta (TCN, OB-1) | 1/1
+0 1 0 1 | ricetta non ammessa (TCN, OB-1) | ricetta non ammessa (TCN, OB-1) | 1/1
+0 1 0 0 | ricetta non ammessa (TCN, OB-1) | ricetta non ammessa (TCN, OB-1) | 1/1
+0 0 1 1 | ottimizzazione non risolta (TCN, OB-1) | ottimizzazione non risolta (TCN, OB-1) | 1/1
+0 0 1 0 | ottimizzazione non risolta (TCN, OB-1) | ottimizzazione non risolta (TCN, OB-1) | 1/1
+0 0 0 1 | ricetta non ammessa (TCN, OB-1) | ricetta non ammessa (TCN, OB-1) | 1/1
+0 0 0 0 | ricetta non ammessa (TCN, OB-1) | ricetta non ammessa (TCN, OB-1) | 1/1
+etichetta unica e corpo = prompt in tutte le 16: True
+B3:192 (MLP > 50% - q quando la clausola non passa e la TCN e' >= 50%): violazioni 0 su 6120

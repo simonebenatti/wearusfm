@@ -1,0 +1,63 @@
+torch 2.14.0
+
+== 1. parametri, pesi nelle trasformazioni, trasformazioni, ReLU, dropout ==
+L0        parametri=8468 (dichiarati 8468, uguali=True) | pesi=7680 bias=20 LN=768 | trasformazioni=1 ReLU=0 dropout=[]
+MLP       parametri=65300 (dichiarati 65300, uguali=True) | pesi=64128 bias=404 LN=768 | trasformazioni=6 ReLU=5 dropout=[('Dropout', 0.1), ('Dropout', 0.1)]
+L13       parametri=100628 (dichiarati 100628, uguali=True) | pesi=99840 bias=20 LN=768 | trasformazioni=1 ReLU=0 dropout=[]
+TCN_post  parametri=65204 (dichiarati 65204, uguali=True) | pesi=64128 bias=308 LN=768 | trasformazioni=6 ReLU=5 dropout=[('Dropout', 0.1), ('Dropout', 0.1)]
+TCN_pre   parametri=65204 (dichiarati 65204, uguali=True) | pesi=64128 bias=308 LN=768 | trasformazioni=6 ReLU=5 dropout=[('Dropout', 0.1), ('Dropout', 0.1)]
+
+== 2. MAC per finestra da 160 patch (esclusi bias, LN, ReLU) ==
+L0        MAC = 1228800
+MLP       MAC = 10260480
+L13       MAC = 15974400
+TCN_post  MAC = 10260480
+TCN_pre   MAC = 10260480
+64128 * 160 = 10260480
+
+== 3. campo ricettivo: Jacobiano dell'uscita al centro t0=80 rispetto all'ingresso (eval, ultimo strato casuale non nullo) ==
+L0        offset con Jacobiano non nullo in tutti e 5 i semi: 0..0 (1 patch, contigui=True)
+MLP       offset con Jacobiano non nullo in tutti e 5 i semi: 0..0 (1 patch, contigui=True)
+L13       offset con Jacobiano non nullo in tutti e 5 i semi: -6..6 (13 patch, contigui=True)
+          quota media di |J| per offset -6..+6: 7.7% 7.7% 7.7% 7.6% 7.9% 7.7% 7.6% 7.6% 7.9% 7.7% 7.4% 7.8% 7.7%
+          massa fuori da [-6,+6]: -1.1920928955078125e-07
+TCN_post  offset con Jacobiano non nullo in tutti e 5 i semi: -6..6 (13 patch, contigui=True)
+          quota media di |J| per offset -6..+6: 5.4% 5.7% 7.5% 8.1% 9.5% 9.3% 9.5% 9.7% 9.2% 7.6% 7.7% 5.5% 5.4%
+          massa fuori da [-6,+6]: 0.0
+
+== 3b. controprova con perturbazioni: quali patch d'ingresso cambiano l'uscita al centro 80 ==
+L0        offset che cambiano l'uscita: [0]
+MLP       offset che cambiano l'uscita: [0]
+L13       offset che cambiano l'uscita: [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+TCN_post  offset che cambiano l'uscita: [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+
+== 3c. struttura esatta (pesi tutti positivi, ingresso positivo: nessuna ReLU spenta) ==
+TCN_post  offset strutturali: [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+L13       offset strutturali: [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+MLP       offset strutturali: [0]
+L0        offset strutturali: [0]
+cammini per offset (dilatazioni 1,2,3): {-6: 1, -5: 1, -4: 2, -3: 2, -2: 3, -1: 3, 0: 3, 1: 3, 2: 3, 3: 2, 4: 2, 5: 1, 6: 1} totale 27
+  tre kernel 3 con dilatazioni (1, 2, 3): RF nominale 13, offset raggiunti 13, senza buchi=True
+  tre kernel 3 con dilatazioni (2, 4, 8): RF nominale 29, offset raggiunti 15, senza buchi=False
+  tre kernel 3 con dilatazioni (2, 2, 2): RF nominale 13, offset raggiunti 7, senza buchi=False
+  tre kernel 3 con dilatazioni (1, 1, 4): RF nominale 13, offset raggiunti 13, senza buchi=True
+  tre kernel 3 con dilatazioni (1, 2, 4): RF nominale 15, offset raggiunti 15, senza buchi=True
+
+== 4. centri 6..153 e padding ==
+centri con 6 <= t e t+6 < 160: 6 .. 153 numero 148
+TCN_post  uscita con padding (4, 160, 20), senza padding (4, 148, 20)
+          max |con padding[6:154] - senza padding| = 4.470e-08
+          padding replicate invece di zeri: max diff sui centri 6..153 = 0.000e+00; ai bordi = 1.105e-02; centri cambiati: [0, 1, 2, 3, 4, 5, 154, 155, 156, 157, 158, 159]
+          padding reflect   invece di zeri: max diff sui centri 6..153 = 0.000e+00; ai bordi = 1.256e-02; centri cambiati: [0, 1, 2, 3, 4, 5, 154, 155, 156, 157, 158, 159]
+          padding circular  invece di zeri: max diff sui centri 6..153 = 0.000e+00; ai bordi = 1.349e-02; centri cambiati: [0, 1, 2, 3, 4, 5, 154, 155, 156, 157, 158, 159]
+L13       uscita con padding (4, 160, 20), senza padding (4, 148, 20)
+          max |con padding[6:154] - senza padding| = 1.717e-05
+          padding replicate invece di zeri: max diff sui centri 6..153 = 0.000e+00; ai bordi = 1.178e+01; centri cambiati: [0, 1, 2, 3, 4, 5, 154, 155, 156, 157, 158, 159]
+          padding reflect   invece di zeri: max diff sui centri 6..153 = 0.000e+00; ai bordi = 1.496e+01; centri cambiati: [0, 1, 2, 3, 4, 5, 154, 155, 156, 157, 158, 159]
+          padding circular  invece di zeri: max diff sui centri 6..153 = 0.000e+00; ai bordi = 1.348e+01; centri cambiati: [0, 1, 2, 3, 4, 5, 154, 155, 156, 157, 158, 159]
+
+== 4b. finestra piu' corta (N=100 patch reali, resto riempito): quali centri dipendono dal riempimento ==
+TCN_post  primo centro che dipende dal riempimento oltre N=100: 94 (centri ammessi dal crop6: t+6 < 100, cioe' t <= 93)
+L13       primo centro che dipende dal riempimento oltre N=100: 94 (centri ammessi dal crop6: t+6 < 100, cioe' t <= 93)
+MLP       primo centro che dipende dal riempimento oltre N=100: 100 (centri ammessi dal crop6: t+6 < 100, cioe' t <= 93)
+L0        primo centro che dipende dal riempimento oltre N=100: 100 (centri ammessi dal crop6: t+6 < 100, cioe' t <= 93)

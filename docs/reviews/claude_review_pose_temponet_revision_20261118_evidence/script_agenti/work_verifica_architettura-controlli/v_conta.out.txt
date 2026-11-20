@@ -1,0 +1,13 @@
+MLP g pesi 64128 g bias 404 tot 73000 pesi trasf 71808 bias tot 424 MAC160 11489280
+TCN g pesi 64128 g bias 308 tot 72904 pesi trasf 71808 bias tot 328 MAC160 11489280
+L0 8468 MAC160 1228800 L13 100628 MAC160 15974400
+torch g TCN 64436 +LN+aff 72904
+RF offsets -6 6 n 13
+centri senza padding 6 .. 153 148
+F.dropout sig: (input: torch.Tensor, p: float = 0.5, training: bool = True, inplace: bool = False) -> torch.Tensor
+nn.Dropout init sig: (self, p: float = 0.5, inplace: bool = False) -> None
+kaiming_normal_ sig: (tensor: torch.Tensor, a: float = 0, mode: Literal['fan_in', 'fan_out'] = 'fan_in', nonlinearity: Literal['linear', 'conv1d', 'conv2d', 'conv3d', 'conv_transpose1d', 'conv_transpose2d', 'conv_transpose3d', 'sigmoid', 'tanh', 'relu', 'leaky_relu', 'selu'] = 'leaky_relu', generator: torch._C.Generator | None = None) -> torch.Tensor
+torch version 2.14.0
+manual_seed chiama cuda.manual_seed_all: False
+bernoulli_ doc has generator: True
+fan_in conv k3 192

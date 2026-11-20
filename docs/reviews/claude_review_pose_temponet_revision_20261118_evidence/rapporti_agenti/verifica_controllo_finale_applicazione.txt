@@ -1,0 +1,172 @@
+RAPPORTO DEL VERIFICATORE AVVERSARIO - LENTE «applicazione» (controllo 2)
+Bozza congelata: controllo2/bozza_controllo2.md (sha256 cdaee410f031b9f05b85dc72c8f35becad2abaf51909d52ac2d05bd4c273127a,
+669 righe; ricontrollato all'inizio, non modificata). Convenzione: «B2:n» = riga della bozza congelata; «B1:n» = riga di
+controllo/bozza_controllo.md; «SC:n» = riga di controllo/sintesi_controllo.txt; P/J/R/DEC/prompt letti in gpt_3e007c8/.
+Script miei in questa cartella: v_soglie.py (+ .out.txt) per P-02, v_bl2_regole.py (+ .out.txt) per P-01. Nessun dato,
+nessuna rete, nessun job.
+Stato: completo (scritto a pezzi).
+
+Esito sintetico: P-01 PARZIALE, P-02 PARZIALE, P-03 CONFERMATO, P-04 PARZIALE, P-05 CONFERMATO. Nessuno cambia verdetti,
+blocchi o correzioni obbligatorie. Un problema nuovo, VA2-N1, legato a P-01: la bozza ha perso «o non conta come superata»
+del CORRECTED_FIX di AVV-05 (B2:174 e prompt B2:590), che il controllore dà per applicato.
+
+======================================================================================================================
+P-01 [B2:167-168] -> PARZIALE (imprecisione)
+======================================================================================================================
+Che cosa regge.
+- LETTO: B1:145-146 «Se non passa, l'etichetta giusta è «controllo non diagnostico»: il margine piantato si legge in modo
+  istantaneo, quindi il controllo non dice se la ricetta sfrutta il tempo.»; B2:168 tiene la stessa giustificazione senza
+  l'etichetta. SC:149 (ISSUE di AVV-05): «In entrambi i casi la giustificazione «il margine si legge in modo istantaneo» non è
+  stabilita». SC:152 (CORRECTED_FIX): «Stesse frasi in BL-2 (bozza:145-146, 152-153)». Quindi la frase di B1:145-146 doveva
+  ricevere le regole nuove; la bozza ha spostato le regole a B2:172-178 e ha lasciato la giustificazione. «Applicato in parte»
+  è corretto.
+- CALCOLATO: con la TCN sopra il 50% (precondizione di B2:173) e la clausola che fallisce (< q), la MLP recupera PIÙ del
+  50% − q del margine (rec_MLP = rec_TCN − clausola > 0,5 − q). La giustificazione è vera solo «almeno in parte», come già
+  diceva l'osservazione O5 della lente correzioni (controllo/correzioni/rapporto.txt:258-259).
+Che cosa non regge come scritto dal controllore.
+- La «contraddizione» con il ramo dell'allarme è debole. Con un allarme sulla TCN e la clausola che fallisce (caso E di
+  v_bl2_regole.out.txt) la MLP legge davvero più del 50% − q, e anche con l'etichetta «ottimizzazione non risolta» il
+  controllo non dice se la ricetta sfrutta il tempo: B2:168 non assegna più un'etichetta, quindi non contraddice B2:174-175.
+- Il caso B (TCN 0,62 senza allarme, MLP 0,40 con allarme) ha la clausola NUMERICA che passa (0,22 ≥ q). B2:168 è attaccata
+  alla disuguaglianza («Se non passa»), quindi alla lettera non riguarda il caso B. Lo riguarda solo se «non conta come
+  superata» (B2:176) si legge come «non passa». È la lettura (i) di v_bl2_regole.out.txt: allora B2:174 dà l'etichetta giusta
+  e B2:168 afferma una cosa non stabilita (MLP al 40%).
+- Con la lettura (ii), cioè «non conta come superata» distinto da «non passa», B2:174 alla lettera non dà alcuna etichetta
+  al caso B. La causa è che la bozza ha perso un pezzo del CORRECTED_FIX. SC:152 diceva «Se la TCN supera il 50% e la clausola
+  non passa, o non conta come superata, l'etichetta è «ottimizzazione non risolta» se la TCN o la MLP hanno un allarme
+  aperto». B2:174 e il prompt B2:590 dicono solo «non passa». Il controllore dà le regole «applicate» (suo rapporto, riga
+  43-45) e non lo vede.
+- Quindi il difetto vero è doppio e piccolo: la giustificazione è troppo forte («almeno in parte») e il caso B dipende da
+  come si legge B2:176. Una delle due letture rende falsa B2:168, l'altra lascia il caso B senza etichetta.
+PROVA: B2:167-168, B2:173-177, B2:589-591; B1:145-146; SC:149, SC:151 (caso B regge), SC:152 (CORRECTED_FIX con «o non conta come
+superata»); controllo/verifica-avvocato-gpt/verifica_conti.out.txt:33; v_bl2_regole.out.txt (casi B, D, E, F, due letture).
+CORRECTED_FIX: B2:168: «Se non passa, la MLP recupera più del 50% − q del margine (la clausola si valuta solo con la TCN
+sopra il 50%): il margine piantato si legge almeno in parte in modo istantaneo, e il controllo non dice se la ricetta sfrutta il
+tempo. L'etichetta segue le regole sotto.» Va insieme al nuovo VA2-N1 (B2:174 e prompt B2:590, «o non conta come
+superata»). Senza VA2-N1 il caso B resta affidato alla lettura. Rispetto alla correzione del controllore, «Se non passa senza
+allarmi aperti» non serve, perché il conto vale anche con gli allarmi.
+
+======================================================================================================================
+P-02 [B2:102-104] -> PARZIALE (imprecisione)
+======================================================================================================================
+Che cosa regge (CALCOLATO, v_soglie.py con le formule di v_scan_lineare.py; scansione di E_real a passi di 0,0001 e soglia
+continua per bisezione):
+- Soglie con sigma continua: K 2,5/5 0,9361 (quote 0,3-0,5) e 0,9214 (0,6); K 3,5/7 0,9133 e 0,8939. «Fra circa 0,89 e 0,94»
+  è giusto.
+- La dipendenza dalla griglia c'è da entrambi i lati. Con K 2,5/5 la griglia attuale fallisce SOTTO la soglia continua: per
+  ogni quota la griglia dà F dove la continua dà P. Con K 3,5/7 e quote 0,3, 0,5 e 0,6 la griglia passa SOPRA la soglia, in
+  [0,9134; 0,9225], [0,9134; 0,9237] e [0,8940; 0,9060]; con quota 0,4 fallisce sotto, in [0,8933; 0,9133].
+- I casi puntuali del controllore sono esatti. K 3,5/7, quota 0,5, E_real 0,92: la griglia sceglie sigma 2 (interna 0,9038) e
+  la WLS fa 0,9089, quindi passa; con sigma continua (sigma 2,169) fa 0,8928 e fallisce. K 2,5/5, stesso caso: griglia sigma
+  2,5, 0,8983, fallisce; continua 0,9180, passa. Sono anche le righe 2 e 5 di
+  controllo/verifica-avvocato-gpt/verifica_conti.out.txt. B1:90 riportava il primo caso, e la riscrittura l'ha tolto.
+Che cosa non regge.
+- L'effetto descritto dal controllore («fa credere che oltre 0,89-0,94 il P attuale fallisca sempre») vale solo nel senso
+  stretto: sopra la soglia continua di quella coppia (K, quota) la griglia può ancora passare, per non più di 0,012 di E_real.
+- Letta come «oltre 0,94», la frase è invece VERA nel modello. Con la griglia attuale le soglie effettive cadono a 0,9164,
+  0,9359, 0,9175 e 0,9000 (K 2,5/5) e a 0,9226, 0,8933, 0,9238 e 0,9061 (K 3,5/7): tutte fra 0,893 e 0,936. Sopra 0,94 la
+  griglia attuale fallisce sempre; l'unica eccezione è «non calibrato» a 0,9998 con K 2,5/5 e quota 0,6.
+- La correzione del controllore è esatta ma lunga, e non dice la cosa che serve al lettore del paragrafo: anche con la griglia
+  attuale la soglia resta nello stesso intervallo, spostata fino a circa 0,02 in giù o 0,01 in su.
+PROVA: v_soglie.out.txt (transizioni e intervalli «griglia != continua» per le otto coppie, casi puntuali); controllo2/
+applicazione/soglia_griglia.out.txt:9-18; controllo/verifica-avvocato-gpt/verifica_conti.out.txt:2 e :5; B1:90; SC:129 (FIX di
+AVV-01, da cui viene la frase con «sotto»).
+CORRECTED_FIX: B2:103-104, al posto di «Sotto quella soglia l'esito dipende da dove cade E_real rispetto alla griglia
+(`controlli-3`).»: «Con la griglia attuale la soglia si sposta, secondo dove cade E_real rispetto ai suoi punti, fino a circa
+0,02 in giù o 0,01 in su, e resta fra 0,89 e 0,94; più in basso la griglia ha anche buchi, «controllo non calibrato»
+(`controlli-3`).» Facoltativo, l'esempio del controllore: «con K 3,5/7, quota 0,5 ed E_real 0,92 la griglia fa passare la WLS
+(90,9%), con sigma continua no (89,3%)».
+
+======================================================================================================================
+P-03 [B2:438] -> CONFERMATO (mancanza, peso basso)
+======================================================================================================================
+Tentativo di smentita: il verificatore di C-04 (SC:220) aveva scritto che «sul fitting outer» per le unità attive è
+«un'aggiunta, innocua: la fonte dice solo «per strato»», e la bozza può averlo seguito. Non regge:
+- LETTO review_controlli.txt:257: «riportare prima dei fit la frazione di unità attive per strato di T sul fitting outer»;
+  :259: «facoltativo: centrare z per dimensione sul fitting outer prima di T (resta rappresentabile: il centro entra nel primo
+  bias)». La fonte ha «sul fitting outer» in entrambi i punti; il FIX di C-04 (SC:219, CONFERMATO) anche. B2:438 non li ha.
+- Per le unità attive il peso è minimo: è una misura descrittiva e non sceglie nulla. Per il centraggio no. La media
+  di z diventa un parametro del mondo sintetico, e P:86 fissa la regola per L e T («si centrano/normalizzano L e T usando solo
+  il fitting outer»). B2:348 la dà fra le cose che reggono («Nessun parametro del mondo si sceglie sugli held outer»).
+- C'è un secondo pezzo perso, che il controllore restituisce nella correzione ma non nomina: «per dimensione». LN centra già
+  ogni campione sulle sue 384 dimensioni. Il difetto di controlli-7 è la media PER DIMENSIONE fra campioni
+  (review_controlli.txt:253 «z=LN(lat) non centrato per dimensione»; verify_architettura-controlli.txt:162 «z non centrato per
+  canale»). «Centrare z prima di T», senza qualificazione, si può leggere come già fatto dalla LN. Anche «il centro entra nel
+  primo bias» serve: dice che T centrato resta nella classe della TCN-post, cioè che B2:345 resta vero.
+PROVA: B2:438; review_controlli.txt:253, :257, :259; SC:219-220; P:86; B2:345, B2:348; verify_architettura-controlli.txt:162.
+Correzione: quella del controllore, che riprende la fonte alla lettera: «Prima dei fit di controllo, misurare sul fitting outer
+la frazione di unità attive per strato di T e la quota del margine che la WLS L13 recupera sul bersaglio temporale (è già fra i
+12 blocchi di P:80). Facoltativo: centrare z per dimensione sul fitting outer prima di T (il centro entra nel primo bias)».
+
+======================================================================================================================
+P-04 [B2:660 (e 662)] -> PARZIALE (imprecisione, peso basso)
+======================================================================================================================
+Che cosa regge.
+- ESEGUITO (grep sugli ID «dimensione-N» del prompt, B2:529-669): tutti gli ID di oggi sono fra parentesi, tranne B2:660
+  («controlli-7 e consegna-4») e B2:662 («architettura-5, criteri-2 e criteri-5»).
+- LETTO R:47 «13 | `controlli-7` | TCN-pre: affiancare la ridge pre storica»; R:27 «R-2 — `consegna-4`, minore»; R:24, R:39,
+  R:62 per le tre di B2:662. Le collisioni ci sono.
+- La stessa riga del prompt mescola i due schemi. Subito sotto, «note 17, 18, 20, 23, 39, 47 e 49» (B2:661) è la numerazione di
+  GPT. Per `controlli-7` la lettura sbagliata («nota 13, già accolta a R:47») è quindi plausibile.
+Che cosa non regge.
+- «La convenzione copre solo gli ID fra parentesi» è vero solo per la prima metà di B2:533-535. La seconda dice che gli ID della
+  32e5452 «quando servono, hanno il prefisso 32e5452:»: un ID senza prefisso è quindi di oggi.
+- La riga sta sotto «Per le note della sezione 5» (B2:658), e nella sezione 5 i due ID hanno righe proprie con il contenuto
+  (B2:424 `consegna-4` (nota), B2:438 `controlli-7` (nota)).
+- Per `consegna-4` lo scambio con R-2 è poco probabile: R-2 è un rilievo «minore» (R:27), non una nota.
+- B2:662 è chiarita dall'elenco fra parentesi di B2:651-657, come riconosce il controllore.
+- Resta un rischio basso, concentrato su `controlli-7`: B2:660 è l'unico punto del prompt in cui compaiono questi due ID, e non
+  ne dice il contenuto.
+PROVA: B2:533-535, B2:651-662; B2:424, B2:438; R:27, R:47; SC:62-64 (NE-4).
+CORRECTED_FIX: B2:660, con gli ID fra parentesi come vuole la convenzione e il contenuto in due parole: «- T quasi lineare, da
+misurare prima dei fit di controllo (controlli-7), e P:122 come destinazione di C-2 (consegna-4);». B2:662 può restare.
+L'alternativa del controllore su B2:533 («anche fuori dalle parentesi») va bene lo stesso, ma non dice a GPT che cosa disporre.
+
+======================================================================================================================
+P-05 [B2:606-607] -> CONFERMATO (imprecisione, peso basso)
+======================================================================================================================
+Tentativo di smentita: con N-1 (B2:546-547, «Le correzioni sono proposte: la scelta scientifica è tua») GPT sa che può
+scegliere altro, quindi «cioè» non lo vincola davvero. Non basta a respingere:
+- LETTO B2:227-228 «una tolleranza dichiarata ora, per esempio allarme solo se il LR più piccolo vince di più di una quota
+  relativa fissata»; SC:185 (CORRECTED_FIX di AVV-11): «Per esempio: allarme solo se [...]. Scriverlo in BL-3 [...] e nel prompt».
+  Il prompt (B2:606-607) ha «cioè». La quota relativa da esempio diventa la definizione: una tolleranza assoluta o un'altra
+  forma risulterebbero fuori dalla proposta.
+- È lo schema di C-06 (SC:228-231, CONFERMATO), che la bozza ha corretto per BL-2 (B2:587 «per esempio»). Lasciarlo qui rende
+  il prompt incoerente con sé stesso, oltre che con il corpo.
+PROVA: B2:227-228, B2:546-547, B2:587, B2:606-607; SC:185; SC:228-231.
+Correzione: quella del controllore, «una tolleranza dichiarata ora, per esempio allarme solo se il LR più piccolo vince di più di
+una quota relativa fissata;».
+
+======================================================================================================================
+NUOVO VA2-N1 [B2:174 e prompt B2:590] mancanza - pezzo perso del CORRECTED_FIX di AVV-05
+======================================================================================================================
+PASSO: B2:174 «se la TCN supera il 50% e la clausola non passa, l'etichetta è «ottimizzazione non risolta» quando la TCN o la
+MLP hanno un allarme aperto, altrimenti «controllo non diagnostico»»; prompt B2:590 «Se non passa: «ottimizzazione non
+risolta» con un allarme aperto su TCN o MLP, altrimenti «non diagnostico».»
+PROBLEMA:
+- Il CORRECTED_FIX (SC:152) diceva «Se la TCN supera il 50% e la clausola non passa, o non conta come superata, l'etichetta è
+  [...]». La bozza ha perso «o non conta come superata», che è proprio il caso B confermato dal verificatore di AVV-05 (SC:151):
+  TCN 0,62 senza allarme, MLP 0,40 con allarme, clausola numerica che passa.
+- B2:176 e B2:591 dicono che la clausola «non conta come superata», ma nessuna regola dice quale etichetta segue. Se il codice
+  tratta «non conta» come stato a parte, per esempio con «non diagnostico» come ripiego, il caso B riprende l'etichetta
+  sbagliata che AVV-05 (gravità: errore) aveva tolto.
+- Con la lettura opposta, «non conta» = «non passa», l'etichetta torna giusta, ma allora B2:168 attribuisce al caso B una
+  lettura istantanea non stabilita (P-01).
+- Il controllore dà le regole di AVV-05 per applicate (suo rapporto, righe 43-45) e non lo segnala.
+PROVA: SC:151-152; B2:173-177; B2:589-591; v_bl2_regole.out.txt (caso B, letture i e ii).
+CORREZIONE: B2:174: «se la TCN supera il 50% e la clausola non passa, o non conta come superata, l'etichetta è «ottimizzazione non
+risolta» quando la TCN o la MLP hanno un allarme aperto, altrimenti «controllo non diagnostico»»; prompt B2:590: «- Se non
+passa, o non conta come superato: «ottimizzazione non risolta» con un allarme aperto su TCN o MLP, altrimenti «non
+diagnostico».» Va insieme alla correzione di P-01 su B2:168.
+
+======================================================================================================================
+OSSERVAZIONI (non problemi)
+======================================================================================================================
+- B2:54-57: dopo questo controllo la frase «Tutto è corretto in questa versione» va aggiornata, con una riga sul controllo finale
+  (lenti e verificatori). È lavoro del commit, non un errore della bozza congelata.
+- I riferimenti citati dal controllore per i cinque problemi tornano tutti alle righe indicate: SC:62-64, :129, :149-152, :185,
+  :219-220, :228-231; R:24, :27, :39, :47, :62; review_controlli.txt:257-259; verifica_conti.out.txt:2, :5, :33; B1:90 e
+  B1:145-146.
+Bozza congelata non modificata: sha256 ricontrollato alla fine (vedi sotto).
+Stato: completo.
+cdaee410f031b9f05b85dc72c8f35becad2abaf51909d52ac2d05bd4c273127a  /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview2/controllo2/bozza_controllo2.md

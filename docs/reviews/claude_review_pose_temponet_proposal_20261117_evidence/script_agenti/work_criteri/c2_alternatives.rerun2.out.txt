@@ -1,0 +1,13 @@
+valori teorici con pesi uguali e dati normali: copertura attesa del percentile 99% = P(|t_14| < 2,5758*sqrt(14/15)) = 0.974 ; del percentile 95% = 0.9209
+livello nominale del percentile che darebbe 99% vero con 15 utenti uguali:  99.794 %
+[reale, code normale, sigma_u=0.7, mu=2.0] copertura: percentile99 B=2000 0.9680 | percentile99 B=20000 0.9687 | percentile nominale 99,8% B=20000 0.9859 | BCa99 B=20000 0.9658 | t di Student con errore standard jackknife (14 gdl) 0.9869
+      semiampiezza media: percentile99 0.530 | percentile 99,8% 0.634 | BCa 0.542 | t-jackknife 0.651
+[reale, code normale, sigma_u=3.0, mu=2.0] copertura: percentile99 B=2000 0.9685 | percentile99 B=20000 0.9698 | percentile nominale 99,8% B=20000 0.9864 | BCa99 B=20000 0.9636 | t di Student con errore standard jackknife (14 gdl) 0.9870
+      semiampiezza media: percentile99 1.986 | percentile 99,8% 2.372 | BCa 2.031 | t-jackknife 2.442
+[reale, code t3, sigma_u=1.5, mu=2.0] copertura: percentile99 B=2000 0.9648 | percentile99 B=20000 0.9659 | percentile nominale 99,8% B=20000 0.9855 | BCa99 B=20000 0.9445 | t di Student con errore standard jackknife (14 gdl) 0.9904
+      semiampiezza media: percentile99 0.932 | percentile 99,8% 1.117 | BCa 1.000 | t-jackknife 1.147
+[uguali, code normale, sigma_u=1.5, mu=2.0] copertura: percentile99 B=2000 0.9722 | percentile99 B=20000 0.9730 | percentile nominale 99,8% B=20000 0.9891 | BCa99 B=20000 0.9707 | t di Student con errore standard jackknife (14 gdl) 0.9908
+      semiampiezza media: percentile99 0.971 | percentile 99,8% 1.162 | BCa 0.988 | t-jackknife 1.178
+[sbilanciato, code normale, sigma_u=1.5, mu=2.0] copertura: percentile99 B=2000 0.9620 | percentile99 B=20000 0.9645 | percentile nominale 99,8% B=20000 0.9859 | BCa99 B=20000 0.9402 | t di Student con errore standard jackknife (14 gdl) 0.9773
+      semiampiezza media: percentile99 1.119 | percentile 99,8% 1.319 | BCa 1.137 | t-jackknife 1.573
+tempo 71 s; R=10000; errore standard Monte Carlo di una copertura: circa 0.0014

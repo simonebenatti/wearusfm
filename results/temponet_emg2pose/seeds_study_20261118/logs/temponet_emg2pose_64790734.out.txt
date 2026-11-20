@@ -1,0 +1,29 @@
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/temponet-emg2pose-seeds-d0bf277 @ d0bf27795db4de0068ccbf0b361c552d60895aae
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+GPU: NVIDIA A100-SXM-64GB | torch 2.2.0a0+git6c8c5ad | CUDA 12.1
+== 2026-11-19T03:39:32+01:00 modo eval, codice d0bf27795db4de0068ccbf0b361c552d60895aae in /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/temponet-emg2pose-seeds-d0bf277; uscite /leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/seeds_20261118/eval_l1_s2
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+validazione: 12468 finestre, MAE con EMA 15.141, grezza 15.403, costante 18.191; cancello 0.832 < 0.9: True
+# TEMPONet su emg2pose: valutazione
+
+Validazione (15 utenti, 12468 finestre ufficiali): MAE con EMA 15.141 gradi, grezza 15.403, predittore costante 18.191 (media fra utenti).
+**Cancello**: 15.141 / 18.191 = 0.832, soglia < 0.9: **superato**.
+
+| Condizione | utenti | MAE con EMA (media ± dev. std. fra utenti) | grezza | costante | pesata per istanti | lettura | vemg2pose / NeuroPose / SensingDynamics |
+|---|---|---|---|---|---|---|---|
+| user | 20 | 14.59 ± 1.57 | 14.89 | 17.51 | 14.39 | fra NeuroPose e SensingDynamics | 12.2 / 13.2 / 15.5 |
+| stage | 158 | 17.71 ± 1.59 | 18.08 | 19.73 | 17.61 | fra NeuroPose e SensingDynamics | 15.2 / 17.2 / 18.8 |
+| user_stage | 20 | 17.62 ± 1.81 | 17.98 | 19.58 | 17.45 | fra NeuroPose e SensingDynamics | 15.8 / 17.5 / 18.7 |
+
+5.0K	/leonardo_work/IscrB_WearUsFM/wearusfm_runs/temponet_emg2pose/seeds_20261118/eval_l1_s2

@@ -1,0 +1,9 @@
+OB-3(a) contrasto 2 gain -1.5 IC99 [-1.9; -0.8] -> etichetta 3 beneficio_2pct_non_sostenuto; veto (a)=False; veto (b)=True; deterioramento >=2% escluso dall'IC: True
+OB-3(a) contrasto 2 gain -1.5 IC99 [-2.6; -0.4] -> etichetta 3 beneficio_2pct_non_sostenuto; veto (a)=False; veto (b)=True; deterioramento >=2% escluso dall'IC: False
+OB-3(a) contrasto 2 gain -1.9 IC99 [-3.4; -0.3] -> etichetta 3 beneficio_2pct_non_sostenuto; veto (a)=False; veto (b)=True; deterioramento >=2% escluso dall'IC: False
+OB-4+OB-3(b) allarme TCN, contrasto 2 gain -1.5 [-1.9; -0.8]: etichetta 3 beneficio_2pct_non_sostenuto; veto (b) senza allarme=True; con il testo di OB-4 resta escluso solo il deterioramento_pratico -> veto conservato=False
+BL-2 banda 0.06: E_LS=0.8997 E_oracolo=0.8457 margine=0.0540; recupero MLP=0.569, TCN=0.550
+BL-2 banda 0.08: E_LS=0.9100 E_oracolo=0.8372 margine=0.0728; recupero MLP=0.564, TCN=0.550
+BL-2 banda 0.10: E_LS=0.9206 E_oracolo=0.8286 margine=0.0921; recupero MLP=0.561, TCN=0.550
+BL-2/OB-1 caso A: TCN recupero 0,48 con minimo E_dyn all'epoca 299/300 (allarme), MLP 0,52 senza allarme: OB-1 da solo -> «ottimizzazione non risolta»; con la clausola al passo 2 e la precedenza di BL-2 -> «non diagnostico»
+BL-2/OB-1 caso B: TCN recupero 0,62 senza allarme, MLP 0,40 con allarme: clausola numericamente superata con q<=0,22, ma per BL-2 «non conta come superata» -> «non diagnostico» e arresto, benche' l'unico stato aperto sia l'allarme di una testa senza cancello

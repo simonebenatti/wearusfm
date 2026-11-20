@@ -1,0 +1,12 @@
+q = 0.10
+A                                      TCN 0.48 all=True MLP 0.52 all=False -> stati per testa di OB-1: ottimizzazione non risolta; B2:168 non si applica
+A'                                     TCN 0.30 all=True MLP 0.35 all=False -> stati per testa di OB-1: ottimizzazione non risolta; B2:168 non si applica
+B                                      lettura (i): clausola numerica True, non conta=True -> ottimizzazione non risolta; B2:168 dice «il margine si legge in modo istantaneo»: MLP 0.40 (minimo garantito 0,5-q = 0.40 se la clausola numerica fallisce)  <-- la clausola numerica PASSA: la frase non e' stabilita
+B                                      lettura (ii): clausola numerica True, non conta=True -> NESSUNA ETICHETTA (B2:174 alla lettera non copre «non conta come superata»)
+C                                      TCN 0.30 all=False MLP 0.35 all=False -> stati per testa di OB-1: ricetta non ammessa; B2:168 non si applica
+D                                      lettura (i): clausola numerica False, non conta=False -> non diagnostico; B2:168 dice «il margine si legge in modo istantaneo»: MLP 0.56 (minimo garantito 0,5-q = 0.40 se la clausola numerica fallisce)
+D                                      lettura (ii): clausola numerica False, non conta=False -> non diagnostico; B2:168 dice «il margine si legge in modo istantaneo»: MLP 0.56 (minimo garantito 0,5-q = 0.40 se la clausola numerica fallisce)
+E (allarme TCN, clausola fallisce)     lettura (i): clausola numerica False, non conta=False -> ottimizzazione non risolta; B2:168 dice «il margine si legge in modo istantaneo»: MLP 0.50 (minimo garantito 0,5-q = 0.40 se la clausola numerica fallisce)
+E (allarme TCN, clausola fallisce)     lettura (ii): clausola numerica False, non conta=False -> ottimizzazione non risolta; B2:168 dice «il margine si legge in modo istantaneo»: MLP 0.50 (minimo garantito 0,5-q = 0.40 se la clausola numerica fallisce)
+F (allarme MLP, clausola fallisce)     lettura (i): clausola numerica False, non conta=True -> ottimizzazione non risolta; B2:168 dice «il margine si legge in modo istantaneo»: MLP 0.55 (minimo garantito 0,5-q = 0.40 se la clausola numerica fallisce)
+F (allarme MLP, clausola fallisce)     lettura (ii): clausola numerica False, non conta=True -> ottimizzazione non risolta; B2:168 dice «il margine si legge in modo istantaneo»: MLP 0.55 (minimo garantito 0,5-q = 0.40 se la clausola numerica fallisce)

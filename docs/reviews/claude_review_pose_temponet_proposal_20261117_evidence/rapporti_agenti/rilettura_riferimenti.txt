@@ -1,0 +1,403 @@
+RILETTURA DELLA BOZZA - LENTE: RIFERIMENTI E CITAZIONI
+Bozza: /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-temponet/docs/reviews/claude_review_pose_temponet_proposal_20261117.md
+(le «righe B<n>» sotto sono righe della bozza; «PROT:<n>» sono righe del protocollo di GPT
+ .../scratchpad/tcnreview/gpt_c15aac9/docs/pose_temponet_frozen_protocol_20261117.md; «PJ:<n>» righe di proposal.json;
+ «DEC:<n>» righe di docs/decisioni.md della copia c15aac9)
+Data: 17/11/2026. Nessun file modificato, nessun commit, ssh, rete, job o subagent. git solo in lettura (log, show, grep, merge-base).
+
+FONTI USATE
+- JSON del workflow: .../tasks/w9ksgedop.output (chiave result), scaricato in forma leggibile in
+  .../scratchpad/tcnreview/rilettura_riferimenti/json_dump.txt (1.791 righe).
+- Primo giro del workflow (fallito): .../tasks/whh2m6l9i.output (workflowProgress e logs).
+- Rapporti completi: .../docs/reviews/claude_review_pose_temponet_proposal_20261117_evidence/rapporti_agenti/*.txt
+- Copia c15aac9: protocollo, proposal.json, README.md, design_review.txt, raw_source_identity.json, analytic_checks.json,
+  decisioni.md (voce DEC:6713-6738), prompt di GPT per Claude, tokenizer_window_nonlinear_protocol_20261102.md, fm_emg_reference_v10.md,
+  scripts/consolidation_long_pose*.py, scripts/tokenizer_pose_readout.py, src/wearusfm/ingest/emg2pose_pose.py.
+- Worktree di Claude (8917e2a): docs/prompt_gpt_temponet_testa_fm_20261116.md, src/wearusfm/model/temponet.py,
+  scripts/temponet_emg2pose.py, docs/temponet_db8_replication.md, docs/claude_GPT_shared (git show 8917e2a).
+
+======================================================================================================================
+PARTE 1 - RIFERIMENTI E CITAZIONI CONTROLLATI CHE REGGONO
+======================================================================================================================
+Righe del protocollo (tutte controllate sul file della copia c15aac9):
+- riga 23 «Correzione tecnica al prompt» (B45): giusta e letterale (PROT:23 «**Correzione tecnica al prompt:**»), nel §2.
+- 378 per un elemento, due elementi distanti 64, unione nominale 442 (B46-47): PROT:23.
+- righe 63-75 (B132) = §4 «Ricetta proposta, unica» fino al caso del bordo; AdamW wd 0,01, LR {1e-4,1e-3} costante, 50 epoche,
+  batch 32 a PROT:65-66.
+- riga 35 (B134): inizializzazione Torch standard degli interni e uscita a zero.
+- riga 75 (B134-135) citazione «Se il migliore è all'ultima epoca o al bordo LR si riporta; non si estende automaticamente la
+  ricerca»: letterale.
+- righe 33, 35 e 42 (B172): catena TCN con cinque ReLU, «nessun ... residuale», MLP «ReLU sui cinque hidden».
+- riga 49 (B177): cautela su TCN/L13 «questa ricetta e la sua parametrizzazione».
+- righe 173-180 (B215): tabella del §10. riga 182 (B399) «della linea 2»: letterale.
+- riga 100 (B196-201): «solo se» letterale; «candidata» letterale. riga 118 (B191, B196): «Se la TCN migliora il lettore» letterale.
+- §2, riga 25 (B232): «una TCN compatta ispirata a TEMPONet»; sei convoluzioni, tre k3 con dilatazioni 1/2/3 e niente BatchNorm,
+  pooling o stride a PROT:33 e 35. Riga «Bracci» PROT:177.
+- righe 61 e 68 (B241): loss su tutte le finestre e scelta di LR ed epoca sulla MSE per finestra.
+- riga 95 (B255) «Beneficio pratico risolto»; righe 95-98 (B264) regola a quattro esiti; formula 100*(E_ref−E_TCN)/E_ref a PROT:83.
+- riga 140: «supporti appaiati» (B308) letterale. riga 88: «la miglior lettura lineare disponibile» (B345) letterale.
+- riga 55: «4,720 GiB di input» (B358) letterale. riga 17: handle iris.polito.it 11583/2978570 (B337).
+- riga 3: «leggilo e dimmi come impostare il confronto con la testa attuale usando l’implementazione che abbiamo già» (B418-419):
+  letterale (solo l'apostrofo tipografico ’ diventa ').
+- riga 169 (§9) per la frase su SCRATCH (B124): riga giusta, ma vedi riferimenti-4 sul testo citato.
+Chiavi JSON e nomi nel codice:
+- PJ:26 «confirmatory_family», PJ:34 «practical_improvement_percent», PJ:37 «readout_failures», PJ:35 «no automatic operational adoption
+  [...] no implied noninferiority» (C-3), PJ:240 historical_fit_receipt_sha256 b08e6e321f38...d5037c14 (B76 «b08e6e32…5037c14»).
+- raw_source_identity.json: chiave «top_level_keys» presente e troncata (12 chiavi per eval.json e run.json).
+- scripts/consolidation_long_pose_runtime.py: BENCHMARK_POLICY riga 27, project_benchmark riga 145 (B301-302).
+- consolidation_long_pose._metrics riga 293; summarize esiste in DUE moduli (vedi riferimenti-10); emg2pose_pose.JOINTS riga 51.
+SHA dei commit (git log, sola lettura):
+- c15aac9 = c15aac9bcf291f4ca2e7757dd248ff61045040df, 17/11 08:28:09, ramo codex/pose-temponet-proposal-20261117 (B5, B12).
+- 8917e2a = prompt di Claude del 16/11 23:24. 60b35bd = introduzione del modello (09/11). 0c19c4b = code_sha dei report raw (11/11).
+- Byte e sha256 ricalcolati con git show: temponet.py 8.519 byte, 9d5a03e23d4d4ef2... a 60b35bd, 0c19c4b e 8917e2a;
+  temponet_emg2pose.py 31.196 byte, 8d7f9dbee1db29ca... a 0c19c4b e 8917e2a, assente a 60b35bd (B73-74 corretto).
+- 0ab9d98 = review Claude del confronto contrastivo; D-4 alla riga 356 dice «E_dyn 0,47-0,90%» (B41).
+- 3263ee9 = «Test frozen campaigns against their archived sources after integration»: antenato di main, non di c15aac9 (B400).
+- 424f0ec = copia della LONG_ROOT su $WORK (B359).
+Citazioni fra caporali di Simone e del prompt di Claude:
+- B3-4 «ok, adesso prepapariamo unprompt per GPT [...] regressine nel FM»: letterale (prompt di Claude righe 3-4).
+- B46 «Campo ricettivo 378 passi: sulla griglia di 25 ms sono 9,45 s»: letterale (prompt di Claude riga 109).
+- B9 «converge poi con te alla fine»: frase della chat, non presente in nessun file del repository: non verificabile da qui.
+Codice TEMPONet e file su SCRATCH:
+- temponet.py riga 123 «causal: bool = True» (default causale); temponet_emg2pose.py riga 189 causal=False. Dipendenza dai passi 0-123
+  con causal=True e da tutti i 160 con causal=False: architettura-7 ESEGUITO e confermato dal verificatore (v02_temponet_rf.py).
+- DOI 10.1109/COINS51742.2021.9524188 e postprint hdl.handle.net/11585/841320: temponet.py riga 5 e
+  docs/temponet_db8_replication.md riga 20.
+- Rallentamento di 13 volte con cuDNN deterministico: docs/temponet_db8_replication.md riga 116 a 8917e2a.
+- File su SCRATCH: pose_stats.json (costo-8, ricevuta R3c righe 250-258); train_subset.npz 257.675.076 byte e val.npz 2.485.295.825 byte
+  (costo-consegna-N1, extraction_plan_19618.json); somma 2.742.970.901 byte = circa 2,74 GB (B395). Scadenza dal 22/12 dei file
+  rinfrescati il 12/11: costo-8 e N1.
+Conteggi della verifica (B62-63, B25, B428): 56 giudizi (34 CONFERMATO, 21 PARZIALE, 1 RIFIUTATO); 8 rilievi nuovi (2+4+2); 60
+affermazioni riattaccate (22+19+19), 3 cadute (1+0+2); dopo la verifica 1 bloccante, 12 minori, 50 note, 1 rifiutato: tutti esatti.
+Le 12 voci minori della bozza corrispondono una a una ai 12 severity_after «minore»; le 50 note dell'elenco del §7 coprono le 50 note
+(selezione-3 e criteri-9 nella stessa riga).
+Verdetti della tabella (B18-23): coincidono con i sei verdict_opinion dei verificatori.
+Primo giro 09:01-09:26 (B60): workflowProgress del primo giro, inizio 09:01:01, ultimo errore 09:26:21.
+
+======================================================================================================================
+PARTE 2 - PROBLEMI TROVATI (prima i due errori, poi imprecisioni e stile, circa per importanza; riferimenti-23 pesa quanto le prime imprecisioni)
+======================================================================================================================
+
+riferimenti-1 | ERRORE | §4 S-1 «Correzioni proposte» (B153-163) e §9 prompt (B437-440)
+  Citazione della bozza: «Correzioni proposte. Le sceglie GPT e le firma Simone [...] 3. **Controllo positivo sui latenti veri**
+  (raccomandato) [...] 4. In alternativa o in aggiunta, il ramo lineare di A-1»; nel prompt: «serve prima dei fit una scelta tua fra:
+  regola di convergenza (...); esito «non a convergenza»; controllo positivo sui lat di train con bersaglio sintetico noto
+  (raccomandato); ramo lineare di A-1».
+  Problema: la bozza fa dei rimedi un menù da cui GPT sceglie, con il controllo positivo solo «raccomandato» e il ramo lineare come
+  alternativa. Il verificatore, che prevale, li chiede tutti e tre insieme; il ramo lineare non sostituisce nessuno di essi.
+  Prove:
+  - JSON, result[1] (selezione-criteri), verification.judgments selezione-1, corrected_statement: «Servono un controllo positivo sui
+    latenti veri del solo train e regole di convergenza e di lettura scritte prima dei fit.»
+  - stesso blocco, verdict_opinion: «Senza controllo positivo sui latenti veri e senza regole di convergenza e di lettura scritte
+    prima, un «no» non e' interpretabile e chiuderebbe la prova.»
+  - verify_selezione-criteri.txt (giudizio su selezione-1): «Il rimedio del revisore (controllo positivo train-only, regola di
+    convergenza scritta prima, regola di lettura «non a convergenza») e' adeguato.» e «nel mondo V allargare il LR fino a 3e-3 non
+    basta; servono anche estensione delle epoche o una scelta d'inizializzazione/regolarizzazione decisa prima».
+  - JSON result[0] (architettura-controlli), verdict_opinion: «Un esito negativo resta leggibile solo dopo il controllo positivo
+    chiesto dalla dimensione Selezione»; verified_ok_attacked[21]: un esito negativo è leggibile «solo se le teste a sei strati
+    arrivano al loro ottimo e se i bracci sono annidati» (due condizioni distinte: il ramo lineare cura la seconda, non la prima).
+  - revisore, selezione-1 fix: (i) controllo positivo, (ii) regola di convergenza, (iii) regola di lettura, tutte «Prima del
+    congelamento».
+  Correzione (S-1): «Correzioni chieste dai verificatori, tutte e tre prima dei fit, sul solo train e uguali per tutte le teste.
+  GPT ne sceglie i dettagli (quali LR, quante epoche in più, quale inizializzazione) e Simone le firma: 1. controllo positivo sui
+  latenti veri [testo attuale del punto 3, senza «raccomandato»]; 2. regola di convergenza [testo attuale del punto 1]; 3. esito «non a
+  convergenza» (K-3). In più, se GPT e Simone lo vogliono, il ramo lineare di A-1: rende i bracci annidati, ma non sostituisce i tre
+  punti.»
+  Correzione (§9): «servono prima dei fit, tutti e tre: un controllo positivo sui lat di train con bersaglio sintetico noto; una
+  regola di convergenza (almeno tre LR con estensione al bordo, un'estensione delle epoche se il migliore cade nelle ultime cinque,
+  epoca 1 come bordo inferiore, inizializzazione nominata); l'esito «non a convergenza». Sceglie tu i dettagli. Il ramo lineare di A-1
+  si può aggiungere, non li sostituisce. Il costo va ricalcolato.»
+
+riferimenti-2 | ERRORE | §6 R-1 (B290, B304) e B26-27, §9 (B448-450)
+  Citazione della bozza: «## 6. Prima del benchmark e dell'esecuzione [...] ### R-1»; «Prima della firma vanno riviste la ricetta di
+  allenamento (S-1) e le parti di testo elencate nelle sezioni 4 e 5»; nel prompt «Prima di benchmark ed esecuzione: P-1 (...) e R-1».
+  Problema: il verificatore mette R-1 (consegna-3) fra i minori da chiudere prima della firma e del congelamento; solo P-1 (costo-1)
+  va chiuso prima del benchmark. Così la bozza dice a GPT e a Simone che R-1 può aspettare.
+  Prove: JSON result[2] (costo-consegna), verdict_opinion: «Restano tre minori prima della firma e del congelamento: il cancello che
+  riproduce i riferimenti e l'allineamento del ritaglio prima dei contrasti (consegna-3), la voce di congelamento completa e pinnata
+  (consegna-4 [...]) e l'oggetto della prova [...] (consegna-5, punto a).» Per costo-1 invece (judgments, reasoning): «Il rilievo va
+  chiuso prima del benchmark, non prima della firma.» Il revisore (consegna-3 fix) chiede di aggiungerlo «al par. 8», cioè al testo
+  del protocollo.
+  Correzione: spostare R-1 nel §5 («Da scrivere nel testo da congelare»), con la frase: «Il cancello va scritto ora nel §8 del
+  protocollo; si esegue prima dei contrasti.» B26-27: «Prima della firma vanno riviste la ricetta di allenamento (S-1) e le parti di
+  testo delle sezioni 4 e 5, compreso il cancello R-1.» §9: «Nel testo da congelare: K-1 (...), K-2 (...), K-3 (...), R-2 (...) e R-1
+  (cancello che riproduce 0,7859020004638595 e 0,7786289843513977 e l'allineamento del ritaglio prima dei contrasti). Prima del
+  benchmark: P-1 (...).»
+
+riferimenti-3 | IMPRECISIONE | §3 (B124-126), §7 Costo (B393-395), §9 prompt (B451-452)
+  Citazione della bozza: «Il file delle statistiche della posa e i riferimenti storici di posa, che il codice della valutazione lunga
+  apre insieme alle cache, stanno solo su SCRATCH»; nel prompt: «statistiche della posa e riferimenti storici di posa stanno solo su
+  SCRATCH».
+  Problema: «riferimenti storici» è il nome che il protocollo dà alle predizioni di ridge post e testa allenata dei contrasti 4 e 5
+  (PROT:51 «**Due riferimenti storici, senza nuovo fitting:** ridge post 49k e testa già allenata»), e la bozza stessa lo usa così
+  (B23 «cancello che riproduce i riferimenti (R-1)», B306 «I riferimenti sono salvati già ritagliati a 148 patch»). Quei file sono su WORK. I file su SCRATCH di costo-consegna-N1
+  sono altri: i «pose_references» della pilot B19618 usati per validare le cache. Letta così, la frase del prompt dice a GPT che le
+  predizioni di ridge e testa stanno su SCRATCH, il che è falso.
+  Prove: JSON result[2].verification.new_findings costo-consegna-N1, titolo «Anche i riferimenti storici della posa usati per
+  validare le cache stanno solo su SCRATCH»; evidenza: train_subset.npz e val.npz «sotto /leonardo_scratch/.../results/pilot_posa/
+  B19618_20261028/B/pose/» (extraction_plan_19618.json), aperti da _reference (runtime righe 81-87). PJ:187, 193, 199: le tre voci
+  «references» (coefficienti e predizioni della ridge, predizioni della testa) hanno path /leonardo_work/... (SCRATCH solo come
+  source_path della copia).
+  Correzione: §3: «Il file delle statistiche della posa e i riferimenti di posa della pilot B19618 (`pose_references`:
+  `train_subset.npz` e `val.npz`), che il codice della valutazione lunga apre per validare le cache, stanno solo su SCRATCH (note
+  costo-8 e costo-consegna-N1). Le predizioni storiche di ridge e testa dei contrasti 4 e 5 sono invece su WORK.» §7: «Anche i
+  riferimenti di posa della pilot B19618 (`pose_references`) stanno solo su SCRATCH [...]». §9: «statistiche della posa e
+  pose_references della pilot B19618 (train_subset.npz, val.npz), che il codice della lunga apre per validare le cache, stanno solo
+  su SCRATCH; le predizioni storiche di ridge e testa sono su WORK».
+
+riferimenti-4 | IMPRECISIONE | §3 «Le tre affermazioni che cadono», secondo punto (B124)
+  Citazione della bozza: «Due volte «i payload A non dipendono dal rinfresco di SCRATCH» (§9, riga 169).»
+  Problema: il testo fra caporali non è quello della riga 169 né quello delle due affermazioni cadute, e non dice chi le aveva
+  fatte. Inoltre il revisore del costo non diceva «nessuna dipendenza»: escludeva già il file delle statistiche.
+  Prove: PROT:169 alla lettera: «I payload A sono su WORK e non dipendono dal rinfresco SCRATCH del 03/12». JSON result[2].verification
+  .verified_ok_attacked, holds=false: [5] «Costo: i payload non dipendono dal rinfresco di SCRATCH, con il solo file delle statistiche
+  come eccezione possibile»; [18] «Consegna: il fermo del 23-25/11 è giusto e i payload A non dipendono dal rinfresco di SCRATCH».
+  Correzione: «- La frase del §9, riga 169, «I payload A sono su WORK e non dipendono dal rinfresco SCRATCH del 03/12», data per buona
+  dal revisore della consegna e, con la sola eccezione possibile del file delle statistiche, da quello del costo. Non regge per
+  intero: oltre al file delle statistiche (costo-8), anche i riferimenti di posa della pilot B19618, che il codice della valutazione
+  lunga apre insieme alle cache, stanno solo su SCRATCH (costo-consegna-N1).»
+
+riferimenti-5 | IMPRECISIONE | §4 S-1 (B143-145) e §9 (B435-436)
+  Citazione della bozza: «nel mondo V del verificatore, tarato sui numeri veri (ridge CV 0,7555, quota del livello 60,2% e 57,5%), il
+  primario vale -3,1%, mentre un lettore lineare con ritardi da -6 a +6 patch fa +21,3%»; nel prompt «Nel mondo V, tarato sui numeri
+  veri, [...] e un lettore lineare con ritardi fa +21,3%».
+  Problema: i numeri fra parentesi sono quelli del mondo V, non quelli veri, che sono diversi; letta com'è, la parentesi fa credere a
+  GPT che la ridge CV vera sia 0,7555. Il +21,3% viene da una ridge con ritardi a passo 2 (-6, -4, ..., +6) e alpha scelto sul fold
+  letto, che il verificatore stesso chiama ottimista.
+  Prove: verify_selezione-criteri.txt, Parte 4: «ridge CV 0,7555 ad alpha 1e5 (vero 0,6561) [...] quota del livello nella MSE della
+  ridge 60,2% su tutte le finestre e 57,5% sulle dinamiche (vero 65,9% e 54,4%)»; «Riferimenti in forma chiusa sulla stessa direzione
+  (alpha scelto sul fold letto: ottimista) [...] ridge con ritardi -6,-4,...,+6 0,7117 / 0,6164 ad alpha 1e5 [...] tutti i ritardi
+  -6...+6 0,7001 / 0,6519 a 1e6». La bozza stessa dà i valori veri in S-2 (B242: 54,4% e 65,9%).
+  Correzione (S-1): «nel mondo V del verificatore, tarato in modo approssimato sui numeri veri (ridge CV 0,7555 contro 0,6561 vera;
+  quota del livello 60,2% su tutte le finestre e 57,5% sulle dinamiche, contro 65,9% e 54,4% veri), il primario vale -3,1%, mentre
+  una ridge con ritardi -6, -4, ..., +6 patch, con alpha scelto sul fold letto (riferimento ottimista), fa +21,3%.» §9: «Nel mondo V,
+  tarato in modo approssimato sui numeri veri, [...] e una ridge con ritardi, con alpha scelto in modo ottimista, fa +21,3%.»
+
+riferimenti-6 | IMPRECISIONE | §3 Costo (B112-113) e §4 S-1, costo (B165-167)
+  Citazione della bozza: «Per analogia con TEMPONet raw in modo deterministico, la matrice dei fit raddoppiata sta intorno a 0,77
+  GPU-ore»; «con 150 epoche e quattro LR la matrice raddoppiata arriverebbe intorno a 3,2 GPU-ore, poco sopra il tetto di fase di 3».
+  Problema: lo 0,77 conta solo i passi di training; la fonte esclude esplicitamente le valutazioni. Il gate del protocollo (PROT:165)
+  conta anche validazione, I/O e avvii. Il 3,2 di Claude eredita la stessa esclusione, quindi «poco sopra» sottostima.
+  Prove: JSON result[2].verification.verified_ok_attacked[1]: «75.000 × 18,5 ms × 2 = 0,77 h, valutazioni escluse, contro 3 h».
+  Conto ripetuto: 5 teste × 4 LR × 2 fold × 150 epoche × 30 passi + 15 rifit × 150 × 60 = 315.000 passi; × 18,5 ms × 2 = 3,24 h, di
+  soli passi. PROT:165: «includendo 20 selezioni, 15 rifit, validation, I/O e avvii».
+  Correzione: B112-113: «Per analogia con TEMPONet raw in modo deterministico (18,5 ms per passo), i 75.000 passi della matrice,
+  raddoppiati, fanno circa 0,77 GPU-ore, valutazioni interne, I/O e avvii esclusi.» B165-166: «con 150 epoche e quattro LR i soli
+  passi, raddoppiati, arriverebbero intorno a 3,2 GPU-ore, già sopra il tetto di fase di 3 prima di valutazioni, I/O e avvii che il
+  gate conta.»
+
+riferimenti-7 | IMPRECISIONE | intestazioni di S-1 (B130), A-1 (B169), K-2 (B262), K-3 (B270)
+  Citazione della bozza: «### S-1. [...] (bloccante)»; «### A-1. [...] (minore; verificatore, N2)»; «### K-2. [...] (minore;
+  verificatore, N1)»; «### K-3. [...] (minore; verificatore, N2)».
+  Problema: gli ID brevi sono ambigui. Esistono tre N1 e tre N2, uno per verificatore, e due di questi stanno sotto la stessa sigla
+  «N2» (A-1 e K-3, di verificatori diversi). S-1 è l'unica voce senza l'ID del rilievo d'origine. Altrove la bozza usa gli ID completi
+  (B338, B379-380, B395, B408), e il LEGGIMI.md delle prove dice che gli ID citati sono quelli completi, «per esempio `selezione-1` o
+  `architettura-controlli-N2`».
+  Prove: JSON new_findings: architettura-controlli-N1/N2 (result[0]), selezione-criteri-N1/N2/N3/N4 (result[1]),
+  costo-consegna-N1/N2 (result[2]). A-1 = architettura-controlli-N2; K-2 = selezione-criteri-N1; K-3 = selezione-criteri-N2;
+  S-1 = selezione-1.
+  Correzione: «(bloccante; selezione-1)», «(minore; verificatore, architettura-controlli-N2)», «(minore; verificatore,
+  selezione-criteri-N1)», «(minore; verificatore, selezione-criteri-N2)».
+
+riferimenti-8 | IMPRECISIONE | §6 P-1 (B294)
+  Citazione della bozza: «Il gate (riga 165) fissa già le misure, il fattore 2, le 50 epoche, i 35 fit e le soglie.»
+  Problema: le misure sono nominate alla riga 163, non alla 165.
+  Prove: JSON result[2].verification.judgments costo-1, reasoning: «La riga 163 del protocollo nomina le misure: caricamento, epoca
+  per architettura e per dimensione fold/full, valutazione interna, salvataggio, RSS/VRAM, warmup incluso nel costo. Fissa anche il
+  fattore 2, le 50 epoche, i 35 fit e le soglie.» PROT:163 «Misura caricamento, epoca forward/backward [...] RSS/VRAM»; PROT:165 è il
+  gate.
+  Correzione: «Il gate (righe 163-165) fissa già le misure (riga 163), il fattore 2, le 50 epoche, i 35 fit e le soglie (riga 165).»
+
+riferimenti-9 | IMPRECISIONE | §1 (B48-49)
+  Citazione della bozza: «La conclusione del prompt non cambia: il trapianto diretto non ha il significato temporale dei 128 ms di
+  TEMPONet raw.»
+  Problema: la frase attribuita alla «conclusione del prompt» è quella di GPT alla riga 23. La conclusione del prompt di Claude, che
+  i revisori dicono giusta, era «più della finestra di 4 s».
+  Prove: PROT:23 «In entrambi i casi il trapianto diretto non ha il significato temporale dei 128 ms raw». Prompt di Claude
+  (8917e2a) riga 109: «Campo ricettivo 378 passi: sulla griglia di 25 ms sono 9,45 s, piu' della finestra di 4 s.» JSON result[0]
+  review architettura, verified_ok[6]: «La conclusione «più della finestra di 4 s» resta vera (442 > 160; con causal=False l'uscita
+  dipende da tutti i 160 passi).»
+  Correzione: «La conclusione del prompt («più della finestra di 4 s») resta vera: anche 378 e 442 superano i 160 passi. E, come
+  scrive GPT alla riga 23, il trapianto diretto non ha il significato temporale dei 128 ms di TEMPONet raw.»
+
+riferimenti-10 | IMPRECISIONE | §7 Criteri (B372)
+  Citazione della bozza: «Secondari: rimandare a `_metrics` e `summarize` e citare `JOINTS` (criteri-5).»
+  Problema: senza modulo il rimando è ambiguo: `summarize` esiste in due file, con regole diverse; il rilievo indica quello di
+  tokenizer_pose_readout (MAE sulle celle con almeno un punto).
+  Prove: scripts/consolidation_long_pose.py riga 264 «def summarize(data, prediction, *, support=None)» e riga 293 «def _metrics»;
+  scripts/tokenizer_pose_readout.py riga 274 «def summarize(data, prediction)»; src/wearusfm/ingest/emg2pose_pose.py riga 51
+  «JOINTS = (...)». JSON criteri-5 fix: «Rimandare a consolidation_long_pose._metrics [...] e a tokenizer_pose_readout.summarize (MAE,
+  celle con almeno un punto) [...] nell'ordine emg2pose_pose.JOINTS».
+  Correzione: «Secondari: rimandare a `consolidation_long_pose._metrics` e a `tokenizer_pose_readout.summarize`, e citare
+  `emg2pose_pose.JOINTS` (criteri-5).»
+
+riferimenti-11 | IMPRECISIONE | §3 «Le tre affermazioni che cadono», primo punto (B122)
+  Citazione della bozza: «Sui dati finti il disegno sa vedere una struttura temporale non lineare quando c'è» (revisore
+  dell'architettura).
+  Problema: la citazione salta un pezzo della frase del revisore senza segnarlo.
+  Prove: review_architettura.txt righe 224-226: «Sui dati finti la ricetta separa le teste come atteso (TCN circa 0,35, MLP circa
+  0,57, L13 circa 0,60, L0 circa 0,80), quindi il disegno sa vedere una struttura temporale non lineare quando c'e'.» Il verificatore
+  la cita con l'omissione segnata (verify_architettura-controlli.txt riga 233: «Sui dati finti [...] il disegno sa vedere [...]»).
+  Correzione: «Sui dati finti [...] il disegno sa vedere una struttura temporale non lineare quando c'è» (revisore dell'architettura).
+
+riferimenti-12 | IMPRECISIONE | §4 C-1 (B191, B195) e §3 Criteri (B104)
+  Citazione della bozza: «non la frase «architettura promettente»» e «niente «architettura promettente»»; «la condizione «limite
+  inferiore > 0» coincidono con il criterio del 02/11».
+  Problema: le due citazioni fra caporali non sono letterali: nessuna delle fonti contiene quelle parole così.
+  Prove: PROT:100 «l'architettura è promettente nel confronto controllato»; PROT:95 «limite inferiore aggiustato >0»; criterio del
+  02/11 (docs/tokenizer_window_nonlinear_protocol_20261102.md righe 195-197): «il limite superiore dell'IC del delta assoluto di
+  E_dyn è <0», equivalente secondo il verificatore («in ogni replica 1 - E_c/E_r > 0 se e solo se E_c - E_r < 0»).
+  Correzione: B191 e B195 «l'architettura è promettente»; B104 «La soglia del 2% e la condizione «limite inferiore aggiustato >0»
+  (riga 95) coincidono con il criterio del 02/11, che la scrive come limite superiore del delta assoluto < 0, al 99% invece che al
+  95%.»
+
+riferimenti-13 | IMPRECISIONE | §3 Criteri (B100-101)
+  Citazione della bozza: «Con codice proprio i revisori hanno riprodotto i due E_dyn storici: 0,7859020004638595 (ridge post) e
+  0,7786289843513977 (testa allenata).»
+  Problema: manca da che cosa: i revisori sono partiti dalle somme per utente della ricevuta pinnata, non dai file delle predizioni.
+  Il ricalcolo dai file pinnati è proprio il cancello R-1, ancora da fare; la frase può far credere che sia già fatto.
+  Prove: JSON result[1] review criteri, summary: «riprodotti 0.7859020004638595 e 0.7786289843513977 dalle somme per utente della
+  ricevuta pinnata, ESEGUITO»; not_verifiable[2]: «Che i file di predizioni storiche su WORK (post_ridge.predictions.npz,
+  trained_head.predictions.npz) riproducano esattamente 0,785902 e 0,778629: qui la riproduzione parte solo dalle somme per utente
+  della ricevuta.» Verificatore criteri-9: «Ho riprodotto con codice mio i due E_dyn storici e i conteggi dalle somme per utente.»
+  Correzione: «Con codice proprio, dalle somme per utente della ricevuta pinnata, i revisori hanno riprodotto i due E_dyn storici:
+  0,7859020004638595 (ridge post) e 0,7786289843513977 (testa allenata). Il ricalcolo dai file delle predizioni pinnate resta da fare
+  (cancello R-1).»
+
+riferimenti-14 | IMPRECISIONE | §4 S-1 (B135)
+  Citazione della bozza: «Alle righe 96-98 e 118, un esito negativo o inconclusivo chiude la prova.»
+  Problema: il riferimento è impreciso. Solo la riga 98 scrive la chiusura, e solo per l'esito inconclusivo; le righe 96-97
+  definiscono le etichette senza conseguenze, e la riga 118 parla del livello B. La chiusura degli altri esiti viene dalla riga 100.
+  Prove: PROT:98 «Il pilot si chiude senza promozione»; PROT:118 «Se A è nullo, B resta logicamente possibile ma richiede una
+  motivazione nuova». JSON criteri-1, claim: «la chiusura senza promozione e' scritta solo per l'inconclusivo (riga 98)»;
+  verificatore criteri-1, reasoning: «PROT:100 rende la TCN candidata solo se passa, quindi D, NS e I chiudono tutti senza promozione,
+  e PROT:118 esclude il seguito automatico».
+  Correzione: «Alla riga 98 l'esito inconclusivo chiude il pilot senza promozione; per la riga 100 la TCN è candidata solo se passa,
+  e per la riga 118 il livello B non è il seguito automatico: ogni esito diverso dal beneficio chiude quindi la prova.»
+
+riferimenti-15 | IMPRECISIONE | §7 Architettura, nota architettura-6 (B332-333)
+  Citazione della bozza: «È facoltativo citare i 128 ms di TEMPONet raw e il lettore lineare con ritardi del 02/11 (architettura-6).»
+  Problema: i 128 ms sono già citati nel protocollo; manca solo che servano a motivare il campo di 13 patch. Così GPT leggerebbe una
+  richiesta già soddisfatta. Manca anche che il lettore del 02/11 era su B student con crop4, non sul T100-G.
+  Prove: JSON result[0].verification.judgments architettura-6, corrected_statement: «I 128 ms di TEMPONet raw sono citati alle righe
+  21 e 23, ma non come motivo del RF; il lettore lineare con ritardi del 02/11 (B student, crop4) non è citato. Aggiungere la frase è
+  facoltativo.» PROT:21 «I suoi 128 ms su EMG a 2 kHz [...]»; PROT:23 «dei 128 ms raw».
+  Correzione: «Il campo di 13 patch è motivato solo dal crop6. È facoltativo motivarlo anche con i 128 ms di TEMPONet raw (già nominati
+  alle righe 21 e 23, ma non per questo) e con il lettore lineare con ritardi del 02/11, provato su B student con crop4
+  (architettura-6).»
+
+riferimenti-16 | IMPRECISIONE | §7 Controlli, nota controlli-3 (B341-343)
+  Citazione della bozza: «§6, confronto raw futuro: un endpoint per blocco valido, con la finestra che finisce in 10j+9 come nel
+  training raw. Sono circa 13,7 milioni di endpoint per i 15 val, lo stesso ordine della lettura ufficiale e non dieci volte tanto. Va
+  riportata l'uscita grezza senza EMA (controlli-3).»
+  Problema: la nota non dice il punto del rilievo, cioè che il metodo che il §6 chiama esatto non lo è, né perché togliere l'EMA.
+  Senza questo GPT leggerà «non dieci volte» come un errore di conto, mentre secondo il verificatore il conto è coerente con il metodo
+  di GPT e l'errore è nel metodo.
+  Prove: JSON result[0].verification.judgments controlli-3, reasoning: «il metodo che GPT chiama esatto stima invece una media
+  triangolare spostata di 4,5 campioni (2,25 ms). Gli endpoint sono 1,10 volte quelli della lettura ufficiale: il «dieci volte» è
+  coerente con il metodo di GPT, quindi l'errore è nel metodo, non nel conto. L'alpha dell'EMA è stato tarato sui 15 val.»; PROT:112
+  e 114.
+  Correzione: «§6, confronto raw futuro: il metodo che il §6 chiama esatto (prevedere su tutti i campioni e poi mediare il blocco)
+  stima una media triangolare spostata di 4,5 campioni. Il metodo esatto è un endpoint per blocco valido, con la finestra che finisce
+  in 10j+9 come nel training raw: circa 13,7 milioni di endpoint per i 15 val, 1,1 volte la lettura ufficiale (il «dieci volte» vale
+  per il metodo del §6). L'uscita va riportata grezza, senza EMA, perché l'alpha dell'EMA è stato scelto sugli stessi 15 val
+  (controlli-3).»
+
+riferimenti-17 | IMPRECISIONE | §4 C-2, correzione (B210-211)
+  Citazione della bozza: «L13 contiene esattamente L0, quindi un L13 peggiore di L0 segnala sovradattamento: in quel caso il
+  contrasto 3 non si attribuisce alla non linearità.»
+  Problema: la regola del revisore scatta solo con l'etichetta «deterioramento», non con qualunque valore peggiore; e il revisore
+  dice «segnalerebbe», con regolarizzazione debole. Scritta così, la regola che GPT copierà è più larga e più sicura della fonte.
+  Prove: JSON controlli-2 evidence: «Con regolarizzazione debole, un L13 peggiore di L0 segnalerebbe sovradattamento»; fix: «se L13
+  e' peggiore di L0 con deterioramento, il 3 non si attribuisce alla non linearita'». Verificatore: «Come scritto dal revisore.»
+  Correzione: «L13 contiene esattamente L0: con una regolarizzazione debole, un L13 peggiore di L0 indicherebbe sovradattamento. Se
+  L13 contro L0 dà «deterioramento pratico», il contrasto 3 non si attribuisce alla non linearità.»
+
+riferimenti-18 | IMPRECISIONE | §4 A-1 (B172-174)
+  Citazione della bozza: «In un mondo sintetico con bersaglio lineare, con la ricetta del §4, la TCN perde il 28,2% contro L0; con
+  un ramo lineare 384→20 a zero torna al livello di L0 (+0,2%).»
+  Problema: non dice su quale misura. Le cifre sono MSE tenute fuori, non E_dyn come quasi tutti gli altri numeri della bozza.
+  Prove: JSON result[0].verification.new_findings architettura-controlli-N2, evidence: «MSE minima tenuta fuori: L0 0,2500 [...] TCN
+  della specifica 0,5030 (epoca 50) e 0,3205 (epoca 44); stessa TCN con un ramo lineare 384->20 a zero 0,2495 [...] la TCN perde il
+  28,2% contro L0».
+  Correzione: «[...] la MSE tenuta fuori della TCN è peggiore del 28,2% di quella di L0; con un ramo lineare 384→20 a zero torna al
+  livello di L0 (+0,2%).»
+
+riferimenti-19 | IMPRECISIONE | Verdetti, riga 4 (B21)
+  Citazione della bozza: «E_dyn, media dei semi, soglia, famiglia e intervalli reggono.»
+  Problema: il verificatore non mette gli intervalli fra ciò che regge: la loro copertura vera è sotto il nominale (nota criteri-6).
+  La frase è un po' più forte della fonte.
+  Prove: JSON result[1].verification.verdict_opinion (Criteri): «metrica, media dei semi, soglia e famiglia reggono»; JSON review
+  criteri, summary: «La copertura vera dell'IC percentile 99% e' 96,0-97,3% per contrasto e 85-91% per la famiglia (nominale 95%).»
+  Correzione: «E_dyn, media dei semi, soglia e famiglia reggono; gli intervalli al 99% coprono in pratica circa il 97% (nota
+  criteri-6).»
+
+riferimenti-20 | IMPRECISIONE | §2 Materiali e metodo (B60)
+  Citazione della bozza: «Il secondo (09:45-11:34) è ripartito dagli script del primo»
+  Problema: ora d'inizio sbagliata di sei minuti.
+  Prove: .../tasks/w9ksgedop.output, workflowProgress: i sei revisori hanno startedAt 1794904776391 ms = 17/11 09:39:36 (ora di
+  Roma); l'ultimo verificatore finisce alle 11:34:07. Il primo giro (.../tasks/whh2m6l9i.output) va dalle 09:01:01 alle 09:26:21.
+  Correzione: «Il secondo (09:39-11:34)».
+
+riferimenti-21 | IMPRECISIONE | §2 Materiali e metodo (B64)
+  Citazione della bozza: «Tutto è stato eseguito sul Mac, su CPU, senza job.»
+  Problema: il revisore del costo ha usato anche la GPU del Mac (MPS) per i micro-benchmark.
+  Prove: review_costo.txt riga 88: «Su MPS del Mac (GPU M3 Pro, NON una A100 e NON CUDA), macchina carica»; JSON result[2] review
+  costo, summary: «i micro-benchmark sintetici sul Mac (MPS e CPU, macchina carica)». (Anche il LEGGIMI.md delle prove dice «su CPU».)
+  Correzione: «Tutto è stato eseguito sul Mac, su CPU e, per i micro-benchmark del costo, sulla GPU del Mac (MPS), senza job.»
+
+riferimenti-22 | STILE | §9 prompt per GPT (B427-428)
+  Citazione della bozza: «con rapporti e script degli agenti nella cartella _evidence.»
+  Problema: «_evidence» non è un percorso; GPT deve cercare la cartella.
+  Prove: la cartella si chiama docs/reviews/claude_review_pose_temponet_proposal_20261117_evidence/ (B68 della bozza e LEGGIMI.md).
+  Correzione: «con rapporti e script degli agenti in docs/reviews/claude_review_pose_temponet_proposal_20261117_evidence/ (vedi il
+  LEGGIMI.md).»
+
+riferimenti-23 | IMPRECISIONE | §4 S-1, primo punto e Kaiming (B138-139, B146-147)
+  Citazione della bozza: «Con l'inizializzazione standard, nell'ultimo strato nascosto di MLP e TCN la parte che dipende
+  dall'ingresso vale solo lo 0,6-2,1% della parte costante, e il 25-44% delle unità è spento (ESEGUITO).» e «Nel mondo V lo stesso fit
+  passa [...] a +2,6% con un'inizializzazione che conserva il segnale (Kaiming).»
+  Problema: messo per primo fra le prove, il dato sull'inizializzazione sembra la causa. Il verificatore conferma il dato ma non il suo
+  ruolo di causa: l'inizializzazione conta nel mondo V, non nel mondo temporale del revisore. Per GPT conta, perché cambiare solo
+  l'inizializzazione non è un rimedio sicuro.
+  Prove: verify_selezione-criteri.txt: «[selezione-1, parte di verifica] Segnale all'inizializzazione - il fatto regge, il suo ruolo
+  causale no» (misura propria: 0,63-2,12% e 28-44% di unità spente) e «Nel mondo V l'inizializzazione conta molto (kaiming: +2,6%
+  invece di −3,1%); nel mondo temporale del revisore no (synth_tcn_init.py: 0,9766-0,9857 contro L0 0,9413). In entrambi i mondi pero'
+  l'esito dipende dalla ricetta piu' che dal guadagno disponibile: e' questo il punto.» Revisore, review_selezione.txt riga 419: «Il
+  limite dominante e' la generalizzazione da 20 utenti con regolarizzazione quasi nulla».
+  Correzione: aggiungere al primo punto: «Il dato regge, ma da solo non spiega la causa: nel mondo temporale del revisore
+  un'inizializzazione che conserva il segnale non chiude il divario, nel mondo V sì. In entrambi l'esito dipende dalla ricetta più che
+  dal guadagno disponibile.»
+
+riferimenti-24 | STILE | §7 Criteri, nota criteri-7 (B375)
+  Citazione della bozza: «20.000 repliche costano secondi. In alternativa, un limite entro 0,1 punti dalla soglia si riporta «al
+  bordo» (criteri-7).»
+  Problema: la prima frase non dice che cosa fare, e l'alternativa perde «tenere 2.000 repliche» e «senza cambiare etichetta».
+  Prove: JSON criteri-7 fix: «Fissare ora 20.000 repliche (costo di secondi), oppure tenere 2.000 e scrivere ora che un limite entro
+  0,1 punti dalla soglia si riporta come 'al bordo' senza cambiare etichetta.» Verificatore: «Errore MC dei limiti circa 0,02 punti
+  con 2.000 repliche: conta solo per un limite vicino a 0 o a 2.»
+  Correzione: «Facoltativo: fissare ora 20.000 repliche, che costano pochi secondi, oppure tenere 2.000 repliche e scrivere ora che un
+  limite entro 0,1 punti da 0 o dal 2% si riporta «al bordo», senza cambiare etichetta (criteri-7).»
+
+======================================================================================================================
+PARTE 3 - NON VERIFICABILE DA QUI (nessun problema segnalato)
+======================================================================================================================
+- B9 «converge poi con te alla fine» e le quattro correzioni di GPT nella chat del 17/11 (B35-43, B454-457): stanno solo nella chat;
+  nessun file del repository le contiene (git grep su 8917e2a e c15aac9, grep su registro e decisioni.md della copia).
+- B12 controlli della punta alle 09:37 e alle 11:34: azioni di Claude in sessione. Oggi i ref locali origin/codex/pose-temponet-
+  proposal-20261117 e codex/pose-temponet-proposal-20261117 puntano a c15aac9bcf291f4ca2e7757dd248ff61045040df (nessun fetch fatto).
+- B64-65 e B75 l'«ls -l» di Claude su Leonardo: i rapporti lo citano come fatto fornito (not_verifiable di selezione, costo,
+  consegna); non ripetibile senza ssh.
+
+======================================================================================================================
+SINTESI
+======================================================================================================================
+Ho controllato circa 170 affermazioni: tutte le righe del protocollo citate, le chiavi JSON, i nomi nel codice, gli SHA, le citazioni fra
+caporali, i conteggi della verifica, le affermazioni sul codice di TEMPONet e sui file su SCRATCH. Righe, chiavi, SHA e conteggi sono
+quasi tutti esatti; le citazioni di Simone e del prompt di Claude sono letterali.
+Due errori: S-1 presenta come menù a scelta (controllo positivo solo «raccomandato», ramo lineare come alternativa) rimedi che il
+verificatore chiede tutti insieme; R-1 è messo «prima del benchmark» mentre il verificatore lo vuole prima della firma e del
+congelamento.
+Fra le imprecisioni contano di più: «riferimenti storici di posa» su SCRATCH, che si confonde con le predizioni di ridge e testa (che
+sono su WORK); il mondo V «tarato sui numeri veri» con numeri che non sono quelli veri; lo 0,77 e il 3,2 GPU-ore che escludono le
+valutazioni; gli ID brevi N1/N2 ambigui; quattro citazioni fra caporali non letterali.

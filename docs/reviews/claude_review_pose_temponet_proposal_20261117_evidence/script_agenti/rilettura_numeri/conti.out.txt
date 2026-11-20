@@ -1,0 +1,73 @@
+== C-1 (L0 0,81, TCN 0,7938)
+  c1 2.0000  c4 -1.0050  c5 -1.9484
+== C-2 (L0 0,785, L13 0,730, MLP 0,735, TCN 0,750)
+  c1 4.459 c2 -2.041 c3 -2.740 c4 4.568 c5 3.677
+== N3 soglia candidata
+  0,98*testa = 0.763056 ; 0,98*ridge = 0.770184 ; sotto la ridge 2.907%
+== D4/ testa vs ridge: 0.9254%
+== Parametri
+  ramo lineare 384->20 con bias: 7700  L0 = LN + lineare: 8468  L13 pesi: 99840 =13x 7680
+  pesi MLP 64128  pesi TCN 64128  MAC/finestra 10260480
+== Weight decay (1-lr*0,01)^n
+  lr 0.001 n 3000 -> 0.9704
+  lr 0.001 n 1500 -> 0.9851
+  lr 0.0001 n 3000 -> 0.9970
+  lr 0.0001 n 1500 -> 0.9985
+== Ridge storica, MSE interna rispetto all'ottimo 0,656115
+  alpha 1e4: +5.37%
+  alpha 0,01: +17.32%
+  alpha 1e6: +2.26%
+== Byte e GiB
+  una predizione val FP32 a 160 patch: 237414400  15 -> 3561216000 B = 3.3166 GiB; a 148 patch: 3.0679
+  cache 5068390194 = 4.7203 GiB; tre riferimenti pinnati 652548847 = 0.6077 GiB; somma 5.328 GiB
+  riferimenti di posa su SCRATCH 2742970901 B = 2.743 GB = 2.555 GiB; cache+pose_refs 7.275 GiB
+== Endpoint del confronto raw
+   13725520  /12.468.000 = 1.1009
+== Passi e GPU-ore
+  LR 2 epoche  50: sel  30000 rifit  45000 tot  75000 passi; x 18,5 ms det. eager x2 = 0.771 GPU-ore
+  LR 2 epoche  50: sel  30000 rifit  45000 tot  75000 passi; x 14,6 ms det. graph x2 = 0.608 GPU-ore
+  LR 2 epoche  50: sel  30000 rifit  45000 tot  75000 passi; x 4,1 ms eager x2 = 0.171 GPU-ore
+  LR 2 epoche  50: sel  30000 rifit  45000 tot  75000 passi; x 1,1 ms graph x2 = 0.046 GPU-ore
+  LR 4 epoche 150: sel 180000 rifit 135000 tot 315000 passi; x 18,5 ms det. eager x2 = 3.237 GPU-ore
+  LR 4 epoche 150: sel 180000 rifit 135000 tot 315000 passi; x 14,6 ms det. graph x2 = 2.555 GPU-ore
+  LR 4 epoche 150: sel 180000 rifit 135000 tot 315000 passi; x 4,1 ms eager x2 = 0.718 GPU-ore
+  LR 4 epoche 150: sel 180000 rifit 135000 tot 315000 passi; x 1,1 ms graph x2 = 0.193 GPU-ore
+  LR 3 epoche 150: sel 135000 rifit 135000 tot 270000 passi; x 18,5 ms det. eager x2 = 2.775 GPU-ore
+  LR 3 epoche 150: sel 135000 rifit 135000 tot 270000 passi; x 14,6 ms det. graph x2 = 2.190 GPU-ore
+  LR 3 epoche 150: sel 135000 rifit 135000 tot 270000 passi; x 4,1 ms eager x2 = 0.615 GPU-ore
+  LR 3 epoche 150: sel 135000 rifit 135000 tot 270000 passi; x 1,1 ms graph x2 = 0.165 GPU-ore
+  LR 4 epoche  50: sel  60000 rifit  45000 tot 105000 passi; x 18,5 ms det. eager x2 = 1.079 GPU-ore
+  LR 4 epoche  50: sel  60000 rifit  45000 tot 105000 passi; x 14,6 ms det. graph x2 = 0.852 GPU-ore
+  LR 4 epoche  50: sel  60000 rifit  45000 tot 105000 passi; x 4,1 ms eager x2 = 0.239 GPU-ore
+  LR 4 epoche  50: sel  60000 rifit  45000 tot 105000 passi; x 1,1 ms graph x2 = 0.064 GPU-ore
+  LR 2 epoche 150: sel  90000 rifit 135000 tot 225000 passi; x 18,5 ms det. eager x2 = 2.312 GPU-ore
+  LR 2 epoche 150: sel  90000 rifit 135000 tot 225000 passi; x 14,6 ms det. graph x2 = 1.825 GPU-ore
+  LR 2 epoche 150: sel  90000 rifit 135000 tot 225000 passi; x 4,1 ms eager x2 = 0.512 GPU-ore
+  LR 2 epoche 150: sel  90000 rifit 135000 tot 225000 passi; x 1,1 ms graph x2 = 0.138 GPU-ore
+  scala 315.000/75.000 = 4.2 ; 0,77 x 4,2 = 3.234 ; 0,693 (MPS) x 4,2 = 2.911
+  scala ingenua 0,77 x 3 (epoche) x 2 (LR) = 4.62
+== Livello B
+  19.618: 16.9444 GPU-ore, x2 = 33.889; continuazione 25.1524; un training a 49.046 42.10, due 84.19; R3c 40,4 x2 = 80.8
+  33,88 x 49046/19618 = 84.70
+== Mondo V (verificatore): L0 0,7834
+  TCN 50 ep (0,8077)                            -3.10%
+  TCN 150 ep (0,7548)                           +3.65%
+  TCN kaiming (0,7629)                          +2.62%
+  ridge ritardi -6,-4..+6 a 1e5 (0,6164)        +21.32%
+  ridge ritardi -6,-4..+6 a 1e6 (0,6753)        +13.80%
+  ridge tutti i ritardi -6..+6 a 1e6 (0,6519)   +16.79%
+  ridge istantanea (0,7945)                     -1.42%
+  oracolo (0,5573)                              +28.86%
+  calibrazione V: ridge CV 0,7555 contro vera 0,6561 (+15.2%); quota livello V 60,2% tutte / 57,5% dinamiche, vere 65,9% / 54,4%
+== Mondo temporale del revisore: L0 0,9357
+  TCN (0,9848)         -5.25%
+  tetto (0,8539)       +8.74%
+  fold 0->1: L0 0,9413; ridge ritardi 0,9163 +2.66%; TCN 0,9782 -3.92%; TCN init che conserva il segnale 0,9766 / 0,9857: -3.75% / -4.72%
+== A-1, mondo lineare del verificatore (MSE tenuta fuori, non E_dyn)
+  TCN 0,3205 contro L0 0,2500: -28.2%; TCN+ramo 0,2495: +0.20%
+== S-2 / N4 (L13)
+  L13 V: E_dyn 3.67%; MSE +4.14%; revisore E_dyn 11.89%; MSE +11.8% / +15.1%
+  distorsione sul primario V: L0 0.17% TCN 0.67%
+== Segnale all'inizializzazione: rapporto di varianze 0,6-2,1% -> rapporto di ampiezze 7.9-14.6%
+== Fold: ceil(953/32) = 30  ceil(954/32) = 30  ceil(1907/32) = 60
+== Conteggi dei rilievi: 8+8+11+10+10+9 = 56 ; nuovi 2+4+2 = 8 ; attaccate 22+19+19 = 60 cadute 1+0+2 = 3

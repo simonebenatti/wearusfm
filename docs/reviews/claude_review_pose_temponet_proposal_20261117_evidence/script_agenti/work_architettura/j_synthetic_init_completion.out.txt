@@ -1,0 +1,26 @@
+torch 2.14.0 thread 1 epoche 50
+
+===== regime: senza componente comune =====
+  L0           LR 0.0001: MSE tenuta fuori epoca 1 = 0.8678, 10 = 0.8018, 25 = 0.8040, 50 = 0.8073; minimo 0.8016 all'epoca 9  [10 s]
+  L0           LR 0.001: MSE tenuta fuori epoca 1 = 0.8073, 10 = 0.8170, 25 = 0.8147, 50 = 0.8140; minimo 0.8073 all'epoca 1  [8 s]
+  MLP-default  LR 0.0001: MSE tenuta fuori epoca 1 = 0.9925, 10 = 0.8606, 25 = 0.7741, 50 = 0.7072; minimo 0.7072 all'epoca 50  [14 s]
+  MLP-default  LR 0.001: MSE tenuta fuori epoca 1 = 0.9201, 10 = 0.6698, 25 = 0.5954, 50 = 0.5740; minimo 0.5740 all'epoca 50  [11 s]
+  MLP-He       LR 0.0001: MSE tenuta fuori epoca 1 = 0.9857, 10 = 0.7678, 25 = 0.6664, 50 = 0.6253; minimo 0.6253 all'epoca 50  [15 s]
+  MLP-He       LR 0.001: MSE tenuta fuori epoca 1 = 0.8351, 10 = 0.6177, 25 = 0.5910, 50 = 0.5903; minimo 0.5879 all'epoca 42  [14 s]
+  TCN-default  LR 0.0001: MSE tenuta fuori epoca 1 = 0.9925, 10 = 0.8209, 25 = 0.6738, 50 = 0.5569; minimo 0.5569 all'epoca 50  [137 s]
+  TCN-default  LR 0.001: MSE tenuta fuori epoca 1 = 0.9233, 10 = 0.5300, 25 = 0.3948, 50 = 0.3546; minimo 0.3546 all'epoca 50  [118 s]
+  TCN-He       LR 0.0001: MSE tenuta fuori epoca 1 = 0.9871, 10 = 0.6601, 25 = 0.5177, 50 = 0.4494; minimo 0.4494 all'epoca 50  [102 s]
+  TCN-He       LR 0.001: MSE tenuta fuori epoca 1 = 0.7802, 10 = 0.4504, 25 = 0.3773, 50 = 0.3586; minimo 0.3568 all'epoca 46  [85 s]
+
+===== regime: componente comune dominante =====
+  L0           LR 0.0001: MSE tenuta fuori epoca 1 = 0.9450, 10 = 0.8035, 25 = 0.7998, 50 = 0.7998; minimo 0.7991 all'epoca 18  [3 s]
+  L0           LR 0.001: MSE tenuta fuori epoca 1 = 0.8103, 10 = 0.8076, 25 = 0.8072, 50 = 0.8107; minimo 0.8017 all'epoca 48  [3 s]
+  MLP-default  LR 0.0001: MSE tenuta fuori epoca 1 = 0.9926, 10 = 0.8956, 25 = 0.8360, 50 = 0.7834; minimo 0.7834 all'epoca 50  [6 s]
+  MLP-default  LR 0.001: MSE tenuta fuori epoca 1 = 0.9492, 10 = 0.7351, 25 = 0.6277, 50 = 0.5719; minimo 0.5667 all'epoca 49  [6 s]
+  MLP-He       LR 0.0001: MSE tenuta fuori epoca 1 = 0.9879, 10 = 0.7876, 25 = 0.6656, 50 = 0.5993; minimo 0.5993 all'epoca 50  [6 s]
+  MLP-He       LR 0.001: MSE tenuta fuori epoca 1 = 0.8668, 10 = 0.5965, 25 = 0.5591, 50 = 0.5551; minimo 0.5506 all'epoca 49  [7 s]
+  TCN-default  LR 0.0001: MSE tenuta fuori epoca 1 = 0.9925, 10 = 0.8880, 25 = 0.7989, 50 = 0.6442; minimo 0.6442 all'epoca 50  [87 s]
+  TCN-default  LR 0.001: MSE tenuta fuori epoca 1 = 0.9567, 10 = 0.6156, 25 = 0.4486, 50 = 0.3448; minimo 0.3448 all'epoca 50  [85 s]
+  TCN-He       LR 0.0001: MSE tenuta fuori epoca 1 = 0.9887, 10 = 0.7133, 25 = 0.5234, 50 = 0.4381; minimo 0.4381 all'epoca 50  [86 s]
+  TCN-He       LR 0.001: MSE tenuta fuori epoca 1 = 0.8787, 10 = 0.4372, 25 = 0.3778, 50 = 0.3426; minimo 0.3424 all'epoca 49  [86 s]
+FINE

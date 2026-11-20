@@ -1,0 +1,281 @@
+RAPPORTO DEL VERIFICATORE AVVERSARIO - DIMENSIONI «architettura» e «controlli»
+Rilettura delle parti cambiate fra c15aac9 e 3e007c8 (contenuti scientifici 62348ab). Data: 18/11/2026.
+Ruolo: provare a confutare i rilievi dei due revisori, controllare a campione le loro conferme, valutare le affermazioni
+S-A, S-B, S-C del revisore capo, cercare rilievi nuovi. Nessun esperimento, nessuna simulazione di reti o mondi, nessun dato
+del progetto, nessun accesso al cluster. Solo lettura, grep, conti in forma chiusa e conteggi di moduli costruiti dalla specifica.
+
+Abbreviazioni (righe di `cat -n` sullo snapshot 3e007c8):
+  P  = gpt_3e007c8/docs/pose_temponet_frozen_protocol_20261117.md
+  R  = gpt_3e007c8/docs/reviews/pose_temponet_response_20261118.md
+  J  = gpt_3e007c8/results/infra/pose_temponet_proposal_20261117/proposal.json (righe del file)
+  DEC = git show 3e007c8:docs/decisioni.md
+Prove: ESEGUITO (comando e risultato), CALCOLATO (conto mostrato), LETTO (file:riga e citazione breve).
+Cartella di lavoro: .../tcnreview2/work_verifica_architettura-controlli/
+
+=====================================================================================================================
+0. IDENTITÀ DEI MATERIALI
+=====================================================================================================================
+ESEGUITO shasum -a 256 sullo snapshot: P 05a9eb09...22f7, J f3b92c4a...d9f, R 076d35f1...0d2b: uguali a
+  delivery_pin_20261118.json e a `git show 3e007c8:<file> | shasum -a 256`. `git diff --stat 62348ab 3e007c8`: solo
+  claude_GPT_shared, decisioni.md e delivery_pin (74 righe aggiunte). JSON validi (python json.load): proposal, analytic_checks,
+  document_checks_20261118, delivery_pin_20261118, raw_source_identity.
+
+=====================================================================================================================
+1. VERIFICA DEI RILIEVI «architettura»
+=====================================================================================================================
+
+architettura-1 (nome «lineare»/«affine») -> PARZIALE. Gravità corretta: nota. Tipo: testo.
+  Regge: P:1, P:109, P:198 dicono «ramo lineare»; P:26-44, P:84, P:200 dicono «affine»; R:22 (R-3) e R:35 (nota 01)
+  promettono «ramo affine». LETTO.
+  Non regge come «disposizione non applicata»: la sostanza di R-3 (consegna-5: la tabella non nominava l'oggetto) è applicata,
+  P:198 ora nomina oggetto, natura «ispirata» e 72.904 parametri. E «ramo lineare» è proprio il nome chiesto da Claude in 8d34f9c:
+  LETTO tcnreview2/claude_testo_per_gpt_20261117_sera.txt, punto 4: «nuovo oggetto del primario (TCN ispirata a TEMPONet con
+  ramo lineare) [...] nella tabella del §10». ESEGUITO grep sul registro del worktree: le voci Claude del 17/11 (righe 8795, 12877,
+  12904) usano «ramo lineare». Nessuna ambiguità tecnica: P:26 definisce il ramo (stessa LN, 7.700 parametri, con b) e
+  J:323 «bias: true». Unificare il nome è facoltativo: nota, non minore.
+
+architettura-2 (residuo normale relativo <=1e-6 senza denominatore) -> PARZIALE. Gravità: minore. Tipo: implementazione.
+  Regge: P:76 e J:311 non scrivono la normalizzazione; LETTO. ESEGUITO scipy 1.16.3: lsqr/lsmr atol=1e-06, conlim=1e8, e la
+  documentazione dà i due test (compatibile: ||r|| <= atol||A|| ||x|| + btol||b||; incompatibile: ||A^H r|| <= atol||A|| ||r||).
+  Verifica numerica (ESEGUITO v_residuo_normale.py: matrice casuale 20.000 x 385 con «LN» float64, nessun dato del progetto):
+    - RHS = X*beta calcolato in float64 (consistente): ||X^T r||/(||X|| ||r||) = 0,88; ||X^T r||/(||X|| ||y||) = 5,8e-15.
+    - RHS calcolato in float32 e poi portato in float64: 5,0e-8 e 5,5e-15 (passa con entrambe).
+    - RHS con rumore: 5,2e-15 e 3,7e-15.
+  Quindi il controesempio vale, ma solo se si sommano tre scelte d'implementazione: normalizzazione di LSQR con ||r||, verifica
+  applicata alla base «L» da sola, e L(z) calcolata in float64 sullo stesso disegno float64. Se L è calcolata in FP32 (default di Torch;
+  P:88 dice solo «Torch CPU pinnato» per T), il residuo è l'arrotondamento FP32, ortogonale alle colonne, e il controllo passa. La stima del revisore
+  «~sqrt(p_eff/n) <= 0,074» non è esatta (misurato 0,88: il residuo di una soluzione QR non è casuale rispetto alle colonne),
+  ma la conclusione «molto sopra 1e-6» regge. Non tocca conclusioni scientifiche: è la definizione di un controllo numerico,
+  che i test CPU previsti (P:153 «per-window WLS e rango») scoprirebbero su un bersaglio esattamente lineare prima di ogni job.
+  Correzione: una riga in P:76 e J:311, per esempio ||X_w^T(y_w − X_w beta)|| <= 1e-6·||X_w||_2·||y_w||_2 per ogni disegno,
+  pattern e RHS (base e combinato), in float64, più un test CPU con RHS esattamente rappresentabile.
+
+architettura-3 (generatori e nn.Dropout) -> CONFERMATO. Gravità: nota. Tipo: implementazione.
+  ESEGUITO torch 2.14.0 (v_conta.py e ispezione): F.dropout(input, p, training, inplace) e nn.Dropout(p, inplace) senza
+  generator; kaiming_normal_(..., generator=None) lo accetta; bernoulli_ lo accetta; torch.manual_seed -> _manual_seed_impl
+  chiama torch.cuda.manual_seed_all(seed) (sorgente letto). LETTO c15aac9:35 «pesi e bias inizializzati a zero»; P:42 dice
+  solo «ultimo strato di g [...] a zero»; R:112 richiede uscita iniziale nulla. Nessuna scelta scientifica nuova.
+
+architettura-4 (precisione della LN nella WLS e rango atteso) -> CONFERMATO. Gravità: nota. Tipo: implementazione.
+  CALCOLATO: sum_k z_k = 0 per ogni riga, un vettore di nucleo per blocco; ranghi generici 384 su 385 (L0) e 13·383+1 = 4.980 su
+  4.993 (L13). ESEGUITO v_residuo_normale.py (righe casuali con media comune, nessun dato del progetto): LN in float32
+  sigma_min/sigma_max = 1,0e-7 > 1e-8, rango 385 su 385; LN in float64 1,5e-16, rango 384. RMS di sum_k z_k: 3,5e-5 (FP32)
+  contro 4,1e-14 (float64). Con una media comune grande l'errore FP32 è anche più alto della stima del revisore (1,2e-6): la
+  conclusione si rafforza. Effetto sulle predizioni trascurabile, rango riportato fuorviante: nota corretta.
+
+architettura-5 (nota 12 accolta ma assente dal §5) -> CONFERMATO. Gravità: minore. Tipo: testo.
+  LETTO R:46: «Il confronto scambia anche larghezza per connessioni temporali», destinazione §5. ESEGUITO ricerca in P di
+  «larghezz», «pari pesi», «manipolazion», «connession»: solo P:40 («senza ricerca di larghezza»). P:122 ha i due versi della
+  lettura (richiesta originale della nota), non la qualificazione promessa. È una disposizione accolta che non è nel protocollo.
+
+architettura-6 (q_i «supportati dopo il crop6») -> PARZIALE. Gravità: nota. Tipo: testo.
+  Il rischio è minimo: P:76 lega già il peso ai «stessi crop/mask/target» nella stessa frase; P:57 definisce la loss sugli
+  elementi validi del supporto (P:55 crop6); J:177 «crop6 all groups»; R:118 esplicito. La precisazione è comoda, non necessaria.
+  Utile invece la seconda parte (divario negativo oltre tolleranza = errore di pipeline nei test): implementazione.
+
+architettura-7 (cautela su L13 tolta) -> CONFERMATO. Gravità: nota. Tipo: testo.
+  LETTO c15aac9:49 «non un teorema sulla non linearità»; assente nella v2 (ricerca «teorema»). CALCOLATO: fuori centro la TCN
+  passa da Conv1x1(384,64), quindi rappresenta solo W_l = M_l·P con P in R^{64x384}; un L13 generico ha righe fuori centro su
+  fino a 240 dimensioni: classi non annidate. La perdita è attenuata da P:72 («non una prova di impossibilità della classe
+  temporale lineare») e P:122 («vantaggio sulla ricetta lineare temporale»): nota facoltativa.
+
+=====================================================================================================================
+2. VERIFICA DEI RILIEVI «controlli»
+=====================================================================================================================
+Script in forma chiusa (nessun dato, nessuna simulazione): work_verifica_architettura-controlli/v_controlli_conti.py (.out.txt)
+e v_scan_lineare.py (.out.txt). Usano lo stesso modello del revisore (N = sigma²·c_n, X = sigma²·p·K/n), per provare a
+smentirlo dall'interno e per misurarne la sensibilità.
+
+controlli-1 (ancora E_real = WLS non regolarizzata a 10 utenti) -> PARZIALE. Gravità: bloccante. Tipo: disegno.
+  Che cosa regge.
+  - LETTO: E_real è la WLS NON regolarizzata dei sottofold 10/10: P:90 «riferimenti L0 pesati», J:405 «E_dyn of weightedLS L0
+    on real targets from innerfolds only», J:308 «weighted unregularized least squares».
+  - ESEGUITO `git show 2930d7d:.../LONG-FIT-G49046-pose-20261105.json | shasum -a 256` = b08e6e32...7c14 (= pin) e lettura del
+    percorso alpha: 0,01 -> 0,76973; 10 -> 0,76859; 100 -> 0,76028; 1e3 -> 0,73003; 1e4 -> 0,69136; 1e5 -> 0,65612; 1e6 -> 0,67091.
+    Quindi a 20 utenti la lettura quasi non regolarizzata è +17,3% in MSE sopra l'ottimo. La direzione «E_real > 0,786» è
+    robusta: 10 utenti senza regolarizzazione contro 40 utenti con alpha ottimo.
+  - Il meccanismo è giusto: nel mondo sintetico il rumore è indipendente fra finestre, quindi l'eccesso di stima per unità di
+    sigma² è piccolo; per pareggiare una E_real gonfiata dall'eccesso di stima REALE la calibrazione può solo alzare sigma, e
+    così l'oracolo stesso si avvicina a E_real e il margine si stringe.
+  - LETTO P:95 contro P:96: il temporale ha una verifica di diagnosticità del riferimento (banda 6-10% sugli held outer), il
+    lineare no (solo «margini non positivi»). L'asimmetria è reale.
+  - CALCOLATO (v_scan_lineare.py, stesso modello): con f' fra 0,3 e 0,6 la WLS esatta passa il 90% fino a E_real ~0,90-0,92 e
+    fallisce sopra (per K=(2,5;5) e (3,5;7)); ci sono anche buchi «non calibrato» a 0,78-0,80 (f'=0,4) e a ~0,84 (f'=0,3).
+  - CALCOLATO (v_controlli_conti.py, punto 6): nel temporale, con a<=1 e f_L=f_T, la quota r del segnale dinamico di T non
+    leggibile da L0 istantanea deve superare, senza l'eccesso X, 0,37-0,46 già a E=0,79, 0,51-0,62 a 0,85, 0,70-0,84 a 0,90;
+    contando X a K=3: 0,25-0,35, 0,34-0,47 e 0,47-0,64 (CALCOLATO a mano dalla stessa algebra). Il rischio «non calibrato» c'è anche vicino al valore storico, non solo con E_real alta (il revisore lo
+    mostra: 22/81 casi a 0,80).
+  Che cosa non regge o va ridimensionato.
+  - La forbice «0,84-1,16, più probabilmente sopra 0,9» è un'estrapolazione con un parametro libero (phi). CALCOLATO
+    (v_controlli_conti.py, punto 1): con phi 0,1-0,3 e due leggi di scala (classica p/(n-p-1) del revisore o asintotica 1/n) si
+    ottiene 0,83-1,01; con phi 0,1-0,2, che mi sembra più probabile perché l'eccesso di stima si concentra nelle direzioni lente
+    che pesano sul livello, 0,83-0,94. Il regime di fallimento (>=0,90-0,92) è plausibile, non stabilito.
+  - «Nemmeno la forma chiusa passa» non vuol dire «la classe non può passare»: la WLS non regolarizzata non è l'ottimo held.
+    CALCOLATO (punto 3, ridge ottima per direzione con spettro ipotetico): a sigma=2,5-3 la WLS dà R_MSE 0,898-0,854; la ridge
+    ottima 0,908-0,872 con spettro isotropo, ma 0,940-0,925 con spettro anisotropo (50 direzioni al 90% del segnale). Una L0
+    neurale ben fermata può quindi passare dove la WLS fallisce. Il controesempio non prova un'attribuzione sbagliata certa:
+    prova che l'esito non è leggibile (efficienza della regolarizzazione o recupero?), e che nessun riferimento lo chiarisce.
+  - Origine: la taratura su E_real l'ha chiesta Claude in 8d34f9c, punto 1 («rumore tarato perché L0 abbia sul bersaglio
+    sintetico una E_dyn interna vicina a quella vera»). Il difetto è il proxy scelto per L0 (WLS non regolarizzata a 10 utenti),
+    non l'idea di tarare. GPT dichiara il rischio di non calibrazione (P:98; registro GPT 18/11, voce 5999 «Controlli positivi
+    possono non calibrarsi o non passare»), ma non la sua probabilità né l'assenza di diagnosticità del lineare.
+  Perché resta bloccante. Con una E_real plausibile la catena si ferma per una ragione di disegno, con un'etichetta
+  («ricetta non ammessa dal controllo positivo») di cui non si può leggere la causa; e i parametri (ancora, griglie, banda)
+  vanno fissati prima di misurare E_real: cambiarli dopo sarebbe post hoc.
+  Correzione minima da decidere ora (corregge anche la (b) del revisore):
+  (a) proxy regolarizzato per E_real ed E_LS,synth: ridge sui disegni inner con alpha scelto sugli inner held (percorso dalla
+      SVD di R), oppure un intervallo fissato ora per E_oracolo;
+  (b) diagnosticità del lineare con un riferimento REGOLARIZZATO in forma chiusa (la stessa ridge, alpha dagli inner, mai dagli
+      held outer), calcolata prima dei fit neurali: se il riferimento non arriva al 90% su MSE ed E_dyn, per fold e pooled,
+      «controllo non diagnostico». Con la WLS non regolarizzata come riferimento, la (b) del revisore fermerebbe la catena anche
+      quando una ricetta ben regolarizzata passerebbe;
+  (c) per il temporale, a oltre 1 (per esempio fino a 3) o banda sganciata dall'ancora; vedi anche controlli-7.
+
+controlli-2 («MLP non deve vincere il temporale») -> CONFERMATO. Gravità: bloccante. Tipo: disegno (corretto da «testo»).
+  LETTO P:94 «(tutte devono passare)» e P:96 «MLP non deve vincere il temporale»; J:441 «neuralL0/MLP descriptive»; J:444 head
+  solo TCN_post; DEC:6749 senza clausola. ESEGUITO ricerca di «prevale», «precedence» in P, J, R: nessuna regola di
+  precedenza. Metrica, margine, valutazioni e conseguenza non definiti. Il controesempio (MLP 0,869 contro TCN 0,870 con TCN al
+  55%) dà esiti opposti nei due documenti. Il tipo è «disegno»: serve una scelta (cancello o descrittivo, e quale cancello),
+  non solo un allineamento di parole. Precisazione alla correzione: se la MLP recupera quanto la TCN, il margine piantato è
+  leggibile in modo istantaneo (E[T | z_t]); l'etichetta giusta è «controllo non diagnostico», non «ricetta non ammessa».
+
+controlli-3 (griglie rade rispetto alla tolleranza) -> CONFERMATO. Gravità: minore. Tipo: disegno.
+  CALCOLATO (stesso modello, K_dyn=2,5): per f'=0,4 E_LS,inner vale 0,713 a sigma=1 e 0,855 a sigma=1,5: buco (0,763; 0,805),
+  che contiene proprio il valore storico 0,786. Il revisore riportava buchi per f' 0,3, 0,5, 0,8 e 1,0; con 0,4 il buco cade
+  sul valore storico. Con K_dyn=3 i suoi numeri tornano (f'=0,5: 0,666 e 0,825). Correzione a costo nullo: griglia fitta o
+  sigma continuo (E_LS monotona in sigma), fissata ora.
+
+controlli-4 (banda del guadagno spostata in basso da inner a outer) -> CONFERMATO. Gravità: minore. Tipo: disegno.
+  CALCOLATO: con g_in=0,08, K=3: R_T/N = 0,08/0,92 − 0,02083 = 0,0661; x_out = 0,0104; g_out = 0,0766/1,0766 = 0,0711, come il
+  revisore. L'eccesso X si dimezza da 10 a 20 utenti; lo spostamento è sistematico. La correzione «guadagno sulla parte di
+  popolazione (LS sul bersaglio pulito y*)» risolve anche S-C.
+
+controlli-5 (held outer scelgono LR/epoca delle teste di controllo) -> CONFERMATO. Gravità: nota. Tipo: disegno.
+  LETTO P:84 «stessa selezione MSE e ricerca finita»; P:67; P:94. Precisazione: P:92 dice «i20 held outer non li scelgono»
+  riferito ai parametri del mondo, quindi il testo non è falso; manca solo la dichiarazione dell'ottimismo dei cancelli.
+
+controlli-6 (manca la componente di livello) -> CONFERMATO. Gravità: nota. Tipo: disegno.
+  CALCOLATO: Var(media di finestra) dell'AR(1) su 124 punti = 0,063 (conti_base.out.txt riga 6, ricontrollato con la stessa
+  formula). Il livello di y* è funzione di z. Limite da dichiarare; facoltativo il RHS di scostamento.
+
+controlli-7 (T forse quasi lineare) -> CONFERMATO. Gravità: nota. Tipo: disegno.
+  Con bias zero e z non centrato per canale, un'unità larga 8 può restare quasi sempre accesa o spenta. Lo collego al punto 6
+  di controlli-1: la calibrabilità del temporale dipende proprio dalla quota non lineare-temporale r di una sola estrazione di T.
+
+controlli-8 (parole non allineate) -> CONFERMATO. Gravità: nota. Tipo: testo.
+  LETTO P:86 «non calibrabile» contro P:92 e J:146 «non calibrato»; DEC:6749 e prompt:17 «margine costante→teacher».
+  Riserva: «rumoreAR1 a varianza fissata» (DEC:6749) è difendibile per epsilon (varianza 1 fissata, sigma scala).
+
+controlli-9 (dettagli d'implementazione) -> CONFERMATO. Gravità: nota. Tipo: implementazione.
+
+controlli-10 (due mondi per direzione outer) -> CONFERMATO. Gravità: nota. Tipo: disegno.
+  LETTO P:86 «Seed 20261118+1000*f per L, +1 per T»; P:92 «Parametri distinti per direzione outer».
+
+controlli-11 (ordine delle verifiche in forma chiusa) -> PARZIALE. Gravità: nota. Tipo: implementazione.
+  Per «non calibrato» l'ordine è già scritto: P:90 «Calibrazione prima di qualsiasi fit neurale». Manca solo per «non
+  diagnostico» (banda LS-L0 sugli held outer, P:96), che pure è in forma chiusa.
+
+controlli-12 (raggiungibilità del 50%) -> CONFERMATO. Gravità: nota. Tipo: benchmark.
+  CALCOLATO: recupero = (R_T + X_LS − X_TCN)/(R_T + X_LS) >= 0,5  <=>  X_TCN <= 0,5·(R_T + X_LS). Corretto.
+
+=====================================================================================================================
+3. AFFERMAZIONI DEL REVISORE CAPO
+=====================================================================================================================
+
+S-A (il lineare non verifica la raggiungibilità del 90%; con E_real ~0,78 la tolleranza è vicina all'errore di stima)
+  -> PARZIALE. Gravità: bloccante (attraverso controlli-1). Tipo: disegno.
+  Regge: l'asimmetria è vera (P:95 solo «margini non positivi»; P:96 banda del riferimento per il temporale). Il conto delle
+  condizioni è giusto: 3 teste × (2 fold + pooled) × 2 metriche = 18. Con E_real ~0,78 il margine costante→oracolo su E_dyn
+  vale 0,19-0,24 e la tolleranza del 90% 0,019-0,024 (CALCOLATO v_controlli_conti.py, punto 4).
+  Non regge: «vicino all'errore di stima atteso». Nel mondo sintetico il rumore è indipendente fra finestre e la WLS esatta a
+  20 utenti usa 0,0066-0,0098 di E_dyn, cioè il 27-51% della tolleranza, con R_MSE 0,95-0,98; la variabilità campionaria
+  dell'eccesso è circa ±10% (chi-quadro sqrt(2/p) = 0,072; termine incrociato ~2/sqrt(p) = 0,10). A 0,78 una L0 simile alla
+  WLS non fallisce per solo campionamento; un fallimento di MLP o TCN sarebbe sovradattamento della ricetta, cioè proprio ciò
+  che il controllo deve vedere. L'errore di stima «con 20 utenti» citato è quello dei dati reali (eterogeneità fra utenti),
+  che il mondo sintetico non riproduce. Il rischio vero arriva per altra via: E_real è probabilmente sopra 0,78 (controlli-1),
+  e nei buchi della griglia (controlli-3) la catena si ferma anche vicino a 0,786.
+
+S-B («MLP non deve vincere il temporale» non definita) -> CONFERMATO. Gravità: bloccante. Tipo: disegno.
+  Coincide con controlli-2 (LETTO P:96, J:441, DEC:6749). In più: la conseguenza naturale di una MLP che vince è «controllo non
+  diagnostico» (margine leggibile in modo istantaneo, E[T | z_t]), non «ricetta non ammessa».
+
+S-C (riferimento LS-L0 non regolarizzato più debole: il 50% è più facile) -> PARZIALE. Gravità: nota. Tipo: disegno.
+  Regge nella direzione: il margine LS->oracolo contiene l'eccesso di stima della LS, che una testa ben regolarizzata può
+  recuperare senza imparare nulla di temporale. CALCOLATO (punto 5, g_in = 0,08): quota del margine outer dovuta alla stima
+  0,09 (K=2), 0,14 (K=3), 0,25 (K=5), 0,32 (K=6), 0,47 (K=8). Se una testa istantanea regolarizzata togliesse il 25-50% di
+  quell'eccesso, il recupero «gratuito» sarebbe 0,02-0,07 per K<=3, 0,06-0,12 per K=5, 0,12-0,23 per K=8, contro la soglia 0,50.
+  Effetto piccolo per K<=5, moderato solo con K alto; la TCN paga inoltre il proprio eccesso di stima (72.904 parametri).
+  Il confondente maggiore è un altro: la parte non lineare ma istantanea di T (S-B). Correzione utile: quella di controlli-4
+  (riferimento sulla LS fittata sul bersaglio pulito y*), che toglie anche questo effetto.
+
+=====================================================================================================================
+4. RILIEVI NUOVI
+=====================================================================================================================
+
+V-architettura-controlli-1 | nota | implementazione | Soglia dinamica di E_real non specificata
+  Posizione: P:90 «Soglie dinamiche per coppia derivate solo dal fitting inner» (vale per le coppie sintetiche); P:59 «Nei
+  controlli i bersagli sono sintetici»; J:167 «real targets for real fits, synthetic forcontrols».
+  Fatto: E_real usa target REALI dentro la calibrazione dei controlli: non è un fit reale né una coppia sintetica. Nessuna
+  riga dice da quale fitting viene la sua soglia dinamica (fitting inner a 10 utenti o fitting outer a 20). LETTO.
+  Effetto: piccolo (la scelta sposta E_real di poco), ma E_real decide sigma e a: va fissato prima.
+  Correzione: in P:90 e J:405 «E_real: soglia = mediana sul fitting inner dei target reali, applicata al rispettivo held inner».
+
+(Non conto come nuovi, perché li hanno già visti i revisori, due rafforzamenti riportati nei verdetti: il buco della griglia
+ lineare che contiene il valore storico 0,786 per f'=0,4 (controlli-3) e la condizione su r già vicina a E_real=0,79 nel
+ temporale (controlli-1, punto 6). Una correzione al rimedio proposto dal revisore è nel verdetto di controlli-1: il
+ riferimento di diagnosticità del lineare deve essere regolarizzato, altrimenti produce falsi «non diagnostico».)
+
+=====================================================================================================================
+5. CONTROLLI A CAMPIONE DELLE CONFERME
+=====================================================================================================================
+Architettura
+  A1 Conteggi. ESEGUITO v_conta.py (aritmetica e modulo torch): MLP g 64.128 pesi + 404 bias, tot 73.000; TCN g 64.128 + 308,
+     tot 72.904 (torch: g 64.436 + LN + ramo = 72.904); pesi delle trasformazioni 71.808; bias 424/328; MAC160 11.489.280;
+     L0 8.468 e 1.228.800; L13 100.628 e 15.974.400. REGGE.
+  A2 Campo ricettivo e crop6. ESEGUITO (supporto dei kernel d3, d2, d1): offset −6..+6, 13 posizioni; centri senza padding in
+     nessuno strato 6..153, 148. REGGE.
+  A3 Memoria del fattore R di L13. CALCOLATO 4.993² × 8 = 199.440.392 B = 190,2 MiB; × 20 = 3,71 GiB. REGGE.
+  A4 Ranghi 384 e 4.980. CALCOLATO (un nucleo per blocco LN) ed ESEGUITO su matrice casuale: rango 384 su 385 con LN float64.
+     REGGE (con LN FP32 diventa 385: architettura-4).
+  A5 API torch. ESEGUITO: kaiming_normal_ con generator; fan_in delle conv k3 64->64 = 192; torch.manual_seed semina anche
+     CUDA; nn.Dropout e F.dropout senza generator. REGGE.
+  A6 Non annidamento TCN+affine / L13. CALCOLATO (collo da 64 canali dopo Conv1x1(384,64)). REGGE.
+Controlli
+  K1 AR(1). CALCOLATO rho = e^(−1/4) = 0,7788; Var = rho² + (1 − rho²) = 1; tempo di correlazione 4 patch = 100 ms. REGGE.
+  K2 Semi. CALCOLATO L 20261118/20262118, T 20261119/20262119, rumore 20261120/20262120; teste 100000..300202: nessuna
+     collisione. REGGE.
+  K3 Traiettorie. CALCOLATO 2 × 3 × 2 × 4 = 48, con 6 LR 72; 40 + 48 + 15 = 103; 60 + 72 + 15 = 147 (P:102, J:129-130, 180-184).
+     REGGE.
+  K4 T inseribile. CALCOLATO T: 3.080 + 3·200 + 72 + 180 = 3.932 parametri, stessa geometria e padding: copia nei canali 0..7,
+     scala e centro per giunto nell'ultimo strato e nei bias, L nel ramo affine. REGGE.
+  K5 Percorso storico della ridge. ESEGUITO sha256 della ricevuta = b08e6e32...7c14 e valori 0,76973 / 0,65612 (+17,3%). REGGE.
+  K6 Condizione del temporale. CALCOLATO E/((1−E)/g+E) = 0,351 (E 0,90, g 0,06) e 0,533 (0,95). REGGE.
+  K7 Spostamento del guadagno. CALCOLATO g_out = 0,0711 con g_in 0,08 e K=3. REGGE.
+  K8 50% su un margine del 6-10%. CALCOLATO 0,5 × 6 = 3%, 0,5 × 10 = 5% di vantaggio su LS-L0. REGGE.
+
+=====================================================================================================================
+6. VERDETTI SUI PUNTI
+=====================================================================================================================
+Punto 1 (ramo affine comune, inizializzazione, conteggi, interpretazione) e parte matematica del punto 4 (WLS per finestra):
+  CONVERGE_CON_CORREZIONI. Nessun bloccante. Da correggere prima del congelamento: architettura-5 (frase della nota 12 nel §5)
+  e architettura-2 (formula del residuo normale, con un test CPU). Facoltative: architettura-1, -3, -4, -6, -7.
+Punto 3 (controlli positivi train-only): BLOCCO. Due decisioni di disegno mancano, entrambe piccole e senza nuovi esperimenti:
+  (i) controlli-1: proxy regolarizzato (o intervallo fissato) per l'ancora del rumore, diagnosticità del lineare con un
+  riferimento regolarizzato in forma chiusa prima dei fit neurali, a oltre 1 nel temporale; (ii) controlli-2 / S-B: la clausola
+  sulla MLP, da definire come cancello (con etichetta «non diagnostico») o da dichiarare descrittiva, uguale in P, J e DEC.
+  Con queste e con controlli-3, -4 e V-architettura-controlli-1 corrette, il resto del §4.4 regge (generatore, rumore, semi,
+  oracolo, isolamento, combinazione dei RHS, conseguenze).
+
+=====================================================================================================================
+7. SINTESI DEI VERDETTI
+=====================================================================================================================
+architettura: 1 PARZIALE (nota, testo); 2 PARZIALE (minore, implementazione); 3 CONFERMATO (nota, implementazione);
+  4 CONFERMATO (nota, implementazione); 5 CONFERMATO (minore, testo); 6 PARZIALE (nota, testo); 7 CONFERMATO (nota, testo).
+controlli: 1 PARZIALE (bloccante, disegno); 2 CONFERMATO (bloccante, disegno); 3 CONFERMATO (minore, disegno);
+  4 CONFERMATO (minore, disegno); 5, 6, 7, 10 CONFERMATO (nota, disegno); 8 CONFERMATO (nota, testo);
+  9 CONFERMATO (nota, implementazione); 11 PARZIALE (nota, implementazione); 12 CONFERMATO (nota, benchmark).
+Affermazioni del revisore capo: S-A PARZIALE; S-B CONFERMATO; S-C PARZIALE.
+Nuovo: V-architettura-controlli-1 (nota, implementazione).
+Punti: 1 (e matematica del 4) CONVERGE_CON_CORREZIONI; 3 BLOCCO.
+File di lavoro: work_verifica_architettura-controlli/v_conta.py, v_residuo_normale.py, v_controlli_conti.py (+ .out.txt),
+  v_scan_lineare.py (+ .out.txt).

@@ -1,0 +1,16 @@
+mondo temporale: train (1920, 160, 384) val (720, 160, 384); soglia 0.2428; generati in 2.2s
+ridge CV: 1e-2: 0.9502/1.0555, 1e-1: 0.9502/1.0555, 1e0: 0.9502/1.0555, 1e1: 0.9501/1.0555, 1e2: 0.9495/1.0549, 1e3: 0.9438/1.0490, 1e4: 0.9057/1.0105, 1e5: 0.8431/0.9477, 1e6: 0.8637/0.9586, 1e7: 0.9811/0.9922, 1e8: 1.0197/0.9991
+ridge alpha 100000: CV mse 0.8431 E_dyn 0.9477; val mse 0.8806 E_dyn 0.9562
+  L0 lr=0.0001: CV in 26s
+  L0 lr=0.001: CV in 53s
+  L0 lr=0.0001: CV mse min 0.8307 ep 10 (ep50 0.8593); E_dyn min 0.9428 ep 15 (ep50 0.9640); E_dyn all'epoca scelta su mse 0.9458
+  L0 lr=0.001: CV mse min 0.8414 ep 1 (ep50 0.9431); E_dyn min 0.9479 ep 2 (ep50 1.0473); E_dyn all'epoca scelta su mse 0.9513
+  L0: scelta su MSE LR 0.0001 ep 10 (0.8307); su E_dyn LR 0.0001 ep 15 (0.9428)
+  L0 rifit LR 0.0001: val all'epoca scelta 10: mse 0.8545 E_dyn 0.9357; oracolo mse 0.8501 ep 6; oracolo E_dyn 0.9345 ep 8; ep50 E_dyn 0.9838
+  TCN lr=0.0001: CV in 482s
+  TCN lr=0.001: CV in 847s
+  TCN lr=0.0001: CV mse min 0.9058 ep 43 (ep50 0.9083); E_dyn min 0.9830 ep 46 (ep50 0.9834); E_dyn all'epoca scelta su mse 0.9833
+  TCN lr=0.001: CV mse min 0.9089 ep 28 (ep50 0.9300); E_dyn min 0.9823 ep 28 (ep50 0.9839); E_dyn all'epoca scelta su mse 0.9823
+  TCN: scelta su MSE LR 0.0001 ep 43 (0.9058); su E_dyn LR 0.001 ep 28 (0.9823)
+  TCN rifit LR 0.0001: val all'epoca scelta 43: mse 0.9190 E_dyn 0.9848; oracolo mse 0.9190 ep 43; oracolo E_dyn 0.9834 ep 50; ep50 E_dyn 0.9834
+fatto in 1200s

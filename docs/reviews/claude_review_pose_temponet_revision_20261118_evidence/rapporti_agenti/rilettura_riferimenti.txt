@@ -1,0 +1,384 @@
+RILETTURA INDIPENDENTE DELLA BOZZA — LENTE: RIFERIMENTI E CITAZIONI
+Bozza: /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-temponet/docs/reviews/claude_review_pose_temponet_revision_20261118.md
+(469 righe, non modificata). Data: 18/11/2026.
+Fonti: copia gpt_3e007c8 (P, J, R, DEC, prompt, README), richiesta GPT, rapporti review_*/verify_*, risultato JSON del
+workflow (w785grg3y.output), copia c15aac9, review 32e5452, registro del worktree, cartella delle prove, git in sola lettura.
+Regole seguite: sola lettura; script e uscite solo in questa cartella; niente ssh, rete, job o subagent.
+
+Script scritti qui:
+- estrai_rilievi.py -> rilievi_estratti.txt: rilievi dei revisori, verdetti dei verificatori, sospetti S-A...S-H, rilievi V-*,
+  conteggi e cambi di gravita' (ESEGUITO).
+- controlla_citazioni.py -> citazioni_controllate.txt: ogni «...» della bozza cercata, senza spazi, nelle fonti (ESEGUITO).
+- conta_disposizioni.py -> disposizioni_R.txt: conteggio delle disposizioni semplici e qualificate di R (vedi parte E).
+- copertura_id.py -> copertura_id.txt: per ogni ID dei rapporti, verdetto e gravita' finali e righe della bozza che lo citano.
+- ricalcola_bl1.py -> ricalcola_bl1.out.txt: numeri del controesempio di BL-1 con le formule di v_scan_lineare.py.
+- conta_riferimenti.py -> conta_riferimenti.txt: numero dei riferimenti della bozza per tipo.
+
+Convenzione: "bozza:N" = riga della bozza. P/J/R/DEC = file della copia gpt_3e007c8 come definiti nella bozza.
+Esito per voce: OK, IMPRECISIONE, ERRORE, NON VERIFICABILE.
+
+==========================================================================================================================
+A) INTESTAZIONE, MATERIALI E CONTEGGI (bozza:1-54)
+==========================================================================================================================
+bozza:3-7, citazioni della richiesta di GPT. LETTO gpt_richiesta_20261118.txt:18 «Ti chiedo l'ultima rilettura delle parti
+  cambiate rispetto a c15aac9»; :29 «Se resta un blocco, indica posizione e controesempio minimo; distingui problemi del
+  disegno dalle verifiche riservate all'implementazione e al benchmark»; :31 «Se converge, dichiaralo esplicitamente come
+  convergenza documentale e indica che la tabella del §10 è pronta per Simone»; :9 «Simone ha autorizzato questa revisione
+  documentale: per ora niente codice o lanci». Tutte letterali. «sei punti» = righe 20-25; «13 rilievi e 50 note» = :27. OK.
+bozza:9-11, SHA. ESEGUITO git log: 3e007c841c97da5793ed4aac6cfceb41c99a00ee (18/11 10:18:16), genitore 62348abdae9c7f92856f
+  573e04d057c9a3153c42 (10:17:34), genitore c15aac9 (17/11 08:28). git diff --stat 62348ab 3e007c8: solo claude_GPT_shared,
+  decisioni.md, delivery_pin_20261118.json (74 righe aggiunte). «aggiunge solo pin e registro»: OK (decisioni.md porta la
+  voce di pin). Ramo codex/pose-temponet-proposal-20261117 a 3e007c8 (ref locale e remote-tracking). 32e5452 = review di
+  Claude del 17/11 12:37; 8d34f9c = voce di registro del 17/11 19:57; c15aac9 = proposta del 17/11. OK.
+bozza:13-14, punta del ramo «alle 10:27, alle 11:46 e alle HH:MM». IMPRECISIONE: «HH:MM» e' un segnaposto non compilato.
+  Le due ore 10:27 e 11:46 NON VERIFICABILI dalle fonti (nessuna uscita di ls-remote nello scratchpad; il reflog locale
+  registra solo il push di GPT alle 10:18:25). Il verificatore costo-consegna scrive di non aver fatto ls-remote
+  (verify_costo-consegna.txt, «Da fare per Claude: rileggere lo SHA remoto del ramo GPT (ls-remote)»): il controllo prima
+  del commit resta a Claude e l'ora va scritta.
+bozza:16-18, abbreviazioni. IMPRECISIONE: la bozza usa anche «prompt» (bozza:172 «alla riga 18 del prompt», bozza:318
+  «prompt:17», bozza:444 «prompt:18»), README (bozza:320), analytic_checks.json (bozza:333), document_checks_20261118.json
+  (bozza:320), ma l'elenco definisce solo P, J, R, DEC. Proposta: aggiungere «prompt = docs/prompt_claude_pose_temponet_
+  review_20261117.md» e dire che README e i due JSON stanno in results/infra/pose_temponet_proposal_20261117/.
+bozza:43, «diff c15aac9..3e007c8: 12 file di testo». ESEGUITO git diff --name-status: 12 file (docs/ e results/infra/pose_
+  temponet_proposal_20261117/), nessun codice. OK.
+bozza:44-46, sei revisori, tre verificatori, otto sospetti S-A...S-H. LETTO JSON del workflow: 6 review, 3 verify; seeded
+  claims S-A, S-B, S-C (architettura-controlli), S-D, S-E, S-F (ricetta-criteri), S-G, S-H (costo-consegna). OK.
+  Nota (non errore): S-F riguarda il nome del ramo (dimensione architettura) ma l'ha giudicato il verificatore
+  ricetta-criteri; la frase «uno per coppia di dimensioni» resta vera.
+bozza:49-52, conteggi. ESEGUITO estrai_rilievi.py: 58 rilievi dei revisori; verificatori 46 CONFERMATO, 12 PARZIALE, 0
+  respinti; 5 rilievi nuovi (V-architettura-controlli-1, V-ricetta-criteri-1/2/3, V-costo-consegna-1); sospetti: 1
+  CONFERMATO (S-B), 6 PARZIALE (S-A, S-C, S-D, S-E, S-F, S-H), 1 RESPINTO (S-G). Gravita' dopo la verifica sui 63 (58+5):
+  3 bloccanti (controlli-1, controlli-2, ricetta-3), 16+2 = 18 minori, 39+3 = 42 note. ricetta-3: revisore «nota», verificatore
+  «PARZIALE, bloccante» solo per la parte MLP, «E' lo stesso punto di controlli-2». ricetta-12: revisore minore,
+  verificatore CONFERMATO minore. Tutto OK.
+bozza:53-54, «Gli ID fra parentesi sono quelli dei rapporti». IMPRECISIONE (ambiguita' di ID): la bozza usa anche ID della
+  review 32e5452, riportati in R, che coincidono per nome con ID diversi dei rapporti di oggi. Esempi: bozza:296 «Nota 12,
+  controlli-6» (32e5452: lettura TCN/MLP nei due versi) contro bozza:326 `controlli-6` (oggi: manca la componente di
+  livello); bozza:302 «Nota 39, costo-7» (32e5452: corsia seriale) contro bozza:337 `costo-7` (oggi: liste dei fold);
+  bozza:298 e bozza:301 «consegna-7», «consegna-9» (note 47 e 49 di 32e5452) contro bozza:320 `consegna-7`, `consegna-9`
+  (oggi: ID esteso e pin); bozza:284 «la mia nota criteri-6» (32e5452: copertura) contro bozza:316 `criteri-6` (oggi:
+  «stessi dtype»). Il revisore consegna usa la stessa convenzione e la dichiara (review_consegna.txt «Le note della review
+  32e5452 con lo stesso nome ... sono citate per numero di riga di RISP»). Proposta: una frase in bozza:54, «nella sezione 4
+  e a bozza:284 gli ID sono quelli della review 32e5452, riportati in R».
+
+==========================================================================================================================
+B) TABELLA DELL'ESITO E BLOCCHI (bozza:31-154)
+==========================================================================================================================
+bozza:33, punto 1 «Solo correzioni di testo (sezione 5)». IMPRECISIONE lieve: fra le correzioni del punto 1 c'e'
+  architettura-2 (residuo normale), che il revisore classifica «minore/disegno» e il verificatore «minore, implementazione»
+  (verify_architettura-controlli.txt:37); il verificatore la chiede «prima del congelamento» insieme ad architettura-5
+  (sezione 6 dello stesso rapporto). Proposta: «correzioni di testo e la formula del residuo normale (sezione 5)».
+bozza:34 e bozza:436-437, BL-3 «toglie il primario». IMPRECISIONE: per P:104 il primario cade solo se non e' ammissibile
+  L0 o TCN-post. Su L13 l'allarme toglie la candidatura (P:122, J:40 «L0/MLP/L13/TCNpost admitted») e le etichette dei
+  contrasti che dipendono da L13 (P:104), non il primario. Il verificatore lo scrive per L0: «Nei fit reali: L0 non
+  ammessa, nessuna promozione primaria (P:104), candidata impossibile (P:122)» (verify_ricetta-criteri.txt, ricetta-12).
+  Il corpo di BL-3 (bozza:139-141) usa correttamente L0. Proposta per bozza:436-437: «su L0 toglie il primario (P:104), su
+  L13 la candidatura e l'etichetta del contrasto 3».
+bozza:60-61, «Dove» di BL-1. P:90 «riferimenti L0 pesati. Stima interna E_real sui target reali» LETTERALE; J:405 «E_dyn of
+  weightedLS L0 on real targets from innerfolds only» LETTERALE; J:308 «weighted unregularized least squares» LETTERALE
+  (seguito da «, descriptive»); P:95 e' il cancello lineare. OK.
+bozza:65-66, ricevuta. ESEGUITO git show 2930d7d:results/infra/consolidation_long_20261105/execution/receipts/LONG-FIT-
+  G49046-pose-20261105.json | shasum -a 256 = b08e6e32...7c14 = J:712. Griglia della ridge post: alpha 0,01 -> cv_mse
+  0,7697254997, alpha 1e5 -> 0,6561153689 (selezionato), fold di 20 utenti (fold_users). 0,76973/0,65612 = 1,1732: +17,3%.
+  «fittata su 20 utenti» corretto (CV a due fold da 20). OK.
+bozza:68-69, P:96 banda 6-10% e P:95 «Margini non positivi/non finiti → controllo non diagnostico». OK.
+bozza:72-78, controesempio di BL-1. CALCOLATO (ricalcola_bl1.py, formule di v_scan_lineare.py): con K=(2,5; 5) e f'=0,5,
+  E_real 0,92 -> sigma 2,5, WLS inner 0,93735, oracolo 0,92135, WLS outer 0,92935, R_dyn = R_MSE = 0,8983. I numeri della bozza
+  tornano. IMPRECISIONE (due parti):
+  (i) il file citato, v_scan_lineare.py, stampa solo la griglia P/F/N (v_scan_lineare.out.txt): i valori 0,937, 0,921,
+      0,929 e 89,8% non sono scritti in nessun file della cartella delle prove; si ricavano dalle sue formule.
+  (ii) il caso vale solo con il primo dei due parametri d'inflazione del verificatore. Con K=(3,5; 7) lo stesso punto
+      (f'=0,5, E_real 0,92) sceglie sigma 2 e PASSA (R 0,9089); v_scan_lineare.out.txt riga «K=(3.5,7.0) f'=0.5:
+      PPPPPPPPFFFF» ha P in corrispondenza di 0,92. La bozza non nomina K.
+  Proposta: «(K_dyn = 2,5, K_MSE = 5; con K = 3,5/7 lo stesso caso passa e il fallimento comincia a 0,94)» e indicare che
+  i numeri sono ricalcolati dalle formule dello script, oppure aggiungere l'uscita del ricalcolo alle prove.
+  La parte «quota 0,4, E_real fra 0,78 e 0,80 -> non calibrato» torna con entrambi i K (righe f'=0.4 «NN...»), e il
+  verificatore da' il buco (0,763; 0,805) (controlli-3). OK.
+bozza:80-81, «Il verificatore stima E_real fra 0,83 e 1,01, più probabilmente fra 0,83 e 0,94». LETTO verify_architettura-
+  controlli.txt:111-112 «si ottiene 0,83-1,01; con phi 0,1-0,2 [...] 0,83-0,94». OK.
+bozza:81-82, «la WLS esatta smette di passare quando E_real supera circa 0,90-0,94». IMPRECISIONE lieve: il verificatore
+  scrive «la WLS esatta passa il 90% fino a E_real ~0,90-0,92 e fallisce sopra» e «Il regime di fallimento (>=0,90-0,92)»
+  (verify_architettura-controlli.txt:102 e :112). Dalla griglia (passo 0,02) l'ultimo valore che passa e' 0,88-0,92 e il
+  primo che fallisce 0,90-0,94. Proposta: «fallisce da circa 0,90-0,94 in su» oppure la cifra del verificatore 0,90-0,92.
+bozza:82-83, «La taratura su E_real l'avevo chiesta io (8d34f9c, punto 1)». LETTO git show 8d34f9c, punto 1 «rumore tarato
+  sui numeri veri»; il testo per GPT del 17/11 sera, punto 1, «rumore tarato perché L0 abbia sul bersaglio sintetico una E_dyn
+  interna vicina a quella vera»; il verificatore lo nota (verify_architettura-controlli.txt, «Origine»). OK.
+bozza:87-101, correzioni (a)-(d). Corrispondono alla «Correzione minima» del verificatore (a)(b)(c) e a controlli-3,
+  controlli-4 (che «risolve anche S-C», verify_architettura-controlli.txt:150-151), V-architettura-controlli-1 («E_real:
+  soglia = mediana sul fitting inner dei target reali, applicata al rispettivo held inner»), ricetta-4 (y o y*). OK.
+bozza:105-125, BL-2. P:94 «(tutte devono passare)», P:96, J:441 «neuralL0/MLP descriptive», J:444 head «TCN_post», DEC:6749
+  senza la clausola: tutto LETTERALE/OK. Controesempio TCN 55%, MLP 0,869 contro TCN 0,870: e' quello del verificatore
+  (verify_architettura-controlli.txt, controlli-2). Formula (E_MLP − E_TCN)/(E_LS − E_oracolo) ≥ q ed etichetta «non
+  diagnostico»: fix di S-B. «parte MLP di ricetta-3»: verificatore «La gravita' va corretta per la parte MLP [...] E' lo
+  stesso punto di controlli-2». controlli-7 «T può venire quasi lineare»: titolo del rilievo. OK.
+bozza:129-152, BL-3. P:69 «oppure LR ancora al bordo dopo l'estensione di quel lato» LETTERALE; J:142 «selectedLR still at
+  expanded boundary»; J:471 «same fit policy as real»; P:104 «Se L0 o TCN-post non è ammissibile, niente promozione primaria»
+  LETTERALE; J:41 «missing_or_unresolved_comparator»: «candidacy not established; dependentcontrasts unlabelled»
+  (resa in italiano corretta). Controesempio: review_ricetta.txt, ricetta-12, «3e-5 0,7268 (ep 57)» contro «1e-4 0,7269
+  (ep 17)», differenza 0,0001 = 0,014% relativo: «più basso dello 0,01%» accettabile; il verificatore usa «dello 0,01%»
+  (verify_ricetta-criteri.txt:359). bozza:144-145: revisore «MINORE», verificatore «CONFERMATO | minore, disegno
+  (correzione obbligatoria prima della firma)» e «Se restasse cosi', la considererei bloccante per la firma del §10»: OK,
+  scostamento dichiarato. Correzione bozza:150-152 = opzione (b) preferita dal verificatore, con l'alternativa (a)
+  «tolleranza»: OK.
+bozza:146, citazione di Simone «ovvio che non possiamo fare troppi giri di review tra voi 2, io a un certo punto
+  l'esperimento lo devo lanciare». LETTO memory/feedback_limit_review_rounds.md: identica (Simone, 18/11 mattina). Nota, non
+  errore: la frase e' stata detta mentre Claude rivedeva il collaudo contrastivo della linea 3, non questa proposta; la
+  bozza non dice il contrario. Il criterio «bloccante solo ciò che farebbe fallire un job...» e' dichiarato «mio»: OK.
+
+==========================================================================================================================
+C) CORREZIONI OBBLIGATORIE OB-1...OB-5 (bozza:156-216)
+==========================================================================================================================
+OB-1 (bozza:160-169). V-ricetta-criteri-2 (minore, disegno): «Nei controlli un allarme aperto ferma la catena anche se la
+  testa supera il cancello», posizione P:98, J:421, J:471: corrisponde. La frase di correzione e' quella del verificatore
+  con una parola cambiata («l'etichetta è» invece di «la causa si registra come»): e' proposta della bozza, non citazione
+  attribuita. P:72 / precedenza allarme su S-2: correzione «minima» di ricetta-1 nel verificatore. Il controesempio (TCN
+  60%, minimo E_dyn all'epoca 298 di 300) non e' nei rapporti: e' un esempio della bozza, coerente con ricetta-1 («Nel
+  controllo temporale e' plausibile che la TCN continui a migliorare E_dyn mentre la MSE [...] ha gia' un minimo»). Non
+  attribuito, quindi OK. ricetta-3: parte «allarmi» del verificatore («arresto solo se una condizione richiesta del
+  cancello non passa»). OK.
+OB-2 (bozza:171-176). P:153 «allarmeS-2», DEC:6747 «Allarme S-2», prompt:18 «Allarme di compromesso»: LETTERALI. P:104 «allarmi
+  aperti» LETTERALE; P:98 dice «un allarme di §4.2 resta aperto» (sostanza uguale). J:145-151 failure_states senza
+  objective_tradeoff: OK. «dal 3,7% al 12%»: ricetta-2 «3,66% e 11,9%», arrotondati; stessa forma nel testo di Claude del 17/11
+  sera, punto 2. OK.
+OB-3 (bozza:178-190). P:122 frase «Se MLP o L13 sono risolti migliori, la TCN non è candidata preferita» LETTERALE;
+  «necessario e sufficiente» (P:122 ha la maiuscola), J:40 iff: OK. Controesempio gain −1,5, IC99 [−1,9; −0,8] -> etichetta 3:
+  e' la terna di labels_check.py (review_criteri.txt, criteri-3) e del verificatore (etichette.py «(-1,5; -1,9; -0,8) -> 3»);
+  il controesempio di criteri-1 usa gain2 −1,351 con lo stesso IC. OK. Numeri di V-ricetta-criteri-1: 0,735 × 1,0366 =
+  0,7619; gain3 +1,56 e −2,04: LETTI in verify_ricetta-criteri.txt:338-341 e ricalcolati. OK.
+  IMPRECISIONE lieve, bozza:183: l'opzione (a) dei rapporti non e' solo «togliere la frase». criteri-1 (a): «tenere la
+  regola e sostituire «risolti migliori» con «con etichetta deterioramento_pratico nel contrasto 2 o 3». Aggiungere che un
+  comparatore migliore con IC99 sotto 0 ma meno del 2% e' una lettura mista dichiarata [...] «candidata, non peggiore in
+  modo pratico di MLP/L13», non «migliore»» (review_criteri.txt:115-117). Proposta: «(a) togliere la frase e chiamare
+  il caso misto "candidata, non peggiore in modo pratico di MLP/L13"».
+OB-4 (bozza:192-204). S-D (PARZIALE, minore, disegno): conseguenza direzionale, «compresa l'assenza di deterioramento usata
+  dal veto», requisito di ammissione per L0, MLP e L13 che «cade solo per TCN-post»: corrisponde. Controesempio (contrasto
+  1 a +5, IC99 [+3; +7], minimo all'epoca 298) e' della bozza, non dei rapporti; non attribuito. OK. Nota: il verificatore
+  aggiunge che con la regola direzionale va riscritta la frase di P:104 «Se L0 o TCN-post non è ammissibile, niente
+  promozione primaria» (vale per L0, non per TCN-post); la bozza lo implica («un allarme della sola TCN-post non la
+  esclude») ma non nomina P:104. Facoltativo.
+OB-5 (bozza:206-216). R:21 (C-3) e R:67 (nota 33) destinano al §10: LETTO. Clausole: P:124 0,7630564046643697 (2% sotto la
+  testa, circa 2,91% sotto la ridge); R:21 «nessuna non-inferiorità implicita di MAE/livello», «nessuna affermazione sul
+  valore del pretraining», «La val è sviluppo già consultato». Riga «Criteri»: consegna-6 (criteri-3 e criteri-6 della
+  32e5452). Parole attaccate: P:198 «72.904parametri», P:203 «gateammissione», «livelloB», P:204 «nelFM», P:205
+  «272coreh/orelocali»: LETTERALI. OK.
+
+==========================================================================================================================
+D) «CHE COSA REGGE» (bozza:218-275)
+==========================================================================================================================
+Punto 1 (bozza:220-227). Conteggi L0 8.468, L13 100.628, MLP 73.000, TCN 72.904, ramo 7.700, 71.808 pesi, 11.489.280 MAC,
+  96 bias: LETTO P:26, P:34-40 e sintesi del revisore architettura; ESEGUITO dal verificatore (v_conta.py). Campo 13,
+  offset −6..+6, 148 centri: OK. Prova di A-1, non identificabilita' «in forma forte», gradienti: sintesi architettura. OK.
+Punto 4 (bozza:228-232). Assorbimento LN, obiettivo, separabilita', limite solo per L0/L13, ridge con alpha>0, rango da SVD:
+  sintesi architettura. «Le maschere sono comuni ai giunti, quindi basta un solo R da circa 190 MiB per disegno»: viene dal
+  revisore costo (C-9, controllo a campione REGGE con train_subset.npz.provenance.json, n_rows_partial_joints 0). Osservazione
+  (non contata): 190 MiB vale per il disegno L13 (R 4.993², P:80); per L0 R e' 385². «Soglia interna = formula del pose_var
+  storico»: revisore ricetta. OK.
+Punto 2 (bozza:233-238). 11 tracce, estensioni, coppie di stati, ceil(q·S_full): sintesi ricetta. «al più 5, non 6 [...]
+  combinatoria esatta dei 720 ordini»: verificatore ricetta-6 «La combinatoria esatta dei 720 ordini da' al piu' 5 LR». OK.
+Punto 3 (bozza:239-245). Frasi della sintesi del revisore controlli («il generatore T sta esattamente nella classe [...] il
+  criterio e' legato al guadagno piantato come chiedeva 8d34f9c»). 8d34f9c punto 1 «criterio legato al guadagno piantato». OK.
+Punto 5 (bozza:246-256). Sintesi criteri e controlli a campione del verificatore: ridge 0,7859020004638595, testa
+  0,7786289843513977, 8.329/8.327, 166.540 = 8.327 × 20, 20.119.920, [6:154]. CALCOLATO 0,98 × 0,7786289843513977 =
+  0,76305640466437; (0,7859020004638595 − 0,7630564046643697)/0,7859020004638595 = 2,907%. Soglia 0,2574231028556824 (P:109,
+  J:726). OK.
+Punto 6 (bozza:257-265). CALCOLATO: 11·4·150·60 + 15·150·60 = 531.000; 11·6·300·60 + 15·300·60 = 1.458.000; con 61:
+  537.600 e 1.477.800; 11·6·2·304 = 40.128. Fasi J:538-627: GPU 0,5+20+1+2,5 = 24; CPU-only 0,5+4+64+8+0,5+3 = 80; totale 272
+  (P:173, J:654). 03:57:00 + 180 s = 4 h (P:175). 691.863 e 0,03931% (P:179, J:509-516). 424f0ec = copia della LONG_ROOT su
+  WORK (git log). OK.
+SCRATCH (bozza:266-269). LETTO 47ca96e:results/infra/scratch_refresh_20261112/refresh_scratch_64280872.log riga 17
+  «data/processed/emg2pose_pose: [...] ancora_vecchi_dopo=0» e riga «wearusfm_runs/results: file=972 [...] ancora_vecchi_
+  dopo=0»; spotcheck_readonly_20261112.log righe 3-4: val.npz 2485295825 byte e pose_stats.json 7377 byte, data 2026-11-12;
+  ssh_ls_scratch_20261118.txt: pose_stats.json 7377, train_subset.npz 257675076, val.npz 2485295825, data 2026-11-12. S-G
+  RESPINTO (verify_costo-consegna.txt, sezione A). 12/11 + 40 giorni = 22/12. Tutto OK salvo:
+  IMPRECISIONE, bozza:269 «byte uguali ai pin»: J pinna i byte solo dei due npz (J:685 257675076, J:693 2485295825); per
+  pose_stats.json J:701-704 e il manifest sorgente extraction_plan_19618.json hanno solo percorso e sha256, nessun byte. I
+  7.377 byte coincidono con lo spotcheck del 12/11 (47ca96e) e con un preflight storico (results/infra/pilot_posa/
+  b_e1e2_20261028/preflight.json:25), non con un pin di J. L'imprecisione viene dal verificatore («Byte uguali ai pin di PJ»).
+  Proposta: «byte uguali ai pin di J per i due npz e alla lettura del 12/11 per pose_stats.json».
+Integrita' (bozza:270-275). LETTO review_consegna.txt d.2 (2.130 file, 0 diversi), d.8 (ancore p1-p10; 106 link verso ancore
+  esistenti, piu' uno senza ancora), :377-385; ESEGUITO qui: document_checks_20261118.json 22 controlli, 22 passed;
+  delivery_pin_20261118.json checks_passed 22, 9 file. «il prompt coincide con la richiesta di oggi»: il revisore scrive «I sei
+  punti coincidono nel contenuto [...] Differenze solo di forma» (d.9): sintesi accettabile. OK.
+
+==========================================================================================================================
+E) SEZIONE 4: DISPOSIZIONI E TABELLA DELLE 12 PROMESSE (bozza:277-303)
+==========================================================================================================================
+bozza:279-281, conteggi. ESEGUITO conta_disposizioni.py (disposizioni_R.txt): rilievi 8 «Accolta.» semplici e 5 qualificate
+  (A-1 R:18, C-1 R:19, C-2 R:20, S-2 R:23, K-3 R:26); note 37 semplici e 13 qualificate (05, 06, 17, 23, 26, 27, 29, 30, 33, 34,
+  40, 45, 46); totale 45 + 18 = 63. OK.
+bozza:283, «49 punti elenco ma 50 ID»: R:11 LETTERALE; verificatore costo-consegna «49 punti; 51 ID distinti, cioè le 50 note
+  più costo-6». Titoli dei 13 rilievi controllati a campione contro 32e5452 (righe 147-350): uguali. OK.
+bozza:284-285, nota criteri-6 di 32e5452 e citazione «La copertura vera degli intervalli è circa 97%»: LETTERALE in
+  32e5452:22 (riga della tabella dei verdetti, «... circa 97% per contrasto (nominale 99%)»); rettifica di GPT a R:63
+  («Qualificata; respinta la lettura universale»). OK (vedi la nota sugli ID in parte A).
+bozza:286, seguito 8d34f9c: R:88-98, quattro punti e tre rettifiche. OK.
+Tabella, riga per riga (colonna «Dove manca» ricontrollata in P e J):
+  1 C-3, R:21: disposizione con destinazione §10 («[§10]»); P:203 «Esito positivo» non contiene pretraining, non-inferiorita'
+    di MAE/livello, sviluppo gia' consultato. OK.
+  2 Nota 33 (selezione-criteri-N3), R:67: «[§5], [§10]»; nessuna soglia 0,763 nel §10 (grep: solo P:124). OK. (Il
+    verificatore consegna-1 la chiama «solo una destinazione imprecisa»: la riga resta vera.)
+  3 R-2, R:27: IMPRECISIONE. La promessa «arresto su NaN o OOM in proposal.json» non e' nella disposizione R:27, che dice
+    solo «La nuova voce deve riportare soglia dinamica, pareggi, etichette, candidata, IC descrittivi, arresti e pin dei
+    documenti» (voce di DEC, presente a DEC:6755 «NaN/Inf,OOM,TIMEOUT [...] fermano la fase»). Viene dal testo del rilievo
+    R-2 di 32e5452:328-329 «In `proposal.json` vanno aggiunti anche l'IC 95% descrittivo e l'arresto su NaN o OOM», che R:27
+    accoglie. Il verificatore lo scrive: «R-2 chiedeva in proposal.json l'arresto su NaN/OOM [...] La disposizione R:27 parla
+    solo della voce di D» (criteri-5). «Dove manca» e' vero (J:145-151 solo «technical_failure»; nessun NaN/OOM/TIMEOUT in
+    J). Proposta: «R-2 (rilievo 32e5452:329, accolto a R:27; la disposizione nomina solo la voce di DEC)».
+  4 C-1, R:19: IMPRECISIONE di parafrasi (vale anche per bozza:313). R:19 dice «Se L0 è deteriorata rispetto alla ridge, i
+    contrasti 1–3 restano confronti fra queste ricette»; 32e5452:233-235 «Se L0 è peggiore della ridge con deterioramento».
+    La bozza scrive «con L0 peggiore delle storiche» (ridge e testa). «Dove manca: P:126» e' vero (P:126 «L0 inferiore alle
+    storiche invita a leggere le differenze [...]», senza la conseguenza sui contrasti). Proposta: «con L0 deteriorata
+    rispetto alla ridge».
+  5 Nota 12 (controlli-6 di 32e5452), R:46: frase LETTERALE «Il confronto scambia anche larghezza per connessioni
+    temporali»; assente da P:122 (grep «larghezz» solo P:40). OK.
+  6 Nota 23 (selezione-11), R:57: «Dichiarare il limite e demandare ai controlli della ricetta. [§4]»; grep «decay» in P:
+    solo P:63. OK.
+  7 Nota 47 (consegna-7 di 32e5452), R:81: «inclusa compatibilità con I-1»; grep «I-1» in P: 0. OK.
+  8 Nota 17 (selezione-5), R:51: «Curve e decisioni prima del rifit e dell'apertura val»; P:70 «Prima dell'inferenza finale si
+    bloccano manifest di selezione [...]» (maiuscola a inizio frase). OK.
+  9 Nota 20 (selezione-8), R:54: «Conservare liste esplicite [...] [§4], `proposal.json`»; J:131 solo la regola; P:57 «liste/
+    hash e conteggi fissati nel manifest prima dei fit». OK.
+  10 Nota 49 (consegna-9 di 32e5452), R:83: «ID versionato della revisione uguale in protocollo, JSON, manifest e futuri
+    output»; ID a P:3, ancora p1 a P:7; nessuna frase su manifest e output. OK.
+  11 Nota 39 (costo-7 di 32e5452), R:73: «disponibilità della corsia controllata per fase»; P:191 e J:532 solo nel preflight.
+    OK.
+  12 Nota 18 (selezione-6), R:52: destinazioni «[§4], [§9]»; semi a P:44 (§3 = P:23-46). OK.
+  Il raggruppamento corrisponde a consegna-5 (a-h) piu' consegna-1 (righe 1-2), consegna-2 (riga 3) e consegna-4(i)/
+  criteri-2 (riga 4). Totale 12. OK.
+
+==========================================================================================================================
+F) SEZIONE 5: «DA CORREGGERE SENZA UN NUOVO GIRO» (bozza:305-338)
+==========================================================================================================================
+ESEGUITO copertura_id.py (copertura_id.txt): tutte le gravita' tra parentesi in sezione 5 coincidono con la gravita' finale
+  del verificatore (architettura-2 PARZIALE minore; architettura-5 minore; criteri-2 PARZIALE minore; criteri-3 minore;
+  criteri-5 PARZIALE minore; consegna-2 minore; criteri-6 minore; S-E PARZIALE minore; tutte le altre «nota», compreso costo-1
+  sceso da minore a nota e architettura-1 sceso a nota). Gli unici ID dei rapporti non citati nella bozza: consegna-4
+  (PARZIALE, nota), il cui contenuto e' coperto dalla riga C-1 della sezione 4 e da criteri-2. Posizioni P/J/R/DEC delle
+  righe ricontrollate: tutte esistono e contengono il testo indicato (P:76 e J:311 tolleranza 1e-6; P:122; P:126; P:119;
+  P:104 e P:151; P:1, P:109, P:198 «ramo lineare»; DEC:6749, prompt:17 «costante→teacher», P:86 «non calibrabile»; J:40;
+  README:5 «IDv2»; document_checks «no_scientific_or_runtime_changes»; P:70; P:72 e J:198; P:104; P:92-94; P:90, P:96;
+  P:124 e J:116; P:177; P:68 e analytic_checks.json:7 «claude_1260000_max_updates_superseded»; P:189 e J:705 «not
+  reverified»; P:185 «calibrazione25combinazioni»; P:191; R:54). Formula di architettura-2 = correzione del verificatore
+  (verify_architettura-controlli.txt:50-51). (1 − 1e-2·0,01)^9000 = 0,4066 (ricetta-7). 5 LR: 125 traiettorie, 1.276.500,
+  33.440 (ricetta-6, costo-2). Problemi:
+bozza:313, criteri-2. IMPRECISIONE (oltre alla parafrasi «storiche» al posto di «ridge», parte E riga 4): la riga riporta un
+  solo verso di C-1. Il revisore criteri-2 e il verificatore (PARZIALE: «Due parti reggono. (1) C-1: [...] Manca anche il
+  verso «L0 migliore della ridge = effetto del rifit», cioe' il caso «1 no, 4 e 5 si'»») chiedono anche il verso opposto,
+  dal rilievo C-1 di 32e5452:235 «se L0 è migliore della ridge, va riportato come effetto del rifit». Proposta: aggiungere
+  «e, se L0 è migliore della ridge, l'effetto del rifit (caso 1 no, 4 e 5 sì)».
+bozza:314, criteri-3. IMPRECISIONE (citazione non letterale): «riportando direzione e ampiezza; non chiamarla
+  equivalenza», attribuita a c15aac9. Il testo di c15aac9 (protocollo, riga 97) e': «riportando comunque direzione e ampiezza.
+  Non chiamarlo equivalenza.» Mancano «comunque», cambia «chiamarlo» in «chiamarla», il punto diventa punto e virgola.
+  Proposta: citare alla lettera, oppure togliere le virgolette («l'etichetta 3 riporta direzione e ampiezza e non si chiama
+  equivalenza, come in c15aac9:97»). Il revisore propone anche un testo suo: «si riportano sempre gain, IC99 e verso; nessuna
+  equivalenza dedotta da un'etichetta 3 o 4» (review_criteri.txt, criteri-3).
+bozza:317, 321-333 e altre righe: IMPRECISIONE lieve (qualificatore del verificatore non riportato). La sezione 5 marca come
+  facoltativa solo ricetta-8, ma i verificatori dicono facoltative anche: architettura-1 («Unificare i nomi è facoltativo»),
+  S-F («Facoltativo: scrivere una volta [...]»), architettura-6 («Facoltativo: scrivere «q_i = elementi supportati»»),
+  architettura-7 (punto 1: «Facoltative: architettura-1, -3, -4, -6, -7»), costo-1 / V-costo-consegna-1 («(testo, facoltativo ma
+  utile a Simone)»). La sezione 5 dice invece «GPT le corregge nella stessa revisione». Proposta: marcarle «(facoltativa)»
+  come ricetta-8, oppure dichiarare che la bozza le rende dovute.
+Nota (non contata): i verificatori chiedono «prima della firma» anche criteri-2, criteri-3, criteri-5, criteri-6/S-E
+  (verify_ricetta-criteri.txt, punto 5) e consegna-2 (verify_costo-consegna.txt, «Due correzioni minori di testo prima che
+  Simone firmi»), e «prima del congelamento» architettura-2 e architettura-5. La bozza le mette in sezione 5, che GPT
+  corregge nella stessa revisione (quindi prima della firma) ma che Claude ricontrolla solo al pacchetto operativo. Non e' una
+  contraddizione; se si vuole essere espliciti, una frase in bozza:307.
+
+==========================================================================================================================
+G) SEZIONE 6: IMPLEMENTAZIONE E BENCHMARK (bozza:340-361)
+==========================================================================================================================
+architettura-3: review_architettura.txt:320-326 (generatore CUDA seminato con 200000+100*f+s dopo l'inizializzazione,
+  salvato/ripristinato; oppure bernoulli_(generator=...)); c15aac9:35 «Ultimo strato lineare con pesi e bias inizializzati
+  a zero». OK. architettura-4: review_architettura.txt:332-341 (z = LN(x) in float64 dai valori FP16; ranghi 384/4.980). OK.
+controlli-9, ricetta-9 («(vii) [...] se la catena prosegue con allarmi aperti, e' una precisazione di testo di P:104»),
+  costo-3 («gli input sono sei, non cinque: c'e' anche splits_v1.json»; manifest storico delle cache su SCRATCH), criteri-9
+  («L'ordine di somma sposta 2e-16, ben sotto 1e-12»), costo-1 («Fissare nel pacchetto operativo il batch della valutazione
+  held, uguale in benchmark e fit»), S-H (p95 per testa, PROT:181), controlli-12 («Se la TCN arriva al 50% lo dice la
+  misura»): tutti corrispondono. OK.
+
+==========================================================================================================================
+H) SEZIONI 7-9 (bozza:363-400)
+==========================================================================================================================
+bozza:376-382, gate GPU. LETTO 8917e2a:docs/claude_GPT_shared:8492-8495 (TEMPONet raw su DB8, collaudi 2 e 3: 18,5 ms per
+  passo in eager con deterministic=True; «senza vincolo 4,1 ms in eager»). Verificatore costo-consegna: uniforme con eval
+  27,78/21,49/19,39 GPUh («19-28»); misto 9,87-14,11 con 6 LR («9,9-14,1»); TCN 37,0% dei passi. P:183 «matrice massima6LR300».
+  OK.
+bozza:387-388, fermo 23-25/11 (P:191) e scadenza dal 22/12 con rinfresco del 03/12 da autorizzare (verificatore costo-4,
+  «decisioni.md:1332: giro del 03/12 da autorizzare»). OK.
+bozza:398-399, pin di WORK contro manifest e 424f0ec; su SCRATCH solo byte e date: coerente con review_costo e con la lettura
+  ls -l. OK.
+
+==========================================================================================================================
+I) SEZIONE 10: PROMPT PER GPT (bozza:402-469)
+==========================================================================================================================
+bozza:405-408: ramo claude/temponet-db8-20261109 (git branch --show-current nel worktree), percorsi della review e della
+  cartella delle prove esistenti (non ancora versionati: git status «??»). Conteggi 58/46/12/0 e 5: OK.
+bozza:411-412, verdetti: coincidono con la tabella della bozza. Nota (non contata): il verdetto del verificatore sul punto 2 e'
+  CONVERGE_CON_CORREZIONI («Nessun bloccante proprio del punto 2»); il «blocco» del punto 2 e' la promozione di ricetta-12
+  fatta da Claude, dichiarata solo nel corpo (bozza:144-148). Nel prompt GPT non lo vede.
+bozza:416-428 (BL-1): P:90, J:405, J:308, P:95, P:96 e +17,3%: OK. bozza:420-421 ripete il controesempio senza K: stessa
+  IMPRECISIONE di bozza:72-78 (vale con K = 2,5/5, non con 3,5/7).
+bozza:430-434 (BL-2): P:94-96, J:441, 55%, 0,869/0,870: OK.
+bozza:436-437 (BL-3): «Su L0 e L13 [...] per P:104, toglie il primario»: IMPRECISIONE gia' descritta in parte B (P:104 toglie
+  il primario solo per L0 o TCN-post).
+bozza:442-453 (OB-1...OB-5): P:98, J:421, P:72, P:153, DEC:6747, prompt:18, P:122, P:104, 0,7630564: OK.
+bozza:457, «frase della nota 12 e lettura di C-1 a P:126»: IMPRECISIONE (posizione ambigua). Nella sezione 5 la frase della
+  nota 12 (architettura-5) va a P:122 (bozza:312) e solo la lettura di C-1 a P:126 (bozza:313). Proposta: «frase della nota
+  12 a P:122 e lettura di C-1 a P:126».
+bozza:458-462: corrispondono alla sezione 5. OK.
+
+==========================================================================================================================
+L) LIMITI DI QUESTA RILETTURA
+==========================================================================================================================
+- Non verificabili da qui: le ore 10:27 e 11:46 del controllo della punta del ramo; la frase «incollata da Simone in chat»;
+  le parole di Simone riportate da GPT.
+- I conteggi di fedelta' dei 50 enunciati (copie letterali di 32e5452) e i 106 link non li ho rifatti uno per uno: ho letto
+  i rapporti consegna e controllato a campione i 13 titoli.
+- Trasparenza: per confrontare l'elenco dei file della cartella delle prove con lo scratchpad ho usato per pochi secondi due
+  file temporanei in /tmp (claude_a_*, claude_b_*), poi cancellati. Nessun altro file fuori da questa cartella e' stato
+  scritto o modificato; la bozza e le fonti sono intatte.
+
+==========================================================================================================================
+M) ELENCO DEI PROBLEMI (quello restituito al chiamante)
+==========================================================================================================================
+[14] imprecisione — «alle 10:27, alle 11:46 e alle HH:MM» — HH:MM e' un segnaposto; 10:27 e 11:46 non verificabili
+  (nessun ls-remote nelle prove; reflog: push GPT 10:18:25; verify_costo-consegna.txt «Da fare per Claude: rileggere lo SHA
+  remoto del ramo GPT (ls-remote)») — ls-remote subito prima del commit e scrivere l'ora.
+[16-18] imprecisione — abbreviazioni solo P, J, R, DEC — la bozza usa prompt:17, prompt:18 (172, 318, 444), README,
+  analytic_checks.json, document_checks_20261118.json senza percorso — aggiungere prompt = docs/prompt_claude_pose_temponet_
+  review_20261117.md e la cartella results/infra/pose_temponet_proposal_20261117/.
+[54; 284; 296; 298; 301; 302] imprecisione — «Gli ID fra parentesi sono quelli dei rapporti» — in sezione 4 e a 284 gli ID
+  sono di 32e5452 (in R) e omonimi di rilievi diversi di oggi: controlli-6 (296/326), costo-7 (302/337), consegna-7 e -9
+  (298, 301/320), criteri-6 (284/316) — dichiararlo a 54 o scrivere «32e5452:».
+[33] imprecisione — «Solo correzioni di testo (sezione 5)» — architettura-2 e' minore «disegno» (revisore) /
+  «implementazione» (verify_architettura-controlli.txt:37), da fare «prima del congelamento» — «testo e formula del residuo».
+[34; 436-437] imprecisione — BL-3 «toglie il primario», nel prompt «Su L0 e L13 [...] per P:104, toglie il primario» — P:104
+  «Se L0 o TCN-post non è ammissibile, niente promozione primaria»: su L13 cadono candidatura (P:122, J:40) ed etichette, non il
+  primario — «su L0 toglie il primario, su L13 la candidatura e il contrasto 3».
+[72-78; 420-421] imprecisione — controesempio BL-1 attribuito a v_scan_lineare.py, senza parametri — lo script stampa solo
+  P/F/N; 0,937/0,921/0,929/89,8% valgono solo con K=(2,5; 5); con K=(3,5; 7) lo stesso punto passa (v_scan_lineare.out.txt
+  «f'=0.5: PPPPPPPPFFFF»; ricalcola_bl1.out.txt: sigma 2, R 0,909) — dichiarare K e il limite; mettere il ricalcolo fra le prove.
+[81-82] imprecisione — «supera circa 0,90-0,94» — verify_architettura-controlli.txt:102 «fino a E_real ~0,90-0,92 e fallisce
+  sopra», :112 «(>=0,90-0,92)» — usare 0,90-0,92.
+[183] imprecisione — OB-3 «(a) togliere la frase» — review_criteri.txt:115-117: (a) sostituire con «con etichetta
+  deterioramento_pratico nel contrasto 2 o 3» e chiamare il caso misto «candidata, non peggiore in modo pratico di MLP/L13» —
+  aggiungere il caso misto.
+[269] imprecisione — «byte uguali ai pin» per tutti e tre i file — J pinna i byte solo dei due npz (J:685, J:693); pose_stats.json
+  ha solo sha256 (J:701-704, extraction_plan_19618.json); 7.377 byte = spotcheck 12/11 (47ca96e) — dirlo per file.
+[294] imprecisione — «R-2 (rilievo, R:27) | arresto su NaN o OOM in proposal.json» — R:27 promette solo la voce di DEC
+  («La nuova voce deve riportare [...] arresti»; presente a DEC:6755); la richiesta e' in 32e5452:328-329; verificatore:
+  «La disposizione R:27 parla solo della voce di D» — «R-2 (rilievo 32e5452:329, accolto a R:27)».
+[295; 313] imprecisione — «L0 peggiore delle storiche» — R:19 «Se L0 è deteriorata rispetto alla ridge»; 32e5452:233-234
+  «peggiore della ridge» — «deteriorata rispetto alla ridge».
+[313] imprecisione — criteri-2 con un solo verso di C-1 — criteri-2 (revisore e verificatore): manca anche «L0 migliore della
+  ridge = effetto del rifit» (caso «1 no, 4 e 5 sì»), 32e5452:235 — aggiungerlo.
+[314] errore — «riportando direzione e ampiezza; non chiamarla equivalenza», «come in c15aac9» — c15aac9 protocollo:97
+  «riportando comunque direzione e ampiezza. Non chiamarlo equivalenza.» — citare alla lettera o togliere le virgolette.
+[sezione 5: 317, 331, 332] imprecisione — facoltativa marcata solo ricetta-8 — verificatori: architettura-1 «Unificare i nomi è
+  facoltativo», S-F «Facoltativo», architettura-6 «Facoltativo», punto 1 «Facoltative: architettura-1, -3, -4, -6, -7», costo-1
+  «facoltativo ma utile a Simone» — marcarle o dichiarare che la bozza le rende dovute.
+[457] imprecisione — «frase della nota 12 e lettura di C-1 a P:126» — sezione 5: nota 12 a P:122 (bozza:312) — «nota 12 a
+  P:122, C-1 a P:126».
+
+Riferimenti controllati: 357 occorrenze (conta_riferimenti.txt: 116 posizioni P/J/R/DEC/prompt, 5 chiavi di J, 81 citazioni,
+94 ID, 34 commit, 15 percorsi, 12 righe della tabella); problemi: 1 errore, 14 imprecisioni.

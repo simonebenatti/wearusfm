@@ -1,0 +1,58 @@
+{
+ "L0": {
+  "params": 8468,
+  "transform_weights": 7680
+ },
+ "MLP": {
+  "params": 65300,
+  "transform_weights": 64128,
+  "rf_center80": [
+   80,
+   80,
+   1
+  ],
+  "rf_t6": [
+   6,
+   6,
+   1
+  ]
+ },
+ "L13": {
+  "params": 100628,
+  "transform_weights": 99840,
+  "rf_center80": [
+   74,
+   86,
+   13
+  ],
+  "rf_t6": [
+   0,
+   12,
+   13
+  ]
+ },
+ "TCN": {
+  "params": 65204,
+  "transform_weights": 64128,
+  "rf_center80": [
+   74,
+   86,
+   13
+  ],
+  "rf_t6": [
+   0,
+   12,
+   13
+  ]
+ },
+ "TCN_over_30M_percent": 0.2298990554725435,
+ "TCN_over_L0": 7.700047236655645,
+ "TCN_MACs_P160": 10260480,
+ "cpu_seconds_per_step": {
+  "L0": 0.006089806950088436,
+  "MLP": 0.009853846533466519,
+  "L13": 0.2041112520833849,
+  "TCN": 0.09138397776672112
+ },
+ "threads": 4
+}

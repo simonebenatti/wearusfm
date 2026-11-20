@@ -1,0 +1,808 @@
+"""TEMPONet su emg2pose, regressione della posa (`docs/temponet_emg2pose_plan.md`; regole ed emendamento in `docs/decisioni.md`, 10/11/2026).
+
+Due modi.
+- `train` (passi 1 e 2): un solo modello sui 158 utenti dello split di training, entrambi i lati.
+  - Rete: TEMPONet di [Z21] in V13, cioe' bersaglio standardizzato con `pose_stats.json` e padding simmetrico, a 20 uscite.
+  - Ricetta: L1, Adam 1e-4 costante, batch 64, 19 epoche, seme 0; cuDNN benchmark; passo catturato in un CUDA graph, con controllo eager/graph
+    prima di allenare.
+  - Ingresso: EMG processato in unita' native per 10^k, con k dal manifest del passo 0.
+  - Finestre: finiscono all'ultimo campione dei blocchi validi a 200 Hz, ogni 8 blocchi; si raccolgono dalla RAM in un thread, a blocchi di
+    passi, in memoria bloccata.
+  - Validazione grezza per epoca, solo descrittiva: istanti a 50 Hz sui blocchi validi. Si usa il modello finale.
+  - Loss (`--loss`, studio del 18/11/2026, `docs/temponet_emg2pose_loss_plan_20261118.md`): `l1` e' la ricetta di riferimento, invariata;
+    `smoothl1` (beta 1 in unita' standardizzate) e `mse` cambiano solo la funzione; `mse_vel` = MSE della posa + `--vel-weight` x MSE della
+    velocita', come il Transformer di emg2pose di [S26] (arXiv 2610.32674, Tab. S1: errori divisi per la deviazione dei bersagli del training).
+    La velocita' e' la differenza fra la posa di una finestra e quella di una compagna che finisce `--vel-lag-blocks` blocchi prima, nella
+    stessa registrazione; le due finestre passano insieme nel modello (BatchNorm sulle 2 x batch finestre), il termine della posa usa solo le
+    finestre di partenza, le coppie senza compagna valida hanno peso 0.
+- `eval` (passo 3): finestre e bersagli ufficiali del passo 0; alpha dell'EMA per giunto sulla validazione; cancello sulla validazione; poi, solo
+  se passa, il test, una volta. Con `--val-only` (collaudo) il test non si calcola.
+
+Uso: `scripts/slurm/temponet_emg2pose.sbatch` (GPU).
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import platform
+import queue
+import re
+import resource
+import sys
+import threading
+import time
+from collections import defaultdict
+from pathlib import Path
+
+import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import temponet_db8 as T  # noqa: E402  (CUDNN_MODES, GRAPH_TOLERANCE, GRAPH_WARMUP, denormalizer)
+
+from wearusfm.harness import emg2pose_regression as R  # noqa: E402
+
+EVAL_BATCH = 8192
+LOSSES = ("l1", "smoothl1", "mse", "mse_vel")
+LOSS_NAMES = {"l1": "L1", "smoothl1": "smooth L1", "mse": "MSE", "mse_vel": "MSE + velocita'"}
+SMOOTH_L1_BETA = 1.0  # in unita' standardizzate (deviazioni del giunto): il default di PyTorch
+STATS_CHUNK = 1 << 20  # righe per blocco nel calcolo della deviazione della velocita'
+
+
+def max_rss_gb() -> float:
+    kb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    return kb / 1e6 if sys.platform.startswith("linux") else kb / 1e9  # Linux: kB; macOS: byte
+
+
+def new_dir(path: str | Path) -> Path:
+    p = Path(path)
+    if p.exists() and any(p.iterdir()):
+        raise SystemExit(f"{p} non e' vuota: serve una cartella nuova")
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+# --- dati in RAM ------------------------------------------------------------------------------------------------------------------------
+
+class HostStore:
+    """EMG di piu' registrazioni concatenato in RAM: X (T_tot, 16) int16 (torch); offset e fattore (10^k / int16_scale) per registrazione."""
+
+    def __init__(self, rows: list[dict], processed_root: str | Path, k: int):
+        import torch
+
+        self.rows = rows
+        metas = []
+        for r in rows:
+            u, s = R.recording_key(r)
+            d = Path(processed_root) / u / s
+            meta = json.loads((d / "metadata.json").read_text())
+            metas.append((d, int(meta["shape"][0]), float(meta["int16_scale"])))
+        self.dirs = [m[0] for m in metas]
+        self.n = np.array([m[1] for m in metas], dtype=np.int64)
+        self.offset = np.zeros(len(metas), dtype=np.int64)
+        if len(metas) > 1:
+            self.offset[1:] = np.cumsum(self.n)[:-1]
+        self.factor = torch.tensor([10.0 ** k / m[2] for m in metas], dtype=torch.float32)
+        t0 = time.time()
+        self.X = torch.empty((int(self.n.sum()), R.N_CHANNELS), dtype=torch.int16)
+        xn = self.X.numpy()
+        for i, (d, n, _) in enumerate(metas):
+            arr = np.load(d / "data_int16.npy", mmap_mode="r")
+            if arr.shape != (n, R.N_CHANNELS) or arr.dtype != np.int16:
+                raise ValueError(f"{d}: {arr.shape} {arr.dtype}, attesi ({n}, {R.N_CHANNELS}) int16")
+            xn[self.offset[i] : self.offset[i] + n] = arr
+        self.load_seconds = round(time.time() - t0, 1)
+        self.win = torch.arange(-(R.WINDOW - 1), 1, dtype=torch.int64)
+
+    @property
+    def gib(self) -> float:
+        return self.X.numel() * 2 / 2**30
+
+    def gather(self, ends, out=None):
+        """(B,) indici globali dell'ultimo campione -> (B, 256, 16) int16 (in `out`, se dato)."""
+        import torch
+
+        idx = (ends[:, None] + self.win[None, :]).reshape(-1)
+        if out is None:
+            return torch.index_select(self.X, 0, idx).view(len(ends), R.WINDOW, R.N_CHANNELS)
+        torch.index_select(self.X, 0, idx, out=out.view(-1, R.N_CHANNELS))
+        return out
+
+
+def partner_blocks(valid: np.ndarray, j: np.ndarray, lag_blocks: int, window: int = R.WINDOW):
+    """Compagne per la velocita' dei blocchi j di `R.train_blocks`: il blocco j - lag se tutti i blocchi da j - lag a j sono validi e la
+    finestra che finisce nel blocco j - lag ha window - 1 campioni di storia nella registrazione; altrimenti j stesso con maschera False.
+    -> (blocchi delle compagne, maschera)."""
+    if lag_blocks < 1:
+        raise ValueError("lag_blocks deve essere almeno 1")
+    v = np.asarray(valid, dtype=bool)
+    j = np.asarray(j, dtype=np.int64)
+    jp = j - lag_blocks
+    jp0 = np.maximum(jp, 0)
+    bad = np.concatenate([[0], np.cumsum(~v)])  # bad[k] = blocchi non validi in [0, k)
+    ok = (jp >= 0) & (R.block_end(jp0) >= window - 1) & (bad[j + 1] - bad[jp0] == 0)
+    return np.where(ok, jp, j), ok
+
+
+def block_index(store: HostStore, pose_root: str | Path, stride_blocks: int, lag_blocks: int = 0):
+    """Finestre sui blocchi validi a 200 Hz (regola di `R.train_blocks`): fine globale (N,), fattore (N,), bersaglio (N, 20) float16 in radianti.
+    Con `lag_blocks` > 0 c'e' un quarto elemento, le compagne per la velocita' (`partner_blocks`): (fine globale (N,), bersaglio (N, 20)
+    float16, maschera (N,) float32). La compagna e' nella stessa registrazione: il fattore e' lo stesso."""
+    import torch
+
+    ends, rid, ys = [], [], []
+    pends, pys, pmask = [], [], []
+    for i, d in enumerate(store.dirs):
+        p = Path(pose_root) / d.parent.name / d.name
+        blocks = np.load(p / "pose_200hz_f16.npy", mmap_mode="r")
+        valid = np.load(p / "pose_valid.npy")
+        if blocks.shape != (int(store.n[i]) // R.BLOCK, R.N_JOINTS) or valid.shape != (blocks.shape[0],):
+            raise ValueError(f"{p}: blocchi {blocks.shape} per {store.n[i]} campioni")
+        j = R.train_blocks(valid, int(store.n[i]), stride_blocks)
+        ends.append(store.offset[i] + R.block_end(j))
+        rid.append(np.full(j.size, i, dtype=np.int64))
+        ys.append(np.asarray(blocks[j], dtype=np.float16))
+        if lag_blocks > 0:
+            jp, ok = partner_blocks(valid, j, lag_blocks)
+            pends.append(store.offset[i] + R.block_end(jp))
+            pys.append(np.asarray(blocks[jp], dtype=np.float16))
+            pmask.append(ok.astype(np.float32))
+    ends_t = torch.from_numpy(np.concatenate(ends))
+    rid_t = torch.from_numpy(np.concatenate(rid))
+    out = (ends_t, store.factor[rid_t], torch.from_numpy(np.concatenate(ys)))
+    if lag_blocks <= 0:
+        return out
+    return out + ((torch.from_numpy(np.concatenate(pends)), torch.from_numpy(np.concatenate(pys)), torch.from_numpy(np.concatenate(pmask))),)
+
+
+def velocity_std(ys, pair) -> tuple[np.ndarray, int]:
+    """Deviazione per giunto (radianti, della popolazione, in due passate) della velocita' bersaglio, cioe' bersaglio - bersaglio della compagna,
+    sulle coppie valide del training: ((D,), numero di coppie valide)."""
+    _, pys, mask = pair
+    keep = mask.numpy() > 0
+    n = int(keep.sum())
+    if n < 2:
+        raise ValueError("coppie valide insufficienti per la deviazione della velocita'")
+
+    def diffs():
+        for a in range(0, len(ys), STATS_CHUNK):
+            k = keep[a : a + STATS_CHUNK]
+            yield ys[a : a + STATS_CHUNK].numpy()[k].astype(np.float64) - pys[a : a + STATS_CHUNK].numpy()[k].astype(np.float64)
+
+    mean = sum(d.sum(axis=0) for d in diffs()) / n
+    sd = np.sqrt(sum(np.square(d - mean).sum(axis=0) for d in diffs()) / n)
+    if not (np.isfinite(sd).all() and (sd > 0).all()):
+        raise ValueError(f"deviazione della velocita' non positiva: {sd}")
+    return sd, n
+
+
+class Feeder:
+    """Blocchi di `k` passi raccolti da un thread in due buffer (in memoria bloccata su GPU); il thread principale li copia sulla GPU e
+    rilascia il buffer quando la copia e' finita. Con `pair` (quarto elemento di `block_index`) raccoglie anche finestre, bersagli e maschere
+    delle compagne (bxp, byp, bm)."""
+
+    def __init__(self, store: HostStore, ends, fw, ys, batch: int, k: int, pin: bool, pair=None):
+        import torch
+
+        self.store, self.ends, self.fw, self.ys, self.batch, self.k, self.pair = store, ends, fw, ys, batch, k, pair
+        n = batch * k
+
+        def buf(shape, dtype):
+            t = torch.empty(shape, dtype=dtype)
+            return t.pin_memory() if pin else t
+
+        self.bx = [buf((n, R.WINDOW, R.N_CHANNELS), torch.int16) for _ in range(2)]
+        self.bf = [buf((n,), torch.float32) for _ in range(2)]
+        self.by = [buf((n, R.N_JOINTS), torch.float16) for _ in range(2)]
+        if pair is not None:
+            self.bxp = [buf((n, R.WINDOW, R.N_CHANNELS), torch.int16) for _ in range(2)]
+            self.byp = [buf((n, R.N_JOINTS), torch.float16) for _ in range(2)]
+            self.bm = [buf((n,), torch.float32) for _ in range(2)]
+        self.free: queue.Queue = queue.Queue()
+        self.ready: queue.Queue = queue.Queue()
+        for b in (0, 1):
+            self.free.put(b)
+        self.gather_seconds = 0.0
+
+    def start(self, order, steps: int) -> None:
+        """order: indici delle finestre dell'epoca nell'ordine dei passi (almeno steps * batch)."""
+        def work():
+            try:
+                for c0 in range(0, steps, self.k):
+                    c = min(self.k, steps - c0)
+                    sel = order[c0 * self.batch : (c0 + c) * self.batch]
+                    b = self.free.get()
+                    t = time.time()
+                    m = sel.numel()
+                    self.store.gather(self.ends[sel], out=self.bx[b][:m])
+                    self.bf[b][:m].copy_(self.fw[sel])
+                    self.by[b][:m].copy_(self.ys[sel])
+                    if self.pair is not None:
+                        pe, py, pm = self.pair
+                        self.store.gather(pe[sel], out=self.bxp[b][:m])
+                        self.byp[b][:m].copy_(py[sel])
+                        self.bm[b][:m].copy_(pm[sel])
+                    self.gather_seconds += time.time() - t
+                    self.ready.put((b, c))
+                self.ready.put(None)
+            except BaseException as e:  # riportata al thread principale
+                self.ready.put(e)
+
+        self.thread = threading.Thread(target=work, daemon=True)
+        self.thread.start()
+
+    def chunks(self):
+        while True:
+            item = self.ready.get()
+            if item is None:
+                return
+            if isinstance(item, BaseException):
+                raise item
+            yield item
+
+    def release(self, b: int) -> None:
+        self.free.put(b)
+
+
+# --- modello e passo --------------------------------------------------------------------------------------------------------------------
+
+def build(seed: int, device, lr: float, dropout: float = 0.5, loss: str = "l1", residual: bool = False):
+    """Modello, ottimizzatore e funzione di loss sul bersaglio standardizzato (per `mse_vel` e' il termine della posa; la velocita' la aggiunge
+    `Stepper`). La loss non cambia l'inizializzazione: la funzione non ha parametri. `residual`: TEMPONet con un salto per blocco."""
+    import torch
+    from torch import nn
+
+    from wearusfm.model.temponet import TEMPONet
+
+    loss_fns = {"l1": nn.L1Loss, "smoothl1": lambda: nn.SmoothL1Loss(beta=SMOOTH_L1_BETA), "mse": nn.MSELoss, "mse_vel": nn.MSELoss}
+    if loss not in loss_fns:
+        raise ValueError(f"loss sconosciuta: {loss}")
+    torch.manual_seed(seed)
+    model = TEMPONet(in_channels=R.N_CHANNELS, window=R.WINDOW, out_dim=R.N_JOINTS, causal=False, dropout=dropout,
+                     residual=residual).to(device)  # V13: simmetrico; residual: un salto per blocco (`--arch residual`)
+    opt = torch.optim.Adam(model.parameters(), lr=lr, capturable=device.type == "cuda")
+    return model, opt, loss_fns[loss]()
+
+
+class Stepper:
+    """Passo di training su buffer statici (finestre int16, fattori, bersagli in radianti), in eager o in un CUDA graph (schema di
+    `temponet_db8.Stepper`: GRAPH_WARMUP passi veri in eager su uno stream laterale, poi cattura e replay). Ingresso = int16 x fattore,
+    bersaglio standardizzato con media e deviazione per giunto.
+
+    Con `vel` = (peso, deviazione della velocita' per giunto in radianti), loss `mse_vel`: anche finestre, bersagli e maschere delle compagne
+    (stesso fattore della finestra di partenza). Loss = MSE della posa sulle finestre di partenza + peso x somma delle maschere x errore
+    quadratico della velocita' / (numero di coppie valide x giunti); velocita' predetta = (z - z_compagna) x sd, bersaglio = y - y_compagna,
+    errore diviso per la deviazione della velocita'. `parts` accumula i due termini."""
+
+    def __init__(self, model, opt, loss_fn, mu, sd, batch: int, use_graph: bool, device, vel=None):
+        import torch
+
+        self.model, self.opt, self.loss_fn, self.use_graph = model, opt, loss_fn, use_graph
+        self.mu = torch.as_tensor(mu, dtype=torch.float32, device=device)
+        self.sd = torch.as_tensor(sd, dtype=torch.float32, device=device)
+        self.xb = torch.zeros((batch, R.WINDOW, R.N_CHANNELS), dtype=torch.int16, device=device)
+        self.fb = torch.ones(batch, dtype=torch.float32, device=device)
+        self.yb = torch.zeros((batch, R.N_JOINTS), dtype=torch.float16, device=device)
+        self.total = torch.zeros((), dtype=torch.float64, device=device)
+        self.graph = None
+        self.side = torch.cuda.Stream(device) if use_graph else None
+        self.done = 0
+        self.vel = vel is not None
+        if self.vel:
+            self.vel_weight = float(vel[0])
+            self.sd_v = torch.as_tensor(vel[1], dtype=torch.float32, device=device)
+            self.xpb = torch.zeros_like(self.xb)
+            self.ypb = torch.zeros_like(self.yb)
+            self.mb = torch.zeros(batch, dtype=torch.float32, device=device)
+            self.parts = torch.zeros(2, dtype=torch.float64, device=device)
+            self._parts = None
+
+    def _loss(self):
+        x = self.xb.permute(0, 2, 1).contiguous().float() * self.fb[:, None, None]
+        y = (self.yb.float() - self.mu) / self.sd
+        if not self.vel:
+            return self.loss_fn(self.model(x), y)
+        import torch
+
+        xp = self.xpb.permute(0, 2, 1).contiguous().float() * self.fb[:, None, None]
+        z = self._pair_forward(torch.cat([x, xp]))
+        za, zp = z[: x.shape[0]], z[x.shape[0] :]
+        pose = self.loss_fn(za, y)
+        dv = ((za - zp) * self.sd - (self.yb.float() - self.ypb.float())) / self.sd_v
+        vel = (self.mb[:, None] * dv.square()).sum() / (self.mb.sum().clamp(min=1.0) * R.N_JOINTS)
+        self._parts = torch.stack([pose.detach(), vel.detach()])
+        return pose + self.vel_weight * vel
+
+    def _pair_forward(self, x2):
+        """Forward di finestre e compagne concatenate (BatchNorm sulle 2 x batch finestre) con UNA maschera del dropout per coppia, ripetuta
+        sulle due meta': la differenza fra le uscite di una coppia non contiene il rumore del dropout (review del 18/11, emendamento 3 in
+        `docs/decisioni.md`). Stesse operazioni di `TEMPONet.forward` e di `_Dense`; con il dropout spento coincide con `model(x2)`."""
+        import torch
+
+        m = self.model
+        h = m.embed(x2)  # i tre blocchi, con i salti se la rete e' residua (merge del 20/11: prima m.features(x2).flatten(1))
+        half = x2.shape[0] // 2
+        for d in m.head:
+            h = d.relu(d.bn(d.fc(h)))
+            p = float(d.drop.p)
+            if m.training and p > 0:
+                keep = (torch.rand((half, h.shape[1]), device=h.device) >= p).to(h.dtype) / (1.0 - p)
+                h = h * torch.cat([keep, keep])
+        return m.out(h)
+
+    def _eager(self):
+        self.opt.zero_grad(set_to_none=True)
+        loss = self._loss()
+        loss.backward()
+        self.opt.step()
+        self.total.add_(loss.detach())
+        if self.vel:
+            self.parts.add_(self._parts)
+
+    def step(self, x, f, y, xp=None, yp=None, m=None) -> None:
+        import torch
+
+        self.xb.copy_(x)
+        self.fb.copy_(f)
+        self.yb.copy_(y)
+        if self.vel:
+            self.xpb.copy_(xp)
+            self.ypb.copy_(yp)
+            self.mb.copy_(m)
+        if not self.use_graph:
+            self._eager()
+        elif self.graph is None and self.done < T.GRAPH_WARMUP:
+            self.side.wait_stream(torch.cuda.current_stream())
+            with torch.cuda.stream(self.side):
+                self._eager()
+            torch.cuda.current_stream().wait_stream(self.side)
+        else:
+            if self.graph is None:
+                self.opt.zero_grad(set_to_none=True)
+                self.graph = torch.cuda.CUDAGraph()
+                with torch.cuda.graph(self.graph):
+                    loss = self._loss()
+                    loss.backward()
+                    self.opt.step()
+                    self.total.add_(loss.detach())
+                    if self.vel:
+                        self.parts.add_(self._parts)
+            self.graph.replay()
+        self.done += 1
+
+    def take_total(self) -> float:
+        v = float(self.total)
+        self.total.zero_()
+        return v
+
+    def take_parts(self) -> tuple[float, float]:
+        """Somme dei termini di posa e di velocita' (non pesato) dall'ultima lettura (solo `mse_vel`)."""
+        v = self.parts.tolist()
+        self.parts.zero_()
+        return v[0], v[1]
+
+
+def graph_check(xs, fs, ys, mu, sd, batch: int, device, lr: float, loss: str = "l1", pair=None, vel=None, residual: bool = False) -> dict:
+    """Stessi pesi iniziali (seme 777), stessi batch, dropout 0, cuDNN deterministico: len(xs) passi eager contro graph. Per `mse_vel`
+    pair = (finestre, bersagli, maschere) delle compagne, impilate come xs, e vel come in `Stepper`. `residual`: la rete del training."""
+    import torch
+
+    saved = (torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark)
+    torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = True, False
+    out, params = {"steps": len(xs), "loss": loss}, {}
+    for mode in ("eager", "graph"):
+        model, opt, loss_fn = build(777, device, lr, dropout=0.0, loss=loss, residual=residual)
+        model.train()
+        st = Stepper(model, opt, loss_fn, mu, sd, batch, mode == "graph", device, vel=vel)
+        extra = (lambda i: (pair[0][i], pair[1][i], pair[2][i])) if pair is not None else (lambda i: ())
+        for i in range(T.GRAPH_WARMUP + 1):
+            st.step(xs[i], fs[i], ys[i], *extra(i))
+        torch.cuda.synchronize()
+        t0 = time.time()
+        for i in range(T.GRAPH_WARMUP + 1, len(xs)):
+            st.step(xs[i], fs[i], ys[i], *extra(i))
+        torch.cuda.synchronize()
+        out[f"{mode}_ms_per_step"] = 1000 * (time.time() - t0) / (len(xs) - T.GRAPH_WARMUP - 1)
+        out[f"{mode}_loss_sum"] = st.take_total()
+        if st.vel:
+            out[f"{mode}_pose_vel_sums"] = list(st.take_parts())
+        params[mode] = [p.detach().clone() for p in model.parameters()] + [b.detach().clone() for b in model.buffers()]
+    out["max_abs_param_diff"] = max(float((a.double() - b.double()).abs().max()) for a, b in zip(params["eager"], params["graph"]))
+    if vel is not None:
+        out["dropout_check"] = dropout_check(xs, fs, ys, mu, sd, batch, device, vel, residual=residual)
+    torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = saved
+    return out
+
+
+DROPOUT_CHECK_VEL_MAX = 1e-8  # termine della velocita' ammesso con compagna = finestra e maschera condivisa
+
+
+def dropout_check(xs, fs, ys, mu, sd, batch: int, device, vel, steps: int = 4, residual: bool = False) -> dict:
+    """Solo `mse_vel`, nel CUDA graph che usera' il training (dropout 0,5): compagna = finestra stessa e lr 0, cosi' i pesi non cambiano.
+    Con la maschera condivisa il termine della velocita' deve essere nullo a ogni replay; il termine della posa deve cambiare fra un replay e
+    l'altro con lo stesso ingresso (la maschera si rinnova). -> esito e valori."""
+    import torch
+
+    model, opt, loss_fn = build(778, device, 0.0, dropout=0.5, loss="mse_vel", residual=residual)
+    model.train()
+    st = Stepper(model, opt, loss_fn, mu, sd, batch, True, device, vel=vel)
+    ones = torch.ones(batch, dtype=torch.float32, device=device)
+    pose, velv = [], []
+    for _ in range(T.GRAPH_WARMUP + steps):
+        st.step(xs[0], fs[0], ys[0], xs[0], ys[0], ones)
+        p, v = st.take_parts()
+        pose.append(p)
+        velv.append(v)
+    replay_pose = pose[T.GRAPH_WARMUP + 1 :]  # passi dopo la cattura, stesso ingresso e stessi pesi
+    ok = max(abs(v) for v in velv) <= DROPOUT_CHECK_VEL_MAX and len(set(replay_pose)) == len(replay_pose)
+    return {"passed": bool(ok), "pose_parts": pose, "vel_parts": velv, "vel_max_allowed": DROPOUT_CHECK_VEL_MAX}
+
+
+def predict(model, store: HostStore, ends, fw, device, batch: int = EVAL_BATCH) -> np.ndarray:
+    """Uscite del modello (in radianti, se `model` e' il denormalizzatore) per le finestre che finiscono in `ends` (globali)."""
+    import torch
+
+    model.eval()
+    out = np.empty((len(ends), R.N_JOINTS), dtype=np.float32)
+    with torch.no_grad():
+        for i in range(0, len(ends), batch):
+            e = ends[i : i + batch]
+            x = store.gather(e).to(device)
+            x = x.permute(0, 2, 1).contiguous().float() * fw[i : i + batch].to(device)[:, None, None]
+            out[i : i + len(e)] = model(x).float().cpu().numpy()
+    return out
+
+
+def setup_torch(cudnn_mode: str):
+    import torch
+
+    torch.backends.cudnn.deterministic, torch.backends.cudnn.benchmark = T.CUDNN_MODES[cudnn_mode]
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
+    torch.set_num_threads(max(1, int(os.environ.get("SLURM_CPUS_PER_TASK", "2")) - 1))
+    return torch
+
+
+def subset(rows: list[dict], n: int, seed: int) -> list[dict]:
+    rows = sorted(rows, key=lambda r: r["filename"])
+    if n and n < len(rows):
+        pick = np.sort(np.random.default_rng(seed).choice(len(rows), size=n, replace=False))
+        rows = [rows[i] for i in pick]
+    return rows
+
+
+# --- training ---------------------------------------------------------------------------------------------------------------------------
+
+def run_train(args) -> int:
+    torch = setup_torch(args.cudnn_mode)
+    device = torch.device(args.device)
+    out = new_dir(args.out)
+    (out / "checkpoints").mkdir()
+    t_start = time.time()
+    manifest = json.loads(Path(args.targets_manifest).read_text())
+    if not manifest.get("complete"):
+        raise SystemExit("manifest del passo 0 incompleto")
+    k = int(manifest["scale"]["exponent_k"])
+    rows = R.read_rows(args.csv)
+    train_rows = subset([r for r in rows if r["split"] == "train"], args.max_train_recordings, args.seed)
+    val_rows = subset([r for r in rows if r["split"] == "val"], args.max_val_recordings, args.seed)
+    mu, sd = R.pose_stats_all(args.pose_root)
+    run = {"kind": "temponet_emg2pose_train_v1", "args": vars(args), "code_dir": os.environ.get("WEARUSFM_CODE_DIR"),
+           "code_sha": os.environ.get("WEARUSFM_CODE_SHA"), "slurm_job_id": os.environ.get("SLURM_JOB_ID"), "python": platform.python_version(),
+           "torch": torch.__version__, "cuda": torch.version.cuda, "started": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "scale_exponent_k": k,
+           "targets_manifest": str(args.targets_manifest), "n_train_recordings": len(train_rows), "n_val_recordings": len(val_rows),
+           "train_users": len({r["user"] for r in train_rows}), "status": "in corso"}
+    from wearusfm.model.temponet import TEMPONet, count_parameters
+
+    run["arch"] = args.arch or "plain"
+    residual = run["arch"] == "residual"
+    run["parameters"] = count_parameters(TEMPONet(in_channels=R.N_CHANNELS, window=R.WINDOW, out_dim=R.N_JOINTS, causal=False, residual=residual))
+    run["loss_definition"] = {"l1": "L1 sul bersaglio standardizzato", "smoothl1": f"smooth L1 (beta {SMOOTH_L1_BETA}) sul bersaglio standardizzato",
+                              "mse": "MSE sul bersaglio standardizzato",
+                              "mse_vel": f"MSE della posa + {args.vel_weight} x MSE della velocita' standardizzata, compagna a "
+                                         f"{args.vel_lag_blocks} blocchi"}[args.loss]
+    (out / "run.json").write_text(json.dumps(run, indent=1))
+    store = HostStore(train_rows, args.processed_root, k)
+    lag = args.vel_lag_blocks if args.loss == "mse_vel" else 0
+    index = block_index(store, args.pose_root, args.train_stride_blocks, lag)
+    ends, fw, ys = index[:3]
+    pair = index[3] if lag else None
+    vel = None
+    if pair is not None:
+        sd_v, n_pairs = velocity_std(ys, pair)
+        vel = (args.vel_weight, sd_v)
+        run.update({"vel_sd_rad": [float(v) for v in sd_v], "vel_pairs_valid": n_pairs, "vel_pairs_fraction": n_pairs / len(ends)})
+    vstore = HostStore(val_rows, args.processed_root, k)
+    vends, vfw, vys = block_index(vstore, args.pose_root, R.VAL_EPOCH_STRIDE_BLOCKS)
+    n = len(ends)
+    steps = n // args.batch
+    if args.max_steps_per_epoch:
+        steps = min(steps, args.max_steps_per_epoch)
+    run.update({"train_gib": round(store.gib, 2), "train_load_seconds": store.load_seconds, "val_gib": round(vstore.gib, 2),
+                "val_load_seconds": vstore.load_seconds, "n_train_windows": n, "steps_per_epoch": steps, "n_val_windows_epoch": len(vends),
+                "max_rss_gb_after_load": round(max_rss_gb(), 2)})
+    print(f"training: {len(train_rows)} registrazioni, {store.gib:.1f} GiB in {store.load_seconds:.0f} s, {n} finestre, {steps} passi per epoca; "
+          f"validazione {len(vends)} finestre; k = {k}", flush=True)
+    (out / "run.json").write_text(json.dumps(run, indent=1))
+    mu_t, sd_t = torch.tensor(mu, dtype=torch.float32), torch.tensor(sd, dtype=torch.float32)
+    use_graph = device.type == "cuda" and not args.no_cuda_graph
+    if args.check_graph and device.type == "cuda":
+        gen_c = torch.Generator().manual_seed(12345)
+        sel = torch.randperm(n, generator=gen_c)[: 60 * args.batch]
+        xs = store.gather(ends[sel]).to(device).view(60, args.batch, R.WINDOW, R.N_CHANNELS)
+        fs = fw[sel].to(device).view(60, args.batch)
+        yv = ys[sel].to(device).view(60, args.batch, R.N_JOINTS)
+        pv = None
+        if pair is not None:
+            pv = (store.gather(pair[0][sel]).to(device).view(60, args.batch, R.WINDOW, R.N_CHANNELS),
+                  pair[1][sel].to(device).view(60, args.batch, R.N_JOINTS), pair[2][sel].to(device).view(60, args.batch))
+        check = graph_check(xs, fs, yv, mu, sd, args.batch, device, args.lr, loss=args.loss, pair=pv, vel=vel, residual=residual)
+        (out / "graph_check.json").write_text(json.dumps(check, indent=1))
+        print(f"controllo eager/graph: differenza massima {check['max_abs_param_diff']:.3g}, {check['eager_ms_per_step']:.2f} ms contro "
+              f"{check['graph_ms_per_step']:.2f} ms per passo", flush=True)
+        if check["max_abs_param_diff"] > T.GRAPH_TOLERANCE:
+            run["status"] = "controllo eager/graph fallito: nessun training"
+            (out / "run.json").write_text(json.dumps(run, indent=1))
+            return 1
+        if "dropout_check" in check:
+            print(f"controllo della maschera condivisa: {'superato' if check['dropout_check']['passed'] else 'FALLITO'}", flush=True)
+            if not check["dropout_check"]["passed"]:
+                run["status"] = "controllo della maschera condivisa del dropout fallito: nessun training"
+                (out / "run.json").write_text(json.dumps(run, indent=1))
+                return 1
+    model, opt, loss_fn = build(args.seed, device, args.lr, loss=args.loss, residual=residual)
+    eval_model = T.denormalizer(model, mu_t.to(device), sd_t.to(device))
+    stepper = Stepper(model, opt, loss_fn, mu, sd, args.batch, use_graph, device, vel=vel)
+    feeder = Feeder(store, ends, fw, ys, args.batch, args.chunk_steps, pin=device.type == "cuda", pair=pair)
+    chunk = args.batch * args.chunk_steps
+    gx = torch.empty((chunk, R.WINDOW, R.N_CHANNELS), dtype=torch.int16, device=device)
+    gf = torch.empty(chunk, dtype=torch.float32, device=device)
+    gy = torch.empty((chunk, R.N_JOINTS), dtype=torch.float16, device=device)
+    if pair is not None:
+        gxp, gyp = torch.empty_like(gx), torch.empty_like(gy)
+        gm = torch.empty(chunk, dtype=torch.float32, device=device)
+    gen = torch.Generator().manual_seed(args.seed)
+    vys_np = vys.float().numpy()
+    deadline = t_start + args.time_budget_s if args.time_budget_s > 0 else float("inf")
+    history = []
+    for epoch in range(args.epochs):
+        t0 = time.time()
+        model.train()
+        order = torch.randperm(n, generator=gen)[: steps * args.batch]
+        feeder.start(order, steps)
+        for b, c in feeder.chunks():
+            m = c * args.batch
+            gx[:m].copy_(feeder.bx[b][:m], non_blocking=True)
+            gf[:m].copy_(feeder.bf[b][:m], non_blocking=True)
+            gy[:m].copy_(feeder.by[b][:m], non_blocking=True)
+            if pair is not None:
+                gxp[:m].copy_(feeder.bxp[b][:m], non_blocking=True)
+                gyp[:m].copy_(feeder.byp[b][:m], non_blocking=True)
+                gm[:m].copy_(feeder.bm[b][:m], non_blocking=True)
+            if device.type == "cuda":
+                ev = torch.cuda.Event()
+                ev.record()
+                ev.synchronize()  # il buffer bloccato torna libero solo a copia finita
+            feeder.release(b)
+            for i in range(c):
+                s0, s1 = i * args.batch, (i + 1) * args.batch
+                if pair is None:
+                    stepper.step(gx[s0:s1], gf[s0:s1], gy[s0:s1])
+                else:
+                    stepper.step(gx[s0:s1], gf[s0:s1], gy[s0:s1], gxp[s0:s1], gyp[s0:s1], gm[s0:s1])
+        if device.type == "cuda":
+            torch.cuda.synchronize()
+        train_loss = stepper.take_total() / steps
+        if not np.isfinite(train_loss):
+            raise FloatingPointError(f"loss non finita all'epoca {epoch + 1}")
+        t_train = time.time() - t0
+        vpred = predict(eval_model, vstore, vends, vfw, device)
+        val_mae = float(np.abs(vpred.astype(np.float64) - vys_np).mean() * R.RAD2DEG)
+        row = {"epoch": epoch + 1, f"train_{args.loss}_std": train_loss}
+        if pair is not None:
+            p_sum, v_sum = stepper.take_parts()
+            row.update({"train_pose_mse_std": p_sum / steps, "train_vel_mse_std": v_sum / steps})
+        row.update({"steps": steps, "train_seconds": round(t_train, 1), "ms_per_step": round(1000 * t_train / steps, 4),
+                    "val_seconds": round(time.time() - t0 - t_train, 1), "val_mae_raw_deg": val_mae,
+                    "gather_seconds_total": round(feeder.gather_seconds, 1)})
+        history.append(row)
+        (out / "history.json").write_text(json.dumps(history, indent=1))
+        torch.save(eval_model.state_dict(), out / "checkpoints" / f"epoch_{epoch + 1:02d}.pt")
+        print(f"epoca {epoch + 1}: train {LOSS_NAMES[args.loss]} (std) {train_loss:.4f}, {row['ms_per_step']:.3f} ms per passo, validazione grezza "
+              f"{val_mae:.3f} gradi, {row['train_seconds']:.0f} + {row['val_seconds']:.0f} s", flush=True)
+        if time.time() > deadline and epoch + 1 < args.epochs:
+            run["status"] = f"incompleto: tempo esaurito dopo l'epoca {epoch + 1}"
+            break
+    else:
+        torch.save(eval_model.state_dict(), out / "model_final.pt")
+        run["status"] = "ok"
+    run.update({"finished": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "seconds": round(time.time() - t_start, 1),
+                "max_rss_gb": round(max_rss_gb(), 2), "gather_seconds_total": round(feeder.gather_seconds, 1)})
+    (out / "run.json").write_text(json.dumps(run, indent=1))
+    print(f"fine: {run['status']} in {run['seconds']:.0f} s, memoria massima {run['max_rss_gb']} GB", flush=True)
+    return 0 if run["status"] == "ok" else 1
+
+
+# --- valutazione ------------------------------------------------------------------------------------------------------------------------
+
+def collect(split: str, manifest: dict, targets_dir: Path, args, model, k: int, device):
+    """Predizioni e bersagli di tutte le finestre ufficiali di uno split: (P, Y) torch (finestre, 1000, 20) su device, metadati per finestra."""
+    import torch
+
+    recs = sorted((stem, info) for stem, info in manifest["recordings"].items() if info["split"] == split and info["n_windows"] > 0)
+    rows = [{"user": info["user"], "filename": stem} for stem, info in recs]
+    store = HostStore(rows, args.processed_root, k)
+    P, Y, meta = [], [], []
+    for i, (stem, info) in enumerate(recs):
+        z = np.load(targets_dir / info["file"])
+        starts = z["starts"]
+        inst = R.eval_instants(starts)
+        if (inst + 0 >= store.n[i]).any():
+            raise ValueError(f"{stem}: istanti oltre la registrazione")
+        ends = torch.from_numpy(store.offset[i] + inst.reshape(-1))
+        fwi = store.factor[i].repeat(len(ends))
+        p = predict(model, store, ends, fwi, device).reshape(inst.shape + (R.N_JOINTS,))
+        P.append(torch.from_numpy(p).to(device))
+        Y.append(torch.from_numpy(np.asarray(z["targets"], dtype=np.float32)).to(device))
+        meta.extend([(info["user"], info["generalization"], info["side"], R.is_moving_side(info))] * len(starts))
+    return torch.cat(P), torch.cat(Y), meta, {"recordings": len(recs), "gib": round(store.gib, 2), "load_seconds": store.load_seconds}
+
+
+def per_window_sums(P, Y):
+    import torch
+
+    return (P.to(torch.float64) - Y.to(torch.float64)).abs().sum(dim=(1, 2)).cpu().numpy()
+
+
+def group_sums(sums: np.ndarray, meta: list, key) -> dict:
+    """{gruppo: {utente: (somma, numero di valori)}} con key(meta) -> gruppo (o None per escludere)."""
+    per_value = R.EVAL_PREDICTED // R.EVAL_STEP * R.N_JOINTS
+    out: dict = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
+    for s, m in zip(sums, meta):
+        g = key(m)
+        if g is None:
+            continue
+        out[g][m[0]][0] += float(s)
+        out[g][m[0]][1] += per_value
+    return {g: {u: tuple(v) for u, v in d.items()} for g, d in out.items()}
+
+
+def run_eval(args) -> int:
+    torch = setup_torch(args.cudnn_mode)
+    device = torch.device(args.device)
+    out = new_dir(args.out)
+    targets_dir = Path(args.targets_manifest).parent
+    manifest = json.loads(Path(args.targets_manifest).read_text())
+    proto = {"predicted": R.EVAL_PREDICTED, "context": R.CONTEXT, "stride": R.EVAL_STRIDE, "step": R.EVAL_STEP}
+    if not manifest.get("complete") or manifest.get("protocol") != proto:
+        raise SystemExit("manifest del passo 0 incompleto o con un protocollo diverso")
+    train_run = json.loads((Path(args.model_dir) / "run.json").read_text())
+    if train_run.get("status") != "ok" and not args.val_only:
+        raise SystemExit(f"training non concluso: {train_run.get('status')}")
+    k = int(manifest["scale"]["exponent_k"])
+    if int(train_run["scale_exponent_k"]) != k:
+        raise SystemExit("scala del training diversa da quella del manifest")
+    mu, sd = R.pose_stats_all(args.pose_root)
+    arch = train_run.get("arch") or "plain"  # la architettura del checkpoint e' quella del training (run.json); prima del 18/11 solo plain
+    if args.arch and args.arch != arch:
+        raise SystemExit(f"--arch {args.arch} diversa da quella del training ({arch})")
+    model, _, _ = build(0, device, 1e-4, residual=arch == "residual")
+    eval_model = T.denormalizer(model, torch.tensor(mu, dtype=torch.float32).to(device), torch.tensor(sd, dtype=torch.float32).to(device))
+    if args.checkpoint:  # training lungo (18/11): il checkpoint di un'epoca dichiarata, invece del modello finale
+        if not re.fullmatch(r"epoch_\d{2,3}\.pt", args.checkpoint):
+            raise SystemExit(f"--checkpoint {args.checkpoint}: atteso epoch_NN.pt")
+        ckpt = Path(args.model_dir) / "checkpoints" / args.checkpoint
+        if not ckpt.is_file():
+            raise SystemExit(f"checkpoint assente: {ckpt}")
+    else:
+        last = lambda: max((Path(args.model_dir) / "checkpoints").glob("epoch_*.pt"), key=lambda p: int(p.stem.split("_")[1]))  # noqa: E731
+        ckpt = Path(args.model_dir) / "model_final.pt" if train_run.get("status") == "ok" else last()  # ultima epoca per numero, non per nome
+    eval_model.load_state_dict(torch.load(ckpt, map_location=device))
+    t0 = time.time()
+    report = {"kind": "temponet_emg2pose_eval_v1", "args": {k: v for k, v in vars(args).items() if k not in ("loss", "vel_weight", "vel_lag_blocks")}, "code_sha": os.environ.get("WEARUSFM_CODE_SHA"),
+              "slurm_job_id": os.environ.get("SLURM_JOB_ID"), "checkpoint": str(ckpt), "train_status": train_run.get("status"), "k": k,
+              "train_loss": train_run["args"].get("loss", "l1"), "arch": arch}
+    mu_dev = torch.tensor(mu, dtype=torch.float32, device=device)
+    Pv, Yv, meta_v, info_v = collect("val", manifest, targets_dir, args, eval_model, k, device)
+    alphas, mae_grid = R.tune_alpha_windows(Pv, Yv)
+    Ev = R.ema_windows(Pv, torch.tensor(alphas, dtype=torch.float32, device=device))
+    everyone = lambda m: "val"  # noqa: E731
+    sums_v = {"ema": per_window_sums(Ev, Yv), "raw": per_window_sums(Pv, Yv), "constant": per_window_sums(mu_dev.expand_as(Yv), Yv)}
+    val = {kind: R.summarize_users(group_sums(s, meta_v, everyone)["val"]) for kind, s in sums_v.items()}
+    g = R.gate(group_sums(sums_v["ema"], meta_v, everyone)["val"], group_sums(sums_v["constant"], meta_v, everyone)["val"])
+    report.update({"val": {"windows": len(meta_v), **info_v, **val}, "alpha": [float(a) for a in alphas],
+                   "alpha_grid_mae_deg_min": float(mae_grid.min(axis=0).mean() * R.RAD2DEG), "gate": g})
+    print(f"validazione: {len(meta_v)} finestre, MAE con EMA {val['ema']['mean_over_users_deg']:.3f}, grezza {val['raw']['mean_over_users_deg']:.3f}, "
+          f"costante {val['constant']['mean_over_users_deg']:.3f}; cancello {g['ratio']:.3f} < {g['max_ratio']}: {g['passed']}", flush=True)
+    del Pv, Yv, Ev
+    if args.val_only or not g["passed"]:
+        report["test"] = "non calcolato: " + ("collaudo (--val-only)" if args.val_only else "cancello non superato, si apre una diagnosi")
+    else:
+        Pt, Yt, meta_t, info_t = collect("test", manifest, targets_dir, args, eval_model, k, device)
+        Et = R.ema_windows(Pt, torch.tensor(alphas, dtype=torch.float32, device=device))
+        sums_t = {"ema": per_window_sums(Et, Yt), "raw": per_window_sums(Pt, Yt), "constant": per_window_sums(mu_dev.expand_as(Yt), Yt)}
+        test = {"windows": len(meta_t), **info_t, "conditions": {}}
+        for cond in R.CONDITIONS:
+            by = {kind: R.summarize_users(group_sums(s, meta_t, lambda m: m[1]).get(cond, {})) for kind, s in sums_t.items()}
+            main = by["ema"]["mean_over_users_deg"]
+            test["conditions"][cond] = {**by, "reading": R.reading(main, cond) if main is not None else None,
+                                        "tab4_regression_deg": R.TAB4_REGRESSION_DEG[cond]}
+        test["by_side_ema"] = {s: R.summarize_users(d) for s, d in group_sums(sums_t["ema"], meta_t, lambda m: m[2]).items()}
+        test["by_moving_ema"] = {("in movimento" if mv else "ferma"): R.summarize_users(d)
+                                 for mv, d in group_sums(sums_t["ema"], meta_t, lambda m: m[3]).items()}
+        report["test"] = test
+    report["seconds"] = round(time.time() - t0, 1)
+    (out / "eval.json").write_text(json.dumps(report, indent=1))
+    (out / "eval.md").write_text(to_markdown(report))
+    print(to_markdown(report), flush=True)
+    return 0 if (args.val_only or g["passed"]) else 3
+
+
+def to_markdown(r: dict) -> str:
+    g, v = r["gate"], r["val"]
+    lines = ["# TEMPONet su emg2pose: valutazione", "",
+             f"Validazione ({v['n_users'] if 'n_users' in v else v['ema']['n_users']} utenti, {v['windows']} finestre ufficiali): MAE con EMA "
+             f"{v['ema']['mean_over_users_deg']:.3f} gradi, grezza {v['raw']['mean_over_users_deg']:.3f}, predittore costante "
+             f"{v['constant']['mean_over_users_deg']:.3f} (media fra utenti).",
+             f"**Cancello**: {g['model_deg']:.3f} / {g['constant_deg']:.3f} = {g['ratio']:.3f}, soglia < {g['max_ratio']}: "
+             f"**{'superato' if g['passed'] else 'NON superato'}**.", ""]
+    t = r["test"]
+    if isinstance(t, str):
+        lines.append(f"Test {t}.")
+        return "\n".join(lines) + "\n"
+    lines += ["| Condizione | utenti | MAE con EMA (media ± dev. std. fra utenti) | grezza | costante | pesata per istanti | lettura | vemg2pose / "
+              "NeuroPose / SensingDynamics |", "|---|---|---|---|---|---|---|---|"]
+    for cond, c in t["conditions"].items():
+        e = c["ema"]
+        if e["mean_over_users_deg"] is None:
+            lines.append(f"| {cond} | 0 | - | - | - | - | - | - |")
+            continue
+        tab = c["tab4_regression_deg"]
+        lines.append(f"| {cond} | {e['n_users']} | {e['mean_over_users_deg']:.2f} ± {e['sd_over_users_deg'] or 0:.2f} | "
+                     f"{c['raw']['mean_over_users_deg']:.2f} | {c['constant']['mean_over_users_deg']:.2f} | {e['pooled_deg']:.2f} | {c['reading']} | "
+                     f"{tab['vemg2pose']} / {tab['NeuroPose']} / {tab['SensingDynamics']} |")
+    return "\n".join(lines) + "\n"
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("mode", choices=("train", "eval"))
+    ap.add_argument("--csv", required=True)
+    ap.add_argument("--processed-root", required=True)
+    ap.add_argument("--pose-root", required=True)
+    ap.add_argument("--targets-manifest", required=True, help="manifest.json del passo 0")
+    ap.add_argument("--out", required=True, help="cartella nuova o vuota")
+    ap.add_argument("--model-dir", default=None, help="eval: cartella del training")
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--epochs", type=int, default=19)
+    ap.add_argument("--lr", type=float, default=1e-4)
+    ap.add_argument("--batch", type=int, default=64)
+    ap.add_argument("--train-stride-blocks", type=int, default=R.TRAIN_STRIDE_BLOCKS)
+    ap.add_argument("--chunk-steps", type=int, default=512, help="passi per blocco raccolto dal thread")
+    ap.add_argument("--max-train-recordings", type=int, default=0, help="solo collaudo")
+    ap.add_argument("--max-val-recordings", type=int, default=0, help="solo collaudo")
+    ap.add_argument("--max-steps-per-epoch", type=int, default=0, help="solo collaudo")
+    ap.add_argument("--val-only", action="store_true", help="eval: solo validazione e cancello, nessun test (collaudo)")
+    ap.add_argument("--check-graph", action="store_true")
+    ap.add_argument("--no-cuda-graph", action="store_true")
+    ap.add_argument("--cudnn-mode", choices=sorted(T.CUDNN_MODES), default="benchmark")
+    ap.add_argument("--device", default="cuda")
+    ap.add_argument("--time-budget-s", type=float, default=0.0, help="train: nessuna epoca nuova dopo questo tempo (run incompleto)")
+    ap.add_argument("--arch", choices=("plain", "residual"), default=None,
+                    help="train: architettura (default plain, la rete di [Z21]); eval: si legge da run.json del training, se data deve coincidere")
+    ap.add_argument("--checkpoint", default=None,
+                    help="eval: checkpoint di un'epoca in <model-dir>/checkpoints (es. epoch_19.pt) invece del modello finale")
+    ap.add_argument("--loss", choices=LOSSES, default="l1", help="train: l1 (riferimento), smoothl1, mse, mse_vel")
+    ap.add_argument("--vel-weight", type=float, default=0.1, help="train, mse_vel: peso del termine della velocita'")
+    ap.add_argument("--vel-lag-blocks", type=int, default=4, help="train, mse_vel: distanza della compagna in blocchi da 5 ms")
+    args = ap.parse_args(argv)
+    if args.mode == "eval" and not args.model_dir:
+        ap.error("eval richiede --model-dir")
+    if args.loss == "mse_vel" and (args.vel_lag_blocks < 1 or not args.vel_weight > 0):
+        ap.error("mse_vel richiede --vel-lag-blocks >= 1 e --vel-weight > 0")
+    return run_train(args) if args.mode == "train" else run_eval(args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

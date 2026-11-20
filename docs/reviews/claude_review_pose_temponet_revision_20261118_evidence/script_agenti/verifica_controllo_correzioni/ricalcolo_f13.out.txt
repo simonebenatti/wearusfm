@@ -1,0 +1,4 @@
+sigma=2.5 K=5.0: WLS=0.8983  somma_quadrati_non_riscalato=0.9077  loss_media_non_riscalato(lam x2.0)=0.9012  loss_media_riscalato=0.9077  ottimo_griglia=0.9077
+sigma=3.0 K=5.0: WLS=0.8536  somma_quadrati_non_riscalato=0.8723  loss_media_non_riscalato(lam x2.0)=0.8611  loss_media_riscalato=0.8723  ottimo_griglia=0.8723
+cancello P:95 = 0.90; con ridge 0.9077: L0 neurale in [0.8983, 0.90) -> 'ricetta non ammessa' con controllo diagnostico; L0 in [0.90, 0.9077] -> passa
+quota dell'intervallo WLS-ridge che fallisce: con ridge 0,9077 = 0.18; con ridge 0,9012 = 0.59

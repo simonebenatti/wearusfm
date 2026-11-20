@@ -1,0 +1,13 @@
+Esempio f_L 0,5, f_T 0,6, K 3 (quello del revisore): valori di a che hanno almeno una coppia ammissibile
+  r=0.25 E_real=0.85 sigma<=  3.0: a usabili [2.0]; sigma massimo usato 3.0
+  r=0.25 E_real=0.85 sigma<= 10.0: a usabili [2.0, 2.5, 3.0]; sigma massimo usato 4.75
+  r=0.25 E_real=0.90 sigma<=  3.0: a usabili []; sigma massimo usato None
+  r=0.25 E_real=0.90 sigma<= 10.0: a usabili []; sigma massimo usato None
+  r=0.4 E_real=0.85 sigma<=  3.0: a usabili [1.0, 1.5]; sigma massimo usato 3.0
+  r=0.4 E_real=0.85 sigma<= 10.0: a usabili [1.0, 1.5, 2.0, 2.5, 3.0]; sigma massimo usato 5.3
+  r=0.4 E_real=0.90 sigma<=  3.0: a usabili [1.5]; sigma massimo usato 3.0
+  r=0.4 E_real=0.90 sigma<= 10.0: a usabili [1.5, 2.0, 2.5, 3.0]; sigma massimo usato 6.0
+Non calibrati su 81 (griglia di ipotesi del revisore), a fino a 3, tabella della bozza, al variare del sigma massimo
+  sigma <=  3.0 | E_real 0.80: 2 | E_real 0.85: 24 | E_real 0.90: 31 | E_real 0.94: 48
+  sigma <=  5.0 | E_real 0.80: 0 | E_real 0.85: 17 | E_real 0.90: 27 | E_real 0.94: 28
+  sigma <= 10.0 | E_real 0.80: 0 | E_real 0.85: 14 | E_real 0.90: 27 | E_real 0.94: 28

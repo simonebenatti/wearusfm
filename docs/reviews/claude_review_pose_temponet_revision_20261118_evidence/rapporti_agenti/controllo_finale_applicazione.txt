@@ -1,0 +1,215 @@
+RAPPORTO DEL CONTROLLO FINALE - LENTE «applicazione» (applicazione dei rilievi e nuovi errori)
+Bozza congelata: controllo2/bozza_controllo2.md (sha256 cdaee410f031b9f05b85dc72c8f35becad2abaf51909d52ac2d05bd4c273127a, 669 righe).
+Convenzione: «B2:n» = riga n della bozza congelata; «B1:n» = riga n della versione precedente (controllo/bozza_controllo.md);
+«SC:n» = riga di controllo/sintesi_controllo.txt. P/J/R/DEC/prompt come nella bozza, letti nella copia gpt_3e007c8/.
+Stato: completo. Rilievi esaminati: 46. Problemi: 5 (P-01...P-05): quattro imprecisioni e una mancanza, nessuna che cambi verdetti o blocchi.
+
+======================================================================================================================
+A. STATO DEI 46 RILIEVI DI sintesi_controllo.txt SULLA BOZZA CONGELATA
+======================================================================================================================
+Per i PARZIALE si e' controllato il CORRECTED_FIX, per i CONFERMATO il FIX; C-14 e' RESPINTO. Conteggio: 3 (correzioni) +
+13 (nuovi-errori, con VN-1) + 13 (avvocato, con VA-N1) + 17 (coerenza, con N-1) = 46.
+Esito: 43 APPLICATO, 2 APPLICATO IN PARTE (AVV-05, C-04), 1 NON DOVUTO (C-14); nessuno NON APPLICATO o APPLICATO MALE.
+
+ID      | Stato              | Dove (B2) e nota
+--------+--------------------+------------------------------------------------------------------------------------------
+F13     | APPLICATO          | B2:121-124: 90,8% alla ridge «così prescritta», 89,8% WLS, 90,1% solo con loss media e alpha
+        |                    | doppio; prompt B2:569-570 senza il 90,1% (come il CORRECTED_FIX di AVV-04).
+F9      | APPLICATO          | B2:416-418 (testo del CORRECTED_FIX di C-01): minori rilette con i blocchi, note al pacchetto.
+F21     | APPLICATO          | Corpo B2:301-305 (P:104 solo per L0; P:122, J:40-41, DEC:6753; voce vii); prompt B2:640-642.
+NE-1    | APPLICATO          | B2:121-122 e prompt B2:569-570.
+NE-2    | APPLICATO          | B2:82-84: tolto il «cioè», rinvio al controesempio.
+NE-3    | APPLICATO          | B2:416-418.
+NE-4    | APPLICATO          | B2:533-535. (Residuo nuovo a B2:660-662, vedi P-04: ID senza parentesi fuori dalla convenzione.)
+NE-5    | APPLICATO          | B2:202, B2:214-221 (motivo solo fit reali; riga su OB-1; OB-2 «nome in tre punti...»),
+        |                    | prompt B2:600-601.
+NE-6    | APPLICATO          | B2:249-251 (nei controlli la regola di OB-1, nei fit reali OB-4).
+NE-7    | APPLICATO          | B2:137-146 (tabella E_cal / E_LS*), prompt B2:579-581.
+NE-8    | APPLICATO          | B2:402 `32e5452:selezione-criteri-N3`.
+NE-9    | APPLICATO          | B2:424: `consegna-4` (nota) e «Per C-2 (R:20 ...) basta indicare P:122 come destinazione»; coerente
+        |                    | con il corrected_fix di consegna-4 («al più indicare PROT:122 come destinazione»).
+NE-10   | APPLICATO          | Prompt B2:631-632 (senza superiorità) e B2:640-641 (P:104 solo per L0).
+NE-11   | APPLICATO          | B2:450 e prompt B2:661-662 (sette promesse; le altre cinque in OB-5, architettura-5, criteri-2,
+        |                    | criteri-5). Conteggio rifatto sulla tabella B2:401-412: 12 righe = 7 note + C-3, N33, R-2, C-1, N12.
+NE-12   | APPLICATO          | B2:51-53 (testo del CORRECTED_FIX alla lettera).
+VN-1    | APPLICATO          | B2:246-248 e prompt B2:611-614.
+AVV-01  | APPLICATO          | B2:90-95 (E_real 0,94; K 3,5/7 85,8%; continua 89,45/86,45%), B2:102-104 (soglia 0,89-0,94),
+        |                    | prompt B2:558-560. Il testo adottato dal FIX e' pero' impreciso: vedi P-02.
+AVV-02  | APPLICATO          | B2:133-134 e prompt B2:577.
+AVV-03  | APPLICATO          | Tabella B2:140-146 con la riga del denominatore BL-2; metrica di alpha B2:111; stimatore di E_LS*
+        |                    | «da dichiarare» B2:143 (nel prompt B2:579-580 manca «da dichiarare»: osservazione O-3, non problema).
+AVV-04  | APPLICATO          | B2:120-129 (CORRECTED_FIX: 0,8 punti, L0 «come la WLS» sotto il 90%, alternativa che chiude il caso
+        |                    | qualunque sia E_real), prompt B2:569-573.
+AVV-05  | APPLICATO IN PARTE | Regole B2:172-178, ordine B2:253-258, prompt B2:589-592 e 619-621 applicati; resta a B2:167-168 la
+        |                    | giustificazione incondizionata «Se non passa, il margine piantato si legge in modo istantaneo», che
+        |                    | AVV-05 contestava e che contraddice la regola con allarme. Vedi P-01.
+AVV-06  | APPLICATO          | B2:162, B2:273, prompt B2:585.
+AVV-07  | APPLICATO          | B2:208-221 (motivo solo fit reali, S-D punto 5, frase del verificatore come contesto, fermo lineare
+        |                    | a OB-1, riga su OB-1) e prompt B2:600-601.
+AVV-08  | APPLICATO          | B2:264-266 (plausibile; 3,66% e 11,9%).
+AVV-09  | APPLICATO          | B2:276-281 e prompt B2:626-629.
+AVV-10  | APPLICATO          | B2:295-299 e prompt B2:635-638.
+AVV-11  | APPLICATO          | B2:223-232 e prompt B2:602-608. (Nel prompt «cioè» al posto di «per esempio»: vedi P-05.)
+AVV-12  | APPLICATO          | B2:246-248 e prompt B2:612-613.
+VA-N1   | APPLICATO          | B2:173-175, B2:258, prompt B2:589-590 e 620-621: il caso C (TCN 0,30, MLP 0,35) va agli stati per testa.
+C-01    | APPLICATO          | B2:416-418 (titolo lasciato, introduzione riscritta alla lettera).
+C-02    | APPLICATO          | B2:214-216 e prompt B2:600-601; manca solo l'inciso «resta l'etichetta sbagliata quando la testa non
+        |                    | passa», non necessario dopo BL-3 (osservazione, non problema).
+C-03    | APPLICATO          | Rinvii B2:403-405, B2:450, prompt B2:661-662.
+C-04    | APPLICATO IN PARTE | consegna-4 a B2:424 e prompt B2:660; riga controlli-7 a B2:438, ma senza «sul fitting outer» per il
+        |                    | centraggio facoltativo di z (e per le unità attive), presente nel FIX e nella fonte. Vedi P-03.
+C-05    | APPLICATO          | Prompt (a) B2:565-566; alternativa su riga propria con «non diagnostico» B2:571-573; (c) B2:622-623;
+        |                    | (d) B2:631-632; (e) B2:640-641; (f) B2:655-656; «20 utenti di fitting outer» B2:568.
+C-06    | APPLICATO          | Prompt B2:587-588 («sugli held outer», «per esempio»).
+C-07    | APPLICATO          | B2:403 (testo del CORRECTED_FIX).
+C-08    | APPLICATO          | B2:350-353 e B2:39.
+C-09    | APPLICATO          | (i) B2:249-251; (ii) B2:255-256 (clausola MLP spostata al passo 4 da AVV-05); (iii) B2:295-299.
+C-10    | APPLICATO          | B2:509-515.
+C-11    | APPLICATO          | B2:502-503.
+C-12    | APPLICATO          | B2:493-497.
+C-13    | APPLICATO          | B2:40 (definizione con le due condizioni di P:72) e B2:261.
+C-14    | NON DOVUTO         | RESPINTO. Aggiunto comunque il facoltativo «(P:147)» a B2:33 e B2:485.
+C-15    | APPLICATO          | B2:268, prompt B2:615 e 623; B2:199 resta ancorato a B2:187 come ammesso dal verificatore.
+C-16    | APPLICATO          | B2:221.
+N-1     | APPLICATO          | Prompt B2:546-547 (dopo i verdetti, prima dei blocchi, invece che in «Che cosa ti chiedo»: posizione
+        |                    | diversa, contenuto uguale).
+
+======================================================================================================================
+B. PROBLEMI (2 da rilievi applicati in parte, 3 errori nuovi nei passi cambiati; nessuno cambia verdetti o blocchi)
+======================================================================================================================
+
+P-01 [B2:167-168] imprecisione - AVV-05 APPLICATO IN PARTE
+PASSO: «Cancello: su E_dyn, sugli held outer, per fold e pooled, per esempio (E_MLP − E_TCN)/(E_LS* − E_oracolo) ≥ q, con q
+  fissato ora. Se non passa, il margine piantato si legge in modo istantaneo, quindi il controllo non dice se la ricetta
+  sfrutta il tempo.»
+PROBLEMA: e' rimasta la giustificazione incondizionata che AVV-05 contestava («In entrambi i casi la giustificazione «il
+  margine si legge in modo istantaneo» non è stabilita»). La bozza ha tolto da questa frase l'etichetta («l'etichetta giusta è
+  «controllo non diagnostico»», B1:145) ma non il motivo, che ora contraddice le regole scritte dieci righe sotto. Con un
+  allarme aperto la clausola che non passa da' «ottimizzazione non risolta» (B2:174-175), cioe' attribuisce la causa
+  all'ottimizzazione. E con un allarme sulla MLP la clausola «non conta come superata» (B2:176) anche quando la MLP legge poco:
+  e' il caso B di AVV-05, TCN 0,62 senza allarme e MLP 0,40 con allarme. La clausola numerica passa (0,22 ≥ q per q ≤ 0,22),
+  non conta come superata, l'etichetta e' «ottimizzazione non risolta», e B2:168 dice che il margine si legge in modo
+  istantaneo quando la MLP ne legge il 40%. Il CORRECTED_FIX chiedeva le nuove frasi proprio in «BL-2 (bozza:145-146,
+  152-153)», e B1:145-146 e' questa frase. Lo stesso punto era nell'osservazione O5 della lente correzioni («almeno in parte»).
+PROVA: B2:167-168 contro B2:173-177; controllo/bozza_controllo.md:145-146; sintesi_controllo.txt:149 (ISSUE di AVV-05),
+  :151 (caso B), :152 (CORRECTED_FIX, «Stesse frasi in BL-2 (bozza:145-146, 152-153)»); controllo/verifica-avvocato-gpt/
+  verifica_conti.out.txt:33 (caso B, «clausola numerica True»); controllo/correzioni/rapporto.txt:258-259 (O5).
+CORREZIONE: B2:168: «Se non passa senza allarmi aperti, la MLP recupera almeno il 50% − q del margine, che quindi si legge
+  almeno in parte in modo istantaneo: il controllo non dice se la ricetta sfrutta il tempo. Con un allarme aperto valgono le
+  regole sotto.» Solo dopo questa correzione e P-03 e' vera la frase di B2:57 «Tutto è corretto in questa versione».
+
+P-02 [B2:102-104] imprecisione - errore nuovo (viene dal FIX di AVV-01, adottato alla lettera)
+PASSO: «Con sigma continua la WLS esatta smette di passare per E_real fra circa 0,89 e 0,94, secondo la quota dinamica e K.
+  Sotto quella soglia l'esito dipende da dove cade E_real rispetto alla griglia (`controlli-3`).»
+PROBLEMA: i numeri reggono (soglie ricalcolate da 0,8939 a 0,9361), ma la seconda frase dice che con la griglia attuale
+  l'esito dipende dalla griglia solo sotto la soglia. Dipende invece da entrambi i lati. Con K 3,5/7 la griglia rada fa
+  PASSARE la WLS esatta sopra la soglia continua. Per esempio, quota 0,5 ed E_real 0,92 (soglia continua 0,9135): la griglia
+  sceglie sigma 2 (interna 0,9038) e la WLS recupera il 90,9%, mentre con sigma continua recupera l'89,3% e fallisce. Lo
+  stesso vale con quota 0,3 (E_real 0,915-0,92) e quota 0,6 (0,895-0,905). Con K 2,5/5 succede il contrario: sotto la soglia
+  la griglia fa fallire un caso che con sigma continua passa (E_real 0,92: 89,8% contro 91,8%). E' proprio il caso che la
+  versione precedente riportava («Con K_dyn 3,5 e K_MSE 7 lo stesso caso sceglie sigma 2 e la WLS recupera il 90,9%: passa»,
+  B1:90) e che la riscrittura ha tolto. Letta cosi', la frase fa credere che oltre 0,89-0,94 il P attuale fallisca sempre. La
+  conclusione del paragrafo non cambia: rischio plausibile, regola da fissare prima di misurare E_real.
+PROVA: controllo2/applicazione/soglia_griglia.py e soglia_griglia.out.txt:13 e :18 («K=(3.5,7.0) f'=0.5 soglia continua 0.9135 | griglia attuale
+  PASSA sopra la soglia: 0.915(s=2.0,R=0.9089), 0.920(s=2.0,R=0.9089)»; idem f'=0.3 e 0.6; «K=(2.5,5.0) f'=0.5 ... FALLISCE
+  sotto la soglia: 0.920(s=2.5) ... 0.935(s=2.5)»); controllo/verifica-avvocato-gpt/verifica_conti.out.txt:5
+  «K=(3.5;7.0) f'=0.5 E_real=0.92 | attuale: sigma 2.00 ... R_MSE 0.9089 PASSA | ... continua: ... 0.8928 FALLISCE»;
+  evidenze script_agenti/rilettura_riferimenti/ricalcola_bl1.out.txt:4; controllo/bozza_controllo.md:90-91;
+  sintesi_controllo.txt:129 (FIX di AVV-01, «sotto, l'esito dipende da dove cade E_real rispetto alla griglia»).
+CORREZIONE: «Con sigma continua la WLS esatta smette di passare per E_real fra circa 0,89 e 0,94, secondo la quota dinamica e
+  K. Con la griglia attuale l'esito dipende anche da dove cade E_real rispetto ai suoi punti, da entrambi i lati della soglia
+  (`controlli-3`): con K 3,5/7, quota 0,5 ed E_real 0,92 la griglia sceglie sigma 2 e la WLS passa (90,9%), con sigma continua
+  no (89,3%); con K 2,5/5 succede il contrario (89,8% contro 91,8%).»
+
+P-03 [B2:438] mancanza - C-04 APPLICATO IN PARTE (peso basso)
+PASSO: «`controlli-7` (nota) | Prima dei fit di controllo, misurare la frazione di unità attive per strato di T e la quota del
+  margine che la WLS L13 recupera sul bersaglio temporale (è già fra i 12 blocchi di P:80). Facoltativo: centrare z prima di T»
+PROBLEMA: il FIX di C-04 (CONFERMATO) e la fonte di controlli-7 dicono «sul fitting outer», sia per le unita' attive sia per il
+  centraggio («centrare z per dimensione sul fitting outer prima di T»). La riga lo perde in entrambi i punti. Per il
+  centraggio non e' un dettaglio: la media di z e' un parametro del mondo sintetico. Calcolata anche sugli held outer,
+  contraddirebbe «Nessun parametro del mondo si sceglie sugli held outer» (B2:348) e la regola di P:86, che normalizza L e T
+  «usando solo il fitting outer». Il verificatore di C-04 chiama «un'aggiunta, innocua» il primo «sul fitting outer» e
+  scrive che «la fonte dice solo «per strato»», ma la fonte (review_controlli.txt:257) dice «per strato di T sul fitting
+  outer». La nota e' facoltativa, quindi il peso e' basso.
+PROVA: review_controlli.txt:257-259; sintesi_controllo.txt:219 (FIX di C-04) e :220 (verificatore); P:86; B2:348.
+CORREZIONE: B2:438: «Prima dei fit di controllo, misurare sul fitting outer la frazione di unità attive per strato di T e la
+  quota del margine che la WLS L13 recupera sul bersaglio temporale (è già fra i 12 blocchi di P:80). Facoltativo: centrare z
+  per dimensione sul fitting outer prima di T (il centro entra nel primo bias)».
+
+P-04 [B2:660 (e 662)] imprecisione - errore nuovo (residuo del rischio di NE-4, peso basso)
+PASSO: «- controlli-7 e consegna-4;» (e B2:662 «nelle minori architettura-5, criteri-2 e criteri-5»)
+PROBLEMA: la convenzione del prompt (B2:533-535) copre solo «Gli ID fra parentesi». A B2:660 gli ID sono senza parentesi e
+  senza descrizione, ed entrambi coincidono con ID della matrice di GPT che indicano altro: `controlli-7` e' la nota 13 (R:47,
+  TCN-pre e ridge pre storica), `consegna-4` e' il rilievo R-2 (R:27, voce di congelamento), che sta anche dietro la minore
+  criteri-5/consegna-2. GPT, che dispone per ID, puo' dare la riga alla propria nota 13 e a R-2 invece che a controlli-7 (T
+  quasi lineare) e a consegna-4 (C-2). E' il rischio di NE-4, rientrato per una riga nuova. A B2:662 anche architettura-5,
+  criteri-2 e criteri-5 coincidono con R:39, R:24 e R:62, ma li' l'elenco delle minori appena sopra, fra parentesi, scioglie il
+  dubbio.
+PROVA: B2:533-535; B2:660; R:27 «R-2 — `consegna-4`, minore»; R:47 «13 | `controlli-7` | TCN-pre: affiancare la ridge pre
+  storica»; R:24, R:39, R:62; sintesi_controllo.txt:62-64 (NE-4).
+CORREZIONE: B2:660: «- controlli-7 (T quasi lineare: unità attive e quota della WLS L13 prima dei fit di controllo) e
+  consegna-4 (C-2: P:122 come destinazione in R:20);». Oppure, a B2:533: «Gli ID dei rilievi (controlli-1, criteri-6, ...),
+  anche fuori dalle parentesi, sono quelli dei rapporti di oggi».
+
+P-05 [B2:606-607] imprecisione - errore nuovo (stesso schema di C-06, peso basso)
+PASSO: «- per MLP e TCN fuori dal controllo lineare: una tolleranza dichiarata ora, cioè allarme solo se il LR più piccolo vince
+  di più di una quota relativa fissata;»
+PROBLEMA: il corpo (B2:227-228) e il CORRECTED_FIX di AVV-11 danno la quota relativa come esempio («per esempio allarme solo
+  se...»). Nel prompt «cioè» la fa diventare la definizione della tolleranza: un esempio diventa la richiesta, come nel caso
+  confermato in C-06. La frase di N-1 (B2:546-547) attenua, ma il prompt resta piu' stretto del corpo.
+PROVA: B2:227-228; sintesi_controllo.txt:185 (CORRECTED_FIX di AVV-11, «Per esempio: allarme solo se il LR più piccolo vince
+  di più di una quota relativa fissata»); sintesi_controllo.txt:229-231 (C-06).
+CORREZIONE: B2:606-607: «una tolleranza dichiarata ora, per esempio allarme solo se il LR più piccolo vince di più di una
+  quota relativa fissata;».
+
+======================================================================================================================
+C. CONTROLLI SUI PASSI CAMBIATI CHE REGGONO (numeri rifatti, riferimenti e citazioni)
+======================================================================================================================
+Numeri, ricalcolati con le formule di v_scan_lineare.py (bl1_griglia_fine.out.txt, verifica_conti.out.txt,
+ricalcola_bl1.out.txt, soglia_griglia.out.txt):
+- BL-1, E_real 0,94, quota 0,5, K 2,5/5, griglia attuale: sigma 2,5 (distanza 0,0027; 3 a 0,0204; 2 a 0,0424), interna 0,9373
+  → «0,937»; oracolo outer 0,92135 → «0,921»; WLS outer 0,92935 → «0,929»; recupero (1−0,92935)/(1−0,92135) = 0,8983 su
+  E_dyn e MSE → «89,8%» (B2:90-93). Giusti.
+- K 3,5/7: griglia attuale sigma 2,5, 0,8576 → «85,8%»; sigma continua 0,8945 (K 2,5) e 0,8645 (K 3,5) → «89,45%» e «86,45%»;
+  griglia a passi di 0,1: 0,8983 e 0,8688. «È sempre sotto il 90%» e «non dipende dalla griglia» valgono per E_real 0,94
+  (B2:94-95; prompt B2:558-560). Giusti.
+- Soglia con sigma continua: K 2,5/5 0,9361 (quote 0,3-0,5) e 0,9214 (0,6); K 3,5/7 0,9133 e 0,8939 → «fra circa 0,89 e 0,94,
+  secondo la quota dinamica e K» (B2:103). Giusto; la quota conta solo a 0,6, tramite la MSE. Il difetto della frase dopo e' P-02.
+- (b) da sola: WLS 0,8983, ridge con penalita' sulla somma dei quadrati e alpha degli inner 0,9077, loss media con alpha doppio
+  0,9012 → 89,8 / 90,8 / 90,1% (B2:121-122; prompt B2:569-570): ricalcolo_f13.out.txt e alpha_scala.out.txt. «meno di un
+  punto di margine» = 0,8 punti sopra il 90% di P:95. Giusto.
+- OB-2: 3,66% e 11,9% (verify_selezione-criteri.txt:330-332 della prova 32e5452: 0,8901/0,7955 = +11,9%). Giusti.
+- Metodo: 48 segnalazioni dei rilettori (N1-N12, R1-R15, F1-F21); 43 dei controllori (3+12+12+16), 42 confermate in tutto o
+  in parte (solo C-14 respinto), 3 aggiunte (VN-1, VA-N1, N-1). Giusti. «Tutto è corretto in questa versione» (B2:57): vedi
+  P-01 e P-03.
+- Sezione 4/5 e prompt: 12 promesse = 7 note (17, 18, 20, 23, 39, 47, 49) + 5 (C-3, N33 → OB-5; R-2 → criteri-5/consegna-2;
+  C-1 → criteri-2; N12 → architettura-5). Giusto.
+- Sezione 8: soglia 20 GPU-ore = colonna GPUh della fase «Controlli + selezioni + rifit» (P:168) e «<=20GPUh» di P:183. Giusto.
+Riferimenti: P:72 (due condizioni di S-2), P:86, P:90, P:92, P:95, P:96, P:98, P:104, P:122, P:147, P:153, P:168; J:40-41,
+J:142, J:308, J:405, J:421, J:441, J:444, J:471; R:3, R:20, R:27, R:46, R:67; DEC:6747, DEC:6753, DEC:6755; prompt:18;
+32e5452:329 e :435: dicono cio' che la bozza attribuisce loro. S-D punto 5 (sintesi_verify.txt:58: «La regola non risolve
+ricetta-12») e voce vii di ricetta-9 (review_ricetta.txt:340) giusti.
+Citazioni fra «» nei passi cambiati, confrontate con le fonti: P:90, J:405, J:308, P:94, P:96, J:441, P:104 (due), P:69, P:72,
+P:122, R:3, R:46 e i testi dei FIX ripresi alla lettera: letterali. Fuori dal diff ma controllata: la frase di Simone a
+B2:211-212 coincide con la memoria del progetto (feedback_limit_review_rounds.md:9-10).
+Cartelle di prova citate (script_agenti/rilettura_riferimenti/, controllo_avvocato-gpt/, controllo_correzioni/,
+rilettura_fedelta/, work_ricetta/traccia_regole.py, work_verifica_architettura-controlli/v_scan_lineare.py): presenti nella
+cartella delle prove e con i valori citati.
+
+======================================================================================================================
+D. OSSERVAZIONI FACOLTATIVE (non problemi)
+======================================================================================================================
+O-1 Prompt B2:569-570: «Da sola non basta: ... 90,8% e la WLS l'89,8%» non dice perche' (la ricetta ha meno di un punto e una
+    L0 «come la WLS» resta sotto il 90%), che il corpo spiega a B2:123-124. La compressione c'era gia' nella versione
+    precedente. Facoltativo: «: lascia alla ricetta meno di un punto».
+O-2 B2:94-95 e prompt B2:560: «con sigma continua l'89,45% e l'86,45%», detto subito dopo la frase su K 3,5/7, si puo' leggere
+    come due valori per K 3,5/7. Facoltativo: «l'89,45% (K 2,5/5) e l'86,45% (K 3,5/7)».
+O-3 Prompt B2:579-580: per E_LS* manca «stimatore da dichiarare: WLS o ridge» del corpo (B2:143). Il prompt dice «la LS», che
+    in P e' la WLS: rischio basso.
+O-4 C-02: manca l'inciso «resta l'etichetta sbagliata quando la testa non passa»; dopo la correzione di BL-3 non serve.
+O-5 Nessun «HH:MM» segnalato (segnaposto del commit).
+O-6 B2:502-503 (testo di C-11 alla lettera): la parentesi «(una testa che non passa con un allarme aperto)» descrive una sola
+    via. Se GPT sceglie il cancello di BL-2, «ottimizzazione non risolta» nasce anche dalla clausola MLP che non passa con un
+    allarme su TCN o MLP (B2:174-175). I tempi detti a Simone restano giusti. Facoltativo: «..., o la clausola MLP che non
+    passa con un allarme aperto».
+Bozza congelata non modificata: sha256 ricontrollato alla fine.

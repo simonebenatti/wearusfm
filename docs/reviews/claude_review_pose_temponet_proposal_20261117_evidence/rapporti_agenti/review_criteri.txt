@@ -1,0 +1,467 @@
+REVIEW DIMENSIONE 4 - Metriche, famiglia e regola di decisione (paragrafo 5; verdetto 4)
+Proposta GPT c15aac9 (ramo codex/pose-temponet-proposal-20261117), snapshot in sola lettura.
+Revisore indipendente, 17/11/2026. Secondo tentativo (il primo si e' interrotto alle 09:26 per un limite d'uso).
+Marcatura delle prove: ESEGUITO = comando o script lanciato in questo tentativo; CALCOLATO = conto rifatto; LETTO = letto in un file.
+Il rapporto si scrive a pezzi: le voci si aggiungono man mano che sono pronte.
+
+PROVE DI PARTENZA (ESEGUITO in questo tentativo)
+- Le tre ricevute copiate nel tentativo precedente in work_criteri/ (LONG-FIT-G49046-pose.json, LONG-FIT-G19618-pose.json,
+  LONG-COMPARE-pose.json) hanno lo stesso sha256 delle copie in git al commit 2930d7d
+  (git show 2930d7d:results/infra/consolidation_long_20261105/execution/receipts/<nome>-20261105.json | shasum -a 256).
+  Quella di 49046 ha sha256 b08e6e321f3803318991b934ff89ddef70493a422f7f3884abd9daa1d5037c14, lo stesso dichiarato in
+  proposal.json:240. Tutti i conti sotto partono da queste somme per utente archiviate; le cache e le predizioni sono su
+  Leonardo e non sono state lette.
+- Gli script del tentativo precedente sono stati riletti riga per riga prima di rieseguirli. Le uscite citate come ESEGUITO
+  sono quelle dei file *.rerun2.out in work_criteri/, prodotte oggi, piu' due script nuovi (c5_mc_error.py e
+  d2_estimate_outside_ci.py, con uscite .out). Le simulazioni hanno semi fissi: c1, c2, c3, c4 e c6 hanno dato uscite
+  identiche a quelle del tentativo precedente (diff vuoto, salvo la riga del tempo).
+
+======================================================================================================================
+(a) DEFINIZIONE DI E_dyn CONTRO IL CODICE E CONTRO I VALORI 0,785902 / 0,778629
+======================================================================================================================
+
+VOCE a-1 (regge, in verified_ok)
+[claim] Protocollo righe 79-81: soglia storica pose_var >= 0,2574231028556824 sulla varianza originale dell'intera
+finestra, senza ricalcolarla; centrare separatamente previsione e target sugli stessi tempi validi di ogni coppia
+finestra/giunto, almeno due punti; sommare la SSE centrata e la somma dei quadrati centrati del target, poi fare il
+rapporto; nessuna media di rapporti. Riga 59: supporto comune crop6 (6 <= t e t+6 < N_i) con la maschera del giunto
+centrale. Riga 83: miglioramento 100*(E_ref - E_TCN)/E_ref.
+[evidence]
+- LETTO: scripts/pose_dynamics.py:88-127 (window_joint_moments: momenti per finestra/giunto sui soli indici validi,
+  centratura esplicita di previsione e target, float64); :134-146 (accumulate: solo celle con n >= min_n; somma di
+  n*momento, cioe' SSE centrata e somma dei quadrati centrati del target per utente). scripts/tokenizer_pose_readout.py:31
+  (THRESHOLD = 0.2574231028556824) e :274-302 (summarize: target[:, 6:-6], central_mask, dinamiche =
+  isfinite(pose_var) & pose_var >= THRESHOLD, accumulate con min_n = 2). scripts/pose_temporal_readout.py:195-199
+  (central_mask: maschera[:, 6:-6] e t+6 < lunghezza). src/wearusfm/harness/pose_eval.py:182-183 (pose_var = media sui
+  giunti della varianza temporale del target, sulle righe dell'intera finestra con almeno un giunto valido).
+  scripts/consolidation_long_pose.py:293-298 (_metrics: E_dyn = somma utenti centered / somma utenti vary) e :364-372
+  (in ogni replica 100*(1 - E_cand/E_ctrl), che e' la formula della riga 83). scripts/consolidation_long_pose_runtime.py:
+  274-275 (testa storica letta come pred[:, 6:-6] in float64, stesso supporto della ridge).
+- ESEGUITO: work_criteri/a_reproduce.py sulle somme per utente della ricevuta di 49046. E_dyn ridge post =
+  0.7859020004638595, testa allenata = 0.7786289843513977, ridge pre = 1.0321280032044744 (uguale alla ricevuta fino a
+  2e-16). 15 utenti, 8.327 finestre dinamiche con supporto centrato, 20.119.920 elementi validi. IC95 [0,764136; 0,806253]
+  e [0,757344; 0,798780], identici a quelli di results/infra/consolidation_long_20261105/gpt_review_20261107/
+  scientific_readout.json (letto con uno script: stessi numeri a tutte le cifre). Contrasti di dose 6,321188%
+  [5,8716; 6,8310] e 6,521954% [5,9244; 7,1480], come in docs/reviews/consolidation_long_results_20261107.md:149.
+- ESEGUITO (lettura della ricevuta): finestre selezionate dinamiche 8.329 e statiche 8.329, 18.548 in tutto, quindi 1.890
+  con pose_var non finita. La soglia divide a meta' le 16.658 finestre con pose_var finita: e' coerente con la mediana
+  storica sullo stesso insieme di bersagli. Quindi la regola "mediana della cache" di pose_dynamics.analyze()
+  (righe 224-225) darebbe qui con ogni probabilita' la stessa selezione (dedotto dai conteggi, non verificato sui
+  valori); la soglia fissa del protocollo resta la scelta corretta, perche' non dipende dalla cache letta.
+Conclusione: la definizione scritta nel protocollo e' identica a quella che ha prodotto 0,785902 e 0,778629 (stesso
+supporto crop6, stessa soglia, almeno due punti, rapporto fra somme, stesso miglioramento relativo).
+[fix] Nessuna sulla definizione. Suggerimento nella voce criteri-9 (riproduzione esatta dei due valori storici come
+test d'ingresso).
+
+======================================================================================================================
+(b) MEDIA DEI TRE SEMI DAGLI ACCUMULATORI PER UTENTE
+======================================================================================================================
+
+VOCE b-1 (regge, in verified_ok)
+[claim] Protocollo riga 81 e proposal.json:39: i tre semi si riassumono mediando gli accumulatori per utente prima del
+rapporto e del bootstrap; "prestazione media di tre teste, non ensemble di predizioni"; si pubblicano anche i tre esiti.
+[evidence]
+- CALCOLATO (dimostrazione). Per il seme s e l'utente u: C_su = SSE centrata, V_u = somma dei quadrati centrati del
+  target. V_u non dipende dal seme, perche' bersagli, maschere e supporto sono gli stessi in tutti i fit (lo richiede gia'
+  il codice: consolidation_long_pose.py:305-311 rifiuta denominatori diversi). Con C_u = (C_0u + C_1u + C_2u)/3:
+  E = somma_u C_u / somma_u V_u = (1/3) somma_s (somma_u C_su / somma_u V_u) = (E_0 + E_1 + E_2)/3.
+  In ogni replica b con molteplicita' m_bu vale lo stesso: E*_b = (1/3) somma_s E*_sb. Quindi la regola stima
+  esattamente la media aritmetica dei tre E_dyn, anche replica per replica. L'ensemble invece valuta la previsione media:
+  per ogni elemento (media_s di (p_s - y))^2 <= media_s di (p_s - y)^2 (convessita'), quindi E_ensemble <= media dei tre E,
+  con uguaglianza solo se le tre previsioni centrate coincidono. La regola e' coerente con "prestazione media di tre
+  teste, non ensemble".
+- ESEGUITO: work_criteri/b_seed_average.py, dati sintetici (15 utenti con 2-59 finestre, maschere con buchi, celle con un
+  solo punto) e funzioni vere di pose_dynamics.py dello snapshot. TCN: E per seme 0,758014 / 0,757459 / 0,759849;
+  media aritmetica 0,758440460651819; E dagli accumulatori mediati 0,758440460651819 (differenza 1,1e-16). Nel bootstrap a
+  2.000 repliche, seme 20261102: scarto massimo 4,4e-16 fra le due strade. Ensemble 0,416154, molto piu' basso: il
+  divario e' grande solo perche' i dati sintetici hanno rumore indipendente fra semi; con teste vere sara' molto minore,
+  ma ha sempre lo stesso verso. Rapporto delle varianze: media dei semi = valore dai momenti mediati (differenza 1e-16,
+  stessa identita' perche' anche li' il denominatore e' comune). Correlazione: media dei semi 0,580051 contro 0,580051 dai
+  momenti mediati (differenza -2,2e-08): non e' un'identita', e il protocollo (riga 104) lo tratta correttamente.
+- CALCOLATO: il contrasto fra due bracci a tre semi e' 100*(E_L0 medio - E_TCN medio)/E_L0 medio (rapporto delle medie),
+  non la media dei tre miglioramenti per seme. Nell'esempio 12,293714% contro 12,293702%: differenza del secondo ordine.
+Che cosa stima: la prestazione media dei tre fit con i semi 0, 1, 2, condizionata all'encoder, ai 40 utenti train e ai 15
+utenti val; il bootstrap aggiunge la variabilita' del campione di utenti, non quella fra semi. Il protocollo lo dichiara
+(riga 91: "Gli IC restano condizionati ai tre fit"). Se la dichiarazione basti per la regola di decisione e' discusso in
+criteri-3.
+[fix] Nessuna sulla regola di media. Precisazione minore in criteri-8: "i tre esiti separati" non dice come si appaiano
+i semi nei contrasti 1-3 (seme s della TCN contro seme s del riferimento, che condividono l'ordine dei minibatch per la
+riga 66, oppure ciascun seme contro la media del riferimento).
+
+======================================================================================================================
+(d) REGOLA A QUATTRO ESITI E REGOLA DEL "CANDIDATO"
+======================================================================================================================
+
+VOCE criteri-1 (minore): le etichette si sovrappongono e la precedenza non e' scritta
+[claim] Protocollo righe 95-98: beneficio pratico risolto = stima >= 2% e limite inferiore aggiustato > 0; deterioramento
+pratico = stima <= -2% e limite superiore < 0; "beneficio di almeno 2% non sostenuto dall'intervallo" = limite superiore
+< 2%; inconclusivo = l'IC include effetti >= 2% ma il beneficio non passa. Stessa sostanza in proposal.json:37 e in
+docs/decisioni.md:6728-6730. Nessun ordine di precedenza.
+[evidence]
+- ESEGUITO: work_criteri/d_rule_enumeration.py. Griglia {-3, -2, -1, 0, 1, 2, 3} per stima, limite inferiore L e superiore
+  U con L <= U, cioe' valori sotto, fra e sopra le soglie ed esattamente sulle soglie -2, 0, +2: 196 combinazioni, 84 con
+  L <= stima <= U e 112 con la stima fuori dall'intervallo (possibile con l'IC percentile). Nessuna combinazione resta
+  senza etichetta: la regola e' esaustiva. Non e' esclusiva:
+  * deterioramento + non sostenuto in tutte le 7 combinazioni coerenti di deterioramento, per esempio (stima, L, U) =
+    (-3, -3, -1): U < 0 implica U < 2, quindi ogni deterioramento e' anche "beneficio di almeno 2% non sostenuto";
+  * beneficio + non sostenuto in 2 combinazioni, per esempio (2, 1, 1): succede solo se la stima sta sopra il limite
+    superiore dell'IC percentile. ESEGUITO work_criteri/d2_estimate_outside_ci.py: con i pesi veri, effetto 2% o 4%,
+    sigma_u da 0,7 a 5, code normali o t3, la stima non e' mai caduta fuori dall'IC 99% (0 casi su 20.000 in ciascuno
+    dei 16 scenari). E' un caso teorico, non pratico.
+- LETTO: il protocollo non dice quale etichetta prevale. La lettura naturale e' "deterioramento" prima di "non sostenuto"
+  (e' piu' specifica, ed e' l'ordine del vecchio practical_assessment in scripts/consolidation_long_pose.py:353-361), ma
+  non e' scritta.
+- ESEGUITO (stesso script): la nuova regola non coincide con quella usata nel lungo (practical_assessment). Nel lungo
+  esisteva "small" (|stima| < 2 e IC che esclude 0); ora (1, 1, 2) passa da "small" a "inconclusivo", (-1, -3, -1) da
+  "small" a "non sostenuto", (-3, -3, 0) da "inconclusive" a "non sostenuto". Il codice nuovo non puo' riusare
+  practical_assessment cosi' com'e'.
+- Effetto sulla decisione: nessuno sull'adozione (deterioramento e non sostenuto escludono entrambi la promozione), ma
+  cambia la lettura del confronto ("la TCN legge peggio" contro "il 2% non c'e'") e il testo da congelare deve dare
+  un'etichetta sola.
+[fix] Scrivere l'ordine, per esempio: 1) beneficio pratico risolto; 2) deterioramento pratico; 3) beneficio di almeno 2%
+non sostenuto; 4) inconclusivo; la prima condizione vera decide. Per il caso teorico stima >= 2% con limite superiore
+< 2% (stima fuori dall'IC) dire quale etichetta vale; la scelta piu' prudente e' "inconclusivo", perche' stima e
+intervallo si contraddicono. Scrivere anche che "non sostenuto" e "deterioramento" chiudono la prova senza promozione,
+come la riga 98 dice per l'inconclusivo. Precisare che la regola e' nuova rispetto a practical_assessment del lungo.
+
+VOCE criteri-2 (minore): "passa" non e' definito, e la regola del candidato non e' scritta allo stesso modo nei tre testi
+[claim] Protocollo riga 100: "Si considera la TCN candidata a migliore lettore della dinamica centrata di questo
+checkpoint solo se passa il primario e i due confronti storici (4 e 5)". Stessa riga: "Per attribuire utilita' specifica
+al contesto servono anche TCN/MLP; per sostenere il vantaggio della ricetta non lineare temporale sul controllo lineare,
+TCN/L13."
+[evidence]
+- LETTO: "passa" e "servono" non sono definiti; l'unico esito positivo definito e' "beneficio pratico risolto" (riga 95).
+  proposal.json:35 dice "only if primary and both historical-reference contrasts pass", con la stessa ambiguita'.
+  docs/decisioni.md:6713-6738 non contiene affatto la regola del candidato, ne' le condizioni su TCN/MLP e TCN/L13: per la
+  decisione riporta le quattro etichette e "Un vantaggio dinamico non autorizza a sostituire la testa se MAE/livello
+  peggiorano".
+- LETTO: decisioni.md:6727 scrive "Primario riduzione relativa E_dyn dinamiche TCNpost-L0": la scrittura "TCNpost-L0"
+  si legge come E_TCN - E_L0, che e' negativa quando la TCN e' migliore; il protocollo (riga 83) usa invece
+  100*(E_ref - E_TCN)/E_ref, positivo quando la TCN e' migliore.
+- CALCOLATO: richiedere tre contrasti tutti positivi e' un test di intersezione-unione: per l'affermazione congiunta
+  basterebbe il livello di ciascun contrasto senza correzione; Bonferroni la rende piu' conservativa, non sbagliata.
+[fix] Scrivere: "passa" = etichetta "beneficio pratico risolto" (stima >= 2% e limite inferiore aggiustato > 0) nel
+contrasto 1 e nei contrasti 4 e 5, tutti e tre; "servono anche TCN/MLP" = beneficio pratico risolto nel contrasto 2;
+"TCN/L13" = beneficio pratico risolto nel contrasto 3. Riportare la regola del candidato, con queste parole, anche in
+proposal.json e nella voce di decisioni.md che si congelera'; usare in decisioni.md la stessa formula 100*(E_ref -
+E_TCN)/E_ref.
+
+======================================================================================================================
+(e) SOGLIA PRATICA DEL 2% E FAMIGLIA DEI CINQUE CONTRASTI
+======================================================================================================================
+
+VOCE e-1 (regge, in verified_ok): la soglia e la condizione sull'IC sono quelle gia' usate, con livello piu' severo
+[claim] Protocollo righe 95 e 91: beneficio = stima della riduzione >= 2% e limite inferiore aggiustato > 0, IC percentile
+99% per contrasto (Bonferroni su cinque); proposal.json:34 "practical_improvement_percent": 2.
+[evidence]
+- LETTO: docs/tokenizer_window_nonlinear_protocol_20261102.md:191 (min_relative_dynamic_error_gain 0,02) e :195-197
+  ("segnale utile" se la riduzione relativa puntuale (E_control - E_candidate)/E_control e' almeno 0,02 e il limite
+  superiore dell'IC del delta assoluto di E_dyn e' < 0; IC 95%, riga 193); identico su main e114a78 (git show). Il lungo
+  usa la stessa soglia: scripts/consolidation_long_pose.py:41 ("practical_relative_improvement_percent": 2.0) e :357.
+- CALCOLATO: in ogni replica del bootstrap il miglioramento relativo e' positivo se e solo se E*_cand < E*_ref, cioe' se
+  e solo se il delta assoluto e' negativo. Quindi "limite inferiore del miglioramento relativo > 0" e "limite superiore del
+  delta assoluto < 0" escludono lo zero con le stesse repliche (a meno dell'interpolazione al quantile). L'unica
+  differenza dal criterio del 02/11 e' il livello: 99% invece di 95%, piu' severo.
+[fix] Nessuna.
+
+VOCE e-2 (regge, in verified_ok): famiglia fissata prima e pubblicata per intero
+[claim] Righe 83-89 (cinque contrasti, sempre TCN-post contro un riferimento); riga 100 ("Si pubblicano tutti e cinque,
+senza scegliere il confronto favorevole"); riga 102 (TCN-pre descrittivo, fuori famiglia, IC 95% senza cancello).
+[evidence] LETTO: proposal.json:26-32 elenca gli stessi cinque contrasti come "confirmatory_family"; proposal.json:33 mette
+TCN-pre e le metriche per giunto fra le descrittive "no pass/fail"; decisioni.md:6727 nomina gli stessi cinque. I tre
+testi coincidono sulla famiglia. Il primario e' unico (contrasto 1).
+[fix] Nessuna sulla famiglia (le ambiguita' su "passa" sono in criteri-2).
+
+VOCE criteri-4 (nota): il 2% e il rumore. Quello che si sa e quello che non si sa
+[claim] Riga 91: "Gli IC restano condizionati ai tre fit e a un solo encoder preallenato, non includono la variabilita'
+del pretraining". La soglia del 2% e' giustificata nel protocollo del 02/11 (riga 191) come argine contro effetti
+minuscoli (0,0123% e 0,49%), non come misura di rumore.
+[evidence]
+- LETTO: review di Claude al commit 0ab9d98, docs/reviews/claude_review_contrastive_comparison_20261116.md:356 (D-4):
+  "Scarto tipico fra due bracci storici: P1 0,29 pp, P2 0,91 pp, E_dyn 0,47-0,90%". E' un metro grezzo fra bracci di
+  pretraining diversi, non una misura del rumore fra semi della sola testa e non un limite superiore.
+- ESEGUITO: work_criteri/a_real_heterogeneity.py su 13 contrasti appaiati gia' pubblicati sugli stessi 15 utenti val
+  (finestre dinamiche; il lettore temporale su cache student con crop4, gli altri su teacher con crop6): lettore
+  temporale contro istantaneo (B e R3c), tre bracci tokenizer a 19.618 e 5.000, testa allenata contro ridge a 19.618 e
+  49.046, dose 49.046 contro 19.618 per ridge e testa, ridge post contro pre a 49.046. Nei 12 contrasti senza il post/pre
+  (effetto 23,9%) la deviazione standard bootstrap del miglioramento relativo va da 0,114% a 0,461%; la
+  deviazione standard fra utenti del miglioramento per utente (14 utenti con peso > 1%) va da 0,47 a 1,57 punti; il
+  numero efficace di utenti (1/somma dei pesi al quadrato) e' 13,1. La semiampiezza dell'IC percentile 99% va da 0,30 a
+  1,14 punti.
+- CALCOLATO: il 2% e' da 2,2 a 4,3 volte lo scarto storico 0,47-0,90% e da 4,3 a 17,5 volte la deviazione bootstrap di
+  un contrasto appaiato fra lettori. Rispetto al rumore di campionamento degli utenti la soglia e' larga. Rispetto al
+  rumore fra semi della testa non si sa: nessuna misura nel progetto; i tre semi lo stimeranno con 2 gradi di liberta'.
+  Per L0 e L13 l'inizializzazione e' deterministica (LN gamma=1, beta=0, unico strato lineare a zero: righe 35, 41, 43),
+  quindi i loro tre semi differiscono solo per l'ordine dei minibatch.
+[fix] Nessuna correzione indispensabile alla soglia. Suggerito: pubblicare, accanto ai cinque IC, la deviazione standard
+fra i tre semi di E_dyn per braccio e del contrasto, confrontata con la deviazione standard bootstrap (e' gia' nei "tre
+esiti separati", basta scriverla come grandezza da riportare). Il seguito e' in criteri-3.
+
+======================================================================================================================
+(f) METRICHE SECONDARIE
+======================================================================================================================
+
+VOCE criteri-5 (minore): definizioni dei secondari incomplete, e lo schema dei giunti non e' citato
+[claim] Riga 104: "E_dyn per tutti/statiche; correlazione centrata, rapporto delle varianze, errore del livello e MAE in
+radianti e gradi con statistiche originali [...] Per giunto e pollice secondo nomi dello schema, non scegliendo i giunti
+che si muovono di piu'." proposal.json:33 e :38.
+[evidence]
+- LETTO, codice storico che definisce gia' quasi tutto: scripts/consolidation_long_pose.py:293-298 (_metrics: correlazione
+  = somma cov / sqrt(somma varp * somma vary), cioe' correlazione centrata dai momenti aggregati; rapporto delle
+  varianze = somma varp / somma vary; level_mse = somma n*(media_p - media_y)^2 / numero di elementi, in unita'
+  standardizzate e al quadrato); scripts/tokenizer_pose_readout.py:285-299 (MAE in radianti = somma |p - y| * std /
+  numero di elementi validi, per gruppo tutte/dinamiche/statiche, su tutte le celle valide, anche quelle con un solo
+  punto, mentre le statistiche centrate usano solo celle con almeno due punti).
+- LETTO: il protocollo non rimanda a queste funzioni. Restano aperte tre scelte: (1) "errore del livello": l'errore
+  quadratico standardizzato del lungo (level_mse) oppure un errore in radianti o in valore assoluto; (2) il supporto della
+  MAE (celle con almeno un punto come nel lungo, oppure lo stesso supporto con almeno due punti di E_dyn); (3) che cosa si
+  calcola "per giunto" e come si aggrega il pollice.
+- ESEGUITO (grep): lo schema dei nomi esiste. src/wearusfm/ingest/emg2pose_pose.py:51-52 (JOINTS = THUMB_CMC_FE,
+  THUMB_CMC_AA, THUMB_MCP_FE, THUMB_IP_FE, poi INDEX/MIDDLE/RING/PINKY per MCP_AA, MCP_FE, PIP_FE, DIP_FE), presente
+  sia nello snapshot sia su main e114a78; i rapporti dell'ingest lo scrivono come "joints" (righe 279 e 393). Il pollice
+  sono le prime quattro colonne. Il protocollo pero' non cita il file, ne' dice se il pollice si riporta come quattro
+  valori o come un aggregato (rapporto fra somme sulle quattro colonne), ne' su quali finestre (dinamiche? tutte?).
+- Effetto sulla decisione: nessuno (i secondari sono descrittivi, proposal.json:33 "no pass/fail"), ma la regola del
+  protocollo dice che un vantaggio dinamico non basta se MAE o livello peggiorano (riga 100): queste due grandezze
+  entrano quindi nella discussione dell'adozione e devono essere definite prima.
+[fix] Scrivere: correlazione, rapporto delle varianze e level_mse come in consolidation_long_pose._metrics; MAE in
+radianti come in tokenizer_pose_readout.summarize (celle con almeno un punto), gradi = radianti * 180/pi; gruppi
+tutte/dinamiche/statiche con la stessa soglia. Per giunto: E_dyn, correlazione, rapporto delle varianze, level_mse e MAE
+ristretti a ciascuna colonna, in ordine emg2pose_pose.JOINTS. Pollice: aggregato delle quattro colonne THUMB_* come
+rapporto fra somme, piu' i quattro valori singoli; finestre dinamiche come per il primario, e tutte come secondario.
+Per seme e media aritmetica dei semi, come gia' scritto alla riga 104.
+
+======================================================================================================================
+(c) BOOTSTRAP SU 15 UTENTI, IC PERCENTILE 99%, 2.000 REPLICHE: SIMULAZIONE
+======================================================================================================================
+
+IPOTESI DELLA SIMULAZIONE (e' una simulazione, non i dati dell'esperimento)
+- Unita': l'utente. Statistica: 100*(1 - somma_u N_cand,u / somma_u N_ref,u), dove N e' la SSE centrata per utente. E' il
+  miglioramento relativo del protocollo, perche' il denominatore comune (varianza centrata del target) si semplifica nel
+  rapporto fra due E_dyn (CALCOLATO). Bootstrap come nel protocollo: 2.000 repliche, seme 20261102, stesse estrazioni
+  per tutti gli insiemi simulati (work_criteri/c_simlib.py:19-23, riletto).
+- Pesi: quelli veri dei 15 utenti val (SSE centrata della ridge post a 49.046 per utente, dalla ricevuta; da 7 a 741
+  finestre dinamiche; numero efficace 13,12). Varianti: utenti ricampionati da quei 15, pesi uguali, pesi lognormali
+  sbilanciati (deviazione del logaritmo 1).
+- Effetto per utente in punti percentuali: mu + sigma_u * z + 10/sqrt(finestre) * rumore, con z normale oppure t a 3
+  gradi di liberta' (code pesanti). La verita' e' mu (effetti indipendenti dai pesi). mu = 0, 2, 4 (in c4 e c6 anche
+  valori intermedi fra 0,5 e 3).
+  sigma_u = 0,7; 1,5; 3; 5 punti: i contrasti storici fra lettori hanno 0,47-1,57 (voce criteri-4), quindi 3 e 5 sono
+  pessimisti.
+- Semi della testa (c4, c6): fattore comune a tutti gli utenti, deviazione standard relativa sigma_seed di E_dyn fra
+  semi = 0; 0,25; 0,5; 1%; tre semi per braccio; per i riferimenti storici nessun seme. Non e' un valore misurato.
+- R = 20.000 insiemi simulati per scenario (10.000 in c2): errore Monte Carlo di una copertura vicino a 0,97 circa
+  0,0012; di una probabilita' al piu' 0,0035.
+
+VOCE c-1 (regge, in verified_ok): sotto effetto nullo la regola del beneficio non scatta; al 4% scatta quasi sempre
+[claim] Righe 93-95 e 91: "beneficio pratico risolto" se stima >= 2% e limite inferiore dell'IC 99% > 0.
+[evidence] ESEGUITO: work_criteri/c4_rule.py (uscita identica al tentativo precedente), IC percentile 99%, pesi veri.
+- Effetto vero 0%: P(beneficio) al piu' 0,0006 con sigma_u 0,7 o 1,5 e sigma_seed 0 o 0,5% (0,0006-0,0154 con
+  sigma_seed 1%); 0,005-0,011 con sigma_u 3 e sigma_seed fino a 0,5% (0,019-0,032 con 1%); 0,015-0,030 con sigma_u 5.
+- Effetto vero 2%: P(beneficio) = 0,42-0,50 in tutti gli scenari con sigma_u <= 3 (0,20-0,23 con sigma_u 5): la soglia
+  coincide con l'effetto, quindi e' un lancio di moneta. E' una proprieta' di ogni regola "stima >= soglia", gia' del
+  criterio del 02/11, e il protocollo la dichiara (riga 95: "Non significa che l'intero IC superi 2%").
+- Effetto vero 4%: P(beneficio) = 0,94-1,00 con sigma_u <= 3; 0,66-0,68 con sigma_u 5.
+- Il limite inferiore > 0 quasi non conta: P(stima >= 2% ma limite inferiore <= 0) = 0,0000-0,0001 con sigma_u <= 1,5;
+  pesa solo con eterogeneita' pessimista (fino a 0,075 con sigma_u 3; fino a 0,34 con sigma_u 5). In pratica la decisione
+  sul beneficio e' la stima puntuale contro il 2%.
+[fix] Nessuna. Utile dirlo a Simone con queste parole: con un effetto vero di esattamente 2% la regola dice si' circa
+una volta su due; con 4% quasi sempre; con 0% praticamente mai.
+
+VOCE criteri-6 (nota): la copertura vera dell'IC percentile 99% con 15 utenti e' circa 97%, e la famiglia circa 85-91%
+[claim] Riga 91: "IC percentile 99% per ciascuno dei cinque contrasti, Bonferroni per una copertura simultanea nominale
+95%. E' un'approssimazione esplorativa con 15 unita' e circa dieci repliche per coda: non una garanzia esatta."
+[evidence]
+- CALCOLATO: 2.000 x 0,005 = 10 repliche per coda, come scritto. Bonferroni: 1 - 5 x 0,01 = 0,95 nominale, corretto.
+- CALCOLATO (teoria, pesi uguali, dati normali): il percentile usa circa z * sqrt(14/15) deviazioni standard invece di
+  t_14: copertura P(|t_14| < 2,5758 * sqrt(14/15)) = 0,974 per il 99% e 0,921 per il 95% (stampato da c2).
+- ESEGUITO: work_criteri/c1_coverage.py. Copertura dell'IC 99%: 0,9628-0,9709 con i pesi veri o ricampionati, code normali
+  o t3, tutte le combinazioni di mu e sigma_u; 0,9682-0,9728 con pesi uguali; 0,9598-0,9608 con pesi sbilanciati. Ogni
+  coda manca 0,013-0,021 invece di 0,005. IC 95%: 0,8959-0,9234. La deviazione bootstrap sottostima la deviazione vera
+  della stima di circa il 6% (per esempio 0,209 contro 0,223).
+- ESEGUITO: work_criteri/c3_family.py. Copertura simultanea dei cinque IC (nominale 0,95): 0,8547-0,9100, secondo quanto
+  i contrasti condividono (rho 0,2-0,8); copertura del singolo 0,9672-0,9692.
+- ESEGUITO: work_criteri/c2_alternatives.py, effetto 2%. Copertura dell'IC 99%: percentile con 2.000 repliche
+  0,9620-0,9722; con 20.000 repliche 0,9645-0,9730 (piu' repliche non riparano); percentile al livello nominale 99,8%
+  0,9855-0,9891; t di Student con errore jackknife a 14 gradi di liberta' 0,9773-0,9908; BCa 0,9402-0,9707 (peggio).
+  Prezzo: semiampiezza media da 0,530 a 0,634 (99,8%) o 0,651 (t-jackknife) con sigma_u 0,7.
+- Effetto sulla decisione: quasi nullo per il beneficio (voce c-1: decide la stima). Per "non sostenuto" (limite
+  superiore < 2%) con effetto vero 2% e nessun rumore di seme, la probabilita' del "no" sbagliato e' 0,015-0,016 invece
+  di 0,005 (c4): piccola.
+[fix] Non indispensabile. Miglioramento: accanto a "nominale 95%" scrivere che con 15 utenti la copertura attesa e'
+circa 97% per contrasto e circa 85-91% per la famiglia (simulazione con ipotesi dichiarate). Chi volesse la copertura
+nominale puo' fissare ora il percentile al 99,8% o la t-jackknife, prima dei dati; non cambia la decisione attesa.
+
+VOCE criteri-7 (nota): errore Monte Carlo con 2.000 repliche
+[claim] Riga 91: 2.000 repliche, seme 20261102, "circa dieci repliche per coda".
+[evidence]
+- ESEGUITO: work_criteri/c5_mc_error.py (nuovo in questo tentativo), 400 semi indipendenti per B = 2.000 e per
+  B = 20.000, su tre insiemi fissi. Deviazione standard Monte Carlo dei limiti 0,5% e 99,5%:
+  * testa allenata contro ridge a 49.046 (dati veri, stima 0,9254%, deviazione bootstrap 0,170): limite inferiore 0,027
+    punti con 2.000 repliche (0,16 deviazioni bootstrap) e 0,009 con 20.000; superiore 0,009 e 0,003. Col seme del
+    protocollo il limite inferiore e' 0,4328 con 2.000 repliche e 0,4158 con 20.000; fra semi diversi, con 2.000
+    repliche, il limite inferiore sta fra 0,353 e 0,453 (2,5-97,5%).
+  * dose della ridge 49.046 contro 19.618 (vero, 6,3212%, deviazione 0,247): 0,022 e 0,026 punti con 2.000; 0,008 con
+    20.000.
+  * sintetico con pesi veri, mu 2%, sigma_u 1,5 (stima 2,3221%, deviazione 0,387): 0,045 e 0,035 punti con 2.000;
+    0,014 e 0,011 con 20.000.
+  * teoria, distribuzione normale: errore standard del quantile 0,5% = 0,109 deviazioni bootstrap con 2.000 repliche e
+    0,034 con 20.000.
+- CALCOLATO: con deviazioni bootstrap di 0,11-0,46% (voce criteri-4) l'incertezza Monte Carlo dei limiti e' circa
+  0,01-0,05 punti con 2.000 repliche. Cambia un'etichetta solo se un limite cade entro circa 0,1 punti da 0 o da 2%.
+[fix] Non indispensabile. Miglioramento a costo trascurabile (pochi secondi di CPU): 20.000 repliche, fissate ora,
+oppure tenere 2.000 per continuita' col lungo e scrivere ora che un limite entro 0,1 punti dalla soglia si riporta come
+"al bordo" senza cambiare etichetta. Non va deciso dopo aver visto i limiti.
+
+VOCE criteri-3 (minore): il rumore fra semi non entra nell'IC, e la regola non dice come leggere tre semi discordi
+[claim] Riga 81: media dei tre semi dagli accumulatori, "pubblicare anche i tre esiti separati". Riga 91: "Gli IC restano
+condizionati ai tre fit". Righe 95-98: le etichette usano solo la stima media e l'IC sugli utenti.
+[evidence]
+- CALCOLATO: con un riferimento rifittato (contrasti 1-3) la stima media su tre semi porta un errore di seme con
+  deviazione sigma_seed * sqrt(2/3); con un riferimento storico (4-5) sigma_seed / sqrt(3). Con sigma_seed = 0,5% sono
+  0,41 e 0,29 punti: quanto o piu' della deviazione bootstrap fra utenti dei contrasti storici (0,11-0,46). Il bootstrap
+  sugli utenti, condizionato ai tre fit, non lo vede.
+- ESEGUITO: work_criteri/c6_seed_bootstrap.py (riferimento rifittato, pesi veri). Copertura dell'IC 99% del protocollo
+  rispetto all'effetto medio della ricetta: 0,9664-0,9702 senza rumore di seme; 0,9000-0,9545 con sigma_seed 0,25%;
+  0,7305-0,9000 con 0,5%; 0,4647-0,7325 con 1% (sigma_u 0,7 e 1,5). Probabilita' del "no" sbagliato (non sostenuto
+  con effetto vero 2%): 0,016-0,017 senza rumore di seme, 0,025-0,047 con 0,25%, 0,051-0,126 con 0,5%, 0,133-0,263 con
+  1%. Probabilita' del si' sbagliato (beneficio con effetto vero 1%): 0-0,010 senza rumore, 0,014-0,043 con 0,5%,
+  0,117-0,136 con 1%.
+- ESEGUITO (stesso script), due rimedi decisi prima:
+  * bootstrap a due livelli (utenti e, per ciascun braccio, i tre semi con reinserimento): copertura 0,8972-0,9705,
+    "no" sbagliato a 2% 0,016-0,048 in tutti gli scenari; non cambia il si' sbagliato a 1% (0,107-0,116 con sigma_seed
+    1%), perche' il beneficio dipende dalla stima puntuale;
+  * concordanza dei semi (beneficio solo se anche ciascuno dei tre semi della TCN, contro la media del riferimento, ha
+    stima >= 2%; non sostenuto solo se ciascuno ha limite superiore < 2%): si' sbagliato a 1% 0,000-0,034 e "no"
+    sbagliato a 2% 0,011-0,073; prezzo in potenza: beneficio con effetto vero 3% 0,947-1,000 con sigma_seed 0-0,25%,
+    0,83-0,88 con 0,5% e 0,58 con 1% (senza concordanza 0,87-1,00).
+- ESEGUITO (c4, riferimento storico, un solo braccio con semi, sigma_u 0,7 e 1,5): "no" sbagliato a 2% 0,016 senza
+  rumore, 0,035-0,078 con 0,5%, 0,084-0,195 con 1%.
+- Che valore abbia sigma_seed qui non si sa: nessuna misura nel progetto (voce criteri-4). Se e' sotto circa 0,25% la
+  regola funziona come scritto; da 0,5% in su le etichette "non sostenuto" e "inconclusivo" non hanno piu' il livello
+  dichiarato, e il "no" chiude la prova (accordo in chat; riga 98 per l'inconclusivo). Il protocollo pubblica i tre esiti
+  ma non dice che cosa farne: qualunque regola scritta dopo averli visti sarebbe post hoc.
+[fix] Da scrivere prima della firma, senza cambiare fit, semi o dati. Proposta minima: (1) riportare per ogni braccio e
+ogni contrasto la deviazione standard fra i tre semi accanto alla deviazione bootstrap; (2) un'etichetta "beneficio" o
+"non sostenuto" vale solo se i tre semi della TCN, ciascuno contro la media dei semi del riferimento (o contro il
+riferimento storico), danno la stessa etichetta; se no, l'esito e' "inconclusivo, sensibile al seme", che chiude come
+l'inconclusivo. Alternativa equivalente per il "no": IC dal bootstrap a due livelli (utenti e semi), gia' simulato.
+Distinzione: e' indispensabile scrivere prima una regola per i semi discordi; quale delle due e' una scelta di GPT.
+
+======================================================================================================================
+(g) COERENZA CON LA DOMANDA 6 DEL PROMPT DI CLAUDE (docs/prompt_gpt_temponet_testa_fm_20261116.md:228-233, 8917e2a)
+======================================================================================================================
+
+VOCE g-1 (regge, in verified_ok, con i rinvii indicati)
+[claim] Il prompt chiede: primario, soglia e IC, riferimento (ridge, testa allenata o entrambe); famiglia fissata prima
+con correzione per molteplicita' e nessun vincitore scelto sulla val; regola di lettura dei controlli (backbone o testa);
+quale esito chiude la domanda, anche il "no"; se aggiungere una misura di inseguimento per tratto.
+[evidence] LETTO, voce per voce:
+- Primario e riferimento: TCN-post contro L0 rifittata (riga 79), con la ragione per non usare la ridge come primario
+  (riga 51: la ridge minimizza la SSE aggregata sugli elementi, la PoseHead la MSE media per finestra). Ridge e testa
+  storica restano nella famiglia (contrasti 4 e 5) e servono entrambe per il "candidato" (riga 100). Soglia 2% come nel
+  criterio del 02/11 (voce e-1); IC percentile 99% Bonferroni (riga 91). Coerente.
+- Famiglia e molteplicita': cinque contrasti fissi, Bonferroni, tutti pubblicati, TCN-pre fuori famiglia (voce e-2); una
+  sola lettura val dopo il congelamento di scelte, pesi, semi e hash (riga 71). Coerente.
+- Lettura dei controlli: a encoder congelato ogni guadagno e' del lettore su questo encoder; nulla si attribuisce al
+  backbone o al pretraining (righe 11, 102, 108). TCN/MLP per il contesto, TCN/L13 per la ricetta non lineare temporale
+  (riga 100). Coerente nella sostanza; manca la definizione di "servono" (criteri-2).
+- Il "no": quattro etichette a due lati (righe 95-98), l'inconclusivo chiude senza promozione (riga 98), un A nullo non
+  porta automaticamente a B (riga 118), un esito nullo non dimostra assenza di informazione (riga 11), come concordato
+  in chat. Scritto, con due lacune: la chiusura per "non sostenuto" e "deterioramento" non e' esplicita e la precedenza
+  manca (criteri-1); tre semi discordi non hanno una lettura scritta (criteri-3).
+- Inseguimento: nessuna metrica nuova di tratto in questo pilot; resta la misura centrata sulle finestre di 4 s con
+  correlazione e rapporto delle varianze; una metrica di tratto richiede una proposta distinta (riga 104). Coerente con
+  il prompt (riga 146: "Un'eventuale misura d'inseguimento va fissata senza usarla").
+[fix] Nessuna oltre a criteri-1, criteri-2 e criteri-3.
+
+======================================================================================================================
+NOTE DI PRECISIONE
+======================================================================================================================
+
+VOCE criteri-8 (nota): "i tre esiti separati" non dicono come si appaiano i semi nei contrasti 1-3
+[claim] Riga 81: "Pubblicare anche i tre esiti separati". Riga 66: ordine dei minibatch identico fra bracci a parita' di
+fold e seme.
+[evidence] LETTO: per i contrasti 4 e 5 l'esito per seme e' univoco (seme s della TCN contro il riferimento fisso). Per
+i contrasti 1-3 sono possibili due letture: seme s della TCN contro seme s del riferimento (stesso ordine dei minibatch,
+riga 66) oppure ciascun seme della TCN contro la media dei tre semi del riferimento. Per L0 e L13 l'inizializzazione e'
+deterministica (LN gamma 1 e beta 0, unico strato lineare a zero: righe 35, 41, 43), quindi i loro semi differiscono solo
+per l'ordine dei minibatch.
+[fix] Scegliere ora una lettura e scriverla (proposta: seme s contro seme s, piu' i nove incroci solo come descrittivi).
+Serve anche alla regola di concordanza proposta in criteri-3.
+
+VOCE criteri-9 (nota): un test d'ingresso che fissa la metrica in modo verificabile
+[claim] Riga 140: "metriche e media fra semi da accumulatori confrontate con un oracolo semplice; cinque contrasti,
+quantili e supporti appaiati".
+[evidence] ESEGUITO (voce a-1): i valori storici 0.7859020004638595 (ridge post) e 0.7786289843513977 (testa allenata), con
+8.327 finestre, 20.119.920 elementi e gli IC95 del lungo, si riproducono dalle somme per utente della ricevuta. Le
+predizioni storiche pinnate in proposal.json:185-202 sono gia' ritagliate al crop6 in float64
+(consolidation_long_pose_runtime.py:274-282).
+[fix] Aggiungere ai test prima della lettura val: ricalcolare con il codice nuovo E_dyn dei due riferimenti storici dalle
+predizioni pinnate e dai target della cache val, e richiedere l'uguaglianza con questi valori (tolleranza dell'ordine di
+1e-12) e con i conteggi 8.327 / 20.119.920. Fallimento = stop, come gli altri gate. Cosi' i contrasti 4 e 5 usano davvero
+la stessa metrica e lo stesso supporto del lungo.
+
+VOCE criteri-10 (nota): "se MAE o livello peggiorano" non dice che cosa conta come peggioramento
+[claim] Riga 100: "questo non basta a raccomandare la sostituzione operativa della testa se MAE o livello peggiorano.
+Quel compromesso va discusso prima dell'adozione; nessuna non-inferiorita' del livello e' implicita e nessuna nuova
+soglia si sceglie dopo gli esiti." proposal.json:35: "inspect MAE/level trade-offs first".
+[evidence] LETTO: il protocollo non definisce "peggiorano" (qualunque differenza puntuale? un IC che esclude zero?).
+L'adozione non e' decisa da questo pilot, quindi l'etichetta del candidato non cambia; ma il rapporto dovra' dire se c'e'
+un peggioramento, e scriverlo dopo aver visto i numeri sarebbe una scelta post hoc. Il lungo aveva gia' una regola pronta,
+descrittiva e senza soglie pratiche nuove: scripts/consolidation_long_pose.py:376-388 (_clear_regressions: livello
+segnalato se il limite inferiore dell'IC95 del delta di level_mse e' > 0, correlazione se il limite superiore del delta e'
+< 0), usata da select_reference (righe 391-408) per "defer_tradeoff".
+[fix] Scrivere ora che "peggiorano" = segnale della regola _clear_regressions su level_mse e correlazione (piu', se si
+vuole, lo stesso criterio sul delta della MAE in radianti), IC95 sugli utenti, solo come segnale descrittivo che rinvia la
+decisione di adozione a Simone. Nessuna soglia di non inferiorita' nuova.
+
+======================================================================================================================
+NON VERIFICABILE DA QUI
+======================================================================================================================
+- Il rumore fra semi delle nuove teste (sigma_seed): nessuna misura esiste; i valori 0-1% delle simulazioni sono ipotesi.
+- L'eterogeneita' fra utenti del contrasto TCN-post contro L0: calibrata sui contrasti storici, non misurabile prima dei fit.
+- Che le predizioni storiche su WORK (post_ridge.predictions.npz, trained_head.predictions.npz) riproducano esattamente
+  0,785902 e 0,778629: qui sono riprodotte solo dalle somme per utente archiviate nella ricevuta; i file sono su Leonardo.
+  Gli sha256 di cache e predizioni non sono stati ricalcolati oggi (Claude ha verificato i byte).
+- Che l'ordine delle colonne dei target nella cache coincida con emg2pose_pose.JOINTS: lo dice il commento del codice
+  (righe 50-52) e il percorso dell'ingest, non e' stato controllato sui dati.
+- Il comportamento del codice futuro (bootstrap, etichette, secondari): non esiste ancora.
+
+======================================================================================================================
+SINTESI E VERDETTO DELLA DIMENSIONE 4
+======================================================================================================================
+
+Verdetto: APPROVATO CON CORREZIONI. Nessun rilievo bloccante: metrica, media dei semi, soglia e famiglia reggono; le
+correzioni sono precisazioni del testo da congelare e non cambiano fit, semi, dati o costo.
+
+Che cosa regge (prove nelle voci a-1, b-1, e-1, e-2, c-1, g-1):
+- E_dyn e' definita come nel lungo e riproduce 0,7859020004638595 e 0,7786289843513977 dalle somme archiviate.
+- La media degli accumulatori e' esattamente la media dei tre E_dyn, anche replica per replica; non e' un ensemble.
+- Il 2% e la condizione sull'IC sono quelli del criterio del 02/11 e del lungo, a un livello piu' severo (99%).
+- La famiglia dei cinque contrasti e' fissata prima e pubblicata tutta, uguale nei tre testi.
+- La regola e' esaustiva e a due lati; sotto effetto nullo il beneficio non scatta.
+
+Correzioni minori, da fare prima della firma (in ordine di peso):
+1. criteri-3: scrivere ora come si leggono tre semi discordi (concordanza dei semi, oppure IC a due livelli per il "no").
+   Senza, se il rumore fra semi e' fra 0,5% e 1%, il "no" con un effetto vero del 2% esce sbagliato nel 5-26% dei casi
+   simulati (riferimento rifittato) e la copertura dichiarata scende a 46-90%.
+2. criteri-1: ordine di precedenza delle quattro etichette ("deterioramento" e' sempre anche "non sostenuto") e chiusura
+   esplicita anche per "non sostenuto" e "deterioramento".
+3. criteri-2: "passa" = "beneficio pratico risolto" nei contrasti 1, 4 e 5; la regola del candidato e le condizioni su
+   TCN/MLP e TCN/L13 vanno scritte allo stesso modo in protocollo, proposal.json e decisioni.md (oggi decisioni.md non le
+   contiene) con la formula 100*(E_ref - E_TCN)/E_ref.
+4. criteri-5: definire i secondari rimandando alle funzioni del lungo e citare lo schema dei giunti
+   (emg2pose_pose.JOINTS), con il pollice aggregato e per colonna.
+
+Note (miglioramenti o dichiarazioni utili): criteri-4 (il 2% e il rumore), criteri-6 (copertura vera circa 97% per
+contrasto e 85-91% per la famiglia), criteri-7 (errore Monte Carlo 0,01-0,05 punti con 2.000 repliche; 20.000 costano
+secondi), criteri-8 (appaiamento dei semi), criteri-9 (riprodurre i due valori storici come test d'ingresso),
+criteri-10 (definire "peggiorano" per MAE e livello con la regola _clear_regressions del lungo).
+
+In parole semplici, per Simone: la regola del beneficio, in pratica, e' "la media dei tre semi migliora di almeno il 2%".
+In simulazione, con un effetto vero nullo non scatta quasi mai (al piu' 0,06% con eterogeneita' fra utenti come nei
+contrasti storici e rumore di seme fino a 0,5%; al piu' 1,5% con rumore di seme dell'1%), con il 4%
+scatta quasi sempre (94-100%), con esattamente il 2% e' un lancio di moneta (42-50%). L'intervallo conta soprattutto per
+il "no"; li' pesano la copertura vera (circa 97% invece di 99%) e soprattutto il rumore fra semi della testa, che oggi
+nessuno ha misurato: per questo la regola sui semi discordi va scritta prima.

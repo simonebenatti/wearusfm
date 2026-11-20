@@ -1,0 +1,48 @@
+== a) tabella del par. 9 (righe 151-158 del protocollo) ==
+  checkout, manifest/hash, supporti  solo CPU GPUh= 0.00 coreh= 0.50 ore locali= 0.50
+  benchmark CPU train-only           solo CPU GPUh= 0.00 coreh= 2.00 ore locali= 2.00
+  benchmark GPU train-only           job GPU  GPUh= 0.25 coreh= 2.00 ore locali= 2.00
+  selezione + rifit                  job GPU  GPUh= 3.00 coreh=24.00 ore locali=24.00
+  inferenza val                      job GPU  GPUh= 0.50 coreh= 4.00 ore locali= 4.00
+  riferimenti, metriche, bootstrap   solo CPU GPUh= 0.00 coreh= 8.00 ore locali= 8.00
+  raccolta e conservazione           solo CPU GPUh= 0.00 coreh= 0.50 ore locali= 0.50
+  riserva: GPUh 0.25 (coreh dei job GPU 2.0), coreh solo CPU 1.0
+  GPUh totali = 4 ; coreh solo CPU = 12 ; coreh dentro i job GPU = 32 ; coreh allocate totali = 44
+  ore locali (billing 8 per ora di job 1 GPU+8 CPU; billing = CPU per i job seriali) = 44
+  ore locali dei soli job GPU = 32 ; dei soli job CPU = 12
+  somma dei limiti di tempo delle fasi = 5.5 h (riserva esclusa)
+  44 ore locali sul residuo committato del 09/11 (691863): 0.00636 %
+  sforamento osservato oltre il limite (63593508): 184 s = 0.0511 h per job; su un job da 1 GPU 0.0511 GPUh = 0.409 ore locali; la riserva GPU ne copre 4.9
+== c) byte e memoria ==
+  una predizione val FP32 = 18548*160*20*4 = 237414400 byte ; 15 = 3561216000 byte = 3.316641 GiB
+  stessa a 148 centri (crop6): 219608320 byte ; 15 = 3.0679 GiB
+  cache train+val = 5068390194 byte = 4.7203 GiB ; riferimenti = 652548847 byte = 0.6077 GiB ; input pinnati in tutto = 5720939041 byte = 5.3280 GiB
+  val: membri numerici non compressi (senza meta_json/config_json) = 5097064592 byte = 4.7470 GiB ; su disco 4593977338 byte ; rapporto disco/non compresso = 0.9013
+      una vista FP16 = 2279178240 byte = 2.1227 GiB ; due viste FP16 = 4.2453 GiB ; una vista intera in FP32 = 4.2453 GiB ; due viste FP32 = 8.4906 GiB
+  train: membri numerici non compressi (senza meta_json/config_json) = 524051228 byte = 0.4881 GiB ; su disco 474412856 byte ; rapporto disco/non compresso = 0.9053
+      una vista FP16 = 234332160 byte = 0.2182 GiB ; due viste FP16 = 0.4365 GiB ; una vista intera in FP32 = 0.4365 GiB ; due viste FP32 = 0.8730 GiB
+  riferimento storico non compresso (float64, 148 centri) = 439216640 byte = 0.4091 GiB ; rapporto post_ridge 0.9527, trained_head 0.5329
+  24 GiB = 24576 MiB, limite seriale 30800 MB: entro
+  pesi FP32 dei 15 rifit = 3657648 byte = 3.49 MiB
+  (se si salvassero le predizioni held di ogni epoca dei 20 fit di selezione: ~11.4 GiB, oltre il tetto di 8)
+  quota 16/11 (dato storico): 1024 - 933,1 = 90.9 GiB liberi; dopo 8 GiB = 82.9
+== b) matrice dei fit ==
+  passi per epoca: fold ~30 (~954 finestre), full 60; a 50 epoche: selezione 30000 + rifit 45000 = 75000
+  per testa: epoche-equivalenti di train sulle 1.907 finestre = 250; valutazioni held equivalenti = 100
+  tetto 3 GPUh: 144 ms per passo; col fattore 2: 72 ms per passo
+  [MPS M3 Pro, sintetico, NON A100, macchina carica] device=mps threads=1 eval_batch=256
+      L0       epoca train (max) 0.473 s ; epoca eval (max) 0.204 s ; matrice 250 train + 100 eval =   138.7 s
+      MLP      epoca train (max) 0.778 s ; epoca eval (max) 0.234 s ; matrice 250 train + 100 eval =   218.0 s
+      L13      epoca train (max) 0.933 s ; epoca eval (max) 0.253 s ; matrice 250 train + 100 eval =   258.6 s
+      TCN-post epoca train (max) 1.185 s ; epoca eval (max) 0.202 s ; matrice 250 train + 100 eval =   316.4 s
+      TCN-pre  epoca train (max) 1.185 s ; epoca eval (max) 0.202 s ; matrice 250 train + 100 eval =   316.4 s
+      matrice dei fit, solo calcolo: 1248 s = 0.347 h ; raddoppiata 0.693 h ; margine sul tetto di 3 h: 4.3x
+      inferenza 15 modelli x 18.548 finestre, solo calcolo: 32 s = 0.0089 h ; raddoppiata 0.0178 h ; margine su 0,5 h: 28.2x
+  [CPU Mac 8 thread, sintetico, macchina carica] device=cpu threads=8 eval_batch=256
+      L0       epoca train (max) 0.686 s ; epoca eval (max) 0.212 s ; matrice 250 train + 100 eval =   192.6 s
+      MLP      epoca train (max) 1.701 s ; epoca eval (max) 0.416 s ; matrice 250 train + 100 eval =   466.9 s
+      L13      epoca train (max) 14.739 s ; epoca eval (max) 7.628 s ; matrice 250 train + 100 eval =  4447.5 s
+      TCN-post epoca train (max) 7.739 s ; epoca eval (max) 3.584 s ; matrice 250 train + 100 eval =  2293.1 s
+      TCN-pre  epoca train (max) 7.739 s ; epoca eval (max) 3.584 s ; matrice 250 train + 100 eval =  2293.1 s
+      matrice dei fit, solo calcolo: 9693 s = 2.693 h ; raddoppiata 5.385 h ; margine sul tetto di 3 h: 0.6x
+      inferenza 15 modelli x 18.548 finestre, solo calcolo: 450 s = 0.1250 h ; raddoppiata 0.2500 h ; margine su 0,5 h: 2.0x

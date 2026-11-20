@@ -1,0 +1,568 @@
+####################################################################################################
+REVIEW architettura verdict=APPROVATO_CON_CORREZIONI report=/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/review_architettura.txt
+SUMMARY:
+Dimensione 1 (domanda e architettura) della proposta GPT c15aac9, secondo tentativo. Ho rieseguito tutti gli script del primo tentativo che servono al verdetto: le uscite sono identiche. Ho completato la prova sintetica interrotta e aggiunto due controlli.
+
+Regge, con prove eseguite:
+- Codice TEMPONet: la classe accetta solo (B,C,T) a lunghezza fissa e dà una posa per finestra (out_length 2 a T=160). BatchNorm e pooling sono fissi nei blocchi privati.
+- Campo ricettivo: 378 passi per un elemento, 442 nominali dopo il flatten, quindi la correzione di GPT al prompt di Claude è giusta. L'affermazione di Claude era incompleta (mancava «per elemento») ma la conclusione era giusta.
+- Identità dei sorgenti: byte e sha256 ai commit 60b35bd, 0c19c4b e 8917e2a coincidono con quelli dichiarati.
+- Teste: i cinque conteggi (8.468, 65.300, 100.628, 65.204), i 64.128 pesi e i 10.260.480 MAC tornano. Il campo ricettivo è di 13 patch, offset -6..+6 senza buchi; L0 e MLP leggono solo la patch centrale.
+- Crop: i centri 6..153 non dipendono dal padding e coincidono con il crop6 storico. Nelle cache tutte le finestre hanno 160 patch reali (hash delle ricevute).
+- Inizializzazione a zero: al primo backward i gradienti interni sono nulli, dopo un passo di AdamW non più.
+- L0 è letteralmente la PoseHead. La ridge storica ha la stessa classe di funzioni di L0 e cambia solo il fitting.
+- La firma del 49.046 esiste. Il backbone è bidirezionale e la posa è già supervisionata nel FM.
+- Non c'è una ricerca nascosta di architetture.
+
+Due rilievi minori da correggere prima della firma:
+- Il titolo, la voce di decisioni.md e la tabella del §10 dicono «TEMPONet», mentre la testa è una TCN compatta di cui non resta il codice di TEMPONet.
+- Il tipo di dropout non è scritto (per elemento o per canale).
+
+Sei note:
+- I flussi del generatore casuale e l'ordine di creazione dei moduli non sono scritti.
+- Per L0 e L13 i tre semi cambiano solo l'ordine dei minibatch.
+- L'inizializzazione di default lascia gli ultimi strati di MLP e TCN dominati dai bias. Su dati finti è lenta a LR 1e-4 e va bene a 1e-3, ma il minimo cade all'epoca 50 in 7 corse su 8.
+- Il contesto di ±150 ms è motivato solo dal crop6.
+- Manca la dipendenza effettiva della TEMPONet trapiantata a T=160.
+- L'elenco «top_level_keys» di raw_source_identity.json è troncato.
+--------------------------------------------------------------------------------
+FINDING architettura-1 [minore] Titolo, decisioni.md e tabella del §10 dicono «TEMPONet», ma la testa non lo è
+  CLAIM: Protocollo riga 1 «# TEMPONet come lettore della posa del FM — proposta»; README.md riga 1; docs/decisioni.md dello snapshot riga 6713 «Proposta TEMPONet come testa di lettura della posa» e riga 6722 «TCN adattata da principi e codice TEMPONet»; §10 righe 173-180: la riga «Bracci» non dice che la TCN non è TEMPONet.
+  EVIDENCE: LETTO. Simone ha chiesto di «provare ad usare temponet come testa» (prompt di Claude riga 3) e decide sulla tabella del §10. Il corpo (§2 riga 25, «Non la chiameremo replica TEMPONet») è chiaro.
+
+Di TEMPONet restano solo lo schema «k3 dilatate + coda 64-32» e i due punti del dropout (temponet.py righe 11-14, 45-86, 131-144).
+
+Spariscono:
+- BatchNorm, stride k5, pooling, larghezze 16/32;
+- dilatazioni 2/4/8 a coppie: con tre k3 a 2/4/8 resterebbero 14 buchi su 29 offset (ESEGUITO c_heads_checks.py);
+- flatten e uscita per finestra, dropout 0,5, EMG grezzo, loss L1.
+
+Nessun blocco di temponet.py è riusabile (§2 riga 25), quindi «codice TEMPONet» sopravvaluta il legame.
+  HOW: LETTO
+  FIX: Titolo, per esempio: «TCN compatta ispirata a TEMPONet come lettore della posa del FM».
+
+Nel §10 aggiungere una riga: «Testa: TCN compatta ispirata a TEMPONet, non la TEMPONet di [Z21]». Va spiegato in una frase perché (uscita per patch su 384 feature a 40 Hz; BatchNorm, stride e pooling incompatibili). Va detto anche che una TEMPONet in senso stretto richiederebbe un'altra proposta.
+
+In decisioni.md scrivere «adattata dai principi di TEMPONet».
+--------------------------------------------------------------------------------
+FINDING architettura-2 [minore] Tipo di dropout non specificato
+  CLAIM: §3 riga 33 «Dropout0.1»; riga 47 «dropout 0,1 dopo i hidden da 64 e 32»; proposal.json righe 142-148. Non dice se per elemento o per canale, né che in valutazione è spento.
+  EVIDENCE: ESEGUITO de_spec_ambiguities.py:
+- nn.Dropout(0,1) su (2,64,160) azzera il 10,4% degli elementi e nessun canale intero;
+- nn.Dropout1d(0,1), lo «spatial dropout» frequente nelle TCN, azzera 10 canali interi su 128 lungo tutte le 160 patch;
+- nn.Dropout1d sulla MLP disposta (B,T,C) azzererebbe 25 patch intere su 320.
+
+Sono tre regolarizzatori diversi e cambiano i fit. TEMPONet usa nn.Dropout per elemento, solo negli strati densi (temponet.py righe 75-86).
+  HOW: ESEGUITO
+  FIX: Nel §3 e in proposal.json scrivere: «nn.Dropout(p=0,1) per elemento (non Dropout1d), negli stessi due punti per MLP e TCN, attivo solo in training; held interni e inferenza val in modo eval».
+--------------------------------------------------------------------------------
+FINDING architettura-3 [nota] Flussi del generatore casuale e ordine di creazione dei moduli non scritti
+  CLAIM: §3 riga 35 «interni con inizializzazione Torch standard e versioni pinnate», ultimo strato a zero «come PoseHead»; §4 riga 66 generatore dedicato per lo shuffle; proposal.json riga 151.
+  EVIDENCE: ESEGUITO de_spec_ambiguities.py:
+- Con lo stesso seme, creare lo strato d'uscita per primo cambia il 100% dei pesi del primo strato 384->64 (differenza massima 0,101).
+- La LayerNorm non consuma il generatore.
+- nn.Linear(384,64) e nn.Conv1d(384,64,1) dallo stesso seme danno pesi identici.
+- La PoseHead crea l'uscita sotto fork_rng (pose_head.py righe 24-27) e non sposta il generatore (0,882269 con e senza). Una nn.Linear poi azzerata lo sposta (0,922752).
+- TCN: primo numero casuale dopo la costruzione 0,627687 con l'uscita creata normalmente, 0,106142 sotto fork_rng; cambiano le maschere di dropout.
+
+Non sono scritti né il generatore del dropout né la regola dei semi dello shuffle. Non cambia il disegno, ma cambiano i numeri esatti e gli hash dei pesi iniziali.
+  HOW: ESEGUITO
+  FIX: Scrivere nella specifica:
+- ordine di creazione (dall'ingresso all'uscita);
+- se l'ultimo strato si crea sotto fork_rng come la PoseHead;
+- il generatore del dropout;
+- la regola dei semi dello shuffle.
+
+In alternativa dichiarare che li fissa il codice rivisto, con gli hash dei pesi iniziali per seme registrati nel manifest prima del primo fit.
+--------------------------------------------------------------------------------
+FINDING architettura-4 [nota] Per L0 e L13 i tre semi cambiano solo l'ordine dei minibatch
+  CLAIM: §4 riga 67 «Seme 0 per ogni fit di selezione, pesi iniziali nuovi»; riga 69 rifit con semi 0, 1, 2; §5 riga 81 «Pubblicare anche i tre esiti separati».
+  EVIDENCE: ESEGUITO de_spec_ambiguities.py: i parametri iniziali di L0 e L13 sono identici con i semi 0, 1 e 2 (LN 1/0 e unico strato a zero), e le due teste non hanno dropout. Quelli di MLP e TCN cambiano.
+
+Quindi la dispersione fra i tre esiti separati misura cose diverse nei bracci. Gli IC non ne sono toccati: sono già condizionati ai tre fit (§5 riga 91).
+  HOW: ESEGUITO
+  FIX: Aggiungere una frase nel §4: «per L0 e L13 l'inizializzazione è deterministica e non c'è dropout: i tre semi cambiano solo l'ordine dei minibatch».
+--------------------------------------------------------------------------------
+FINDING architettura-5 [nota] Inizializzazione di default: ultimi strati dominati dai bias, selezione all'epoca 50 probabile
+  CLAIM: §3 riga 35 e proposal.json riga 151: interni con inizializzazione Torch standard.
+  EVIDENCE: ESEGUITO i_init_recursion.py. Il default di torch 2.14 dà pesi e bias uniformi in ±1/sqrt(fan_in), cioè varianza 1/(3 fan_in), un sesto di He.
+
+CALCOLATO: nel quinto hidden il bias spiega il 90% (TCN) e l'85% (MLP) della varianza della pre-attivazione. Misura su 20 semi: 33,0% e 33,3% di unità mai accese, 39,2% e 37,3% sempre accese.
+
+ESEGUITO j_synthetic_init_completion.py su dati finti (non del progetto), con la ricetta del §4. MSE minima tenuta fuori, senza / con componente comune:
+- TCN default: 0,5569 / 0,6442 a LR 1e-4; 0,3546 / 0,3448 a 1e-3;
+- TCN He: 0,4494 / 0,4381 a 1e-4; 0,3568 / 0,3424 a 1e-3;
+- MLP default: 0,7072 / 0,7834 a 1e-4; 0,5740 / 0,5667 a 1e-3;
+- MLP He: 0,6253 / 0,5993 a 1e-4; 0,5879 / 0,5506 a 1e-3.
+
+Il minimo delle corse di default cade all'epoca 50 in 7 corse su 8 (l'ottava all'epoca 49). Sui dati finti le teste si separano come atteso (TCN circa 0,35, L0 circa 0,80). È un indizio, non una misura sui latenti.
+  HOW: ESEGUITO
+  FIX: Nessuna correzione obbligatoria.
+
+Suggerimenti:
+- nominare il default esatto (kaiming_uniform_ con a=sqrt(5), bias in ±1/sqrt(fan_in)) accanto alla versione di torch;
+- dire a Simone che una selezione all'epoca 50 o a LR 1e-3 è attesa e verrà solo riportata (§4 riga 75);
+- se GPT preferisce l'inizializzazione He, deciderlo ora, prima di qualunque fit.
+--------------------------------------------------------------------------------
+FINDING architettura-6 [nota] Contesto di ±150 ms motivato solo dal crop6
+  CLAIM: §3 riga 37: RF di 13 patch, ±150 ms, compatibile con il crop6; §4 riga 66: nessuna ricerca di RF.
+  EVIDENCE: LETTO: il crop6 storico protegge i bordi dal supporto di circa 300 ms del tokenizer T100 (docs/tokenizer_window_nonlinear_protocol_20261102.md righe 67-68 e 158-159), non è una scelta di contesto. Un grep nel protocollo su «100 ms», «0,49», «ec5b309» e «pose_temporal» non trova nulla.
+
+Il protocollo non cita:
+- i 128 ms di TEMPONet raw (CALCOLATO: 5,12 patch, solo passato);
+- il lettore lineare con ritardi -4/0/+4 (results/infra/pose_temporal_20261102/summary.json, braccio B): E_dyn dinamiche 0,85951 -> 0,85532, delta -0,00419 [-0,00633; -0,00194], cioè -0,49% relativo (CALCOLATO 0,488%); R3c -2,54%.
+
+È comunque una scelta unica fissata prima, non una ricerca.
+  HOW: LETTO
+  FIX: Aggiungere una frase al §3: «RF 13 = massimo contesto simmetrico che non tocca il padding con il crop6 storico; contiene i 128 ms raw e il ±100 ms del lettore lineare del 02/11 (-0,49% relativo per B)».
+--------------------------------------------------------------------------------
+FINDING architettura-7 [nota] Dipendenza effettiva della TEMPONet trapiantata a T=160 non detta; prompt di Claude incompleto
+  CLAIM: §2 riga 23: unione nominale di 442, «prima dei limiti dell'input e del padding». Prompt di Claude, riga 109: «Campo ricettivo 378 passi [...] più della finestra di 4 s».
+  EVIDENCE: ESEGUITO a_temponet_rf.py:
+- 378 passi contigui per elemento, elementi spostati di 64, unione 442.
+- A T=160 e 384 canali, con causal=True (default) l'uscita dipende dai passi 0-123 (124 su 160; perturbazioni: 124 su 160). Con causal=False (configurazione emg2pose, scripts/temponet_emg2pose.py riga 189) dipende da tutti i 160.
+
+CALCOLATO: 378 x 25 ms = 9,45 s. Claude non aveva scritto «per elemento», ma la conclusione «più della finestra» era giusta (378 e 442 sono entrambi maggiori di 160). La correzione di GPT è corretta.
+  HOW: ESEGUITO
+  FIX: Facoltativo, una frase nel §2: «a T=160 l'uscita dipende da tutti i 160 passi con causal=False e dai soli passi 0-123 con il default causal=True». Claude può registrare la precisazione.
+--------------------------------------------------------------------------------
+FINDING architettura-8 [nota] Elenco «top_level_keys» troncato in raw_source_identity.json
+  CLAIM: raw_source_identity.json righe 18-51: «top_level_keys» con 12 chiavi per eval.json e 12 per run.json.
+  EVIDENCE: ESEGUITO lettura JSON: eval.json ha 13 chiavi (manca «seconds») e run.json 28. Entrambi hanno una sola versione nel repository (12feb8b), quindi è un troncamento. Nessun effetto sull'identità dei sorgenti.
+  HOW: ESEGUITO
+  FIX: Rinominare il campo in «first_top_level_keys» oppure elencare tutte le chiavi.
+--------------------------------------------------------------------------------
+VOK architettura#1: §2 riga 21: TEMPONet riceve (B,C,T) a lunghezza fissa e dà una posa per finestra
+  HOW: ESEGUITO a_temponet_rf.py; LETTO temponet.py righe 146-149
+  EVIDENCE: TEMPONet(in_channels=384, window=160, out_dim=20) ha 80.884 parametri e uscita (1,20). Gli ingressi (2,384,159), (2,160,384) e (2,384,161) sono rifiutati con ValueError.
+--------------------------------------------------------------------------------
+VOK architettura#2: §2 riga 21: stride, tre pooling e flatten impediscono un'uscita per patch
+  HOW: ESEGUITO
+  EVIDENCE: output_length: 37 -> 0, 38 -> 1, 101 -> 1, 102 -> 2, 160 -> 2, 256 -> 4. Il forward fa flatten(1) prima della coda densa (riga 149).
+--------------------------------------------------------------------------------
+VOK architettura#3: §2 righe 21 e 25: la prima convoluzione comprime 384->16; _TemporalConv, _StridedConv e _Dense fissano BatchNorm e pooling
+  HOW: LETTO
+  EVIDENCE: temponet.py righe 45-86: BatchNorm e AvgPool senza opzioni per toglierli; righe 131-132: primo blocco _TemporalConv(in_channels, 16).
+--------------------------------------------------------------------------------
+VOK architettura#4: §2 riga 23: receptive_field() vale 378 per un elemento; a T=160 il flatten unisce due elementi distanti 64 passi, unione nominale 442
+  HOW: ESEGUITO
+  EVIDENCE: receptive_field() = 378. Con pesi positivi, a T=2048 un elemento dipende da 378 passi contigui, il successivo è spostato di 64 e l'unione fa 442 (sia causale sia simmetrica).
+--------------------------------------------------------------------------------
+VOK architettura#5: §2 riga 23: in training la BatchNorm aggiunge dipendenze dal batch
+  HOW: ESEGUITO
+  EVIDENCE: Gradiente dell'uscita del campione 0 rispetto all'ingresso del campione 1: 1680,74 in train, 0,0 in eval.
+--------------------------------------------------------------------------------
+VOK architettura#6: §2 riga 21: 128 ms di EMG a 2 kHz non corrispondono a 256 latenti a 40 Hz
+  HOW: CALCOLATO
+  EVIDENCE: 256/2000 s = 128 ms; 256/40 = 6,4 s.
+--------------------------------------------------------------------------------
+VOK architettura#7: La correzione tecnica di GPT al prompt di Claude è giusta
+  HOW: ESEGUITO, CALCOLATO e LETTO
+  EVIDENCE: Il prompt di Claude (riga 109) non diceva «per elemento»; 378 x 25 ms = 9,45 s. La conclusione «più della finestra di 4 s» resta vera (442 > 160; con causal=False l'uscita dipende da tutti i 160 passi).
+--------------------------------------------------------------------------------
+VOK architettura#8: raw_source_identity.json: temponet.py e scripts/temponet_emg2pose.py identici fra 0c19c4b e 8917e2a; modello identico a 60b35bd
+  HOW: ESEGUITO git show | wc -c e | shasum -a 256
+  EVIDENCE: temponet.py: 8519 byte, 9d5a03e23d4d4ef2f4ba57e46740702b21b74a1538c97a12b63f8d9b8949d0cc a tutti e tre i commit. Script: 31196 byte, 8d7f9dbee1db29ca29e707e27fb771655f2f7ad2150ee543a41e68b12d955690 a 0c19c4b e 8917e2a (non esiste a 60b35bd). Il modello ha un solo commit; git diff fra 0c19c4b e 8917e2a vuoto; code_sha di eval.json e run.json = 0c19c4b.
+--------------------------------------------------------------------------------
+VOK architettura#9: §2 riga 19: il launcher raw e i test citati esistono
+  HOW: ESEGUITO git cat-file a 8917e2a
+  EVIDENCE: scripts/slurm/temponet_emg2pose.sbatch (62 righe), tests/cpu/test_temponet.py (76), tests/cpu/test_temponet_emg2pose.py (323).
+--------------------------------------------------------------------------------
+VOK architettura#10: §3: parametri L0 8.468, MLP 65.300, L13 100.628, TCN-post e TCN-pre 65.204
+  HOW: ESEGUITO c_heads_checks.py; CALCOLATO
+  EVIDENCE: Le teste costruite alla lettera (heads.py, riletto) danno esattamente questi valori. LN 768 in ciascuna; bias 20, 404, 20 e 308.
+--------------------------------------------------------------------------------
+VOK architettura#11: §3 riga 47: MLP e TCN hanno 64.128 pesi nelle trasformazioni, sei trasformazioni, cinque ReLU, 10.260.480 MAC per finestra, 96 parametri di bias in più nella MLP
+  HOW: ESEGUITO e CALCOLATO
+  EVIDENCE: Le somme a mano danno 64.128 per entrambe; MAC con hook 10.260.480 = 64.128 x 160; bias 404 - 308 = 96.
+--------------------------------------------------------------------------------
+VOK architettura#12: §3 riga 37: campo ricettivo di 13 patch, tutti gli offset -6..+6, ±150 / 300 / 325 ms
+  HOW: ESEGUITO (Jacobiano su 5 semi, perturbazioni, struttura con pesi positivi); CALCOLATO
+  EVIDENCE: TCN e L13: offset -6..+6 contigui; massa del Jacobiano fuori da [-6,+6] = 0 per la TCN; quota per offset da 5,4% ai bordi a 9,7% al centro. Cammini per offset 1,1,2,2,3,3,3,3,3,2,2,1,1. 6 x 25, 12 x 25 e 13 x 25 ms.
+--------------------------------------------------------------------------------
+VOK architettura#13: §8 riga 135: MLP e L0 dipendono solo dalla patch centrale
+  HOW: ESEGUITO
+  EVIDENCE: Jacobiano, perturbazione e struttura danno l'offset 0 soltanto.
+--------------------------------------------------------------------------------
+VOK architettura#14: §3 riga 37: i centri 6..153 non dipendono dal padding e coincidono con il crop6 storico
+  HOW: ESEGUITO c_heads_checks.py; LETTO tokenizer_pose_readout.py righe 30 e 44 e pose_temporal_readout.py righe 195-199
+  EVIDENCE: 148 centri. Con padding [6:154] contro senza padding: differenza 4,5e-8 (TCN) e 1,7e-5 (L13). Con padding replicate, reflect o circular cambiano solo i centri 0-5 e 154-159.
+--------------------------------------------------------------------------------
+VOK architettura#15: §4 riga 59: la regola t+6 < N_i protegge le finestre più corte
+  HOW: ESEGUITO
+  EVIDENCE: Con 100 patch reali, il primo centro che dipende dal riempimento è 94 = N - 6 per TCN e L13, e 100 per MLP e L0.
+--------------------------------------------------------------------------------
+VOK architettura#16: Aggiunta: nelle cache del lungo tutte le finestre hanno 160 patch reali
+  HOW: ESEGUITO g_lengths_hash.py sulle ricevute dello snapshot
+  EVIDENCE: key_time_valid_sha256 delle sei ricevute (dosi 19.618, 39.237, 49.046; train e val) = hash di una matrice (n,160) tutta vera, con n = 1.907 e 18.548, calcolato con la stessa arrays_hash. Una patch falsa cambia l'hash.
+--------------------------------------------------------------------------------
+VOK architettura#17: §3 riga 35 e §8 riga 138: con l'ultimo strato a zero i gradienti interni sono nulli al primo backward e non nulli dopo un passo di AdamW
+  HOW: ESEGUITO c_zero_init.py con la ricetta del §4
+  EVIDENCE: Primo backward: interni 0 su 768, 64.640 e 64.544, tutti finiti. Secondo backward: interni non nulli (MLP 61.810/64.640, TCN 62.337/64.544, L0 e L13 768/768). Dopo il primo passo l'ultimo strato vale al massimo LR in modulo. Stessi risultati a LR 1e-3 e 1e-4.
+--------------------------------------------------------------------------------
+VOK architettura#18: §3 riga 29: L0 è la stessa PoseHead (LN affine, eps 1e-5, uscita a zero), rifittata da zero
+  HOW: ESEGUITO de_spec_ambiguities.py con la classe dello snapshot; LETTO pose_head.py, jepa.py righe 548-556, backbone_depth.py riga 34
+  EVIDENCE: eps 1e-05, affine, gamma 1, beta 0, uscita a zero, 8.468 parametri, stesso state_dict, uscita identica a parità di pesi. La cache lat è enc.z mediata sugli slot, lo stesso ingresso della testa del FM.
+--------------------------------------------------------------------------------
+VOK architettura#19: §3 riga 51: la ridge storica usa una LN senza stato e la SSE aggregata; non basta da sola ad attribuire il guadagno all'architettura
+  HOW: LETTO pose_temporal_readout.py righe 202-209 e tokenizer_pose_readout.py righe 30, 43, 238 e 268; ESEGUITO; CALCOLATO
+  EVIDENCE: F.layer_norm senza pesi, eps 1e-5. Una LN affine appena creata dà esattamente lo stesso risultato. W(gamma*n+beta)+b è ancora affine in n: L0 e la ridge hanno la stessa classe di funzioni e differiscono solo nel fitting.
+--------------------------------------------------------------------------------
+VOK architettura#20: §3 riga 49: L13 è affine, a rango non limitato da 16 canali, e non a pari capacità
+  HOW: CALCOLATO
+  EVIDENCE: Mappa diretta da 384 x 13 a 20; 100.628 parametri contro 65.204.
+--------------------------------------------------------------------------------
+VOK architettura#21: analytic_checks.json: centri, byte, GiB e numero dei fit
+  HOW: CALCOLATO
+  EVIDENCE: 148 centri; 18.548 x 160 x 20 x 4 = 237.414.400 byte; 15 teste = 3,316640853881836 GiB; 5.068.390.194 byte di cache; 20 + 15 = 35 fit.
+--------------------------------------------------------------------------------
+VOK architettura#22: §1 riga 9: il 49.046 è il riferimento esplorativo per la posa firmato da Simone
+  HOW: LETTO decisioni.md dello snapshot (righe 6668 e 6683-6688) e consolidation_long_results_20261107.md (righe 233-235 e 249-253); ESEGUITO git log e git show 8382801
+  EVIDENCE: Conclusione 2 della review 57c4d7e; «Sì, firmo» il 07/11 alle 14:54; commit 8382801 e 776b401.
+--------------------------------------------------------------------------------
+VOK architettura#23: §1 riga 13: backbone bidirezionale, ogni latente accede alla finestra di 4 s; la TCN non rende causale il sistema
+  HOW: LETTO backbone.py righe 1-12 e 55-59
+  EVIDENCE: Attenzione temporale su tutte le P patch con sola maschera delle chiavi, nessun is_causal. Nelle cache tutte le patch sono reali. La TCN ha padding simmetrico.
+--------------------------------------------------------------------------------
+VOK architettura#24: §1 riga 11: la posa è già supervisionata nel FM
+  HOW: LETTO ricevuta LONG-G49046-pose-train e jepa.py
+  EVIDENCE: pose_head True, pose_weight 1.0, loss_per_window True, which teacher, step 49046.
+--------------------------------------------------------------------------------
+VOK architettura#25: §2 riga 25: «TCN compatta ispirata a TEMPONet» è un nome onesto nel corpo, e il non riuso è motivato
+  HOW: LETTO
+  EVIDENCE: «Non la chiameremo replica TEMPONet»; uscita per finestra, scala dei tempi, compressione e BatchNorm/pooling fissi; pesi non riusabili.
+--------------------------------------------------------------------------------
+VOK architettura#26: Nessuna ricerca nascosta di architetture
+  HOW: LETTO §3-§5 e proposal.json righe 78-161
+  EVIDENCE: Cinque teste fisse; la selezione riguarda solo LR (2 valori) ed epoca (al più 50) sui fold train; i cinque contrasti sono fissati e tutti pubblicati; larghezze MLP scelte per conto.
+--------------------------------------------------------------------------------
+VOK architettura#27: Posizione della LN, padding, eps e bias non lasciano ambiguità che cambino i numeri
+  HOW: ESEGUITO de_spec_ambiguities.py
+  EVIDENCE: LayerNorm(384) su (B,384,160) dà errore, quindi uno sbaglio non passa in silenzio. Il valore del padding non tocca i centri 6..153. eps e bias sono scritti.
+NOTVER architettura#1: "Il link di provenienza del §2 riga 17 (iris.polito.it/handle/11583/2978570): non ho accesso alla rete. temponet.py e docs/temponet_db8_replication.md riga 20 usano invece DOI 10.1109/COINS51742.2021.9524188 e hdl.handle.net/11585/841320."
+NOTVER architettura#2: "Come si comportano le teste sui latenti veri (statistiche dopo la LN, unità spente, velocità di addestramento): le cache sono su $WORK e non ho ssh. La prova sintetica è solo un indizio."
+NOTVER architettura#3: "Gli sha256 attuali delle cache e dei riferimenti su $WORK: non ricalcolati."
+NOTVER architettura#4: "Se la versione di torch che sarà fissata su Leonardo ha lo stesso default di inizializzazione di torch 2.14, e il determinismo delle convoluzioni su GPU: non provabili sul Mac."
+NOTVER architettura#5: "L13 sui dati sintetici: c'è solo il valore del primo tentativo (0,6047 a LR 1e-4), non rieseguito."
+####################################################################################################
+REVIEW controlli verdict=APPROVATO_CON_CORREZIONI report=/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/review_controlli.txt
+SUMMARY:
+Dimensione 2 (controlli e attribuzione). Per la domanda circoscritta i bracci bastano: L0, MLP, L13, TCN-post, TCN-pre e i due riferimenti storici; non manca nessun braccio da allenare. Le affermazioni di fatto del paragrafo 3 reggono: le ho ricontrollate nel codice e con prove eseguite su dati sintetici (riduzioni della loss, 158 utenti, EMA, 40 utenti, viste pre e post medie sui 64 slot). Nuovo: L0 e ridge storica hanno la stessa classe di funzioni e gli stessi dati. Il rinvio di encoder random, TCN da zero e TEMPONet raw e' coerente con una conclusione ristretta al lettore su encoder fissato; confermo che la proposta non pretende un vantaggio del pretraining rispetto a random o raw. Nessun bloccante. Quattro rilievi minori, nessuno con fit in piu': (1) manca un controllo di sanita' della ricetta comune (L0 rifittata contro ridge e testa storiche, con lettura scritta prima); su questi latenti la ridge ha avuto bisogno di alpha 1e5, mentre il weight decay di AdamW e' trascurabile; (2) la regola «candidata» da' solo condizioni necessarie e non copre i casi in cui MLP o L13 battono la TCN; mancano i descrittivi MLP-L0 e L13-L0 (L13 contiene L0); (3) il testo sul futuro confronto raw indica come esatto un metodo che non lo e' (TEMPONet raw e' allenata sulla media del blocco a 10j+9) e stima dieci volte gli endpoint invece di circa 1,1 volte; l'EMA e' stata tarata sugli stessi 15 utenti; (4) la tabella del paragrafo 10 e decisioni.md non dicono che cosa un esito positivo autorizza. Quattro note. Nello snapshot e' comparso un __pycache__ (09:43) che non viene dai miei script.
+--------------------------------------------------------------------------------
+FINDING controlli-1 [minore] Manca il controllo di sanita' della ricetta comune: L0 rifittata contro ridge e testa storiche, con lettura scritta prima
+  CLAIM: PROT:83-89 definisce cinque contrasti, tutti TCN-post meno riferimento. PROT:100: TCN candidata solo se passa 1, 4 e 5, ma «Se batte L0 ma non i riferimenti gia' disponibili, l'architettura e' promettente nel confronto controllato». PROT:118: «Se la TCN migliora il lettore» si puo' passare al pretraining. PROT:65-69: AdamW, weight decay 0,01, 2 LR, al piu' 50 epoche.
+  EVIDENCE: LETTO: nessun contrasto L0 contro ridge o testa storica e' definito (PROT:83-89, 102-104; PJ righe 26-33). ESEGUITO (check_l0_ridge_class.py): PoseHead e ridge storica hanno la stessa classe di funzioni (scarto 3,4e-6 su ampiezza 9,85). ESEGUITO (check_pins.py): sono fittate sugli stessi dati (stesso train.npz 30c0b50d09fa..., 40 utenti). Quindi L0 contro ridge isola la sola ricetta. ESEGUITO (extract_ric.py su RIC): la griglia della ridge mostra forte sensibilita' alla regolarizzazione. MSE interno: alpha 1e4 +5,37%, 1e6 +2,26%, 1e2 +15,88%, 0,01 +17,32% sull'ottimo 0,656115 ad alpha 1e5. CALCOLATO: contrazione cumulata del weight decay in 3.000 passi 0,9704 (LR 1e-3) e 0,9970 (LR 1e-4). CALCOLATO (esempio): con L0 rifittata a 0,81, una TCN a 0,7938 passa il primario pur essendo -1,00% sulla ridge (0,785902) e -1,95% sulla testa (0,778629). La regola 4 e 5 ferma l'etichetta, ma non «architettura promettente» ne' l'aggancio al livello B.
+  HOW: ESEGUITO
+  FIX: Dichiarare ora, fuori dalla famiglia e senza verdetto, i descrittivi «L0 rifittata contro ridge storica» e «L0 rifittata contro testa storica» (bootstrap appaiato, IC 95%, zero fit). Scrivere prima la lettura, per esempio riusando la regola a due lati: se L0 e' peggiore della ridge con deterioramento, i contrasti 1-3 sono confronti a ricetta fissa, niente «architettura promettente» e niente motivazione per B; altrimenti il primario si legge come scritto; se L0 e' migliore, riportarlo come effetto del rifit. In PROT:118 legare «migliora il lettore» all'esito completo di PROT:100.
+--------------------------------------------------------------------------------
+FINDING controlli-2 [minore] Regola «candidata» con sole condizioni necessarie; casi con MLP o L13 migliori non coperti; domande della tabella senza contrasto; L13 senza controllo di sanita'
+  CLAIM: PROT:100 e PJ riga 35: TCN candidata a migliore lettore «solo se» passa 1, 4 e 5; attribuzione al contesto con TCN/MLP, alla non linearita' con TCN/L13. Tabella PROT:42-43: «Quanto basta aumentare la capacita' non lineare per istante?» (MLP), «Quanto basta una lettura lineare con lo stesso contesto?» (L13). PROT:49: L13 riguarda «questa ricetta».
+  EVIDENCE: LETTO: «solo se» non dice se 1, 4 e 5 bastino, ne' che cosa si conclude se 2 o 3 mostrano deterioramento. CALCOLATO (numeri d'esempio): L0 0,785, L13 0,730, TCN 0,750 danno contrasti 1, 4 e 5 = 4,46%, 4,57%, 3,68% e contrasto 3 = -2,74%. Allo stesso modo MLP 0,735 da' contrasto 2 = -2,04%. La TCN risulterebbe candidata mentre un controllo e' migliore. LETTO: MLP contro L0 e L13 contro L0 non sono definiti in nessun punto. ESEGUITO (check_heads.py): L13 ha 99.840 pesi, 13 volte quelli di L0, e contiene esattamente L0 (prese laterali a zero). Con regolarizzazione debole, un L13 peggiore di L0 segnalerebbe sovradattamento: il contrasto 3 misurerebbe quello, non la non linearita'.
+  HOW: CALCOLATO
+  FIX: Completare la regola come necessaria e sufficiente: candidata se passano 1, 4 e 5 e ne' 2 ne' 3 mostrano deterioramento; altrimenti esito negativo per l'ipotesi temporale non lineare. Scrivere le letture miste (1, 4 e 5 si', 2 o 3 non risolti). Dichiarare come descrittivi, IC 95% senza cancello, «MLP contro L0» e «L13 contro L0». Il secondo vale anche come controllo di sanita': se L13 e' peggiore di L0 con deterioramento, il 3 non si attribuisce alla non linearita'. Riformulare le domande della tabella come letture di questi descrittivi.
+--------------------------------------------------------------------------------
+FINDING controlli-3 [minore] Paragrafo 6: il metodo chiamato «esatto» per il confronto raw non lo e', «circa dieci volte gli endpoint» e' sbagliato, l'EMA e' ambigua
+  CLAIM: PROT:112: per i target FM occorre prevedere sui campioni nativi e mediare ogni blocco; «Cinque predizioni puntuali a 200 Hz per patch sono un'approssimazione dichiarata, non lo stesso bersaglio temporale». PROT:114: «L'inferenza esatta richiede circa dieci volte gli endpoint della lettura ufficiale». Stesso concetto in REG riga 5993 e design_review.txt riga 9. «Senza ritarare EMA o lag».
+  EVIDENCE: LETTO: corretta la parte su window_pose (pose_targets.py:148-180) e sui blocchi (emg2pose_pose.py:130-139). Ma TEMPONet raw e' allenata con la finestra che finisce in 10j+9 e con bersaglio la media del blocco j, dallo stesso pose_200hz_f16.npy (WT emg2pose_regression.py:96-108; temponet_emg2pose.py:102-119). Un endpoint a fine blocco da' quindi esattamente il bersaglio del FM. ESEGUITO (check_raw_grid.py): fini di training tutte congrue a 9 modulo 10; istanti ufficiali con fase qualunque (5, 9, 2). CALCOLATO: mediare le 10 uscite del blocco stima una media triangolare su 19 campioni, spostata di 4,5 campioni. CALCOLATO: 18.548 x 148 x 5 = 13.725.520 endpoint contro 12.468.000 della lettura ufficiale (1,10 volte; il metodo per campione da' 11,0 volte). ESEGUITO: scarto mediano fra media del blocco e angolo puntuale 0,000359 rad. ESEGUITO (check_raw_support.py): il passato raw resta dentro la finestra (almeno 49 campioni), quindi la frase sui 150 ms e' corretta. ESEGUITO: i 15 utenti su cui e' stato scelto l'alpha dell'EMA sono gli stessi 15 utenti val della cache FM.
+  HOW: ESEGUITO
+  FIX: Riscrivere PROT:112-114, REG riga 5993 e design_review.txt riga 9: un endpoint per blocco valido, con la finestra che finisce in 10j+9 come nel training raw, poi stessa media per patch, standardizzazione e crop6; circa 13,7 milioni di endpoint per i 15 val, lo stesso ordine della lettura ufficiale, non dieci volte; gli istanti ufficiali non sono riusabili; si riporta l'uscita grezza senza EMA, perche' l'alpha e' stato scelto sugli stessi 15 utenti. Nessun effetto sul livello A.
+--------------------------------------------------------------------------------
+FINDING controlli-4 [minore] La tabella del paragrafo 10 e la voce di decisioni.md non dicono che cosa un esito positivo autorizza e che cosa no
+  CLAIM: PROT:173-180: la tabella delle decisioni elenca livello, checkpoint, bracci, ricetta e lettura («cinque IC aggiustati»), budget e ruoli. DEC righe 6713-6738 e' il testo da congelare. PJ riga 26: «confirmatory_family».
+  EVIDENCE: LETTO: i limiti sono sparsi nel testo (PROT:11, 73, 100, 108, 118; REG riga 5989) e assenti dalla tabella. DEC righe 6731-6732: «non autorizza a sostituire la testa se MAE/livello peggiorano». La frase lascia aperta un'adozione se non peggiorano, mentre PROT:100 esclude ogni non inferiorita' implicita: DEC e' piu' debole del protocollo. DEC riga 6721 elenca i bracci esclusi, non il perimetro della conclusione. ESEGUITO (diff): le baseline non negoziabili del v10 (righe 1129-1137) sono identiche su main e114a78 e nello snapshot. LETTO: PJ riga 25 dice «confirmation: none independent» e PROT:91 parla di «approssimazione esplorativa», contro il nome «confirmatory_family».
+  HOW: LETTO
+  FIX: Aggiungere alla tabella una riga «Che cosa autorizza l'esito». Esito positivo = TCN candidata a lettore della dinamica centrata migliore degli esistenti su questo checkpoint. Non autorizza: la sostituzione della testa (decisione distinta dopo MAE e livello), il livello B, affermazioni sul pretraining rispetto a random o rete da zero (baseline v10 paragrafo 8 ancora dovute), una conferma su dati mai visti. Esito nullo: chiude la prova, non dimostra un limite dell'encoder. Ripetere il perimetro in decisioni.md, togliere l'ambiguita' su MAE e livello, rinominare la chiave in «contrast_family».
+--------------------------------------------------------------------------------
+FINDING controlli-5 [nota] Contrasto 4: la ridge storica non e' «la miglior lettura lineare disponibile»
+  CLAIM: PROT:88: «Ridge post storica: utilita' rispetto alla miglior lettura lineare disponibile».
+  EVIDENCE: ESEGUITO (extract_ric.py) + LETTO: la testa storica e' anch'essa lineare (pose_head.py:20-34) e sullo stesso supporto e' migliore. A 49.046: E_dyn 0,778629 contro 0,785902, cioe' 0,925%; a 19.618: 0,713%; a 39.237: 0,582% (scientific_readout.json). Anche la MAE e' migliore: 0,276754 contro 0,280019 rad.
+  HOW: ESEGUITO
+  FIX: Scrivere «utilita' rispetto alla ridge lineare in forma chiusa fittata sugli stessi 40 utenti».
+--------------------------------------------------------------------------------
+FINDING controlli-6 [nota] TCN contro MLP: stessi pesi e profondita', larghezze diverse; scrivere la lettura nei due versi
+  CLAIM: PROT:47: MLP e TCN hanno 64.128 pesi, il che «rende il controllo di capacita' preciso». PROT:86: il contrasto 2 misura l'informazione temporale utile a capacita' comparabile.
+  EVIDENCE: ESEGUITO (check_heads.py): MLP 65.300 e TCN 65.204 parametri, 64.128 pesi ciascuna, 10.260.480 MAC, sei trasformazioni, cinque ReLU, dropout negli stessi punti. CALCOLATO: la TCN con le sole prese centrali ha 39.552 pesi; le prese laterali valgono 24.576 pesi, che la MLP spende in larghezza (96 invece di 64). Una vittoria della TCN sostiene il contesto. Il pareggio e' gia' coperto dalla regola contro l'equivalenza (PROT:97, REG riga 5989). Una vittoria della MLP direbbe «a pari pesi la larghezza rende piu' di questo contesto», non «il contesto nuoce».
+  HOW: CALCOLATO
+  FIX: Una frase in PROT:47 o PROT:86 con la lettura nei due versi. Nessun braccio in piu'.
+--------------------------------------------------------------------------------
+FINDING controlli-7 [nota] TCN-pre: descrizione corretta; mancano l'ancora della ridge pre storica e una lettura descrittiva scritta prima
+  CLAIM: PROT:45 e PROT:102: TCN-pre e' descrittiva; le viste hanno contesto diverso gia' incorporato; il contrasto misura l'accessibilita' dopo il backbone, non il valore del pretraining.
+  EVIDENCE: LETTO: pre = uscita del Perceiver presa con un hook, post = enc.z dopo il backbone e la sua LayerNorm, entrambe medie sui K = 64 slot (backbone_depth.py:24, 34; fm.py:169, 210, 213; backbone.py:88, 103; consolidation_long_pose.py:76-86, 105-111). ESEGUITO (check_views.py): pre e post coincidono con il ricalcolo a mano, scarto 0,0. ESEGUITO (check_views2.py): una perturbazione in una patch cambia pre in 13 patch (da -6 a +6) e post in tutte le 160. CALCOLATO: TCN-pre vede al piu' 25 patch di segnale. ESEGUITO: la ridge pre storica esiste gia' (E_dyn 1,032128, correlazione 0,078662, predizioni pinnate) e non e' citata. LETTO: manca la regola backbone/testa chiesta dal prompt di Claude (riga 231). CALCOLATO: c'e' un effetto di bordo su 12 centri su 148.
+  HOW: ESEGUITO
+  FIX: Affiancare la ridge pre storica come ancora descrittiva, senza fit. Scrivere prima la lettura descrittiva di TCN-post contro TCN-pre con le categorie di PROT:95-98: se il beneficio e' risolto, la vista post serve anche a una testa temporale; se il beneficio di almeno 2% non e' sostenuto, e' un segnale da discutere prima del livello B; mai conclusioni sul pretraining. Dichiarare l'effetto di bordo.
+--------------------------------------------------------------------------------
+FINDING controlli-8 [nota] Ridge e testa storiche: dire su quali dati sono fittate ed elencare tutte le differenze di ricetta
+  CLAIM: PROT:51: la ridge storica minimizza la SSE aggregata, la PoseHead la MSE media per finestra; non usare la ridge da sola per attribuire il guadagno all'architettura.
+  EVIDENCE: ESEGUITO (check_pins.py): la ridge usa gli stessi 40 utenti e le stesse 1.907 finestre (stesso train.npz), ma nel protocollo il fatto e' solo implicito. LETTO: oltre alla pesatura cambiano la LN senza parametri, il fit in forma chiusa in float64, l'intercetta libera e alpha 1e5 scelto su griglia (tokenizer_pose_readout.py:41-51). CALCOLATO: e' valido l'85,28% degli elementi del crop6 nel train. LETTO: le predizioni della testa storica vengono da latenti FP32 (pose_eval.py:171-172), le teste nuove leggono la cache FP16 (riga 177); per il 49.046 lo scarto non e' verificato.
+  HOW: ESEGUITO
+  FIX: Una frase in PROT:51: ridge fittata sugli stessi 40 utenti e 1.907 finestre, stessa classe di funzioni di L0; differisce per obiettivo, forma chiusa con alpha 1e5, LN senza parametri e float64; la testa storica predice da latenti FP32, le nuove teste dalla cache FP16.
+--------------------------------------------------------------------------------
+VOK controlli#1: Parametri L0 8.468, MLP 65.300, L13 100.628, TCN 65.204 (PROT:41-44)
+  HOW: ESEGUITO
+  EVIDENCE: check_heads.py rieseguito; check_posehead.py: PoseHead dello snapshot con 8.468 parametri, LN affine eps 1e-5, gamma 1, beta 0, pesi e bias a zero, uscita iniziale zero
+--------------------------------------------------------------------------------
+VOK controlli#2: MLP e TCN: 64.128 pesi ciascuna, differenza di 96 nei bias, 10.260.480 MAC, sei trasformazioni e cinque ReLU, dropout negli stessi punti (PROT:47)
+  HOW: ESEGUITO
+  EVIDENCE: check_heads.py: bias 404 contro 308, LN 768 ciascuna
+--------------------------------------------------------------------------------
+VOK controlli#3: Campo ricettivo di 13 patch contigue (da -6 a +6) per TCN e L13; L0 e MLP dipendono solo dal centro (PROT:37)
+  HOW: ESEGUITO
+  EVIDENCE: check_heads.py, gradiente rispetto all'ingresso con pesi casuali
+--------------------------------------------------------------------------------
+VOK controlli#4: I centri 6...153 non dipendono dal padding: equivalenza con il crop6 (PROT:37)
+  HOW: ESEGUITO
+  EVIDENCE: check_crop64.py in float64: scarto massimo 2,3e-14 per L13 e 2,8e-13 per la TCN
+--------------------------------------------------------------------------------
+VOK controlli#5: L13 non ha collo di bottiglia: rango non limitato (PROT:49)
+  HOW: LETTO + ESEGUITO
+  EVIDENCE: Conv diretta 384->20 con 99.840 pesi
+--------------------------------------------------------------------------------
+VOK controlli#6: L0 usa la stessa PoseHead (PROT:29), che ha la stessa classe di funzioni della ridge storica
+  HOW: ESEGUITO
+  EVIDENCE: check_l0_ridge_class.py: riscrittura esatta come LN senza parametri piu' mappa affine, scarto 3,4e-6
+--------------------------------------------------------------------------------
+VOK controlli#7: La ridge storica minimizza la SSE aggregata sugli elementi validi (PROT:51)
+  HOW: LETTO + ESEGUITO
+  EVIDENCE: pose_e3_b.py:117-128, 151-172, 175-187, 208-219; tokenizer_pose_readout.py:232-260. check_losses.py: gradiente nella soluzione 4,07e-13, contro 1,73 per l'obiettivo per finestra; E.score uguale alla SSE diretta (83,6014 su 373 elementi)
+--------------------------------------------------------------------------------
+VOK controlli#8: La PoseHead del training minimizza la MSE media per finestra (PROT:51)
+  HOW: LETTO + ESEGUITO
+  EVIDENCE: jepa.py:182-209 e 552-553; run.py:254-259 (with_window1_rules imposta loss_per_window=True); il comando della continuazione a 49.046 contiene --window1-rules (continuation/49046/launch.json). check_losses.py: per_window=True 2,13643, pari alla media delle medie per finestra; per_window=False 1,92843 = SSE/400
+--------------------------------------------------------------------------------
+VOK controlli#9: La testa storica ha visto 158 utenti nel pretraining mascherato, con aggiornamenti EMA (PROT:51)
+  HOW: LETTO + ESEGUITO
+  EVIDENCE: jepa.py:426 e 552 (testa sullo studente mascherato); run.py:1618 ed jepa.py:121-126 (EMA di tutto il modello); config T100-G: ema 0,996, maschera 0,5; 158 utenti in pilot_posa_v1.md:78 ed emendamento:24; RIC: which = teacher, supervised_updates = 0
+--------------------------------------------------------------------------------
+VOK controlli#10: Le nuove teste vedono 40 utenti e latenti teacher non mascherati (PROT:51)
+  HOW: LETTO + ESEGUITO
+  EVIDENCE: consolidation_long_pose.py:34, 44-49, 77; check_pins.py e RIC: n_users 40, fold 20+20, stessa cache train
+--------------------------------------------------------------------------------
+VOK controlli#11: pre = uscita del Perceiver, lat = dopo il backbone e la sua LayerNorm finale, medie sui 64 slot
+  HOW: LETTO + ESEGUITO
+  EVIDENCE: backbone_depth.py:24, 34; fm.py:169, 210, 213; backbone.py:88, 103; pose_eval.py:171, 177; k_latents 64; check_views.py: scarto 0,0 dal ricalcolo
+--------------------------------------------------------------------------------
+VOK controlli#12: Le due viste hanno contesto diverso gia' incorporato; TCN-pre misura l'accessibilita' dopo il backbone, non il valore del pretraining (PROT:102)
+  HOW: ESEGUITO + LETTO
+  EVIDENCE: check_views2.py: pre locale (13 patch), post globale (160 patch); pre include moduli pre-allenati, come dicono PROT:108 e REG riga 5984
+--------------------------------------------------------------------------------
+VOK controlli#13: Il supporto comune (lunghezze/key_time_valid) coincide con la maschera centrale storica (PROT:59)
+  HOW: LETTO
+  EVIDENCE: consolidation_long_pose.py:131-134 impone key_time_valid uguale a t < lunghezza; pose_temporal_readout.py:195-199
+--------------------------------------------------------------------------------
+VOK controlli#14: window_pose media per patch i blocchi da dieci campioni secondo i loro centri; 5 blocchi per patch (PROT:112)
+  HOW: LETTO + ESEGUITO
+  EVIDENCE: pose_targets.py:148-180; emg2pose_pose.py:130-139; check_raw_support.py su 400 sfasamenti
+--------------------------------------------------------------------------------
+VOK controlli#15: Il passato raw [q-255,q] rientra nel margine di 150 ms, anche con i blocchi a cavallo del bordo (PROT:114)
+  HOW: ESEGUITO
+  EVIDENCE: check_raw_support.py: almeno 49 campioni dentro la finestra con endpoint a fine blocco, 40 con endpoint per campione
+--------------------------------------------------------------------------------
+VOK controlli#16: I pin storici di proposal.json coincidono con la ricevuta storica
+  HOW: ESEGUITO
+  EVIDENCE: sha256 della ricevuta estratta da git b08e6e32...; check_pins.py: 12 confronti su 12 uguali (checkpoint, cache train e val, tre riferimenti, utenti, soglia)
+--------------------------------------------------------------------------------
+VOK controlli#17: Ridge e testa storiche sono valutate sullo stesso supporto e sugli stessi bersagli
+  HOW: ESEGUITO
+  EVIDENCE: extract_ric.py: support 973930475e94..., targets c907b85bca26..., 8.327 finestre dinamiche, 15 utenti, 20.119.920 elementi
+--------------------------------------------------------------------------------
+VOK controlli#18: Numeri storici a 49.046: ridge post 0,785902, testa 0,778629, ridge pre 1,032128
+  HOW: ESEGUITO
+  EVIDENCE: extract_ric.py; stessi valori in scientific_readout.json
+--------------------------------------------------------------------------------
+VOK controlli#19: Statistiche della posa dal train158 invariate (PROT:57)
+  HOW: LETTO
+  EVIDENCE: stats_sha256 di proposal.json = STATS_SHA di pose_e3_b.py:18 = pose_stats_sha256 della ricevuta della continuazione (757f2aee...)
+--------------------------------------------------------------------------------
+VOK controlli#20: I bracci nuovi condividono finestre, etichette, supporto e loss sul crop6 (PROT:57-61)
+  HOW: LETTO
+  EVIDENCE: PROT:57-61; proposal.json fit.loss «crop6 all groups»
+--------------------------------------------------------------------------------
+VOK controlli#21: I 15 val sono sviluppo gia' consultato (PROT:73)
+  HOW: ESEGUITO
+  EVIDENCE: gli ID dei 15 utenti val della cache FM coincidono con quelli della lettura val di TEMPONet raw (eval.json) e del manifest dei bersagli
+--------------------------------------------------------------------------------
+VOK controlli#22: Nessuna deroga silenziosa alle baseline del v10 paragrafo 8; conclusione ristretta (PROT:108)
+  HOW: ESEGUITO + LETTO
+  EVIDENCE: diff delle righe 1129-1137 fra main e114a78 e snapshot: identiche; PROT:11, 108; REG righe 209 e 5984
+--------------------------------------------------------------------------------
+VOK controlli#23: Verdetto 2: la proposta non pretende un vantaggio del pretraining rispetto a random o raw
+  HOW: LETTO
+  EVIDENCE: PROT:11, 108; REG righe 209 e 5984; proposal.json «not_in_this_proposal»
+--------------------------------------------------------------------------------
+VOK controlli#24: La correzione di GPT al prompt di Claude: ridge e pretraining non hanno la stessa riduzione della loss
+  HOW: ESEGUITO
+  EVIDENCE: check_losses.py
+--------------------------------------------------------------------------------
+VOK controlli#25: Un esito nullo non viene presentato come equivalenza o assenza di informazione
+  HOW: LETTO
+  EVIDENCE: PROT:11, 97; REG riga 5989; DEC riga 6730
+NOTVER controlli#1: "Se L0 rifittata con AdamW arrivi al livello della ridge, e se L13 resti almeno al livello di L0, sui latenti veri: servono i fit, e fittare prima di congelare i criteri sarebbe guardare i dati."
+NOTVER controlli#2: "Contenuto e sha256 attuali delle cache su $WORK (pre, lat, pred, maschere): niente ssh; ci sono solo le ricevute in Git."
+NOTVER controlli#3: "Quanto differiscano sui dati veri la pesatura per finestra e quella per elemento: e' nota solo la quota valida complessiva del train (85,28%)."
+NOTVER controlli#4: "Quanto della sensibilita' alla regolarizzazione vista nell'MSE dei fold passi a E_dyn sulle dinamiche."
+NOTVER controlli#5: "Supporto temporale della vista pre nel checkpoint vero T100-G 30M: misurato solo in modo strutturale su un modello piccolo a pesi casuali; con il caricatore di classificazione una perturbazione cambia pre in tutte le patch; il caricatore di posa non e' stato provato."
+NOTVER controlli#6: "Scarto fra le predizioni della testa storica (latenti FP32) e la stessa testa applicata alla cache FP16 del 49.046."
+NOTVER controlli#7: "Le tre letture critiche locali di GPT (/root/temponet_*_review): nello snapshot c'e' solo il riassunto in design_review.txt."
+NOTVER controlli#8: "Forma e convenzione di supporto dei file delle predizioni storiche: non letti."
+NOTVER controlli#9: "Origine di SNAP/scripts/__pycache__/pose_dynamics.cpython-311.pyc (creato alle 09:43:04): non viene da questa review (import sempre con PYTHONDONTWRITEBYTECODE=1); non toccato."
+####################################################################################################
+VERIFICATION architettura-controlli report=/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/verify_architettura-controlli.txt
+--------------------------------------------------------------------------------
+JUDG architettura-1 outcome=PARZIALE after=nota
+  REASONING: Non è vero che la tabella del §10 dica «TEMPONet»: non la nomina affatto. La voce di decisioni.md (riga 6722) dice già «non replica invariata», come il §2 alla riga 25. Restano ambigui solo i titoli. «Del codice di temponet.py non resta nulla» è una previsione sul modulo futuro, non una prova: il §2 alla riga 25 prevede di adattare il codice con attribuzione.
+  EVIDENCE: ESEGUITO grep -n «TEMPONet» sul protocollo: righe 1, 5, 15, 17, 25, 108, 112, 130 e 165, nessuna nelle righe 173-180 della tabella. LETTO decisioni.md dello snapshot, riga 6722 («TCN adattata da principi e codice TEMPONet, non replica invariata»); §2 riga 25. CALCOLATO (v03_heads.py): tre k3 con dilatazioni 2/4/8 raggiungono 15 offset su 29 (14 buchi), il conto è giusto.
+  CORRECTED_STATEMENT: «TEMPONet» senza qualificazione compare nel titolo del protocollo, nel titolo del README e nell'intestazione della voce di decisioni.md (riga 6713). La tabella del §10, il corpo e la riga 6722 non inducono in errore. Basta un titolo più preciso («TCN compatta ispirata a TEMPONet»): è una nota di chiarezza, non una correzione da fare prima della firma.
+--------------------------------------------------------------------------------
+JUDG architettura-2 outcome=CONFERMATO after=nota
+  REASONING: È vero che il tipo di dropout non è scritto. La catena della riga 33 però usa la notazione dei moduli PyTorch, in cui «Dropout» è nn.Dropout per elemento, e lo spegnimento in eval è il comportamento normale di model.eval(). Il codice lo rivede Claude prima del deploy. Non cambia né il disegno né i criteri da firmare.
+  EVIDENCE: LETTO: §3 righe 33 e 47; proposal.json righe 142-148 (solo after_hidden_layers [4,5] e p 0.1).
+  CORRECTED_STATEMENT: Il tipo di dropout non è scritto; nella notazione della riga 33 la lettura naturale è nn.Dropout per elemento, attivo solo in training. Va scritto in una riga: nota, non minore.
+--------------------------------------------------------------------------------
+JUDG architettura-3 outcome=CONFERMATO after=nota
+  REASONING: I fatti tornano: l'ordine di creazione e il fork_rng cambiano i numeri esatti, non la distribuzione né il disegno.
+  EVIDENCE: ESEGUITO v06_init.py: nn.Linear(384,64) e nn.Conv1d(384,64,1) creati con lo stesso seme hanno pesi e bias identici; nn.LayerNorm non consuma il generatore. LETTO pose_head.py righe 24-30: l'uscita nasce sotto torch.random.fork_rng e viene azzerata. proposal.json riga 151 dice solo «torch defaults under seed».
+  CORRECTED_STATEMENT: Come scritto dal revisore.
+--------------------------------------------------------------------------------
+JUDG architettura-4 outcome=CONFERMATO after=nota
+  REASONING: Per L0 e L13 l'inizializzazione è deterministica e non c'è dropout. «Pesi iniziali nuovi» (riga 67) per queste due teste non vuol dire niente. Gli IC non ne sono toccati.
+  EVIDENCE: ESEGUITO v03_heads.py, teste costruite da me: parametri iniziali identici fra i semi 0, 1 e 2 per L0 e L13 (True), diversi per MLP e TCN (False); in L0 e L13 nessun modulo Dropout.
+  CORRECTED_STATEMENT: Come scritto dal revisore.
+--------------------------------------------------------------------------------
+JUDG architettura-5 outcome=PARZIALE after=nota
+  REASONING: La parte sull'inizializzazione regge: ho rifatto la ricorsione e il Monte Carlo. Due affermazioni invece non reggono. (1) Il minimo all'epoca 50 non dipende dall'init di default: lo ha anche L0, che non ha strati interni. (2) «Il disegno sa vedere una struttura temporale non lineare quando c'è» vale nel mondo sintetico del revisore e nel mio, ma non nel mondo temporale della dimensione Selezione.
+  EVIDENCE: ESEGUITO v06_init.py (torch 2.14.0): max|w| 0,05103 = 1/sqrt(384); quota del bias nel quinto hidden 0,896 (TCN) e 0,846 (MLP); unità mai accese 31,2-38,0% e sempre accese 35,9-43,8%, con due distribuzioni d'ingresso diverse. ESEGUITO v08_synth_train.py, con un generatore mio diverso da quello del revisore: minimo all'epoca 46-50 in tutte e 6 le corse, compreso L0 (46 a lr 1e-4, 50 a lr 1e-3); a lr 1e-3 TCN 0,1402 < MLP 0,1872 < L0 0,6883. LETTO review_selezione.txt [e-4]: nel mondo temporale la TCN fa -5,2% rispetto a L0, con un tetto possibile di +8,7%.
+  CORRECTED_STATEMENT: Con l'init di default la pre-attivazione del quinto hidden è dominata dai bias (85-90% della varianza) e circa un terzo delle unità non si accende mai. Sui dati sintetici il minimo cade all'epoca 46-50 anche per L0, quindi dipende dal tetto di 50 epoche e dai dati, non solo dall'init. Se la ricetta faccia vedere una struttura temporale presente dipende dal mondo sintetico. Nominare l'init esatto e, se si vuole He, deciderlo prima dei fit insieme alla ricetta.
+--------------------------------------------------------------------------------
+JUDG architettura-6 outcome=PARZIALE after=nota
+  REASONING: È vero che il RF13 è motivato solo dall'equivalenza col crop6. È falsa invece l'evidenza «il protocollo non cita i 128 ms di TEMPONet raw»: li cita due volte (il grep del revisore non cercava «128»). Il lettore lineare con ritardi di ±100 ms è stato provato su B student con crop4, non sul T100-G teacher: è contesto, non una prova su questo checkpoint.
+  EVIDENCE: ESEGUITO grep «128» sul protocollo: riga 21 («I suoi 128 ms su EMG a 2 kHz non corrispondono a 256 latenti a 40 Hz») e riga 23 («il significato temporale dei 128 ms raw»). LETTO prompt di Claude riga 85 («B student, crop4», commit ec5b309); tokenizer_window_nonlinear_protocol_20261102.md righe 67-68 e 158-159.
+  CORRECTED_STATEMENT: Nel testo il RF13 è giustificato solo dall'equivalenza col crop6. I 128 ms di TEMPONet raw sono citati alle righe 21 e 23, ma non come motivo del RF; il lettore lineare con ritardi del 02/11 (B student, crop4) non è citato. Aggiungere la frase è facoltativo.
+--------------------------------------------------------------------------------
+JUDG architettura-7 outcome=CONFERMATO after=nota
+  REASONING: I numeri tornano. La riga 23 dice già «unione nominale di 442, prima dei limiti dell'input e del padding», quindi la frase in più è facoltativa.
+  EVIDENCE: ESEGUITO v02_temponet_rf.py (propagazione simbolica degli insiemi di dipendenza, senza pesi, più controprova autograd su 5 semi). T=160 con causal=True: elemento 0 dai passi 0-59, elemento 1 dai passi 0-123, uscita da 124 passi su 160, 124 anche con autograd in 5 semi su 5; con causal=False 160 su 160. A T=4096: 378 passi contigui, salto di 64, unione 442. output_length coincide con il conto simbolico per T = 37, 38, 101, 102, 160 e 256.
+  CORRECTED_STATEMENT: Come scritto dal revisore.
+--------------------------------------------------------------------------------
+JUDG architettura-8 outcome=CONFERMATO after=nota
+  REASONING: È un troncamento senza effetto sull'identità dei sorgenti.
+  EVIDENCE: ESEGUITO git show 8917e2a: eval.json ha 13 chiavi (manca «seconds»), run.json 28; le prime 12 di ciascuno coincidono con l'elenco del JSON; git log --all trova un solo commit (12feb8b) per entrambi i file.
+  CORRECTED_STATEMENT: Come scritto dal revisore.
+--------------------------------------------------------------------------------
+JUDG controlli-1 outcome=CONFERMATO after=minore
+  REASONING: L0 e la ridge hanno la stessa classe di funzioni (affine nelle feature LN) e gli stessi dati, quindi il loro scarto misura solo la ricetta. La regolarizzazione esplicita di L0 è trascurabile, mentre la ridge è molto sensibile ad alpha. Il protocollo non dice come leggere il primario se L0 rifittata resta sotto la ridge. Per questo la gravità minore resta: tocca l'attribuzione del primario e la frase «architettura promettente».
+  EVIDENCE: ESEGUITO v04_conti.py sulla ricevuta estratta da me con git show 2930d7d (sha256 b08e6e32...5037c14, uguale a proposal.json). MSE interno della ridge: alpha 0,01 0,769725 (+17,32%), 1e4 0,691356 (+5,37%), 1e5 0,656115 (scelto, due estensioni verso l'alto), 1e6 0,670911 (+2,26%). CALCOLATO: weight decay (1-lr·0,01)^3000 = 0,9704 a lr 1e-3 e 0,9970 a lr 1e-4 (nei fold 0,9851 e 0,9985). ESEGUITO v05_pins.py: stesso train.npz (30c0b50d..., 474.412.856 byte), 40 utenti, fold ad alternanza degli ID ordinati. CALCOLATO l'esempio L0 0,81 / TCN 0,7938: contrasti 1, 4 e 5 = +2,000%, -1,005%, -1,948%.
+  CORRECTED_STATEMENT: Come scritto dal revisore.
+--------------------------------------------------------------------------------
+JUDG controlli-2 outcome=CONFERMATO after=minore
+  REASONING: «solo se» e «only if» danno solo condizioni necessarie. Se il contrasto 2 o il 3 va nel verso opposto, la TCN prenderebbe l'etichetta «migliore lettore» anche con un controllo migliore di lei. La riga 100 dice che cosa serve per attribuire il guadagno al contesto o alla non linearità, non che cosa succede all'etichetta in quel caso.
+  EVIDENCE: CALCOLATO v04_conti.py con L0 0,785, L13 0,730, MLP 0,735, TCN 0,750: c1 4,459%, c2 -2,041%, c3 -2,740%, c4 4,568% e c5 3,677%. LETTO riga 100 e proposal.json riga 35. ESEGUITO v03_heads.py: L13 ha 99.840 pesi, 13 volte i 7.680 di L0, e con le prese laterali a zero coincide con L0.
+  CORRECTED_STATEMENT: Come scritto dal revisore.
+--------------------------------------------------------------------------------
+JUDG controlli-3 outcome=CONFERMATO after=nota
+  REASONING: La sostanza è giusta. Un endpoint a fine blocco dà lo stesso bersaglio del FM; il metodo che GPT chiama esatto stima invece una media triangolare spostata di 4,5 campioni (2,25 ms). Gli endpoint sono 1,10 volte quelli della lettura ufficiale: il «dieci volte» è coerente con il metodo di GPT, quindi l'errore è nel metodo, non nel conto. L'alpha dell'EMA è stato tarato sui 15 val. Però il §6 descrive una prova futura esplicitamente esclusa dalla proposta e non tocca nulla del livello A: nota.
+  EVIDENCE: LETTO WT emg2pose_regression.py righe 96-108 (finestra che finisce in 10j+9, bersaglio = media del blocco) e righe 66-81 (istanti ufficiali o+255+10m, fase qualunque); temponet_emg2pose.py righe 102-119 e 497-499 (tune_alpha_windows sulla val); SNAP pose_targets.py righe 148-180. CALCOLATO: 18.548 x 148 x 5 = 13.725.520 endpoint = 1,1009 x 12.468.000; con il metodo per campione 137.255.200 = 11,0086 x. ESEGUITO: gli utenti di val.ema.per_user_deg in eval.json coincidono con quelli della ricevuta (True); scarto mediano fra blocco e angolo puntuale 0,000359 rad (0,0205°) su 7.493 registrazioni. proposal.json elenca «raw TEMPONet reevaluation» fra not_in_this_proposal.
+  CORRECTED_STATEMENT: Il §6 chiama esatto un metodo (prevedere su tutti i campioni nativi, poi mediare) che stima una media triangolare spostata di 4,5 campioni. Il metodo esatto è un endpoint a fine blocco: circa 13,7 milioni di endpoint, 1,1 volte la lettura ufficiale. L'alpha dell'EMA è stato scelto sui 15 val, quindi va riportata l'uscita grezza. Da correggere nel testo, ma è una prova futura esclusa: nota.
+--------------------------------------------------------------------------------
+JUDG controlli-4 outcome=PARZIALE after=minore
+  REASONING: È vero che la tabella non riporta il perimetro della conclusione e che decisioni.md, il testo da congelare, omette «nessuna adozione automatica» e «nessuna non-inferiorità implicita». Non è vero invece che decisioni.md sia più debole sulla clausola «se MAE/livello peggiorano»: è la stessa della riga 100 del protocollo. Inoltre decisioni.md esclude già il livello B e la tabella rimanda alle sezioni 3-5.
+  EVIDENCE: LETTO protocollo riga 100 («se MAE o livello peggiorano. Quel compromesso va discusso prima dell'adozione; nessuna non-inferiorità del livello è implicita») e righe 173-180. LETTO decisioni.md righe 6731-6732 («né a lanciare il livelloB»); ESEGUITO grep sulle righe 6713-6738: nessun «adozione» né «automatic». LETTO proposal.json riga 35 («no automatic operational adoption [...] no implied noninferiority») e righe 25-26 («confirmation: none independent» contro la chiave «confirmatory_family»).
+  CORRECTED_STATEMENT: La tabella del §10 non riporta il perimetro della conclusione. decisioni.md esclude già il livello B e la sostituzione della testa se MAE o livello peggiorano. Omette però la non-adozione automatica e la non-inferiorità non implicita, presenti in proposal.json riga 35 e nella riga 100, e non dice che la conclusione non riguarda il valore del pretraining. La chiave «confirmatory_family» va rinominata.
+--------------------------------------------------------------------------------
+JUDG controlli-5 outcome=CONFERMATO after=nota
+  REASONING: Anche la testa storica è lineare (LayerNorm seguita da Linear) ed è migliore della ridge a tutte e tre le dosi.
+  EVIDENCE: ESEGUITO sulla ricevuta: E_dyn della ridge 0,7859020004638595 contro 0,7786289843513977 della testa (0,9254%); MAE 0,280019 contro 0,276754 rad; stesso support_sha256 per le tre celle. ESEGUITO su scientific_readout.json: la testa è migliore dello 0,7127% a 19.618 e dello 0,5823% a 39.237.
+  CORRECTED_STATEMENT: Come scritto dal revisore.
+--------------------------------------------------------------------------------
+JUDG controlli-6 outcome=CONFERMATO after=nota
+  REASONING: Il conto torna: la TCN spende 24.576 pesi in contesto, la MLP li spende in larghezza.
+  EVIDENCE: CALCOLATO: la TCN con le sole prese centrali ha 39.552 pesi, le prese laterali 3x2x64x64 = 24.576, totale 64.128 come la MLP. ESEGUITO v03_heads.py: 64.128 pesi ciascuna; bias 404 e 308; 6 trasformazioni, 5 ReLU e 2 Dropout per entrambe.
+  CORRECTED_STATEMENT: Come scritto dal revisore.
+--------------------------------------------------------------------------------
+JUDG controlli-7 outcome=CONFERMATO after=nota
+  REASONING: L'ancora lineare sulla vista pre esiste già, con le predizioni pinnate, e il protocollo non la usa. I conti sul contesto e sull'effetto di bordo tornano. Il supporto di ±6 patch di pre l'ho solo letto, non rieseguito.
+  EVIDENCE: ESEGUITO sulla ricevuta: ridge pre con E_dyn 1,0321280032044746, correlazione 0,0786621, rapporto delle varianze 0,0752988 e predizioni con sha256 832593f9.... LETTO backbone_depth.py righe 23-34 e fm.py righe 210 e 213: pre = uscita di pool catturata con un hook, post = enc.z, entrambe medie su dim 2; config k_latents 64. CALCOLATO: la TCN-pre legge segnale da t-12 a t+12 (25 patch, 625 ms); 12 centri su 148 hanno un supporto che esce dalla finestra.
+  CORRECTED_STATEMENT: Come scritto dal revisore.
+--------------------------------------------------------------------------------
+JUDG controlli-8 outcome=CONFERMATO after=nota
+  REASONING: I fatti tornano. Altre differenze della testa storica (loss su tutte le patch e non sul crop6, finestre da 1-4 s) le ha già segnalate la dimensione Selezione.
+  EVIDENCE: ESEGUITO v05_pins.py: 20 pin su 20 uguali fra proposal.json e ricevuta. CALCOLATO 4.813.620/(1.907x148x20) = 85,2765% di elementi validi. LETTO pose_eval.py righe 170-180: la testa predice da latenti FP32, la cache tiene lat in FP16. LETTO review_selezione.txt righe 144-150.
+  CORRECTED_STATEMENT: Come scritto dal revisore.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#1 holds=True: [architettura] Parametri: L0 8.468, MLP 65.300, L13 100.628, TCN 65.204
+  EVIDENCE: ESEGUITO v03_heads.py, con le teste costruite da zero dal testo del protocollo e L0 dalla classe PoseHead dello snapshot. (totale, pesi, bias, LN): L0 (8468, 7680, 20, 768), MLP (65300, 64128, 404, 768), L13 (100628, 99840, 20, 768), TCN (65204, 64128, 308, 768).
+--------------------------------------------------------------------------------
+ATT architettura-controlli#2 holds=True: [architettura] MLP e TCN: 64.128 pesi ciascuna, 6 trasformazioni, 5 ReLU, 10.260.480 MAC per finestra
+  EVIDENCE: ESEGUITO v03_heads.py: 6 trasformazioni, 5 ReLU e 2 Dropout per entrambe; MAC per finestra = pesi x 160 = 10.260.480 (L0 1.228.800, L13 15.974.400).
+--------------------------------------------------------------------------------
+ATT architettura-controlli#3 holds=True: [architettura] RF di 13 patch senza buchi, offset da -6 a +6; L0 e MLP leggono solo la patch centrale
+  EVIDENCE: ESEGUITO v03_heads.py: cammini per offset con dilatazioni 1/2/3 = 1,1,2,2,3,3,3,3,3,2,2,1,1 (27 in tutto, zero buchi). Gradiente rispetto all'ingresso ai centri 6, 80 e 153: TCN e L13 dagli offset -6..+6 (13), MLP e L0 solo dall'offset 0.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#4 holds=True: [architettura] I centri 6..153 non dipendono dal padding (equivalenza col crop6)
+  EVIDENCE: ESEGUITO v07_crop_bn.py in float64, contro una convoluzione «valida» senza padding: scarto massimo 7,8e-16 (TCN) e 1,9e-14 (L13) con padding a zeri, replicate, reflect e circular; i bordi 0-5 invece cambiano. Con 100 patch reali, il primo centro che dipende dal riempimento è il 94.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#5 holds=True: [architettura] Nelle cache del lungo tutte le finestre hanno 160 patch reali
+  EVIDENCE: ESEGUITO v01_ktv_hash.py, con la funzione di hash riscritta da me: le sei ricevute (dosi 19.618, 39.237 e 49.046, train e val) hanno key_time_valid_sha256 uguale all'hash di una matrice (n,160) tutta vera, con n = 1.907 e 18.548. Basta una patch falsa perché l'hash non coincida più.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#6 holds=True: [architettura] Con l'ultimo strato a zero i gradienti interni sono nulli al primo backward e non nulli dopo un passo di AdamW
+  EVIDENCE: ESEGUITO v03_heads.py con la ricetta del §4 a lr 1e-3. Primo backward: 0 gradienti non nulli fra gli interni (768, 64.640, 768 e 64.544 parametri), tutti finiti. Secondo backward: L0 768/768, MLP 61.796/64.640, L13 768/768, TCN 62.284/64.544.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#7 holds=True: [architettura] L0 è la stessa PoseHead (LN affine con eps 1e-5, uscita a zero)
+  EVIDENCE: LETTO pose_head.py righe 20-34. ESEGUITO v03_heads.py: 8.468 parametri e inizializzazione identica fra i semi.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#8 holds=True: [architettura] TEMPONet: 378 passi per elemento, unione nominale 442, uscita per finestra, BatchNorm che lega i campioni del batch
+  EVIDENCE: ESEGUITO v02_temponet_rf.py (simbolico più autograd): 378 passi contigui, salto di 64, unione 442; ingressi (2,384,159), (2,160,384) e (2,384,161) rifiutati; 80.884 parametri. ESEGUITO v07_crop_bn.py: gradiente dell'uscita del campione 0 rispetto all'ingresso del campione 1 = 1754 in train e 0 in eval.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#9 holds=True: [architettura] Identità byte per byte e sha256 dei sorgenti fra 60b35bd, 0c19c4b e 8917e2a
+  EVIDENCE: ESEGUITO git show | wc -c | shasum -a 256: temponet.py 8519 byte (9d5a03e2...) a tutti e tre i commit; temponet_emg2pose.py 31196 byte (8d7f9dbe...) a 0c19c4b e 8917e2a, assente a 60b35bd. merge-base: 60b35bd < 0c19c4b < 8917e2a. code_sha 0c19c4b in eval.json e in run.json.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#10 holds=True: [architettura] Il 49.046 è il riferimento esplorativo per la posa firmato da Simone
+  EVIDENCE: ESEGUITO git log -1 8382801 (07/11 alle 14:54:02) e git show 8382801 -- docs/decisioni.md: «Sì, firmo» e «(2) per la posa 49.046 come riferimento esplorativo, con ridge post e testa allenata affiancati».
+--------------------------------------------------------------------------------
+ATT architettura-controlli#11 holds=True: [architettura] Il backbone è bidirezionale e la posa è già supervisionata nel FM
+  EVIDENCE: LETTO backbone.py righe 47-63 (sola maschera delle chiavi, nessun is_causal) e riga 103 (LayerNorm finale). LETTO ricevuta LONG-G49046-pose-train: pose_head True, pose_weight 1.0, loss_per_window True, which teacher, dim 384, k_latents 64.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#12 holds=False: [architettura, rapporto del revisore, d-4] Sui dati finti il disegno sa vedere una struttura temporale non lineare quando c'è
+  EVIDENCE: Dipende dal mondo sintetico. Vale nel mondo del revisore e nel mio (ESEGUITO v08: TCN 0,1402 < MLP 0,1872 < L0 0,6883). Non vale nel mondo temporale della dimensione Selezione (LETTO review_selezione.txt [e-4]: TCN -5,2% rispetto a L0 con +8,7% possibile). Nel mio mondo lineare (v09) la TCN perde il 28,2% contro L0.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#13 holds=True: [controlli] La ridge storica minimizza la SSE aggregata; la PoseHead del training la MSE media per finestra
+  EVIDENCE: LETTO jepa.py righe 182-209 e 548-556 e run.py righe 254-260 (with_window1_rules imposta loss_per_window=True). ESEGUITO grep su launch.json del 49.046: --window1-rules e --pose-weight compaiono una volta ciascuno. Ricevuta: «pooled masked standardized SSE / valid elements».
+--------------------------------------------------------------------------------
+ATT architettura-controlli#14 holds=True: [controlli] La testa storica ha visto 158 utenti, lo studente mascherato e l'EMA; le teste nuove vedono 40 utenti e il teacher non mascherato
+  EVIDENCE: LETTO jepa.py righe 121-126 (EMA di tutti i parametri) e riga 426 (enc = student.encode(inp, visible, generator)); config T100-G con EMA 0,996 e maschera 0,5; emendamento_pilot_posa_v1.md righe 22-24; consolidation_long_pose.py riga 47 (n_users=40) e riga 77 (mask None, senza gradiente).
+--------------------------------------------------------------------------------
+ATT architettura-controlli#15 holds=True: [controlli] pre = uscita del Perceiver, post = dopo il backbone e la sua LayerNorm finale, entrambe medie sui 64 slot
+  EVIDENCE: LETTO backbone_depth.py righe 23-34, fm.py righe 210 e 213, backbone.py riga 103; config k_latents 64. Il supporto locale di 13 patch della vista pre l'ho solo letto nel documento del tokenizer, non rieseguito.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#16 holds=True: [controlli] I pin di proposal.json coincidono con la ricevuta storica
+  EVIDENCE: ESEGUITO v05_pins.py sulla ricevuta estratta da me (sha256 b08e6e32..., uguale a proposal.json): 20 confronti su 20 uguali (checkpoint, cache train e val con sha256, byte e nome, tre riferimenti con sha256, byte e percorso, 40 e 15 utenti, soglia). Fold = alternanza degli ID ordinati: True.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#17 holds=True: [controlli] Valori storici a 49.046 sulle finestre dinamiche: ridge post 0,785902, testa 0,778629, ridge pre 1,032128
+  EVIDENCE: ESEGUITO sulla ricevuta: 0,7859020004638595, 0,7786289843513977 e 1,0321280032044746; stesso support_sha256 per le tre celle; 8.327 finestre (8.329 selezionate), 15 utenti, 20.119.920 elementi.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#18 holds=True: [controlli] I 15 utenti val sono quelli della lettura val di TEMPONet raw, su cui è stato scelto l'alpha dell'EMA
+  EVIDENCE: ESEGUITO: le chiavi di val.ema.per_user_deg in eval.json coincidono con gli utenti della ricevuta (True). LETTO temponet_emg2pose.py righe 497-499 (tune_alpha_windows sulla val).
+--------------------------------------------------------------------------------
+ATT architettura-controlli#19 holds=True: [controlli] Le baseline del v10 §8 sono invariate e la proposta non pretende un vantaggio del pretraining
+  EVIDENCE: ESEGUITO diff delle righe 1125-1140 di fm_emg_reference_v10.md fra e114a78 e lo snapshot: identiche. LETTO protocollo righe 11 e 108; proposal.json not_in_this_proposal («random encoder», «raw TCN training», «raw TEMPONet reevaluation»).
+--------------------------------------------------------------------------------
+ATT architettura-controlli#20 holds=True: [controlli] Il passato raw [q-255,q] rientra nel margine di 150 ms per i centri ammessi
+  EVIDENCE: CALCOLATO: la patch 6 inizia a s0+300; il primo blocco con il centro dentro la patch ha 10j >= s0+295 e finisce a >= s0+304, quindi il passato parte da >= s0+49 con endpoint a fine blocco e da >= s0+40 con endpoint per campione. Coincide con il revisore.
+--------------------------------------------------------------------------------
+ATT architettura-controlli#21 holds=True: [controlli] Il supporto comune coincide con la maschera centrale storica
+  EVIDENCE: LETTO tokenizer_pose_readout.py riga 30 (OFFSET 6), consolidation_long_pose.py riga 26 e righe 131-134, central_mask in pose_temporal_readout.py righe 195-199 (offset passato come parametro).
+--------------------------------------------------------------------------------
+ATT architettura-controlli#22 holds=True: [controlli] Per la domanda circoscritta non manca nessun braccio da allenare
+  EVIDENCE: Regge per i bracci. Però un esito negativo o nullo è leggibile solo se le teste a sei strati arrivano al loro ottimo e se i bracci sono annidati. ESEGUITO v09: nel mondo lineare la TCN perde il 28,2% contro L0 e con un ramo lineare lo pareggia. Vedi N2 e Selezione [e-4].
+--------------------------------------------------------------------------------
+NEW architettura-controlli-N1 [nota] Il link di provenienza del §2 non è quello verificato nel codice
+  CLAIM: Protocollo riga 17: «Provenienza: Zanghieri et al., COINS 2021 (https://iris.polito.it/handle/11583/2978570)».
+  EVIDENCE: temponet.py righe 4-5 e docs/temponet_db8_replication.md riga 20 (worktree di Claude) citano [Z21] con DOI 10.1109/COINS51742.2021.9524188 e postprint https://hdl.handle.net/11585/841320, letti il 09/11. Un grep nel worktree e nello snapshot trova l'handle 11583/2978570 solo alla riga 17 del protocollo. Senza rete non posso dire se sia sbagliato: è un riferimento diverso e non verificato accanto a quello verificato.
+  HOW: LETTO
+  FIX: Usare lo stesso riferimento del codice (DOI e postprint) oppure verificare il nuovo link prima della firma.
+--------------------------------------------------------------------------------
+NEW architettura-controlli-N2 [minore] Bracci non annidati: solo L13 contiene L0, TCN e MLP no
+  CLAIM: Riga 35: «nessun ... residuale». Righe 33 e 42: in TCN e MLP ogni cammino verso l'uscita passa per 5 ReLU. La riga 49 limita la lettura a «questa ricetta e la sua parametrizzazione» solo per TCN/L13. La riga 85 chiama L0 il «primario architetturale». La cautela della riga 11 vale solo per un esito nullo, non per un deterioramento (righe 96-98).
+  EVIDENCE: CALCOLATO: L13 con le prese laterali a zero è esattamente L0, cioè lo contiene. TCN e MLP non hanno un cammino lineare: possono imitare L0 solo con bias grandi che tengono accese le ReLU, e all'init il quinto hidden è dominato dai bias (85-90%). ESEGUITO v09_linear_world.py, in un mio mondo sintetico con bersaglio lineare (640/320 finestre da 28 patch, ricetta del §4). MSE minima tenuta fuori: L0 0,2500 (lr 1e-4, epoca 42) e 0,2512 (lr 1e-3, epoca 4); TCN della specifica 0,5030 (epoca 50) e 0,3205 (epoca 44); stessa TCN con un ramo lineare 384->20 a zero 0,2495 (epoca 48) e 0,2512 (epoca 4). CALCOLATO: la TCN perde il 28,2% contro L0, mentre con il ramo lineare torna al livello di L0 (+0,2%). Sono MSE su dati finti: mostrano il meccanismo, non l'esito vero. LETTO review_selezione.txt [e-4]: stesso verso nel mondo temporale, ma senza la questione dell'annidamento.
+  HOW: ESEGUITO
+  FIX: Prima della firma e senza fit: (i) estendere la cautela della riga 49 al primario e a MLP/L0, cioè «classi non annidate con questa ricetta: un deterioramento o un esito nullo non dimostra che una lettura temporale non lineare sia peggiore o inutile». (ii) Decidere ora, non dopo i fit, se dare a TCN e MLP un ramo lineare con uscita a zero (+7.700 parametri per testa), così che il primario misuri il beneficio aggiunto. Il punto (ii) cambia la specifica e lo scelgono GPT e Simone.
+VERDICT_OPINION: Domanda e architettura: APPROVATO_CON_CORREZIONI. Ho rifatto con metodi miei tutti i fatti su cui poggia la specifica, e tornano: conteggi, parità MLP/TCN, RF13 senza buchi, crop6 indipendente dal padding, 160 patch reali in tutte le cache, uscita a zero, L0 = PoseHead, i numeri di TEMPONet (378, 442, 124/160) e l'identità dei sorgenti. I due rilievi minori del revisore scendono a note: la tabella del §10 non nomina TEMPONet e decisioni.md (riga 6722) dice già «non replica invariata»; quanto al dropout, nella notazione PyTorch «Dropout» è per elemento. Resta però la correzione N2. TCN e MLP non contengono L0: nel mio mondo lineare la TCN perde il 28,2% contro L0 e con un ramo lineare lo pareggia. Prima della firma va almeno scritta la cautela, oppure deciso il ramo lineare. Controlli e attribuzione: APPROVATO_CON_CORREZIONI. I bracci bastano per la domanda circoscritta e la proposta non pretende un vantaggio del pretraining: baseline v10 invariate, 20 pin su 20, numeri e supporti storici identici. Vanno corretti prima della firma: controlli-1 (L0 contro ridge, stessa classe e stessi dati), controlli-2 (regola «candidata» completa), controlli-4 in parte (decisioni.md omette la non-adozione automatica) e la cautela di N2. controlli-3 è solo una nota sul §6, che riguarda una prova futura. Un esito negativo resta leggibile solo dopo il controllo positivo chiesto dalla dimensione Selezione ([e-4]).

@@ -1,0 +1,47 @@
+/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/work_architettura/c_zero_init.py:53: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+  print(f"{name:9s} uscita iniziale tutta zero: {bool((out0 == 0).all())}; loss iniziale = {float(loss_fn(out0, y, mask)):.6f}")
+
+===== LR 0.001 =====
+L0        uscita iniziale tutta zero: True; loss iniziale = 1.005262
+          backward 1: loss=1.005262 norma_grad=0.1348 | interni: max|g|=0.000e+00, non nulli 0/768 | ultimo strato: max|g_w|=5.902e-03 (non nulli 7680/7680), max|g_b|=3.348e-03 | finiti=True
+          dopo il passo 1: max |peso ultimo strato| = 1.000e-03, pesi ultimo strato non nulli 7680/7680; spostamento massimo dei parametri interni (solo weight decay) = 0.000e+00
+          backward 2: loss=0.996227 norma_grad=0.1273 | interni: max|g|=3.441e-05, non nulli 768/768 | ultimo strato: max|g_w|=5.750e-03 (non nulli 7680/7680), max|g_b|=3.236e-03 | finiti=True
+          backward 3: loss=0.987960 norma_grad=0.1202 | interni: max|g|=6.456e-05, non nulli 768/768 | ultimo strato: max|g_w|=5.608e-03 (non nulli 7680/7680), max|g_b|=3.099e-03 | finiti=True
+MLP       uscita iniziale tutta zero: True; loss iniziale = 1.005262
+          backward 1: loss=1.005262 norma_grad=0.0079 | interni: max|g|=0.000e+00, non nulli 0/64640 | ultimo strato: max|g_w|=5.778e-04 (non nulli 499/640), max|g_b|=3.348e-03 | finiti=True
+          dopo il passo 1: max |peso ultimo strato| = 1.000e-03, pesi ultimo strato non nulli 499/640; spostamento massimo dei parametri interni (solo weight decay) = 1.252e-06
+          backward 2: loss=1.005208 norma_grad=0.0071 | interni: max|g|=2.612e-05, non nulli 61810/64640 | ultimo strato: max|g_w|=5.214e-04 (non nulli 480/640), max|g_b|=3.129e-03 | finiti=True
+          backward 3: loss=1.005160 norma_grad=0.0065 | interni: max|g|=4.412e-05, non nulli 61874/64640 | ultimo strato: max|g_w|=6.311e-04 (non nulli 478/640), max|g_b|=2.899e-03 | finiti=True
+L13       uscita iniziale tutta zero: True; loss iniziale = 1.005262
+          backward 1: loss=1.005262 norma_grad=0.4858 | interni: max|g|=0.000e+00, non nulli 0/768 | ultimo strato: max|g_w|=6.771e-03 (non nulli 99840/99840), max|g_b|=3.348e-03 | finiti=True
+          dopo il passo 1: max |peso ultimo strato| = 1.000e-03, pesi ultimo strato non nulli 99840/99840; spostamento massimo dei parametri interni (solo weight decay) = 0.000e+00
+          backward 2: loss=0.891468 norma_grad=0.4329 | interni: max|g|=3.169e-04, non nulli 768/768 | ultimo strato: max|g_w|=6.166e-03 (non nulli 99840/99840), max|g_b|=3.213e-03 | finiti=True
+          backward 3: loss=0.793870 norma_grad=0.3856 | interni: max|g|=5.420e-04, non nulli 768/768 | ultimo strato: max|g_w|=5.763e-03 (non nulli 99840/99840), max|g_b|=2.980e-03 | finiti=True
+TCN_post  uscita iniziale tutta zero: True; loss iniziale = 1.005262
+          backward 1: loss=1.005262 norma_grad=0.0079 | interni: max|g|=0.000e+00, non nulli 0/64544 | ultimo strato: max|g_w|=6.762e-04 (non nulli 377/640), max|g_b|=3.348e-03 | finiti=True
+          dopo il passo 1: max |peso ultimo strato| = 1.000e-03, pesi ultimo strato non nulli 377/640; spostamento massimo dei parametri interni (solo weight decay) = 1.252e-06
+          backward 2: loss=1.005212 norma_grad=0.0071 | interni: max|g|=2.472e-05, non nulli 62337/64544 | ultimo strato: max|g_w|=6.081e-04 (non nulli 399/640), max|g_b|=3.142e-03 | finiti=True
+          backward 3: loss=1.005161 norma_grad=0.0065 | interni: max|g|=4.372e-05, non nulli 62510/64544 | ultimo strato: max|g_w|=6.711e-04 (non nulli 360/640), max|g_b|=2.910e-03 | finiti=True
+
+===== LR 0.0001 =====
+L0        uscita iniziale tutta zero: True; loss iniziale = 1.005262
+          backward 1: loss=1.005262 norma_grad=0.1348 | interni: max|g|=0.000e+00, non nulli 0/768 | ultimo strato: max|g_w|=5.902e-03 (non nulli 7680/7680), max|g_b|=3.348e-03 | finiti=True
+          dopo il passo 1: max |peso ultimo strato| = 1.000e-04, pesi ultimo strato non nulli 7680/7680; spostamento massimo dei parametri interni (solo weight decay) = 0.000e+00
+          backward 2: loss=1.004322 norma_grad=0.1340 | interni: max|g|=3.637e-06, non nulli 768/768 | ultimo strato: max|g_w|=5.887e-03 (non nulli 7680/7680), max|g_b|=3.337e-03 | finiti=True
+          backward 3: loss=1.003390 norma_grad=0.1332 | interni: max|g|=7.230e-06, non nulli 768/768 | ultimo strato: max|g_w|=5.872e-03 (non nulli 7680/7680), max|g_b|=3.326e-03 | finiti=True
+MLP       uscita iniziale tutta zero: True; loss iniziale = 1.005262
+          backward 1: loss=1.005262 norma_grad=0.0079 | interni: max|g|=0.000e+00, non nulli 0/64640 | ultimo strato: max|g_w|=5.778e-04 (non nulli 499/640), max|g_b|=3.348e-03 | finiti=True
+          dopo il passo 1: max |peso ultimo strato| = 1.000e-04, pesi ultimo strato non nulli 499/640; spostamento massimo dei parametri interni (solo weight decay) = 1.267e-07
+          backward 2: loss=1.005256 norma_grad=0.0078 | interni: max|g|=2.952e-06, non nulli 61810/64640 | ultimo strato: max|g_w|=5.533e-04 (non nulli 480/640), max|g_b|=3.326e-03 | finiti=True
+          backward 3: loss=1.005251 norma_grad=0.0078 | interni: max|g|=5.835e-06, non nulli 61845/64640 | ultimo strato: max|g_w|=6.686e-04 (non nulli 478/640), max|g_b|=3.304e-03 | finiti=True
+L13       uscita iniziale tutta zero: True; loss iniziale = 1.005262
+          backward 1: loss=1.005262 norma_grad=0.4858 | interni: max|g|=0.000e+00, non nulli 0/768 | ultimo strato: max|g_w|=6.771e-03 (non nulli 99840/99840), max|g_b|=3.348e-03 | finiti=True
+          dopo il passo 1: max |peso ultimo strato| = 1.000e-04, pesi ultimo strato non nulli 99840/99840; spostamento massimo dei parametri interni (solo weight decay) = 0.000e+00
+          backward 2: loss=0.993100 norma_grad=0.4804 | interni: max|g|=3.623e-05, non nulli 768/768 | ultimo strato: max|g_w|=6.710e-03 (non nulli 99840/99840), max|g_b|=3.335e-03 | finiti=True
+          backward 3: loss=0.981113 norma_grad=0.4750 | interni: max|g|=7.145e-05, non nulli 768/768 | ultimo strato: max|g_w|=6.650e-03 (non nulli 99840/99840), max|g_b|=3.319e-03 | finiti=True
+TCN_post  uscita iniziale tutta zero: True; loss iniziale = 1.005262
+          backward 1: loss=1.005262 norma_grad=0.0079 | interni: max|g|=0.000e+00, non nulli 0/64544 | ultimo strato: max|g_w|=6.762e-04 (non nulli 377/640), max|g_b|=3.348e-03 | finiti=True
+          dopo il passo 1: max |peso ultimo strato| = 1.000e-04, pesi ultimo strato non nulli 377/640; spostamento massimo dei parametri interni (solo weight decay) = 1.267e-07
+          backward 2: loss=1.005257 norma_grad=0.0078 | interni: max|g|=2.778e-06, non nulli 62337/64544 | ultimo strato: max|g_w|=6.398e-04 (non nulli 399/640), max|g_b|=3.328e-03 | finiti=True
+          backward 3: loss=1.005251 norma_grad=0.0077 | interni: max|g|=5.601e-06, non nulli 62341/64544 | ultimo strato: max|g_w|=6.562e-04 (non nulli 360/640), max|g_b|=3.307e-03 | finiti=True

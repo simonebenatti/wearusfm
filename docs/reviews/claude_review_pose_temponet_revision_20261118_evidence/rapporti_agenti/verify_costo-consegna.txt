@@ -1,0 +1,293 @@
+RAPPORTO DEL VERIFICATORE AVVERSARIO — dimensioni «costo» e «consegna»
+Data: 18/11/2026. Ruolo: confutare i rilievi dei revisori costo e consegna, controllare a campione le loro conferme,
+valutare le affermazioni del revisore capo S-G e S-H, cercare rilievi nuovi.
+Materiale: snapshot gpt_3e007c8 (consegna 3e007c8, contenuti 62348ab), snapshot gpt_c15aac9, review 32e5452, seguito 8d34f9c.
+Abbreviazioni: PROT = gpt_3e007c8/docs/pose_temponet_frozen_protocol_20261117.md; RISP = gpt_3e007c8/docs/reviews/
+pose_temponet_response_20261118.md; PJ = gpt_3e007c8/results/infra/pose_temponet_proposal_20261117/proposal.json;
+REV = worktree claude-temponet docs/reviews/claude_review_pose_temponet_proposal_20261117.md.
+Regole: sola lettura; nessun esperimento; scritture solo in work_verifica_costo-consegna/ e in questo file.
+Prove marcate ESEGUITO / CALCOLATO / LETTO. Rapporto scritto a pezzi.
+
+======================================================================================================
+A) AFFERMAZIONE DEL REVISORE CAPO S-G (perimetro del rinfresco del 12/11) — RESPINTA
+======================================================================================================
+Ipotesi: i tre file SCRATCH (pose_stats.json, train_subset.npz, val.npz del pilot B19618) potrebbero essere fuori dal
+perimetro del rinfresco del 12/11 (job 64280872) e scadere prima del 22/12.
+- LETTO 47ca96e:scripts/slurm/refresh_scratch.sbatch (sha256 5ad03da2..., ESEGUITO shasum): perimetro predefinito
+  «data/raw data/processed wearusfm_runs external» (riga 22); per ogni voce di primo livello «find -L "$d" -exec touch -c {} +»
+  (riga 33); poi «still=... find -L "$d" -type f -mtime +0» (riga 34), cioe' file piu' vecchi di un giorno DOPO il touch.
+- LETTO 47ca96e:results/infra/scratch_refresh_20261112/refresh_scratch_64280872.log:
+  «data/processed/emg2pose_pose: file=75760 ... ancora_vecchi_dopo=0» e «wearusfm_runs/results: file=972 ...
+  data_piu_vecchia_prima=2026-10-28 ancora_vecchi_dopo=0»; «cartelle con problemi = 0». Con -mtime +0, «0» vuol dire che
+  ogni file di quelle voci ha la data del 12/11. pose_stats.json sta in data/processed/emg2pose_pose; i due npz stanno in
+  wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/ (percorsi in PJ scratch_dependencies).
+- LETTO 47ca96e:.../spotcheck_readonly_20261112.log righe 3-4: val.npz «2026-11-12 15:52:26 | 2485295825 byte» e
+  pose_stats.json «2026-11-12 15:38:44 | 7377 byte», con sha256 757f2aee... (riga 15) uguale al pin.
+- ESEGUITO (una sola lettura su Leonardo, comando del capo con -o ConnectTimeout=30; il primo tentativo non era partito:
+  «command not found: timeout» del Mac, ssh mai eseguito), uscita in work_verifica_costo-consegna/ssh_ls_scratch_20261118.txt:
+    7377        2026-11-12 15:38:44 .../data/processed/emg2pose_pose/pose_stats.json
+    257675076   2026-11-12 15:52:26 .../pilot_posa/B19618_20261028/B/pose/train_subset.npz
+    2485295825  2026-11-12 15:52:26 .../pilot_posa/B19618_20261028/B/pose/val.npz
+  Byte uguali ai pin di PJ. I tre file esistono oggi e hanno la data del rinfresco.
+- CALCOLATO: 12/11 + 40 giorni = 22/12/2026 (Python datetime). Il 22/12 del protocollo (PROT:189) e' giusto.
+- Limite: ls -l mostra mtime; touch -c aggiorna anche l'accesso. Il criterio esatto della cancellazione CINECA non e' riletto qui.
+Verdetto: RESPINTA. I tre file sono nel perimetro e sono stati toccati il 12/11. Scadenza dal 22/12, non prima.
+Conseguenza per il testo: il condizionale «solo se realmente applicato» (PROT:189) e «not reverified» (PJ
+scratch_dependencies.refresh) si possono sostituire con la prova: 47ca96e (log e spotcheck) e la lettura di oggi.
+Nota: 47ca96e sta sul ramo worktree-claude-training-engine e non e' antenato di 3e007c8 (ESEGUITO git merge-base).
+
+======================================================================================================
+B) VERDETTI SUI RILIEVI DEL REVISORE «costo»
+======================================================================================================
+Script dei conti: work_verifica_costo-consegna/conti_verifica.py; uscita: conti_verifica_output.txt (ESEGUITO python3 -I).
+
+costo-1 — PARZIALE. Gravita' corretta: nota (era minore). Tipo: testo, con un punto di implementazione e uno di benchmark.
+Regge:
+- LETTO 8917e2a:docs/claude_GPT_shared:8492 e :8495: 18,5 ms per passo in eager con il collaudo deterministico;
+  «con `deterministic=True` le convoluzioni dilatate usano im2col/col2im di PyTorch; senza vincolo 4,1 ms in eager».
+  Il 4,1 ms e' quindi fuori dai flag di PROT:63. Anche la review 32e5452 lo chiamava «il tempo non deterministico» (REV:202-203).
+- LETTO PROT:65: valutazione held a ogni epoca; PROT:183: il gate conta 40.128 eval held. CALCOLATO: a batch 32 sono
+  1.223.904 batch + circa 1.571 dei 37 forward, 0,83 volte i 1.477.800 passi. Conti del revisore rifatti: a 18,5 ms uniformi,
+  gate raddoppiato 27,78 / 21,49 / 19,39 GPUh con eval = 1, 1/2, 1/3 di passo (conti_verifica_output.txt).
+Non regge, o regge meno:
+- Il testo non nasconde l'esclusione: PROT:177 «col fattore2 del gate massimo3,37–15,19GPUh **prima di validation/I/O**» e
+  «Non si presenta una stima puntuale totale non verificata». Non e' un'affermazione sbagliata da correggere: e' incompleta.
+- Lo scenario «19-28 GPUh» applica 18,5 ms a TUTTE le teste. Il rallentamento misurato in 8917e2a nasce dalle convoluzioni
+  dilatate (riga 8495). Nel disegno le hanno solo le TCN: PROT:28 «Conv k3,d2 ... Conv k3,d3»; L13 e' «Conv384,20,k13,pad6»
+  senza dilatazione (PROT:35); MLP e L0 non hanno convoluzioni (PROT:30, :34). CALCOLATO: le TCN sono 4 combinazioni CV su 11
+  e 6 rifit su 15, cioe' 547.200 passi su 1.477.800 (37,0%) e 445.056 batch held su 1.223.904 (36,4%).
+  CALCOLATO, scenario misto (TCN a 18,5 ms, altre teste a 4,1 ms): gate raddoppiato 9,87-14,11 GPUh con 6 LR e 8,47-12,01 con
+  5 LR, sotto le 18 h utili anche con 40 job. Anche per la TCN l'analogo e' pessimistico: TEMPONet raw ha sei convoluzioni
+  dilatate (LETTO 8917e2a:src/wearusfm/model/temponet.py, DEFAULT_DILATIONS=(2,4,8), due _TemporalConv per blocco), la TCN
+  nuova ne ha due.
+- Il gate non usa un tempo uniforme: proietta per testa con il p95 misurato (PROT:181, :183). Lo scenario uniforme non e' cio'
+  che il gate calcolera'.
+- Nella correzione «con un batch grande il termine diventa trascurabile» non e' dimostrato: per le dilatate deterministiche
+  il percorso e' im2col/col2im (8917e2a:8495) e il suo costo puo' non scalare col numero di batch. Va misurato.
+Correzione corretta: (testo, facoltativo ma utile a Simone) una frase in §9: «4,1 ms e' senza il vincolo deterministico del §4.2;
+a batch 32 le valutazioni held sono circa 0,83 volte i passi; con 18,5 ms uniformi il gate supererebbe 20 GPUh, ma il
+rallentamento deterministico riguarda le convoluzioni dilatate, presenti nelle sole TCN (circa 37% dei passi); decide il gate
+misurato». (implementazione) Fissare nel pacchetto operativo il batch della valutazione held, uguale in benchmark e fit.
+(benchmark) Misurare eval e train per testa; nessun cambio della regola.
+
+costo-2 — CONFERMATO. Nota. Tipo: disegno (scelta facoltativa della matrice del gate), con un ritocco di testo.
+- LETTO PROT:66 (continuazioni per LR, decise dalle curve di quel LR), :67 (minimo MSE su tutti i checkpoint ammessi),
+  :68 («Se vince il bordo [...] una volta per lato [...] Dopo ogni aggiunta si ricalcola la selezione»). Aggiungere un LR
+  non cambia le curve degli altri: il nuovo argmin e' il vecchio vincitore o il LR aggiunto, sullo stesso lato. Il bordo
+  opposto non puo' vincere dopo. Ho cercato il controesempio (pareggi, continuazioni del LR aggiunto): nessuno; i pareggi
+  scelgono comunque fra vecchio vincitore e LR aggiunto.
+- CALCOLATO: massimo raggiungibile 110 traiettorie CV + 15 = 125; limite 1.276.500 aggiornamenti; 33.440 eval held.
+- CALCOLATO: il 1.260.000 di Claude = 11x5x300x60 + 15x300x60 (testo per GPT del 17/11 sera: «con un'estensione al bordo»).
+  LETTO analytic_checks.json, chiave «claude_1260000_max_updates_superseded»: il conto di Claude e' il massimo raggiungibile a
+  30 passi per fold, non un conto superato. Anche la controproposta GPT del 17/11 diceva «una sola estensione verso quel lato».
+- Nessun rischio di sottostima. La scelta 6 resta prudente; con 5 il gate scende di circa il 15% (conti_verifica_output.txt).
+
+costo-3 — CONFERMATO. Nota. Tipo: implementazione.
+- LETTO 3e007c8:results/infra/consolidation_long_20261105/execution/manifests/cache_manifest.json, voce pose/49046: cache e
+  receipt (report.json) di train e val con percorsi /leonardo_scratch/.../consolidation_long_20261105/49046/pose/.
+- LETTO 3e007c8:scripts/consolidation_long_pose_runtime.py:81-93 (_reference e _read): _read prende la cache da quel manifest e il riferimento
+  SCRATCH da legacy pose_references. LETTO consolidation_long_common.py:114-121: load_context fa pinned() di tutti i
+  legacy inputs. ESEGUITO su extraction_plan_19618.json: gli input sono sei, non cinque: manifest, scales, windows (WORK,
+  passo6), pose_stats (SCRATCH), csv (WORK data/raw/emg2pose_mini) e splits/v1/splits_v1.json (relativo al checkout).
+- ESEGUITO grep: «424f0ec» e «63781257» assenti da PJ e PROT; compaiono solo nel testo citato della nota 20 (RISP:54).
+- Precisazione: oltre ai quattro file WORK c'e' anche splits_v1.json nel checkout. Il resto del rilievo regge.
+
+costo-4 — CONFERMATO, rafforzato da S-G. Nota. Tipo: testo, con un controllo operativo.
+- Prove: sezione A. Il log, lo spotcheck del 12/11 e la lettura di oggi mostrano i tre file con data 12/11.
+- LETTO decisioni.md:1332 (3e007c8): calendario D9 con il giro del 03/12, «ogni giro autorizzato da Simone».
+- La correzione regge: citare 47ca96e (e, se si vuole, la lettura del 18/11) al posto del condizionale; nel piano operativo
+  ricontrollare i file prima di ogni fase che li apre; chiudere entro il 22/12 se il giro del 03/12 non e' autorizzato.
+
+costo-5 — CONFERMATO. Nota. Tipo: testo.
+- LETTO PROT:90: griglia temporale 5x5 «lineare a=0 con la stessa griglia sigma»; PROT:92: il lineare sceglie fra le sigma.
+  PROT:185: «calibrazione25combinazioni». CALCOLATO: 25 + 5 = 30 per direzione outer. Costo trascurabile (combinazioni
+  lineari di soluzioni gia' fattorizzate, PROT:90).
+
+costo-6 — PARZIALE. Nota. Tipo: testo.
+- Non regge la parte sull'ordine: PROT:185 fissa gia' l'ordine («Dopo i gate risorse si eseguono WLS/calibrazione e
+  qualificazione»). La tabella (PROT:162-173) e' un elenco di risorse, non una sequenza. Lo spreco di 64 core-ore e' escluso
+  dal testo stesso.
+- Regge la parte sulla corsia: LETTO RISP:73 «disponibilità della corsia controllata per fase»; PROT:191 e PJ
+  operator_preflight_required la mettono solo nel preflight (ESEGUITO lettura del JSON: «sharedseriallane» fra i controlli
+  del preflight). La nota 39 della review chiedeva «prima di ogni fase CPU».
+- Correzione corretta: «corsia seriale ricontrollata prima di ogni fase CPU» in §9 o nel JSON, oppure correggere RISP:73.
+  La frase sull'ordine e' facoltativa. Duplicato di consegna-5(g).
+
+costo-7 — CONFERMATO. Nota. Tipo: testo.
+- LETTO RISP:54 (nota 20) «Conservare liste esplicite [...] `proposal.json`»; PJ fit.cv_folds contiene solo la regola;
+  PROT:57 rinvia liste/hash/conteggi al manifest prima dei fit. Anche il «rimando a 424f0ec» della stessa nota manca (costo-3).
+  Duplicato di consegna-5(e). Nessun effetto sul costo: il limite 61/60 vale per ogni divisione (ESEGUITO, sezione D).
+
+======================================================================================================
+C) VERDETTI SUI RILIEVI DEL REVISORE «consegna»
+======================================================================================================
+
+consegna-1 — CONFERMATO. Minore. Tipo: testo.
+- LETTO REV:253 (titolo di C-3: «Il perimetro dell'esito non è nella tabella del §10») e REV:262-264: la riga da aggiungere
+  alla tabella doveva dire anche «Non autorizza affermazioni sul pretraining [...]» e «Non è una conferma su dati mai visti».
+- LETTO PROT:203 (riga «Esito positivo»): dinamica centrata, 1/4/5, nessuna adozione o livello B. ESEGUITO grep:
+  «pretraining» a PROT:12, :133, :140; «mai visti» assente; «consultat» a :10 e :57; «inferiorit» solo a :124. Nel §10
+  mancano quindi pretraining, dati gia' consultati e non-inferiorita' MAE/livello, che RISP:21 promette anche nel §10.
+- LETTO PJ evaluation.candidate.scope («no automatic adoption, pretrainingclaim orlevelB») e reading_limits
+  («development15alreadyconsulted»): il JSON e' completo; manca solo la tabella.
+- Precisazione sulla parte N3: la soglia 0,7630564046643697 c'e' in PROT:124 e in PJ candidate; «Va detto a Simone» (REV:434)
+  e' soddisfatto dal §5, che Simone legge. Li' c'e' solo una destinazione imprecisa (RISP:67 cita il §10). La parte C-3 basta
+  da sola a tenere la gravita' minore, perche' C-3 riguardava proprio la tabella.
+
+consegna-2 — CONFERMATO. Minore. Tipo: testo.
+- LETTO REV:324 e :329: «In `proposal.json` vanno aggiunti anche l'IC 95% descrittivo e l'arresto su NaN o OOM».
+- ESEGUITO (Python su PJ): NaN 0, OOM 0, TIMEOUT 0, «divergen» 0; «technical» 1 (fit.failure_states[4]). Le sette
+  occorrenze di «stop» riguardano flag deterministici, calibrazione, controlli positivi, gate, riserva, SCRATCH: nessuna
+  dice NaN/OOM. L'IC 95% c'e' (evaluation.descriptive_ci_percent = 95).
+- LETTO decisioni.md:6755 (3e007c8): «NaN/Inf,OOM,TIMEOUT,incompletezza o pin/supportidiversi fermano la fase». La parte di
+  R-2 su decisioni.md e' quindi soddisfatta; manca solo il JSON. La correzione del revisore regge (un oggetto con condizioni
+  e conseguenza; il nome technical_failure anche in PROT:104).
+
+consegna-3 — CONFERMATO. Nota. Tipo: testo.
+- LETTO decisioni.md:6749 «lineare: almeno90% margine costante→teacher» e prompt:17 «margine costante→teacher»; PROT:95
+  «costante→oracolo»; PJ positive_controls.gates.linear.formula con E_oracle. Nel prompt «teacher» indica il generatore
+  sintetico (prompt:17 «teacher osservabile»), che nel mondo lineare coincide con l'oracolo: il senso si recupera. Ma nel
+  protocollo «teacher» e' T(z) (PROT:86) e l'encoder (PROT:199). Rischio basso, correzione a costo nullo.
+
+consegna-4 — PARZIALE. Gravita' corretta: nota (era minore). Tipo: testo.
+- (ii) C-2 non regge. LETTO PROT:122, ultima frase dello stesso paragrafo della lettura TCN/L13: «Nessuna attribuzione
+  causale “pura” al ramo g, che può imparare componenti affini». g e' il ramo non lineare (PROT:26). Il divieto c'e' quindi
+  sempre, non solo quando L13 e' peggiore di L0: copre la promessa di RISP:20 («niente attribuzione forte del contrasto 3 alla
+  non linearità»). PROT:72 aggiunge la cautela S-2 su L13. Il controesempio del revisore (L0 0,785, L13 0,830, TCN 0,760)
+  produce la lettura «vantaggio sulla ricetta lineare temporale», che e' vera sui numeri, e il protocollo vieta di
+  attribuirla al ramo g. Il descrittivo L13 vs L0 (PROT:126) mostra il -5,7%. Nessuna conclusione sbagliata.
+- (i) C-1 regge solo alla lettera. LETTO REV:233-235: «Se L0 è peggiore della ridge con deterioramento, i contrasti 1-3 sono
+  confronti a ricetta fissa: niente «l'architettura è promettente» e nessuna motivazione per B». Nel protocollo: «promettente»
+  e «Se la TCN migliora» tolti (ESEGUITO grep, 0 occorrenze); PROT:124 «Il successo non autorizza adozione operativa o
+  livello B»; PROT:140 «Nessun automatismo»; letture sempre relative alla ricetta (PROT:12 «Un esito nullo riguarda questa
+  ricetta e questo lettore», PROT:122 «in questa ricetta»). Manca solo la frase condizionata esplicita. La candidatura
+  richiede anche 4 e 5 (PROT:122), quindi una L0 allenata male non basta a creare una candidata.
+- Correzione corretta: facoltativa una frase a PROT:126 («Se L0 è deteriorata rispetto alla ridge, i contrasti 1–3 restano
+  confronti fra queste ricette»), oppure togliere la promessa da RISP:19. Per RISP:20 nessuna modifica necessaria; al piu'
+  indicare PROT:122 come destinazione.
+
+consegna-5 — CONFERMATO come insieme di note. Nota. Tipo: testo.
+- Verificati con grep sul protocollo: «I-1» 0 occorrenze; «decay» solo :63; «larghezza» solo :40; «corsia» solo :191; ID a :3
+  prima dell'ancora p1 (:7); PJ senza ID utente; semi a :44 (§3).
+- Due punti sono piu' deboli: (a) la nota controlli-6 chiedeva la lettura nei due versi, che c'e' (PROT:122); la frase su
+  larghezza e connessioni e' un'aggiunta di GPT nella risposta. (d) la selezione precede il rifit per costruzione (PROT:70
+  «al LR e durata scelti»); manca solo il blocco esplicito delle curve prima del rifit.
+
+consegna-6 — CONFERMATO. Nota. Tipo: testo.
+- LETTO REV:421-422 e :426-427 («decidere ora», «decisi ora»): scelte lasciate a Simone. PROT:202 non le nomina; i limiti
+  sono in PROT:114 e :128 e in PJ reading_limits. Correzione: una frase nella riga «Criteri», oppure nel messaggio di Claude a
+  Simone con la review. Entrambe vanno bene.
+
+consegna-7 — CONFERMATO. Nota. Tipo: testo.
+- ESEGUITO grep -c dell'ID esteso: protocollo 1, PJ 1, delivery_pin 1, prompt 1, registro 1, README 0, decisioni.md 0.
+
+consegna-8 — CONFERMATO. Nota. Tipo: testo.
+- ESEGUITO (mia euristica, diversa da quella del revisore: parola di almeno 3 lettere attaccata a cifre o a sigle, fuori dal
+  codice in linea e dai link): 182 casi nel protocollo v2 contro 7 in c15aac9. Nel §10 (PROT:196-207) trovati tutti gli
+  esempi del revisore: 72.904parametri, 40train, 3semi, 2000bootstrap, iff1, pratico2, gateammissione, livelloB, nelFM,
+  272coreh/orelocali. Ordine di grandezza confermato.
+
+consegna-9 — CONFERMATO. Nota. Tipo: testo.
+- LETTO document_checks_20261118.json: «no_scientific_or_runtime_changes», passed true, details «none», mentre il disegno
+  scientifico cambia. LETTO delivery_pin: content_commit 62348ab, sha256 dei file. Ogni correzione richiede un nuovo pin:
+  conseguenza procedurale ovvia, giusta da ricordare.
+
+======================================================================================================
+D) CONTROLLI A CAMPIONE DELLE CONFERME
+======================================================================================================
+Dimensione «costo»
+- C-1/C-2/C-3 matrice: REGGE. ESEGUITO conti_verifica.py: traiettorie CV 88 = 40 + 48, piu' 15 = 103; massimo 132 + 15 = 147;
+  passi 531.000 / 1.458.000 / 537.600 / 1.477.800; massimo di ceil(a/32)+ceil((1907-a)/32) su tutte le divisioni = 61;
+  ceil(1907/32) = 60; eval held 40.128 = 132 x 304; batch held 1.223.904.
+- C-5 fasi e billing: REGGE. CALCOLATO dalle 8 fasi di PJ: GPUh 21,5 + 2,5 = 24; CPU-only 77 + 3 = 80; allocate
+  249 + 23 = 272. LETTO 3e007c8:results/infra/consolidation_20261104/benchmark/sacct.txt:1 «billing=8,cpu=8,gres/gpu=1,
+  mem=100G»; consolidation_long_20261105/execution/accounting/sacct_benchmark.tsv:3 «billing=8,cpu=8,...,mem=30G» (job solo CPU, senza gres/gpu);
+  riga 2 «billing=2,cpu=2».
+- C-6/C-7 limiti e saldo: REGGE. LETTO fccf88d:.../recovery-v3-reread-20261109/remote_listing.txt: riga 119
+  «DefMemPerCPU=15400» (boost), 123 «MaxTime=04:00:00» e 127 «DefMemPerCPU=3850» (lrd_all_serial), 190
+  «IscrB_WearUsFM 20260107 20270107 2000000 1308137». CALCOLATO 691.863; 272/691.863 = 0,03931%; residuo 691.591.
+- C-9 memoria: REGGE. LETTO 3e007c8:results/infra/pilot_posa/b19618_20261029/final/extraction_metadata/B/pose/
+  train_subset.npz.provenance.json: n_rows_partial_joints 0, n_valid_per_joint 260.163 per tutti i 20 giunti,
+  n_valid_elements 5.203.260 = 20 x 260.163. CALCOLATO 4993^2 x 8 B = 199.440.392 B = 190,2 MiB (x20 = 3,715 GiB).
+- C-10 pin: REGGE. ESEGUITO su extraction_plan_19618.json (sha256 a01799f8..., come il revisore): path, sha256, byte,
+  finestre, utenti e registrazioni dei due npz e sha256 di pose_stats uguali a PJ scratch_dependencies.
+- C-11 rinfresco: REGGE e ora con prova diretta (sezione A).
+Dimensione «consegna»
+- Pin: REGGE. ESEGUITO (Python): i 9 file di delivery_pin hanno byte e sha256 uguali nello snapshot, in git show 62348ab e
+  in git show 3e007c8; 22 controlli in document_checks, 22 passed; i 6 hash di document_checks coincidono col pin.
+- Perimetro del diff: REGGE. ESEGUITO git diff --name-status c15aac9 3e007c8: 12 file, tutti in docs/ e in
+  results/infra/pose_temponet_proposal_20261117/; 62348ab..3e007c8: solo claude_GPT_shared, decisioni.md, delivery_pin;
+  numstat 37/0 e 34/0 (solo aggiunte). Genitori: 3e007c8 -> 62348ab -> c15aac9 -> cfa6462 (git log %P).
+- 49 punti e 50 ID: REGGE. ESEGUITO (regex su REV righe 363-470): 49 punti elenco; 51 ID distinti, cioe' le 50 note piu'
+  costo-6, citato solo nella riga «Rifiutato dai verificatori».
+- ID esteso: REGGE (sezione C, consegna-7). Ancore: LETTO PROT righe 7, 14, 23, 48, 106, 130, 137, 144, 157, 193.
+- Conferma c.7 del revisore consegna («analytic_checks dichiara superato il conto di Claude: corretto, il nuovo è un tetto
+  più prudente»): REGGE SOLO A META'. Il nuovo e' piu' prudente, ma non sostituisce un conto sbagliato: 1.260.000 =
+  11x5x300x60 + 15x300x60 e' il massimo raggiungibile con l'ordine scritto (costo-2). Prevale costo-2.
+- git diff --check c15aac9 3e007c8: ESEGUITO, uscita 0.
+- Punta remota del ramo GPT: NON verificata da me. Il ref locale origin/codex/pose-temponet-proposal-20261117 vale
+  3e007c8 (committer 18/11 10:18). origin e' git@github.com (ssh): per la regola «niente ssh» non ho fatto ls-remote.
+  Claude deve rileggere lo SHA remoto prima del verdetto.
+
+======================================================================================================
+E) AFFERMAZIONE DEL REVISORE CAPO S-H (gate GPU sulla matrice massima) — PARZIALE
+======================================================================================================
+Regge: l'aritmetica. CALCOLATO: 1.477.800 x 18,5 ms x 2 = 15,19 GPUh; con le eval held a batch 32 il gate raddoppiato
+uniforme fa 19,39-27,78 GPUh prima di I/O e avvii; con 40 job restano 18 h utili (PROT:175). Il gate e' sulla matrice
+formale massima (PROT:183 «matrice massima6LR300»), mentre il caso nominale iniziale e' 531.000 passi (36%).
+Non regge come previsione:
+- Il gate proietta per testa con il p95 misurato (PROT:181, :183), non con un tempo uniforme.
+- Il rallentamento deterministico misurato e' delle convoluzioni dilatate (8917e2a:8495). Le hanno solo le TCN (PROT:28), che
+  fanno il 37,0% dei passi e il 36,4% dei batch held. Scenario misto (TCN 18,5 ms, altre 4,1 ms): 9,87-14,11 GPUh con 6 LR,
+  8,47-12,01 con 5 LR. TEMPONet raw ha sei dilatate, la TCN nuova due: anche 18,5 ms per la TCN e' pessimistico.
+- Il sesto LR non si raggiunge (costo-2): la matrice raggiungibile riduce il gate di circa il 15%.
+Risposta alla domanda: va detto a Simone, in una frase (nel §9 o nella review di Claude). La regola non va cambiata: P-1
+chiedeva proprio un gate su tutta la matrice, estensioni comprese, e un arresto al gate non produce conclusioni sbagliate
+(PROT:185 «nessun fit neurale»; PROT:147 «torna alla decisione pertinente»). Facoltativo e coerente con P-1: proiettare la
+matrice raggiungibile (5 LR: 125 traiettorie, 1.276.500 passi, 33.440 eval held). Implementazione: fissare il batch delle
+valutazioni held. Benchmark: la cifra vera.
+
+======================================================================================================
+F) RILIEVI NUOVI
+======================================================================================================
+V-costo-consegna-1 — nota, testo. La stima a priori del §9 applica lo stesso tempo per passo a tutte le teste; il
+rallentamento deterministico misurato riguarda solo le convoluzioni dilatate delle TCN.
+- Posizione: PROT:177; PJ resource_proposal.a_priori_timing; fonte dei tempi 8917e2a:docs/claude_GPT_shared:8492-8495.
+- Prove: LETTO 8917e2a:8495 «con `deterministic=True` le convoluzioni dilatate usano im2col/col2im»; i tempi sono di
+  TEMPONet raw su DB8 (voce del 09/11, collaudi 2 e 3), che ha sei convoluzioni dilatate (temponet.py, dilatazioni 2/4/8, due
+  per blocco). Nel disegno: TCN con due dilatate (PROT:28), L13 k13 senza dilatazione (PROT:35), MLP e L0 senza convoluzioni.
+  CALCOLATO: le TCN sono il 37,0% dei passi della matrice massima; con TCN a 18,5 ms e altre teste a 4,1 ms il gate raddoppiato
+  fa 9,87-14,11 GPUh (6 LR), contro 19,39-27,78 dello scenario uniforme.
+- Effetto: il limite alto della stima (15,19 GPUh di soli passi) e' pessimistico per la composizione della matrice; il limite
+  basso usa un tempo senza vincolo deterministico. Nessuna regola cambia: il gate misura per testa.
+- Correzione: insieme alla frase di costo-1, dire che l'analogo deterministico riguarda le convoluzioni dilatate delle TCN e
+  che la cifra per le altre teste viene solo dal benchmark. Utile a Simone per leggere il tetto di 24 GPUh.
+
+Nessun altro rilievo nuovo nelle due dimensioni. Ho cercato in particolare: coerenza dei numeri fra PROT, PJ, decisioni.md e
+registro (soglie, semi, griglie, IC, bootstrap: coerenti); limiti delle code e memoria per job (larghi); quota WORK e fonte
+del 933,1G (e4ebdbf, gia' verificata nel giro precedente); identita' dei 9 file pinnati (9/9).
+
+======================================================================================================
+G) VERDETTI DEI PUNTI
+======================================================================================================
+Punto 6 — preventivo massimo, memoria e dipendenze (dimensione «costo»): CONVERGE.
+- Dopo la verifica non resta nessun bloccante e nessun minore. L'unico minore del revisore (costo-1) scende a nota: il testo
+  dice gia' «prima di validation/I/O» e non da' una stima totale; lo scenario che sfora usa 18,5 ms uniformi, mentre il
+  rallentamento riguarda le sole TCN (37% dei passi) e il gate misura per testa.
+- Restano note: frase utile a Simone su eval held, 4,1 ms non deterministico e analogo valido solo per le TCN (costo-1, V-1,
+  S-H); sesto LR irraggiungibile e chiave «superseded» da correggere (costo-2); file aperti dai validatori storici
+  (costo-3, implementazione); citare la prova del rinfresco (costo-4, S-G respinta); 30 combinazioni (costo-5); corsia per fase
+  promessa in RISP:73 (costo-6); liste dei fold promesse in PJ (costo-7).
+- Disegno, implementazione, benchmark: nessun problema del disegno aperto (la scelta 5/6 LR del gate e' facoltativa); batch
+  delle eval held e elenco dei file aperti spettano al codice; la cifra del gate al benchmark.
+
+Dimensione «consegna» — disposizioni, pin e integrita': CONVERGE_CON_CORREZIONI.
+- Integrita' confermata: pin 9/9 in tre sorgenti, 22/22 controlli, diff solo documentale (12 file), 62348ab..3e007c8 solo pin
+  e registro, 49 punti / 50 ID, ID esteso coerente dove c'e'.
+- Due correzioni minori di testo prima che Simone firmi: consegna-1 (riga «Esito positivo» del §10 senza pretraining, dati gia'
+  consultati e non-inferiorita' MAE/livello, che C-3 chiedeva proprio nella tabella) e consegna-2 (arresto NaN/OOM/TIMEOUT solo
+  come etichetta in PJ, chiesto da R-2). consegna-4 scende a nota (C-2 coperto da PROT:122; C-1 coperto nella sostanza).
+- Note: consegna-3, -5, -6, -7, -8, -9 (testo). Dopo le correzioni va rifatto il pin.
+- Da fare per Claude: rileggere lo SHA remoto del ramo GPT (ls-remote), che qui non ho verificato.
+
+Fine del rapporto.

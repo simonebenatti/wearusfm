@@ -1,0 +1,79 @@
+POINT VERDICTS architettura-controlli [('1 — ramo affine comune a MLP, TCN-post e', 'CONVERGE_CON_CORREZIONI'), ('3 — controlli positivi train-only', 'BLOCCO')]
+POINT VERDICTS ricetta-criteri [('2 — ricetta finita', 'CONVERGE_CON_CORREZIONI'), ('5 — criteri completi', 'CONVERGE_CON_CORREZIONI')]
+POINT VERDICTS costo-consegna [('6 — Preventivo massimo, memoria e dipend', 'CONVERGE'), ('Consegna — disposizioni, pin e integrità', 'CONVERGE_CON_CORREZIONI')]
+architettura-1	rev	minore	testo	PARZIALE	nota	testo	Nome del ramo: «lineare» nei titoli e nel §10, «affine» nel §3, nei bracci e nella rispost
+architettura-2	rev	minore	disegno	PARZIALE	minore	implementazione	Residuo normale relativo ≤1e-6 senza denominatore: nella lettura di LSQR il cancello scatt
+architettura-3	rev	nota	implementazione	CONFERMATO	nota	implementazione	«Generatori separati» con nn.Dropout: realizzabile, ma va detto come
+architettura-4	rev	nota	implementazione	CONFERMATO	nota	implementazione	Precisione della LN nella WLS e rango atteso
+architettura-5	rev	minore	testo	CONFERMATO	minore	testo	Nota 12 accolta ma non riportata: TCN/MLP scambia larghezza con connessioni temporali
+architettura-6	rev	nota	testo	PARZIALE	nota	testo	q_i: dire «elementi supportati dopo il crop6»; un divario negativo oltre tolleranza indica
+architettura-7	rev	nota	testo	CONFERMATO	nota	testo	La v2 ha tolto la cautela di c15aac9 su L13 (classi non annidate, capacità diversa)
+controlli-1	rev	bloccante	disegno	PARZIALE	bloccante	disegno	Ancora E_real = WLS non regolarizzata a 10 utenti: la calibrazione fallisce o porta il con
+controlli-2	rev	bloccante	testo	CONFERMATO	bloccante	disegno	«MLP non deve vincere il temporale»: cancello nel protocollo, descrittivo nel JSON, senza 
+controlli-3	rev	minore	disegno	CONFERMATO	minore	disegno	Griglie troppo rade rispetto alla tolleranza 0,05: «non calibrato» possibile anche con E_r
+controlli-4	rev	minore	disegno	CONFERMATO	minore	disegno	Il guadagno tarato sugli inner a 10 utenti contiene l'errore di stima della LS: sugli oute
+controlli-5	rev	nota	disegno	CONFERMATO	nota	disegno	Gli held outer non scelgono (a, sigma), ma scelgono LR ed epoca delle teste di controllo
+controlli-6	rev	nota	disegno	CONFERMATO	nota	disegno	Il mondo sintetico non ha la componente di livello che domina la MSE reale: i controlli no
+controlli-7	rev	nota	disegno	CONFERMATO	nota	disegno	«Uscita teacher non nulla» è controllata solo da std>1e-8: T può essere quasi lineare o av
+controlli-8	rev	nota	testo	CONFERMATO	nota	testo	Parole non allineate fra i documenti e precedenza delle etichette
+controlli-9	rev	nota	implementazione	CONFERMATO	nota	implementazione	Dettagli da fissare nel codice e nel manifest dei controlli
+controlli-10	rev	nota	disegno	CONFERMATO	nota	disegno	Due mondi diversi per direzione outer: il pooled è una miscela pesata dalle scale
+controlli-11	rev	nota	implementazione	PARZIALE	nota	implementazione	Le verifiche in forma chiusa dei controlli vanno decise prima dei fit neurali di controllo
+controlli-12	rev	nota	benchmark	CONFERMATO	nota	benchmark	Raggiungibilità del 50% della TCN: non stabilita qui, va misurata
+V-architettura-controlli-1	new	None	None	NUOVO	nota	implementazione	Soglia dinamica di E_real non specificata
+S-A	seed	None	None	PARZIALE	bloccante	disegno	La parte strutturale regge: il lineare non ha una verifica di raggiungibilità, il temporal
+S-B	seed	None	None	CONFERMATO	bloccante	disegno	Coincide con controlli-2. La clausola non è definita (riferimento, margine, metrica, fold 
+S-C	seed	None	None	PARZIALE	nota	disegno	Regge nella direzione: il margine LS→oracolo contiene l'eccesso di stima della LS, che una
+ricetta-1	rev	minore	disegno	PARZIALE	minore	disegno	Minimo di E_dyn al bordo di 300: compromesso S-2 o «ottimizzazione non risolta»? Il testo 
+ricetta-12	rev	minore	disegno	CONFERMATO	minore	disegno	L'allarme «LR ancora al bordo dopo l'estensione» può scattare su L0/L13 per differenze min
+ricetta-2	rev	minore	testo	CONFERMATO	minore	testo	S-2 chiamato «allarme» mentre gli «allarmi aperti» tolgono etichette e ammissibilità
+ricetta-4	rev	minore	testo	CONFERMATO	minore	testo	Controlli: soglia dinamica ed E_dyn non dicono se si calcolano su y osservato o su y* puli
+ricetta-6	rev	nota	testo	CONFERMATO	nota	testo	«Massimo 6 LR» non è raggiungibile: il massimo vero è 5 per combinazione
+ricetta-3	rev	nota	disegno	PARZIALE	bloccante	testo	Nei controlli non è detto quali teste fermano la catena con un allarme
+ricetta-5	rev	nota	testo	CONFERMATO	nota	testo	S-2 non dice che cosa succede se il compromesso riguarda L0 o MLP
+ricetta-7	rev	nota	testo	CONFERMATO	nota	testo	Nota selezione-11 accolta con qualificazione, ma il limite del weight decay non è scritto 
+ricetta-8	rev	nota	disegno	CONFERMATO	nota	disegno	Un NaN in un LR esplorativo (3e-3 o 1e-2) ferma tutta la fase
+ricetta-10	rev	nota	testo	CONFERMATO	nota	testo	Manifest di selezione bloccato prima dell'inferenza, non esplicitamente prima del rifit
+ricetta-11	rev	nota	disegno	CONFERMATO	nota	disegno	Nei controlli lo stesso held outer sceglie LR ed epoca e poi giudica il recupero
+ricetta-9	rev	nota	implementazione	CONFERMATO	nota	implementazione	Dettagli da fissare nel codice e nei test del §8
+criteri-1	rev	minore	disegno	CONFERMATO	minore	disegno	«Risolti migliori» non definito: contraddice la regola iff della candidata
+criteri-2	rev	minore	testo	PARZIALE	minore	testo	Letture accolte nella risposta (C-1 nei due versi, C-2, controlli-6) assenti da protocollo
+criteri-3	rev	minore	testo	CONFERMATO	minore	testo	Etichetta 3 senza «direzione e ampiezza» e senza «nessuna equivalenza» (regressione da c15
+criteri-4	rev	minore	testo	CONFERMATO	minore	testo	Tabella §10, riga «Esito positivo»: mancano clausole che la risposta destina al §10
+criteri-5	rev	minore	testo	PARZIALE	minore	testo	JSON: technical_failure senza cause né conseguenza; gate R-1 senza conseguenza scritta
+criteri-6	rev	minore	testo	CONFERMATO	minore	testo	Testo del gate R-1: «stessi dtype» falso per costruzione; «8.327» senza «con supporto»
+criteri-7	rev	nota	testo	CONFERMATO	nota	testo	MAE e livello: manca il riferimento del delta
+criteri-8	rev	nota	testo	CONFERMATO	nota	testo	«Ammessa» e «gate di qualità» non elencati in un punto solo
+criteri-9	rev	nota	implementazione	CONFERMATO	nota	implementazione	R-1 può verificare anche il bootstrap e conviene eseguirlo prima dell'inferenza bloccata
+criteri-10	rev	nota	testo	CONFERMATO	nota	testo	Frasi del §5 di c15aac9 cadute nella riscrittura; ridge pre solo come punto storico
+criteri-11	rev	nota	testo	CONFERMATO	nota	testo	In PJ la regola è prosa compressa, con i nomi delle etichette attaccati alle parole
+V-ricetta-criteri-1	new	None	None	NUOVO	minore	disegno	S-2 su L13 (o MLP) entra nella regola della candidata attraverso il veto
+V-ricetta-criteri-2	new	None	None	NUOVO	minore	disegno	Nei controlli un allarme aperto ferma la catena anche se la testa supera il cancello
+V-ricetta-criteri-3	new	None	None	NUOVO	nota	testo	«minimo interno» di S-2 si puo' leggere in due modi
+S-D	seed	None	None	PARZIALE	minore	disegno	Il nucleo regge. P:69 rende «non risolta» anche il caso di compromesso, e P:104 toglie le 
+S-E	seed	None	None	PARZIALE	minore	testo	Il gate e' coerente con la ricevuta; il sospetto di incoerenza non regge. 8.327 e' groups.
+S-F	seed	None	None	PARZIALE	nota	testo	Il fatto regge: «ramo lineare» nel titolo, nel §5 e nel §10, «ramo affine» nel §3. La disp
+costo-1	rev	minore	testo	PARZIALE	nota	testo	La stima a priori esclude le valutazioni held e prende come estremo basso un tempo senza v
+costo-2	rev	nota	disegno	CONFERMATO	nota	disegno	Con l'ordine dei passi 2-4 il sesto LR non si raggiunge: al massimo 5 LR per combinazione;
+costo-3	rev	nota	implementazione	CONFERMATO	nota	implementazione	I validatori storici, se riusati invariati, aprono più file di quelli elencati come dipend
+costo-4	rev	nota	testo	CONFERMATO	nota	testo	Il condizionale sul rinfresco del 12/11 ha già una prova; manca il controllo per fase se l
+costo-5	rev	nota	testo	CONFERMATO	nota	testo	Il gate CPU conta 25 combinazioni di calibrazione, ma la griglia ne ha 30 per direzione
+costo-6	rev	nota	testo	PARZIALE	nota	testo	La tabella non segue l'ordine di esecuzione, e la corsia seriale si controlla solo al pref
+costo-7	rev	nota	testo	CONFERMATO	nota	testo	La disposizione della nota 20 manda le liste dei fold in proposal.json, che contiene solo 
+consegna-1	rev	minore	testo	CONFERMATO	minore	testo	La tabella del §10 non porta tutto il perimetro di C-3 né la soglia N3
+consegna-2	rev	minore	testo	CONFERMATO	minore	testo	In proposal.json l'arresto tecnico NaN/OOM è solo un'etichetta
+consegna-4	rev	minore	testo	PARZIALE	nota	testo	Due letture accolte nella matrice (C-1 e C-2) non sono scritte nel §5
+consegna-3	rev	nota	testo	CONFERMATO	nota	testo	«costante→teacher» al posto di «costante→oracolo» in decisioni.md e nel prompt
+consegna-5	rev	nota	testo	CONFERMATO	nota	testo	Piccole promesse delle disposizioni assenti dal protocollo, o destinazioni imprecise
+consegna-6	rev	nota	testo	CONFERMATO	nota	testo	Le scelte che la review lasciava a Simone (criteri-3, criteri-6) non compaiono nella tabel
+consegna-7	rev	nota	testo	CONFERMATO	nota	testo	L'ID esteso del protocollo manca nel README e in decisioni.md
+consegna-8	rev	nota	testo	CONFERMATO	nota	testo	Parole fuse nel testo che Simone legge, tabella §10 compresa
+consegna-9	rev	nota	testo	CONFERMATO	nota	testo	Pin da rifare dopo le correzioni; nome di un controllo fuorviante
+V-costo-consegna-1	new	None	None	NUOVO	nota	testo	La stima a priori del §9 usa un tempo per passo uniforme per tutte le teste, ma il rallent
+S-G	seed	None	None	RESPINTO	nota	testo	I tre file stanno nel perimetro del rinfresco del 12/11 e sono stati toccati quel giorno. 
+S-H	seed	None	None	PARZIALE	nota	testo	L'aritmetica regge. A 18,5 ms uniformi i soli passi fanno 15,19 GPUh, e con le eval held a
+N findings 63
+final severity Counter({'nota': 42, 'minore': 18, 'bloccante': 3})
+verdicts rev Counter({'CONFERMATO': 46, 'PARZIALE': 12})
+seed verdicts Counter({'PARZIALE': 6, 'CONFERMATO': 1, 'RESPINTO': 1})
+final kind Counter({'testo': 37, 'disegno': 16, 'implementazione': 9, 'benchmark': 1})

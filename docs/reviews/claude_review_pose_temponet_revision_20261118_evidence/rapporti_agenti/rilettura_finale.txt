@@ -1,0 +1,304 @@
+RILETTURA FINALE AVVERSARIA (controllo3) DELLA BOZZA DELLA REVIEW TCN, SOLO SULLE PARTI DEL DIFF
+====================================================================================================
+
+Oggetto: bozza congelata controllo3/bozza_controllo3.md (717 righe), citata qui come B3:<riga>.
+sha256 9492d23ea1ba5788e16871f8e6b97f6d8088b33887b43c91794841c55d6cf9b6, uguale all'inizio e alla fine del lavoro
+(r0_fonti.out.txt, r5_applicazione.out.txt e ricontrollo finale). La bozza non è stata toccata.
+Confronto: controllo2/bozza_controllo2.md (B2), diff controllo3/diff_controllo2_controllo3.patch (359 righe, 21 blocchi).
+Rilievi da applicare: controllo2/sintesi_controllo2.txt (SC), P-01...P-05, VA2-N1, T-01...T-10; per i PARZIALE vale il
+CORRECTED_FIX. Fonti: copia gpt_3e007c8 (P, J, DEC, R), più review_controlli.txt, review_ricetta.txt e i rapporti/script di
+controllo2.
+Regole rispettate: script e rapporto solo in controllo3/rilettura/; nessun altro file; git non usato; niente ssh, rete, job o
+subagent. Il segnaposto «HH:MM» (B3:14) non è segnalato. Nessuna proposta di riprogettazione: solo errori e incoerenze.
+
+Script (tutti in questa cartella, eseguiti con python3 -I, solo aritmetica o lettura di testo):
+- r0_fonti.py -> r0_fonti.out.txt: 32 controlli sulle righe di P, J, DEC e R citate nei passi cambiati. Tutti OK.
+- r1_soglia_r_scomposta.py -> .out.txt: scompone l'aumento 0,27 -> 0,37 della quota minima r fra ancora ridge e banda su y*.
+- r2_bl2_16.py -> .out.txt: le 16 combinazioni di BL-2 con OB-1, nel corpo e nel prompt; identità di B3:192.
+- r3_ob3_ob4.py -> .out.txt: le 30 combinazioni OB-3/OB-4 con la frase nuova di T-08.
+- r4_soglie.py -> .out.txt: spostamento delle soglie con la griglia attuale (da v_soglie.out.txt).
+- r5_applicazione.py -> .out.txt: presenza e assenza delle frasi chiave di ogni correzione, con le righe.
+- r6_id_prompt.py -> .out.txt: ID dei rapporti fuori parentesi nel prompt (convenzione di B3:569-571).
+
+
+1. STATO DEI 16 RILIEVI
+-----------------------
+
+P-01 APPLICATO. B3:192-194 riporta alla lettera il CORRECTED_FIX (SC:25): «Se non passa, la MLP recupera più del 50% − q del
+  margine (la clausola si valuta solo con la TCN sopra il 50%): il margine piantato si legge almeno in parte in modo istantaneo, e
+  il controllo non dice se la ricetta sfrutta il tempo. L'etichetta segue le regole sotto.» Con la divisione di T-06, «non passa»
+  vale «non passa nei numeri», e il caso B di AVV-05 (clausola superata nei numeri, allarme MLP) non è più toccato da questa frase.
+  L'identità regge perché il 50% e la clausola hanno lo stesso denominatore E_LS* − E_oracolo (tabella B3:162-163): frazione MLP =
+  frazione TCN − clausola > 0,5 − q (r2: 0 violazioni su 6.120 casi). La frase vecchia «Se non passa, il margine piantato si legge
+  in modo istantaneo» è sparita (r5).
+
+P-02 APPLICATO. B3:105-107 coincide con il CORRECTED_FIX (SC:31). Numeri rifatti da v_soglie.out.txt (r4): spostamenti per coppia
+  (K, quota) da −0,0214 a +0,0122, cioè «circa 0,02 in giù o 0,01 in su»; soglie, continue e di griglia, fra 0,8933 e 0,9361,
+  cioè «fra 0,89 e 0,94». I buchi «non calibrato» sotto la soglia ci sono (K 2,5/5 e 3,5/7 con quota 0,3 e 0,4). L'esempio
+  facoltativo non è stato aggiunto: era facoltativo.
+
+P-03 APPLICATO. B3:472 è il FIX alla lettera (SC:35): «sul fitting outer» per unità attive e centraggio, «per dimensione», «il
+  centro entra nel primo bias». P:80 contiene davvero i «12 blocchi di soluzioni» (r0).
+
+P-04 APPLICATO. B3:708 è il CORRECTED_FIX (SC:42): «T quasi lineare, da misurare prima dei fit di controllo (controlli-7), e P:122
+  come destinazione di C-2 (consegna-4);». La riga vecchia «- controlli-7 e consegna-4;» non c'è più. Il problema che P-04 chiudeva
+  però ricompare in una riga nuova del prompt, B3:638 (problema 5).
+
+P-05 APPLICATO (assorbito dalla riscrittura di T-07). Il «cioè» di B2:606 non c'è più. Il corpo (B3:252-254) e il prompt
+  (B3:648-650) danno ora entrambi la quota relativa come regola e lo 0,5% come esempio, quindi il prompt non è più stretto del
+  corpo, che era il rilievo. Lo 0,5% «come propone il revisore» è riscontrato: review_ricetta.txt:391-392, «una quota relativa
+  dichiarata (per esempio 0,5%)», riferita alla MSE pooled del LR vicino.
+
+VA2-N1 APPLICATO, nella forma di T-06. L'etichetta del caso «non conta come superata» ora è scritta, nel corpo (B3:203-205: «se
+  la clausola passa nei numeri ma la MLP ha un allarme aperto, non conta come superata e l'etichetta è «ottimizzazione non
+  risolta»») e nel prompt (B3:634). Il testo letterale di VA2-N1 («o non conta come superata [...] quando la TCN o la MLP hanno un
+  allarme») non è stato adottato per la clausola fallita nei numeri: lì prevale T-06, errore confermato. Nel caso «non conta» le due
+  regole danno la stessa etichetta, perché la MLP ha sempre l'allarme.
+
+T-01 APPLICATO. Corpo B3:133-136 e prompt B3:607-608 (CORRECTED_FIX di SC:67). «Nel modello di 0,002-0,005 di E_dyn» corrisponde a
+  Delta_syn 0,0022, 0,0028, 0,0039 e 0,0048 (v_t01_ancora.out.txt, quota 0,5, E_real 0,92 e 0,94, K 2,5/5 e 3,5/7): è più preciso
+  del «circa 0,003» del CORRECTED_FIX e ugualmente vero. La sezione 7 non è stata toccata, come voleva il verificatore. Nella
+  trascrizione si sono perse le virgole del CORRECTED_FIX (problema 4).
+
+T-02 APPLICATO IN PARTE.
+  - Corpo completo. Nella nota sotto la tabella (B3:169-174), 0,27 -> 0,37 con a = 1 ed E_real 0,85 corrisponde a
+    bl1_soglia_r.out.txt. L'aumento viene tutto dalla banda su y*: WLS/y* dà 0,37, ridge/y dà 0,27 (r1), quindi «la banda su E_LS*
+    alza la quota minima» è attribuito bene. Il saldo «da 1 caso in meno a 12 in più, su 81» corrisponde a v_t02_arresti.out.txt
+    (scarti da −1 a +12 fra «banda su ystar» e «banda su y», NC+ND). Anche il contrappeso «toglie il «non diagnostico»» c'è.
+  - In (c), B3:144-147: sigma fino a circa 6 per a = 3 (bl1_intervallo_sigma: sigma massimo usato 6,0); «P:92 vieta un nuovo seme»
+    (P:92: «nessun nuovo seed/griglia automatica»); RHS-base T (P:80). Riga 80 invariata, come chiesto. La non equivalenza della
+    banda su y con E_LS* solo nel margine è detta in B3:173-174 e B3:623.
+  - Nel prompt, (c) (B3:613-615) è completo. (d) (B3:622-623) riporta solo i costi. Manca il contrappeso del corpo, «toglie il «non
+    diagnostico» dovuto allo spostamento della banda outer», con il saldo da −1 a +12 su 81. Il CORRECTED_FIX diceva: «Le stesse
+    frasi vanno nel prompt, in (c) e (d)». Peso basso. Correzione: problema 3.
+
+T-03 APPLICATO. Corpo B3:82-86 (P:96, P:98 e P:95 riscontrati in r0), nota della tabella B3:167-168 («ricetta non ammessa» diventa
+  più probabile) e prompt B3:591-592. La frase vecchia del prompt «il temporale sì (P:96)» non c'è più.
+
+T-04 APPLICATO MALE, in una frase sola.
+  - (i) è giusto: le due conseguenze sono separate (B3:138-140 e B3:610-611), e per la testa valgono gli stati per testa di OB-1.
+  - (ii) è giusto in parte: «Un'alternativa a (b)» (B3:137, B3:609) e «La (a) resta per l'ancora».
+  - (iii) è giusto: la ridge del cancello è quella di (a) e (b), che restano scritte.
+  - È sbagliata l'ultima frase del corpo, B3:141-142: «Se GPT sostituisce anche (a) con l'intervallo di E_oracolo, la (c) deve
+    essere la banda sganciata dall'ancora, perché l'ancora del temporale resterebbe la WLS non regolarizzata».
+    - Il caso che il FIX copriva è un altro: l'alternativa sostituisce anche (a), cioè la toglie, e resta l'ancora di P:92 sulla
+      WLS (T-04 (ii): SC:81; tenuta/rapporto.txt:291; verifica-tenuta/rapporto.txt:121, «coerente con T-02 (iii)»).
+    - Con l'intervallo di E_oracolo l'ancora a E_real non c'è più (B3:119, «senza ancora a E_real»; in P:92 cade
+      «abs(E_LS,synth−E_real)<=0.05»). Proprio nel caso nominato, quindi, la ragione è falsa e la condizione non ha oggetto.
+    - Il caso vero resta scoperto. In quel caso, inoltre, la ridge del cancello perderebbe griglia e regola di bordo, che stanno in
+      (a).
+  - Nel prompt (B3:611-612) c'è il testo del FIX («se sostituisci anche (a)»). Lì però l'unica sostituzione di (a) nominata è
+    l'intervallo (B3:602-603), quindi si legge allo stesso modo.
+  - Correzione: problema 1.
+
+T-05 APPLICATO IN PARTE. Il corpo è completo (B3:116-121). La regola storica è riscontrata: DEC:5319-5320, «alpha 10**[-2..4],
+  estensioni fino a 3 decadi per lato, parita' alpha minore, eventuale bordo irrisolto dichiarato». Ci sono anche l'intercetta non
+  penalizzata e, per la variante dell'intervallo, la scelta di sigma nel lineare e lo spareggio del temporale (P:92). Nel prompt
+  (a) (B3:601-603) manca «la conseguenza scritta se il minimo resta al bordo», che il FIX chiedeva «In (a) e nel prompt» (r5: la
+  frase compare solo a B3:117). DEC:5319 non dà una conseguenza, solo «bordo irrisolto dichiarato». Correzione: problema 2.
+
+T-06 APPLICATO. Corpo B3:200-202 e prompt B3:632-633. La combinazione TCN oltre il 50%, nessun allarme TCN, clausola fallita nei
+  numeri e allarme MLP dà ora «controllo non diagnostico» (r2). La frase vecchia «con un allarme aperto su TCN o MLP» non c'è più.
+
+T-07 APPLICATO. B3:252-263 e prompt B3:648-654: quota relativa per tutte le teste, nei fit reali e nei controlli. Le altre
+  condizioni di P:69 restano allarmi (riscontrate in r0), e il lato superiore resta allarme. Il 3/7 non compare, come voleva il
+  verificatore. Il controesempio di BL-3 è chiuso dall'esempio: 0,0001 contro 0,005 × 0,7269 = 0,0036.
+
+T-08 APPLICATO. Frase nuova nel corpo (B3:333-334) e nel prompt (B3:686-687). Il prompt omette «La scelta opposta va bene, purché
+  dichiarata», ma la copre la clausola generale di B3:582-583. Le 30 combinazioni OB-3/OB-4 hanno ora un nome solo ciascuna (r3; il
+  caso che era ambiguo, OB-3(a) con allarme TCN ed etichetta 3 con upper99 < 0, dà il nome misto con la lettura sospesa).
+
+T-09 APPLICATO.
+  - J:104 compare in B3:306-307, B3:320 e B3:338, e nel prompt a B3:671, B3:678 e B3:690.
+  - DEC:6747 compare in B3:251 e B3:654.
+  - DEC:6753 compare in B3:320 e B3:678.
+  - Righe riscontrate (r0): J:104 è `practical_readout_recommendation` e chiede «L0/MLP/L13/TCNpost admitted»; DEC:6747 contiene
+    «Bordo finale irrisolto» e «Allarme S-2»; DEC:6753 contiene «Candidata iff», «TCN-post ammessi» e «S-2 limita attribuzione».
+
+T-10 APPLICATO. Tutte e quattro le parti:
+  - (1) B3:607-608;
+  - (2) B3:620-621;
+  - (3) B3:638-639;
+  - (4) B3:280-282, coerente con il prompt B3:661-662.
+  La frase di (3) è il CORRECTED_FIX alla lettera, ma introduce il problema 5.
+
+Riepilogo: 13 APPLICATO (P-01...P-05, VA2-N1, T-01, T-03, T-06...T-10), 2 APPLICATO IN PARTE (T-02, T-05), 1 APPLICATO MALE (T-04),
+0 NON APPLICATO. La frase di B3:58 «Tutto è corretto in questa versione» diventa vera solo dopo le correzioni 1-3 qui sotto.
+
+
+2. PROBLEMI (errori nuovi o di applicazione, nei passi cambiati)
+----------------------------------------------------------------
+
+1. [B3:141-142; prompt B3:611-612] ERRORE (peso medio: non cambia verdetti né blocchi, ma è una condizione che GPT deve applicare).
+   Problema: la frase di T-04 è applicata al caso sbagliato.
+   - Nel corpo la ragione data è falsa proprio nel caso che nomina: con l'intervallo di E_oracolo non c'è ancora a E_real.
+   - Il caso da coprire resta scoperto: l'alternativa toglie anche (a) e resta l'ancora di P:92 sulla WLS.
+   - Il prompt è ambiguo nello stesso modo.
+   Prova:
+   - B3:119 «In alternativa ad (a), un intervallo fissato ora per l'errore dell'oracolo, senza ancora a E_real»;
+   - P:92 «abs(E_LS,synth−E_real)<=0.05»;
+   - SC:81 e tenuta/rapporto.txt:291 «(b)» toglie anche (a): l'ancora del temporale resta la WLS non regolarizzata»;
+   - verifica-tenuta/rapporto.txt:121;
+   - B3:602-603: nel prompt l'unica sostituzione di (a) nominata è l'intervallo.
+   Correzione:
+   - B3:141-142: «La (a) resta per l'ancora. Se GPT toglie anche (a) e tiene l'aggancio di P:92 alla WLS non regolarizzata, la (c)
+     deve essere la banda sganciata dall'ancora, perché l'ancora del temporale resterebbe quella WLS. Con l'intervallo di
+     E_oracolo l'ancora a E_real non c'è più e valgono le regole scritte in (a).»
+   - B3:611-612: «La (a) resta per l'ancora; se togli anche (a) e tieni l'aggancio di P:92 alla WLS, la (c) deve essere la banda
+     sganciata dall'ancora.»
+
+2. [prompt B3:601-603] IMPRECISIONE (applicazione parziale di T-05).
+   Problema: il prompt chiede «una regola di bordo (per esempio quella storica di DEC:5319)», ma non la conseguenza se il minimo
+   resta al bordo. È proprio ciò che T-05 voleva evitare: un ottimo fuori griglia rifà l'ancora gonfiata e alla rilettura «corrisponde».
+   Prova:
+   - B3:117 ha la frase, il prompt no (r5);
+   - DEC:5319-5320 dà solo «eventuale bordo irrisolto dichiarato»;
+   - SC:87 «In (a) e nel prompt: [...] conseguenza dichiarata se il minimo resta al bordo».
+   Correzione, B3:601-602: «... su una griglia fissata ora con una regola di bordo (per esempio quella storica di DEC:5319) e la
+   conseguenza scritta se il minimo resta al bordo, con una metrica dichiarata, per ciascun bersaglio, intercetta non penalizzata.»
+
+3. [prompt B3:622-623] IMPRECISIONE (peso basso; applicazione parziale di T-02).
+   Problema: il prompt (d) riporta solo i due costi di E_LS*. Mancano il contrappeso e il saldo che il corpo dà (B3:170-171), quindi
+   il prompt è più sbilanciato del corpo nella scelta chiesta a GPT.
+   Prova:
+   - SC:73 «Le stesse frasi vanno nel prompt, in (c) e (d)»;
+   - r5: «In cambio toglie il «non diagnostico»» compare solo a B3:170.
+   Correzione, B3:622-623: «Va detto che il cancello del 50% diventa più severo e che la banda su E_LS* rende più probabile «non
+   calibrato», ma toglie il «non diagnostico» dello spostamento della banda outer (nel modello il saldo degli arresti va da −1 a
+   +12 casi su 81); non è equivalente la banda su y con E_LS* solo nel margine.»
+
+4. [B3:134-135] IMPRECISIONE (peso basso; nata dalla trascrizione di T-01).
+   Problema: «e se la ridge non abbassa affatto E_real cresce di poco». Senza virgole si legge «E_real cresce di poco», mentre il
+   soggetto è la stretta del margine: è un'ambiguità su E_real, la grandezza centrale del blocco.
+   Prova: il CORRECTED_FIX (SC:67) aveva «(e, se la ridge non abbassa affatto E_real, cresce di poco: ...)».
+   Correzione: «...la stretta resta; e, se la ridge non abbassa affatto E_real, la stretta cresce di poco, perché a pari sigma la
+   ridge sintetica sbaglia meno della WLS (nel modello di 0,002-0,005 di E_dyn).»
+
+5. [prompt B3:638-639] IMPRECISIONE (peso basso; nata dal CORRECTED_FIX di T-10 (3)).
+   Problema: «controlli-7 propone di misurarla in forma chiusa prima dei fit di controllo».
+   - (i) L'ID sta fuori parentesi, contro la convenzione di B3:569-571 che P-04 ha appena fatto rispettare. È l'unico ID nuovo fuori
+     parentesi nel prompt (r6; quelli di B3:710 erano già accettati da P-04). È proprio `controlli-7`, che nella matrice di GPT è la
+     nota 13 (R:47: «13 | `controlli-7` | TCN-pre: affiancare la ridge pre storica»), cioè la collisione che P-04 indicava come
+     rischio residuo principale.
+   - (ii) L'oggetto attribuito non è quello di controlli-7. La nota propone di riportare le unità attive per strato di T e la quota
+     di E_LS->E_oracolo recuperata dalla WLS L13, cioè quanto T è quasi lineare (review_controlli.txt:249-259). Lo dicono anche il
+     corpo (B3:208-209, «propone di misurarlo», T quasi lineare) e il prompt stesso (B3:708, «T quasi lineare, da misurare»). Non
+     propone di misurare «la quota di T non leggibile in modo istantaneo».
+   - Le unità attive, poi, non si misurano «in forma chiusa».
+   - GPT può confondere questa misura con quella della quota r di T non leggibile da L0 chiesta in (c) (B3:614-615).
+   Correzione, B3:638-639: «Con il cancello, la quota di T non leggibile in modo istantaneo diventa una condizione di riuscita. Con
+   bias nulli T può venire quasi lineare: unità attive per strato e quota del margine recuperata dalla WLS L13, da misurare prima
+   dei fit di controllo (controlli-7).»
+
+Problemi: 1 errore, 4 imprecisioni.
+
+
+3. COERENZA DELLE REGOLE RISCRITTE (corpo contro prompt, e fra loro)
+--------------------------------------------------------------------
+
+BL-1
+- (a): corpo e prompt coincidono, salvo la conseguenza al bordo (problema 2).
+  - Riscontrati: griglia fissata ora, metrica dichiarata, per ciascun bersaglio, intercetta non penalizzata.
+  - Variante dell'intervallo: in entrambi si dice come si sceglie sigma nel lineare e come si spareggia nel temporale.
+- (b): coincidono (ridge sui 20 utenti di fitting outer, alpha dagli inner sul bersaglio sintetico, penalità sulla SSE, 90% su MSE
+  ed E_dyn per fold e pooled, altrimenti «non diagnostico»; 90,8% e 89,8%).
+- Alternativa:
+  - coincidono su «a (b)», sulla quota minima della ridge con «non diagnostico» e sui 90% del margine costante→ridge con gli stati
+    per testa di OB-1. OB-1, passo 2, lo riprende (B3:286-287 «o, con l'alternativa, quota minima della ridge»; prompt B3:666);
+  - non coincidono sull'ultima frase: il corpo dice «con l'intervallo di E_oracolo», il prompt no. Il corpo contraddice B3:119
+    (problema 1).
+- (c): coincidono (a oltre 1 con sigma allargato e fissato ora, fino a circa 6 per a = 3; quota r troppo bassa -> banda sganciata o
+  misura in forma chiusa sul RHS-base T con regola fissata ora). Il prompt omette «P:92 vieta un nuovo seme»: è una ragione, non
+  una regola. Va bene così.
+- Nota sotto la tabella: il prompt ha i due costi, la non equivalenza e il rinvio a controlli-4 e S-C, ma non il contrappeso
+  (problema 3).
+- Fra le parti di BL-1 nessuna contraddizione, salvo il problema 1: la tabella usa E_LS* per banda, margine del 50% e denominatore
+  della clausola; (c) e la nota sono coerenti sulla quota r; «(a) e (b) vanno insieme» e «la chiude solo l'alternativa» sono
+  coerenti con B3:137.
+
+BL-2, regole del cancello
+- Corpo (B3:191-206) e prompt (B3:629-635) coincidono regola per regola. OB-1, passo 4 (B3:289; prompt B3:666-667), mette la
+  clausola dopo lo stato della TCN con le regole di BL-2, quindi la regola per testa di OB-1 non si sovrappone a quella della
+  clausola.
+- Le 16 combinazioni (r2), con T = TCN oltre il 50%, C = clausola passa nei numeri, aT = allarme TCN, aM = allarme MLP. In ognuna si
+  applica una sola regola, e corpo e prompt danno la stessa etichetta:
+    T C aT aM -> etichetta
+    1 1 1 1 -> ottimizzazione non risolta (non conta come superata)
+    1 1 1 0 -> passa (allarme TCN registrato, OB-1)
+    1 1 0 1 -> ottimizzazione non risolta (non conta come superata)
+    1 1 0 0 -> passa
+    1 0 1 1 -> ottimizzazione non risolta
+    1 0 1 0 -> ottimizzazione non risolta
+    1 0 0 1 -> controllo non diagnostico (T-06: l'allarme della sola MLP non cambia l'esito)
+    1 0 0 0 -> controllo non diagnostico
+    0 * 1 * -> ottimizzazione non risolta (stato per testa della TCN; clausola non valutata)
+    0 * 0 * -> ricetta non ammessa (stato per testa della TCN; clausola non valutata)
+  La sola etichetta implicita è «passa» con C = 1 e aM = 0: discende dal cancello «≥ q» e da OB-1 («gli allarmi delle teste che
+  passano si registrano»). Non è ambigua.
+- B3:192 («la MLP recupera più del 50% − q») è vera in tutte le combinazioni con T = 1 e C = 0 (r2).
+
+BL-3, quota per tutte le teste
+- Corpo (B3:251-263) e prompt (B3:648-654) coincidono: quota relativa sul lato inferiore, per esempio lo 0,5% della MSE pooled del
+  LR vicino; vale per tutte le teste, nei fit reali e nei controlli. Le altre condizioni di P:69 restano allarmi, il lato superiore
+  resta allarme e DEC:6747 va aggiornata.
+- Coerente con il controesempio di BL-3 (chiuso) e con OB-1 (il controesempio del controllo lineare a B3:275-276 descrive il P
+  attuale).
+
+OB-1, precedenza allarme/S-2
+- Corpo B3:280-282 e prompt B3:661-662 coincidono: vale ogni allarme di P:69 sulla stessa testa, e il caso tipico è un minimo di
+  E_dyn nelle ultime 5 epoche. P:69 riscontrato: «minimo MSE o E_dyn ancora nelle ultime5 epoche».
+- Con OB-3 e OB-4 non c'è conflitto: S-2 e un allarme su L13 o MLP portano alla testa non ammessa e a nessuna candidatura, e la
+  qualificazione S-2 non entra in gioco.
+
+OB-3, luoghi
+- Corpo B3:306 e B3:320 coincidono con il prompt B3:671 e B3:678 (P:122, J candidate (J:40), J:104, DEC:6753, §10).
+
+OB-4, nome misto e luoghi
+- Corpo B3:333-334 e B3:338 coincidono con il prompt B3:686-687 e B3:690. Il prompt non dice «La scelta opposta va bene, purché
+  dichiarata», ma lo copre B3:582-583.
+- Le 30 combinazioni OB-3/OB-4 hanno un nome solo ciascuna (r3).
+
+
+4. NUMERI, RIFERIMENTI E CITAZIONI CONTROLLATI NEI PASSI CAMBIATI
+-----------------------------------------------------------------
+
+Numeri (tutti giusti):
+- 15 segnalazioni confermate in tutto o in parte, più una nuova (B3:57-58): P-01...P-05 e T-01...T-10, nessuna respinta, più
+  VA2-N1;
+- 0,02 in giù e 0,01 in su, fra 0,89 e 0,94 (r4);
+- 0,002-0,005 di E_dyn (v_t01);
+- sigma fino a circa 6 per a = 3;
+- 0,27 -> 0,37 (r1);
+- saldo da −1 a +12 su 81;
+- 50% − q (r2);
+- 0,5% della MSE pooled del LR vicino (review_ricetta.txt:391-392);
+- DEC:5319: alpha 10^-2...10^4, 3 decadi per lato, a parità l'alpha minore.
+
+Riferimenti di riga (r0, tutti OK):
+- P:69, P:72, P:80, P:86, P:92, P:95, P:96, P:98, P:104, P:122;
+- J:40, J:41, J:104, J:142, J:471;
+- DEC:5319-5320, DEC:6747, DEC:6753;
+- R:20 (C-2, «Un L13 peggiore di L0») e R:47 (nota 13 = `controlli-7` nella matrice di GPT, usata per il problema 5).
+
+Citazioni:
+- «Nessuna vittoria costruita su un comparatore inadeguatamente allenato» (B3:204-205) è letterale da P:104;
+- le etichette fra «» corrispondono a P:92, P:95, P:96 e P:98;
+- «non automaticamente non convergenza» corrisponde a P:72.
+
+
+5. OSSERVAZIONI FUORI DAL DIFF O FACOLTATIVE (non contate)
+----------------------------------------------------------
+
+- B3:536 (sezione 8, invariata). La glossa «(una testa che non passa con un allarme aperto)» è più stretta delle regole di BL-2.
+  «Ottimizzazione non risolta» nasce anche con la TCN oltre il 50%, la clausola fallita e l'allarme TCN, e con la clausola superata
+  e l'allarme MLP. Era così già in B2. Facoltativo: «(una testa o la clausola MLP non superata, con un allarme aperto)».
+- B3:208-209 (invariata). Il nesso fra «quota di T non leggibile in modo istantaneo» e T quasi lineare è debole. Con il margine
+  definito rispetto a L0, una T quasi lineare rende il margine soprattutto temporale lineare, che la MLP istantanea legge poco,
+  quindi facilita la clausola. controlli-7 riguarda piuttosto quanto il controllo temporale provi la non linearità (L13 potrebbe già
+  prendere il vantaggio). Non è nel diff; la correzione del problema 5 tiene il prompt fedele alla nota.
+- B3:145 «Servono allora la banda [...], oppure una misura»: con «oppure» è meglio il singolare «Serve» (come nel prompt B3:614).
+  Refuso.
+- B3:107 e B3:282 sono righe molto più lunghe delle altre, per il reflow. Cosmetico: il Markdown le rende uguali.
+- B3:107 «più in basso la griglia ha anche buchi». È vero; c'è anche un buco in alto (K 2,5/5, quota 0,6, E_real ≥ 0,9998:
+  v_soglie.out.txt), che però è oltre la forbice più probabile. Nessuna correzione.
+- B3:58 «Tutto è corretto in questa versione» vale dopo le correzioni 1-3. Le 4 e 5 sono di peso basso.

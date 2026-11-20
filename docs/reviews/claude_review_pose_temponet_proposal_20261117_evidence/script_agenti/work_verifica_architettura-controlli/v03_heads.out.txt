@@ -1,0 +1,27 @@
+/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/tcnreview/work_verifica_architettura-controlli/v03_heads.py:101: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+  res.append((step, round(float(loss), 6), nz, tot, fin))
+testa: totale, pesi, bias, LN, trasformazioni, ReLU, Dropout
+  L0 (8468, 7680, 20, 768, 1, 0, 0)
+  MLP (65300, 64128, 404, 768, 6, 5, 2)
+  L13 (100628, 99840, 20, 768, 1, 0, 0)
+  TCN (65204, 64128, 308, 768, 6, 5, 2)
+  MAC/finestra L0 1228800
+  MAC/finestra MLP 10260480
+  MAC/finestra L13 15974400
+  MAC/finestra TCN 10260480
+TCN offsets 1/2/3: [1, 1, 2, 2, 3, 3, 3, 3, 3, 2, 2, 1, 1] somma 27 buchi 0
+ipotesi k3 d=2/4/8: raggiunti 15 su 29 buchi 14
+ipotesi sei k3 d=2,2,4,4,8,8 (coppie come TEMPONet): raggiunti 29 su 57 buchi 28
+  TCN offset con gradiente per centri 6/80/153: [(-6, 6, 13), (-6, 6, 13), (-6, 6, 13)]
+  L13 offset con gradiente per centri 6/80/153: [(-6, 6, 13), (-6, 6, 13), (-6, 6, 13)]
+  MLP offset con gradiente per centri 6/80/153: [(0, 0, 1), (0, 0, 1), (0, 0, 1)]
+  L0 offset con gradiente per centri 6/80/153: [(0, 0, 1), (0, 0, 1), (0, 0, 1)]
+  L0 lr1e-3 (passo, loss, grad interni non nulli, totale interni, finiti): [(0, 0.999475, 0, 768, True), (1, 0.99024, 768, 768, True)]
+  MLP lr1e-3 (passo, loss, grad interni non nulli, totale interni, finiti): [(0, 0.999475, 0, 64640, True), (1, 0.999435, 61796, 64640, True)]
+  L13 lr1e-3 (passo, loss, grad interni non nulli, totale interni, finiti): [(0, 0.999475, 0, 768, True), (1, 0.882907, 768, 768, True)]
+  TCN lr1e-3 (passo, loss, grad interni non nulli, totale interni, finiti): [(0, 0.999475, 0, 64544, True), (1, 0.999436, 62284, 64544, True)]
+  L0 init identica fra semi 0/1/2: True
+  L13 init identica fra semi 0/1/2: True
+  MLP init identica fra semi 0/1/2: False
+  TCN init identica fra semi 0/1/2: False

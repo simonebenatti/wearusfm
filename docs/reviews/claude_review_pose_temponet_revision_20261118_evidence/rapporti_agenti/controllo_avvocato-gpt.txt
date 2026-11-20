@@ -1,0 +1,430 @@
+CONTROLLO FINALE DELLA BOZZA - LENTE «AVVOCATO DI GPT» (avversaria)
+=====================================================================
+Bozza controllata: controllo/bozza_controllo.md, sha256 5e872e1d2089df94e2907c6065fbcbe27938db3ac4dcc14aa85643ed739a6dcf,
+585 righe (ESEGUITO shasum all'inizio; i numeri di riga «bozza:N» sono di questa copia congelata).
+Fonti: P, J, R, DEC, prompt nella copia gpt_3e007c8/ (3e007c8); rapporti review_*.txt e verify_*.txt; sintesi_verify.txt;
+ricevuta work_criteri/LONG-FIT-G49046-pose-20261105.json (sha256 b08e6e32...7c14, ESEGUITO); script degli agenti.
+Script miei (solo aritmetica sulle formule degli agenti, nessun dato, nessuna simulazione), in questa cartella:
+  - bl1_griglia_fine.py -> bl1_griglia_fine.out.txt (BL-1 con la griglia di sigma attuale e con sigma continua);
+  - etichette_casi.py -> etichette_casi.out.txt (casi d'esempio per OB-3, OB-4, BL-2/OB-1).
+Metodo: per ciascuna delle 8 voci ho provato a smontare, dalla parte di GPT, (a) l'esistenza del difetto in P/J, (b) validita',
+minimalita' ed etichetta del controesempio, (c) correttezza, realizzabilita' e chiusura della correzione, e se crea problemi
+nuovi (anche in combinazione con le altre correzioni), (d) coerenza della classificazione con il criterio dichiarato a
+bozza:187-189. Un problema e' aperto solo dove un punto non regge, con la prova.
+
+---------------------------------------------------------------------------------------------------------------------
+VOCE 1 - BL-1 (calibrazione ancorata alla WLS non regolarizzata; controllo lineare senza verifica di leggibilita')
+---------------------------------------------------------------------------------------------------------------------
+(a) Il difetto esiste. LETTO P:80 «Calibrazione sotto: altri4 disegni L0 (due inner per outer), RHS-base reale,L,T,rumore»
+    e P:76 «minimi quadrati pesati non regolarizzati»: i «riferimenti L0 pesati» di P:90 sono la WLS non regolarizzata del
+    §4.3; J:398 «weightedLS L0 internalpredictions», J:405, J:308. P:95 ferma solo «Margini non positivi/non finiti».
+    ESEGUITO sulla ricevuta pinnata: selection.fold_users 20/20, objective «pooled masked standardized SSE ... raw-SSE ridge
+    penalty», alpha 0,01 -> 0,7697254997, alpha 1e5 -> 0,6561153689: +17,32%. Il fatto citato a bozza:69-71 regge.
+    Il «quanto pesi su E_real non e' stabilito» (bozza:69) e «plausibile, non stabilito» (bozza:95) sono onesti.
+(b) Il controesempio e' etichettato bene («modello in forma chiusa dei revisori, non una misura», bozza:80) ma NON e' minimo
+    e non regge alla correzione proposta dalla stessa bozza. CALCOLATO (bl1_griglia_fine.out.txt, stesse formule di
+    v_scan_lineare.py): con f'=0,5, E_real=0,92, K=(2,5;5) la griglia attuale sceglie sigma 2,5 perche' 0,9373 dista 0,0173
+    da 0,92 e sigma 2 (0,8976) dista 0,0224: la calibrazione «supera» E_real di 0,017. Con sigma continua, cioe' dopo la
+    correzione (d) primo punto (bozza:120, «griglia di sigma fitta o continua»), lo stesso caso sceglie sigma 2,245 e la WLS
+    esatta recupera 0,918: PASSA. Al contrario, il caso che la bozza dice superato (K=(3,5;7), bozza:90-91, 0,909 con
+    sigma 2) con sigma continua va a sigma 2,169 e 0,893: FALLISCE. Quindi «Il controesempio dipende quindi dai parametri del
+    modello» (bozza:91) attribuisce a K una dipendenza che e' della griglia; il controesempio mescola controlli-3 (minore,
+    buchi della griglia) con controlli-1 (bloccante, ancora). Il meccanismo dell'ancora resta: con sigma continua la WLS
+    esatta smette di passare a E_real 0,9365 (K 2,5/5, f' 0,3-0,5), 0,9215 (f' 0,6), 0,9135 (K 3,5/7, f' 0,3-0,5), 0,894
+    (f' 0,6). Un controesempio minimo che isola l'ancora e regge a entrambe le griglie e a entrambi i K: E_real 0,94, f' 0,5
+    (griglia attuale 0,898 e 0,858; sigma continua 0,8945 e 0,8645: fallisce in tutti e quattro i casi). Il revisore originale
+    usava 0,95, robusto (review_controlli.txt:135-137 e 145-150). -> problema AVV-01.
+(c) Correzione.
+    - (a)+(d): P:92 usa un solo simbolo, E_LS,synth, sia per l'aggancio |E_LS,synth - E_real| <= 0,05 sia per la banda
+      (E_LS,synth - E_oracle)/E_LS,synth in [0,06; 0,10]. La correzione (a) (bozza:103-104) lo rende «una ridge ... per
+      ciascun bersaglio» su y; la (d) secondo punto (bozza:121-122) vuole la banda calcolata con la LS fittata su y*, anche
+      sugli inner («Così il passaggio da inner a outer non sposta la banda»). Le due correzioni ridefiniscono la stessa
+      grandezza in due modi e la bozza non lo dice; non dice nemmeno con quale metrica (MSE o E_dyn) si sceglie alpha.
+      -> problema AVV-03.
+    - (d) quarto punto (bozza:127, prompt:516): «pose_var, soglia ed E_dyn dei controlli su y osservato oppure su y*». Con
+      E_dyn su y* l'oracolo ha errore nullo (P:88: l'oracolo coincide con y*), quindi il guadagno di P:92 vale 1 per ogni coppia e la
+      banda [0,06; 0,10] non si raggiunge mai: «controllo non calibrato» sempre. In piu' E_LS,synth rispetto a y* contiene solo
+      l'errore di stima e non si puo' agganciare a E_real, che e' misurata su target reali osservati. L'opzione y* e'
+      praticabile solo per pose_var e soglia (la selezione delle finestre, che e' il «Perche' conta» di
+      review_ricetta.txt:264-268), non per E_dyn. Il verificatore consigliava y (sintesi_verify.txt:37 «fissare y
+      (consigliato, coerente con «noisy held»)»): la bozza ha perso il consiglio. -> problema AVV-02.
+    - (b) (bozza:106-114): la frase «la ridge recupera il 90,8% all'alpha ottimo e il 90,1% con l'alpha degli inner non
+      riscalato» usa per il 90,1% la parametrizzazione a loss media (rilettura_fedelta/conti_rilettura.py: «parametrizzazione
+      a loss media: alpha* ~ 1/n», colonna «ridge alpha x2»). Ma (b) prescrive proprio la penalita' sulla somma dei quadrati,
+      con cui - lo dice bozza:109 - l'alpha degli inner non va riscalato: nel modello la cifra pertinente e' 90,8%. La
+      conclusione «(b) da sola non basta» regge comunque (0,8 punti sopra il 90%). Inoltre la bozza non mostra che (a)+(b)
+      chiuda il controesempio: lo chiude solo «nella misura in cui l'errore di stima pesa su E_real» (bozza:113-114); se
+      l'errore reale e' soprattutto spostamento fra utenti che una ridge non toglie, sigma resta alto e una L0 neurale fra
+      89,8% e 90,8% riceve ancora «ricetta non ammessa». Solo l'alternativa del cancello riferito alla forma chiusa
+      (bozza:115-117) chiude il controesempio qualunque sia la composizione di E_real. -> problema AVV-04.
+    - (a) e (b) sono realizzabili (percorso dalla SVD di R; la ricevuta storica usa gia' la «raw-SSE ridge penalty»); (c)
+      a > 1 e la soglia di E_real dal fitting inner non creano problemi che io veda.
+(d) Classificazione: coerente col criterio. Lo stop con «ricetta non ammessa» quando il margine non e' leggibile e' un'etichetta
+    che attribuisce alla ricetta cio' che dipende dal disegno (bozza:76-78), e il «non calibrato» del temporale ferma la
+    prova; e' diverso dal gate GPU della sezione 8, dove lo stop ha la causa giusta. Regge.
+VERDETTO BL-1: REGGE IN PARTE (difetto e classificazione reggono; controesempio non minimo e dipendente dalla griglia;
+tre punti della correzione da sistemare).
+
+---------------------------------------------------------------------------------------------------------------------
+VOCE 2 - BL-2 («MLP non deve vincere il temporale» non definito)
+---------------------------------------------------------------------------------------------------------------------
+(a) Il difetto esiste. LETTO P:94 «(tutte devono passare)», P:96 «MLP non deve vincere il temporale»; J:424 «every required
+    condition mustpass»; J:441 «neuralL0/MLP descriptive»; J:444 head solo «TCN_post»; DEC:6749 senza la clausola. L'unica
+    difesa possibile per GPT («tutte» si riferisce a fold e pooled, non alla frase) non basta: la frase e' imperativa, sta nel
+    punto elenco della qualificazione, e nessuna regola dice quale documento prevale (verificatore, sintesi_verify.txt:11).
+(b) Controesempio valido e coerente. CALCOLATO (etichette_casi.out.txt): con TCN al 55% e E_TCN 0,870, la banda 6-10% da'
+    E_LS 0,900-0,921, E_oracolo 0,829-0,846, MLP al 56-57%: dentro i valori plausibili di E_real. Pero' i numeri sono
+    scritti a mano e la bozza non lo dice (bozza:139-141; prompt:520), mentre etichetta «numeri d'esempio» OB-1 e OB-4.
+    -> problema AVV-06 (insieme a OB-3).
+(c) Correzione. L'opzione descrittiva e' corretta e senza effetti collaterali. L'opzione cancello no, per come si compone con
+    OB-1:
+    - bozza:145-146 giustifica «non diagnostico» con «il margine piantato si legge in modo istantaneo»; bozza:152 fa
+      prevalere «non diagnostico» sulle etichette di OB-1; bozza:153 dice che con un allarme sulla MLP la clausola «non conta
+      come superata»; bozza:220-221 mette la clausola al passo 2, prima degli stati per testa.
+    - Caso A (numeri d'esempio, etichette_casi.out.txt): TCN al 48% con minimo di E_dyn all'epoca 299 di 300 (allarme), MLP al
+      52% senza allarme. Per OB-1 (bozza:212-214) l'etichetta sarebbe «ottimizzazione non risolta»; con la precedenza di BL-2
+      diventa «non diagnostico», cioe' si afferma che il margine si legge in modo istantaneo quando la TCN stava ancora
+      migliorando.
+    - Caso B: TCN al 62% senza allarme, MLP al 40% con allarme. La clausola passa nei numeri, ma «non conta come superata»,
+      quindi per bozza:152 «non diagnostico» e arresto: lo ferma l'allarme di una testa senza cancello, contro lo spirito di
+      OB-1 («Gli allarmi delle teste che passano si registrano»), e l'etichetta indica il mondo, non il comparatore.
+    E' lo stesso errore che BL-1 rimprovera a P:98 (attribuire l'arresto alla causa sbagliata), introdotto dalla correzione.
+    Il passo 2 di OB-1 mette insieme stati decisi in forma chiusa (banda, BL-1(b)) e uno deciso dopo i fit e dipendente
+    dalla qualita' dell'ottimizzazione; inoltre l'elenco del passo 2 omette gli altri «non diagnostico» gia' scritti (P:90
+    denominatore nullo/non finito, P:95 margini non positivi/non finiti). -> problema AVV-05.
+    La bozza dichiara invece in modo trasparente che il cancello si decide dopo i fit dei controlli e che rende la quota di T
+    non istantanea una condizione di riuscita (bozza:150-157, 452-453): su questo non apro problemi.
+(d) Classificazione: coerente. Due implementazioni fedeli danno esiti opposti su una regola di arresto: una delle due
+    ferma la catena con «ricetta non ammessa» per una causa che non e' la ricetta. Regge.
+VERDETTO BL-2: REGGE IN PARTE (difetto, controesempio e classificazione reggono; l'opzione cancello, composta con OB-1,
+etichetta male i casi con allarmi aperti; numeri non etichettati).
+
+---------------------------------------------------------------------------------------------------------------------
+VOCE 3 - BL-3 (allarme «LR ancora al bordo» senza tolleranza)
+---------------------------------------------------------------------------------------------------------------------
+(a) Il difetto esiste. LETTO P:68 (estensione una volta per lato), P:67 (pareggi solo esatti), P:69 «oppure LR ancora al
+    bordo dopo l'estensione di quel lato», J:142, J:471. Conseguenze: P:104 e J:41 «candidacy not established; dependent
+    contrasts unlabelled». Regge.
+(b) Controesempio etichettato («numeri scritti a mano dal revisore, vicini al mondo V», bozza:171-172). LETTO nella prova della
+    32e5452 (claude_review_pose_temponet_proposal_20261117_evidence/rapporti_agenti/verify_selezione-criteri.txt:264, :330):
+    L0 a 1e-4 minimo all'epoca 17 con MSE 0,7269 e L13 a 1e-4 minimo all'epoca 5 con curva «piatta e rumorosa». 0,0001/0,7269
+    = 0,0138%. Minimo, valido, etichettato. Regge.
+(c) Correzione: chiude il controesempio (3e-5 vince all'epoca 57, interna) ed e' compatibile con OB-1. Ma la sua portata supera
+    la sua giustificazione. L'argomento (bozza:167-168) vale «Su una testa affine (L0, L13)»; il verificatore lo estende
+    «quasi» a MLP e TCN solo nel controllo lineare (sintesi_verify.txt:35). La correzione invece vale per tutte le teste e
+    tutti i controlli (bozza:198 «Stessa regola per teste e controlli»). Per MLP e TCN nei fit reali (teste non affini)
+    l'allarme del lato inferiore e' proprio la protezione chiesta dalla S-1 bloccante della 32e5452 («La ricetta può
+    lasciare MLP e TCN lontane dal loro ottimo», R:17) e serve a P:104 «Nessuna vittoria costruita su un comparatore inadeguatamente allenato». Caso:
+    la MLP vince a 3e-5 con epoca interna e il suo ottimo sta sotto; senza allarme il contrasto 2 favorevole alla TCN prende
+    l'etichetta. -> problema AVV-11.
+(d) Classificazione: e' il punto debole. La bozza promuove BL-3 a blocco con tre appoggi (bozza:184-194):
+    1. «Il verificatore aggiunge che, lasciato così, lo considererebbe bloccante per la firma del §10» (bozza:186): ma
+       «obbligatoria prima della firma» e' esattamente la definizione della sezione 2 della bozza («Correzioni obbligatorie
+       prima della firma», bozza:202); il verificatore la dice «minore» e «obbligatoria prima della firma» nella stessa frase
+       (sintesi_verify.txt:35). L'appoggio sostiene OB, non BL.
+    2. «Nel controllo lineare ferma la catena prima dei fit reali, quindi fa fallire la prova» (bozza:191): lo stesso effetto
+       lo toglie OB-1 (bozza:208-214, «Gli allarmi delle teste che passano si registrano»; bozza:178 rimanda proprio a OB-1),
+       che la bozza tiene fra le obbligatorie senza dire perche' (bozza:192-194 spiega solo OB-2 e OB-4). Se «ferma la catena»
+       basta per un blocco, OB-1 (bozza:209-210, «La catena si ferma con una ricetta che ha passato il controllo») dovrebbe
+       essere un blocco; se non basta, questo appoggio cade.
+    3. «Dà l'etichetta «ottimizzazione non risolta» a un'ottimizzazione risolta, quindi falsa un risultato» (bozza:190-191):
+       l'etichetta e' quella che P:69 definisce per un ottimo di LR non racchiuso, e qui l'ottimo non e' racchiuso; la
+       conseguenza (L0 non ammessa, niente primario) e' una perdita d'informazione, la stessa che la bozza usa per tenere OB-4
+       fra le obbligatorie («la regola attuale perde informazione, ma non ne inventa», bozza:193-194). Nessuna conclusione
+       sulla TCN viene inventata.
+    -> problema AVV-07 (classificazione di BL-3 e di OB-1).
+VERDETTO BL-3: REGGE IN PARTE (difetto, controesempio e chiusura reggono; portata della correzione piu' larga del suo
+argomento; promozione a blocco sostenuta da appoggi che valgono anche per OB-1 e OB-4).
+
+---------------------------------------------------------------------------------------------------------------------
+VOCE 4 - OB-1 (arresto nei controlli solo se un cancello non passa; precedenza allarme/S-2; ordine degli stati)
+---------------------------------------------------------------------------------------------------------------------
+(a) Il difetto esiste. LETTO P:98 «Se un allarme di §4.2 resta aperto [...] stop prima dei fit reali»; J:421 «unresolved
+    optimization outcomes stop before realneuralfits»; J:471 «same fit policy as real». Regge.
+(b) Controesempio etichettato («numeri d'esempio», bozza:209) e valido per P:69. Il quadro e' plausibile: nel mondo V della
+    32e5452 la TCN a 1e-3 aveva il minimo di E_dyn all'epoca 148 di 150 (verify_selezione-criteri.txt:342-344 della prova
+    32e5452). Regge.
+(c) La regola principale (bozza:212-214) regge nella sostanza, ma con «solo» esclude alla lettera anche gli arresti per
+    «non calibrato» e «non diagnostico» (AVV-12). La precedenza dell'allarme su S-2 regge: il verificatore nota che la precedenza
+    «si ricava già» (sintesi_verify.txt:34) e la definizione di «minimo interno» usa lo stesso dominio della selezione (P:65,
+    P:67). Non regge l'ordine degli stati (bozza:218-221) quando la clausola MLP di BL-2 diventa un cancello: vedi voce 2 e
+    AVV-05; e l'elenco del passo 2 e' incompleto (P:90, P:95).
+(d) Classificazione incoerente col criterio come la bozza lo applica a BL-3: OB-1 «ferma la catena con una ricetta che ha
+    passato il controllo» (bozza:209-210), cioe' rientra nella descrizione dei blocchi di bozza:28-29 («Ciascuno può fermare la
+    catena [...] per una ragione che non riguarda la domanda della prova») e nell'appoggio usato per BL-3 a bozza:191; la
+    bozza spiega perche' OB-2 e OB-4 restano obbligatorie (bozza:192-194) ma non OB-1. -> AVV-07.
+VERDETTO OB-1: REGGE IN PARTE.
+
+---------------------------------------------------------------------------------------------------------------------
+VOCE 5 - OB-2 (S-2 non e' un allarme)
+---------------------------------------------------------------------------------------------------------------------
+(a) Il difetto esiste. LETTO P:153 «allarmeS-2», DEC:6747 «Allarme S-2», prompt:18 «Allarme di compromesso»; P:98 «un allarme
+    di §4.2» (S-2 sta in §4.2, P:72) e P:104 «allarmi aperti»; J:145-151 senza S-2 fra i failure_states. La difesa di GPT (P:69
+    elenca «questi allarmi», P:72 dice «compromesso») non toglie l'ambiguita' di DEC, che e' il testo che si congela.
+    DEC:6747 non nomina l'allarme della scelta al primo quarto (dice solo «quarti primaepoca selezionabili» e «Bordo finale
+    irrisolto»). Regge.
+(b) Il controesempio regge nella logica (due letture, due esiti sulla candidata), ma «S-2 su L13 è probabile» (bozza:226) e'
+    piu' forte delle fonti: viene da due mondi sintetici della 32e5452 (3,66% nel mondo V e 11,9% nel l13_fold del revisore,
+    verify_selezione-criteri.txt:330-332 della prova 32e5452). GPT ha scritto a R:23 «I valori sintetici citati non sono una
+    stima dell'effetto nei latenti veri» e la bozza stessa, per i suoi modelli, dice «Mostrano il meccanismo, non la
+    probabilità» (bozza:465). -> AVV-08.
+(c) Correzione corretta e coerente con J:199 («restrict interpretation»): non togliere etichette ne' ammissibilita' e' compatibile
+    con la qualificazione di OB-3. Regge.
+(d) Classificazione coerente (la lettura voluta e' gia' in J e P:72). Regge.
+VERDETTO OB-2: REGGE IN PARTE (solo la forza del controesempio).
+
+---------------------------------------------------------------------------------------------------------------------
+VOCE 6 - OB-3 (che cosa veta la candidata)
+---------------------------------------------------------------------------------------------------------------------
+(a) Il difetto esiste. LETTO P:122 «Se MLP o L13 sono risolti migliori, la TCN non è candidata preferita» contro la regola
+    «Necessario e sufficiente» (P:122, J:40, DEC:6753, P:203). L'appiglio di GPT («candidata preferita» non e' «candidata alla
+    migliore lettura») non regge: la locuzione compare solo li', e «migliore lettura» con una MLP risolta migliore e'
+    contraddittorio. Regge.
+(b) Controesempio valido (CALCOLATO etichette_casi.out.txt: gain -1,5, IC99 [-1,9; -0,8] -> etichetta 3, nessun veto per (a),
+    veto per (b)), ma i numeri non sono etichettati come d'esempio (bozza:234) -> AVV-06. La parte S-2 (bozza:241-243) e'
+    etichettata e i conti tornano (+1,562 e -2,041; 0,735 x 1,0366 = 0,7619).
+(c) Opzione (a): il nome «candidata, non peggiore in modo pratico di MLP/L13» (bozza:238-239; prompt:551-552) afferma una non
+    inferiorita' pratica che la regola non verifica. «Risolto migliore ma di meno del 2%» vuol dire upper99 < 0 e stima sopra
+    -2, non lower99 > -2. CALCOLATO: gain -1,5 con IC99 [-2,6; -0,4] e gain -1,9 con IC99 [-3,4; -0,3] sono etichetta 3,
+    nessun veto per (a), ma un deterioramento di oltre il 2% resta compatibile con l'intervallo. Il protocollo esclude soglie
+    di non inferiorita' (P:124 «nessuna nuova soglia di non inferiorità»; DEC:6753 «Nessuna equivalenza») e la bozza stessa
+    chiede di rimettere per l'etichetta 3 «Non chiamarlo equivalenza» (bozza:378, criteri-3). Il nome finirebbe nella riga
+    «Esito positivo» del §10 che Simone firma (OB-5, bozza:272). -> AVV-09.
+    Opzione (b) e qualificazione S-2 (bozza:244-246) reggono.
+(d) Classificazione coerente. Regge.
+VERDETTO OB-3: REGGE IN PARTE.
+
+---------------------------------------------------------------------------------------------------------------------
+VOCE 7 - OB-4 (conseguenza degli allarmi nei fit reali)
+---------------------------------------------------------------------------------------------------------------------
+(a) Il difetto esiste: P:104 toglie le etichette in entrambi i versi e lega il primario all'ammissibilita' di TCN-post; tutti e
+    cinque i contrasti dipendono da TCN-post. Regge.
+(b) Controesempio etichettato («numeri d'esempio», bozza:250) e plausibile (mondo V della 32e5452, TCN con minimo di E_dyn a
+    148 di 150). Regge.
+(c) La logica direzionale regge (un allarme dice che la testa potrebbe fare meglio; i comparatori con allarme bloccano le
+    letture favorevoli alla TCN, coerente con P:104 ultima frase). Ma i due punti di bozza:253-257 (e prompt:557-560) scrivono
+    il veto come «deterioramento_pratico», cioe' il veto dell'opzione (a) di OB-3. Se GPT sceglie l'opzione (b) di OB-3
+    (bozza:240, veto quando upper99 < 0), con un allarme sulla TCN un contrasto 2 con upper99 < 0 ma etichetta 3 e' una
+    «conclusione negativa o nulla» sospesa, e solo il deterioramento_pratico «esclude comunque la candidatura»: la TCN con
+    allarme avrebbe un veto piu' debole di una TCN risolta. CALCOLATO etichette_casi.out.txt: gain -1,5 [-1,9; -0,8], veto (b)
+    senza allarme = vero, veto conservato col testo di OB-4 = falso. Due correzioni proposte che, scelte insieme, si
+    contraddicono. -> AVV-10.
+(d) Classificazione coerente («perde informazione, ma non ne inventa»). Regge.
+VERDETTO OB-4: REGGE IN PARTE.
+
+---------------------------------------------------------------------------------------------------------------------
+VOCE 8 - OB-5 (righe del §10)
+---------------------------------------------------------------------------------------------------------------------
+(a) Il difetto esiste. LETTO P:203 (manca soglia, MAE/livello, pretraining, sviluppo gia' consultato); R:21 destina il perimetro
+    di C-3 anche al §10, R:67 la soglia a §5 e §10; parole fuse a P:198, P:203, P:204, P:205. Regge.
+(b) Nessun controesempio necessario.
+(c) Numeri giusti: 0,98 x 0,7786289843513977 = 0,7630564046643697, 2,907% sotto la ridge (rilettura_fedelta/
+    conti_rilettura.out.txt); «encoder casuale e reti da zero restano da fare» corrisponde alla C-3 della 32e5452 («le baseline
+    del v10 §8 restano dovute»). Per la soglia il verificatore vedeva solo una destinazione imprecisa e per consegna-6 offriva
+    anche «dirlo a Simone nella review di Claude» (sintesi_verify.txt:78, :83): la bozza sceglie l'opzione piu' prudente,
+    coerente con la sua definizione delle obbligatorie (bozza:204). Nessun problema nuovo, salvo che il nome di OB-3(a)
+    entrerebbe qui (AVV-09).
+(d) Classificazione coerente (cambia il testo che Simone firma). Regge.
+VERDETTO OB-5: REGGE.
+
+=====================================================================================================================
+PROBLEMI (12), in ordine di voce (AVV-12 aggiunto in fondo). Severita': errore / imprecisione / mancanza.
+=====================================================================================================================
+
+AVV-01 | BL-1 | bozza:84-91 (e 96-97; prompt:496-501) | imprecisione
+Passo: «Quota dinamica del segnale 0,5, E_real = 0,92. La calibrazione sceglie sigma 2,5 [...]»; «Con K_dyn 3,5 e K_MSE 7 lo
+  stesso caso sceglie sigma 2 e la WLS recupera il 90,9%: passa. Il controesempio dipende quindi dai parametri del modello.»
+Problema: il controesempio «minimo» dipende dalla griglia rada di sigma, che la bozza stessa chiede di rendere fitta o continua
+  in (d) (bozza:120). Con sigma continua o a passi di 0,1 il caso scelto passa e quello dato per superato fallisce: la
+  dipendenza attribuita a K e' della griglia. GPT lo smonta con la correzione che la review gli chiede.
+Prova: CALCOLATO bl1_griglia_fine.out.txt (formule di v_scan_lineare.py): K 2,5/5, f' 0,5, E_real 0,92 -> sigma 2,5 e 0,898 con
+  la griglia attuale (0,9373 a 0,0173 da E_real contro 0,8976 a 0,0224), ma sigma 2,245 e 0,918 con sigma continua (0,921 a
+  passi di 0,1): PASSA. K 3,5/7 -> 0,909 con la griglia attuale, 0,893 con sigma continua (0,890 a passi di 0,1): FALLISCE.
+  Soglia con sigma continua: 0,9365 / 0,9215 (K 2,5/5) e 0,9135 / 0,894 (K 3,5/7). Il revisore usava E_real 0,95, robusto
+  (review_controlli.txt:135-137 e 145-150).
+Correzione: scegliere un caso che isoli l'ancora, per esempio f' 0,5 ed E_real 0,94: la WLS esatta recupera 0,898/0,8945 con
+  K 2,5/5 e 0,858/0,8645 con K 3,5/7 (griglia attuale/sigma continua), sotto il 90% in tutti i casi; E_real 0,94 e' ancora
+  nella forbice «più probabilmente fra 0,83 e 0,94». Sostituire «dipende quindi dai parametri del modello» con: «con sigma
+  continua la WLS esatta smette di passare fra E_real 0,89 e 0,94, secondo K e f'; sotto, il caso dipende dalla posizione
+  di E_real rispetto alla griglia (controlli-3)». Stessa modifica nel prompt.
+
+AVV-02 | BL-1 | bozza:127 (prompt:516) | errore
+Passo: «pose_var, soglia ed E_dyn dei controlli su y osservato oppure su y*, detto una volta (`ricetta-4`).»
+Problema: l'opzione «E_dyn su y*» non e' praticabile. Con y* come bersaglio l'oracolo (che e' y*, P:88) ha E_dyn nulla, il
+  guadagno (E_LS,synth - E_oracle)/E_LS,synth vale 1 per ogni coppia e la banda [0,06; 0,10] di P:92 non si raggiunge mai:
+  «controllo non calibrato» per costruzione. Inoltre E_LS,synth misurata su y* non contiene rumore e non si puo' agganciare a
+  E_real, misurata su target reali osservati. La bozza ha tolto il consiglio del verificatore.
+Prova: LETTO P:88 «Non è un bound campionario garantito sul noisy held»; P:92; P:90 «Stima interna E_real sui target reali».
+  review_ricetta.txt:264-270 (il motivo di ricetta-4 e' la selezione delle finestre: «la scelta delle finestre «dinamiche» puo'
+  dipendere molto dal rumore»). sintesi_verify.txt:37: «fissare y (consigliato, coerente con «noisy held») oppure y*».
+Correzione: «E_dyn e i suoi accumulatori dei controlli sempre su y osservato, per teste, LS-L0, oracolo e calibrazione; per
+  pose_var e soglia (selezione delle finestre dinamiche) y oppure y*, detto una volta». Stessa riga nel prompt.
+
+AVV-03 | BL-1 | bozza:103-105 e 121-124 (prompt:504-505, 514) | imprecisione
+Passo: «(a) E_real ed E_LS,synth con lo stesso stimatore regolarizzato in forma chiusa: una ridge [...]»; «LS fittata sul
+  bersaglio pulito y*, sia nella banda [6%, 10%] sia nel margine del cancello del 50%. Così il passaggio da inner a outer non
+  sposta la banda».
+Problema: P:92 usa lo stesso E_LS,synth per l'aggancio a E_real e per la banda inner. (a) lo rende una ridge su y, (d) chiede la
+  banda (anche inner, altrimenti la banda si sposterebbe) con la LS su y*. Le due correzioni ridefiniscono la stessa grandezza
+  in due modi e la bozza non lo dice; non dice nemmeno se la LS su y* e' la WLS o la ridge, ne' con quale metrica (MSE o
+  E_dyn) si sceglie alpha. GPT non puo' scrivere P:92 seguendo entrambe alla lettera.
+Prova: LETTO P:92 «abs(E_LS,synth−E_real)<=0.05 e guadagno (E_LS,synth−E_oracle)/E_LS,synth in [0.06,0.10]»; P:96; bozza:103-105;
+  bozza:121-124; review_controlli.txt:221-223 (controlli-4: «Definire il guadagno sulla parte di popolazione: LS fittata sul
+  bersaglio pulito y*»).
+Correzione: in BL-1 dire che E_LS,synth si sdoppia: (i) E_cal = ridge su y sintetico, con alpha dagli held inner su una metrica
+  dichiarata, solo per |E_cal − E_real| <= 0,05, con E_real dalla stessa ridge sui target reali; (ii) E_LS* = LS su y*
+  (stimatore dichiarato) per la banda inner e outer e per il margine del cancello del 50%. Una tabella di quattro righe (aggancio,
+  banda inner, banda outer, margine del cancello) con stimatore e bersaglio evita la scelta implicita.
+
+AVV-04 | BL-1 | bozza:106-117 (prompt:506-510) | imprecisione
+Passo: «Con la penalità sulla somma dei quadrati alpha passa da 10 a 20 utenti senza riscalare»; «la ridge recupera il 90,8%
+  all'alpha ottimo e il 90,1% con l'alpha degli inner non riscalato; la WLS l'89,8%»; «Con (a) il rumore tarato scende [...]
+  nella misura in cui l'errore di stima pesa su E_real».
+Problema: (1) il 90,1% viene dalla parametrizzazione a loss media, in cui l'alpha degli inner e' doppio dell'ottimo a 20 utenti;
+  (b) prescrive la penalita' sulla somma dei quadrati, con cui l'alpha degli inner non riscalato e' gia' l'ottimo: nel modello
+  la cifra pertinente e' 90,8% (la conclusione «da sola non basta» regge). (2) La coppia raccomandata (a)+(b) chiude il
+  controesempio solo se E_real contiene errore che una ridge toglie; se e' soprattutto spostamento fra utenti, sigma resta alto
+  e una L0 neurale fra 89,8% e 90,8% riceve ancora «ricetta non ammessa». Solo l'alternativa del cancello riferito alla forma
+  chiusa (bozza:115-117) lo chiude in ogni caso: la bozza non lo dice.
+Prova: LETTO rilettura_fedelta/conti_rilettura.py: «ridge con alpha portato da 10 a 20 utenti senza riscalare (parametrizzazione
+  a loss media: alpha* ~ 1/n)», colonne «ridge ottima» e «ridge alpha x2»; conti_rilettura.out.txt «isotropo sigma=2.5: R_MSE
+  OLS=0.898 ridge ottima=0.908 ridge alpha x2=0.901». Ricevuta storica: «raw-SSE ridge penalty».
+Correzione: «Con la penalità sulla somma dei quadrati, nel modello isotropo a sigma 2,5 la ridge recupera circa il 90,8%
+  (la WLS l'89,8%): il riferimento passa di meno di un punto, e una L0 neurale fra le due darebbe ancora «ricetta non
+  ammessa».» Aggiungere: «(a)+(b) chiude il controesempio solo nella misura in cui E_real contiene errore di stima che la
+  ridge toglie; il cancello riferito alla forma chiusa lo chiude qualunque sia E_real.» Nel prompt togliere «90,1-90,8%».
+
+AVV-05 | BL-2 e OB-1 | bozza:145-146, 150-154, 218-221 (prompt:522-524, 545) | errore
+Passo: «Se non passa, l'etichetta giusta è «controllo non diagnostico»: il margine piantato si legge in modo istantaneo»; «se
+  non passa, «non diagnostico» prevale sulle etichette di OB-1»; «con un allarme aperto sulla MLP la clausola non conta come
+  superata»; ordine «2. «non diagnostico»: banda di P:96, verifica di BL-1(b), clausola MLP di BL-2 [...] 3. per ciascuna testa».
+Problema: l'opzione cancello, composta con OB-1, attribuisce al mondo cio' che dipende dall'ottimizzazione. (A) TCN al 48% con
+  minimo di E_dyn all'epoca 299 di 300 (allarme), MLP al 52% senza allarme: OB-1 da solo dice «ottimizzazione non risolta»
+  (bozza:212-214), la precedenza di BL-2 dice «non diagnostico». (B) TCN al 62% senza allarme, MLP al 40% con allarme: la
+  clausola «non conta come superata», quindi «non diagnostico» e arresto, per l'allarme di una testa senza cancello, contro
+  «Gli allarmi delle teste che passano si registrano». In entrambi i casi la giustificazione di bozza:145-146 («si legge in modo
+  istantaneo») non e' stabilita. E' l'errore che BL-1 rimprovera a P:98. Inoltre il passo 2 elenca solo tre «non diagnostico»
+  e omette quelli gia' scritti a P:90 (denominatore nullo/non finito) e P:95 (margini non positivi/non finiti).
+Prova: numeri d'esempio in etichette_casi.out.txt (casi A e B); LETTO bozza:212-214, bozza:452-453 (la clausola e' l'unica
+  decisa dopo i fit neurali); P:90; P:95; P:104.
+Correzione: «La clausola MLP si valuta al passo 3, dopo gli stati per testa. Se non passa, o non conta come superata, e la TCN o
+  la MLP hanno un allarme aperto, l'etichetta è «ottimizzazione non risolta»; «non diagnostico» solo con TCN e MLP senza
+  allarmi.» Passo 2: «tutti gli stati non diagnostico decisi in forma chiusa (P:90, P:95, banda di P:96, BL-1(b))». Stesse
+  frasi nel prompt.
+
+AVV-06 | BL-2 e OB-3 | bozza:139-141 e 234-235 (prompt:520) | imprecisione
+Passo: «la MLP ha E_dyn 0,869, la TCN 0,870»; «contrasto 2 con gain −1,5 e IC99 [−1,9; −0,8]».
+Problema: numeri scritti a mano presentati senza etichetta, mentre OB-1 (bozza:209), OB-4 (bozza:250) e OB-3 seconda parte
+  (bozza:243) dicono «numeri d'esempio». Valori a tre decimali senza etichetta si leggono come esiti di un conto o di un modello.
+Prova: LETTO bozza:139-141, 234-235, 209, 243, 250; i casi sono coerenti (etichette_casi.out.txt), ma non vengono da misure.
+Correzione: aggiungere «(numeri d'esempio)» a bozza:139 e bozza:234 e nel prompt a 520.
+
+AVV-07 | BL-3 e OB-1 | bozza:184-194, 206-211 (e 28-29; prompt:532-533) | imprecisione
+Passo: «Il verificatore aggiunge che, lasciato così, lo considererebbe bloccante per la firma del §10»; «Nel controllo lineare
+  ferma la catena prima dei fit reali, quindi fa fallire la prova»; «la regola attuale perde informazione, ma non ne inventa».
+Problema: la promozione di BL-3 non e' coerente col modo in cui la bozza tratta OB-1 e OB-4. (1) «bloccante per la firma»
+  coincide con la definizione delle obbligatorie (titolo della sezione 2, bozza:202); il verificatore dice «minore» e
+  «obbligatoria prima della firma» nella stessa frase. (2) L'arresto del controllo lineare lo toglie OB-1, e OB-1 stesso
+  («La catena si ferma con una ricetta che ha passato il controllo», bozza:209-210) soddisfa la descrizione dei blocchi di
+  bozza:28-29 e l'appoggio di bozza:191, ma resta obbligatoria senza motivazione (bozza:192-194 spiega solo OB-2 e OB-4).
+  (3) Per L0, «ottimizzazione non risolta» e' l'etichetta che P:69 da' a un ottimo di LR non racchiuso, e la conseguenza
+  (niente primario) e' una perdita d'informazione, come in OB-4. GPT puo' sostenere che il punto 2 «converge con correzioni».
+Prova: LETTO sintesi_verify.txt:35 («Resta minore [...] è obbligatoria prima della firma: lasciata cosi', la considererei
+  bloccante per la firma del §10»); sintesi_verify.txt:66 (punto 2 CONVERGE_CON_CORREZIONI, «Il punto 2 non ha bloccanti
+  propri»); P:69; bozza:28-29, 178, 191, 192-194, 202, 209-210.
+Correzione: o tenere BL-3 fra le obbligatorie (punto 2 «Converge con correzioni obbligatorie», rinviando a OB-1 per il controllo
+  lineare), o motivare il blocco con un solo argomento non condiviso da OB-1 e OB-4 (per esempio: e' l'unico dei tre che toglie
+  il primario con un'ottimizzazione risolta nella pratica, e la conseguenza direzionale non lo risolve, S-D punto 5,
+  sintesi_verify.txt:58); in entrambi i casi dire perche' OB-1 resta obbligatoria, oppure portarla fra i blocchi.
+
+AVV-08 | OB-2 | bozza:226 | imprecisione
+Passo: «Controesempio: S-2 su L13 è probabile; nei mondi sintetici della review `32e5452` costava a L13 dal 3,7% al 12% di E_dyn.»
+Problema: «probabile» e' piu' forte delle fonti: due mondi sintetici. GPT ha gia' scritto che quei valori non stimano l'effetto
+  sui latenti veri, e la bozza stessa, per i propri modelli, dice che mostrano il meccanismo e non la probabilita'. Il
+  controesempio (due letture, due esiti) non ha bisogno della probabilita'.
+Prova: LETTO R:23 «I valori sintetici citati non sono una stima dell'effetto nei latenti veri»; bozza:465 «Mostrano il meccanismo,
+  non la probabilità»; verify_selezione-criteri.txt:330-332 della prova 32e5452 (3,66% nel mondo V, 11,9% nel l13_fold).
+Correzione: «S-2 su L13 è plausibile: è comparso in entrambi i mondi sintetici della review `32e5452` (3,66% e 11,9% di E_dyn)».
+
+AVV-09 | OB-3 | bozza:237-239 (prompt:550-552) | errore
+Passo: «Un comparatore risolto migliore ma di meno del 2% diventa una lettura mista dichiarata: l'esito si chiama «candidata, non
+  peggiore in modo pratico di MLP/L13», non «migliore».»
+Problema: il nome afferma una non inferiorita' pratica che la regola non verifica. Se «di meno del 2%» si riferisce alla
+  stima (lettura naturale; la fonte dice «con IC99 sotto 0 ma meno del 2%»), il nome copre anche intervalli che arrivano oltre
+  -2, dove un deterioramento pratico resta compatibile. Se invece vuol dire tutto l'IC fra -2 e 0, i casi con upper99 < 0 e
+  lower99 < -2 restano senza nome e, non essendo etichetta 2, diventano «candidata» senza qualificazione. In entrambe le
+  letture la regola proposta non regge. Il protocollo esclude soglie di non inferiorita' e la bozza chiede di non chiamare
+  equivalenza l'etichetta 3. Il nome finirebbe nella riga «Esito positivo» che Simone firma (OB-5).
+Prova: CALCOLATO etichette_casi.out.txt: gain -1,5 con IC99 [-2,6; -0,4] e gain -1,9 con IC99 [-3,4; -0,3] -> etichetta 3,
+  nessun veto con (a), «deterioramento >=2% escluso dall'IC: False». LETTO P:124 «nessuna nuova soglia di non inferiorità»;
+  DEC:6753 «Nessuna equivalenza»; bozza:378 (criteri-3: «Non chiamarlo equivalenza»); review_criteri.txt:115-117 (origine
+  del nome).
+Correzione: nome neutro, per esempio «candidata, con MLP/L13 risolti migliori sotto la soglia pratica del 2% (stima)», con gain e
+  IC99 riportati; oppure, se si vuole «non peggiore in modo pratico», aggiungere ora la condizione lower99 > -2 nel contrasto 2
+  o 3, dichiarandola come nuova regola fissata prima dei dati.
+
+AVV-10 | OB-4 (con OB-3) | bozza:253-257 (prompt:557-560) | imprecisione
+Passo: «allarme sulla TCN: si sospendono solo le conclusioni negative o nulle sul valore della TCN. Un `deterioramento_pratico`
+  misurato nel contrasto 2 o 3 non diventa una conclusione negativa, ma esclude comunque la candidatura»; «compresa l'assenza
+  di deterioramento usata dal veto».
+Problema: OB-4 scrive il veto come quello dell'opzione (a) di OB-3. Se GPT sceglie l'opzione (b) (bozza:240, veto con upper99 < 0),
+  con un allarme sulla TCN un contrasto 2 con upper99 < 0 ed etichetta 3 e' una conclusione «negativa o nulla» sospesa, e solo
+  il deterioramento_pratico esclude la candidatura: la TCN con allarme avrebbe un veto piu' debole di una TCN risolta. Le due
+  correzioni proposte, scelte insieme, si contraddicono.
+Prova: CALCOLATO etichette_casi.out.txt: gain -1,5, IC99 [-1,9; -0,8]: veto (b) senza allarme = vero; con il testo di OB-4,
+  veto conservato = falso. LETTO bozza:240, 253-257.
+Correzione: in OB-4 e nel prompt, «la condizione di veto scelta in OB-3 (deterioramento_pratico con l'opzione (a), upper99 < 0
+  con l'opzione (b)) esclude comunque la candidatura» e «compresa l'assenza della condizione di veto».
+
+AVV-11 | BL-3 | bozza:196-198 (prompt:534-536) | imprecisione
+Passo: «Sul lato inferiore, se vince il LR più piccolo con epoca scelta interna [...] il bordo si registra e non è un allarme.
+  Il lato superiore resta allarme. Stessa regola per teste e controlli.»
+Problema: la correzione vale per tutte le teste, ma il suo argomento vale per le teste affini (bozza:167, «Su una testa affine
+  (L0, L13)»); il verificatore lo estende «quasi» a MLP e TCN solo nel controllo lineare. Per MLP e TCN nei fit reali, e per
+  la TCN nel controllo temporale, l'allarme del lato inferiore e' la protezione chiesta dalla S-1 della 32e5452 (R:17) e
+  serve a P:104 «Nessuna vittoria costruita su un comparatore inadeguatamente allenato»: con l'esenzione, una MLP che vince a
+  3e-5 con epoca interna e ottimo sotto 3e-5 non da' allarme, e un contrasto 2 favorevole alla TCN prende l'etichetta.
+Prova: LETTO bozza:167-169; sintesi_verify.txt:35 («Nel controllo lineare vale per L0, e quasi per MLP e TCN»); R:17; P:104.
+Correzione: esenzione del lato inferiore per L0 e L13 (e, nel controllo lineare, per tutte le teste); per MLP e TCN nei fit reali
+  e nel controllo temporale, l'allarme resta oppure vale una tolleranza dichiarata ora.
+
+AVV-12 | OB-1 | bozza:212-214 (prompt:539) | imprecisione
+Passo: «Correzione: «Nei controlli si ferma la catena solo se una condizione richiesta del cancello non passa. [...]»»
+Problema: la frase e' proposta per essere copiata cosi' com'e' in P:98, ma con «solo» esclude, alla lettera, gli arresti per
+  «non calibrato» e «non diagnostico», che non sono condizioni del cancello e che P:98 e J:421 tengono, come l'ordine degli
+  stati proposto dalla stessa OB-1 (bozza:218-221). GPT puo' rispondere che la frase, presa alla lettera, contraddice l'ordine
+  degli stati di OB-1.
+Prova: LETTO P:98 «e anche per controllo non calibrato o non diagnostico, stop prima dei fit reali»; J:421 «all noncalibrated/
+  nondiagnostic/failedpositive/unresolvedoptimization outcomes stop»; bozza:212, 218-221; sintesi_verify.txt:63 (stessa frase
+  in V-ricetta-criteri-2).
+Correzione: «Nei controlli la catena si ferma per «non calibrato», per «non diagnostico» o se una condizione richiesta del
+  cancello non passa; un allarme aperto, da solo, non la ferma: gli allarmi delle teste che passano si registrano.»
+
+=====================================================================================================================
+SINTESI
+=====================================================================================================================
+Voci esaminate: 8 (BL-1, BL-2, BL-3, OB-1, OB-2, OB-3, OB-4, OB-5).
+- BL-1: REGGE IN PARTE. Il difetto c'e' (ancora alla WLS non regolarizzata a 10 utenti, ricevuta +17,3% verificata) e la
+  classificazione e' coerente. Il controesempio non e' minimo: con la griglia fitta che la bozza stessa chiede passa (0,918),
+  mentre il caso dato per superato fallisce (0,893) (AVV-01). Correzione: l'opzione «E_dyn su y*» rende i controlli non
+  calibrabili per costruzione (AVV-02); (a) e (d) ridefiniscono E_LS,synth in due modi (AVV-03); il 90,1% non e' la cifra di
+  (b) come e' scritta e (a)+(b) chiudono il controesempio solo a certe condizioni (AVV-04).
+- BL-2: REGGE IN PARTE. Difetto, controesempio e classificazione reggono; l'opzione cancello, con la precedenza di
+  «non diagnostico» e l'ordine di OB-1, etichetta come «non diagnostico» casi con TCN o MLP non risolte (AVV-05); numeri non
+  etichettati (AVV-06).
+- BL-3: REGGE IN PARTE. Difetto, controesempio e chiusura reggono; l'esenzione vale per tutte le teste ma l'argomento solo per
+  quelle affini (AVV-11); la promozione a blocco poggia su argomenti che valgono anche per OB-1 e OB-4 (AVV-07).
+- OB-1: REGGE IN PARTE. Difetto, controesempio e regola reggono; la frase con «solo» toglie alla lettera gli arresti per
+  «non calibrato» e «non diagnostico» (AVV-12); l'ordine degli stati non regge con il cancello di BL-2 ed e' incompleto
+  (AVV-05); classificazione non motivata (AVV-07).
+- OB-2: REGGE IN PARTE. Difetto e correzione reggono; «S-2 su L13 è probabile» e' piu' forte di due mondi sintetici (AVV-08).
+- OB-3: REGGE IN PARTE. Difetto e parte S-2 reggono; il nome «non peggiore in modo pratico» dell'opzione (a) afferma una non
+  inferiorita' non verificata (AVV-09); numeri non etichettati (AVV-06).
+- OB-4: REGGE IN PARTE. La logica direzionale regge; il testo fissa il veto di OB-3(a) e, con OB-3(b), indebolisce il veto
+  proprio per la TCN con allarme (AVV-10).
+- OB-5: REGGE.
+Nessuna voce NON REGGE: tutti i difetti esistono nel testo di P e J a 3e007c8. Gli errori sono nelle correzioni proposte (AVV-02,
+AVV-05, AVV-09) e vanno corretti prima di consegnare la review, perche' GPT li contesterebbe con ragione; gli altri sono
+imprecisioni di argomentazione o di testo. Nessuno richiede nuove misure: AVV-01 si chiude cambiando il caso numerico.
+Che cosa non ho verificato: nessun dato; i conti di BL-1 usano il modello del revisore con i suoi parametri liberi (f', K),
+quindi mostrano la dipendenza dalla griglia, non la probabilita' del caso.

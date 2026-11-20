@@ -1,0 +1,76 @@
+== 1. Traiettorie
+  L=4 iniziale: CV reale 40, controlli 48, rifit 15, totale 103
+  L=5 max raggiungibile (una sola estensione LR): CV reale 50, controlli 60, rifit 15, totale 125
+  L=6 max dichiarato: CV reale 60, controlli 72, rifit 15, totale 147
+  combinazioni testa/bersaglio = 11
+  JSON: 40 60 48 72 15 103 147
+== 2. Aggiornamenti: 11*L*E*(S0+S1) + 15*E*Sfull
+  ceil(1907/32) = 60; ceil(a/32)+ceil(b/32) <= ceil((a+b)/32)+1 = 61
+  massimo esaustivo di S0+S1 su a+b=1907: 61
+  nominale iniziale: 531,000
+  nominale max: 1,458,000
+  limite iniziale: 537,600
+  limite max: 1,477,800
+  Claude 1,26M = 5 LR: 1,260,000
+  limite max raggiungibile 5 LR: 1,276,500
+  con <=1854 finestre supportate: Sfull <= 58, S0+S1 <= 59; limite max 1,429,200
+  fold <=1000 finestre (100 registrazioni x <=10): S_fold <= 32, >= 29
+== 3. Valutazioni held
+  dichiarato: 132 traiettorie CV x 304 = 40,128; + diagnostici 22+15 = 37
+  raggiungibile: 110 traiettorie CV x 304 = 33,440; + diagnostici 22+15 = 37
+== 4. GPU-ore a priori (solo update)
+  537,600 x 4.1 ms = 0.6123 h; x2 = 1.2245 h
+  537,600 x 18.5 ms = 2.7627 h; x2 = 5.5253 h
+  1,477,800 x 4.1 ms = 1.6831 h; x2 = 3.3661 h
+  1,477,800 x 18.5 ms = 7.5942 h; x2 = 15.1885 h
+== 5. Quota delle valutazioni held nel gate GPU (batch eval = 32)
+  L=6: batch train 1,477,800; batch eval held 1,223,904 + fitting 1,571 = 1,225,475; rapporto eval/train 0.829; quota eval (pari tempo) 0.453
+    t=4.1 ms, eval=passo: gate = 6.16 GPUh, margine vs 20 = +13.84
+    t=4.1 ms, eval=1/2: gate = 4.76 GPUh, margine vs 20 = +15.24
+    t=4.1 ms, eval=1/3: gate = 4.30 GPUh, margine vs 20 = +15.70
+    t=18.5 ms, eval=passo: gate = 27.78 GPUh, margine vs 20 = -7.78
+    t=18.5 ms, eval=1/2: gate = 21.49 GPUh, margine vs 20 = -1.49
+    t=18.5 ms, eval=1/3: gate = 19.39 GPUh, margine vs 20 = +0.61
+    pareggio eval=passo, tetto 20 h: 13.32 ms per batch
+    pareggio eval=passo, tetto 18 h (40 job x 180 s): 11.99 ms per batch
+    pareggio eval=1/3, tetto 20 h: 19.09 ms per batch
+    pareggio eval=1/3, tetto 18 h (40 job x 180 s): 17.18 ms per batch
+  L=5: batch train 1,276,500; batch eval held 1,019,920 + fitting 1,571 = 1,021,491; rapporto eval/train 0.800; quota eval (pari tempo) 0.445
+    t=4.1 ms, eval=passo: gate = 5.23 GPUh, margine vs 20 = +14.77
+    t=4.1 ms, eval=1/2: gate = 4.07 GPUh, margine vs 20 = +15.93
+    t=4.1 ms, eval=1/3: gate = 3.68 GPUh, margine vs 20 = +16.32
+    t=18.5 ms, eval=passo: gate = 23.62 GPUh, margine vs 20 = -3.62
+    t=18.5 ms, eval=1/2: gate = 18.37 GPUh, margine vs 20 = +1.63
+    t=18.5 ms, eval=1/3: gate = 16.62 GPUh, margine vs 20 = +3.38
+    pareggio eval=passo, tetto 20 h: 15.67 ms per batch
+    pareggio eval=passo, tetto 18 h (40 job x 180 s): 14.10 ms per batch
+    pareggio eval=1/3, tetto 20 h: 22.26 ms per batch
+    pareggio eval=1/3, tetto 18 h (40 job x 180 s): 20.04 ms per batch
+== 6. Tabella delle fasi
+  checkout_preflight: cpu 2 x 0.25 h = 0.5; GPUh 0.0; coerente True
+  cpu_benchmark: cpu 8 x 0.5 h = 4.0; GPUh 0.0; coerente True
+  wls_calibration: cpu 8 x 8 h = 64; GPUh 0; coerente True
+  gpu_benchmark: cpu 8 x 0.5 h = 4.0; GPUh 0.5; coerente True
+  controls_selection_refits: cpu 8 x 20 h = 160; GPUh 20; coerente True
+  locked_inference: cpu 8 x 1 h = 8; GPUh 1; coerente True
+  metrics: cpu 8 x 1 h = 8; GPUh 0; coerente True
+  collection: cpu 2 x 0.25 h = 0.5; GPUh 0.0; coerente True
+  totali: GPUh 24.0, CPU-only coreh 80.0, allocate 272.0; JSON 24, 80, 272
+  24*8 + 80 = 272; riserva locale 2,5*8+3 = 23.0
+== 7. Job seriali
+  03:57:00 + 180 s = 4.0000 h; 2 job x 8 CPU = 64.0 coreh
+  limite memoria seriale 8 x 3850 MB = 30800 MB; 24 GiB = 24576 MiB
+  boost: 8 x 15400 MB = 123200 MB default; 32 GiB = 32768 MiB
+  40 job GPU x 180 s = 2.0 h dentro il tetto di 20
+== 8. Saldo
+  2.000.000 - 1.308.137 = 691863; 272/691863 = 0.03931%; residuo 691591
+== 9. Memoria e byte
+  R/Gram 4993^2 float64 = 199,440,392 B = 190.2 MiB; x20 = 3.715 GiB
+  L13 disegno per fold ~120.000 righe x 4993 x 8 B = 4.46 GiB
+  predizione per testa 237,414,400 B; x15 = 3.31664 GiB
+  vista val FP16 2.123 GiB; FP32 4.245 GiB; vista train FP16 0.218 GiB
+  cache 5,068,390,194 B = 4.7203 GiB; + riferimenti 652,548,847 = 5,720,939,041 B = 5.3280 GiB
+  riferimenti SCRATCH 2,742,970,901 B = 2.743 GB = 2.555 GiB
+== 10. Calendario
+  12/11 + 40 giorni = 2026-12-22
+  03/12 + 40 giorni = 2027-01-12

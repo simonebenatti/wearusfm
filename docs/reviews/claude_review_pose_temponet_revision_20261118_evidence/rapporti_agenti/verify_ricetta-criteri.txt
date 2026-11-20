@@ -1,0 +1,409 @@
+RAPPORTO DEL VERIFICATORE AVVERSARIO - DIMENSIONI «ricetta» (punto 2) e «criteri» (punto 5)
+Revisione documentale GPT della proposta TCN: consegna 3e007c841c97da5793ed4aac6cfceb41c99a00ee, contenuti 62348ab, base c15aac9.
+Data: 18/11/2026. Nessun esperimento, nessun training, nessun accesso al cluster. Solo lettura, grep, aritmetica, sha256.
+
+Convenzioni delle prove: ESEGUITO (comando e risultato), CALCOLATO (conto mostrato), LETTO (file:riga, citazione breve).
+Abbreviazioni (righe dello snapshot 3e007c8 in tcnreview2/gpt_3e007c8/):
+  P   = docs/pose_temponet_frozen_protocol_20261117.md
+  J   = results/infra/pose_temponet_proposal_20261117/proposal.json (riga del file)
+  R   = docs/reviews/pose_temponet_response_20261118.md
+  D   = docs/decisioni.md
+  REG = docs/claude_GPT_shared
+  C15 = protocollo di c15aac9 (tcnreview/gpt_c15aac9/)
+  REV = review di Claude 32e5452 (worktree claude-temponet)
+Rapporti verificati: tcnreview2/review_ricetta.txt (revisore «ricetta») e tcnreview2/review_criteri.txt (revisore «criteri»).
+Cartella di lavoro: tcnreview2/work_verifica_ricetta-criteri/ (script e copie estratte in sola lettura).
+
+Il rapporto si scrive a pezzi: sezione 0 identita', sezione 1 rilievi «ricetta», sezione 2 rilievi «criteri»,
+sezione 3 controlli a campione, sezione 4 affermazioni S-D/S-E/S-F, sezione 5 rilievi nuovi, sezione 6 verdetti.
+
+==============================================================================================================================
+0. IDENTITA' DEI MATERIALI
+==============================================================================================================================
+ESEGUITO (worktree claude-temponet, git show in sola lettura + shasum -a 256 sullo snapshot):
+  P   05a9eb09a7cd4341...  uguale in 3e007c8, 62348ab e snapshot (= pin delivery_pin_20261118.json e D:6765)
+  J   f3b92c4a8f0aa525...  uguale nei tre (= pin e D:6766)
+  R   076d35f161703d8d...  uguale nei tre (= pin)
+  analytic_checks.json 4ee7d920e04ee142... e prompt 401066e6fdd6e836... uguali nei tre.
+ESEGUITO: git show 2930d7d:results/infra/consolidation_long_20261105/execution/receipts/LONG-FIT-G49046-pose-20261105.json
+  -> work_verifica_ricetta-criteri/estratti/, sha256 b08e6e321f3803318991b934ff89ddef70493a422f7f3884abd9daa1d5037c14
+  = J:712 historical_fit_receipt_sha256.
+ESEGUITO: proposal.json e' un JSON valido (json.load).
+Le righe citate sono quelle dello snapshot, identico ai commit.
+
+==============================================================================================================================
+1. RILIEVI DELLA DIMENSIONE «ricetta»: VERIFICA AVVERSARIA
+==============================================================================================================================
+
+--- ricetta-1 | revisore: minore, disegno | VERDETTO: PARZIALE | minore, disegno ---------------------------------------------
+Che cosa regge.
+  - LETTO P:69 «minimo MSE o E_dyn ancora nelle ultime5 epoche dell'orizzonte massimo [...] dà ottimizzazione non risolta».
+    Un LR con MSE a minimo interno ed E_dyn ancora in discesa a 296-300 alza l'allarme, e S-2 (P:72) scatta insieme.
+  - LETTO P:98: nei controlli «Se un allarme di §4.2 resta aperto [...] stop prima dei fit reali», anche se il recupero passa.
+  - LETTO P:104: nei fit reali «senza etichette inferenziali sui contrasti che dipendono da quella testa»; J:41
+    «candidacy not established». Le conseguenze descritte dal revisore sono giuste.
+Che cosa non regge.
+  - «Il testo dice entrambe le cose» e' troppo forte. P:72 dice «non automaticamente non convergenza»: S-2 da solo non e'
+    un allarme, ma la frase non esclude che scatti anche il punto 5. La precedenza si ricava gia': l'allarme vale, S-2
+    resta una diagnosi. Il codice non deve fare una scelta nuova.
+  - Il claim strutturato cita R:23 come «limitano solo l'interpretazione». LETTO R:23: «i disaccordi residui limitano
+    l'interpretazione, senza selezionare una seconda epoca sulla val». La parola «solo» non c'e'.
+  - L'allarme su E_dyn a fine orizzonte non e' una svista di trascrizione. LETTO gpt_controproposta_chat_20261117.txt:
+    «Arresto: Se i controlli restano irrisolti al limite previsto», e i controlli sono MSE oppure E_dyn nelle ultime cinque.
+    LETTO REG del worktree claude-temponet:8778 sgg. (voce 8d34f9c): Claude accoglie l'impianto con l'esito «ottimizzazione
+    non risolta entro il budget». L'opzione (a) del revisore cambia quindi una parte gia' accolta: si puo' proporre, ma
+    spetta a GPT e Simone.
+Lettura corretta. Il problema vero non e' una contraddizione, ma una conseguenza troppo larga. Per la TCN candidata un minimo
+  di E_dyn ancora a 300 dice che una lettura negativa o nulla non e' conclusiva (e' il rischio di S-1). Non dice nulla contro
+  un beneficio misurato. Per un comparatore scelto su MSE interna, invece, e' un compromesso S-2, non un sottoallenamento
+  rispetto al criterio di selezione. Vedi S-D (sezione 4): la conseguenza direzionale risolve questo caso meglio di (a).
+Correzione. Minimo: scrivere in P:72, P:98, P:104 e nel §10 che l'allarme del punto 5 prevale su S-2, con la sua conseguenza.
+  Preferibile: conseguenza direzionale (S-D) e, nei controlli, arresto solo se un cancello richiesto non passa (V-2).
+
+--- ricetta-12 | revisore: minore, disegno | VERDETTO: CONFERMATO | minore, disegno (correzione obbligatoria prima della firma) --
+Il rilievo regge, e l'argomento si puo' rafforzare senza esperimenti.
+  - LETTO P:69 «oppure LR ancora al bordo dopo l'estensione di quel lato»; J:142 «selectedLR still at expanded boundary».
+    Nessuna tolleranza. J:471: la stessa politica vale nei controlli.
+  - ESEGUITO work_verifica_ricetta-criteri/script/lr_massimo.py (combinatoria pura delle regole P:67-68 su tutti i 720 ordini
+    dei 6 LR): l'allarme scatta in 72 ordini su 720. Se il profilo e' monotono (LR piu' piccolo sempre migliore), scatta
+    sempre: vince 1e-4, si aggiunge 3e-5, vince 3e-5.
+  - Perche' il profilo tende a essere monotono per L0 e L13 (ragionamento, non misura). Le due teste sono affini nelle
+    feature normalizzate. Con LR costante, minibatch e arresto sul checkpoint migliore, un LR piu' piccolo segue quasi lo
+    stesso cammino con fluttuazioni piu' piccole: l'eccesso di loss al plateau cresce con il LR. Se il budget basta, vince il
+    LR piu' piccolo. Il budget basta: nel mondo V L0 a 1e-4 ha il minimo all'epoca 17 (LETTO verify_selezione-criteri.txt:
+    264); a 3e-5 servono circa 17x10/3 = 57 epoche, dentro le 150 iniziali. L13 a 1e-4 ha il minimo all'epoca 5 (:330).
+  - Nel controllo lineare il bersaglio e' affine e il rumore non si impara: la MSE held scende fino a un plateau. Vale lo
+    stesso argomento per L0 e anche per MLP e TCN, che a LR piccolo si comportano quasi come il loro ramo affine.
+Conseguenze. Nei fit reali: L0 non ammessa, nessuna promozione primaria (P:104), candidata impossibile (P:122). Nel
+  controllo lineare: arresto prima dei fit reali (P:98). Quindi il rischio non e' marginale: con buona probabilita' la catena
+  si ferma al controllo lineare per un allarme che non indica un problema di ottimizzazione.
+Perche' non lo porto a bloccante. La regola e' definita e implementabile, l'esito e' conservativo (nessun verdetto negativo) e
+  la correzione e' una riga che non cambia l'impianto. Ma va fatta prima della firma: e' la correzione piu' importante del
+  punto 2. Se restasse cosi', la considererei bloccante per la firma del §10.
+Correzione (senza dati). Preferibile l'opzione (b) del revisore: sul lato inferiore, se vince il LR piu' piccolo con epoca
+  interna (non al primo quarto, non nelle ultime 5 dell'orizzonte), il bordo si registra e non e' allarme; il lato superiore
+  resta allarme. L'opzione (a), tolleranza fissa dello 0,5%, funziona ma il valore e' arbitrario. Stessa regola per teste e
+  controlli. Nota: la conseguenza direzionale di S-D non basta da sola, perche' un allarme su L0 bloccherebbe comunque il
+  beneficio del contrasto 1.
+
+--- ricetta-2 | revisore: minore, testo | VERDETTO: CONFERMATO | minore, testo ------------------------------------------------
+  - LETTO P:153 «entrambe le curve e allarmeS-2»; D:6747 «Allarme S-2 se distanza>5epoche e regretE_dyn>=2%»; prompt:18
+    «Allarme di compromesso». LETTO P:98 «Se un allarme di §4.2 resta aperto» e P:104 «Fit reali con allarmi aperti».
+    S-2 sta in §4.2 (P:72): la lettura ambigua e' possibile.
+  - LETTO J:145-151 (failure_states senza objective_tradeoff) e J:199 («retain MSE selection [...] restrict interpretation»):
+    il testo macchina e' chiaro, S-2 non e' un fallimento. Il rischio riguarda chi legge P e D.
+  - LETTO verify_selezione-criteri.txt:330-331: L13 mondo V, minimo MSE all'epoca 5, minimo E_dyn all'epoca 23, «costa il
+    3,66%»; CALCOLATO distanza 18 > 5 e regret >= 2% -> S-2 probabile su L13. Le due letture danno esiti opposti sulla
+    candidata. Regge.
+  - LETTO D:6747: la voce cita «Bordo finale irrisolto» ma non l'allarme della scelta al primo quarto. Regge.
+
+--- ricetta-4 | revisore: minore, testo | VERDETTO: CONFERMATO | minore, testo --------------------------------------------------
+  - LETTO P:59 «Nei controlli i bersagli sono sintetici»; P:88 «Bersaglio pulito noto y*=L+a*T; osservato y=y*+sigma*epsilon»;
+    P:92 «mediana del fitting outer sul bersaglio sintetico scelto»; J:167 e J:418. Non e' scritto se pose_var, soglia ed
+    E_dyn dei controlli usano y o y*. P:88 «sul noisy held» suggerisce y per l'errore, non per la soglia.
+  - Il revisore dei controlli legge y come implicito (review_controlli.txt:282 «implicito in noisy held»): stessa richiesta,
+    scriverlo.
+  - ESEGUITO work_verifica_ricetta-criteri/script/rumore_ar1_formachiusa.py (forma chiusa con la matrice di covarianza,
+    n=160, rho=exp(-1/4)): E[s2] = 0,951; SD di s2 per un giunto 0,2135; SD della media su 20 giunti 0,0477.
+    Il revisore scrive 0,051·sigma^2: il valore esatto e' 0,048·sigma^2 (0,19 a sigma 2, 0,43 a sigma 3, non 0,20 e 0,46).
+    Piccola sovrastima, conclusione invariata. In piu': la parte media del rumore (0,95·sigma^2) supera gia' a sigma 1 la
+    mediana reale 0,257, quindi la soglia su y cade in una zona dominata dal rumore.
+
+--- ricetta-6 | revisore: nota, testo | VERDETTO: CONFERMATO | nota, testo ----------------------------------------------------
+  - ESEGUITO lr_massimo.py: su 720 ordini il massimo e' 5 LR; nessun ordine estende entrambi i lati.
+  - ESEGUITO script/conti.py: 6 LR 1.477.800 (limite) e 1.458.000 (nominale); 5 LR 1.276.500 e 1.260.000; traiettorie
+    massime 147 contro 125; valutazioni held 40.128 contro 33.440. LETTO analytic_checks.json:7: il conto di Claude
+    (1.260.000) e' «superseded» da un massimo a 6 LR che non si raggiunge. Il 6 resta un margine prudente.
+
+--- ricetta-3 | revisore: nota, disegno | VERDETTO: PARZIALE | parte MLP: bloccante, testo (= controlli-2); parte allarmi: nota ---
+  - LETTO P:96 «MLP non deve vincere il temporale» sotto P:94 «(tutte devono passare)»; J:441 «neuralL0/MLP descriptive».
+    E' una contraddizione fra P e J su una condizione di cancello, e «vincere» non e' definito (metrica, margine, fold).
+    Due implementazioni fedeli a P e a J danno esiti opposti: per la definizione data e' un cancello contraddittorio che
+    richiede una scelta nuova, quindi bloccante, con correzione di una riga. Non e' una nota. E' lo stesso punto di
+    controlli-2, che il revisore dei controlli classifica gia' bloccante (review_controlli.txt:169-185). Appartiene al
+    punto 3 (controlli), non al verdetto del punto 2.
+  - La parte «quali teste fermano la catena» regge come nota; la risolve la regola V-2 (arresto solo se un cancello non passa).
+
+--- ricetta-5 | revisore: nota, testo | VERDETTO: CONFERMATO | nota, testo ----------------------------------------------------
+  - LETTO P:72 (copre L13 e TCN) e J:199 («restrict interpretation of contrast3 and any negative TCN conclusion»).
+    CALCOLATO: L0 mondo V regret 0,166%, distanza 3: rischio basso. Regge per L0 e MLP.
+  - Per L13 c'e' di piu': con il veto della candidata (nuovo in v2), S-2 su L13 entra nella regola della candidata. Vedi
+    il rilievo nuovo V-1.
+
+--- ricetta-7 | revisore: nota, testo | VERDETTO: CONFERMATO | nota, testo ----------------------------------------------------
+  - ESEGUITO grep di «decay|regolarizz» in P: righe 63, 76, 78; nessuna frase sul limite del weight decay (P:78 parla del
+    divario WLS). R:57 promette «Dichiarare il limite [...] [§4]». CALCOLATO (conti.py): fattore (1-lr·wd)^passi 0,9851 a 1e-3
+    per 1.500 passi; 0,7634 a 3e-3 per 9.000; 0,4066 a 1e-2 per 9.000. Regge.
+
+--- ricetta-8 | revisore: nota, disegno | VERDETTO: CONFERMATO | nota, disegno (facoltativa) ----------------------------------
+  - LETTO P:104 «NaN/Inf, divergenza non finita [...] fermano la fase»; C15:66 griglia {1e-4,1e-3}. Con AdamW, clip 1, LN e
+    FP32 il caso e' poco probabile. Facoltativa.
+
+--- ricetta-9 | revisore: nota, implementazione | VERDETTO: CONFERMATO | nota, implementazione (la voce vii e' testo) ---------
+  - ESEGUITO inspect.signature nel venv (torch 2.14.0): F.dropout(input, p, training, inplace), nn.Dropout(p, inplace), senza
+    generator; torch.bernoulli accetta generator. LETTO P:44 «dropout 200000+100*f+s»: il codice dovra' gestirlo. Regge.
+  - LETTO pose_eval.py:182-183 (varianza population, media sui giunti, almeno 2 tempi; calcolo in float32) e
+    consolidation_long_pose.py:227 («>=»). Regge la voce (iii).
+  - La voce (vii) (la catena prosegue con allarmi aperti?) e' una precisazione di testo di P:104, non solo di codice.
+
+--- ricetta-10 | revisore: nota, testo | VERDETTO: CONFERMATO | nota, testo --------------------------------------------------
+  - LETTO R:51 «Curve e decisioni prima del rifit e dell'apertura val»; P:70 «Prima dell'inferenza finale si bloccano
+    manifest di selezione». Nessuna fuga possibile; precisazione utile.
+
+--- ricetta-11 | revisore: nota, disegno | VERDETTO: CONFERMATO | nota, disegno ------------------------------------------------
+  - LETTO P:84 «due fold outer, stessa selezione MSE»; P:94 «Qualificazione, sui held outer»; P:92 «i20 held outer non li
+    scelgono» vale per (a, sigma), non per LR ed epoca. Lo stesso held sceglie e giudica: vantaggio ottimistico, indiretto
+    (scelta su MSE, giudizio su E_dyn) e probabilmente piccolo, perche' i checkpoint vicini sono molto correlati. Regge.
+
+==============================================================================================================================
+2. RILIEVI DELLA DIMENSIONE «criteri»: VERIFICA AVVERSARIA
+==============================================================================================================================
+
+--- criteri-1 | revisore: minore, disegno | VERDETTO: CONFERMATO | minore, disegno ---------------------------------------------
+  - LETTO P:122: «Necessario e sufficiente [...] né2 né3 ha etichetta deterioramento_pratico», poi «Se MLP o L13 sono
+    risolti migliori, la TCN non è candidata preferita». ESEGUITO grep: «candidata preferita» e «risolti migliori» compaiono
+    solo in P:122. J:40, D:6753 e P:203 codificano solo il veto su deterioramento_pratico.
+  - LETTO REG:6007 (voce GPT del 18/11): «ChiusuraC2 esplicita conveto seMLP/L13 risolti migliori». Anche l'autore usa la
+    formula ambigua: l'intenzione va chiarita da GPT, quindi «disegno» e' il tipo giusto.
+  - CALCOLATO (conti.py): controesempio del revisore giusto (gain1 6,25; gain4 4,568; gain5 3,677; gain3 5,063; gain2 -1,351).
+    ESEGUITO etichette.py: (-1,5; -1,9; -0,8) -> etichetta 3, nessun veto per la regola iff.
+  - Precisazione sulla prova di «realismo». ESEGUITO lettura di scientific_readout.json (sha256 4f10f678... = J:64): le
+    semiampiezze 0,341 e 0,433 sono di contrasti fra dosi dello stesso lettore (49046 contro 39237), con predizioni molto
+    correlate. Fra lettori diversi la semiampiezza puo' essere molto piu' grande: ridge post contro ridge pre a 49046 ha
+    IC95 [21,826; 26,172], semiampiezza 2,17. Fra teste nuove sugli stessi latenti la banda «-2 < gain2 < 0 con upper99 < 0»
+    e' plausibile, non certa. L'incoerenza del testo resta comunque, a prescindere dalla probabilita'.
+
+--- criteri-2 | revisore: minore, testo | VERDETTO: PARZIALE | minore, testo -------------------------------------------------
+  - Regge per C-1. LETTO R:19 «Se L0 è deteriorata rispetto alla ridge, i contrasti 1–3 restano confronti fra queste ricette».
+    LETTO P:126 «L0 inferiore alle storiche invita a leggere le differenze di dose/loss/FP16 e i controlli train»: lettura
+    diversa, la conseguenza sui contrasti 1-3 non c'e'. Il verso opposto chiesto da C-1 (REV:235, «se L0 è migliore della
+    ridge, va riportato come effetto del rifit») manca anche nella disposizione R:19. CALCOLATO (conti.py): E_L0 0,770 ed
+    E_TCN 0,760 danno gain1 1,299, gain4 3,296, gain5 2,393; L0 da sola +2,023 sulla ridge e +1,108 sulla testa. Regge.
+  - Regge per controlli-6. LETTO R:46 «scambia anche larghezza per connessioni temporali». ESEGUITO grep «larghezza» in P:
+    solo P:40 («senza ricerca di larghezza»), che e' un'altra cosa.
+  - Regge poco per C-2. R:20 chiede «niente attribuzione forte del contrasto 3 alla non linearità» se L13 e' peggiore di L0.
+    Ma P:122 non attribuisce mai il contrasto 3 alla non linearita': «TCN/L13 passa → vantaggio sulla ricetta lineare
+    temporale, con cautela S-2» e «Nessuna attribuzione causale “pura” al ramo g». Manca solo la lettura condizionata a
+    L13 peggiore di L0; utile, non necessaria.
+  - «L0 inferiore» e «Post>pre» (P:126): ambigui, il contesto li risolve. Livello nota.
+
+--- criteri-3 | revisore: minore, testo | VERDETTO: CONFERMATO | minore, testo -------------------------------------------------
+  - LETTO C15:97 «riportando comunque direzione e ampiezza. Non chiamarlo equivalenza.»; P:119 solo la condizione.
+    ESEGUITO grep «equivalen» in P: righe 126 (post/pre) e 153 (fixture CPU); nessuna per l'etichetta 3. In J nessuna
+    occorrenza. D:6753 «Nessuna equivalenza». ESEGUITO etichette.py: l'etichetta 3 raccoglie (-1,5; -1,9; -0,8), (0; -1; 1),
+    (1,5; 0,5; 1,9) e anche (-2,6; -5; 0,3), cioe' un deterioramento pratico non risolto. Regressione vera; gravita' bassa
+    dentro «minore», legata a criteri-1.
+
+--- criteri-4 | revisore: minore, testo | VERDETTO: CONFERMATO | minore, testo -------------------------------------------------
+  - LETTO R:21 (C-3) destinazione «[§5], [§10], proposal.json e nuova voce di decisioni.md» per «nessuna non-inferiorità
+    implicita di MAE/livello [...] nessuna affermazione sul valore del pretraining»; R:66 e R:67 indicano anche il §10.
+  - LETTO P:203: «nessuna adozione o livelloB automatici» e basta. P:199 dice «15sviluppo» ma non «gia' consultati, non una
+    conferma». La correzione C-3 della review (REV:253-266) chiedeva queste clausole nella tabella. Regge.
+
+--- criteri-5 | revisore: minore, testo | VERDETTO: PARZIALE | minore, testo -------------------------------------------------
+  - Regge per J. ESEGUITO grep su J: nessuna occorrenza di «NaN», «OOM», «TIMEOUT», «Inf»; «technical_failure» solo come
+    nome (J:150). LETTO REV:329 «In proposal.json vanno aggiunti anche l'IC 95% descrittivo e l'arresto su NaN o OOM».
+    LETTO R:27: la disposizione di R-2 «Accolta» parla solo della voce di decisioni.md. L'IC95 c'e' (J:56), l'arresto no.
+    E' una disposizione accolta che non e' nel JSON.
+  - Regge meno per R-1. LETTO P:151 «GateR-1 [...] prima dei contrasti»; P:116 «Prima i gate di qualità»; J:114
+    «qualityfailures precede scientificlabels»; J:40 «all qualitygates». La conseguenza di un fallimento (nessuna etichetta)
+    si ricava gia'. Manca solo la frase su che cosa si fa dopo (arresto, correzione del codice con decisione registrata).
+    Questa parte e' una nota.
+
+--- criteri-6 | revisore: minore, testo | VERDETTO: CONFERMATO | minore, testo -------------------------------------------------
+  - LETTO gpt_3e007c8/scripts/consolidation_long_pose.py:147 «data["pred"].dtype == np.float32»; consolidation_long_pose_
+    runtime.py:275 «held["pred"][:, P.OFFSET:-P.OFFSET].astype(np.float64)». P:151 «stessi dtype/valori»: alla lettera falso.
+  - ESEGUITO work_verifica_ricetta-criteri/script/r1_ricevuta.py sulla ricevuta: groups.dynamic.n_selected_windows = 8.329,
+    groups.dynamic.centered.n_windows = 8.327, n_window_joints 166.540, n_valid_elements 20.119.920, 15 utenti. La ricevuta
+    contiene entrambi i numeri con nomi diversi: «8.327 finestre dinamiche» senza «con supporto centrato» e' ambiguo. Regge.
+
+--- criteri-7 | revisore: nota, testo | VERDETTO: CONFERMATO | nota, testo ---------------------------------------------------
+  - LETTO P:124 «MAE/livello: riportare delta e IC95 descrittivo; delta positivo è peggioramento stimato»; J:116 uguale.
+    LETTO consolidation_long_pose.py:365: nel lungo il delta e' candidato meno controllo. Il riferimento non e' scritto.
+
+--- criteri-8 | revisore: nota, testo | VERDETTO: CONFERMATO | nota, testo ---------------------------------------------------
+  - LETTO J:40 «all qualitygates and L0/MLP/L13/TCNpost admitted»; P:203 «gateammissione». Nessuna definizione in un punto.
+
+--- criteri-9 | revisore: nota, implementazione | VERDETTO: CONFERMATO | nota, implementazione (facoltativa) ------------------
+  - LETTO consolidation_long_pose.py:314 «np.random.default_rng(seed).integers(0, len(users), (n_boot, len(users)))», :290
+    «np.percentile(draws, [2.5, 97.5])»; tokenizer_pose_readout.py:30 SEED 20261102, N_BOOT 2000. Proposta sensata.
+  - ESEGUITO r1_ricevuta.py: pre_ridge ricalcolato 1.0321280032044744 contro 1.0321280032044746 memorizzato: l'ordine di somma
+    sposta 2e-16, ben sotto 1e-12. Regge.
+
+--- criteri-10 | revisore: nota, testo | VERDETTO: CONFERMATO | nota, testo --------------------------------------------------
+  - LETTO C15:91 «Stessi sorteggi fra bracci, semi e riferimenti», C15:100 «Si pubblicano tutti e cinque», C15:104 «una nuova
+    metrica di tratto». ESEGUITO grep in P: nessuna delle tre. LETTO P:126 «TCN-pre e ancora ridge pre dal report storico»
+    sotto «IC95 appaiati», contro J:59 «paired_CI_against_TCN_pre: false». P:46 chiarisce («ancora descrittiva»). Regge.
+
+--- criteri-11 | revisore: nota, testo | VERDETTO: CONFERMATO | nota, testo --------------------------------------------------
+  - LETTO J:40 e J:42 (prosa compressa); P:114 «IC percentile99», P:153 «allarmeS-2». Regge.
+
+==============================================================================================================================
+3. CONTROLLI A CAMPIONE DELLE CONFERME DEI REVISORI
+==============================================================================================================================
+Ricetta
+  R1. 304 valutazioni per traiettoria e 40.128 in tutto (C-r6). ESEGUITO conti.py: quarti S=30 -> 8,15,23,30; S=31 -> 8,16,24,31;
+      S_full=60 -> 15,30,45,60; S_full = ceil(1907/32) = 60; massimo di ceil(n/32)+ceil((1907-n)/32) = 61; 11x6x2x304 = 40.128.
+      REGGE (P:102).
+  R2. Numeri S-2 nel mondo V (C-r9). LETTO verify_selezione-criteri.txt:343-344 (TCN 1e-3 a 150: minimo MSE epoca 93 con E_dyn
+      0,7548, minimo E_dyn 0,7370 all'epoca 148) e :264 (L0 1e-4: scelta epoca 17 E_dyn 0,7834, minimo 0,7821 all'epoca 14).
+      CALCOLATO: TCN distanza 55, regret 2,415%; TCN a 50 epoche distanza 7, regret 0,673%; L0 distanza 3, regret 0,166%. L13:
+      LETTO :330-331 «Scegliere sulla MSE costa il 3,66%», distanza 23-5 = 18. REGGE.
+  R3. Fattori del weight decay (C-r10). CALCOLATO conti.py: 0,9851 / 0,7634 / 0,4066 / 0,1653. REGGE.
+  R4. pose_var interna = formula in cache (C-r8). LETTO pose_eval.py:182-183 «rows_ok = m.any(axis=1)» e «t[rows_ok].var(axis=0)
+      .mean()»; pose_targets.py:177-179 «mask[has] = True» (tutti i giunti insieme); pose_slot_readout.py:176 «np.nanmedian(val
+      ['pose_var']) == THRESHOLD». REGGE.
+  R5. P e J coincidono sui parametri (C-r12). LETTO a campione: griglia P:65 = J:171-176; 3e-5/1e-2 P:68 = J:138,143; 150/300
+      P:65-66 = J:162,179; S-2 5 epoche e 2% P:72 = J:200-201; semi 0/1/2 P:70 = J:209-213; pareggi P:66-67 = J:216. REGGE.
+Criteri
+  K1. Numeri del gate R-1. ESEGUITO r1_ricevuta.py (somme per utente, utenti ordinati): post_ridge 0.7859020004638595 e
+      trained_head 0.7786289843513977, identici ai memorizzati; 15 utenti; 8.327 finestre con supporto; 166.540 coppie;
+      20.119.920 elementi; 8.329 selezionate. Statiche 8.329 selezionate, quindi 16.658 finite e 1.890 non finite. REGGE.
+  K2. Soglia della testa. CALCOLATO: 0,98 x 0,7786289843513977 = 0,7630564046643697; gain5 alla soglia 2,0000000000000013;
+      2,9069% sotto la ridge; 2% sotto la ridge = 0,7701839604545823. REGGE.
+  K3. Quattro etichette. ESEGUITO etichette.py (griglia -6..6 passo 0,25, lower<=upper, frazioni esatte): 60.025 terne,
+      conteggi 5.100 / 5.100 / 20.296 / 29.529, identici al revisore. Casi chiesti come nel rapporto. REGGE.
+  K4. Parametri della tabella del §10. CALCOLATO conti.py dalla specifica di P:28-30: TCN g 64.436 + LN 768 + affine 7.700 =
+      72.904; MLP 73.000; L0 8.468; L13 100.628. REGGE.
+  K5. Ritaglio e bootstrap. LETTO tokenizer_pose_readout.py:30 «OFFSET, EPS, SEED, N_BOOT, BATCH = 6, 1e-5, 20261102, 2000, 64»
+      e consolidation_long_pose_runtime.py:275 «[:, P.OFFSET:-P.OFFSET]»: con 160 patch [6:154]. REGGE.
+
+==============================================================================================================================
+4. AFFERMAZIONI DEL REVISORE CAPO
+==============================================================================================================================
+
+--- S-D | VERDETTO: PARZIALE | minore, disegno -----------------------------------------------------------------------------
+Regge.
+  - LETTO P:69: il caso «MSE a minimo interno, E_dyn ancora in discesa a 296-300» e' «ottimizzazione non risolta».
+  - LETTO P:104: la conseguenza toglie ogni etichetta ai contrasti che dipendono dalla testa, in entrambi i versi. Per
+    TCN-post: nessuna etichetta e nessuna candidata (P:104 «Se L0 o TCN-post non è ammissibile, niente promozione primaria»).
+  - Ragionamento: ogni allarme del punto 5 dice «questa testa potrebbe fare meglio con piu' budget o un altro LR». Un beneficio
+    gia' misurato sui 15 utenti resta la prestazione del predittore selezionato e rifittato: un allenamento migliore della TCN
+    non lo ridurrebbe. Lo stesso allarme rende invece non leggibile un esito negativo o nullo della TCN (il rischio di S-1).
+    Per un comparatore vale il contrario. E' coerente con la chat di GPT («senza una conclusione negativa sulla TCN») e con
+    P:104 «Nessuna vittoria costruita su un comparatore inadeguatamente allenato».
+Da correggere nella proposta.
+  - La formula «un allarme su un comparatore impedisce il beneficio contro quel comparatore» non basta. Per MLP e L13 la
+    candidata non usa un beneficio, usa l'assenza di deterioramento (veto). Se MLP e' sottoallenata, «nessun deterioramento
+    contro MLP» non e' leggibile. Controesempio: MLP con allarme, gain2 = +0,5 (etichetta 3), contrasti 1, 4, 5 passati. Se
+    la regola direzionale, scritta come in S-D, sostituisse anche il requisito di ammissione di P:122 e J:40, la TCN
+    diventerebbe candidata anche se una MLP allenata meglio potrebbe batterla di oltre il 2%. Formula corretta: un allarme
+    su una testa blocca ogni lettura che piu' allenamento di quella testa potrebbe rovesciare. Sulla candidata: letture
+    negative o nulle. Su un comparatore: letture favorevoli alla TCN, compresa l'assenza di deterioramento usata dal veto.
+    In pratica il requisito di ammissione resta per L0, MLP e L13 e cade solo per TCN-post.
+  - Va riscritta P:104 («Se L0 o TCN-post non è ammissibile, niente promozione primaria»): con la regola direzionale vale per
+    L0, non per TCN-post.
+  - Il mondo V citato (MSE 93, E_dyn 148 su 150) mostra il trigger dell'estensione, non l'allarme a 300: LETTO
+    verify_selezione-criteri.txt:343-344, E_dyn sale a 150 (0,7385 contro 0,7370 a 148). Non si sa dove cadrebbe a 300.
+  - Nei controlli il ragionamento porta a una regola analoga: l'allarme non deve fermare la catena se la testa supera il suo
+    cancello (rilievo nuovo V-2).
+  - La regola direzionale non risolve ricetta-12: un falso allarme su L0 bloccherebbe comunque il beneficio del contrasto 1.
+    Servono tutte e due le correzioni.
+
+--- S-E | VERDETTO: PARZIALE | minore, testo (coincide con criteri-6) ---------------------------------------------------------
+  - Da dove viene 8.327. ESEGUITO r1_ricevuta.py sulla ricevuta pinnata (sha256 b08e6e32...): per post_ridge, trained_head e
+    pre_ridge groups.dynamic.n_selected_windows = 8.329 e groups.dynamic.centered.n_windows = 8.327, con 166.540 = 8.327 x 20
+    coppie e 20.119.920 elementi. Due finestre dinamiche hanno pose_var finita sull'intera finestra ma nessuna coppia con almeno
+    due tempi validi nel ritaglio [6:154]. Statiche: 8.329 selezionate, 8.293 con supporto; tutte: 18.548 e 16.620.
+  - Origine del testo. LETTO REV:101 «con le stesse 8.327 finestre dinamiche» e REV:341 «conteggi del supporto (8.327 finestre,
+    20.119.920 elementi)»: GPT ha ripreso la formula della review di Claude.
+  - Il gate e' coerente con la ricevuta: 8.327 e' il conteggio del supporto centrato, lo stesso su cui si calcolano E_dyn ed
+    elementi. Il sospetto di un'incoerenza non regge. Resta l'ambiguita' del nome: chi conta le selezionate trova 8.329 e ferma
+    la catena. Correzione: «8.329 finestre dinamiche selezionate, 8.327 con supporto centrato, 166.540 coppie, 20.119.920
+    elementi, 15 utenti» in P:151 e J:70, con i nomi dei campi della ricevuta.
+
+--- S-F | VERDETTO: PARZIALE | nota, testo ----------------------------------------------------------------------------------
+  - Il fatto regge. ESEGUITO grep in P: «ramo lineare» alle righe 1, 109, 198; «ramo affine» alle righe 26, 30, 36-38, 42, 44;
+    «percorso affine» alla 10; «+affine» alle 84 e 200. LETTO R:22 (R-3): «Oggetto: TCN compatta ispirata a TEMPONet con ramo
+    affine», mentre il §10 (P:198) dice «con ramo lineare».
+  - Non e' un difetto da correggere prima del congelamento. Entrambe le parole indicano lo stesso oggetto, definito senza
+    ambiguita': P:26 «yhat=W h+b+g(h)», «aggiunge 7.700 parametri» (= 384x20+20, con bias); J:322-339 bias true,
+    parameters_added 7700. Nel progetto «lineare» si usa anche per L0, che ha il bias. Nessuna implementazione diversa
+    puo' nascere dalla differenza.
+  - Facoltativo: scrivere una volta, nel titolo o nel §10, «ramo lineare (affine, con bias)».
+
+==============================================================================================================================
+5. RILIEVI NUOVI
+==============================================================================================================================
+
+--- V-ricetta-criteri-1 | minore | disegno | S-2 su L13 (o MLP) entra nella regola della candidata attraverso il veto ---------
+Posizione: P:72, P:122, P:203; J:39-43 (candidate), J:198-204 (objective_tradeoff.consequence).
+Che cosa e' cambiato. In c15aac9 la candidata usava solo i contrasti 1, 4 e 5 (C15:100). La review lo notava: LETTO REV:285
+  «Il rischio pratico riguarda il contrasto 3, non la regola della candidata». In v2, per C-2, i contrasti 2 e 3 entrano come
+  veto (P:122). Quindi la distorsione nota di S-2 su L13 ora tocca la candidata.
+Meccanismo. S-2 su L13 significa che il checkpoint scelto sulla MSE ha E_dyn interna peggiore di almeno il 2% del suo minimo.
+  Nelle prove della review il costo per L13 e' 3,66% (mondo V) e 11,9% (mondo del revisore), sopra il margine del veto.
+  Una E_dyn di L13 gonfiata alza gain3 e rende il veto meno probabile. J:199 limita «interpretation of contrast3», ma P:122,
+  J:40 e il §10 non dicono nulla di S-2 nella candidata.
+Controesempio minimo (CALCOLATO, numeri scritti a mano). L13 al suo minimo dinamico interno avrebbe sui 15 utenti E_dyn 0,735;
+  al checkpoint MSE, con regret 3,66%, 0,735 x 1,0366 = 0,7619. TCN 0,750, L0 0,800, MLP 0,770, riferimenti storici.
+  gain3 = 100 x (0,7619 - 0,750)/0,7619 = +1,56: nessun veto, e con 1, 4, 5 passati la TCN e' «candidata alla migliore
+  lettura della dinamica centrata». Con L13 al minimo dinamico gain3 = -2,04: con upper99 < 0 sarebbe deterioramento_pratico
+  e veto. La candidata dipende da una distorsione che il protocollo stesso prevede.
+Perche' minore. La selezione MSE e' comune a tutte le teste ed e' dichiarata; P:72 dice gia' che il contrasto 3 «resta una
+  prestazione di questa selezione MSE». Manca solo la conseguenza sulla candidata. Nessuna nuova inferenza e' necessaria.
+Correzione (da scegliere prima della firma). (i) Consigliata: se S-2 riguarda L13 o MLP, la candidata si dichiara «sotto
+  selezione MSE comune, con compromesso S-2 sul comparatore», e non si afferma la superiorita' sulla lettura lineare temporale
+  (o istantanea). Scriverlo in P:122, J candidate e nella riga «Esito positivo» del §10. (ii) Piu' forte: con S-2 su un
+  comparatore del veto, candidata non accertata. Dato che S-2 su L13 e' probabile, (ii) chiuderebbe quasi sempre la
+  candidatura: sconsigliata.
+
+--- V-ricetta-criteri-2 | minore | disegno | Nei controlli un allarme aperto ferma la catena anche se la testa supera il cancello --
+Posizione: P:98, J:421 («all noncalibrated/nondiagnostic/failedpositive/unresolvedoptimization outcomes stop before
+  realneuralfits»), J:471 (stessa politica dei fit reali).
+Il problema. Il controllo serve a sapere se la ricetta recupera un margine noto. Se la testa lo recupera (>=90% nel lineare,
+  >=50% nel temporale) la domanda ha risposta positiva. Un allarme aperto (bordo LR, minimo nelle ultime 5 epoche, primo
+  quarto) dice solo che il budget forse non basta per l'ottimo. Oggi ferma comunque la catena. I fit reali hanno gia' i
+  propri allarmi, quindi l'allarme del controllo non protegge niente in piu'.
+Controesempio minimo. Controllo lineare, L0: recupero 99% del margine su MSE ed E_dyn, per fold e pooled. Il minimo pooled a
+  3e-5 e' piu' basso di quello a 1e-4 dello 0,01% (eccesso di plateau proporzionale al LR, vedi ricetta-12). Allarme «LR al
+  bordo dopo l'estensione» -> P:98 «stop prima dei fit reali». La prova si ferma con una ricetta che ha superato il controllo.
+  Lo stesso vale per un minimo di MSE ancora in lenta discesa a 296-300 su un bersaglio affine.
+Relazione con i rilievi dei revisori. Unifica la parte «controlli» di ricetta-1, ricetta-3 e ricetta-12 con una regola sola.
+Correzione. «Nei controlli si ferma la catena solo se una condizione richiesta del cancello non passa. Gli allarmi delle teste
+  che passano si registrano. Se una testa non passa e ha un allarme aperto, la causa si registra come ottimizzazione non
+  risolta, altrimenti ricetta non ammessa.» Non cambia soglie ne' griglie.
+
+--- V-ricetta-criteri-3 | nota | testo | «minimo interno» di S-2 si puo' leggere in due modi -----------------------------------
+Posizione: P:72 «perdita relativa E_dyn >=2% rispetto al suo minimo interno»; J:198-204 (nessun dominio del minimo).
+Nel protocollo «interno» indica gli held interni (P:59, P:66, P:78). Ma «minimo interno» si puo' leggere anche come «minimo
+  non al bordo della curva». Con questa seconda lettura, nel caso di ricetta-1 (minimo di E_dyn a 300) S-2 non sarebbe
+  definito. Correzione: «minimo di E_dyn pooled sugli held interni, fra tutti i checkpoint ammessi del LR selezionato, passo 0
+  escluso» (insieme a ricetta-9, voce ii).
+
+==============================================================================================================================
+6. VERDETTI DEI DUE PUNTI
+==============================================================================================================================
+
+Punto 2 «ricetta»: CONVERGE_CON_CORREZIONI.
+  La ricetta e' finita e implementabile: al piu' 5 LR per combinazione (combinatoria esatta), una continuazione 150->300 per
+  LR, selezione unica sulla MSE pooled con pareggi definiti, coppie di stati dei fold, durata dei rifit e soglia interna solo
+  train coerente con la formula storica di pose_var. Nessun bloccante proprio del punto 2.
+  Correzioni da fare prima della firma, senza esperimenti:
+    - ricetta-12: l'allarme del bordo LR inferiore senza tolleranza; per L0 e L13, e nel controllo lineare, e' probabile
+      che scatti senza un problema di ottimizzazione. E' la correzione piu' importante.
+    - V-2 (che unifica la parte controlli di ricetta-1, -3 e -12): nei controlli fermare la catena solo se un cancello non
+      passa.
+    - ricetta-1 / S-D: precedenza e conseguenza degli allarmi; preferibile la conseguenza direzionale.
+    - ricetta-2 (S-2 non e' un allarme) e ricetta-4 (y o y* nei controlli).
+  Il punto MLP di ricetta-3 (= controlli-2) e' bloccante per definizione, ma appartiene al punto 3.
+
+Punto 5 «criteri»: CONVERGE_CON_CORREZIONI.
+  Reggono e coincidono in P, J e D: formula del gain, quattro etichette ordinate, «passa», regola della candidata, stati che
+  impediscono il verdetto, descrittivi, MAE/livello, semi, bootstrap e bordo MC, soglia storica e numeri del gate R-1 (rifatti
+  dalla ricevuta pinnata). Correzioni prima della firma: criteri-1 (che cosa veta la candidata), V-1 (S-2 su L13/MLP nella
+  candidata), criteri-4 (riga «Esito positivo» del §10), criteri-5 (technical_failure in J), criteri-6/S-E (testo del gate
+  R-1), criteri-2 e criteri-3 (letture e etichetta 3). Note: criteri-7...11.
+  La tabella del §10 e' fedele al corpo; e' pronta per Simone dopo criteri-1, criteri-4 e V-1, e dopo aver riportato nella
+  riga «Esito positivo» la scelta su S-D se viene adottata.
+
+Tipi. Disegno: ricetta-1, ricetta-12, ricetta-8, ricetta-11, criteri-1, V-1, V-2, S-D. Testo: ricetta-2, -3, -4, -5, -6, -7, -10,
+  criteri-2...8, -10, -11, S-E, S-F, V-3. Implementazione: ricetta-9, criteri-9. Benchmark: nessuno nei due punti.
+
+==============================================================================================================================
+7. CHE COSA NON HO VERIFICATO
+==============================================================================================================================
+- Nessun ls-remote o fetch del ramo di GPT: ho verificato i file dei commit 3e007c8 e 62348ab gia' presenti nel worktree.
+  Il controllo della punta del ramo resta al revisore capo.
+- Nessuna simulazione: gli argomenti su ricetta-12 e V-2 sono qualitativi (eccesso di plateau proporzionale al LR), non misure.
+- Le dimensioni controlli, architettura, costo e consegna non sono mie: ne ho letto solo le parti che toccano ricetta e criteri.

@@ -1,0 +1,27 @@
+JobID|JobName|State|ExitCode|Elapsed|Start|End|NodeList|AllocCPUS
+64931573|TCNH-preflight-20261119|FAILED|1:0|00:01:13|2026-11-20T11:04:36|2026-11-20T11:05:49|login13|2
+64931573.batch|batch|FAILED|1:0|00:01:13|2026-11-20T11:04:36|2026-11-20T11:05:49|login13|2
+64931573.extern|extern|COMPLETED|0:0|00:01:15|2026-11-20T11:04:36|2026-11-20T11:05:51|login13|2
+---
+    openjdk/11.0.20.1_1
+{"bytes": 61513, "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/manifests/e3f5b119b19af08274d2df0744ef3772323f4325bcb4d50e72804b56235ef261.json", "sha256": "e3f5b119b19af08274d2df0744ef3772323f4325bcb4d50e72804b56235ef261"}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261119/scripts/pose_temponet/__main__.py", line 250, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261119/scripts/pose_temponet/__main__.py", line 244, in main
+    value = run_stage(plan, args.job_id)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261119/scripts/pose_temponet/runner.py", line 263, in run_stage
+    details["preflight"] = P.preflight(plan)
+                           ^^^^^^^^^^^^^^^^^
+  File "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261119/scripts/pose_temponet/provenance.py", line 452, in preflight
+    train = read_verified_inputs(plan,"train",stage="preflight",depth="post")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261119/scripts/pose_temponet/provenance.py", line 439, in read_verified_inputs
+    require(sorted({m["user"] for m in data["meta"]}) == producer["users"], "cache user population differs from original producer")
+  File "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261119/scripts/pose_temponet/provenance.py", line 67, in require
+    raise ValueError(message)
+ValueError: cache user population differs from original producer

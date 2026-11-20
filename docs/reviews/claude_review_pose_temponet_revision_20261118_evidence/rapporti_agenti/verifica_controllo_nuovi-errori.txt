@@ -1,0 +1,203 @@
+VERIFICA AVVERSARIA DEL CONTROLLO «nuovi-errori» SULLA BOZZA CONGELATA
+Bozza: controllo/bozza_controllo.md (sha256 5e872e1d2089df94e2907c6065fbcbe27938db3ac4dcc14aa85643ed739a6dcf, 585 righe), non modificata.
+Rapporto del controllore: controllo/nuovi-errori/rapporto.txt (12 problemi NE-1...NE-12).
+Metodo: per ogni NE rilettura della bozza alle righe indicate e delle fonti citate (P, J, R, DEC di gpt_3e007c8, result_dump.txt,
+rapporti review_*/verify_*, script work_* e rilettura_*); conti rifatti con python3 in questa cartella.
+Il rapporto si scrive a pezzi.
+
+=====================================================================================================================
+1. VERDETTI
+=====================================================================================================================
+
+NE-1 [bozza:108-113, prompt:508] -> PARZIALE. Gravita': errore (di attribuzione del numero; nessun effetto sulle conclusioni).
+  Regge il nucleo. Ricalcolo indipendente in forma chiusa (ne1_ridge.py, ne1_ridge.out.txt, stesso modello isotropo di
+  rilettura_fedelta/conti_rilettura.py: p=384, n_out=118.000, n_in=n_out/2, K_MSE=5):
+    sigma 2,5: alpha* con penalita' sulla somma dei quadrati = 12.000 sia a 10 sia a 20 utenti (indipendente da n);
+               alpha'* con loss media = 0,2034 a 10 utenti e 0,1017 a 20 (rapporto 2,00);
+               recupero MSE: WLS 0,8983; ridge ottima 0,9077; SSE con alpha degli inner non riscalato 0,9077;
+               loss media con alpha degli inner non riscalato 0,9012.
+  Quindi con la penalita' prescritta da (b) (bozza:107-109) l'alpha degli inner non riscalato E' l'ottimo del modello e da' il
+  90,8%; il 90,1% e' il caso a loss media (P:57) senza riscalare, cioe' proprio quello che la frase di bozza:108-109 esclude.
+  Fonte del 90,1%: rilettura_fedelta/rapporto.txt:272-279 (P-25: «con la loss media per finestra (P:57) l'alpha ottimo scala
+  circa come 1/n, quindi l'alpha inner e' circa doppio ... con alpha doppio 0,901»).
+  Da cambiare nella correzione: (i) la frase seguente, bozza:112-113 «una L0 neurale fra le due darebbe ancora «ricetta non
+  ammessa»», con 89,8% e 90,8% non vale piu' per tutto l'intervallo (fra 90,0% e 90,8% la L0 passa): va ristretta a una L0 che
+  resta sotto il 90%; (ii) «è l'alpha ottimo» vale esattamente solo nel modello (disegno isotropo); con autovalori del
+  disegno diversi l'alpha ottimo unico dipende appena da n (0,7% fra 10 e 20 utenti nel caso di prova di ne1_anisotropia.py,
+  recupero invariato a 4 cifre): scrivere «nel modello coincide con l'ottimo». Nota a margine, senza effetto sulla bozza: nello
+  stesso modello una ridge con un solo alpha non guadagna nulla dall'anisotropia del solo segnale (0,9077 in entrambi i casi);
+  lo 0,940 «anisotropo» del verificatore e' lo shrinkage ottimo per direzione. La bozza usa solo il caso isotropo.
+  Correzione: «Nel modello dei revisori, con spettro isotropo e sigma 2,5, la ridge così prescritta (alpha degli inner con
+  penalità sulla somma dei quadrati, che nel modello coincide con l'alpha ottimo) recupera il 90,8%; con la loss media e alpha
+  non riscalato, cioè doppio, il 90,1%; la WLS l'89,8%. Il riferimento passa di un soffio, e una L0 neurale che regolarizza meno
+  della ridge e resta sotto il 90% darebbe ancora «ricetta non ammessa».» Prompt:508: «Da sola non basta: nel modello isotropo a
+  sigma 2,5 la ridge così prescritta recupera il 90,8% (90,1% con la loss media e alpha non riscalato) e la WLS l'89,8%.»
+
+NE-2 [bozza:76-78 contro 109-110] -> PARZIALE. Gravita': imprecisione.
+  L'incoerenza c'e': bozza:78 definisce («cioè») il margine illeggibile come quello che la WLS non regolarizzata non recupera;
+  bozza:109-110 dice che la WLS come riferimento darebbe falsi «non diagnostico» (stessa obiezione del verificatore,
+  verify_architettura-controlli.txt:113, :128-131 e :226, result_dump.txt verdetto di controlli-1: «Usare la WLS non regolarizzata
+  come riferimento darebbe falsi «non diagnostico»»).
+  Ma la correzione del controllore crea un nuovo disallineamento: se «illeggibile» = «nemmeno la ridge ben regolarizzata arriva
+  al 90%», il controesempio che segue (bozza:84-89: WLS 89,8%, ridge 90,8% dopo NE-1) non e' piu' un caso del problema
+  enunciato, eppure la bozza lo presenta come tale («la causa non si legge», bozza:89) e lo usa in 111-113. Il testo regge
+  meglio senza una definizione secca: il controesempio mostra il caso, (b) fissa il riferimento, 111-113 spiega perche' (b)
+  da sola non basta.
+  Correzione: in bozza:77-78 togliere «cioè quando nemmeno la forma chiusa non regolarizzata lo recupera», oppure sostituirlo
+  con «(controesempio sotto: nemmeno la forma chiusa non regolarizzata lo recupera, e passare dipende da quanto la testa
+  regolarizza)». Bozza:109-110 resta com'e'.
+
+NE-3 [bozza:369] -> CONFERMATO. Gravita': imprecisione.
+  «GPT le corregge nella stessa revisione; le ricontrollo alla review del pacchetto operativo» riguarda tutta la tabella,
+  minori comprese. Bozza:30-31, 430-433 e 582-583 dicono che le minori si rileggono nel prossimo giro, prima della firma;
+  bozza:437 e 583 rinviano solo le note. P:147 conferma che la review del pacchetto viene «Dopo eventuale firma §10». E' il
+  residuo di F9 (segnalazioni_rilettori.txt). La correzione del controllore va bene.
+
+NE-4 [prompt, bozza:474-585] -> CONFERMATO. Gravita': mancanza.
+  Il prompt usa dodici ID omonimi di rilievi diversi della 32e5452 senza la convenzione di bozza:20-22. Controllati su R:
+  controlli-1 = C-1 (R:19), controlli-2 = C-2 (R:20), controlli-4 = C-3 (R:21), criteri-2 = K-1 (R:24), architettura-2 =
+  nota 02 (R:36), architettura-5 = nota 05 (R:39), controlli-3 = nota 10 (R:44), criteri-3 = nota 26 (R:60), criteri-5 = nota
+  28 (R:62), criteri-6 = nota 29 (R:63), consegna-1 = nota 44 (R:78), consegna-2 = nota 45 (R:79). Il caso piu' insidioso e'
+  prompt:484 «disposizioni: ... (consegna-1, consegna-2)»: nella sua matrice delle disposizioni GPT legge le note 44 e 45.
+  La correzione del controllore va bene.
+
+NE-5 [bozza:28-29, 184-194, 206-211; anche prompt:532-533] -> PARZIALE. Gravita': imprecisione.
+  (i) e (ii) reggono. V-ricetta-criteri-2, fonte di OB-1, dice: «I fit reali hanno gia' i propri allarmi, quindi qui l'arresto
+  non protegge niente in piu'» e ha come controesempio proprio il caso lineare di BL-3 (result_dump.txt:1124-1133: «L0
+  recupera il 99% ... scatta l'allarme «LR al bordo dopo l'estensione» e P:98 ferma la catena»). La bozza stessa lo lega a
+  OB-1 (bozza:178 «Nel controllo lineare lo stesso caso ferma la catena prima dei fit reali (OB-1)»), ma a bozza:191 lo conta
+  come secondo motivo del blocco, e a bozza:192-194 spiega perche' OB-2 e OB-4 restano obbligatorie senza dire nulla di OB-1,
+  che con la stessa logica di bozza:191 «fa fallire la prova». Corretta OB-1 (obbligatoria comunque), nel controllo lineare il
+  fermo sparisce; resta l'etichetta falsa nei fit reali (P:69 e P:104), che basta a tenere BL-3 fra i blocchi.
+  (iii) e' debole: «Basta togliere una parola» si riferisce alla parola «allarme» (in tre righe); la frase in P:72 e i tre
+  allarmi in DEC:6747 sono aggiunte, non il cuore della correzione. Si puo' precisare, ma non e' un difetto di sostanza.
+  La correzione del controllore e' incompleta: lo stesso secondo motivo e' ripetuto nel prompt, bozza:532-533 «Lo porto fra i
+  blocchi perché dà «non risolta» a un'ottimizzazione risolta e ferma il controllo lineare».
+  Correzione: bozza:190-191 «Questo rilievo ci rientra perché dà l'etichetta «ottimizzazione non risolta» a un'ottimizzazione
+  risolta, quindi falsa un risultato; il fermo nel controllo lineare viene dalla regola di P:98, che OB-1 corregge.» Bozza:192,
+  aggiungere OB-1: «OB-1 ferma la catena anche con un controllo superato, ma, corretta BL-3, solo per un allarme vero e con
+  un'etichetta vera: è conservativa.» Facoltativo per OB-2: «basta cambiare il nome in tre righe». Prompt:532-533: «Lo porto fra
+  i blocchi perché dà «non risolta» a un'ottimizzazione risolta; il fermo del controllo lineare lo chiude OB-1.»
+
+NE-6 [bozza:215-216] -> CONFERMATO. Gravita': imprecisione (bassa).
+  OB-4 e' «Conseguenza degli allarmi nei fit reali» (bozza:248); P:98 e' il testo dei controlli, dove la conseguenza e' quella
+  della prima voce di OB-1 (bozza:212-214). La fonte (ricetta-1, corrected_fix) dice «con la sua conseguenza», senza rinvio a
+  OB-4. Il prompt (bozza:542) non ha il rinvio e non va toccato. La correzione del controllore va bene.
+
+NE-7 [bozza:103-105 con 121-124; anche prompt:504 e 514] -> PARZIALE. Gravita': imprecisione (bassa).
+  Regge: in P:92 lo stesso E_LS,synth sta nella tolleranza «abs(E_LS,synth−E_real)<=0.05» e nel guadagno
+  «(E_LS,synth−E_oracle)/E_LS,synth in [0.06,0.10]»; (a) lo rende una ridge su y, (d) chiede la LS su y* «nella banda», e la
+  bozza non dice che servono due grandezze. Se la ridge su y resta anche nella banda inner mentre quella outer (P:96) usa y*,
+  ritorna lo spostamento inner/outer di controlli-4 (result_dump.txt, controlli-4: «Da 10 a 20 utenti l'eccesso di stima X si
+  dimezza»), ridotto ma non nullo.
+  La correzione va estesa al prompt, che ha la stessa ambiguita' (bozza:504 «(a) E_real ed E_LS,synth con una ridge»; 514 «LS
+  su y* nella banda e nel margine del cancello del 50%»).
+  Correzione: in (d), bozza:121-124, aggiungere «In P:92 servono due grandezze: la ridge di (a) su y per la tolleranza con
+  E_real; la LS su y* per la banda, inner (P:92) e outer (P:96), e per il margine del 50%.» Nel prompt, dopo bozza:514: «(in P:92
+  due grandezze: ridge su y per la tolleranza, LS su y* per la banda)».
+
+NE-8 [bozza:355] -> CONFERMATO. Gravita': imprecisione (molto bassa).
+  «N3» da solo non e' un ID: R:67 «| 33 | `selezione-criteri-N3` |» e 32e5452:435 «(verificatore, selezione-criteri-N3)»; le
+  altre righe della tabella usano l'ID intero (per esempio `32e5452:selezione-11`). Il riferimento si ritrova comunque da
+  «Nota 33» e «R:67». La correzione va bene.
+
+NE-9 [bozza:377] -> CONFERMATO. Gravita': mancanza (bassa).
+  Il residuo C-2 di criteri-2 («La parte C-2 regge poco ... Manca solo la lettura per L13 peggiore di L0», result_dump.txt:1006)
+  non e' riportato ne' scartato; consegna-4 (nota, PARZIALE) lo giudica coperto da P:122 «Nessuna attribuzione causale “pura” al
+  ramo g» (result_dump.txt:1534-1540). La mia copertura (copertura.py, copertura.out.txt) conferma che consegna-4 e' l'unico
+  dei 71 ID (63 rilievi e 8 sospetti) senza alcuna riga nella bozza, quindi GPT non gli dara' la riga di disposizione che la
+  bozza chiede per ogni nota. R:20 promette «Un L13 peggiore di L0 ... in quel caso niente attribuzione forte del contrasto 3
+  alla non linearità»; P:122 lo copre solo in forma generale. La correzione del controllore e' accettabile; in alternativa una
+  riga «consegna-4 (nota, facoltativa)» con la stessa frase, per non mescolare una nota facoltativa in una riga «minore».
+
+NE-10 [prompt, bozza:554 e 562] -> CONFERMATO. Gravita': mancanza (bassa).
+  Prompt:554 si ferma all'etichetta e perde «senza affermare la superiorità sulla lettura lineare temporale (o istantanea)»
+  (bozza:245; fix di V-ricetta-criteri-1, result_dump.txt: «e non si afferma la superiorita' sulla lettura lineare temporale (o
+  istantanea)»). Prompt:562 «Riscrivi anche P:104, dicendo se la catena prosegue con allarmi aperti» non dice che la frase di
+  P:104 «Se L0 o TCN-post non è ammissibile, niente promozione primaria» con la regola direzionale vale solo per L0 (bozza:259-
+  260; S-D, punto (2): «Va riscritta P:104»). Prompt:561 («un allarme della sola TCN-post non la esclude») riguarda la
+  candidata, non la promozione primaria: il rischio che GPT si limiti alla voce vii e' basso ma reale. Correzione del
+  controllore corretta.
+
+NE-11 [bozza:402 e prompt:577-578] -> PARZIALE. Gravita': imprecisione (bassa).
+  Regge che non tutte le 12 promesse sono note: C-3 e la nota 33 vanno in OB-5 (bozza:354-355 «→ OB-5»; bozza:267-272), R-2 nella
+  minore criteri-5/consegna-2 (bozza:356, 379), C-1 nella minore criteri-2 (bozza:357, 377). Ma anche la nota 12 e' una minore:
+  la sua promessa (bozza:358, «Il confronto scambia anche larghezza per connessioni temporali», P:122) e' esattamente
+  architettura-5, CONFERMATO minore (bozza:376 «Frase della nota 12»; prompt:572 «frase della nota 12 a P:122
+  (architettura-5)»; result_dump.txt, architettura-5: «È una disposizione accolta che non è nel protocollo»). Le promesse
+  davvero da nota sono quindi sette (note 17, 18, 20, 23, 39, 47, 49), le altre cinque stanno in OB-5 (2) e nelle minori (3).
+  La correzione del controllore per il prompt («otto ... le altre quattro») contraddirebbe prompt:572.
+  Correzione: bozza:402 «Le promesse delle note 17, 18, 20, 23, 39, 47 e 49 (sezione 4); quella della nota 12 è la minore
+  architettura-5». Prompt:577-578 «… e sette delle 12 promesse della sezione 4 (note 17, 18, 20, 23, 39, 47, 49); le altre cinque
+  stanno in OB-5 e nelle minori architettura-5, criteri-2 e criteri-5».
+
+NE-12 [bozza:51-52] -> PARZIALE. Gravita': imprecisione (bassa).
+  Regge la prima parte: «solo lettura, conti in forma chiusa e controlli dei file» e' piu' stretto di quanto fatto e del
+  LEGGIMI.md:4-5 della cartella delle prove («con conti in forma chiusa, matrici casuali o file del repository»): il verificatore
+  ha eseguito un controllo numerico su una matrice casuale 20.000x385 (work_verifica_architettura-controlli/
+  v_residuo_normale.py, da cui viene la riga architettura-2 della sezione 5), e i revisori hanno costruito i moduli torch dalla
+  specifica, con autograd per il campo ricettivo (work_architettura/conta_moduli.py:87-98; bozza:280 lo dice gia').
+  Non regge come difetto la seconda parte: che due agenti dichiarino regole piu' strette («Nessun training, nessuna simulazione
+  di reti o mondi sintetici», review_architettura.txt:4; verify_architettura-controlli.txt:4) non rende falsa la frase della
+  bozza; degli altri sette rapporti, sei dicono «nessun esperimento» (con o senza «nessun training») e uno
+  (review_controlli.txt:5) «Nessun esperimento, nessuna simulazione». Le istruzioni date agli agenti non sono fra le fonti,
+  quindi non conviene riscriverle con la formula di due soli rapporti.
+  Correzione minima: «Regole per gli agenti: nessun esperimento né simulazione sui dati; solo lettura, conti in forma chiusa,
+  piccoli controlli numerici su matrici casuali, moduli costruiti dalla specifica per contarli e controlli dei file; …».
+
+=====================================================================================================================
+2. PROBLEMI NUOVI
+=====================================================================================================================
+VN-1 [bozza:212-214, prompt:539] imprecisione. La frase proposta per OB-1, «Nei controlli si ferma la catena solo se una
+  condizione richiesta del cancello non passa», e' scritta fra «» come testo da incollare in P:98 e J:421. Letta alla lettera
+  toglie gli altri due arresti dei controlli: oggi P:98 dice «In questi casi, e anche per controllo non calibrato o non
+  diagnostico, stop prima dei fit reali» e J:421 «all noncalibrated/nondiagnostic/failedpositive/unresolvedoptimization
+  outcomes stop before realneuralfits». L'ordine degli stati (bozza:218-221) nomina «non calibrato» e «non diagnostico» ma non
+  dice che fermano la catena; lo dicono solo, indirettamente, BL-1(b) (bozza:109) e la sezione 8 (bozza:451-454). Se GPT
+  sostituisce la regola di P:98/J:421 con la frase proposta, un controllo non calibrato o non diagnostico non ferma piu'
+  esplicitamente la catena e si potrebbe arrivare ai fit reali senza una qualificazione della ricetta, cioe' ammettere
+  evidenze non qualificate. La frase viene dal fix di V-ricetta-criteri-2 (result_dump.txt:1124-1133), che parlava solo degli
+  allarmi. Probabilita' bassa, effetto alto.
+  Correzione (bozza:212-214 e prompt:539-541): «Un allarme aperto non ferma da solo la catena. Nei controlli la catena si ferma
+  per «non calibrato», per «non diagnostico» o se una condizione richiesta del cancello non passa; gli allarmi delle teste che
+  passano si registrano. Se una testa non passa e ha un allarme aperto, l'etichetta è "ottimizzazione non risolta", altrimenti
+  "ricetta non ammessa".»
+
+Osservazioni minori, non bloccanti e non riportate fra i problemi nuovi:
+- Bozza:379, riga `criteri-5`, `consegna-2` (minori): «che cosa segue a un fallimento del gate R-1» e' messo in una riga
+  minore, ma il verificatore la tiene come nota («La parte R-1 e' una nota ... Manca solo che cosa si fa dopo», result_dump.txt,
+  verdetto di criteri-5). Classificazione un po' piu' forte della fonte, effetto trascurabile.
+- Bozza:218-221: l'elenco di «non diagnostico» (banda di P:96, BL-1(b), clausola MLP) non nomina gli altri casi gia' scritti
+  (P:90 denominatore nullo o non finito; P:95 margini non positivi o non finiti). Basta «fra gli altri».
+
+=====================================================================================================================
+3. CONTROLLI FATTI SENZA ESITO NEGATIVO
+=====================================================================================================================
+- sha256 della bozza ricontrollato: 5e872e1d...6dcf, 585 righe, invariata.
+- Conti di BL-1 (controesempio, due coppie di K, griglia v_scan) e di OB-3, OB-4, OB-5, BL-3: uguali al ricalcolo del
+  controllore (controllo/nuovi-errori/ricalcoli.out.txt); per (b) ricalcolo indipendente in ne1_ridge.out.txt.
+- Epoche 17 (L0) e 5 (L13) a 1e-4: tcnreview/verify_selezione-criteri.txt:264 e :330. Caso L: work_ricetta/traccia_regole.py
+  :132-139. 3,66% e 11,9% per S-2 su L13: verify_selezione-criteri.txt:330-332.
+- «GPT consolidamento» come autore: gpt_3e007c8/docs/claude_GPT_shared:181, :186, :5994, :5999.
+- Ramo della review: il worktree claude-temponet e' su claude/temponet-db8-20261109 (prompt:474-475); review e cartella delle
+  prove ancora non tracciate, come atteso prima del commit.
+- «resta da autorizzare» per il giro del 03/12 (bozza:398, 456-457): confermato da 47ca96e:docs/decisioni.md:5679
+  («Prossimo giro: 03/12/2026, poi 24/12, ciascuno col via di Simone al momento»); DEC:1332 da solo era ambiguo.
+- «il prompt coincide con la richiesta di oggi» (bozza:335): il testo e' diverso, il contenuto dei sei punti coincide
+  (review_consegna.txt:70-76); la frase va letta «nel contenuto», come nella fonte. Non lo segnalo.
+- DEC:6747 elenca solo «Bordo finale irrisolto» fra gli allarmi: la richiesta di OB-2 di elencare i tre allarmi regge.
+- C-3 (R:21): «Rinominare confirmatory_family» e' fatto (J:105 «prespecified_family»); «il nullo non dimostra un limite
+  dell'encoder» e' nella riga «Esito negativo/irrisolto» di P:204 («nessuna conclusione di assenza d'informazione nelFM»). La riga C-3 della sezione 4 resta corretta.
+- Copertura degli ID (copertura.py, copertura.out.txt): tutti i 71 ID compaiono nella bozza tranne consegna-4 (NE-9).
+
+=====================================================================================================================
+4. SINTESI
+=====================================================================================================================
+CONFERMATI (6): NE-3, NE-4, NE-6, NE-8, NE-9, NE-10. Nei sei parziali il problema c'e'; cambia la correzione o la portata.
+PARZIALI (6): NE-1 (la frase successiva «una L0 neurale fra le due» va ristretta; «è l'alpha ottimo» vale nel modello),
+  NE-2 (la definizione proposta stacca il controesempio dal problema: meglio togliere il «cioè»), NE-5 (stesso motivo ripetuto
+  nel prompt:532-533; il punto (iii) e' debole), NE-7 (stessa ambiguita' nel prompt:504/514), NE-11 (anche la nota 12 e' una
+  minore: le note sono sette, non otto), NE-12 (solo la prima meta' regge).
+RESPINTI: nessuno.
+NUOVI: VN-1 (la frase di OB-1 «solo se una condizione del cancello non passa», incollata alla lettera, toglie gli arresti per
+  «non calibrato» e «non diagnostico»).

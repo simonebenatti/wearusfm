@@ -1,0 +1,362 @@
+=== CONF architettura
+[
+ {
+  "item": "Conteggi di parametri, pesi, bias e MAC di L0, L13, MLP, TCN-post e TCN-pre",
+  "evidence": "ESEGUITO work_architettura/conta_moduli.py. L0 8.468, L13 100.628, MLP 73.000, TCN 72.904. Pesi delle trasformazioni 71.808 (64.128 di g + 7.680 del ramo); bias 424 contro 328 (differenza 96). MAC per finestra 160: 1.228.800 / 15.974.400 / 11.489.280. Uguali a P:35-40, J heads e analytic_checks."
+ },
+ {
+  "item": "Campo ricettivo 13, offset da −6 a +6, compatibilità con il crop6",
+  "evidence": "ESEGUITO con autograd e analisi strato per strato: i centri 6..153 dipendono da 13 posizioni e non toccano il padding in nessuno strato; i centri 0..5 e 154..159 sì. 6/12/13 patch × 25 ms = 150/300/325 ms (P:30)."
+ },
+ {
+  "item": "Prova di contenimento di A-1 (R:106-108) e sue ipotesi",
+  "evidence": "CALCOLATO: ||n(x)||² = D·v/(v+eps) < D per ogni x, quindi il sup esiste. Ipotesi necessarie: larghezze ≥20, LN con gamma e beta finiti, bias nel primo e nell'ultimo strato, ReLU, dropout spento, tap fuori centro a zero nella TCN. Il padding non serve. Coincide con il testo della review 32e5452 (riga 209)."
+ },
+ {
+  "item": "Non identificabilità del ramo g (R:110, P:122)",
+  "evidence": "CALCOLATO: g rappresenta esattamente ogni mappa affine sul dominio della LN, quindi (W,b,g) e (W−A,b−a,g+A) danno la stessa funzione. Nessuna attribuzione «al solo g»."
+ },
+ {
+  "item": "Inizializzazione, gradienti al primo passo, assenza di gate e ReLU morti",
+  "evidence": "CALCOLATO: al primo passo solo il ramo affine e l'ultimo strato di g hanno gradiente; interni e LN lo ricevono dal secondo passo. Un gate α=0 davanti a g nullo sarebbe morto per sempre (scelta di P:42 corretta). Con Kaiming fan_in e bias zero la pre-attivazione ha varianza circa 2. ESEGUITO: kaiming_normal_ accetta generator; fan_in delle k3 = 192."
+ },
+ {
+  "item": "Ordine di creazione e fork_rng",
+  "evidence": "LETTO pose_head.py:26-30 a 3e007c8: uscita creata sotto fork_rng(devices=[]) e azzerata; il ramo affine ripete lo schema. Semi di init, dropout e shuffle coerenti fra P:44 e J fit.shuffle_rng; L0/L13 deterministiche, i tre semi cambiano solo lo shuffle."
+ },
+ {
+  "item": "Con g=0 la testa coincide esattamente con L0",
+  "evidence": "LETTO pose_head.py:23 (nn.LayerNorm, eps 1e-5, affine) e P:26. CALCOLATO: stessa LN, stesso Linear 384→20 con bias, stessi gruppi di decay, uscita zero all'avvio. Le traiettorie divergono dal secondo passo (clipping e gradienti di g): «non è garantita la stessa traiettoria» è esatto."
+ },
+ {
+  "item": "Assorbimento della LN e classi di L0/L13 uguali alle mappe affini di z",
+  "evidence": "CALCOLATO: W(γ⊙n+β)+b = (W diag γ)n + (Wβ+b), e lo stesso per tap in L13. Con γ=1, β=0 si ottiene ogni mappa affine. Ai bordi il padding dopo la LN altererebbe l'intercetta: il crop6 è necessario e sufficiente."
+ },
+ {
+  "item": "Obiettivo WLS uguale alla loss di training e separabile per giunto",
+  "evidence": "CALCOLATO: L = (1/N)Σ_i(1/q_i)Σ_tj m_itj(·)² si divide in 20 problemi indipendenti con pesi m_itj/q_i; un disegno per pattern di maschera. LETTO R:118-122, P:76-80 e pose_e3_b.py:110-148 (raggruppamento per maschera già nel solver storico)."
+ },
+ {
+  "item": "WLS come limite inferiore solo per L0/L13; ridge e weight decay non lo sono",
+  "evidence": "CALCOLATO: quadratica convessa, quindi minimo globale; vale per le sole teste lineari, entro la tolleranza numerica. La ridge con α>0 non è un limite inferiore. Il decay su W non è una ridge su A = W diag γ, perché γ non ha decay. LETTO pose_e3_b.py:165 (α>0 obbligatorio, come R:128)."
+ },
+ {
+  "item": "Rango dall'SVD di R e non dalla Gram",
+  "evidence": "CALCOLATO: σ(R) = σ(X_w), mentre gli autovalori della Gram sono σ². La soglia 1e-8 sui σ diventerebbe 1e-16 sugli autovalori, sotto la risoluzione float64 (u64 = 1,11e-16)."
+ },
+ {
+  "item": "Memoria e numero di blocchi WLS",
+  "evidence": "CALCOLATO: 4.993²·8 B = 190,2 MiB per pattern e 3,71 GiB per 20 pattern (P:80, R:130). 4 disegni outer × 3 RHS = 12 blocchi più 4 disegni L0 di calibrazione (J). La soluzione troncata è lineare nel RHS, quindi la combinazione dei RHS-base è esatta."
+ },
+ {
+  "item": "Generatore T contenuto esattamente nella TCN-post+affine",
+  "evidence": "CALCOLATO: T (hidden 8, stessa geometria) si inserisce nei canali 0..7 con pesi nulli altrove e bias zero; L va nel ramo affine. y* sta nella classe TCN; la MLP+affine contiene L ma non T (P:86, J generator)."
+ },
+ {
+  "item": "Coerenza dei numeri fra protocollo, JSON e §10",
+  "evidence": "LETTO: 72.904 nell'Oggetto del §10 = P:142; 8,6 volte L0 (72.904/8.468 = 8,61); kernel, dilatazioni e larghezze in J = P:28-30; ancora pre 1,0321280032044744 = P:46."
+ },
+ {
+  "item": "Note di architettura 02-09 della review applicate",
+  "evidence": "LETTO P:17, P:19, P:26-30, P:42-44 e R:36-43. ESEGUITO: chiavi complete di eval.json e run.json (13 e 28, identiche a raw_source_identity.json); sha256 di temponet.py e temponet_emg2pose.py uguali a 8917e2a e 0c19c4b."
+ }
+]
+=== CONF controlli
+[
+ {
+  "item": "T è inseribile esattamente nella TCN-post: y*=L_n+a·T_n è nella classe TCN-post+affine; L_n è nelle classi L0, MLP+affine e TCN+affine",
+  "evidence": "LETTO PROT:28 e PROT:86. CALCOLATO in conti_base.py: T ha 3.932 parametri e RF 13; g ha 64.436 parametri, che con ramo affine e LN fanno 72.904 (PROT:37). Copia dei pesi nei primi 8 canali e zeri altrove (ReLU(0)=0); centro e scala per giunto assorbiti da ultimo strato, ramo affine e bias."
+ },
+ {
+  "item": "Rumore AR(1) stazionario con varianza 1; sigma è la deviazione standard stazionaria; seme da SHA256 senza dipendenza dai dati",
+  "evidence": "LETTO PROT:88. CALCOLATO: rho=exp(-1/4)=0,7788 e Var=rho²+(1-rho²)=1; tempo di correlazione 4 patch (100 ms)."
+ },
+ {
+  "item": "Semi distinti e indipendenti dall'ordine dei batch",
+  "evidence": "CALCOLATO: L 20261118/20262118, T 20261119/20262119, rumore 20261120/20262120; teste fino a 300202 (PROT:44, PROT:86)."
+ },
+ {
+  "item": "Oracolo come funzione delle feature osservate, non dei fattori nascosti",
+  "evidence": "LETTO PROT:88 e PJ:456, 460."
+ },
+ {
+  "item": "Nessun parametro del mondo scelto sugli held outer e nessun accesso ai 15 di sviluppo",
+  "evidence": "LETTO PROT:84, 90, 92; PJ:402, 471. I target reali entrano solo tramite E_real, sui 20 utenti di fitting outer."
+ },
+ {
+  "item": "Soglie dinamiche train-only dal bersaglio sintetico, mai dalla soglia storica val",
+  "evidence": "LETTO PROT:59, 90, 92; PJ:163-168."
+ },
+ {
+  "item": "Combinazione lineare delle soluzioni sui RHS-base esatta per soluzioni e predizioni; soglie ed E_dyn ricalcolate per coppia",
+  "evidence": "CALCOLATO: con design, pesi, maschere e soglia di rango fissi, beta=R^+Q'W^(1/2)y è lineare in y (PROT:76, 80, 90; PJ:300-305, 313-314)."
+ },
+ {
+  "item": "Aggregazione come rapporto delle somme; casi degeneri gestiti; per E_dyn la costante ha errore esattamente 1",
+  "evidence": "LETTO PROT:90, 95; PJ:397, 438."
+ },
+ {
+  "item": "Criterio legato al guadagno piantato: tutti i sei elementi del punto 1 di 8d34f9c sono presenti",
+  "evidence": "LETTO PROT:92-98. CALCOLATO: un recupero del 50% su un margine del 6-10% richiede alla TCN un vantaggio del 3-5% sulla LS-L0, cioè 1,5-2,5 volte la soglia del 2%."
+ },
+ {
+  "item": "Conseguenze distinte, tutte con stop prima dei fit reali e senza etichetta negativa",
+  "evidence": "LETTO PROT:98; PJ:145-151, 421; coerente con RISP:17 e RISP:26."
+ },
+ {
+  "item": "I controlli non sono dichiarati superati",
+  "evidence": "LETTO PROT:98; PJ:388; document_checks_20261118.json:146-155 («syntheticfit» fra i non eseguiti); registro GPT del 18/11."
+ },
+ {
+  "item": "Conteggio delle traiettorie di controllo: 48 iniziali, 72 al massimo",
+  "evidence": "CALCOLATO: 2 controlli × 3 teste × 2 fold × 4 LR = 48, e 72 con 6 LR (PROT:102; PJ:129-130; analytic_checks.json:8-9)."
+ },
+ {
+  "item": "Disposizioni accolte del mio punto presenti nel testo; la qualificazione del +21,3% come ottimista è corretta",
+  "evidence": "LETTO RISP:92 e RISP:98 contro PROT:86-98 e PJ:387-472. L'unica incoerenza è controlli-2."
+ },
+ {
+  "item": "Identità dei materiali rivisti",
+  "evidence": "ESEGUITO shasum -a 256: PROT 05a9eb09..., PJ f3b92c4a..., RISP 076d35f1..., uguali a delivery_pin_20261118.json e a git show 3e007c8."
+ }
+]
+=== CONF ricetta
+[
+ {
+  "item": "La ricetta è finita: al più una continuazione 150->300 per LR e al più un'aggiunta per lato; nessun ciclo",
+  "evidence": "LETTO P:66 «una sola estensione, non ripartenza»; P:68 «una volta per lato». ESEGUITO work_ricetta/traccia_regole.py su 11 casi con curve scritte a mano: tutti terminano con scelta, durata del rifit, allarmi e S-2 definiti."
+ },
+ {
+  "item": "Estensioni decise prima, una volta, uguali per tutte le teste e per i controlli",
+  "evidence": "LETTO P:65-68; proposal.json righe 137-142; riga 471 «same fit policy as real; seed0; no external users». Nessun passo lascia scelte all'operatore."
+ },
+ {
+  "item": "Trigger delle epoche su MSE oppure E_dyn, come chiedono la controproposta di GPT e la rettifica di Claude in 8d34f9c",
+  "evidence": "LETTO P:66 e J riga 137. CALCOLATO sui numeri del mondo V (verify_selezione-criteri.txt:263-267 e :342-344): a 50 epoche il minimo MSE all'epoca 43 non scatta, il minimo E_dyn all'epoca 50 sì; a 150 epoche MSE 93 no, E_dyn 148 sì."
+ },
+ {
+  "item": "Selezione unica sulla MSE pooled, con pareggi definiti (checkpoint più precoce, durata minore, LR minore) e passo 0 escluso",
+  "evidence": "LETTO P:66-67 e J righe 159 e 216, coincidenti. ESEGUITO traccia, caso D: pareggio esatto fra 3e-4 e 1e-3 all'epoca 50, sceglie 3e-4."
+ },
+ {
+  "item": "Checkpoint appaiati dei fold ben definiti, con continuazione da stato conservato",
+  "evidence": "LETTO P:66 «si salva la coppia di stati dei fold [...] si conserva anche la coppia corrente»; MSE come somma delle loss per finestra sul numero di finestre; E_dyn come rapporto delle somme; J riga 206. La coppia salvata serve ai 37 forward diagnostici di P:78."
+ },
+ {
+  "item": "Checkpoint della prima epoca e conteggi corretti",
+  "evidence": "ESEGUITO conti.py: S=30 dà i passi 8/15/23/30, S_full=60 dà 15/30/45/60; 304 valutazioni per traiettoria a 300 epoche, e 132·304 = 40.128 come P:102. CALCOLATO: S_full = 60 e S0+S1 ≤ 61, come P:102."
+ },
+ {
+  "item": "Durata dei rifit definita, anche dopo un'estensione e nella prima epoca",
+  "evidence": "LETTO P:70 «da zero al LR e durata scelti (non300 automatiche); [...] ceil(q*S_full)»; J riga 208. Chiude selezione-4 e il punto 4 del seguito 8d34f9c. Esempio: scelta a 1/4 di epoca, quindi 15 passi."
+ },
+ {
+  "item": "Soglia dinamica interna solo train coerente con la definizione storica",
+  "evidence": "LETTO pose_eval.py:182-183: varianza population sui tempi validi, media sui giunti, almeno 2 tempi. LETTO pose_targets.py:177-179: maschera comune ai 20 giunti, quindi la formula di P:59 coincide con il pose_var in cache. LETTO pose_slot_readout.py:176: la soglia storica è la nanmedian dei val. ESEGUITO: 0,2574231028556824 è un valore float32. La soglia storica resta solo per il report finale (P:59)."
+ },
+ {
+  "item": "S-2 definito e tarato in modo da cogliere L13 e non L0 nelle prove sintetiche",
+  "evidence": "CALCOLATO conti.py: TCN mondo V a 150 epoche, distanza 55 e regret 2,42%, tradeoff; L13 distanza 18 e regret 3,66%, tradeoff; L0 distanza 3 e regret 0,17%, no. Caso H1: con E_dyn_min = 0 il regret è infinito (P:72)."
+ },
+ {
+  "item": "Qualificazione di GPT su selezione-11 corretta",
+  "evidence": "CALCOLATO (1-lr·wd)^passi: 1,5% a 1e-3 per 1.500 passi; 23,7% a 3e-3 per 9.000; 59,3% a 1e-2 per 9.000. Con il nuovo orizzonte il decay non è trascurabile, come dice R:57."
+ },
+ {
+  "item": "«Divergenza non finita» al posto di «divergenza»: un LR alto che peggiora resta solo un LR perdente",
+  "evidence": "LETTO P:104 contro c15aac9:75 («NaN, divergenza, OOM [...] fermano la fase»)."
+ },
+ {
+  "item": "Protocollo e proposal.json coincidono su tutti i parametri della ricetta",
+  "evidence": "LETTO P:63-72 e J righe 122-231 (sezione fit): griglia, 3e-5/1e-2, 150/300, trigger 146-150, quarti, passo 0, pareggi, rifit, S-2 a 5 epoche e 2%, soglia interna. Nessuna divergenza di valori."
+ },
+ {
+  "item": "Identità dei materiali",
+  "evidence": "ESEGUITO shasum -a 256: protocollo 05a9eb09…, uguale fra snapshot, 3e007c8 e 62348ab; proposal.json f3b92c4a…; risposta 076d35f1…, uguali ai pin di delivery_pin_20261118.json."
+ }
+]
+=== CONF criteri
+[
+ {
+  "item": "Identità dei file letti e pin",
+  "evidence": "ESEGUITO shasum -a 256: PROT 05a9eb09…22f7 e PJ f3b92c4a…4d9f coincidono con delivery_pin_20261118.json e DEC:6765-6766. Ricevuta FIT estratta con git show 2930d7d: sha256 b08e6e32…037c14 = PJ source_provenance."
+ },
+ {
+  "item": "Numeri del gate R-1",
+  "evidence": "ESEGUITO r1_counts.py sulle somme per utente della ricevuta: post_ridge 0.7859020004638595 e trained_head 0.7786289843513977; 15 utenti, 8.327 finestre supportate (8.329 selezionate), 166.540 coppie, 20.119.920 elementi, stesso support_sha256. Static 8.329 selezionate: 8.329+8.329=16.658 finite, 1.890 non finite, come nel verificatore (verify_selezione-criteri.txt:243)."
+ },
+ {
+  "item": "Ritaglio [6:154]",
+  "evidence": "LETTO consolidation_long_pose_runtime.py:275 pred[:, OFFSET:-OFFSET] e tokenizer_pose_readout.py:30 OFFSET 6. Con 160 patch si ottiene [6:154], 148 centri 6..153, uguali al supporto di PROT:55."
+ },
+ {
+  "item": "Soglia della testa 0,7630564046643697",
+  "evidence": "CALCOLATO 0,98×0,7786289843513977 = 0,7630564046643697; a questo valore gain5 = 2,0000000000000013. È il 2,9069% sotto la ridge; il 2% sotto la ridge richiederebbe solo 0,7701839604545823."
+ },
+ {
+  "item": "Soglia finale storica",
+  "evidence": "LETTO tokenizer_pose_readout.py:31 e :278 (isfinite e >= THRESHOLD): 0.2574231028556824, uguale in PROT:109, PJ support e DEC:6751."
+ },
+ {
+  "item": "Gain",
+  "evidence": "LETTO: 100*(E_ref−E_TCN)/E_ref in PROT:111, PJ gain_formula e DEC:6751. È algebricamente uguale allo storico consolidation_long_pose.py:370 e a c15aac9:83."
+ },
+ {
+  "item": "Quattro etichette: ordine e copertura",
+  "evidence": "ESEGUITO labels_check.py: 60.025 terne su griglia, ognuna con un'etichetta sola. gain 1,5 con [0,5; 1,9] → etichetta 3; gain 1,5 con [0,5; 2,5] → inconclusivo; gain −1,5 con [−1,9; −0,8] → etichetta 3. Stesso ordine in PROT:116-120, PJ outcome_priority e DEC:6753."
+ },
+ {
+  "item": "«Passa» e regola iff della candidata",
+  "evidence": "LETTO PROT:122, PJ candidate.iff, DEC:6753 e §10:203: passano 1, 4 e 5, nessun deterioramento_pratico in 2 o 3, comparatori ammessi. Gli esempi C-2 della review (contrasto 3 −2,740, contrasto 2 −2,041) con upper99<0 bloccano la candidatura. K-1 e C-2 chiusi nella sostanza."
+ },
+ {
+  "item": "Stati che impediscono il verdetto, contrasto per contrasto",
+  "evidence": "LETTO PROT:69, 76, 92, 95-98, 104, 185 e PJ. Controlli non calibrati, non diagnostici o falliti, WLS non verificata e gate risorse falliti: stop prima dei fit reali, nessun negativo. Una testa irrisolta lascia senza etichetta i contrasti che dipendono da lei; L0, MLP, L13 o TCN-post irrisolta: candidatura non accertata. TCN-pre: solo descrittivo. objective_tradeoff e al_bordo_MC non cambiano etichette."
+ },
+ {
+  "item": "Descrittivi predefiniti",
+  "evidence": "LETTO PROT:126 e PJ descriptive (IC95): L0 contro ridge e testa storiche, MLP contro L0, L13 contro L0, post contro pre; ridge pre come punto storico 1,0321280032044744, sorgente sha256 4f10f678…cd9f verificata."
+ },
+ {
+  "item": "Frasi rimosse come chiedeva C-1",
+  "evidence": "LETTO: in v2 non ci sono più «architettura promettente» (c15aac9:100) né «Se la TCN migliora il lettore» (c15aac9:118); PROT:140 «Nessun automatismo»."
+ },
+ {
+  "item": "MAE e livello, semi, bootstrap e bordo MC",
+  "evidence": "LETTO PROT:114, 124, 128 e PJ: verso del delta definito, nessuna soglia nuova; s contro s, nove incroci descrittivi; SD dei semi separata; 2.000 repliche con seme 20261102 come lo storico; flag entro 0,1 pp da 0 e 2, che sono tutte le soglie sugli estremi usate dalle etichette."
+ },
+ {
+  "item": "K-2 e R-2",
+  "evidence": "LETTO: PJ contiene formula, etichette ordinate, iff, comparatore irrisolto, scope e gate R-1; confirmatory_family rinominata (grep -c = 0). DEC:6741-6759 riporta soglia, pareggi, etichette, candidata, IC95, arresti e R-1; il pin DEC:6762-6772 cita il commit e gli sha256 verificati."
+ },
+ {
+  "item": "Tabella §10 fedele al corpo",
+  "evidence": "LETTO PROT:196-209 contro corpo e PJ: oggetto (72.904 parametri, CALCOLATO 64.436+768+7.700), livello, bracci, ricetta, criteri, esiti, tetto 24/80/272/8 GiB, ruoli e portata coincidono. R-3 chiuso."
+ },
+ {
+  "item": "Precisazioni della risposta ben motivate",
+  "evidence": "LETTO RISP:19, 20, 26, 60, 63, 64, 67: C-1 (pesatura, regolarizzazione e algoritmo diversi), C-2 (la non candidatura non è un negativo), K-3 (nome), criteri-6 (copertura simulata non universale; Bonferroni non corregge marginali mal calibrati), criteri-7 (seconda opzione) e N3 (condizione necessaria). Motivazioni corrette."
+ }
+]
+=== CONF costo
+[
+ {
+  "item": "C-1 Traiettorie 40/60, 48/72, 15; totale 103/147",
+  "evidence": "CALCOLATO: 11 combinazioni (5 reali + 2x3 controlli); 5x4x2 = 40, 5x6x2 = 60; 2x3x4x2 = 48, 2x3x6x2 = 72; rifit 5x3 = 15. LETTO riga 102 e proposal.json fit (103/147)."
+ },
+ {
+  "item": "C-2 Aggiornamenti 531.000/1.458.000 e limiti 537.600/1.477.800",
+  "evidence": "CALCOLATO con 11*L*E*(S0+S1)+15*E*Sfull. ESEGUITO: il massimo di ceil(a/32)+ceil((1907-a)/32) su tutte le divisioni è 61; ceil(1907/32) = 60. Con al massimo 1854 finestre con posa valida (provenance del riferimento train, stessa firma della cache 49046) il limite scende a 1.429.200: quello dichiarato copre. I conteggi per fold non sono in proposal.json; la riga 57 li rimanda al manifest."
+ },
+ {
+  "item": "C-3 Valutazioni 40.128 + 37",
+  "evidence": "CALCOLATO: 132 x (300 + 3 + 1) = 40.128; 11x2 + 15 = 37. LETTO riga 102 e proposal.json fit.internal_fold_evaluations_max e selected_fitting_evaluations_max."
+ },
+ {
+  "item": "C-4 GPU-ore a priori 0,61-2,76; 1,68-7,59; 3,37-15,19 (solo aritmetica)",
+  "evidence": "CALCOLATO: 537.600 x 4,1/18,5 ms = 0,6123/2,7627 h; 1.477.800 x 4,1/18,5 ms = 1,6831/7,5942 h; raddoppiate 3,3661/15,1885 h."
+ },
+ {
+  "item": "C-5 Tabella delle fasi, totali 24/80/272, riserva, billing",
+  "evidence": "ESEGUITO sulle 8 fasi di proposal.json: cpus x ore = core-ore allocate, gpus x ore = GPUh, ore locali = core-ore allocate. Somme 24, 80, 272 = 24x8 + 80; riserva 2,5x8 + 3 = 23. LETTO AllocTRES storiche: billing=8 con 1 GPU e 8 CPU, billing=8 per 8 CPU seriali, billing=2 per 2 CPU (sacct.txt di consolidation_20261104 e sacct_benchmark.tsv di consolidation_long)."
+ },
+ {
+  "item": "C-6 Job seriali e limiti delle code",
+  "evidence": "CALCOLATO: 03:57:00 + 180 s = 4 h; 2 x 8 x 4 = 64 core-ore. LETTO fccf88d remote_listing.txt righe 119, 123, 127: lrd_all_serial MaxTime 04:00:00 e DefMemPerCPU 3850, quindi 30.800 MB contro 24 GiB = 24.576 MiB; boost 15.400 x 8 = 123.200 MB contro 32 GiB. 7 job CPU bastano per le fasi; 40 x 180 s = 2 h dentro le 20 h."
+ },
+ {
+  "item": "C-7 Saldo storico e imputazione",
+  "evidence": "LETTO fccf88d remote_listing.txt riga 190: 2000000 e 1308137. CALCOLATO: 691.863; 272/691.863 = 0,03931%; residuo 691.591; dichiarato storico."
+ },
+ {
+  "item": "C-8 Gate meccanico come chiedeva P-1",
+  "evidence": "LETTO riga 181: warmup escluso, 10 epoche, mediana e p95 con interpolazione lineare. Riga 187: memoria 1.25*(parte fissa + buffer di una vista val e un batch) su un surrogato train, soglie 24/32/48 GiB. Righe 63 e 181: stesse impostazioni numeriche. Riga 183: formula, matrice massima, 20 GPUh e packing; inferenza 1 GPUh. Riga 185: WLS 64 core-ore e job da 4 h al massimo, report 8 core-ore."
+ },
+ {
+  "item": "C-9 Memoria",
+  "evidence": "CALCOLATO: R 4993^2 float64 = 190,2 MiB, x20 = 3,715 GiB. LETTO provenance del riferimento train: n_rows_partial_joints 0 e n_valid_per_joint uguale per i 20 giunti, quindi un solo pattern per disegno. LETTO LONG-BENCH-pose: 4.813.620 elementi, circa 120.000 righe per fold, design L13 circa 4,5 GiB. Vista val FP16 2,12 GiB. 15 predizioni = 3,31664 GiB contro un tetto di 8; cache 4,7203 GiB, con i riferimenti 5,3280 GiB."
+ },
+ {
+  "item": "C-10 Pin delle dipendenze SCRATCH e WORK",
+  "evidence": "ESEGUITO: percorsi, sha256, byte e conteggi dei tre file SCRATCH uguali a extraction_plan_19618.json (il source_manifest citato). sha256 e byte di cache e riferimenti WORK uguali alla ricevuta LONG-FIT-G49046-pose (sha256 b08e6e32, uguale al pin) e all'inventario della copia WORK 424f0ec. scientific_readout.json sha256 4f10f678 uguale al pin."
+ },
+ {
+  "item": "C-11 Perimetro del rinfresco del 12/11 e calendario",
+  "evidence": "LETTO 47ca96e refresh_scratch.sbatch (sha256 5ad03da2): perimetro data/processed e wearusfm_runs, touch di ogni file. Log 64280872: emg2pose_pose e wearusfm_runs/results con 'ancora_vecchi_dopo=0'. CALCOLATO: scadenza dal 22/12. LETTO decisioni.md:1332: giro del 03/12 da autorizzare. Fermo 23-25/11 coerente con CLAUDE.md."
+ },
+ {
+  "item": "C-12 Disposizioni di costo della risposta presenti nel testo",
+  "evidence": "LETTO: P-1 nelle righe 181-187; note 35, 36, 38, 40-43 nelle righe 175, 185, 189, 191 e nei campi resource_proposal e scratch_dependencies; note 16, 19, 21 e 47 nelle righe 70, 53, 55, 102 e 142. Eccezioni parziali: nota 37 (costo-1) e nota 39 (costo-6)."
+ },
+ {
+  "item": "C-13 Tetti di benchmark, inferenza e WLS larghi",
+  "evidence": "CALCOLATO: benchmark GPU circa 9.500 batch x 18,5 ms = 176 s; inferenza 8.700 batch x 18,5 ms = 161 s (raddoppiati 5,4 minuti) più l'I/O; WLS L13 circa 1,7e13 flop, cioè 3-15 minuti con 20-100 GFLOP/s ipotizzati su 8 core, contro un tetto di 64 core-ore."
+ }
+]
+=== CONF consegna
+[
+ {
+  "item": "Lo snapshot coincide con l'albero git di 3e007c8",
+  "evidence": "ESEGUITO: git hash-object su 2.130 file contro git ls-tree -r 3e007c8: 0 diversi, stessi percorsi. Le patch del materiale hanno lo stesso sha256 di git diff (33a10de8..., ad021e6e...)."
+ },
+ {
+  "item": "Pin della consegna integri",
+  "evidence": "ESEGUITO: i 9 file di delivery_pin hanno byte e sha256 uguali nello snapshot, in git show 62348ab e in git show 3e007c8 (per esempio protocollo 34.916 B 05a9eb09..., proposal.json 30.101 B f3b92c4a...). I 6 hash di document_checks sono coerenti, la voce di pin in decisioni.md coincide, e i controlli passati sono 22 su 22."
+ },
+ {
+  "item": "Il diff è solo documentale",
+  "evidence": "ESEGUITO git diff --name-status/--numstat c15aac9 3e007c8: 12 file di testo in docs/ e in results/infra/pose_temponet_proposal_20261117/. Nessun .py, nessun binario, nessun dato; git diff --check pulito. 62348ab..3e007c8 aggiunge solo delivery_pin, due voci di registro e la voce di pin in decisioni.md."
+ },
+ {
+  "item": "JSON validi e pin storici invariati",
+  "evidence": "ESEGUITO: 5 JSON validi, senza chiavi duplicate né NaN/Infinity. caches, references, checkpoint, stats, support e source_provenance sono identici a c15aac9. I pin SCRATCH (path, sha256, byte, finestre, utenti) coincidono con extraction_plan_19618.json."
+ },
+ {
+  "item": "ID del protocollo coerente",
+  "evidence": "ESEGUITO grep: pose-temponet-frozen-encoder-readout-20261117-v2 compare in PROT:3, in PJ, in delivery_pin, nel prompt e nel registro. Il vecchio ID di c15aac9 era pose-temponet-frozen-head-20261117-v1-proposal: il cambio è voluto."
+ },
+ {
+  "item": "Ancore, link e tabelle",
+  "evidence": "ESEGUITO: <a id=p1...p10> alle righe 7, 14, 23, 48, 106, 130, 137, 144, 157, 193; i 106 link #pN della risposta risolvono, e anche i link relativi del protocollo. Le 6 tabelle markdown hanno un numero di colonne costante."
+ },
+ {
+  "item": "Frase «49 punti elenco ma 50 ID» ed enunciati letterali",
+  "evidence": "ESEGUITO work_consegna/fedelta_note.py: nel §7 della review ci sono 49 punti e 50 ID distinti; il punto 15 porta selezione-3 e criteri-9. I 50 enunciati hanno 0 differenze dal testo della review. Con fedelta_rilievi.py: 13 titoli, gravità e ID originari coincidenti."
+ },
+ {
+  "item": "Disposizioni complete",
+  "evidence": "ESEGUITO: 63 righe, 45 «Accolta.» semplici e 18 qualificate, nessuna riga senza disposizione. costo-6 resta respinto come in REV:469-470."
+ },
+ {
+  "item": "A-1 confutato correttamente",
+  "evidence": "LETTO RISP:106-112 e PROT c15aac9:29-45. Dopo la LN il dominio è limitato; le larghezze nascoste sono tutte >= 20; con bias c_j > sup|W_j h| le ReLU restano accese; nella TCN basta il tap centrale. La review scriveva «con bias grandi» (REV:209) e Claude l'ha riconosciuto (registro worktree :12901-12904). CALCOLATO: 7.700, 73.000, 72.904, 71.808, 11.489.280 MAC, differenza di 96 bias."
+ },
+ {
+  "item": "Motivazioni delle qualificazioni corrette",
+  "evidence": "C-1 e C-2: coerenti con la regola a quattro etichette (REV:117). S-2 tiene la MSE come chiede REV:289. selezione-11 CALCOLATO: contrazione 0,97 nell'orizzonte vecchio, 0,41 con lr 1e-2 su 9.000 passi. criteri-6: REV:22 diceva davvero «copertura vera», ma la base è una simulazione (REV:118). criteri-7 e consegna-2 della review: sono opzioni offerte dalla review stessa. costo-8: confrontare digest non prova che il file esista. costo-consegna-N1: è la terza strada della review."
+ },
+ {
+  "item": "Seguito 8d34f9c disposto e presente",
+  "evidence": "LETTO. Criterio legato al guadagno piantato: PROT:92, :96. Taratura |E_LS,synth−E_real|<=0,05: :92. Soglie dinamiche dal train: :59, :90, :92. Controllo lineare: :95. Conseguenza del fallimento: :98. S-2: :72. WLS: :76-80. Prima epoca e rifit: :65, :69, :70. Ramo in TCN-pre e sulla stessa LN: :26, :38. Oggetto: :198. Trigger MSE o E_dyn: :66. Le tre rettifiche: :42, :66, :96."
+ },
+ {
+  "item": "Numeri ricalcolati",
+  "evidence": "CALCOLATO: 0,98×0,7786289843513977 = 0,7630564046643697 (2,907% sotto la ridge); 4,720 e 5,328 GiB; fasi 24 GPUh, 80 e 272 coreh; saldo 691.863 (fccf88d remote_listing.txt, ESEGUITO); 13.725.520 endpoint (1,10 volte); aggiornamenti 531.000/1.458.000/537.600/1.477.800; 40.128 valutazioni held; Gram L13 di 190 MiB per pattern."
+ },
+ {
+  "item": "Riferimenti e provenienza",
+  "evidence": "ESEGUITO. I valori di R-1 e l'ancora ridge pre 1,0321280032044744 (sha256 4f10f678...) corrispondono a scientific_readout.json in 3e007c8. Le chiavi raw sono complete rispetto a 8917e2a. temponet.py è identico in 8917e2a, 0c19c4b e 60b35bd. DOI e postprint stanno a temponet.py:5. pose_e3_b.py:165 richiede alpha>0. train_blocks fa finire la finestra in 10j+9."
+ },
+ {
+  "item": "Il prompt aggiornato coincide con la richiesta di oggi",
+  "evidence": "LETTO prompt:1-24 e gpt_richiesta_20261118.txt: i sei punti, l'elenco delle letture, la distinzione fra disegno, implementazione e benchmark, la convergenza documentale con tabella §10 e il divieto di codice e lanci coincidono. Il prompt non contiene lo SHA, cosa inevitabile per un file dentro 62348ab."
+ },
+ {
+  "item": "Voci GPT del 18/11 coerenti con il protocollo",
+  "evidence": "LETTO decisioni.md:6741-6772 e registro (claude_GPT_shared:181-198 e la sezione 2): numeri, etichette, candidata, soglie, tetti e dipendenze da SCRATCH sono coerenti con PROT. L'unica eccezione è il termine «teacher» (consegna-3). Nessuna riga cancellata in decisioni.md e nel registro (numstat 34/0 e 37/0)."
+ },
+ {
+  "item": "Frasi superate tolte",
+  "evidence": "ESEGUITO grep sul protocollo v2: «linea 2», «promettente» e «Se la TCN migliora» non compaiono più, e in PJ «confirmatory_family» è diventata prespecified_family. raw_source_identity ha solo aggiunte, con hash invariati, e design_review.txt ha solo un'appendice datata."
+ }
+]

@@ -1,0 +1,18 @@
+r = 18548/1907 = 9.726272
+== ricevute storiche della valutazione lunga (2930d7d) ==
+  CPU: RSS benchmark train 1.288 GiB x r = 12.530 GiB proiettati; misurati nel fit 8.860 GiB; sovrastima 1.41x
+  GPU (estrazioni): RSS train 2.885 GiB, val 18.806 GiB; rapporto 6.52 (r = 9.73)
+     retta per i due punti: parte fissa 1.060 GiB, 1.0273 MB per finestra
+     regola 'RSS_train x r' applicata alla GPU: 28.056 GiB contro 18.806 misurati (sovrastima 1.49x)
+     0,85 x 32 GiB = 27.2 GiB (frazione 0,85 della lunga, BENCHMARK_POLICY memory_fraction)
+  tempi storici: lettura+validazione train nel benchmark 5,94 s -> val stimata 57.8 s; job di fit ridge completo (train+val, 2 profondita', 5 salvataggi) 184,7 s nello script, 199 s in sacct
+== ordine di grandezza atteso (non una misura su A100) ==
+  75000 passi x 4.1 ms = 308 s = 0.085 h
+  75000 passi x 8.0 ms = 600 s = 0.167 h
+  75000 passi x 20.0 ms = 1500 s = 0.417 h
+  passo eager TEMPONet raw su A100 senza vincolo deterministico: 4,1 ms (registro, voce TEMPONet DB8 collaudo 3); con deterministic=True 14,6 ms col CUDA graph contro 1,1 ms
+  fit (MPS sintetico): 0.135-0.347 h di solo calcolo; raddoppiati 0.27-0.69 h; margine sul tetto 3 h: 4.3-11.1x
+  stima grossolana: GPU 0.25-0.6 GPUh (benchmark + fit + inferenza + avvii) = 2-4.8 ore locali; CPU 1.5-3.5 core-ore; totale 3.5-8.3 ore locali contro il tetto di 44 (5.3-12.6x)
+== sforamento oltre il limite (OverTimeLimit 3 min) ==
+  3 job GPU tutti in TIMEOUT: +0.153 GPUh (riserva 0,25); job CPU (2, 8, 8, 2): +1.022 core-ore (riserva 1)
+  7 job GPU tutti in TIMEOUT: +0.358 GPUh (riserva 0,25); job CPU (2, 8, 8, 2): +1.022 core-ore (riserva 1)
