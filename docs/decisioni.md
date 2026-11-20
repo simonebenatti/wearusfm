@@ -8309,3 +8309,14 @@ piani rigenerati identici. Ricevuta con comandi/hash in `amendment_20261119/vali
 resoconto dei due tentativi precedenti conservati in `amendment_20261119/verification.json`.
 Aggiunta compatibilità con le API CUDA di PyTorch 2.2, provata simulandole sul Mac;
 nessuna esecuzione su CUDA o sul cluster dichiarata.
+
+### 20/11/2026 — Firma di Simone e prima release del preflight RMS100/fast125 (linea 3)
+
+Alla domanda di Claude «Firmi la proposta faa4a8d7 e il tetto di 18 GPU-ore?» Simone ha risposto **«Sì, firmo entrambi»** il 20/11/2026. La review di Claude registra la risposta alle 09:57. La firma copre la proposta scientifica `faa4a8d7` e i seguenti limiti del preflight.
+
+- Per C0, CN e CR adottiamo bf16 autocast, SDPA solo math, TF32 spento per matmul e cuDNN. Misuriamo il costo sul batch misto di 32 prima di considerare i training.
+- La prova a peso zero usa lo stato vivo di C0 prima degli update 128 e 256, due repliche per braccio e gradienti ridotti byte-identici. I valori di loss e norma lungo i primi 256 update hanno lettura descrittiva.
+- Per CN e CR un solo checkpoint a 544 alimenta due riprese fino a 576 accanto al continuo. I confronti conservano i denominatori e il limite storico dell’1%, anche per singolo tensore mobile di Adam e coda. Se i due reload concordano e il continuo eccede il limite, la fase si ferma. Localizzare al primo passo, per rank, tensore e gruppo DDP, a partire da 545–546. Un cambiamento dell’ordine di riduzione è un’ipotesi da verificare. Se divergono anche i reload la ripetibilità resta aperta e il blocco si mantiene.
+- Risorse firmate per 17 allocazioni di preflight: **18 GPU-ore e 169,6 core-ore richieste**, inviluppo contabile **21,6 GPU-ore e 202,4 core-ore**. Il margine SLURM vale 3,6 GPU-ore e 32,8 core-ore. Lo stanziamento copre il preflight. I training richiedono un preventivo e una release successivi.
+
+La review su `fbfde797b48644744c36547533acf0e8a7793535` è il documento `docs/reviews/claude_review_contrastive_targets_runtime_20261120.md` a `469b312cd5502b801a0af44c56e16a89f019c14c`, SHA-256 `71238b7c763e2fdf8f2fb596e1decacf8f56d165f29a360f997baf66971173b3`. La prima consegna di GPT rilascia a 3-launcher solo checkout e audit CPU. Le fasi seguenti richiedono ricevute proprie. [Review autenticata](../results/infra/contrastive_targets_20261118/releases/audit_20261120/claude_review_contrastive_targets_runtime_20261120.md)
