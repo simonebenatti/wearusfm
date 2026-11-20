@@ -1,0 +1,151 @@
+{
+ "summary": "Reviewer TESTS, all five tasks done on tip 0e548bf8 (reviewed worktree untouched: git status 0 lines before and after; own worktree and work directory removed, no process left). The 8 new tests protect the fix for the right reasons: the claim that test_pose_temponet_preflight_real_layout.py replaces nothing but metrics.HISTORICAL_REFERENCE is true line by line, all 12 pytest.raises blocks match a specific message, there is no order or out-of-repository dependence (8 of 8 pass alone, 34 pass in reversed order), and the first-delivery behaviour makes the real-layout fixture fail with the exact message of job 64931573. I ran 38 new mutation runs (37 distinct mutations, none of the author's 8 repeated on his test set): 22 caught, 15 distinct mutations survive; none of the survivors is a defect of the delivered code, because 8 extra tests I wrote in my own tree all pass on the delivered sources (\"8 passed in 9.49s\") and kill 12 of the 15. Both fixtures agree with every independent piece of evidence in the repository (52 checks), and the 7 parity constants equal the approved proposal. No blocking and no important finding: what remains are test gaps (minor) and the fact, unavoidable locally, that the 1e-12 parity on the real val arrays is still exercised by no test. Durable notes: /Users/simonebenatti/wearusfm_local/tcn_users_fix_review/tests_notes.md; scripts and results kept in /Users/simonebenatti/wearusfm_local/tcn_users_fix_review/tests_artifacts/ (mutate.py, mutations_tests_reviewer.json, test_wf2_reviewer_gaps.py, probe_layout.py, probe_p13.py).",
+ "findings": [
+  {
+   "id": "T-1",
+   "severity": "minor",
+   "title": "No test checks the user list that run_stage hands to the two benchmarks, and no test runs any stage after the preflight through the unpatched reader on real-format files",
+   "location": "scripts/pose_temponet/runner.py:269-273; tests/cpu/test_pose_temponet_runner.py:40,50-51; tests/cpu/test_pose_temponet_e2e_chain.py:127,132-133",
+   "claim": "The 2nd and 3rd job of the chain (cpu_benchmark, gpu_benchmark) receive allowed_train_users from plan[\"producers\"][\"train\"][\"users\"]; every test that calls run_stage replaces benchmark.benchmark_cpu/benchmark_gpu and P.read_verified_inputs, so a regression of that list (the same class of defect as the first failure) would be seen by no test. The delivered code is right: this is a test gap only.",
+   "evidence": "Mutation R1a (runner.py:272 -> plan[\"producers\"][\"train\"][\"storage_directories\"]) run on runner, runtime_fixes, benchmark, resources, e2e_chain (every file that calls run_stage): SURVIVED, \"58 passed in 118.85s (0:01:58)\". Control R1b (same change at runner.py:289, calibration): CAUGHT by e2e_chain, \"1 failed, 12 passed in 16.57s\". Delivered behaviour verified with my test test_gap_later_stages_read_the_real_layout_and_consumers_accept_the_plan_users (real_layout fixture, unpatched reader): train read for the 6 TRAIN_STAGES, benchmark._validate_train / controls.validate_outer_partition / workflow.prepare_real_folds accept the plan list and refuse storage_directories, folds accepted after the JSON round trip of the preflight result, val read for locked_inference (post, pre) and metrics; it passes on the delivered code and kills R1a together with a static check (\"R1a+gaptests CAUGHT | 1 failed, 7 passed\").",
+   "suggested_fix": "Add the two tests from /Users/simonebenatti/wearusfm_local/tcn_users_fix_review/tests_artifacts/test_wf2_reviewer_gaps.py (test_gap_later_stages_read_the_real_layout_and_consumers_accept_the_plan_users, test_gap_runner_hands_the_plan_users_to_the_benchmarks). Tests only: tests/ is outside source_manifest, so source_sha256 does not change. Not needed for the launch."
+  },
+  {
+   "id": "T-2",
+   "severity": "minor",
+   "title": "The real R-1 constants and the 1e-12 tolerance are pinned by no test",
+   "location": "scripts/pose_temponet/metrics.py:13-21 and :185; tests/cpu/test_pose_temponet_metrics.py:104; tests/cpu/test_pose_temponet_e2e_chain.py:157; tests/cpu/test_pose_temponet_preflight_real_layout.py:122",
+   "claim": "Every test that reaches historical_reference_gate rebinds metrics.HISTORICAL_REFERENCE to values computed by the same evaluate on the same arrays, so a wrong constant or a looser tolerance would only be found by the real preflight. Today the constants are right.",
+   "evidence": "Mutation P18 (post_ridge_E_dyn 0.7859020004638595 -> 0.7859020004638695 and dynamic_users 15 -> 16) on the 20 TCN files other than e2e_chain: SURVIVED, \"270 passed in 55.89s\"; e2e_chain rebinds the constants at line 157. Mutation P17 (<= 1e-12 -> <= 1e-6) on provenance, execution, preflight_real_layout, metrics: SURVIVED, \"42 passed in 14.73s\". Control P17b (E_dyn comparison removed): CAUGHT by metrics::test_reference_gate_rejects_shift_even_with_identical_shape_and_counts. Current values checked: all 7 constants == proposal.json evaluation.historical_reference_gate (post_ridge_E_dyn, trained_head_E_dyn, 8329, 8327, 20119920, 166540, 15; absolute_tolerance 1e-12), and both E_dyn values are present in gpt_review_20261107/pose_verification.json and scientific_readout.json.",
+   "suggested_fix": "Add test_gap_parity_constants_are_the_approved_proposal_values and test_gap_parity_tolerance_is_exactly_1e_12 from the artifacts file (they kill P18 and P17). Harmless to the run."
+  },
+  {
+   "id": "T-3",
+   "severity": "minor",
+   "title": "validate_plan's comparison of the producer entry with the receipt is not protected by any test",
+   "location": "scripts/pose_temponet/provenance.py:419; tests/cpu/test_pose_temponet_provenance.py:191-205",
+   "claim": "Removing the require \"historical producer identity was rewritten\", or excluding users and storage_directories from it, breaks no test. The existing parametrised test [producer] uses a bare pytest.raises(ValueError) and is satisfied by \"execution identity differs\", producers being part of the execution identity; a plan with rewritten user lists and a recomputed execution_sha256 is never presented.",
+   "evidence": "P14 (require removed): SURVIVED on the 3 core files (\"34 passed in 14.37s\") and on the 20 files other than e2e_chain (P14all, \"270 passed in 53.79s\"). P15 (users and storage_directories ignored in the comparison): SURVIVED, \"34 passed in 14.46s\". Delivered behaviour verified: my test rewrites users to the directory names (first-delivery content) or drifts storage_directories, recomputes execution_sha256 with P.execution_identity, for train and val: validate_plan raises exactly \"historical producer identity was rewritten\" (4 of 4 cases); the test kills P14 and P15.",
+   "suggested_fix": "Add test_gap_validate_plan_rejects_rewritten_user_lists_even_with_recomputed_identity; give the existing parametrised test a message match per case."
+  },
+  {
+   "id": "T-4",
+   "severity": "minor",
+   "title": "The preflight checks on the VAL split are only partly tested",
+   "location": "tests/cpu/test_pose_temponet_preflight_real_layout.py:146-168; scripts/pose_temponet/provenance.py:471,475-476,492",
+   "claim": "On val only the second user check (storage directories) has a test. The first user check on val, the six details on val, and the fact that the preflight applies read_verified_inputs to val at all are untested: test_first_delivery_user_list_fails_exactly_like_job_64931573 calls P.preflight on a plan wrong in both splits, which stops at train.",
+   "evidence": "P7 (first user check skipped for val): SURVIVED, \"34 passed in 16.05s\". P8e (six details skipped for val): SURVIVED, \"34 passed in 14.23s\". P16b (preflight reads val through D.read_cache_pin, no user and no details check): SURVIVED, \"34 passed in 14.17s\". Controls caught: P7b (both user checks skipped for val), P7c (for train), P16 (return before reading val), P16c (gate on train instead of val). Delivered behaviour verified: P.preflight on a plan with only the val users rewritten raises \"cache user population differs from original producer\", and with each of the six val details changed raises \"historical cache details changed: <key>\" (7 of 7); the test kills P7, P8e and P16b.",
+   "suggested_fix": "Add test_gap_preflight_applies_user_and_detail_checks_to_val."
+  },
+  {
+   "id": "T-5",
+   "severity": "minor",
+   "title": "The campaign name in the submit command and in the preflight export is untested",
+   "location": "scripts/pose_temponet/execution.py:202-203 and :216-217; scripts/slurm/pose_temponet_checkout.sbatch:8",
+   "claim": "The new execution test checks E.CAMPAIGN, E.CODE_DIR and the IDs, but nothing checks that submit_command writes the new campaign in --campagna and in the CAMPAIGN export; the checkout wrapper stops with exit 2 when CODE_DIR differs from $WORK/wearusfm_campaigns/$CAMPAIGN. The delivered command is right.",
+   "evidence": "E4 (\"--campagna\", \"pose_temponet_20261119\") and E5 (export CAMPAIGN=pose_temponet_20261119) on execution, operational, cli, cli_guards: both SURVIVED, \"59 passed in 9.98s\" and \"59 passed in 9.97s\". Controls caught by the new test: E1 (one stage keeps the 20261119 suffix), E2 (CAMPAIGN literal), E3 (CODE_DIR). Delivered behaviour verified on the preflight job of job_graph(): --id TCNH-preflight-20261120, --campagna pose_temponet_20261120, export CAMPAIGN=pose_temponet_20261120 with CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261120, CAMPAIGN_SHA == EXPECTED_SHA, --time=00:12:00, --mem=24G, --cpus-per-task=2, launcher pose_temponet_checkout.sbatch; the test kills E4 and E5.",
+   "suggested_fix": "Add test_gap_preflight_command_names_the_new_campaign_everywhere."
+  },
+  {
+   "id": "T-6",
+   "severity": "minor",
+   "title": "No test distinguishes an equal user population from a subset, nor a receipt with a wrong number of user directories",
+   "location": "scripts/pose_temponet/provenance.py:471-473 and :315; tests/cpu/test_pose_temponet_provenance.py:144-176",
+   "claim": "Both user checks of read_verified_inputs can be weakened from equality to subset, and the count check of historical_producer can be dropped, without any test failing: no test serves a cache with one user missing or a receipt with one directory less or more. Other layers (pin user count in D.read_cache_pin, details n_users) still refuse such inputs, and the delivered code refuses them directly.",
+   "evidence": "P6 (first check subset): SURVIVED \"34 passed in 15.42s\"; P6b (both checks subset): SURVIVED \"34 passed in 14.38s\"; P13 (len(users) no longer compared with details n_users): SURVIVED \"34 passed in 14.27s\". Delivered behaviour: my mocked test with real[:-1] raises \"cache user population differs from original producer\" and kills P6 and P6b; probe_p13.py on the two real receipts: one directory removed and one added are refused with \"historical cache population differs\" (4 of 4 cases).",
+   "suggested_fix": "Add test_gap_cache_with_one_user_missing_is_refused and one test that removes the files of one user directory from the real receipt and expects \"historical cache population differs\"."
+  },
+  {
+   "id": "T-7",
+   "severity": "minor",
+   "title": "One new test promises more than it exercises",
+   "location": "tests/cpu/test_pose_temponet_provenance.py:144-176 (name and comment at :158)",
+   "claim": "test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout replaces P.verify_pin, P.unchanged and P.D.read_cache_pin; the served cache is {\"meta\":[{\"user\":...}], \"input_verification\": copy of the producer details}. Only the user IDs are real, not the layout, and of the consumers named in the comment (benchmark, calibration, controls, folds) only controls.validate_outer_partition is called. The comparisons it does test are real and it catches the author's mutations a, b, f and my P7c.",
+   "evidence": "Lines 149-151: monkeypatch.setattr(P,\"verify_pin\",...), monkeypatch.setattr(P,\"unchanged\",...), monkeypatch.setattr(P.D,\"read_cache_pin\",lambda pin,**kwargs:served[\"data\"]); line 160 is the only consumer call. Mutation R1a (benchmark list) survives the whole suite, see T-1.",
+   "suggested_fix": "Rename it (for example ..._use_cache_ids_with_the_real_user_ids) and reduce the comment to what is exercised, or add the consumers through the real_layout fixture as in T-1."
+  },
+  {
+   "id": "T-8",
+   "severity": "note",
+   "title": "Two assertions of the new execution test cannot fail",
+   "location": "tests/cpu/test_pose_temponet_execution.py:21 and :25",
+   "claim": "`E.job_id(\"preflight\") == \"TCNH-preflight-20261120\" != \"TCNH-preflight-20261119\"` ends with an inequality between two literals; the intersection with the two inventory IDs cannot be non-empty because no stage token produces \"CPU-inventory-login08\". The rest of the test is effective (it catches E1, E2, E3 and the author's d).",
+   "evidence": "Read of the test. The real question behind line 25 is answered outside the test: the 24 IDs of job_graph() against /Users/simonebenatti/wearusfm_local/jobs/ledger.tsv (885 distinct IDs): collisions []; TCNH IDs present there: TCNH-CPU-inventory-login08-20261120, TCNH-CPU-inventory-login13-20261120, TCNH-preflight-20261119; no state file in ~/wearusfm_local/jobs starts with a new ID.",
+   "suggested_fix": "None needed; optionally drop the two expressions."
+  },
+  {
+   "id": "T-9",
+   "severity": "note",
+   "title": "What stays synthetic in the real-layout test: the R-1 pass and the six details are true by construction",
+   "location": "tests/cpu/test_pose_temponet_preflight_real_layout.py:92-93 and :116-127",
+   "claim": "In the fixture the receipt details are recomputed with D.historical.validate_cache on the synthetic file and the parity constants are rebound to the output of the same metrics.evaluate; the trained-head predictions are written from the cache's own pred. So historical_R1.passed, the crop equality and the six comparisons cannot fail there. Sizes are 80 train and 60 val windows (real 1907 and 18548). The real 1e-12 parity and the five real counts are executed by no local test; this is a suspicion-free gap, not a detected defect.",
+   "evidence": "Lines 92-93 recompute receipt[\"details\"]; line 122 is the only monkeypatch of the file. Mitigation verified for the six details: the producer computed them with the same call on the read-back file (scripts/consolidation_long_pose_runtime.py:136) and `git diff 7d276c98 0e548bf8` is empty for consolidation_long_pose.py, consolidation_long_pose_runtime.py, consolidation_long_common.py, tokenizer_pose_readout.py, pose_temporal_readout.py, pose_dynamics.py, pose_e3_b.py, src/wearusfm/harness/pose_eval.py and the two emg2pose ingest modules (7d276c98 is the producer code_sha); the real receipts carry exactly the six keys with targets = {arrays, central_mask, metadata}; the metadata digest already matches on real data (meta_stats.json). What would confirm the parity: only running metrics.historical_reference_gate on the real val cache and the two real prediction files, that is the next preflight.",
+   "suggested_fix": "None in the tests. Keep this as the declared residual risk of the next preflight."
+  },
+  {
+   "id": "T-10",
+   "severity": "note",
+   "title": "The author's mutation check never executed the three real-layout tests",
+   "location": "results/infra/pose_temponet_execution_20261120/mutation_check/run_mutations.py (COMMAND) and mutations.json (baseline \"31 passed in 7.02s\")",
+   "claim": "run_mutations.py runs only test_pose_temponet_provenance.py and test_pose_temponet_execution.py (31 tests); the real-layout file was added afterwards. The statement \"each mutation caught by a new test\" is true for those 31. I covered the missing part: the real-layout tests are not vacuous.",
+   "evidence": "My runs against test_pose_temponet_preflight_real_layout.py alone: A0 (author's a, first-delivery behaviour) \"3 errors in 8.40s\", each \"ValueError: cache user population differs from original producer\"; A1 (author's b) \"1 failed, 2 passed\", line 162 DID NOT RAISE; A2 (author's f) \"1 failed, 2 passed\", line 152 DID NOT RAISE. The six details loop is held ONLY by the real-layout file: P8a (loop removed), P8b (targets dropped), P8c (key_time_valid_sha256 dropped), P8d (both digests dropped) are each caught by test_real_read_path_refuses_drifted_directories_and_each_changed_detail and by nothing else.",
+   "suggested_fix": "Add the real-layout file to COMMAND in run_mutations.py if the mutation check is rerun."
+  },
+  {
+   "id": "T-11",
+   "severity": "note",
+   "title": "Two surviving mutations are equivalent once the plan is validated",
+   "location": "scripts/pose_temponet/provenance.py:471-473",
+   "claim": "Comparing sets instead of sorted lists in either user check changes nothing on a plan accepted by validate_plan, whose lists are sorted and unique by construction of historical_producer. They are not test gaps worth closing.",
+   "evidence": "P4 (first check set == set) and P5 (second check set == set): SURVIVED on the 3 core files (\"34 passed\") and against my 8 extra tests (\"8 passed\"). Order of the delivered lists is tested: P1 (storage_directories reversed) and P2 (users reversed) are caught, \"2 failed, 29 passed, 3 errors\" each.",
+   "suggested_fix": "None."
+  }
+ ],
+ "verified_ok": [
+  {
+   "what": "Task 1: the claim that the real-layout test runs the real provenance.preflight with nothing replaced except metrics.HISTORICAL_REFERENCE",
+   "evidence": "Line by line: the only monkeypatch.setattr of tests/cpu/test_pose_temponet_preflight_real_layout.py is line 122 (M.HISTORICAL_REFERENCE). build_plan, validate_plan, read_verified_inputs, D.read_cache_pin, historical save_cache/read_cache/validate_cache, reference.read_targets/check_selection, read_predictions, verify_pin, alternating_user_folds and historical_reference_gate are the real functions. Two comparisons in it are real against real: the producer metadata of the REAL receipt against the REAL config_json of the cache (D.validate_producer), and the real storage directories against the real cache IDs."
+  },
+  {
+   "what": "Task 1: the synthetic cache written by the test has the real file format",
+   "evidence": "probe_layout.py (own tree): the file written by the test's _cache through historical.save_cache has the same 13 members as the real cache, same dtype descr and rank for all 13 including the 5 scalars the test does not assert (config_json <U780 train, <U778 val as in the real headers). Real metadata value types in meta_stats.json (5 str, int recording/start/n_patches, float fs) equal the synthetic ones."
+  },
+  {
+   "what": "Task 1: no vacuous expected-exception block, no order or out-of-repository dependence in the 8 new tests",
+   "evidence": "All 12 pytest.raises blocks of the 8 new tests carry a message match. The anchored message of test_first_delivery_user_list_fails_exactly_like_job_64931573 equals the last line of results/infra/pose_temponet_execution_20261119/launcher_preflight_20261120/preflight_64931573.log (\"ValueError: cache user population differs from original producer\"). Each of the 8 tests run alone by node id: 8 of 8 \"1 passed\"; the three files in fully reversed collection order: \"34 passed in 17.45s\". No file outside the repository is read."
+  },
+  {
+   "what": "Task 2: 22 of 38 new mutation runs caught (own detached worktree, runner mutate.py, results in mutations_tests_reviewer.json)",
+   "evidence": "Caught: P1 storage_directories reversed, P2 users reversed, P7b and P7c both user checks skipped for val / for train, P8a-P8d details loop removed or reduced, P9 re.match instead of fullmatch, P10 hex-only regex, P11 other naming rule without @, P12 no ID validation, P16 preflight returns before val, P16c gate on train, P17b E_dyn comparison removed, E1 one stage keeps the old suffix, E2 CAMPAIGN literal, E3 CODE_DIR diverges, R1b calibration gets the directories, A0/A1/A2 author's a/b/f against the real-layout file alone. Baseline in my tree: \"34 passed in 15.28s\". Survivals are conclusive for the whole TCN suite: only provenance and real_layout call read_verified_inputs / preflight / historical_producer unpatched (grep over tests/cpu/*.py), P18 and P14all ran on the 20 files other than e2e_chain, R1a on every file that calls run_stage."
+  },
+  {
+   "what": "Task 2 and 4: the delivered code behaves correctly in every surviving-mutation area",
+   "evidence": "8 extra tests written in my own tree (kept in /Users/simonebenatti/wearusfm_local/tcn_users_fix_review/tests_artifacts/test_wf2_reviewer_gaps.py) on the unmodified delivered sources: \"8 passed in 9.49s\". Re-running the 15 surviving mutations against only these tests: 12 caught (P6, P6b, P7, P8e, P14, P15, P16b, P17, P18, E4, E5, R1a), 3 still surviving (P4, P5 equivalent; P13 covered by probe_p13.py, 4 of 4 refused)."
+  },
+  {
+   "what": "Task 3: users fixture against independent evidence",
+   "evidence": "sha256(json.dumps(users)) = 3e05c75e8c63947abd21147f9b3f257d2137569b7e74ad6a818f71d0c534eb7b (train) and 905ab1a96d61a800cbd9911243e0b2773269a28b8a31ae72a361e9d1f677f4b9 (val) == fixture users_json_sha256 == operator's actual_users_sha256 in user_format_diagnosis.json; in addition sha256 of the \"u\"+ID lists == operator's producer_users_sha256 (e7a29def..., b6d4a7b2...). \"u\"+ID == the 40 and 15 directories after \"emg2pose\" in the two real receipts. Users == headers.json metadata users of the two target references. Precision on the task text: headers.json holds metadata users only for the target references, not for the caches (read_headers.py reads meta_json only when key.startswith(\"target_reference\")); cache metadata == reference metadata comes from meta_stats.json (same_meta_cache_vs_reference_train/val true, equal meta_canonical_sha256 and ids_sha256), and that digest equals details.targets.metadata of both receipts (b270cdd3..., 960c8328...). cache_pin_sha256, path and windows equal the proposal pins and the receipts."
+  },
+  {
+   "what": "Task 3: layout fixture against headers.json",
+   "evidence": "For train and val: config equal, 13 member names equal, descr and shape equal for all 13 members, metadata_keys equal to the headers and to the single key set of meta_stats.json, no fortran-order member, first dimension of every array member equal to the window count, n_patches 160 for every window. Total of the two verification scripts: 52 checks pass (the 6 that printed FAIL in my first script were my own wrong assumption about where headers.json stores the cache users, redone correctly)."
+  },
+  {
+   "what": "Parity constants and committed plan",
+   "evidence": "metrics.HISTORICAL_REFERENCE == proposal.json evaluation.historical_reference_gate for all 7 values, tolerance 1e-12 in both. Committed results/infra/pose_temponet_execution_20261120/plan.json: job IDs == job_graph() (24, all ending -20261120), producers users == fixture for both splits, status REVIEW_REQUIRED, submission_released false."
+  },
+  {
+   "what": "Import claim of the fix (provenance.py:23-25)",
+   "evidence": "In a fresh interpreter, after `import pose_temponet.data`, 'wearusfm.harness.pose_eval' is already in sys.modules and importing pose_temponet.provenance loads no further module outside pose_temponet (printed list: []); P._STORAGE_UNSAFE is the ingest object _SAFE_RE, pattern [^0-9A-Za-z_.@-], so the round-trip branch of cache_user is reachable only by the monkeypatch used in the test, as intended."
+  },
+  {
+   "what": "Task 5: the three test files once in the reviewed worktree",
+   "evidence": "cd /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-tcn-users-fix, one thread, -p no:cacheprovider, PYTHONDONTWRITEBYTECODE=1, tests/cpu/test_pose_temponet_provenance.py + test_pose_temponet_execution.py + test_pose_temponet_preflight_real_layout.py: \"34 passed in 18.03s\". git status --porcelain: 0 lines before and after; HEAD 0e548bf8218f15ba07fc731efcc2ead512e65034."
+  },
+  {
+   "what": "Hard rules and cleanup",
+   "evidence": "No ssh, no submission, no push, no download. Own worktree removed with git worktree remove --force, work directory deleted, `git worktree list | grep -c wf2_tests` = 0, ps count of python/pytest processes 0 at 15:01 (start 14:27). Notes appended after each task in /Users/simonebenatti/wearusfm_local/tcn_users_fix_review/tests_notes.md (198 lines)."
+  }
+ ],
+ "tasks_not_completed": []
+}

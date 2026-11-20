@@ -18,11 +18,24 @@ def measured_pack(jobs):
 def test_second_delivery_never_reuses_the_identity_of_the_failed_first_preflight():
     ids = [j["id"] for j in E.job_graph()]
     assert len(set(ids)) == 24 and all(i.startswith("TCNH-") and i.endswith("-20261120") for i in ids)
-    assert E.job_id("preflight") == "TCNH-preflight-20261120" != "TCNH-preflight-20261119"
+    assert E.job_id("preflight") == "TCNH-preflight-20261120" and "TCNH-preflight-20261119" not in ids
     assert E.CAMPAIGN == "pose_temponet_20261120"
     assert E.CODE_DIR == "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261120"
-    # Diagnostic IDs already in the common ledger for this date use another stage token.
-    assert not {"TCNH-CPU-inventory-login08-20261120","TCNH-CPU-inventory-login13-20261120"} & set(ids)
+
+
+def test_preflight_command_names_the_new_campaign_everywhere():
+    """pose_temponet_checkout.sbatch refuses a CODE_DIR that is not $WORK/wearusfm_campaigns/$CAMPAIGN."""
+    output_root = "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117"
+    command = E.submit_command({"submission_released": True}, E.job_graph()[0], checkout_sha="a"*40,
+                               plan_path=output_root+"/manifests/"+"b"*64+".json", plan_sha256="b"*64)
+    assert command[command.index("--id")+1] == "TCNH-preflight-20261120"
+    assert command[command.index("--campagna")+1] == "pose_temponet_20261120"
+    export = dict(item.split("=", 1) for item in next(w for w in command if w.startswith("--export="))[9:].split(",")[1:])
+    assert export["CAMPAIGN"] == "pose_temponet_20261120" and export["TCN_JOB_ID"] == "TCNH-preflight-20261120"
+    assert export["CODE_DIR"] == "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/"+export["CAMPAIGN"]
+    assert export["CAMPAIGN_SHA"] == export["EXPECTED_SHA"] == "a"*40
+    assert command[command.index("--script-stdin")+1] == "scripts/slurm/pose_temponet_checkout.sbatch"
+    assert "--time=00:12:00" in command and "--mem=24G" in command and "--cpus-per-task=2" in command
 
 
 def test_graph_has_no_duplicate_cells_and_keeps_global_scientific_dependencies():

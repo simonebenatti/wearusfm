@@ -8,6 +8,7 @@ Adapted from the dry run of the independent LOGIC reviewer of the second deliver
 """
 import copy
 import hashlib
+import inspect
 import json
 from pathlib import Path
 import sys
@@ -16,7 +17,8 @@ import numpy as np
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]/"scripts"))
-from pose_temponet import data as D, execution as E, metrics as M, provenance as P
+from pose_temponet import benchmark as B, controls as C, data as D, execution as E, metrics as M
+from pose_temponet import provenance as P, runner as R, workflow as W
 
 REPO = Path(__file__).resolve().parents[2]
 USERS = json.loads((REPO/"tests/cpu/data/pose_temponet_cache_users_20261120.json").read_text())
@@ -166,3 +168,67 @@ def test_real_read_path_refuses_drifted_directories_and_each_changed_detail(real
         changed["producers"]["train"]["details"][key] = "x"
         with pytest.raises(ValueError, match="historical cache details changed: "+key):
             P.read_verified_inputs(changed, "train", stage="preflight")
+
+
+def test_preflight_applies_user_and_detail_checks_to_val(real_layout):
+    plan = real_layout
+    bad = copy.deepcopy(plan)
+    bad["producers"]["val"]["users"] = list(bad["producers"]["val"]["storage_directories"])
+    with pytest.raises(ValueError, match="^cache user population differs from original producer$"):
+        P.preflight(bad)
+    for key in DETAILS:
+        bad = copy.deepcopy(plan)
+        bad["producers"]["val"]["details"][key] = "x"
+        with pytest.raises(ValueError, match="^historical cache details changed: "+key+"$"):
+            P.preflight(bad)
+
+
+def test_later_stages_read_the_real_layout_and_consumers_accept_the_plan_users(real_layout):
+    """Every stage after the preflight, through the unpatched reader, with the list that the runner hands on."""
+    plan = real_layout
+    result = json.loads(P.canonical_bytes(P.preflight(plan)))  # as the next job reads it from the receipt
+    allowed = plan["producers"]["train"]["users"]
+    directories = plan["producers"]["train"]["storage_directories"]
+    identity = R._input_identity(plan)
+    for stage in P.TRAIN_STAGES:
+        cache = P.read_verified_inputs(plan, "train", stage=stage)
+        assert {"pre", "lat"} <= set(cache) and "features" not in cache
+        folds = D.alternating_user_folds(cache, result["train"]["folds"])
+        if stage in ("cpu_benchmark", "gpu_benchmark"):
+            _, population = B._validate_train(cache, allowed, identity)
+            assert population["fold_windows"] == [40, 40] and population["train_windows"] == 80
+            with pytest.raises(ValueError, match="exactly the declared training users"):
+                B._validate_train(cache, directories, identity)
+        if stage == "wls_calibration":
+            fit = np.asarray([i for i, m in enumerate(cache["meta"]) if m["user"] in set(folds[0])])
+            held = np.asarray([i for i, m in enumerate(cache["meta"]) if m["user"] not in set(folds[0])])
+            partition = C.validate_outer_partition(cache["meta"], fit, held, allowed)
+            assert partition["fitting_users"] == folds[0] and partition["held_users"] == folds[1]
+            with pytest.raises(ValueError, match="non-training users"):
+                C.validate_outer_partition(cache["meta"], fit, held, directories)
+        if stage in ("selection", "refit"):
+            bundle = W.prepare_real_folds(cache, allowed_train_users=allowed, source_identity=identity,
+                                          expected_folds=result["train"]["folds"])
+            assert bundle.manifest["users"] == USERS["train"]["users"] and bundle.manifest["user_folds"] == folds
+            with pytest.raises(ValueError, match="train population differs from the allowed users"):
+                W.prepare_real_folds(cache, allowed_train_users=directories, source_identity=identity,
+                                     expected_folds=result["train"]["folds"])
+        with pytest.raises(ValueError, match="not permitted to open val"):
+            P.read_verified_inputs(plan, "val", stage=stage)
+    for stage, depth in (("locked_inference", "post"), ("locked_inference", "pre"), ("metrics", "post")):
+        cache = P.read_verified_inputs(plan, "val", stage=stage, depth=depth)
+        assert cache["feature_depth"] == depth and "lat" not in cache and "pre" not in cache
+        assert sorted({m["user"] for m in cache["meta"]}) == USERS["val"]["users"]
+        assert not set(USERS["val"]["users"]) & set(allowed)
+    # The metrics stage repeats the parity gate on the val cache it reads itself.
+    cache = P.read_verified_inputs(plan, "val", stage="metrics", depth="post")
+    cache.pop("features", None)
+    parity = M.historical_reference_gate(cache, D.read_predictions(plan["inputs"]["post_ridge_predictions"]),
+                                         D.read_predictions(plan["inputs"]["trained_head_predictions"]))
+    assert parity == result["historical_R1"]
+
+
+def test_runner_hands_the_cache_ids_of_the_plan_to_every_training_stage():
+    """Wiring guard: the first failure was a wrong list handed on. Every test of run_stage replaces the consumers."""
+    source = inspect.getsource(R.run_stage)
+    assert source.count('plan["producers"]["train"]["users"]') == 3 and "storage_directories" not in source

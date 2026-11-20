@@ -1,0 +1,127 @@
+{
+ "summary": "No blocking or important defect found: nothing I could read or simulate would make the next preflight or the two stages after it fail on real-format data. The R-1 gate calls the same three functions of the same byte-identical module as the historical run, its constants are bit-equal to the archived historical receipt, and at the real val size the two paths give bit-identical E_dyn under numpy 1.26.4 and 2.3.5; the largest perturbation I could produce is 4.4e-16, against a 1e-12 tolerance. The val read peaks at about 9 GiB (real historical job with the same reader on the same file: 8.86 GiB) and the whole preflight should take about 3 minutes, so 24 GB and 12 minutes are safe. On a real-size train cache built with the real support facts (53 empty windows, first window of 76bfc2d385 empty, two one-centre windows), the first statements of both benchmarks, the wls_calibration branch for fold 0 and one training/scoring cell per head all ran without an empty quantity or a division by zero. Nothing was run on real data or on the cluster; the full benchmark_gpu, the 4992-wide L13 diagnostic, wls fold 1 and all later stages were not executed at real size. The five findings are one minor and four notes, none requiring a source change before this launch. Notes are in /Users/simonebenatti/wearusfm_local/tcn_users_fix_review/realdata_notes.md, scripts and logs in /Users/simonebenatti/wearusfm_local/tcn_users_fix_review/realdata_scripts/.",
+ "findings": [
+  {
+   "id": "RD-1",
+   "severity": "minor",
+   "title": "Report cost surrogate depends on the first window of the first 15 sorted users having pose support",
+   "location": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-tcn-users-fix/scripts/pose_temponet/benchmark.py:608-613 (failure would surface at :648)",
+   "claim": "benchmark._report_measurement takes, for each of the first 15 sorted training users, the first window in the cache and builds the bootstrap surrogate from it. Nothing checks beforehand that these windows have centred support. If one were empty, cpu_benchmark would stop with 'cost-only report did not exercise complete bootstrap'. On the pinned real cache the property holds, and the cache is hash-pinned, so this run is not affected.",
+   "evidence": "Code: `selected_users = sorted({row[\"user\"] for row in data[\"meta\"]})[:15]` and `ids = [next(i for i, row in enumerate(data[\"meta\"]) if row[\"user\"] == user) for user in selected_users]`. Real data (results/infra/pose_temponet_execution_20261120/real_input_headers/train_support.json): all 15 first windows have joints_with_2 = 20, minimum 41 supported centres (user 3589743749); the only user with an empty first window is 76bfc2d385, 19th in sorted order. My run of the kept first_statements.py on a real-size train cache built with exactly these facts printed: `first windows of the 15 surrogate users have central support: [True x15]` and `report surrogate OK 2000`. The interrupted reviewer's log (bench_repair.log) shows the failure mode when a first window is empty.",
+   "suggested_fix": "None for this launch (a source change would force a new delivery, and the pinned cache satisfies the property). For the next source revision: choose the first window with centred support per user, as in the kept partial_realdata/candidate_fix.py, or raise an explicit early error naming the user."
+  },
+  {
+   "id": "RD-2",
+   "severity": "note",
+   "title": "A scratch refresh that lands inside a job's read window would be reported as a changed input",
+   "location": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-tcn-users-fix/scripts/slurm/refresh_scratch.sbatch:22,33 vs scripts/pose_temponet/provenance.py:484-495 and scripts/pose_temponet/data.py:111",
+   "claim": "Three of the eight pinned inputs live on $SCRATCH (both target references and pose_stats.json). The periodic refresh touches every file under $SCRATCH/data/processed and $SCRATCH/wearusfm_runs, which changes mtime and ctime. The reader compares file states (including mtime_ns and ctime_ns) before and after use, so a touch during that window raises 'pinned input changed while in use' or 'pinned input changed while reading'. The window is the whole preflight (about 3 minutes) and seconds to about 1.5 minutes at the start of every later job. Unlikely, but it would cost a delivery cycle.",
+   "evidence": "refresh_scratch.sbatch:22 `DEFAULT=(data/raw data/processed wearusfm_runs external)`, :33 `find -L \"$d\" -exec touch -c {} +`. plan.json pins: target_reference_train and target_reference_val under /leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/, pose_stats under /leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/. provenance.py:484 `verified = verify_inputs(plan,\"preflight\")` ... :495 `unchanged(states)`; _stat_record includes mtime_ns and ctime_ns (provenance.py:131-134). Not executed: this is a reading of the two scripts. The next refresh is planned for 03/12 at 09:00 according to the project memory.",
+   "suggested_fix": "Operational only: do not let the scratch refresh run while a TCN job is in its first minutes (check squeue for TCNH-* jobs before the 03/12 refresh, or hold the refresh until the running job has passed its input read). No code change."
+  },
+  {
+   "id": "RD-3",
+   "severity": "note",
+   "title": "The gpu8 numeric pin includes card memory and CPU model of the benchmark node; equality on other GPU nodes is unverified",
+   "location": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-tcn-users-fix/scripts/pose_temponet/provenance.py:514-518 and :546-548",
+   "claim": "Unverified suspicion. After the benchmarks, every GPU stage requires digest(numeric context) to equal the digest recorded by gpu_benchmark. The context contains gpu_name, gpu_capability, gpu_bytes (props.total_memory) and cpu_model. If two boost_usr_prod nodes reported different values, every controls/selection/refit job landing on another node would stop with 'current numeric context differs from benchmark'. The operator instructions cover this only for the CPU model of the two serial nodes.",
+   "evidence": "provenance.py:518 `hardware.update(gpu_name=props.name,gpu_capability=[props.major,props.minor],gpu_bytes=props.total_memory)`; :548 `require(expected is None or digest(context) == expected, \"current numeric context differs from benchmark\")`. docs/pose_temponet_execution_20261119.md:131-133 mentions only `cpu8` and the two serial nodes; `grep -n \"gpu8\\|gpu_bytes\\|total_memory\"` over the two instruction files and the delivery document returns nothing else. `grep -rhoE '\"(total_memory|gpu_bytes)\": ?[0-9]+' results docs` returns no archived value, so I could not compare two nodes.",
+   "suggested_fix": "What would confirm or dismiss it: one read-only comparison of torch.cuda.get_device_properties(0).total_memory and the /proc/cpuinfo model name on two different boost_usr_prod nodes (the same kind of inventory already done for the serial nodes), before the first dependent GPU job is sent. If they differ, apply the 'rule per node class' that the instructions already foresee for cpu8."
+  },
+  {
+   "id": "RD-4",
+   "severity": "note",
+   "title": "The preflight hashes and validates the val cache twice and keeps 2.1 GiB of latents it never uses",
+   "location": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-tcn-users-fix/scripts/consolidation_long_pose.py:145 (called from :174 and again from scripts/pose_temponet/data.py:83); scripts/pose_temponet/provenance.py:492",
+   "claim": "Harmless redundancy. The val cache (4.59 GB) is hashed in verify_inputs and again in read_cache_pin; historical.validate_cache runs inside read_cache and again inside data.validate_cache, so the full boolean-index copy of pre and lat (2.12 GiB each, plus a 1.06 GiB bool) is made four times; depth=\"post\" keeps lat alive through a gate that reads only pred, target and mask. This sets the peak (about 9 GiB) and about a third of the val time, both far inside the allocation.",
+   "evidence": "consolidation_long_pose.py:145 `np.isfinite(a[available]).all()` with n_patches = 160 for all 18548 windows (meta_stats.json), so `available` is all True and a[available] is a full copy. Reduced-size profile through the unmocked provenance.preflight (val 2000 windows): two H.validate_cache calls of 0.46 s and 0.38 s, two hashes of the cache, peak RSS 1.214 GiB over a 0.261 GiB baseline. Real cluster figure for one read with the same reader: peak_rss_bytes 9513836544 in the historical LONG-FIT-G49046-pose receipt.",
+   "suggested_fix": "Leave as is for this launch. In a later revision the preflight could read val with the latents dropped right after validation, and data.validate_cache could reuse the result of the validation done inside read_cache."
+  },
+  {
+   "id": "RD-5",
+   "severity": "note",
+   "title": "Kept script bench_gpu_on_cpu.py does not finish in a usable time and probably fails at its last step",
+   "location": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-tcn-users-fix/results/infra/pose_temponet_execution_20261120/independent_review/partial_realdata/bench_gpu_on_cpu.py:14 with scripts/pose_temponet/benchmark.py:32-40",
+   "claim": "Review tooling only, not the delivery. On one Mac thread the script needs an estimated 30-40 minutes. It patches torch.cuda.is_available to True but not benchmark._hardware, which then calls torch.cuda.current_device() on a CPU-only build when the receipt is assembled after all 15 cells. The crash is inferred from reading; I stopped the run before that point.",
+   "evidence": "My run: started 14:55:15, after 4 min 03 s the output directory held 43 cost files (L0 complete, L13 fold0 at epoch 7); stopped with pkill and files removed. bench_gpu_on_cpu.py:14 `torch.cuda.is_available = lambda: True`; benchmark.py:39-40 `if torch.cuda.is_available(): props = torch.cuda.get_device_properties(torch.cuda.current_device())`, reached through _base_receipt at the end of benchmark_gpu.",
+   "suggested_fix": "If the script is reused, also replace benchmark._hardware (or restore torch.cuda.is_available before the receipt is built) and reduce the work, as in my gpu_cells_smoke.py kept in /Users/simonebenatti/wearusfm_local/tcn_users_fix_review/realdata_scripts/. Running it to the end would confirm the crash."
+  }
+ ],
+ "verified_ok": [
+  {
+   "what": "Task 1a: origin of the two reference numbers and the five counts",
+   "evidence": "`git show 2930d7d6:results/infra/consolidation_long_20261105/execution/receipts/LONG-FIT-G49046-pose-20261105.json` (reachable as a git object; not in the working tree, which has 28 of the 103 receipts). cells.post_ridge.analysis.groups.dynamic.centered.centered_mse_ratio = 0.7859020004638595 and trained_head = 0.7786289843513977: difference from HISTORICAL_REFERENCE 0.0 for both. Same receipt: n_selected_windows 8329, n_windows 8327, n_window_joints 166540, n_valid_elements 20119920, n_users 15. Side fact: for pre_ridge the receipt has 1.0321280032044746 while the comparison point used as anchor is ...744 (the two historical formulas can differ by 1 ulp); pre_ridge is not gated."
+  },
+  {
+   "what": "Task 1a: the gate and the historical path are the same function calls on byte-identical modules",
+   "evidence": "Historical: consolidation_long_pose_runtime._fit -> P.summarize -> tokenizer_pose_readout.summarize (lines 274-302, BATCH=64) -> pose_dynamics.window_joint_moments / accumulate(min_n=2, CENTERED_FIELDS) / pooled_summary (lines 88-173). New: metrics.historical_reference_gate (169-199) -> metrics.evaluate (78-158, batch_windows=64 default) -> the same three functions. `git rev-parse <commit>:<file>` at the historical fit code a70e29e4 and at tip 0e548bf8: pose_dynamics.py a261606a SAME, tokenizer_pose_readout.py f0cfe709 SAME, pose_temporal_readout.py 590d8e13 SAME, consolidation_long_pose.py 28f1283f SAME. One statement differs on the E_dyn path: targets are cast to float64 once in _cropped (metrics.py:75) instead of inside window_joint_moments; float32 to float64 is exact and commutes with the masking. Same selection `np.isfinite(pv) & (pv >= 0.2574231028556824)`, same central mask function with offset 6, same window order."
+  },
+  {
+   "what": "Task 1a: the gate will see the same inputs as the historical run",
+   "evidence": "plan.json pins equal the historical fit receipt in sha256 and bytes for cache_val (36bab32e..., 4593977338), cache_train, post_ridge_predictions (36fb5f9b...), trained_head_predictions (9dbd52a0...) and post_ridge_coefficients. The historical analysis targets_sha256 (arrays c907b85b..., central_mask 97393047..., metadata 960c8328...) equals plan.producers.val.details.targets, which read_verified_inputs enforces at run time. Numerical environment: failed preflight receipt numpy 1.26.4 / python 3.11.6 / torch 2.2.0a0 on Xeon Platinum 8358; historical fit receipt numpy 1.26.4 / python 3.11.6 / torch 2.2.0."
+  },
+  {
+   "what": "Task 1b: trained_head.predictions.npz holds exactly pred[:, 6:-6].astype(float64) of the pinned val cache",
+   "evidence": "consolidation_long_pose_runtime.py at a70e29e4, lines 277-285: `prediction = held[\"pred\"][:, P.OFFSET:-P.OFFSET].astype(np.float64)` then `_save_array(Path(out)/(reader+\".predictions.npz\"), prediction=prediction)`, with P.OFFSET = R.OFFSET = 6 and held read from the cache whose sha256 is the cache_val pin. The gate compares the same slice with the same cast, so the arrays are equal on every element; NaN cannot break np.array_equal on support because validate_cache already requires isfinite(pred[mask]) and support is a subset of mask[:, 6:-6]."
+  },
+  {
+   "what": "Task 1c: measured parity at the real val size, and how safe 1e-12 is",
+   "evidence": "r1_measure.py on synthetic arrays of the real geometry (18548 windows, the 15 real val IDs with 700..1540 windows, float32 targets, 1896 empty windows, 20 one-centre and 20 edge-only windows, float32 pose_var with NaN, float64 predictions), run with numpy 2.3.5 and with numpy 1.26.4 (conda env appTF), identical output: `post_ridge: historical E_dyn 0.8911610782699846 | evaluate 0.8911610782699846 | abs diff 0.000e+00 | counts equal True | per-user sums bitwise equal True | all three groups' centered blocks equal True`; trained_head 0.7615891451150004 on both paths, diff 0.0. batch_windows 1/7/32/128/1000/18548: differences between 0 and 4.441e-16; shuffled window order 1.110e-16; time axis reversed 0.0; aggregate sum-ratio formula 1.110e-16. Largest perturbation 4.4e-16, so 1e-12 leaves a factor of about 2250 (3.3 orders of magnitude). On the cluster batch, order, numpy and functions are those of the historical run: expected difference 0."
+  },
+  {
+   "what": "Task 1: the gate itself at real size",
+   "evidence": "Same script: `historical_reference_gate at real size: passed True | seconds 2.7` (2.8 with numpy 1.26.4), strict JSON of the result accepted, and `shifted head prediction refused: historical trained-head crop indices/values differ` for a head prediction shifted by one patch."
+  },
+  {
+   "what": "Task 2: peak memory of the val read; 24 GB is safe",
+   "evidence": "Arrays alive at the peak (consolidation_long_pose.py:145): pre 2.123 GiB + lat 2.123 GiB + a[available] full copy 2.123 GiB + isfinite bool 1.061 GiB + pred 0.221 + target 0.221 + mask 0.055 + target reference 0.33 + interpreter, about 8.7-9.1 GiB. Everything in the gate stays near 4.8 GiB (metrics.py:75, 175-176). Real cluster number for the same reader on the same file: measured_resources.peak_rss_bytes = 9513836544 (8.86 GiB) in LONG-FIT-G49046-pose, job 63684845. My profile of the unmocked provenance.preflight at val 2000 windows (val.npz 248.6 kB per window, real 247.7): baseline 0.261 GiB, peak 1.214 GiB, scaled linearly to 18548 windows = 9.10 GiB. Margin about 2.7x."
+  },
+  {
+   "what": "Task 2: wall time of the preflight; 12 minutes is safe",
+   "evidence": "Mac profile at val 2000: val part 3.93 s (two hashes 0.36, read_targets 0.13, inflate 1.93, two validations 0.46 + 0.38, predictions 0.31, gate 0.35), x 9.274 = 36 s at real size; gate measured directly at real size 2.7 s. Scaling assumption: every phase is linear in the number of windows. Cluster/Mac factor from the only real number: the failed job spent 23.6 s inside run_stage for check_release + hashing 8.46 GB + the whole train read, about 7.5 s on the Mac, so factor <= 3.1 and val part <= 113 s. Cross-check from the real LONG-BENCH-pose receipt: read_validate 5.94 s for 1907 windows, x 9.73 = 58 s, plus second validation, predictions and gate = about 85 s. Whole job: 73 s already used by 64931573 plus 85-113 s = 160-190 s against 720 s (+180 s grace)."
+  },
+  {
+   "what": "Task 3: masks are identical across the 20 joints by construction, so the linear references have one mask group",
+   "evidence": "src/wearusfm/data/pose_targets.py:157-179: `mask = np.zeros((p, N_JOINTS), dtype=bool)` ... `mask[has] = True` sets whole rows. Consistent with real counts: 166540 = 8327 x 20, and in train_support.json every first-15 window has supported = max_joint x 20. So linear.mask_groups returns a single group of 20 joints and one QR factor per design, as in the interrupted reviewer's real-size benchmark_cpu run."
+  },
+  {
+   "what": "Task 3: first statements of cpu_benchmark, gpu_benchmark, wls_calibration and the fold preparation on a real-size train cache with the real support facts",
+   "evidence": "Cache built with build_sim_real.py (train.npz 475589707 bytes vs real 474412856; `train: empty windows 53 | one-centre windows [1247, 746] | empty first window of ['76bfc2d385']`). Kept script first_statements.py: population `{'train_windows': 1907, 'fold_windows': [960, 947], 'fit_train_windows': 1854, 'fit_fold_windows': [938, 916], 'excluded_fitting_windows': [22, 31]}`, `partition users 20 20 | inner [(480, 480), (480, 480)] | wls fold 0 equals benchmark fold 0: True`, `window ids unique: True`, `training sets supported: [938, 938]`, `production score on 64 held windows: ... 'window_count': 63`, `report surrogate OK 2000`; the first delivery's directory list is refused with 'benchmark population must contain exactly the declared training users'."
+  },
+  {
+   "what": "Task 3: wls_calibration branch of runner.run_stage (runner.py:281-298) for fold 0 at real size",
+   "evidence": "stage3_wls.py, one deviation (L13 outer diagnostic off): `fold 0 | fit/held windows 960 947 | unsupported in fit/held 22 31 | one-centre windows 2`, `dynamic_variance: NaN windows 55`, `build_positive_control_fold OK | seconds 29.0 | status calibrated | evaluations 1936 | ... outer scored True`, `calibration.pt bytes 228543033 | calibration.json bytes 1943605` (strict JSON through runner._plain), partition equal to a fresh validate_outer_partition after the torch and the JSON round trips. Unsupported windows are handled by np.divide(..., where=q>0) (linear.py:241, 326; controls.py:108) and WeightedQR.add dropping zero-weight rows (linear.py:83-86)."
+  },
+  {
+   "what": "Task 3: one training and scoring cell per head on the real-format training sets",
+   "evidence": "gpu_cells_smoke.py = the per-cell statements of benchmark.py:288-345 on CPU, one epoch: L0 fold0 and full, L13, MLP, TCN_post, TCN_pre (depth pre) all complete: `train_windows 938 excluded 22 steps/epoch 30` (full: 1854 / 53 / 58), `held windows 947 scored 916`, state capture and restore, atomic_torch and read back, prediction batches (32,148,20) and (20,148,20). TensorTrainingSet removes unsupported windows before any minibatch (train.py:176-180); the heads have LayerNorm only, no BatchNorm (heads.py:36-58)."
+  },
+  {
+   "what": "Task 3: time of the GPU benchmark's CPU-side work and consistency of the resource gate with unsupported windows",
+   "evidence": "gpu_score_cost.py: `seconds per scoring pass {'fold': 0.35, 'full': 0.67, ... 'validation_surrogate': 1.96} | ... five heads 75.1`; with the <= 3.1 cluster factor about 4 minutes, plus GPU epochs and 165 small state files, against the 1620 s cap. resources.gate_and_pack (read, lines 126-151) uses fit_fold_windows, fit_train_windows and excluded_fitting_windows, consistent with 938 + 916 = 1854 and 22 + 31 = 53."
+  },
+  {
+   "what": "Task 4: user identities and embedded producer identity, both splits",
+   "evidence": "plan.json: producers.train.users and producers.val.users equal the sorted real cache IDs of tests/cpu/data/pose_temponet_cache_users_20261120.json (40 and 15, all 10-character hex), storage_directories equal 'u'+ID; proposal.json contains no user-ID-like string. Real embedded config_json of both caches (real_input_headers/headers.json) equals plan.producers[split].metadata on all nine PRODUCER_FIELDS, and the window recipe is 10 / 4.0 / 20261026 / False: this is the comparison data.validate_producer will make on val, which the new code has not yet executed on the cluster."
+  },
+  {
+   "what": "Task 4: exact equality of the resource gate between the operator's machine and the cluster",
+   "evidence": "runner.py:235 requires `projection == plan.get(\"resource_gate\")`; the plan value is computed locally by `resource-plan` (docs/pose_temponet_execution_20261119.md:169-175) and recomputed on the cluster with numpy 1.26.4. The only numpy call in gate_and_pack is resources.percentile95 = np.quantile(values, .95, method=\"linear\") on 10 samples. quantile_bits.py, 200000 random sample sets: sha256 of all (p95, median) pairs a9eb09d0e83bcf5ded38ee61214ed4da19994b5f9e83147cb781d977138cd5fd under numpy 2.3.5, 1.26.4 and 2.0.2. The rest is Python float arithmetic in a fixed order, and the returned structure contains no tuples."
+  },
+  {
+   "what": "Task 4: scheduler formats read by the first GPU job and by the completion proofs",
+   "evidence": "runner._allocation reads AllocTRES keys cpu, mem and gres/gpu; archived real sacct rows of this project read `billing=8,cpu=8,gres/gpu=1,mem=100G,node=1` (138 rows) and the CPU form already passed in job 64931573. The instructions give `sacct -X -n -P --format=JobIDRaw,State,ExitCode`, the three fields execution.verify_completed_predecessors parses. heads.HEADS == workflow.HEADS == resources.HEADS; execution.CONTROL_HEADS and WORLDS equal workflow's."
+  },
+  {
+   "what": "Rules respected and clean-up",
+   "evidence": "No ssh, no submission, no push, no download. Delivery worktree untouched: `git status --short` empty, HEAD 0e548bf8218f15ba07fc731efcc2ead512e65034. My detached worktree (scratchpad/wf2_realdata_tree) and work directory (scratchpad/wf2_realdata_work) are removed; `ps` shows no process of mine. One heavy process at a time; work directory never above 0.96 GB. A stray `find /` started by my first environment probe was killed within about two minutes."
+  }
+ ],
+ "tasks_not_completed": [
+  "Task 3, partly: the complete benchmark.benchmark_gpu was not run at real size (the kept script needs an estimated 30-40 minutes on one Mac thread; I stopped it after 4 minutes with L0 complete and replaced it with one cell per head). Consequently resources.gate_and_pack was read but not executed on real-size receipts.",
+  "Task 3, partly: in the wls_calibration run the L13 outer diagnostic (4992-wide design) was switched off for run time, and only fold 0 was run. The L13 design at real size is covered only by the interrupted reviewer's benchmark_cpu log (bench_repair.log), not by me.",
+  "Task 3, scope: the stages after wls_calibration (controls, selection, refit, locked_inference, metrics, collection) were read, not executed at real size.",
+  "By rule nothing was executed on real data or on the cluster: the six details digests on whole real arrays, the real val read and the real R-1 values remain unexecuted until the preflight runs. My conclusions for them rest on the archived historical receipts, the real headers and metadata statistics, and simulations in the real format.",
+  "RD-3 (gpu8 numeric pin across GPU nodes) could not be verified offline: no archived value of the card's total memory exists in the repository."
+ ]
+}
