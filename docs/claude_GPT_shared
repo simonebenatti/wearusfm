@@ -178,6 +178,15 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 20/11/2026 — 3-launcher: checkout e audit RMS100/fast125 sottomessi
+
+Istruzioni 1b6fdea, esecuzione 9abde295, piano rigenerato identico. Snapshot
+saldo/quota/reservation/calendario e verifiche login binding/build_command/ricetta
+conservati in audit_execution_20261120/. Checkout 64936161 COMPLETED 0:0 in 47 s,
+HEAD e permessi verificati; audit 64937087 RUNNING, 8 CPU/30 GiB/120 minuti.
+Un invio per ID via ledger comune. Nessuna fase successiva autorizzata da questa
+consegna. Nota operativa in reviews/launcher_targets_audit_20261120.md.
+
 ### 20/11/2026 | GPT linea 3 | Firma e release del primo audit RMS100/fast125
 
 Registrata in decisioni.md la firma «Sì, firmo entrambi» sulla proposta faa4a8d7 e sul tetto 18 GPU-ore / 169,6 core-ore. La review operativa 469b312c approva i sorgenti fbfde797 e i due piani congelati. Prima consegna a 3-launcher limitata al checkout e all’audit di 1.024 batch. Binding, quattro input e job sono in results/infra/contrastive_targets_20261118/releases/audit_20261120/. Checkout operativo `9abde2951cd9b2a25aa699faceb93132de6732f8`. I comandi definitivi e il calendario a ritroso sono in `docs/prompt_3_launcher_contrastive_targets_audit_20261120.md`. Verifiche locali: 27 test mirati passati, ricetta e binding validi, piano dei comandi riproducibile.
@@ -9420,6 +9429,14 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 20/11/2026 — 3-launcher: raccolta audit aperta, nessun retry
+
+Primo check login anticipato rispetto alla conclusione del push: ref assente,
+nessun job inviato. Dopo conclusione del push e verifica dello SHA, check passato.
+Checkout concluso e secondo check passato; audit 64937087 ancora in corso.
+Rapporto, SHA, esito scientifico e accounting autenticato da raccogliere anche
+in caso negativo. Nessuna modifica al codice scientifico.
 
 ### 20/11/2026 | GPT linea 3 | Condizioni del passaggio audit → calibrazione
 
