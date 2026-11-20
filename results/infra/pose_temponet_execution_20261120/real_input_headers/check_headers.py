@@ -49,6 +49,24 @@ coefficients = headers["post_ridge_coefficients"]["members"]
 check("post_ridge_coefficients: weights 384x20 and bias 20, float64",
       coefficients["weights.npy"]["shape"] == [384, 20] and coefficients["bias.npy"]["shape"] == [20] and
       coefficients["weights.npy"]["descr"] == coefficients["bias.npy"]["descr"] == "<f8")
+# Window metadata (meta_stats.json): the reader needs unique, canonical, finite metadata with only two fields read by name.
+stats = json.loads((HERE/"meta_stats.json").read_text())
+KEYS = ["fs", "n_patches", "recording", "session", "side", "stage", "start", "stem", "user"]
+for split, windows, people in (("train", 1907, 40), ("val", 18548, 15)):
+    for source in ("cache_", "target_reference_"):
+        entry = stats[source+split]
+        name = source+split
+        check(name+": every window has unique canonical metadata", entry["canonical_ok"] and entry["windows"] == windows ==
+              entry["unique_windows"] and entry["duplicate_groups"] == 0)
+        check(name+": one key set, the nine real keys", entry["key_sets"] == [[KEYS, windows]])
+        check(name+": user is str and n_patches is int everywhere", entry["types"]["user"] == {"str": windows} and
+              entry["types"]["n_patches"] == {"int": windows})
+        check(name+": n_patches inside (12, 160]", 12 < entry["n_patches_min_max"][0] <= entry["n_patches_min_max"][1] <= 160)
+        check(name+": no non-finite float and the pinned user count", entry["nonfinite_floats"] == 0 and entry["users"] == people)
+    check(split+": cache metadata identical to the target reference metadata", stats["same_meta_cache_vs_reference_"+split] is True)
+    # One of the three "targets" digests that the preflight compares with the producer receipt depends on metadata only.
+    check(split+": real metadata digest equals details.targets.metadata of the producer receipt",
+          stats["cache_"+split]["meta_canonical_sha256"] == plan["producers"][split]["details"]["targets"]["metadata"])
 failed = [name for name, passed in checks if not passed]
 print(json.dumps({"checks": len(checks), "passed": len(checks)-len(failed), "failed": failed}, indent=1))
 sys.exit(1 if failed else 0)

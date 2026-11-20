@@ -1,5 +1,10 @@
 # TCN frozen: consegna eseguibile del 19/11/2026
 
+> **Aggiornamento del 20/11/2026.** Dopo il preflight 64931573 fallito c'è una seconda consegna:
+> `docs/pose_temponet_execution_20261120.md`. Per i lanci valgono i suoi valori: ID con suffisso `-20261120`, checkout
+> `pose_temponet_20261120`, piano in `results/infra/pose_temponet_execution_20261120/plan.json`. Dove questo documento scrive
+> `20261119` per ID, checkout, piano o riferimento di deploy, vale il valore nuovo. Il resto resta valido.
+
 ## Stato, titolarità e identità
 
 Il protocollo v3 ha la convergenza documentale effettiva di Claude

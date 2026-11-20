@@ -1,0 +1,135 @@
+{
+ "summary": "I dry-ran the operator sequence for the second delivery in my own detached worktree at 5d6fb2dc. Nothing in identity, paths or leftovers of the first attempt would stop the next preflight: I found no blocking defect. Release, command generation, both wrappers (in a local fake $WORK with the old read-only checkout present) and the 24-stage fixture chain with the old manifest and failed receipt seeded in the output root all behave. The on-cluster plan write and the real run could not be executed locally because the output root /leonardo_work is hard-coded and cannot be created on the Mac; the cluster state itself is taken from the context. Two important gaps remain before handing over: the commit lacks the delivery document and validation receipt the addendum points to, and there is no local guard for the deploy commit before the one-shot submission. The rest is three minor documentation points and three notes. Housekeeping: my first scratch worktree and fake work area were removed by another process around 12:19; I recreated one for the last two checks and removed it. Five stand-in commits (26e5cc13, ab26dccc, 5c84413c, a977f289, f377718e) remain as unreachable objects, on no ref and never pushed. The author's worktree, the ledger and the cluster were not touched.",
+ "findings": [
+  {
+   "id": "D-1",
+   "severity": "important",
+   "title": "Delivery document and validation receipt referenced by the addendum are not in the commit",
+   "location": "docs/pose_temponet_execution_20261120.md:74 and :82; results/infra/pose_temponet_execution_20261120/",
+   "claim": "At 5d6fb2dc the addendum sends the operator to a 'documento di consegna di Claude' for $TCN_CODE_SHA and source_sha256 (line 74) and to a validation receipt in results/infra/pose_temponet_execution_20261120/validation/ (line 82). Neither exists in the commit, and docs/claude_GPT_shared has no entry for the fix. Step 2 of the sequence cannot be completed from the committed state alone.",
+   "evidence": "`git ls-tree -r --name-only 5d6fb2dc -- results/infra/pose_temponet_execution_20261120 docs/reviews | grep -E 'pose_temponet_execution_20261120|claude_delivery|users_fix'` lists only plan.json, validate.py and real_input_headers/{check_headers.py,check_headers.txt,headers.json,read_headers.py}. `git show 5d6fb2dc:docs/claude_GPT_shared | grep -c -i -E 'storage_directories|users-fix|seconda consegna|pose_temponet_20261120|TCNH-preflight-20261120'` -> 0. At 12:20 the author's working tree held uncommitted drafts: untracked docs/reviews/claude_delivery_pose_temponet_users_fix_20261120.md, README.md, real_input_headers/meta_stats.json and read_meta_stats.py; modified check_headers.py, check_headers.txt and the 19/11 document. The draft names code 5d6fb2dc..., source_sha256 37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de and plan sha256 1e8e2b46...563e / 60,341 bytes; all three match what I computed. The modified check_headers.py reads meta_stats.json, which is untracked. README names delivery_pin.json and validation/, neither present yet. `P.source_manifest` on that working tree: 246 sources, digest 37985d28..., equal to the plan manifest.",
+   "suggested_fix": "Add one child commit (do not amend 5d6fb2dc) touching only docs/ and results/: the delivery document, the validation/ output of validate.py, delivery_pin.json, README, meta_stats.json together with the check_headers.py that reads it, and the registry entry. Afterwards re-run `python -m pose_temponet inspect --plan results/infra/pose_temponet_execution_20261120/plan.json` and confirm reader 37985d28.... --reviewed-code-sha can stay 5d6fb2dc: release-plan accepts any commit whose 246 sources match (verified with a metadata-only descendant)."
+  },
+  {
+   "id": "D-2",
+   "severity": "important",
+   "title": "No local guard on the deploy commit before the single submission; the reviewed commit now comes from another agent's branch",
+   "location": "scripts/pose_temponet/__main__.py:208-236 (commands); scripts/pose_temponet/runner.py:212 and provenance.py:560-562 (checkout_identity); provenance.py:262-265 (review copy fallback); docs/pose_temponet_execution_20261120.md:75-78",
+   "claim": "`commands` accepts any 40-hex --checkout-sha. It does not check that the commit exists, descends from reader.code_sha, carries the plan's sources, or contains the released plan and the review copy. A deploy commit built by cherry-pick, rebase or squash of 5d6fb2dc, or one missing the review copy, is rejected only inside the job, after campaign_checkout has created pose_temponet_20261120 and the ID is 'sottomesso'. Both are then consumed and a third delivery with a source change is needed. The addendum states neither the ancestry requirement nor a pre-submission check. This is pre-existing behaviour, not introduced by the fix; the cross-branch handoff is what is new.",
+   "evidence": "(1) `commands ... --checkout-sha aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` and `--checkout-sha f546c9e4...` (main) both print the submit line. (2) Y=a977f289 made with `git commit-tree ab26dccc^{tree} -p 31877ad8` has the same tree as a valid deploy commit but not 5d6fb2dc as ancestor. `commands` from a checkout of Y prints the line; `P.checkout_identity(plan)` gives `CalledProcessError ... ['git','merge-base','--is-ancestor','5d6fb2dc...','a977f289...'] returned non-zero exit status 1`. runner.py:212 is before the try block, so no failure receipt is written. (3) With the review commit unavailable and the copy absent from the checkout, `validate_plan(require_review=True)` gives `FileNotFoundError: ... DRYRUN_standin_review_tcn_users_fix_20261120.md`; with the copy tracked it is accepted. release-plan leaves the copy untracked when the review lives outside the branch history: `?? docs/reviews/DRYRUN_standin_review_names_source_only.md`. (4) Re-running the preflight wrapper with the checkout present: '...pose_temponet_20261120 esiste gia': un checkout di campagna non si modifica. Nessuna azione.' exit 2.",
+   "suggested_fix": "No source change. Add a local read-only check to the addendum between steps 3 and 4, with D = deploy SHA (= --checkout-sha = --plan-commit) and C = $TCN_CODE_SHA: `git merge-base --is-ancestor \"$C\" \"$D\"`; `git diff --quiet \"$C\" \"$D\" -- src scripts`; `[ \"$(git show \"$D:$PLAN\" | shasum -a 256 | cut -d' ' -f1)\" = \"$PLAN_SHA256\" ]`; `git cat-file -e \"$D:$TCN_REVIEW_PATH\"`; working tree clean at D; `git ls-remote leonardo` of the deploy ref equals D. State that 5d6fb2dc must enter the operator branch by fast-forward or merge, never cherry-pick, rebase or squash. I ran the first five checks on a valid commit (all ok) and on three bad ones: squash fails the ancestry line, a source-changing descendant fails the diff line, the bare code commit fails the plan and review lines."
+  },
+  {
+   "id": "D-3",
+   "severity": "minor",
+   "title": "The addendum does not say which artifact is passed as --review-commit/--review-path, and the recorded label says Claude",
+   "location": "docs/pose_temponet_execution_20261120.md:23 and :67-74; scripts/pose_temponet/__main__.py:128-132 and :139",
+   "claim": "The addendum says the independent reread is GPT's but does not name the file and commit the operator must pass to release-plan. It also does not say the text must contain the full 40-hex code SHA or the 64-hex source_sha256. release_plan always writes status 'claude_review_converged', so plan and receipts will carry that label for an artifact that in this delivery is either GPT's reread or Claude's own delivery note.",
+   "evidence": "release-plan with a review file naming neither value: `ValueError: operational review must name the full reviewed code SHA or source SHA256`. Naming only 5d6fb2dc... in full, or only 37985d28..., is accepted. __main__.py:139 has the constant `\"status\": \"claude_review_converged\"`. The uncommitted delivery draft says at lines 22-24: 'Non è una review indipendente del diff: il diff è mio ... Questo documento nomina lo SHA completo e il source_sha256 perché release-plan li richiede'.",
+   "suggested_fix": "Name the artifact in the addendum: either GPT's reread file, which must quote 5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba or 37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de in full, or Claude's delivery document with GPT's verdict recorded in the registry. Add that the status string is a fixed schema label, not a statement of who reviewed."
+  },
+  {
+   "id": "D-4",
+   "severity": "minor",
+   "title": "Inherited 19/11 instructions left ambiguous: CPU-model evidence and final accounting",
+   "location": "docs/pose_temponet_execution_20261119.md:126-129 and :218-219; docs/pose_temponet_execution_20261120.md:3-4 and :67",
+   "claim": "The addendum keeps the 19/11 text 'parola per parola'. That includes (a) 'Prima del rilascio l'operatore confronta anche il modello CPU dei due nodi seriali', without saying whether the 10:58 evidence can be cited or new inventory jobs are needed; and (b) the closing 'sacct -X per tutte le 24 allocazioni', although with the first attempt there are 27 allocations and 0.0433 core-hours already spent against the unchanged caps.",
+   "evidence": "cpu_inventory_sacct via release_operator_read.txt: `64931087|COMPLETED|0:0|2|2|login08`, `64931101|COMPLETED|0:0|3|2|login13`; both nodes Xeon Platinum 8358 in operator_checks_release.json. The IDs TCNH-CPU-inventory-login08-20261120 and -login13-20261120 are already in ~/wearusfm_local/jobs. preflight_failure_result.json: total_actual_allocations 3, total_core_hours_including_inventory 0.043333. My arithmetic from the plan resources: the new chain requests 77.0 CPU-only core-hours inclusive of grace (0.5 + 4 + 64 + 8 + 0.5); the first attempt adds 0.043 actual, or 0.767 by requested caps (0.5 + 0.267), still under 80.",
+   "suggested_fix": "Two sentences in the addendum: the CPU-model evidence of jobs 64931087 and 64931101 stays valid and is cited in the new operator evidence, with no new inventory jobs; the final accounting covers 27 allocations and debits the first attempt's 0.0433 core-hours to the same caps."
+  },
+  {
+   "id": "D-5",
+   "severity": "minor",
+   "title": "Local receipt copies for resource-plan must keep their logical names; undocumented, and the first attempt archived the receipt under another name",
+   "location": "scripts/pose_temponet/provenance.py:606-607 and :643-645; docs/pose_temponet_execution_20261119.md:164-170 (step 6)",
+   "claim": "verified_receipt remaps every predecessor pin to <mirror dir>/<basename of the cluster path>. The local copies used by resource-plan and --completed-prerequisites must therefore sit in one folder as <ID>.json, including TCNH-preflight-20261120.json next to the two benchmark receipts. The documents only say 'legge le copie locali', and after the first attempt the operator saved the receipt as preflight_receipt.json. The failure is local and burns no job.",
+   "evidence": "Scratch test on the fixture chain, first three stages run through run_stage: mirror folder with the two benchmark receipts and the preflight receipt saved as preflight_receipt.json gives `R.measured_plan` -> `FileNotFoundError TCNH-preflight-20261120.json`. After copying it under its logical name: measured plan produced, receipt_pins ['TCNH-cpu-benchmark-20261120', 'TCNH-gpu-benchmark-20261120']. 1 passed in 2.95s.",
+   "suggested_fix": "One sentence in the addendum: collect every receipt as <ID>.json in a single folder, alongside any renamed archive copy."
+  },
+  {
+   "id": "D-6",
+   "severity": "note",
+   "title": "The authorization quote is not verifiable in the repository, and the reread assignment is the author's inference",
+   "location": "docs/pose_temponet_execution_20261120.md:19-23",
+   "claim": "The exchange «Autorizzi un nuovo preflight dopo la correzione e la mia rilettura?» / «Sì, autorizzo» appears only in the addendum. The decision for a new attempt (L3-9) is not recorded in docs/decisioni.md or the registry at this commit. The quoted question ties the preflight to 'la mia rilettura', and the diagnosis note has Claude as the rereader; the addendum then assigns the reread to GPT. Confirmation would be a registry or decisioni entry with the verbatim exchange and who asked, plus an explicit statement that GPT's reread satisfies the condition.",
+   "evidence": "`git grep -n -i -E 'Autorizzi un nuovo preflight|fai tu la correzione' 5d6fb2dc -- docs results` returns only lines 20-21 of the addendum; the same search on codex/pose-temponet-launcher-20261120, worktree-claude-training-engine and claude/temponet-db8-20261109 returns nothing. `git show 5d6fb2dc:docs/decisioni.md | grep -c -i -E '...|64931573'` -> 0. docs/reviews/claude_note_pose_temponet_preflight_users_20261120.md:84-85: 'Rileggo solo il diff, senza agenti' and 'Il nuovo tentativo richiede una decisione di Simone (L3-9)'. The second quote, «fai tu la correzione?», matches the request relayed to this workflow.",
+   "suggested_fix": "Before the launch, record the verbatim exchange and the L3-9 decision in the registry and in decisioni.md, and state who rereads and why."
+  },
+  {
+   "id": "D-7",
+   "severity": "note",
+   "title": "'20261120' already names first-attempt artifacts, and the 19/11 examples no longer run from the new sources",
+   "location": "results/infra/pose_temponet_execution_20261119/plan_released_20261120.json; results/infra/pose_temponet_execution_20261119/launcher_preflight_20261120/; ledger IDs TCNH-CPU-inventory-login{08,13}-20261120; docs/pose_temponet_execution_20261119.md:50-51",
+   "claim": "The old released plan, the operator's folder of the failed job and two diagnostic IDs (registered under campagna pose_temponet_20261119) already carry the date 20261120, so the suffix alone does not identify the second delivery. The 19/11 examples that inspect the 20261119 plan fail from the new sources. Every mix-up I tried is refused locally, so this is a readability risk only. The addendum does not name the output path for the new released plan.",
+   "evidence": "`inspect --plan results/infra/pose_temponet_execution_20261119/plan.json` -> `ValueError: reader sources changed`. `commands --plan results/infra/pose_temponet_execution_20261119/plan_released_20261120.json ...` -> `ValueError: reader sources changed`. `commands --plan <new released> --plan-repository-path results/infra/pose_temponet_execution_20261119/plan_released_20261120.json` -> `ValueError: plan has not been committed as declared`. `release-plan --plan results/infra/pose_temponet_execution_20261119/plan.json` with the new code -> `ValueError: reader sources changed`. release-plan onto an existing output path -> `FileExistsError`.",
+   "suggested_fix": "Name the new released plan and the operator folder in the addendum, for example results/infra/pose_temponet_execution_20261120/plan_released.json and .../launcher_preflight/. Commit the banner already drafted at the top of the 19/11 document."
+  },
+  {
+   "id": "D-8",
+   "severity": "note",
+   "title": "release-plan does not check that the operator evidence is new",
+   "location": "scripts/pose_temponet/__main__.py:66-75; docs/pose_temponet_execution_20261120.md:67",
+   "claim": "The addendum asks for a new operator evidence with an updated observed_at, but release-plan only requires a timezone-aware timestamp. The evidence file of the first release, taken before the failed job, is accepted unchanged. The requirement is procedural only.",
+   "evidence": "release-plan on the new plan with --operator-checks results/infra/pose_temponet_execution_20261119/launcher_preflight_20261120/operator_checks_release.json is accepted; the output carries observed_at 2026-11-20T11:01:21+01:00. With those 11:01 numbers the quota gate has 5,805,740,032 bytes (5.407 GiB) of margin: free 44,460,445,696 against 12 GiB + pending 25,769,803,776.",
+   "suggested_fix": "Nothing in code. Keep the instruction, and have the operator write the new evidence to a new file in the 20261120 folder so the old one cannot be passed by habit."
+  }
+ ],
+ "verified_ok": [
+  {
+   "what": "Task 1, release-plan dry run with a stand-in review commit and operator checks",
+   "evidence": "Stand-in review committed as 26e5cc13 (names 5d6fb2dc... in full); operator checks with the seven required keys. `python -m pose_temponet release-plan --plan results/infra/pose_temponet_execution_20261120/plan.json --review-commit 26e5cc13... --review-path docs/reviews/DRYRUN_standin_review_tcn_users_fix_20261120.md --reviewed-code-sha 5d6fb2dc... --operator-checks ... --output .../plan_released_dryrun.json` -> exit 0, 61,665 bytes, sha256 caab963f.... Versus the unreleased plan only these change: reader.code_sha, review.operational.*, status, submission_released, plus operator_checks and operator_evidence added."
+  },
+  {
+   "what": "Task 1, exact generated preflight line (the SHA and plan hash are my stand-in values)",
+   "evidence": "python3 scripts/submit_job.py --id TCNH-preflight-20261120 --agente gpt --campagna pose_temponet_20261120 --gpu-ore 0.0 --script-stdin scripts/slurm/pose_temponet_checkout.sbatch -- --account=IscrB_WearUsFM --partition=lrd_all_serial --nodes=1 --ntasks=1 --cpus-per-task=2 --mem=24G --time=00:12:00 --no-requeue --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261120,EXPECTED_SHA=ab26dccc690dbe3798a3c53f6ce6621857d5ea7b,TCN_PLAN=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/manifests/caab963ff801843cee0086ecb8e77d9716d3c0aebbcaddeb893189ba24a1245c.json,TCN_PLAN_SHA256=caab963ff801843cee0086ecb8e77d9716d3c0aebbcaddeb893189ba24a1245c,TCN_JOB_ID=TCNH-preflight-20261120,CAMPAIGN=pose_temponet_20261120,CAMPAIGN_SHA=ab26dccc690dbe3798a3c53f6ce6621857d5ea7b,TCN_PLAN_COMMIT=ab26dccc690dbe3798a3c53f6ce6621857d5ea7b,TCN_PLAN_REPO_PATH=results/infra/pose_temponet_execution_20261120/plan_released_dryrun.json --output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-preflight-20261120_%j.out --error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-preflight-20261120_%j.out"
+  },
+  {
+   "what": "Task 1, every token of that line",
+   "evidence": "Rebuilt the sbatch argv as scripts/submit_job.py:224 does and compared it with the argv recorded for the accepted job 64931573 (TCNH-preflight-20261119.state.json): 15 tokens each, nine export keys in the same order, zero differences after exactly five substitutions (job ID, campaign, checkout SHA, plan hash, plan repository path). Plan path is under the output root in manifests/<sha256>.json; 2 CPUs, 24G, 00:12:00, lrd_all_serial; logs under wearusfm_runs/logs with the new ID. The checkout wrapper hashes to a33af08ce57ddc32be48d03932a913324a6fc04b77a23336cbcccf56e19085ff, the script_stdin_sha256 recorded for the first submission."
+  },
+  {
+   "what": "Task 1, release_plan source check and checkout_identity with the stand-in descendant",
+   "evidence": "--reviewed-code-sha 31877ad8 (parent) with a review naming the source hash -> `ValueError: source differs from reviewed code: scripts/pose_temponet/execution.py`. A metadata-only descendant as reviewed SHA -> accepted. checkout_identity at HEAD ab26dccc with the released plan -> {'code_sha': 'ab26dccc...', 'reviewed_code_sha': '5d6fb2dc...'}, also with EXPECTED_SHA or WEARUSFM_CODE_SHA set to ab26dccc; a wrong launcher SHA -> 'deployment checkout differs from launcher SHA'. A descendant changing heads.py -> validate_plan 'reader sources changed' and checkout_identity 'deployment sources differ from reviewed manifest'."
+  },
+  {
+   "what": "Task 1, steps that could not be dry-run and what replaced them",
+   "evidence": "Push to origin and the deploy ref on leonardo are forbidden: replaced by a local `git clone --shared --no-checkout` used as fake $WORK/wearusfm. Submission is forbidden: replaced by the argv comparison above. materialize-plan's write and `run` need /leonardo_work: on the Mac they stop at provenance.py:120 with `OSError: [Errno 30] Read-only file system: 'leonardo_work'`; replaced by a relocated-root materialize test and the fixture chain below."
+  },
+  {
+   "what": "Task 2, the preflight wrapper creates the new checkout and reaches the plan write with the old checkout present",
+   "evidence": "In the fake $WORK I first created pose_temponet_20261119 at c531e76c with its own campaign_checkout.sbatch (locked, read-only, 'files: 2212' as in the real log). Then pose_temponet_checkout.sbatch with the generated environment (only the /leonardo_work/IscrB_WearUsFM prefix of WORK and CODE_DIR replaced, stub `module` and venv): plan hash check passed, 'checkout di campagna pronto: .../pose_temponet_20261120 @ ab26dccc...', 'files: 2232', code_dir_setup passed, materialize-plan passed commit, hash, validate_plan(require_review=True) and path equality, and stopped only at the Errno 30 above. pose_temponet_dispatch.sbatch for TCNH-cpu-benchmark-20261120 reached the same point. Reusing the old campaign name is refused with exit 2."
+  },
+  {
+   "what": "Task 2, materialize_plan next to the old manifest",
+   "evidence": "With only OUTPUT_ROOT relocated and the real e3f5b119... manifest and failed receipt seeded: new manifest created (61,665 bytes, mode 0o600), second call idempotent, manifests now ['caab963ff801', 'e3f5b119b19a'], old manifest hash unchanged. Stage dir preflight/ absent and receipts/TCNH-preflight-20261120.json absent, so the run_stage guards at runner.py:218-219 do not fire. Writing onto the old manifest name is refused: 'materialized plan path must be its content hash'."
+  },
+  {
+   "what": "Task 2, the same output root is safe for all 24 stages with the leftovers present",
+   "evidence": "Scratch variant of the e2e chain test with manifests/e3f5b119....json (61,513 bytes) and receipts/TCNH-preflight-20261119.json (5,862 bytes, sha fab87ddf...) seeded before the first stage: 'LEFTOVERS_OK inventory_files=126 receipts=25', '1 passed in 134.90s'. All 24 stages completed through run_stage, both leftovers kept their hashes, and collection/inventory.json lists both. SLURM, numeric census, inputs, preflight details and benchmark receipts are fixtures in that test; the leftover-handling code is the real one. The only directory scans in the package are benchmark.py:382 and :729 (the job's own cost_only folder) and runner.py:386 (collection)."
+  },
+  {
+   "what": "Task 3, ID hygiene",
+   "evidence": "24 IDs, 24 distinct (also case-insensitively), all TCNH-...-20261120, longest 40 characters (TCNH-controls-temporal-TCN_post-20261120). All match execution.job_id's limit (<=64, [A-Za-z0-9._-]+), submit_job.py ID_RE and the provenance regex. No exact or case-insensitive collision with the 882 IDs in ~/wearusfm_local/jobs (directories and ledger.tsv); the only TCNH entries there are the three named in the context. The 80 'after' references all point to new IDs, none contains 20261119. Submit lines for all 24 jobs (in-memory probe with dummy times): 80 --dopo tokens equal to each job's 'after' list, no identity token wrong. The real benchmark lines carry `--dopo TCNH-preflight-20261120`."
+  },
+  {
+   "what": "Task 4, plan comparison leaf by leaf",
+   "evidence": "20261119/plan.json (993 leaves) against 20261120/plan.json (1,048 leaves): 55 added, all producers.{train,val}.storage_directories (40 + 15); 163 changed: jobs[*].id 24, jobs[*].after[*] 80, producers.train.users 40, producers.val.users 15, reader.source_manifest 2 (execution.py, provenance.py), reader.source_sha256 1, execution_sha256 1. Nothing else differs: inputs, proposal, recipe_sha256, resource_policy, numeric_pins, output_root, protocol, review, status and submission_released are identical. New users equal the old ones without the leading 'u'; old users equal the new storage_directories; jobs are identical after the suffix swap. `prepare-plan` from the sources reproduces the committed plan byte for byte (sha256 1e8e2b46...563e, 60,341 bytes)."
+  },
+  {
+   "what": "Task 5, addendum claims that hold",
+   "evidence": "Job 64931573 FAILED 1:0 in 73 s (sacct). Note c2ae0d55... identical at 629fdaed and in the tree. Fixture user hashes equal the operator's independent hashes for both splits (3e05c75e... train, 905ab1a9... val), 40 and 15 users, 1,907 and 18,548 windows. Two of 246 sources changed between 01252b6c and 5d6fb2dc. The three launchers, campaign_checkout.sbatch, lib_code_dir.sh and submit_job.py are byte-identical to the first delivery. Consumers of the user list are benchmark._validate_train, controls.validate_outer_partition and the workflow folds (runner.py:272, 289, 302). 20 TCN test files and the 5 historical ones exist. headers.json confirms float16 [N,160,384], float32 [N,160,20], float64 [18548,148,20], 10 windows of 4 s, seed 20261026, teacher at 49046; the committed check_headers.py reproduces 65 of 65. R-1 tolerance is 1e-12 (metrics.py:185)."
+  },
+  {
+   "what": "A fresh checkout of the new commit will be clean, and tracked copies cover commits absent on the cluster",
+   "evidence": "2,229 files at 5d6fb2dc, no .gitattributes, no CRLF in the 12 files of the fix, no case-insensitive path collisions; the simulated checkout passed campaign_checkout's status and read-only checks. With the commit forced unavailable, the documentary review and both producer receipts are served from their tracked copies with the pinned byte counts."
+  },
+  {
+   "what": "Operator-check file requirements match the documents",
+   "evidence": "`_operator_checks` accepts the complete file and refuses each of the seven keys when missing (work_free_bytes, pending_write_bytes, no_duplicate_jobs, serial_lane_checked, reservations_checked, balance_checked, observed_at), a timestamp without timezone, a float byte count, and free space one byte under 12 GiB plus pending ('WORK quota gate fails')."
+  },
+  {
+   "what": "Extra checks outside the five tasks",
+   "evidence": "The new import in provenance.py loads no module beyond what pose_temponet.data already loads (only 'pose_temponet.provenance' is new in sys.modules). The raw output of the real historical_reference_gate on a fixture contains only builtin types (1 bool, 5 float, 17 int) and passes P.digest, so the preflight receipt path does not depend on runner._plain. 84 tests passed in the five delivery-related TCN test files."
+  }
+ ]
+}

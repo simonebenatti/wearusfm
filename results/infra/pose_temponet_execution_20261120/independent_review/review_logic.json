@@ -1,0 +1,99 @@
+{
+ "summary": "Reviewer LOGIC, commit 5d6fb2dc against 31877ad8: I found no blocking or important defect in the code change; I report three minor points and one note. The uniqueness argument of cache_user holds (0 counterexamples in 25,260 exhaustive and 200,000 random strings), and the 40+15 directories of the real receipts map exactly onto the IDs read independently from the two caches. Every consumer of plan[\"producers\"] is consistent with the new format, old plans are refused by two independent checks (and the old code refuses the new plan), and the new import changes neither the import order nor the numeric context digest. The unpatched preflight body ran end to end on small real-format files carrying the real IDs, receipts, config_json and metadata keys; with the first delivery's content the same files reproduce the 64931573 error. Still decided only by the job: the six details and the R-1 parity on the real arrays, and time and memory of the val read. I worked in my own detached worktrees (all removed) and changed nothing in the author's worktree, whose uncommitted non-source changes made after the commit I did not review.",
+ "findings": [
+  {
+   "id": "L-1",
+   "severity": "minor",
+   "title": "The addendum cites a validation receipt directory that is not in the commit",
+   "location": "docs/pose_temponet_execution_20261120.md:82",
+   "claim": "The document says the receipt of the 20 TCN test files and 5 historical files is in results/infra/pose_temponet_execution_20261120/validation/. That directory does not exist at commit 5d6fb2dc, and was still absent from the working tree at 12:20. A reader doing the short re-read finds a dangling reference.",
+   "evidence": "`git ls-tree -r --name-only 5d6fb2dc -- results/infra/pose_temponet_execution_20261120/` lists only plan.json, real_input_headers/{check_headers.py,check_headers.txt,headers.json,read_headers.py} and validate.py. `git status --short` in the author's worktree at 12:20 shows README.md, meta_stats.json, read_meta_stats.py and a delivery document as untracked, no validation/. The underlying claim is true: in a clean worktree at 5d6fb2dc the 20 TCN files gave `268 passed in 179.18s` and the 5 historical files gave `1 failed, 125 passed`, the failure being the declared baseline test_consolidation_long_common.py::test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned.",
+   "suggested_fix": "Run validate.py with --out on the final commit and commit the validation/ directory, or reword line 82. Neither touches a file of the source manifest, so plan.json and source_sha256 stay as they are."
+  },
+  {
+   "id": "L-2",
+   "severity": "minor",
+   "title": "validate.py accepts a historical run that ends with setup errors",
+   "location": "results/infra/pose_temponet_execution_20261120/validate.py:59-60",
+   "claim": "For the historical group the rule is `result.returncode in (0, 1) and failures in ([], BASELINE_FAILURE)`, where failures come from the regex `^FAILED`. A run with return code 1 caused only by ERROR outcomes (fixture or setup errors) has failures == [] and is recorded as accepted, so no_new_regression can be true with broken historical tests. This is local tooling and does not affect the job.",
+   "evidence": "Demo with a two-test file whose fixture raises: `pytest returncode=1`, summary `1 passed, 1 error in 0.01s`, short summary line `ERROR test_err_demo.py::test_uses_broken_fixture`; applying lines 57-60 to that log gives `failures parsed by validate.py regex: [] | accepted by the 'historical' rule: True`. The runtime group is strict (returncode == 0).",
+   "suggested_fix": "Accept the historical group only when (returncode == 0 and failures == []) or (returncode == 1 and failures == BASELINE_FAILURE and the log has no line starting with `ERROR `)."
+  },
+  {
+   "id": "L-3",
+   "severity": "minor",
+   "title": "No committed test runs the real preflight body; outside the three new tests the suite is still blind to the user format",
+   "location": "tests/cpu/test_pose_temponet_e2e_chain.py:105 and :127; tests/cpu/test_pose_temponet_runner.py:32 and :40; tests/cpu/test_pose_temponet_provenance.py (test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout stubs P.D.read_cache_pin)",
+   "claim": "provenance.preflight is never called unpatched by any test: the e2e chain and the runner tests replace both P.preflight and P.read_verified_inputs and build their caches from the plan's own user list, and the new test stubs D.read_cache_pin. The original bug is detected only by the three new tests. The lines after the fixed comparison (six details, folds, val read, R-1 gate, receipt payload) therefore have no regression guard, although they did run correctly in my manual dry run.",
+   "evidence": "`grep -n \"preflight(\" tests/cpu/test_pose_temponet*.py` returns only the name of the new execution test. Re-introducing the bug in my worktree (`users = sorted(directories)`) and running the 20 TCN files: `3 failed, 265 passed in 200.11s`, the three failures being test_real_producer_users_are_the_ids_stored_in_the_real_caches, test_producer_with_ambiguous_storage_directory_is_refused and test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout. Dry run of the unpatched body at 5d6fb2dc: `preflight returned | integrity: True | R1 passed: True | folds: [20, 20] | supported train windows: 80 | inputs verified: 8`, `non-builtin value types inside the preflight result: [] count 0`, and with users set to directory names `REFUSED ... -> cache user population differs from original producer`.",
+   "suggested_fix": "Port the dry run to a CPU test. Script (rerun with identical output after re-creation): /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/review_logic_preflight_dryrun.py. It writes small caches with historical.save_cache using the real IDs, real config_json and real metadata keys, re-binds only the artifact pin and the six details of the real receipts, builds the plan with build_plan(producer_receipts=...), rebinds only metrics.HISTORICAL_REFERENCE and calls P.preflight unpatched. Tests are outside the source manifest, so adding it changes neither source_sha256 nor plan.json."
+  },
+  {
+   "id": "L-4",
+   "severity": "note",
+   "title": "validate_plan does not bind job IDs to the delivery; a hand-made hybrid plan with the old IDs passes validation",
+   "location": "scripts/pose_temponet/provenance.py:342-345 (execution_identity) and :425-432 (job checks); scripts/pose_temponet/execution.py:77-96 (validate_graph)",
+   "claim": "Old plans as such are refused, but the job list is outside execution_sha256 and neither validate_plan nor validate_graph compares IDs with execution.job_graph(). A plan with the new sources and producers and the first delivery's job list (-20261119) is accepted by both. This predates the diff and no CLI path produces such a plan (prepare-plan always uses job_graph()). For the preflight stage the reuse of the old ID is then stopped only at run time.",
+   "evidence": "Experiment at 5d6fb2dc: `ACCEPTED   new plan with the OLD job list (IDs -20261119)` and `ACCEPTED   validate_graph(old IDs in new plan)`; execution_identity(hybrid) == execution_identity(new plan). Barriers that remain: runner.py:219 `existing stage receipt: do not duplicate or retry` (the operator's failed_job_artifact_pins.json records receipts/TCNH-preflight-20261119.json as existing; I did not read the cluster), the ledger reservation in scripts/submit_job.py (reg.reserve), and for later stages runner.py:236 `apply_training_pack(execution.job_graph(), ...) == plan[\"jobs\"]`. The committed plan is clean: 24 of 24 IDs end in -20261120, intersection with the first delivery's IDs is empty, and there is no collision with the 884 distinct IDs of ~/wearusfm_local/jobs/ledger.tsv.",
+   "suggested_fix": "Nothing needed for this delivery. If a source change is made anyway, a one-line check in the run and commands branches of __main__.py that the plan's job IDs equal those of E.job_graph() would close it; done alone it would force a new plan and a new source_sha256, which is not worth it."
+  }
+ ],
+ "verified_ok": [
+  {
+   "what": "Uniqueness of cache_user: whenever it accepts, the returned ID is the only preimage under \"u\" + _SAFE_RE.sub(\"_\", user)",
+   "evidence": "P._STORAGE_UNSAFE is the same object as wearusfm.ingest.emg2pose._SAFE_RE, pattern `[^0-9A-Za-z_.@-]`, flags 32 (no IGNORECASE). Exhaustive run over a 29-character alphabet (u, U, _, ., @, -, /, space, newline, NUL, accented, dotless i, long s, fullwidth and Arabic digits, combining mark, lone surrogate), lengths 0-3: `enumerated users: 25260 distinct directories: 1464`, `accepted directories: 1110 | accepted with !=1 preimage or wrong ID: 0 | rejected although unique in this enumeration: 1` (the directory \"u\", empty ID). Random run, lengths 1-12: `random users: 200000 | accepted: 95788 | accepted but returned ID != original user: 0 | acceptance differs from 'user in [0-9A-Za-z.@-]+': 0`. Probes: 'uu' -> 'u'; 'u', '', 'u_', 'ua_b', 'u a', 'uabc\\n', 'Uabc', 'u/', Kelvin sign, None, bytes, int, list all refused with ValueError; storage_directory('') refused."
+  },
+  {
+   "what": "The storage rule and the cache ID are the ones of the historical producer",
+   "evidence": "Receipts carry code_sha 7d276c98. `git diff --stat 7d276c98 HEAD` is empty for src/wearusfm/ingest/emg2pose.py, src/wearusfm/harness/pose_eval.py, src/wearusfm/ingest/emg2pose_pose.py and for scripts/consolidation_long_pose.py, tokenizer_pose_readout.py, pose_dynamics.py, pose_e3_b.py, pose_temporal_readout.py. At that commit pose_eval.py:70 builds `u{_SAFE_RE.sub('_', r['user'])}` and pose_eval.py:184 stores `\"user\": rec[\"user\"]`. The regex line has one commit in its history (eee30bfa, 2026-09-30)."
+  },
+  {
+   "what": "Real receipts: every storage directory is accepted and maps one to one",
+   "evidence": "producer_train.json: 1000 file_states, 400 under emg2pose (200 data_int16.npy + 200 metadata.json), 600 under emg2pose_pose, 0 elsewhere; producer_val.json: 9750 = 3900 + 5850. Directories: 40 and 15, `all dirs match u[0-9a-f]{10}: True | any '_' in dir: False`; emg2pose and emg2pose_pose directory sets are equal in both splits; no path has two emg2pose components."
+  },
+  {
+   "what": "The new plan's users are the IDs stored in the real caches, by three independent sources",
+   "evidence": "plan users == fixture users for train and val; fixture == the original read committed at 629fdaed (cache_users.json); headers.json target_reference_train/val metadata users == plan users (40 and 15). Operator's user_format_diagnosis.json: actual_users_sha256 3e05c75e... (train) and 905ab1a9... (val) equal sha256(json.dumps(new plan users)); producer_users_sha256 equals both sha256(new plan storage_directories) and sha256(first released plan users). Train and val lists are disjoint (40, 15)."
+  },
+  {
+   "what": "Every consumer of plan[\"producers\"][split] is consistent with the new format and the new key",
+   "evidence": "grep over scripts/pose_temponet and the launchers: provenance.py:345 (execution_identity hashes the whole entry), :419 (whole entry minus receipt compared with historical_producer), :467-476 (metadata, users, storage_directories, details); runner.py:95 (_development_identity takes the whole val entry), :272, :289, :302 (users as allow-list). Launchers and scripts/submit_job.py do not read producers; outside the package only real_input_headers/check_headers.py:22 does. With a 40-user cache carrying the real IDs: benchmark._validate_train, workflow.prepare_real_folds and controls.validate_outer_partition ACCEPTED with the new list and REFUSED with the first delivery's list (`benchmark population must contain exactly the declared training users`, `train population differs from the allowed users`, `control input contains non-training users`)."
+  },
+  {
+   "what": "Old plans cannot be accepted by the new code, and the new plan cannot be run by the old code",
+   "evidence": "New code: both first-delivery plans -> `ValueError: reader sources changed`; with verify_sources=False, and also after porting the old released plan to the new manifest with a recomputed execution_sha256 -> `historical producer identity was rewritten`. Seven tampered variants of the new plan (users set to directories, key removed, one directory swapped, one user swapped, users reversed, extra key, train/val swapped), each with execution_sha256 recomputed, all refused with the same message. Old code (worktree at c531e76c) x new plan -> `reader sources changed`, and with verify_sources=False -> `historical producer identity was rewritten`. verify_sources=False has no caller in scripts/, src/ or tests/."
+  },
+  {
+   "what": "No path reads a cache without the new checks",
+   "evidence": "D.read_cache_pin is called only at provenance.py:468; read_verified_inputs is called at runner.py:269, 283, 301, 327, 348 and provenance.py:486, 492. The other np.load/torch.load sites read predictions, own artifacts or a self-written cost proxy (benchmark.py:625). All seven CLI subcommands go through load_plan or validate_plan."
+  },
+  {
+   "what": "The new import changes neither import order nor numeric context, and creates no cycle",
+   "evidence": "data.py:10 imports consolidation_long_pose, whose line 19 imports wearusfm.harness.pose_eval at module level; provenance.py:22 imports data before line 25. Start-order trace with a meta-path hook and PYTHONHASHSEED=0, importing execution and provenance as __main__.py:14 does: 1752 entries, byte-identical with and without the line (pose_temponet.heads at 5, torch 14, numpy 71, provenance 1061, data 1062, consolidation_long_pose 1063, pose_eval 1323). In three entry modes (main, runner, provenance only) the sys.modules set (2448, 2458, 2445 modules) and numeric_context digest (4052af4f...) are identical with and without it. Nothing under src/ or scripts/*.py imports pose_temponet; the wearusfm package __init__ files are empty; pyproject.toml has no isort/ruff/black section. pose_eval.py and ingest/emg2pose.py are in the plan's source manifest."
+  },
+  {
+   "what": "The committed plan is exactly what the committed sources produce, and the declared invariants hold",
+   "evidence": "prepare-plan in a clean worktree at 5d6fb2dc: output byte-identical to results/infra/pose_temponet_execution_20261120/plan.json (sha256 1e8e2b46b046072c706738995e745f608f009d33406d970729a3eb22a73f563e, 60341 bytes). `git archive 5d6fb2dc -- <manifest>` reproduces all 246 manifest hashes; source_sha256 37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de. Against the first released plan: 2 of 246 sources changed (execution.py, provenance.py); job graph identical apart from the suffix; recipe_sha256, inputs, proposal, output_root, resource_policy identical; producers differ only in users and the added storage_directories; execution_sha256 6e025927... -> 4d65d94c.... Receipt pins equal the constants in provenance.py and the committed local copies hash to them."
+  },
+  {
+   "what": "Second-delivery identity: no stale date and no ID collision",
+   "evidence": "grep finds 20261119 in the package only in a comment (execution.py:10) and in review/evidence paths (provenance.py:34-44); none in the launchers or submit_job.py. Preflight argv from E.submit_command: --id TCNH-preflight-20261120, --campagna pose_temponet_20261120, CODE_DIR and CAMPAIGN on the new path, receipt path receipts/TCNH-preflight-20261120.json. Ledger has exactly three TCNH IDs (the two CPU inventories and TCNH-preflight-20261119); intersection with the 24 new IDs is empty."
+  },
+  {
+   "what": "The new tests kill every mutation of the new logic that I tried",
+   "evidence": "At 5d6fb2dc: test_pose_temponet_provenance.py + test_pose_temponet_execution.py `31 passed in 8.72s`; the 20 TCN files `268 passed in 179.18s`. 15 single-line mutants (original bug; storage check dropped; '_' allowed; round trip dropped; key omitted; DELIVERY, job_id and CAMPAIGN back to 20261119; users check dropped; re.match instead of fullmatch; empty ID accepted in either function; '-' as replacement; upper-case prefix; cache IDs stripped of 'u'): each makes 1 to 3 tests of those two files fail."
+  },
+  {
+   "what": "Unpatched preflight and read_verified_inputs on real-format files with real identities",
+   "evidence": "Small caches written with historical.save_cache using the 40+15 real IDs, the real config_json from headers.json, the real nine metadata keys, and the real receipts with only the artifact pin and six details re-bound; plan built by build_plan; only metrics.HISTORICAL_REFERENCE rebound. Output: `plan built by the real build_plan/validate_plan | train users == fixture: True | val: True`; `preflight returned | integrity: True | R1 passed: True | folds: [20, 20] | supported train windows: 80 | inputs verified: 8`; `receipt payload serializes with provenance.canonical_bytes: 5758 bytes`; one storage directory replaced -> `cache users do not map onto the producer storage directories`; each of the six details changed -> `historical cache details changed: <key>`. Array values and sizes are synthetic, so this says nothing about the real hashes, parity, time or memory."
+  },
+  {
+   "what": "The six details comparisons right after the fixed line recompute what the receipt recorded",
+   "evidence": "consolidation_long_pose_runtime.py:135-136 computed the receipt details as validate_cache(read_cache(path, reference, selection), ...) on the re-read file; the preflight calls the same functions (files identical to commit 7d276c98) on a cache pinned by sha256. validate_cache returns exactly the six compared keys with str/int values (consolidation_long_pose.py:154-156), matching the receipt's details structure. Not executed on the real arrays."
+  },
+  {
+   "what": "Documentation and comments of the diff match the code and the records",
+   "evidence": "sacct record `64931573|FAILED|1:0|73|2|login13|`; the note cited in the addendum is in the tree and identical to 629fdaed; check_headers.py rerun at the commit: 65 checks, 65 passed; comments at provenance.py:23-24, 272-276, 282-287, 310-311 and execution.py:10-11 agree with what I measured; the fixture is tracked, not ignored, and its IDs were already in files committed before this change (25 occurrences of u03d49b393e in producer_train.json at 31877ad8)."
+  }
+ ]
+}
