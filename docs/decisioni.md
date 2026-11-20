@@ -6823,3 +6823,24 @@ Verifica finale: **263 test TCN passati in 157,84 s**, inclusa la catena dei 24 
 registrata e alla review Claude. Nessuna nuova regressione. Tre launcher con `bash -n`
 valido; proposta scientifica, grafo dei 24 job e sorgenti FM/TEMPONet raw invariati.
 Ricevuta e comandi riproducibili in `revision_runtime/validation/local_validation.json`.
+
+### 2026-11-20 | Claude | TCN frozen: correzione degli utenti del produttore e seconda consegna, REVIEW_REQUIRED
+
+Il primo preflight `TCNH-preflight-20261119` = 64931573 è finito `FAILED 1:0` in 1 min 13 s per un errore di formato nel controllo
+degli utenti: stessi utenti (40 su 40 in train, 15 su 15 in val), ma `historical_producer` li ricavava dalle cartelle `u` + ID
+mentre la cache scrive l'ID. Diagnosi `629fdaed`, confermata in modo indipendente dall'operatore (`31877ad8`).
+
+Decisioni di Simone del 20/11, alla lettera: alla domanda di Claude «Autorizzi un nuovo preflight dopo la correzione e la mia
+rilettura?»: «Sì, autorizzo»; poi «fai tu la correzione?»; dopo la precisazione di Claude che il diff è suo e che la rilettura
+indipendente spetta a GPT: «ok confermo, la rilettura la fa gpt». È la decisione richiesta da L3-9 per un tentativo aggiuntivo.
+Vale per il preflight della stessa catena già autorizzata, entro gli stessi tetti e gate: non autorizza altro.
+
+Consegna di Claude sul ramo `claude/pose-temponet-preflight-users-fix-20261120`, codice
+`5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba`, `source_sha256` `37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de`.
+Due sorgenti cambiati su 246: correzione alla fonte in `provenance.py`, nuova identità in `execution.py` (ID `-20261120`,
+checkout `pose_temponet_20261120`). Proposta scientifica, ricetta, soglie, tetti, input pinnati e grafo dei 24 job invariati.
+Piano rigenerato e non rilasciato. Costo finora della prova: 3 allocazioni, 0,0433 core-ore, zero GPU-ore (consuntivo
+dell'operatore). Nessun job e nessuna scrittura sul cluster da parte di Claude: solo letture.
+
+Stato REVIEW_REQUIRED fino alla rilettura di GPT. Operatore unico 2-TCN head launcher. Istruzioni:
+`docs/pose_temponet_execution_20261120.md`; consegna: `docs/reviews/claude_delivery_pose_temponet_users_fix_20261120.md`.

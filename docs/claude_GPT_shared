@@ -6099,6 +6099,30 @@ Teste, controlli positivi y/y*, WLS/ridge, selezione paired-fold, rifit e lock q
 Verifica finale: 204 test nuovi passati (35,35 s), 125 storici passati; un'asserzione storica sullo stato non ancora rivisto del vecchio piano lungo fallisce anche sull'export isolato della base. Evidenza in `results/infra/pose_temponet_execution_20261119/baseline_failure.json`; nessuna modifica alla campagna chiusa per nasconderla. Shell syntax e diff check puliti. Prove indipendenti su WLS/ridge e IC dai dati grezzi; parità bit-identica della TCN fra storage host FP16 e precedente FP32 a tre update. I gate sui dati veri restano da eseguire.
 Tetti 24 GPUh, 80 coreh CPU-only, 272 coreh totali invariati; walltime dei 16 gruppi neurali non dichiarati prima del benchmark. Solo l'operatore `2-TCN head launcher` eseguirà la catena dopo review favorevole/gate; contatto con Claude tramite Simone. Prompt e prontuario operativi nel ramo. Il pin successivo lega commit e hash dei contenuti.
 
+### 2026-11-20 | Claude | TCN frozen: correzione degli utenti del produttore e seconda consegna, REVIEW_REQUIRED (nessun job) | Ramo `claude/pose-temponet-preflight-users-fix-20261120`
+
+- Incarico di Simone del 20/11, alla lettera: alla mia domanda «Autorizzi un nuovo preflight dopo la correzione e la mia
+  rilettura?» ha risposto «Sì, autorizzo»; poi «fai tu la correzione?»; quando ho scritto che il diff è mio e che la rilettura
+  indipendente spetta a GPT: «ok confermo, la rilettura la fa gpt». Il nuovo tentativo è la decisione richiesta da L3-9.
+- Base: punta dell'operatore `31877ad85c619ec69214cd5e9fb53df50e452148`. Codice `5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba`,
+  `source_sha256` `37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de`, 246 sorgenti di cui due cambiati.
+- Correzione alla fonte in `scripts/pose_temponet/provenance.py`: `historical_producer` restituisce in `users` gli ID come li
+  scrive la cache e conserva le cartelle `u` + ID in `storage_directories`; `read_verified_inputs` verifica entrambi.
+  `cache_user` accetta solo cartelle da cui l'ID si ricava in modo unico.
+- Nuova identità in `scripts/pose_temponet/execution.py`: ID con suffisso `-20261120`, campagna e checkout
+  `pose_temponet_20261120`. Stessa radice degli output: la cartella `preflight/` non esiste, la ricevuta fallita resta come traccia.
+- Piano rigenerato e non rilasciato: `results/infra/pose_temponet_execution_20261120/plan.json`. Proposta, ricetta, input e grafo
+  dei 24 job invariati, a parte il suffisso degli ID.
+- Verifiche: 271 test passati su 271 nei 21 file TCN; 125 passati e 1 fallito nei 5 file storici, con lo stesso fallimento
+  della base; otto
+  mutazioni di prova, tutte fermate dai test nuovi; 93 controlli su 93 sui file veri, letti in sola lettura su Leonardo senza
+  aprire gli array interi.
+- Review indipendente del commit `5d6fb2dc`: LOGIC e DELIVERY conclusi, nessun blocco e nessuna richiesta sui sorgenti; i loro
+  punti sui documenti sono applicati. REAL-DATA e TESTS fermati prima della fine per la pausa chiesta da Simone, senza esito.
+- Seguito: GPT rilegge il diff; poi l'operatore 2-TCN head launcher rilascia, pubblica il deploy e invia
+  `TCNH-preflight-20261120`. Documenti: `docs/reviews/claude_delivery_pose_temponet_users_fix_20261120.md` e
+  `docs/pose_temponet_execution_20261120.md`. Nessun lancio e nessuna scrittura sul cluster da parte mia.
+
 ## 2) Problemi trovati
 
 ### 2026-11-20 | GPT launcher TCN | Difetto runtime confermato di formato utenti, nessuna differenza di popolazione
@@ -9042,3 +9066,19 @@ Review effettiva `ad9f5141`: BL-1…3, OB-1…5 e sei minori chiusi. I tre ritoc
 
 Risolti durante l'integrazione: storage host FP32 non necessario; finestre con supporto centrale vuoto gestite dal benchmark come dal fitting; memoria simultanea dei pattern WLS proiettata prima delle allocazioni; attraversamento ripetuto delle ricevute evitato senza perdere i controlli di ciclo/hash/stato. Fixture delle ricevute aggiornate al controllo effettivo del commit, senza allentare la guardia produttiva. Tutti i 204 test nuovi verdi.
 Un failure storico riprodotto sulla base: `test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned` attende ancora un rifiuto Claude su un piano già convergente. Non è una regressione TCN; test e programma storici invariati. Nessuna prova locale certifica velocità A100, controlli positivi sulle cache o vantaggio scientifico: review operativa e gate reali restano necessari.
+
+### 2026-11-20 | Claude | Seconda consegna TCN: punti aperti per chi rilegge e per l'operatore
+
+- Il diff è mio: il documento di consegna nomina SHA e `source_sha256` per `release-plan`, ma la review indipendente è la
+  rilettura di GPT. L'etichetta `claude_review_converged` del piano rilasciato è un nome fisso dello schema.
+- `commands` accetta qualsiasi `--checkout-sha` di 40 cifre: un commit di deploy che non discende da `5d6fb2dc`, o senza piano
+  rilasciato e copia della review, verrebbe rifiutato solo dentro il job, dopo aver consumato ID e checkout. Per questo le
+  istruzioni del 20/11 hanno un controllo locale in sei righe prima dell'invio. Il codice non cambia.
+- `benchmark._report_measurement` usa la prima finestra dei primi 15 utenti in ordine. Sui dati veri quelle finestre hanno posa
+  valida (letto in sola lettura); in train 53 finestre su 1.907 non ne hanno, e l'utente `76bfc2d385`, diciannovesimo, ha la
+  prima finestra vuota. Limite noto, non corretto in questa consegna.
+- `validate_plan` non lega gli ID dei job alla consegna. Nessun comando produce un piano ibrido.
+- Restano da vedere solo nel job: digest degli array, parità R-1 a 1e-12, tempo e memoria della lettura di val.
+- La data `20261120` compare già in tre oggetti del primo tentativo (vecchio piano rilasciato, cartella
+  `launcher_preflight_20261120`, due ID di inventario): per la seconda consegna fa fede la cartella
+  `results/infra/pose_temponet_execution_20261120/`.

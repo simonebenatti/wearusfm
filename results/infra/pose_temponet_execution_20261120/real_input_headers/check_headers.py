@@ -67,6 +67,18 @@ for split, windows, people in (("train", 1907, 40), ("val", 18548, 15)):
     # One of the three "targets" digests that the preflight compares with the producer receipt depends on metadata only.
     check(split+": real metadata digest equals details.targets.metadata of the producer receipt",
           stats["cache_"+split]["meta_canonical_sha256"] == plan["producers"][split]["details"]["targets"]["metadata"])
+# Pose support of the train cache (train_support.json). benchmark._report_measurement builds its cost surrogate from the
+# FIRST window of each of the first fifteen sorted training users: those windows must carry valid pose.
+support = json.loads((HERE/"train_support.json").read_text())
+surrogate = support["first_15_sorted_users"]
+check("train: mask geometry 1907x160x20 and metadata grouped by user", support["shape"] == [1907, 160, 20] and
+      support["meta_in_user_order"] is True)
+check("train: the fifteen surrogate users are the first fifteen sorted cache users",
+      [row["user"] for row in surrogate] == users["train"]["users"][:15])
+check("train: every surrogate first window has central support on all twenty joints",
+      all(row["supported"] > 0 and row["joints_with_2"] == 20 for row in surrogate))
+check("train: windows without central support are counted, not assumed absent",
+      support["windows_with_central_support"] + support["windows_without_central_support"] == 1907)
 failed = [name for name, passed in checks if not passed]
 print(json.dumps({"checks": len(checks), "passed": len(checks)-len(failed), "failed": failed}, indent=1))
 sys.exit(1 if failed else 0)

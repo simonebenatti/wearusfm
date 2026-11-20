@@ -1,0 +1,219 @@
+{
+ "description": "Real config_json and metadata key layout of the two pinned historical pose caches (frozen T100-G teacher, step 49046).",
+ "metadata_keys": [
+  "fs",
+  "n_patches",
+  "recording",
+  "session",
+  "side",
+  "stage",
+  "start",
+  "stem",
+  "user"
+ ],
+ "read": {
+  "evidence": "results/infra/pose_temponet_execution_20261120/real_input_headers/headers.json",
+  "how": "read-only on Leonardo: npy headers and the config_json/meta_json members, with zipfile and without numpy",
+  "when": "2026-11-20"
+ },
+ "train": {
+  "config": {
+   "checkpoint": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt",
+   "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+   "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+   "checkpoint_step": 49046,
+   "code_sha": "7d276c98fc54d66dab1226226eb6c5e447422c69",
+   "n_windows": 10,
+   "per_side": false,
+   "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+   "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+   "seed": 20261026,
+   "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+   "split": "train",
+   "which": "teacher",
+   "window_s": 4.0
+  },
+  "members": {
+   "config_json": {
+    "descr": "<U780",
+    "shape": []
+   },
+   "dim": {
+    "descr": "<i8",
+    "shape": []
+   },
+   "has_head": {
+    "descr": "|b1",
+    "shape": []
+   },
+   "key_time_valid": {
+    "descr": "|b1",
+    "shape": [
+     1907,
+     160
+    ]
+   },
+   "lat": {
+    "descr": "<f2",
+    "shape": [
+     1907,
+     160,
+     384
+    ]
+   },
+   "mask": {
+    "descr": "|b1",
+    "shape": [
+     1907,
+     160,
+     20
+    ]
+   },
+   "meta_json": {
+    "descr": "<U552267",
+    "shape": []
+   },
+   "n_recordings": {
+    "descr": "<i8",
+    "shape": []
+   },
+   "pose_var": {
+    "descr": "<f4",
+    "shape": [
+     1907
+    ]
+   },
+   "pre": {
+    "descr": "<f2",
+    "shape": [
+     1907,
+     160,
+     384
+    ]
+   },
+   "pred": {
+    "descr": "<f4",
+    "shape": [
+     1907,
+     160,
+     20
+    ]
+   },
+   "std": {
+    "descr": "<f4",
+    "shape": [
+     1907,
+     20
+    ]
+   },
+   "target": {
+    "descr": "<f4",
+    "shape": [
+     1907,
+     160,
+     20
+    ]
+   }
+  }
+ },
+ "val": {
+  "config": {
+   "checkpoint": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt",
+   "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+   "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+   "checkpoint_step": 49046,
+   "code_sha": "7d276c98fc54d66dab1226226eb6c5e447422c69",
+   "n_windows": 10,
+   "per_side": false,
+   "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+   "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+   "seed": 20261026,
+   "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+   "split": "val",
+   "which": "teacher",
+   "window_s": 4.0
+  },
+  "members": {
+   "config_json": {
+    "descr": "<U778",
+    "shape": []
+   },
+   "dim": {
+    "descr": "<i8",
+    "shape": []
+   },
+   "has_head": {
+    "descr": "|b1",
+    "shape": []
+   },
+   "key_time_valid": {
+    "descr": "|b1",
+    "shape": [
+     18548,
+     160
+    ]
+   },
+   "lat": {
+    "descr": "<f2",
+    "shape": [
+     18548,
+     160,
+     384
+    ]
+   },
+   "mask": {
+    "descr": "|b1",
+    "shape": [
+     18548,
+     160,
+     20
+    ]
+   },
+   "meta_json": {
+    "descr": "<U5374666",
+    "shape": []
+   },
+   "n_recordings": {
+    "descr": "<i8",
+    "shape": []
+   },
+   "pose_var": {
+    "descr": "<f4",
+    "shape": [
+     18548
+    ]
+   },
+   "pre": {
+    "descr": "<f2",
+    "shape": [
+     18548,
+     160,
+     384
+    ]
+   },
+   "pred": {
+    "descr": "<f4",
+    "shape": [
+     18548,
+     160,
+     20
+    ]
+   },
+   "std": {
+    "descr": "<f4",
+    "shape": [
+     18548,
+     20
+    ]
+   },
+   "target": {
+    "descr": "<f4",
+    "shape": [
+     18548,
+     160,
+     20
+    ]
+   }
+  }
+ }
+}

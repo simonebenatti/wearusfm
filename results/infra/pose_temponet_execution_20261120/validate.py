@@ -1,6 +1,6 @@
 """Local checks of the second TCN delivery (20/11/2026). No cluster calls, no job.
 
-Runs the 20 TCN test files and the 5 historical pose files, checks that the
+Runs every TCN test file and the 5 historical pose files, checks that the
 committed plan is exactly what prepare-plan derives from the current sources,
 and writes the logs with a small receipt. Same layout as revision_runtime/validate.py
 of the first delivery.
@@ -56,10 +56,14 @@ def main():
         text = log.read_text()
         failures = re.findall(r"^FAILED (.+?)(?: - |$)", text, re.M)
         summary = re.findall(r"^(?:=+ )?(.*(?:passed|failed).* in [0-9.]+s.*?)(?: =+)?$", text, re.M)
-        accepted = (result.returncode == 0 if name == "runtime"
-                    else result.returncode in (0, 1) and failures in ([], BASELINE_FAILURE))
+        errors = re.findall(r"^ERROR (.+?)(?: - |$)", text, re.M)
+        if name == "runtime":
+            accepted = result.returncode == 0 and not failures and not errors
+        else:  # the historical group may only show the failure already present on the reviewed baseline
+            accepted = not errors and ((result.returncode == 0 and not failures) or
+                                       (result.returncode == 1 and failures == BASELINE_FAILURE))
         runs.append({"name": name, "command": command, "returncode": result.returncode,
-                     "elapsed_s": time.monotonic()-started, "log": pin(log), "failures": failures,
+                     "elapsed_s": time.monotonic()-started, "log": pin(log), "failures": failures, "errors": errors,
                      "summary": summary[-1] if summary else None,
                      "expected_baseline_failure_only": name == "historical" and failures == BASELINE_FAILURE,
                      "accepted": accepted})

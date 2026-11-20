@@ -1,0 +1,104 @@
+[
+ {
+  "mutation": "none (baseline)",
+  "returncode": 0,
+  "failed": [],
+  "summary": "31 passed in 7.02s"
+ },
+ {
+  "mutation": "a: historical_producer returns the directory names (first delivery behaviour)",
+  "returncode": 1,
+  "failed": [
+   "test_producer_with_ambiguous_storage_directory_is_refused",
+   "test_real_producer_users_are_the_ids_stored_in_the_real_caches",
+   "test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout"
+  ],
+  "summary": "3 failed, 28 passed in 7.28s",
+  "caught": true
+ },
+ {
+  "mutation": "b: second check of read_verified_inputs removed",
+  "returncode": 1,
+  "failed": [
+   "test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout"
+  ],
+  "summary": "1 failed, 30 passed in 7.02s",
+  "caught": true
+ },
+ {
+  "mutation": "c: cache_user strips the first character without any check",
+  "returncode": 1,
+  "failed": [
+   "test_producer_with_ambiguous_storage_directory_is_refused",
+   "test_storage_directory_maps_back_only_where_the_id_is_unique"
+  ],
+  "summary": "2 failed, 29 passed in 7.21s",
+  "caught": true
+ },
+ {
+  "mutation": "d: delivery identity back to 20261119",
+  "returncode": 1,
+  "failed": [
+   "test_second_delivery_never_reuses_the_identity_of_the_failed_first_preflight"
+  ],
+  "summary": "1 failed, 30 passed in 7.16s",
+  "caught": true
+ },
+ {
+  "mutation": "e: storage_directory forgets the u prefix",
+  "returncode": 1,
+  "failed": [
+   "test_each_source_category_and_launcher_enters_new_reader_identity",
+   "test_explicit_review_binds_actual_artifact_and_source_without_fake_documentary_code",
+   "test_forged_receipt_even_with_recomputed_payload_digest_is_rejected[chain]",
+   "test_forged_receipt_even_with_recomputed_payload_digest_is_rejected[code]",
+   "test_forged_receipt_even_with_recomputed_payload_digest_is_rejected[job]",
+   "test_forged_receipt_even_with_recomputed_payload_digest_is_rejected[payload]",
+   "test_forged_receipt_even_with_recomputed_payload_digest_is_rejected[stage]",
+   "test_metadata_descendant_records_both_shas_but_source_archive_must_match",
+   "test_numerical_context_checked_before_fit_and_failed_receipt_can_preserve_mismatch",
+   "test_producer_with_ambiguous_storage_directory_is_refused",
+   "test_real_original_producers_and_documentary_review_remain_distinct_from_reader",
+   "test_real_producer_users_are_the_ids_stored_in_the_real_caches",
+   "test_receipts_link_fixed_code_numeric_context_and_complete_predecessors",
+   "test_rewriting_historical_metadata_or_scientific_pins_fails[identity]",
+   "test_rewriting_historical_metadata_or_scientific_pins_fails[input]",
+   "test_rewriting_historical_metadata_or_scientific_pins_fails[producer]",
+   "test_rewriting_historical_metadata_or_scientific_pins_fails[recipe]",
+   "test_rewriting_historical_metadata_or_scientific_pins_fails[resource]",
+   "test_storage_directory_maps_back_only_where_the_id_is_unique",
+   "test_train_only_stages_never_open_or_verify_validation",
+   "test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout"
+  ],
+  "summary": "1 failed, 10 passed, 20 errors in 2.71s",
+  "caught": true
+ },
+ {
+  "mutation": "f: first check of read_verified_inputs removed",
+  "returncode": 1,
+  "failed": [
+   "test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout"
+  ],
+  "summary": "1 failed, 30 passed in 7.48s",
+  "caught": true
+ },
+ {
+  "mutation": "g: cache_user accepts an underscore",
+  "returncode": 1,
+  "failed": [
+   "test_producer_with_ambiguous_storage_directory_is_refused",
+   "test_storage_directory_maps_back_only_where_the_id_is_unique"
+  ],
+  "summary": "2 failed, 29 passed in 6.90s",
+  "caught": true
+ },
+ {
+  "mutation": "h: round-trip check of cache_user removed",
+  "returncode": 1,
+  "failed": [
+   "test_storage_directory_maps_back_only_where_the_id_is_unique"
+  ],
+  "summary": "1 failed, 30 passed in 7.20s",
+  "caught": true
+ }
+]

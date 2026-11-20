@@ -1,0 +1,60 @@
+{
+  "status": "REVIEW_REQUIRED",
+  "delivery": "second delivery after the failed preflight TCNH-preflight-20261119 = 64931573",
+  "code_commit": "5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba",
+  "base_commit": "31877ad85c619ec69214cd5e9fb53df50e452148",
+  "first_delivery_reviewed_code": "01252b6c3023c49046b312e003b7915d8f3f6119",
+  "first_delivery_review_commit": "85f0d62159d0ac5337857540a14466b3875bebf1",
+  "source_sha256": "37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de",
+  "sources": 246,
+  "sources_changed_since_first_delivery": [
+    "scripts/pose_temponet/execution.py",
+    "scripts/pose_temponet/provenance.py"
+  ],
+  "plan": {
+    "path": "results/infra/pose_temponet_execution_20261120/plan.json",
+    "sha256": "1e8e2b46b046072c706738995e745f608f009d33406d970729a3eb22a73f563e",
+    "bytes": 60341
+  },
+  "local_validation": {
+    "path": "results/infra/pose_temponet_execution_20261120/validation/local_validation.json",
+    "sha256": "1e8a325c51b5a48e796c77baee059878643163cc8b8d97bf04019496b4901491",
+    "bytes": 8681
+  },
+  "real_input_checks": {
+    "path": "results/infra/pose_temponet_execution_20261120/real_input_headers/check_headers.txt",
+    "sha256": "4cef70f71b37eee0c40d23fa1317e38c885b62fb38e5caf43b4f5e8cd1fa6052",
+    "bytes": 48
+  },
+  "mutation_check": {
+    "path": "results/infra/pose_temponet_execution_20261120/mutation_check/mutations.json",
+    "sha256": "a4ba94622bbcb780ce44084d3c23d4ad4dc196f7660eee34e139281457559e87",
+    "bytes": 3880
+  },
+  "delivery_document": {
+    "path": "docs/reviews/claude_delivery_pose_temponet_users_fix_20261120.md",
+    "sha256": "aedc74923e1b9ebe3afc34373db97dab202cbca84676d2f1674ae5ff6b10f657",
+    "bytes": 7522
+  },
+  "operator_instructions": {
+    "path": "docs/pose_temponet_execution_20261120.md",
+    "sha256": "208340c8c67f2243a92bfdfb895862a41ffd415e112e2e8112a2024c50bf19c2",
+    "bytes": 12928
+  },
+  "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+  "runtime_tests_passed": 271,
+  "runtime_test_files": 21,
+  "historical_tests_passed": 125,
+  "historical_tests_failed_preexisting": 1,
+  "mutations_caught": 8,
+  "mutations_total": 8,
+  "real_input_checks_passed": 93,
+  "real_input_checks_total": 93,
+  "diff_command": "git diff 31877ad85c619ec69214cd5e9fb53df50e452148 <tip of claude/pose-temponet-preflight-users-fix-20261120>",
+  "author_of_the_fix": "Claude, on Simone's explicit request of 2026-11-20",
+  "independent_reread": "GPT (confirmed by Simone on 2026-11-20)",
+  "operator": "2-TCN head launcher",
+  "no_jobs": true,
+  "no_remote_writes": true,
+  "remote_reads_only": true
+}

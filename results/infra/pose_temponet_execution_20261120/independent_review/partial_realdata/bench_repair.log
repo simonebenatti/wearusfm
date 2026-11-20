@@ -1,0 +1,15 @@
+first windows of the 15 surrogate users with support: [True, True, True, True, False, True, True, True, True, True, True, True, True, True, True]
+gave valid pose to the first window of 1223558697
+benchmark_cpu OK: measured True | elapsed s 372.4 | fold projections s [952.4, 1026.3] | report projection s 129.0 | peak RSS GiB 2.0 | projected peak GiB 4.18 | strict JSON bytes 56008
+  fold 0 generator s 3.4 scan s 0.4
+     outer context 0 dim 384 joints 20 blocks 3 of 30 | qr s [0.1, 0.1, 0.1] | solves s 0.1 | projected s 18.3
+     outer context 6 dim 4992 joints 20 blocks 4 of 30 | qr s [6.9, 20.1, 22.0, 21.0] | solves s 98.6 | projected s 895.0
+     inner context 0 dim 384 joints 20 blocks 3 of 15 | qr s [0.1, 0.1, 0.1] | solves s 0.1 | projected s 10.3
+     inner context 0 dim 384 joints 20 blocks 3 of 15 | qr s [0.1, 0.1, 0.1] | solves s 0.1 | projected s 10.4
+  fold 1 generator s 4.0 scan s 0.4
+     outer context 0 dim 384 joints 20 blocks 3 of 30 | qr s [0.1, 0.1, 0.1] | solves s 0.2 | projected s 23.6
+     outer context 6 dim 4992 joints 20 blocks 4 of 30 | qr s [9.0, 23.3, 22.7, 24.3] | solves s 102.8 | projected s 963.8
+     inner context 0 dim 384 joints 20 blocks 3 of 15 | qr s [0.1, 0.1, 0.1] | solves s 0.1 | projected s 10.0
+     inner context 0 dim 384 joints 20 blocks 3 of 15 | qr s [0.1, 0.1, 0.1] | solves s 0.1 | projected s 9.9
+  report: {'moment_seconds': 0.47, 'moment_windows': 1907, 'report_cells': 17, 'batch_windows': 32, 'historical_R1_evaluations': 2, 'historical_R1_seconds': 0.33, 'prediction_read_seconds': 0.09, 'prediction_read_bytes': 18910356, 'input_io_projection_seconds': 47.14, 'input_io_is_train_only_projection': True, 'bootstrap_seconds': 0.27, 'bootstrap_replicates': 2000, 'serialization_seconds': 0.0, 'serialization_bytes': 795234, 'projected_seconds': 129.03, 'train_only_surrogate': True}
+process peak RSS GiB: 2.0

@@ -1,0 +1,178 @@
+{
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train/train.npz",
+    "shape": [
+        1907,
+        160,
+        20
+    ],
+    "central_patches": 148,
+    "windows_with_central_support": 1854,
+    "windows_without_central_support": 53,
+    "windows_with_a_joint_of_two_centres": 1852,
+    "windows_with_empty_full_mask": 53,
+    "first_15_sorted_users": [
+        {
+            "user": "03d49b393e",
+            "first_index": 0,
+            "supported": 2960,
+            "max_joint": 148,
+            "joints_with_2": 20,
+            "full_mask": 3160,
+            "start": 800,
+            "stage": "WristFlexionAbduction"
+        },
+        {
+            "user": "055bb1b487",
+            "first_index": 50,
+            "supported": 2960,
+            "max_joint": 148,
+            "joints_with_2": 20,
+            "full_mask": 3200,
+            "start": 6400,
+            "stage": "OneHandedFreeStyle"
+        },
+        {
+            "user": "06d17ebbe4",
+            "first_index": 76,
+            "supported": 2960,
+            "max_joint": 148,
+            "joints_with_2": 20,
+            "full_mask": 3200,
+            "start": 2400,
+            "stage": "HandClawGraspFlicks"
+        },
+        {
+            "user": "1066cc94fc",
+            "first_index": 126,
+            "supported": 2960,
+            "max_joint": 148,
+            "joints_with_2": 20,
+            "full_mask": 3200,
+            "start": 3600,
+            "stage": "FingerPinchesSingleFingerPinchesMultiple"
+        },
+        {
+            "user": "1223558697",
+            "first_index": 176,
+            "supported": 2280,
+            "max_joint": 114,
+            "joints_with_2": 20,
+            "full_mask": 2520,
+            "start": 16800,
+            "stage": "TwoHandedFreeStyle"
+        },
+        {
+            "user": "2cc385c3cd",
+            "first_index": 226,
+            "supported": 2960,
+            "max_joint": 148,
+            "joints_with_2": 20,
+            "full_mask": 3200,
+            "start": 800,
+            "stage": "unconstrained"
+        },
+        {
+            "user": "323f919c83",
+            "first_index": 270,
+            "supported": 2720,
+            "max_joint": 136,
+            "joints_with_2": 20,
+            "full_mask": 2960,
+            "start": 7200,
+            "stage": "HandClawGraspFlicks"
+        },
+        {
+            "user": "32473f0e96",
+            "first_index": 320,
+            "supported": 2720,
+            "max_joint": 136,
+            "joints_with_2": 20,
+            "full_mask": 2960,
+            "start": 1200,
+            "stage": "unconstrained"
+        },
+        {
+            "user": "32cbfe3221",
+            "first_index": 370,
+            "supported": 2900,
+            "max_joint": 145,
+            "joints_with_2": 20,
+            "full_mask": 3020,
+            "start": 5200,
+            "stage": "HandClawGraspFlicks"
+        },
+        {
+            "user": "342248118e",
+            "first_index": 420,
+            "supported": 2960,
+            "max_joint": 148,
+            "joints_with_2": 20,
+            "full_mask": 3200,
+            "start": 2000,
+            "stage": "WristFlexionAbduction"
+        },
+        {
+            "user": "3589743749",
+            "first_index": 460,
+            "supported": 820,
+            "max_joint": 41,
+            "joints_with_2": 20,
+            "full_mask": 820,
+            "start": 10000,
+            "stage": "unconstrained"
+        },
+        {
+            "user": "3669295621",
+            "first_index": 485,
+            "supported": 2960,
+            "max_joint": 148,
+            "joints_with_2": 20,
+            "full_mask": 3200,
+            "start": 13200,
+            "stage": "unconstrained"
+        },
+        {
+            "user": "3f79dccf7a",
+            "first_index": 535,
+            "supported": 2960,
+            "max_joint": 148,
+            "joints_with_2": 20,
+            "full_mask": 3120,
+            "start": 400,
+            "stage": "PokePinchCloseFar"
+        },
+        {
+            "user": "47c605ad6f",
+            "first_index": 585,
+            "supported": 2960,
+            "max_joint": 148,
+            "joints_with_2": 20,
+            "full_mask": 3200,
+            "start": 6400,
+            "stage": "OneHandedFreeStyle"
+        },
+        {
+            "user": "5ef3a0537e",
+            "first_index": 635,
+            "supported": 1840,
+            "max_joint": 92,
+            "joints_with_2": 20,
+            "full_mask": 2080,
+            "start": 5200,
+            "stage": "unconstrained"
+        }
+    ],
+    "users_whose_first_window_has_no_central_support": [
+        "76bfc2d385"
+    ],
+    "users_whose_first_window_has_no_joint_with_two_centres": [
+        "76bfc2d385"
+    ],
+    "per_user_min": {
+        "windows": 25,
+        "supported_windows": 22,
+        "usable_windows": 22
+    },
+    "users_with_unsupported_windows": 14,
+    "meta_in_user_order": true
+}
