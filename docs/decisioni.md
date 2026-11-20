@@ -8320,3 +8320,7 @@ Alla domanda di Claude «Firmi la proposta faa4a8d7 e il tetto di 18 GPU-ore?» 
 - Risorse firmate per 17 allocazioni di preflight: **18 GPU-ore e 169,6 core-ore richieste**, inviluppo contabile **21,6 GPU-ore e 202,4 core-ore**. Il margine SLURM vale 3,6 GPU-ore e 32,8 core-ore. Lo stanziamento copre il preflight. I training richiedono un preventivo e una release successivi.
 
 La review su `fbfde797b48644744c36547533acf0e8a7793535` è il documento `docs/reviews/claude_review_contrastive_targets_runtime_20261120.md` a `469b312cd5502b801a0af44c56e16a89f019c14c`, SHA-256 `71238b7c763e2fdf8f2fb596e1decacf8f56d165f29a360f997baf66971173b3`. La prima consegna di GPT rilascia a 3-launcher solo checkout e audit CPU. Le fasi seguenti richiedono ricevute proprie. [Review autenticata](../results/infra/contrastive_targets_20261118/releases/audit_20261120/claude_review_contrastive_targets_runtime_20261120.md)
+
+### 20/11/2026 — Audit superato per RMS100/fast125, linea 3
+
+L’audit 64937087 è completo e autenticato (4.022 s su 7.200). Nel pannello 8.179 finestre su 8.192 sono ammissibili per InfoNCE, RnC ha supporto in tutti i 256 batch. Agli update 128 e 256 entrambe le loss hanno supporto, come in ciascuno dei 32 batch scelti per la prova di ripresa. Il flusso dei 1.024 record coincide con quello storico 25/50. È soddisfatto il prerequisito dati della calibrazione. La scelta dei due pesi resta affidata alle tre norme misurate sullo stesso batch, con il criterio firmato. [Lettura scientifica](reviews/contrastive_targets_audit_science_20261120.md)
