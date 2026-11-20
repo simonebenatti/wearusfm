@@ -1,0 +1,89 @@
+{
+  "execution_commit": "9abde2951cd9b2a25aa699faceb93132de6732f8",
+  "operator": "3-launcher",
+  "campaign_directory": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-audit-20261119",
+  "deploy_ref": "refs/heads/deploy/contrastive-targets-audit-20261119",
+  "source_transport_sha256": {
+    "results/infra/contrastive_targets_20261118/audit_handoff_20261120/prepare_handoff.py": "b92a5798b2eae59515964452e094609434408f56cc02bfeecf19a7fef2df8769",
+    "results/infra/contrastive_targets_20261118/audit_handoff_20261120/login_check.sh": "c96a4ac7963a6f1493825152a2389f294fdef0637f8d221b29ecbbb474c4aeb9",
+    "scripts/slurm/campaign_checkout.sbatch": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+    "scripts/slurm/contrastive_preflight_cpu.sbatch": "683ada3cf4ceebb369ce4e218d82ca3b6a861c071e99b3586e62d0c51e184884",
+    "results/infra/contrastive_targets_20261118/releases/audit_20261120/audit.job.json": "e99936f4ccfcc1ce35c6d272ccb71a1b5d4b676bec7611fdb0d14de46b62ddeb",
+    "results/infra/contrastive_targets_20261118/releases/audit_20261120/review_binding.json": "171b47df22e3990d07e4411b3148e2e89b5d8645f07cdff84db9d166e8c2e1bb",
+    "scripts/submit_job.py": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82"
+  },
+  "deploy": [
+    "git",
+    "-C",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets",
+    "push",
+    "leonardo",
+    "9abde2951cd9b2a25aa699faceb93132de6732f8:refs/heads/deploy/contrastive-targets-audit-20261119"
+  ],
+  "verify_deploy_sha": [
+    "git",
+    "-C",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets",
+    "ls-remote",
+    "--exit-code",
+    "leonardo",
+    "refs/heads/deploy/contrastive-targets-audit-20261119"
+  ],
+  "check_immediately_before_checkout": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/results/infra/contrastive_targets_20261118/audit_handoff_20261120/prepare_handoff.py",
+    "--frozen-sha",
+    "9abde2951cd9b2a25aa699faceb93132de6732f8",
+    "--check-checkout-login"
+  ],
+  "checkout_only": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+    "--id",
+    "CONTRAST-CHECKOUT-audit-targets-v3-20261118",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "CONTRASTIVE-targets-v3-20261118",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/scripts/slurm/campaign_checkout.sbatch",
+    "--",
+    "--cpus-per-task=4",
+    "--mem=2G",
+    "--time=00:04:00",
+    "--export=ALL,CAMPAIGN=contrastive-targets-audit-20261119,CAMPAIGN_SHA=9abde2951cd9b2a25aa699faceb93132de6732f8,EXPECTED_SHA=9abde2951cd9b2a25aa699faceb93132de6732f8"
+  ],
+  "check_immediately_before_audit": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/results/infra/contrastive_targets_20261118/audit_handoff_20261120/prepare_handoff.py",
+    "--frozen-sha",
+    "9abde2951cd9b2a25aa699faceb93132de6732f8",
+    "--check-audit-login"
+  ],
+  "audit_only_after_verified_completed_checkout": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+    "--id",
+    "CONTRAST-AUDIT-targets-v3-20261118",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "CONTRASTIVE-targets-v3-20261118",
+    "--gpu-ore",
+    "0",
+    "--",
+    "--cpus-per-task=8",
+    "--mem=30G",
+    "--time=02:00:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-audit-20261119,EXPECTED_SHA=9abde2951cd9b2a25aa699faceb93132de6732f8",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-audit-20261119/scripts/slurm/contrastive_preflight_cpu.sbatch",
+    "results/infra/contrastive_targets_20261118/releases/audit_20261120/audit.job.json"
+  ],
+  "audit_output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/audit.json",
+  "audit_phase_max": {
+    "gpu_hours": 0,
+    "core_hours": 16.266666666666666
+  }
+}
