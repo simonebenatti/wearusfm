@@ -1,0 +1,27 @@
+{
+  "accounting_cpus_per_job_cap": 2,
+  "accounting_margin_seconds_per_job": 180,
+  "base_scientific_graph_allocations": 24,
+  "core_hours_cap_with_margin": 0.26666666666666666,
+  "gpu_hours": 0,
+  "logical_ids": [
+    "TCNH-CPU-inventory-login08-20261120",
+    "TCNH-CPU-inventory-login13-20261120"
+  ],
+  "memory_per_job": "1G",
+  "no_retry": true,
+  "nodes": [
+    "login08",
+    "login13"
+  ],
+  "partition": "lrd_all_serial",
+  "physical_allocations_added": 2,
+  "requested_cpus_per_job": 1,
+  "requested_walltime_seconds": 60,
+  "scientific_recipe_changed": false,
+  "scope": "Two one-minute hardware-inventory jobs requested to complete the CPU check after SSH failure; not neural/scientific runs",
+  "source_manifest_changed": false,
+  "source_of_cpu_budget": "deduct from3coreh CPU-only operational reserve; no increase of80coreh total CPU-only cap",
+  "total_physical_allocations_if_base_completes": 26,
+  "user_request": "e come si fa a complertarlo? lo fai tu ?"
+}

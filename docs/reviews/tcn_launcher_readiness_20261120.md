@@ -49,3 +49,13 @@ entro le allocazioni esistenti. È un prerequisito tecnico, non una nuova decisi
 [Fotografia strutturata](../../results/infra/pose_temponet_execution_20261119/launcher_preflight_20261120/readiness.json)
 e stdout della verifica nello stesso percorso. Il worktree scientifico originale è intatto; questa consegna sta nel ramo
 `codex/pose-temponet-launcher-20261120`.
+
+## Seguito: misura richiesta da Simone
+
+Simone chiede «e come si fa a complertarlo? lo fai tu ?». L'operatore completa il controllo con due inventari hardware
+SLURM di un minuto, uno per nodo, via submitter e ledger comuni. Non sono esperimenti scientifici e non modificano
+i sorgenti rivisti. Sono due allocazioni diagnostiche aggiuntive fuori dal grafo scientifico24job (totale fisico26secompleto):
+zeroGPUh e massimo0,266667coreh includendo180s/job e dueCPUallocate prudenziali. Il costo è detratto dalla riserva
+operativaCPUdi3coreh, senza aumentare il tetto80coreh CPU-only o272coreh globale. Numero e costo vanno esplicitati
+nel consuntivo, senza contarli come due fit. Nessun retry o risottomissione automatica. Il piano e lo script di inventario
+sono nella directory delle prove, distinti dal piano eseguibile immutato della matrice scientifica.
