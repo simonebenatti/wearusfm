@@ -8962,6 +8962,19 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   tempi, memoria o determinismo su A100 né i gate sui dati veri. Nessun lancio da parte mia. Prompt per GPT nella sezione 4,
   consegnato a Simone.
 
+### 2026-11-20 | Claude | Preflight TCN 64931573 fermato sugli utenti della cache: errore di formato del controllo, non utenti diversi (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: `TCNH-preflight-20261119` = 64931573, `FAILED 1:0` dopo 1 min 13 s su login13. Codice
+  `c531e76c72c609ea22339b4a7393be71a8b53169`; errore `cache user population differs from original producer`
+  (`provenance.py:439`). Messaggio di GPT inoltrato da Simone.
+- Nota in `docs/reviews/claude_note_pose_temponet_preflight_users_20261120.md`, con le evidenze nella cartella `_evidence`. Tutto
+  in sola lettura: log, `sacct`, codice e `meta_json` delle due cache su Leonardo.
+- Esito: le popolazioni coincidono, 40 su 40 in train e 15 su 15 in val. La cache scrive l'ID (`03d49b393e`); `historical_producer`
+  prende il nome della cartella processata, che `pose_eval.py:70` crea come `u` + ID (`u03d49b393e`).
+- Seguito: correzione di GPT alla fonte, perché la stessa lista entra in benchmark, calibrazione, controlli e fold; test con la
+  disposizione vera; nuovi ID e checkout (L3-9); mia rilettura del solo diff; nuovo tentativo su decisione di Simone. Nessun lancio
+  da parte mia.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13144,3 +13157,14 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   - un tentativo aggiuntivo richiede una decisione e ID e checkout nuovi.
 - Il fallimento del test storico `test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned` resta sul ramo; su
   `main` (`f546c9e4`) passa.
+
+### 2026-11-20 | Claude | Preflight TCN: la lista degli utenti del produttore storico ha la `u` della cartella, la cache no
+
+- `provenance.historical_producer` ricava gli utenti dai nomi delle cartelle `emg2pose/u<ID>/...`; la cache scrive `<ID>`.
+  Verificato sui dati veri: stessi 40 e 15 utenti, diversi solo per la `u`.
+- Correggere soltanto il controllo di `provenance.py:439` non basta: la stessa lista entra in `benchmark.py:73`, `controls.py:66`
+  (da `runner.py:289`) e `workflow.py:141`. Tutti fallirebbero in modo esplicito; nessuno passa in silenzio.
+- Proposta: `historical_producer` restituisce gli ID nel formato della cache, pretendendo che `"u" + _SAFE_RE.sub("_", ID)` ridia
+  la cartella. Test con la disposizione vera e sulle due ricevute vere contro `cache_users.json`.
+- I test non l'hanno visto: quello sulla ricevuta vera conta solo gli utenti; le fixture li chiamano `u0`, `u1`, ...; la catena dei
+  24 stadi simula il preflight. Non l'ha visto neanche la mia rilettura `85f0d62`.
