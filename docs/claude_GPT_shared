@@ -178,6 +178,24 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-20 | GPT chat 2 | Rilettura indipendente della correzione utenti TCN: APPROVATO, attesa conferma finale Claude
+
+Riletto il diff `31877ad85c619ec69214cd5e9fb53df50e452148` → `0e548bf8218f15ba07fc731efcc2ead512e65034`
+di Claude. Review: `docs/reviews/gpt_review_pose_temponet_users_fix_20261120.md`, sul ramo
+`codex/pose-temponet-users-review-20261120`, discendente della consegna senza riscriverla.
+Codice `5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba`; source SHA256
+`37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de`: tutti i 246 sorgenti ricalcolati,
+due soli cambiati. Piano rigenerato identico, SHA256 `1e8e2b46b046072c706738995e745f608f009d33406d970729a3eb22a73f563e`.
+Correzione alla fonte verificata su ricevute e liste reali, anche attraverso benchmark, workflow e controlli
+con array sintetici; 40 utenti train e 15 val disgiunti. Nessuna modifica a ricetta, input, soglie o grafo,
+salvo suffisso dei job e checkout nuovi. Test rieseguiti: 271 TCN passati in 164,47 s, 125 storici passati
+e il solo fallimento preesistente. Ricalcolati 93 controlli su 93 sulle osservazioni archiviate; nessuna lettura remota.
+Prove, comandi e hash in `results/infra/pose_temponet_execution_20261120/gpt_review/`.
+Nessun blocco tecnico trovato. Come da addendum trasmesso da Simone, il rilascio attende la conferma finale
+di Claude tramite Simone: due suoi revisori erano ancora attivi alla consegna. Il nuovo preflight è già
+autorizzato (L3-9), senza bisogno di un altro consenso. Solo 2-TCN head launcher opera; nessun release-plan,
+deploy o job da questa chat. Piano invariato REVIEW_REQUIRED; un eventuale nuovo diff di sorgenti va ricontrollato.
+
 ### 2026-11-20 | GPT launcher TCN | Preflight64931573fallito:diagnosi prefisso utenti e raccolta prove
 
 64931573FAILED1:0,73s×2CPU=0,040556coreh; coninventariCPUtotale3allocazioni,0,043333coreh,zeroGPUh.
@@ -6124,6 +6142,19 @@ Tetti 24 GPUh, 80 coreh CPU-only, 272 coreh totali invariati; walltime dei 16 gr
   `docs/pose_temponet_execution_20261120.md`. Nessun lancio e nessuna scrittura sul cluster da parte mia.
 
 ## 2) Problemi trovati
+
+### 2026-11-20 | GPT chat 2 | Difetto utenti chiuso nel codice; gate reali ancora da eseguire
+
+Nessun rilievo bloccante nel diff di Claude `0e548bf8`. L'inversione della cartella del produttore è ammessa
+solo se univoca, conserva il prefisso in storage_directories e confronta entrambe le liste; i vecchi u+ID
+sono rifiutati da benchmark, workflow e controlli. Anche le verifiche dei dettagli storici restano attive.
+Le prove locali con formato reale usano array sintetici e costanti R-1 sostituite dichiaratamente: non
+certificano digest completi, parità R-1 a 1e-12 o tempi/memoria del job. Gli esiti sui metadati archiviati
+non sono una nuova lettura del cluster. Nessun risultato scientifico TCN ancora disponibile.
+Resta il fallimento storico del test sul vecchio piano lungo, già documentato; non è una regressione del diff.
+La freschezza dell'evidenza operatore e l'appartenenza degli ID alla seconda consegna sono controlli
+procedurali espliciti. Prima di release-plan resta la conferma finale di Claude tramite Simone, non una
+nuova autorizzazione del test. Review e sorgenti congelati identificati nella voce della sezione 1.
 
 ### 2026-11-20 | GPT launcher TCN | Difetto runtime confermato di formato utenti, nessuna differenza di popolazione
 

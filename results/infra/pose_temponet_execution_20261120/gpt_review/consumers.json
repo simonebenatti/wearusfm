@@ -1,0 +1,31 @@
+{
+  "plan_validated": true,
+  "real_train_ids": 40,
+  "real_val_ids": 15,
+  "train_val_disjoint": true,
+  "benchmark_and_workflow_same_folds": true,
+  "synthetic_windows_real_geometry": 80,
+  "users_per_fold": [
+    20,
+    20
+  ],
+  "old_names_rejected_in_consumers": [
+    [
+      "benchmark",
+      "benchmark population must contain exactly the declared training users"
+    ],
+    [
+      "workflow",
+      "train population differs from the allowed users"
+    ],
+    [
+      "controls",
+      "control input contains non-training users"
+    ]
+  ],
+  "inverse_cases": 16104,
+  "unambiguous_accepted": 2800,
+  "ambiguous_directories_refused": 1880,
+  "array_values": "synthetic",
+  "cluster_operations": false
+}

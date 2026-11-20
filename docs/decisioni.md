@@ -6844,3 +6844,23 @@ dell'operatore). Nessun job e nessuna scrittura sul cluster da parte di Claude: 
 
 Stato REVIEW_REQUIRED fino alla rilettura di GPT. Operatore unico 2-TCN head launcher. Istruzioni:
 `docs/pose_temponet_execution_20261120.md`; consegna: `docs/reviews/claude_delivery_pose_temponet_users_fix_20261120.md`.
+
+
+### 2026-11-20 | GPT chat 2 | Rilettura correzione preflight TCN favorevole; rilascio ancora in attesa
+
+Review indipendente del diff Claude `31877ad8` → `0e548bf8218f15ba07fc731efcc2ead512e65034`:
+**APPROVATO**, nessun blocco tecnico trovato. File `docs/reviews/gpt_review_pose_temponet_users_fix_20261120.md`.
+Codice per il successivo rilascio: `5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba`; source SHA256
+`37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de`. Piano rigenerato identico:
+`1e8e2b46b046072c706738995e745f608f009d33406d970729a3eb22a73f563e`.
+271 test TCN e 125 storici passati; un solo fallimento storico preesistente. Verificate la correzione
+alla fonte, le popolazioni 40/15, i consumatori e l'identità nuova; proposta, ricetta, input e tetti invariati.
+Prove locali riproducibili in `results/infra/pose_temponet_execution_20261120/gpt_review/`.
+
+Simone ha trasmesso l'addendum: «Il rilascio con release-plan aspetti la conferma di Claude, che arriva
+tramite Simone: se i revisori chiedessero un cambio dei sorgenti, lo SHA del codice cambierebbe».
+Questa condizione resta aperta; la decisione L3-9 per il nuovo preflight è già registrata e non va richiesta
+nuovamente. In attesa della conferma, il piano resta REVIEW_REQUIRED e non rilasciato. Solo 2-TCN head launcher
+eseguirà il prontuario aggiornato, senza riusare checkout o ID falliti. Questa review non fa release-plan,
+deploy, invii, letture di Leonardo o modifiche del runtime. I gate su array completi, R-1 e risorse restano
+quelli del preflight e dei benchmark; nessuna conclusione scientifica anticipata.

@@ -1,0 +1,51 @@
+{
+  "reviewed_tip": "0e548bf8218f15ba07fc731efcc2ead512e65034",
+  "reviewed_code": "5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba",
+  "base": "31877ad85c619ec69214cd5e9fb53df50e452148",
+  "source_sha256": "37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de",
+  "source_files": 246,
+  "changed_sources": [
+    "scripts/pose_temponet/execution.py",
+    "scripts/pose_temponet/provenance.py"
+  ],
+  "plan_sha256": "1e8e2b46b046072c706738995e745f608f009d33406d970729a3eb22a73f563e",
+  "fixed_plan_fields": [
+    "proposal",
+    "recipe_sha256",
+    "inputs",
+    "resource_policy",
+    "output_root",
+    "numeric_pins"
+  ],
+  "same_normalized_24_job_graph": true,
+  "old_plan_rejection": "reader sources changed",
+  "populations": {
+    "train": {
+      "users": 40,
+      "windows": 1907,
+      "receipt_matches_cache_and_operator": true
+    },
+    "val": {
+      "users": 15,
+      "windows": 18548,
+      "receipt_matches_cache_and_operator": true
+    }
+  },
+  "delivery_pins_verified": [
+    "plan",
+    "local_validation",
+    "real_input_checks",
+    "mutation_check",
+    "delivery_document",
+    "operator_instructions"
+  ],
+  "archived_header_checks": {
+    "checks": 93,
+    "passed": 93,
+    "failed": []
+  },
+  "recipe_changed": false,
+  "release_performed": false,
+  "remote_operations": false,
+  "limit": "Archived metadata only; full array digests, real R-1, timing and memory await the new preflight."
+}
