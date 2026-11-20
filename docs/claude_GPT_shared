@@ -9191,6 +9191,8 @@ Su richiesta di Simone liberati 8,43 GiB di temporanei pytest inattivi; dati e c
 
 Merge di `adb35def` su `f546c9e4`. I merge `03f768ac` e `326ffee0` conservano i commit `97bb3166` (residua) e `629fdaed` (studio delle loss e nota sul preflight). Verificati l’uso di `TEMPONet.embed()` nel forward a coppie, l’architettura scelta nel controllo dropout e il percorso storico senza salti. Sul risultato dell’integrazione sono passati 142 test mirati su TEMPONet, DB8 e finestre dei bersagli, e la verifica di sintassi dei cinque script Slurm.
 
+Verifica CPU conclusa sul merge `d6fe6489`: tutti i 3.511 casi distinti raccolti da pytest sono passati sul Mac in più esecuzioni. Al momento della pausa risultavano coperti 3.425 casi; gli 86 rimanenti sono passati alla ripresa. La copertura è stata verificata per identificativo di test, contando una sola volta le riesecuzioni.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
