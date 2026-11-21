@@ -178,6 +178,21 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-21 | GPT chat 2 | TCN: conferma finale Claude ricevuta, rilettura favorevole e attesa chiusa
+
+Simone ha trasmesso la conclusione dei quattro revisori di Claude, senza blocchi né cambi dei sorgenti.
+Riletta la punta `5146ecc2ca7215f739bce54ed064d44aa48ad50f`, integrata per merge nel ramo
+`codex/pose-temponet-users-review-20261120`. Diff su src/scripts da `0e548bf8` vuoto; piano invariato.
+Codice `5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba`, source SHA256
+`37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de`: 246 file verificati byte per byte.
+Esito **APPROVATO, nessun blocco residuo di review per il nuovo preflight**. Chiusa la condizione sospensiva
+della review GPT `e5e8be6c`; nuova nota `docs/reviews/gpt_review_pose_temponet_users_fix_final_20261121.md`.
+Rieseguiti 279 test TCN: tutti passati in 176,88 s; 125 storici passati e il solo fallimento preesistente.
+Prove locali in `results/infra/pose_temponet_execution_20261120/gpt_review/followup_20261121/`.
+L3-9 già autorizzata: l'operatore unico 2-TCN head launcher può preparare il rilascio e il nuovo preflight,
+senza ulteriore consenso o review dello stesso codice. Il piano sorgente resta REVIEW_REQUIRED/non rilasciato,
+la trasformazione in piano di esecuzione compete all'operatore. Nessun accesso a Leonardo, release-plan, deploy o job qui.
+
 ### 2026-11-20 | GPT chat 2 | Rilettura indipendente della correzione utenti TCN: APPROVATO, attesa conferma finale Claude
 
 Riletto il diff `31877ad85c619ec69214cd5e9fb53df50e452148` → `0e548bf8218f15ba07fc731efcc2ead512e65034`
@@ -6158,6 +6173,15 @@ Tetti 24 GPUh, 80 coreh CPU-only, 272 coreh totali invariati; walltime dei 16 gr
 - Esiti in `results/infra/pose_temponet_execution_20261120/independent_review/`; documenti di consegna e istruzioni aggiornati.
 
 ## 2) Problemi trovati
+
+### 2026-11-21 | GPT chat 2 | TCN: nessun blocco nuovo; due note operative per il seguito
+
+I nuovi test coprono anche i consumatori successivi e la campagna nella riga del submitter. Nessun difetto
+nuovo dimostrato. Le prove R-1 alla geometria reale usano array sintetici; 9 GiB/3 minuti sono stime, non
+misure del nuovo job. Restano i gate sui file veri. Le note gpu8 e SCRATCH non bloccano il preflight CPU:
+confrontare il profilo hardware prima degli invii GPU dipendenti, senza allentare i pin se differisce;
+coordinare il rinfresco del 03/12 affinché non tocchi i tre input SCRATCH mentre vengono letti.
+La conferma finale di Claude è ricevuta e l'attesa del 20/11 è chiusa; nessuna richiesta di nuovo consenso.
 
 ### 2026-11-20 | GPT chat 2 | Difetto utenti chiuso nel codice; gate reali ancora da eseguire
 

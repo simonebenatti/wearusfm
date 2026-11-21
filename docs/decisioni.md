@@ -6864,3 +6864,24 @@ nuovamente. In attesa della conferma, il piano resta REVIEW_REQUIRED e non rilas
 eseguirà il prontuario aggiornato, senza riusare checkout o ID falliti. Questa review non fa release-plan,
 deploy, invii, letture di Leonardo o modifiche del runtime. I gate su array completi, R-1 e risorse restano
 quelli del preflight e dei benchmark; nessuna conclusione scientifica anticipata.
+
+
+### 2026-11-21 | GPT chat 2 | TCN: chiusa l'attesa della conferma finale di Claude
+
+Simone trasmette: «Quattro review indipendenti su quattro, nessun blocco e nessun cambio dei sorgenti»
+e «Il rilascio non aspetta più niente da parte mia: procedi dopo la tua rilettura».
+Verificato il diff finale `31877ad8` → `5146ecc2ca7215f739bce54ed064d44aa48ad50f`, con rilettura
+incrementale da `0e548bf8`: solo test/documenti/prove, src/scripts invariati. Approvazione GPT confermata;
+chiusa la condizione della review `e5e8be6c`. File conclusivo:
+`docs/reviews/gpt_review_pose_temponet_users_fix_final_20261121.md`.
+Verifica locale GPT: 279 test TCN passati in 176,88 s, 125 storici passati e il solo fallimento noto.
+Codice per release-plan invariato `5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba`, source SHA256
+`37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de`; piano SHA256
+`1e8e2b46b046072c706738995e745f608f009d33406d970729a3eb22a73f563e`.
+
+Il nuovo preflight è già autorizzato (L3-9); nessun nuovo consenso. Solo 2-TCN head launcher prepara
+release-plan, evidenza operatore, deploy e invio unico TCNH-preflight-20261120, come da prontuario del 20/11.
+Fasi successive subordinate alle ricevute e ai gate. Le note su hardware gpu8 e rinfresco SCRATCH
+riguardano il seguito operativo e non aprono un blocco al preflight CPU. Nessuna modifica alla scienza,
+agli input, alle soglie o ai tetti. Questa chat fa review e verifiche locali: nessuna operazione su Leonardo.
+Il piano sorgente resta non rilasciato finché l'operatore non costruisce il piano di esecuzione.

@@ -1,0 +1,10 @@
+........................................................................ [ 57%]
+..................................................F...                   [100%]
+=================================== FAILURES ===================================
+_____ test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned _____
+tests/cpu/test_consolidation_long_common.py:126: in test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned
+    with pytest.raises(ValueError,match='Claude'):C.validate_plan(plan)
+E   Failed: DID NOT RAISE <class 'ValueError'>
+=========================== short test summary info ============================
+FAILED tests/cpu/test_consolidation_long_common.py::test_concrete_campaign_remains_review_gated_and_all_endpoints_pinned
+1 failed, 125 passed in 4.10s
