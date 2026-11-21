@@ -1,0 +1,36 @@
+# Linea 3 · Lettura del confronto CPU delle riprese RMS100/fast125
+
+**Decisione del 21/11. Il preflight resta bloccato per InfoNCE.** Rank-N-Contrast soddisfa i criteri nelle tre coppie. Per InfoNCE entrambe le riprese riproducono lo stesso scarto dal continuo in quattro tensori del proiettore. La soglia firmata è 1% per ciascun tensore. Il job 65035852 ha prodotto un rapporto completo in 107 secondi con stato `FAILED_REQUIRES_REVIEW`, codice 2 e nessun confronto inconclusivo. Ho verificato i 3.081.874 byte del JSON originale e la sua impronta SHA-256 `d4300a2e31c85b39f1f36b8f3146886811d70fe9e24c2d0a9d07e683e84cd4b8`. [Rapporto originale compresso](../../results/infra/contrastive_targets_20261118/readout_execution_20261121/preflight_readout.json.gz) · [Regola sottoscritta](contrastive_common_diagnostics_science_20261119.md)
+
+| Loss | Coppia al passo 576 | Studente | Teacher EMA | Tensori Adam o coda oltre 1% | Esito |
+|---|---|---:|---:|---:|---|
+| InfoNCE | Continuo / A | 0,08975% | 0,00821% | 4 | Fuori soglia |
+| InfoNCE | Continuo / B | 0,08975% | 0,00821% | 4 | Fuori soglia |
+| InfoNCE | A / B | 0% | 0% | 0 | Passa |
+| Rank-N-Contrast | Continuo / A | 0,08082% | 0,00727% | 0 | Passa |
+| Rank-N-Contrast | Continuo / B | 0,08082% | 0,00727% | 0 | Passa |
+| Rank-N-Contrast | A / B | 0% | 0% | 0 | Passa |
+
+Per studente e teacher ogni percentuale è la distanza L2 fra i due modelli divisa per lo spostamento del primo modello dalla propria inizializzazione. Se si prende come riferimento solo il movimento dello studente nei 32 passi dal checkpoint 544, la distanza continuo/A è **0,6454% per InfoNCE e 0,6164% per Rank-N-Contrast**. Questa seconda lettura è descrittiva. Per i momenti di Adam il denominatore è la norma del singolo tensore al passo 576 nel primo membro della coppia. [Definizione delle distanze](../../scripts/contrastive_target_resume.py)
+
+## Dove si concentra lo scarto
+
+Entrambe le loss avevano superato il controllo sull’intensità dell’intervento. A peso pieno, sui passi 513–576 del continuo, il rapporto mediano fra norma del gradiente contrastivo pesato e norma del gradiente di base è 21,54% per InfoNCE e 8,28% per Rank-N-Contrast. Il rapporto fra le mediane è 2,60 e rientra nell’intervallo firmato 0,25–4. Il motivo del blocco emerge confrontando i momenti dell’ottimizzatore dopo la ripresa. [Lettura dei tre continui](contrastive_targets_three_benchmarks_science_20261121.md)
+
+Ho ricostruito i nomi dei parametri dalla configurazione CN e dal gruppo ordinato di 270 parametri che il trainer passa ad AdamW. Gli ID 266–269 corrispondono al peso e al bias del primo e del secondo strato lineare del proiettore contrastivo. Le rispettive medie mobili dei gradienti (`exp_avg`) differiscono dell’**1,222%, 1,034%, 1,316% e 1,108%**. Le medie dei gradienti al quadrato degli stessi parametri differiscono tra 0,155% e 0,168%. Gli altri tensori controllati di Adam e della coda rientrano nella soglia. InfoNCE usa questo proiettore per calcolare la loss. Rank-N-Contrast usa direttamente le rappresentazioni temporali dell’encoder. I test su queste due loss rispondono quindi a domande diverse sulla sensibilità del proiettore. [Costruzione di AdamW](../../src/wearusfm/training/run.py) · [Ingressi delle due loss](../../src/wearusfm/training/contrastive_objectives.py)
+
+## Cosa indicano le tracce
+
+La ricostruzione locale dell’ordine dei parametri e del gruppo AdamW al passo 545 restituisce l’impronta `864a86decd9d15929e4bf5a0400908c0697ae08ded112e95b5db8140570e9837` osservata nelle 24 tracce al confine dei due continui attivi e delle rispettive riprese. Nel JSON delle distanze i parametri sono registrati per ID. [Traccia al confine del continuo CN](../../results/infra/contrastive_targets_20261118/benchmark_execution_20261121/CN/trace-0.jsonl)
+
+Lo stato al confine 544 coincide per studente, teacher, momenti e gruppi di Adam, stato contrastivo e RNG verificato. Batch, input, contatori, identità e ordine della coda coincidono per 32 passi sui quattro rank. Le due repliche producono checkpoint finali identici byte per byte entro ciascun braccio. Passano anche la parità a peso zero di C0 e il controllo del contesto numerico sui 28 processi. Queste verifiche restringono la ricerca all’esecuzione dopo il ripristino. [Raccolta delle riprese](launcher_targets_reloads_20261121.md)
+
+Al primo passo dopo la ripresa, il 545, lo scarto sulla norma totale del gradiente InfoNCE è circa 9,5 × 10⁻¹². Nel continuo DDP ha già ricostruito i gruppi con cui riduce i gradienti tra GPU. Nei processi riavviati le tracce riportano la stessa composizione e lo stesso ordine del continuo dal 547. La diversa fase di avvio del calcolo distribuito è un’ipotesi concreta. Il ruolo causale di DDP o dell’aritmetica bf16 resta aperto. Anche due repliche con checkpoint finali identici hanno piccoli scarti nelle loss aggregate a log. Per localizzare la causa servono i gradienti effettivamente usati per aggiornare i pesi. [Traccia del continuo CN](../../results/infra/contrastive_targets_20261118/benchmark_execution_20261121/CN/trace-0.ddp.jsonl) · [Traccia della ripresa CN_A](../../results/infra/contrastive_targets_20261118/reloads_execution_20261121/CN_A/trace-0.ddp.jsonl)
+
+## Proposta per Simone
+
+L’evidenza riguarda un checkpoint per loss, due riprese e 32 passi. L’identità tra A e B rende ripetibile l’osservazione a questo checkpoint. La frequenza e la grandezza dello scarto ad altre dosi restano da misurare.
+
+Prima dei training lunghi propongo **una diagnostica mirata su InfoNCE**. Sullo stesso nodo e sugli stessi quattro dispositivi si conserva un continuo con DDP già a regime e si confronta il riavvio dallo stesso stato a 544. Si riproducono gli stessi batch e gli stessi RNG. Nei primi tre aggiornamenti si confrontano i gradienti dei quattro parametri del proiettore su ciascun rank prima della riduzione, dopo la riduzione e dopo il clipping, poi i momenti e i pesi dopo AdamW. Si controlla che la strumentazione riproduca il comportamento del percorso ordinario. Il primo punto che diverge distingue un effetto già locale da uno introdotto dalla riduzione o dall’aggiornamento. Se il confronto strumentato non riproduce lo scarto, la causa resta aperta. Il disegno esecutivo e il costo vanno fissati prima di un eventuale invio.
+
+Il risultato decide la compatibilità tecnica della ripresa in queste condizioni. Il confronto sull’utilità di InfoNCE e Rank-N-Contrast per il modello dipenderà dagli endpoint di posa e classificazione. Il via ai training a 19.618 resta sospeso. La raccolta CPU con il suo checkout è costata 0,283333 core-ore e zero GPU-ore. [Consuntivo e sei confronti](../../results/infra/contrastive_targets_20261118/readout_execution_20261121/execution_summary.json)

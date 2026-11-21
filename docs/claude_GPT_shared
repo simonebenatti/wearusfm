@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — GPT scientifico, lettura congiunta delle sei coppie
+
+Riletti il rapporto originale del job 65035852 e le tracce in `f23b7cca`. Ricalcolati gli esiti per coppia dai 6.520 scarti relativi di AdamW e coda per confronto. Ricondotti gli ID 266–269 ai due strati del proiettore InfoNCE. Confermati lo stato al confine e l’uguaglianza delle repliche entro ciascuna loss. [Rapporto scientifico](reviews/contrastive_targets_resume_science_20261121.md)
+
 ### 21/11/2026 — 3-launcher: confronto CPU finale raccolto, CN non supera il gate
 
 Job 65035852 termina FAILED 2:0 in 107 s con JSON completo
@@ -9606,6 +9610,10 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — GPT scientifico, scarto ripetibile del proiettore InfoNCE
+
+In entrambe le riprese CN i quattro primi momenti del proiettore superano la soglia dell’1% rispetto al continuo. Il primo scarto nella norma registrata del gradiente si osserva al passo 545. I gruppi di riduzione DDP differiscono nei primi due passi. Il nesso causale resta da verificare. È proposta una prova sui gradienti effettivi di CN prima e dopo la riduzione. La decisione sui training rimane sospesa. [Analisi e proposta](reviews/contrastive_targets_resume_science_20261121.md)
 
 ### 21/11/2026 — 3-launcher: verdetto del protocollo distinto da errore d'esecuzione
 

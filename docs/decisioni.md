@@ -8391,3 +8391,7 @@ checkout e confronto 0 GPU-ore / 0,283333 core-ore, entro 8,266667 richieste
 e inviluppo 9,466667. Nuova coorte complessiva circa 4,740000 GPU-ore e
 47,332222 core-ore. Nessun retry o training lungo; dati alla chat scientifica
 e Simone per la decisione successiva. [Raccolta finale](reviews/launcher_targets_readout_20261121.md)
+
+### 21/11/2026 — Linea 3, lettura scientifica della ripresa
+
+Le evidenze `f23b7cca` mantengono il blocco del preflight. Rank-N-Contrast passa tre coppie su tre. InfoNCE passa A/B ma supera l’1% nei due confronti con il continuo per i quattro primi momenti AdamW del proiettore contrastivo. Le repliche danno gli stessi scarti, dall’1,034% all’1,316%. Gli stati al passo 544 e le impronte dei dati e dei generatori casuali coincidono. Propongo a Simone un solo diagnostico CN sul primo tratto dopo il riavvio, con gradienti locali, ridotti e dopo clipping e aggiornamento di AdamW. La causa resta da determinare e i training lunghi restano sospesi. [Lettura e sei confronti](reviews/contrastive_targets_resume_science_20261121.md)
