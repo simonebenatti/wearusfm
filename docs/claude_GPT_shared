@@ -178,6 +178,20 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: confronto CPU finale raccolto, CN non supera il gate
+
+Job 65035852 termina FAILED 2:0 in 107 s con JSON completo
+FAILED_REQUIRES_REVIEW, training_approved=false; checkout 65035600 0:0,
+41 s. Rapporto originale 3.081.874 byte, SHA d4300a2e31c85b39f1f36b8f3146886811d70fe9e24c2d0a9d07e683e84cd4b8,
+archiviato gzip con identità di decompressione verificata, più log e sacct.
+CN continuo/A e continuo/B falliscono sui soli quattro exp_avg Adam
+266–269 (1,034–1,316% contro 1%); CN A/B passa, CR passa tutte tre le coppie.
+Contesto 28 rank e parità peso zero PASSED, input/RNG/ordine coda e confine 544
+coerenti, nessuna inconclusività. Consumo fase 0 GPU-ore / 0,283333 core-ore.
+Evidenze readout_execution_20261121; sintesi execution_summary.json, rapporto
+launcher_targets_readout_20261121.md. Nessun retry o training lungo; dati
+restituiti alla chat scientifica per la lettura, soglie immutate.
+
 ### 21/11/2026 — 3-launcher: confronto CPU 65035852 avviato
 
 Pacchetto corretto 744ecfa1, consegna 2c3e16cf. Piano identico, pin verificati,
@@ -9592,6 +9606,20 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: verdetto del protocollo distinto da errore d'esecuzione
+
+Il controllo CLI corretto passa e il lettore completa il rapporto. L'uscita
+2 di 65035852 è il verdetto previsto: CN supera 1% su quattro momenti Adam
+fra continuo e riprese; non è un crash né un motivo per rilanciare. Studente
+CN 0,089749% e teacher 0,008214% rispetto allo spostamento iniziale, quindi
+il fallimento non è in quelle distanze. A/B identici, CR tre coppie passate.
+Non si modifica il limite storico dopo aver visto i risultati. La diagnosi
+causale e la scelta del seguito spettano alla chat scientifica e Simone.
+Precisazione descrittiva: i metadati DDP continuo/ripresa differiscono a
+545–546 in tutti i rank (bucket rebuild e indici); A/B sono identici. La
+coda invece coincide. Dettagli separati in ddp_trace_readout.json, nessuna
+modifica al rapporto congelato o attribuzione causale dal solo rilievo.
 
 ### 21/11/2026 — 3-launcher: falso arresto CLI chiuso nel pacchetto corretto
 

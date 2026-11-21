@@ -8373,3 +8373,21 @@ Simone affida a 3-launcher la lettura finale del preflight RMS100/fast125. Il jo
 Il checkout e il confronto richiedono complessivamente 0 GPU-ore e 8,266667 core-ore, con un margine di 1,2 core-ore. Il limite della lettura è 60 minuti su 8 CPU e 30 GiB. Il pacchetto ha superato 164 test locali. Il risultato della lettura e la decisione sui training restano aperti. [Consegna a 3-launcher](prompt_3_launcher_contrastive_targets_readout_20261121.md)
 
 Il controllo sul login ha rilevato una differenza di tipo tra i percorsi attesi e quelli restituiti dal lettore, prima dell’invio di entrambi i job. La correzione operativa `744ecfa1` allinea il formato dei sette percorsi. Tre test aggiuntivi sul parser reale verificano il caso corretto, lo scambio delle due repliche InfoNCE e una ricevuta audit sbagliata. È stato verificato anche il comando con i percorsi della specifica pubblicata. 3-launcher prosegue con i due ID previsti sul nuovo checkout. [Arresto originale](reviews/launcher_targets_readout_20261121.md)
+
+### 21/11/2026 — 3-launcher, raccolta del verdetto CPU finale
+
+Checkout 65035600 COMPLETED 0:0, 41 s; confronto 65035852 FAILED 2:0,
+107 s, con JSON completo FAILED_REQUIRES_REVIEW. L'uscita 2 è quella
+prevista dal lettore per un esito negativo. Nessuna inconclusività;
+training_approved=false. CN continuo/A e continuo/B superano il limite
+storico 1% su quattro exp_avg Adam (1,034–1,316%); A/B passa. CR passa
+tutte tre le coppie. Contesto numerico 28 rank, parità peso zero e confine
+a 544 passati; batch, RNG e ordine della coda coincidono. Separatamente,
+metadati DDP continuo/ripresa diversi a 545–546 in tutti i rank: rilievo
+descrittivo, non una modifica del criterio né una causa dimostrata.
+Rapporto originale 3.081.874 byte, SHA d4300a2e31c85b39f1f36b8f3146886811d70fe9e24c2d0a9d07e683e84cd4b8,
+archivio gzip byte/hash verificato con log, ricevute e sacct. Costo di
+checkout e confronto 0 GPU-ore / 0,283333 core-ore, entro 8,266667 richieste
+e inviluppo 9,466667. Nuova coorte complessiva circa 4,740000 GPU-ore e
+47,332222 core-ore. Nessun retry o training lungo; dati alla chat scientifica
+e Simone per la decisione successiva. [Raccolta finale](reviews/launcher_targets_readout_20261121.md)
