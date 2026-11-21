@@ -6172,6 +6172,11 @@ Tetti 24 GPUh, 80 coreh CPU-only, 272 coreh totali invariati; walltime dei 16 gr
   delle quali è un difetto del codice consegnato. Gli otto test proposti sono stati aggiunti: ora i test TCN sono 279, tutti passati; 125 storici passati più il fallimento noto.
 - Esiti in `results/infra/pose_temponet_execution_20261120/independent_review/`; documenti di consegna e istruzioni aggiornati.
 
+
+### 2026-11-21 | GPT operatore TCN | Nuovo preflight: release finale
+
+Integrata senza riscrittura la punta GPT 5cb60ca0e4d26f0e7310f1b79819d4e72feb3fc9. Release dalla review finale GPT, codice 5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba; sorgenti invariati. Piano rilasciato SHA256 84b82384a2eafb60f11480910d33ebc85832cb75063d3479d42e243351ea23b0. Evidenza operatore nuova in results/infra/pose_temponet_execution_20261120/launcher/: quota libera 40,735 GiB, riserva scritture pendenti 24 GiB, CPU seriali gia verificate dai job 64931087/64931101; nessun refresh SCRATCH durante lo stadio. Nuovo ID assente dal ledger e destinazioni nuove assenti. Primo preflight 64931573 resta FAILED, nessun riuso. Nessuna nuova autorizzazione richiesta.
+
 ## 2) Problemi trovati
 
 ### 2026-11-21 | GPT chat 2 | TCN: nessun blocco nuovo; due note operative per il seguito
@@ -9164,3 +9169,9 @@ Un failure storico riprodotto sulla base: `test_concrete_campaign_remains_review
   sugli input. Prossimo rinfresco previsto il 03/12.
 - Nessun test locale esegue la parità R-1 sugli array veri: resta il rischio dichiarato del prossimo preflight, ridotto dalla
   prova di identità bit per bit in simulazione.
+
+### 2026-11-21 | GPT operatore TCN | Nuovo preflight: limiti e verifiche residue
+
+Integrata senza riscrittura la punta GPT 5cb60ca0e4d26f0e7310f1b79819d4e72feb3fc9. Release dalla review finale GPT, codice 5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba; sorgenti invariati. Piano rilasciato SHA256 84b82384a2eafb60f11480910d33ebc85832cb75063d3479d42e243351ea23b0. Evidenza operatore nuova in results/infra/pose_temponet_execution_20261120/launcher/: quota libera 40,735 GiB, riserva scritture pendenti 24 GiB, CPU seriali gia verificate dai job 64931087/64931101; nessun refresh SCRATCH durante lo stadio. Nuovo ID assente dal ledger e destinazioni nuove assenti. Primo preflight 64931573 resta FAILED, nessun riuso. Nessuna nuova autorizzazione richiesta.
+
+Parita R-1, digest degli array, tempo e memoria restano da verificare nel job; confronto gpu8 subordinato agli invii GPU successivi, non al preflight CPU. Nessun sorgente modificato.
