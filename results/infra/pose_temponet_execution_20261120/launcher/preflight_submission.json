@@ -1,0 +1,23 @@
+{
+  "logical_id": "TCNH-preflight-20261120",
+  "slurm_job_id": 65016127,
+  "submitted_once": true,
+  "checkout_sha": "3205763d1b3e29799231aa1f9453819f6182e4ee",
+  "six_pre_submit_checks": {
+    "reviewed_code_ancestor": true,
+    "src_scripts_identical": true,
+    "committed_plan_hash_matches": true,
+    "review_present_in_commit": true,
+    "tree_clean_before_submit": true,
+    "leonardo_deploy_ref_matches": true
+  },
+  "submitter_bytes_identical_to_reviewed": true,
+  "initial_state": "RUNNING",
+  "initial_node": "login08",
+  "resources": {
+    "cpus": 2,
+    "ram_gib": 24,
+    "minutes": 12,
+    "gpus": 0
+  }
+}
