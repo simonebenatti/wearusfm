@@ -5,6 +5,34 @@
 passaggio di Simone del 17/11. Questa chat scientifica non avvia runner,
 checkout o job. La precedente catena 19k, confronto 64785568, è conclusa.
 
+## Aggiornamento operativo del 21/11: un solo via per la catena
+
+Letta la sezione «Un solo via per le tre chat e i loro launcher» del riferimento
+Mac `/Users/simonebenatti/dev/wearusfm/CLAUDE.md`, pubblicata in
+`92d1fc0a16bfda9c2d0309c5f1d8769fa2880074`. Il via già dato da Simone copre
+l'intera catena 49.046: controlli, riprese previste, attese di slot e dipendenze,
+raccolta, archiviazione e commit/push. Il launcher prosegue appena i requisiti
+del piano sono soddisfatti, senza altri consensi o review fra gli stadi.
+
+Il pacchetto operativo definitivo è `87da975bc0fd4824684e166659bb996e118ff107`,
+approvato dalla review unica `f6ba1c925e9619d096eea8d68371b1f8811a36a3` in
+`docs/reviews/gpt_review_scaling49046_release_20261119.md`: prevale sui dettagli
+preparatori qui sotto. In particolare il secondo segmento viene inviato dopo
+raccolta e verifica del primo, e l'interazione dose×taglia resta descrittiva.
+Nessun cambio ai pin scientifici, ai criteri o ai tetti approvati.
+
+Unico operatore resta 1-30/300 launcher, che riconcilia il ledger prima degli
+invii; questa chat non crea job o duplicati. Per il submitter segue l'invocazione
+diretta già consentita descritta nel CLAUDE.md operativo, solo dopo verifica che
+i byte coincidano con quelli previsti dal piano. Una risposta ambigua richiede
+riconciliazione dell'ID, non risottomissione.
+
+Un permesso tecnico realmente imposto dall'app va rispettato: un solo operatore
+segnala una volta l'operazione precisa e il motivo se serve intervento dell'utente.
+Non si deduce una richiesta di consenso dal solo indicatore dell'app. Restano da
+segnalare decisioni scientifiche nuove, risorse fuori perimetro e arresti previsti
+dai criteri; nessuno di questi è introdotto da questo aggiornamento procedurale.
+
 ## Decisione e perimetro
 
 Simone ha chiesto di procedere al termine lungo dopo la lettura19k:
