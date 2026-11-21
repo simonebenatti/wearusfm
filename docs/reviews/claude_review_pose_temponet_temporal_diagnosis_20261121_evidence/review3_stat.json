@@ -1,0 +1,117 @@
+{
+ "summary": "I recomputed the gate from the raw moments, tried to refute the variance-budget claim with the archived numbers, worked out what D0 and D1 can separate, and ran a labelled toy (synthetic latents, real generator, real TCN_post head and real loss, one fold, one seed, LR 0.003). The gate arithmetic and GPT's numbers are right: 24.17% / 18.88% / 21.71%, identical denominators, and no paired checkpoint can pass. The diagnosis omits a baseline asymmetry: heads trained on noisy y with no temporal ability sit at -12.3% (neural L0), -11.5% (MLP) and -17.8% (closed-form L0) pooled. Like for like the TCN closes 30.3% of the L0(noisy)-to-oracle distance, so the asymmetry does not explain the failure. D0 and D1 are worth running, but D1's reading rules must be fixed first: they label the expected outcome of clean training (minimum at the edge) as inconclusive, and they declare no fixed-epoch readings. D0 and D1 also cannot tell \"a smaller head would pass\" from \"no random-init head passes with this recipe at this sample size\". In the toy the D1-like run succeeds (80% at epoch 28, still rising) while the wide head on noisy y gets 31% and the width-8 head only 27%. The variance claim holds in order of magnitude for converged ERM, but \"a width-8 head could plausibly pass\" is not supported: its variance floor allows it (67% from the true weights in the toy), SGD from random init does not get there. One of my own intermediate bounds was contradicted by the toy and is withdrawn in the notes.",
+ "findings": [
+  {
+   "id": "STAT-1",
+   "severity": "blocking",
+   "title": "D1 reading rules classify the expected outcome of clean training as inconclusive, and no fixed-epoch readings are declared",
+   "location": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/review_diag/docs/reviews/pose_temponet_temporal_diagnosis_20261121.md lines 76 and 78-85 (section 5, D1 and its table)",
+   "claim": "With a noise-free training target nothing produces an interior minimum unless the clean function overfits users, so a held minimum at or near epoch 150 is the expected outcome exactly when clean training works. As written, that outcome is 'inconclusive' (line 76) or 'optimisation to investigate' (row 3), while row 1 (recovery >= 50% in three panels) can fire on the same run and row 4 then makes it 'discordant'. The rows are not mutually exclusive. No reading at the noisy run's selected epoch (31) is declared, so the split into early-stopping bias and noise-driven error would have to be chosen after seeing the curves, which is post hoc. D0 and D1 themselves are sound; only the reading rules block.",
+   "evidence": "Text, line 76: 'Se la lettura resta ambigua o a bordo a 150, esito diagnostico inconclusivo'; row 3: 'o curve ancora in discesa/bordo -> Ottimizzazione/implementazione da indagare'; line 85: 'Le righe qualitative non sono nuovi gate numerici'. Toy (stat_work_files/log_wide_clean.txt): TCN_post trained on y* has held recovery 43.2 / 60.8 / 70.5 / 75.3 / 80.2% at epochs 10 / 15 / 20 / 25 / 28, with the held-MSE minimum at the last epoch run. Toy iso-epoch check at epochs 23-25: clean-run bias 24.7 points plus truth-initialised variance 45.0 points predicts 30.3%, against 31.1% observed for the noisy run (4.5 points off at epoch 20).",
+   "suggested_fix": "Before the operational package: (1) state that for the clean arm an edge minimum is neither an alarm nor inconclusive. (2) Pre-declare readings at exposures 31, 150 and the selected one, per fold and pooled, fitting and held, against y and y*, as clean recovery = 1 - cleanSSE(head)/cleanSSE(cleanLS). (3) Pre-declare bias(31) = clean-run held clean error at 31, and noise-driven part(31) = D0 held clean error minus that. (4) Make the rows mutually exclusive with numbers frozen before the run: the existing 50% on y for 'generalises', and one numeric fitting level for 'function learned on fitting'."
+  },
+  {
+   "id": "STAT-2",
+   "severity": "important",
+   "title": "D0+D1 cannot separate 'a smaller or regularised head would pass' from 'no random-init head passes with this recipe at this sample size'",
+   "location": "same document, line 80 (row 1) and line 89 (section 6)",
+   "claim": "Optimisation failure and a noise-free cross-user gap are separated by D1. The two noise-driven hypotheses (fixable by a smaller head; not fixable by any head under this recipe) predict the same D0 and D1 outcome: clean training generalises and recovery on y is >= 50%. Row 1 then prescribes 'priority to complexity/regularisation' and section 6 a single frozen variant. That inference is not licensed, and the frozen-once variant can fail again with no declared path afterwards. The proposal's own line 60 says the calibration does not guarantee that half the margin is estimable at 920/934 windows; neither D0 nor D1 tests that.",
+   "evidence": "Toy, held recovery on the gate scale (stat_work_files/log_*.txt): TCN_post on y 31.1% at the selected epoch 25 (fitting 91.9%; the real run has 24/19% held, 86/69% fitting); TCN_post on y* 80.2% at epoch 28 and rising; width-8 generator-family head (12,400 parameters) from random init on y 27.2% at epoch 94; the same head on y* 44.2% at epoch 78; the same head started at the true weights on y 66.6% at epoch 94 (flat 65-67%); TCN_post started at the truth with free extra channels on y falls 100 -> 80.7 -> 71.8 -> 63.5 -> 55.0% at epochs 0 / 3 / 10 / 20 / 23, still falling. So a D1 'success' coexists with every random-init head tried failing the bar. Limits: synthetic latents, one fold, one seed, one LR, horizons cut at 28 (wide) and 78-94 (small) epochs.",
+   "suggested_fix": "Add to the same diagnostic package two non-candidate, non-admissible arms on the noisy y at LR 0.003, 150 epochs, per fold. (b) Width-8 generator-family head initialised at the true weights, read at fixed exposures 31 and 150 plus the curve, never at a held-selected epoch (step 0 is trivially 100%). (a) The same head from the frozen random-init rule. Pre-declare: (b) below 50% at 150 in any panel means the bar is not attainable under this recipe, so the control specification, not the head, goes to a registered decision. (b) and (a) both >= 50% means a capacity variant is motivated. (b) >= 50% and (a) < 50% means narrower is not the remedy. If the arms are not added, reword row 1 so D1 success does not prioritise a capacity variant. A closed-form WLS on y from [z, true hidden features] is a cheap sanity check of the scoring chain but does not separate the two cases."
+  },
+  {
+   "id": "STAT-3",
+   "severity": "important",
+   "title": "The clean-fit baseline handicaps every noisy-trained head by 11-19 points and the diagnosis does not report it",
+   "location": "same document, section 3 (lines 26-36); protocol /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/review_diag/docs/pose_temponet_frozen_protocol_20261117.md lines 92, 100, 102",
+   "claim": "The gate compares a TCN trained on noisy y with a linear reader fitted on the clean y*. On that scale a head trained on y with no temporal ability starts below zero. The protocol says this only qualitatively (line 100: the clean margin 'possono essere più severi ... WLS su y* toglie il rumore nel fit'). The diagnosis gives TCN versus neural L0 as -2.67% E_dyn but never places L0 or MLP on the gate scale. The asymmetry is real but does not by itself explain the failure.",
+   "evidence": "Recomputed from selection_temporal_{L0,MLP}.json selected_outer_statistics and calibration_{0,1}.json outer_reference_statistics (temporal, and linear_diagnostics.L0.worlds.temporal.held.statistics), fold0 / fold1 / pooled: neural L0 -13.55 / -10.82 / -12.28%; neural MLP -12.24 / -10.65 / -11.50% (equals gate.temporal_head_gate.mlp_recovery); closed-form WLS L0 on y -19.10 / -16.38 / -17.84%. Like for like, (E_L0noisy - E_TCN)/(E_L0noisy - E_oracle) = 33.22 / 26.80 / 30.27%. To reach the 50% bar from the neural L0 the TCN must close 55.5% of that distance pooled. A grep of the document and the three READMEs for these recoveries or any asymmetry wording finds nothing.",
+   "suggested_fix": "Add these three rows and the like-for-like figure to section 3, stating that the gate is unchanged and that 24/19% and 30% are two scales of the same failure. If the control is ever re-specified by a registered decision, the symmetric baseline (L0 trained on y under the same selection) is the alternative to put on the table. Not now."
+  },
+  {
+   "id": "STAT-4",
+   "severity": "important",
+   "title": "Reviewer's variance-budget claim: right in order of magnitude for converged ERM, overstated for the recipe and for the width-8 head",
+   "location": "reviewer claim under test (task 2); archived numbers in calibration_{0,1}.json and selection_temporal_TCN_post.json",
+   "claim": "Not refuted: converged ERM of a head this size costs about the whole margin. Overstated in three ways. (1) 'Plain ERM' is not the recipe; at the early-stopped checkpoint the archive does not identify the split, and the safe figures are non-noise error on held >= 13.9% / 30.7% of the margin and noise-driven variance <= 63.5% / 49.9%. (2) 'A width-8 head loses 15-30% and could plausibly pass' is a variance-only figure at a well-optimised optimum; no archived number supports the pass, and the toy contradicts it for random init. (3) 'Compatible with a pure sample-size effect' is non-exclusion only.",
+   "evidence": "Closed-form L0 on y versus on y* (exact noise-only contrast, 7,680 scalar parameters): held excess 34,895.9 / 26,000.8 SSE = 19.10 / 16.38% of the margin, 4.54 / 3.39 SSE per parameter. Closed-form L13 on y (99,600 parameters): 85.56 / 69.46% of the margin above cleanLS; noise-only 85.6-112.6% / 69.5-89.4% ASSUMING its unarchived clean-fit held recovery lies in [0, 0.2709 / 0.1993]. TCN at LR 0.003: pooled recovery 21.71% at epoch 31 to -22.62% at 150, 44.3 points lost and still falling. Counting heuristic for TCN_post (deep branch 64,436 parameters): 0.9-1.3 margins. Width-8 head: affine 19.1 / 16.4 measured plus deep 2-11 heuristic = 19-29 / 19-25% lost. Toy: wide head from the truth loses 45 points by epoch 23; width-8 from the truth loses 33; width-8 from random init reaches 27% on y and 44% on y*. My first bound (non-noise >= 28-37 / 45-52%) assumed noise-driven clean fitting error <= fitted-noise covariance; the toy shows a ratio of 1.8 (30.0 against 16.7 points), so that bound is withdrawn.",
+   "suggested_fix": "In the review write 'converged ERM' where that is meant. Do not state that a head of the generator's size would plausibly pass; say its variance floor is compatible with passing and that its learnability from random init is unknown (failed in one toy). Present the sample-size reading as not excluded. State that the L13 figure rests on an assumption about an unarchived value."
+  },
+  {
+   "id": "STAT-5",
+   "severity": "minor",
+   "title": "'Best checkpoint of the whole search recovers 21.88%' is a pooled curve point, not a saved state",
+   "location": "same document, line 40; selection_temporal_TCN_post.json curves[*].points",
+   "claim": "The statement is correct for the pooled panel and sufficient for the gate, but 'checkpoint' overstates what exists. Curves hold pooled values only; per-fold values exist only for the selected pair; the epoch-27 point has no saved state.",
+   "evidence": "Curve point keys are edyn, exposure, fold_steps, mse. Minimum over 915 admitted points of 5 LRs is 0.7158262458538921 at LR 0.003, exposure 27, giving 21.8830% pooled. train.py:452-459 saves per LR only best_states (pair at minimum pooled MSE) and current_states (final). Pooled recovery is the margin-weighted mean of the fold recoveries (weights 0.535 / 0.465), so no paired checkpoint can pass all three panels. Best pooled recovery per LR: 5.01, 5.36, 10.81, 21.88, -14.85% for 1e-4, 3e-4, 1e-3, 3e-3, 1e-2.",
+   "suggested_fix": "Write 'best pooled curve point' and state that D0 can re-score only exposures 31 and 150 of LR 0.003. Keep the per-fold curves in D1 as already proposed."
+  },
+  {
+   "id": "STAT-6",
+   "severity": "minor",
+   "title": "D0: declare its discriminating number and add two cheap readings",
+   "location": "same document, lines 64-68 (D0)",
+   "claim": "D0's useful output is the clean recovery of the selected checkpoint on the fitting half; it separates 'noise damages the fitted function on the fitting users' from 'pure cross-user gap'. It cannot split held bias from held variance. Two near-free additions make it self-checking.",
+   "evidence": "Fitting excess of the TCN over the reconstructed fitting oracle (0.654332 / 0.693246) is 0.007541 / 0.017336 E_dyn = 13.88 / 30.75% of the fitting margin (0.054322 / 0.056379), so the clean fitting recovery is at most 86.1 / 69.3% (no fitted noise). If the toy mechanism holds it is about 51 / 44% (toy itself: 58.6% at its selected epoch, with fitting recovery on y 91.9%). In the toy the truth-initialised wide head's fitting E_dyn on y goes below the fitting oracle from epoch 15 (recovery 101-105%).",
+   "suggested_fix": "State in advance that the reading is the clean fitting recovery against these two reference values. Add (1) the same clean fitting score for the selected L0 and MLP states, where the closed forms give the expected answer; (2) the fitting oracle computed from the arrays instead of reconstructed, and the flag 'fitting E_dyn on y at 150 below the fitting oracle' as direct evidence of fitted noise."
+  },
+  {
+   "id": "STAT-7",
+   "severity": "note",
+   "title": "The zero embedding of the generator freezes the extra channels of TCN_post",
+   "location": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/d9aa6af4-72b7-4d2a-8229-4444e8ca2c8f/scratchpad/review_diag/results/infra/pose_temponet_temporal_diagnosis_20261121/architecture/oracle_embedding.py lines 38-49",
+   "claim": "The forward-only proof is fine as a representability check. If that embedding is ever reused to start a wide head from the truth, the channels set to zero receive exactly zero gradient (zero activation and zero ReLU derivative), so the run is a width-8 fit in disguise.",
+   "evidence": "stat_work_files/gradcheck.py on the real head after one backward on noisy targets: with the zero embedding, gradient norm 0.0 on rows >= 8 of all five hidden convs and on columns >= 8 of convs 1-5, while true rows have 2.63 / 0.71 / 0.82 / 0.77 / 0.58. With random incoming weights kept and only outgoing weights zeroed, the outgoing columns get 1.25 / 1.51 / 1.37 / 0.90 / 0.19 and the function at init is still the truth (RMSE 4.5e-7).",
+   "suggested_fix": "For any truth-initialised wide arm, keep the extra channels' random incoming weights and zero only their outgoing weights. No change needed to GPT's proof."
+  },
+  {
+   "id": "STAT-8",
+   "severity": "note",
+   "title": "Held scoring noise is 1-2 recovery points; the LR curve suggests a race between learning the function and fitting noise",
+   "location": "selection_temporal_TCN_post.json selected_outer_statistics, selected_outer_clean_statistics, curves",
+   "claim": "Selecting the D1 epoch on y rather than y* is immaterial. The LR pattern is consistent with the function being learned more slowly than the noise is fitted, which D1 can show only through fixed-epoch readings (STAT-1). The gap between LR 3e-3 and 1e-2 is unexplored; I do not propose a new grid.",
+   "evidence": "Held noisy SSE minus clean SSE minus oracle SSE for the TCN: -2,915.8 / +817.3 SSE = -1.6% / +0.5% of the margin. Best pooled recovery rises with LR (5.0, 5.4, 10.8, 21.9% for 1e-4 to 3e-3) and collapses at 1e-2 (-14.9%, L0 level); no alarm fires because the winner is interior.",
+   "suggested_fix": "None required beyond STAT-1. Mention the cross-term size where the document says selection 'resta sensibile alla realizzazione del rumore'."
+  }
+ ],
+ "verified_ok": [
+  {
+   "what": "Gate arithmetic and what it compares",
+   "evidence": "workflow.py:343-388 -> controls.py:302-318 -> controls.py:251-260. clean_ls is WLS L0 (alpha 0) fitted on y* of the fitting half and predicted on held (controls.py:573); oracle is y* on held; head scored by workflow.py:242-261; all on observed y with pose_var and threshold from y*. Recomputed from raw dynamic_sse / dynamic_target_ss: 24.1731 / 18.8755 / 21.7101%, equal to gate.temporal_head_gate.recovery 0.24173052888786836 / 0.1887545039561508 / 0.21710109906955868."
+  },
+  {
+   "what": "Denominators are the same for head and references",
+   "evidence": "dynamic_target_ss of selected_outer_statistics versus calibration outer_reference_statistics.temporal.clean_ls: relative difference 0 (fold0), 1.7e-16 (fold1), 1.6e-16 (pooled), for TCN_post, L0 and MLP."
+  },
+  {
+   "what": "Reference values and oracle gap",
+   "evidence": "Held cleanLS / oracle: 0.7104311506 / 0.6534505840 (fold0), 0.7499203961 / 0.6911028974 (fold1), 0.7284790287 / 0.6706589240 (pooled). Gap fraction 8.02 / 7.84 / 7.94%; inner calibration 7.86 / 7.82%. a = 0.4, sigma = 1.3 in both folds."
+  },
+  {
+   "what": "No archived paired checkpoint passes; 21.88% is the pooled maximum",
+   "evidence": "915 admitted curve points over 5 LRs; minimum E_dyn 0.7158262458538921 at LR 0.003 exposure 27. Selected point LR 0.003 exposure 31, fold_steps [899, 930]; final [4350, 4500]."
+  },
+  {
+   "what": "GPT's descriptive numbers",
+   "evidence": "TCN versus neural L0: 2.672% lower E_dyn (0.715926 against 0.735580). Clean-target E_dyn 0.139236 against 0.199032 (30.04% lower). Fitting recoveries 86.12 / 69.25% with fitting oracle 0.654332 / 0.693246 reconstructed from the L13 clean-fit recovery. Epoch 150 E_dyn 0.741556, 3.58% worse. 29 + 30 = 59 updates per epoch, 8,850 at 150 epochs; 4,427 s x 150/900 = 738 s."
+  },
+  {
+   "what": "Closed-form context result quoted by GPT",
+   "evidence": "L13 fitted on y: fitting 0.667239 / 0.708586, held 0.759182 / 0.790777; L0: 0.705764 / 0.745870 to 0.721315 / 0.759555 (calibration_{0,1}.json outer_reference_statistics.linear_diagnostics.*.worlds.temporal)."
+  },
+  {
+   "what": "Decomposition held noisy SSE = clean SSE + oracle SSE + small cross term",
+   "evidence": "TCN fold0: 2,233,678.0 = 141,448.3 + 2,095,145.5 - 2,915.8; fold1: 1,993,943.1 = 127,958.4 + 1,865,167.4 + 817.3. So the gate is equivalent to 'clean dynamic SSE of the head on held <= 50% of that of cleanLS'; the TCN is at 77.42 / 80.61%."
+  },
+  {
+   "what": "Housekeeping",
+   "evidence": "The review checkout is untouched (git status empty, HEAD e7670758de9d0b6e25a9ad880ec3e1f7d573f169). The work directory wf3_stat_work is deleted, including the 297 MB toy data, and no process is left. Notes are in /Users/simonebenatti/wearusfm_local/tcn_temporal_diag_review/stat_notes.md; scripts and toy logs (100 kB) are in /Users/simonebenatti/wearusfm_local/tcn_temporal_diag_review/stat_work_files/."
+  }
+ ],
+ "key_numbers": "Gate recovery TCN_post (fold0 / fold1 / pooled): 24.1731% / 18.8755% / 21.7101% (raw moments, calibration_{0,1}.json + selection_temporal_TCN_post.json)\nMargin cleanLS - oracle on held: 0.056981 / 0.058817 / 0.057820 E_dyn = 182,695.6 / 158,738.3 / 341,433.9 SSE = 8.72% / 8.51% of the held noise SS\nNeural L0 trained on y, gate scale: -13.55% / -10.82% / -12.28% (selection_temporal_L0.json)\nNeural MLP trained on y, gate scale: -12.24% / -10.65% / -11.50% (gate.temporal_head_gate.mlp_recovery)\nClosed-form WLS L0 fitted on y, gate scale: -19.10% / -16.38% / -17.84% (linear_diagnostics.L0.worlds.temporal.held)\nClosed-form WLS L13 fitted on y, gate scale: -85.56% / -69.46% / -78.08%\nTCN like for like against neural L0 trained on y: 33.22% / 26.80% / 30.27% of the L0(noisy)-to-oracle distance; 55.5% needed pooled to reach the gate\nBest pooled curve point: E_dyn 0.7158262458538921, LR 0.003, exposure 27, recovery 21.8830%; pooled weights of the folds 0.535 / 0.465\nLate degradation LR 0.003: 21.71% (epoch 31) to -22.62% (epoch 150), 44.3 points; LR 0.001: 10.81% to -39.81%, 50.6 points\nTCN clean dynamic SSE on held: 141,448.3 / 127,958.4 = 77.42% / 80.61% of the margin; cross term -1.6% / +0.5% of the margin\nNoise-only held cost of unregularised L0 (7,680 scalar parameters): 19.10% / 16.38% of the margin; 4.54 / 3.39 SSE per parameter; held excess 3.77x / 2.57x the in-sample optimism\nNoise-only held cost of unregularised L13 (99,600 parameters): 85.6-112.6% / 69.5-89.4% of the margin, assuming clean-fit held recovery in [0, 0.2709 / 0.1993] (value not archived)\nTCN fitting excess over the fitting oracle: 0.007541 / 0.017336 E_dyn = 13.88% / 30.75% of the fitting margin (0.054322 / 0.056379)\nSelected-checkpoint split, safe bounds: non-noise error on held >= 13.9% / 30.7% of the margin, noise-driven variance <= 63.5% / 49.9% (assumes held bias >= fitting bias and noise-driven clean fitting error <= 2x fitted-noise covariance)\nParameters: TCN_post 72,904 = LayerNorm 768 + affine 7,700 + deep 64,436 (first 1x1 layer 24,640); width-8 generator-family head 12,400 = 768 + 7,700 + 3,932\nCounting heuristic, variance at converged ERM: TCN_post 0.9-1.3 margins; width-8 head 19-29% / 19-25% of the margin (affine measured, deep heuristic)\nTOY regime: synthetic latents, 920 fitting + 920 held windows x 160 x 384, 20 joints, a 0.4, sigma 1.3; E_cleanLS 0.8221, E_oracle 0.7655, gap 6.88%, closed-form L0 on y -8.9%; one fold, one seed, LR 0.003\nTOY held recovery: TCN_post on y 31.1% (selected epoch 25; fitting 91.9%, fitting clean 58.6%); TCN_post on y* 80.2% at epoch 28, still rising\nTOY held recovery: width-8 random init on y 27.2% (epoch 94); width-8 random init on y* 44.2% (epoch 78); width-8 from the truth on y 66.6% (epoch 94)\nTOY held recovery: TCN_post from the truth with free extra channels on y: 80.7% / 71.8% / 63.5% / 55.0% at epochs 3 / 10 / 20 / 23, still falling\nTOY at iso-epoch 23-25: bias 24.7 points + variance 45.0 points predicts 30.3%, observed 31.1%\nTOY speed, CPU single thread: wide head 13-17 s per epoch, width-8 head about 4.3 s per epoch (including held scoring)",
+ "tasks_not_completed": [
+  "Task 4 only partially: the wide-head toy runs stopped at 28 epochs (clean and noisy) and 23 epochs (truth-initialised) on the time budget, not 150; the width-8 runs stopped at 78-94. One fold, one seed, one LR, no LR search, synthetic latents whose L0 variance is about half the real one. The toy shows the failure mode is possible, not that it holds on the real latents.",
+  "Task 2: the noise-only variance of L13 cannot be computed exactly because the L13 clean-fit held score is not archived; the 86-113% / 69-89% range rests on the stated assumption.",
+  "Task 2: the bias/variance split of the TCN at the selected checkpoint is not identified by the archive; only the weak bounds are safe."
+ ]
+}

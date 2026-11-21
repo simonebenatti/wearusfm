@@ -1,0 +1,12 @@
+r_s8_noisy params 12400 epoch 0 held rec -3.143 clean -3.160 | fit rec -2.978 clean -2.959
+r_s8_noisy ep 1 held E 0.86548 mse 2.37761 rec -0.766 clean_rec -0.769 | fit E 0.85902 rec -0.668 clean_rec -0.686 t 23s
+r_s8_noisy ep 2 held E 0.85509 mse 2.25479 rec -0.583 clean_rec -0.589 | fit E 0.84581 rec -0.452 clean_rec -0.492 t 28s
+r_s8_noisy ep 3 held E 0.84796 mse 2.16625 rec -0.456 clean_rec -0.463 | fit E 0.83810 rec -0.325 clean_rec -0.377 t 35s
+r_s8_noisy ep 4 held E 0.84289 mse 2.10445 rec -0.367 clean_rec -0.372 t 39s
+r_s8_noisy ep 5 held E 0.83590 mse 2.04873 rec -0.243 clean_rec -0.247 | fit E 0.82012 rec -0.031 clean_rec -0.106 t 45s
+r_s8_noisy ep 6 held E 0.83180 mse 2.00118 rec -0.171 clean_rec -0.174 t 49s
+r_s8_noisy ep 7 held E 0.82890 mse 1.97175 rec -0.120 clean_rec -0.126 t 53s
+r_s8_noisy ep 8 held E 0.82681 mse 1.95317 rec -0.083 clean_rec -0.085 t 58s
+r_s8_noisy ep 9 held E 0.82460 mse 1.93089 rec -0.044 clean_rec -0.049 t 62s
+r_s8_noisy ep 10 held E 0.82290 mse 1.91908 rec -0.014 clean_rec -0.019 | fit E 0.80588 rec 0.203 clean_rec 0.096 t 67s
+r_s8_noisy SUMMARY: selected(min held MSE) ep 10 rec -0.014 clean -0.019 | best rec ep 10 -0.014 | last ep 10 rec -0.014 clean -0.019

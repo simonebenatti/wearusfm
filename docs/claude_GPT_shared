@@ -8992,6 +8992,21 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   `docs/decisioni.md`: «va bene se aumenti il budget» e «dagli quello che serve moltiplicato per 1.5».
 - Seguito: l'operatore 2-TCN head launcher rilascia con questa review e procede. Nessun lancio da parte mia.
 
+### 2026-11-21 | Claude | Diagnosi del controllo temporale TCN: regge, D0 e D1 da fare con quattro condizioni (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: la diagnosi di GPT e il seguito D0/D1, ramo `codex/pose-temponet-temporal-diagnosis-20261121`, commit
+  `e7670758de9d0b6e25a9ad880ec3e1f7d573f169`, base `d3e41d06afbc5d47cb988488784a4655f16584af`. Richiesta di GPT incollata da
+  Simone il 21/11: una sola review scientifica mirata, nessuna implementazione e nessun lancio.
+- Review in `docs/reviews/claude_review_pose_temponet_temporal_diagnosis_20261121.md`, con la cartella `_evidence`.
+- Metodo: i tre script di GPT rieseguiti (uscite identiche); gate, curve, selezione e riferimenti ricalcolati dai JSON grezzi; due
+  revisori indipendenti e quattro controlli incrociati, con una simulazione giocattolo su latenti sintetici. Nessun accesso al
+  cluster.
+- Esito: **nessun blocco**. Tutti i riscontri della diagnosi sono confermati. D0 e D1 vanno fatti. Quattro condizioni da scrivere
+  nella proposta prima del pacchetto operativo: regola di lettura di D1 decidibile e fissata prima dei fit; un riferimento sotto
+  rumore, perché D0 e D1 non dicono se un rimedio dal lato della testa esiste; variante confermata su un mondo nuovo, un solo
+  tentativo; decisione registrata di Simone con ID, costi e sotto-budget.
+- Seguito: GPT integra le condizioni, poi prepara il pacchetto distinto per 2-TCN head launcher, che avrà la sua review.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13198,3 +13213,23 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
 - I limiti sul percorso critico sommano 17,73 ore, più code e passaggi dell'operatore; dal 23/11 alle 08:00 Leonardo è in
   manutenzione per due giorni.
 - Dalle ricevute vere: il preflight del 21/11 ha riprodotto i due `E_dyn` storici bit per bit.
+
+### 2026-11-21 | Claude | Controllo temporale TCN: che cosa la diagnosi non dice ancora, e la regola di lettura di D1
+
+- Sulla scala del gate una testa allenata sul rumoroso senza capacità temporale parte sotto zero: L0 neurale −13,6 / −10,8 /
+  −12,3%, MLP −12,2 / −10,7 / −11,5%, L0 in forma chiusa su `y` −19,1 / −16,4 / −17,8%. Alla pari contro L0 neurale la TCN chiude
+  il 33,2 / 26,8 / 30,3%; per il gate ne servirebbe il 55,5% pooled. Il gate resta valido: il protocollo lo dichiarava.
+- Nel controllo lineare la stessa ricetta, scelta all'epoca 28, finisce il 19,7 / 18,7% del margine temporale sopra l'oracolo.
+  Lettura additiva approssimata: margine catturato circa 44 / 38%, prezzo del rumore circa 20 / 19%. Anche senza rumore il 50% non
+  sarebbe raggiunto all'epoca scelta; proseguendo il recupero pooled cade a −22,6%.
+- Lo scarto fitting/esclusi della TCN sta fra quelli di L0 e L13 in forma chiusa su `y`, mentre `cleanLS` si trasferisce senza
+  perdita: è compatibile con la sola memorizzazione del rumore, non indica un cattivo trasferimento fra utenti.
+- La tabella degli esiti di D1 non è decidibile: un minimo al bordo delle 150 epoche è «inconclusivo», «ottimizzazione da
+  indagare» e compatibile con la riga 1 nello stesso tempo. Nel giocattolo il bordo scatta in un seme su due per puro caso.
+- D0 e D1 non separano «un rimedio dal lato della testa esiste» da «a questo campione nessuna testa allenata così arriva al 50%».
+  Nel giocattolo il successo sul pulito (80% all'epoca 28) convive con ogni testa a inizio casuale ferma al 31% o sotto su `y`;
+  la testa larga 8 da inizio casuale arriva al 27% su `y` e al 44% su `y*`.
+- Cambiare la candidata e ripetere il gate sullo stesso mondo, con gli stessi semi e le stesse metà escluse, non è protetto dalla
+  circolarità.
+- Corretti due punti della mia lettura provvisoria: il costo del rumore fra il 65% e il 181% del margine vale a convergenza, non
+  al checkpoint scelto; una testa stretta come il generatore, da inizio casuale, non è un buon riferimento.

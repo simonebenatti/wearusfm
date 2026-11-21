@@ -1,0 +1,20 @@
+f_wide_noisy params 72904 epoch 0 held rec -3.143 clean -3.160 | fit rec -2.978 clean -2.959
+f_wide_noisy ep 1 held E 0.86527 mse 2.37155 rec -0.762 clean_rec -0.766 | fit E 0.85891 rec -0.666 clean_rec -0.684 t 43s
+f_wide_noisy ep 2 held E 0.85499 mse 2.25083 rec -0.581 clean_rec -0.588 | fit E 0.84571 rec -0.450 clean_rec -0.490 t 69s
+f_wide_noisy ep 3 held E 0.84779 mse 2.16470 rec -0.454 clean_rec -0.460 | fit E 0.83785 rec -0.321 clean_rec -0.373 t 100s
+f_wide_noisy ep 4 held E 0.83937 mse 2.09771 rec -0.305 clean_rec -0.309 t 123s
+f_wide_noisy ep 5 held E 0.83275 mse 2.03856 rec -0.188 clean_rec -0.188 | fit E 0.81551 rec 0.045 clean_rec -0.031 t 156s
+f_wide_noisy ep 6 held E 0.82716 mse 1.99426 rec -0.089 clean_rec -0.090 t 176s
+f_wide_noisy ep 7 held E 0.82353 mse 1.96122 rec -0.025 clean_rec -0.031 t 195s
+f_wide_noisy ep 8 held E 0.82053 mse 1.94397 rec 0.028 clean_rec 0.030 t 211s
+f_wide_noisy ep 9 held E 0.81754 mse 1.91810 rec 0.081 clean_rec 0.078 t 231s
+f_wide_noisy ep 10 held E 0.81614 mse 1.90615 rec 0.106 clean_rec 0.105 | fit E 0.78738 rec 0.506 clean_rec 0.358 t 263s
+f_wide_noisy ep 11 held E 0.81384 mse 1.88702 rec 0.146 clean_rec 0.142 t 286s
+f_wide_noisy ep 12 held E 0.81243 mse 1.87984 rec 0.171 clean_rec 0.169 t 307s
+f_wide_noisy ep 13 held E 0.81134 mse 1.86956 rec 0.191 clean_rec 0.188 t 326s
+f_wide_noisy ep 14 held E 0.81050 mse 1.86232 rec 0.205 clean_rec 0.207 t 348s
+f_wide_noisy ep 15 held E 0.80929 mse 1.85504 rec 0.227 clean_rec 0.228 | fit E 0.77429 rec 0.720 clean_rec 0.502 t 379s
+f_wide_noisy ep 16 held E 0.80781 mse 1.85433 rec 0.253 clean_rec 0.253 t 397s
+f_wide_noisy ep 17 held E 0.80684 mse 1.84497 rec 0.270 clean_rec 0.271 t 415s
+f_wide_noisy STOP: time budget reached at epoch 17
+f_wide_noisy SUMMARY: selected(min held MSE) ep 17 rec 0.270 clean 0.271 | best rec ep 17 0.270 | last ep 17 rec 0.270 clean 0.271

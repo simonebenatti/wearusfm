@@ -1,0 +1,5 @@
+r_wide_clean params 72904 epoch 0 held rec -3.143 clean -3.160 | fit rec -2.978 clean -2.959
+r_wide_clean ep 1 held E 0.86225 mse 2.35438 rec -0.709 clean_rec -0.712 | fit E 0.85626 rec -0.623 clean_rec -0.625 t 47s
+r_wide_clean ep 2 held E 0.84597 mse 2.20088 rec -0.421 clean_rec -0.428 | fit E 0.83604 rec -0.292 clean_rec -0.299 t 70s
+r_wide_clean ep 3 held E 0.83361 mse 2.08628 rec -0.203 clean_rec -0.207 | fit E 0.81960 rec -0.022 clean_rec -0.028 t 94s
+r_wide_clean SUMMARY: selected(min held MSE) ep 3 rec -0.203 clean -0.207 | best rec ep 3 -0.203 | last ep 3 rec -0.203 clean -0.207

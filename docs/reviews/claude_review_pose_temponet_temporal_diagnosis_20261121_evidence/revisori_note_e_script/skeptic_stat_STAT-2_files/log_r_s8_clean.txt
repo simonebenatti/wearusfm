@@ -1,0 +1,12 @@
+r_s8_clean params 12400 epoch 0 held rec -3.143 clean -3.160 | fit rec -2.978 clean -2.959
+r_s8_clean ep 1 held E 0.86258 mse 2.36156 rec -0.715 clean_rec -0.718 | fit E 0.85656 rec -0.628 clean_rec -0.629 t 23s
+r_s8_clean ep 2 held E 0.84907 mse 2.21303 rec -0.476 clean_rec -0.484 | fit E 0.84126 rec -0.377 clean_rec -0.386 t 29s
+r_s8_clean ep 3 held E 0.83986 mse 2.09569 rec -0.313 clean_rec -0.322 | fit E 0.82920 rec -0.180 clean_rec -0.191 t 35s
+r_s8_clean ep 4 held E 0.83250 mse 2.00533 rec -0.183 clean_rec -0.192 t 39s
+r_s8_clean ep 5 held E 0.82740 mse 1.93848 rec -0.093 clean_rec -0.101 | fit E 0.81403 rec 0.069 clean_rec 0.063 t 45s
+r_s8_clean ep 6 held E 0.82369 mse 1.89371 rec -0.028 clean_rec -0.037 t 49s
+r_s8_clean ep 7 held E 0.82061 mse 1.86120 rec 0.027 clean_rec 0.018 t 54s
+r_s8_clean ep 8 held E 0.81933 mse 1.84237 rec 0.049 clean_rec 0.040 t 58s
+r_s8_clean ep 9 held E 0.81723 mse 1.82663 rec 0.086 clean_rec 0.076 t 62s
+r_s8_clean ep 10 held E 0.81577 mse 1.81443 rec 0.112 clean_rec 0.102 | fit E 0.80217 rec 0.263 clean_rec 0.255 t 68s
+r_s8_clean SUMMARY: selected(min held MSE) ep 10 rec 0.112 clean 0.102 | best rec ep 10 0.112 | last ep 10 rec 0.112 clean 0.102
