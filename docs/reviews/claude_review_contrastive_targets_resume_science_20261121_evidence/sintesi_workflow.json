@@ -1,0 +1,551 @@
+[
+ {
+  "key": "a-mappatura-denominatori",
+  "result": {
+   "sintesi": "GPT ha ragione sulla mappatura. Gli ID 266-269 sono peso e bias dei due lineari del proiettore InfoNCE: 384x384, 384, 128x384 e 128 elementi, 197.120 parametri su 28.559.133. AdamW ha un solo gruppo da 270 parametri, lr 1e-4 e weight decay 0,05 per tutti. Ho riprodotto l'impronta 864a86de... solo con le chiavi di AdamW di torch 2.2, la versione del run. L'impronta conferma numero di parametri e iperparametri, non i nomi. I denominatori e tutte le percentuali citate da GPT coincidono con il JSON. In CR il proiettore riceve un gradiente esattamente nullo (peso NCE 0): i momenti sono zero e l'errore vale 0/1e-12. Il superamento di CR quindi non controlla quel percorso. Lo scarto CN è graduato e diffuso: mediana degli exp_avg 0,46%, chiavi della coda fino a 0,92%, blocchi local e pool fino all'1,05% dal passo 544. Il quadro è compatibile con una divergenza numerica che il denominatore amplifica (exp_avg è per il 96,6% fatto di gradienti successivi al fork). Non indica un tensore non ripristinato.",
+   "risultati": [
+    {
+     "affermazione": "Gli ID 266, 267, 268 e 269 corrispondono a contrastive_head.layers.0.weight (384,384), layers.0.bias (384), layers.2.weight (128,384) e layers.2.bias (128). Sono gli ultimi 4 dei 270 parametri allenabili, 197.120 elementi su 28.559.133.",
+     "prova": "run.py:1387-1390 (il proiettore è attaccato dopo WearUsFM) e run.py:1429 (AdamW su student.parameters() con requires_grad). Lo script agents/a-mappatura-denominatori/build_params.py sulla config CN e CR stampa: 266 contrastive_head.layers.0.weight (384, 384) 147456 ... 269 contrastive_head.layers.2.bias (128,) 128; n trainable 270.",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "nessuna (prerequisito)"
+    },
+    {
+     "affermazione": "AdamW ha un solo gruppo di parametri: lr 1e-4, betas (0.9, 0.999), eps 1e-8, weight decay 0,05 su tutto, compresi bias e norme. Il proiettore non ha iperparametri propri.",
+     "prova": "run.py:1429; build_params.py stampa groups 1 [lr 0.0001, betas (0.9, 0.999), eps 1e-08, weight_decay 0.05].",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "L'impronta 864a86de...9837 è lo state_sha256 dei param_groups con lr=_lr_at(544)=2,7778e-5. Compare in 24 tracce su 24 al confine. La riproduco esattamente solo con il set di chiavi di AdamW di torch 2.2 e params=range(270); con torch 2.14 esce 1cfdcaef...4251. Conferma numero dei parametri e iperparametri, non i loro nomi.",
+     "prova": "contrastive_target_resume.py:181-188 e 314-319. Il conteggio con uniq -c sulle prime righe delle 24 trace-?.jsonl dà 24 occorrenze. fp2.py: MATCH n 270 {} (provati n da 265 a 274). numeric_profile.rank0.json: torch_version 2.2.0a0+git6c8c5ad.",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "In CR i momenti 266-269 sono zero esatti. Il proiettore esiste e sta nel grafo, ma serve solo a InfoNCE, che in CR ha peso 0: il gradiente è uno zero esatto e l'errore relativo vale 0/max(0,1e-12)=0. I pesi cambiano solo per il weight decay deterministico.",
+     "prova": "run.py:1388-1390; contrastive_objectives.py:245 (q_raw dal proiettore), 272 e 288 (RnC usa enc.z); jepa.py:275 (perdita = somma di peso x num). Metriche CR: contrast_projector_grad_norm > 0 in 0 passi su 576 e contrast_nce_weight 0.0. In CN è > 0 in 320 passi (257-576). JSON CR: by_block...from_fork.student.contrastive_head = 0.0.",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "Il superamento di CR non dice nulla sul percorso del proiettore."
+    },
+    {
+     "affermazione": "Denominatore dei momenti e delle chiavi della coda: norma L2 del singolo tensore del primo membro, pavimento 1e-12, fallimento se l'errore supera 0,01. I contatori .step devono coincidere esattamente.",
+     "prova": "contrastive_benchmark_readout.py:114-127 (return sqrt(error2)/max(sqrt(scale2),1e-12)), 135-143; contrastive_target_resume.py:256-258.",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "Denominatore di studente e teacher: spostamento del primo membro dall'inizializzazione autenticata. È il campo saved['student'] del checkpoint di calibrazione a peso fisso, al passo 512 con ottimizzatore vuoto; vale anche per il teacher, perché alla partenza i due hanno lo stesso sha. Si confrontano solo i parametri; i buffer devono coincidere esattamente. La lettura dal passo 544 usa fork[part] come riferimento ed è solo descrittiva.",
+     "prova": "contrastive_target_resume.py:249-253 e 274-286; contrastive_benchmark_readout.py:276-282.",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "Il primo membro è il continuo nelle coppie continuo/A e continuo/B; nella coppia A/B è reload_a.",
+     "prova": "contrastive_target_resume.py:396, itertools.combinations(PHASES, 2) con PHASES=(continuous, reload_a, reload_b).",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "Tutti i valori citati coincidono con il JSON. exp_avg CN: 0.01221615662445262, 0.01034195290681912, 0.013164698202657702 e 0.01108410806754013. exp_avg_sq: 0,155-0,168%. Dall'inizializzazione: studente/teacher CN 0,08975%/0,00821%, CR 0,08082%/0,00727%. Studente dal passo 544: CN 0,6454%, CR 0,6164%. La coppia A/B ha tutto a 0. Nessun errore al confine e nessuna differenza di input, RNG o ordine.",
+     "prova": "preflight_readout.json, campi arms.CN|CR.resume.pairs.*.floating_state_errors, floating_tensor_relative_to_left, relative_to_left_displacement_from_initial, relative_to_left_displacement_from_544, boundary_mismatches=[], input_rng_counter_order_differences di lunghezza 0.",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "In CN lo scarto è graduato e diffuso. I 270 exp_avg hanno mediana 0,461%, 90° percentile 0,588% e massimo fuori dal proiettore 0,714% (ID 194). Le chiavi della coda arrivano a 0,919%. Dal passo 544 i pesi dei blocchi local e pool differiscono dell'1,028% e dell'1,047%, più del proiettore (0,932%). In CR la mediana degli exp_avg è 0,288%.",
+     "prova": "preflight_readout.json: statistiche su floating_tensor_relative_to_left e by_block_relative_to_left_displacement_from_fork (comando python nel rapporto).",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "Sostiene H2 e H3 contro H1, nella forma di uno stato non ripristinato."
+    },
+    {
+     "affermazione": "I denominatori sono asimmetrici. Al passo 576 exp_avg è per il 96,6% (1-0,9^32) fatto di gradienti successivi al fork; exp_avg_sq solo per il 3,1% (1-0,999^32). I parametri invece si giudicano su 576 passi di spostamento. Lo scarto del proiettore (1,0-1,3%) è coerente con la divergenza di 32 passi misurata sui pesi dal 544 (0,65% in totale, 0,93% nel blocco). La norma di una media mobile di gradienti rumorosi è ridotta dalla cancellazione dei segni, quindi usata come denominatore amplifica lo scarto relativo.",
+     "prova": "Aritmetica su betas (0.9, 0.999) verificati in build_params.py e sui valori del JSON.",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H3 (amplificata da H2)"
+    },
+    {
+     "affermazione": "Già al passo 545 il grad_norm del continuo e di CN_A differisce di 2,2e-12. Al 546 coincide esattamente. Poi lo scarto salta: 2,2e-5 al 547, 3,8e-4 al 550. Il total registrato nel log differisce già al 545 (9,8e-8) e quindi non è un indicatore fedele.",
+     "prova": "benchmark_execution_20261121/CN/metrics.jsonl e reloads_execution_20261121/CN_A/metrics.jsonl, campi grad_norm e total ai passi 545-552.",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "Compatibile con H2; da passare al compito 2."
+    }
+   ],
+   "divergenze_da_gpt": [
+    "Nessuna divergenza su mappatura, denominatori o valori. Una precisazione: l'impronta 864a86de... è riproducibile solo con il set di chiavi di AdamW di torch 2.2 del run, non con torch 2.14 del Mac. Prova un gruppo da 270 parametri con gli stessi iperparametri, non l'associazione fra ID e nomi; quella viene dall'ordine di costruzione del codice.",
+    "GPT presenta le due loss come risposte a domande diverse sulla sensibilità del proiettore. È più forte di così: in CR i momenti del proiettore sono zeri esatti e il controllo su 266-269 non ha alcun segnale. Il superamento di CR non è un controllo negativo per il proiettore.",
+    "GPT scrive che gli altri tensori rientrano nella soglia, ma non dice quanto vicino. In CN la mediana degli exp_avg è 0,46%, il massimo fuori dal proiettore 0,71% e le chiavi della coda arrivano a 0,92%. Dal passo 544 i pesi dei blocchi local e pool (1,03-1,05%) divergono più del proiettore. Lo scarto è diffuso; il proiettore è solo la coda della distribuzione."
+   ],
+   "punti_aperti": [
+    "Nomi dei parametri ricavati dal codice del clone 918245b6: non ho confrontato i moduli del modello con il sorgente congelato del run (source_sha256 della coorte).",
+    "Le misure del punto 4 richiedono una lettura CPU dei checkpoint .pt che stanno su Leonardo (CN 544 e 576 continuo, CN_A/CN_B 576, più CR per confronto). Sono misure, previsioni ed esiti attesi nel rapporto; non sono state eseguite.",
+    "I checkpoint non contengono i gradienti intermedi: le letture misurano la scala dello scarto, non la sua origine (DDP, bf16 o altro non determinismo legato al processo).",
+    "La causa del salto del grad_norm fra 546 (identico) e 547 (2e-5) in CN non è chiarita; spetta al compito 2."
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_resume/reports/a-mappatura-denominatori.md"
+  }
+ },
+ {
+  "key": "b-stato-ripristino",
+  "result": {
+   "sintesi": "Gli artefatti escludono un difetto di ripristino dello stato salvato (H1). Le impronte al confine 545 coincidono in tutti gli elementi verificati, su 4 rank e 3 fasi, in CN e CR. Gli elementi sono studente con il proiettore, teacher, momenti e gruppi di AdamW, coda (chiavi, ordine, copertura) e RNG per rank. Batch, input, RNG e ordine della coda coincidono nei 32 passi. Al 545 le loss deterministiche contrast_nce, contrast_rnc e pose sono identiche bit per bit fra continuo e riprese. La prima divergenza e' la norma del gradiente dopo la riduzione DDP (2,2e-12 relativo). L'unica differenza di stato di processo osservata sono i bucket DDP, non salvati nel checkpoint e iniziali nella ripresa al 545. Al 546 la norma del gradiente CN e' identica, quindi la disposizione diversa riguarda probabilmente il solo passo 545. In CR il proiettore ha gradiente nullo e momenti 266-269 con errore 0: il successo di CR non mette alla prova quei tensori.",
+   "risultati": [
+    {
+     "affermazione": "Nessuna discrepanza di confine: lo stato al 545 di studente, teacher, momenti AdamW, param_groups al lr successivo e stato contrastivo coincide col fork su tutti i rank e le fasi, e cosi' gli RNG CPU/CUDA",
+     "prova": "preflight_readout.json: arms.CN.resume.boundary_mismatches=[] e arms.CR.resume.boundary_mismatches=[]; confronto in scripts/contrastive_target_resume.py:314-371; cmp.py: boundary uguale continuo/A/B su 4 rank",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "contro H1"
+    },
+    {
+     "affermazione": "Tutti i campi di trace-<rank>.jsonl (batch, input, rng prima/dopo, ordine/lunghezza/last_step della coda, copertura, finestre, pesi, supporto) sono identici per 32 passi e 4 rank fra continuo, A e B, in CN e CR",
+     "prova": "agents/b-stato-ripristino/cmp.py: 'cont vs reload diffs: {}' e 'A vs B diffs: []' per ogni rank e braccio",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "contro H1"
+    },
+    {
+     "affermazione": "Al 545 il forward e' bit-identico per le loss deterministiche: contrast_nce=3.67859810590744, contrast_rnc e pose uguali fra continuo e riprese in CN; al 546 contrast_nce identico; prima differenza al 547",
+     "prova": "metrics_cmp.py/ab_cmp.py su benchmark_execution_20261121/CN/metrics.jsonl e reloads_execution_20261121/CN_A/metrics.jsonl",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "contro H1 (coda, proiettore, studente e teacher ripristinati in modo funzionalmente esatto)"
+    },
+    {
+     "affermazione": "La prima divergenza e' nella norma del gradiente dopo la riduzione al 545: grad_norm 4.336711902204087 contro 4.336711902194546 (2,2e-12 relativo, 9,5e-12 assoluto), contrast_projector_grad_norm 1,0e-13 relativo",
+     "prova": "metrics.jsonl step 545, CN continuo contro CN_A (metrics_cmp.py)",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Al 546 grad_norm, grad_clip_factor e contrast_projector_grad_norm CN sono identici fra continuo e ripresa: la disposizione dei bucket diversa riguarda probabilmente il solo 545",
+     "prova": "metrics_cmp.py step 546 rel=0.0; torch 2.14 locale distributed.py:1758 set_runtime_stats_and_log prima di :1776 _rebuild_buckets() in _pre_forward, per cui has_rebuilt_buckets:0 registrato al 546 e' compatibile con la ricostruzione al 546 (torch 2.2.0a0 di Leonardo non controllato)",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "La ripresa al 545 usa i bucket DDP iniziali (iteration 0, bucket_sizes '114202292, 68480'), il continuo quelli ricostruiti; l'ordine ricostruito finale coincide",
+     "prova": "trace-<rank>.ddp.jsonl di CN/CR, continuo e CN_A (cmp.py)",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Fra A e B, con checkpoint identici, le loss di ancore e JEPA registrate differiscono fino a 5e-7 relativo, mentre grad_norm, contrast_nce e pose sono identici: e' rumore della sola lettura (index_add atomico nelle somme per finestra), che non tocca il gradiente",
+     "prova": "ab_cmp.py: jepa n_diff=29 max_rel 2,7e-7, log_rms 32/3,6e-7, grad_norm n_diff=0; src/wearusfm/model/anchors.py:47-48,65-66",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "le differenze di jepa/log_rms al 545 non indicano stato diverso"
+    },
+    {
+     "affermazione": "La coda e' replicata su ogni rank (chiavi raccolte globalmente), salvata dal rank 0 e ricaricata su ogni rank dallo stesso file; chiavi in fp32, con il dtype controllato al caricamento",
+     "prova": "contrastive_objectives.py:255-257,270,176-194; contrastive_memory.py:211,220,248-290; contrastive.py:66-73",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "contro H1"
+    },
+    {
+     "affermazione": "Le chiavi della coda precedenti al fork hanno errore esattamente 0 a 576 (CN entries 0-5069, CR 0-5039); quelle scritte dopo differiscono, fino allo 0,92% in CN e allo 0,60% in CR",
+     "prova": "preflight_readout.json pairs.continuous__reload_a.floating_tensor_relative_to_left, chiavi contrastive_state.queue.entries.*.key (910 non nulle CN, 940 CR, suffisso contiguo)",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "contro H1"
+    },
+    {
+     "affermazione": "In CR il proiettore non riceve gradiente (contrast_projector_grad_norm=0.0 in tutti i passi), e i momenti 266-269 hanno errore 0.0: CR non e' un controllo per i quattro tensori che falliscono in CN",
+     "prova": "metrics.jsonl CR; preflight_readout.json arms.CR.resume.pairs.continuous__reload_a.floating_tensor_relative_to_left optimizer.state.266-269 = 0.0",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H3 (il criterio colpisce tensori che solo CN mette alla prova)"
+    },
+    {
+     "affermazione": "ProjectionHead non ha buffer; niente GradScaler; flag numerici uguali fra continuo e ripresa; EMA a momento costante",
+     "prova": "contrastive.py:15-27; grep GradScaler vuoto in run.py; diff dei flag di numeric_profile.rank0.json vuoto (FLAGS_EQUAL); jepa.py:606",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "contro H1"
+    },
+    {
+     "affermazione": "L'impronta di confine non include il dispositivo dei tensori di AdamW (step, exp_avg): un percorso foreach o fused o un dispositivo diverso dopo load_state_dict non e' verificato, ma dal codice di torch risulta uguale al continuo",
+     "prova": "src/wearusfm/training/pairing.py:17-20 (hash di dtype, forma e byte, non del dispositivo)",
+     "stato": "non_dimostrato",
+     "ipotesi_sostenuta": "H1 residua, improbabile"
+    }
+   ],
+   "divergenze_da_gpt": [
+    "GPT colloca il raggruppamento diverso fino al 547; le metriche CN al 546 (grad_norm e norma del gradiente del proiettore identici) indicano che la disposizione diversa riguarda probabilmente il solo 545. Il campo has_rebuilt_buckets registrato al 546 precede la ricostruzione nello stesso _pre_forward (dedotto da torch 2.14 locale).",
+    "GPT non nota che in CR il proiettore ha gradiente nullo e i momenti 266-269 hanno errore 0: il successo di CR non e' un controllo per quei tensori.",
+    "GPT parla di 9,5e-12 sulla 'norma totale del gradiente InfoNCE': e' la differenza assoluta della norma totale del gradiente del braccio CN (2,2e-12 relativo), non della componente InfoNCE.",
+    "GPT dice che i tensori della coda rientrano nella soglia senza dire che le chiavi scritte dopo il fork arrivano a 0,92% (CN) e 0,60% (CR), vicino all'1%; quelle precedenti al fork sono esatte."
+   ],
+   "punti_aperti": [
+    "Il torch di Leonardo (2.2.0a0) mette set_runtime_stats_and_log prima di _rebuild_buckets come il 2.14 locale? Se si', solo il 545 ha bucket diversi.",
+    "Dispositivo e dtype di step ed exp_avg dopo load_state_dict, e percorso foreach di AdamW, non verificati a runtime.",
+    "Gradienti locali per rank al 545 non registrati: per confermare che la divergenza nasce nella riduzione serve la prova strumentata, oppure una ripresa con bucket gia' ricostruiti (passo a vuoto escluso dal confronto, o bucket fissati).",
+    "Non so se continuo e riprese abbiano girato sullo stesso nodo (allocation.sacct.tsv senza NodeList): resta aperta una variazione dell'algoritmo NCCL.",
+    "Le chiavi scritte al passo 544 (forward 545) siano rimaste esatte e' plausibile per il contrast_nce bit-identico, ma non e' dimostrabile senza gli step delle voci della coda nei checkpoint."
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_resume/reports/b-stato-ripristino.md"
+  }
+ },
+ {
+  "key": "c-decorso",
+  "result": {
+   "sintesi": "Gli artefatti indicano una differenza numerica ripetibile (H2), resa visibile dalla soglia dell'1% su exp_avg (H3). Un difetto di ripristino (H1) è quasi escluso. L'unico punto in cui il continuo e le riprese differiscono è la riduzione DDP dell'update 545: il primo iterato dopo il riavvio usa un solo bucket fp32 da 114 MB invece dei bucket ricostruiti. Lo scarto parte da 2,2e-12 sulla norma del gradiente, compie un salto quantizzato di tipo bf16 (CN 547, CR 546) e poi cresce lentamente, di 0,02-0,04 decadi per update. Le chiavi della coda inserite a 545-546 (in CN anche a 547) sono identiche bit per bit; la norma del gradiente CN al 546 è identica al continuo. Nello spazio dei parametri lo scarto è globale e simile nei due bracci (studente da 544: 0,645% CN, 0,616% CR). I tensori 266-269, cioè il proiettore InfoNCE (mappatura confermata), sono solo la coda della distribuzione. Correzione a GPT: secondo la mia lettura il layout dei bucket differisce solo al 545, non al 545-546. Tempi e GPU-ore di GPT sono corretti; i nodi non sono registrati da nessuna parte.",
+   "risultati": [
+    {
+     "affermazione": "A e B coincidono bit per bit in tutte le metriche di gradiente. Differiscono solo i log delle loss (band_shape, contrast_rnc, jepa, log_env, log_rms, ms_fast, ms_slow, total) e i tempi, con scarti di ordine float32 (jepa al massimo 2,7e-7 in CN e 5,0e-7 in CR).",
+     "prova": "agents/c-decorso/metrics_diff.py su metrics.jsonl delle riprese: elenco dei campi diversi fra A e B, identico per CN e CR; massimi A/B calcolati inline",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "Lo scarto A/B nei log viene da index_add non deterministico nella media per campione. Il gradiente non cambia, quindi i checkpoint restano identici. Anche gli scarti continuo/A di jepa e simili ai passi 545-546 (≤4e-7) cadono sotto questo rumore e non provano una divergenza.",
+     "prova": "src/wearusfm/model/anchors.py:47-48; src/wearusfm/training/jepa.py:25-26 («su GPU l'ordine delle somme non e' deterministico»)",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Primo scarto sul gradiente all'update 545: in CN 2,2e-12 relativo (9,5e-12 assoluto: 4.336711902204087 contro 4.336711902194546), in CR 3,4e-13. Al 546 la norma CN è identica (9.023137809933427 nei tre run), quella CR differisce di 3,4e-6. Al 547 CN differisce di 2,2e-5, CR di 1,3e-4.",
+     "prova": "campo grad_norm di benchmark_execution_20261121/{CN,CR}/metrics.jsonl e di reloads_execution_20261121/{CN,CR}_{A,B}/metrics.jsonl",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "La crescita dopo il salto è lenta. La pendenza di log10 dello scarto sugli update 548-576 vale +0,037 per grad_norm CN e +0,040 per CR; nella seconda metà rallenta (CN +0,030, CR −0,039, proiettore CN −0,025). CN e CR hanno lo stesso decorso, con CR un update in anticipo, e livelli simili (grad_norm 567-576: 8,7e-4 CN, 3,2e-4 CR).",
+     "prova": "agents/c-decorso/trend.py su reldiff.json",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "Gli ID 266-269 sono contrastive_head.layers.0.weight (384×384), layers.0.bias, layers.2.weight (128×384) e layers.2.bias. Il modello ha 270 parametri per 28.559.133 elementi. In CR proprio questi quattro hanno errore zero, perché il proiettore non riceve gradiente.",
+     "prova": "agents/c-decorso/params.py (stessa costruzione di run.py:1387-1390 e AdamW di run.py:1429); nel JSON, CR: contrast_projector_grad_norm 0.0, by_block student.contrastive_head 0.0, zeri esatti solo per 266-269",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "In CN gli exp_avg hanno mediana 4,6e-3, p99 1,06e-2 e massimo 1,32e-2. I tensori 266-269 occupano i ranghi 1-4 su 270 e valgono 2,3-2,9 volte la mediana; il quinto è a 7,1e-3, e 85 tensori superano lo 0,5%. In CR la mediana è 2,9e-3 e il massimo 5,9e-3. Gli exp_avg_sq restano 10-100 volte sotto. Lo spostamento dello studente da 544 è 0,6454% in CN e 0,6164% in CR.",
+     "prova": "agents/c-decorso/tensors.py su arms.*.resume.pairs.*.floating_tensor_relative_to_left; relative_to_left_displacement_from_544.student",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H3"
+    },
+    {
+     "affermazione": "exp_avg risponde quasi solo ai gradienti degli ultimi ~10 update (peso pre-fork 0,9^32 = 3,4%); exp_avg_sq resta dominato dalla storia comune (0,999^32 = 96,8%). La soglia dell'1% su exp_avg è quindi molto più severa di quella sui pesi.",
+     "prova": "conto esplicito con i β di default di AdamW (run.py:1429 non li modifica)",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H3"
+    },
+    {
+     "affermazione": "Le chiavi della coda inserite agli update 545 e 546 (29 + 32), e in CN anche al 547 (30), sono identiche bit per bit fra continuo e riprese. Il confine fra zeri e non zeri cade esattamente su un confine di update: CN all'indice 5070 = 4979 + 91, CR all'indice 5040 = 4979 + 61. Dal primo update diverso le mediane salgono subito a 3,3-3,6e-3 e restano quasi piatte: 4,6-5,9e-3 in CN, 3,6-4,4e-3 in CR, cioè a scala dell'ulp bf16.",
+     "prova": "agents/c-decorso/queue_map.py: ricostruzione della coda da origin ed eligible, ordine (step, global_index) da contrastive_memory.py:236-245 e :286; uscita queue_by_update_{CN,CR}.json",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H2 (contro H1)"
+    },
+    {
+     "affermazione": "Teacher, coda e forward al 545 sono ripristinati in modo esatto: le chiavi del 545 le calcola il teacher ripristinato dal fork (run.py:1722). In CN lo studente dopo il 545 è identico nel bf16, perché la norma del 546 è identica. Un errore di momenti, lr o contatore avrebbe dato scarti ≥1e-7 già al 545-546.",
+     "prova": "chiavi identiche (riga precedente) + grad_norm 546 identico + conto sulla risoluzione float32",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2 (contro H1)"
+    },
+    {
+     "affermazione": "Uno scarto relativo di 2,2e-12 sulla norma è compatibile con circa 3e5 elementi (~1%) che differiscono di 1 ulp float32 con segni casuali; 3,4e-13 corrisponde a circa 7e3 elementi. Non può nascere da un errore sistematico. Però è 5-100 volte sotto quanto ci si aspetterebbe se tutti gli elementi cambiassero ordine di somma.",
+     "prova": "Δ‖g‖/‖g‖ ≈ 2^-23·√k/N con N = 2,856e7 (conto nel rapporto, sezione 3)",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Al 545 lo scarto della norma del gradiente del proiettore (1,0e-13 su 197.120 elementi) corrisponde a circa un solo elemento diverso. Il proiettore non è l'origine dello scarto: lo riceve dopo e lo amplifica. Spiegazione possibile: in entrambi i layout si trova all'inizio del buffer, nello stesso blocco dell'anello NCCL.",
+     "prova": "conto √k ≈ 0,17; ordine dei parametri nei bucket da trace-0.ddp.jsonl (268 269 266 267 all'inizio, primo bucket ricostruito da 3.241.700 byte)",
+     "stato": "non_dimostrato"
+    },
+    {
+     "affermazione": "La riduzione dell'update 546 usa già i bucket ricostruiti, quindi il layout diverso riguarda solo il 545. Il trace DDP si legge dopo il backward, ma le statistiche vengono fissate all'inizio del forward, prima di _rebuild_buckets: has_rebuilt_buckets=0 alla riga 546 descrive lo stato prima della ricostruzione.",
+     "prova": "scripts/contrastive_target_resume.py:189-201; nel torch locale distributed.py:1758 (set_runtime_stats_and_log) prima di :1776 (_rebuild_buckets); grad_norm CN al 546 identico bit per bit",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Il salto da ~1e-12 a 1e-5…1e-4 è compatibile con l'autocast bf16 (amp_bf16 true): una differenza di pochi ulp float32 diventa visibile solo quando un valore bf16 cambia arrotondamento, e allora cambia di 2^-8. Il valore esatto 2e-5 non è ricavabile dagli artefatti.",
+     "prova": "config.json amp_bf16: true; numeric_profile bf16_reduced_precision_reduction true, deterministic_algorithms false",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Tempi: CN continuo 784 s (job 65017310), CN_A 265 s (65033016), CN_B 213 s (65033756), CR_A 205 s, CR_B 210 s, C0 795 s, CR 773 s. 997-1.049 s corrispondono a 1,108-1,166 GPU-ore; il tetto di 30 min su 4 GPU vale 2 GPU-ore e 16 core-ore. Le cifre di GPT sono corrette.",
+     "prova": "benchmark_execution_20261121/allocation.sacct.tsv, reloads_execution_20261121/allocation.sacct.tsv, *_submission.txt; elapsed_s nei summary.json",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "Nessun artefatto registra i nodi: sacct senza NodeList, nei .out nessun host, nei summary solo cuda:0. La riga 'Nodes=lrdn3075' negli snapshot appartiene alla prenotazione s_int_check_boost, non al job. Non si può dire se continuo, A e B abbiano girato sullo stesso nodo.",
+     "prova": "benchmark_execution_20261121/CN_operational_snapshot.txt:95-97 (ReservationName=s_int_check_boost)",
+     "stato": "verificato"
+    }
+   ],
+   "divergenze_da_gpt": [
+    "GPT scrive che ai passi 545-546 continuo e riprese raggruppano diversamente i gradienti. Secondo la mia lettura la differenza riguarda solo il 545. Il trace DDP fotografa lo stato prima della ricostruzione dei bucket, che avviene nel forward del 546; la norma del gradiente CN al 546 è identica bit per bit al continuo.",
+    "Il «9,5 × 10⁻¹²» di GPT al 545 è lo scarto assoluto sulla norma del gradiente; il relativo è 2,2e-12 (CN) e 3,4e-13 (CR).",
+    "GPT propone di misurare gradienti locali e ridotti dei soli quattro tensori del proiettore. I dati indicano invece che al 545 il proiettore differisce in circa un elemento e che il seme sta altrove. La prova va estesa a tutti i 270 parametri (sha256, norma float64 e numero di elementi diversi per rank), con vettori completi solo per 266-269.",
+    "GPT tratta il proiettore come il luogo dello scarto. Gli artefatti mostrano uno scarto globale di ordine simile nei due bracci: exp_avg mediana 4,6e-3 in CN e 2,9e-3 in CR, chiavi 5,5e-3 e 4,1e-3, studente 0,645% e 0,616%. Il proiettore supera la soglia perché è la coda più sensibile, e la soglia su exp_avg con β1 = 0,9 misura solo i gradienti recenti.",
+    "GPT non indica un criterio esatto per controllare che la strumentazione non alteri il fenomeno. Ne esiste uno gratuito: gli sha256 finali dei checkpoint a 576 (continuo CN 4743abaf…, ripresa CN bb39f339…) devono essere riprodotti dai run strumentati in sola lettura.",
+    "La proposta GPT dice «sullo stesso nodo», ma i nodi dei run originali non sono registrati. La prova nuova deve registrare hostname e UUID delle GPU."
+   ],
+   "punti_aperti": [
+    "La sequenza «statistiche DDP prima della ricostruzione dei bucket» è verificata solo sul torch locale. Va letta nel sorgente del torch 2.2.0a0 del cluster.",
+    "La spiegazione dello scarto quasi nullo del proiettore al 545 (stesso blocco dell'anello NCCL nei due layout) non è verificata: dipende da canali e protocollo di NCCL 2.19.",
+    "Non ho stimato quantitativamente il salto bf16 (2e-5 al 547): servirebbero i pesi o le attivazioni.",
+    "A 576 gli scalari crescono ancora lentamente. Non si sa se lo scarto si stabilizzi su orizzonti più lunghi.",
+    "Senza leggere i checkpoint non conosco le norme assolute di m per 266-269, la norma della differenza e il coseno. Servono a giudicare la rilevanza pratica.",
+    "I nodi di continui e riprese sono ignoti, quindi non si può escludere un effetto del nodo. L'identità di A e B lo rende improbabile.",
+    "Una nuova soglia definita dopo questi dati sarebbe una regola post hoc e va dichiarata come tale."
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_resume/reports/c-decorso.md"
+  }
+ },
+ {
+  "key": "d-ddp",
+  "result": {
+   "sintesi": "Nella ripresa si discosta dal continuo solo la riduzione DDP dell'update 545. Il 545 usa ancora il layout iniziale a un solo bucket fp32. Il 546 ricostruisce i bucket all'inizio del forward e riduce già con i 7 bucket del continuo. Il campo has_rebuilt_buckets è registrato prima della ricostruzione, quindi è in ritardo di un update. Per questo sono sfasate entrambe le letture, «545-546» e «dal 547». Gli artefatti esistenti localizzano già la prima differenza dopo la riduzione DDP: a 545 le norme fp64 dei gradienti globali per obiettivo coincidono, mentre differiscono grad_norm (2,2e-12) e la norma del proiettore dopo la riduzione (1e-13). In CN, a 546, quest'ultima torna identica. L'ordine di grandezza è compatibile con un diverso ordine di somma fp32 su 4 rank. Controllo minimo consigliato: una sola ripresa CN con un'iterazione di riscaldamento DDP a effetto nullo prima del 545 (circa 0,25-0,3 GPU-ore). Il criterio è l'identità byte per byte con il continuo 4743abaf…. La modifica richiede una nuova review e una nuova release.",
+   "risultati": [
+    {
+     "affermazione": "La traccia DDP si campiona dopo forward e backward dell'update. Il valore viene dal logger, che copia lo stato del reducer in _pre_forward PRIMA di _rebuild_buckets, quindi è in ritardo di un update.",
+     "prova": "scripts/contrastive_target_resume.py:189-201 (accumulate, poi _get_ddp_logging_data); torch/nn/parallel/distributed.py (2.14) 1755-1778: set_runtime_stats_and_log alla riga 1758, _rebuild_buckets alla riga 1776",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "Nella ripresa la riduzione usa i bucket iniziali solo all'update 545 (iterazione 0). Dal 546 usa i 7 bucket ricostruiti, uguali al continuo (hash c946e781).",
+     "prova": "Probe CPU/gloo con torch 2.14 (agents/d-ddp/ddp_rebuild_probe.py, .out): con comm hook, all'iterazione 1 si riducono già i bucket ricostruiti mentre il log riporta has_rebuilt 0. Tracce di Leonardo, torch 2.2.0a0: in tutti i rank di CN_A/B e CR_A/B, 545 iteration 0 senza il campo, 546 has_rebuilt 0, 547 has_rebuilt 1 c946e781. Nel continuo iteration 500, has_rebuilt 1 c946e781 a ogni update.",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Il trainer fa un solo forward sincronizzato per update, perché la contrastiva richiede accum_steps=1. Il DDP si crea una volta per processo, con find_unused_parameters falso e un layout iniziale sys.maxsize.",
+     "prova": "src/wearusfm/training/run.py:742-744, 759-761, 430-438, 1469; distributed.py:150-159; nelle riprese iteration = update-545",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "A 545 i gradienti locali coincidono e la prima differenza compare dopo la riduzione DDP. contrast_global_grad_base/nce/rnc, calcolati con un all_reduce esplicito a layout fisso, sono identici. grad_norm differisce di 2,20e-12 in CN e di 3,40e-13 in CR, contrast_projector_grad_norm di 1,02e-13 in CN.",
+     "prova": "metrics.jsonl continuo vs CN_A/CR_A (agents/d-ddp/fields.py); contrastive_objectives.py:415-439; run.py:1691-1692",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "In CN, a 546, grad_norm, contrast_projector_grad_norm e contrast_global_grad_* sono identici bit per bit al continuo. In CR, a 546, la differenza (grad_norm 3,43e-6, contrast_global_grad_nce 1,58e-5) è già a monte della riduzione e viene dallo stato dopo il 545.",
+     "prova": "agents/d-ddp/gradnorm.py e fields.py: CN 546 9.023137809933427 in entrambi",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Le loss di log differiscono di 1e-8...4e-7 anche fra A e B, con gradienti e checkpoint identici. Sono rumore del solo calcolo registrato e non provano una divergenza.",
+     "prova": "agents/d-ddp/ab.py: 7 campi per update, 219 (CN) e 213 (CR) differenze in 32 update, grad_norm A/B sempre uguale",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "Batch, input, RNG, coda, copertura e confine a 544 coincidono fra continuo e riprese in tutti i rank.",
+     "prova": "agents/d-ddp/trace_eq.py: diffs none, boundary_eq True in 4 rank × CN/CR × A/B",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "Cambiare il layout dei bucket cambia l'ordine di somma fp32 nel ring a 4 rank. Ne risultano circa 1 ulp sugli elementi, ||Δ||/||g|| di circa 4e-8 e una norma globale a 1e-12...1e-11: compatibile con 2,2e-12 e 3,4e-13.",
+     "prova": "agents/d-ddp/ring_order_sim.py: 27,6% di elementi diversi, ||Δ||/||g||=4,2e-8, Δnorma fp64 5,0e-11 per N=4e6; grad_norm non è rappresentabile in fp32 (numpy)",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Controllo minimo I1: una ripresa CN con forward/backward di riscaldamento sul DDP vivo, runtime clonato, ripristino degli RNG e zero_grad prima del 545. Dimostra H2 sufficiente se lo stato finale è identico a 4743abaf… e a 545 grad_norm=4.336711902204087. Costa circa 0,25-0,3 GPU-ore e richiede review e release.",
+     "prova": "Durate delle riprese 205-265 s su 4 GPU (reloads_execution_20261121/allocation.sacct.tsv); i meccanismi di ripristino esistono in scripts/contrastive_target_parity.py:41-53, 98-120, 290-296",
+     "stato": "non_dimostrato"
+    }
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_resume/reports/d-ddp.md",
+   "divergenze_da_gpt": [
+    "GPT, nel prompt, scrive che i gruppi differiscono ai passi 545-546; il documento GPT (docs/reviews/contrastive_targets_resume_science_20261121.md:28) e la nota precedente di Claude scrivono che coincidono «dal 547». Si discosta invece solo la riduzione del 545: has_rebuilt_buckets è registrato prima della ricostruzione fatta nello stesso forward, quindi è in ritardo di un update. Anche ddp_trace_readout.json, con differing_update_ids [545,546], descrive il log e non la riduzione.",
+    "Lo scarto di circa 9,5e-12 attribuito alla «norma totale del gradiente InfoNCE» è la differenza assoluta di grad_norm, il gradiente totale dopo DDP (9,54e-12). La norma del solo gradiente InfoNCE (contrast_global_grad_nce) a 545 è identica.",
+    "GPT considera aperta la localizzazione e propone di misurare i gradienti locali ai passi 545-547. Gli artefatti esistenti la danno già in forma indiretta: a 545 le norme a layout fisso sono uguali e quelle dopo DDP diverse; in CN, a 546, le norme dopo DDP sono di nuovo uguali. Ai passi 546-547 non c'è alcuna differenza di riduzione da misurare. Per provare che il layout basta a spiegare lo scarto, è più economico e decisivo un intervento che pareggi il layout (I1, una ripresa, circa 0,3 GPU-ore) con criterio byte per byte."
+   ],
+   "punti_aperti": [
+    "La semantica del Reducer C++ in torch 2.2 non è letta nel sorgente: è dedotta dal Python 2.14 e dall'identità dello schema di log nelle tracce 2.2.",
+    "Algoritmo, protocollo e canali NCCL usati su Leonardo non risultano dagli artefatti.",
+    "Non è verificato che in CN i parametri dopo il 545 siano bit-identici: le norme del 546 sono solo compatibili con questa ipotesi.",
+    "Quale stato canonico o file calcolano gli hash bb39f339…/4743abaf… va riletto in reloads_execution_20261121/collection_readout.json prima di fissare il criterio di I1.",
+    "Le norme del 545 non escludono da sole un difetto che agisca solo nell'update di AdamW. Il confine verificato a 544 lo rende improbabile; I1 lo esclude se dà identità.",
+    "I1 e I2 toccano file dell'inventario del digest (scripts/contrastive_target_resume.py, run.py): servono review e release prima di qualsiasi invio."
+   ]
+  }
+ },
+ {
+  "key": "e-prova-gpt",
+  "result": {
+   "sintesi": "La prova GPU di GPT localizzerebbe solo il seme del passo 545: direbbe se lo scarto e' già nei gradienti locali o compare nella riduzione. Serve a capire la causa, non a decidere i training lunghi, e non tocca H3. Gli artefatti archiviati mostrano tre cose. Al 545 lo scarto ha la grandezza di un arrotondamento (rel 2,2e-12 su grad_norm). In CN il 546 e' identico bit per bit. Dal 547 la divergenza si diffonde in modo caotico su tutti i 270 tensori, in entrambi i bracci. I quattro exp_avg del proiettore sono solo la coda della distribuzione: CN ha mediana 0,46% e p90 0,59%, CR ha massimo 0,59%. I pesi del proiettore non sono anomali (0,93% contro 1,03-1,05% di local e pool). Lettura: H2+H3 sostenute, H1 grossolano escluso in pratica. Il raggruppamento DDP diverso riguarda solo il 545: l'indicazione «545-546» di GPT nasce da un'istantanea del logger presa prima della ricostruzione. Il criterio «differenza già locale → a monte» vale solo al 545. Primo controllo consigliato: lettura CPU dei momenti nei checkpoint (0 GPU-ore). Se si vuole la causa, una coppia GPU: comm hook osservativo validato sui byte (4743abaf/bb39f339) oppure riduzione a ordine fisso come intervento. Costi di GPT corretti (1,108-1,166 GPU-ore); il tetto di 2 GPU-ore vale solo se le due fasi stanno in un solo job.",
+   "risultati": [
+    {
+     "affermazione": "I costi di GPT sono corretti: continuo CN 784 s, riprese CN 265 s e 213 s, 4 GPU, quindi 1,108-1,166 GPU-ore e 8,86-9,32 core-ore.",
+     "prova": "allocation.sacct.tsv: 65017310 ElapsedRaw 784, 65033016 265 s, 65033756 213 s, gres/gpu=4, cpu=32; ID associati ai bracci dai file *_submission.txt",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "Il tetto di 2 GPU-ore (30 min x 4 GPU) vale solo se continuo e ripresa girano in un unico job. Con due job da 30 minuti, come nel disegno eseguito (TimelimitRaw 30), il preventivo GPU x walltime e' 4 GPU-ore.",
+     "prova": "allocation.sacct.tsv TimelimitRaw 30 per ogni job GPU; regola del preventivo in CLAUDE.md",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "Nella ripresa DDP usa al 545 un gruppo float32 unico da 114.202.292 byte e un gruppo float64 da 68.480; il continuo usa 7 gruppi con lo stesso totale (114.270.772) e i parametri 268 269 266 267 in testa al primo.",
+     "prova": "CN/trace-0.ddp.jsonl update 545; CN_A/trace-0.ddp.jsonl update 545-547; somma calcolata",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "La ricostruzione dei gruppi nella ripresa avviene nella forward del 546; il campo has_rebuilt_buckets=0 letto al 546 e' un'istantanea presa prima della ricostruzione. Solo il 545 e' raggruppato in modo diverso.",
+     "prova": "torch locale 2.14, distributed.py:1755-1776: set_runtime_stats_and_log prima di _rebuild_buckets (per la 2.2 l'ordine e' presunto). In CN al 546 grad_norm 9.023137809933427 e contrast_projector_grad_norm float64 0.21809202574133565 identici C/A, mentre al 545 differiscono (0.13962099177834264 vs 0.1396209917783284)",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Il seme al 545 ha la grandezza di un arrotondamento: grad_norm rel -2,2e-12, norma del proiettore rel -1,0e-13, contrast_nce identico. In CN la divergenza visibile parte dal 547 (contrast_nce rel 2,4e-6, grad_norm 2,2e-5), in CR dal 546.",
+     "prova": "metrics.jsonl di CN, CN_A, CR, CR_A, passi 545-547 (script in linea)",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "I campi di perdita band_shape, log_rms, ms_fast, ms_slow, log_env, jepa, total e talvolta contrast_rnc differiscono fra A e B in 29-32 passi su 32, benche' i checkpoint siano identici: non servono per il confronto. Sono affidabili grad_norm, grad_clip_factor, contrast_nce, contrast_global_grad_* e contrast_projector_grad_norm.",
+     "prova": "Conteggio A!=B in CN: {'band_shape': 32, 'contrast_rnc': 2, 'jepa': 29, 'log_env': 32, 'log_rms': 32, 'ms_fast': 29, 'ms_slow': 31, 'total': 32}",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "grad_clip_factor e' una funzione deterministica di grad_norm e non porta informazione propria.",
+     "prova": "run.py:1735; scarti relativi uguali e opposti in metrics.jsonl (545: +2,20e-12 / -2,20e-12)",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "La divergenza e' diffusa: exp_avg CN mediana 0,461%, p90 0,588%, massimo 1,316%, i primi quattro sono 268/266/269/267; CR mediana 0,288%, massimo 0,591%. I blocchi dei pesi CN rispetto allo spostamento dal 544: contrastive_head 0,932%, local 1,027%, pool 1,047%. Il proiettore e' anomalo solo nei momenti.",
+     "prova": "preflight_readout.json arms.{CN,CR}.resume.pairs.continuous__reload_a.floating_tensor_relative_to_left e by_block_relative_to_left_displacement_from_fork",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H3"
+    },
+    {
+     "affermazione": "Il criterio di GPT 'una differenza gia' locale sposta l'indagine a monte' vale solo al 545. Al 546 vale solo con pesi, momenti e buffer in ingresso identici bit per bit, da registrare come hash. Al 547 gli scarti locali sono conseguenze attese.",
+     "prova": "Metriche: forward del 547 gia' diversa (contrast_nce); exp_avg diverso dopo il 545 per costruzione di AdamW",
+     "stato": "dedotto"
+    },
+    {
+     "affermazione": "La prova GPU non distingue H3 e, per il 545, separa due varianti di H2 (riduzione oppure storia del processo) piu' che H1 da H2, perche' lo stato al confine e' gia' verificato per hash.",
+     "prova": "Traccia del confine in trace-*.jsonl (boundary), equalita' di batch e RNG per 32 passi; analisi degli esiti nel rapporto §3",
+     "stato": "dedotto"
+    },
+    {
+     "affermazione": "Lo strumento piu' adatto per i gradienti locali e' un comm hook DDP che clona bucket.buffer() e poi esegue l'allreduce di default; la divisione per 4 e' esatta. Un'alternativa sono gli hook sui tensori dei parametri, che scattano prima dei post-hook del reducer. Una replica senza DDP e' sconsigliata. La validazione richiede checkpoint strumentati identici a 4743abaf.../bb39f339..., tracce identiche e campi affidabili identici.",
+     "prova": "run.py:430-438 (DDP senza hook), contrastive_target_resume.py:148-208 (punti di patch), final_checkpoint_sha256 nel JSON",
+     "stato": "dedotto"
+    },
+    {
+     "affermazione": "Overhead della strumentazione limitata a 545-547: meno di 30 s per fase, sotto il 3%.",
+     "prova": "t_step_s 2,2-3,6 s ai passi 545-551; somma dei passi 545-576 pari a 79,7 s; stima delle copie da 114 MB e degli hash",
+     "stato": "non_dimostrato"
+    }
+   ],
+   "divergenze_da_gpt": [
+    "GPT scrive che ai passi 545-546 continuo e riprese raggruppano diversamente i gradienti. Secondo la mia lettura e' diverso solo il 545: il logger DDP registra has_rebuilt_buckets prima della ricostruzione nella stessa forward, e in CN al 546 grad_norm e norma del proiettore sono identici bit per bit.",
+    "Il criterio 'una differenza gia' locale sposterebbe l'indagine a monte' vale solo per il primo passo (545), non per i tre passi strumentati.",
+    "La prova GPU non risolve H3, che pesa di piu' sulla decisione. Gli artefatti mostrano gia' una divergenza diffusa (mediana exp_avg CN 0,46%) con il proiettore come coda, e pesi del proiettore non anomali. La prova quindi non e' decisiva per tornare ai training lunghi.",
+    "Il tetto di 2 GPU-ore e' valido solo per un unico job che contenga continuo e ripresa; con due job da 30 minuti il preventivo e' 4 GPU-ore.",
+    "Propongo come alternativa causale piu' forte una riduzione indipendente dal layout (somma in float64 o in ordine fisso) in continuo e ripresa, con la verifica di identita' bit per bit a 576, allo stesso costo."
+   ],
+   "punti_aperti": [
+    "L'ordine logger/ricostruzione in _pre_forward e' verificato su torch 2.14 locale, non su torch 2.2.0a0 di Leonardo.",
+    "Non so se A e B siano girati sullo stesso nodo: la riproducibilita' dei byte su un altro nodo e' presunta.",
+    "Coseni e norme assolute dei quattro exp_avg richiedono la lettura dei checkpoint su Leonardo, con un job CPU.",
+    "L'overhead reale della strumentazione e la sua neutralita' (identita' dei byte) sono da misurare.",
+    "Una regola basata sullo spostamento dal 544 sarebbe post hoc e va dichiarata tale."
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_resume/reports/e-prova-gpt.md"
+  }
+ },
+ {
+  "key": "f-confutazione",
+  "result": {
+   "sintesi": "La tesi regge nella sostanza: non si tratta di un difetto di ripristino. Lo stato al passo 545 coincide per hash, tutti i conteggi coincidono, e al 545 i gradienti diagnostici calcolati fuori da DDP sono identici bit per bit, mentre il gradiente ridotto da DDP differisce. Tre punti però non sono dimostrati. (1) Il rumore non è comune ai due bracci: nei momenti dell'encoder CN ha errori 1,63 volte quelli di CR, mentre la distanza dei pesi è solo 1,05 volte. (2) Non c'è un livello di rumore stabile: in CN il primo scarto visibile arriva al 547 e da lì le norme divergono di 5-7 volte in 32 passi senza fermarsi. (3) Il meccanismo dei bucket DDP non è dimostrato: al 546 la ripresa usa ancora i bucket non ricostruiti, eppure in CN le norme del gradiente ridotto e del proiettore coincidono esattamente col continuo. È un effetto del primo passo DDP, non dimostrabilmente della disposizione dei bucket.",
+   "risultati": [
+    {
+     "affermazione": "Numeri della tesi: CN ha 270 exp_avg tutti non nulli (mediana 0,461%, massimo 1,3165% sull'ID 268). CR ne ha 266 non nulli su 270 (mediana 0,2897%, massimo 0,5913%); gli ID 266-269 di CR valgono 0. I quattro tensori CN fuori soglia sono i primi quattro su 270. Il successivo è l'ID 194 con 0,714%.",
+     "prova": "agents/f-confutazione/stats.py sul campo arms.{CN,CR}.resume.pairs.continuous__reload_a.floating_tensor_relative_to_left di preflight_readout.json",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H3"
+    },
+    {
+     "affermazione": "Lo stato al confine è ripristinato esattamente. Le tracce continuo/A sono identiche su tutti i campi per 32 passi, 4 rank e 2 bracci, compreso al 545 l'hash boundary (studente, teacher, opt.state_dict state e param_groups, stato contrastivo, RNG). Su 5.965 conteggi per braccio nessuno differisce e origin è identico a ogni passo.",
+     "prova": "Confronto delle tracce trace-{0..3}.jsonl tra benchmark e reload; agents/f-confutazione/counts.py; il contenuto dell'hash è in scripts/contrastive_target_resume.py:181-187",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "contro H1"
+    },
+    {
+     "affermazione": "Al 545 i gradienti diagnostici contrast_global_grad_base/nce/rnc e i coseni, calcolati con autograd.grad e un solo all_reduce piatto fuori da DDP, sono identici bit per bit. grad_norm (abs 9,54e-12) e la norma del proiettore (1e-13 relativo) invece differiscono. Lo scarto nasce quindi nella riduzione DDP, non nel forward/backward locale dell'encoder.",
+     "prova": "agents/f-confutazione/ab.py (lista C!=A al passo 545); src/wearusfm/training/contrastive_objectives.py:415-436; run.py:796-797",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Al 546 la ripresa ha ancora i bucket non ricostruiti (114202292, 68480), ma in CN grad_norm (9.023137809933427) e la norma del proiettore (0.21809202574133565) coincidono esattamente fra continuo, A e B. La sola disposizione dei bucket non spiega lo scarto: è un effetto del primo passo DDP dopo l'avvio.",
+     "prova": "Valori grezzi di metrics.jsonl al 546; reloads CN_A/trace-0.ddp.jsonl; ddp_trace_readout.json (differenze solo agli update 545 e 546)",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2 generica, non il meccanismo dei bucket"
+    },
+    {
+     "affermazione": "Il primo scarto visibile è al 547 in CN e al 546 in CR. InfoNCE non ha anomalie specifiche a 545-546: contrast_nce e tutte le contrast_nce_loss__* coincidono bit per bit; al 547 differisce 1 dataset su 8, dal 548 tutti.",
+     "prova": "agents/f-confutazione/steps.py, ab.py e growth.py",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "La divergenza cresce senza plateau. RMS di grad_norm per blocchi di 8 passi: CN 1,5e-4 → 1,1e-3, CR 1,6e-4 → 8,4e-4; anche jepa cresce di 7-8 volte. Solo la norma del proiettore è piatta, fra 1,3e-3 e 2,1e-3, circa 10 volte la norma totale.",
+     "prova": "agents/f-confutazione/growth.py",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H3 (dipendenza dall'orizzonte)"
+    },
+    {
+     "affermazione": "Il rumore non è comune ai due bracci. Il rapporto exp_avg CN/CR sull'encoder ha mediana 1,627 (q10 0,984, q90 1,933); per le chiavi della coda il rapporto delle mediane è 1,33 (0,53% contro 0,40%). La distanza dei pesi dal fork è invece 0,6454% contro 0,6164%, cioè 1,05.",
+     "prova": "stats.py e corr.py; campo relative_to_left_displacement_from_544.student",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "contraddice la tesi"
+    },
+    {
+     "affermazione": "La sensibilità per tensore è condivisa: i log-errori di CN e CR sui 266 tensori hanno Pearson 0,71 e Spearman 0,57; i tensori più colpiti si ripetono con passo 18, cioè con lo stesso ruolo in ogni blocco.",
+     "prova": "agents/f-confutazione/corr.py",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Il rapporto exp_avg_sq/exp_avg alto del proiettore (0,13-0,15 contro 0,020 di mediana nell'encoder) si spiega per un fattore 4,0 sui circa 6,8 osservati: il proiettore riceve gradiente solo dal passo 257 (rampa fino al 512), quindi gli ultimi 32 passi pesano il 29,05% del suo exp_avg_sq contro il 7,19% nell'encoder. Il residuo rientra nella dispersione dell'encoder (q95 0,080, massimo 0,233).",
+     "prova": "agents/f-confutazione/frac.py; contrast_nce_weight in metrics.jsonl; AdamW con betas di default (run.py:1429)",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2/H3"
+    },
+    {
+     "affermazione": "Il rapporto peso/bias del proiettore è coerente nei due strati (W1/b1 1,181, W2/b2 1,188): nessun segno di un singolo tensore rotto.",
+     "prova": "agents/f-confutazione/corr.py",
+     "stato": "verificato",
+     "ipotesi_sostenuta": "contro H1"
+    },
+    {
+     "affermazione": "Il clipping agisce in 576 passi su 576 (norma dopo il taglio sempre 1,0, fattore 0,10-0,23 nei passi 545-576). La differenza di norma totale, al massimo circa 2e-3, contribuisce all'exp_avg al più per lo 0,1% circa: il clipping non è il canale principale dello 0,46% o dell'1,2%.",
+     "prova": "agents/f-confutazione/frac.py e steps.py",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "CR_A e CR_B si sono sovrapposti nel tempo (job da 4 GPU su 1 nodo, quindi su nodi diversi) e danno comunque checkpoint identici bit per bit. Il nodo non è registrato negli artefatti raccolti; per CN_A/CN_B non si può dire.",
+     "prova": "reloads_execution_20261121/execution_timeline.sacct.tsv, allocation.sacct.tsv, *.state.json (ID dei job)",
+     "stato": "dedotto",
+     "ipotesi_sostenuta": "H2"
+    },
+    {
+     "affermazione": "Fra A e B, che hanno checkpoint identici, 6-7 campi di loss a log (jepa, total, band_shape, log_*, ms_*) differiscono di circa 1e-7 a ogni passo. Gli scarti di loss fra continuo e ripresa al 545-546 quindi non provano nulla.",
+     "prova": "agents/f-confutazione/ab.py",
+     "stato": "verificato"
+    },
+    {
+     "affermazione": "«1 ulp» è compatibile con i dati: al 545 la norma del proiettore, accumulata in float64, differisce di 1e-13 relativo, quanto pochi elementi con 1 ulp fp32 di differenza. Il dato elemento per elemento manca.",
+     "prova": "metrics.jsonl al 545; run.py:1690-1693",
+     "stato": "non_dimostrato"
+    }
+   ],
+   "divergenze_da_gpt": [
+    "GPT attribuisce la differenza alla diversa ricostruzione dei bucket DDP ai passi 545-546. Al 546 però la ripresa usa ancora i bucket non ricostruiti e in CN le norme del gradiente ridotto e del proiettore sono identiche al continuo: il dato punta a un effetto del primo passo DDP, non della disposizione dei bucket.",
+    "GPT non usa i gradienti diagnostici fuori da DDP (contrast_global_grad_* e coseni). Al 545 sono identici bit per bit, quindi gli artefatti esistenti localizzano già lo scarto nella riduzione DDP, almeno per i parametri condivisi dell'encoder. È più forte di quanto GPT dichiari («ruolo causale aperto»).",
+    "GPT non segnala che l'errore dei momenti dell'encoder di CN è 1,63 volte quello di CR, mentre i pesi divergono solo 1,05 volte: il rumore dipende dal braccio.",
+    "GPT non segnala che la divergenza cresce di 5-7 volte nei 32 passi senza plateau: l'esito dell'1% dipende dall'orizzonte.",
+    "GPT non osserva che l'exp_avg_sq alto del proiettore si spiega in buona parte con la sua storia corta (gradiente solo dal passo 257, rampa fino al 512).",
+    "GPT non nota che le chiavi della coda CN arrivano allo 0,92%, vicino alla soglia anche per quel criterio.",
+    "Per la prova GPU aggiungerei due falsificatori espliciti: gradienti locali già diversi al 545 escludono la causa DDP; lo stesso scarto anche al 546 sosterrebbe l'effetto dei bucket. Come controllo della strumentazione chiederei la riproduzione bit per bit dei grad_norm e delle norme del proiettore storici ai passi 545-547."
+   ],
+   "punti_aperti": [
+    "Norme assolute, norma della differenza e coseni degli exp_avg 266-269 e di alcuni tensori dell'encoder dai checkpoint a 576 (lettura CPU su Leonardo, non fatta: i .pt non sono sul Mac).",
+    "Perché il primo passo DDP dopo l'avvio produce una riduzione diversa mentre il secondo, con gli stessi bucket, no: meccanismo non identificato (NCCL, Reducer all'iterazione 0, allocatore).",
+    "I gradienti locali del proiettore al 545 non sono osservati: i diagnostici coprono solo i parametri condivisi dell'encoder.",
+    "Non è dimostrato che CR supererebbe il criterio su un orizzonte più lungo di 32 passi, né quanto crescerebbe lo scarto di CN.",
+    "Manca una coppia di riprese per C0 come controllo del solo JEPA.",
+    "Non si sa se CN_A e CN_B, o il continuo e le riprese, siano girati sullo stesso nodo."
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_resume/reports/f-confutazione.md"
+  }
+ }
+]

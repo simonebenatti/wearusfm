@@ -1,0 +1,47 @@
+CN CN_A 545 grad_norm 4.336711902204087 4.336711902194546 abs 9.540812584418745e-12 rel 2.200010699251138e-12 | clip 0.23058944715505791 | lr 2.777777777777778e-05
+CN CN_A 546 grad_norm 9.023137809933427 9.023137809933427 abs 0.0 rel 0.0 | clip 0.11082619162694336 | lr 2.782874617737003e-05
+CN CN_A 547 grad_norm 9.53343618854569 9.533647724823064 abs 0.00021153627737469094 rel 2.2188880608321403e-05 | clip 0.10489397319315864 | lr 2.7879714576962284e-05
+CR CR_A 545 grad_norm 4.618657714258972 4.618657714257402 abs 1.5694112676101213e-12 rel 3.397981328568578e-13 | clip 0.21651312174806667 | lr 2.777777777777778e-05
+CR CR_A 546 grad_norm 9.761924658417746 9.76189121571802 abs 3.3442699725938496e-05 rel 3.4258305504438334e-06 | clip 0.10243881560156236 | lr 2.782874617737003e-05
+CR CR_A 547 grad_norm 9.967602965127014 9.968870657880085 abs 0.001267692753071259 rel 0.00012718130502453306 | clip 0.10032502332793884 | lr 2.7879714576962284e-05
+CN/CN_A grad_norm                      548-576 mediana 3.27e-04 max 2.31e-03 | media geom. 548-561 1.56e-04 562-576 4.96e-04
+CN/CN_A contrast_global_grad_base      548-576 mediana 3.50e-04 max 3.70e-03 | media geom. 548-561 1.11e-04 562-576 5.51e-04
+CN/CN_A contrast_global_grad_nce       548-576 mediana 1.28e-03 max 8.51e-03 | media geom. 548-561 6.86e-04 562-576 1.16e-03
+CN/CN_A contrast_projector_grad_norm   548-576 mediana 1.17e-03 max 4.74e-03 | media geom. 548-561 8.62e-04 562-576 7.25e-04
+CR/CR_A grad_norm                      548-576 mediana 2.52e-04 max 2.06e-03 | media geom. 548-561 7.35e-05 562-576 3.89e-04
+CR/CR_A contrast_global_grad_base      548-576 mediana 4.08e-04 max 2.69e-03 | media geom. 548-561 8.68e-05 562-576 6.33e-04
+CR/CR_A contrast_global_grad_rnc       548-576 mediana 6.41e-04 max 2.41e-03 | media geom. 548-561 3.39e-04 562-576 3.97e-04
+CR/CR_A contrast_projector_grad_norm   548-576 mediana 0.00e+00 max 0.00e+00 | media geom. 548-561 nan 562-576 nan
+CN clip factor: min 0.030811785982517235 max 0.3017118206793548 quanti < 1: 576 su 576 | ultimi 32: min 0.10489397319315864 max 0.26243043652197423
+CN peso nce a 1,128,256,384,512,513,544,576: [0.0, 0.0, 0.0, 0.059235410801012904, 0.11847082160202581, 0.11847082160202581, 0.11847082160202581, 0.11847082160202581] | rnc: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+CR clip factor: min 0.030811785982517235 max 0.32046619811263394 quanti < 1: 576 su 576 | ultimi 32: min 0.09374498566890194 max 0.2521594261915014
+CR peso nce a 1,128,256,384,512,513,544,576: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] | rnc: [0.0, 0.0, 0.0, 0.16442640710133413, 0.32885281420266826, 0.32885281420266826, 0.32885281420266826, 0.32885281420266826]
+CN chiavi diverse: 910 minimo non nullo 0.0020092471296811664 mediana 0.005345208511799704 max 0.009192513422706378
+    266 exp_avg 0.01221615662445262 exp_avg_sq 0.0016646098478157953
+    267 exp_avg 0.01034195290681912 exp_avg_sq 0.0015465897293868852
+    268 exp_avg 0.013164698202657702 exp_avg_sq 0.0016754286386947356
+    269 exp_avg 0.01108410806754013 exp_avg_sq 0.0015515173706853837
+CR chiavi diverse: 940 minimo non nullo 0.001997031679459615 mediana 0.0040468362586983195 max 0.006041475340506482
+    266 exp_avg 0.0 exp_avg_sq 0.0
+    267 exp_avg 0.0 exp_avg_sq 0.0
+    268 exp_avg 0.0 exp_avg_sq 0.0
+    269 exp_avg 0.0 exp_avg_sq 0.0
+   cfg model.tokenizer_logsquare_eps = 0.001
+   cfg jepa.ema_momentum = 0.996
+   cfg batch_size = 32
+   cfg lr = 0.0001
+   cfg warmup_steps = 1962
+   cfg weight_decay = 0.05
+   cfg grad_clip = 1.0
+   cfg max_steps = 576
+   cfg amp_bf16 = True
+   cfg schedule.total_steps = 49046
+   cfg accum_steps = 1
+   cfg branch_calibration_batches = 16
+   cfg fixed_eval_batches = 8
+   cfg log_batch_origin = True
+   cfg contrastive.nce_temperature = 0.2
+   cfg contrastive.rnc_temperature = 0.1
+   cfg contrastive.fill_steps = 256
+   cfg contrastive.ramp_steps = 256
+   cfg contrastive.coverage_global_batch_size = 32

@@ -8278,6 +8278,15 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Scansione: sul mio ramo l'unico file accettato dal parser è la review; sul ramo di GPT a `0efa4d45` nessuno.
 - Ambito: tutte le fasi del preflight, non i training; P-1...P-8 restano condizioni operative. Nessun job da me.
 
+### 2026-11-21 | Claude | Secondo parere sulla ripresa InfoNCE (`918245b6`): differenza numerica, non difetto di ripristino
+- Richiesta: messaggio di GPT incollato da Simone il 21/11 («i quattro scarti di InfoNCE indicano un problema nella ripresa oppure una differenza numerica ripetibile che il criterio dell’1% rende visibile?»).
+- Review in `docs/reviews/claude_review_contrastive_targets_resume_science_20261121.md`, prove nella cartella `_evidence/`. Verdetto storico `FAILED_REQUIRES_REVIEW` invariato; nessun job da me.
+- Metodo: lettura mia di rapporto, metriche e tracce; sei analisi indipendenti; tre riletture contro le fonti (44 rilievi corretti); due letture in sola lettura su Leonardo (nodi con sacct, sorgente di torch 2.2).
+- Mappatura, denominatori e valori di GPT confermati: 266-269 sono pesi e bias dei due strati del proiettore; digest dei sorgenti `40d39f56…` ricalcolato a `918245b6`.
+- Stato salvato ripristinato esattamente: confine identico in 24 tracce su 24, loss del 545 identiche, chiavi anteriori al fork esatte; A e B identiche byte per byte su nodi diversi.
+- Al 545 differiscono, fra i campi di gradiente, solo le grandezze dopo la riduzione DDP (2,2e-12 sulla norma): unico update con raggruppamento diverso. Salto al 547 (CN) e al 546 (CR), poi crescita lenta.
+- Tutti i primi momenti differiscono: CN mediana 0,46% (proiettore 1,03-1,32%, gruppo distinto), CR mediana 0,29% (massimo 0,59%, proiettore a zero).
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11260,3 +11269,12 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - P-1: `TORCH_DIST_INIT_BARRIER=1` nella riga di invio delle celle GPU, senza toccare gli sbatch inventariati; P-2...P-8 come nella review.
 - M-a, M-b e M-d nella release dei training: farli prima del preflight cambierebbe il digest e annullerebbe il blocco.
 - Se la consegna cambia sorgenti, piani o perimetro, torna da me; con soli metadati e controlli meccanici superati non serve un nuovo giro.
+
+### 2026-11-21 | Claude | Ripresa InfoNCE: limite registrato, precisazioni e prova minima (per GPT)
+- Il limite del 20/11 (`decisioni.md`, `9abde295`) chiede la localizzazione per rank, tensore e gruppo DDP: gli artefatti danno solo un'indicazione indiretta; rinunciare alla prova è una deroga che spetta a Simone.
+- La riduzione con raggruppamento diverso è solo quella del 545: `has_rebuilt_buckets` è registrato prima della ricostruzione (torch 2.2.0a0, `distributed.py:1396` e `:1413`); era sfasata anche la mia P-7 del 20/11.
+- 9,5e-12 è la differenza assoluta di `grad_norm` (2,2e-12 relativo); `contrast_global_grad_*`, fuori da DDP e sui 218 tensori condivisi dell'encoder, al 545 sono identiche.
+- In CR i momenti 266-269 sono zeri esatti; in CN gli altri primi momenti arrivano allo 0,71% e le chiavi allo 0,92%.
+- Prova consigliata, se si fa: due riprese CN dal fork, una ordinaria e una con riscaldamento DDP, strumentate al 545; attese 0,47-0,59 GPU-ore; criterio tensore per tensore con il continuo. È un disegno, non codice provato.
+- Ripiego: la prova di GPT (1,11-1,17 GPU-ore) con sei correzioni; non risulta dimostrato che un continuo rifatto da zero riproduca i byte archiviati.
+- Indimostrati: sufficienza causale, fattore proprio del proiettore, rapporto fra i bracci, orizzonte oltre 32 update, scala assoluta dei momenti.

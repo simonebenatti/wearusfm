@@ -1,0 +1,13 @@
+tensori per prefisso: {'tokenizer': 10, 'identity': 9, 'local': 36, 'pool': 17, 'backbone': 146, 'decoder': 34, 'anchor_heads': 10, 'pose_head': 4, 'contrastive_head': 4} | totale 270 | condivisi 218 | fuori 52
+primi momenti 0-265: mediana CN 0.4574% CR 0.2897% rapporto 1.579 | media CN 0.4279% CR 0.2917% rapporto 1.467 | mediana dei rapporti 1.627 | media geometrica dei rapporti 1.431
+CN primi momenti, primi 6: [(268, 1.316), (266, 1.222), (269, 1.108), (267, 1.034), (194, 0.714), (158, 0.704)] | fra 0,75% e 1%: 0
+CN secondi momenti, primi 6: [(268, 0.1675), (266, 0.1665), (269, 0.1552), (267, 0.1547), (49, 0.0504), (48, 0.0355)]
+CN chiavi: dopo il fork 1001 mediana su tutte 0.5229% | diverse 910 mediana 0.5345% minimo 0.2009% massimo 0.9193% | non nulle prima di 4979: 0
+CR chiavi: dopo il fork 1001 mediana su tutte 0.3998% | diverse 940 mediana 0.4047% minimo 0.1997% massimo 0.6041% | non nulle prima di 4979: 0
+CN_A vs CN_B campi diversi (update su 32, scarto massimo): {'band_shape': (32, 2.7e-07), 'contrast_rnc': (2, 8e-08), 'jepa': (29, 2.7e-07), 'log_env': (32, 2.7e-07), 'log_rms': (32, 3.6e-07), 'ms_fast': (29, 3.8e-07), 'ms_slow': (31, 3.1e-07), 'total': (32, 1.1e-07)}
+CR_A vs CR_B campi diversi (update su 32, scarto massimo): {'band_shape': (29, 2.6e-07), 'contrast_rnc': (3, 3e-08), 'jepa': (29, 5e-07), 'log_env': (31, 4.6e-07), 'log_rms': (31, 3.1e-07), 'ms_fast': (29, 3.4e-07), 'ms_slow': (29, 3e-07), 'total': (32, 8.4e-08)}
+CN vs CN_A update 545 campi diversi: {'grad_norm': 2.2e-12, 'grad_clip_factor': 2.2e-12, 'jepa': 3.84e-07, 'log_env': 2.05e-07, 'log_rms': 9.11e-08, 'ms_fast': 8.95e-08, 'ms_slow': 1.1e-07, 'total': 3.54e-08, 'contrast_projector_grad_norm': 1.02e-13}
+CN vs CN_A update 546 campi diversi: {'band_shape': 8.91e-08, 'jepa': 1.46e-08, 'log_env': 2.54e-07, 'log_rms': 1.04e-07, 'ms_fast': 1.54e-07, 'ms_slow': 1.9e-07, 'total': 5.95e-08, 'contrast_global_cos_nce_base': 5.66e-16, 'contrast_global_cos_rnc_base': 4.94e-16}
+CN mediane 548-576: {'grad_norm': 0.000327, 'contrast_global_grad_base': 0.00035, 'contrast_global_grad_nce': 0.00128, 'contrast_projector_grad_norm': 0.00117}
+CR mediane 548-576: {'grad_norm': 0.000252, 'contrast_global_grad_base': 0.000408, 'contrast_global_grad_rnc': 0.000641}
+pendenza log10 grad_norm 548-576: CN 0.037 CR 0.040 decadi/update

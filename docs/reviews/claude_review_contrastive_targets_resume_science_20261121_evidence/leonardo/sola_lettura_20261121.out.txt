@@ -1,0 +1,24 @@
+21/11/2026 16:03:36
+JobIDRaw|JobName|NodeList|Start|End|ElapsedRaw|State
+65017240|CONTRAST-BENCH-C0-targets-v3-20261118|lrdn0113|2026-11-21T10:45:00|2026-11-21T10:58:15|795|COMPLETED
+65017310|CONTRAST-BENCH-CN-targets-v3-20261118|lrdn0389|2026-11-21T10:47:12|2026-11-21T11:00:16|784|COMPLETED
+65020151|CONTRAST-BENCH-CR-targets-v3-20261118|lrdn0292|2026-11-21T11:24:03|2026-11-21T11:36:56|773|COMPLETED
+65033016|CONTRAST-RELOAD-CN-A-targets-v3-20261118|lrdn0257|2026-11-21T14:49:01|2026-11-21T14:53:26|265|COMPLETED
+65033756|CONTRAST-RELOAD-CN-B-targets-v3-20261118|lrdn0362|2026-11-21T14:58:27|2026-11-21T15:02:00|213|COMPLETED
+65033804|CONTRAST-RELOAD-CR-A-targets-v3-20261118|lrdn2576|2026-11-21T14:59:45|2026-11-21T15:03:10|205|COMPLETED
+65034107|CONTRAST-RELOAD-CR-B-targets-v3-20261118|lrdn0680|2026-11-21T15:02:51|2026-11-21T15:06:21|210|COMPLETED
+----
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/torch/nn/parallel/distributed.py
+from typing import Optional
+
+__all__ = ['__version__', 'debug', 'cuda', 'git_version', 'hip']
+__version__ = '2.2.0a0+git6c8c5ad'
+debug = False
+240:    def forward(ctx, ddp_weakref, *inputs):
+286:        ddp.reducer._rebuild_buckets()
+1388:    def _pre_forward(self, *inputs, **kwargs):
+1396:            self.logger.set_runtime_stats_and_log()
+1397:            self.reducer.prepare_for_forward()
+1413:        if torch.is_grad_enabled() and self.reducer._rebuild_buckets():
+1414:            logger.info("Reducer buckets have been rebuilt in this iteration.")
+1517:    def forward(self, *inputs, **kwargs):

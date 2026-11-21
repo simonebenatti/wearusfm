@@ -1,0 +1,88 @@
+===== CN {'exp_avg': 270, 'exp_avg_sq': 270, 'queue': 5980, 'other': 0}
+   other keys: []
+  exp_avg: n=270 zero=0 min=6.171e-04 q25=3.701e-03 med=4.605e-03 q75=5.197e-03 q95=6.274e-03 max=1.316e-02
+     > 0.001: 264     > 0.002: 244     > 0.005: 85     > 0.0075: 4     > 0.009: 4     > 0.01: 4
+  exp_avg_sq: n=270 zero=0 min=5.527e-06 q25=7.858e-05 med=9.576e-05 q75=1.133e-04 q95=2.259e-04 max=1.675e-03
+     > 0.001: 4     > 0.002: 0     > 0.005: 0     > 0.0075: 0     > 0.009: 0     > 0.01: 0
+  queue: n=5980 zero=5070 min=0.000e+00 q25=0.000e+00 med=0.000e+00 q75=0.000e+00 q95=5.797e-03 max=9.193e-03
+     > 0.001: 910     > 0.002: 910     > 0.005: 579     > 0.0075: 27     > 0.009: 1     > 0.01: 0
+  top exp_avg:
+     optimizer.state.268.exp_avg: 0.013165
+     optimizer.state.266.exp_avg: 0.012216
+     optimizer.state.269.exp_avg: 0.011084
+     optimizer.state.267.exp_avg: 0.010342
+     optimizer.state.194.exp_avg: 0.007144
+     optimizer.state.158.exp_avg: 0.007040
+     optimizer.state.212.exp_avg: 0.007016
+     optimizer.state.176.exp_avg: 0.006960
+     optimizer.state.140.exp_avg: 0.006693
+     optimizer.state.122.exp_avg: 0.006645
+     optimizer.state.104.exp_avg: 0.006521
+     optimizer.state.9.exp_avg: 0.006496
+     optimizer.state.8.exp_avg: 0.006403
+     optimizer.state.208.exp_avg: 0.006274
+     optimizer.state.49.exp_avg: 0.006216
+     optimizer.state.172.exp_avg: 0.006184
+     optimizer.state.186.exp_avg: 0.006182
+     optimizer.state.168.exp_avg: 0.006170
+     optimizer.state.86.exp_avg: 0.006111
+     optimizer.state.68.exp_avg: 0.006100
+     optimizer.state.204.exp_avg: 0.006014
+     optimizer.state.190.exp_avg: 0.005993
+     optimizer.state.154.exp_avg: 0.005976
+     optimizer.state.188.exp_avg: 0.005933
+     optimizer.state.170.exp_avg: 0.005911
+  top exp_avg_sq:
+     optimizer.state.268.exp_avg_sq: 0.001675
+     optimizer.state.266.exp_avg_sq: 0.001665
+     optimizer.state.269.exp_avg_sq: 0.001552
+     optimizer.state.267.exp_avg_sq: 0.001547
+     optimizer.state.49.exp_avg_sq: 0.000504
+     optimizer.state.48.exp_avg_sq: 0.000355
+     optimizer.state.6.exp_avg_sq: 0.000264
+     optimizer.state.47.exp_avg_sq: 0.000255
+  queue: nonzero entries 910 first nz idx [5070, 5071, 5072, 5073, 5074] last nz idx [5975, 5976, 5977, 5978, 5979] max 0.009192513422706378
+===== CR {'exp_avg': 270, 'exp_avg_sq': 270, 'queue': 5980, 'other': 0}
+   other keys: []
+  exp_avg: n=270 zero=4 min=0.000e+00 q25=2.338e-03 med=2.875e-03 q75=3.466e-03 q95=4.178e-03 max=5.913e-03
+     > 0.001: 257     > 0.002: 239     > 0.005: 3     > 0.0075: 0     > 0.009: 0     > 0.01: 0
+  exp_avg_sq: n=270 zero=4 min=0.000e+00 q25=4.342e-05 med=5.785e-05 q75=8.064e-05 q95=1.400e-04 max=3.393e-04
+     > 0.001: 0     > 0.002: 0     > 0.005: 0     > 0.0075: 0     > 0.009: 0     > 0.01: 0
+  queue: n=5980 zero=5040 min=0.000e+00 q25=0.000e+00 med=0.000e+00 q75=0.000e+00 q95=4.335e-03 max=6.041e-03
+     > 0.001: 940     > 0.002: 939     > 0.005: 61     > 0.0075: 0     > 0.009: 0     > 0.01: 0
+  top exp_avg:
+     optimizer.state.47.exp_avg: 0.005913
+     optimizer.state.29.exp_avg: 0.005739
+     optimizer.state.50.exp_avg: 0.005617
+     optimizer.state.11.exp_avg: 0.004802
+     optimizer.state.9.exp_avg: 0.004624
+     optimizer.state.48.exp_avg: 0.004539
+     optimizer.state.226.exp_avg: 0.004284
+     optimizer.state.194.exp_avg: 0.004277
+     optimizer.state.158.exp_avg: 0.004251
+     optimizer.state.49.exp_avg: 0.004250
+     optimizer.state.228.exp_avg: 0.004217
+     optimizer.state.53.exp_avg: 0.004198
+     optimizer.state.31.exp_avg: 0.004196
+     optimizer.state.176.exp_avg: 0.004178
+     optimizer.state.35.exp_avg: 0.004172
+     optimizer.state.17.exp_avg: 0.004137
+     optimizer.state.246.exp_avg: 0.004134
+     optimizer.state.230.exp_avg: 0.004130
+     optimizer.state.212.exp_avg: 0.004127
+     optimizer.state.140.exp_avg: 0.004103
+     optimizer.state.51.exp_avg: 0.004092
+     optimizer.state.14.exp_avg: 0.004072
+     optimizer.state.33.exp_avg: 0.004062
+     optimizer.state.27.exp_avg: 0.004052
+     optimizer.state.43.exp_avg: 0.004031
+  top exp_avg_sq:
+     optimizer.state.30.exp_avg_sq: 0.000339
+     optimizer.state.47.exp_avg_sq: 0.000279
+     optimizer.state.15.exp_avg_sq: 0.000266
+     optimizer.state.225.exp_avg_sq: 0.000246
+     optimizer.state.48.exp_avg_sq: 0.000234
+     optimizer.state.224.exp_avg_sq: 0.000226
+     optimizer.state.31.exp_avg_sq: 0.000223
+     optimizer.state.240.exp_avg_sq: 0.000195
+  queue: nonzero entries 940 first nz idx [5040, 5041, 5042, 5043, 5044] last nz idx [5975, 5976, 5977, 5978, 5979] max 0.006041475340506482

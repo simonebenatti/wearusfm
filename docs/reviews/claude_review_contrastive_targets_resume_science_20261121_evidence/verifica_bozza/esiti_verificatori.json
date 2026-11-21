@@ -1,0 +1,306 @@
+[
+ {
+  "key": "v1-numeri-riferimenti",
+  "result": {
+   "sintesi": "Ho controllato circa 125 affermazioni sulle fonti primarie: JSON originale (sha256 e byte ricontrollati), metrics.jsonl, tracce, config, codice del clone 918245b6, lettura di Leonardo, decisioni.md e faa4a8d7. Quasi tutti i numeri delle tabelle tornano: mappatura 266-269, 270 tensori e 28.559.133 elementi, 197.120 (0,69%), percentuali dei momenti, mediane e p90, 85, 5.070/5.040 = 4.979+91/61, decorso 545-548 e medie geometriche, nodi, costi, consumi 4,74/47,33, tetti 18/169,6, 17 allocazioni, citazione firmata, righe di codice e righe 1396/1413. Ho trovato un errore (gli 'uno o due update identici' del verdetto), due eccessi rilevanti (il 546 CN non è 'tutto identico': i coseni differiscono di circa 5e-16; i 'gradienti locali dell'encoder coincidono' è dedotto da norme di vettori già ridotti, che coprono solo l'encoder) e diverse imprecisioni: la crescita '3-7 volte' non è coerente con '0,02-0,04 decadi', il contatore di iterazione, 'un solo all_reduce', la soglia dello 0,2%, la statistica del rapporto '1,6', il commit della lettura di GPT e una citazione non letterale.",
+   "affermazioni_controllate": 125,
+   "problemi": [
+    {
+     "sezione": "Verdetto, punto 'Come cresce'",
+     "citazione": "Dopo uno o due update identici, lo scarto salta di colpo a 1e-5 circa",
+     "problema": "In Rank-N-Contrast non c'è alcun update identico dopo il 545: al 546 grad_norm differisce già di 3,4e-6 relativo. In InfoNCE l'update identico è uno solo (546). In CR il primo valore visibile è 3,4e-6, non 1e-5.",
+     "correzione": "«Lo scarto salta di circa sette ordini uno update dopo il seme in Rank-N-Contrast (546) e due update dopo in InfoNCE (547, dopo un 546 identico)», come la sezione 2.6 ('salto quantizzato uno o due update dopo').",
+     "fonte": "benchmark_execution_20261121/CR/metrics.jsonl e reloads_execution_20261121/CR_A/metrics.jsonl, step 546: grad_norm 9.761924658417746 contro 9.76189121571802",
+     "gravita": "errore"
+    },
+    {
+     "sezione": "2.2 'Update identico'; 3.2 'Che cosa mostrerebbe'; 2.5 'Riscontro nei dati'",
+     "citazione": "al 546 tutto identico in InfoNCE",
+     "problema": "Al 546 CN coincidono grad_norm, la norma del proiettore e le contrast_global_grad_*. Differiscono invece fra continuo e riprese (A = B) contrast_global_cos_nce_base (0,5889655845844823 contro ...827) e contrast_global_cos_rnc_base (-0,3373571680204288 contro ...290), circa 5e-16 relativo. Questi campi sono calcolati fuori da DDP: lo stato dopo il 545 non è quindi provato identico bit per bit nemmeno in CN.",
+     "correzione": "«Al 546, in InfoNCE, le norme coincidono in tutte le cifre; i coseni per obiettivo differiscono all'ultima cifra (circa 5e-16)». Togliere 'tutto identico' o motivarlo.",
+     "fonte": "metrics.jsonl CN continuo e CN_A, step 546, campi contrast_global_cos_*",
+     "gravita": "eccesso"
+    },
+    {
+     "sezione": "2.2 'Crescita lenta' (ripreso nel prompt: 'cresce ancora di 3-7 volte')",
+     "citazione": "diverge ancora di 3-7 volte nei 32 update, fra 0,02 e 0,04 decadi per update",
+     "problema": "I due numeri non sono coerenti. La regressione di log10 dello scarto di grad_norm su 548-576 dà 0,037 decadi per update in CN e 0,040 in CR, cioè un fattore 11-13 su 28 update (15-21 se si parte da 547/546). Il '3-7' viene da rapporti fra medie di finestre: medie geometriche 562-576/548-561 = 3,2 (CN) e 5,3 (CR); mediane dei terzili del rapporto c-decorso = 6,2 e 4,6. L'intervallo 0,02-0,04 mescola campi diversi (total 0,018, pose 0,015-0,030, jepa 0,036).",
+     "correzione": "Dichiarare la statistica: per esempio «la media geometrica dello scarto di grad_norm cresce di 3,2 volte (CN) e 5,3 volte (CR) fra 548-561 e 562-576; la pendenza della regressione è circa 0,04 decadi per update».",
+     "fonte": "metrics.jsonl, regressione dello script verifica/v1-numeri-riferimenti/trend.py; rapporti_agenti/c-decorso.md, tabella di crescita",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.5 'Un solo forward per update'",
+     "citazione": "il contatore di iterazione della traccia avanza di uno per update",
+     "problema": "Nelle riprese iteration vale 0..10 agli update 545-555 e poi resta 10 fino al 576. Nel continuo vale 500 in tutti i 32 update: è il campionamento del logger DDP. Avanza di uno per update solo nei primi 11 update delle riprese.",
+     "correzione": "«Nelle riprese il contatore avanza di uno per update da 545 a 555 (0-10), poi il logger DDP smette di aggiornarlo»",
+     "fonte": "reloads_execution_20261121/CN_A/trace-0.ddp.jsonl; benchmark_execution_20261121/CN/trace-0.ddp.jsonl",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.5 'Fuori da DDP, identico'",
+     "citazione": "le riduce con un solo `all_reduce` di un vettore in ordine fisso",
+     "problema": "global_gradients esegue un all_reduce per ciascuno dei tre obiettivi (base, nce, rnc), dentro il ciclo alle righe 427-433.",
+     "correzione": "«con un all_reduce per obiettivo, di un vettore concatenato in ordine fisso»",
+     "fonte": "src/wearusfm/training/contrastive_objectives.py:427-433",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.5 'Fuori da DDP, identico' e titolo della sezione",
+     "citazione": "I gradienti locali dell'encoder quindi coincidono.",
+     "problema": "È una deduzione presentata come fatto. Le grandezze identiche sono norme e coseni dei vettori per obiettivo già sommati fra i rank con all_reduce e ottenuti con autograd.grad, non i gradienti locali del backward. Coprono inoltre solo SHARED_PREFIXES (tokenizer, identity, local, pool, backbone): restano fuori decoder, anchor_heads, pose_head e proiettore. La frase 'Gli artefatti archiviati localizzano già la prima differenza nella riduzione DDP' è quindi più forte delle prove.",
+     "correzione": "«Le norme e i coseni dei gradienti per obiettivo sull'encoder, sommati fra i rank in ordine fisso, coincidono bit per bit: è compatibile con gradienti locali dell'encoder identici. Per decoder e teste non c'è un controllo equivalente.»",
+     "fonte": "run.py:709-713 (SHARED_PREFIXES, _shared_params), run.py:797-798, contrastive_objectives.py:415-439",
+     "gravita": "eccesso"
+    },
+    {
+     "sezione": "2.2 'I campi di log non sono una prova'",
+     "citazione": "differiscono a ogni update le loss registrate `total`, `jepa`, `log_rms` e simili [...] Sono somme non deterministiche che non entrano nel gradiente",
+     "problema": "jepa, log_rms ecc. sono loss che entrano nel gradiente. Non deterministico è il valore registrato della somma (index_add), mentre il suo gradiente è deterministico. Inoltre non differiscono a ogni update: jepa differisce in 29 update su 32 in entrambi i bracci, log_rms in 31 su 32 in CR, contrast_rnc in 2-3 update.",
+     "correzione": "«differiscono in quasi tutti gli update (total 32/32, jepa 29/32) per 1e-8-5e-7: è la somma registrata a non essere deterministica, il gradiente lo è»",
+     "fonte": "metrics.jsonl CN_A/CN_B e CR_A/CR_B; c-decorso.md §1 (anchors.py:47-48)",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.4 'Niente valori intermedi'; prompt per GPT",
+     "citazione": "Ogni chiave è identica oppure diversa di almeno lo 0,2%: nessuna sta fra zero e 0,2%",
+     "problema": "In CR la chiave diversa più piccola vale 0,1997%, quindi una chiave sta sotto lo 0,2%. In CN il minimo è 0,2009%.",
+     "correzione": "«di almeno circa lo 0,2% (minimo 0,20% in CN e 0,1997% in CR)»",
+     "fonte": "preflight_readout.json, arms.CR.resume.pairs.continuous__reload_a.floating_tensor_relative_to_left, chiavi contrastive_state.queue.entries.*.key",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "Verdetto, 2.3, 2.6, prompt per GPT",
+     "citazione": "InfoNCE ha errori 1,6 volte quelli di Rank-N-Contrast",
+     "problema": "1,58 è il rapporto delle mediane dei 266 exp_avg dell'encoder. La media aritmetica dà 1,47 e la media geometrica dei rapporti per tensore 1,43. Il numero dipende dalla statistica, che la bozza non dichiara.",
+     "correzione": "«la mediana è 1,6 volte (1,4-1,5 con la media)»",
+     "fonte": "preflight_readout.json floating_tensor_relative_to_left, ID 0-265; script dist.py",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "Richiesta, 'Fonti'; 3.2 punto 6",
+     "citazione": "lettura di GPT a `adb6e3d6`",
+     "problema": "I conti che la bozza conferma (997-1.049 s, 1,11-1,17 GPU-ore, tetto di 2 GPU-ore) e la richiesta sulle norme e sul coseno stanno nella sezione 'Elementi da sottoporre a Claude', aggiunta a 918245b6 (8 righe nel diff adb6e3d6..918245b6), non nella lettura a adb6e3d6.",
+     "correzione": "«lettura di GPT a adb6e3d6, con la sezione 'Elementi da sottoporre a Claude' aggiunta a 918245b6»",
+     "fonte": "git diff adb6e3d6 918245b6 -- docs/reviews/contrastive_targets_resume_science_20261121.md",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.7, precisazione 4",
+     "citazione": "«Gli altri tensori rientrano nella soglia»",
+     "problema": "La citazione tra virgolette non è letterale.",
+     "correzione": "Testo di GPT: «Gli altri tensori controllati di Adam e della coda rientrano nella soglia».",
+     "fonte": "docs/reviews/contrastive_targets_resume_science_20261121.md (clone 918245b6), sezione 'Dove si concentra lo scarto'",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "Richiesta",
+     "citazione": "Domanda per Simone: i quattro scarti di InfoNCE indicano un problema nella ripresa, oppure una differenza numerica ripetibile che il criterio dell'1% rende visibile?",
+     "problema": "È una parafrasi non dichiarata, che unisce due delle tre ipotesi del prompt. Il prompt pone la decisione «se gli artefatti esistenti bastano a spiegare il risultato oppure se vale la pena di spendere GPU per una prova mirata» e distingue tre ipotesi: difetto di ripristino, differenza numerica ripetibile, sensibilità del criterio.",
+     "correzione": "Marcarla come parafrasi, oppure riportare la decisione del prompt e le tre ipotesi.",
+     "fonte": "docs/prompt_claude_contrastive_targets_resume_science_20261121.md, paragrafo iniziale e punto 2",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.6 'Gradienti locali del proiettore'",
+     "citazione": "Le norme calcolate fuori da DDP coprono i parametri condivisi dell'encoder, non il proiettore.",
+     "problema": "Sono escluse anche decoder, anchor_heads e pose_head, non solo il proiettore. La lacuna della localizzazione è più ampia di quella dichiarata.",
+     "correzione": "«coprono solo tokenizer, identity, local, pool e backbone: non decoder, teste e proiettore»",
+     "fonte": "run.py:709 SHARED_PREFIXES",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.2 'Seme'",
+     "citazione": "Un errore di scala o di stato darebbe almeno 1e-7.",
+     "problema": "È una stima (c-decorso §3, marcata [D]) presentata come fatto.",
+     "correzione": "«Secondo una stima, un errore di scala o di stato darebbe almeno 1e-7»",
+     "fonte": "rapporti_agenti/c-decorso.md §3",
+     "gravita": "eccesso"
+    },
+    {
+     "sezione": "2.3 tabella, riga 'Chiavi della coda dopo il fork'",
+     "citazione": "0,53% e 0,92%",
+     "problema": "0,53% è la mediana delle 910 chiavi diverse. Sulle 1.001 chiavi inserite dopo il fork, comprese le 91 identiche, la mediana è 0,52%. In CR resta 0,40%.",
+     "correzione": "«mediana delle chiavi diverse 0,53%» oppure 0,52% su tutte le chiavi dopo il fork",
+     "fonte": "preflight_readout.json, chiavi della coda 4.979-5.979",
+     "gravita": "imprecisione"
+    }
+   ],
+   "non_verificabili": [
+    "5.965 conteggi senza differenze (fonte secondaria: rapporti_agenti/f-confutazione.md)",
+    "L'impronta 864a86de si riproduce solo con le chiavi di AdamW di torch 2.2 (fonte secondaria: a-mappatura-denominatori.md, non ricalcolata)",
+    "Errore delle chiavi per update di inserimento (29/32/30 chiavi, mediane 0,46-0,59% e 0,36-0,44%): ricostruzione per simulazione dell'agente c; la riporta fedelmente ed è coerente con i conteggi 5.070 e 5.040 che ho rifatto",
+    "Sonda DDP su CPU con torch 2.14 (ddp_rebuild_probe.out.txt riportato fedelmente, non rieseguito)",
+    "Dispositivo dei tensori di AdamW dopo il caricamento (b-stato-ripristino, dedotto)",
+    "Stima di circa 0,3 core-ore per la lettura CPU dei checkpoint",
+    "Ordine di grandezza del seme (1e-12 da una minoranza di elementi) e salto bf16: stime, non misurabili sul Mac",
+    "Nota P-7 del 20/11 sfasata: confermata in claude_review_contrastive_targets_runtime_20261120.md:183-186",
+    "Esiti attesi dell'intervento con riscaldamento DDP (proposta di disegno, nessun codice)"
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_resume/verifica/v1-numeri-riferimenti.md (script in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_resume/verifica/v1-numeri-riferimenti/)"
+  }
+ },
+ {
+  "key": "v2-conclusioni-eccessi",
+  "result": {
+   "sintesi": "Le conclusioni di fondo della bozza reggono sulle fonti primarie. Lo stato salvato e' ripristinato per tutto cio' che le impronte coprono, A e B sono identiche su nodi diversi, la prima differenza visibile e' di arrotondamento al 545, e il verdetto storico resta visibile. Ho pero' trovato 3 errori, 6 imprecisioni e 9 eccessi. Il piu' grave: la bozza afferma che gli artefatti danno gia' la localizzazione chiesta dalla regola firmata. Non cita pero' i limiti firmati il 20/11 in decisioni.md, che chiedono di localizzare per rank, tensore e gruppo DDP e chiamano esplicitamente l'ordine di riduzione «un'ipotesi da verificare». Inoltre le norme calcolate fuori da DDP coprono 218 tensori su 270 (mancano decoder, anchor_heads, pose_head e proiettore) e sono gia' ridotte con all_reduce, non per rank. Il raggruppamento dei soli quattro tensori del proiettore come «coda» nasconde un salto netto. La frase «al 546 tutto identico» e' falsa per i momenti.",
+   "problemi": [
+    {
+     "sezione": "3 (Regola firmata), 3.1, Raccomandazione punti 2 e 4, Prompt per GPT",
+     "citazione": "La regola firmata chiede una localizzazione, e gli artefatti la danno già / Dà la localizzazione che la regola firmata richiede",
+     "problema": "La bozza cita solo la frase di faa4a8d7. Omette i limiti che la firma di Simone del 20/11 copre esplicitamente in decisioni.md. Quei limiti chiedono una localizzazione al primo passo per rank, tensore e gruppo DDP, e dicono che il cambio dell'ordine di riduzione e' un'ipotesi da verificare. Gli artefatti archiviati danno solo norme globali: grad_norm totale, una norma del proiettore e le norme contrast_global_grad_* di vettori gia' ridotti con all_reduce. Non danno valori per rank, per tensore o per gruppo DDP. Dire che la regola firmata e' gia' soddisfatta, e su questa base che la GPU non serve per decidere, va oltre il testo firmato.",
+     "correzione": "Citare decisioni.md riga 8319: «Localizzare al primo passo, per rank, tensore e gruppo DDP, a partire da 545–546. Un cambiamento dell'ordine di riduzione è un'ipotesi da verificare.» Poi dire che gli artefatti danno una localizzazione indiretta e aggregata, non quella per rank, tensore e gruppo. Se basti o no lo decide Simone, eventualmente come deroga dichiarata.",
+     "fonte": "clone/docs/decisioni.md:8315-8319; clone/docs/reviews/contrastive_common_diagnostics_science_20261119.md:49; metrics.jsonl (solo campi globali)",
+     "gravita": "eccesso"
+    },
+    {
+     "sezione": "2.6 Che cosa resta indimostrato; Limiti; 2.5",
+     "citazione": "Le norme calcolate fuori da DDP coprono i parametri condivisi dell'encoder, non il proiettore",
+     "problema": "_shared_params prende solo i prefissi tokenizer, identity, local, pool e backbone, cioe' 218 tensori su 270. Restano fuori anche decoder (34), anchor_heads (10) e pose_head (4), quindi 48 tensori oltre al proiettore, che non hanno alcuna prova prima di DDP. Per questi tensori l'origine nella riduzione resta del tutto dedotta.",
+     "correzione": "«coprono i 218 tensori condivisi dell'encoder; restano fuori decoder, anchor_heads, pose_head e proiettore (52 tensori)».",
+     "fonte": "clone/src/wearusfm/training/run.py:709-713; names_CN.json (conteggio per prefisso)",
+     "gravita": "errore"
+    },
+    {
+     "sezione": "2.5 Fuori da DDP, identico",
+     "citazione": "I gradienti locali dell'encoder quindi coincidono.",
+     "problema": "La frase e' una deduzione presentata come fatto. Le grandezze identiche sono le norme in float64 di vettori gia' sommati sui 4 rank da torch.distributed.all_reduce e divisi per ws. Non sono norme per rank. Vengono inoltre da tre chiamate autograd.grad separate (base, nce, rnc), non dal loss.backward() i cui gradienti DDP riduce davvero. Due norme uguali non dimostrano che gli elementi coincidano, ne' che coincidano i singoli contributi dei rank.",
+     "correzione": "«Le norme dei gradienti ridotti con un all_reduce a layout fisso coincidono bit per bit: è coerente con gradienti locali identici sull'encoder, che però non sono osservati per rank né sul backward vero».",
+     "fonte": "clone/src/wearusfm/training/contrastive_objectives.py:415-439; run.py:796-798",
+     "gravita": "eccesso"
+    },
+    {
+     "sezione": "2.1 Restano fuori dalle impronte",
+     "citazione": "Restano fuori dalle impronte solo stati di processo che il checkpoint non contiene: il raggruppamento interno di DDP [...] e il dispositivo dei tensori di AdamW",
+     "problema": "«solo» e' troppo forte. Le impronte di confine hashano student, teacher, optimizer state e param_groups e contrastive_state; generatori casuali, batch e coda sono confrontati a parte. state_sha256 ignora il dispositivo. Restano fuori anche altri stati di processo: l'intero stato del Reducer DDP (non solo i bucket), i communicator NCCL, gli handle e workspace cuBLAS, l'allocatore CUDA, i buffer .grad e lo stato interno del monitor oltre agli alarm_counts. I dati ne rendono improbabili alcuni, ma non risultano esclusi dalle impronte.",
+     "correzione": "«Restano fuori dalle impronte gli stati di processo non salvati (DDP/Reducer, NCCL, librerie CUDA, buffer .grad, monitor); fra questi il raggruppamento DDP risulta diverso».",
+     "fonte": "clone/scripts/contrastive_target_resume.py:181-188, 317-371; clone/src/wearusfm/training/pairing.py:14-20",
+     "gravita": "eccesso"
+    },
+    {
+     "sezione": "3.2 Che cosa mostrerebbe",
+     "citazione": "al 546 tutto identico in InfoNCE",
+     "problema": "Se al 545 i gradienti ridotti differiscono, differiscono anche i momenti di AdamW dopo il 545 e quindi al 546 (m546 = beta1*m545 + ...). Al 546 coincidono le norme dei gradienti e le loss, non i momenti. Una prova che confronta i momenti dopo AdamW li troverebbe diversi.",
+     "correzione": "«al 546 gradienti locali e ridotti identici in InfoNCE, momenti diversi per l'eredità del 545».",
+     "fonte": "metrics.jsonl CN/CN_A: grad_norm e norma del proiettore identici al 546; ragionamento sull'aggiornamento di AdamW",
+     "gravita": "errore"
+    },
+    {
+     "sezione": "Verdetto (Perché solo InfoNCE supera l'1%) e 2.3 (Lo scarto è diffuso e graduato)",
+     "citazione": "I quattro tensori fuori soglia sono la coda di questa distribuzione [...] Non sono un caso isolato.",
+     "problema": "Nei primi momenti di CN i quattro tensori del proiettore formano un gruppo separato: si salta da 0,714% (ID 194) a 1,034%, e fra 0,75% e 1% non c'e' nessun tensore. Nei secondi momenti vanno da 0,155% a 0,168%, contro 0,050% del primo fra gli altri. Inoltre dal 548 la norma del gradiente del proiettore diverge da 2 a 5 volte piu' della norma totale (media geometrica 8,6e-4 contro 1,6e-4 sui passi 548-561). C'e' quindi un fattore proprio del proiettore che la bozza non spiega. «Perché solo InfoNCE supera» non e' risolto: si spiega solo perche' Rank-N-Contrast non puo' superare la soglia su quei tensori.",
+     "correzione": "«Lo scarto è diffuso, ma i quattro tensori del proiettore formano un gruppo distinto sopra un salto (0,71% → 1,03%); il loro gradiente diverge più del resto. Il motivo non è dimostrato».",
+     "fonte": "script_claude/distribuzione_tensori.out.txt; metrics.jsonl CN (contrast_projector_grad_norm contro grad_norm)",
+     "gravita": "eccesso"
+    },
+    {
+     "sezione": "2.4 Scala e Conseguenza",
+     "citazione": "Conseguenza. Il livello dello scarto non dipende dall'ampiezza del seme.",
+     "problema": "Nel rapporto C la frase e' marcata [D], cioe' deduzione. Nella bozza diventa un fatto senza riserva, e c'e' un solo seme osservato. Anche il meccanismo («quando lo fa, l'uscita si sposta subito di questa quantità») e' impreciso. Un solo arrotondamento bf16 su un elemento di una chiave a 128 dimensioni sposta la norma L2 relativa di circa 2^-8/sqrt(128) ≈ 0,035%. Il minimo osservato di circa 0,2% (0,201% in CN, 0,200% in CR) implica che cambi gran parte degli elementi della chiave. Le assegnazioni delle chiavi per update vengono poi da una ricostruzione dell'agente C (queue_map.py), quindi da una fonte secondaria.",
+     "correzione": "«Ipotesi: con bf16 una perturbazione minima sposta quasi tutti gli elementi di una chiave di circa un'unità di arrotondamento; ne seguirebbe un livello poco dipendente dall'ampiezza del seme (non verificato, un solo seme)».",
+     "fonte": "rapporti_agenti/c-decorso.md:116-118 ([D]); script_claude/confine_livelli_config.out.txt:19,24",
+     "gravita": "eccesso"
+    },
+    {
+     "sezione": "3.3 e Costi a confronto",
+     "citazione": "Che cosa dimostra: sufficienza causale dell'ordine di riduzione / Un ripristino incompleto può solo rompere l'identità",
+     "problema": "L'identita' byte per byte non puo' nascere per caso, e su questo l'argomento a un lato regge. Ma un'iterazione di riscaldamento DDP cambia piu' del solo layout dei bucket: Reducer, prima comunicazione NCCL sui bucket, allocatore, inizializzazioni pigre. Un'identita' dimostrerebbe quindi che basta il riscaldamento, non specificamente l'ordine di riduzione. Il «Controllo interno» con le impronte di confine, inoltre, non copre i buffer .grad ne' lo stato DDP. E il punto in cui la traccia prende le impronte di confine (il primo backward osservato con step 544) va adattato perche' il riscaldamento non venga registrato come update 545.",
+     "correzione": "«dimostra che lo stato di processo ricostruito dal riscaldamento basta; l'attribuzione al solo ordine di riduzione richiede un controllo dei bucket (per esempio layout fissato) o resta un'inferenza».",
+     "fonte": "clone/scripts/contrastive_target_resume.py:168-201",
+     "gravita": "eccesso"
+    },
+    {
+     "sezione": "Verdetto (Come cresce)",
+     "citazione": "Dopo uno o due update identici, lo scarto salta di colpo a 1e-5 circa",
+     "problema": "Il 545 non e' identico in nessun braccio (grad_norm 2,2e-12 in CN, 3,4e-13 in CR). In CN e' identico solo il 546. In CR nessun update e' identico nelle norme: al 546 la differenza e' gia' 3,4e-6. «Uno o due» vale solo per le chiavi della coda.",
+     "correzione": "«Dopo uno scarto di arrotondamento al 545 (e un 546 identico in InfoNCE), lo scarto salta a 1e-6–1e-5».",
+     "fonte": "metrics.jsonl CN, CN_A, CR, CR_A, passi 545-547",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.2 I campi di log non sono una prova",
+     "citazione": "Sono somme non deterministiche che non entrano nel gradiente.",
+     "problema": "jepa, log_rms, band_shape, ms_fast e gli altri sono componenti della loss che entrano nel backward. A non entrare nel gradiente e' solo l'arrotondamento del valore ridotto e registrato. Il fatto che il forward abbia somme non deterministiche fra A e B, con gradienti identici, e' una deduzione non verificata. Fra A e B differisce anche contrast_rnc in 2 update (CN) e in 3 (CR).",
+     "correzione": "«valori registrati di somme non deterministiche; il loro arrotondamento non influisce sul gradiente (deduzione)».",
+     "fonte": "metrics.jsonl CN_A/CN_B e CR_A/CR_B: conteggio dei campi diversi",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.5 e 2.6 (Il nodo non è la causa)",
+     "citazione": "Un effetto del nodo renderebbe diverse anche A e B.",
+     "problema": "Non e' necessario. Un effetto presente solo su alcuni nodi, come il nodo del continuo (lrdn0389, oppure lrdn0292 per CR), lascerebbe identiche A e B. L'argomento piu' forte e' che due continui su nodi diversi mostrano lo stesso schema al 545 in entrambi i bracci. Basta a renderlo molto improbabile, non a escluderlo.",
+     "correzione": "«Il nodo è un'ipotesi molto improbabile: A e B coincidono su nodi diversi, e i due continui su nodi diversi mostrano lo stesso schema».",
+     "fonte": "leonardo/sola_lettura_20261121.out.txt",
+     "gravita": "eccesso"
+    },
+    {
+     "sezione": "1 Denominatori",
+     "citazione": "dopo 32 update il primo momento è fatto per il 96,6% di gradienti successivi al fork",
+     "problema": "1-0,9^32 = 0,9657 e' il peso dei gradienti successivi al fork nella media mobile, non la loro quota della norma, che dipende da ampiezze e cancellazioni. In piu', il numeratore della differenza viene interamente da gradienti successivi al fork, non «quasi solo». Anche «per questo i loro errori sono molto più piccoli» per i secondi momenti e' una deduzione.",
+     "correzione": "«i gradienti successivi al fork pesano il 96,6% nella media mobile (peso, non quota della norma); la differenza viene tutta da loro».",
+     "fonte": "aritmetica con beta1=0,9 e beta2=0,999 dalla config",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.3 Secondi momenti del proiettore",
+     "citazione": "si spiega in buona parte con la storia corta",
+     "problema": "E' una spiegazione non misurata, presentata come fatto. I dati archiviati non permettono di separare l'effetto della storia corta dalla maggiore divergenza del gradiente del proiettore.",
+     "correzione": "«potrebbe dipendere in parte dalla storia corta (ipotesi)».",
+     "fonte": "metrics.jsonl CN (primo gradiente del proiettore al 257, peso pieno dal 512): verificato il dato, non la spiegazione",
+     "gravita": "eccesso"
+    },
+    {
+     "sezione": "2.7 precisazione 1",
+     "citazione": "Sono sfasate di un update sia l'indicazione «545-546» sia «dal 547»",
+     "problema": "La lettura di GPT dice «Nei processi riavviati le tracce riportano la stessa composizione e lo stesso ordine del continuo dal 547». E' una frase sulle tracce, ed e' letteralmente corretta. Sfasata, nel senso della riduzione, e' solo la frase del prompt «Ai passi 545–546 i gruppi di riduzione DDP differiscono». Anche i limiti firmati dicono «a partire da 545–546».",
+     "correzione": "Attribuire lo sfasamento al prompt (e a ddp_trace_readout.json se letto come riduzione). Riconoscere che la frase della lettura descrive correttamente il log.",
+     "fonte": "clone/docs/reviews/contrastive_targets_resume_science_20261121.md (sezione «Cosa indicano le tracce»); prompt punto 2",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.7 precisazione 3",
+     "citazione": "Per i quattro tensori non è un controllo: lì i momenti sono zeri esatti.",
+     "problema": "La precisazione e' presentata come correzione, ma GPT lo aveva gia' scritto nella sua lettura: «InfoNCE usa questo proiettore per calcolare la loss. Rank-N-Contrast usa direttamente le rappresentazioni temporali dell'encoder» e «rispondono quindi a domande diverse». La precisazione vale per il prompt, che porta il superamento di Rank-N-Contrast come prova.",
+     "correzione": "Dire che la lettura di GPT lo riconosce gia' qualitativamente, e che la bozza aggiunge il dato degli zeri esatti.",
+     "fonte": "lettura GPT, sezione «Dove si concentra lo scarto»",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "2.7 precisazione 2",
+     "citazione": "La norma del solo gradiente InfoNCE, calcolata fuori da DDP, al 545 è identica.",
+     "problema": "contrast_global_grad_nce e' calcolata solo sui 218 parametri condivisi dell'encoder. Esclude il proiettore, cioe' proprio i parametri che ricevono il gradiente InfoNCE diretto, ed e' gia' sommata sui rank.",
+     "correzione": "«La norma del gradiente InfoNCE sui parametri condivisi dell'encoder, ridotta con un all_reduce separato, al 545 è identica».",
+     "fonte": "contrastive_objectives.py:415-439; run.py:709-713",
+     "gravita": "imprecisione"
+    },
+    {
+     "sezione": "Raccomandazione, Tre avvertenze",
+     "citazione": "Il piano prevede due fasi per braccio, a 5.000 e a 19.618",
+     "problema": "Le fonti lette dicono «la ricetta scientifica lunga conserva 5000/19618», cioe' i checkpoint conservati, e «lettura descrittiva a 5.000». Non dicono che il training sia diviso in due job con una ripresa a 5.000. Il punto di ripresa effettivo potrebbe dipendere dal limite di walltime.",
+     "correzione": "«Se il training lungo comprende riprese (per esempio a 5.000 o per walltime), il punto di ripresa deve essere lo stesso nei tre bracci».",
+     "fonte": "clone/docs/contrastive_targets_execution_20261119.md:50-53; faa4a8d7 riga 50",
+     "gravita": "errore"
+    },
+    {
+     "sezione": "Raccomandazione punto 1 e Verdetto",
+     "citazione": "lo stato a 544 è ripreso esattamente e le riprese sono riproducibili byte per byte",
+     "problema": "Manca la riserva che la stessa bozza mette in 2.1: lo stato di processo non salvato (DDP) differisce, e proprio li' nasce lo scarto. Detto a Simone senza riserva, «ripreso esattamente» puo' essere letto come «la ripresa riproduce il continuo».",
+     "correzione": "Aggiungere: «lo stato salvato è ripreso esattamente; lo stato di processo non salvato (raggruppamento DDP) no, ed è lì che nasce la differenza».",
+     "fonte": "bozza 2.1 e 2.5; trace-*.ddp.jsonl",
+     "gravita": "eccesso"
+    }
+   ],
+   "affermazioni_controllate": 58,
+   "non_verificabili": [
+    "Che il torch 2.2 del cluster (C++ Reducer) usi davvero i bucket ricostruiti gia' nella riduzione del 546. Lo sostengono l'ordine delle righe Python 1396/1413 letto su Leonardo, una sonda CPU con torch 2.14 e le norme identiche al 546 in CN. Il comportamento del Reducer C++ 2.2 resta dedotto.",
+    "«Lo stesso ordine di grandezza atteso se una minoranza di elementi differisce di un ulp» (2.5): e' una stima, senza misura dei gradienti per elemento.",
+    "Il minimo di circa 0,2% e l'assenza di valori intermedi per le chiavi per update di inserimento: la mappatura delle chiavi agli update viene dalla ricostruzione dell'agente C (queue_map.py, fonte secondaria). Il minimo non nullo complessivo (0,201% CN, 0,200% CR) e' invece nell'uscita di Claude.",
+    "Fattibilita' del riscaldamento DDP «a effetto nullo» e possibilita' di riprodurre byte per byte 4743abaf con un continuo strumentato nuovo: e' disegno non provato, servono codice e checkpoint, che non sono sul Mac.",
+    "La stima «al più circa lo 0,1%» del fattore di taglio sui primi momenti: e' una stima dell'analista, non ricalcolata sui momenti.",
+    "«Rilettura della bozza da parte di due verificatori indipendenti» (Perimetro): e' scritta al passato mentre la verifica e' in corso.",
+    "Il consuntivo di 4,74 GPU-ore e 47,33 core-ore: la bozza dichiara di non averlo ricalcolato, e io non l'ho controllato."
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_resume/verifica/v2-conclusioni-eccessi.md"
+  }
+ }
+]
