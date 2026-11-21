@@ -1,5 +1,7 @@
 # 3-launcher · quattro riprese contrastive RMS100/fast125
 
+**Via di Simone per la catena concordata.** La regola su `origin/main` a `92d1fc0a` si applica a questa consegna. Il via già dato copre attese di slot, controlli, quattro riprese, raccolta e pubblicazione, quindi anche il checkout e la lettura CPU già elencati nel piano una volta pubblicato il relativo pacchetto con i sette riepiloghi verificati. Il passaggio delle ricevute alla chat scientifica serve a fissare i file esatti per il lettore. 3-launcher resta l'unico operatore per gli invii e consulta il ledger prima di ciascuno. Un eventuale esito negativo o inconclusivo va consegnato con il rapporto e il motivo. [Regola operativa](../CLAUDE.md) · [Piano delle celle](../results/infra/contrastive_targets_20261118/preflight_plan.json)
+
 ## Ripresa del controllo prima del checkout, 21/11
 
 Il tentativo documentato a `086422e1` ha restituito 255 al client SSH dopo 92 verifiche di integrità positive e l’elenco dei moduli. Manca già la prima ricevuta JSON attesa, quella di `check-binding`. La riconnessione delle 12:12 CET e la riconciliazione confermano checkout e uscite assenti, cinque ID disponibili e nessuna allocazione. Il piano dei comandi si rigenera identico e la verifica del binding si riproduce sul Mac. La causa precisa dell’interruzione resta aperta.
