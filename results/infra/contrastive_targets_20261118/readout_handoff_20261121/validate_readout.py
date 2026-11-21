@@ -105,13 +105,23 @@ def main():
             if (summary != folder / "summary.json" or values["steps"] != 576 or values["stopped"] != "max_steps"
                     or values["contrastive"]["config"]["arm"] != label.split("_")[0] or (folder / "STOP").exists()):
                 raise ValueError(f"Mismatch between summary, arm and physical endpoint: {label}")
+    validate_reader_command(command, root, full, reloads)
+    print(json.dumps({"id": JOB_ID, "execution_started": False, "reader_argv_valid": True,
+                      "verified_full_arms": list(full), "verified_reloads": list(reloads),
+                      "physical_checkpoints_verified": 10, "output": str(output),
+                      "execution_argv": command}, indent=2))
+
+
+def validate_reader_command(command, root, full, reloads):
+    # argparse parses individual receipt paths as Path; ARM=directory mappings keep strings.
     cohort = (PACKAGE / "releases/benchmark_20261121/cohort/cohort.json").resolve()
-    expected_args = (cohort, full, reloads, root / "cuda.json")
+    expected_args = (cohort, {arm: str(folder) for arm, folder in full.items()},
+                     {cell: str(folder) for cell, folder in reloads.items()}, root / "cuda.json")
     expected_kwargs = {"cpu_audit_path": root / "audit.json",
                        "calibration_path": root / "calibration_report.json",
                        "calibration_run_dir": root / "calibration",
                        "cpu_audit_sacct_path": (PACKAGE / "audit_execution_20261120/audit_accounting.json").resolve()}
-    if command.count("--out") != 1 or command[command.index("--out") + 1] != str(output):
+    if command.count("--out") != 1 or command[command.index("--out") + 1] != str(root / "preflight_readout.json"):
         raise ValueError("Wrong readout output")
 
     class Parsed(Exception):
@@ -131,11 +141,6 @@ def main():
             pass
         else:
             raise ValueError("Frozen reader did not reach expected dispatch")
-
-    print(json.dumps({"id": JOB_ID, "execution_started": False, "reader_argv_valid": True,
-                      "verified_full_arms": list(full), "verified_reloads": list(reloads),
-                      "physical_checkpoints_verified": 10, "output": str(output),
-                      "execution_argv": command}, indent=2))
 
 
 if __name__ == "__main__":
