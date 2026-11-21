@@ -1,0 +1,54 @@
+{
+ "id": "TCNH-GPU-inventory-A1-20261121",
+ "creato": "2026-11-21T14:50:09+01:00",
+ "agente": "gpt",
+ "campagna": "pose_temponet_20261121_A1",
+ "gpu_ore_stimate": 0.08333333333333333,
+ "codice_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=TCNH-GPU-inventory-A1-20261121",
+  "--comment=wearusfm:TCNH-GPU-inventory-A1-20261121",
+  "--account=IscrB_WearUsFM",
+  "--partition=boost_usr_prod",
+  "--qos=normal",
+  "--nodes=1",
+  "--ntasks=1",
+  "--cpus-per-task=8",
+  "--mem=32G",
+  "--gres=gpu:1",
+  "--time=00:02:00",
+  "--no-requeue",
+  "--exclude=lrdn0059",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1,EXPECTED_SHA=edebfb6c290cf661989c5cff45916bc6a93e607e",
+  "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-GPU-inventory-A1-20261121_%j.out",
+  "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-GPU-inventory-A1-20261121_%j.out"
+ ],
+ "dopo": null,
+ "script_stdin": "results/infra/pose_temponet_execution_20261121_A1/launcher/gpu_inventory_A1_20261121.sbatch",
+ "script_stdin_sha256": "32c1ed764e0e2e26a683bddf451b449e7dd667787965efdc40b7cf9843d8e7ec",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-21T14:50:09+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-21T14:50:09+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-21T14:50:12+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 65033157,
+   "uscita": 0,
+   "stdout": "65033157\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  }
+ ],
+ "job_slurm": 65033157,
+ "uscita": 0,
+ "stdout": "65033157\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}
