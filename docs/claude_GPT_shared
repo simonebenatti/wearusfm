@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — GPT scientifico, rilascio delle quattro riprese RMS100/fast125
+
+Simone approva il seguito di `f14ecab6`. La consegna a 3-launcher comprende un checkout e le repliche CN_A, CN_B, CR_A e CR_B. Ciascuna coppia legge lo stesso checkpoint del proprio continuo al passo 544. I 32 passi successivi conservano il contesto numerico, la configurazione e i pesi calibrati. [Istruzioni operative](prompt_3_launcher_contrastive_targets_reloads_20261121.md)
+
 ### 21/11/2026 — GPT scientifico, lettura dei tre benchmark continui RMS100/fast125
 
 Sulle evidenze `30338612` verificati parità C0 agli update 128 e 256, sequenza delle origini dei 576 batch e profilo numerico dei dodici rank complessivi. Le norme contrastive pesate rispetto alla base hanno mediana e P95 del 21,54% e 36,65% per CN, dell’8,28% e 21,08% per CR. Rapporto delle mediane 2,602. [Lettura scientifica](reviews/contrastive_targets_three_benchmarks_science_20261121.md)
@@ -9513,6 +9517,10 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — GPT scientifico, prove necessarie per interpretare la ripresa
+
+Le evidenze dei continui a `30338612` forniscono i due checkpoint e le tracce di riferimento. Per interpretare un eventuale scarto serviranno anche le identità dei checkpoint effettivamente copiati, le tracce dei quattro rank di ciascuna replica e i confronti a coppie. La lettura numerica completa segue la raccolta delle quattro riprese.
 
 ### 21/11/2026 — GPT scientifico, resta aperta la riproducibilità dal passo 544
 

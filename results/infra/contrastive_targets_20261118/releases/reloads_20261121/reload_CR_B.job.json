@@ -1,0 +1,115 @@
+{
+  "config": {
+    "path": "results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/CR.config.json",
+    "sha256": "57b50984f6847b6cfda8191a54f95fc074659d9a36fef8b97042e8a875bfa432",
+    "bytes": 5325
+  },
+  "inputs": {
+    "manifest": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+      "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+    },
+    "scales": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+      "sha256": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486"
+    },
+    "window_seconds": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+      "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+    },
+    "pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+    }
+  },
+  "roots": [
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed"
+  ],
+  "audit": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/audit.json",
+    "sha256": "eb7cbdf49ffdd00148647e82c5f51768edbd17b5ef515d960a1f6edec35754d3",
+    "bytes": 20275571
+  },
+  "audit_sacct": {
+    "path": "results/infra/contrastive_targets_20261118/audit_execution_20261120/audit_accounting.json",
+    "sha256": "594d72932f2ca15440ee4bf1255a0abe035467933703efcd23309a6e14a32726",
+    "bytes": 516
+  },
+  "calibration_report": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration_report.json",
+    "sha256": "20cb900522b62b46f17d1b65cbbe1ef579a4cdd5e935a7ab31b7a309ed516532",
+    "bytes": 125185
+  },
+  "calibration_summary": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration/summary.json",
+    "sha256": "7cdf45af1b0b1250445844f4fe2955a12640d95cbf10729fb80d91a06d5855cd",
+    "bytes": 7501
+  },
+  "cohort": {
+    "path": "results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/cohort.json",
+    "sha256": "2e611964c76c6f8e7622a89ecb407c1175ec31502e77b2a64d66efb5236b9c3a",
+    "bytes": 868
+  },
+  "cuda_report": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/cuda.json",
+    "sha256": "920bfb46c881c13b7edc9a93af01e9073a714908bb97081c46d266cb17f8133d",
+    "bytes": 243122
+  },
+  "release": {
+    "path": "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_B.release.json",
+    "sha256": "da8bd80c7b5b65da6416b8e64045f62753259a10d8598b79489276657b1592fb",
+    "bytes": 3541
+  },
+  "fork_checkpoint": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/benchmark/CR/checkpoint_step0000544.pt",
+    "sha256": "a9a5b1deb69c46c0238480500605f24fe9415c41f2a964d91d0cd2f7f5608e1a",
+    "bytes": 463142486
+  },
+  "continuous_summary": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/benchmark/CR/summary.json",
+    "sha256": "69dc27315497faec486122af1fd24bf492889014bfe172c17ab76bbc420dadaa",
+    "bytes": 7650
+  },
+  "status": "APPROVED_FOR_PREFLIGHT",
+  "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+  "mode": "resume",
+  "id": "CONTRAST-RELOAD-CR-B-targets-v3-20261118",
+  "package_review": {
+    "schema": "contrastive-target-review-binding-v1",
+    "review_commit": "469b312cd5502b801a0af44c56e16a89f019c14c",
+    "original_review_path": "docs/reviews/claude_review_contrastive_targets_runtime_20261120.md",
+    "original_review_sha256": "71238b7c763e2fdf8f2fb596e1decacf8f56d165f29a360f997baf66971173b3",
+    "review": {
+      "path": "results/infra/contrastive_targets_20261118/releases/audit_20261120/claude_review_contrastive_targets_runtime_20261120.md",
+      "sha256": "71238b7c763e2fdf8f2fb596e1decacf8f56d165f29a360f997baf66971173b3",
+      "bytes": 24434
+    },
+    "review_payload": {
+      "schema": "contrastive-target-release-review-v1",
+      "status": "APPROVED",
+      "reviewed_commit": "fbfde797b48644744c36547533acf0e8a7793535",
+      "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+      "science_plan_sha256": "b03c0bc679f7247d703635d7065c9fc7bda4a292f2c8c106e29004e0527e021a",
+      "preflight_plan_sha256": "e4b3959112db86dac806978cf65307d97694da68b64096120487e8f568c6dd92"
+    },
+    "science_plan": {
+      "path": "results/infra/contrastive_targets_20261118/plan.json",
+      "sha256": "b03c0bc679f7247d703635d7065c9fc7bda4a292f2c8c106e29004e0527e021a",
+      "bytes": 14862
+    },
+    "preflight_plan": {
+      "path": "results/infra/contrastive_targets_20261118/preflight_plan.json",
+      "sha256": "e4b3959112db86dac806978cf65307d97694da68b64096120487e8f568c6dd92",
+      "bytes": 9082
+    }
+  },
+  "review": {
+    "path": "results/infra/contrastive_targets_20261118/releases/audit_20261120/claude_review_contrastive_targets_runtime_20261120.md",
+    "sha256": "71238b7c763e2fdf8f2fb596e1decacf8f56d165f29a360f997baf66971173b3",
+    "bytes": 24434
+  },
+  "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CR_B",
+  "arm": "CR",
+  "repeat": "b"
+}
