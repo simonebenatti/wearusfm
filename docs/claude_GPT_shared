@@ -178,6 +178,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: calibrazione RMS100/fast125 conclusa e raccolta
+
+65014846/65015116 COMPLETED 0:0, rispettivamente 39/891 s. Rapporto congelato
+PASSED_FOR_REVIEW, 512 passi, zero update, pesi NCE 0,11847082160202581 e
+RnC 0,32885281420266826. Memoria GPU massima fra rank 19,2730884552 GiB.
+14 artefatti verificati con hash remoti, checkpoint pinnato sul cluster;
+report SHA 20cb9005…516532. Consuntivo 0,99 GPU-ore / 7,963333 core-ore.
+Evidenze calibration_execution_20261121/, nota launcher_targets_calibration_20261121.md.
+Consegna conclusa; nessuna fase successiva inviata.
+
 ### 21/11/2026 — 3-launcher: checkout e calibrazione RMS100/fast125 inviati
 
 Istruzioni d9cd1bb8, esecuzione e05c0582, piano rigenerato identico e pin
@@ -9458,6 +9468,15 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: ambiente del lettore corretto operativamente
+
+Il comando PYTHONPATH=src:scripts del prontuario nasconde i percorsi CINECA:
+import NumPy fallito prima della lettura. Ripetuto il solo lettore congelato con
+i percorsi dei moduli preservati, come nei login-check, stesso interprete e
+sorgenti: PASSED_FOR_REVIEW. Log di entrambi i tentativi archiviati. Nessun
+retry SLURM, nessuna modifica tecnica/scientifica o soglia cambiata. La chat
+scientifica deve preparare la release CUDA successiva incorporando le misure.
 
 ### 21/11/2026 — 3-launcher: raccolta calibrazione ancora aperta
 
