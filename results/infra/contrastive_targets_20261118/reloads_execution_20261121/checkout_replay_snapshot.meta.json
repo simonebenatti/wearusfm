@@ -1,0 +1,14 @@
+{
+  "started": "2026-11-21T12:17:19.363425+01:00",
+  "elapsed_s": 2.2303883749991655,
+  "returncode": 0,
+  "argv": [
+    "/usr/bin/ssh",
+    "-o",
+    "ControlMaster=no",
+    "-o",
+    "ControlPath=none",
+    "leonardo",
+    "date -Is; saldo -b; df -k /leonardo_work/IscrB_WearUsFM; squeue -A IscrB_WearUsFM -h -o \"%i|%u|%q|%T|%C|%l|%L|%j\"; sinfo -p lrd_all_serial,boost_usr_prod -o \"%P|%a|%C\"; scontrol show reservation"
+  ]
+}

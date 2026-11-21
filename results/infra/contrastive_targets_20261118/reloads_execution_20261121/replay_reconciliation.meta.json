@@ -1,0 +1,14 @@
+{
+  "started": "2026-11-21T12:17:02.957262+01:00",
+  "elapsed_s": 1.4681638340116479,
+  "returncode": 0,
+  "argv": [
+    "/usr/bin/ssh",
+    "-o",
+    "ControlMaster=no",
+    "-o",
+    "ControlPath=none",
+    "leonardo",
+    "date -Is; hostname; ps -u sbenatti -o pid,etime,args; squeue -u sbenatti -h -o \"%i|%T|%j\"; test ! -e /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121; test ! -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads; git -C /leonardo_work/IscrB_WearUsFM/wearusfm rev-parse refs/heads/deploy/contrastive-targets-reloads-20261121"
+  ]
+}

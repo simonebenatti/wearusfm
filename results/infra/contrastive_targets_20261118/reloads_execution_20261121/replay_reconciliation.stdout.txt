@@ -1,0 +1,13 @@
+2026-11-21T12:17:03+01:00
+login02.leonardo.local
+    PID     ELAPSED COMMAND
+2902050       00:14 /usr/lib/systemd/systemd --user
+2902102       00:14 (sd-pam)
+2903017       00:13 sshd: sbenatti@notty
+2903054       00:13 python3 -c import json,subprocess,zlib,base64,hashlib from pathlib import Path jid='65023067' r={'sacct':subprocess.check_output(['sacct','-n','-P','-j',jid,'--format=JobIDRaw,State,ExitCode,ElapsedRaw,AllocCPUS,AllocTRES,MaxRSS,NodeList,Start,End'],universal_newlines=True),'allocation':subprocess.check_output(['sacct','-X','-n','-P','-j',jid,'--format=JobIDRaw,State,ExitCode,ElapsedRaw,AllocCPUS'],universal_newlines=True)} wd=Path('/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1') log=Path('/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-checkout-A1-20261121_65023067.out') if log.exists():  b=log.read_bytes();r['log']={'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b),'zlib_base64':base64.b64encode(zlib.compress(b)).decode()} if '|COMPLETED|0:0|' in r['allocation']:  r['sha']=subprocess.check_output(['git','-C',str(wd),'rev-parse','HEAD'],universal_newlines=True).strip()  r['status']=subprocess.check_output(['git','-C',str(wd),'status','--porcelain'],universal_newlines=True)  r['writable']=subprocess.check_output(['find',str(wd),'-path',str(wd/'.git'),'-prune','-o','!','-type','l','(','-perm','-0200','-o','-perm','-0020','-o','-perm','-0002',')','-print'],universal_newlines=True) print(json.dumps(r))
+2903724       00:12 git -C /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1 status --porcelain
+2914263       00:01 sshd: sbenatti@notty
+2914298       00:01 bash -c date -Is; hostname; ps -u sbenatti -o pid,etime,args; squeue -u sbenatti -h -o "%i|%T|%j"; test ! -e /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121; test ! -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads; git -C /leonardo_work/IscrB_WearUsFM/wearusfm rev-parse refs/heads/deploy/contrastive-targets-reloads-20261121
+2914569       00:00 ps -u sbenatti -o pid,etime,args
+64837401|PENDING|SCALING-49046-train-39237-20261118
+12e215a978b9d30ea6d670f58af1a0f97387d477

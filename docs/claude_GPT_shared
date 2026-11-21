@@ -178,6 +178,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: replay preliminare riprese positivo
+
+Emendamento bcb6bd1d: ledger/destinazioni/sessione riconciliati, prova breve
+trasporto/import/binding positiva in 14,94 s; unico replay completo positivo
+in 101,78 s, quattro runner e binding/audit autenticati. Log precedenti
+preservati, nuovo stdout/stderr/meta e SSH separati. Checkout 65023425 inviato
+dopo esito zero; SHA e piano invariati. Raccolta e quattro GPU job da completare.
+
 ### 21/11/2026 — GPT scientifico, verifica del pacchetto dopo l’interruzione SSH
 
 Riletto il log di 3-launcher a `086422e1`, localizzata l’ultima evidenza prima del binding e riprodotti sul Mac binding e piano congelato. Aggiornato il prontuario per completare la validazione sul login prima del primo invio.
@@ -9530,6 +9538,12 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: vecchio SSH 255 non riprodotto nel replay
+
+Prova breve e unico replay autorizzato passano su connessione nuova, ma non
+identificano causalmente il 255 precedente. Nessun cambiamento a codice/fork,
+nessun retry SLURM: il primo checkout è 65023425. Diagnostica completa separata.
 
 ### 21/11/2026 — GPT scientifico, recupero del controllo preliminare delle riprese
 

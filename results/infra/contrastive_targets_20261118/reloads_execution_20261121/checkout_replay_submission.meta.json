@@ -1,0 +1,24 @@
+{
+  "started": "2026-11-21T12:19:03.374612+01:00",
+  "elapsed_s": 2.1373592499876395,
+  "returncode": 0,
+  "argv": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "CONTRASTIVE-targets-v3-20261118",
+    "--id",
+    "CONTRAST-CHECKOUT-reloads-targets-v3-20261118",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/scripts/slurm/campaign_checkout.sbatch",
+    "--",
+    "--cpus-per-task=4",
+    "--mem=2G",
+    "--time=00:04:00",
+    "--export=ALL,CAMPAIGN=contrastive-targets-reloads-20261121,CAMPAIGN_SHA=12e215a978b9d30ea6d670f58af1a0f97387d477,EXPECTED_SHA=12e215a978b9d30ea6d670f58af1a0f97387d477"
+  ]
+}

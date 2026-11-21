@@ -1,0 +1,331 @@
+64937087|COMPLETED|0:0|4022|8|120
+JobIDRaw|State|ExitCode|ElapsedRaw|AllocCPUS|TimelimitRaw
+65014846|COMPLETED|0:0|39|4|4
+65015116|COMPLETED|0:0|891|32|30
+JobIDRaw|State|ExitCode|ElapsedRaw|AllocCPUS|TimelimitRaw
+65016695|COMPLETED|0:0|28|4|4
+65016794|COMPLETED|0:0|130|32|30
+JobIDRaw|State|ExitCode|ElapsedRaw|AllocCPUS|TimelimitRaw
+65017186|COMPLETED|0:0|19|4|4
+65017240|COMPLETED|0:0|795|32|30
+65017310|COMPLETED|0:0|784|32|30
+65020151|COMPLETED|0:0|773|32|30
+JobIDRaw|State|ExitCode|ElapsedRaw|AllocCPUS|TimelimitRaw
+calibration/config.json: OK
+calibration/numeric_profile.rank0.json: OK
+calibration/metrics.jsonl: OK
+calibration/pose_panel_set.json: OK
+calibration/fixed_eval_set.json: OK
+calibration/numeric_profile.rank2.json: OK
+calibration/summary.json: OK
+calibration/numeric_profile.rank3.json: OK
+calibration/pose_panel.jsonl: OK
+calibration/fixed_eval.jsonl: OK
+calibration/origin_sessions.json: OK
+calibration/pose_provenance.json: OK
+calibration/numeric_profile.rank1.json: OK
+calibration_report.json: OK
+cuda/coverage_stop/config.json: OK
+cuda/coverage_stop/pose_provenance.json: OK
+cuda/coverage_stop/STOP: OK
+cuda/coverage_stop/metrics.jsonl: OK
+cuda/coverage_stop/summary.json: OK
+cuda/numeric_stop/config.json: OK
+cuda/numeric_stop/metrics.jsonl: OK
+cuda/numeric_stop/summary.json: OK
+cuda/numeric_stop/STOP: OK
+cuda/numeric_stop/pose_provenance.json: OK
+cuda.json.rank_exit_probe/report.json: OK
+cuda.json.rank_exit_probe/stdout.log: OK
+cuda.json.rank_exit_probe/worker_1.json: OK
+cuda.json.rank_exit_probe/worker_0.json: OK
+cuda.json.rank_exit_probe/worker_3.json: OK
+cuda.json.rank_exit_probe/worker_2.json: OK
+cuda.json.rank_exit_probe/stderr.log: OK
+cuda.json: OK
+C0/pose_panel_set.json: OK
+C0/fixed_eval.jsonl: OK
+C0/zero_weight_parity.rank2.json: OK
+C0/pose_panel.jsonl: OK
+C0/numeric_profile.rank1.json: OK
+C0/numeric_profile.rank3.json: OK
+C0/numeric_profile.rank2.json: OK
+C0/config.json: OK
+C0/pose_provenance.json: OK
+C0/fixed_eval_set.json: OK
+C0/zero_weight_parity.rank1.json: OK
+C0/zero_weight_parity.rank0.json: OK
+C0/metrics.jsonl: OK
+C0/origin_sessions.json: OK
+C0/zero_weight_parity.json: OK
+C0/zero_weight_parity.rank3.json: OK
+C0/numeric_profile.rank0.json: OK
+C0/summary.json: OK
+CN/fixed_eval.jsonl: OK
+CN/pose_panel.jsonl: OK
+CN/pose_panel_set.json: OK
+CN/config.json: OK
+CN/trace-3.jsonl: OK
+CN/trace-3.ddp.jsonl: OK
+CN/numeric_profile.rank1.json: OK
+CN/numeric_profile.rank0.json: OK
+CN/origin_sessions.json: OK
+CN/trace-1.ddp.jsonl: OK
+CN/trace-2.ddp.jsonl: OK
+CN/numeric_profile.rank3.json: OK
+CN/pose_provenance.json: OK
+CN/summary.json: OK
+CN/trace-0.jsonl: OK
+CN/fixed_eval_set.json: OK
+CN/trace-2.jsonl: OK
+CN/metrics.jsonl: OK
+CN/trace-1.jsonl: OK
+CN/numeric_profile.rank2.json: OK
+CN/trace-0.ddp.jsonl: OK
+CR/numeric_profile.rank1.json: OK
+CR/pose_provenance.json: OK
+CR/fixed_eval_set.json: OK
+CR/numeric_profile.rank0.json: OK
+CR/metrics.jsonl: OK
+CR/pose_panel.jsonl: OK
+CR/config.json: OK
+CR/trace-3.jsonl: OK
+CR/trace-0.ddp.jsonl: OK
+CR/trace-1.ddp.jsonl: OK
+CR/trace-0.jsonl: OK
+CR/trace-2.jsonl: OK
+CR/origin_sessions.json: OK
+CR/numeric_profile.rank2.json: OK
+CR/numeric_profile.rank3.json: OK
+CR/trace-1.jsonl: OK
+CR/summary.json: OK
+CR/pose_panel_set.json: OK
+CR/trace-3.ddp.jsonl: OK
+CR/fixed_eval.jsonl: OK
+CR/trace-2.ddp.jsonl: OK
+{"schema": "contrastive-target-release-review-v1", "status": "APPROVED", "reviewed_commit": "fbfde797b48644744c36547533acf0e8a7793535", "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0", "science_plan_sha256": "b03c0bc679f7247d703635d7065c9fc7bda4a292f2c8c106e29004e0527e021a", "preflight_plan_sha256": "e4b3959112db86dac806978cf65307d97694da68b64096120487e8f568c6dd92"}
+{"accounting_sha256": "594d72932f2ca15440ee4bf1255a0abe035467933703efcd23309a6e14a32726", "sacct_sha256": "8d2c71fbcbe883cf906b8349d5b104882307a26e859cc95629bf295f1c413cfe", "audit_sha256": "eb7cbdf49ffdd00148647e82c5f51768edbd17b5ef515d960a1f6edec35754d3", "job_id": "64937087", "logical_id": "CONTRAST-AUDIT-targets-v3-20261118", "elapsed_seconds": 4022, "state": "COMPLETED", "exit_code": "0:0"}
+{"recipe_valid": true, "release_valid": true, "execution_started": false, "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0", "config_sha256": "425d054ec8f5c28d5aaacaef4fc98e93796364354c6092eec9b3e2f8aeacda88"}
+{
+  "id": "CONTRAST-RELOAD-CN-A-targets-v3-20261118",
+  "job_arm": "CN",
+  "config_arm": "CN",
+  "release_arm": "CN",
+  "phase": "resume_a",
+  "start_checkpoint_step": 544,
+  "end_step": 576,
+  "fork_sha256": "aa5952f0c4b7a8f07b5965b096877d568f3b5662bf08e6d8a4fc56f2a9e37ce6",
+  "fork_bytes": 463142486,
+  "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_A",
+  "full_summary_sha256": "e7bc701dab54ca1b5d3fae8d6a0fb1393234933ebde083b35cc94b10a1c49d17",
+  "batch_size": 32,
+  "calibrated_coefficients": {
+    "nce": 0.11847082160202581,
+    "rnc": 0.32885281420266826
+  },
+  "execution_argv": [
+    "/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3",
+    "-m",
+    "torch.distributed.run",
+    "--standalone",
+    "--nproc_per_node=4",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/scripts/contrastive_run.py",
+    "--config",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/CN.config.json",
+    "--release",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_A.release.json",
+    "--stage",
+    "benchmark",
+    "--out-dir",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_A",
+    "--time-limit-s",
+    "1770",
+    "--manifest",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+    "--scales",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+    "--window-seconds",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+    "--root",
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "--root",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed",
+    "--audit-report",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/audit.json",
+    "--cohort",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/cohort.json",
+    "--calibration-report",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration_report.json",
+    "--calibration-run-dir",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration"
+  ],
+  "execution_started": false
+}
+{"recipe_valid": true, "release_valid": true, "execution_started": false, "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0", "config_sha256": "425d054ec8f5c28d5aaacaef4fc98e93796364354c6092eec9b3e2f8aeacda88"}
+{
+  "id": "CONTRAST-RELOAD-CN-B-targets-v3-20261118",
+  "job_arm": "CN",
+  "config_arm": "CN",
+  "release_arm": "CN",
+  "phase": "resume_b",
+  "start_checkpoint_step": 544,
+  "end_step": 576,
+  "fork_sha256": "aa5952f0c4b7a8f07b5965b096877d568f3b5662bf08e6d8a4fc56f2a9e37ce6",
+  "fork_bytes": 463142486,
+  "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_B",
+  "full_summary_sha256": "e7bc701dab54ca1b5d3fae8d6a0fb1393234933ebde083b35cc94b10a1c49d17",
+  "batch_size": 32,
+  "calibrated_coefficients": {
+    "nce": 0.11847082160202581,
+    "rnc": 0.32885281420266826
+  },
+  "execution_argv": [
+    "/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3",
+    "-m",
+    "torch.distributed.run",
+    "--standalone",
+    "--nproc_per_node=4",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/scripts/contrastive_run.py",
+    "--config",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/CN.config.json",
+    "--release",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_B.release.json",
+    "--stage",
+    "benchmark",
+    "--out-dir",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_B",
+    "--time-limit-s",
+    "1770",
+    "--manifest",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+    "--scales",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+    "--window-seconds",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+    "--root",
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "--root",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed",
+    "--audit-report",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/audit.json",
+    "--cohort",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/cohort.json",
+    "--calibration-report",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration_report.json",
+    "--calibration-run-dir",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration"
+  ],
+  "execution_started": false
+}
+{"recipe_valid": true, "release_valid": true, "execution_started": false, "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0", "config_sha256": "57b50984f6847b6cfda8191a54f95fc074659d9a36fef8b97042e8a875bfa432"}
+{
+  "id": "CONTRAST-RELOAD-CR-A-targets-v3-20261118",
+  "job_arm": "CR",
+  "config_arm": "CR",
+  "release_arm": "CR",
+  "phase": "resume_a",
+  "start_checkpoint_step": 544,
+  "end_step": 576,
+  "fork_sha256": "a9a5b1deb69c46c0238480500605f24fe9415c41f2a964d91d0cd2f7f5608e1a",
+  "fork_bytes": 463142486,
+  "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CR_A",
+  "full_summary_sha256": "69dc27315497faec486122af1fd24bf492889014bfe172c17ab76bbc420dadaa",
+  "batch_size": 32,
+  "calibrated_coefficients": {
+    "nce": 0.11847082160202581,
+    "rnc": 0.32885281420266826
+  },
+  "execution_argv": [
+    "/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3",
+    "-m",
+    "torch.distributed.run",
+    "--standalone",
+    "--nproc_per_node=4",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/scripts/contrastive_run.py",
+    "--config",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/CR.config.json",
+    "--release",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_A.release.json",
+    "--stage",
+    "benchmark",
+    "--out-dir",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CR_A",
+    "--time-limit-s",
+    "1770",
+    "--manifest",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+    "--scales",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+    "--window-seconds",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+    "--root",
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "--root",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed",
+    "--audit-report",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/audit.json",
+    "--cohort",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/cohort.json",
+    "--calibration-report",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration_report.json",
+    "--calibration-run-dir",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration"
+  ],
+  "execution_started": false
+}
+{"recipe_valid": true, "release_valid": true, "execution_started": false, "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0", "config_sha256": "57b50984f6847b6cfda8191a54f95fc074659d9a36fef8b97042e8a875bfa432"}
+{
+  "id": "CONTRAST-RELOAD-CR-B-targets-v3-20261118",
+  "job_arm": "CR",
+  "config_arm": "CR",
+  "release_arm": "CR",
+  "phase": "resume_b",
+  "start_checkpoint_step": 544,
+  "end_step": 576,
+  "fork_sha256": "a9a5b1deb69c46c0238480500605f24fe9415c41f2a964d91d0cd2f7f5608e1a",
+  "fork_bytes": 463142486,
+  "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CR_B",
+  "full_summary_sha256": "69dc27315497faec486122af1fd24bf492889014bfe172c17ab76bbc420dadaa",
+  "batch_size": 32,
+  "calibrated_coefficients": {
+    "nce": 0.11847082160202581,
+    "rnc": 0.32885281420266826
+  },
+  "execution_argv": [
+    "/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3",
+    "-m",
+    "torch.distributed.run",
+    "--standalone",
+    "--nproc_per_node=4",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/scripts/contrastive_run.py",
+    "--config",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/CR.config.json",
+    "--release",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_B.release.json",
+    "--stage",
+    "benchmark",
+    "--out-dir",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CR_B",
+    "--time-limit-s",
+    "1770",
+    "--manifest",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+    "--scales",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+    "--window-seconds",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+    "--root",
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "--root",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed",
+    "--audit-report",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/audit.json",
+    "--cohort",
+    "/scratch_local/tmp.7TPJHwFrzi/tree/results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/cohort.json",
+    "--calibration-report",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration_report.json",
+    "--calibration-run-dir",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration"
+  ],
+  "execution_started": false
+}
