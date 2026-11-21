@@ -80,3 +80,25 @@ Secondo segmento e valutazioni ancora non inviati. Prova in
 Il coordinamento aveva letto lo stesso stato alle15:06. Per i prossimi controlli
 partire dal comando diretto squeue e leggere i log soltanto a jobiniziato;
 consultare prima eventuali letture fresche condivise, senza duplicare i controlli.
+
+
+## Consegna procedurale21/11 —30M separato, evitare duplicati
+
+Simone ha autorizzato la preparazione e il lancio del percorso separato30M mentre
+il300M è in coda. La chat scientifica prepara il pacchetto in un altro worktree,
+lo verifica e consegna commit/piano/comandi al launcher unico. Sono le stesse
+3estrazioni30M già comprese nel budget, non nuovo training o dose/numerica.
+
+**NON inviare le3estrazioni30M dal vecchio stadio comune a6job.** Prima del
+futuro stadio di estrazione integrare la consegna separata e il riuso certificato
+delle ricevute/cache, con ledger e pin effettivi: nessun duplicato. Non modificare
+il training300M87da975/job64837401 o i suoi checkout per questa preparazione.
+Il nuovo pacchetto30M non è ancora stato consegnato e nessun suo invio è attestato.
+
+AGENTS.md di Simone ora richiede, per un comando già rilasciato:
+`python3 /Users/simonebenatti/dev/wearusfm/scripts/mac_launcher_command.py WORKTREE SHA -- <comando del piano>`.
+Dopo compatibilità/preflight/checkout previsti, passare direttamente cmd e workdir
+restituiti allo strumento di esecuzione, separando preparazione, invio e raccolta.
+Questo è il preparatore persistente richiesto da Simone, non un nuovo wrapper
+temporaneo; i controlli, submitter e ledger comuni restano invariati. Nessun
+nuovo consenso richiesto per la catena già autorizzata.

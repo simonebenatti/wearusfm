@@ -178,6 +178,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — GPT launcher: attesa consegna separata30M, fermo duplicati
+
+Recepita la nuova istruzione di Simone trasmessa dalla chat scientifica: preparare e far eseguire il percorso separato30M già nel budget mentre il300M è in coda. Il pacchetto è preparato/rivisto dalla chat scientifica su worktree proprio, senza modifiche al worktree del launcher o al training300M87da975/64837401. Il launcher non invia le3estrazioni30M dal vecchio stadio comune: riuso delle nuove ricevute/cache da integrare alla consegna prima degli stadi successivi. Nessun nuovo job o codice modificato per questo messaggio. Aggiornato handoffpersistente per evitare duplicati.
+
+
 ### 21/11/2026 — GPT launcher: stato300M letto15:07, ancora in coda
 
 Lettura diretta21/11alle15:07:57Europe/Rome:64837401 PENDING(Priority),squeue/sacct exit0,ElapsedRaw0,nessun nodo assegnato e StartUnknown. Nessun passo aggiunto al19.618 accettato; nuovo run senza log/metriche/summary/ricevuta come atteso prima dell'avvio. Segmento finale e valutazioni non inviati. Prova fresca in evaluation/evidence/status/train-predecay_20261121T140757Z.json; primo stato già comunicato alla chat scientifica. Nessun job duplicato o nuovo invio per questo controllo, nessun codice modificato.
@@ -6310,6 +6315,11 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — GPT launcher: cambio di percorso30M da recepire prima degli invii
+
+Il vecchio comando dello stadio comune elenca6estrazioni: non eseguirlo integralmente dopo il300M senza prima recepire il pacchetto30M separato e il riuso verificato. Non esistono ancora comandi30M rilasciati da questa nuova consegna. Per gli invii futuri usare il preparatore persistente mac_launcher_command.py richiesto da AGENTS.md e passare cmd/workdir restituiti dopo i gate; nessun wrapper temporaneo o modifica al codice congelato. Nessun controlloSSH duplicato per questo aggiornamento.
+
 
 ### 21/11/2026 — GPT launcher: attesa dello scheduler, nessun errore del training
 
