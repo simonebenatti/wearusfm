@@ -6190,6 +6190,11 @@ Ricevuta archiviata col nome esatto TCNH-preflight-20261120.json in results/infr
 Parita R-1 superata con scarto assoluto zero per entrambi i riferimenti (tolleranza 1e-12): ridge 0,7859020004638595 e testa storica 0,7786289843513977, stessi supporti e 15 utenti. Sono riferimenti storici, non nuove predizioni o risultati TCN. La correzione del formato utenti passa sui dati reali.
 Checkout 3205763d1b3e29799231aa1f9453819f6182e4ee pulito e sorgenti non scrivibili; il solo puntatore .git resta scrivibile come previsto dal launcher rivisto. Nessun input rinfrescato durante la lettura; nessun rilancio, nessun sorgente modificato. Benchmark non inviati in questa consegna: le fasi successive restano ai gate e alle ricevute previsti, incluso profilo GPU prima dei suoi invii dipendenti.
 
+
+### 2026-11-21 | GPT operatore TCN | Benchmark CPU e GPU sottomessi
+
+Su istruzione di Simone di procedere con benchmark e seguito se passano i gate, inviati una volta TCNH-cpu-benchmark-20261120 = 65016438 e TCNH-gpu-benchmark-20261120 = 65016447. Prerequisito preflight verificato, prova sacct archiviata; checkout 3205763d invariato. Limiti 27 minuti, CPU8/24GiB e GPU1/CPU8/32GiB; riserva inclusiva 0,5 GPUh + 4 coreh solo CPU = 8 coreh totali. Inizialmente entrambi PENDING, nessun errore. Nessun WLS o fit prima del cancello globale misurato; nessun refresh SCRATCH durante gli stadi.
+
 ## 2) Problemi trovati
 
 ### 2026-11-21 | GPT chat 2 | TCN: nessun blocco nuovo; due note operative per il seguito
@@ -9199,3 +9204,7 @@ TCNH-preflight-20261120 = 65016127: COMPLETED 0:0, login08, 119 s su 2 CPU, 0,06
 Ricevuta archiviata col nome esatto TCNH-preflight-20261120.json in results/infra/pose_temponet_execution_20261120/launcher/; SHA256 0a3314138a98ea3b9e6a8475297c38d5fed575dc112eb52dc4ae4d14d51ee16b uguale al remoto. Verificati payload, contesto numerico, identita di codice/ricetta/esecuzione/piano, otto hash input, digest train e metadati contro produttore; validazione val e digest eseguiti dal preflight congelato. Due fold disgiunti da 20 utenti; 1.907 finestre train, 1.854 con supporto.
 Parita R-1 superata con scarto assoluto zero per entrambi i riferimenti (tolleranza 1e-12): ridge 0,7859020004638595 e testa storica 0,7786289843513977, stessi supporti e 15 utenti. Sono riferimenti storici, non nuove predizioni o risultati TCN. La correzione del formato utenti passa sui dati reali.
 Checkout 3205763d1b3e29799231aa1f9453819f6182e4ee pulito e sorgenti non scrivibili; il solo puntatore .git resta scrivibile come previsto dal launcher rivisto. Nessun input rinfrescato durante la lettura; nessun rilancio, nessun sorgente modificato. Benchmark non inviati in questa consegna: le fasi successive restano ai gate e alle ricevute previsti, incluso profilo GPU prima dei suoi invii dipendenti.
+
+### 2026-11-21 | GPT operatore TCN | Benchmark CPU e GPU sottomessi
+
+Su istruzione di Simone di procedere con benchmark e seguito se passano i gate, inviati una volta TCNH-cpu-benchmark-20261120 = 65016438 e TCNH-gpu-benchmark-20261120 = 65016447. Prerequisito preflight verificato, prova sacct archiviata; checkout 3205763d invariato. Limiti 27 minuti, CPU8/24GiB e GPU1/CPU8/32GiB; riserva inclusiva 0,5 GPUh + 4 coreh solo CPU = 8 coreh totali. Inizialmente entrambi PENDING, nessun errore. Nessun WLS o fit prima del cancello globale misurato; nessun refresh SCRATCH durante gli stadi.
