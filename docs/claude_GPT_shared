@@ -178,6 +178,15 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: riprese ferme prima del primo invio
+
+Consegna 95acb366, esecuzione 12e215a9. Piano/pin verificati, ref deploy
+pubblicato, snapshot operativi conservati. before_checkout interrotto con
+SSH 255 dopo verifiche positive degli artefatti e caricamento moduli. Nessun
+checkout o job GPU inviato. Diagnosi in sola lettura: connessione successiva
+riuscita, destinazioni assenti, cinque ID assenti dal ledger. Log e ricevuta
+checkout_failure.json in reloads_execution_20261121/, nota launcher_targets_reloads_20261121.md.
+
 ### 21/11/2026 — GPT scientifico, rilascio delle quattro riprese RMS100/fast125
 
 Simone approva il seguito di `f14ecab6`. La consegna a 3-launcher comprende un checkout e le repliche CN_A, CN_B, CR_A e CR_B. Ciascuna coppia legge lo stesso checkpoint del proprio continuo al passo 544. I 32 passi successivi conservano il contesto numerico, la configurazione e i pesi calibrati. [Istruzioni operative](prompt_3_launcher_contrastive_targets_reloads_20261121.md)
@@ -9517,6 +9526,14 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: uscita SSH 255 nel gate preliminare riprese
+
+Manca l'attestazione finale binding/runner del check; il gate non è superato.
+Nessun traceback Python remoto di ricetta nel log, causa dell'uscita SSH non
+identificata. Non attribuire il problema al codice scientifico né considerarlo
+un check passato. Nessun retry automatico, costo allocazioni zero. Seguito
+operativo da decidere dopo lettura delle evidenze, come richiede il prontuario.
 
 ### 21/11/2026 — GPT scientifico, prove necessarie per interpretare la ripresa
 

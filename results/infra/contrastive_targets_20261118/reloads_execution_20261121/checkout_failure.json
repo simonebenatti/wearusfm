@@ -1,0 +1,16 @@
+{
+  "status": "STOPPED_BEFORE_SUBMISSION",
+  "phase": "before_checkout",
+  "execution_sha": "12e215a978b9d30ea6d670f58af1a0f97387d477",
+  "ssh_exit_code": 255,
+  "local_generator_exit_code": 1,
+  "slurm_jobs_submitted": [],
+  "reserved_ledger_ids": [],
+  "checkout_exists_after_check": false,
+  "reload_outputs_exist_after_check": false,
+  "later_readonly_connection": {"time": "2026-11-21T12:12:03+01:00", "host": "login02.leonardo.local", "succeeded": true},
+  "cause": "unknown; SSH invocation ended after module setup, before final recipe validation evidence",
+  "allocated_gpu_hours": 0,
+  "allocated_core_hours": 0,
+  "automatic_retry": false
+}
