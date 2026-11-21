@@ -13,7 +13,7 @@ import time
 import numpy as np
 import torch
 
-from . import controls, data, execution, heads, metrics, provenance as P, report, resources, train, workflow
+from . import budget_amendment as A1, controls, data, execution, heads, metrics, provenance as P, report, resources, train, workflow
 
 
 GateNotPassed = controls.GateNotPassed
@@ -112,19 +112,20 @@ def _control_gate(receipts, artifacts):
     return workflow.qualify_controls(artifacts, selections)
 
 
-def _resource_projection(plan, receipts):
+def _resource_projection(plan, receipts, *, source_root=P.ROOT):
     cpu = _single(receipts, "cpu_benchmark")
     gpu = _single(receipts, "gpu_benchmark")
     checks = plan.get("operator_checks", {})
     required = ("work_free_bytes", "pending_write_bytes")
     P.require(all(type(checks.get(k)) is int for k in required), "current quota/pending-write measurements required")
     measurement = gpu["details"]["benchmark"]
-    P.require(cpu["details"]["benchmark"]["input_identity"] == measurement["input_identity"] == _input_identity(plan),
+    benchmark_plan = A1.benchmark_identity_plan(plan, source_root=source_root)
+    P.require(cpu["details"]["benchmark"]["input_identity"] == measurement["input_identity"] == _input_identity(benchmark_plan),
               "benchmark input identity differs from this execution")
     persistent = measurement["persistent_output_bytes"]
     gate = resources.gate_and_pack(cpu["details"]["benchmark"], measurement,
                   work_free_bytes=checks["work_free_bytes"], pending_write_bytes=checks["pending_write_bytes"],
-                  persistent_output_bytes=persistent)
+                  persistent_output_bytes=persistent, budget_caps=A1.effective_caps(plan))
     return gate
 
 
@@ -141,10 +142,11 @@ def measured_plan(plan, cpu_pin, gpu_pin, *, source_root=P.ROOT):
     gpu = P.verified_receipt(gpu_pin, out, stage="gpu_benchmark",source_root=source_root,
                              verify_artifacts=False,receipt_mirror_dir=Path(gpu_pin["path"]).parent)
     rows = {cpu["job_id"]: cpu, gpu["job_id"]: gpu}
-    gate = _resource_projection(out, rows)
+    gate = _resource_projection(out, rows, source_root=source_root)
     if not gate["all_passed"]:
         raise GateNotPassed("global resource gate failed; no calibration or neural jobs released")
-    out["jobs"] = execution.apply_training_pack(out["jobs"], _training_pack(gate))
+    out["jobs"] = execution.apply_training_pack(out["jobs"], _training_pack(gate),
+                                                 budget_caps=A1.effective_caps(out))
     out["resource_gate"] = gate
     out["receipt_pins"] = {**out.get("receipt_pins", {}),
                            **{receipt["job_id"]:{**pin,"path":str(P.receipt_path(out,receipt["job_id"]))}
@@ -230,10 +232,11 @@ def run_stage(plan, logical_id, *, source_root=P.ROOT):
             gates.update(integrity=previous["integrity"] is True,
                          historical_R1=bool(previous["historical_R1"].get("passed", False)))
         if stage not in ("preflight", "cpu_benchmark", "gpu_benchmark"):
-            projection = _resource_projection(plan, receipts)
+            projection = _resource_projection(plan, receipts, source_root=source_root)
             gates["resources"] = projection["all_passed"]
             P.require(projection == plan.get("resource_gate"), "resource plan is not the measured, pinned projection")
-            P.require(execution.apply_training_pack(execution.job_graph(), _training_pack(projection)) == plan["jobs"],
+            P.require(execution.apply_training_pack(execution.job_graph(), _training_pack(projection),
+                          budget_caps=A1.effective_caps(plan)) == plan["jobs"],
                       "allocations differ from measured packing")
         if stage in ("controls", "selection", "refit", "locked_inference", "metrics"):
             calibrated = _calibrations(receipts)

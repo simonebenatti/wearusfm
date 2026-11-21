@@ -1,0 +1,71 @@
+{
+  "environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "src:scripts"
+  },
+  "not_tested": [
+    "new A1 checkout on Leonardo",
+    "A100 numerical identity on second node",
+    "real WLS calibrations or positive controls",
+    "scientific benefit of neural heads",
+    "full historical CPU suite: historical scientific sources unchanged"
+  ],
+  "runs": [
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/cpu/test_pose_temponet_budget_amendment.py tests/cpu/test_pose_temponet_resources.py tests/cpu/test_pose_temponet_execution.py tests/cpu/test_pose_temponet_provenance.py tests/cpu/test_pose_temponet_runner.py",
+      "passed": 84,
+      "seconds": 28.48
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/cpu/test_pose_temponet*.py",
+      "note": "Before adding the A1 parametrization to the existing 24-stage test and final old-review-rejection test; production sources identical to final code.",
+      "passed": 297,
+      "seconds": 180.83
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/cpu/test_pose_temponet_e2e_chain.py -k True",
+      "deselected": 1,
+      "note": "Additional A1 transition through real 24-stage runner on synthetic data; fixed base/pins and external review simulated, real immutable pins tested separately.",
+      "passed": 1,
+      "seconds": 110.27
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/cpu/test_pose_temponet_budget_amendment.py",
+      "note": "Final targeted tests including rejection of previous operational review for new sources.",
+      "passed": 19,
+      "seconds": 5.52
+    }
+  ],
+  "shell_validation": {
+    "command": "bash -n scripts/slurm/pose_temponet.sbatch scripts/slurm/pose_temponet_checkout.sbatch scripts/slurm/pose_temponet_dispatch.sbatch scripts/slurm/campaign_checkout.sbatch",
+    "exit_code": 0
+  },
+  "status": "passed",
+  "test_files": {
+    "tests/cpu/test_pose_temponet_benchmark.py": "0a1e2e050024d4dbda40ea0392b88514af11c8a16de8193951cd937a060292a3",
+    "tests/cpu/test_pose_temponet_budget_amendment.py": "28a926fc613766fa73a748cdcf637473b383f7e5a0d6e65b32283ed31a43d44c",
+    "tests/cpu/test_pose_temponet_cli.py": "eb6efc24bbc8f4982b3d822cdeff97b9d04413e5bfd0d8c2f95357864ca8d0a0",
+    "tests/cpu/test_pose_temponet_cli_guards.py": "2778ab9cd690b61986b84ba6ba0c690c9797fcd6235bcb42f034192bfb562b67",
+    "tests/cpu/test_pose_temponet_controls.py": "fe744dbf78ab4175425a9fcdef88b898fe10add344b65ad0bca0586647b32b23",
+    "tests/cpu/test_pose_temponet_data.py": "20c9a98229f58d3120a4cbf2b47c006d47e5cc16182126c573b0ecb838e847a2",
+    "tests/cpu/test_pose_temponet_e2e_chain.py": "9ac06aa8fa44beec31996c68c46b1964bfb9fa582f8ba7229682764bf01b4566",
+    "tests/cpu/test_pose_temponet_execution.py": "5212bd53aaae479e93ecf70fc9b8bf718aa84f156ea923ab6f1645d5cee49556",
+    "tests/cpu/test_pose_temponet_heads.py": "86587add9d3e06ac74ee0a77a97b2a04f585f924e2df48860e54fc3a136a971d",
+    "tests/cpu/test_pose_temponet_linear.py": "dc0d7abb08ba82f4883e8593f26eb87de2c4da9202e06ca81fa9476d6c30df65",
+    "tests/cpu/test_pose_temponet_metrics.py": "d8a3484c139c66f916fbb2176636205e599b7406861ea348e125f0b35a2d6769",
+    "tests/cpu/test_pose_temponet_operational.py": "459cd6ff3538d6d4151827218b5a57c638e86d57c06c660348b32b596386d52c",
+    "tests/cpu/test_pose_temponet_preflight_real_layout.py": "a737d080abe3f02a6d46793a37bd49f4d35ee732fa81503818f9d75783fc8992",
+    "tests/cpu/test_pose_temponet_provenance.py": "53d594cabc8f1b80943216bc853819841c0afd88917615b3a732cd093541d44b",
+    "tests/cpu/test_pose_temponet_report.py": "f031368398d280c55566e998c6c7c9cafed44e786e3fb4a2c4b2657fdb293ca8",
+    "tests/cpu/test_pose_temponet_resources.py": "b3e23f20f724ac47f9368b8cae0fa0cb43f81e1c0055424278a48592d5fc0445",
+    "tests/cpu/test_pose_temponet_runner.py": "57d3666c4c9e4de79ec6cc71b43634c160f639b86f3031b19b741852e31a9b26",
+    "tests/cpu/test_pose_temponet_runtime_fixes.py": "cb5dc7c721105e16c8d43611db81a9ee65578b64105d0b57b541a20d13d8afda",
+    "tests/cpu/test_pose_temponet_scientific_integration.py": "0bfed7e2eeaaeeece5dd99af417fe4a44963214553038a022b8ddc13c95af8d5",
+    "tests/cpu/test_pose_temponet_selection.py": "64dd6e72354a5f7bcfcb1c201bfa025405a31734bac69ba379a481ed8e7a409d",
+    "tests/cpu/test_pose_temponet_train.py": "66c4289ed56553949984f7ebb0f9584ebe3de97d082619bae2b9826ae6b97f33",
+    "tests/cpu/test_pose_temponet_workflow.py": "e3999ae9f0546cf7cd17fc6f6a98bfd7953e473d151a7c6b12f76ddd0abc7bab"
+  }
+}

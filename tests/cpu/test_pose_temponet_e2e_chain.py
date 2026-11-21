@@ -199,12 +199,25 @@ def real_chain(prepared, monkeypatch):
     return repo, plan, execute, opened, completed, qualified
 
 
-def test_all_24_stages_use_real_selection_refits_inference_and_report(real_chain, capsys):
+@pytest.mark.parametrize("budget_transition", [False, True])
+def test_all_24_stages_use_real_selection_refits_inference_and_report(real_chain, capsys,
+                                                                  monkeypatch, budget_transition):
     repo, plan, execute, opened, completed, qualified = real_chain
     originals = W.run_selection, W.run_refits
     pins = {}
     for job in plan["jobs"][:3]:
         pins[job["stage"]] = execute(plan, job)
+    if budget_transition:
+        # Wiring simulation of A1 after three successful predecessors. Only the
+        # campaign-specific base/pins and external review are fixtures here;
+        # test_pose_temponet_budget_amendment verifies the real immutable pins.
+        from pose_temponet import budget_amendment as A1
+        base = copy.deepcopy(plan)
+        monkeypatch.setattr(A1, "base_plan", lambda root: copy.deepcopy(base))
+        monkeypatch.setattr(A1, "LEGACY", {j["id"]: (pins[j["stage"]]["sha256"], pins[j["stage"]]["bytes"])
+                                         for j in plan["jobs"][:3]})
+        plan = A1.prepare(base, source_root=repo)
+        plan = release(repo, plan, monkeypatch)
     plan["operator_checks"]["observed_at"] = datetime.now(timezone.utc).isoformat()
     plan = R.measured_plan(plan, pins["cpu_benchmark"], pins["gpu_benchmark"], source_root=repo)
     for job in plan["jobs"][3:]:

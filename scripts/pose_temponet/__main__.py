@@ -20,6 +20,9 @@ def parser():
     prepare = commands.add_parser("prepare-plan")
     prepare.add_argument("--proposal", type=Path, default=Path("results/infra/pose_temponet_proposal_20261117/proposal.json"))
     prepare.add_argument("--output", type=Path, required=True)
+    amendment = commands.add_parser("prepare-budget-amendment", help="prepare unreleased A1; never submits or bypasses review")
+    amendment.add_argument("--plan", type=Path, required=True)
+    amendment.add_argument("--output", type=Path, required=True)
     inspect = commands.add_parser("inspect")
     inspect.add_argument("--plan", type=Path, required=True)
     release = commands.add_parser("release-plan", help="operator records the actual favorable operational review")
@@ -183,6 +186,10 @@ def main(argv=None):
     if args.command == "prepare-plan":
         plan = P.build_plan(args.proposal, jobs=E.job_graph())
         value = _write(args.output, plan)
+    elif args.command == "prepare-budget-amendment":
+        from . import budget_amendment as A1
+        base = P.read_json_pin(P.file_pin(args.plan.absolute()))
+        value = _write(args.output, A1.prepare(base, source_root=P.ROOT))
     elif args.command == "inspect":
         plan = P.load_plan(args.plan)
         E.validate_graph(plan["jobs"])

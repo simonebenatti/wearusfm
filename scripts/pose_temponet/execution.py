@@ -96,7 +96,7 @@ def validate_graph(jobs):
     return True
 
 
-def apply_training_pack(jobs, pack):
+def apply_training_pack(jobs, pack, *, budget_caps=None):
     """Bind measured times, preserving every cell and dependency of the graph."""
     import copy
     out = copy.deepcopy(jobs)
@@ -122,7 +122,12 @@ def apply_training_pack(jobs, pack):
               for j in out if not j["resources"]["gpus"])
     fit = sum((j["resources"]["requested_seconds"] + GRACE)/3600 for j in out
               if j["stage"] in ("controls", "selection", "refit"))
-    if fit > 20 or gpu > 24 or cpu > 80 or gpu*8+cpu > 272:
+    from .budget_amendment import ORIGINAL_CAPS, CAPS
+    limits = ORIGINAL_CAPS if budget_caps is None else budget_caps
+    if limits not in (ORIGINAL_CAPS, CAPS):
+        raise ValueError("unauthorized budget ceilings")
+    if (fit > limits["neural_gpu_hours"] or gpu > limits["gpu_total_hours"] or
+            cpu > limits["cpu_only_core_hours"] or gpu*8+cpu > limits["total_core_hours"]):
         raise ValueError("inclusive allocation exceeds approved phase/campaign caps")
     return out
 
@@ -194,13 +199,22 @@ def submit_command(plan, job, *, checkout_sha, plan_path, plan_sha256,
         raise ValueError("full checkout and plan hashes are required")
     if plan.get("submission_released") is not True or not job["resource_release"]:
         raise ValueError("reviews/resources have not released this job")
+    from . import budget_amendment as A1
+    campaign = CAMPAIGN
+    if "budget_amendment" in plan:
+        A1.effective_caps(plan)
+        if job["id"] in A1.LEGACY:
+            raise ValueError("A1 completed predecessor must never be resubmitted")
+        campaign = A1.CAMPAIGN
+        if code_dir == CODE_DIR:
+            code_dir = A1.CODE_DIR
     r = job["resources"]
     seconds = r["requested_seconds"]
     if type(seconds) is not int or seconds <= 0 or seconds % 60:
         raise ValueError("unmeasured or non-minute allocation")
     time = "%02d:%02d:%02d" % (seconds//3600, seconds//60%60, seconds%60)
     command = ["python3", "scripts/submit_job.py", "--id", job["id"], "--agente", "gpt",
-               "--campagna", CAMPAIGN, "--gpu-ore", str((seconds+GRACE)*r["gpus"]/3600)]
+               "--campagna", campaign, "--gpu-ore", str((seconds+GRACE)*r["gpus"]/3600)]
     completed = verify_completed_predecessors(plan, completed_proofs or {})
     if job["stage"] == "controls":
         verify_closed_form_release(plan, completed_proofs or {}, completed)

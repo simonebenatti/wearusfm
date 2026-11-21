@@ -104,13 +104,16 @@ def _job(name, phase, raw_seconds, *, gpus=0, cpus=8, margin=2., requested_cap=N
 
 def gate_and_pack(cpu_receipt, gpu_receipt, *, work_free_bytes, pending_write_bytes,
                   persistent_output_bytes, benchmark_gpu_seconds=None, benchmark_cpu_seconds=None,
-                  checkout_seconds=720, collection_seconds=720):
+                  checkout_seconds=720, collection_seconds=720, budget_caps=None):
     """Return all independent gates and exact packs; never silently shrink a matrix.
 
     Two CPU reference jobs, one per outer fold, preserve the signed 03:57 limit.
     Eleven paired-fold searches and five three-seed refits remain separate jobs;
     the operator adds dependency IDs, never changes their scientific contents.
     """
+    from .budget_amendment import ORIGINAL_CAPS, CAPS
+    limits = ORIGINAL_CAPS if budget_caps is None else budget_caps
+    _require(limits in (ORIGINAL_CAPS, CAPS), "unauthorized budget ceilings")
     _receipt(cpu_receipt, "cpu")
     _receipt(gpu_receipt, "gpu")
     _require(cpu_receipt["input_identity"] == gpu_receipt["input_identity"], "input identities differ")
@@ -233,14 +236,15 @@ def gate_and_pack(cpu_receipt, gpu_receipt, *, work_free_bytes, pending_write_by
     available = _number(work_free_bytes, "WORK free")
     pending = _number(pending_write_bytes, "pending writes")
     output = _number(persistent_output_bytes, "output projection", positive=True)
-    gates = {"neural_gpu_hours": phase("neural", "gpu_hours") <= 20,
+    gates = {"neural_gpu_hours": phase("neural", "gpu_hours") <= limits["neural_gpu_hours"],
              "inference_gpu_hours": phase("inference", "gpu_hours") <= 1 and infer_job["within_job_limit"],
              "references_core_hours": phase("references", "core_hours") <= 64 and all(j["within_job_limit"] for j in jobs if j["phase"] == "references"),
              "report_core_hours": phase("report", "core_hours") <= 8 and report_job["within_job_limit"],
              "benchmark_gpu_hours": phase("benchmark_gpu", "gpu_hours") <= .5 and gpu_job["within_job_limit"],
              "benchmark_cpu_core_hours": phase("benchmark_cpu", "core_hours") <= 4 and cpu_job["within_job_limit"],
-             "gpu_total": gpu_hours <= 24, "cpu_only_total": cpu_hours <= 80,
-             "core_total": total_core_hours <= 272,
+             "gpu_total": gpu_hours <= limits["gpu_total_hours"],
+             "cpu_only_total": cpu_hours <= limits["cpu_only_core_hours"],
+             "core_total": total_core_hours <= limits["total_core_hours"],
              "job_counts": gpu_jobs <= 40 and cpu_jobs <= 7,
              "job_limits": all(j["within_job_limit"] for j in jobs),
              "cpu_host_memory": cpu_host <= 24*GIB, "gpu_host_memory": gpu_host <= 32*GIB,

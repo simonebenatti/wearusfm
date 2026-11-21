@@ -1,0 +1,28 @@
+{
+  "changed_sources": [
+    "scripts/pose_temponet/__main__.py",
+    "scripts/pose_temponet/budget_amendment.py",
+    "scripts/pose_temponet/execution.py",
+    "scripts/pose_temponet/provenance.py",
+    "scripts/pose_temponet/resources.py",
+    "scripts/pose_temponet/runner.py"
+  ],
+  "effective_caps": {
+    "cpu_only_core_hours": 115.5,
+    "gpu_total_hours": 56.1,
+    "neural_gpu_hours": 53.85,
+    "total_core_hours": 564.3
+  },
+  "inputs_unchanged": true,
+  "jobs_unchanged": true,
+  "no_cluster_operations": true,
+  "preview_global_gate_passes": true,
+  "recipe_unchanged": true,
+  "review_required": true,
+  "same_measurements_and_all_walltimes": true,
+  "source_files": 247,
+  "source_plan_sha256": "553ce1b5185fc0f996af93c1e6a190813ff56e33c5f05c015e752d1f04ca645f",
+  "source_sha256": "9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea",
+  "three_real_predecessors_verified": true,
+  "unchanged_original_sources": 241
+}

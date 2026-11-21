@@ -340,6 +340,9 @@ def recipe_identity(proposal):
 
 
 def execution_identity(plan):
+    if "budget_amendment" in plan:
+        return digest({"base_execution": execution_identity({k: v for k, v in plan.items()
+                       if k != "budget_amendment"}), "budget_amendment": plan["budget_amendment"]})
     return digest({"protocol":plan["protocol"],"source_sha256":plan["reader"]["source_sha256"],
                    "proposal_sha256":plan["proposal"]["sha256"],"recipe_sha256":plan["recipe_sha256"],
                    "inputs":plan["inputs"],"producers":plan["producers"],"output_root":plan["output_root"]})
@@ -406,6 +409,8 @@ def validate_plan(plan, *, source_root=ROOT, require_review=False, verify_source
             "recipe or eight fixed input pins changed")
     require(set(plan["inputs"]) == set(ALL_INPUTS), "unexpected raw/new/held input")
     require(plan["resource_policy"] == proposal["resource_proposal"], "resource policy changed")
+    from . import budget_amendment as A1
+    A1.validate(plan, source_root=source_root)
     require(digest(plan["reader"]["source_manifest"]) == plan["reader"]["source_sha256"], "source manifest digest differs")
     if verify_sources:
         require(source_manifest(source_root) == plan["reader"]["source_manifest"], "reader sources changed")
@@ -630,9 +635,13 @@ def verified_receipt(pin, plan, *, stage=None, numeric_sha256=None, source_root=
     jobs = [j for j in plan["jobs"] if j["id"] == receipt["job_id"]]
     require(len(jobs) == 1 and receipt["stage"] == jobs[0]["stage"], "receipt job/stage differs from plan")
     require(receipt["job_id"] not in _trail, "cyclic receipt chain")
-    require(receipt["protocol"] == plan["protocol"] and receipt["execution_sha256"] == plan["execution_sha256"] and
-            receipt["source_sha256"] == plan["reader"]["source_sha256"] and receipt["recipe_sha256"] == plan["recipe_sha256"] and
-            receipt["reviewed_code_sha"] == plan["reader"]["code_sha"] and _hex(receipt["code_sha"],40),
+    from . import budget_amendment as A1
+    identity_plan = A1.receipt_identity_plan(plan, receipt, pin, source_root=source_root)
+    require(receipt["protocol"] == identity_plan["protocol"] and
+            receipt["execution_sha256"] == identity_plan["execution_sha256"] and
+            receipt["source_sha256"] == identity_plan["reader"]["source_sha256"] and
+            receipt["recipe_sha256"] == identity_plan["recipe_sha256"] and
+            receipt["reviewed_code_sha"] == identity_plan["reader"]["code_sha"] and _hex(receipt["code_sha"],40),
             "predecessor source/recipe/execution identity differs")
     require(stage is None or receipt["stage"] == stage, "wrong predecessor stage")
     require(receipt["numeric_sha256"] == digest(receipt["numeric_context"]), "receipt numerical context is corrupt")
