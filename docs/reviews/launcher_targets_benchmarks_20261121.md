@@ -25,3 +25,9 @@ Before_C0 e before_CN passati sul checkout completato, con snapshot aggiornati.
 Primi ID benchmark: **C0 65017240**, **CN 65017310**. Entrambi inviati una sola
 volta via submitter, export TORCH_DIST_INIT_BARRIER=1 nelle ricevute.
 CR resta da inviare al primo slot disponibile dopo ricontrollo completo.
+
+C0 e CN conclusi COMPLETED 0:0 in 795 e 784 s, entrambi a 576 update.
+Prima raccolta disponibile: parità C0 aggregata e quattro rapporti individuali;
+gate PASSED per entrambi i punti 128/256, gradienti byte-identici entro e fra
+i casi. Before_CR nuovamente positivo e slot verificato libero: **CR 65020151**
+inviato una volta. Non è stato necessario accodare una terza cella agli altri due.
