@@ -178,6 +178,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-21 | GPT chat 2 | TCN: diagnosi del gate temporale e proposta D0/D1 per Claude
+
+Su richiesta di Simone, riletti codice e risultati locali del controllo A1, base d3e41d06afbc5d47cb988488784a4655f16584af. Ramo codex/pose-temponet-temporal-diagnosis-20261121; nota docs/reviews/pose_temponet_temporal_diagnosis_20261121.md e prompt omonimo in docs/prompt_claude_pose_temponet_temporal_diagnosis_20261121.md. Stato REVIEW_REQUIRED, nessun rilascio.
+Recupero verificato: fold0 24,17%, fold1 18,88%, pooled 21,71%, soglia 50% non superata. Il minimo E_dyn su tutte le curve recupererebbe 21,88%; cinque LR già completati, 150/300 epoche. Selezionato LR 0,003 a 31; alla 150 peggiora. Ricalcolati fitting/esclusi e score puliti, senza reinterpretare i punteggi fitting rumorosi come segnale pulito. Prova costruttiva di soli forward: la TCN può incorporare il generatore noto, RMSE circa 5e-7 su otto finestre sintetiche; non prova apprendibilità.
+Tre analisi locali riproducibili in results/infra/pose_temponet_temporal_diagnosis_20261121/, con hash input/output e log. Rilettura critica locale senza blocchi. Sorgenti produttivi e piani A1 invariati; nessun training o accesso a Leonardo.
+Proposti: D0 scoring pulito/rumoroso dei checkpoint esistenti, poi D1 due fit del solo target pulito, stessi split/TCN/LR 0,003 e 150 epoche, selezione ancora MSE su y originale. Stima proporzionale 0,205 GPUh per D1 non è preventivo: scoring/IO/margine da misurare. Eventuale successo diagnostico non ammette la ricetta su target rumoroso. Operatore unico resta 2-TCN head launcher dopo review e pacchetto distinto.
+
 ### 2026-11-21 | GPT chat 2 | TCN: conferma finale Claude ricevuta, rilettura favorevole e attesa chiusa
 
 Simone ha trasmesso la conclusione dei quattro revisori di Claude, senza blocchi né cambi dei sorgenti.
@@ -6257,6 +6264,11 @@ Passano i tre controlli lineari; TCN temporale recupera 24,17% /18,88% /21,71% (
 Consuntivo16allocazioni sulle tre campagne:3,681111GPUh /31,975000coreh (controlli3,566667/28,533333); CPU-only2,526111coreh, entro tetti A1. Ledger un sottomesso per ID. Nota completa docs/reviews/pose_temponet_controls_results_20261121.md; prove launcher/positive_controls_gate_20261121.json e controls_final_verification_20261121.json. Sorgenti src/scripts immutati da a1ae9607. Due letture login fallite per PYTHONPATH operatore sovrascritto, risolto riproducendo l'append del launcher; nessuna allocazione o modifica all'ambiente. Per riprendere serve diagnosi e una consegna distinta se cambia la ricetta.
 
 ## 2) Problemi trovati
+
+### 2026-11-21 | GPT chat 2 | TCN: fallimento di sensibilità, causa non identificata univocamente
+
+Il gate negativo è corretto; la TCN apprende parte del segnale ma non recupera il margine richiesto. Le curve non sostengono una semplice estensione delle epoche o il cambio di metrica. Divario fitting/esclusi e peggioramento tardivo sono compatibili con rumore/generalizzazione; manca lo score pulito sul fitting. Nessun bug architetturale dimostrato, nessuna prova di ottimo. La calibrazione del margine dell'oracolo non garantisce l'apprendibilità a campione finito. Il ramo lineare esiste già: warm start da ridge non è una cura dimostrata.
+Campagna ferma a recipe_not_admitted; 50% invariato, nessun risultato sul confronto reale delle teste o sui 15 utenti esterni. D0/D1 sono proposte train-only, non invii o modifiche della ricetta. Un loro successo non rilascia i fit reali. Nuove ricevute/risorse e compatibilità delle identità devono essere esplicite prima di qualunque futuro rilascio.
 
 ### 2026-11-21 | GPT operatore TCN | Gate temporale recipe_not_admitted
 

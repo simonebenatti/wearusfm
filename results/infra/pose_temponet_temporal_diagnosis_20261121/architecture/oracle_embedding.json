@@ -1,0 +1,55 @@
+{
+  "purpose": "constructive representability only; no optimization/admission claim",
+  "source": "unchanged runtime imports controls.generate_components and heads.make_head",
+  "data": "8 synthetic random feature windows, not real latents",
+  "operations": "known teacher state embedded into reader; no backward or optimizer",
+  "dtype": "FP32 forward, float64 normalized target comparison",
+  "teacher_width": 8,
+  "reader_width": "64 then 32",
+  "receptive_field_patches": 13,
+  "dropout": "disabled at inference",
+  "torch_version": "2.14.0",
+  "numpy_version": "2.3.5",
+  "results": [
+    {
+      "fold": 0,
+      "a": 0.4,
+      "max_abs_error_all": 6.404659816272584e-06,
+      "max_abs_error_central": 6.404659816272584e-06,
+      "rmse_central": 5.004040712023159e-07,
+      "clean_rms_central": 1.069486504887431,
+      "teacher_hidden_activation_fraction": [
+        0.500390625,
+        0.44375,
+        0.5744140625,
+        0.5333984375,
+        0.379296875
+      ],
+      "reader_parameters": 72904,
+      "teacher_state_hashes": {
+        "L": "575fe3175dd95f9fe6f10df5cded71883d3ef36138d45cc5812e74a1697319cb",
+        "T": "12dabadb32a550e92f911005a490dc1905b310a3e6f502b2891fc31828ffbfea"
+      }
+    },
+    {
+      "fold": 1,
+      "a": 0.4,
+      "max_abs_error_all": 4.3543853860406045e-06,
+      "max_abs_error_central": 4.3543853860406045e-06,
+      "rmse_central": 5.020945492739934e-07,
+      "clean_rms_central": 1.0874430963880293,
+      "teacher_hidden_activation_fraction": [
+        0.5,
+        0.3267578125,
+        0.6123046875,
+        0.4974609375,
+        0.453125
+      ],
+      "reader_parameters": 72904,
+      "teacher_state_hashes": {
+        "L": "a3ec7122743f9bd795ff21e689d8c253ecd717dc87c1437f80afcb98d46647b7",
+        "T": "051a6fbd4b4d0886da6f11cafd7361ffe4617948870dd5639b6dc538a5e42401"
+      }
+    }
+  ]
+}

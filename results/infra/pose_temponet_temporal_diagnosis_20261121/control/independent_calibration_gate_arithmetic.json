@@ -1,0 +1,140 @@
+{
+  "analysis_source_sha256": "1c1e17fb84fd2f52dd307176dfb47e8d0d03ebe14e6951358554461bf6f22ae4",
+  "fitting": {
+    "fold0": {
+      "L13_recovery": 0.270895914587907,
+      "TCN": 0.661873047288167,
+      "TCN_MSE": 1.6880667993662357,
+      "TCN_recovery": 0.8611810284283723,
+      "TCN_windows": 920,
+      "clean_L0": 0.708653705280475,
+      "clean_L13": 0.6939382288434504,
+      "oracle_reconstructed_from_clean_L13_margin": 0.6543321904676357
+    },
+    "fold1": {
+      "L13_recovery": 0.19930915281486627,
+      "TCN": 0.710582584366069,
+      "TCN_MSE": 1.7095008793297446,
+      "TCN_recovery": 0.6925087595684193,
+      "TCN_windows": 934,
+      "clean_L0": 0.749625831004648,
+      "clean_L13": 0.7383888952935002,
+      "oracle_reconstructed_from_clean_L13_margin": 0.6932464046087837
+    },
+    "pooled": {
+      "TCN_recovery": 0.7764225339069184,
+      "baseline_sse": 4254138.07536662,
+      "oracle_sse": 3931156.1569747105,
+      "target_ss": 5836689.199707413,
+      "tcn_sse": 4003367.635882656
+    }
+  },
+  "gate_status": "recipe_not_admitted",
+  "held": {
+    "fold0": {
+      "L0_clean_target_Edyn": 0.18992232380848542,
+      "TCN": 0.6966572080798834,
+      "TCN_clean_target_Edyn": 0.12785566323791742,
+      "TCN_relative_improvement_vs_L0_on_clean_target": 0.3268002377285306,
+      "TCN_relative_improvement_vs_learned_L0": 0.029933108579166277,
+      "admission_maximum_Edyn": 0.6819408672941072,
+      "clean_ls": 0.7104311505676322,
+      "gap_to_admission_Edyn": 0.014716340785776216,
+      "learned_L0": 0.7181537832504584,
+      "oracle": 0.6534505840205822,
+      "recovery_recomputed": 0.24173052888786836,
+      "recovery_saved": 0.24173052888786836
+    },
+    "fold1": {
+      "L0_clean_target_Edyn": 0.21119530149554583,
+      "TCN": 0.7388183283237657,
+      "TCN_clean_target_Edyn": 0.15443089058638765,
+      "TCN_relative_improvement_vs_L0_on_clean_target": 0.2687768643866131,
+      "TCN_relative_improvement_vs_learned_L0": 0.023093724278337537,
+      "admission_maximum_Edyn": 0.7205116467724489,
+      "clean_ls": 0.7499203961102027,
+      "gap_to_admission_Edyn": 0.01830668155131676,
+      "learned_L0": 0.7562837364085763,
+      "oracle": 0.6911028974346952,
+      "recovery_recomputed": 0.1887545039561508,
+      "recovery_saved": 0.1887545039561508
+    },
+    "pooled": {
+      "L0_clean_target_Edyn": 0.199032065527104,
+      "TCN": 0.7159262203822878,
+      "TCN_clean_target_Edyn": 0.1392359909390737,
+      "TCN_relative_improvement_vs_L0_on_clean_target": 0.30043437689133223,
+      "TCN_relative_improvement_vs_learned_L0": 0.026719308035183086,
+      "admission_maximum_Edyn": 0.6995689763192543,
+      "clean_ls": 0.7284790286546209,
+      "gap_to_admission_Edyn": 0.016357244063033516,
+      "learned_L0": 0.7355804202146525,
+      "oracle": 0.6706589239838878,
+      "recovery_recomputed": 0.21710109906955868,
+      "recovery_saved": 0.21710109906955868
+    }
+  },
+  "inner_calibration": {
+    "fold0": {
+      "E_cal": 0.7288481588740706,
+      "E_cleanLS": 0.7181230571380551,
+      "E_oracle": 0.6616810922681824,
+      "E_real": 0.7471336512943431,
+      "a": 0.4,
+      "boundary_unresolved": false,
+      "oracle_gain_fraction": 0.07859650836837298,
+      "sigma": 1.3
+    },
+    "fold1": {
+      "E_cal": 0.7615145162642932,
+      "E_cleanLS": 0.7520398276523866,
+      "E_oracle": 0.6932014417989419,
+      "E_real": 0.7757878528799143,
+      "a": 0.4,
+      "boundary_unresolved": false,
+      "oracle_gain_fraction": 0.07823839069417132,
+      "sigma": 1.3
+    }
+  },
+  "limits": [
+    "Fitting recovery can benefit from fitting realized noise; it does not prove accurate recovery of the clean generator.",
+    "Fitting oracle is reconstructed algebraically from the archived L13 clean-fitting margin, not independently evaluated from the arrays.",
+    "The neural fitting-clean score is not archived here; recover it from selected checkpoint inference without replaying training.",
+    "A held oracle advantage establishes room for improvement, not finite-sample learnability of a random nonlinear teacher at this noise level.",
+    "All panels use train-only synthetic splits. These results say nothing directly about the fifteen external held users or missing FM information."
+  ],
+  "scope": "Independent arithmetic on archived train-only synthetic controls. No training, jobs, or external held data.",
+  "source_inputs": {
+    "calibration_0.json": {
+      "path": "results/infra/pose_temponet_execution_20261121_A1/launcher/calibration_0.json",
+      "sha256": "2b6fe2a59bc2c6422e0eeea26817048f032b8a0db1c6fbd6c44556d8bd2518ff"
+    },
+    "calibration_1.json": {
+      "path": "results/infra/pose_temponet_execution_20261121_A1/launcher/calibration_1.json",
+      "sha256": "357097f22b4dad2fd91e59844d74a3a75addf203096be0580284651c9aea350c"
+    },
+    "positive_controls_gate_20261121.json": {
+      "path": "results/infra/pose_temponet_execution_20261121_A1/launcher/positive_controls_gate_20261121.json",
+      "sha256": "4532ce81259dfeaef95dd06643a5f60c2de7e321c8e53fddedae5f80215f42af"
+    },
+    "selection_temporal_L0.json": {
+      "path": "results/infra/pose_temponet_execution_20261121_A1/launcher/selection_temporal_L0.json",
+      "sha256": "ad9a1dbeb940159a87925ddd28b26be2a556b8221fa0688dc443184679ceb505"
+    },
+    "selection_temporal_MLP.json": {
+      "path": "results/infra/pose_temponet_execution_20261121_A1/launcher/selection_temporal_MLP.json",
+      "sha256": "8086340e3167fbd89af29b60fcae16e12d9b16ed9728887d7b481d768eb85a9e"
+    },
+    "selection_temporal_TCN_post.json": {
+      "path": "results/infra/pose_temponet_execution_20261121_A1/launcher/selection_temporal_TCN_post.json",
+      "sha256": "b2464c1c757927a71d08cb9b5743f1f55eb24a0136300a536abf1576bc34e03d"
+    }
+  },
+  "synthetic_world": {
+    "a": 0.4,
+    "caveat": "L and T are normalized separately on fitting support. This ratio is marginal component variance bookkeeping, not measured dynamic SNR; it excludes covariance and temporal-centering effects.",
+    "noise_rho": 0.7788007830714049,
+    "nominal_noise_variance_to_T_variance_ratio": 10.562499999999998,
+    "sigma": 1.3
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "performed_at_utc": "2026-11-21T16:55:27.531648+00:00",
+  "base_commit": "d3e41d06afbc5d47cb988488784a4655f16584af",
+  "environment": {
+    "PYTHONPATH": "src:scripts",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "commands": [
+    {
+      "command": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "results/infra/pose_temponet_temporal_diagnosis_20261121/optimization/analyze.py"
+      ],
+      "exit_code": 0,
+      "script_sha256": "41658b7b858280c2b9a7d56a5d36cf069a47f7e65c5bb0a8f0a137fc09338f4c",
+      "log": "results/infra/pose_temponet_temporal_diagnosis_20261121/validation_logs/optimization.log",
+      "log_sha256": "2cf14fa90317f35aaaf9b0da8c9a10ea80c22307a234cb8728ee9aca3b440b51"
+    },
+    {
+      "command": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "results/infra/pose_temponet_temporal_diagnosis_20261121/control/analyze.py"
+      ],
+      "exit_code": 0,
+      "script_sha256": "1c1e17fb84fd2f52dd307176dfb47e8d0d03ebe14e6951358554461bf6f22ae4",
+      "log": "results/infra/pose_temponet_temporal_diagnosis_20261121/validation_logs/control.log",
+      "log_sha256": "3b22fefa8dd220debc1f7cffe696a47227a7422844f1627f516b3c222816c81a"
+    },
+    {
+      "command": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "results/infra/pose_temponet_temporal_diagnosis_20261121/architecture/oracle_embedding.py"
+      ],
+      "exit_code": 0,
+      "script_sha256": "8f307286cf1231950d523247600209281c456fffc204aff9951ffc962df41bdb",
+      "log": "results/infra/pose_temponet_temporal_diagnosis_20261121/validation_logs/architecture.log",
+      "log_sha256": "d472fbc927978f5b4deedbe33abe91904bd0542f49ee3b887698e91973fcc4d5"
+    }
+  ],
+  "artifact_sha256": {
+    "results/infra/pose_temponet_temporal_diagnosis_20261121/architecture/oracle_embedding.json": "d472fbc927978f5b4deedbe33abe91904bd0542f49ee3b887698e91973fcc4d5",
+    "results/infra/pose_temponet_temporal_diagnosis_20261121/control/independent_calibration_gate_arithmetic.json": "b3f4b33448ed8ee7309326ce0e92f656d22a3e44b926ba302e9890089aa1622c",
+    "results/infra/pose_temponet_temporal_diagnosis_20261121/optimization/analysis.json": "6af5eee98be37779a70df0b2a1c0d835065c1f2322ab3a63458b2ff2d1ff4cd2"
+  },
+  "scope": "local JSON arithmetic and CPU forward on eight synthetic windows only; no optimizer, real-data inference or cluster access"
+}

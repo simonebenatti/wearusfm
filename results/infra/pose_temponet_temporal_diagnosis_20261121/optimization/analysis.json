@@ -1,0 +1,1590 @@
+{
+  "closed_form_context_diagnostics": {
+    "fold0": {
+      "L0": {
+        "clean_fit_temporal_recovery": 0.0,
+        "clean_target_fit_scored_on_noisy_fitting_target": {
+          "E_dyn": 0.708653705280475,
+          "MSE": 1.7829756445309146
+        },
+        "noisy_target_fit": {
+          "fitting": {
+            "E_dyn": 0.7057636851118837,
+            "MSE": 1.7523312848726968
+          },
+          "held": {
+            "E_dyn": 0.7213147452630873,
+            "MSE": 1.846799930253567
+          }
+        },
+        "unread_T_fraction_fitting": 0.7116860104655595
+      },
+      "L13": {
+        "clean_fit_temporal_recovery": 0.270895914587907,
+        "clean_target_fit_scored_on_noisy_fitting_target": {
+          "E_dyn": 0.6939382288434504,
+          "MSE": 1.7553923700185499
+        },
+        "noisy_target_fit": {
+          "fitting": {
+            "E_dyn": 0.667238648966149,
+            "MSE": 1.6393800877915392
+          },
+          "held": {
+            "E_dyn": 0.7591822570874833,
+            "MSE": 1.9581463764651734
+          }
+        },
+        "unread_T_fraction_fitting": 0.5162624224089408
+      },
+      "TCN_recovery_on_seen_noisy_target_not_clean_recovery": 0.8611810284283723,
+      "derived_fitting_oracle": 0.6543321904676357
+    },
+    "fold1": {
+      "L0": {
+        "clean_fit_temporal_recovery": 0.0,
+        "clean_target_fit_scored_on_noisy_fitting_target": {
+          "E_dyn": 0.749625831004648,
+          "MSE": 1.7941276791802256
+        },
+        "noisy_target_fit": {
+          "fitting": {
+            "E_dyn": 0.7458699161560215,
+            "MSE": 1.7665025992851393
+          },
+          "held": {
+            "E_dyn": 0.7595545088021758,
+            "MSE": 1.8447311876974763
+          }
+        },
+        "unread_T_fraction_fitting": 0.8788039817974561
+      },
+      "L13": {
+        "clean_fit_temporal_recovery": 0.19930915281486627,
+        "clean_target_fit_scored_on_noisy_fitting_target": {
+          "E_dyn": 0.7383888952935002,
+          "MSE": 1.7701355960011262
+        },
+        "noisy_target_fit": {
+          "fitting": {
+            "E_dyn": 0.7085862212453038,
+            "MSE": 1.6694355078401732
+          },
+          "held": {
+            "E_dyn": 0.7907770872108842,
+            "MSE": 1.9251105384042781
+          }
+        },
+        "unread_T_fraction_fitting": 0.7056918884393675
+      },
+      "TCN_recovery_on_seen_noisy_target_not_clean_recovery": 0.6925087595684193,
+      "derived_fitting_oracle": 0.6932464046087837
+    }
+  },
+  "heads": {
+    "linear_L0": {
+      "best_dynamic_over_all_logged_checkpoints": {
+        "edyn": 0.7488341003844877,
+        "exposure": 186.0,
+        "fold_steps": [
+          5394,
+          5580
+        ],
+        "lr": 0.0003,
+        "mse": 1.9215655652310513
+      },
+      "curves": [
+        {
+          "best_dynamic": {
+            "edyn": 0.7490492561857017,
+            "exposure": 298.0,
+            "fold_steps": [
+              8642,
+              8940
+            ],
+            "mse": 1.9209662195228756
+          },
+          "best_mse": {
+            "edyn": 0.7490760779164948,
+            "exposure": 299.0,
+            "fold_steps": [
+              8671,
+              8970
+            ],
+            "mse": 1.920843012031834
+          },
+          "horizon": 300,
+          "last": {
+            "edyn": 0.7490648718105201,
+            "exposure": 300.0,
+            "fold_steps": [
+              8700,
+              9000
+            ],
+            "mse": 1.9210773530210556
+          },
+          "lr": 0.0001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7488341003844877,
+            "exposure": 186.0,
+            "fold_steps": [
+              5394,
+              5580
+            ],
+            "mse": 1.9215655652310513
+          },
+          "best_mse": {
+            "edyn": 0.7489360701421391,
+            "exposure": 128.0,
+            "fold_steps": [
+              3712,
+              3840
+            ],
+            "mse": 1.9208808652206828
+          },
+          "horizon": 300,
+          "last": {
+            "edyn": 0.7492283432681478,
+            "exposure": 300.0,
+            "fold_steps": [
+              8700,
+              9000
+            ],
+            "mse": 1.9228551273357315
+          },
+          "lr": 0.0003
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7492151371789681,
+            "exposure": 65.0,
+            "fold_steps": [
+              1885,
+              1950
+            ],
+            "mse": 1.925083901724279
+          },
+          "best_mse": {
+            "edyn": 0.7493022414492472,
+            "exposure": 51.0,
+            "fold_steps": [
+              1479,
+              1530
+            ],
+            "mse": 1.9244936864665996
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7499804921283176,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.9279503851170903
+          },
+          "lr": 0.001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7503928627887745,
+            "exposure": 114.0,
+            "fold_steps": [
+              3306,
+              3420
+            ],
+            "mse": 1.9312426627688632
+          },
+          "best_mse": {
+            "edyn": 0.7504772501991576,
+            "exposure": 111.0,
+            "fold_steps": [
+              3219,
+              3330
+            ],
+            "mse": 1.929647237125577
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7507998166751584,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.9313201279117638
+          },
+          "lr": 0.003
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7529547498890493,
+            "exposure": 300.0,
+            "fold_steps": [
+              8700,
+              9000
+            ],
+            "mse": 1.9316481115620097
+          },
+          "best_mse": {
+            "edyn": 0.7529547498890493,
+            "exposure": 300.0,
+            "fold_steps": [
+              8700,
+              9000
+            ],
+            "mse": 1.9316481115620097
+          },
+          "horizon": 300,
+          "last": {
+            "edyn": 0.7529547498890493,
+            "exposure": 300.0,
+            "fold_steps": [
+              8700,
+              9000
+            ],
+            "mse": 1.9316481115620097
+          },
+          "lr": 3e-05
+        }
+      ],
+      "fitting_at_selected": {
+        "0": {
+          "E_dyn": 0.7276649328311083,
+          "MSE": 1.8086525876250343
+        },
+        "1": {
+          "E_dyn": 0.7662536940448104,
+          "MSE": 1.9450558046379969
+        }
+      },
+      "head": "L0",
+      "objective_tradeoff": {
+        "dynamic_minimum": {
+          "edyn": 0.7490492561857017,
+          "exposure": 298.0,
+          "fold_steps": [
+            8642,
+            8940
+          ],
+          "mse": 1.9209662195228756
+        },
+        "dynamic_relative_regret": 3.580769965599945e-05,
+        "exposure_distance": 1.0,
+        "flag": false,
+        "is_optimizer_alarm": false,
+        "regret_infinite": false,
+        "selected": {
+          "edyn": 0.7490760779164948,
+          "exposure": 299.0,
+          "lr": 0.0001,
+          "mse": 1.920843012031834
+        }
+      },
+      "optimization_unresolved": true,
+      "optimizer_alarms": [
+        "minimum_in_last_five_maximum_epochs"
+      ],
+      "outer_at_selected": {
+        "fold0": {
+          "E_dyn": 0.7306026336397139,
+          "MSE": 1.855100766697395
+        },
+        "fold1": {
+          "E_dyn": 0.7709900151178449,
+          "MSE": 1.9875856828387535
+        },
+        "pooled": {
+          "E_dyn": 0.7490760779164948,
+          "MSE": 1.920843012031834
+        }
+      },
+      "outer_clean_at_selected": {
+        "fold0": {
+          "E_dyn": 0.02942255039027142,
+          "MSE": 0.030456183581168094
+        },
+        "fold1": {
+          "E_dyn": 0.029367841289358165,
+          "MSE": 0.023171978255191104
+        },
+        "pooled": {
+          "E_dyn": 0.029399666932988622,
+          "MSE": 0.0268415833115355
+        }
+      },
+      "recipe": {
+        "batch_size": 32,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "clip_norm": 1.0,
+        "eps": 1e-08,
+        "initial_epochs": 150,
+        "last_epochs": 5,
+        "maximum_epochs": 300,
+        "test_only": false,
+        "weight_decay": 0.01
+      },
+      "selected": {
+        "edyn": 0.7490760779164948,
+        "exposure": 299.0,
+        "lr": 0.0001,
+        "mse": 1.920843012031834
+      },
+      "world": "linear"
+    },
+    "linear_MLP": {
+      "best_dynamic_over_all_logged_checkpoints": {
+        "edyn": 0.7520682921642879,
+        "exposure": 18.0,
+        "fold_steps": [
+          522,
+          540
+        ],
+        "lr": 0.003,
+        "mse": 1.9373542398136159
+      },
+      "curves": [
+        {
+          "best_dynamic": {
+            "edyn": 0.7540764301997438,
+            "exposure": 113.0,
+            "fold_steps": [
+              3277,
+              3390
+            ],
+            "mse": 1.9342422208699954
+          },
+          "best_mse": {
+            "edyn": 0.7541259963809349,
+            "exposure": 116.0,
+            "fold_steps": [
+              3364,
+              3480
+            ],
+            "mse": 1.9340297608378219
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.754532967928714,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.935142223706919
+          },
+          "lr": 0.0001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7539643461120674,
+            "exposure": 42.0,
+            "fold_steps": [
+              1218,
+              1260
+            ],
+            "mse": 1.9353505981095933
+          },
+          "best_mse": {
+            "edyn": 0.7540494688562764,
+            "exposure": 38.0,
+            "fold_steps": [
+              1102,
+              1140
+            ],
+            "mse": 1.9348633003116518
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7653472503904162,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.9671632301377182
+          },
+          "lr": 0.0003
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7539576097517509,
+            "exposure": 14.0,
+            "fold_steps": [
+              406,
+              420
+            ],
+            "mse": 1.9377560200125732
+          },
+          "best_mse": {
+            "edyn": 0.7540627035258071,
+            "exposure": 15.0,
+            "fold_steps": [
+              435,
+              450
+            ],
+            "mse": 1.9359595291508236
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7885379081979955,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 2.0191544069659546
+          },
+          "lr": 0.001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7520682921642879,
+            "exposure": 18.0,
+            "fold_steps": [
+              522,
+              540
+            ],
+            "mse": 1.9373542398136159
+          },
+          "best_mse": {
+            "edyn": 0.7520890026733639,
+            "exposure": 15.0,
+            "fold_steps": [
+              435,
+              450
+            ],
+            "mse": 1.9364846575080148
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.784237984391884,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 2.000632651640125
+          },
+          "lr": 0.003
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7543600120742335,
+            "exposure": 298.0,
+            "fold_steps": [
+              8642,
+              8940
+            ],
+            "mse": 1.9347472608102085
+          },
+          "best_mse": {
+            "edyn": 0.754375453537928,
+            "exposure": 299.0,
+            "fold_steps": [
+              8671,
+              8970
+            ],
+            "mse": 1.9346900455647704
+          },
+          "horizon": 300,
+          "last": {
+            "edyn": 0.7543657539149665,
+            "exposure": 300.0,
+            "fold_steps": [
+              8700,
+              9000
+            ],
+            "mse": 1.9347151807638994
+          },
+          "lr": 3e-05
+        }
+      ],
+      "fitting_at_selected": {
+        "0": {
+          "E_dyn": 0.726395625042142,
+          "MSE": 1.8003093443030416
+        },
+        "1": {
+          "E_dyn": 0.7645657507811237,
+          "MSE": 1.9376413922960614
+        }
+      },
+      "head": "MLP",
+      "objective_tradeoff": {
+        "dynamic_minimum": {
+          "edyn": 0.7540764301997438,
+          "exposure": 113.0,
+          "fold_steps": [
+            3277,
+            3390
+          ],
+          "mse": 1.9342422208699954
+        },
+        "dynamic_relative_regret": 6.57309779301671e-05,
+        "exposure_distance": 3.0,
+        "flag": false,
+        "is_optimizer_alarm": false,
+        "regret_infinite": false,
+        "selected": {
+          "edyn": 0.7541259963809349,
+          "exposure": 116.0,
+          "lr": 0.0001,
+          "mse": 1.9340297608378219
+        }
+      },
+      "optimization_unresolved": false,
+      "optimizer_alarms": [],
+      "outer_at_selected": {
+        "fold0": {
+          "E_dyn": 0.7357351337988033,
+          "MSE": 1.8700863648056165
+        },
+        "fold1": {
+          "E_dyn": 0.7759419718788038,
+          "MSE": 1.998946208548778
+        },
+        "pooled": {
+          "E_dyn": 0.7541259963809349,
+          "MSE": 1.9340297608378219
+        }
+      },
+      "outer_clean_at_selected": {
+        "fold0": {
+          "E_dyn": 0.0486974516337161,
+          "MSE": 0.045438525990973255
+        },
+        "fold1": {
+          "E_dyn": 0.049529741403071,
+          "MSE": 0.03517338088734519
+        },
+        "pooled": {
+          "E_dyn": 0.049045577760192645,
+          "MSE": 0.040344710729194495
+        }
+      },
+      "recipe": {
+        "batch_size": 32,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "clip_norm": 1.0,
+        "eps": 1e-08,
+        "initial_epochs": 150,
+        "last_epochs": 5,
+        "maximum_epochs": 300,
+        "test_only": false,
+        "weight_decay": 0.01
+      },
+      "selected": {
+        "edyn": 0.7541259963809349,
+        "exposure": 116.0,
+        "lr": 0.0001,
+        "mse": 1.9340297608378219
+      },
+      "world": "linear"
+    },
+    "linear_TCN_post": {
+      "best_dynamic_over_all_logged_checkpoints": {
+        "edyn": 0.7506559643002055,
+        "exposure": 121.0,
+        "fold_steps": [
+          3509,
+          3630
+        ],
+        "lr": 0.01,
+        "mse": 1.9385952402250624
+      },
+      "curves": [
+        {
+          "best_dynamic": {
+            "edyn": 0.7555886788009989,
+            "exposure": 96.0,
+            "fold_steps": [
+              2784,
+              2880
+            ],
+            "mse": 1.9392135793364904
+          },
+          "best_mse": {
+            "edyn": 0.7555886788009989,
+            "exposure": 96.0,
+            "fold_steps": [
+              2784,
+              2880
+            ],
+            "mse": 1.9392135793364904
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7573154692696199,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.9445153824482282
+          },
+          "lr": 0.0001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7554346820310119,
+            "exposure": 40.0,
+            "fold_steps": [
+              1160,
+              1200
+            ],
+            "mse": 1.9396058641133216
+          },
+          "best_mse": {
+            "edyn": 0.7554781134756083,
+            "exposure": 37.0,
+            "fold_steps": [
+              1073,
+              1110
+            ],
+            "mse": 1.9393568420592184
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.772525406595774,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.9879874983353996
+          },
+          "lr": 0.0003
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7540517384318607,
+            "exposure": 14.0,
+            "fold_steps": [
+              406,
+              420
+            ],
+            "mse": 1.9383641402484308
+          },
+          "best_mse": {
+            "edyn": 0.7543614927381832,
+            "exposure": 15.0,
+            "fold_steps": [
+              435,
+              450
+            ],
+            "mse": 1.9379918060927632
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.8001275521208987,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 2.0530152637096863
+          },
+          "lr": 0.001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7516098739616618,
+            "exposure": 18.0,
+            "fold_steps": [
+              522,
+              540
+            ],
+            "mse": 1.9363566245891164
+          },
+          "best_mse": {
+            "edyn": 0.7524789690858711,
+            "exposure": 28.0,
+            "fold_steps": [
+              812,
+              840
+            ],
+            "mse": 1.934064254197489
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7877230907333511,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 2.004420942998667
+          },
+          "lr": 0.003
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7506559643002055,
+            "exposure": 121.0,
+            "fold_steps": [
+              3509,
+              3630
+            ],
+            "mse": 1.9385952402250624
+          },
+          "best_mse": {
+            "edyn": 0.7514440955186937,
+            "exposure": 54.0,
+            "fold_steps": [
+              1566,
+              1620
+            ],
+            "mse": 1.9341195555525357
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7512078984497064,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.939260039899189
+          },
+          "lr": 0.01
+        }
+      ],
+      "fitting_at_selected": {
+        "0": {
+          "E_dyn": 0.7234705111261387,
+          "MSE": 1.804081396149997
+        },
+        "1": {
+          "E_dyn": 0.7647507443223719,
+          "MSE": 1.9479116929815854
+        }
+      },
+      "head": "TCN_post",
+      "objective_tradeoff": {
+        "dynamic_minimum": {
+          "edyn": 0.7516098739616618,
+          "exposure": 18.0,
+          "fold_steps": [
+            522,
+            540
+          ],
+          "mse": 1.9363566245891164
+        },
+        "dynamic_relative_regret": 0.001156311477959145,
+        "exposure_distance": 10.0,
+        "flag": false,
+        "is_optimizer_alarm": false,
+        "regret_infinite": false,
+        "selected": {
+          "edyn": 0.7524789690858711,
+          "exposure": 28.0,
+          "lr": 0.003,
+          "mse": 1.934064254197489
+        }
+      },
+      "optimization_unresolved": false,
+      "optimizer_alarms": [],
+      "outer_at_selected": {
+        "fold0": {
+          "E_dyn": 0.7337305610845399,
+          "MSE": 1.867198079243256
+        },
+        "fold1": {
+          "E_dyn": 0.7747190792359236,
+          "MSE": 2.001947957901025
+        },
+        "pooled": {
+          "E_dyn": 0.7524789690858711,
+          "MSE": 1.934064254197489
+        }
+      },
+      "outer_clean_at_selected": {
+        "fold0": {
+          "E_dyn": 0.04100701206773614,
+          "MSE": 0.04291377460769225
+        },
+        "fold1": {
+          "E_dyn": 0.04598109130348127,
+          "MSE": 0.03884880366670854
+        },
+        "pooled": {
+          "E_dyn": 0.04308754579635505,
+          "MSE": 0.040896636923924715
+        }
+      },
+      "recipe": {
+        "batch_size": 32,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "clip_norm": 1.0,
+        "eps": 1e-08,
+        "initial_epochs": 150,
+        "last_epochs": 5,
+        "maximum_epochs": 300,
+        "test_only": false,
+        "weight_decay": 0.01
+      },
+      "selected": {
+        "edyn": 0.7524789690858711,
+        "exposure": 28.0,
+        "lr": 0.003,
+        "mse": 1.934064254197489
+      },
+      "world": "linear"
+    },
+    "temporal_L0": {
+      "best_dynamic_over_all_logged_checkpoints": {
+        "edyn": 0.7355241690740991,
+        "exposure": 198.0,
+        "fold_steps": [
+          5742,
+          5940
+        ],
+        "lr": 0.0003,
+        "mse": 1.8365589327783796
+      },
+      "curves": [
+        {
+          "best_dynamic": {
+            "edyn": 0.7360319739890011,
+            "exposure": 298.0,
+            "fold_steps": [
+              8642,
+              8940
+            ],
+            "mse": 1.8372697980712631
+          },
+          "best_mse": {
+            "edyn": 0.7360558536957764,
+            "exposure": 299.0,
+            "fold_steps": [
+              8671,
+              8970
+            ],
+            "mse": 1.8372320927063719
+          },
+          "horizon": 300,
+          "last": {
+            "edyn": 0.7360544168957801,
+            "exposure": 300.0,
+            "fold_steps": [
+              8700,
+              9000
+            ],
+            "mse": 1.8375239654943734
+          },
+          "lr": 0.0001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7355241690740991,
+            "exposure": 198.0,
+            "fold_steps": [
+              5742,
+              5940
+            ],
+            "mse": 1.8365589327783796
+          },
+          "best_mse": {
+            "edyn": 0.7355804202146525,
+            "exposure": 183.0,
+            "fold_steps": [
+              5307,
+              5490
+            ],
+            "mse": 1.8361487273908483
+          },
+          "horizon": 300,
+          "last": {
+            "edyn": 0.7357503015851219,
+            "exposure": 300.0,
+            "fold_steps": [
+              8700,
+              9000
+            ],
+            "mse": 1.8371677113703593
+          },
+          "lr": 0.0003
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7359403670509498,
+            "exposure": 79.0,
+            "fold_steps": [
+              2291,
+              2370
+            ],
+            "mse": 1.8414336758843983
+          },
+          "best_mse": {
+            "edyn": 0.7359903726615848,
+            "exposure": 80.0,
+            "fold_steps": [
+              2320,
+              2400
+            ],
+            "mse": 1.8391141123461308
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7363142717490839,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.8416513581977452
+          },
+          "lr": 0.001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7367382457482525,
+            "exposure": 111.0,
+            "fold_steps": [
+              3219,
+              3330
+            ],
+            "mse": 1.844792105829055
+          },
+          "best_mse": {
+            "edyn": 0.7369741380729522,
+            "exposure": 140.0,
+            "fold_steps": [
+              4060,
+              4200
+            ],
+            "mse": 1.8434202227608572
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7370510641315362,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.8444115635778755
+          },
+          "lr": 0.003
+        }
+      ],
+      "fitting_at_selected": {
+        "0": {
+          "E_dyn": 0.7087890090476355,
+          "MSE": 1.7675443771397352
+        },
+        "1": {
+          "E_dyn": 0.7484959624084473,
+          "MSE": 1.7799409898809644
+        }
+      },
+      "head": "L0",
+      "objective_tradeoff": {
+        "dynamic_minimum": {
+          "edyn": 0.7355241690740991,
+          "exposure": 198.0,
+          "fold_steps": [
+            5742,
+            5940
+          ],
+          "mse": 1.8365589327783796
+        },
+        "dynamic_relative_regret": 7.64776236030695e-05,
+        "exposure_distance": 15.0,
+        "flag": false,
+        "is_optimizer_alarm": false,
+        "regret_infinite": false,
+        "selected": {
+          "edyn": 0.7355804202146525,
+          "exposure": 183.0,
+          "lr": 0.0003,
+          "mse": 1.8361487273908483
+        }
+      },
+      "optimization_unresolved": false,
+      "optimizer_alarms": [],
+      "outer_at_selected": {
+        "fold0": {
+          "E_dyn": 0.7181537832504584,
+          "MSE": 1.8353915429646979
+        },
+        "fold1": {
+          "E_dyn": 0.7562837364085763,
+          "MSE": 1.836917434188701
+        },
+        "pooled": {
+          "E_dyn": 0.7355804202146525,
+          "MSE": 1.8361487273908483
+        }
+      },
+      "outer_clean_at_selected": {
+        "fold0": {
+          "E_dyn": 0.18992232380848542,
+          "MSE": 0.14497038452500538
+        },
+        "fold1": {
+          "E_dyn": 0.21119530149554583,
+          "MSE": 0.14257296567647906
+        },
+        "pooled": {
+          "E_dyn": 0.199032065527104,
+          "MSE": 0.1437807268439675
+        }
+      },
+      "recipe": {
+        "batch_size": 32,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "clip_norm": 1.0,
+        "eps": 1e-08,
+        "initial_epochs": 150,
+        "last_epochs": 5,
+        "maximum_epochs": 300,
+        "test_only": false,
+        "weight_decay": 0.01
+      },
+      "selected": {
+        "edyn": 0.7355804202146525,
+        "exposure": 183.0,
+        "lr": 0.0003,
+        "mse": 1.8361487273908483
+      },
+      "world": "temporal"
+    },
+    "temporal_MLP": {
+      "best_dynamic_over_all_logged_checkpoints": {
+        "edyn": 0.7339034704712903,
+        "exposure": 12.0,
+        "fold_steps": [
+          348,
+          360
+        ],
+        "lr": 0.003,
+        "mse": 1.839770361640596
+      },
+      "curves": [
+        {
+          "best_dynamic": {
+            "edyn": 0.7359239622181746,
+            "exposure": 144.0,
+            "fold_steps": [
+              4176,
+              4320
+            ],
+            "mse": 1.836505047748995
+          },
+          "best_mse": {
+            "edyn": 0.7361219080933077,
+            "exposure": 142.0,
+            "fold_steps": [
+              4118,
+              4260
+            ],
+            "mse": 1.8363761424296534
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7360856820022667,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.8364850845320577
+          },
+          "lr": 0.0001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.735756798540363,
+            "exposure": 56.0,
+            "fold_steps": [
+              1624,
+              1680
+            ],
+            "mse": 1.836795763834364
+          },
+          "best_mse": {
+            "edyn": 0.735815447713414,
+            "exposure": 57.0,
+            "fold_steps": [
+              1653,
+              1710
+            ],
+            "mse": 1.8367812318770833
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7435791940493371,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.8574958091985674
+          },
+          "lr": 0.0003
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.734591326658751,
+            "exposure": 18.0,
+            "fold_steps": [
+              522,
+              540
+            ],
+            "mse": 1.836297574478843
+          },
+          "best_mse": {
+            "edyn": 0.7351298365743526,
+            "exposure": 24.0,
+            "fold_steps": [
+              696,
+              720
+            ],
+            "mse": 1.8348415706928989
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7639356054559179,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.9048996216535352
+          },
+          "lr": 0.001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7339034704712903,
+            "exposure": 12.0,
+            "fold_steps": [
+              348,
+              360
+            ],
+            "mse": 1.839770361640596
+          },
+          "best_mse": {
+            "edyn": 0.7341384124800004,
+            "exposure": 15.0,
+            "fold_steps": [
+              435,
+              450
+            ],
+            "mse": 1.8364228925547739
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.766835575740619,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.899288643345974
+          },
+          "lr": 0.003
+        }
+      ],
+      "fitting_at_selected": {
+        "0": {
+          "E_dyn": 0.6881375955401817,
+          "MSE": 1.7269887078701163
+        },
+        "1": {
+          "E_dyn": 0.7341489625299155,
+          "MSE": 1.745352892650324
+        }
+      },
+      "head": "MLP",
+      "objective_tradeoff": {
+        "dynamic_minimum": {
+          "edyn": 0.734591326658751,
+          "exposure": 18.0,
+          "fold_steps": [
+            522,
+            540
+          ],
+          "mse": 1.836297574478843
+        },
+        "dynamic_relative_regret": 0.000733074154374981,
+        "exposure_distance": 6.0,
+        "flag": false,
+        "is_optimizer_alarm": false,
+        "regret_infinite": false,
+        "selected": {
+          "edyn": 0.7351298365743526,
+          "exposure": 24.0,
+          "lr": 0.001,
+          "mse": 1.8348415706928989
+        }
+      },
+      "optimization_unresolved": false,
+      "optimizer_alarms": [],
+      "outer_at_selected": {
+        "fold0": {
+          "E_dyn": 0.7174055827392385,
+          "MSE": 1.8330868883820164
+        },
+        "fold1": {
+          "E_dyn": 0.7561867296630012,
+          "MSE": 1.8366229546911208
+        },
+        "pooled": {
+          "E_dyn": 0.7351298365743526,
+          "MSE": 1.8348415706928989
+        }
+      },
+      "outer_clean_at_selected": {
+        "fold0": {
+          "E_dyn": 0.18505549608698815,
+          "MSE": 0.14169980443621452
+        },
+        "fold1": {
+          "E_dyn": 0.21074073163995,
+          "MSE": 0.14272412387568942
+        },
+        "pooled": {
+          "E_dyn": 0.1960547019956037,
+          "MSE": 0.14220809671470258
+        }
+      },
+      "recipe": {
+        "batch_size": 32,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "clip_norm": 1.0,
+        "eps": 1e-08,
+        "initial_epochs": 150,
+        "last_epochs": 5,
+        "maximum_epochs": 300,
+        "test_only": false,
+        "weight_decay": 0.01
+      },
+      "selected": {
+        "edyn": 0.7351298365743526,
+        "exposure": 24.0,
+        "lr": 0.001,
+        "mse": 1.8348415706928989
+      },
+      "world": "temporal"
+    },
+    "temporal_TCN_post": {
+      "best_dynamic_over_all_logged_checkpoints": {
+        "edyn": 0.7158262458538921,
+        "exposure": 27.0,
+        "fold_steps": [
+          783,
+          810
+        ],
+        "lr": 0.003,
+        "mse": 1.8037653215852052
+      },
+      "curves": [
+        {
+          "best_dynamic": {
+            "edyn": 0.725580162290832,
+            "exposure": 201.0,
+            "fold_steps": [
+              5829,
+              6030
+            ],
+            "mse": 1.8187478407605808
+          },
+          "best_mse": {
+            "edyn": 0.7256444669656075,
+            "exposure": 181.0,
+            "fold_steps": [
+              5249,
+              5430
+            ],
+            "mse": 1.8181615643874114
+          },
+          "horizon": 300,
+          "last": {
+            "edyn": 0.7281499412886786,
+            "exposure": 300.0,
+            "fold_steps": [
+              8700,
+              9000
+            ],
+            "mse": 1.8268597285134838
+          },
+          "lr": 0.0001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.725382121932922,
+            "exposure": 64.0,
+            "fold_steps": [
+              1856,
+              1920
+            ],
+            "mse": 1.8174307513426158
+          },
+          "best_mse": {
+            "edyn": 0.725382121932922,
+            "exposure": 64.0,
+            "fold_steps": [
+              1856,
+              1920
+            ],
+            "mse": 1.8174307513426158
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.731909906310411,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.837209816099995
+          },
+          "lr": 0.0003
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.722227946298081,
+            "exposure": 28.0,
+            "fold_steps": [
+              812,
+              840
+            ],
+            "mse": 1.8153136122183333
+          },
+          "best_mse": {
+            "edyn": 0.722990837297975,
+            "exposure": 31.0,
+            "fold_steps": [
+              899,
+              930
+            ],
+            "mse": 1.8139640289997057
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7514958336696763,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.8860919742547864
+          },
+          "lr": 0.001
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7158262458538921,
+            "exposure": 27.0,
+            "fold_steps": [
+              783,
+              810
+            ],
+            "mse": 1.8037653215852052
+          },
+          "best_mse": {
+            "edyn": 0.7159262203822878,
+            "exposure": 31.0,
+            "fold_steps": [
+              899,
+              930
+            ],
+            "mse": 1.8001448213440414
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7415560124949256,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.8521482905919395
+          },
+          "lr": 0.003
+        },
+        {
+          "best_dynamic": {
+            "edyn": 0.7370656177709967,
+            "exposure": 111.0,
+            "fold_steps": [
+              3219,
+              3330
+            ],
+            "mse": 1.8512294682449575
+          },
+          "best_mse": {
+            "edyn": 0.7373841024585337,
+            "exposure": 93.0,
+            "fold_steps": [
+              2697,
+              2790
+            ],
+            "mse": 1.8492724749293896
+          },
+          "horizon": 150,
+          "last": {
+            "edyn": 0.7376106840187479,
+            "exposure": 150.0,
+            "fold_steps": [
+              4350,
+              4500
+            ],
+            "mse": 1.8522916932246416
+          },
+          "lr": 0.01
+        }
+      ],
+      "fitting_at_selected": {
+        "0": {
+          "E_dyn": 0.661873047288167,
+          "MSE": 1.6880667993662357
+        },
+        "1": {
+          "E_dyn": 0.710582584366069,
+          "MSE": 1.7095008793297446
+        }
+      },
+      "head": "TCN_post",
+      "objective_tradeoff": {
+        "dynamic_minimum": {
+          "edyn": 0.7158262458538921,
+          "exposure": 27.0,
+          "fold_steps": [
+            783,
+            810
+          ],
+          "mse": 1.8037653215852052
+        },
+        "dynamic_relative_regret": 0.00013966312212604262,
+        "exposure_distance": 4.0,
+        "flag": false,
+        "is_optimizer_alarm": false,
+        "regret_infinite": false,
+        "selected": {
+          "edyn": 0.7159262203822878,
+          "exposure": 31.0,
+          "lr": 0.003,
+          "mse": 1.8001448213440414
+        }
+      },
+      "optimization_unresolved": false,
+      "optimizer_alarms": [],
+      "outer_at_selected": {
+        "fold0": {
+          "E_dyn": 0.6966572080798834,
+          "MSE": 1.7977516746113744
+        },
+        "fold1": {
+          "E_dyn": 0.7388183283237657,
+          "MSE": 1.8025743855269882
+        },
+        "pooled": {
+          "E_dyn": 0.7159262203822878,
+          "MSE": 1.8001448213440414
+        }
+      },
+      "outer_clean_at_selected": {
+        "fold0": {
+          "E_dyn": 0.12785566323791742,
+          "MSE": 0.1069184292076631
+        },
+        "fold1": {
+          "E_dyn": 0.15443089058638765,
+          "MSE": 0.10922585232230175
+        },
+        "pooled": {
+          "E_dyn": 0.1392359909390737,
+          "MSE": 0.10806342881147515
+        }
+      },
+      "recipe": {
+        "batch_size": 32,
+        "betas": [
+          0.9,
+          0.999
+        ],
+        "clip_norm": 1.0,
+        "eps": 1e-08,
+        "initial_epochs": 150,
+        "last_epochs": 5,
+        "maximum_epochs": 300,
+        "test_only": false,
+        "weight_decay": 0.01
+      },
+      "selected": {
+        "edyn": 0.7159262203822878,
+        "exposure": 31.0,
+        "lr": 0.003,
+        "mse": 1.8001448213440414
+      },
+      "world": "temporal"
+    }
+  },
+  "inputs": {
+    "results/infra/pose_temponet_execution_20261121_A1/launcher/positive_controls_gate_20261121.json": "4532ce81259dfeaef95dd06643a5f60c2de7e321c8e53fddedae5f80215f42af",
+    "results/infra/pose_temponet_execution_20261121_A1/launcher/selection_linear_L0.json": "af382db6b57cfd06af977baf8850797b322be2ef275aa23261354593a15023ee",
+    "results/infra/pose_temponet_execution_20261121_A1/launcher/selection_linear_MLP.json": "baddaa049a0c8f5809b41f8e337b4a46ef592130ea9aa50db3a7460901cee94b",
+    "results/infra/pose_temponet_execution_20261121_A1/launcher/selection_linear_TCN_post.json": "39bbc21f906f13c7a30b0463d53b9fe67a372eb8ec81aded4b03a20fb2268a39",
+    "results/infra/pose_temponet_execution_20261121_A1/launcher/selection_temporal_L0.json": "ad9a1dbeb940159a87925ddd28b26be2a556b8221fa0688dc443184679ceb505",
+    "results/infra/pose_temponet_execution_20261121_A1/launcher/selection_temporal_MLP.json": "8086340e3167fbd89af29b60fcae16e12d9b16ed9728887d7b481d768eb85a9e",
+    "results/infra/pose_temponet_execution_20261121_A1/launcher/selection_temporal_TCN_post.json": "b2464c1c757927a71d08cb9b5743f1f55eb24a0136300a536abf1576bc34e03d"
+  },
+  "limitations": [
+    "CV selection seed is 0; fold model initialization is shared, trajectories differ by fold.",
+    "Saved full curves are pooled across two internal held folds, not per-fold curves.",
+    "Fitting diagnostics exist only for the selected checkpoint and score the noisy fitted target.",
+    "Thus no train/validation trajectory comparison or clean fitting error can be reconstructed.",
+    "Absent optimizer alarms certify only the prespecified edge checks, not an optimum."
+  ],
+  "method": "Recompute from JSON additive moments and pooled curves only; no fitting, no task-held scores.",
+  "temporal_gate": {
+    "fold0": {
+      "TCN_selected_E_dyn": 0.6966572080798834,
+      "TCN_selected_recovery": 0.24173052888786836,
+      "clean_ls": 0.7104311505676322,
+      "oracle": 0.6534505840205822,
+      "threshold_for_50pct_recovery": 0.6819408672941072
+    },
+    "fold1": {
+      "TCN_selected_E_dyn": 0.7388183283237657,
+      "TCN_selected_recovery": 0.1887545039561508,
+      "clean_ls": 0.7499203961102027,
+      "oracle": 0.6911028974346952,
+      "threshold_for_50pct_recovery": 0.7205116467724489
+    },
+    "pooled": {
+      "TCN_relative_gain_vs_selected_L0": 0.026719308035183076,
+      "TCN_selected_E_dyn": 0.7159262203822878,
+      "TCN_selected_recovery": 0.21710109906955868,
+      "best_logged_E_dyn": 0.7158262458538921,
+      "best_logged_recovery": 0.21883016076816753,
+      "clean_ls": 0.7284790286546209,
+      "last_vs_selected_dynamic_relative_degradation": 0.03579948796812071,
+      "last_vs_selected_mse_relative_degradation": 0.028888491987589582,
+      "oracle": 0.6706589239838878,
+      "selection_MSE_instead_of_dynamic_cost_absolute": 9.997452839571874e-05,
+      "threshold_for_50pct_recovery": 0.6995689763192543
+    }
+  }
+}
