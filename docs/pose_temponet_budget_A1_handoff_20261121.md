@@ -40,3 +40,7 @@ Prima del rilascio, risolvere esplicitamente la transizione di source identity: 
 Il pacchetto da rileggere deve comprendere codice, test (rifiuto di ricevute non pinnate o alterate, ricetta/input cambiati, vecchi tetti non scavalcabili senza A1), piano rigenerato, stessa proiezione sulle stesse misure e prontuario incrementale. Nessuna nuova autorizzazione finanziaria necessaria entro i tetti qui registrati. Contatto con Claude tramite Simone come da prontuario; nessun messaggio inviato ad altre chat.
 
 Prima degli invii GPU dipendenti resta il confronto hardware su un secondo nodo: il benchmark su lrdn0059 misura Xeon Platinum 8358, NVIDIA A100-SXM-64GB, capability [8,0], 68.099.571.712 byte. Il pin numerico gpu8 e `12cb2a0b3207b66e260d3ca490db93ee0c029bb8f03d766df89a9edba6b7eb3f`; cpu8 `21e70b1c1a297b71f430fc4036bf9afdf61a5068a7e59c02c05b8012dc1e24d7`. Non allentare i pin. Nessun refresh SCRATCH durante uno stadio.
+
+## Seguito: implementazione completata
+
+Implementato nel codice a1ae9607681c1a181034d7f72770537054af419d. Per la review e il seguito operativo vale docs/pose_temponet_execution_A1_20261121.md; il presente documento conserva la richiesta originaria. Stato awaiting_claude_rereview, nessun deploy o job A1.
