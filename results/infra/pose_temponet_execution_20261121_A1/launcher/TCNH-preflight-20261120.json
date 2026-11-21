@@ -1,0 +1,359 @@
+{
+  "artifacts": {},
+  "code_sha": "3205763d1b3e29799231aa1f9453819f6182e4ee",
+  "complete": true,
+  "details": {
+    "allocation": {
+      "cpus": 2,
+      "gpus": 0,
+      "nodes": 1,
+      "scontrol": "JobId=65016127 JobName=TCNH-preflight-20261120 UserId=sbenatti(127686) GroupId=interactive(25200) MCS_label=N/A Priority=139449 Nice=0 Account=iscrb_wearusfm QOS=normal JobState=RUNNING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:29 TimeLimit=00:12:00 TimeMin=N/A SubmitTime=2026-11-21T10:07:17 EligibleTime=2026-11-21T10:07:17 AccrueTime=2026-11-21T10:07:17 StartTime=2026-11-21T10:07:20 EndTime=2026-11-21T10:19:20 Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-21T10:07:20 Scheduler=Main Partition=lrd_all_serial AllocNode:Sid=login05-interconnect-1:3022787 ReqNodeList=(null) ExcNodeList=(null) NodeList=login08 BatchHost=login08 NumNodes=1 NumCPUs=2 NumTasks=1 CPUs/Task=2 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=2,mem=24G,node=1,billing=2,gres/tmpfs=10737418240 AllocTRES=cpu=2,mem=24G,node=1,billing=2,gres/tmpfs=10737418240 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=2 MinMemoryNode=24G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null) Command=(null) WorkDir=/leonardo/home/userexternal/sbenatti Comment=wearusfm:TCNH-preflight-20261120  StdErr=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-preflight-20261120_65016127.out StdIn=/dev/null StdOut=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-preflight-20261120_65016127.out TresPerNode=gres/tmpfs:10g TresPerTask=cpu=2",
+      "slurm_job_id": "65016127"
+    },
+    "elapsed_seconds": 87.06311625614762,
+    "finished_at": "2026-11-21T09:09:17.307617+00:00",
+    "preflight": {
+      "external_access": "historical cache/reference parity only; no new readout predictions or selection",
+      "historical_R1": {
+        "absolute_tolerance": 1e-12,
+        "crop": [
+          6,
+          154
+        ],
+        "observed": {
+          "post_ridge": {
+            "E_dyn": 0.7859020004638595,
+            "centered_elements": 20119920,
+            "centered_windows": 8327,
+            "selected_windows": 8329,
+            "users": 15,
+            "window_joint_pairs": 166540
+          },
+          "trained_head": {
+            "E_dyn": 0.7786289843513977,
+            "centered_elements": 20119920,
+            "centered_windows": 8327,
+            "selected_windows": 8329,
+            "users": 15,
+            "window_joint_pairs": 166540
+          }
+        },
+        "passed": true,
+        "reference_policy": {
+          "dynamic_centered_elements": 20119920,
+          "dynamic_centered_windows": 8327,
+          "dynamic_selected_windows": 8329,
+          "dynamic_users": 15,
+          "dynamic_window_joint_pairs": 166540,
+          "post_ridge_E_dyn": 0.7859020004638595,
+          "trained_head_E_dyn": 0.7786289843513977
+        }
+      },
+      "inputs": {
+        "cache_train": {
+          "pin": {
+            "bytes": 474412856,
+            "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train/train.npz",
+            "sha256": "30c0b50d09fa55e39085e547e923593378e490e86f1b70c1e1ffe8bfdd1eec7e"
+          },
+          "state": {
+            "bytes": 474412856,
+            "ctime_ns": 1794063003000000000,
+            "device": 2897990118,
+            "inode": 162135430425265295,
+            "mtime_ns": 1793914196000000000
+          }
+        },
+        "cache_val": {
+          "pin": {
+            "bytes": 4593977338,
+            "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/pose/val/val.npz",
+            "sha256": "36bab32e5a53cf73640f3ee567404a5a70aa8ecbcb27ce843f24666e4804ce4f"
+          },
+          "state": {
+            "bytes": 4593977338,
+            "ctime_ns": 1794063002000000000,
+            "device": 2897990118,
+            "inode": 144121947247211313,
+            "mtime_ns": 1793915570000000000
+          }
+        },
+        "pose_stats": {
+          "pin": {
+            "bytes": 7377,
+            "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+            "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+          },
+          "state": {
+            "bytes": 7377,
+            "ctime_ns": 1794494324000000000,
+            "device": 2267999710,
+            "inode": 162139590872838380,
+            "mtime_ns": 1794494324000000000
+          }
+        },
+        "post_ridge_coefficients": {
+          "pin": {
+            "bytes": 59367,
+            "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/post_ridge.coefficients.npz",
+            "sha256": "fc9a9fd1683ad75277d4e61a0c40e14ed34069c705d8d39dee0b2f950c9060ba"
+          },
+          "state": {
+            "bytes": 59367,
+            "ctime_ns": 1794063046000000000,
+            "device": 2897990118,
+            "inode": 144121947247211399,
+            "mtime_ns": 1793982779000000000
+          }
+        },
+        "post_ridge_predictions": {
+          "pin": {
+            "bytes": 418440754,
+            "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/post_ridge.predictions.npz",
+            "sha256": "36fb5f9b00de385447ed0dd8e14ffcdc854fee086ca75e9951ae4ebac4fb556f"
+          },
+          "state": {
+            "bytes": 418440754,
+            "ctime_ns": 1794063048000000000,
+            "device": 2897990118,
+            "inode": 144121947247211401,
+            "mtime_ns": 1793982921000000000
+          }
+        },
+        "target_reference_train": {
+          "pin": {
+            "bytes": 257675076,
+            "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz",
+            "sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23"
+          },
+          "state": {
+            "bytes": 257675076,
+            "ctime_ns": 1794495146000000000,
+            "device": 2267999710,
+            "inode": 180152682084951411,
+            "mtime_ns": 1794495146000000000
+          }
+        },
+        "target_reference_val": {
+          "pin": {
+            "bytes": 2485295825,
+            "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz",
+            "sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904"
+          },
+          "state": {
+            "bytes": 2485295825,
+            "ctime_ns": 1794495146000000000,
+            "device": 2267999710,
+            "inode": 180152682084951413,
+            "mtime_ns": 1794495146000000000
+          }
+        },
+        "trained_head_predictions": {
+          "pin": {
+            "bytes": 234048726,
+            "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/trained_head.predictions.npz",
+            "sha256": "9dbd52a0cf05c37e5ea989175d055f33bdd8482426438f028c17f29c8701c0d3"
+          },
+          "state": {
+            "bytes": 234048726,
+            "ctime_ns": 1794063048000000000,
+            "device": 2897990118,
+            "inode": 144121947247211402,
+            "mtime_ns": 1793982942000000000
+          }
+        }
+      },
+      "integrity": true,
+      "train": {
+        "folds": [
+          [
+            "03d49b393e",
+            "06d17ebbe4",
+            "1223558697",
+            "323f919c83",
+            "32cbfe3221",
+            "3589743749",
+            "3f79dccf7a",
+            "5ef3a0537e",
+            "65228c03b3",
+            "76bfc2d385",
+            "82f6fe243f",
+            "8bd1c0ff16",
+            "915e7ab7da",
+            "9261f6ab56",
+            "bd64911c18",
+            "c2991a87f6",
+            "d8b3b209f4",
+            "e5ffa40c92",
+            "eab042e9de",
+            "ef59709d32"
+          ],
+          [
+            "055bb1b487",
+            "1066cc94fc",
+            "2cc385c3cd",
+            "32473f0e96",
+            "342248118e",
+            "3669295621",
+            "47c605ad6f",
+            "60e5a2b0a4",
+            "70ad60b9a1",
+            "79d6b65fef",
+            "84a77feea6",
+            "8db8aaea3b",
+            "91e58c0561",
+            "9fcad1a5cc",
+            "bd84652be9",
+            "ce52651f99",
+            "e03cea741b",
+            "e666e9de6e",
+            "ec7f7bbbcd",
+            "fba9f08c33"
+          ]
+        ],
+        "input_verification": {
+          "central_mask_sha256": "ec1ee7176e9cc67f2ed061849adb9b54eb5c62f922bae8128a31462ad0d7b032",
+          "dim": 384,
+          "historical_producer": {
+            "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+            "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+            "checkpoint_step": 49046,
+            "code_sha": "7d276c98fc54d66dab1226226eb6c5e447422c69",
+            "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+            "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+            "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+            "split": "train",
+            "which": "teacher"
+          },
+          "key_time_valid_sha256": "0065b939fb665ae3ff7cd475d9090a90834ca2e3fea311bbbf8c1fbcd000246f",
+          "n_recordings": 200,
+          "n_users": 40,
+          "n_windows": 1907,
+          "supported_windows": 1854,
+          "targets": {
+            "arrays": "3fe41f53dc7c2ecd23608276247bf6e89dee4556ec63127bb00d4abbc2b7054e",
+            "central_mask": "ec1ee7176e9cc67f2ed061849adb9b54eb5c62f922bae8128a31462ad0d7b032",
+            "metadata": "b270cdd3070a7b2381bfb5bb01a17458283df3932502dae4e11bacc8b6d9f337"
+          }
+        },
+        "supported_windows": 1854
+      }
+    }
+  },
+  "execution_sha256": "4d65d94cb38b0cbce43733e7bfb189d4ad1510f80f582abc0a930187c4b95551",
+  "gates": {
+    "historical_R1": true,
+    "integrity": true
+  },
+  "job_id": "TCNH-preflight-20261120",
+  "numeric_context": {
+    "cuda": "12.1",
+    "flags": {
+      "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+      "cudnn_benchmark": false,
+      "cudnn_deterministic": false,
+      "cudnn_tf32": true,
+      "deterministic": false,
+      "deterministic_warn_only": false,
+      "matmul_tf32": false
+    },
+    "hardware": {
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "kind": "cpu",
+      "machine": "x86_64"
+    },
+    "numpy": "1.26.4",
+    "python": "3.11.6",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpools": [
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 2,
+        "prefix": "libopenblas",
+        "threading_layer": "pthreads",
+        "version": "0.3.21.dev"
+      },
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 2,
+        "prefix": "libopenblas",
+        "threading_layer": "pthreads",
+        "version": "0.3.23.dev"
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 2,
+        "prefix": "libgomp",
+        "threading_layer": null,
+        "version": null
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 2,
+        "prefix": "libgomp",
+        "threading_layer": null,
+        "version": null
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 2,
+        "prefix": "libomp",
+        "threading_layer": null,
+        "version": null
+      }
+    ],
+    "threads": {
+      "environment": {
+        "MKL_NUM_THREADS": "2",
+        "OMP_NUM_THREADS": "2",
+        "OPENBLAS_NUM_THREADS": "2"
+      },
+      "interop": 128,
+      "intraop": 2
+    },
+    "torch": "2.2.0a0+git6c8c5ad"
+  },
+  "numeric_sha256": "d5490afb699664cd52e754b943a7a3ac5d6590993c0189b4b1b565232647f3ed",
+  "phase_plan_sha256": "b0855d1f7ee4ef08fde832bc50f44a1e2dbf62fff283bfb5e58c4772ca501d68",
+  "predecessors": [],
+  "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+  "protocol": "pose-temponet-frozen-encoder-readout-20261117-v3",
+  "receipt_sha256": "ba9734961c206c0b5ca274ff37f874ba0f1539acd9889adf8da9b245816152f5",
+  "recipe_sha256": "e4b971f04beed2f82ab068fc86dc20e9e72ce02796e66b14dfbb3941e3409856",
+  "review": {
+    "documentary": {
+      "artifact": {
+        "bytes": 13178,
+        "local_copy": "docs/reviews/claude_review_pose_temponet_v3_20261119.md",
+        "path": "docs/reviews/claude_review_pose_temponet_v3_20261119.md",
+        "sha256": "25a8d513eb115ab8156dafdf1005a500c6f7e43c609045d2dea4a4c04b81cb48"
+      },
+      "commit": "ad9f5141711ba60ea1014bd9ba842af168ff0a37",
+      "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+      "status": "claude_review_converged"
+    },
+    "operational": {
+      "artifact": {
+        "bytes": 4701,
+        "local_copy": "docs/reviews/gpt_review_pose_temponet_users_fix_final_20261121.md",
+        "path": "docs/reviews/gpt_review_pose_temponet_users_fix_final_20261121.md",
+        "sha256": "c0b1bcca6a8f7902e462c049e300b59778b80f40ab3a1bf7c18f4b6ec6f35057"
+      },
+      "commit": "5cb60ca0e4d26f0e7310f1b79819d4e72feb3fc9",
+      "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+      "reviewed_code_sha": "5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba",
+      "source_sha256": "37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de",
+      "status": "claude_review_converged"
+    }
+  },
+  "reviewed_code_sha": "5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba",
+  "source_sha256": "37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de",
+  "stage": "preflight",
+  "status": "completed"
+}

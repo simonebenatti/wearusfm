@@ -1,0 +1,23 @@
+{
+  "jobs": {
+    "TCNH-wls-calibration-0-20261120": 65023397,
+    "TCNH-wls-calibration-1-20261120": 65023399
+  },
+  "submitted_once_each": true,
+  "phase": "wls_calibration",
+  "checkout_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+  "plan_sha256": "594077d61bcfb6f56f19b62a5917827d13ca20413e37faccf98745b71a74aafa",
+  "resources_each": {
+    "cpus": 8,
+    "gpus": 0,
+    "host_ram_gib": 24,
+    "requested_seconds": 14220
+  },
+  "reserved_cpu_core_hours_including_grace": 64,
+  "initial_states": {
+    "65023397": "RUNNING login08",
+    "65023399": "PENDING QOSMaxCpuPerUserLimit"
+  },
+  "no_gpu_dependents_before_combined_gate_and_numeric_inventory": true,
+  "other_active_login_process": "contrastive validate_reload.py: inspected read-only checker of distinct contrastive checkpoint/config; no touch/refresh action found in script"
+}

@@ -1,0 +1,19 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+2026-11-21T12:17:37+01:00
+Disk quotas for prj 20147512 (pid 20147512):
+     Filesystem  kbytes   quota   limit   grace   files   quota   limit   grace
+ /leonardo_work 1035230936  1073741824       0       - 1238421       0       0       -
+64837401 SCALING-49046-train-39237-20261118 PENDING (Priority)
+    PID COMMAND
+2902050 /usr/lib/systemd/systemd --user
+2902102 (sd-pam)
+2929437 sshd: sbenatti@notty
+2929460 bash -lc set -eo pipefail; git -C "$WORK/wearusfm" show 12e215a978b9d30ea6d670f58af1a0f97387d477:results/infra/contrastive_targets_20261118/reloads_handoff_20261121/login_check.sh | bash -s -- checkout 12e215a978b9d30ea6d670f58af1a0f97387d477
+2929834 bash -s -- checkout 12e215a978b9d30ea6d670f58af1a0f97387d477
+2938769 sshd: sbenatti@notty
+2938808 bash -c date -Is; lfs quota -p 20147512 /leonardo_work; squeue -u sbenatti -h -o "%i %j %T %R"; ps -u sbenatti -o pid,args; test ! -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/wls_calibration && echo WLS_DESTINATIONS_ABSENT
+2939332 python3 results/infra/contrastive_targets_20261118/reloads_handoff_20261121/validate_reload.py CN_A
+2939442 ps -u sbenatti -o pid,args
+WLS_DESTINATIONS_ABSENT
