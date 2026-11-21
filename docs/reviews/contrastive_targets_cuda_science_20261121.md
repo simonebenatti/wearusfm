@@ -1,0 +1,13 @@
+# RMS100/fast125 — lettura scientifica del collaudo CUDA del 21 novembre
+
+Il checkout 65016695 è terminato in 28 s. Il collaudo 65016794 è terminato con `COMPLETED 0:0` in 130 s su quattro GPU. La verifica di 3-launcher lega l'esito al checkpoint di calibrazione e al codice `4e880b9f6787d7294712370d00ed485bfbe45735`. Per questa lettura ho ricontato i confronti del rapporto e verificato le impronte SHA-256 di `cuda.json` (`920bfb46c881c13b7edc9a93af01e9073a714908bb97081c46d266cb17f8133d`) e della prova di uscita (`ca4282219ffccb4b9faa6d1ce3576ecf62906661b3775b179a14d593da39c26a`). [Rapporto numerico](../../results/infra/contrastive_targets_20261118/cuda_execution_20261121/cuda.json) · [Verifica sul cluster](../../results/infra/contrastive_targets_20261118/cuda_execution_20261121/verify_results.log)
+
+| Prova | Risultato |
+|---|---|
+| Calcolo distribuito contro riferimento su singola GPU | 160/160 confronti entro soglia in FP32 e 160/160 in bf16. Il conteggio include dieci grandezze per due update, due bracci e quattro rank. I quattro rank partecipano allo stesso esperimento. |
+| Gradiente | In bf16 il confronto più vicino alla propria soglia è il vettore gradiente di CN al secondo update, con errore relativo 0,2447% su 0,6451% ammesso. Sulla norma del gradiente InfoNCE lo scarto relativo massimo in bf16 è 0,1529% su 1% ammesso. |
+| Copertura insufficiente al secondo update | Tutti i rank segnalano l'arresto. Il checkpoint conserva studente e teacher del primo update valido. |
+| NaN introdotto sul rank 0 | Tutti i rank si fermano prima del primo aggiornamento, con coda intatta e zero righe di metriche. |
+| Eccezione intenzionale sul rank 0 dopo l'avvio di CUDA e NCCL | Il launcher di prova esce con il codice di errore atteso. La prova termina in 12,27 s su 60 s ammessi, senza processi residui fra quelli tracciati. |
+
+La prova copre entrambi gli obiettivi contrastivi su un batch globale di 8, con due update e peso unitario del termine attivo. I dati sostengono il passaggio ai tre benchmark brevi di C0, CN e CR. Su batch globale 32, il benchmark di C0 controllerà la parità a peso zero ai passi 128 e 256. In CN e CR i passi 513–576 misureranno il rapporto tra gradiente contrastivo pesato e gradiente di base con i coefficienti calibrati. Le due riprese per braccio dal passo 544 serviranno a distinguere lo scarto di ripresa dalla variabilità tra repliche. La scelta di una loss per la posa o la classificazione richiederà misure sui rispettivi compiti. [Prova di uscita](../../results/infra/contrastive_targets_20261118/cuda_execution_20261121/cuda.json.rank_exit_probe/report.json) · [Protocollo della fase successiva](contrastive_targets_calibration_science_20261121.md)
