@@ -1,0 +1,89 @@
+{
+  "missing": [
+    "linear/TCN_post",
+    "temporal/TCN_post"
+  ],
+  "reports": {
+    "linear/L0": {
+      "individual_gate": {
+        "optimization_alarms": [
+          "minimum_in_last_five_maximum_epochs"
+        ],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9962983885594601,
+            "MSE": 0.9971238427307381
+          },
+          "fold1": {
+            "E_dyn": 0.9961546436948001,
+            "MSE": 0.9972605499134968
+          },
+          "pooled": {
+            "E_dyn": 0.9962383758312005,
+            "MSE": 0.9971879604726432
+          }
+        },
+        "status": "passed"
+      },
+      "optimizer_alarms": [
+        "minimum_in_last_five_maximum_epochs"
+      ],
+      "selected": {
+        "edyn": 0.7490760779164948,
+        "exposure": 299.0,
+        "lr": 0.0001,
+        "mse": 1.920843012031834
+      },
+      "selection_locked": true
+    },
+    "linear/MLP": {
+      "individual_gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9773171278780054,
+            "MSE": 0.9830152008595852
+          },
+          "fold1": {
+            "E_dyn": 0.9746144705650416,
+            "MSE": 0.9853331511120726
+          },
+          "pooled": {
+            "E_dyn": 0.9761887826026219,
+            "MSE": 0.9841023546801779
+          }
+        },
+        "status": "passed"
+      },
+      "optimizer_alarms": [],
+      "selected": {
+        "edyn": 0.7541259963809349,
+        "exposure": 116.0,
+        "lr": 0.0001,
+        "mse": 1.9340297608378219
+      },
+      "selection_locked": true
+    },
+    "temporal/L0": {
+      "optimizer_alarms": [],
+      "selected": {
+        "edyn": 0.7355804202146525,
+        "exposure": 183.0,
+        "lr": 0.0003,
+        "mse": 1.8361487273908483
+      },
+      "selection_locked": true
+    },
+    "temporal/MLP": {
+      "optimizer_alarms": [],
+      "selected": {
+        "edyn": 0.7351298365743526,
+        "exposure": 24.0,
+        "lr": 0.001,
+        "mse": 1.8348415706928989
+      },
+      "selection_locked": true
+    }
+  },
+  "scope": "partial train-only diagnostic; NOT full positive gate"
+}

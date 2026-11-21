@@ -1,0 +1,168 @@
+{
+  "artifacts": {
+    "combined_gate": {
+      "bytes": 1782,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/controls/temporal/L0/combined_gate.json",
+      "sha256": "a928e2014752669d48b4df2b7573fe36a3bccd7f628f681ed3cb8d944f75f9ec"
+    },
+    "selection": {
+      "bytes": 250800,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/controls/temporal/L0/selection.json",
+      "sha256": "ad9a1dbeb940159a87925ddd28b26be2a556b8221fa0688dc443184679ceb505"
+    },
+    "states": {
+      "bytes": 2197650,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/controls/temporal/L0/selection_states.pt",
+      "sha256": "7e6cf0692022079828b4dd34bb7f11ca3e1fbc0f436238a00714be25db1bea45"
+    }
+  },
+  "code_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+  "complete": true,
+  "details": {
+    "allocation": {
+      "cpus": 8,
+      "gpus": 1,
+      "nodes": 1,
+      "scontrol": "JobId=65035628 JobName=TCNH-controls-temporal-L0-20261120 UserId=sbenatti(127686) GroupId=interactive(25200) MCS_label=N/A Priority=139481 Nice=0 Account=iscrb_wearusfm QOS=normal JobState=RUNNING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:25 TimeLimit=01:32:00 TimeMin=N/A SubmitTime=2026-11-21T15:21:41 EligibleTime=2026-11-21T15:21:41 AccrueTime=2026-11-21T15:21:41 StartTime=2026-11-21T15:22:47 EndTime=2026-11-21T16:54:50 Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-11-21T15:22:47 Scheduler=Backfill Partition=boost_usr_prod AllocNode:Sid=login02-interconnect-1:4163195 ReqNodeList=(null) ExcNodeList=(null) NodeList=lrdn2287 BatchHost=lrdn2287 NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=8,mem=32G,node=1,billing=8,gres/gpu=1 AllocTRES=cpu=8,mem=32G,node=1,billing=8,gres/gpu=1 Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=8 MinMemoryNode=32G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null) Command=(null) WorkDir=/leonardo/home/userexternal/sbenatti Comment=wearusfm:TCNH-controls-temporal-L0-20261120  StdErr=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-temporal-L0-20261120_65035628.out StdIn=/dev/null StdOut=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-temporal-L0-20261120_65035628.out TresPerNode=gres/gpu:1 TresPerTask=cpu=8",
+      "slurm_job_id": "65035628"
+    },
+    "elapsed_seconds": 1074.0177669719997,
+    "finished_at": "2026-11-21T14:41:07.428718+00:00"
+  },
+  "execution_sha256": "857c5f333f82cc1440d3111e424507a3773e978c5b68853353954d148904d7ab",
+  "gates": {
+    "calibration": true,
+    "closed_references": true,
+    "historical_R1": true,
+    "integrity": true,
+    "resources": true
+  },
+  "job_id": "TCNH-controls-temporal-L0-20261120",
+  "numeric_context": {
+    "cuda": "12.1",
+    "flags": {
+      "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+      "cudnn_benchmark": false,
+      "cudnn_deterministic": true,
+      "cudnn_tf32": false,
+      "deterministic": true,
+      "deterministic_warn_only": false,
+      "matmul_tf32": false
+    },
+    "hardware": {
+      "cpu_model": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+      "gpu_bytes": 68099571712,
+      "gpu_capability": [
+        8,
+        0
+      ],
+      "gpu_name": "NVIDIA A100-SXM-64GB",
+      "kind": "gpu",
+      "machine": "x86_64"
+    },
+    "numpy": "1.26.4",
+    "python": "3.11.6",
+    "scipy": "1.12.0",
+    "sklearn": "1.4.1.post1",
+    "threadpools": [
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 8,
+        "prefix": "libopenblas",
+        "threading_layer": "pthreads",
+        "version": "0.3.21.dev"
+      },
+      {
+        "architecture": "SkylakeX",
+        "internal_api": "openblas",
+        "num_threads": 8,
+        "prefix": "libopenblas",
+        "threading_layer": "pthreads",
+        "version": "0.3.23.dev"
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 8,
+        "prefix": "libgomp",
+        "threading_layer": null,
+        "version": null
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 8,
+        "prefix": "libgomp",
+        "threading_layer": null,
+        "version": null
+      },
+      {
+        "architecture": null,
+        "internal_api": "openmp",
+        "num_threads": 8,
+        "prefix": "libomp",
+        "threading_layer": null,
+        "version": null
+      }
+    ],
+    "threads": {
+      "environment": {
+        "MKL_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8"
+      },
+      "interop": 1,
+      "intraop": 8
+    },
+    "torch": "2.2.0a0+git6c8c5ad"
+  },
+  "numeric_sha256": "12cb2a0b3207b66e260d3ca490db93ee0c029bb8f03d766df89a9edba6b7eb3f",
+  "phase_plan_sha256": "fdb578f7de8aecbfbe78931a3e994d9c7bf1c883b0a414751accb6aa241664a7",
+  "predecessors": [
+    {
+      "bytes": 6932,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/receipts/TCNH-wls-calibration-0-20261120.json",
+      "sha256": "2e78439b72d15a57da56660d64d18d163d2d98e02879cf8cdc3372832a554634"
+    },
+    {
+      "bytes": 6938,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/receipts/TCNH-wls-calibration-1-20261120.json",
+      "sha256": "697d52d894f9c759f64c95488011780a95ebf388db843b2e907476dc799a2dfa"
+    }
+  ],
+  "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+  "protocol": "pose-temponet-frozen-encoder-readout-20261117-v3",
+  "receipt_sha256": "77780d0211f8f6cb869346cb179689253d341f5146d79884498395950a410a41",
+  "recipe_sha256": "e4b971f04beed2f82ab068fc86dc20e9e72ce02796e66b14dfbb3941e3409856",
+  "review": {
+    "documentary": {
+      "artifact": {
+        "bytes": 13178,
+        "local_copy": "docs/reviews/claude_review_pose_temponet_v3_20261119.md",
+        "path": "docs/reviews/claude_review_pose_temponet_v3_20261119.md",
+        "sha256": "25a8d513eb115ab8156dafdf1005a500c6f7e43c609045d2dea4a4c04b81cb48"
+      },
+      "commit": "ad9f5141711ba60ea1014bd9ba842af168ff0a37",
+      "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+      "status": "claude_review_converged"
+    },
+    "operational": {
+      "artifact": {
+        "bytes": 14330,
+        "local_copy": "docs/reviews/claude_review_pose_temponet_A1_budget_20261121.md",
+        "path": "docs/reviews/claude_review_pose_temponet_A1_budget_20261121.md",
+        "sha256": "829224979169adcfa9ff8af79eead9085f05888026049e014af46f616a37fbf2"
+      },
+      "commit": "2f759ebbf275e2aae3d63b986b48e035590c82a1",
+      "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+      "reviewed_code_sha": "a1ae9607681c1a181034d7f72770537054af419d",
+      "source_sha256": "9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea",
+      "status": "claude_review_converged"
+    }
+  },
+  "reviewed_code_sha": "a1ae9607681c1a181034d7f72770537054af419d",
+  "source_sha256": "9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea",
+  "stage": "controls",
+  "status": "completed"
+}

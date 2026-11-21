@@ -1,0 +1,184 @@
+{
+  "all_six_selection_locks_and_statistics_match_frozen_remote_gate": true,
+  "controls": {
+    "TCNH-controls-linear-L0-20261120": {
+      "artifacts_verified_remote_by_frozen_controller": true,
+      "local_log": {
+        "bytes": 196801,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-linear-L0-20261120.log",
+        "sha256": "4e6efaccb84051e2444f10886d9d9b07e8fdad90299fd078ba7b7f30f02544cd"
+      },
+      "local_selection": {
+        "bytes": 310772,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/selection_linear_L0.json",
+        "sha256": "af382db6b57cfd06af977baf8850797b322be2ef275aa23261354593a15023ee"
+      },
+      "optimizer_alarms": [
+        "minimum_in_last_five_maximum_epochs"
+      ],
+      "receipt": {
+        "bytes": 7315,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-linear-L0-20261120.json",
+        "sha256": "543d7ba1cd0feceedc6115b3ff9053b0a307a9aa8d02458e6f6f34131ce780c0"
+      },
+      "recursive_receipt_verified": true,
+      "selected": {
+        "edyn": 0.7490760779164948,
+        "exposure": 299.0,
+        "lr": 0.0001,
+        "mse": 1.920843012031834
+      },
+      "selection_lock": "aeed44506e40a14a1d500fc65ea88a13df8ea8d852150fd3013545271d80fc3f",
+      "slurm_id": "65035622"
+    },
+    "TCNH-controls-linear-MLP-20261120": {
+      "artifacts_verified_remote_by_frozen_controller": true,
+      "local_log": {
+        "bytes": 148609,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-linear-MLP-20261120.log",
+        "sha256": "aaf5873b84ec636c0302e6c979858b851f0475a2525b338b63c3935226596405"
+      },
+      "local_selection": {
+        "bytes": 251434,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/selection_linear_MLP.json",
+        "sha256": "baddaa049a0c8f5809b41f8e337b4a46ef592130ea9aa50db3a7460901cee94b"
+      },
+      "optimizer_alarms": [],
+      "receipt": {
+        "bytes": 7324,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-linear-MLP-20261120.json",
+        "sha256": "57cb766e0ebb4fcf97ec2aeb3a052bbb1e9c8dca51f40df75cfe852e35228be2"
+      },
+      "recursive_receipt_verified": true,
+      "selected": {
+        "edyn": 0.7541259963809349,
+        "exposure": 116.0,
+        "lr": 0.0001,
+        "mse": 1.9340297608378219
+      },
+      "selection_lock": "8bebc4f3d5cd5e9e2a3ce2493a77e1ec930234243777b142be7c5a668ddd9aa9",
+      "slurm_id": "65035623"
+    },
+    "TCNH-controls-linear-TCN_post-20261120": {
+      "artifacts_verified_remote_by_frozen_controller": true,
+      "local_log": {
+        "bytes": 124507,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-linear-TCN_post-20261120.log",
+        "sha256": "9f0d8e17c5f938e3bcd9a2d5418a5cbc736eb476a3c2b80ec3f25452f6af40eb"
+      },
+      "local_selection": {
+        "bytes": 221780,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/selection_linear_TCN_post.json",
+        "sha256": "39bbc21f906f13c7a30b0463d53b9fe67a372eb8ec81aded4b03a20fb2268a39"
+      },
+      "optimizer_alarms": [],
+      "receipt": {
+        "bytes": 7364,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-linear-TCN_post-20261120.json",
+        "sha256": "0576c92fd784051fc0cf7b03445462200c54f8a66d1bbc313ab382e016047946"
+      },
+      "recursive_receipt_verified": true,
+      "selected": {
+        "edyn": 0.7524789690858711,
+        "exposure": 28.0,
+        "lr": 0.003,
+        "mse": 1.934064254197489
+      },
+      "selection_lock": "010060eb54fb693262d64c12cb6b111e2ecfdaa9693f0b98e9306da7e09aebb1",
+      "slurm_id": "65035626"
+    },
+    "TCNH-controls-temporal-L0-20261120": {
+      "artifacts_verified_remote_by_frozen_controller": true,
+      "local_log": {
+        "bytes": 148320,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-temporal-L0-20261120.log",
+        "sha256": "73dcc1ae0be81418910da41d916fc66c9e9dc7f953efa50364b006dcdd461acb"
+      },
+      "local_selection": {
+        "bytes": 250800,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/selection_temporal_L0.json",
+        "sha256": "ad9a1dbeb940159a87925ddd28b26be2a556b8221fa0688dc443184679ceb505"
+      },
+      "optimizer_alarms": [],
+      "receipt": {
+        "bytes": 7331,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-temporal-L0-20261120.json",
+        "sha256": "d299b001c83015dd37b7dc6630e571a663755d6e95a4544ff4b8c634de36b25d"
+      },
+      "recursive_receipt_verified": true,
+      "selected": {
+        "edyn": 0.7355804202146525,
+        "exposure": 183.0,
+        "lr": 0.0003,
+        "mse": 1.8361487273908483
+      },
+      "selection_lock": "acc28aebb272847697748e4e4996d8f99f78d703ff1104ef35c85208281f4872",
+      "slurm_id": "65035628"
+    },
+    "TCNH-controls-temporal-MLP-20261120": {
+      "artifacts_verified_remote_by_frozen_controller": true,
+      "local_log": {
+        "bytes": 100153,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-temporal-MLP-20261120.log",
+        "sha256": "243925cf17c1462fbbf3ab35245d533c717f7af802ca4be8b468141c84a4d02c"
+      },
+      "local_selection": {
+        "bytes": 191517,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/selection_temporal_MLP.json",
+        "sha256": "8086340e3167fbd89af29b60fcae16e12d9b16ed9728887d7b481d768eb85a9e"
+      },
+      "optimizer_alarms": [],
+      "receipt": {
+        "bytes": 7339,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-temporal-MLP-20261120.json",
+        "sha256": "81f6c38eb097a87d5ab2ffd78a597904c86f29627e228f53c9634d00c9b20fcc"
+      },
+      "recursive_receipt_verified": true,
+      "selected": {
+        "edyn": 0.7351298365743526,
+        "exposure": 24.0,
+        "lr": 0.001,
+        "mse": 1.8348415706928989
+      },
+      "selection_lock": "d1d3f5b1880fe7f964fff65fc6feb81f231f25ea5f47aa7415d3b5886798c207",
+      "slurm_id": "65035629"
+    },
+    "TCNH-controls-temporal-TCN_post-20261120": {
+      "artifacts_verified_remote_by_frozen_controller": true,
+      "local_log": {
+        "bytes": 148612,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-temporal-TCN_post-20261120.log",
+        "sha256": "2ab973335e506c5023aefec79c35bcb25412f96e9eb9f1993bf9c5387858a27a"
+      },
+      "local_selection": {
+        "bytes": 251445,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/selection_temporal_TCN_post.json",
+        "sha256": "b2464c1c757927a71d08cb9b5743f1f55eb24a0136300a536abf1576bc34e03d"
+      },
+      "optimizer_alarms": [],
+      "receipt": {
+        "bytes": 7380,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-controls-temporal-TCN_post-20261120.json",
+        "sha256": "f95c7a5dceb80458998c92a50e4d1efbe3248c972c781055a2689be58fafd84d"
+      },
+      "recursive_receipt_verified": true,
+      "selected": {
+        "edyn": 0.7159262203822878,
+        "exposure": 31.0,
+        "lr": 0.003,
+        "mse": 1.8001448213440414
+      },
+      "selection_lock": "a80254f81a6849f3127636aeed0af7d07650972d663cf6a5dda0db17fae8ef24",
+      "slurm_id": "65035631"
+    }
+  },
+  "gate_sha256": "9e91c8a237cc305f6e8c47bacff170536e4b5f0c1c1599f542e078c22e133858",
+  "gate_status": "recipe_not_admitted",
+  "independent_temporal_recovery_arithmetic_matches": true,
+  "ledger_submitted_count": 16,
+  "no_automatic_retry_or_source_changes": true,
+  "no_duplicate_ids": true,
+  "no_real_training_or_held_inference_submitted": true,
+  "source_sha256": "9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea",
+  "status": "stopped_at_positive_controls"
+}

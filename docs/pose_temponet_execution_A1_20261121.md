@@ -1,5 +1,7 @@
 # TCN A1 — consegna operativa per review del 21/11/2026
 
+Esito operativo 21/11: sei controlli completati; gate temporale recipe_not_admitted, fase reale non inviata. Vedi docs/reviews/pose_temponet_controls_results_20261121.md. Questa nota non modifica piani, sorgenti o criteri congelati.
+
 Stato: **claude_review_converged** al 21/11/2026, review originale `2f759ebbf275e2aae3d63b986b48e035590c82a1`, artefatto `docs/reviews/claude_review_pose_temponet_A1_budget_20261121.md`. Piani rilasciato e misurato preparati con evidenza fresca; i passi eseguiti sono nel registro. Le istruzioni seguenti restano il prontuario, non attestano da sole un invio.
 
 Codice da nominare nella review: `a1ae9607681c1a181034d7f72770537054af419d`.

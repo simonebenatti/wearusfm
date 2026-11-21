@@ -6250,7 +6250,18 @@ Regole esistenti verificate con execpolicy per ogni invocazione prevista: tutti 
 
 Dopo la prima lettura PENDING, sacct attesta tutti RUNNING: 65035622 lrdn2183, 65035623 lrdn3188, 65035626 lrdn3369, 65035628 lrdn2287 e 65035629 lrdn3349 avviati15:22:47 CET; 65035631 lrdn0707 avviato15:23:24 CET. Prova in launcher/controls_first_status.tsv e controls_first_actual_starts.json. Aggiornato controls_submission.json separando stato iniziale in coda e primo avvio effettivo; nessuna esecuzione completata o gate positivo anticipato. Nessun altro job inviato.
 
+### 2026-11-21 | GPT operatore TCN | Sei controlli conclusi, gate temporale negativo: fase reale non inviata
+
+Tutti i sei controlli COMPLETED 0:0 al primo tentativo: linear/L0 65035622 (1451s), linear/MLP 65035623 (1287s), linear/TCN_post 65035626 (3710s), temporal/L0 65035628 (1105s), temporal/MLP 65035629 (860s), temporal/TCN_post 65035631 (4427s). Ricevute, sei selection.json originali, log e sacct sul Mac; hash/lock/statistiche e catena ricorsiva verificati. Source247 9aaf1c8b e gpu8 12cb2a0b invariati. Il controller congelato, in sola lettura sui due calibration.pt completi e sulle sei selezioni, produce gate 9e91c8a237cc305f6e8c47bacff170536e4b5f0c1c1599f542e078c22e133858, status recipe_not_admitted. Verifica indipendente della formula e dei lock sul Mac concordante.
+Passano i tre controlli lineari; TCN temporale recupera 24,17% /18,88% /21,71% (fold0/fold1/pooled) del margine fra clean_ls e oracolo, sotto soglia50% in tutti i pannelli, senza optimization_alarm. Pooled E_dyn0,715926 contro clean_ls0,728479 e oracolo0,670659. Migliora il controllo ma non lo qualifica: nessun verdetto sulle rappresentazioni reali del FM. Nessuna selezione reale, rifit o held inferenza inviata, nessun retry, modifica dei sorgenti, nuovo esperimento o monitor. Arresto scientifico prescritto, non attesa di autorizzazione.
+Consuntivo16allocazioni sulle tre campagne:3,681111GPUh /31,975000coreh (controlli3,566667/28,533333); CPU-only2,526111coreh, entro tetti A1. Ledger un sottomesso per ID. Nota completa docs/reviews/pose_temponet_controls_results_20261121.md; prove launcher/positive_controls_gate_20261121.json e controls_final_verification_20261121.json. Sorgenti src/scripts immutati da a1ae9607. Due letture login fallite per PYTHONPATH operatore sovrascritto, risolto riproducendo l'append del launcher; nessuna allocazione o modifica all'ambiente. Per riprendere serve diagnosi e una consegna distinta se cambia la ricetta.
+
 ## 2) Problemi trovati
+
+### 2026-11-21 | GPT operatore TCN | Gate temporale recipe_not_admitted
+
+Controlli tecnicamente conclusi tutti0:0, ma la TCN recupera solo21,71% pooled del vantaggio temporale dell'oracolo (fold24,17% /18,88%), richiesto50%. Lineari ammessi, controllo temporale no, nessun optimization_alarm TCN. Bloccate le fasi reali come da protocollo; non allentate soglie, non rilanciato e non chiesto un altro via. Questo non dimostra assenza di dinamica nei latenti: manca la qualificazione della ricetta sul controllo. Report e consuntivo nella nota docs/reviews/pose_temponet_controls_results_20261121.md. Due errori di lettura operatore sul login conservati e corretti preservando PYTHONPATH del modulo; non sono job falliti della campagna.
+
 
 ### 2026-11-21 | GPT chat 2 | TCN: nessun blocco nuovo; due note operative per il seguito
 
