@@ -178,6 +178,18 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: confronto CPU fermato prima del checkout
+
+Consegna f68c753b, esecuzione e0ddbac8, ricevute riprese 358ede81. Piano
+rigenerato identico, pin e submitter corretti, ID nel ledger ancora liberi,
+deploy pubblicato e verificato. Controllo SSH diretto su connessione nuova:
+accounting e ricevute positive, poi validatore CLI fallito con exit 1 per
+«Frozen reader parsed different arm/receipt paths». Nessun job inviato,
+0 GPU-ore / 0 core-ore di allocazioni. Log e snapshot in
+readout_execution_20261121; diagnosi in docs/reviews/launcher_targets_readout_20261121.md.
+Restituito alla chat scientifica per un pacchetto corretto; autorizzazione
+di Simone già valida, nessun nuovo via da chiedere e nessun retry cieco.
+
 ### 21/11/2026 — GPT scientifico, confronto CPU delle quattro riprese
 
 Le quattro ricevute al commit `358ede81` attestano l’endpoint 576 dopo 32 aggiornamenti. Il pacchetto di esecuzione `e0ddbac8` fissa i tre riepiloghi dei continui e i quattro delle riprese. 3-launcher riceve un checkout e un confronto CPU per valutare le sei coppie e il controllo C0. Tetto della tranche 0 GPU-ore e 8,266667 core-ore. [Consegna e comandi](prompt_3_launcher_contrastive_targets_readout_20261121.md)
@@ -9565,6 +9577,16 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: sentinel del lettore confronta stringhe con Path
+
+e0ddbac8: contrastive_benchmark_readout.main.mapping restituisce dict di
+stringhe, mentre validate_readout.expected_args contiene dict di Path per
+full/resumed. Il sentinel rifiuta anche percorsi testualmente identici.
+Non è un fallimento dei modelli o del protocollo numerico: nessuna lettura
+dei tensori e nessun job. Pacchetto fermo prima del checkout; launcher non
+modifica codice o pin e richiede alla chat scientifica correzione con
+regressione e nuovo SHA pubblicato. Autorizzazioni e budget invariati.
 
 ### 21/11/2026 — GPT scientifico, differenza fra continuo e ripresa da quantificare
 
