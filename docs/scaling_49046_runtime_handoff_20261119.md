@@ -48,3 +48,25 @@ non trattarla come una riserva esclusiva. Le soglie restano30GiBWORK,
 20GiBSCRATCH, orizzonte19/12; nessuna pulizia automatica autorizzata qui.
 Conservare ricevute,sacctgrezzo,accounting e log e pubblicarli conregistro nelle
 due sezioni, commit/push e SHA remoto verificato.
+
+
+## Procedura comune aggiornata21/11
+
+Recepita l'istruzione di Simone in CLAUDE.md su main92d1fc0a, sezione
+«Un solo via per le tre chat e i loro launcher». Il via già ricevuto copre
+l'intera catena e le riprese previste; consultare il ledger prima di ogni invio,
+proseguire alle condizioni approvate senza ulteriori consensi di routine.
+Nessun nuovo esperimento, duplicato, retry o cambiamento di budget implicito.
+
+Per gli invii successivi usare direttamente l'interprete persistente
+`/Users/simonebenatti/.venvs/wearusfm-tok/bin/python` e lo script persistente
+`/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py`.
+Confronto locale21/11: script byte-identico a scripts/submit_job.py del codice
+approvato87da975b, SHA256814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82.
+Interprete presente. Nessuna modifica al generatore congelato: usare gli argomenti
+emessi e ammessi dai cancelli sostituendo solo interprete/percorso del submitter
+con quelli persistenti indicati da Simone. Restano checkout, sbatch, flag,
+prenotazione/lock e ledger comuni. Verificare ancora la compatibilità prima dell'uso.
+Nessun wrapper temporaneo; per coda/accounting usare i comandi diretti consentiti.
+Un vero permesso tecnico imposto dall'app si rispetta e si segnala una sola volta
+con l'operazione e il motivo effettivi, senza rinnovare il consenso scientifico.
