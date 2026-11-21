@@ -158,6 +158,11 @@ e lo script `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-scie
 Questa invocazione ha già un permesso persistente. Usarla quando lo script coincide con la versione prevista dal piano,
 con i suoi argomenti, il checkout fissato, lo sbatch previsto e il ledger comune. Eseguire i controlli di campagna previsti
 anche quando sono separati dall’invio. Per coda e contabilità usare i comandi diretti già consentiti su Leonardo.
+Per una domanda di stato, chi ha già la lettura con ID e ora la condivide con le altre chat. Se serve una lettura
+aggiornata, partire da `ssh leonardo squeue -h -j ID`, sostituendo ID con il numero Slurm. Per un job in attesa
+bastano stato e motivo. Se la riga è sparita, verificare l’esito con `ssh leonardo sacct -X -j ID`.
+Leggere metriche e file del run quando il job ha iniziato a produrli. Evitare di riunire questi diversi controlli
+in un programma Python remoto per una semplice domanda di coda.
 Per raccogliere e pubblicare usare le normali operazioni del progetto. Il permesso del submitter non si estende a uno
 script temporaneo che lo avvolge. In preparazione si può verificare la corrispondenza delle regole con `codex execpolicy check`,
 senza eseguire il comando.
