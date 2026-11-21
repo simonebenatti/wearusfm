@@ -1,0 +1,161 @@
+{
+  "completed_prerequisites": {
+    "TCNH-cpu-benchmark-20261120": {
+      "receipt": {
+        "bytes": 70963,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-cpu-benchmark-20261120.json",
+        "sha256": "d6fca52ab2d719003d641a24f1067e25c7c31f9400d928c1d0e0d3757fc33ce8"
+      },
+      "sacct": {
+        "bytes": 23,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-cpu-benchmark-20261120.sacct.tsv",
+        "sha256": "d4f8bacef0bf68a4988b8a6c44e44c950a3f101a3a5aac335bc35cb67c244317"
+      }
+    },
+    "TCNH-gpu-benchmark-20261120": {
+      "receipt": {
+        "bytes": 76463,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-gpu-benchmark-20261120.json",
+        "sha256": "8228db8c6bed7df2eb45eeeedb2203f002ff4e64f625adca010c53f1b367f306"
+      },
+      "sacct": {
+        "bytes": 23,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-gpu-benchmark-20261120.sacct.tsv",
+        "sha256": "b9042525052f89b40899e67c4ae0b92331576c34610c583985a9a5697d5f96eb"
+      }
+    },
+    "TCNH-preflight-20261120": {
+      "receipt": {
+        "bytes": 14122,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-preflight-20261120.json",
+        "sha256": "0a3314138a98ea3b9e6a8475297c38d5fed575dc112eb52dc4ae4d14d51ee16b"
+      },
+      "sacct": {
+        "bytes": 23,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-preflight-20261120.sacct.tsv",
+        "sha256": "65c78a5760666e58ab6d010a655b30bfb4da6205d36b57a6c41d777de903af59"
+      }
+    },
+    "TCNH-wls-calibration-0-20261120": {
+      "calibration": {
+        "bytes": 1954955,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/calibration_0.json",
+        "sha256": "2b6fe2a59bc2c6422e0eeea26817048f032b8a0db1c6fbd6c44556d8bd2518ff"
+      },
+      "receipt": {
+        "bytes": 6932,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-wls-calibration-0-20261120.json",
+        "sha256": "2e78439b72d15a57da56660d64d18d163d2d98e02879cf8cdc3372832a554634"
+      },
+      "sacct": {
+        "bytes": 23,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-wls-calibration-0-20261120.sacct.tsv",
+        "sha256": "3ca208f1608a51cd0c44092c3c6696a81c5528aab8cb46293c2786d0ac282858"
+      }
+    },
+    "TCNH-wls-calibration-1-20261120": {
+      "calibration": {
+        "bytes": 1955346,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/calibration_1.json",
+        "sha256": "357097f22b4dad2fd91e59844d74a3a75addf203096be0580284651c9aea350c"
+      },
+      "receipt": {
+        "bytes": 6938,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-wls-calibration-1-20261120.json",
+        "sha256": "697d52d894f9c759f64c95488011780a95ebf388db843b2e907476dc799a2dfa"
+      },
+      "sacct": {
+        "bytes": 23,
+        "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/TCNH-wls-calibration-1-20261120.sacct.tsv",
+        "sha256": "60eabb205cb5536b52ef09afa3a6fe95e9dfe219dc284ab98382af1779c1273f"
+      }
+    }
+  },
+  "gate": {
+    "linear_gate": {
+      "recovery": {
+        "fold0": {
+          "E_dyn": 0.974352159605047,
+          "MSE": 0.974643139496397
+        },
+        "fold1": {
+          "E_dyn": 0.9729756595524683,
+          "MSE": 0.9776382671866398
+        },
+        "pooled": {
+          "E_dyn": 0.973777004732129,
+          "MSE": 0.9760456113308534
+        }
+      },
+      "status": "diagnostic"
+    },
+    "linear_records": {
+      "fold0": {
+        "E_dyn": {
+          "constant": 1.0,
+          "oracle": 0.7224840392196938,
+          "ridge": 0.7296017242888392
+        },
+        "MSE": {
+          "constant": 2.914203216653283,
+          "oracle": 1.8244121550971675,
+          "ridge": 1.8520458350231193
+        }
+      },
+      "fold1": {
+        "E_dyn": {
+          "constant": 1.0,
+          "oracle": 0.7637206984541279,
+          "ridge": 0.7701059907398086
+        },
+        "MSE": {
+          "constant": 2.9374494633247887,
+          "oracle": 1.9631903075747557,
+          "ridge": 1.9849764305066078
+        }
+      },
+      "pooled": {
+        "E_dyn": {
+          "constant": 1.0,
+          "oracle": 0.7413459485252131,
+          "ridge": 0.7481286324930521
+        },
+        "MSE": {
+          "constant": 2.925738570988658,
+          "oracle": 1.8932772577289805,
+          "ridge": 1.9180092373126603
+        }
+      }
+    },
+    "status": "diagnostic",
+    "temporal_gate": {
+      "oracle_gain_fraction": {
+        "fold0": 0.08020561387478953,
+        "fold1": 0.07843165618723094,
+        "pooled": 0.07937099407997666
+      },
+      "status": "diagnostic"
+    },
+    "temporal_records": {
+      "fold0": {
+        "clean_ls": 0.7104311505676322,
+        "oracle": 0.6534505840205822
+      },
+      "fold1": {
+        "clean_ls": 0.7499203961102027,
+        "oracle": 0.6911028974346952
+      },
+      "pooled": {
+        "clean_ls": 0.7284790286546209,
+        "oracle": 0.6706589239838878
+      }
+    }
+  },
+  "phase_plan": {
+    "bytes": 76657,
+    "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/plan_controls.json",
+    "sha256": "b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3"
+  },
+  "schema": "pose-head-closed-reference-release-v1",
+  "status": "diagnostic"
+}
