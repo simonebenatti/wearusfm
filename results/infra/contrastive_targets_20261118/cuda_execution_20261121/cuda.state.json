@@ -1,0 +1,47 @@
+{
+ "id": "CONTRAST-CUDA-targets-v3-20261118",
+ "creato": "2026-11-21T10:29:06+01:00",
+ "agente": "gpt",
+ "campagna": "CONTRASTIVE-targets-v3-20261118",
+ "gpu_ore_stimate": 2.0,
+ "codice_sha": "4e880b9f6787d7294712370d00ed485bfbe45735",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONTRAST-CUDA-targets-v3-20261118",
+  "--comment=wearusfm:CONTRAST-CUDA-targets-v3-20261118",
+  "--cpus-per-task=32",
+  "--gres=gpu:4",
+  "--mem=240G",
+  "--time=00:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-cuda-20261121,EXPECTED_SHA=4e880b9f6787d7294712370d00ed485bfbe45735,TORCH_DIST_INIT_BARRIER=1",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-cuda-20261121/scripts/slurm/contrastive_preflight_gpu.sbatch",
+  "results/infra/contrastive_targets_20261118/releases/cuda_20261121/cuda.job.json"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-21T10:29:06+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-21T10:29:06+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-21T10:29:07+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 65016794,
+   "uscita": 0,
+   "stdout": "65016794\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 65016794,
+ "uscita": 0,
+ "stdout": "65016794\n",
+ "stderr": ""
+}

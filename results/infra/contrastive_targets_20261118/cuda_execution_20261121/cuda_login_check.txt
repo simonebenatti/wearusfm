@@ -1,0 +1,102 @@
+65016695|COMPLETED|0:0|CONTRAST-CHECKOUT-cuda-targets-v3-20261118|4|4
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-cuda-20261121 @ 4e880b9f6787d7294712370d00ed485bfbe45735
+JobIDRaw|State|ExitCode|ElapsedRaw|AllocCPUS|TimelimitRaw
+64937087|COMPLETED|0:0|4022|8|120
+JobIDRaw|State|ExitCode|ElapsedRaw|AllocCPUS|TimelimitRaw
+65014846|COMPLETED|0:0|39|4|4
+65015116|COMPLETED|0:0|891|32|30
+calibration/config.json: OK
+calibration/numeric_profile.rank0.json: OK
+calibration/metrics.jsonl: OK
+calibration/pose_panel_set.json: OK
+calibration/fixed_eval_set.json: OK
+calibration/numeric_profile.rank2.json: OK
+calibration/summary.json: OK
+calibration/numeric_profile.rank3.json: OK
+calibration/pose_panel.jsonl: OK
+calibration/fixed_eval.jsonl: OK
+calibration/origin_sessions.json: OK
+calibration/pose_provenance.json: OK
+calibration/numeric_profile.rank1.json: OK
+calibration_report.json: OK
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+{"schema": "contrastive-target-release-review-v1", "status": "APPROVED", "reviewed_commit": "fbfde797b48644744c36547533acf0e8a7793535", "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0", "science_plan_sha256": "b03c0bc679f7247d703635d7065c9fc7bda4a292f2c8c106e29004e0527e021a", "preflight_plan_sha256": "e4b3959112db86dac806978cf65307d97694da68b64096120487e8f568c6dd92"}
+{"accounting_sha256": "594d72932f2ca15440ee4bf1255a0abe035467933703efcd23309a6e14a32726", "sacct_sha256": "8d2c71fbcbe883cf906b8349d5b104882307a26e859cc95629bf295f1c413cfe", "audit_sha256": "eb7cbdf49ffdd00148647e82c5f51768edbd17b5ef515d960a1f6edec35754d3", "job_id": "64937087", "logical_id": "CONTRAST-AUDIT-targets-v3-20261118", "elapsed_seconds": 4022, "state": "COMPLETED", "exit_code": "0:0"}
+{
+  "job_id": "CONTRAST-CUDA-targets-v3-20261118",
+  "job_arm": null,
+  "stage": "cuda",
+  "config_arm": "C0",
+  "technical_arms": [
+    {
+      "arm": "CN",
+      "steps": 2,
+      "global_batch": 8,
+      "nce_weight": 1.0,
+      "rnc_weight": 1.0
+    },
+    {
+      "arm": "CR",
+      "steps": 2,
+      "global_batch": 8,
+      "nce_weight": 1.0,
+      "rnc_weight": 1.0
+    }
+  ],
+  "calibration_weights_authenticated": {
+    "nce": 0.11847082160202581,
+    "rnc": 0.32885281420266826
+  },
+  "checkpoint_state_sha256": "ba8a86579992a0eeb2a8072c67eef30b699465ad091671b50123c0073173fa2f",
+  "execution_argv": [
+    "/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3",
+    "-m",
+    "torch.distributed.run",
+    "--standalone",
+    "--nproc_per_node=4",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-cuda-20261121/scripts/contrastive_cuda_check.py",
+    "--config",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-cuda-20261121/results/infra/contrastive_targets_20261118/review_configs/calibration.config.json",
+    "--config-sha256",
+    "b50da4004c46ff95cfd79f00c199160af629a16c1bef1ac60360d30cce906b69",
+    "--expected-source-sha256",
+    "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+    "--calibration-checkpoint",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration/checkpoint.pt",
+    "--calibration-checkpoint-sha256",
+    "d0dd318302f278e08513ec7d5acde3c82b36a523f7c650829167a68864870ebc",
+    "--rank-exit-report",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/cuda.json.rank_exit_probe/report.json",
+    "--pose-stats-sha256",
+    "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+    "--out",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/cuda.json",
+    "--manifest",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+    "--scales",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+    "--window-seconds",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+    "--root",
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "--root",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed",
+    "--manifest-sha256",
+    "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "--scales-sha256",
+    "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+    "--window-seconds-sha256",
+    "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+  ],
+  "execution_started": false
+}
