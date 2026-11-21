@@ -1,0 +1,47 @@
+{
+ "id": "CONTRAST-CALIB-targets-v3-20261118",
+ "creato": "2026-11-21T09:44:07+01:00",
+ "agente": "gpt",
+ "campagna": "CONTRASTIVE-targets-v3-20261118",
+ "gpu_ore_stimate": 2.0,
+ "codice_sha": "e05c05826daa9a6feda47f1f75742ea329c84f5f",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONTRAST-CALIB-targets-v3-20261118",
+  "--comment=wearusfm:CONTRAST-CALIB-targets-v3-20261118",
+  "--cpus-per-task=32",
+  "--gres=gpu:4",
+  "--mem=240G",
+  "--time=00:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-calibration-20261120,EXPECTED_SHA=e05c05826daa9a6feda47f1f75742ea329c84f5f,TORCH_DIST_INIT_BARRIER=1",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-calibration-20261120/scripts/slurm/contrastive_preflight_gpu.sbatch",
+  "results/infra/contrastive_targets_20261118/releases/calibration_20261120/calibration.job.json"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-21T09:44:07+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-21T09:44:07+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-21T09:44:08+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 65015116,
+   "uscita": 0,
+   "stdout": "65015116\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 65015116,
+ "uscita": 0,
+ "stdout": "65015116\n",
+ "stderr": ""
+}

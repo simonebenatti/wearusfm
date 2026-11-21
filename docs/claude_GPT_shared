@@ -178,6 +178,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: checkout e calibrazione RMS100/fast125 inviati
+
+Istruzioni d9cd1bb8, esecuzione e05c0582, piano rigenerato identico e pin
+verificati. Prima di ogni invio conservati saldo/quota/reservation/slot,
+check-binding/check-audit, make-job/cmp, build_command e --validate-only.
+Checkout 65014846 COMPLETED 0:0 in 39 s; calibrazione 65015116 inviata con
+TORCH_DIST_INIT_BARRIER=1, 4 GPU/32 CPU/240 GiB/30 minuti. Ricevute e stdout in
+calibration_execution_20261121/, nota reviews/launcher_targets_calibration_20261121.md.
+Nessuna modifica al codice e nessuna fase successiva inviata.
+
 ### 21/11/2026 — GPT linea 3, calibrazione RMS100/fast125
 
 P-5 verificato su quattro processi locali. Nei due punti C0 il gradiente coincide nei sei casi. Le due riprese CN concordano e tutti e tre i confronti superano il criterio. Rilasciati il checkout e la calibrazione dei pesi InfoNCE e RnC a 3-launcher. [Ricevute e decisione](reviews/contrastive_targets_audit_science_20261120.md)
@@ -9448,6 +9458,12 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: raccolta calibrazione ancora aperta
+
+Nessun blocco nei controlli congelati; entrambi gli ID inviati una sola volta.
+Esito, due pesi, memoria GPU e consuntivo della calibrazione 65015116 da
+raccogliere. Nessun rilascio CUDA automatico da questa consegna.
 
 ### 21/11/2026 — GPT linea 3, calibrazione RMS100/fast125
 
