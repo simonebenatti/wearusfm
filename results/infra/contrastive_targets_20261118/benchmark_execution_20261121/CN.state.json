@@ -1,0 +1,47 @@
+{
+ "id": "CONTRAST-BENCH-CN-targets-v3-20261118",
+ "creato": "2026-11-21T10:47:07+01:00",
+ "agente": "gpt",
+ "campagna": "CONTRASTIVE-targets-v3-20261118",
+ "gpu_ore_stimate": 2.0,
+ "codice_sha": "746112dd711903e5c92ade2efd90834264b2676a",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONTRAST-BENCH-CN-targets-v3-20261118",
+  "--comment=wearusfm:CONTRAST-BENCH-CN-targets-v3-20261118",
+  "--cpus-per-task=32",
+  "--gres=gpu:4",
+  "--mem=240G",
+  "--time=00:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-full-20261121,EXPECTED_SHA=746112dd711903e5c92ade2efd90834264b2676a,TORCH_DIST_INIT_BARRIER=1",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-full-20261121/scripts/slurm/contrastive_preflight_gpu.sbatch",
+  "results/infra/contrastive_targets_20261118/releases/benchmark_20261121/benchmark_CN.job.json"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-21T10:47:07+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-21T10:47:07+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-21T10:47:10+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 65017310,
+   "uscita": 0,
+   "stdout": "65017310\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 65017310,
+ "uscita": 0,
+ "stdout": "65017310\n",
+ "stderr": ""
+}

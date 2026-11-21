@@ -178,6 +178,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: prima ondata benchmark RMS100/fast125
+
+Consegna ab7a69a6, esecuzione 746112dd. Controlli operativi/pin/login runner
+passati, checkout comune 65017186 COMPLETED 0:0 in 19 s. C0 65017240 e CN
+65017310 sottomessi una volta con TORCH_DIST_INIT_BARRIER=1. CR attende un
+posto debug e nuovo check prima dell'invio. Evidenze benchmark_execution_20261121/;
+nota reviews/launcher_targets_benchmarks_20261121.md. Nessuna ripresa o training.
+
 ### 21/11/2026 — GPT scientifico, tre benchmark brevi della linea 3
 
 Dopo la lettura scientifica `4f14fbca` e la raccolta CUDA `8333d071`, Simone autorizza il checkout e le tre celle C0/CN/CR a 576 aggiornamenti per 3-launcher. I pesi attivi e il criterio di parità sono quelli congelati per la coorte RMS100/fast125. Richiesta incrementale 6 GPU-ore e 48,266667 core-ore.
@@ -9491,6 +9499,12 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: tranche dei tre continui ancora in corso
+
+C0/CN inviati, CR non ancora inviato per rispettare due slot debug complessivi.
+Raccolta dei 576 passi, parità C0 per rank e tracce/checkpoint CN/CR aperta.
+Nessun retry o modifica di protocollo; le riprese restano consegna successiva.
 
 ### 21/11/2026 — GPT scientifico, lettura dei tre bracci prima delle riprese
 
