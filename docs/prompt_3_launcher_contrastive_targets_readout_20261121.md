@@ -12,12 +12,12 @@ Le quattro riprese hanno chiuso con `COMPLETED 0:0`. Gli 88 file raccolti e le r
 
 ## Checkout e confronto
 
-Usa il commit di esecuzione `e0ddbac808c74f133cad619b8a61821e0afe18ea`. Le evidenze delle quattro riprese sono al commit `358ede81c07a49df75ffcbabf80aac0198ee540e`, già incluso nel primo. Verifica il piano dei comandi dal worktree prima del deploy. [Comandi dei due invii](../results/infra/contrastive_targets_20261118/readout_handoff_20261121/submission_plan.json)
+Usa il commit di esecuzione `744ecfa1cccaa7ec650cc874fdc5799a83e0787e`. Le evidenze delle quattro riprese sono al commit `358ede81c07a49df75ffcbabf80aac0198ee540e`. Sul precedente deploy `e0ddbac8` il controllo preliminare si è fermato prima della prenotazione degli ID. Il nuovo commit corregge il confronto dei percorsi passato al lettore. Conserva la prima verifica archiviata in `dc15bb01` e raccogli il nuovo controllo in file distinti. Avanza il ref di deploy con fast-forward e verifica il nuovo SHA. Il ledger e i due ID sono quelli originari. [Comandi dei due invii](../results/infra/contrastive_targets_20261118/readout_handoff_20261121/submission_plan.json)
 
 ```bash
 set -o pipefail
 handoff=results/infra/contrastive_targets_20261118/readout_handoff_20261121
-python3 "$handoff/prepare_handoff.py" --frozen-sha e0ddbac808c74f133cad619b8a61821e0afe18ea --dry-run | cmp - "$handoff/submission_plan.json"
+python3 "$handoff/prepare_handoff.py" --frozen-sha 744ecfa1cccaa7ec650cc874fdc5799a83e0787e --dry-run | cmp - "$handoff/submission_plan.json"
 ```
 
 Le voci `before_checkout` e `before_readout` del piano controllano il ledger sul Mac e stampano gli argomenti SSH. Esegui direttamente il comando SSH stampato e conserva stdout, stderr e codice di uscita della connessione. La sola stampa del comando non attesta la verifica sul login. Per ciascun invio esegui direttamente la venv e il submitter comuni con la lista di argomenti pubblicata.

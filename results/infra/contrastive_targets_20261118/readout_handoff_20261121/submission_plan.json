@@ -1,11 +1,11 @@
 {
-  "execution_commit": "e0ddbac808c74f133cad619b8a61821e0afe18ea",
+  "execution_commit": "744ecfa1cccaa7ec650cc874fdc5799a83e0787e",
   "operator": "3-launcher",
   "campaign_directory": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-readout-20261121",
   "pins": {
     "results/infra/contrastive_targets_20261118/readout_handoff_20261121/prepare_handoff.py": "9ae7411bbd2a3be0f0390d44870fc6e724613dda1b08002dc2a07dd25647344b",
     "results/infra/contrastive_targets_20261118/readout_handoff_20261121/login_check.sh": "fe0ad5ffbbe866a396a0e8ac2e2f484164a2286bc86496e98b2f5db527a8414f",
-    "results/infra/contrastive_targets_20261118/readout_handoff_20261121/validate_readout.py": "79488b4fd2dd48fb2935849f7977c44894717968984de2492b87620d190fc959",
+    "results/infra/contrastive_targets_20261118/readout_handoff_20261121/validate_readout.py": "e3b4db2a3d245460ca7f57ff3ba071241d138dbadf3c26122682f6c79836bde8",
     "scripts/slurm/contrastive_preflight_cpu.sbatch": "683ada3cf4ceebb369ce4e218d82ca3b6a861c071e99b3586e62d0c51e184884",
     "scripts/slurm/campaign_checkout.sbatch": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
     "results/infra/contrastive_targets_20261118/releases/audit_20261120/review_binding.json": "171b47df22e3990d07e4411b3148e2e89b5d8645f07cdff84db9d166e8c2e1bb",
@@ -39,7 +39,7 @@
     "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets",
     "push",
     "leonardo",
-    "e0ddbac808c74f133cad619b8a61821e0afe18ea:refs/heads/deploy/contrastive-targets-readout-20261121"
+    "744ecfa1cccaa7ec650cc874fdc5799a83e0787e:refs/heads/deploy/contrastive-targets-readout-20261121"
   ],
   "verify_deploy_sha": [
     "git",
@@ -54,7 +54,7 @@
     "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
     "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/results/infra/contrastive_targets_20261118/readout_handoff_20261121/prepare_handoff.py",
     "--frozen-sha",
-    "e0ddbac808c74f133cad619b8a61821e0afe18ea",
+    "744ecfa1cccaa7ec650cc874fdc5799a83e0787e",
     "--print-login-argv",
     "checkout"
   ],
@@ -75,13 +75,13 @@
     "--cpus-per-task=4",
     "--mem=2G",
     "--time=00:04:00",
-    "--export=ALL,CAMPAIGN=contrastive-targets-readout-20261121,CAMPAIGN_SHA=e0ddbac808c74f133cad619b8a61821e0afe18ea,EXPECTED_SHA=e0ddbac808c74f133cad619b8a61821e0afe18ea"
+    "--export=ALL,CAMPAIGN=contrastive-targets-readout-20261121,CAMPAIGN_SHA=744ecfa1cccaa7ec650cc874fdc5799a83e0787e,EXPECTED_SHA=744ecfa1cccaa7ec650cc874fdc5799a83e0787e"
   ],
   "before_readout": [
     "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
     "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/results/infra/contrastive_targets_20261118/readout_handoff_20261121/prepare_handoff.py",
     "--frozen-sha",
-    "e0ddbac808c74f133cad619b8a61821e0afe18ea",
+    "744ecfa1cccaa7ec650cc874fdc5799a83e0787e",
     "--print-login-argv",
     "readout"
   ],
@@ -100,7 +100,7 @@
     "--cpus-per-task=8",
     "--mem=30G",
     "--time=01:00:00",
-    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-readout-20261121,EXPECTED_SHA=e0ddbac808c74f133cad619b8a61821e0afe18ea",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-readout-20261121,EXPECTED_SHA=744ecfa1cccaa7ec650cc874fdc5799a83e0787e",
     "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-readout-20261121/scripts/slurm/contrastive_preflight_cpu.sbatch",
     "results/infra/contrastive_targets_20261118/releases/readout_20261121/readout.job.json"
   ],

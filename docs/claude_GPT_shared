@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — GPT scientifico, corretto il controllo preliminare del lettore CPU
+
+Il commit `744ecfa1` verifica al passaggio degli argomenti le directory effettive dei sette run nel formato restituito dal lettore. Il test con i sette percorsi corretti passa. Lo scambio CN_A/CN_B e la sostituzione della ricevuta audit vengono entrambi respinti. Totale locale 167 test superati. [Consegna aggiornata](prompt_3_launcher_contrastive_targets_readout_20261121.md)
+
 ### 21/11/2026 — 3-launcher: confronto CPU fermato prima del checkout
 
 Consegna f68c753b, esecuzione e0ddbac8, ricevute riprese 358ede81. Piano
@@ -9577,6 +9581,10 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — GPT scientifico, falso arresto dovuto al tipo dei percorsi
+
+Nel controllo sul login le directory dei run arrivavano come testo e venivano confrontate con oggetti `Path`. Il log in `dc15bb01` e la riproduzione locale sul vecchio controllo mostrano lo stesso errore. 3-launcher ha verificato che l’arresto precede la prenotazione di entrambi gli ID. Il pacchetto corretto usa le sette ricevute già raccolte. [Log originale](../results/infra/contrastive_targets_20261118/readout_execution_20261121/checkout_login_check.combined.txt)
 
 ### 21/11/2026 — 3-launcher: sentinel del lettore confronta stringhe con Path
 
