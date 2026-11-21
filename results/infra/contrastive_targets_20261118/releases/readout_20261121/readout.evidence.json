@@ -1,0 +1,89 @@
+{
+  "inputs": {
+    "manifest": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+      "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+    },
+    "scales": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+      "sha256": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486"
+    },
+    "window_seconds": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+      "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+    },
+    "pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+    }
+  },
+  "cohort": {
+    "path": "results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/cohort.json",
+    "sha256": "2e611964c76c6f8e7622a89ecb407c1175ec31502e77b2a64d66efb5236b9c3a",
+    "bytes": 868
+  },
+  "audit": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/audit.json",
+    "sha256": "eb7cbdf49ffdd00148647e82c5f51768edbd17b5ef515d960a1f6edec35754d3",
+    "bytes": 20275571
+  },
+  "audit_sacct": {
+    "path": "results/infra/contrastive_targets_20261118/audit_execution_20261120/audit_accounting.json",
+    "sha256": "594d72932f2ca15440ee4bf1255a0abe035467933703efcd23309a6e14a32726",
+    "bytes": 516
+  },
+  "calibration_report": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration_report.json",
+    "sha256": "20cb900522b62b46f17d1b65cbbe1ef579a4cdd5e935a7ab31b7a309ed516532",
+    "bytes": 125185
+  },
+  "calibration_summary": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration/summary.json",
+    "sha256": "7cdf45af1b0b1250445844f4fe2955a12640d95cbf10729fb80d91a06d5855cd",
+    "bytes": 7501
+  },
+  "cuda_report": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/cuda.json",
+    "sha256": "920bfb46c881c13b7edc9a93af01e9073a714908bb97081c46d266cb17f8133d",
+    "bytes": 243122
+  },
+  "full": {
+    "C0": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/benchmark/C0/summary.json",
+      "sha256": "f07a87de9ae09200cfff0cc5f7ce54e1e7fa86af0f5bdcaa68d203594d1caff7",
+      "bytes": 7650
+    },
+    "CN": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/benchmark/CN/summary.json",
+      "sha256": "e7bc701dab54ca1b5d3fae8d6a0fb1393234933ebde083b35cc94b10a1c49d17",
+      "bytes": 7650
+    },
+    "CR": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/benchmark/CR/summary.json",
+      "sha256": "69dc27315497faec486122af1fd24bf492889014bfe172c17ab76bbc420dadaa",
+      "bytes": 7650
+    }
+  },
+  "resumed": {
+    "CN_A": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_A/summary.json",
+      "sha256": "f9798e87fffea3db0a587dafd55ebbfbc611cbc6cd1f4d43b96e41df8613d539",
+      "bytes": 7606
+    },
+    "CN_B": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_B/summary.json",
+      "sha256": "51d02fe4702a24299ecf2922e9a162e0b02135059522c989c9c7bbe9d6c1c85d",
+      "bytes": 7608
+    },
+    "CR_A": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CR_A/summary.json",
+      "sha256": "8da1f0f4452942cdfbf9546d6f0b8f9a1005868de6df3b6f413c64d0b7623e88",
+      "bytes": 7607
+    },
+    "CR_B": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CR_B/summary.json",
+      "sha256": "1a31c1ee013483048563d2a1f9d6a418c151334e04dceeb99549f01e4df5acac",
+      "bytes": 7607
+    }
+  }
+}
