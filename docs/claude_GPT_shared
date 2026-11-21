@@ -8975,6 +8975,23 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   disposizione vera; nuovi ID e checkout (L3-9); mia rilettura del solo diff; nuovo tentativo su decisione di Simone. Nessun lancio
   da parte mia.
 
+### 2026-11-21 | Claude | Emendamento TCN A1 (budget e ricevute): APPROVATO, review operativa favorevole (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: l'emendamento A1 sul ramo `codex/pose-temponet-launcher-20261120`. Codice
+  `a1ae9607681c1a181034d7f72770537054af419d`, consegna `d715290ee06379f74e71c43fa03b2d33bb48170f`, base
+  `c90d43e0b9f905fe13770498a59ffdb7c963413a`, `source_sha256`
+  `9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea`. Richiesta di GPT incollata da Simone il 21/11: review del
+  solo diff, senza agenti, limitata a budget e compatibilità delle ricevute.
+- Review in `docs/reviews/claude_review_pose_temponet_A1_budget_20261121.md`.
+- Riprodotto su un checkout isolato di `d715290e`: 299 test TCN passati (22 file), 125 storici più il fallimento noto, `bash -n`
+  sui quattro launcher. Ricalcolati i due controlli di budget sulle ricevute vere: stessi totali, 35,90 / 37,40 / 77,00 / 376,20;
+  i tetti A1 sono esattamente 1,5 volte. Prova locale di `release-plan`, `resource-plan` e `commands --stage wls_calibration`.
+- Letto in sola lettura su Leonardo: le tre ricevute su `$WORK` hanno hash e byte di `budget_amendment.LEGACY`; i job 65016127,
+  65016438 e 65016447 sono `COMPLETED 0:0`; nessun checkout A1 e nessun job TCNH in coda.
+- Esito: **APPROVATO**, i cinque punti chiesti sono verificati. Autorizzazione di Simone citata come la registra GPT in
+  `docs/decisioni.md`: «va bene se aumenti il budget» e «dagli quello che serve moltiplicato per 1.5».
+- Seguito: l'operatore 2-TCN head launcher rilascia con questa review e procede. Nessun lancio da parte mia.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13168,3 +13185,16 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   la cartella. Test con la disposizione vera e sulle due ricevute vere contro `cache_users.json`.
 - I test non l'hanno visto: quello sulla ricevuta vera conta solo gli utenti; le fixture li chiamano `u0`, `u1`, ...; la catena dei
   24 stadi simula il preflight. Non l'ha visto neanche la mia rilettura `85f0d62`.
+
+### 2026-11-21 | Claude | Emendamento TCN A1: note operative per l'operatore, nessun blocco
+
+- Lo script dell'inventario del secondo nodo GPU non è nella consegna: va versionato prima dell'invio, fuori dai percorsi del
+  manifest dei sorgenti (non sotto `scripts/slurm/pose_temponet*.sbatch`, che cambierebbe `source_sha256`).
+- Il pin `gpu8` è il digest dell'intero contesto numerico: se possibile l'inventario calcoli lo stesso digest con
+  `train.configure_numerics()` e `P.numeric_context("gpu")`; altrimenti i quattro campi hardware. Un solo secondo nodo non li
+  copre tutti.
+- `resource_policy` e la `policy` del gate riportano ancora i vecchi tetti: nel consuntivo valgono quelli di
+  `budget_amendment.authorized_caps`. Il ledger avrà tre campagne per lo stesso budget, 29 allocazioni al massimo.
+- I limiti sul percorso critico sommano 17,73 ore, più code e passaggi dell'operatore; dal 23/11 alle 08:00 Leonardo è in
+  manutenzione per due giorni.
+- Dalle ricevute vere: il preflight del 21/11 ha riprodotto i due `E_dyn` storici bit per bit.
