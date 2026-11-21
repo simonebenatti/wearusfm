@@ -1,0 +1,37 @@
+{
+  "cpu": {
+    "core_hours": 0.5422222222222223,
+    "exit": "0:0",
+    "gpu_hours": 0,
+    "max_rss_kib": 4027080,
+    "seconds": 244,
+    "slurm": 65016438,
+    "state": "COMPLETED"
+  },
+  "cumulative_allocations": 6,
+  "cumulative_core_hours": 1.5227777777777778,
+  "cumulative_gpu_hours": 0.10888888888888888,
+  "downstream_submissions": 0,
+  "failed_gates": [
+    "neural_gpu_hours",
+    "gpu_total",
+    "core_total"
+  ],
+  "gpu": {
+    "core_hours": 0.8711111111111111,
+    "exit": "0:0",
+    "gpu_hours": 0.10888888888888888,
+    "max_rss_kib": 6437864,
+    "seconds": 392,
+    "slurm": 65016447,
+    "state": "COMPLETED"
+  },
+  "gpu_second_node_check": "still required before GPU-dependent stages; not run because global resources failed",
+  "verified": [
+    "remote/local SHA256 for receipts, benchmark artifacts and logs",
+    "P.verified_receipt payload and provenance checks",
+    "exact original artifact hashes and JSON values",
+    "train-only measurements",
+    "one submission per logical ID"
+  ]
+}

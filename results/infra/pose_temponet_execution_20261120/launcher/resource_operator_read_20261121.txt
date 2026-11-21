@@ -1,0 +1,21 @@
+2026-11-21T10:29:15+01:00
+Disk quotas for prj 20147512 (pid 20147512):
+     Filesystem  kbytes   quota   limit   grace   files   quota   limit   grace
+ /leonardo_work 1031728872  1073741824       0       - 1231673       0       0       -
+-----------------------------------------------------------------------------------------------------------------------------------------
+account                start         end         total        localCluster   totConsumed     totConsumed     monthTotal     monthConsumed
+                                             (local h)   Consumed(local h)     (local h)               %      (local h)         (local h)
+-----------------------------------------------------------------------------------------------------------------------------------------
+CNHPC_1526560       20240711    20260430        640000              557186        557186            87.1             0                  0
+IscrB_WearUsFM      20260107    20270107       2000000             1346072       1346072            67.3        164383              46532
+64837401 SCALING-49046-train-39237-20261118 PENDING (Priority)
+65016794 CONTRAST-CUDA-targets-v3-20261118 RUNNING lrdn0113
+PartitionName=lrd_all_serial AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL AllocNodes=ALL Default=YES QoS=lrd_all_serial DefaultTime=00:30:00 DisableRootJobs=NO ExclusiveUser=NO ExclusiveTopo=NO GraceTime=0 Hidden=NO MaxNodes=UNLIMITED MaxTime=04:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED Nodes=login[08,13] PriorityJobFactor=1 PriorityTier=1 RootOnly=NO ReqResv=NO OverSubscribe=NO OverTimeLimit=NONE PreemptMode=OFF State=UP TotalCPUs=256 TotalNodes=2 SelectTypeParameters=NONE JobDefaults=(null) DefMemPerCPU=3850 MaxMemPerNode=UNLIMITED TRES=cpu=256,mem=1028000M,node=2,billing=256,gres/tmpfs=30786325577728
+ReservationName=maint_23112026_vizser StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00 Nodes=login[08,13],viz[02-16] NodeCnt=17 CoreCnt=1088 Features=(null) PartitionName=(null) Flags=MAINT,SPEC_NODES TRES=cpu=2176 Users=(null) Groups=(null) Accounts=cin_sanity Licenses=(null) State=INACTIVE BurstBuffer=(null) MaxStartDelay=(null)
+ReservationName=maint_23112026_booster StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00 Nodes=lrdn[0001-3456] NodeCnt=3456 CoreCnt=110592 Features=(null) PartitionName=boost_usr_prod Flags=MAINT,SPEC_NODES TRES=cpu=110592 Users=(null) Groups=(null) Accounts=cin_sanity Licenses=(null) State=INACTIVE BurstBuffer=(null) MaxStartDelay=(null)
+    PID COMMAND
+3852804 /usr/lib/systemd/systemd --user
+3852918 (sd-pam)
+3862488 sshd: sbenatti@notty
+3894197 bash -c date -Is; lfs quota -p 20147512 /leonardo_work; saldo -b; squeue -u sbenatti -h -o "%i %j %T %R"; scontrol show partition lrd_all_serial -o; scontrol show reservation maint_23112026_vizser -o; scontrol show reservation maint_23112026_booster -o; ps -u sbenatti -o pid,args
+3895051 ps -u sbenatti -o pid,args

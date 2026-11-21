@@ -1,0 +1,39 @@
+{
+  "active_checkout_sha": "3205763d1b3e29799231aa1f9453819f6182e4ee",
+  "authorized_caps": {
+    "cpu_only_core_hours": 115.5,
+    "gpu_total_hours": 56.1,
+    "neural_gpu_hours": 53.85,
+    "total_core_hours": 564.3
+  },
+  "basis": "Frozen measured global resource gate; inclusive allocations already contain factor 2 timing margin and 180 s per job. The additional 1.5 applies to campaign budget ceilings, not to individual job walltimes or scientific dose.",
+  "date": "2026-11-21",
+  "factor": 1.5,
+  "measured_need": {
+    "cpu_only_core_hours": 77.0,
+    "gpu_total_hours": 37.4,
+    "neural_gpu_hours": 35.9,
+    "total_core_hours": 376.2
+  },
+  "next": "Resource-only amendment must explicitly preserve the three valid completed receipts across a source-identity change, with exact pins and a reviewed narrowly scoped compatibility rule; no blind rerun.",
+  "original_reviewed_code_sha": "5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba",
+  "preserve": [
+    "8 scientific inputs",
+    "recipe",
+    "heads",
+    "folds",
+    "LR grid",
+    "300 epoch maximum",
+    "scores/thresholds",
+    "measured per-job walltimes",
+    "single submit per logical ID",
+    "original preflight/benchmark receipt bytes"
+  ],
+  "review_required_reason": "Execution manual: every source change invalidates plan and requires review. Caps are hard-coded in resources.gate_and_pack and execution.apply_training_pack. Existing immutable checkout is not modified.",
+  "source_sha256": "37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de",
+  "status": "budget_authorized_implementation_awaiting_review",
+  "user_words": [
+    "va bene se aumenti il budget",
+    "dagli quello che serve moltiplicato per 1.5"
+  ]
+}

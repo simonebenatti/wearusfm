@@ -6195,6 +6195,13 @@ Checkout 3205763d1b3e29799231aa1f9453819f6182e4ee pulito e sorgenti non scrivibi
 
 Su istruzione di Simone di procedere con benchmark e seguito se passano i gate, inviati una volta TCNH-cpu-benchmark-20261120 = 65016438 e TCNH-gpu-benchmark-20261120 = 65016447. Prerequisito preflight verificato, prova sacct archiviata; checkout 3205763d invariato. Limiti 27 minuti, CPU8/24GiB e GPU1/CPU8/32GiB; riserva inclusiva 0,5 GPUh + 4 coreh solo CPU = 8 coreh totali. Inizialmente entrambi PENDING, nessun errore. Nessun WLS o fit prima del cancello globale misurato; nessun refresh SCRATCH durante gli stadi.
 
+
+### 2026-11-21 | GPT operatore TCN | Benchmark chiusi, gate negativo e budget A1 autorizzato
+
+CPU 65016438 e GPU 65016447 entrambi COMPLETED 0:0, 244 e 392 s, hash delle ricevute/artefatti/log uguali ai remoti; verificati con il validatore congelato. Gate risorse negativo soltanto per fit neurali 35,9>20 GPUh, totale 37,4>24 GPUh e 376,2>272 coreh. Tutti gli altri gate passano. Nessun job successivo inviato; nessun retry o sorgente cambiato.
+Simone, informato dei numeri, autorizza: «va bene se aumenti il budget» e «dagli quello che serve moltiplicato per 1.5». Tetti A1 esatti: fit 53,85 GPUh, GPU totali 56,10, CPU-only 115,50 coreh, totale 564,30 coreh. Il fattore 1,5 riguarda i tetti sulla proiezione gia prudenziale, non i walltime o la dose. Consuntivo di 6 allocazioni incluse le tre pregresse: 0,108889 GPUh / 1,522778 coreh.
+Consegna pronta in docs/pose_temponet_budget_A1_handoff_20261121.md e decisione macchina in launcher/budget_amendment_A1_authorization_20261121.json. Serve l'emendamento revisionato dei controlli cablati e una regola esplicita per conservare i tre predecessori validi nel cambio di source identity. Il checkout immutabile resta intatto; nessuna nuova autorizzazione finanziaria richiesta. Confronto hardware del secondo nodo GPU ancora da fare prima dei fit GPU dipendenti. Nessuna prenotazione pendente priva di esito.
+
 ## 2) Problemi trovati
 
 ### 2026-11-21 | GPT chat 2 | TCN: nessun blocco nuovo; due note operative per il seguito
@@ -9208,3 +9215,9 @@ Checkout 3205763d1b3e29799231aa1f9453819f6182e4ee pulito e sorgenti non scrivibi
 ### 2026-11-21 | GPT operatore TCN | Benchmark CPU e GPU sottomessi
 
 Su istruzione di Simone di procedere con benchmark e seguito se passano i gate, inviati una volta TCNH-cpu-benchmark-20261120 = 65016438 e TCNH-gpu-benchmark-20261120 = 65016447. Prerequisito preflight verificato, prova sacct archiviata; checkout 3205763d invariato. Limiti 27 minuti, CPU8/24GiB e GPU1/CPU8/32GiB; riserva inclusiva 0,5 GPUh + 4 coreh solo CPU = 8 coreh totali. Inizialmente entrambi PENDING, nessun errore. Nessun WLS o fit prima del cancello globale misurato; nessun refresh SCRATCH durante gli stadi.
+
+### 2026-11-21 | GPT operatore TCN | Benchmark chiusi, gate negativo e budget A1 autorizzato
+
+CPU 65016438 e GPU 65016447 entrambi COMPLETED 0:0, 244 e 392 s, hash delle ricevute/artefatti/log uguali ai remoti; verificati con il validatore congelato. Gate risorse negativo soltanto per fit neurali 35,9>20 GPUh, totale 37,4>24 GPUh e 376,2>272 coreh. Tutti gli altri gate passano. Nessun job successivo inviato; nessun retry o sorgente cambiato.
+Simone, informato dei numeri, autorizza: «va bene se aumenti il budget» e «dagli quello che serve moltiplicato per 1.5». Tetti A1 esatti: fit 53,85 GPUh, GPU totali 56,10, CPU-only 115,50 coreh, totale 564,30 coreh. Il fattore 1,5 riguarda i tetti sulla proiezione gia prudenziale, non i walltime o la dose. Consuntivo di 6 allocazioni incluse le tre pregresse: 0,108889 GPUh / 1,522778 coreh.
+Consegna pronta in docs/pose_temponet_budget_A1_handoff_20261121.md e decisione macchina in launcher/budget_amendment_A1_authorization_20261121.json. Serve l'emendamento revisionato dei controlli cablati e una regola esplicita per conservare i tre predecessori validi nel cambio di source identity. Il checkout immutabile resta intatto; nessuna nuova autorizzazione finanziaria richiesta. Confronto hardware del secondo nodo GPU ancora da fare prima dei fit GPU dipendenti. Nessuna prenotazione pendente priva di esito.
