@@ -8324,3 +8324,7 @@ La review su `fbfde797b48644744c36547533acf0e8a7793535` è il documento `docs/re
 ### 20/11/2026 — Audit superato per RMS100/fast125, linea 3
 
 L’audit 64937087 è completo e autenticato (4.022 s su 7.200). Nel pannello 8.179 finestre su 8.192 sono ammissibili per InfoNCE, RnC ha supporto in tutti i 256 batch. Agli update 128 e 256 entrambe le loss hanno supporto, come in ciascuno dei 32 batch scelti per la prova di ripresa. Il flusso dei 1.024 record coincide con quello storico 25/50. È soddisfatto il prerequisito dati della calibrazione. La scelta dei due pesi resta affidata alle tre norme misurate sullo stesso batch, con il criterio firmato. [Lettura scientifica](reviews/contrastive_targets_audit_science_20261120.md)
+
+### 21/11/2026 — Linea 3, P-5 superato e rilascio della calibrazione RMS100/fast125
+
+Verificati su quattro processi CPU/Gloo il controllo C0 e le due riprese CN dal medesimo checkpoint. Tutte e tre le coppie sono entro il limite dell’1% nella prova locale. Dopo l’audit positivo, si rilascia a 3-launcher la sola calibrazione con un checkout nuovo. Richiesta incrementale 2 GPU-ore e 16,266667 core-ore incluso il checkout. La lettura del rapporto determinerà il seguito. [Esito e ricevute](reviews/contrastive_targets_audit_science_20261120.md)

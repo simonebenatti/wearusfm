@@ -1,0 +1,40 @@
+{
+  "status": "LOCAL_VALIDATION_PASSED",
+  "job": "CONTRAST-CALIB-targets-v3-20261118",
+  "job_sha256": "20ad24c7d102f9c7fd46d232ed82b576c8723ae1c77ae1440cca9c3ecd1d2404",
+  "release_sha256": "c741ad729808a5b948d7985e793763fd787e85707cdaf47e57a83e32871caf52",
+  "script_sha256": "9a53d735caf203bec495dfafa86d5d94e6f040c9cce4384ad18650827e38346a",
+  "evidence_sha256": "8a23ae415e1c0451fb1eb2bfd250c24404cd8729617876e26ef5fc042f0b297f",
+  "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+  "inputs_sha256": {
+    "manifest": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+    "scales": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+    "window_seconds": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+    "pose_stats": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+  },
+  "audit_accounting": {
+    "accounting_sha256": "594d72932f2ca15440ee4bf1255a0abe035467933703efcd23309a6e14a32726",
+    "sacct_sha256": "8d2c71fbcbe883cf906b8349d5b104882307a26e859cc95629bf295f1c413cfe",
+    "audit_sha256": "eb7cbdf49ffdd00148647e82c5f51768edbd17b5ef515d960a1f6edec35754d3",
+    "job_id": "64937087",
+    "logical_id": "CONTRAST-AUDIT-targets-v3-20261118",
+    "elapsed_seconds": 4022,
+    "state": "COMPLETED",
+    "exit_code": "0:0"
+  },
+  "stage": "calibration",
+  "ranks": 4,
+  "max_steps": 512,
+  "trainer_seconds": 1770,
+  "allocation_seconds": 1800,
+  "training_authorized": false,
+  "verified": [
+    "binding",
+    "make_job",
+    "validate_recipe",
+    "validate_release",
+    "check_input_files",
+    "build_command_with_local_paths"
+  ],
+  "scope": "Real source and input bytes. Absolute input paths and both data mounts translated for local build_command. No execution. Physical mounts, release validation and fresh output to recheck on login."
+}

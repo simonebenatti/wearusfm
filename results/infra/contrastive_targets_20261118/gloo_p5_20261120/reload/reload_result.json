@@ -1,0 +1,245 @@
+{
+  "protocol": "contrastive-target-common-fork-20261119-v1",
+  "arm": "CN",
+  "steps": [
+    2,
+    4
+  ],
+  "passed": true,
+  "status": "PASSED",
+  "training_approved": false,
+  "fork_sha256": "0c21b6cfcec5cded019cc1aa03449350330a77f117e57ce53ef1e5d2fa021d9d",
+  "historical_one_percent_gate_applied": true,
+  "boundary_mismatches": [],
+  "missing_active_support": [],
+  "pairs": {
+    "continuous__reload_a": {
+      "passed": true,
+      "bound": 0.01,
+      "relative_to_left_displacement_from_initial": {
+        "student": 4.7382706391174043e-07,
+        "teacher": 1.5966763100280606e-06
+      },
+      "floating_state_errors": {},
+      "failure_reasons": [],
+      "denominators": {
+        "model": "L2 parameter displacement of the left final model from authenticated initialization; floor 1e-12",
+        "floating_state": "L2 norm of each left final tensor separately; floor 1e-12"
+      },
+      "relative_to_left_displacement_from_544": {
+        "student": 8.261697319898356e-07,
+        "teacher": 2.160430309048249e-06
+      },
+      "by_block_relative_to_left_displacement_from_fork": {
+        "student": {
+          "anchor_heads": 0.0,
+          "backbone": 7.670801914568711e-07,
+          "contrastive_head": 2.455787707494227e-06,
+          "decoder": 1.047914547396773e-06,
+          "identity": 1.242395034009388e-07,
+          "local": 5.045966345419146e-07,
+          "pool": 2.927859801667612e-07,
+          "pose_head": 6.686812016156881e-08,
+          "tokenizer": 1.6420740501933186e-07
+        },
+        "teacher": {
+          "anchor_heads": 0.0,
+          "backbone": 3.0573996025155548e-09,
+          "contrastive_head": 0.0,
+          "decoder": 6.960753962493494e-09,
+          "identity": 0.0,
+          "local": 7.085104708641774e-09,
+          "pool": 3.133922536692245e-09,
+          "pose_head": 3.479259083036038e-08,
+          "tokenizer": 5.412052855642022e-06
+        }
+      },
+      "input_rng_counter_order_differences": [],
+      "final_checkpoint_sha256": {
+        "continuous": "76960befc0405e3684e161a11244379dcb46ffa451a9221fc4afeccea4feb634",
+        "reload_a": "303779d7a3a32aa341d213df159e01d57e66ee10ad6ad57608db3bd8151fc146"
+      },
+      "floating_tensors_compared": 220,
+      "max_floating_tensor_relative_to_left": 1.1373232785899263e-06
+    },
+    "continuous__reload_b": {
+      "passed": true,
+      "bound": 0.01,
+      "relative_to_left_displacement_from_initial": {
+        "student": 4.7382706391174043e-07,
+        "teacher": 1.5966763100280606e-06
+      },
+      "floating_state_errors": {},
+      "failure_reasons": [],
+      "denominators": {
+        "model": "L2 parameter displacement of the left final model from authenticated initialization; floor 1e-12",
+        "floating_state": "L2 norm of each left final tensor separately; floor 1e-12"
+      },
+      "relative_to_left_displacement_from_544": {
+        "student": 8.261697319898356e-07,
+        "teacher": 2.160430309048249e-06
+      },
+      "by_block_relative_to_left_displacement_from_fork": {
+        "student": {
+          "anchor_heads": 0.0,
+          "backbone": 7.670801914568711e-07,
+          "contrastive_head": 2.455787707494227e-06,
+          "decoder": 1.047914547396773e-06,
+          "identity": 1.242395034009388e-07,
+          "local": 5.045966345419146e-07,
+          "pool": 2.927859801667612e-07,
+          "pose_head": 6.686812016156881e-08,
+          "tokenizer": 1.6420740501933186e-07
+        },
+        "teacher": {
+          "anchor_heads": 0.0,
+          "backbone": 3.0573996025155548e-09,
+          "contrastive_head": 0.0,
+          "decoder": 6.960753962493494e-09,
+          "identity": 0.0,
+          "local": 7.085104708641774e-09,
+          "pool": 3.133922536692245e-09,
+          "pose_head": 3.479259083036038e-08,
+          "tokenizer": 5.412052855642022e-06
+        }
+      },
+      "input_rng_counter_order_differences": [],
+      "final_checkpoint_sha256": {
+        "continuous": "76960befc0405e3684e161a11244379dcb46ffa451a9221fc4afeccea4feb634",
+        "reload_b": "303779d7a3a32aa341d213df159e01d57e66ee10ad6ad57608db3bd8151fc146"
+      },
+      "floating_tensors_compared": 220,
+      "max_floating_tensor_relative_to_left": 1.1373232785899263e-06
+    },
+    "reload_a__reload_b": {
+      "passed": true,
+      "bound": 0.01,
+      "relative_to_left_displacement_from_initial": {
+        "student": 0.0,
+        "teacher": 0.0
+      },
+      "floating_state_errors": {},
+      "failure_reasons": [],
+      "denominators": {
+        "model": "L2 parameter displacement of the left final model from authenticated initialization; floor 1e-12",
+        "floating_state": "L2 norm of each left final tensor separately; floor 1e-12"
+      },
+      "relative_to_left_displacement_from_544": {
+        "student": 0.0,
+        "teacher": 0.0
+      },
+      "by_block_relative_to_left_displacement_from_fork": {
+        "student": {
+          "anchor_heads": 0.0,
+          "backbone": 0.0,
+          "contrastive_head": 0.0,
+          "decoder": 0.0,
+          "identity": 0.0,
+          "local": 0.0,
+          "pool": 0.0,
+          "pose_head": 0.0,
+          "tokenizer": 0.0
+        },
+        "teacher": {
+          "anchor_heads": 0.0,
+          "backbone": 0.0,
+          "contrastive_head": 0.0,
+          "decoder": 0.0,
+          "identity": 0.0,
+          "local": 0.0,
+          "pool": 0.0,
+          "pose_head": 0.0,
+          "tokenizer": 0.0
+        }
+      },
+      "input_rng_counter_order_differences": [],
+      "final_checkpoint_sha256": {
+        "reload_a": "303779d7a3a32aa341d213df159e01d57e66ee10ad6ad57608db3bd8151fc146",
+        "reload_b": "303779d7a3a32aa341d213df159e01d57e66ee10ad6ad57608db3bd8151fc146"
+      },
+      "floating_tensors_compared": 220,
+      "max_floating_tensor_relative_to_left": 0.0
+    }
+  },
+  "evidence_sha256": {
+    "continuous": {
+      "checkpoint.pt": "76960befc0405e3684e161a11244379dcb46ffa451a9221fc4afeccea4feb634",
+      "summary.json": "ab96c343d1fb30d5a35882754b92d5acddc016ae53e45f745ebdd9c80dd2235d",
+      "config.json": "8582f368d8b4baf1a3d12e4b53db4bf9c267c9118daf1630c3a9e37ba026c92c",
+      "metrics.jsonl": "16755adc8a14b6c01407a9b6bd79e695463d385f27344fc21b6b5cf44944ba05",
+      "origin_sessions.json": "f2bfc9715312e0d0fe56d87f0d9b82fa558f41ec26380903fd6e0ecf1a7bcfed",
+      "trace-0.jsonl": "3d1975dc0b925c07ce3ece1d329dfb3752ceb2ba36a63d4352fff4b6304161c1",
+      "trace-1.jsonl": "f19b62e30b58e6b758fc5bda1b3ffd46ae32c2e19c1b7490c0b0a468eda46e5a",
+      "trace-2.jsonl": "bb06eeaa61a416787c5062e2a335a1828a6afb29aa5dc8b6df9848a6a24ee5ca",
+      "trace-3.jsonl": "02494e208b055886941bb0793870c07dce83ab5c1d4610ea213b7962c4c29370"
+    },
+    "reload_a": {
+      "checkpoint.pt": "303779d7a3a32aa341d213df159e01d57e66ee10ad6ad57608db3bd8151fc146",
+      "summary.json": "84a12e440805314707ecde47fba7d50e3731e9ed454e128f7bb79d264c97dda0",
+      "config.json": "8582f368d8b4baf1a3d12e4b53db4bf9c267c9118daf1630c3a9e37ba026c92c",
+      "metrics.jsonl": "e8060b877dc6403b64256278c294e2460d3ec70bca88c7c2606369c5f7df8d43",
+      "start.json": "fcc38f8a01550ed020b0c307e4dae28fdefe83136a66312a10e6c7285266971d",
+      "origin_sessions.json": "f2bfc9715312e0d0fe56d87f0d9b82fa558f41ec26380903fd6e0ecf1a7bcfed",
+      "trace-0.jsonl": "4243a23b7e15a1bf3b122e08ed32629685f8be30d11867aa3275c384f5ddd9e6",
+      "trace-1.jsonl": "4f537b2b36ef1f8c598ce30a31f329c783b76f0efddf0857239c04a55e7ce807",
+      "trace-2.jsonl": "0a37638f08d67b1d8bf931b6d8dfc7026af0b1ac654928ed8816df2acf554e94",
+      "trace-3.jsonl": "58f3781cbddcd27bb4ae1f83dee44f84954cb5f8ae8c03fbe34f3207cf1de4b8"
+    },
+    "reload_b": {
+      "checkpoint.pt": "303779d7a3a32aa341d213df159e01d57e66ee10ad6ad57608db3bd8151fc146",
+      "summary.json": "fee99a3cc23a0eb72ae4bff174eb93aeb4599f015b7a573a56ac6aa18471c6d2",
+      "config.json": "8582f368d8b4baf1a3d12e4b53db4bf9c267c9118daf1630c3a9e37ba026c92c",
+      "metrics.jsonl": "5f07edabbb4e17120ff9c46faaa0cb9c8bd8cbb0d45ea738ae60d047c545dbce",
+      "start.json": "0cd56ee4ddcb64354b979871f4bd502239dd433be97643149a473b40dd9ce0c5",
+      "origin_sessions.json": "f2bfc9715312e0d0fe56d87f0d9b82fa558f41ec26380903fd6e0ecf1a7bcfed",
+      "trace-0.jsonl": "c4f9e73ee79c83dbd7e3388109494c63df70f1218e9e1a575a361e9f4d93b4f4",
+      "trace-1.jsonl": "5c8717432693c9aa7a58dcfd897a68fe00b87961bd2efca5ff5564760cd02310",
+      "trace-2.jsonl": "15f4e36347c766a23f41dd05e6207238692a8b408eff6e895692d19ad8aa7d49",
+      "trace-3.jsonl": "2964dddc8e4c120039352367c6a93ea26e9e784aa5c99e2f0f59d92cccc07207"
+    }
+  },
+  "fork_distances_descriptive_only": true,
+  "scope": "local synthetic CN; CPU FP32, four fresh Gloo workers per path; not a production CUDA gate",
+  "entry_point": "scripts/contrastive_run.py:main",
+  "cuda_tested": false,
+  "fixture_changes": [
+    "tiny real data/model and local artifact pins, 0 loader workers",
+    "main uses real Gloo barrier; numeric profile is CPU; no CUDA allocation",
+    "fork/update 2..4 represent 544..576; the binder checks the scaled step and real checkpoint name",
+    "CPU RNG required and CUDA RNG required absent on all four ranks; no CUDA RNG synthesized"
+  ],
+  "seconds_per_phase": {
+    "full": 19.848,
+    "resume_a": 13.728,
+    "resume_b": 9.325
+  },
+  "rank_trace_rows_per_phase": {
+    "continuous": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "reload_a": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "reload_b": [
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "receipts_archive": "reload_gloo_receipts.zip",
+  "receipts_archive_sha256": "55b4e34876c70835c036d02fe5330244ac540cd38bbcb3f0cc12bd8b251c5e40",
+  "fixture_initial_sha256": "e94f2bae96874e44b8fb143883d3453388238fd1c92abc8cd672a4843a766b82",
+  "real_trainer": true,
+  "cpu_rng_only": true,
+  "source_pins": {
+    "contrastive_run.py": "3bfa4f56a8280513fcffcd061b1ac01cd83a7fab9f6fcb0bcb27c479a08de560",
+    "contrastive_target_resume.py": "862a4085267d4b6737654fab6507a40b29fb61a11a1b42c07e28e7c5e61e55ff"
+  }
+}

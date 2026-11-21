@@ -1,0 +1,84 @@
+{
+  "config": {
+    "path": "results/infra/contrastive_targets_20261118/review_configs/calibration.config.json",
+    "bytes": 5281,
+    "sha256": "b50da4004c46ff95cfd79f00c199160af629a16c1bef1ac60360d30cce906b69"
+  },
+  "inputs": {
+    "manifest": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+      "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+    },
+    "scales": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+      "sha256": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486"
+    },
+    "window_seconds": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+      "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+    },
+    "pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+    }
+  },
+  "roots": [
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed"
+  ],
+  "audit": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/audit.json",
+    "sha256": "eb7cbdf49ffdd00148647e82c5f51768edbd17b5ef515d960a1f6edec35754d3",
+    "bytes": 20275571
+  },
+  "audit_sacct": {
+    "path": "results/infra/contrastive_targets_20261118/audit_execution_20261120/audit_accounting.json",
+    "sha256": "594d72932f2ca15440ee4bf1255a0abe035467933703efcd23309a6e14a32726",
+    "bytes": 516
+  },
+  "release": {
+    "path": "results/infra/contrastive_targets_20261118/releases/calibration_20261120/calibration.release.json",
+    "sha256": "c741ad729808a5b948d7985e793763fd787e85707cdaf47e57a83e32871caf52",
+    "bytes": 2588
+  },
+  "status": "APPROVED_FOR_PREFLIGHT",
+  "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+  "mode": "calibration",
+  "id": "CONTRAST-CALIB-targets-v3-20261118",
+  "package_review": {
+    "schema": "contrastive-target-review-binding-v1",
+    "review_commit": "469b312cd5502b801a0af44c56e16a89f019c14c",
+    "original_review_path": "docs/reviews/claude_review_contrastive_targets_runtime_20261120.md",
+    "original_review_sha256": "71238b7c763e2fdf8f2fb596e1decacf8f56d165f29a360f997baf66971173b3",
+    "review": {
+      "path": "results/infra/contrastive_targets_20261118/releases/audit_20261120/claude_review_contrastive_targets_runtime_20261120.md",
+      "sha256": "71238b7c763e2fdf8f2fb596e1decacf8f56d165f29a360f997baf66971173b3",
+      "bytes": 24434
+    },
+    "review_payload": {
+      "schema": "contrastive-target-release-review-v1",
+      "status": "APPROVED",
+      "reviewed_commit": "fbfde797b48644744c36547533acf0e8a7793535",
+      "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+      "science_plan_sha256": "b03c0bc679f7247d703635d7065c9fc7bda4a292f2c8c106e29004e0527e021a",
+      "preflight_plan_sha256": "e4b3959112db86dac806978cf65307d97694da68b64096120487e8f568c6dd92"
+    },
+    "science_plan": {
+      "path": "results/infra/contrastive_targets_20261118/plan.json",
+      "sha256": "b03c0bc679f7247d703635d7065c9fc7bda4a292f2c8c106e29004e0527e021a",
+      "bytes": 14862
+    },
+    "preflight_plan": {
+      "path": "results/infra/contrastive_targets_20261118/preflight_plan.json",
+      "sha256": "e4b3959112db86dac806978cf65307d97694da68b64096120487e8f568c6dd92",
+      "bytes": 9082
+    }
+  },
+  "review": {
+    "path": "results/infra/contrastive_targets_20261118/releases/audit_20261120/claude_review_contrastive_targets_runtime_20261120.md",
+    "sha256": "71238b7c763e2fdf8f2fb596e1decacf8f56d165f29a360f997baf66971173b3",
+    "bytes": 24434
+  },
+  "out": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration",
+  "arm": null
+}

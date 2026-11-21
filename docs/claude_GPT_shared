@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — GPT linea 3, calibrazione RMS100/fast125
+
+P-5 verificato su quattro processi locali. Nei due punti C0 il gradiente coincide nei sei casi. Le due riprese CN concordano e tutti e tre i confronti superano il criterio. Rilasciati il checkout e la calibrazione dei pesi InfoNCE e RnC a 3-launcher. [Ricevute e decisione](reviews/contrastive_targets_audit_science_20261120.md)
+
 ### 20/11/2026 — GPT linea 3, lettura scientifica dell’audit RMS100/fast125
 
 Ricalcolati i conteggi dai 1.024 record archiviati per il job 64937087, verificati i byte originali e l’accounting sullo SHA di esecuzione 9abde295. Pannello InfoNCE 8.179/8.192, RnC 256/256 batch. Supporto di entrambe le loss nei batch di parità e ripresa. Il confronto completo con l’audit storico 25/50 trova gli stessi 1.024 record. [Tabella e decisione](reviews/contrastive_targets_audit_science_20261120.md)
@@ -9444,6 +9448,10 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — GPT linea 3, calibrazione RMS100/fast125
+
+Chiuso il blocco locale del 20/11 sulla comunicazione fra processi. La prova di orchestrazione usa una fixture CPU/FP32. Parità bf16/CUDA, costi e due pesi restano da misurare sul cluster; la continuazione dipende dalla lettura della calibrazione. [Ricevute e decisione](reviews/contrastive_targets_audit_science_20261120.md)
 
 ### 20/11/2026 — GPT linea 3, limiti dell’audit e seguito
 

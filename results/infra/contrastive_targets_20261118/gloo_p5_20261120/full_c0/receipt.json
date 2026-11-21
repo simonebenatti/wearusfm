@@ -1,0 +1,33 @@
+{
+  "arithmetic": "float32",
+  "arm": "C0",
+  "backend": "gloo",
+  "cases_per_rank_per_point": 6,
+  "device": "cpu",
+  "fixture": "synthetic emg2pose, global batch 32, 3 steps, parity at 2 and 3",
+  "local_orchestration": "PASSED",
+  "production_parity": "INCONCLUSIVE",
+  "python": "3.11.14",
+  "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+  "torch": "2.14.0",
+  "training_approved": false,
+  "uncompressed_sha256": {
+    "C0_full.rank0.json": "1c141e28fb44ff876a761d27e9230fd9f0d1fde8c144394b5493bc1432f2bc18",
+    "C0_full.rank1.json": "1c141e28fb44ff876a761d27e9230fd9f0d1fde8c144394b5493bc1432f2bc18",
+    "C0_full.rank2.json": "1c141e28fb44ff876a761d27e9230fd9f0d1fde8c144394b5493bc1432f2bc18",
+    "C0_full.rank3.json": "1c141e28fb44ff876a761d27e9230fd9f0d1fde8c144394b5493bc1432f2bc18",
+    "config.json": "f048b95b862e1a2314319a05cca0dba9180716ed815895adaa178d93ed145eb3",
+    "metrics.jsonl": "3a9b122d7cd3ea7a16df3669d0024b62aef3ab3d346ed3a274d1e3d33398cb38",
+    "numeric_profile.rank0.json": "37d1ff5d082d3f7b8aebcea9d5c72b144cd24b69d292038bbe58a590c4ab0fe7",
+    "numeric_profile.rank1.json": "94e155b141cb85eb7e12925ae77efeda3a1f82fbee4823ca8ef5692a3c6fc21f",
+    "numeric_profile.rank2.json": "f8c8c4e3256579505ef5dacc3fd6e676ffd53428b37ad5d8196b1f118f3eebb4",
+    "numeric_profile.rank3.json": "4c14f5b2c7faa8c98656f063ecced49866b53837eef862354b6e7beaf1d7dc56",
+    "summary.json": "a15d273172ccda88d2257560e21e9562c16d89c3b65da2a018057bc2d294d2e1",
+    "zero_weight_parity.json": "9df6e3b5898ae64218cf79592a85089edab2dc9962eae1537c9650b5b3023056",
+    "zero_weight_parity.rank0.json": "5f471cdd5759b349e1be5e4f75485455f5bcbb6bcfb04277e8ce76cc02d50275",
+    "zero_weight_parity.rank1.json": "36866fc32296856f62e33d53be900ede9fd6578b1d40f56097ebc6108f86247e",
+    "zero_weight_parity.rank2.json": "badb8a27effade33e056ece995cdb782cabf3670b12cfaafdaf25451f199a156",
+    "zero_weight_parity.rank3.json": "8013649a4d9944f63aafdc8e0dd438411fed1fd5ac054c68eee0dd9a106b4a42"
+  },
+  "world_size": 4
+}
