@@ -9193,6 +9193,10 @@ Merge di `adb35def` su `f546c9e4`. I merge `03f768ac` e `326ffee0` conservano i 
 
 Verifica CPU conclusa sul merge `d6fe6489`: tutti i 3.511 casi distinti raccolti da pytest sono passati sul Mac in più esecuzioni. Al momento della pausa risultavano coperti 3.425 casi; gli 86 rimanenti sono passati alla ripresa. La copertura è stata verificata per identificativo di test, contando una sola volta le riesecuzioni.
 
+### 2026-11-21 | GPT coordinamento | Un solo via per le tre linee e i rispettivi launcher
+
+Simone ha confermato che l’approvazione del piano copre invii, attese di slot, raccolta e pubblicazione. Indicati in `CLAUDE.md` il responsabile unico di ogni invio e il percorso del submitter con permesso persistente sul Mac. Il submitter comune e le copie controllate nelle tre linee hanno lo stesso SHA-256 `814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82`. Il controllo delle regole locali è stato eseguito senza sottomettere job.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13532,3 +13536,7 @@ Incidenti locali della suite riportati nella ricevuta completa; nessun sorgente 
 ### 2026-11-20 | GPT integratore | Risoluzione dei conflitti nei registri TEMPONet
 
 I soli file modificati da entrambi i lati erano `docs/claude_GPT_shared` e `docs/decisioni.md`. Prima di aggiungere questa voce sono stati verificati la molteplicità e l’ordine delle righe di entrambi i genitori, preservando le voci di Claude del 20/11 nelle rispettive sezioni. I 669 file esclusivi del ramo e i 74 esclusivi di main coincidono con le rispettive versioni nel merge. Il dato storico di 3.475 test CPU passati si riferisce a `03f768ac`.
+
+### 2026-11-21 | GPT coordinamento | Richieste tecniche ripetute durante una ripresa approvata
+
+Per CN_B il launcher 3 ha tentato di usare uno script Python in `/private/tmp` privo di una regola persistente. Il verificatore locale riconosce invece il submitter ufficiale. CN_B è stato poi sottomesso con quel submitter, ID Slurm `65033756`. Questo riscontro spiega il caso CN_B. Per la finestra relativa all’archiviazione del censimento GPU manca una corrispondenza certa fra il testo visualizzato e il comando.
