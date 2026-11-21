@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/cpu/test_scaling_control30m_ops.py",
+    "tests/cpu/test_scaling_control30m_bridge.py",
+    "tests/cpu/test_scaling_control30m_extraction.py",
+    "tests/cpu/test_scaling_continue49046.py",
+    "tests/cpu/test_scaling_evaluation49046_launcher.py",
+    "tests/cpu/test_scaling_output_identity.py",
+    "tests/cpu/test_scaling_readers49046_launcher.py",
+    "tests/cpu/test_scaling_release49046.py"
+  ],
+  "exit_code": 0,
+  "seconds": 241.624871875,
+  "source_sha256": {
+    "scripts/scaling_control30m_bridge.py": "0803c5cbc25431cf4f9be652b2cefa5f84a84d160379b0f167294f8cce9b4e67",
+    "scripts/scaling_control30m_evaluation.py": "070c248a09e5dcc4b204ba66021d9e710e0fb0ded3d5059b10ba4b74a7e2ec4f",
+    "scripts/scaling_control30m_ops.py": "b2016abcb82d56d3022970635ff463940cb798e22d4f6c80a91424b3537f56b8",
+    "scripts/slurm/scaling_control30m_evaluation.sbatch": "b135c96a8b0f3578a470d1147db8129d5764dfa09573086aaefaada995213b28",
+    "tests/cpu/test_scaling_control30m_ops.py": "e44550c64743a6548eb4eaa6593538a461cf9ef872fca80cec577d5986440a92",
+    "tests/cpu/test_scaling_control30m_bridge.py": "91e6ea2217618731e67fcb711f9427835e2bd653f51c58aa2f77c860698dbdd3",
+    "tests/cpu/test_scaling_control30m_extraction.py": "4024fee9101a69c1561a6f7ad8e98b574735956cc5598e438de202c8f5a6c3d7",
+    "tests/cpu/test_scaling_continue49046.py": "7a6efefcb337f2ea976018352ab411761a406baa3d273f17ed5778caa0289fce",
+    "tests/cpu/test_scaling_evaluation49046_launcher.py": "511ff7b61b74360aed15f4890f847df185af64ebeb2ef96553a30645e8e19ca6",
+    "tests/cpu/test_scaling_output_identity.py": "34039caa71f8e90b3cecaf29dceb5c3883100fa7fc44408fe993a50dd330227f",
+    "tests/cpu/test_scaling_readers49046_launcher.py": "4d075e6443b92246735c78bc2910762e8c43ae18cae79d34e6c50663d5d1e322",
+    "tests/cpu/test_scaling_release49046.py": "524a36f0efb68785c8c5ff21f22ce319de3dab3aabbb509d44b0c2deeccaf6ed"
+  },
+  "sources_unchanged": true
+}

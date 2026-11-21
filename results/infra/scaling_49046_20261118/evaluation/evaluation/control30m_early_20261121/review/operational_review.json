@@ -1,0 +1,23 @@
+{
+  "verdict": "APPROVATO",
+  "scope": "operational gates and accounting; independent reviewer",
+  "blocking_findings_resolved": [
+    {
+      "finding": "Accounting required MaxRSS although collection allows missing MaxRSS for non-memory-gated stages.",
+      "fix": "Pass need_rss=False consistently; preserve any available measurement.",
+      "regression": "test_checkout_accounting_without_rss_matches_collection: passed, 3.06 s, 23 deselected"
+    }
+  ],
+  "confirmed": [
+    "gate-to-lines pin and ledger binding",
+    "30M does not depend on candidate training",
+    "three existing extraction IDs and outputs retained",
+    "future original gate emits only missing candidate jobs",
+    "separate real producer identities in final reader plans",
+    "348.066667/400 core-hours and extra checkout included"
+  ],
+  "limitations": [
+    "No SSH, submissions or GPU test",
+    "Root combined regression suite recorded separately"
+  ]
+}

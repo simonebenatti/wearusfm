@@ -1,0 +1,38 @@
+{
+  "verdict": "APPROVATO",
+  "scope": "independent scientific adapter, mixed-producer bridge and their composition with frozen CPU readers; operational gate also reviewed separately by another reviewer",
+  "base": "87da975bc0fd4824684e166659bb996e118ff107",
+  "files_sha256": {
+    "scripts/scaling_control30m_evaluation.py": "070c248a09e5dcc4b204ba66021d9e710e0fb0ded3d5059b10ba4b74a7e2ec4f",
+    "scripts/slurm/scaling_control30m_evaluation.sbatch": "b135c96a8b0f3578a470d1147db8129d5764dfa09573086aaefaada995213b28",
+    "scripts/scaling_control30m_bridge.py": "0803c5cbc25431cf4f9be652b2cefa5f84a84d160379b0f167294f8cce9b4e67",
+    "tests/cpu/test_scaling_control30m_extraction.py": "4024fee9101a69c1561a6f7ad8e98b574735956cc5598e438de202c8f5a6c3d7",
+    "tests/cpu/test_scaling_control30m_bridge.py": "91e6ea2217618731e67fcb711f9427835e2bd653f51c58aa2f77c860698dbdd3"
+  },
+  "tests": {
+    "files": [
+      "tests/cpu/test_scaling_control30m_extraction.py",
+      "tests/cpu/test_scaling_control30m_bridge.py"
+    ],
+    "exit_code": 0,
+    "result": "85 passed in 39.80s"
+  },
+  "checks": [
+    "frozen scientific and numerical sources unchanged against87da975",
+    "adapter derives only plan-shape guard from hash-pinned historical loader",
+    "only30M49046 accepted, no candidate placeholder",
+    "exact frozen execute/receipt/finalizer paths reused",
+    "new shell launcher changes no resource allocations or log paths",
+    "bridge binds each arm to actual separate producer code and plan",
+    "common input/reference/checkpoint30M pins exact between early and final plans",
+    "original reader numerical source hashes verified against87da975",
+    "all6logical job IDs required, previous3control IDs retained",
+    "ops checks previously accepted early evidence equals full later collection byte-for-byte before join"
+  ],
+  "limits": [
+    "no SSH or jobs",
+    "no future result/cache claim",
+    "no full CPU suite",
+    "review applies to source hashes recorded here"
+  ]
+}

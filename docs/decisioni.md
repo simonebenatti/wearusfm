@@ -7429,3 +7429,24 @@ Dopo gatefresco positivo, pubblicato deploy/scaling_49046_code_20261118_v1. Chec
 Checkout64835246 COMPLETED0:0 in18s,2CPU,0,01coreh; prova raccolta. Tutti i cancelli train-predecay superati, incluso il piano canonico e la quota42,6216GiB sopra30. Primo segmento300M19.618→39.237 sottomesso11:46:56Europe/Rome:64837401,4GPU/32CPU/480G,19h45,79GPUh richieste, codice congelato87da975b. Ricevuta/riga/gate pubblicati; nessun risultato scientifico ancora prodotto da questa consegna. Budget e ricetta invariati.
 
 Il seguito39.237→49.046 rimane già autorizzato ma attende raccolta verificata del segmento1; nessun job duplicato, secondo segmento, runner o automazione nuova. L'esecuzione fino al confronto segue il piano approvato senza ulteriori review o consensi di routine, con stop al primo errore reale/TIMEOUT/costo fuori piano.
+
+## 21/11/2026 — Anticipo autorizzato delle estrazioni30M49k
+
+Simone: «ok allora prepara il percorso separato per il30M, verificalo e fallo lanciare al launcher senza chiedermi di nuovo il consenso, così andiamo avanti mentre il300M è in coda».
+Si separano le tre estrazioni del controllo30M dal piano che attende il finale300M.
+Stessi checkpoint, dati, selezione, algoritmo, ID e output già previsti; nessun
+nuovo training, nessuna nuova metrica o scelta sperimentale. Nuovo checkout e
+adapter limitato allo schema del piano; tutti i sorgenti originali87da invariati.
+
+Tre job1GPU/8CPU/100G da150/120/150min:7GPUh richieste,7,15 con margine già
+comprese nelle14/14,3totali. Checkout extra2CPU/4G/5min:0,266667coreh con margine;
+fasecheckout6job/tetto1,6coreh; massimoCPU-only348,066667/400. Nessun ampliamento
+del tettoCPU né aumentoGPU. Il consuntivo finale comprende il costo effettivo extra.
+
+Ricevute e cache anticipate confluiscono nel confronto con provenienza per braccio;
+non saranno riestratte. Il training300M e i lettori numerici restano nel checkout
+originale. Il ramo storico riceverà soltanto i documenti prodotti dal bridge.
+Gli invii sono esclusivamente del launcher dopo verifica del nuovo percorso,
+senza altra approvazione di Simone; preparatorelocale mac_launcher_command.py,
+submitter/ledger comuni, gate freschi e stop al primo errore senza retry automatico.
+Piano: `docs/scaling_control30m_early_execution_20261121.md`.

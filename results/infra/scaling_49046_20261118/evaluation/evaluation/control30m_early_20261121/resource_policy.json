@@ -1,0 +1,20 @@
+{
+  "protocol": "scaling-control30m-early-20261121-v1",
+  "base_code": "87da975bc0fd4824684e166659bb996e118ff107",
+  "existing_extraction_ids": [
+    "SCALING-49046-extract-30m-pose-20261118",
+    "SCALING-49046-extract-30m-p1-20261118",
+    "SCALING-49046-extract-30m-p2-20261118"
+  ],
+  "control_gpu_hours_requested": 7.0,
+  "control_gpu_hours_with_margin": 7.15,
+  "all_extractions_gpu_hours_requested": 14.0,
+  "additional_checkout_id": "SCALING-49046-control30m-checkout-20261121",
+  "additional_checkout_core_hours_with_margin": 0.26666666666666666,
+  "checkout_count": 6,
+  "checkout_stage_cap_with_margin": 1.6,
+  "cpu_only_worst_case_with_margin": 348.06666666666666,
+  "cpu_only_cap": 400,
+  "other_stage_caps_unchanged": true,
+  "no_duplicate_extractions": true
+}
