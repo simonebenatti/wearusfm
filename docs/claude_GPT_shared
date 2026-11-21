@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — GPT linea 3, lettura della calibrazione RMS100/fast125
+
+Rieseguito il lettore sui 512 record della calibrazione 65015116. Rapporto e pesi riprodotti integralmente. Verificati i 14 digest e i rapporti di norma per batch. Proposto il collaudo CUDA a due update prima dei benchmark della nuova coorte. [Lettura scientifica](reviews/contrastive_targets_calibration_science_20261121.md)
+
 ### 21/11/2026 — 3-launcher: calibrazione RMS100/fast125 conclusa e raccolta
 
 65014846/65015116 COMPLETED 0:0, rispettivamente 39/891 s. Rapporto congelato
@@ -9468,6 +9472,10 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — GPT linea 3, lettura della calibrazione RMS100/fast125
+
+Il primo lettore sul login aveva sovrascritto i percorsi Python CINECA. L’errore all’import precede ogni lettura dei dati. Rettificato il comando nel prontuario per conservare i percorsi preesistenti. Il lettore congelato ha prodotto il rapporto registrato. L’1,18% misurato all’inizializzazione dipende dalla regola storica; i benchmark attivi dovranno misurare il contributo reale dei due termini. [Lettura scientifica](reviews/contrastive_targets_calibration_science_20261121.md)
 
 ### 21/11/2026 — 3-launcher: ambiente del lettore corretto operativamente
 
