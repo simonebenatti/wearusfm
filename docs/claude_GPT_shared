@@ -178,6 +178,16 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: tre continui RMS100/fast125 conclusi e raccolti
+
+Checkout 65017186 COMPLETED 0:0, 19 s; C0 65017240/CN 65017310/CR 65020151
+COMPLETED 0:0 in 795/784/773 s, tutti 576 update. C0 parità PASSED ai punti
+128/256, aggregato e quattro rapporti individuali verificati. 60 artefatti
+verificati per hash/byte; quattro tracce 545–576 per CN e CR; checkpoint
+544/576 pinnati sul cluster. Consuntivo tranche 2,613333 GPU-ore / 20,927778
+core-ore. Evidenze benchmark_execution_20261121/, nota launcher_targets_benchmarks_20261121.md.
+Consegna conclusa; nessuna ripresa, lettura CPU completa o training lungo.
+
 ### 21/11/2026 — 3-launcher: prima ondata benchmark RMS100/fast125
 
 Consegna ab7a69a6, esecuzione 746112dd. Controlli operativi/pin/login runner
@@ -9499,6 +9509,14 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: nessun blocco nei tre continui, lettura successiva aperta
+
+Ricette, dose, input, profili e mappe origini coerenti. CN/CR batch e input SHA
+coincidono nelle tracce 545–576; nessuna estensione di questa attestazione a
+tutti i passi non tracciati. Mediane descrittive norma pesata/base 513–576:
+CN 0,21541209, CR 0,08278750. Questi numeri non rilasciano training; riprese e
+lettura CPU completa richiedono consegna scientifica successiva. Nessun retry.
 
 ### 21/11/2026 — 3-launcher: tranche dei tre continui ancora in corso
 

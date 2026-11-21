@@ -1,0 +1,68 @@
+{
+  "execution_sha": "746112dd711903e5c92ade2efd90834264b2676a",
+  "verified_files": 60,
+  "arms": {
+    "C0": {
+      "steps": 576,
+      "summary_sha256": "f07a87de9ae09200cfff0cc5f7ce54e1e7fa86af0f5bdcaa68d203594d1caff7",
+      "gpu_peak_gib": 19.20900535583496,
+      "trainer_elapsed_s": 762.0498883724213,
+      "mean_t_step_after8_s": 1.1557073018080752,
+      "origin_sessions_sha256": "aa837c099d43b4e52bba68b31aabc4e0d40a385c7291dffd2a0ebee600e4dc9d",
+      "parity": {
+        "status": "PASSED",
+        "points": [
+          {
+            "status": "PASSED",
+            "errors": [],
+            "inconclusive": [],
+            "within_and_between_byte_identical": true,
+            "unique_gradient_hashes": [
+              "3c4d47ee4f8e43f86c55fc93629d3d4fc24ef90b6b951187100e7af39a276ee6"
+            ]
+          },
+          {
+            "status": "PASSED",
+            "errors": [],
+            "inconclusive": [],
+            "within_and_between_byte_identical": true,
+            "unique_gradient_hashes": [
+              "f8ba2cdcd0caaef4362584c09a78ade165a8b00955b0c57237dbf40652b8c20d"
+            ]
+          }
+        ],
+        "training_approved": false
+      },
+      "parity_sha256": "78cdae11e2a385a5fc92b9fff50c9225d537865a397d7e4ddd971017ee42a976"
+    },
+    "CN": {
+      "steps": 576,
+      "summary_sha256": "e7bc701dab54ca1b5d3fae8d6a0fb1393234933ebde083b35cc94b10a1c49d17",
+      "gpu_peak_gib": 19.20900535583496,
+      "trainer_elapsed_s": 753.0358424186707,
+      "mean_t_step_after8_s": 1.1108399755518201,
+      "origin_sessions_sha256": "aa837c099d43b4e52bba68b31aabc4e0d40a385c7291dffd2a0ebee600e4dc9d",
+      "trace_range": [
+        545,
+        576
+      ],
+      "active_gradient_ratio_median_descriptive": 0.21541209081133683
+    },
+    "CR": {
+      "steps": 576,
+      "summary_sha256": "69dc27315497faec486122af1fd24bf492889014bfe172c17ab76bbc420dadaa",
+      "gpu_peak_gib": 19.20900535583496,
+      "trainer_elapsed_s": 737.8579876422882,
+      "mean_t_step_after8_s": 1.108899495131533,
+      "origin_sessions_sha256": "aa837c099d43b4e52bba68b31aabc4e0d40a385c7291dffd2a0ebee600e4dc9d",
+      "trace_range": [
+        545,
+        576
+      ],
+      "active_gradient_ratio_median_descriptive": 0.08278749831964327
+    }
+  },
+  "training_approved": false,
+  "same_origin_sessions_map": true,
+  "CN_CR_input_hash_differences_545_576": []
+}
