@@ -8365,3 +8365,9 @@ fasi precedenti circa 4,740000 GPU-ore / 47,048889 core-ore. Controlli e
 invii diretti secondo l'autorizzazione unica 92d1fc0a, senza wrapper che
 aggiunga nuove richieste tecniche. Nessun nuovo job oltre queste quattro celle.
 [Ricevute e raccolta](reviews/launcher_targets_reloads_20261121.md).
+
+### 21/11/2026 — Linea 3, confronto CPU delle riprese con i continui
+
+Simone affida a 3-launcher la lettura finale del preflight RMS100/fast125. Il job al commit `e0ddbac8` fissa i sette riepiloghi a 576 passi e applica i criteri del 20/11. Per InfoNCE e Rank-N-Contrast confronta separatamente il continuo con A, il continuo con B e A con B. C0 fornisce il controllo di parità a peso zero. I checkpoint finali delle riprese A e B sono identici entro ciascuna loss, mentre le impronte di studente e teacher differiscono dal continuo. Il rapporto misurerà le distanze e verificherà stato, dati e casualità alla ripresa.
+
+Il checkout e il confronto richiedono complessivamente 0 GPU-ore e 8,266667 core-ore, con un margine di 1,2 core-ore. Il limite della lettura è 60 minuti su 8 CPU e 30 GiB. Il pacchetto ha superato 164 test locali. Il risultato della lettura e la decisione sui training restano aperti. [Consegna a 3-launcher](prompt_3_launcher_contrastive_targets_readout_20261121.md)
