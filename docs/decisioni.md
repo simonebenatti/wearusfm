@@ -6885,3 +6885,10 @@ Fasi successive subordinate alle ricevute e ai gate. Le note su hardware gpu8 e 
 riguardano il seguito operativo e non aprono un blocco al preflight CPU. Nessuna modifica alla scienza,
 agli input, alle soglie o ai tetti. Questa chat fa review e verifiche locali: nessuna operazione su Leonardo.
 Il piano sorgente resta non rilasciato finché l'operatore non costruisce il piano di esecuzione.
+
+### 2026-11-21 | GPT operatore TCN | Nuovo preflight concluso e verificato
+
+TCNH-preflight-20261120 = 65016127: COMPLETED 0:0, login08, 119 s su 2 CPU, 0,066111 core-ore e zero GPU-ore. Picco RSS 10.153.000 KiB = 9,683 GiB, sotto 24 GiB; runtime interno 87,063 s. Consuntivo cumulato con due inventari e primo preflight fallito: 4 allocazioni, 0,109444 core-ore, zero GPU-ore, nei tetti originali.
+Ricevuta archiviata col nome esatto TCNH-preflight-20261120.json in results/infra/pose_temponet_execution_20261120/launcher/; SHA256 0a3314138a98ea3b9e6a8475297c38d5fed575dc112eb52dc4ae4d14d51ee16b uguale al remoto. Verificati payload, contesto numerico, identita di codice/ricetta/esecuzione/piano, otto hash input, digest train e metadati contro produttore; validazione val e digest eseguiti dal preflight congelato. Due fold disgiunti da 20 utenti; 1.907 finestre train, 1.854 con supporto.
+Parita R-1 superata con scarto assoluto zero per entrambi i riferimenti (tolleranza 1e-12): ridge 0,7859020004638595 e testa storica 0,7786289843513977, stessi supporti e 15 utenti. Sono riferimenti storici, non nuove predizioni o risultati TCN. La correzione del formato utenti passa sui dati reali.
+Checkout 3205763d1b3e29799231aa1f9453819f6182e4ee pulito e sorgenti non scrivibili; il solo puntatore .git resta scrivibile come previsto dal launcher rivisto. Nessun input rinfrescato durante la lettura; nessun rilancio, nessun sorgente modificato. Benchmark non inviati in questa consegna: le fasi successive restano ai gate e alle ricevute previsti, incluso profilo GPU prima dei suoi invii dipendenti.
