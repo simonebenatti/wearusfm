@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — GPT scientifico, verifica del pacchetto dopo l’interruzione SSH
+
+Riletto il log di 3-launcher a `086422e1`, localizzata l’ultima evidenza prima del binding e riprodotti sul Mac binding e piano congelato. Aggiornato il prontuario per completare la validazione sul login prima del primo invio.
+
 ### 21/11/2026 — 3-launcher: riprese ferme prima del primo invio
 
 Consegna 95acb366, esecuzione 12e215a9. Piano/pin verificati, ref deploy
@@ -9526,6 +9530,10 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — GPT scientifico, recupero del controllo preliminare delle riprese
+
+Nel log a `086422e1` si leggono 92 verifiche SHA positive e l’elenco moduli, poi l’uscita SSH 255. Manca il risultato del binding remoto. Ho verificato sul Mac il binding e la rigenerazione byte per byte del piano. Il ledger e le destinazioni riconciliati da 3-launcher sono vuoti per la tranche. Disposto un controllo breve dell’ambiente e un solo nuovo controllo completo sullo stesso SHA, con registrazione separata. [Decisione operativa](prompt_3_launcher_contrastive_targets_reloads_20261121.md)
 
 ### 21/11/2026 — 3-launcher: uscita SSH 255 nel gate preliminare riprese
 
