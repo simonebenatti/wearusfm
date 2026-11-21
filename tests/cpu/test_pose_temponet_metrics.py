@@ -2,6 +2,8 @@
 from pathlib import Path
 import sys
 
+import json
+
 import numpy as np
 import pytest
 import torch
@@ -131,3 +133,36 @@ def test_all_joint_descriptives_sum_to_pooled_accumulators_without_filtering():
     for key,value in result["centered"]["sums"].items():
         assert sum(j["centered"]["sums"][key] for j in result["by_joint"].values()) == pytest.approx(value,abs=1e-9)
     assert sum(j["centered"]["n_valid_elements"] for j in result["by_joint"].values()) == result["centered"]["n_valid_elements"]
+
+
+def test_parity_constants_are_the_approved_proposal_values():
+    """The R-1 numbers are fixed by the reviewed proposal; every other test rebinds them to synthetic values."""
+    repo = Path(__file__).resolve().parents[2]
+    proposal = json.loads((repo/"results/infra/pose_temponet_proposal_20261117/proposal.json").read_text())
+    gate = proposal["evaluation"]["historical_reference_gate"]
+    assert M.HISTORICAL_REFERENCE == {
+        "post_ridge_E_dyn": gate["post_ridge_E_dyn"], "trained_head_E_dyn": gate["trained_head_E_dyn"],
+        "dynamic_selected_windows": gate["dynamic_windows_selected"], "dynamic_centered_windows": gate["dynamic_windows"],
+        "dynamic_centered_elements": gate["dynamic_valid_elements"],
+        "dynamic_window_joint_pairs": gate["dynamic_window_joint_pairs"], "dynamic_users": gate["users"]}
+    assert gate["absolute_tolerance"] == 1e-12
+
+
+def test_parity_tolerance_is_exactly_1e_12(monkeypatch):
+    data, _ = fixture()
+    ridge = data["target"][:, 6:-6].astype(float)*.2
+    head = data["pred"][:, 6:-6].astype(float)
+    rows = [M.evaluate(a, data)["groups"]["dynamic"] for a in (ridge, head)]
+    expected = {"post_ridge_E_dyn": rows[0]["centered"]["centered_mse_ratio"],
+                "trained_head_E_dyn": rows[1]["centered"]["centered_mse_ratio"],
+                "dynamic_selected_windows": rows[0]["n_selected_windows"],
+                "dynamic_centered_windows": rows[0]["centered"]["n_windows"],
+                "dynamic_centered_elements": rows[0]["centered"]["n_valid_elements"],
+                "dynamic_window_joint_pairs": rows[0]["centered"]["n_window_joints"],
+                "dynamic_users": rows[0]["centered"]["n_users"]}
+    monkeypatch.setattr(M, "HISTORICAL_REFERENCE", {**expected, "post_ridge_E_dyn": expected["post_ridge_E_dyn"]+5e-13})
+    assert M.historical_reference_gate(data, ridge, head)["passed"]
+    monkeypatch.setattr(M, "HISTORICAL_REFERENCE", {**expected, "post_ridge_E_dyn": expected["post_ridge_E_dyn"]+3e-12})
+    with pytest.raises(ValueError, match="historical E_dyn parity failed: post_ridge"):
+        M.historical_reference_gate(data, ridge, head)
+

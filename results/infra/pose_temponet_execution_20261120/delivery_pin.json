@@ -18,8 +18,8 @@
   },
   "local_validation": {
     "path": "results/infra/pose_temponet_execution_20261120/validation/local_validation.json",
-    "sha256": "1e8a325c51b5a48e796c77baee059878643163cc8b8d97bf04019496b4901491",
-    "bytes": 8681
+    "sha256": "11f4a07f82a63295547fa65c7105f95c563cdf31ec2b3004aa0aab8396a866df",
+    "bytes": 8683
   },
   "real_input_checks": {
     "path": "results/infra/pose_temponet_execution_20261120/real_input_headers/check_headers.txt",
@@ -28,21 +28,21 @@
   },
   "mutation_check": {
     "path": "results/infra/pose_temponet_execution_20261120/mutation_check/mutations.json",
-    "sha256": "a4ba94622bbcb780ce44084d3c23d4ad4dc196f7660eee34e139281457559e87",
-    "bytes": 3880
+    "sha256": "c26a840a32104ca4c007fc6e5f0b6666a818a6e1630a2dae082810058dbc0c29",
+    "bytes": 5251
   },
   "delivery_document": {
     "path": "docs/reviews/claude_delivery_pose_temponet_users_fix_20261120.md",
-    "sha256": "aedc74923e1b9ebe3afc34373db97dab202cbca84676d2f1674ae5ff6b10f657",
-    "bytes": 7522
+    "sha256": "ff76953a263ccb88edf2e447bc7ed50822cb05b01ce0609815b0ebcf2a6ee775",
+    "bytes": 10255
   },
   "operator_instructions": {
     "path": "docs/pose_temponet_execution_20261120.md",
-    "sha256": "208340c8c67f2243a92bfdfb895862a41ffd415e112e2e8112a2024c50bf19c2",
-    "bytes": 12928
+    "sha256": "a872b725e8942a554977161fd4628b18871dda51b5ae6c6348a5b263bcf4b6fc",
+    "bytes": 14737
   },
   "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
-  "runtime_tests_passed": 271,
+  "runtime_tests_passed": 279,
   "runtime_test_files": 21,
   "historical_tests_passed": 125,
   "historical_tests_failed_preexisting": 1,
@@ -56,5 +56,31 @@
   "operator": "2-TCN head launcher",
   "no_jobs": true,
   "no_remote_writes": true,
-  "remote_reads_only": true
+  "remote_reads_only": true,
+  "new_tests_in_this_delivery": 16,
+  "independent_reviews": {
+    "logic": {
+      "path": "results/infra/pose_temponet_execution_20261120/independent_review/review_logic.json",
+      "sha256": "d628cb3b0c249331bbdb3c15d272e070d163e2be71f6b2fb06502cfc998148a8",
+      "bytes": 18452
+    },
+    "delivery": {
+      "path": "results/infra/pose_temponet_execution_20261120/independent_review/review_delivery.json",
+      "sha256": "27b2ed1f64dca0ccadb408bbfe8768600dbbc1dde7e133901e68c75da6c525de",
+      "bytes": 26327
+    },
+    "realdata": {
+      "path": "results/infra/pose_temponet_execution_20261120/independent_review/review2_realdata.json",
+      "sha256": "ea1ecd7337fd15e85d3f88993505171ce9e487061a621c796d0cf08ccd703818",
+      "bytes": 24073
+    },
+    "tests": {
+      "path": "results/infra/pose_temponet_execution_20261120/independent_review/review2_tests.json",
+      "sha256": "a849b1d23ed69d434efe6699863ef7f4b37dd9bbf21633a6cd1aad1e0a287bf7",
+      "bytes": 24418
+    },
+    "concluded": 4,
+    "blocking_findings": 0,
+    "source_changes_requested": 0
+  }
 }

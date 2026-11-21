@@ -141,7 +141,7 @@ def test_producer_with_ambiguous_storage_directory_is_refused(prepared):
         P.historical_producer(receipt,**arguments)
 
 
-def test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout(prepared,monkeypatch):
+def test_verified_inputs_compare_cache_ids_and_directories_with_the_real_user_ids(prepared,monkeypatch):
     _,plan = prepared
     producer = plan["producers"]["train"]
     real = REAL_CACHE_USERS["train"]["users"]
@@ -155,7 +155,8 @@ def test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout(prepar
     served["data"] = cache(real)
     data = P.read_verified_inputs(plan,"train",stage="preflight")
     assert data is served["data"]
-    # The same list is the allow-list of benchmark, calibration, controls and folds.
+    # The same list is the allow-list of the control partitions (the other consumers are exercised on
+    # real-format files in test_pose_temponet_preflight_real_layout.py).
     half = len(data["meta"])//2
     partition = C.validate_outer_partition(data["meta"],range(half),range(half,2*half),producer["users"])
     assert sorted(partition["fitting_users"]+partition["held_users"]) == real
@@ -174,6 +175,43 @@ def test_verified_inputs_and_consumers_use_cache_ids_with_the_real_layout(prepar
     served["data"] = cache(real)
     with pytest.raises(ValueError,match="do not map onto the producer storage directories"):
         P.read_verified_inputs(drifted,"train",stage="preflight")
+
+
+def test_validate_plan_rejects_rewritten_user_lists_even_with_recomputed_identity(prepared):
+    """A plan carrying the first delivery's list is refused by validation itself, not only at read time."""
+    repo,plan = prepared
+    for split in ("train","val"):
+        for field in ("users","storage_directories"):
+            bad = copy.deepcopy(plan)
+            if field == "users":  # the first delivery's content
+                bad["producers"][split]["users"] = list(bad["producers"][split]["storage_directories"])
+            else:
+                bad["producers"][split]["storage_directories"][0] = "uffffffffff"
+            bad["execution_sha256"] = P.execution_identity(bad)
+            with pytest.raises(ValueError,match="^historical producer identity was rewritten$"):
+                P.validate_plan(bad,source_root=repo)
+
+
+def test_cache_with_one_user_missing_and_receipt_with_one_directory_missing_are_refused(prepared,monkeypatch):
+    repo,plan = prepared
+    real = REAL_CACHE_USERS["train"]["users"]
+    monkeypatch.setattr(P,"verify_pin",lambda pin,**kwargs:{"pin":pin,"state":{}})
+    monkeypatch.setattr(P,"unchanged",lambda states:None)
+    served = {"meta":[{"user":user} for user in real[:-1] for _ in range(2)],
+              "input_verification":copy.deepcopy(plan["producers"]["train"]["details"])}
+    monkeypatch.setattr(P.D,"read_cache_pin",lambda pin,**kwargs:served)
+    with pytest.raises(ValueError,match="^cache user population differs from original producer$"):
+        P.read_verified_inputs(plan,"train",stage="preflight")
+    # Equality, not inclusion, also when the plan is built: 39 storage directories are not the 40 of the cache.
+    proposal = json.loads((repo/plan["proposal"]["path"]).read_text())
+    receipt = json.loads((repo/P.HISTORICAL_RECEIPTS["train"]["local_copy"]).read_text())
+    last = plan["producers"]["train"]["storage_directories"][-1]
+    states = receipt["raw_inputs"]["file_states"]
+    receipt["raw_inputs"]["file_states"] = {name:state for name,state in states.items() if "/emg2pose/"+last+"/" not in name}
+    assert 0 < len(receipt["raw_inputs"]["file_states"]) < len(states)
+    with pytest.raises(ValueError,match="^historical cache population differs$"):
+        P.historical_producer(receipt,split="train",cache_pin=plan["inputs"]["cache_train"],
+                              stats_sha256=proposal["stats_sha256"])
 
 
 def test_each_source_category_and_launcher_enters_new_reader_identity(prepared):

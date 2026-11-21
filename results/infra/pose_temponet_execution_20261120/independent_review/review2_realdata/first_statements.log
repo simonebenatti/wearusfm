@@ -1,0 +1,9 @@
+numpy 2.3.5 | metadata keys: ['fs', 'n_patches', 'recording', 'session', 'side', 'stage', 'start', 'stem', 'user'] | arrays: ['central_mask', 'key_time_valid', 'lat', 'lengths', 'mask', 'pose_var', 'pre', 'pred', 'std', 'target']
+population: {'train_windows': 1907, 'fold_windows': [960, 947], 'fit_train_windows': 1854, 'fit_fold_windows': [938, 916], 'excluded_fitting_windows': [22, 31], 'validation_windows': 18548} | io: first_application_load
+first delivery's list (directories) at the benchmark: benchmark population must contain exactly the declared training users
+partition users 20 20 | inner [(480, 480), (480, 480)] | wls fold 0 equals benchmark fold 0: True
+window ids unique: True | real fold bundle windows/excluded: [(960, 22), (947, 31)] | training sets supported: [938, 938] ['torch.float16', 'torch.float16']
+generate_components s 3.0 | partition equal: True | types float64 str_
+production score on 64 held windows: {'mse_sum': 143.3828, 'window_count': 63, 'dynamic_sse': 112538.6925, 'dynamic_target_ss': 112538.6925}
+first windows of the 15 surrogate users have central support: [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True]
+report surrogate OK 2000

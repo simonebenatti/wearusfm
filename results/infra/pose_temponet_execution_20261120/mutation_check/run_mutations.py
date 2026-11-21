@@ -36,7 +36,8 @@ MUTATIONS = [
 ENV = {**os.environ, "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1", "PYTHONDONTWRITEBYTECODE": "1"}
 COMMAND = [str(Path.home()/".venvs/wearusfm-tok/bin/python"), "-c",
            "import sys; sys.path.insert(0, 'src'); import pytest; sys.exit(pytest.main(['-q', '-p', 'no:cacheprovider', "
-           "'--tb=no', 'tests/cpu/test_pose_temponet_provenance.py', 'tests/cpu/test_pose_temponet_execution.py']))"]
+           "'--tb=no', 'tests/cpu/test_pose_temponet_provenance.py', 'tests/cpu/test_pose_temponet_execution.py', "
+           "'tests/cpu/test_pose_temponet_preflight_real_layout.py']))"]
 
 
 def run():

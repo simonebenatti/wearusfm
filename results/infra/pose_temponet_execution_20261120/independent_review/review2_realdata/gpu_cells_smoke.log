@@ -1,0 +1,8 @@
+population {'train_windows': 1907, 'fold_windows': [960, 947], 'fit_train_windows': 1854, 'fit_fold_windows': [938, 916], 'excluded_fitting_windows': [22, 31], 'validation_windows': 18548} | thresholds [1.1429, 1.1435, 1.1433]
+L0        fold0 depth post train_windows 938 excluded 22 steps/epoch 30 | epoch loss 2.0579 | held windows 947 scored 916 E_dyn 0.7008 | state bytes 118701 | batches [(32, 148, 20), (20, 148, 20)] | s 2.0
+L0        full  depth post train_windows 1854 excluded 53 steps/epoch 58 | epoch loss 1.9399 | held windows 1907 scored 1854 E_dyn 0.6124 | state bytes 118701 | batches [(32, 148, 20), (20, 148, 20)] | s 1.9
+L13       fold0 depth post train_windows 938 excluded 22 steps/epoch 30 | epoch loss 2.1105 | held windows 947 scored 916 E_dyn 0.7566 | state bytes 1224685 | batches [(32, 148, 20), (20, 148, 20)] | s 25.3
+MLP       fold0 depth post train_windows 938 excluded 22 steps/epoch 30 | epoch loss 2.0575 | held windows 947 scored 916 E_dyn 0.6992 | state bytes 905693 | batches [(32, 148, 20), (20, 148, 20)] | s 1.3
+TCN_post  fold0 depth post train_windows 938 excluded 22 steps/epoch 30 | epoch loss 2.0583 | held windows 947 scored 916 E_dyn 0.7008 | state bytes 904605 | batches [(32, 148, 20), (20, 148, 20)] | s 9.2
+TCN_pre   fold0 depth pre  train_windows 938 excluded 22 steps/epoch 30 | epoch loss 2.2596 | held windows 947 scored 916 E_dyn 1.0046 | state bytes 904605 | batches [(32, 148, 20), (20, 148, 20)] | s 9.9
+reference proxy {'reference_read_bytes': 652549847, 'reference_proxy_bytes': 475589707, 'reference_projection_multiplier': 1.3720857230411003}

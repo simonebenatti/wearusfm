@@ -1,0 +1,5 @@
+fold 0 | fit/held windows 960 947 | unsupported in fit/held 22 31 | one-centre windows 2
+dynamic_variance: NaN windows 55 | thresholds [1.1429125862459808, 1.143496267450413]
+build_positive_control_fold OK | seconds 29.0 | status calibrated | evaluations 1936 | real_reference {'MSE': 1.7791781376425158, 'E_dyn': 0.5939637085694739, 'alpha': 0.1, 'boundary_unresolved': False} | selected {'linear': {'a': 0.0, 'sigma': 1.25, 'alpha': 0.1, 'E_cal': 0.5966776651483002}, 'temporal': {'a': 0.4, 'sigma': 1.3, 'alpha': 0.1, 'E_cal': 0.6372705339590935}} | outer scored True | timing {'inner_seconds': 20.6, 'outer_seconds': 8.4}
+calibration.pt bytes 228543033 | calibration.json bytes 1943605 | peak RSS GiB 1.94
+partition after torch round trip equals a fresh validate_outer_partition: True | JSON round trip partition equals: True

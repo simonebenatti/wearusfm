@@ -6141,6 +6141,22 @@ Tetti 24 GPUh, 80 coreh CPU-only, 272 coreh totali invariati; walltime dei 16 gr
   `TCNH-preflight-20261120`. Documenti: `docs/reviews/claude_delivery_pose_temponet_users_fix_20261120.md` e
   `docs/pose_temponet_execution_20261120.md`. Nessun lancio e nessuna scrittura sul cluster da parte mia.
 
+### 2026-11-20 | Claude | Seconda consegna TCN: conclusi anche i due revisori rilanciati, nessun cambio dei sorgenti (nessun job) | Ramo `claude/pose-temponet-preflight-users-fix-20261120`
+
+- Simone, sui due revisori fermati alla pausa: «li potresti riprendere?». Rilanciati sulla punta `0e548bf8`; hanno concluso
+  tutti e due. Con LOGIC e DELIVERY i revisori indipendenti conclusi sono quattro su quattro: nessun blocco, nessun punto
+  importante sui sorgenti. Il codice per `release-plan` resta `5d6fb2dc855bd3c12788bb6d3c3a66043c34f1ba`, `source_sha256`
+  `37985d28c75bf82a6a784106d414825b727b9ba78575b675dd2dac1d4ccfc8de`.
+- REAL-DATA: il gate R-1 usa le stesse tre funzioni dello stesso modulo, identico byte per byte, del job storico; costanti uguali
+  bit per bit alla ricevuta archiviata; `E_dyn` identico bit per bit in simulazione alla dimensione reale di val, con numpy
+  1.26.4 e 2.3.5 (perturbazione massima ottenuta 4,4e-16 contro 1e-12). Lettura di val: circa 9 GiB di picco, preflight intero
+  circa 3 minuti. Su una cache train simulata di dimensione reale: primi passi dei due benchmark, WLS del fold 0 e una cella per
+  testa senza errori. Non eseguiti a dimensione reale: benchmark GPU completo, diagnostico L13 dentro la WLS, fold 1, stadi dopo
+  la WLS.
+- TESTS: i test nuovi proteggono la correzione per le ragioni giuste; 37 mutazioni in più, 22 fermate e 15 sopravvissute, nessuna
+  delle quali è un difetto del codice consegnato. Gli otto test proposti sono stati aggiunti: ora i test TCN sono 279, tutti passati; 125 storici passati più il fallimento noto.
+- Esiti in `results/infra/pose_temponet_execution_20261120/independent_review/`; documenti di consegna e istruzioni aggiornati.
+
 ## 2) Problemi trovati
 
 ### 2026-11-20 | GPT chat 2 | Difetto utenti chiuso nel codice; gate reali ancora da eseguire
@@ -9113,3 +9129,14 @@ Un failure storico riprodotto sulla base: `test_concrete_campaign_remains_review
 - La data `20261120` compare già in tre oggetti del primo tentativo (vecchio piano rilasciato, cartella
   `launcher_preflight_20261120`, due ID di inventario): per la seconda consegna fa fede la cartella
   `results/infra/pose_temponet_execution_20261120/`.
+
+### 2026-11-20 | Claude | Seconda consegna TCN: due note operative dai revisori rilanciati
+
+- Pin `gpu8`: comprende nome, capacità e memoria della scheda e il modello di CPU del nodo del benchmark GPU. Nessuno ha
+  verificato che due nodi di `boost_usr_prod` diano gli stessi valori: se differissero, controlli, selezioni e rifit si
+  fermerebbero con `current numeric context differs from benchmark`. Si chiude con una lettura su un secondo nodo prima del primo
+  invio dipendente. È un sospetto non verificato, non un difetto accertato.
+- Tre degli otto input pinnati stanno su SCRATCH: un rinfresco durante i primi minuti di un job TCN farebbe scattare la guardia
+  sugli input. Prossimo rinfresco previsto il 03/12.
+- Nessun test locale esegue la parità R-1 sugli array veri: resta il rischio dichiarato del prossimo preflight, ridotto dalla
+  prova di identità bit per bit in simulazione.
