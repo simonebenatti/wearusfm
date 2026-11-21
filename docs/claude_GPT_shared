@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — GPT linea 3, rilascio del collaudo CUDA RMS100/fast125
+
+Preparato il solo collaudo CUDA con checkout nuovo, legato ad audit, review, rapporto della calibrazione e checkpoint. L’operatore 3-launcher verifica la copia fisica sul login, sottomette i due job e raccoglie gli esiti. [Job CUDA](../results/infra/contrastive_targets_20261118/releases/cuda_20261121/cuda.job.json)
+
 ### 21/11/2026 — GPT linea 3, lettura della calibrazione RMS100/fast125
 
 Rieseguito il lettore sui 512 record della calibrazione 65015116. Rapporto e pesi riprodotti integralmente. Verificati i 14 digest e i rapporti di norma per batch. Proposto il collaudo CUDA a due update prima dei benchmark della nuova coorte. [Lettura scientifica](reviews/contrastive_targets_calibration_science_20261121.md)
@@ -9472,6 +9476,10 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — GPT linea 3, rilascio del collaudo CUDA RMS100/fast125
+
+Le verifiche locali usano l’impronta remota del checkpoint conservato su Leonardo. Prima di ciascun invio si riapre il checkpoint sul login verificando byte, stato iniziale, studente e teacher. Una cella non riuscita o un rapporto incompleto richiedono la lettura delle evidenze; il seguito è sospeso per decisione di Simone. [Job CUDA](../results/infra/contrastive_targets_20261118/releases/cuda_20261121/cuda.job.json)
 
 ### 21/11/2026 — GPT linea 3, lettura della calibrazione RMS100/fast125
 

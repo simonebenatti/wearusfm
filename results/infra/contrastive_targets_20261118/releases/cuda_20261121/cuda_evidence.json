@@ -1,0 +1,59 @@
+{
+  "config": {
+    "path": "results/infra/contrastive_targets_20261118/review_configs/calibration.config.json",
+    "bytes": 5281,
+    "sha256": "b50da4004c46ff95cfd79f00c199160af629a16c1bef1ac60360d30cce906b69"
+  },
+  "inputs": {
+    "manifest": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+      "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec"
+    },
+    "scales": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+      "sha256": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486"
+    },
+    "window_seconds": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+      "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0"
+    },
+    "pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+    }
+  },
+  "roots": [
+    "/leonardo_work/IscrB_WearUsFM/data/processed",
+    "/leonardo_scratch/large/userexternal/sbenatti/data/processed"
+  ],
+  "audit": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/audit.json",
+    "sha256": "eb7cbdf49ffdd00148647e82c5f51768edbd17b5ef515d960a1f6edec35754d3",
+    "bytes": 20275571
+  },
+  "audit_sacct": {
+    "path": "results/infra/contrastive_targets_20261118/audit_execution_20261120/audit_accounting.json",
+    "sha256": "594d72932f2ca15440ee4bf1255a0abe035467933703efcd23309a6e14a32726",
+    "bytes": 516
+  },
+  "calibration_checkpoint": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration/checkpoint.pt",
+    "sha256": "d0dd318302f278e08513ec7d5acde3c82b36a523f7c650829167a68864870ebc",
+    "bytes": 234339194
+  },
+  "calibration_report": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration_report.json",
+    "sha256": "20cb900522b62b46f17d1b65cbbe1ef579a4cdd5e935a7ab31b7a309ed516532",
+    "bytes": 125185
+  },
+  "calibration_summary": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/calibration/summary.json",
+    "sha256": "7cdf45af1b0b1250445844f4fe2955a12640d95cbf10729fb80d91a06d5855cd",
+    "bytes": 7501
+  },
+  "calibration_accounting": {
+    "path": "results/infra/contrastive_targets_20261118/calibration_execution_20261121/allocation.sacct.tsv",
+    "sha256": "4b991416b7d28dd8ed07209d0c7ef563221f9d3901496d5548f52196f1350fa2",
+    "bytes": 335
+  }
+}

@@ -8332,3 +8332,7 @@ Verificati su quattro processi CPU/Gloo il controllo C0 e le due riprese CN dal 
 ### 21/11/2026 — Calibrazione dei pesi della coorte RMS100/fast125
 
 Accetto il rapporto del job 65015116 e i pesi InfoNCE 0,11847082160202581 e RnC 0,32885281420266826. Entrambi i gradienti pesati hanno una norma mediana pari all’1,18% della base sui 32 batch di calibrazione. Propongo il collaudo tecnico CUDA previsto prima dei benchmark attivi. I tre endpoint scientifici restano da misurare. [Analisi, limiti e proposta](reviews/contrastive_targets_calibration_science_20261121.md)
+
+### 21/11/2026 — Linea 3, rilascio del solo collaudo CUDA
+
+Simone affida a 3-launcher il checkout e il collaudo CUDA dopo la calibrazione accettata. L’ingresso è il checkpoint a 512 passi della cella 65015116, con rapporto, SHA e byte autenticati. In questa prova tecnica CN e CR usano peso unitario per due update su batch di 8. Le decisioni sui benchmark e sull’uso dei pesi calibrati seguono la lettura del rapporto CUDA. Richiesta incrementale 2 GPU-ore e 16,266667 core-ore incluso il checkout. [Specifica di esecuzione](../results/infra/contrastive_targets_20261118/releases/cuda_20261121/cuda.job.json)
