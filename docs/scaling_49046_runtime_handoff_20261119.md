@@ -13,7 +13,7 @@ Nessun nuovo monitor/automazione o mittente concorrente.
 | Job | Stato attestato | Risorse |
 |---|---|---|
 |64835246 checkout-code |COMPLETED0:0, raccolto;18s/0,01coreh |2CPU/4G/5min |
-|64837401 train-predecay |PENDING(Priority), letto11:53:31Europe/Rome |4GPU/32CPU/480G/19h45 |
+|64837401 train-predecay |PENDING(Priority), letto21/11alle15:07:57Europe/Rome |4GPU/32CPU/480G/19h45 |
 
 Squeue e sacct usciti0: PENDING(Priority), nessunGPU ancora allocato, log ancora assenti come atteso. Non inferire RUNNING dal solo invio. Secondo segmento non sottomesso. Primo run:
 `/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_49046_20261118/T100-G-300M-39237`.
@@ -70,3 +70,13 @@ prenotazione/lock e ledger comuni. Verificare ancora la compatibilità prima del
 Nessun wrapper temporaneo; per coda/accounting usare i comandi diretti consentiti.
 Un vero permesso tecnico imposto dall'app si rispetta e si segnala una sola volta
 con l'operazione e il motivo effettivi, senza rinnovare il consenso scientifico.
+
+
+Ultima lettura21/11alle15:07:57Europe/Rome:64837401 ancoraPENDING(Priority),
+ElapsedRaw0,StartUnknown,nodo non assegnato. Nessun update nuovo, ultimo
+checkpoint valido19.618; nessuna ricevuta/log/metriche del nuovo run.
+Secondo segmento e valutazioni ancora non inviati. Prova in
+`evaluation/evidence/status/train-predecay_20261121T140757Z.json`.
+Il coordinamento aveva letto lo stesso stato alle15:06. Per i prossimi controlli
+partire dal comando diretto squeue e leggere i log soltanto a jobiniziato;
+consultare prima eventuali letture fresche condivise, senza duplicare i controlli.

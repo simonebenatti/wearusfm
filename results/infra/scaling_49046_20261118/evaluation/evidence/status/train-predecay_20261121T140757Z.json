@@ -1,0 +1,23 @@
+{
+  "utc": "2026-11-21 14:07:57.370121",
+  "job": "64837401",
+  "commands": {
+    "squeue": {
+      "exit": 0,
+      "stdout": "64837401|PENDING|0:00|N/A|(Priority)\n",
+      "stderr": ""
+    },
+    "sacct": {
+      "exit": 0,
+      "stdout": "JobIDRaw|State|ExitCode|ElapsedRaw|AllocCPUS|MaxRSS|NodeList|Partition|Start|End|Timelimit|AllocTRES\n64837401|PENDING|0:0|0|0||None assigned|boost_usr_prod|Unknown|Unknown|19:45:00|\n",
+      "stderr": ""
+    }
+  },
+  "files": {
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_continue49046_64837401.out": null,
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/training/39237/training.log": null,
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/training/39237/receipt.json": null,
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_49046_20261118/T100-G-300M-39237/metrics.jsonl": null,
+    "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/runs/scaling_49046_20261118/T100-G-300M-39237/summary.json": null
+  }
+}

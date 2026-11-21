@@ -178,6 +178,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — GPT launcher: stato300M letto15:07, ancora in coda
+
+Lettura diretta21/11alle15:07:57Europe/Rome:64837401 PENDING(Priority),squeue/sacct exit0,ElapsedRaw0,nessun nodo assegnato e StartUnknown. Nessun passo aggiunto al19.618 accettato; nuovo run senza log/metriche/summary/ricevuta come atteso prima dell'avvio. Segmento finale e valutazioni non inviati. Prova fresca in evaluation/evidence/status/train-predecay_20261121T140757Z.json; primo stato già comunicato alla chat scientifica. Nessun job duplicato o nuovo invio per questo controllo, nessun codice modificato.
+
+
 ### 21/11/2026 — GPT launcher: regola del via unico e submitter persistente recepita
 
 Letta la sezione «Un solo via per le tre chat e i loro launcher» di CLAUDE.md main92d1fc0a. La catena49k approvata prosegue alle condizioni del piano senza nuovi consensi di routine; nessun nuovo esperimento/duplicato implicito. Verificato submitter persistente wearusfm-gpt-science/scripts/submit_job.py byte-identico a quello rivisto87da975b, SHA256814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82, interprete venv presente. Aggiornata la consegna operativa: argomenti dei gate invariati, invocazione diretta con interprete/percorso persistenti, ledger controllato prima di inviare, nessun wrappertemporaneo. Codice scientifico e operativo congelato invariato; nessuna nuova sottomissione per il solo aggiornamento procedurale.
@@ -6305,6 +6310,11 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — GPT launcher: attesa dello scheduler, nessun errore del training
+
+Il training64837401 non è concluso né fallito: non è ancora iniziato(Priority). Non leggere un exit0:0 di un jobPENDING come esito di training. Coordinamento aveva rilevato lo stesso stato alle15:06; la comunicazione è arrivata dopo la lettura15:07 del launcher. Per i prossimi controlli usare prima il normale squeue diretto, leggere i log solo a jobiniziato e riusare le letture fresche condivise; nessuna altra interrogazione fatta dopo quella comunicazione. Nessun cambio di piano o retry.
+
 
 ### 21/11/2026 — GPT launcher: permessi e procedura, nessuna nuova decisione scientifica
 
