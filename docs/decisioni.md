@@ -8348,3 +8348,20 @@ Simone autorizza C0, InfoNCE (CN) e Rank-N-Contrast (CR) dopo i 320 confronti CU
 Simone approva il seguito della lettura `f14ecab6`. Per InfoNCE e Rank-N-Contrast, 3-launcher avvierà due repliche indipendenti che ripristinano il rispettivo checkpoint a 544. Ogni replica esegue i 32 aggiornamenti 545–576 con le finestre e i pesi contrastivi del continuo originale. Le due repliche CN usano l’impronta `aa5952f0c4b7a8f07b5965b096877d568f3b5662bf08e6d8a4fc56f2a9e37ce6`, le due CR `a9a5b1deb69c46c0238480500605f24fe9415c41f2a964d91d0cd2f7f5608e1a`. Entrambi i file originali misurano 463.142.486 byte.
 
 Per ciascuna loss la lettura confronterà continuo/A, continuo/B e A/B secondo i criteri firmati il 20/11. Le differenze nelle coppie si interpretano assieme al controllo su stato iniziale, batch, RNG, coda e ordine delle riduzioni. Richiesta per checkout e quattro celle: 8 GPU-ore e 64,266667 core-ore, inviluppo SLURM 9,6 e 77,466667. Totale richiesto nella coorte fino a questa fase 18 GPU-ore e 161,333333 core-ore su 18 e 169,6. La successiva lettura CPU completa dipende dalle ricevute dei quattro endpoint. [Lettura dei continui](reviews/contrastive_targets_three_benchmarks_science_20261121.md)
+
+### 21/11/2026 — 3-launcher, consuntivo delle quattro riprese
+
+Checkout 65023425 e riprese CN_A 65033016, CN_B 65033756, CR_A 65033804,
+CR_B 65034107 tutti COMPLETED 0:0. Un solo tentativo per ID, picco due celle
+contemporanee, SHA scientifico 12e215a9 invariato. Endpoint 576 verificati,
+88 file raccolti con SHA-256 e byte, quattro log originali, ricevute e fork
+immutati. Checkpoint finali A/B byte-identici entro ciascuna loss. Batch,
+input e RNG coincidono con i continui; le impronte finali student/teacher
+sono invece diverse dai continui. Nessun verdetto sulle distanze dei tensori
+né rilascio dei training da questa sola raccolta: resta il lettore CPU previsto.
+Consuntivo checkout e quattro celle 0,992222 GPU-ore / 7,981111 core-ore,
+entro la richiesta 8 / 64,266667 e l'inviluppo 9,6 / 77,466667. Coorte con
+fasi precedenti circa 4,740000 GPU-ore / 47,048889 core-ore. Controlli e
+invii diretti secondo l'autorizzazione unica 92d1fc0a, senza wrapper che
+aggiunga nuove richieste tecniche. Nessun nuovo job oltre queste quattro celle.
+[Ricevute e raccolta](reviews/launcher_targets_reloads_20261121.md).

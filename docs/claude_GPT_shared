@@ -178,6 +178,21 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: quattro riprese RMS100/fast125 concluse e raccolte
+
+Consegna 95acb366/bcb6bd1d, esecuzione 12e215a9. Checkout 65023425 COMPLETED
+0:0, poi CN_A 65033016, CN_B 65033756, CR_A 65033804 e CR_B 65034107 tutti
+COMPLETED 0:0. Un tentativo per ID, submitter persistente e ledger comuni,
+picco due celle simultanee verificato dalla cronologia. Tutti a 576, 32
+aggiornamenti per rank; raccolti e verificati byte/hash di 88 file, quattro
+log originali e ricevute. Fork immutati. Checkpoint A/B identici per loss;
+batch/input/RNG coincidono con i continui, ma student/teacher finali hanno
+hash diversi dai continui: resta la lettura CPU dei tensori per il verdetto.
+Consuntivo tranche 0,992222 GPU-ore / 7,981111 core-ore; nessun altro job.
+Rapporto docs/reviews/launcher_targets_reloads_20261121.md; evidenze e
+verifica riproducibile in reloads_execution_20261121/collection_readout.json
+e verify_collection.py. Procedura unica autorizzazione 92d1fc0a/df5c8c43 recepita.
+
 ### 21/11/2026 — 3-launcher: checkout riprese in attesa di quota CPU
 
 Replay completo autorizzato passato, checkout 65023425 sottomesso una volta.
@@ -9546,6 +9561,21 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: invii completati, distinzione fra trasporto e ripresa
+
+Il wrapper locale degli invii non ereditava il permesso persistente del
+submitter; ha causato richieste tecniche ripetute nonostante l'autorizzazione
+di Simone. Corretto il percorso operativo usando direttamente l'interprete
+e il submitter congelati già consentiti, senza cambiare il piano. Nessun
+invio duplicato. Una connessione multiplexata CN_B ha restituito SSH 255
+prima della ricevuta; checkout verificato separatamente, poi controllo
+congelato completo positivo su connessione nuova. Un altro 255 su sola
+lettura con multiplexing rafforza la distinzione dal protocollo, senza
+dimostrare la causa del trasporto. Tutte le quattro esecuzioni poi 0:0.
+La ripetibilità A/B del checkpoint finale è esatta; le impronte dei modelli
+finali differiscono dai continui. Non è una misura della distanza: non si
+autorizzano training lunghi dalla raccolta, resta il lettore CPU previsto.
 
 ### 21/11/2026 — 3-launcher: attesa scheduler distinta dal vecchio SSH 255
 

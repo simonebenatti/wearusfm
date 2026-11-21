@@ -1,5 +1,5 @@
 The key ecdsa-sha2-nistp256-cert-v01@openssh.com AAAAKGVjZHNhLXNoYTItbmlzdHAyNTYtY2VydC12MDFAb3BlbnNzaC5jb20AAAAgJk51WUBCTigwci97eyhHcidrX015UjJ8Y11AJVVjfEwAAAAIbmlzdHAyNTYAAABBBGLRKz1sPDV6s+kklvfSBSmUQd/m8yDYBbEskGGKD0MjeXw62NMVm5+ZflhQG3LDhcGReAOnDl7FFVPXZcDPKgy0siaCItkPSAAAAAEAAAAZc2ltb25lLmJlbmF0dGlAdW5pbW9yZS5pdAAAAAwAAAAIc2JlbmF0dGkAAAAAawFRCQAAAABrAfnJAAAAAAAAAE0AAAAVcGVybWl0LVgxMS1mb3J3YXJkaW5nAAAAAAAAABZwZXJtaXQtcG9ydC1mb3J3YXJkaW5nAAAAAAAAAApwZXJtaXQtcHR5AAAAAAAAAAAAAABoAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNpCUFXXfC3NOUja8qObyvhYzQmGrPLpG7jMIwBk4pYL8u42o4Gvk3t/FMFX5x4/SljpYpnsc4iNWnvvPJKeUXcAAABkAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAABJAAAAIQDC2v7rNvC4wAQ5Bwh4doqi/h1ZooMHnJqTi2SfOxPz+AAAACAerGo/GGJu6ldlxjhJZ2WiOPlqnQ/zaz45c2VECyvGYw== simone.benatti@unimore.it is already present in the SSH agent.
-2026-11-21T12:21:27+01:00
+2026-11-21T14:46:46+01:00
 -----------------------------------------------------------------------------------------------------------------------------------------
 account                start         end         total        localCluster   totConsumed     totConsumed     monthTotal     monthConsumed
                                              (local h)   Consumed(local h)     (local h)               %      (local h)         (local h)
@@ -7,7 +7,7 @@ account                start         end         total        localCluster   tot
 CNHPC_1526560       20240711    20260430        640000              557186        557186            87.1             0                  0
 IscrB_WearUsFM      20260107    20270107       2000000             1346072       1346072            67.3        164383              46532
 Filesystem                                        1K-blocks       Used Available Use% Mounted on
-10.128.82.1@o2ib:10.128.82.2@o2ib:/larchive/work 1073741824 1035231996  38509828  97% /leonardo_work
+10.128.82.1@o2ib:10.128.82.2@o2ib:/larchive/work 1073741824 1035906912  37834912  97% /leonardo_work
 64526226|gmerlino|boost_qos_lprod|PENDING|32|3:00:00|3:00:00|lpfs___ultrapro_s4
 64526225|gmerlino|boost_qos_lprod|PENDING|32|3:00:00|3:00:00|lpfs___ultrapro_s4
 64526224|gmerlino|boost_qos_lprod|PENDING|32|3:00:00|3:00:00|lpfs___ultrapro_re
@@ -36,15 +36,12 @@ Filesystem                                        1K-blocks       Used Available
 64966185|msimonin|normal|PENDING|8|1-00:00:00|1-00:00:00|biot_d3b16_ho_noTE_zca_s0_4
 64966181|msimonin|normal|PENDING|8|1-00:00:00|1-00:00:00|biot_d3b16_ho_noTE_zca_s0_3
 64966179|msimonin|normal|PENDING|8|1-00:00:00|1-00:00:00|biot_d3b16_ho_noTE_zca_s0_2
-64966218|msimonin|normal|RUNNING|8|1-00:00:00|5:29:39|biot_d3b16_ho_noTE_pw_s0_1
-64966176|msimonin|normal|RUNNING|8|1-00:00:00|5:27:25|biot_d3b16_ho_noTE_zca_s0_1
-64966209|msimonin|normal|RUNNING|8|1-00:00:00|5:27:25|biot_d3b16_ho_noTE_zcas_s0_1
-65023425|sbenatti|normal|PENDING|4|4:00|4:00|CONTRAST-CHECKOUT-reloads-targets-v3-20261118
-65023399|sbenatti|normal|PENDING|8|3:57:00|3:57:00|TCNH-wls-calibration-1-20261120
-65023397|sbenatti|normal|RUNNING|8|3:57:00|3:53:46|TCNH-wls-calibration-0-20261120
+64966218|msimonin|normal|RUNNING|8|1-00:00:00|3:04:21|biot_d3b16_ho_noTE_pw_s0_1
+64966176|msimonin|normal|RUNNING|8|1-00:00:00|3:02:07|biot_d3b16_ho_noTE_zca_s0_1
+64966209|msimonin|normal|RUNNING|8|1-00:00:00|3:02:07|biot_d3b16_ho_noTE_zcas_s0_1
 PARTITION|AVAIL|CPUS(A/I/O/T)
-boost_usr_prod|up|104799/1409/0/106208
-lrd_all_serial*|up|150/106/0/256
+boost_usr_prod|up|103771/2437/0/106208
+lrd_all_serial*|up|136/120/0/256
 ReservationName=s_int_SNC StartTime=2026-07-22T18:17:48 EndTime=2027-07-22T18:17:48 Duration=365-00:00:00
    Nodes=lrdn[0944,1416,1590,3320,4574,4586,4945,4948] NodeCnt=8 CoreCnt=576 Features=(null) PartitionName=(null) Flags=MAINT,SPEC_NODES
    TRES=cpu=576

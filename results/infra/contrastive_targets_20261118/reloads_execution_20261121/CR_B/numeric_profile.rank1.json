@@ -1,0 +1,29 @@
+{
+  "flags": {
+    "profile": "bf16_math_tf32_off",
+    "matmul_tf32": false,
+    "cudnn_tf32": false,
+    "math_sdp_enabled": true,
+    "flash_sdp_enabled": false,
+    "mem_efficient_sdp_enabled": false,
+    "cudnn_sdp_enabled": null,
+    "deterministic_algorithms": false,
+    "deterministic_warn_only": false,
+    "cudnn_deterministic": false,
+    "cudnn_benchmark": false,
+    "float32_matmul_precision": "highest",
+    "bf16_reduced_precision_reduction": true,
+    "fp16_reduced_precision_reduction": true,
+    "autocast_cuda_enabled": false,
+    "autocast_cuda_dtype": "torch.float16",
+    "torch_version": "2.2.0a0+git6c8c5ad",
+    "cuda_version": "12.1",
+    "cublas_workspace_config": null
+  },
+  "source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+  "config_sha256": "57b50984f6847b6cfda8191a54f95fc074659d9a36fef8b97042e8a875bfa432",
+  "config_canonical_sha256": "99d9cff4c9ef0568c3ae74a8128794ac3801a63f59dfdfe9afed4f1e7a9e8be6",
+  "phase": "resume_b",
+  "rank": 1,
+  "world_size": 4
+}

@@ -1,0 +1,47 @@
+{
+ "id": "CONTRAST-RELOAD-CR-A-targets-v3-20261118",
+ "creato": "2026-11-21T14:59:21+01:00",
+ "agente": "gpt",
+ "campagna": "CONTRASTIVE-targets-v3-20261118",
+ "gpu_ore_stimate": 2.0,
+ "codice_sha": "12e215a978b9d30ea6d670f58af1a0f97387d477",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONTRAST-RELOAD-CR-A-targets-v3-20261118",
+  "--comment=wearusfm:CONTRAST-RELOAD-CR-A-targets-v3-20261118",
+  "--cpus-per-task=32",
+  "--gres=gpu:4",
+  "--mem=240G",
+  "--time=00:30:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121,EXPECTED_SHA=12e215a978b9d30ea6d670f58af1a0f97387d477,TORCH_DIST_INIT_BARRIER=1",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121/scripts/slurm/contrastive_preflight_gpu.sbatch",
+  "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_A.job.json"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-21T14:59:21+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-21T14:59:21+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-21T14:59:22+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 65033804,
+   "uscita": 0,
+   "stdout": "65033804\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  }
+ ],
+ "job_slurm": 65033804,
+ "uscita": 0,
+ "stdout": "65033804\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}

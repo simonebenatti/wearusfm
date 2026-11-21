@@ -525,3 +525,709 @@ debug2: client_loop: session QoS is now interactive
 Transferred: sent 3788, received 5140 bytes, in 0.9 seconds
 Bytes per second: sent 4306.5, received 5843.5
 debug1: Exit status 1
+debug1: OpenSSH_10.3p1, LibreSSL 3.3.6
+debug1: Reading configuration data /Users/simonebenatti/.ssh/config
+debug1: /Users/simonebenatti/.ssh/config line 23: Applying options for leonardo
+debug1: Reading configuration data /etc/ssh/ssh_config
+debug1: /etc/ssh/ssh_config line 21: include /etc/ssh/ssh_config.d/* matched no files
+debug1: /etc/ssh/ssh_config line 54: Applying options for *
+debug1: Authenticator provider $SSH_SK_PROVIDER did not resolve; disabling
+debug1: Executing proxy command: exec bash -c 'step ssh login "simone.benatti@unimore.it" --provisioner cineca-hpc >&2; exec nc login.leonardo.cineca.it 22'
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_rsa
+debug1: identity file /Users/simonebenatti/.ssh/id_rsa type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_rsa
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa
+debug1: identity file /Users/simonebenatti/.ssh/id_ecdsa type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa_sk
+debug1: identity file /Users/simonebenatti/.ssh/id_ecdsa_sk type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa_sk
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519
+debug1: identity file /Users/simonebenatti/.ssh/id_ed25519 type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519_sk
+debug1: identity file /Users/simonebenatti/.ssh/id_ed25519_sk type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519_sk
+debug1: Local version string SSH-2.0-OpenSSH_10.3
+debug1: Remote protocol version 2.0, remote software version OpenSSH_8.0
+debug1: compat_banner: match: OpenSSH_8.0 pat OpenSSH* compat 0x04000000
+debug2: fd 6 setting O_NONBLOCK
+debug2: fd 5 setting O_NONBLOCK
+debug1: Authenticating to login.leonardo.cineca.it:22 as 'sbenatti'
+debug1: load_hostkeys: fopen /Users/simonebenatti/.ssh/known_hosts2: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
+debug1: SSH2_MSG_KEXINIT sent
+debug1: SSH2_MSG_KEXINIT received
+debug2: local client KEXINIT proposal
+debug2: KEX algorithms: mlkem768x25519-sha256,sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,ext-info-c,kex-strict-c-v00@openssh.com
+debug2: host key algorithms: ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256
+debug2: ciphers ctos: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: ciphers stoc: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: MACs ctos: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: MACs stoc: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+debug2: peer server KEXINIT proposal
+debug2: KEX algorithms: curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1
+debug2: host key algorithms: rsa-sha2-512,rsa-sha2-256,ssh-rsa,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ssh-ed25519
+debug2: ciphers ctos: aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cbc
+debug2: ciphers stoc: aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cbc
+debug2: MACs ctos: hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha1,umac-128@openssh.com,hmac-sha2-512
+debug2: MACs stoc: hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha1,umac-128@openssh.com,hmac-sha2-512
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+debug1: kex: algorithm: curve25519-sha256
+debug1: kex: host key algorithm: rsa-sha2-512-cert-v01@openssh.com
+debug1: kex: server->client cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
+debug1: kex: client->server cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
+debug1: expecting SSH2_MSG_KEX_ECDH_REPLY
+debug1: SSH2_MSG_KEX_ECDH_REPLY received
+debug1: Server host certificate: ssh-rsa-cert-v01@openssh.com SHA256:wtCA6aEP+864Iu/JDPat2Ynna5YATnolGpyqcIkXZEs, serial 10472078169039493030 ID "vault-approle-c2d080e9a10ffbceb822efc90cf6add989e76b96004e7a251a9caa708917644b" CA ssh-rsa SHA256:52nmOhLUgZ1nBxWQi9mVTR4q53pfsv0nh/BOIn/uE6s valid from 2025-10-31T10:35:58 to 2035-10-29T10:36:28
+debug1: load_hostkeys: fopen /Users/simonebenatti/.ssh/known_hosts2: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
+debug1: No matching CA found. Retry with plain key
+debug1: Host 'login.leonardo.cineca.it' is known and matches the RSA host key.
+debug1: Found key in /Users/simonebenatti/.ssh/known_hosts:12
+debug2: ssh_set_newkeys: mode 1
+debug1: rekey out after 134217728 blocks
+debug1: SSH2_MSG_NEWKEYS sent
+debug1: expecting SSH2_MSG_NEWKEYS
+debug1: SSH2_MSG_NEWKEYS received
+debug2: ssh_set_newkeys: mode 0
+debug1: rekey in after 134217728 blocks
+debug2: KEX algorithms: mlkem768x25519-sha256,sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,ext-info-c,kex-strict-c-v00@openssh.com
+debug2: host key algorithms: ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256
+debug2: ciphers ctos: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: ciphers stoc: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: MACs ctos: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: MACs stoc: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+debug1: SSH2_MSG_EXT_INFO received
+debug1: kex_ext_info_client_parse: server-sig-algs=<ssh-ed25519,ssh-rsa,rsa-sha2-256,rsa-sha2-512,ssh-dss,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521>
+debug2: service_accept: ssh-userauth
+debug1: SSH2_MSG_SERVICE_ACCEPT received
+debug1: Authentications that can continue: publickey,gssapi-keyex,gssapi-with-mic
+debug1: Next authentication method: publickey
+debug1: get_agent_identities: bound agent to hostkey
+debug1: get_agent_identities: agent returned 2 keys
+debug1: Will attempt key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+debug1: Will attempt key: simone.benatti@unimore.it ECDSA-CERT SHA256:YcJublNkE36Il5sFBYSpraytyJ/2GQ6gmKY1kb5gu8k agent
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_rsa 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ecdsa 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ecdsa_sk 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ed25519 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ed25519_sk 
+debug2: pubkey_prepare: done
+debug1: Offering public key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+debug2: we sent a publickey packet, wait for reply
+debug1: Server accepts key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+Authenticated to login.leonardo.cineca.it (via proxy) using "publickey".
+debug2: fd 4 setting O_NONBLOCK
+debug2: fd 7 setting O_NONBLOCK
+debug1: channel 0: new session [client-session] (inactive timeout: 0)
+debug2: channel 0: send open
+debug1: Requesting no-more-sessions@openssh.com
+debug1: Entering interactive session.
+debug1: pledge: filesystem
+debug2: client_loop: session QoS is now interactive
+debug1: client_input_global_request: rtype hostkeys-00@openssh.com want_reply 0
+debug1: client_input_hostkeys: searching /Users/simonebenatti/.ssh/known_hosts for login.leonardo.cineca.it / (none)
+debug1: client_input_hostkeys: searching /Users/simonebenatti/.ssh/known_hosts2 for login.leonardo.cineca.it / (none)
+debug1: client_input_hostkeys: hostkeys file /Users/simonebenatti/.ssh/known_hosts2 does not exist
+debug1: client_input_hostkeys: CA/revocation marker, manual host list or wildcard host pattern found, skipping UserKnownHostsFile update
+debug1: Remote: cert: key options: port-forwarding pty x11-forwarding
+debug1: Remote: cert: key options: port-forwarding pty x11-forwarding
+debug2: channel_input_open_confirmation: channel 0: callback start
+debug2: client_session2_setup: id 0
+debug1: Sending environment.
+debug1: channel 0: setting env LC_ALL = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: channel 0: setting env LANG = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: channel 0: setting env LC_CTYPE = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: Sending command: date -Is; saldo -b; df -k /leonardo_work/IscrB_WearUsFM; squeue -A IscrB_WearUsFM -h -o "%i|%u|%q|%T|%C|%l|%L|%j"; sinfo -p lrd_all_serial,boost_usr_prod -o "%P|%a|%C"; scontrol show reservation
+debug2: channel 0: request exec confirm 1
+debug1: pledge: fork
+debug2: channel_input_open_confirmation: channel 0: callback done
+debug2: channel 0: open confirm rwindow 0 rmax 32768
+debug2: client_loop: session QoS is now non-interactive
+debug2: channel 0: rcvd adjust 2097152
+debug2: channel_input_status_confirm: type 99 id 0
+debug2: exec request accepted on channel 0
+debug2: channel 0: read failed rfd 4 maxlen 32768: Broken pipe
+debug2: channel 0: read failed
+debug2: chan_shutdown_read: channel 0: (i0 o0 sock -1 wfd 4 efd 8 [write])
+debug2: channel 0: input open -> drain
+debug2: channel 0: ibuf empty
+debug2: channel 0: send eof
+debug2: channel 0: input drain -> closed
+debug2: channel 0: rcvd eof
+debug2: channel 0: output open -> drain
+debug1: client_input_channel_req: channel 0 rtype exit-status reply 0
+debug2: channel 0: rcvd close
+debug2: channel 0: obuf empty
+debug2: chan_shutdown_write: channel 0: (i3 o1 sock -1 wfd 7 efd 8 [write])
+debug2: channel 0: output drain -> closed
+debug2: channel 0: almost dead
+debug2: channel 0: gc: notify user
+debug2: channel 0: gc: user detached
+debug2: channel 0: send_close2
+debug2: channel 0: send close for remote id 0
+debug2: channel 0: is dead
+debug2: channel 0: garbage collecting
+debug1: channel 0: free: client-session, nchannels 1
+debug2: client_loop: session QoS is now interactive
+Transferred: sent 3740, received 12832 bytes, in 4.8 seconds
+Bytes per second: sent 782.4, received 2684.4
+debug1: Exit status 0
+debug1: OpenSSH_10.3p1, LibreSSL 3.3.6
+debug1: Reading configuration data /Users/simonebenatti/.ssh/config
+debug1: /Users/simonebenatti/.ssh/config line 23: Applying options for leonardo
+debug1: Reading configuration data /etc/ssh/ssh_config
+debug1: /etc/ssh/ssh_config line 21: include /etc/ssh/ssh_config.d/* matched no files
+debug1: /etc/ssh/ssh_config line 54: Applying options for *
+debug1: Authenticator provider $SSH_SK_PROVIDER did not resolve; disabling
+debug1: Executing proxy command: exec bash -c 'step ssh login "simone.benatti@unimore.it" --provisioner cineca-hpc >&2; exec nc login.leonardo.cineca.it 22'
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_rsa
+debug1: identity file /Users/simonebenatti/.ssh/id_rsa type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_rsa
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa
+debug1: identity file /Users/simonebenatti/.ssh/id_ecdsa type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa_sk
+debug1: identity file /Users/simonebenatti/.ssh/id_ecdsa_sk type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa_sk
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519
+debug1: identity file /Users/simonebenatti/.ssh/id_ed25519 type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519_sk
+debug1: identity file /Users/simonebenatti/.ssh/id_ed25519_sk type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519_sk
+debug1: Local version string SSH-2.0-OpenSSH_10.3
+debug1: Remote protocol version 2.0, remote software version OpenSSH_8.0
+debug1: compat_banner: match: OpenSSH_8.0 pat OpenSSH* compat 0x04000000
+debug2: fd 6 setting O_NONBLOCK
+debug2: fd 5 setting O_NONBLOCK
+debug1: Authenticating to login.leonardo.cineca.it:22 as 'sbenatti'
+debug1: load_hostkeys: fopen /Users/simonebenatti/.ssh/known_hosts2: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
+debug1: SSH2_MSG_KEXINIT sent
+debug1: SSH2_MSG_KEXINIT received
+debug2: local client KEXINIT proposal
+debug2: KEX algorithms: mlkem768x25519-sha256,sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,ext-info-c,kex-strict-c-v00@openssh.com
+debug2: host key algorithms: ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256
+debug2: ciphers ctos: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: ciphers stoc: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: MACs ctos: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: MACs stoc: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+debug2: peer server KEXINIT proposal
+debug2: KEX algorithms: curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1
+debug2: host key algorithms: rsa-sha2-512,rsa-sha2-256,ssh-rsa,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ssh-ed25519
+debug2: ciphers ctos: aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cbc
+debug2: ciphers stoc: aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cbc
+debug2: MACs ctos: hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha1,umac-128@openssh.com,hmac-sha2-512
+debug2: MACs stoc: hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha1,umac-128@openssh.com,hmac-sha2-512
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+debug1: kex: algorithm: curve25519-sha256
+debug1: kex: host key algorithm: rsa-sha2-512-cert-v01@openssh.com
+debug1: kex: server->client cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
+debug1: kex: client->server cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
+debug1: expecting SSH2_MSG_KEX_ECDH_REPLY
+debug1: SSH2_MSG_KEX_ECDH_REPLY received
+debug1: Server host certificate: ssh-rsa-cert-v01@openssh.com SHA256:wtCA6aEP+864Iu/JDPat2Ynna5YATnolGpyqcIkXZEs, serial 10472078169039493030 ID "vault-approle-c2d080e9a10ffbceb822efc90cf6add989e76b96004e7a251a9caa708917644b" CA ssh-rsa SHA256:52nmOhLUgZ1nBxWQi9mVTR4q53pfsv0nh/BOIn/uE6s valid from 2025-10-31T10:35:58 to 2035-10-29T10:36:28
+debug1: load_hostkeys: fopen /Users/simonebenatti/.ssh/known_hosts2: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
+debug1: No matching CA found. Retry with plain key
+debug1: Host 'login.leonardo.cineca.it' is known and matches the RSA host key.
+debug1: Found key in /Users/simonebenatti/.ssh/known_hosts:12
+debug2: ssh_set_newkeys: mode 1
+debug1: rekey out after 134217728 blocks
+debug1: SSH2_MSG_NEWKEYS sent
+debug1: expecting SSH2_MSG_NEWKEYS
+debug1: SSH2_MSG_NEWKEYS received
+debug2: ssh_set_newkeys: mode 0
+debug1: rekey in after 134217728 blocks
+debug2: KEX algorithms: mlkem768x25519-sha256,sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,ext-info-c,kex-strict-c-v00@openssh.com
+debug2: host key algorithms: ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256
+debug2: ciphers ctos: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: ciphers stoc: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: MACs ctos: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: MACs stoc: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+debug1: SSH2_MSG_EXT_INFO received
+debug1: kex_ext_info_client_parse: server-sig-algs=<ssh-ed25519,ssh-rsa,rsa-sha2-256,rsa-sha2-512,ssh-dss,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521>
+debug2: service_accept: ssh-userauth
+debug1: SSH2_MSG_SERVICE_ACCEPT received
+debug1: Authentications that can continue: publickey,gssapi-keyex,gssapi-with-mic
+debug1: Next authentication method: publickey
+debug1: get_agent_identities: bound agent to hostkey
+debug1: get_agent_identities: agent returned 2 keys
+debug1: Will attempt key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+debug1: Will attempt key: simone.benatti@unimore.it ECDSA-CERT SHA256:YcJublNkE36Il5sFBYSpraytyJ/2GQ6gmKY1kb5gu8k agent
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_rsa 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ecdsa 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ecdsa_sk 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ed25519 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ed25519_sk 
+debug2: pubkey_prepare: done
+debug1: Offering public key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+debug2: we sent a publickey packet, wait for reply
+debug1: Server accepts key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+Authenticated to login.leonardo.cineca.it (via proxy) using "publickey".
+debug2: fd 4 setting O_NONBLOCK
+debug2: fd 7 setting O_NONBLOCK
+debug2: fd 8 setting O_NONBLOCK
+debug1: channel 0: new session [client-session] (inactive timeout: 0)
+debug2: channel 0: send open
+debug1: Requesting no-more-sessions@openssh.com
+debug1: Entering interactive session.
+debug1: pledge: filesystem
+debug2: client_loop: session QoS is now interactive
+debug1: client_input_global_request: rtype hostkeys-00@openssh.com want_reply 0
+debug1: client_input_hostkeys: searching /Users/simonebenatti/.ssh/known_hosts for login.leonardo.cineca.it / (none)
+debug1: client_input_hostkeys: searching /Users/simonebenatti/.ssh/known_hosts2 for login.leonardo.cineca.it / (none)
+debug1: client_input_hostkeys: hostkeys file /Users/simonebenatti/.ssh/known_hosts2 does not exist
+debug1: client_input_hostkeys: CA/revocation marker, manual host list or wildcard host pattern found, skipping UserKnownHostsFile update
+debug1: Remote: cert: key options: port-forwarding pty x11-forwarding
+debug1: Remote: cert: key options: port-forwarding pty x11-forwarding
+debug2: channel_input_open_confirmation: channel 0: callback start
+debug2: client_session2_setup: id 0
+debug1: Sending environment.
+debug1: channel 0: setting env LC_ALL = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: channel 0: setting env GIT_PROTOCOL = "version=2"
+debug2: channel 0: request env confirm 0
+debug1: channel 0: setting env LANG = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: channel 0: setting env LC_CTYPE = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: Sending command: git-upload-pack '/leonardo_work/IscrB_WearUsFM/wearusfm'
+debug2: channel 0: request exec confirm 1
+debug1: pledge: fork
+debug2: channel_input_open_confirmation: channel 0: callback done
+debug2: channel 0: open confirm rwindow 0 rmax 32768
+debug2: client_loop: session QoS is now non-interactive
+debug2: channel 0: rcvd adjust 2097152
+debug2: channel_input_status_confirm: type 99 id 0
+debug2: exec request accepted on channel 0
+debug2: channel 0: read failed rfd 4 maxlen 32768: Broken pipe
+debug2: channel 0: read failed
+debug2: chan_shutdown_read: channel 0: (i0 o0 sock -1 wfd 4 efd 8 [write])
+debug2: channel 0: input open -> drain
+debug2: channel 0: ibuf empty
+debug2: channel 0: send eof
+debug2: channel 0: input drain -> closed
+debug2: channel 0: rcvd eof
+debug2: channel 0: output open -> drain
+debug2: channel 0: obuf empty
+debug2: chan_shutdown_write: channel 0: (i3 o1 sock -1 wfd 7 efd 8 [write])
+debug2: channel 0: output drain -> closed
+debug1: client_input_channel_req: channel 0 rtype exit-status reply 0
+debug1: client_input_channel_req: channel 0 rtype eow@openssh.com reply 0
+debug2: channel 0: rcvd eow
+debug2: channel 0: rcvd close
+debug2: channel 0: almost dead
+debug2: channel 0: gc: notify user
+debug2: channel 0: gc: user detached
+debug2: channel 0: send_close2
+debug2: channel 0: send close for remote id 0
+debug2: channel 0: is dead
+debug2: channel 0: garbage collecting
+debug1: channel 0: free: client-session, nchannels 1
+debug2: client_loop: session QoS is now interactive
+Transferred: sent 3676, received 15380 bytes, in 6.8 seconds
+Bytes per second: sent 537.2, received 2247.8
+debug1: Exit status 0
+debug1: OpenSSH_10.3p1, LibreSSL 3.3.6
+debug1: Reading configuration data /Users/simonebenatti/.ssh/config
+debug1: /Users/simonebenatti/.ssh/config line 23: Applying options for leonardo
+debug1: Reading configuration data /etc/ssh/ssh_config
+debug1: /etc/ssh/ssh_config line 21: include /etc/ssh/ssh_config.d/* matched no files
+debug1: /etc/ssh/ssh_config line 54: Applying options for *
+debug1: Authenticator provider $SSH_SK_PROVIDER did not resolve; disabling
+debug1: Executing proxy command: exec bash -c 'step ssh login "simone.benatti@unimore.it" --provisioner cineca-hpc >&2; exec nc login.leonardo.cineca.it 22'
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_rsa
+debug1: identity file /Users/simonebenatti/.ssh/id_rsa type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_rsa
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa
+debug1: identity file /Users/simonebenatti/.ssh/id_ecdsa type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa_sk
+debug1: identity file /Users/simonebenatti/.ssh/id_ecdsa_sk type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa_sk
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519
+debug1: identity file /Users/simonebenatti/.ssh/id_ed25519 type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519_sk
+debug1: identity file /Users/simonebenatti/.ssh/id_ed25519_sk type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519_sk
+debug1: Local version string SSH-2.0-OpenSSH_10.3
+debug1: Remote protocol version 2.0, remote software version OpenSSH_8.0
+debug1: compat_banner: match: OpenSSH_8.0 pat OpenSSH* compat 0x04000000
+debug2: fd 6 setting O_NONBLOCK
+debug2: fd 5 setting O_NONBLOCK
+debug1: Authenticating to login.leonardo.cineca.it:22 as 'sbenatti'
+debug1: load_hostkeys: fopen /Users/simonebenatti/.ssh/known_hosts2: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
+debug1: SSH2_MSG_KEXINIT sent
+debug1: SSH2_MSG_KEXINIT received
+debug2: local client KEXINIT proposal
+debug2: KEX algorithms: mlkem768x25519-sha256,sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,ext-info-c,kex-strict-c-v00@openssh.com
+debug2: host key algorithms: ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256
+debug2: ciphers ctos: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: ciphers stoc: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: MACs ctos: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: MACs stoc: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+debug2: peer server KEXINIT proposal
+debug2: KEX algorithms: curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1
+debug2: host key algorithms: rsa-sha2-512,rsa-sha2-256,ssh-rsa,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ssh-ed25519
+debug2: ciphers ctos: aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cbc
+debug2: ciphers stoc: aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cbc
+debug2: MACs ctos: hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha1,umac-128@openssh.com,hmac-sha2-512
+debug2: MACs stoc: hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha1,umac-128@openssh.com,hmac-sha2-512
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+debug1: kex: algorithm: curve25519-sha256
+debug1: kex: host key algorithm: rsa-sha2-512-cert-v01@openssh.com
+debug1: kex: server->client cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
+debug1: kex: client->server cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
+debug1: expecting SSH2_MSG_KEX_ECDH_REPLY
+debug1: SSH2_MSG_KEX_ECDH_REPLY received
+debug1: Server host certificate: ssh-rsa-cert-v01@openssh.com SHA256:wtCA6aEP+864Iu/JDPat2Ynna5YATnolGpyqcIkXZEs, serial 10472078169039493030 ID "vault-approle-c2d080e9a10ffbceb822efc90cf6add989e76b96004e7a251a9caa708917644b" CA ssh-rsa SHA256:52nmOhLUgZ1nBxWQi9mVTR4q53pfsv0nh/BOIn/uE6s valid from 2025-10-31T10:35:58 to 2035-10-29T10:36:28
+debug1: load_hostkeys: fopen /Users/simonebenatti/.ssh/known_hosts2: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
+debug1: No matching CA found. Retry with plain key
+debug1: Host 'login.leonardo.cineca.it' is known and matches the RSA host key.
+debug1: Found key in /Users/simonebenatti/.ssh/known_hosts:12
+debug2: ssh_set_newkeys: mode 1
+debug1: rekey out after 134217728 blocks
+debug1: SSH2_MSG_NEWKEYS sent
+debug1: expecting SSH2_MSG_NEWKEYS
+debug1: SSH2_MSG_NEWKEYS received
+debug2: ssh_set_newkeys: mode 0
+debug1: rekey in after 134217728 blocks
+debug2: KEX algorithms: mlkem768x25519-sha256,sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,ext-info-c,kex-strict-c-v00@openssh.com
+debug2: host key algorithms: ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256
+debug2: ciphers ctos: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: ciphers stoc: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: MACs ctos: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: MACs stoc: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+debug1: SSH2_MSG_EXT_INFO received
+debug1: kex_ext_info_client_parse: server-sig-algs=<ssh-ed25519,ssh-rsa,rsa-sha2-256,rsa-sha2-512,ssh-dss,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521>
+debug2: service_accept: ssh-userauth
+debug1: SSH2_MSG_SERVICE_ACCEPT received
+debug1: Authentications that can continue: publickey,gssapi-keyex,gssapi-with-mic
+debug1: Next authentication method: publickey
+debug1: get_agent_identities: bound agent to hostkey
+debug1: get_agent_identities: agent returned 2 keys
+debug1: Will attempt key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+debug1: Will attempt key: simone.benatti@unimore.it ECDSA-CERT SHA256:YcJublNkE36Il5sFBYSpraytyJ/2GQ6gmKY1kb5gu8k agent
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_rsa 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ecdsa 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ecdsa_sk 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ed25519 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ed25519_sk 
+debug2: pubkey_prepare: done
+debug1: Offering public key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+debug2: we sent a publickey packet, wait for reply
+debug1: Server accepts key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+Authenticated to login.leonardo.cineca.it (via proxy) using "publickey".
+debug2: fd 4 setting O_NONBLOCK
+debug2: fd 7 setting O_NONBLOCK
+debug1: channel 0: new session [client-session] (inactive timeout: 0)
+debug2: channel 0: send open
+debug1: Requesting no-more-sessions@openssh.com
+debug1: Entering interactive session.
+debug1: pledge: filesystem
+debug2: client_loop: session QoS is now interactive
+debug1: client_input_global_request: rtype hostkeys-00@openssh.com want_reply 0
+debug1: client_input_hostkeys: searching /Users/simonebenatti/.ssh/known_hosts for login.leonardo.cineca.it / (none)
+debug1: client_input_hostkeys: searching /Users/simonebenatti/.ssh/known_hosts2 for login.leonardo.cineca.it / (none)
+debug1: client_input_hostkeys: hostkeys file /Users/simonebenatti/.ssh/known_hosts2 does not exist
+debug1: client_input_hostkeys: CA/revocation marker, manual host list or wildcard host pattern found, skipping UserKnownHostsFile update
+debug1: Remote: cert: key options: port-forwarding pty x11-forwarding
+debug1: Remote: cert: key options: port-forwarding pty x11-forwarding
+debug2: channel_input_open_confirmation: channel 0: callback start
+debug2: client_session2_setup: id 0
+debug1: Sending environment.
+debug1: channel 0: setting env LC_ALL = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: channel 0: setting env LANG = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: channel 0: setting env LC_CTYPE = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: Sending command: bash -lc 'set -eo pipefail; git -C "$WORK/wearusfm" show 12e215a978b9d30ea6d670f58af1a0f97387d477:results/infra/contrastive_targets_20261118/reloads_handoff_20261121/login_check.sh | bash -s -- CN_A 12e215a978b9d30ea6d670f58af1a0f97387d477 65023425'
+debug2: channel 0: request exec confirm 1
+debug1: pledge: fork
+debug2: channel_input_open_confirmation: channel 0: callback done
+debug2: channel 0: open confirm rwindow 0 rmax 32768
+debug2: client_loop: session QoS is now non-interactive
+debug2: channel 0: rcvd adjust 2097152
+debug2: channel_input_status_confirm: type 99 id 0
+debug2: exec request accepted on channel 0
+debug2: channel 0: read failed rfd 4 maxlen 32768: Broken pipe
+debug2: channel 0: read failed
+debug2: chan_shutdown_read: channel 0: (i0 o0 sock -1 wfd 4 efd 8 [write])
+debug2: channel 0: input open -> drain
+debug2: channel 0: ibuf empty
+debug2: channel 0: send eof
+debug2: channel 0: input drain -> closed
+debug1: client_input_channel_req: channel 0 rtype keepalive@openssh.com reply 1
+debug2: channel 0: rcvd ext data 670
+debug2: channel 0: written 670 to efd 8
+debug1: client_input_channel_req: channel 0 rtype keepalive@openssh.com reply 1
+debug2: channel 0: rcvd eof
+debug2: channel 0: output open -> drain
+debug2: channel 0: obuf empty
+debug2: chan_shutdown_write: channel 0: (i3 o1 sock -1 wfd 7 efd 8 [write])
+debug2: channel 0: output drain -> closed
+debug1: client_input_channel_req: channel 0 rtype exit-status reply 0
+debug2: channel 0: rcvd close
+debug2: channel 0: almost dead
+debug2: channel 0: gc: notify user
+debug2: channel 0: gc: user detached
+debug2: channel 0: send_close2
+debug2: channel 0: send close for remote id 0
+debug2: channel 0: is dead
+debug2: channel 0: garbage collecting
+debug1: channel 0: free: client-session, nchannels 1
+debug2: client_loop: session QoS is now interactive
+Transferred: sent 3856, received 15280 bytes, in 121.4 seconds
+Bytes per second: sent 31.8, received 125.9
+debug1: Exit status 0
+debug1: OpenSSH_10.3p1, LibreSSL 3.3.6
+debug1: Reading configuration data /Users/simonebenatti/.ssh/config
+debug1: /Users/simonebenatti/.ssh/config line 23: Applying options for leonardo
+debug1: Reading configuration data /etc/ssh/ssh_config
+debug1: /etc/ssh/ssh_config line 21: include /etc/ssh/ssh_config.d/* matched no files
+debug1: /etc/ssh/ssh_config line 54: Applying options for *
+debug1: Authenticator provider $SSH_SK_PROVIDER did not resolve; disabling
+debug1: Executing proxy command: exec bash -c 'step ssh login "simone.benatti@unimore.it" --provisioner cineca-hpc >&2; exec nc login.leonardo.cineca.it 22'
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_rsa
+debug1: identity file /Users/simonebenatti/.ssh/id_rsa type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_rsa
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa
+debug1: identity file /Users/simonebenatti/.ssh/id_ecdsa type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa_sk
+debug1: identity file /Users/simonebenatti/.ssh/id_ecdsa_sk type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ecdsa_sk
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519
+debug1: identity file /Users/simonebenatti/.ssh/id_ed25519 type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519
+debug1: no pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519_sk
+debug1: identity file /Users/simonebenatti/.ssh/id_ed25519_sk type -1
+debug1: no identity pubkey loaded from /Users/simonebenatti/.ssh/id_ed25519_sk
+debug1: Local version string SSH-2.0-OpenSSH_10.3
+debug1: Remote protocol version 2.0, remote software version OpenSSH_8.0
+debug1: compat_banner: match: OpenSSH_8.0 pat OpenSSH* compat 0x04000000
+debug2: fd 6 setting O_NONBLOCK
+debug2: fd 5 setting O_NONBLOCK
+debug1: Authenticating to login.leonardo.cineca.it:22 as 'sbenatti'
+debug1: load_hostkeys: fopen /Users/simonebenatti/.ssh/known_hosts2: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
+debug1: SSH2_MSG_KEXINIT sent
+debug1: SSH2_MSG_KEXINIT received
+debug2: local client KEXINIT proposal
+debug2: KEX algorithms: mlkem768x25519-sha256,sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,ext-info-c,kex-strict-c-v00@openssh.com
+debug2: host key algorithms: ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256
+debug2: ciphers ctos: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: ciphers stoc: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: MACs ctos: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: MACs stoc: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+debug2: peer server KEXINIT proposal
+debug2: KEX algorithms: curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1
+debug2: host key algorithms: rsa-sha2-512,rsa-sha2-256,ssh-rsa,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ecdsa-sha2-nistp256,ssh-ed25519
+debug2: ciphers ctos: aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cbc
+debug2: ciphers stoc: aes256-gcm@openssh.com,chacha20-poly1305@openssh.com,aes256-ctr,aes256-cbc,aes128-gcm@openssh.com,aes128-ctr,aes128-cbc
+debug2: MACs ctos: hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha1,umac-128@openssh.com,hmac-sha2-512
+debug2: MACs stoc: hmac-sha2-256-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha1,umac-128@openssh.com,hmac-sha2-512
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+debug1: kex: algorithm: curve25519-sha256
+debug1: kex: host key algorithm: rsa-sha2-512-cert-v01@openssh.com
+debug1: kex: server->client cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
+debug1: kex: client->server cipher: chacha20-poly1305@openssh.com MAC: <implicit> compression: none
+debug1: expecting SSH2_MSG_KEX_ECDH_REPLY
+debug1: SSH2_MSG_KEX_ECDH_REPLY received
+debug1: Server host certificate: ssh-rsa-cert-v01@openssh.com SHA256:wtCA6aEP+864Iu/JDPat2Ynna5YATnolGpyqcIkXZEs, serial 10472078169039493030 ID "vault-approle-c2d080e9a10ffbceb822efc90cf6add989e76b96004e7a251a9caa708917644b" CA ssh-rsa SHA256:52nmOhLUgZ1nBxWQi9mVTR4q53pfsv0nh/BOIn/uE6s valid from 2025-10-31T10:35:58 to 2035-10-29T10:36:28
+debug1: load_hostkeys: fopen /Users/simonebenatti/.ssh/known_hosts2: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
+debug1: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
+debug1: No matching CA found. Retry with plain key
+debug1: Host 'login.leonardo.cineca.it' is known and matches the RSA host key.
+debug1: Found key in /Users/simonebenatti/.ssh/known_hosts:12
+debug2: ssh_set_newkeys: mode 1
+debug1: rekey out after 134217728 blocks
+debug1: SSH2_MSG_NEWKEYS sent
+debug1: expecting SSH2_MSG_NEWKEYS
+debug1: SSH2_MSG_NEWKEYS received
+debug2: ssh_set_newkeys: mode 0
+debug1: rekey in after 134217728 blocks
+debug2: KEX algorithms: mlkem768x25519-sha256,sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,ext-info-c,kex-strict-c-v00@openssh.com
+debug2: host key algorithms: ssh-ed25519-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,webauthn-sk-ecdsa-sha2-nistp256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-ed25519,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,sk-ssh-ed25519@openssh.com,sk-ecdsa-sha2-nistp256@openssh.com,webauthn-sk-ecdsa-sha2-nistp256@openssh.com,rsa-sha2-512,rsa-sha2-256
+debug2: ciphers ctos: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: ciphers stoc: chacha20-poly1305@openssh.com,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+debug2: MACs ctos: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: MACs stoc: umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1
+debug2: compression ctos: none,zlib@openssh.com
+debug2: compression stoc: none,zlib@openssh.com
+debug2: languages ctos: 
+debug2: languages stoc: 
+debug2: first_kex_follows 0 
+debug2: reserved 0 
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+debug1: SSH2_MSG_EXT_INFO received
+debug1: kex_ext_info_client_parse: server-sig-algs=<ssh-ed25519,ssh-rsa,rsa-sha2-256,rsa-sha2-512,ssh-dss,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521>
+debug2: service_accept: ssh-userauth
+debug1: SSH2_MSG_SERVICE_ACCEPT received
+debug1: Authentications that can continue: publickey,gssapi-keyex,gssapi-with-mic
+debug1: Next authentication method: publickey
+debug1: get_agent_identities: bound agent to hostkey
+debug1: get_agent_identities: agent returned 2 keys
+debug1: Will attempt key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+debug1: Will attempt key: simone.benatti@unimore.it ECDSA-CERT SHA256:YcJublNkE36Il5sFBYSpraytyJ/2GQ6gmKY1kb5gu8k agent
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_rsa 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ecdsa 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ecdsa_sk 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ed25519 
+debug1: Will attempt key: /Users/simonebenatti/.ssh/id_ed25519_sk 
+debug2: pubkey_prepare: done
+debug1: Offering public key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+debug2: we sent a publickey packet, wait for reply
+debug1: Server accepts key: simone.benatti@unimore.it ECDSA-CERT SHA256:ZD3hKrqLtd6T8hvuwMnOY9v6NmQpjDpF0TR4Cgv5r1U agent
+Authenticated to login.leonardo.cineca.it (via proxy) using "publickey".
+debug2: fd 4 setting O_NONBLOCK
+debug2: fd 7 setting O_NONBLOCK
+debug2: fd 8 setting O_NONBLOCK
+debug1: channel 0: new session [client-session] (inactive timeout: 0)
+debug2: channel 0: send open
+debug1: Requesting no-more-sessions@openssh.com
+debug1: Entering interactive session.
+debug1: pledge: filesystem
+debug2: client_loop: session QoS is now interactive
+debug1: client_input_global_request: rtype hostkeys-00@openssh.com want_reply 0
+debug1: client_input_hostkeys: searching /Users/simonebenatti/.ssh/known_hosts for login.leonardo.cineca.it / (none)
+debug1: client_input_hostkeys: searching /Users/simonebenatti/.ssh/known_hosts2 for login.leonardo.cineca.it / (none)
+debug1: client_input_hostkeys: hostkeys file /Users/simonebenatti/.ssh/known_hosts2 does not exist
+debug1: client_input_hostkeys: CA/revocation marker, manual host list or wildcard host pattern found, skipping UserKnownHostsFile update
+debug1: Remote: cert: key options: port-forwarding pty x11-forwarding
+debug1: Remote: cert: key options: port-forwarding pty x11-forwarding
+debug2: channel_input_open_confirmation: channel 0: callback start
+debug2: client_session2_setup: id 0
+debug1: Sending environment.
+debug1: channel 0: setting env LC_ALL = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: channel 0: setting env LANG = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: channel 0: setting env LC_CTYPE = "C.UTF-8"
+debug2: channel 0: request env confirm 0
+debug1: Sending command: sbatch --parsable --job-name=CONTRAST-RELOAD-CN-A-targets-v3-20261118 --comment=wearusfm:CONTRAST-RELOAD-CN-A-targets-v3-20261118 --cpus-per-task=32 --gres=gpu:4 --mem=240G --time=00:30:00 --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121,EXPECTED_SHA=12e215a978b9d30ea6d670f58af1a0f97387d477,TORCH_DIST_INIT_BARRIER=1 /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121/scripts/slurm/contrastive_preflight_gpu.sbatch results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_A.job.json
+debug2: channel 0: request exec confirm 1
+debug1: pledge: fork
+debug2: channel_input_open_confirmation: channel 0: callback done
+debug2: channel 0: open confirm rwindow 0 rmax 32768
+debug2: client_loop: session QoS is now non-interactive
+debug2: channel 0: rcvd adjust 2097152
+debug2: channel_input_status_confirm: type 99 id 0
+debug2: exec request accepted on channel 0
+debug2: channel 0: read failed rfd 4 maxlen 32768: Broken pipe
+debug2: channel 0: read failed
+debug2: chan_shutdown_read: channel 0: (i0 o0 sock -1 wfd 4 efd 8 [write])
+debug2: channel 0: input open -> drain
+debug2: channel 0: ibuf empty
+debug2: channel 0: send eof
+debug2: channel 0: input drain -> closed
+debug2: channel 0: rcvd eof
+debug2: channel 0: output open -> drain
+debug1: client_input_channel_req: channel 0 rtype exit-status reply 0
+debug2: channel 0: rcvd close
+debug2: channel 0: obuf empty
+debug2: chan_shutdown_write: channel 0: (i3 o1 sock -1 wfd 7 efd 8 [write])
+debug2: channel 0: output drain -> closed
+debug2: channel 0: almost dead
+debug2: channel 0: gc: notify user
+debug2: channel 0: gc: user detached
+debug2: channel 0: send_close2
+debug2: channel 0: send close for remote id 0
+debug2: channel 0: is dead
+debug2: channel 0: garbage collecting
+debug1: channel 0: free: client-session, nchannels 1
+debug2: client_loop: session QoS is now interactive
+Transferred: sent 4140, received 5076 bytes, in 2.0 seconds
+Bytes per second: sent 2103.4, received 2579.0
+debug1: Exit status 0
