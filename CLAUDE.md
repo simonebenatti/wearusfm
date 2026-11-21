@@ -1,5 +1,31 @@
 # WearUsFM
 
+### Un solo via per le tre chat e i loro launcher — Simone, 21/11/2026
+
+Per le campagne delle chat 1 (30M/300M), 2 (schedule lungo e teste TCN) e 3 (log-quadratico e contrastiva),
+un «lancia» di Simone vale anche per i rispettivi launcher. Chi riceve il via lo associa al piano nella consegna
+già in uso. Il launcher di quella linea è l’unico a inviare i job e consulta il ledger prima di ogni invio.
+Il via comprende i controlli preliminari, i job e le riprese elencati nel piano, la lettura dei log, la raccolta,
+l’archiviazione, il commit e il push. Quando si libera uno slot o si soddisfa una dipendenza, il launcher
+prosegue da solo rispettando i limiti del piano. Una risposta ambigua all’invio richiede la riconciliazione dell’ID.
+
+Sul Mac, per un invio previsto dal piano, usare direttamente la venv `/Users/simonebenatti/.venvs/wearusfm-tok/bin/python`
+e lo script `/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py`.
+Questa invocazione ha già un permesso persistente. Usarla quando lo script coincide con la versione prevista dal piano,
+con i suoi argomenti, il checkout fissato, lo sbatch previsto e il ledger comune. Eseguire i controlli di campagna previsti
+anche quando sono separati dall’invio. Per coda e contabilità usare i comandi diretti già consentiti su Leonardo.
+Per raccogliere e pubblicare usare le normali operazioni del progetto. Il permesso del submitter non si estende a uno
+script temporaneo che lo avvolge. In preparazione si può verificare la corrispondenza delle regole con `codex execpolicy check`,
+senza eseguire il comando.
+
+Quando servono una modifica scientifica, risorse fuori dal perimetro approvato o una decisione richiesta da un criterio
+di arresto, la chat responsabile segnala la decisione precisa. Se l’app richiede davvero un permesso tecnico mancante,
+un solo operatore indica l’operazione bloccata e il motivo. Le altre chat proseguono le attività indipendenti.
+
+Recepita nella chat 2 dal coordinamento: testo originale di `origin/main`, commit `92d1fc0a16bfda9c2d0309c5f1d8769fa2880074`.
+Per la TCN resta unico operatore **2-TCN head launcher**; questa regola accompagna il via già registrato nella consegna vigente.
+
+
 ## TCN frozen: mandato del 19/11/2026
 
 Instradamento chiarito da Simone il 19/11: questa chat 2 tratta schedule lungo e TCN e prepara i prompt per la stessa chat **Claude 2**. I prompt e le consegne della linea 3 compaiono nella chat 3. Non mescolare le consegne né attribuire a una chat TCN separata le review di Claude 2.
