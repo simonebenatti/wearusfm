@@ -97,5 +97,82 @@
     "job_slurm": "65023399",
     "quando": "2026-11-21T12:18:11+01:00",
     "stato": "sottomesso"
+  },
+  {
+    "agente": "gpt",
+    "campagna": "pose_temponet_20261121_A1",
+    "codice_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+    "comando": "sbatch --parsable --job-name=TCNH-GPU-inventory-A1-20261121 --comment=wearusfm:TCNH-GPU-inventory-A1-20261121 --account=IscrB_WearUsFM --partition=boost_usr_prod --qos=normal --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=32G --gres=gpu:1 --time=00:02:00 --no-requeue --exclude=lrdn0059 --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1,EXPECTED_SHA=edebfb6c290cf661989c5cff45916bc6a93e607e --output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-GPU-inventory-A1-20261121_%j.out --error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-GPU-inventory-A1-20261121_%j.out",
+    "gpu_ore_stimate": "0.08333333333333333",
+    "id": "TCNH-GPU-inventory-A1-20261121",
+    "job_slurm": "65033157",
+    "quando": "2026-11-21T14:50:12+01:00",
+    "stato": "sottomesso"
+  },
+  {
+    "agente": "gpt",
+    "campagna": "pose_temponet_20261121_A1",
+    "codice_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+    "comando": "sbatch --parsable --job-name=TCNH-controls-linear-L0-20261120 --comment=wearusfm:TCNH-controls-linear-L0-20261120 --account=IscrB_WearUsFM --partition=boost_usr_prod --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=32G --time=01:32:00 --no-requeue --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1,EXPECTED_SHA=edebfb6c290cf661989c5cff45916bc6a93e607e,TCN_PLAN=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/manifests/b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3.json,TCN_PLAN_SHA256=b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3,TCN_JOB_ID=TCNH-controls-linear-L0-20261120,TCN_PLAN_COMMIT=6a20054ad2ffdb3d754e6106775a159a0933d99a,TCN_PLAN_REPO_PATH=results/infra/pose_temponet_execution_20261121_A1/plan_controls.json --output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-linear-L0-20261120_%j.out --error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-linear-L0-20261120_%j.out --gres=gpu:1 --qos=normal",
+    "gpu_ore_stimate": "1.5833333333333333",
+    "id": "TCNH-controls-linear-L0-20261120",
+    "job_slurm": "65035622",
+    "quando": "2026-11-21T15:21:35+01:00",
+    "stato": "sottomesso"
+  },
+  {
+    "agente": "gpt",
+    "campagna": "pose_temponet_20261121_A1",
+    "codice_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+    "comando": "sbatch --parsable --job-name=TCNH-controls-linear-MLP-20261120 --comment=wearusfm:TCNH-controls-linear-MLP-20261120 --account=IscrB_WearUsFM --partition=boost_usr_prod --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=32G --time=01:42:00 --no-requeue --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1,EXPECTED_SHA=edebfb6c290cf661989c5cff45916bc6a93e607e,TCN_PLAN=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/manifests/b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3.json,TCN_PLAN_SHA256=b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3,TCN_JOB_ID=TCNH-controls-linear-MLP-20261120,TCN_PLAN_COMMIT=6a20054ad2ffdb3d754e6106775a159a0933d99a,TCN_PLAN_REPO_PATH=results/infra/pose_temponet_execution_20261121_A1/plan_controls.json --output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-linear-MLP-20261120_%j.out --error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-linear-MLP-20261120_%j.out --gres=gpu:1 --qos=normal",
+    "gpu_ore_stimate": "1.75",
+    "id": "TCNH-controls-linear-MLP-20261120",
+    "job_slurm": "65035623",
+    "quando": "2026-11-21T15:21:36+01:00",
+    "stato": "sottomesso"
+  },
+  {
+    "agente": "gpt",
+    "campagna": "pose_temponet_20261121_A1",
+    "codice_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+    "comando": "sbatch --parsable --job-name=TCNH-controls-linear-TCN_post-20261120 --comment=wearusfm:TCNH-controls-linear-TCN_post-20261120 --account=IscrB_WearUsFM --partition=boost_usr_prod --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=32G --time=05:11:00 --no-requeue --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1,EXPECTED_SHA=edebfb6c290cf661989c5cff45916bc6a93e607e,TCN_PLAN=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/manifests/b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3.json,TCN_PLAN_SHA256=b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3,TCN_JOB_ID=TCNH-controls-linear-TCN_post-20261120,TCN_PLAN_COMMIT=6a20054ad2ffdb3d754e6106775a159a0933d99a,TCN_PLAN_REPO_PATH=results/infra/pose_temponet_execution_20261121_A1/plan_controls.json --output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-linear-TCN_post-20261120_%j.out --error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-linear-TCN_post-20261120_%j.out --gres=gpu:1 --qos=normal",
+    "gpu_ore_stimate": "5.233333333333333",
+    "id": "TCNH-controls-linear-TCN_post-20261120",
+    "job_slurm": "65035626",
+    "quando": "2026-11-21T15:21:39+01:00",
+    "stato": "sottomesso"
+  },
+  {
+    "agente": "gpt",
+    "campagna": "pose_temponet_20261121_A1",
+    "codice_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+    "comando": "sbatch --parsable --job-name=TCNH-controls-temporal-L0-20261120 --comment=wearusfm:TCNH-controls-temporal-L0-20261120 --account=IscrB_WearUsFM --partition=boost_usr_prod --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=32G --time=01:32:00 --no-requeue --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1,EXPECTED_SHA=edebfb6c290cf661989c5cff45916bc6a93e607e,TCN_PLAN=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/manifests/b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3.json,TCN_PLAN_SHA256=b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3,TCN_JOB_ID=TCNH-controls-temporal-L0-20261120,TCN_PLAN_COMMIT=6a20054ad2ffdb3d754e6106775a159a0933d99a,TCN_PLAN_REPO_PATH=results/infra/pose_temponet_execution_20261121_A1/plan_controls.json --output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-temporal-L0-20261120_%j.out --error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-temporal-L0-20261120_%j.out --gres=gpu:1 --qos=normal",
+    "gpu_ore_stimate": "1.5833333333333333",
+    "id": "TCNH-controls-temporal-L0-20261120",
+    "job_slurm": "65035628",
+    "quando": "2026-11-21T15:21:41+01:00",
+    "stato": "sottomesso"
+  },
+  {
+    "agente": "gpt",
+    "campagna": "pose_temponet_20261121_A1",
+    "codice_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+    "comando": "sbatch --parsable --job-name=TCNH-controls-temporal-MLP-20261120 --comment=wearusfm:TCNH-controls-temporal-MLP-20261120 --account=IscrB_WearUsFM --partition=boost_usr_prod --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=32G --time=01:42:00 --no-requeue --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1,EXPECTED_SHA=edebfb6c290cf661989c5cff45916bc6a93e607e,TCN_PLAN=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/manifests/b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3.json,TCN_PLAN_SHA256=b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3,TCN_JOB_ID=TCNH-controls-temporal-MLP-20261120,TCN_PLAN_COMMIT=6a20054ad2ffdb3d754e6106775a159a0933d99a,TCN_PLAN_REPO_PATH=results/infra/pose_temponet_execution_20261121_A1/plan_controls.json --output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-temporal-MLP-20261120_%j.out --error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-temporal-MLP-20261120_%j.out --gres=gpu:1 --qos=normal",
+    "gpu_ore_stimate": "1.75",
+    "id": "TCNH-controls-temporal-MLP-20261120",
+    "job_slurm": "65035629",
+    "quando": "2026-11-21T15:21:43+01:00",
+    "stato": "sottomesso"
+  },
+  {
+    "agente": "gpt",
+    "campagna": "pose_temponet_20261121_A1",
+    "codice_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+    "comando": "sbatch --parsable --job-name=TCNH-controls-temporal-TCN_post-20261120 --comment=wearusfm:TCNH-controls-temporal-TCN_post-20261120 --account=IscrB_WearUsFM --partition=boost_usr_prod --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=32G --time=05:11:00 --no-requeue --export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1,EXPECTED_SHA=edebfb6c290cf661989c5cff45916bc6a93e607e,TCN_PLAN=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/manifests/b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3.json,TCN_PLAN_SHA256=b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3,TCN_JOB_ID=TCNH-controls-temporal-TCN_post-20261120,TCN_PLAN_COMMIT=6a20054ad2ffdb3d754e6106775a159a0933d99a,TCN_PLAN_REPO_PATH=results/infra/pose_temponet_execution_20261121_A1/plan_controls.json --output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-temporal-TCN_post-20261120_%j.out --error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-temporal-TCN_post-20261120_%j.out --gres=gpu:1 --qos=normal",
+    "gpu_ore_stimate": "5.233333333333333",
+    "id": "TCNH-controls-temporal-TCN_post-20261120",
+    "job_slurm": "65035631",
+    "quando": "2026-11-21T15:21:44+01:00",
+    "stato": "sottomesso"
   }
 ]

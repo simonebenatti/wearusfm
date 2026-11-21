@@ -1,0 +1,53 @@
+{
+ "id": "TCNH-controls-linear-TCN_post-20261120",
+ "creato": "2026-11-21T15:21:36+01:00",
+ "agente": "gpt",
+ "campagna": "pose_temponet_20261121_A1",
+ "gpu_ore_stimate": 5.233333333333333,
+ "codice_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=TCNH-controls-linear-TCN_post-20261120",
+  "--comment=wearusfm:TCNH-controls-linear-TCN_post-20261120",
+  "--account=IscrB_WearUsFM",
+  "--partition=boost_usr_prod",
+  "--nodes=1",
+  "--ntasks=1",
+  "--cpus-per-task=8",
+  "--mem=32G",
+  "--time=05:11:00",
+  "--no-requeue",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1,EXPECTED_SHA=edebfb6c290cf661989c5cff45916bc6a93e607e,TCN_PLAN=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/manifests/b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3.json,TCN_PLAN_SHA256=b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3,TCN_JOB_ID=TCNH-controls-linear-TCN_post-20261120,TCN_PLAN_COMMIT=6a20054ad2ffdb3d754e6106775a159a0933d99a,TCN_PLAN_REPO_PATH=results/infra/pose_temponet_execution_20261121_A1/plan_controls.json",
+  "--output=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-linear-TCN_post-20261120_%j.out",
+  "--error=/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-controls-linear-TCN_post-20261120_%j.out",
+  "--gres=gpu:1",
+  "--qos=normal"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/pose_temponet_dispatch.sbatch",
+ "script_stdin_sha256": "baed3903e6e3dda9c0c10e9784548dc38eac6b45fe9acbcad636f8478c14b84e",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-21T15:21:36+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-21T15:21:36+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-21T15:21:39+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 65035626,
+   "uscita": 0,
+   "stdout": "65035626\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+  }
+ ],
+ "job_slurm": 65035626,
+ "uscita": 0,
+ "stdout": "65035626\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\n"
+}

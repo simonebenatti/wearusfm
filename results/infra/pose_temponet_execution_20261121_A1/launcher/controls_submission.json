@@ -1,0 +1,29 @@
+{
+  "checkout_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+  "existing_execpolicy_allow_verified_before_all_six_commands": true,
+  "first_actual_start": null,
+  "first_actual_start_policy": "Record only actual sacct Start/receipts, never estimate as started",
+  "gate_before_selections": "all six completed verified controls and combined positive-control gate",
+  "initial_state": "PENDING Priority",
+  "jobs": {
+    "TCNH-controls-linear-L0-20261120": 65035622,
+    "TCNH-controls-linear-MLP-20261120": 65035623,
+    "TCNH-controls-linear-TCN_post-20261120": 65035626,
+    "TCNH-controls-temporal-L0-20261120": 65035628,
+    "TCNH-controls-temporal-MLP-20261120": 65035629,
+    "TCNH-controls-temporal-TCN_post-20261120": 65035631
+  },
+  "maximum_approved_allocations": 29,
+  "one_submission_each": true,
+  "phase_plan_commit": "6a20054ad2ffdb3d754e6106775a159a0933d99a",
+  "phase_plan_sha256": "b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3",
+  "reserved_core_hours": 137.06666666666666,
+  "reserved_gpu_hours": 17.133333333333333,
+  "reviewed_code_sha": "a1ae9607681c1a181034d7f72770537054af419d",
+  "selections_not_submitted": true,
+  "source_sha256": "9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea",
+  "stage": "controls",
+  "submission_count": 6,
+  "submitter_metadata_head": "9bc90f454ab19facf3b4460d109354b04d6a8920",
+  "total_campaign_allocations_submitted": 16
+}
