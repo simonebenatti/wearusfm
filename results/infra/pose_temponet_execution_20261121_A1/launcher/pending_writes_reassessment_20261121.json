@@ -1,0 +1,22 @@
+{
+  "archive_implementation_commit": "81f3583b3485a0909146696183c0818b4bbc0e48",
+  "archive_padding_bytes": 1768667204,
+  "archive_peak_formal_upper_bound_bytes": 17558685628,
+  "archive_plan_sha256": "ed8933068cb813b8036ee6fcd387259e5db3367c66def1868218962e3ba54797",
+  "archive_script_sha256": "3fff1267f12b88666bca58ab6da44f83342ad39724ae663af8968de8a2fc59dd",
+  "checkpoint_19618_actual_bytes": 4673783740,
+  "free_after_pending_gib": 12.343486785888672,
+  "no_data_deleted_moved_or_modified": true,
+  "observed_at": "2026-11-21T15:08:55+01:00",
+  "old_pending_bytes": 25769803776,
+  "other_metadata_operational_reserved_bytes_unchanged": 4294967296,
+  "other_two_checkpoints_maximum_bytes_each": 6442450944,
+  "pending_write_bytes": 23622320128,
+  "quota_passes": true,
+  "reason": "Previous 20 GiB scaling estimate included a fourth full-sized temporary copy. Pinned implementation copies each of three sources directly to its exclusive final destination, no full-sized WORK temporary. First checkpoint size measured; next two are bounded by 6 GiB each in code. Retain 18 GiB for formal <=16.353 GiB output peak plus >1.64 GiB padding, and the entire original 4 GiB unrelated metadata reserve.",
+  "scaling_archive_reserved_bytes": 19327352832,
+  "source_policy": "Current pinned plans only; recompute if another archive/storage plan is released.",
+  "status": "measured_operator_estimate_no_gate_or_source_change",
+  "unchanged_minimum_free_plus_pending_bytes": 12884901888,
+  "work_free_bytes": 36876038144
+}

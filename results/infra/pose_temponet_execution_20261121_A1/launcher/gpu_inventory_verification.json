@@ -1,0 +1,100 @@
+{
+  "inventory": {
+    "code_dir": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1",
+    "different_node": true,
+    "expected_code_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
+    "expected_numeric_sha256": "12cb2a0b3207b66e260d3ca490db93ee0c029bb8f03d766df89a9edba6b7eb3f",
+    "matches": true,
+    "node": "lrdn0058",
+    "numeric_context": {
+      "cuda": "12.1",
+      "flags": {
+        "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true,
+        "cudnn_tf32": false,
+        "deterministic": true,
+        "deterministic_warn_only": false,
+        "matmul_tf32": false
+      },
+      "hardware": {
+        "cpu_model": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+        "gpu_bytes": 68099571712,
+        "gpu_capability": [
+          8,
+          0
+        ],
+        "gpu_name": "NVIDIA A100-SXM-64GB",
+        "kind": "gpu",
+        "machine": "x86_64"
+      },
+      "numpy": "1.26.4",
+      "python": "3.11.6",
+      "scipy": "1.12.0",
+      "sklearn": "1.4.1.post1",
+      "threadpools": [
+        {
+          "architecture": "SkylakeX",
+          "internal_api": "openblas",
+          "num_threads": 8,
+          "prefix": "libopenblas",
+          "threading_layer": "pthreads",
+          "version": "0.3.21.dev"
+        },
+        {
+          "architecture": "SkylakeX",
+          "internal_api": "openblas",
+          "num_threads": 8,
+          "prefix": "libopenblas",
+          "threading_layer": "pthreads",
+          "version": "0.3.23.dev"
+        },
+        {
+          "architecture": null,
+          "internal_api": "openmp",
+          "num_threads": 8,
+          "prefix": "libgomp",
+          "threading_layer": null,
+          "version": null
+        },
+        {
+          "architecture": null,
+          "internal_api": "openmp",
+          "num_threads": 8,
+          "prefix": "libgomp",
+          "threading_layer": null,
+          "version": null
+        },
+        {
+          "architecture": null,
+          "internal_api": "openmp",
+          "num_threads": 8,
+          "prefix": "libomp",
+          "threading_layer": null,
+          "version": null
+        }
+      ],
+      "threads": {
+        "environment": {
+          "MKL_NUM_THREADS": "8",
+          "OMP_NUM_THREADS": "8",
+          "OPENBLAS_NUM_THREADS": "8"
+        },
+        "interop": 1,
+        "intraop": 8
+      },
+      "torch": "2.2.0a0+git6c8c5ad"
+    },
+    "numeric_sha256": "12cb2a0b3207b66e260d3ca490db93ee0c029bb8f03d766df89a9edba6b7eb3f",
+    "schema": "TCNH-second-node-numeric-inventory-v1",
+    "signal_inputs_read": false,
+    "slurm_job_id": "65033157",
+    "source_sha256": "9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea"
+  },
+  "original_log": {
+    "bytes": 2800,
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/TCNH-GPU-inventory-A1-20261121_65033157.out",
+    "sha256": "ddc1f812818f9ebb7fafd7fecd9964191a5da75ca718eb5bb6712a11d3aada6d"
+  },
+  "sacct": "65033157|COMPLETED|0:0|20|8|billing=8,cpu=8,gres/gpu=1,mem=32G,node=1|lrdn0058\n"
+}
