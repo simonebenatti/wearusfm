@@ -1,0 +1,102 @@
+{
+  "execution_commit": "4e880b9f6787d7294712370d00ed485bfbe45735",
+  "operator": "3-launcher",
+  "campaign_directory": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-cuda-20261121",
+  "pins": {
+    "results/infra/contrastive_targets_20261118/cuda_handoff_20261121/prepare_handoff.py": "a199a8182a967c594c4af52f7d9154c3605898d14c7db5ac62d639d6919efac7",
+    "results/infra/contrastive_targets_20261118/cuda_handoff_20261121/login_check.sh": "2289c18fa4eb11057f15d0dff25b1499dd466268c0ffc7308770055076d35f6b",
+    "scripts/slurm/contrastive_preflight_gpu.sbatch": "d3f128ae4dc1ea7565aa4603069f5578260f261268430b4c262b02c2d619128f",
+    "scripts/slurm/campaign_checkout.sbatch": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+    "results/infra/contrastive_targets_20261118/releases/cuda_20261121/cuda.job.json": "a2d380b35bf44bd2c90cb190557836394a788050e76627ed9e6f19f4be88ad20",
+    "results/infra/contrastive_targets_20261118/releases/audit_20261120/review_binding.json": "171b47df22e3990d07e4411b3148e2e89b5d8645f07cdff84db9d166e8c2e1bb",
+    "results/infra/contrastive_targets_20261118/cuda_handoff_20261121/verify_results.py": "6b035bd8da01e60ae0679ff7fbf944c979079aec05734429f14c6a2e7d88a665",
+    "results/infra/contrastive_targets_20261118/releases/cuda_20261121/cuda_evidence.json": "be648e00b6b70a0ff82ec9c30ab0f95d85e33d7038324804d6e102a29d95d725",
+    "results/infra/contrastive_targets_20261118/calibration_execution_20261121/calibration_report.json": "20cb900522b62b46f17d1b65cbbe1ef579a4cdd5e935a7ab31b7a309ed516532",
+    "results/infra/contrastive_targets_20261118/calibration_execution_20261121/calibration/summary.json": "7cdf45af1b0b1250445844f4fe2955a12640d95cbf10729fb80d91a06d5855cd",
+    "results/infra/contrastive_targets_20261118/calibration_execution_20261121/allocation.sacct.tsv": "4b991416b7d28dd8ed07209d0c7ef563221f9d3901496d5548f52196f1350fa2",
+    "results/infra/contrastive_targets_20261118/calibration_execution_20261121/checkpoint_remote_receipt.txt": "f56c96487188cfe1ac3157ce6d65d937bf6f0b72024a2d2bc66e810f9d645aa6",
+    "results/infra/contrastive_targets_20261118/audit_execution_20261120/audit_accounting.json": "594d72932f2ca15440ee4bf1255a0abe035467933703efcd23309a6e14a32726",
+    "results/infra/contrastive_targets_20261118/audit_execution_20261120/audit.sacct.tsv": "8d2c71fbcbe883cf906b8349d5b104882307a26e859cc95629bf295f1c413cfe",
+    "scripts/submit_job.py": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82"
+  },
+  "deploy": [
+    "git",
+    "-C",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets",
+    "push",
+    "leonardo",
+    "4e880b9f6787d7294712370d00ed485bfbe45735:refs/heads/deploy/contrastive-targets-cuda-20261121"
+  ],
+  "verify_deploy_sha": [
+    "git",
+    "-C",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets",
+    "ls-remote",
+    "--exit-code",
+    "leonardo",
+    "refs/heads/deploy/contrastive-targets-cuda-20261121"
+  ],
+  "before_checkout": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/results/infra/contrastive_targets_20261118/cuda_handoff_20261121/prepare_handoff.py",
+    "--frozen-sha",
+    "4e880b9f6787d7294712370d00ed485bfbe45735",
+    "--login-check",
+    "checkout"
+  ],
+  "checkout_only": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "CONTRASTIVE-targets-v3-20261118",
+    "--id",
+    "CONTRAST-CHECKOUT-cuda-targets-v3-20261118",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/scripts/slurm/campaign_checkout.sbatch",
+    "--",
+    "--cpus-per-task=4",
+    "--mem=2G",
+    "--time=00:04:00",
+    "--export=ALL,CAMPAIGN=contrastive-targets-cuda-20261121,CAMPAIGN_SHA=4e880b9f6787d7294712370d00ed485bfbe45735,EXPECTED_SHA=4e880b9f6787d7294712370d00ed485bfbe45735"
+  ],
+  "before_cuda": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/results/infra/contrastive_targets_20261118/cuda_handoff_20261121/prepare_handoff.py",
+    "--frozen-sha",
+    "4e880b9f6787d7294712370d00ed485bfbe45735",
+    "--login-check",
+    "cuda"
+  ],
+  "cuda_only": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "CONTRASTIVE-targets-v3-20261118",
+    "--id",
+    "CONTRAST-CUDA-targets-v3-20261118",
+    "--gpu-ore",
+    "2",
+    "--",
+    "--cpus-per-task=32",
+    "--gres=gpu:4",
+    "--mem=240G",
+    "--time=00:30:00",
+    "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-cuda-20261121,EXPECTED_SHA=4e880b9f6787d7294712370d00ed485bfbe45735,TORCH_DIST_INIT_BARRIER=1",
+    "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-cuda-20261121/scripts/slurm/contrastive_preflight_gpu.sbatch",
+    "results/infra/contrastive_targets_20261118/releases/cuda_20261121/cuda.job.json"
+  ],
+  "requested": {
+    "gpu_hours": 2,
+    "core_hours": 16.266666666666666
+  },
+  "slurm_allowance": {
+    "gpu_hours": 0.4,
+    "core_hours": 3.6
+  }
+}
