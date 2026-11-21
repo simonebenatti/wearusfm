@@ -1,0 +1,21 @@
+[good] bind: BOUND | last:  | require: REQUIRE_OK
+[double] bind: NOT_BOUND | last: ValueError: Requires precisely one current cn-restart-review block | require: ValueError: New Claude review and published release_binding.json required
+[badhash] bind: NOT_BOUND | last: ValueError: Review does not approve this exact CN restart package | require: ValueError: New Claude review and published release_binding.json required
+[crlf] bind: NOT_BOUND | last: ValueError: Requires precisely one current cn-restart-review block | require: ValueError: New Claude review and published release_binding.json required
+[trailing] bind: BOUND | last:  | require: REQUIRE_OK
+[quoted_plus_real] bind: BOUND | last:  | require: REQUIRE_OK
+[indented_plus_real] bind: BOUND | last:  | require: REQUIRE_OK
+[fenced_example_plus_real] bind: NOT_BOUND | last: ValueError: Requires precisely one current cn-restart-review block | require: ValueError: New Claude review and published release_binding.json required
+[oldblock] bind: NOT_BOUND | last: ValueError: Requires precisely one current cn-restart-review block | require: ValueError: New Claude review and published release_binding.json required
+[pretty] bind: BOUND | last:  | require: REQUIRE_OK
+[not_ancestor] bind: NOT_BOUND | last: subprocess.CalledProcessError: Command '['git', '-C', '/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad | require: ValueError: New Claude review and published release_binding.json required
+[short_commit] bind: NOT_BOUND | last: ValueError: Full Claude review commit required | require: ValueError: New Claude review and published release_binding.json required
+[bound good for tamper tests]
+[tamper compare.py] require: ValueError: Review does not approve this exact CN restart package
+[tamper test file, outside package] require: REQUIRE_OK
+[tamper production module] require: ValueError: Wrong scientific baseline or diagnostic plan
+[tamper scripts/submit_job.py (not run on cluster)] require: REQUIRE_OK
+[tamper evidence start.json] require: subprocess.CalledProcessError: Command '['git', '-C', '/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad
+[forged binding, self-consistent] require: REQUIRE_OK
+[release commit 74f42236] status: '' require: REQUIRE_OK
+[rebind existing] FileExistsError: [Errno 17] File exists: '/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a

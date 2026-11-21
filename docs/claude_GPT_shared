@@ -8304,6 +8304,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Sensori. Alla domanda sulle «4 regioni (superiore destra, superiore sinistra, inferiore destra e inferiore sinistra)» Simone ha precisato «Quadranti dell'arto» e, con uno schizzo, «non importa quanti sensori ci sono in ogni quadrante, lo dice il dataset». Esito in `notes/SENSORI_4_REGIONI.md` (fuori dal repository), 21 righe: quattro gruppi attorno all'arto formabili per 17 (16 «solo relativi» più putEMG); Zhang anatomical approssimato per muscolo; Hyser per blocco; non possibile per Zhang random e Camargo. Letto dal codice di ingest, non dai sidecar su Leonardo.
 - Disco del Mac: con il via di Simone («Sì, cancellale») ho tolto quattro cartelle temporanee di lavori chiusi in `/private/tmp` (una era già vuota): da 2,2 a 8,4 GiB liberi.
 
+### 2026-11-21 | Claude | Review della prova mirata InfoNCE (`9d34dc69`): release chiusa, due difetti bloccanti nel confronto
+- Richiesta: prompt di GPT e messaggio di Simone del 21/11 («Se approvi il diagnostico, pubblica il nuovo blocco di review previsto nel prompt e restituisci lo SHA completo»).
+- Review in `docs/reviews/claude_review_contrastive_cn_restart_probe_20261121.md`, prove nella cartella `_evidence/`. Blocco `cn-restart-review` NON emesso; nessun job da me.
+- Metodo: lettura mia, impronte ricalcolate (`b0640ca6…`, `9d5811b6…`), sette revisori e 34 scettici, catena intera su CPU con 4 processi Gloo, bozza riletta da un verificatore.
+- Letture su Leonardo in sola lettura: sorgente e API di torch 2.2; `checkpoint_differences` del commit candidato eseguita sui checkpoint storici veri; requisiti del confronto sugli artefatti remoti.
+- Esito: disegno approvato; gambe, riscaldamento e osservatore verificati con il codice vero; due difetti bloccanti nel solo confronto CPU (B-1, B-2) e nove correzioni da fare nello stesso commit.
+- Su CPU, con il trainer vero su un modello piccolo, la ripresa riscaldata ricostruisce il continuo bit per bit e la classificazione dà `SUPPORTED`: indicazione, non misura.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11310,3 +11318,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Raggio dei token interamente nascosti: nelle note di lavoro era uscito 2 dal piano del 02/11; la configurazione eseguita di T100-G dice `masked_loss_radius` 0 (riga 38). Le tavole usano 0.
 - Commenti non aggiornati visti dai verificatori, senza effetto sui dati: `src/wearusfm/training/masking.py` alla riga 1 parla di «BOZZA D10, non firmata» e più sotto di D10 firmata il 03/10. Gli altri sono elencati nei rapporti in `notes/` (fuori dal repository).
 - Raccoglitore delle prove: `results/infra/coordinamento_claude/raccogli_prove.py` si è fermato con «FERMO: possibile segreto, chiave o indirizzo» su una mia lettura fallita che contiene solo la riga `Permission denied` con utente e host. Le letture fallite di questo tipo sono quattro (08/11 10:14, 09/11 11:41, 12/11 09:35, 21/11 09:07). Ho tolto le otto copie parziali che aveva già scritto e non ho forzato nulla: le letture dei job del coordinamento dal 07/11 al 21/11 non sono ancora nel repository. Serve una regola di taglio per quella riga, oppure togliere i quattro file dal Mac: decide Simone.
+
+### 2026-11-21 | Claude | Prova mirata InfoNCE: B-1, B-2 e correzioni prima della misura (per GPT)
+- B-1: `contrastive_cn_restart_observe.py:144`, `torch.load` con `Path` e `mmap=True`; il torch 2.2 del cluster vuole `str` (`serialization.py:1012-1014`): il report uscirebbe `INCONCLUSIVE`.
+- B-2: `contrastive_cn_restart_compare.py:248`; `cuda_rng.1`, `.2` e `.3` di ogni ripresa differiscono dal continuo per costruzione (`run.py:1383`, `1463`, `1446-1450`, `1482`). Provato sui checkpoint veri: `INCONCLUSIVE` garantito.
+- Da registrare prima della misura: regola per i due parametri scalari (ID 253 e 257) contro la soglia 1e-6, e regola per rieseguire il solo confronto su CPU a criteri invariati.
+- Nello stesso commit: test di `compare()` con il torch 2.2 simulato e payload realistico, `TimeoutExpired` nell'except, `--gpu-ore 1.0`, controllo della norma a 1e-12, costanti del piano, comando di `--validate-only`, tempi per gamba.
+- Poi rileggo solo il diff ed emetto il blocco sul commit nuovo.

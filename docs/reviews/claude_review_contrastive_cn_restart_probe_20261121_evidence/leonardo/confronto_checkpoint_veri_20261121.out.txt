@@ -1,0 +1,23 @@
+21/11/2026 18:54:54
+-rw-r--r--. 1 sbenatti interactive 463190144 Nov 21 11:00 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/benchmark/CN/checkpoint.pt
+-rw-r--r--. 1 sbenatti interactive 463190144 Nov 21 14:53 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_A/checkpoint.pt
+-rw-r--r--. 1 sbenatti interactive 463190144 Nov 21 15:01 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_B/checkpoint.pt
+torch 2.2.0a0+git6c8c5ad
+chiavi continuo: ['alarm_counts', 'config', 'contrastive_initial_sha256', 'contrastive_provenance', 'contrastive_state', 'cuda_rng', 'data_signature', 'optimizer', 'pose_stats_sha256', 'rank_rng', 'step', 'stream', 'student', 'teacher', 'torch_rng', 'world_size']
+chiavi A: ['alarm_counts', 'config', 'contrastive_initial_sha256', 'contrastive_provenance', 'contrastive_state', 'cuda_rng', 'data_signature', 'optimizer', 'pose_stats_sha256', 'rank_rng', 'step', 'stream', 'student', 'teacher', 'torch_rng', 'world_size']
+foglie continuo {'Tensor:torch.float64': 34, 'Tensor:torch.float32': 7302, 'builtins.float': 6103, 'builtins.bool': 32, 'builtins.NoneType': 5405, 'builtins.int': 24931, 'builtins.str': 17992, 'Tensor:torch.uint8': 13}
+foglie A {'Tensor:torch.float64': 34, 'Tensor:torch.float32': 7302, 'builtins.float': 6103, 'builtins.bool': 32, 'builtins.NoneType': 5405, 'builtins.int': 24931, 'builtins.str': 17992, 'Tensor:torch.uint8': 13}
+step continuo: 576 | A: 576
+world_size continuo: 4 | A: 4
+alarm_counts continuo: (0, 0) | A: (0, 0)
+data_signature continuo: {'target_version': 'step1_psd_power_shape_energy_fast125_v3', 'readout_version': 'p1p2_qc_equal_channel_v1', 'manifest_sha256': '6d6d8167b882eb4079fcc566748028d | A: {'target_version': 'step1_psd_power_shape_energy_fast125_v3', 'readout_version': 'p1p2_qc_equal_channel_v1', 'manifest_sha256': '6d6d8167b882eb4079fcc566748028d
+pose_stats_sha256 continuo: '757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e' | A: '757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e'
+contrastive_initial_sha256 continuo: 'ba8a86579992a0eeb2a8072c67eef30b699465ad091671b50123c0073173fa2f' | A: 'ba8a86579992a0eeb2a8072c67eef30b699465ad091671b50123c0073173fa2f'
+stream tipo: dict | repr: {'num_workers': 6, 'segment': 1200, 'world_size': 4}
+torch_rng uguale: True
+cuda_rng tipo: list len 4 | uguali per dispositivo: [True, False, False, False]
+rank_rng tipo: list chiavi[0]: ['cuda_rng', 'torch_rng']
+continuo vs A | exact_payload False | tensori float diversi 1990 | metadata_or_schema_different ['cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] n 3
+   tensori diversi per parte: {'student': 270, 'teacher': 270, 'optimizer.state': 540, 'contrastive_state.queue': 910}
+A vs B | exact_payload True | float diversi 0 | metadati diversi []
+secondi 24.4

@@ -1,0 +1,32 @@
+21/11/2026 18:48:51
+torch 2.2.0a0+git6c8c5ad
+GradBucket: ['buffer', 'gradients', 'index', 'is_last', 'parameters', 'set_buffer']
+CudaDeviceProperties: ['gcnArchName', 'is_integrated', 'is_multi_gpu_board', 'major', 'max_threads_per_multi_processor', 'minor', 'multi_processor_count', 'name', 'total_memory']
+    def _check_comm_hook(self, hook):
+        if not callable(hook):
+            self._log_and_throw(TypeError, "Communication hook must be callable.")
+
+        sig = inspect.signature(hook)
+        if (
+            sig.parameters["bucket"].annotation != inspect._empty
+            and sig.parameters["bucket"].annotation != dist.GradBucket
+        ):
+            self._log_and_throw(
+                ValueError,
+                "Communication hook: bucket annotation should be dist.GradBucket.",
+            )
+
+        if (
+            sig.return_annotation != inspect._empty
+            and sig.return_annotation != torch.futures.Future[torch.Tensor]
+        ):
+            self._log_and_throw(
+                ValueError,
+                "Communication hook: return annotation should be torch.futures.Future[torch.Tensor].",
+            )
+
+        if hook.__name__ in [
+            "bf16_compress_
+file_digest True
+untyped_storage True
+cuda available on login: False

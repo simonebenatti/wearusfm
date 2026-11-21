@@ -1,0 +1,88 @@
+21/11/2026 18:48:25
+TORCH_DIR=/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/torch
+__all__ = ['__version__', 'debug', 'cuda', 'git_version', 'hip']
+__version__ = '2.2.0a0+git6c8c5ad'
+--- serialization.py: mmap
+872:    mmap: Optional[bool] = None,
+880:    """load(f, map_location=None, pickle_module=pickle, *, weights_only=False, mmap=None, **pickle_load_args)
+922:        mmap: Indicates whether the file should be mmaped rather than loading all the storages into memory.
+925:            second step is a no-op if the final location is CPU. When the ``mmap`` flag is set, instead of copying the
+926:            tensor storages from disk to CPU memory in the first step, ``f`` is mmaped.
+990:    if mmap is None:
+991:        mmap = False
+1012:                if mmap:
+1014:                        raise ValueError("f must be a string filename in order to use mmap argument")
+1031:        if mmap:
+1032:            raise RuntimeError("mmap can only be used with files saved with "
+1034:                               "please torch.save your checkpoint with this option in order to use mmap.")
+--- righe attorno al controllo
+                    return torch.jit.load(opened_file, map_location=map_location)
+                if mmap:
+                    if not isinstance(f, str):
+                        raise ValueError("f must be a string filename in order to use mmap argument")
+                    size = os.path.getsize(f)
+                    overall_storage = torch.UntypedStorage.from_file(f, False, size)
+                if weights_only:
+                    try:
+--- default_hooks.py
+from typing import Any, Callable
+
+import torch
+import torch.distributed as dist
+
+__all__ = ["allreduce_hook", "fp16_compress_hook", "bf16_compress_hook", "fp16_compress_wrapper", "bf16_compress_wrapper"]
+
+def _allreduce_fut(
+    process_group: dist.ProcessGroup, tensor: torch.Tensor
+) -> torch.futures.Future[torch.Tensor]:
+    "Averages the input gradient tensor by allreduce and returns a future."
+    group_to_use = process_group if process_group is not None else dist.group.WORLD
+
+    # Apply the division first to avoid overflow, especially for FP16.
+    tensor.div_(group_to_use.size())
+
+    return (
+        dist.all_reduce(tensor, group=group_to_use, async_op=True)
+        .get_future()
+        .then(lambda fut: fut.value()[0])
+    )
+
+
+def allreduce_hook(
+    process_group: dist.ProcessGroup, bucket: dist.GradBucket
+) -> torch.futures.Future[torch.Tensor]:
+    """
+    This DDP communication hook just calls ``allreduce`` using ``GradBucket``
+    tensors. Once gradient tensors are aggregated across all workers, its ``then``
+    callback takes the mean and returns the result. If user registers this hook,
+    DDP results is expected to be same as the case where no hook was registered.
+    Hence, this won't change behavior of DDP and user can use this as a reference
+    or modify this hook to log useful information or any other purposes while
+    unaffecting DDP behavior.
+
+    Example::
+        >>> # xdoctest: +SKIP
+        >>> ddp_model.register_comm_hook(process_group, allreduce_hook)
+    """
+    return _allreduce_fut(process_group, bucket.buffer())
+
+
+def fp16_compress_hook(
+    process_group: dist.ProcessGroup, bucket: dist.GradBucket
+) -> torch.futures.Future[torch.Tensor]:
+--- distributed.py register_comm_hook
+    def register_comm_hook(self, state: object, hook: Callable):
+        r"""
+        Register communication hook for user-defined DDP aggregation of gradients across multiple workers.
+
+        This hook would be very useful for researchers to try out new ideas. For
+        example, this hook can be used to implement several algorithms like GossipGrad
+        and gradient compression which involve different communication strategies for
+1874:        self._check_comm_hook(hook)
+1877:        dist._register_comm_hook(self.reducer, state, hook)
+2077:    def _check_comm_hook(self, hook):
+--- optimizer hooks
+418:    def register_step_pre_hook(self, hook: OptimizerPreHook) -> RemovableHandle:
+440:    def register_step_post_hook(self, hook: OptimizerPostHook) -> RemovableHandle:
+--- python
+Python 3.11.6
