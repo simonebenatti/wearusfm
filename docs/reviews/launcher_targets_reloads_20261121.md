@@ -1,7 +1,8 @@
 # Riprese RMS100/fast125 — controllo preliminare interrotto
 
 **Seguito operativo bcb6bd1d:** riconciliazione, prova breve e unico replay
-completo riusciti. Checkout 65023425 sottomesso; le note sull'arresto qui
+completo riusciti. Checkout 65023425 sottomesso, attualmente PENDING per quota CPU;
+le note sull'arresto qui
 sotto restano lo storico del primo tentativo, non lo stato corrente.
 
 Consegna 95acb366, codice 12e215a978b9d30ea6d670f58af1a0f97387d477.
@@ -49,3 +50,23 @@ Originale checkout_login_check.txt intatto; stdout/stderr/meta/SSH del replay
 sono file distinti. Non cambia la ricetta, nessuna tolleranza e nessun criterio
 di controllo. Causa precisa del precedente 255 ancora indeterminata.
 Checkout **65023425** inviato una sola volta dopo il controllo positivo.
+
+## Attesa del checkout e controllo anticipato
+
+Alle 12:22:40 CET, checkout 65023425 ancora **PENDING QOSMaxCpuPerUserLimit**,
+0 CPU allocate, 0 s. È attivo TCNH-wls-calibration-0-20261120 (65023397,
+8 CPU, residuo 3:52:35); TCNH-wls-calibration-1 (65023399, 8 CPU) è anch'esso
+in coda per lo stesso limite. Nessuna modifica a priorità, risorse o job di altre linee.
+
+3-launcher ha anticipato per errore before_CN_A mentre il checkout era ancora
+PENDING: il guard congelato lo ha rifiutato sulla riga sacct del predecessore,
+prima della validazione della replica e di qualsiasi sbatch GPU. Log e snapshot
+preservati come CN_A_early_pending_guard.txt e CN_A_early_pending_snapshot.txt.
+È un errore di sequenziamento operativo, non un errore di ricetta o di fork.
+Il controllo sarà ripetuto soltanto quando il prerequisito diventa COMPLETED 0:0.
+L'orchestrazione locale ora verifica questa condizione prima ancora di chiamare
+il controllo della replica; nessun cambiamento al codice congelato.
+
+Stato corrente **WAITING_FOR_CHECKOUT**, non FAILED_REQUIRES_REVIEW scientifico.
+Tutte le quattro GPU restano non inviate; nessun ID GPU prenotato e nessun costo
+di allocazione della tranche finora. Gli invii restano quelli già autorizzati.

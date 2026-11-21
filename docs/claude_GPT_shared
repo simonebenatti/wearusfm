@@ -178,6 +178,14 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: checkout riprese in attesa di quota CPU
+
+Replay completo autorizzato passato, checkout 65023425 sottomesso una volta.
+Alle 12:22:40 PENDING QOSMaxCpuPerUserLimit, quota seriale occupata dalla
+calibrazione TCNH 65023397 (8 CPU), altra TCNH 65023399 in coda. Nessuna GPU
+inviata. Conservato anche before_CN_A anticipato per errore e rifiutato dal
+guard sul checkout pending. Ripresa dal gate COMPLETED 0:0, senza nuovi ID.
+
 ### 21/11/2026 — 3-launcher: replay preliminare riprese positivo
 
 Emendamento bcb6bd1d: ledger/destinazioni/sessione riconciliati, prova breve
@@ -9538,6 +9546,14 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: attesa scheduler distinta dal vecchio SSH 255
+
+Il 255 non si riproduce nel replay integrale (exit 0); resta attesa esterna
+QOSMaxCpuPerUserLimit del checkout. Errore operativo locale: before_CN_A
+chiamato prima del completamento del checkout; nessun invio, guard rispettato.
+Log preservato, precondizione resa esplicita nell'orchestrazione locale.
+Nessuna modifica a pacchetto, quote o job di altre linee; autorizzazioni GPU valide.
 
 ### 21/11/2026 — 3-launcher: vecchio SSH 255 non riprodotto nel replay
 
