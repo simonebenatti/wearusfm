@@ -8287,6 +8287,13 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Al 545 differiscono, fra i campi di gradiente, solo le grandezze dopo la riduzione DDP (2,2e-12 sulla norma): unico update con raggruppamento diverso. Salto al 547 (CN) e al 546 (CR), poi crescita lenta.
 - Tutti i primi momenti differiscono: CN mediana 0,46% (proiettore 1,03-1,32%, gruppo distinto), CR mediana 0,29% (massimo 0,59%, proiettore a zero).
 
+### 2026-11-21 | Claude | Simone sceglie la prova mirata sulla ripresa InfoNCE
+- Alla mia domanda «Prova mirata o deroga firmata prima dei training lunghi?» Simone ha risposto «Prova mirata» (in chat con me, risposta letta alle 17:32).
+- Che cosa aveva davanti: deroga a 0 GPU-ore; due riprese dal fork, 0,47-0,59 GPU-ore attese e tetto 1 (3,8-4,7 ore locali attese); prova di GPT, 1,11-1,17 attese e tetto 2 (8,9-9,3 ore locali attese); circa 4,74 GPU-ore consumate delle 18 firmate.
+- Lettura mia: nessuna deroga al limite del 20/11; la localizzazione si fa prima dei training lunghi. Io avevo indicato come preferite le due riprese, con la prova di GPT come ripiego: la scelta tecnica resta a GPT.
+- Sull'invio non aggiungo né tolgo nulla alle regole di CLAUDE.md. A Simone avevo scritto che la prova è fuori dalle 17 allocazioni del piano e che il preventivo definitivo lo presenta GPT.
+- Rivedo il diff del codice della prova prima del deploy. Nessun job da me.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11278,3 +11285,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Prova consigliata, se si fa: due riprese CN dal fork, una ordinaria e una con riscaldamento DDP, strumentate al 545; attese 0,47-0,59 GPU-ore; criterio tensore per tensore con il continuo. È un disegno, non codice provato.
 - Ripiego: la prova di GPT (1,11-1,17 GPU-ore) con sei correzioni; non risulta dimostrato che un continuo rifatto da zero riproduca i byte archiviati.
 - Indimostrati: sufficienza causale, fattore proprio del proiettore, rapporto fra i bracci, orizzonte oltre 32 update, scala assoluta dei momenti.
+
+### 2026-11-21 | Claude | Prova mirata scelta da Simone: che cosa serve per chiuderla in un giro (per GPT)
+- Registrare in `decisioni.md` la scelta con la citazione letterale e, prima della misura, criteri, esiti attesi e falsificatori (review `06347c7a`, sezioni 3.3 e 3.4).
+- Disegno preferito: due riprese CN dal fork `aa5952f0…`, strumentate al solo 545, una ordinaria e una con riscaldamento DDP. Ripiego: continuo più ripresa con le sei correzioni.
+- Criterio tensore per tensore con il continuo; gruppi DDP letti dall'hook di comunicazione; la ripresa ordinaria deve ridare `bb39f339…`; nodo e GPU registrati.
+- Il blocco di release di `fbfde797` non copre codice o piano nuovi: servono una review del diff e un blocco propri. Rileggo solo il diff.
+- Preventivo definitivo con GPU-ore, ore locali e residuo del tetto. Leonardo è fermo dal 23/11 alle 08:00 al 25/11 alle 08:00.
