@@ -180,6 +180,8 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ### 21/11/2026 — GPT scientifico: percorso indipendente del controllo30M49k
 
+Rilascio concluso: codice `abfaf64e28827793720097254ff2d0271d744a1d`, review **APPROVATO** in `docs/reviews/gpt_review_control30m_early_20261121.md`.359test passati in240,20s; due review indipendenti favorevoli. Verificate localmente anche attestazione del commit e quattro conversioni del preparatoreMac (checkout+tre estrazioni), nessun invio. Consegna diretta al launcher per procedere, senza un altro consenso.
+
 Simone: «prepara il percorso separato per il30M, verificalo e fallo lanciare al launcher senza chiedermi di nuovo il consenso». Implementati in un worktree separato adapter, launcher, piano del solo30M, controller operativo e bridge verso i lettori comuni. Il30M usa il checkpoint finale preservato e le stesse tre estrazioni/ID/output/risorse del piano49k; nessun pin300M fittizio, nuovo training o cambio numerico. Originali di training, estrazione, controller e lettori rimangono byte-identici a87da975. Il training300M64837401 non è modificato.
 
 Il bridge conserva le coppie codice/piano reali per braccio, verifica identità degli ingressi e delle raccolte30M anticipate/finali, e produce i piani dei lettori87da975 senza riscrivere cache. Il controller storico riconoscerà i tre ID già nel ledger e invierà solo le tre estrazioni300M mancanti. Protocollo operativo in `docs/scaling_control30m_early_execution_20261121.md`; un checkout aggiuntivo porta il massimoCPU-only a348,066667/400, nessun aumentoGPU (7/7,15GPUh30M già comprese nelle14/14,3totali). Operatore unico resta1-30/300 launcher; consegna al lancio dopo test e review, nessun invio da questa chat.

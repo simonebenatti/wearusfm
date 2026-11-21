@@ -1,0 +1,41 @@
+{
+  "reviewed_commit": "abfaf64e28827793720097254ff2d0271d744a1d",
+  "attestation": {
+    "protocol": "scaling-control30m-early-20261121-v1",
+    "commit": "abfaf64e28827793720097254ff2d0271d744a1d",
+    "base_code": "87da975bc0fd4824684e166659bb996e118ff107",
+    "sha256": {
+      "scripts/scaling_control30m_ops.py": "b2016abcb82d56d3022970635ff463940cb798e22d4f6c80a91424b3537f56b8",
+      "scripts/scaling_control30m_bridge.py": "0803c5cbc25431cf4f9be652b2cefa5f84a84d160379b0f167294f8cce9b4e67",
+      "scripts/scaling_control30m_evaluation.py": "070c248a09e5dcc4b204ba66021d9e710e0fb0ded3d5059b10ba4b74a7e2ec4f",
+      "scripts/slurm/scaling_control30m_evaluation.sbatch": "b135c96a8b0f3578a470d1147db8129d5764dfa09573086aaefaada995213b28",
+      "results/infra/scaling_49046_20261118/evaluation/evaluation/control30m_early_20261121/plan.json": "d7b24bfad92025c60ff1c3324f2a693d375a93ccc9d0631b433541c215052f94",
+      "results/infra/scaling_49046_20261118/evaluation/evaluation/control30m_early_20261121/resource_policy.json": "f4e1e984c075a56c0e3b38cffdb2056ff52bb24ee1f97cfed946cfa8525ec8ae"
+    }
+  },
+  "submitter_preparer_checks": [
+    {
+      "id": "SCALING-49046-control30m-checkout-20261121",
+      "prepared_command_sha256": "272e8f627de80dc1f661a3d44ace04f590e6f98fc27999fb6aaedbc87788202b",
+      "workdir": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-scaling-control30m"
+    },
+    {
+      "id": "SCALING-49046-extract-30m-pose-20261118",
+      "prepared_command_sha256": "3591a5909d2e6ab1260e639d60f7b367ebb07b0c22a73d3b200cb6eb3b8b9506",
+      "workdir": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-scaling-control30m"
+    },
+    {
+      "id": "SCALING-49046-extract-30m-p1-20261118",
+      "prepared_command_sha256": "85b8722280c24e89f69d1bfb24ec6aa321163a80e4ab2afee1f58a49b6f07dfa",
+      "workdir": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-scaling-control30m"
+    },
+    {
+      "id": "SCALING-49046-extract-30m-p2-20261118",
+      "prepared_command_sha256": "8368b16cc2dc2a8fa0cb7c860dc6a9192578b13a5182b29a2474b3d71548bd43",
+      "workdir": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-scaling-control30m"
+    }
+  ],
+  "source_contract_unchanged": true,
+  "submitted": false,
+  "scope": "Local verification only; live gate required before actual command generation"
+}
