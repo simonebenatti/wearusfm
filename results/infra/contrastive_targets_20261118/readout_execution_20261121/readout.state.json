@@ -1,0 +1,46 @@
+{
+ "id": "CONTRAST-READOUT-targets-v3-20261118",
+ "creato": "2026-11-21T15:24:31+01:00",
+ "agente": "gpt",
+ "campagna": "CONTRASTIVE-targets-v3-20261118",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "744ecfa1cccaa7ec650cc874fdc5799a83e0787e",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONTRAST-READOUT-targets-v3-20261118",
+  "--comment=wearusfm:CONTRAST-READOUT-targets-v3-20261118",
+  "--cpus-per-task=8",
+  "--mem=30G",
+  "--time=01:00:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-readout-20261121,EXPECTED_SHA=744ecfa1cccaa7ec650cc874fdc5799a83e0787e",
+  "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-readout-20261121/scripts/slurm/contrastive_preflight_cpu.sbatch",
+  "results/infra/contrastive_targets_20261118/releases/readout_20261121/readout.job.json"
+ ],
+ "dopo": null,
+ "script_stdin": null,
+ "script_stdin_sha256": null,
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-21T15:24:31+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-21T15:24:31+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-21T15:24:37+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 65035852,
+   "uscita": 0,
+   "stdout": "65035852\n",
+   "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+  }
+ ],
+ "job_slurm": 65035852,
+ "uscita": 0,
+ "stdout": "65035852\n",
+ "stderr": "** WARNING: connection is not using a post-quantum key exchange algorithm.\n** This session may be vulnerable to \"store now, decrypt later\" attacks.\n** The server may need to be upgraded. See https://openssh.com/pq.html\nsbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\n"
+}

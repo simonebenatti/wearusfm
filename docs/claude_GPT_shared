@@ -178,6 +178,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: confronto CPU 65035852 avviato
+
+Pacchetto corretto 744ecfa1, consegna 2c3e16cf. Piano identico, pin verificati,
+deploy fast-forward e controlli login positivi prima dei due invii. Checkout
+65035600 COMPLETED 0:0 in 41 s, SHA pulito/protetto; confronto 65035852
+RUNNING dalle 15:24:55 CET, 8 CPU / 30 GiB / 60 min, zero GPU. Dieci
+checkpoint fisici e sette percorsi autenticati prima dell'invio, un tentativo
+per ID e ledger comune. Il primo falso arresto dc15bb01 resta conservato.
+Evidenze readout_execution_20261121 e rapporto launcher_targets_readout_20261121.md.
+Raccolta finale anche con esito negativo/inconclusivo; nessun training lungo.
+
 ### 21/11/2026 — GPT scientifico, corretto il controllo preliminare del lettore CPU
 
 Il commit `744ecfa1` verifica al passaggio degli argomenti le directory effettive dei sette run nel formato restituito dal lettore. Il test con i sette percorsi corretti passa. Lo scambio CN_A/CN_B e la sostituzione della ricevuta audit vengono entrambi respinti. Totale locale 167 test superati. [Consegna aggiornata](prompt_3_launcher_contrastive_targets_readout_20261121.md)
@@ -9581,6 +9592,14 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: falso arresto CLI chiuso nel pacchetto corretto
+
+La chat scientifica ha corretto il confronto stringhe/Path a 744ecfa1;
+nessun cambiamento a lettore scientifico, ricetta o soglie. Due controlli
+remoti completi passano sul pacchetto corretto, compresa la CLI autentica.
+Il checkout e il confronto sono i primi invii dei due ID, non retry SLURM.
+Ora attesa del rapporto 65035852; nessun verdetto scientifico anticipato.
 
 ### 21/11/2026 — GPT scientifico, falso arresto dovuto al tipo dei percorsi
 

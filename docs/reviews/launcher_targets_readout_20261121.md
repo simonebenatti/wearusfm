@@ -1,4 +1,10 @@
-# Confronto CPU RMS100/fast125 — controllo preliminare fermato
+# Confronto CPU RMS100/fast125 — esecuzione avviata
+
+**Stato corrente:** controllo corretto superato, checkout 65035600
+COMPLETED 0:0 in 41 s; confronto 65035852 RUNNING dalle 15:24:55 CET
+del 21/11. SHA effettivo 744ecfa1cccaa7ec650cc874fdc5799a83e0787e,
+consegna 2c3e16cf. La sezione seguente conserva lo storico del primo
+controllo, fermato prima di qualsiasi invio.
 
 21/11/2026, 3-launcher. Consegna f68c753b, SHA di esecuzione
 e0ddbac808c74f133cad619b8a61821e0afe18ea, ricevute delle riprese 358ede81.
@@ -37,3 +43,27 @@ Il launcher non modifica validatore, soglie, pin o piani. Problema restituito
 alla chat scientifica per correzione del validatore, regressione e nuovo
 pacchetto pubblicato prima del deploy. Autorizzazione operativa già acquisita;
 nessun retry del pacchetto fallito e nessun nuovo consenso richiesto.
+
+## Seguito corretto e invii
+
+Il pacchetto 744ecfa1 corregge solo il validatore dei percorsi e ne fissa
+la regressione (consegna scientifica: 167 test passati); fra i 29 pin cambia
+solo il verificatore. Piano rigenerato byte-identico, ID ancora liberi nel
+ledger e submitter persistente identico. Ref deploy avanzato fast-forward
+senza alcun checkout attivo sul riferimento precedente.
+
+Controllo checkout corretto exit 0, ricevuta reader_argv_valid=true e dieci
+checkpoint fisici verificati. Checkout inviato una volta, 65035600:
+4 CPU, 2 GiB, 4 min; COMPLETED 0:0, 15:21:32–15:22:13 CET.
+Verificati SHA effettivo, pulizia e protezione del checkout. Controllo
+before_readout successivo exit 0, stesse dieci ricevute e parser validi.
+Snapshot operativo rinnovato: quota 989,7 GiB / 1 TiB, saldo 653.928 ore
+locali, riserva 12+18 GiB, seriale up e manutenzione confermata. Il proxy
+dei restanti impegni di progetto dallo snapshot è circa 3.763,7 core-ore;
+non è un consuntivo né una nuova imputazione dei tempi già trascorsi.
+
+Confronto inviato una volta come 65035852, 8 CPU / 30 GiB / 60 min,
+0 GPU. Sacct e squeue ne attestano l'avvio effettivo alle 15:24:55 CET su
+login08; richiesta e allocazione con billing=8, cpu=8. I log e le ricevute
+di questo seguito sono distinti dal primo controllo. Nessun training
+lungo avviato; il rapporto finale va raccolto anche con uscita 2.
