@@ -1,0 +1,25 @@
+{
+  "balance_checked": true,
+  "maintenance": "2026-11-23 08:00 Europe/Rome through 2026-11-25 08:00",
+  "new_job_ids_absent_from_ledger": [
+    "TCNH-checkout-A1-20261121",
+    "TCNH-wls-calibration-0-20261120",
+    "TCNH-wls-calibration-1-20261120",
+    "TCNH-GPU-inventory-A1-20261121"
+  ],
+  "next_planned_scratch_refresh": "2026-12-03; forbidden during TCN input reads",
+  "no_duplicate_jobs": true,
+  "no_refresh_during_stage": true,
+  "observed_at": "2026-11-21T12:07:35+01:00",
+  "operator": "2-TCN head launcher",
+  "pending_write_basis": "Conservative 24 GiB reserve for scaling archive and metadata, unchanged; only SCALING-49046 continuation pending; no active user job or refresh observed.",
+  "pending_write_bytes": 25769803776,
+  "reservations_checked": true,
+  "review_commit": "2f759ebbf275e2aae3d63b986b48e035590c82a1",
+  "serial_lane_checked": true,
+  "sources": [
+    "operator_release_read_20261121.txt",
+    "../../pose_temponet_execution_20261119/launcher_preflight_20261120/cpu_inventory_result.json"
+  ],
+  "work_free_bytes": 39557316608
+}

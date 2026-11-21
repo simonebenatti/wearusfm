@@ -1,0 +1,31 @@
+{
+  "deployment_not_yet_published": true,
+  "effective_caps": {
+    "cpu_only_core_hours": 115.5,
+    "gpu_total_hours": 56.1,
+    "neural_gpu_hours": 53.85,
+    "total_core_hours": 564.3
+  },
+  "global_gate": true,
+  "gpu_inventory_script_sha256": "32c1ed764e0e2e26a683bddf451b449e7dd667787965efdc40b7cf9843d8e7ec",
+  "measured_plan_sha256": "594077d61bcfb6f56f19b62a5917827d13ca20413e37faccf98745b71a74aafa",
+  "no_repeat_preflight_or_benchmarks": true,
+  "released_plan_sha256": "a02ccc7838817b3104127e812731243b1b4ce46b090f68ae431c60f1ff96f4c9",
+  "resource_projection": {
+    "allocated_core_hours": 376.20000000000005,
+    "cpu_host_bytes": 5760273450.0,
+    "cpu_jobs": 6,
+    "cpu_only_core_hours": 77.0,
+    "gpu_host_bytes": 8046533760.0,
+    "gpu_hours": 37.400000000000006,
+    "gpu_jobs": 18,
+    "prediction_bytes": 3561216000,
+    "vram_bytes": 144703488.0
+  },
+  "review_commit": "2f759ebbf275e2aae3d63b986b48e035590c82a1",
+  "review_path": "docs/reviews/claude_review_pose_temponet_A1_budget_20261121.md",
+  "review_sha256": "829224979169adcfa9ff8af79eead9085f05888026049e014af46f616a37fbf2",
+  "reviewed_code_sha": "a1ae9607681c1a181034d7f72770537054af419d",
+  "source_sha256": "9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea",
+  "status": "claude_review_converged"
+}

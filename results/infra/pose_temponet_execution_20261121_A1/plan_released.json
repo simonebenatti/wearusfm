@@ -1,0 +1,1366 @@
+{
+  "background_monitor": false,
+  "budget_amendment": {
+    "authorized_caps": {
+      "cpu_only_core_hours": 115.5,
+      "gpu_total_hours": 56.1,
+      "neural_gpu_hours": 53.85,
+      "total_core_hours": 564.3
+    },
+    "base_plan": {
+      "path": "results/infra/pose_temponet_execution_20261120/plan_released.json",
+      "sha256": "84b82384a2eafb60f11480910d33ebc85832cb75063d3479d42e243351ea23b0"
+    },
+    "decision": {
+      "by": "Simone",
+      "date": "2026-11-21",
+      "words": [
+        "va bene se aumenti il budget",
+        "dagli quello che serve moltiplicato per 1.5"
+      ]
+    },
+    "factor": 1.5,
+    "id": "TCNH-budget-A1-20261121",
+    "legacy_receipts": {
+      "TCNH-cpu-benchmark-20261120": {
+        "bytes": 70963,
+        "sha256": "d6fca52ab2d719003d641a24f1067e25c7c31f9400d928c1d0e0d3757fc33ce8"
+      },
+      "TCNH-gpu-benchmark-20261120": {
+        "bytes": 76463,
+        "sha256": "8228db8c6bed7df2eb45eeeedb2203f002ff4e64f625adca010c53f1b367f306"
+      },
+      "TCNH-preflight-20261120": {
+        "bytes": 14122,
+        "sha256": "0a3314138a98ea3b9e6a8475297c38d5fed575dc112eb52dc4ae4d14d51ee16b"
+      }
+    }
+  },
+  "execution_sha256": "857c5f333f82cc1440d3111e424507a3773e978c5b68853353954d148904d7ab",
+  "inputs": {
+    "cache_train": {
+      "bytes": 474412856,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train/train.npz",
+      "sha256": "30c0b50d09fa55e39085e547e923593378e490e86f1b70c1e1ffe8bfdd1eec7e",
+      "users": 40,
+      "windows": 1907
+    },
+    "cache_val": {
+      "bytes": 4593977338,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/49046/pose/val/val.npz",
+      "sha256": "36bab32e5a53cf73640f3ee567404a5a70aa8ecbcb27ce843f24666e4804ce4f",
+      "users": 15,
+      "windows": 18548
+    },
+    "pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e"
+    },
+    "post_ridge_coefficients": {
+      "bytes": 59367,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/post_ridge.coefficients.npz",
+      "sha256": "fc9a9fd1683ad75277d4e61a0c40e14ed34069c705d8d39dee0b2f950c9060ba",
+      "source_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/post_ridge.coefficients.npz"
+    },
+    "post_ridge_predictions": {
+      "bytes": 418440754,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/post_ridge.predictions.npz",
+      "sha256": "36fb5f9b00de385447ed0dd8e14ffcdc854fee086ca75e9951ae4ebac4fb556f",
+      "source_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/post_ridge.predictions.npz"
+    },
+    "target_reference_train": {
+      "bytes": 257675076,
+      "n_recordings": 200,
+      "n_users": 40,
+      "n_windows": 1907,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/train_subset.npz",
+      "sha256": "c7bc296e70197f5a07a590a391f051fa1554425bcdbdb11d046e427a0c50db23"
+    },
+    "target_reference_val": {
+      "bytes": 2485295825,
+      "n_recordings": 1950,
+      "n_users": 15,
+      "n_windows": 18548,
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/pose/val.npz",
+      "sha256": "2e1a9d5977c38e0ab83a03e0a35a2186749251765a81828e0c06c5e84469c904"
+    },
+    "trained_head_predictions": {
+      "bytes": 234048726,
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/trained_head.predictions.npz",
+      "sha256": "9dbd52a0cf05c37e5ea989175d055f33bdd8482426438f028c17f29c8701c0d3",
+      "source_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/fits/pose/49046/trained_head.predictions.npz"
+    }
+  },
+  "jobs": [
+    {
+      "after": [],
+      "fold": null,
+      "head": null,
+      "id": "TCNH-preflight-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "preflight",
+      "resource_release": true,
+      "resources": {
+        "cpus": 2,
+        "gpus": 0,
+        "grace_seconds": 180,
+        "host_ram_gib": 24,
+        "partition": "lrd_all_serial",
+        "requested_seconds": 720
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "preflight",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-preflight-20261120"
+      ],
+      "fold": null,
+      "head": null,
+      "id": "TCNH-cpu-benchmark-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "cpu_benchmark",
+      "resource_release": true,
+      "resources": {
+        "cpus": 8,
+        "gpus": 0,
+        "grace_seconds": 180,
+        "host_ram_gib": 24,
+        "partition": "lrd_all_serial",
+        "requested_seconds": 1620
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "cpu_benchmark",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-preflight-20261120"
+      ],
+      "fold": null,
+      "head": null,
+      "id": "TCNH-gpu-benchmark-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "gpu_benchmark",
+      "resource_release": true,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": 1620
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "gpu_benchmark",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-cpu-benchmark-20261120",
+        "TCNH-gpu-benchmark-20261120"
+      ],
+      "fold": 0,
+      "head": null,
+      "id": "TCNH-wls-calibration-0-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "wls_calibration/0",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 0,
+        "grace_seconds": 180,
+        "host_ram_gib": 24,
+        "partition": "lrd_all_serial",
+        "requested_seconds": 14220
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "wls_calibration",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-cpu-benchmark-20261120",
+        "TCNH-gpu-benchmark-20261120"
+      ],
+      "fold": 1,
+      "head": null,
+      "id": "TCNH-wls-calibration-1-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "wls_calibration/1",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 0,
+        "grace_seconds": 180,
+        "host_ram_gib": 24,
+        "partition": "lrd_all_serial",
+        "requested_seconds": 14220
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "wls_calibration",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-wls-calibration-0-20261120",
+        "TCNH-wls-calibration-1-20261120"
+      ],
+      "fold": null,
+      "head": "L0",
+      "id": "TCNH-controls-linear-L0-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "controls/linear/L0",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "controls",
+      "world": "linear"
+    },
+    {
+      "after": [
+        "TCNH-wls-calibration-0-20261120",
+        "TCNH-wls-calibration-1-20261120"
+      ],
+      "fold": null,
+      "head": "MLP",
+      "id": "TCNH-controls-linear-MLP-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "controls/linear/MLP",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "controls",
+      "world": "linear"
+    },
+    {
+      "after": [
+        "TCNH-wls-calibration-0-20261120",
+        "TCNH-wls-calibration-1-20261120"
+      ],
+      "fold": null,
+      "head": "TCN_post",
+      "id": "TCNH-controls-linear-TCN_post-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "controls/linear/TCN_post",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "controls",
+      "world": "linear"
+    },
+    {
+      "after": [
+        "TCNH-wls-calibration-0-20261120",
+        "TCNH-wls-calibration-1-20261120"
+      ],
+      "fold": null,
+      "head": "L0",
+      "id": "TCNH-controls-temporal-L0-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "controls/temporal/L0",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "controls",
+      "world": "temporal"
+    },
+    {
+      "after": [
+        "TCNH-wls-calibration-0-20261120",
+        "TCNH-wls-calibration-1-20261120"
+      ],
+      "fold": null,
+      "head": "MLP",
+      "id": "TCNH-controls-temporal-MLP-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "controls/temporal/MLP",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "controls",
+      "world": "temporal"
+    },
+    {
+      "after": [
+        "TCNH-wls-calibration-0-20261120",
+        "TCNH-wls-calibration-1-20261120"
+      ],
+      "fold": null,
+      "head": "TCN_post",
+      "id": "TCNH-controls-temporal-TCN_post-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "controls/temporal/TCN_post",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "controls",
+      "world": "temporal"
+    },
+    {
+      "after": [
+        "TCNH-controls-linear-L0-20261120",
+        "TCNH-controls-linear-MLP-20261120",
+        "TCNH-controls-linear-TCN_post-20261120",
+        "TCNH-controls-temporal-L0-20261120",
+        "TCNH-controls-temporal-MLP-20261120",
+        "TCNH-controls-temporal-TCN_post-20261120"
+      ],
+      "fold": null,
+      "head": "L0",
+      "id": "TCNH-selection-L0-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "selection/L0",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "selection",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-controls-linear-L0-20261120",
+        "TCNH-controls-linear-MLP-20261120",
+        "TCNH-controls-linear-TCN_post-20261120",
+        "TCNH-controls-temporal-L0-20261120",
+        "TCNH-controls-temporal-MLP-20261120",
+        "TCNH-controls-temporal-TCN_post-20261120"
+      ],
+      "fold": null,
+      "head": "L13",
+      "id": "TCNH-selection-L13-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "selection/L13",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "selection",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-controls-linear-L0-20261120",
+        "TCNH-controls-linear-MLP-20261120",
+        "TCNH-controls-linear-TCN_post-20261120",
+        "TCNH-controls-temporal-L0-20261120",
+        "TCNH-controls-temporal-MLP-20261120",
+        "TCNH-controls-temporal-TCN_post-20261120"
+      ],
+      "fold": null,
+      "head": "MLP",
+      "id": "TCNH-selection-MLP-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "selection/MLP",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "selection",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-controls-linear-L0-20261120",
+        "TCNH-controls-linear-MLP-20261120",
+        "TCNH-controls-linear-TCN_post-20261120",
+        "TCNH-controls-temporal-L0-20261120",
+        "TCNH-controls-temporal-MLP-20261120",
+        "TCNH-controls-temporal-TCN_post-20261120"
+      ],
+      "fold": null,
+      "head": "TCN_post",
+      "id": "TCNH-selection-TCN_post-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "selection/TCN_post",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "selection",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-controls-linear-L0-20261120",
+        "TCNH-controls-linear-MLP-20261120",
+        "TCNH-controls-linear-TCN_post-20261120",
+        "TCNH-controls-temporal-L0-20261120",
+        "TCNH-controls-temporal-MLP-20261120",
+        "TCNH-controls-temporal-TCN_post-20261120"
+      ],
+      "fold": null,
+      "head": "TCN_pre",
+      "id": "TCNH-selection-TCN_pre-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "selection/TCN_pre",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "selection",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-selection-L0-20261120",
+        "TCNH-selection-L13-20261120",
+        "TCNH-selection-MLP-20261120",
+        "TCNH-selection-TCN_post-20261120",
+        "TCNH-selection-TCN_pre-20261120"
+      ],
+      "fold": null,
+      "head": "L0",
+      "id": "TCNH-refit-L0-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "refit/L0",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "refit",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-selection-L0-20261120",
+        "TCNH-selection-L13-20261120",
+        "TCNH-selection-MLP-20261120",
+        "TCNH-selection-TCN_post-20261120",
+        "TCNH-selection-TCN_pre-20261120"
+      ],
+      "fold": null,
+      "head": "L13",
+      "id": "TCNH-refit-L13-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "refit/L13",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "refit",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-selection-L0-20261120",
+        "TCNH-selection-L13-20261120",
+        "TCNH-selection-MLP-20261120",
+        "TCNH-selection-TCN_post-20261120",
+        "TCNH-selection-TCN_pre-20261120"
+      ],
+      "fold": null,
+      "head": "MLP",
+      "id": "TCNH-refit-MLP-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "refit/MLP",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "refit",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-selection-L0-20261120",
+        "TCNH-selection-L13-20261120",
+        "TCNH-selection-MLP-20261120",
+        "TCNH-selection-TCN_post-20261120",
+        "TCNH-selection-TCN_pre-20261120"
+      ],
+      "fold": null,
+      "head": "TCN_post",
+      "id": "TCNH-refit-TCN_post-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "refit/TCN_post",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "refit",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-selection-L0-20261120",
+        "TCNH-selection-L13-20261120",
+        "TCNH-selection-MLP-20261120",
+        "TCNH-selection-TCN_post-20261120",
+        "TCNH-selection-TCN_pre-20261120"
+      ],
+      "fold": null,
+      "head": "TCN_pre",
+      "id": "TCNH-refit-TCN_pre-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "refit/TCN_pre",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": null
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "refit",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-refit-L0-20261120",
+        "TCNH-refit-L13-20261120",
+        "TCNH-refit-MLP-20261120",
+        "TCNH-refit-TCN_post-20261120",
+        "TCNH-refit-TCN_pre-20261120"
+      ],
+      "fold": null,
+      "head": null,
+      "id": "TCNH-locked-inference-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "locked_inference",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 1,
+        "grace_seconds": 180,
+        "host_ram_gib": 32,
+        "partition": "boost_usr_prod",
+        "requested_seconds": 3420
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "locked_inference",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-locked-inference-20261120"
+      ],
+      "fold": null,
+      "head": null,
+      "id": "TCNH-metrics-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "metrics",
+      "resource_release": false,
+      "resources": {
+        "cpus": 8,
+        "gpus": 0,
+        "grace_seconds": 180,
+        "host_ram_gib": 24,
+        "partition": "lrd_all_serial",
+        "requested_seconds": 3420
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "metrics",
+      "world": null
+    },
+    {
+      "after": [
+        "TCNH-metrics-20261120"
+      ],
+      "fold": null,
+      "head": null,
+      "id": "TCNH-collection-20261120",
+      "operator": "2-TCN head launcher",
+      "output_directory": "collection",
+      "resource_release": false,
+      "resources": {
+        "cpus": 2,
+        "gpus": 0,
+        "grace_seconds": 180,
+        "host_ram_gib": 24,
+        "partition": "lrd_all_serial",
+        "requested_seconds": 720
+      },
+      "retry": "forbidden_without_new_decision",
+      "stage": "collection",
+      "world": null
+    }
+  ],
+  "numeric_pins": {
+    "cpu8": null,
+    "gpu8": null
+  },
+  "operator_checks": {
+    "balance_checked": true,
+    "maintenance": "2026-11-23 08:00 Europe/Rome through 2026-11-25 08:00",
+    "new_job_ids_absent_from_ledger": [
+      "TCNH-checkout-A1-20261121",
+      "TCNH-wls-calibration-0-20261120",
+      "TCNH-wls-calibration-1-20261120",
+      "TCNH-GPU-inventory-A1-20261121"
+    ],
+    "next_planned_scratch_refresh": "2026-12-03; forbidden during TCN input reads",
+    "no_duplicate_jobs": true,
+    "no_refresh_during_stage": true,
+    "observed_at": "2026-11-21T12:07:35+01:00",
+    "operator": "2-TCN head launcher",
+    "pending_write_basis": "Conservative 24 GiB reserve for scaling archive and metadata, unchanged; only SCALING-49046 continuation pending; no active user job or refresh observed.",
+    "pending_write_bytes": 25769803776,
+    "reservations_checked": true,
+    "review_commit": "2f759ebbf275e2aae3d63b986b48e035590c82a1",
+    "serial_lane_checked": true,
+    "sources": [
+      "operator_release_read_20261121.txt",
+      "../../pose_temponet_execution_20261119/launcher_preflight_20261120/cpu_inventory_result.json"
+    ],
+    "work_free_bytes": 39557316608
+  },
+  "operator_evidence": {
+    "bytes": 1065,
+    "path": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-tcn-launcher/results/infra/pose_temponet_execution_20261121_A1/launcher/operator_checks_release_20261121.json",
+    "sha256": "069f846115d35a1ad64da2b3096033fa1d89f78919a1ec3cf9d03c3c34c1e8c4"
+  },
+  "output_root": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117",
+  "producers": {
+    "train": {
+      "details": {
+        "dim": 384,
+        "key_time_valid_sha256": "0065b939fb665ae3ff7cd475d9090a90834ca2e3fea311bbbf8c1fbcd000246f",
+        "n_recordings": 200,
+        "n_users": 40,
+        "n_windows": 1907,
+        "targets": {
+          "arrays": "3fe41f53dc7c2ecd23608276247bf6e89dee4556ec63127bb00d4abbc2b7054e",
+          "central_mask": "ec1ee7176e9cc67f2ed061849adb9b54eb5c62f922bae8128a31462ad0d7b032",
+          "metadata": "b270cdd3070a7b2381bfb5bb01a17458283df3932502dae4e11bacc8b6d9f337"
+        }
+      },
+      "metadata": {
+        "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+        "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+        "checkpoint_step": 49046,
+        "code_sha": "7d276c98fc54d66dab1226226eb6c5e447422c69",
+        "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+        "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+        "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+        "split": "train",
+        "which": "teacher"
+      },
+      "original_cache": {
+        "bytes": 474412856,
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/train/train.npz",
+        "sha256": "30c0b50d09fa55e39085e547e923593378e490e86f1b70c1e1ffe8bfdd1eec7e"
+      },
+      "preservation_policy": "path moved to WORK; hash and bytes identical",
+      "receipt": {
+        "bytes": 342030,
+        "commit": "2930d7d6feb6a054ae0ce9fded98ac5ac1b12abe",
+        "local_copy": "docs/reviews/pose_temponet_runtime_evidence_20261119/producer_train.json",
+        "path": "results/infra/consolidation_long_20261105/execution/receipts/LONG-G49046-pose-train-20261105.json",
+        "sha256": "27297241e4bf0f12a61edb2e5cf5d8cef28262f6f26caee44f98af263b3a1f36"
+      },
+      "storage_directories": [
+        "u03d49b393e",
+        "u055bb1b487",
+        "u06d17ebbe4",
+        "u1066cc94fc",
+        "u1223558697",
+        "u2cc385c3cd",
+        "u323f919c83",
+        "u32473f0e96",
+        "u32cbfe3221",
+        "u342248118e",
+        "u3589743749",
+        "u3669295621",
+        "u3f79dccf7a",
+        "u47c605ad6f",
+        "u5ef3a0537e",
+        "u60e5a2b0a4",
+        "u65228c03b3",
+        "u70ad60b9a1",
+        "u76bfc2d385",
+        "u79d6b65fef",
+        "u82f6fe243f",
+        "u84a77feea6",
+        "u8bd1c0ff16",
+        "u8db8aaea3b",
+        "u915e7ab7da",
+        "u91e58c0561",
+        "u9261f6ab56",
+        "u9fcad1a5cc",
+        "ubd64911c18",
+        "ubd84652be9",
+        "uc2991a87f6",
+        "uce52651f99",
+        "ud8b3b209f4",
+        "ue03cea741b",
+        "ue5ffa40c92",
+        "ue666e9de6e",
+        "ueab042e9de",
+        "uec7f7bbbcd",
+        "uef59709d32",
+        "ufba9f08c33"
+      ],
+      "users": [
+        "03d49b393e",
+        "055bb1b487",
+        "06d17ebbe4",
+        "1066cc94fc",
+        "1223558697",
+        "2cc385c3cd",
+        "323f919c83",
+        "32473f0e96",
+        "32cbfe3221",
+        "342248118e",
+        "3589743749",
+        "3669295621",
+        "3f79dccf7a",
+        "47c605ad6f",
+        "5ef3a0537e",
+        "60e5a2b0a4",
+        "65228c03b3",
+        "70ad60b9a1",
+        "76bfc2d385",
+        "79d6b65fef",
+        "82f6fe243f",
+        "84a77feea6",
+        "8bd1c0ff16",
+        "8db8aaea3b",
+        "915e7ab7da",
+        "91e58c0561",
+        "9261f6ab56",
+        "9fcad1a5cc",
+        "bd64911c18",
+        "bd84652be9",
+        "c2991a87f6",
+        "ce52651f99",
+        "d8b3b209f4",
+        "e03cea741b",
+        "e5ffa40c92",
+        "e666e9de6e",
+        "eab042e9de",
+        "ec7f7bbbcd",
+        "ef59709d32",
+        "fba9f08c33"
+      ]
+    },
+    "val": {
+      "details": {
+        "dim": 384,
+        "key_time_valid_sha256": "04749cb00edae4861a7ab70cb5e7cb3363b18f28d61a818dbb4d105631ab485c",
+        "n_recordings": 1950,
+        "n_users": 15,
+        "n_windows": 18548,
+        "targets": {
+          "arrays": "c907b85bca262312c6a1e8ec8148225431e78133f8293fd220018c11a27f7cad",
+          "central_mask": "973930475e9405c1e4baa0e9570b058c6f41159fff7c2b0553ffc7d4ee6f1924",
+          "metadata": "960c8328c8ef972643eec0a59676ec408ed5826a4de62ea80885a47eaa93280a"
+        }
+      },
+      "metadata": {
+        "checkpoint_pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+        "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+        "checkpoint_step": 49046,
+        "code_sha": "7d276c98fc54d66dab1226226eb6c5e447422c69",
+        "pose_stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+        "recipe_sha256": "b2356a8e09fd7bc560a2a677c2c93f8446afcff96254c91454452c937f865422",
+        "source_sha256": "1ca7aead5cd48a1fd9ff398338d80f2471a8d4041ccc0ac7fcdb3c3c03d0b1e1",
+        "split": "val",
+        "which": "teacher"
+      },
+      "original_cache": {
+        "bytes": 4593977338,
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/consolidation_long_20261105/49046/pose/val/val.npz",
+        "sha256": "36bab32e5a53cf73640f3ee567404a5a70aa8ecbcb27ce843f24666e4804ce4f"
+      },
+      "preservation_policy": "path moved to WORK; hash and bytes identical",
+      "receipt": {
+        "bytes": 3258392,
+        "commit": "2930d7d6feb6a054ae0ce9fded98ac5ac1b12abe",
+        "local_copy": "docs/reviews/pose_temponet_runtime_evidence_20261119/producer_val.json",
+        "path": "results/infra/consolidation_long_20261105/execution/receipts/LONG-G49046-pose-val-20261105.json",
+        "sha256": "1321038a8e0f50da56e57543c9b5a662c391af523d7094c6984cad1a396a755c"
+      },
+      "storage_directories": [
+        "u1f6de69ab3",
+        "u2251681168",
+        "u29ddab35d7",
+        "u2af4aec870",
+        "u2d0838950a",
+        "u3875521008",
+        "u7016fd5330",
+        "u737fb9d2eb",
+        "u9b8c99cdc2",
+        "ua993d16f6e",
+        "uab228f34a5",
+        "ud387095792",
+        "ue51f6d97cf",
+        "ue86f1eaf2f",
+        "uf3a4630adf"
+      ],
+      "users": [
+        "1f6de69ab3",
+        "2251681168",
+        "29ddab35d7",
+        "2af4aec870",
+        "2d0838950a",
+        "3875521008",
+        "7016fd5330",
+        "737fb9d2eb",
+        "9b8c99cdc2",
+        "a993d16f6e",
+        "ab228f34a5",
+        "d387095792",
+        "e51f6d97cf",
+        "e86f1eaf2f",
+        "f3a4630adf"
+      ]
+    }
+  },
+  "proposal": {
+    "bytes": 38867,
+    "path": "results/infra/pose_temponet_proposal_20261117/proposal.json",
+    "sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906"
+  },
+  "protocol": "pose-temponet-frozen-encoder-readout-20261117-v3",
+  "reader": {
+    "code_sha": "a1ae9607681c1a181034d7f72770537054af419d",
+    "source_manifest": {
+      "scripts/account_node_usage.py": "4932d2c46783f86a7d5542fd59480fc4a7067e5aeb0aac95d8ff82633b31acd0",
+      "scripts/analyze_step1_gradients.py": "514c13ccc7fa24f4269ec4354532837b013d1009fbce88a4c254f6c407268668",
+      "scripts/anchor_candidates.py": "a192a11d8adba9fe2cc86dab6d078da7621e12fd3e7390b71a706e2810b8f8b2",
+      "scripts/arms_collaudo.py": "f3af378012f2140c5dbf2ffa7b0795740d7c3c9ce0c1feeb47dafb6e68ea6405",
+      "scripts/arms_compare.py": "6b01ccb106bd2a7c4861b165b880eb5059399948d9e3fbccfb7e3a937e3881f8",
+      "scripts/arms_plan.py": "695443582be218d7c4441b092a98139b76ebe0d7dd9e1a129b34f346fbe3f0aa",
+      "scripts/audit_training_stability.py": "442eb576a83966f1c0f8006707c206cf0ffd1eaafca78c5359a3c480ae33864b",
+      "scripts/branch_mask_leak.py": "c289f95d3c93b4e6a84cd9cca2e8b9a5252d456b47ce8b7125a5ce0f9a2e4530",
+      "scripts/branch_pilot.py": "69662d4390b04c3c1a38987da8ddd1ad1fd0e7b2bcb658a10faea8eb7f469788",
+      "scripts/build_manifest.py": "8512b74368c703cdda16ca3c5949daf065373a7ec9c0d32805355d537bff57c8",
+      "scripts/build_nested_manifests.py": "79551f67640ffbdc455f462cdb1133c28d1fa81f10408353676bc58032fa600d",
+      "scripts/build_pose_b19618_eval_payloads.py": "cb0750e2b7c5c476eb40aad517fc1cb5002bc279bd988e8c255274fb4cdc9597",
+      "scripts/build_pose_b19618_preflight_payload.py": "5fe992d14536cb4c05cb34f2b1e4d53f1ef0f5ca298aa2d14b4b95d17dc168cb",
+      "scripts/build_pose_b19618_report_payload.py": "05e6c655ee73cbe8d63646b7fac971ded3b80de9e9762375fec6f147a88aaf1b",
+      "scripts/build_pose_dynamics_payload.py": "846670bd68807f7e391ea69530cd604a4ea0d602d53bbd4ea1dbcf9cc377c891",
+      "scripts/build_pose_e3_b_payloads.py": "c412cf47939a35747dd7af32a8dd82ad74bde9d579bef101ac7f8888854654d6",
+      "scripts/calibration_plan.py": "7f3ce4778066345fcdd6f8630f04821f7a5c6174550d5772596c98d51c1c1aa2",
+      "scripts/calibration_probe.py": "197d19d061aa188a5a6c87305e60087f25b346e1966ad949c1a6ab7f8522aac3",
+      "scripts/calibration_select.py": "4f1558abae313dd14288da590d86655aa5548a2c02df2573ed8f0135a994b381",
+      "scripts/channel_readout.py": "746e2ce9d81da27bc089d1ec8b62f270d8b70c9f5c42a2420370f4b7f113c20a",
+      "scripts/check_capgmyo_grid.py": "78635b782ebe871f6bd9a152378f1988696991f4e7b68c12f9273af087e341a2",
+      "scripts/check_checkpoint.py": "5a5bfa7d37f74acd66218d0a06dc24fa210f59d90972fc25829200b083850a99",
+      "scripts/check_long_mask_positions.py": "ac70e60fc16b16b5eb7d6967b168ee47cec0e4710136385dca7433f12279b589",
+      "scripts/check_perceiver_cuda.py": "157219bd365d0b1d1f023036f02f86900ba1ef9b2e93b9b3a8ecfd319fbe670e",
+      "scripts/check_processed_layout.py": "5b017f6ba2fc09ffdd1ad3d5a3613a701aa8e324a456889476333b3a82fe74bb",
+      "scripts/check_quotes.py": "417afdf60cb9972a844765d1fd85f546b8c2cbb4214a3155953e04611444ad38",
+      "scripts/check_step1_cuda.py": "6e60507bfacdd94e304361e51f88fb7b56cea0786270d509c8f2dde1a07e57c6",
+      "scripts/classical_baseline.py": "4412988b1f777efb46874c64e3379c62116252873d41ae2b8cfb003be9daf85a",
+      "scripts/compare_step2_closed_reports.py": "f9bb7cd5d70eaa36c994e83030ef46a42c312b0c089cfa74627db81ad8d1be80",
+      "scripts/consolidation_continue.py": "f8f35ccbc3ae4cb924e28aa63c52d7b8030b40061cd7cf472fca6225f4682d09",
+      "scripts/consolidation_finetune.py": "e7240aef85580735ebfe55ffe84ac838b7e0d6f7d7352e3c765b177f3027386a",
+      "scripts/consolidation_finetune15.py": "e49e4a51c5005d282c16b743f024107a2b8cd06adb4bc91845fea640400a3e42",
+      "scripts/consolidation_ft15_report.py": "f477725067603a0f361a0ebff96e77f57bce90e5289b8b23246d08aee33588bf",
+      "scripts/consolidation_ft_report.py": "c6d713fdd07e49dd7b24480623d20f961c216eccdaf2699a65d4a68f6f5ed6bb",
+      "scripts/consolidation_long.py": "8ea087749bf1c37950d4734dabf6901b195b78fbe5de8268c175dcd171821a4a",
+      "scripts/consolidation_long_classification.py": "2f31087af637bb8523be34154dd23b63b628617d5fe8e5f3a400bda8c0b03f81",
+      "scripts/consolidation_long_classification_runtime.py": "729c35f9a4441c2c04ed067755ba9ec8d0aad0895342fb36f9439d34807eb22a",
+      "scripts/consolidation_long_common.py": "547586041275cf01a9122a4de8b02d8557bd5114862aca3907742f2162083f1a",
+      "scripts/consolidation_long_pose.py": "be00c3d8cfa4768149e43d541e9d7e36c304961791220a9c92cf0e4546a57052",
+      "scripts/consolidation_long_pose_runtime.py": "59cf958ffadd10d84d0c6a061a7132a432f36ea42a28856f0b0dc7301b766a48",
+      "scripts/corpus_inventory.py": "12a0d542b6185cb489bf77b7d27fa736836604d2f2263b87ba10bdd7c2e810b2",
+      "scripts/dataverse_download.py": "ffc3e63fcbe56e8a2a4c2a0ea8e74043c018af5c1d7e86686be32e0ec2d299ba",
+      "scripts/ddp_equivalence.py": "98191d560b2e4057f547ab6d535ec6c0365f9f0420d68bb747d8e932303c2b1f",
+      "scripts/diagnose_initial_state.py": "fc91abc0619d7cb2ae9725e9f1713e4f81cffc581a1def604d9fdbd93471e8db",
+      "scripts/eval_wavelet_vs_gabor.py": "bd24c7365a1cae7e3e2c73e30cca7257a97480cfd6a6661d95fa1daf4cda8aa7",
+      "scripts/evaluation_chain.py": "7361032e1d1eb862c5c5ce6d500dab89c1889cf9e157b9106026c923cd967852",
+      "scripts/export_metadata_schema.py": "6129328f2f9b9e8f9df1ce1d8d9e6709819cadbc81830268919aaab50a27bc69",
+      "scripts/finestra1_calendario.py": "d4fed09e92c8c722561a34b27867bb24c5c62637ead90fc4bc1170905bb48487",
+      "scripts/fix_capgmyo_grid.py": "e1de0d3880f00acf57a2e14efd709e782f3a596a2c3595fa72ef909bd2221336",
+      "scripts/gate_d8.py": "968d029c736bd9764724267845d303ef9128132ee3dfb25a22a1f9565109c6b9",
+      "scripts/ingest_camargo.py": "d3189ac89c6f42c082a7bf2ce161670d3957b917b416a6760897d390b4462b5b",
+      "scripts/ingest_capgmyo.py": "9f73b7869f1dfc63cc3aea62557a5e8b2983b656c2dd0160e31d5cea03a4e31f",
+      "scripts/ingest_csl_hdemg.py": "ca48c1dd0cb2ae7fb3ee1ba329ba710e335bcd33458fc8f339c9d17914189119",
+      "scripts/ingest_emg2pose_pose.py": "9c010b6a44e674bf7ecb3ab29c3bea01aadd870ce1cbe7928e1236917ea7760c",
+      "scripts/ingest_grabmyo.py": "4aa59fc91f42937354fd68cd94d13f909e864a3f22d1cae4b8d1c3f1f5bb9e8b",
+      "scripts/ingest_hyser.py": "b09cb4b4f5ad5932c382a32278f284eb07d83c21aa5d536457c06b872ce8237a",
+      "scripts/ingest_kaifosh.py": "590f2d4d03474fb23aa9f990ec9bc4efc81c9e2188d90345ab087a6faca06a32",
+      "scripts/ingest_meta_bracelet.py": "a5b22e54ef467300fe77dc5427ffd7aa0d8f1e702afe294fc2dff49c06d89c99",
+      "scripts/ingest_ninapro_db10.py": "e107e3ed1b45ea01df00da48cad0404c8792812a56b5a38d98d9fdad850a0172",
+      "scripts/ingest_ninapro_db5.py": "3279b99eb536c304e236c4234df4aef140e4c15828d240b8da4c9ef7a9baadf1",
+      "scripts/ingest_ninapro_db6.py": "6147fb6b0b2bfef6485ef6ebb9db13e05d5ec78f4fbd5f188b78748c1d41adcd",
+      "scripts/ingest_ninapro_db8.py": "1bcd10eb6dc5d0f5f2f0d36b0032105b038d8298c7c866701783e4b842fe54a5",
+      "scripts/ingest_ninapro_std.py": "ba1f53f972f044474b152bef3bbb84ff64f2ba4d14dde7258b0c1787980f1202",
+      "scripts/ingest_putemg.py": "b42ed77fc1372737b9fa3bfe5f1119a23aa34bf0f43d30d6726cb2234d14baec",
+      "scripts/ingest_zhang2026.py": "a186331754847fc58864b24186a169c79fba07934b8a66efdae69f01aff27b9c",
+      "scripts/inspect_mat.py": "62e03809ab141a130e963ac7d3fc3b55b2bcb79596c5d91cf025fa1b47c47ff3",
+      "scripts/inspect_zhang_csv.py": "6db2a04f64acb07ec346eadcc41bfed4d0f40df2e7f3e22f2a6fc8a33ab35b3a",
+      "scripts/leonardo_feed.py": "65cafa4347e1a60abbb5b8b11785164289d723863bad274c6cc0162203d44dc5",
+      "scripts/leonardo_watch.py": "b2aa05e2dd3cbf7c4a19f9e4f8fc1a79d74ff868dc5e961920d326fb9cb6665b",
+      "scripts/make_splits_draft.py": "66eae973c749719c01a049df904774543906b3d47df619ee18951f0f62ffc18d",
+      "scripts/manifest_table.py": "6452f51cda675fb2103eda02a764ac767fea99d1e909c53a492a3980a4c4f356",
+      "scripts/measure_loader.py": "9bb86ca98518e877f37b6ea0adea8c4523baa79c01727636c73baddba9c25c1d",
+      "scripts/nested_manifest_d9_weights.py": "0658518cc901b7918603a7bdda0fc9a8550adcfc37add97c4133ab9490d0a94c",
+      "scripts/nested_manifest_report.py": "160511ff569b005bb8aa24afe583644584dcfcbba8d58ad278a5df638ba61183",
+      "scripts/pca_existing_oof_compare.py": "c6c57e57638b304f81cc3a170e4c24334fa018a2baffba7283746d5992c50f67",
+      "scripts/pose_audit.py": "b692cd80525bc330e74f7ab9de3051730cebd7bb91dd14975012279300c258e2",
+      "scripts/pose_b19618_eval_guard.py": "16b44fd39432ae7a605e098a8eabe972959a175c081b68ef1ba452f46bef3e64",
+      "scripts/pose_b19618_preflight.py": "02c3e617fa7c1e74c104d9c562d10f5f4adfee53450452feb889c10a5877a869",
+      "scripts/pose_b19618_report.py": "ad92f589fa9fff65bd96d80551f4634b22e010e10e52a3e59b569455eadb4962",
+      "scripts/pose_dynamics.py": "5e5ff2c8b27d5692a064534f793924ddf5463c7bab13ccf75356c0950d9dd5b8",
+      "scripts/pose_e3_b.py": "859dc19b7867a9597fe7fe868cde8833471a1db7da018113809e6a6fda831782",
+      "scripts/pose_e3_b_extract.py": "21ada4640c4504f78672eb2adcbfa0bb7aa64116f28ae91453296d04c5850bd7",
+      "scripts/pose_eval.py": "044037f0c351db467775cb03209defb2fd4c4b3bd95c017f247f44933a5d49a9",
+      "scripts/pose_head_synthetic.py": "caba2473629ef4a8f58bef90db13dc6d94808dd3c4305a0f6925e7d000c2320e",
+      "scripts/pose_slot_extract.py": "5dc97126f3ed60306f07078110831b049df488fc8ff7b7fd3f3cd2134b3960d9",
+      "scripts/pose_slot_features.py": "7cc239c0bc4d8688ce0b74016e9c20de624cde17586557d30473495da11bbba5",
+      "scripts/pose_slot_plan.py": "39f4c2ce7aaf8db8d1b08cc17968c7b15a16dd1ab6842c4f0de6367bcc545939",
+      "scripts/pose_slot_readout.py": "e8770188d943bed1b55cbd1c4488c320d1b5b561bf256ad7bbe43a43a1e4a2f9",
+      "scripts/pose_temponet/__init__.py": "089a3a51cac857f4048038661e5b0b73c055c88566eb01ee2464967efd62566e",
+      "scripts/pose_temponet/__main__.py": "11e31d1bab3b43599baae0a7bbd69f22467f8c0cb043b2a0f9634500d02cdd44",
+      "scripts/pose_temponet/benchmark.py": "884e3398165528bb3f04ed69300b59f831cf70e30961702ee04a061d77832dcf",
+      "scripts/pose_temponet/budget_amendment.py": "1cfd764f654ec744a45694b217234d0c1f898c8a55c476416e8418d5ad86255b",
+      "scripts/pose_temponet/controls.py": "2be38d2d9d02c4cda73a4c73a079e48f6a2f63944cb2655e1deea798313331b9",
+      "scripts/pose_temponet/data.py": "90de1b86e4254aaa8c792656901667c4172686131246f53f1c56eec4c216acad",
+      "scripts/pose_temponet/execution.py": "43088958001579b5148f03456612507f6455907af0cf437d63d2a7c737fadc3a",
+      "scripts/pose_temponet/heads.py": "2f31edf076a285ea23a82ffe0aa958ce3f84b41b2c77d0a4bc753332ad84472a",
+      "scripts/pose_temponet/linear.py": "140683ec0642698bdd991ccb993a4b6002f08b172d16852cf76edd03fb93daed",
+      "scripts/pose_temponet/metrics.py": "d1546d766f6f37fd8972af3842a83f6dfdda843be127d888c4a2fdee05148496",
+      "scripts/pose_temponet/provenance.py": "46f56a1942a06152482a924b7e8903a8f0e244bec559d34ec2274b8cce5acb06",
+      "scripts/pose_temponet/report.py": "09fd407e4ecf221c80a07d87f70ae5e79c5c968ebcb4bf7f85377517f9c4c2a1",
+      "scripts/pose_temponet/resources.py": "a7b6fcff5d8e53bdb61522278e6611b600ac06fb60fb828df13bb6ce086d7fd1",
+      "scripts/pose_temponet/runner.py": "5deff7cf6d151e60f27d4d61b3776b98ab1d5cf81770ff430826d86140e0dec7",
+      "scripts/pose_temponet/selection.py": "28dfc4dd6241614daa4185caf48a4d96c1671f756457c51f864a04e681dd7457",
+      "scripts/pose_temponet/train.py": "a30cdc8bfbdc4265c14b2c976fe4e6bb43d187cfd099c4b0a7bc202a41e44edb",
+      "scripts/pose_temponet/workflow.py": "6ed771f36880fe568bc4dc15db3b736da22c5990a85a7b18e4aa840ab9cb3ea0",
+      "scripts/pose_temporal_readout.py": "b0adaaacde63151519f6a50aaf9d60aa9a2acabc13b59c8b37582dadb292a815",
+      "scripts/precompute_rvq_codes.py": "8a62f19a1ac58f1c1b38eb66b5027ca5f8e6a521b9ccd8114f94cd2c519c89bb",
+      "scripts/probe_memory.py": "87c451257da7da7e1145e0c88ccbb08aba3f1ab8fd83546d0fedc0a04c4a395a",
+      "scripts/probe_p1.py": "14e2fc4179f3169671b8db0d52ce5ac4b8886d8594a9f64ec84bfc9f1cf59d59",
+      "scripts/probe_p2.py": "8e9f492dc4e8b57013226003e78d06a9d81478ac6489b64d5fe7e80e42a3c8fb",
+      "scripts/psd3_readout.py": "211b1542d6d1fd9d107f5f6d02a7707cd35ef8fc9c70745a609b978a1296603a",
+      "scripts/qc_relative_check.py": "298ca3be015ae3921be6429ce0bfa3bafa5d368961ced7eddc4545bf9eed81e4",
+      "scripts/random_checkpoint.py": "1a734e96018a911b48be6e0a7e6e58f08dc1228d152eba6def4dc2fde236223b",
+      "scripts/replicate_neurorvq.py": "b8ec1422120c40c8af420806c02aa59a57abe68df24a4e514392ebb6f5e44ee8",
+      "scripts/rvq_branch_confirm.py": "74cc5a86c3f7f6aa7a6df13417fdb212a7097789553b10c3fa5f68fbdaf10317",
+      "scripts/rvq_branch_probe.py": "0859c9da2cb57e34134bf8c605286d7a7da0322e4a373e23393c81e76b12561e",
+      "scripts/s3_bucket_download.py": "5ca0581901eda2db91e52c314c7973e00c1e2ccd78de1083d9683dc8cfc0ea4c",
+      "scripts/select_emg2pose_reference.py": "25b4ac37935c65a4282ea66f6a97a5092873d22e2cfde763bfa0478b7263ef8f",
+      "scripts/slurm/campaign_checkout.sbatch": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+      "scripts/slurm/lib_code_dir.sh": "0f961f459516f146ffe935d757f71f054e5b5ee62b4c68e88ff34153d708ee19",
+      "scripts/slurm/pose_temponet.sbatch": "0190f7789848fa29d20ca2622012f39cb0414eb17dfa64646c0faaf3b407c91d",
+      "scripts/slurm/pose_temponet_checkout.sbatch": "a33af08ce57ddc32be48d03932a913324a6fc04b77a23336cbcccf56e19085ff",
+      "scripts/slurm/pose_temponet_dispatch.sbatch": "baed3903e6e3dda9c0c10e9784548dc38eac6b45fe9acbcad636f8478c14b84e",
+      "scripts/spectral_diagnostic.py": "2c5615e37c18487c79945343a53f29f8656065b7456ca7b149eef8cc238cfa88",
+      "scripts/spectral_step1.py": "88b6ced5c06606140dedb4e186fb19e8adf73f19ac402f0526e65c6ef7e9c8cc",
+      "scripts/step1_ab.py": "9864437e4a210b5c15c7a7ee06fc47b62d7c5d81f6c52ca53f0311aef9713f18",
+      "scripts/step1_downstream.py": "5c7cef5f847e053c9ba5caca5853f9e9f45f394b807ed70f83d913ba55e74171",
+      "scripts/step1_random_downstream.py": "dea335e9a5fac189ddc909f5d71d33f02a4d42b1738fed5ebeb3b84e9e048482",
+      "scripts/step1bis_continuous_features.py": "0f1113eb2582ccbf9cb9d9e2393ff4fcfe310db016b114af57f6cac0cd8866dc",
+      "scripts/step1bis_cpu_vs_gpu.py": "b0a7663a2c57ccb2bda03716d0f44ee308c8683657e29c5fef3e44fe4a5ffa9b",
+      "scripts/step1bis_feature_stability.py": "b5781efc0fd75f17b807f4c6ab0a8c20ae26cdcc3b379233a96c2a8b7a282c6c",
+      "scripts/step1bis_margins.py": "6d566aac297e6a351d17a2eb11cf6dc684905e8a3184153aa4cbeada931e638f",
+      "scripts/step1bis_run.py": "50c3db70bb6dad549cfe753fe050b158a68c2a51126047492f0c54061331af8d",
+      "scripts/step1bis_scale_sweep.py": "2d06fc0588125c423257070e9fd22c75ea4b67dededb7b7945d80080fb42b818",
+      "scripts/step1bis_v3_extras.py": "5f50b547a74a6dbe7d5e6b42f6dcf280111c3985ce840452dabb3143f96de947",
+      "scripts/step2a.py": "6d1e2ecf15f02b3b35ea3a37e315f067ca82e8931831c51c3645e54b9a0a5abc",
+      "scripts/step2c.py": "bd7659c5c3f89dcd3fa4d7db9b33694c4c15cd4ab139e05d5d8d25acbd3dc523",
+      "scripts/submit_job.py": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+      "scripts/tokenizer_b_repeatability.py": "0fa2fba40718d8e60e8e51399f5a6427ff0b84340b90d08896c141beefb01b37",
+      "scripts/tokenizer_evaluation.py": "00d5f42583bc3203df5041558486647dd05f66f59df8adf3ae7728cf3e6c127b",
+      "scripts/tokenizer_pose_readout.py": "18a15436e48045447661d3aaab6a8770819527b4ff97a2837d9be3930bad7fb3",
+      "scripts/tokenizer_preflight.py": "3bdd90d0a30c1089953345c0b63415f8c40974939af6dd05da63f11d59affe69",
+      "scripts/tokenizer_probe.py": "0bdf7ab248fb7a5b48bffd2e3dc805259e9b5282d0907de0f00718fe4fc0f0fd",
+      "scripts/tokenizer_train.py": "d948fe30ad35543bdf7aa05fb174fd550cc398f0f2b63efc546592a1a3e2dda2",
+      "scripts/train_jepa.py": "b9f7fcfccd68034d4cc566c1ef29008e9ab4d7233529f501f2076cda207f8006",
+      "scripts/window_seconds.py": "896397ad978bb3665d270361e12f62115748b193abbec1ecba1fbf47e2c0f1e4",
+      "scripts/wsd_chain.py": "593c3b1fd14114877444be53321facad510b33846b190dfa60a879d6b0f36337",
+      "src/wearusfm/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/wearusfm/data/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/wearusfm/data/collate.py": "0e4279b057b3fe3878fc14b9cf6532443807b15ae23e85ada7da2cacfd871f93",
+      "src/wearusfm/data/consumer.py": "575f0ebcb6f635372674571a19c0c9c8b5bac0bcf59421469a71ad980cb41c09",
+      "src/wearusfm/data/manifest.py": "489b99030660ebadd79bea89e1c3be4dd1a9383e50127a855937d43840f64430",
+      "src/wearusfm/data/masking.py": "4612b363c69dbb501ee646dc525e9c5568e9b51da0f89d5e97ad20eadef1a61d",
+      "src/wearusfm/data/pipeline.py": "d53fcb3464f24211e774e1dc1440e8aa26ec9d980e67cb97c3dcfedaaf109744",
+      "src/wearusfm/data/pose_targets.py": "8453b16c72124603d95019d988e0c6c8e131f3ededf0b073555c6d90fc0519b9",
+      "src/wearusfm/data/pretraining_loader.py": "851e881a7cb216f3623f1ded585ce2d7517abd7c39966f803f74b8e88abc01b2",
+      "src/wearusfm/data/pretraining_manifest.py": "73d9dd681d5b66d9a1e8006f7931ccb34e1f47dfb7589e27ab0521f8217262d3",
+      "src/wearusfm/data/processed.py": "8329dc5ba8bb7d88796640f6dd4757c4e13c9ffad129ea2a320cd9e7dbadb9e9",
+      "src/wearusfm/data/rvq_codes.py": "fa4dba6f4e9e85946042fe6b0f0b77a7e80cee9c6e516c041393b67b02a0c67f",
+      "src/wearusfm/data/shards.py": "b10457010b08c12e3c33c7a68d303cb2459584ba7df3356b3928ac18076fd4e2",
+      "src/wearusfm/data/synthetic.py": "f881e775d0d1a815de36b0e1b8ba91ac9cb82600ed3dcf398082f17bf777f50f",
+      "src/wearusfm/data/transforms.py": "a6707882a3f6b6d29846016f266b458f5b538cf01d9d471c4488196bd96691fd",
+      "src/wearusfm/data/virtual_montage.py": "40c352b91c60248e1aad5faf140cf89e56c6c3edba94f2571d58faaa62a4b8d5",
+      "src/wearusfm/gate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/wearusfm/gate/consistency.py": "2b756bc46c205a3ee593cd37316c15e169cd45e20bc3f55bb01c407111b51e58",
+      "src/wearusfm/harness/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/wearusfm/harness/anchor_candidates.py": "ab44587869a98376e379249e8143cdf112e382e192515da3eaf97c0a9b7eb47a",
+      "src/wearusfm/harness/backbone_depth.py": "db46035b774bbb59712749513c7e9e6d1e36b3c1958cf98fba4428b0a6dada7c",
+      "src/wearusfm/harness/baselines.py": "ba3dbe19f596e51c4466f925fec59d886aa287f314af39f5810432a9e8fe589f",
+      "src/wearusfm/harness/benchmarks.py": "8f9baf3c4fc1c81af06bdbea27c8a93db95bff28a91f51b6333899d3c973de9f",
+      "src/wearusfm/harness/channel_readout.py": "e82a0796be2e10338b4c9a4615d92eed87666adc351d7e20a69342c5d35fed98",
+      "src/wearusfm/harness/downstream_ab.py": "ea3b91423fe6c12743acb9679e4a3e9e214d84e4135769aeb4bbd82ed97b3164",
+      "src/wearusfm/harness/feature_sets.py": "9c16fc817ebc9acb11c25b1d96a0f469a4fb7d7cea68b43afaa75e9e452d7b4b",
+      "src/wearusfm/harness/features_hudgins.py": "86678ba36d20dced450d673f3869e642be8dc76ed9cccdaab4e5ac1b26bec252",
+      "src/wearusfm/harness/finetuning.py": "3109c3146dae1c16947e6477307bb7f1e2305050481f749697e60e90692f8aac",
+      "src/wearusfm/harness/fm_features.py": "2561f2de0a6e8d797195041b2fa3695815adb44d202098d4c408c4175e11bcfc",
+      "src/wearusfm/harness/normalization.py": "d449bd524a2e69b456af3b9655e97b14e7932213235a98404ed3947291847df5",
+      "src/wearusfm/harness/p1_cross_subject.py": "7045b947920d314e7b25e85dc41e42de6bc5dc42aef0812c485b247bda31c4ce",
+      "src/wearusfm/harness/pose_eval.py": "b333d59656f1b5d4fa0863aa967cc0158e8de0ad2cc040c7b8341579f3075f59",
+      "src/wearusfm/harness/probe.py": "98dcc1a1fbd55593c0a1740d458df2f3943becde3eb2060d411e30e02e750998",
+      "src/wearusfm/harness/protocol.py": "07ac9fa1ada8f43e1aaf82f53145e47ee7dfef33d2c53415ad46f8acf0f2456c",
+      "src/wearusfm/harness/psd3_compare.py": "068549c829c2d5f75e54615400bb62fd9510cc1876ff17d117c5d3904b2f7703",
+      "src/wearusfm/harness/psd3_inputs.py": "c50c94bc9bd5c40fcc2ebe36abd2576c85591476de885e3d182d4f90248e159d",
+      "src/wearusfm/harness/psd3_readers.py": "73e0214a94e9888c2ff4d022818e2430afae2c4ed91d8fe407f28117fffec56b",
+      "src/wearusfm/harness/random_encoder.py": "6cdb50a5f2bda7974b16e41adcef645c780f33863a1bcabd4cb0adc2195591cc",
+      "src/wearusfm/harness/spectral_ab.py": "63ec613c59896fde42a333cae7acf37c8958813ff1a3bbaf37896dab8a84e3ea",
+      "src/wearusfm/harness/spectral_probe.py": "05fb15da39ccbac658bfb4b35d8504b64b4b4e75adb69c3794c7228ef35f2cea",
+      "src/wearusfm/harness/splits.py": "51039fe49c211b8670445e1f037faae4c08b6290a881757e779971f71adc501e",
+      "src/wearusfm/harness/training_stability.py": "00f74e4e4c779258e4d2692bd921f196a517695ab6e18d7a16617ca585cceb52",
+      "src/wearusfm/harness/traps.py": "85f14e44a660a1ab744b84907682851df8f58b46a4ec6488a132755e85f0db24",
+      "src/wearusfm/ingest/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/wearusfm/ingest/camargo.py": "5b60789de19e0e37179445ca78fc7b09010b5205ad483c9b6e6efba5442721bb",
+      "src/wearusfm/ingest/capgmyo.py": "66325bdbd3e7c95c3364dc5b96f4aa34936b67ee8779ed329c0b85141abcd081",
+      "src/wearusfm/ingest/common.py": "4ef13d98e7440092b192848fb007acdc78bb8701f5d535126bc48f3ffb5ced04",
+      "src/wearusfm/ingest/csl_hdemg.py": "e18d22dc592b20a69a60cd985ea2ce02bf2d9028670935487b3e3782e60c53a9",
+      "src/wearusfm/ingest/emg2pose.py": "93f50ff29828ded0818db348a04fb981890e3054f8fdc3de1589db1d5d23e5fb",
+      "src/wearusfm/ingest/emg2pose_pose.py": "82aaff5c997ab69c1cc09cb0a9cf2dabf85bca90cbabec72fded1c0789d97a85",
+      "src/wearusfm/ingest/emg2qwerty.py": "a271e9f21aebcb742bf5008ada2e5383dcd912544d05b77498b35a1c900d629f",
+      "src/wearusfm/ingest/grabmyo.py": "930ecbccf36b2e23ca85e840eeedb93b0f735723bf7c7eacb247ecc3261ecc0d",
+      "src/wearusfm/ingest/hyser.py": "11ff8c7aa34323dd1d769af8c493efe8da821b523baa0582239324cfe6dab12e",
+      "src/wearusfm/ingest/kaifosh.py": "6e2e0380b8962b7eb352a718c5d948a25c08a2f9ccdd4581b2deb8ed2756b52a",
+      "src/wearusfm/ingest/ninapro_db10.py": "e173696be5a628bc0ebb4fca73b9e6565d73cdf33e98f3d1517a9112c92b22fd",
+      "src/wearusfm/ingest/ninapro_db5.py": "3c9e7586c31f77c40e0972fc99ccbe33f2299daed88debb17daa759d1007e6cc",
+      "src/wearusfm/ingest/ninapro_db6.py": "fb3206e0d957a261c00bcd4a47c920c61a291d07f7b65bdc681209402f9ac5a1",
+      "src/wearusfm/ingest/ninapro_db8.py": "e00c5bb19302197d95dc2b024f99cf147b6a1e68bc1865cd97d5f8d17e17d832",
+      "src/wearusfm/ingest/ninapro_std.py": "d3d8818c7543959301420bb16b6fc6bfd4c30c6eb0d28126dc6d1e650301c40e",
+      "src/wearusfm/ingest/putemg.py": "f06b0b2bbf213cd5dce51eb917c2ad30af5fca7dac75181154e49536836afa4b",
+      "src/wearusfm/ingest/zhang2026.py": "a019cc20e0a04bfcb8db6475bd8c3c0aceb3561b7a7e93400b33e793a510077c",
+      "src/wearusfm/metadata/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/wearusfm/metadata/schema.py": "690d022f934e6a82bcf1c32e9ec1df43efdd2655222de01afa9323c9df52afc4",
+      "src/wearusfm/metadata/taxonomy.py": "64f8ab4472a006d33f99202a0e9d6e3937e02bc971b82df3af8485ea33815af2",
+      "src/wearusfm/model/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/wearusfm/model/anchor_targets.py": "d3394896bf7c1aada47687f8d230a02edd526f20e3c2dd55f1c78b5ee7052f58",
+      "src/wearusfm/model/anchors.py": "d820d973d2967a0121e96dbbec3bf6d51f50f06aa68adb64a22228d13f771adc",
+      "src/wearusfm/model/backbone.py": "fb6317751f6c4fe57327896419f479498d2e5e1ba92e3ca43634d5e7b75b5e89",
+      "src/wearusfm/model/branch_masking.py": "db4e99584e6e51b0ad1dc6a0138100be356dadbfdc77daff16bca313c49bae16",
+      "src/wearusfm/model/channel_codes.py": "390480ca460c852a52e8c1885c2725e1e1e0af95bd7f2bb1e3b36b15fdee36fb",
+      "src/wearusfm/model/channel_identity.py": "8c0d2f9ecf387f7967c7492bf3373c82e924edc959520bbdde9522715608be12",
+      "src/wearusfm/model/fm.py": "6c91c1795e5506728dc1d163e0546d78c153e7674bdb11296e369337650d77b5",
+      "src/wearusfm/model/frontend.py": "42cb6ae3f1084b6c2e1350416f9d356552d6009ed9a889b3c6dc8226d94a8ad0",
+      "src/wearusfm/model/geometry.py": "f2a5da0c3d570cbb333b59f7cbb90304611e2f27987d84a0c20c7893079c0d1e",
+      "src/wearusfm/model/local_encoder.py": "b861eb53e7300248a1999765c078ffb17f9abaf14dd92a0124014bfa5ff4992b",
+      "src/wearusfm/model/patch_tokens.py": "6107faf2a15a009c2d43cf59927186c52eeb29bcce2426e820adb694f4d85e43",
+      "src/wearusfm/model/perceiver.py": "1ffb562901c4c8280128c8d4aa37afba92da5db2ffe919709ea26bc129f51481",
+      "src/wearusfm/model/pose_head.py": "01fe3d4d3b1dde0235fbfd53c95e5297a31ee28cdffbd04c5c6b8e8344e56717",
+      "src/wearusfm/model/proxy.py": "759279987f2bd3c0b3fd4d50145de4287090b2f57c5ef236f359408f3f422537",
+      "src/wearusfm/model/query_decoder.py": "a766a9a2528844a8cc1c09db6fb8645e581cecdc3f660d92ff759ed0990af0af",
+      "src/wearusfm/model/spectral_branches.py": "5ac9b30c6442a4c93d19bd708ca35cfeb454de83f249ede28332060bbd70599f",
+      "src/wearusfm/model/spectral_step1.py": "4a4173f7110287d9dd34635458decf4d84cffe2cdcc0b7e1c5f5249ff45f6b56",
+      "src/wearusfm/model/spectral_targets.py": "292582fb50c2583b8fc3181457cfa568d3480c2781f39b4c48df96fb2e5b205c",
+      "src/wearusfm/preprocessing/__init__.py": "8ee00fefea175bb6eb63a8efdf3a7846c5e2e282eeb7228091520c5cc77116e4",
+      "src/wearusfm/preprocessing/canonical_view.py": "d01994231e6588f47d7445554e0f4a9b21baacdd3c8b639684fbd3bb066bd7ca",
+      "src/wearusfm/tokenizer_checks/__init__.py": "fd22070f64cac8f6a0c38e017bfb5f678abb6f860d865d0e26828778bb673629",
+      "src/wearusfm/tokenizer_checks/branch_probe.py": "cdee56c465f5eb4c1cc1e20756990771bee34ffb08b9cbb91d2056231397ce1d",
+      "src/wearusfm/tokenizer_checks/continuous_features.py": "d3d4fa7f7d805e67b10ebacd3c6968e3ca37f3d749c9d425d9615d617f602049",
+      "src/wearusfm/tokenizer_checks/emg2pose.py": "0d8f7ed0d719b624e3fe11112a2b76ecbd217a95970e9f5dda731144c53e4d5c",
+      "src/wearusfm/tokenizer_checks/metrics.py": "8067b9d0d00a36e2a13b0672d832d4b8dbba7c3ae1bc7f8560ab29de9ab5b701",
+      "src/wearusfm/tokenizer_checks/neurorvq.py": "8eda3ae7ae2a48fb1289129758eaa1ff6a8454d9acf3acadecc868523c873492",
+      "src/wearusfm/tokenizer_checks/pipeline.py": "dd7e1567cadda3e1b351771c063987566698f631e09359a6c1969ef5003f6bb0",
+      "src/wearusfm/tokenizer_checks/run_io.py": "9bda5451e2d16730fab0fe444e26b391bcf4aeb35a16d658c13f25372fa91518",
+      "src/wearusfm/tokenizer_checks/sessions.py": "4e3b25b5f341ced08056554ddfb89e14592100088cdafd30bfcff14f53f15a88",
+      "src/wearusfm/training/__init__.py": "e9477c745cfaa543b2abd30ffdcb0fb64673b5bc1177c552262a5fe5f945eaf1",
+      "src/wearusfm/training/jepa.py": "98c715597360ad133d3d5f26b10077f4e9c5ca3a6c80b58fac8bc2e5c8375f29",
+      "src/wearusfm/training/masking.py": "6049614839ecf692564b05fc09fcdb5af8ade8c84116a8b4e0893cb489267f79",
+      "src/wearusfm/training/pairing.py": "fba0b9d21f916c14d91b297e9a7705738279a68b98ac689b86a70b6f7e540a4b",
+      "src/wearusfm/training/run.py": "c7d8ee87ad4ff3ff7951f545b78b41da5ed6cee6f162429ff0fe503b2397acac",
+      "src/wearusfm/training/spectral_calibration.py": "51ac24b23c791a7701f357b4090d3e97c81d7bf8cb903b037b635282cc701318"
+    },
+    "source_sha256": "9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea"
+  },
+  "recipe_sha256": "e4b971f04beed2f82ab068fc86dc20e9e72ce02796e66b14dfbb3941e3409856",
+  "resource_policy": {
+    "a_priori_timing": "analog4.1..18.5ms/update only;max1.4778M gives1.68..7.59GPUh update-only; doubled3.37..15.19 beforeeval/I/O, not newhead measurement",
+    "benchmark_gpu_hours_cap": 0.5,
+    "budget_name": "lettore posa TCN v3",
+    "budget_status": "SCOPE_APPROVED_20261119_GATE_AND_REVIEW_REQUIRED",
+    "calibration_combinations_per_outer": 1936,
+    "cpu_only_core_hours_cap": 80,
+    "cpu_ram_gib": 24,
+    "fit_initial_updates_upper": 537600,
+    "fit_max_updates_upper": 1477800,
+    "fit_phase_gpu_hours_cap": 20,
+    "gate": "all resource gates before any neuralfit includingcontrols; 2x wholemaxmatrix train/40128heldeval/37selected-fittingeval/I/O/startups/save <=20GPUh and inclusivejobpacking;2x inference<=1GPUh; WLS<=64coreh andperjob<=4hinclusive; metrics<=8coreh; CPU/RAM/diskcaps; stop no partialreal launch",
+    "gpu_attached_cpus": 8,
+    "gpu_hours_cap": 24,
+    "gpu_job_host_ram_gib": 32,
+    "historical_balance": {
+      "allocated_local_hours": 2000000,
+      "consumed_local_hours": 1308137,
+      "current": false,
+      "date_local": "2026-11-09 12:21 Europe/Rome",
+      "remaining_if_only_thiscap_from_snapshot": 691591,
+      "remaining_local_hours": 691863,
+      "source_commit": "fccf88d493c1c444f231b612f88bc3b41daa5827"
+    },
+    "inference_gpu_hours_cap": 1,
+    "io_scale": "max(byte_ratio,window_ratio), stream15 outputs",
+    "job_grace_seconds_counted": 180,
+    "local_hours_conditional_cap": 272,
+    "max_cpu_only_jobs": 7,
+    "max_gpu_jobs": 40,
+    "measured_estimate": null,
+    "memory_policy": "measureRSS/VRAM;1.25*(fixed+oneview valbufferandbatch) usingtrainrepetition shapedlikeval;include copiesworkspacecompression, no externaltargetinspection",
+    "operator_preflight_required": [
+      "hashallinputpins includingSCRATCH",
+      "source andmanifestpins",
+      "WORKfree>=12GiB+otherpendingwrites",
+      "currentbalance",
+      "reservations includingreported23-25Novstop",
+      "sharedseriallane",
+      "actualAllocTRESbillingfirstjob",
+      "fullresource andpackinggate",
+      "calibration/positivecontrols before realneuralfits",
+      "shared serial lane rechecked before each CPU phase"
+    ],
+    "overhead_policy": "SUM(requestedwalltime+180seconds)*resources <=eachphase; reserve not automaticretries; no doublecount",
+    "phases": [
+      {
+        "allocated_core_hours_cap": 0.5,
+        "cpu_only_core_hours_cap": 0.5,
+        "cpus": 2,
+        "cumulative_wall_hours_including_180s_perjob": 0.25,
+        "gpu_hours_cap": 0,
+        "gpus": 0,
+        "host_ram_gib": 24,
+        "local_hours_if_stated_billing": 0.5,
+        "phase": "checkout_preflight"
+      },
+      {
+        "allocated_core_hours_cap": 4,
+        "cpu_only_core_hours_cap": 4,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 0.5,
+        "gpu_hours_cap": 0,
+        "gpus": 0,
+        "host_ram_gib": 24,
+        "local_hours_if_stated_billing": 4,
+        "phase": "cpu_benchmark"
+      },
+      {
+        "allocated_core_hours_cap": 64,
+        "cpu_only_core_hours_cap": 64,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 8,
+        "gpu_hours_cap": 0,
+        "gpus": 0,
+        "host_ram_gib": 24,
+        "local_hours_if_stated_billing": 64,
+        "phase": "wls_calibration"
+      },
+      {
+        "allocated_core_hours_cap": 4.0,
+        "cpu_only_core_hours_cap": 0,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 0.5,
+        "gpu_hours_cap": 0.5,
+        "gpus": 1,
+        "host_ram_gib": 32,
+        "local_hours_if_stated_billing": 4.0,
+        "phase": "gpu_benchmark"
+      },
+      {
+        "allocated_core_hours_cap": 160,
+        "cpu_only_core_hours_cap": 0,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 20,
+        "gpu_hours_cap": 20,
+        "gpus": 1,
+        "host_ram_gib": 32,
+        "local_hours_if_stated_billing": 160,
+        "phase": "controls_selection_refits"
+      },
+      {
+        "allocated_core_hours_cap": 8,
+        "cpu_only_core_hours_cap": 0,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 1,
+        "gpu_hours_cap": 1,
+        "gpus": 1,
+        "host_ram_gib": 32,
+        "local_hours_if_stated_billing": 8,
+        "phase": "locked_inference"
+      },
+      {
+        "allocated_core_hours_cap": 8,
+        "cpu_only_core_hours_cap": 8,
+        "cpus": 8,
+        "cumulative_wall_hours_including_180s_perjob": 1,
+        "gpu_hours_cap": 0,
+        "gpus": 0,
+        "host_ram_gib": 24,
+        "local_hours_if_stated_billing": 8,
+        "phase": "metrics"
+      },
+      {
+        "allocated_core_hours_cap": 0.5,
+        "cpu_only_core_hours_cap": 0.5,
+        "cpus": 2,
+        "cumulative_wall_hours_including_180s_perjob": 0.25,
+        "gpu_hours_cap": 0,
+        "gpus": 0,
+        "host_ram_gib": 24,
+        "local_hours_if_stated_billing": 0.5,
+        "phase": "collection"
+      }
+    ],
+    "reserve_cpu_core_hours": 3,
+    "reserve_gpu_hours": 2.5,
+    "reserve_use": "accountedstartup/overrun; no newseeds/architectures/automaticretry",
+    "time_statistic": {
+      "measured_epochs": 10,
+      "projection": "p95 linearinterpolation",
+      "report": [
+        "median",
+        "p95"
+      ],
+      "synchronization": "CUDA synchronize at timedboundaries",
+      "timed": [
+        "train_epoch_perhead_fold_full",
+        "held_eval_perhead_fold",
+        "load",
+        "save",
+        "startup",
+        "wls_stats",
+        "wls_factor_eachmaskpattern",
+        "wls_rhs_predict",
+        "calibration",
+        "bootstrap",
+        "serialization"
+      ],
+      "warmup_epochs_excluded": 1
+    },
+    "total_allocated_core_hours_cap": 272,
+    "vram_gate_gib": 48,
+    "vram_requirement_gib": null,
+    "vram_status": "not measured",
+    "wls_jobs": 2,
+    "wls_requested_walltime_max": "03:57:00"
+  },
+  "review": {
+    "documentary": {
+      "artifact": {
+        "bytes": 13178,
+        "local_copy": "docs/reviews/claude_review_pose_temponet_v3_20261119.md",
+        "path": "docs/reviews/claude_review_pose_temponet_v3_20261119.md",
+        "sha256": "25a8d513eb115ab8156dafdf1005a500c6f7e43c609045d2dea4a4c04b81cb48"
+      },
+      "commit": "ad9f5141711ba60ea1014bd9ba842af168ff0a37",
+      "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+      "status": "claude_review_converged"
+    },
+    "operational": {
+      "artifact": {
+        "bytes": 14330,
+        "local_copy": "docs/reviews/claude_review_pose_temponet_A1_budget_20261121.md",
+        "path": "docs/reviews/claude_review_pose_temponet_A1_budget_20261121.md",
+        "sha256": "829224979169adcfa9ff8af79eead9085f05888026049e014af46f616a37fbf2"
+      },
+      "commit": "2f759ebbf275e2aae3d63b986b48e035590c82a1",
+      "proposal_sha256": "171b52785f37f80e0a9f1b6194e90e29bd7620c4b7106c117267465bfc6c2906",
+      "reviewed_code_sha": "a1ae9607681c1a181034d7f72770537054af419d",
+      "source_sha256": "9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea",
+      "status": "claude_review_converged"
+    }
+  },
+  "status": "claude_review_converged",
+  "submission_released": true
+}

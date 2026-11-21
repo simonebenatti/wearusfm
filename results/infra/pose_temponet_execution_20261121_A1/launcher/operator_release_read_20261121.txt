@@ -1,0 +1,25 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+2026-11-21T12:07:35+01:00
+Disk quotas for prj 20147512 (pid 20147512):
+     Filesystem  kbytes   quota   limit   grace   files   quota   limit   grace
+ /leonardo_work 1035111632  1073741824       0       - 1235715       0       0       -
+-----------------------------------------------------------------------------------------------------------------------------------------
+account                start         end         total        localCluster   totConsumed     totConsumed     monthTotal     monthConsumed
+                                             (local h)   Consumed(local h)     (local h)               %      (local h)         (local h)
+-----------------------------------------------------------------------------------------------------------------------------------------
+CNHPC_1526560       20240711    20260430        640000              557186        557186            87.1             0                  0
+IscrB_WearUsFM      20260107    20270107       2000000             1346072       1346072            67.3        164383              46532
+64837401 SCALING-49046-train-39237-20261118 PENDING 0:00 (Priority)
+PartitionName=lrd_all_serial AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL AllocNodes=ALL Default=YES QoS=lrd_all_serial DefaultTime=00:30:00 DisableRootJobs=NO ExclusiveUser=NO ExclusiveTopo=NO GraceTime=0 Hidden=NO MaxNodes=UNLIMITED MaxTime=04:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED Nodes=login[08,13] PriorityJobFactor=1 PriorityTier=1 RootOnly=NO ReqResv=NO OverSubscribe=NO OverTimeLimit=NONE PreemptMode=OFF State=UP TotalCPUs=256 TotalNodes=2 SelectTypeParameters=NONE JobDefaults=(null) DefMemPerCPU=3850 MaxMemPerNode=UNLIMITED TRES=cpu=256,mem=1028000M,node=2,billing=256,gres/tmpfs=30786325577728
+ReservationName=maint_23112026_vizser StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00 Nodes=login[08,13],viz[02-16] NodeCnt=17 CoreCnt=1088 Features=(null) PartitionName=(null) Flags=MAINT,SPEC_NODES TRES=cpu=2176 Users=(null) Groups=(null) Accounts=cin_sanity Licenses=(null) State=INACTIVE BurstBuffer=(null) MaxStartDelay=(null)
+ReservationName=maint_23112026_booster StartTime=2026-11-23T08:00:00 EndTime=2026-11-25T08:00:00 Duration=2-00:00:00 Nodes=lrdn[0001-3456] NodeCnt=3456 CoreCnt=110592 Features=(null) PartitionName=boost_usr_prod Flags=MAINT,SPEC_NODES TRES=cpu=110592 Users=(null) Groups=(null) Accounts=cin_sanity Licenses=(null) State=INACTIVE BurstBuffer=(null) MaxStartDelay=(null)
+    PID COMMAND
+1628380 /usr/lib/systemd/systemd --user
+1628445 (sd-pam)
+1629030 sshd: sbenatti@notty
+1629044 bash -c date -Is; lfs quota -p 20147512 /leonardo_work; saldo -b; squeue -u sbenatti -h -o "%i %j %T %M %R"; scontrol show partition lrd_all_serial -o; scontrol show reservation maint_23112026_vizser -o; scontrol show reservation maint_23112026_booster -o; ps -u sbenatti -o pid,args; test ! -e /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1 && echo A1_CHECKOUT_ABSENT; test ! -e /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117/wls_calibration && echo WLS_DESTINATIONS_ABSENT
+1629857 ps -u sbenatti -o pid,args
+A1_CHECKOUT_ABSENT
+WLS_DESTINATIONS_ABSENT
