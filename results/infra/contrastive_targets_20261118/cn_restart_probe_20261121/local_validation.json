@@ -1,0 +1,32 @@
+{
+  "scope": "Local macOS CPU/Gloo only. No Leonardo checkout or job.",
+  "status": "CPU_TESTS_PASSED",
+  "training_approved": false,
+  "historical_status": "FAILED_REQUIRES_REVIEW",
+  "cpu_threads": 1,
+  "gloo_world_size": 4,
+  "passed": 170,
+  "pytest_reported_seconds": 34.83,
+  "files": [
+    "tests/cpu/test_cn_restart_leg.py",
+    "tests/cpu/test_cn_restart_observe.py",
+    "tests/cpu/test_cn_restart_compare.py",
+    "tests/cpu/test_cn_restart_package.py",
+    "tests/cpu/test_contrastive_numeric_profile.py",
+    "tests/cpu/test_contrastive_target_resume.py",
+    "tests/cpu/test_contrastive_benchmark_readout.py",
+    "tests/cpu/test_contrastive_job.py",
+    "tests/cpu/test_contrastive_release.py",
+    "tests/cpu/test_contrastive_targets_readout.py",
+    "tests/cpu/test_contrastive_readout_handoff.py"
+  ],
+  "checks": [
+    "Real DDP/Gloo observation and uninstrumented reference on a synthetic mixed-dtype model",
+    "Cold and warm reducers on a synthetic 270-parameter network at four ranks",
+    "Real WearUsFM/InfoNCE backward on a small CPU fixture with prepared runtime and queue at the restart boundary",
+    "Historical CN_A, CN_B and continuous metadata and monitoring metrics",
+    "New package rejects absent binding and old approval block",
+    "bash -n scripts/slurm/cn_restart_probe.sbatch"
+  ],
+  "scope_limit": "Four-rank Gloo uses test models. Native Torch/CUDA/NCCL fidelity, the historical checkpoint bytes, the historical rebuilt bucket layout and the deadline are prospective checks for Leonardo."
+}

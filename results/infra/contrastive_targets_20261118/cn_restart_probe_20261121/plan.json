@@ -1,0 +1,57 @@
+{
+  "schema": "cn-restart-probe-v1",
+  "status": "REVIEW_REQUIRED",
+  "training_approved": false,
+  "decision": "Prova mirata",
+  "decision_record_commit": "e0ecbd4bbffdb56fbbe3d79e0bbc4f1d44085510",
+  "scientific_review_commit": "06347c7a918c13dd25100511dde832e7fce68594",
+  "evidence_commit": "f23b7cca706e0541e9e4f540f78e043abd724fb4",
+  "historical_status": "FAILED_REQUIRES_REVIEW",
+  "historical_job": {
+    "path": "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_A.job.json",
+    "sha256": "fd693e4c877a059c2e143172a214148ae92e1bbe5a1d27f89cfb4e45931a1ca0",
+    "bytes": 5523
+  },
+  "production_source_sha256": "40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0",
+  "output": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/cn_restart_probe_20261121",
+  "fork": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/benchmark/CN/checkpoint_step0000544.pt",
+    "sha256": "aa5952f0c4b7a8f07b5965b096877d568f3b5662bf08e6d8a4fc56f2a9e37ce6",
+    "bytes": 463142486
+  },
+  "ordinary_reference": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_A/checkpoint.pt",
+    "sha256": "bb39f33998df27c2a0b7b6ca7554c77afccf08bb7405831a17a28c4ef6594301",
+    "bytes": 463190144
+  },
+  "continuous_reference": {
+    "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/benchmark/CN/checkpoint.pt",
+    "sha256": "4743abaff631d43c0f9267b886087fdcbefdfc156332bf34d43b668297668dec",
+    "bytes": 463190144
+  },
+  "legs": [
+    "ordinary",
+    "warm"
+  ],
+  "trace_update": 545,
+  "fork_step": 544,
+  "final_step": 576,
+  "n_parameters": 270,
+  "n_ranks": 4,
+  "relative_gradient_roundoff_limit": 1e-06,
+  "gradient_norm_floor": 1e-12,
+  "allocation": {
+    "seconds": 900,
+    "gpus": 4,
+    "cpus": 32,
+    "memory_gib": 240,
+    "nodes": 1,
+    "checkout_cpus": 4,
+    "checkout_seconds": 240,
+    "checkout_memory_gib": 2
+  },
+  "logical_ids": [
+    "CONTRAST-CHECKOUT-CN-RESTART545-20261121",
+    "CONTRAST-CN-RESTART545-20261121"
+  ]
+}

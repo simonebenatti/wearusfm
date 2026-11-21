@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — GPT scientifico, prova mirata sulla ripresa InfoNCE
+
+Simone alle 17:32 ha scelto «Prova mirata». Preparati due riavvii dallo stesso fork a 544, in una sola allocazione di 4 GPU. Al 545 si leggono i gradienti locali e ridotti di tutti i 270 parametri su ogni rank e i gruppi effettivi dalla comunicazione. A 576 si confrontano entrambi gli endpoint storici. Pacchetto in review, tetto 1 GPU-ora e 8,2667 ore locali compreso il checkout. [Protocollo, regole e budget](contrastive_cn_restart_probe_20261121.md)
+
 ### 21/11/2026 — GPT scientifico, lettura congiunta delle sei coppie
 
 Riletti il rapporto originale del job 65035852 e le tracce in `f23b7cca`. Ricalcolati gli esiti per coppia dai 6.520 scarti relativi di AdamW e coda per confronto. Ricondotti gli ID 266–269 ai due strati del proiettore InfoNCE. Confermati lo stato al confine e l’uguaglianza delle repliche entro ciascuna loss. [Rapporto scientifico](reviews/contrastive_targets_resume_science_20261121.md)
@@ -9610,6 +9614,10 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — GPT scientifico, origine dello scarto al 545 ancora aperta
+
+La review indipendente 06347c7a conferma il primo scarto aggregato dopo la riduzione DDP. Il logger della versione di Torch sul cluster legge i gruppi con un aggiornamento di ritardo. La misura nuova intercetta la comunicazione reale e separa la fedeltà della strumentazione dalla verifica dell’ipotesi. Il verdetto storico resta FAILED_REQUIRES_REVIEW. Claude deve rivedere il nuovo diff e vincolare la review al pacchetto prima del passaggio a 3-launcher.
 
 ### 21/11/2026 — GPT scientifico, scarto ripetibile del proiettore InfoNCE
 
