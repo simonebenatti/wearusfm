@@ -1,10 +1,48 @@
 {
   "checkout_sha": "edebfb6c290cf661989c5cff45916bc6a93e607e",
   "existing_execpolicy_allow_verified_before_all_six_commands": true,
-  "first_actual_start": null,
+  "first_actual_start": {
+    "65035622": {
+      "node": "lrdn2183",
+      "start": "2026-11-21T15:22:47",
+      "state": "RUNNING",
+      "timezone": "Europe/Rome"
+    },
+    "65035623": {
+      "node": "lrdn3188",
+      "start": "2026-11-21T15:22:47",
+      "state": "RUNNING",
+      "timezone": "Europe/Rome"
+    },
+    "65035626": {
+      "node": "lrdn3369",
+      "start": "2026-11-21T15:22:47",
+      "state": "RUNNING",
+      "timezone": "Europe/Rome"
+    },
+    "65035628": {
+      "node": "lrdn2287",
+      "start": "2026-11-21T15:22:47",
+      "state": "RUNNING",
+      "timezone": "Europe/Rome"
+    },
+    "65035629": {
+      "node": "lrdn3349",
+      "start": "2026-11-21T15:22:47",
+      "state": "RUNNING",
+      "timezone": "Europe/Rome"
+    },
+    "65035631": {
+      "node": "lrdn0707",
+      "start": "2026-11-21T15:23:24",
+      "state": "RUNNING",
+      "timezone": "Europe/Rome"
+    }
+  },
   "first_actual_start_policy": "Record only actual sacct Start/receipts, never estimate as started",
+  "first_archived_status": "RUNNING for all six",
   "gate_before_selections": "all six completed verified controls and combined positive-control gate",
-  "initial_state": "PENDING Priority",
+  "initial_state": "PENDING Priority at first read, before archived RUNNING snapshot",
   "jobs": {
     "TCNH-controls-linear-L0-20261120": 65035622,
     "TCNH-controls-linear-MLP-20261120": 65035623,
