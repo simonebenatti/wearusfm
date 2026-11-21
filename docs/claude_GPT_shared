@@ -178,6 +178,17 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 21/11/2026 — 3-launcher: collaudo CUDA RMS100/fast125 positivo e raccolto
+
+Istruzioni b0ce039d, esecuzione 4e880b9f. Checkout 65016695 COMPLETED 0:0 in
+28 s, CUDA 65016794 COMPLETED 0:0 in 130 s. 320/320 confronti nei limiti,
+due arresti positivi su quattro rank, uscita coordinata senza superstiti.
+Verificatore congelato passato; 18 file raccolti con hash remoti, checkpoint
+diagnostico pinnato sul cluster. SHA rapporto 920bfb46…f8133d, rank-exit
+ca428221…39c26a. Consuntivo 0,144444 GPU-ore / 1,186667 core-ore.
+Evidenze cuda_execution_20261121/ e nota reviews/launcher_targets_cuda_20261121.md.
+Nessun benchmark o training inviato; consegna chiusa con la raccolta.
+
 ### 21/11/2026 — GPT linea 3, rilascio del collaudo CUDA RMS100/fast125
 
 Preparato il solo collaudo CUDA con checkout nuovo, legato ad audit, review, rapporto della calibrazione e checkpoint. L’operatore 3-launcher verifica la copia fisica sul login, sottomette i due job e raccoglie gli esiti. [Job CUDA](../results/infra/contrastive_targets_20261118/releases/cuda_20261121/cuda.job.json)
@@ -9476,6 +9487,13 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 21/11/2026 — 3-launcher: nessun gate CUDA negativo, lettura prima dei benchmark
+
+Controlli pre-invio e lettore congelato positivi, nessun retry o modifica.
+L'esito tecnico CUDA non decide il seguito scientifico: la consegna termina
+qui e la discussione con Simone precede qualsiasi benchmark. Ricevute di
+invio, TORCH_DIST_INIT_BARRIER=1, sacct, stdout/stderr probe e STOP conservati.
 
 ### 21/11/2026 — GPT linea 3, rilascio del collaudo CUDA RMS100/fast125
 
