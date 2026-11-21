@@ -1,0 +1,213 @@
+{
+  "execution_commit": "12e215a978b9d30ea6d670f58af1a0f97387d477",
+  "operator": "3-launcher",
+  "campaign_directory": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121",
+  "pins": {
+    "results/infra/contrastive_targets_20261118/reloads_handoff_20261121/prepare_handoff.py": "e777bf27269405f75d21bcaeb1c94381fe1aefb049b15745ce0ee9e8e49fdfbc",
+    "results/infra/contrastive_targets_20261118/reloads_handoff_20261121/login_check.sh": "8bab3a49b60ccd31c7e33832cc249383434f689ed46a259b88383a06211f1c37",
+    "results/infra/contrastive_targets_20261118/reloads_handoff_20261121/validate_reload.py": "614fba29fae49a6706ee25c70debe62a5304d15a69c851a899137152d7e5e23e",
+    "scripts/slurm/contrastive_preflight_gpu.sbatch": "d3f128ae4dc1ea7565aa4603069f5578260f261268430b4c262b02c2d619128f",
+    "scripts/slurm/campaign_checkout.sbatch": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+    "results/infra/contrastive_targets_20261118/releases/audit_20261120/review_binding.json": "171b47df22e3990d07e4411b3148e2e89b5d8645f07cdff84db9d166e8c2e1bb",
+    "results/infra/contrastive_targets_20261118/audit_execution_20261120/audit_accounting.json": "594d72932f2ca15440ee4bf1255a0abe035467933703efcd23309a6e14a32726",
+    "results/infra/contrastive_targets_20261118/audit_execution_20261120/audit.sacct.tsv": "8d2c71fbcbe883cf906b8349d5b104882307a26e859cc95629bf295f1c413cfe",
+    "scripts/submit_job.py": "814da4bc66dbf18d69ee2ba332675fa0788ab25247d5f5460224cfd24d7e0d82",
+    "results/infra/contrastive_targets_20261118/calibration_execution_20261121/allocation.sacct.tsv": "4b991416b7d28dd8ed07209d0c7ef563221f9d3901496d5548f52196f1350fa2",
+    "results/infra/contrastive_targets_20261118/calibration_execution_20261121/remote_sha256.txt": "451121e694b19195d56044f1d7e8d8898122b7fc26ae77efc0ff8143b2d34ecb",
+    "results/infra/contrastive_targets_20261118/cuda_execution_20261121/allocation.sacct.tsv": "83f41c85661ba9801c95a063cf900fc5e7c841b1b846c2b6a9b38095548e929f",
+    "results/infra/contrastive_targets_20261118/cuda_execution_20261121/remote_sha256.txt": "a17d900b8f8d7ae89d33b30a91f3bb15f37dd57ecbf1236268a0d82e3b936182",
+    "results/infra/contrastive_targets_20261118/benchmark_execution_20261121/allocation.sacct.tsv": "6e832bb0b76740a04a6418dd22b9041b2102d58161cdeb5428ce9203fdf624ca",
+    "results/infra/contrastive_targets_20261118/benchmark_execution_20261121/remote_sha256.txt": "eb27d399c9a9349c7df3fe0786d2571ef5271b57f2a62a4ff45248cb55dcd193",
+    "results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/cohort.json": "2e611964c76c6f8e7622a89ecb407c1175ec31502e77b2a64d66efb5236b9c3a",
+    "results/infra/contrastive_targets_20261118/benchmark_execution_20261121/checkpoints_remote.txt": "9a71ba458e587c931c62eb3095cbdb559ff211a5e55279d75831049d44e702a9",
+    "results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/C0.config.json": "bbb179fffe990ec65ba6899f2c7bef63fcced17772ec8909a1693e0a92d40ee2",
+    "results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/CN.config.json": "425d054ec8f5c28d5aaacaef4fc98e93796364354c6092eec9b3e2f8aeacda88",
+    "results/infra/contrastive_targets_20261118/releases/benchmark_20261121/cohort/CR.config.json": "57b50984f6847b6cfda8191a54f95fc074659d9a36fef8b97042e8a875bfa432",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_A.evidence.json": "6f5dcaf1def7b5db0e7d9f4faaac209ad61e2ac45daf98c70a67bae249a8a01b",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_A.release.json": "7cc5235803cc163473b21e5fd2eed28d5228f63ca3202b709c0ecbc231c38fec",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_A.job.json": "fd693e4c877a059c2e143172a214148ae92e1bbe5a1d27f89cfb4e45931a1ca0",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_B.evidence.json": "3a32b8b8cbe39b796f58ab84ae3c5ee3c0069c5823592edb52d837b5ef8f7d8a",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_B.release.json": "fc56fab764bef96dceb48820a82578c6a3ca68e8905ebecfcea1bf6f90b38a3c",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_B.job.json": "a1641fa7e27e87ade6a06dec196e4b2bc719210b7de523eb4d6f0936dfb38bec",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_A.evidence.json": "63ac419db102b70adde873ae1445e874aff1f7109b58b9599104b5df99f53c06",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_A.release.json": "62196494fa197c268c6cac8d725591d17203208f441c09aa9cb7e017fd71a914",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_A.job.json": "76b7c953f8da8545849aa34b78689a5e7f1d74a17cb5e9f45dbf41f980d2cb7e",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_B.evidence.json": "ef53c1ca72cf1d71e78d979061ffd19a8d389ca8a411fd901530ede1693b5c7f",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_B.release.json": "da8bd80c7b5b65da6416b8e64045f62753259a10d8598b79489276657b1592fb",
+    "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_B.job.json": "e343388bf9c431b9d1b20cc86adab87cb8e026c5f4e1775d122ef77653a1a836"
+  },
+  "deploy": [
+    "git",
+    "-C",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets",
+    "push",
+    "leonardo",
+    "12e215a978b9d30ea6d670f58af1a0f97387d477:refs/heads/deploy/contrastive-targets-reloads-20261121"
+  ],
+  "verify_deploy_sha": [
+    "git",
+    "-C",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets",
+    "ls-remote",
+    "--exit-code",
+    "leonardo",
+    "refs/heads/deploy/contrastive-targets-reloads-20261121"
+  ],
+  "before_checkout": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/results/infra/contrastive_targets_20261118/reloads_handoff_20261121/prepare_handoff.py",
+    "--frozen-sha",
+    "12e215a978b9d30ea6d670f58af1a0f97387d477",
+    "--login-check",
+    "checkout"
+  ],
+  "checkout_only": [
+    "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+    "--agente",
+    "gpt",
+    "--campagna",
+    "CONTRASTIVE-targets-v3-20261118",
+    "--id",
+    "CONTRAST-CHECKOUT-reloads-targets-v3-20261118",
+    "--gpu-ore",
+    "0",
+    "--script-stdin",
+    "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/scripts/slurm/campaign_checkout.sbatch",
+    "--",
+    "--cpus-per-task=4",
+    "--mem=2G",
+    "--time=00:04:00",
+    "--export=ALL,CAMPAIGN=contrastive-targets-reloads-20261121,CAMPAIGN_SHA=12e215a978b9d30ea6d670f58af1a0f97387d477,EXPECTED_SHA=12e215a978b9d30ea6d670f58af1a0f97387d477"
+  ],
+  "reloads": {
+    "CN_A": {
+      "before_reload": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/results/infra/contrastive_targets_20261118/reloads_handoff_20261121/prepare_handoff.py",
+        "--frozen-sha",
+        "12e215a978b9d30ea6d670f58af1a0f97387d477",
+        "--login-check",
+        "CN_A"
+      ],
+      "submit_reload": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "CONTRASTIVE-targets-v3-20261118",
+        "--id",
+        "CONTRAST-RELOAD-CN-A-targets-v3-20261118",
+        "--gpu-ore",
+        "2",
+        "--",
+        "--cpus-per-task=32",
+        "--gres=gpu:4",
+        "--mem=240G",
+        "--time=00:30:00",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121,EXPECTED_SHA=12e215a978b9d30ea6d670f58af1a0f97387d477,TORCH_DIST_INIT_BARRIER=1",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121/scripts/slurm/contrastive_preflight_gpu.sbatch",
+        "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_A.job.json"
+      ]
+    },
+    "CN_B": {
+      "before_reload": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/results/infra/contrastive_targets_20261118/reloads_handoff_20261121/prepare_handoff.py",
+        "--frozen-sha",
+        "12e215a978b9d30ea6d670f58af1a0f97387d477",
+        "--login-check",
+        "CN_B"
+      ],
+      "submit_reload": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "CONTRASTIVE-targets-v3-20261118",
+        "--id",
+        "CONTRAST-RELOAD-CN-B-targets-v3-20261118",
+        "--gpu-ore",
+        "2",
+        "--",
+        "--cpus-per-task=32",
+        "--gres=gpu:4",
+        "--mem=240G",
+        "--time=00:30:00",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121,EXPECTED_SHA=12e215a978b9d30ea6d670f58af1a0f97387d477,TORCH_DIST_INIT_BARRIER=1",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121/scripts/slurm/contrastive_preflight_gpu.sbatch",
+        "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CN_B.job.json"
+      ]
+    },
+    "CR_A": {
+      "before_reload": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/results/infra/contrastive_targets_20261118/reloads_handoff_20261121/prepare_handoff.py",
+        "--frozen-sha",
+        "12e215a978b9d30ea6d670f58af1a0f97387d477",
+        "--login-check",
+        "CR_A"
+      ],
+      "submit_reload": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "CONTRASTIVE-targets-v3-20261118",
+        "--id",
+        "CONTRAST-RELOAD-CR-A-targets-v3-20261118",
+        "--gpu-ore",
+        "2",
+        "--",
+        "--cpus-per-task=32",
+        "--gres=gpu:4",
+        "--mem=240G",
+        "--time=00:30:00",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121,EXPECTED_SHA=12e215a978b9d30ea6d670f58af1a0f97387d477,TORCH_DIST_INIT_BARRIER=1",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121/scripts/slurm/contrastive_preflight_gpu.sbatch",
+        "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_A.job.json"
+      ]
+    },
+    "CR_B": {
+      "before_reload": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-contrastive-targets/results/infra/contrastive_targets_20261118/reloads_handoff_20261121/prepare_handoff.py",
+        "--frozen-sha",
+        "12e215a978b9d30ea6d670f58af1a0f97387d477",
+        "--login-check",
+        "CR_B"
+      ],
+      "submit_reload": [
+        "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python",
+        "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py",
+        "--agente",
+        "gpt",
+        "--campagna",
+        "CONTRASTIVE-targets-v3-20261118",
+        "--id",
+        "CONTRAST-RELOAD-CR-B-targets-v3-20261118",
+        "--gpu-ore",
+        "2",
+        "--",
+        "--cpus-per-task=32",
+        "--gres=gpu:4",
+        "--mem=240G",
+        "--time=00:30:00",
+        "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121,EXPECTED_SHA=12e215a978b9d30ea6d670f58af1a0f97387d477,TORCH_DIST_INIT_BARRIER=1",
+        "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/contrastive-targets-reloads-20261121/scripts/slurm/contrastive_preflight_gpu.sbatch",
+        "results/infra/contrastive_targets_20261118/releases/reloads_20261121/reload_CR_B.job.json"
+      ]
+    }
+  },
+  "requested": {
+    "gpu_hours": 8,
+    "core_hours": 64.26666666666667
+  },
+  "slurm_allowance": {
+    "gpu_hours": 1.6,
+    "core_hours": 13.2
+  }
+}
