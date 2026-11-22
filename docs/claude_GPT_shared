@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 22/11/2026 — GPT scientifico, correzioni alla review del confronto CN al passo 545
+
+Aggiornato il pacchetto per la review successiva a `fc3eef6b`. Il confronto gestisce il vincolo mmap di Torch 2.2 e distingue le tre copie CUDA inattive del processo rank 0 dagli stati RNG utilizzati. Regola prospettica sui due bias scalari, tempi per gamba, verifica dello spazio su WORK e consuntivo di invio allineato al walltime. [Protocollo](contrastive_cn_restart_probe_20261121.md)
+
 ### 21/11/2026 — GPT scientifico, prova mirata sulla ripresa InfoNCE
 
 Simone alle 17:32 ha scelto «Prova mirata». Preparati due riavvii dallo stesso fork a 544, in una sola allocazione di 4 GPU. Al 545 si leggono i gradienti locali e ridotti di tutti i 270 parametri su ogni rank e i gruppi effettivi dalla comunicazione. A 576 si confrontano entrambi gli endpoint storici. Pacchetto in review, tetto 1 GPU-ora e 8,2667 ore locali compreso il checkout. [Protocollo, regole e budget](contrastive_cn_restart_probe_20261121.md)
@@ -9614,6 +9618,10 @@ Il pacchetto resta REVIEW_REQUIRED: preventivo di 13 allocazioni, 14 GPUh / 137,
 nessuna calibrazione nuova misurata, nessun job o deploy. Prompt per Claude pubblicato.
 
 ## 2) Problemi trovati
+
+### 22/11/2026 — GPT scientifico, correzioni alla review del confronto CN al passo 545
+
+Il candidato `9d34dc69` avrebbe prodotto `INCONCLUSIVE` anche con dati corretti. Claude ha documentato due cause indipendenti. La rettifica conserva la verifica bit per bit della ripresa ordinaria e tratta come inconclusiva ogni altra differenza non in virgola mobile a 576. Entrambe le gambe devono essere complete prima di una eventuale rilettura su CPU. Il vecchio verdetto e la chiusura della release restano validi.
 
 ### 21/11/2026 — GPT scientifico, origine dello scarto al 545 ancora aperta
 

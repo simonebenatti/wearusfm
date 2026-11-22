@@ -126,3 +126,68 @@ def test_post_update_trace_includes_each_optimizer_tensor_in_order(tmp_path):
     path.write_text(json.dumps(data))
     with pytest.raises(ValueError, match="parameter ordering"):
         compare.post_update_hashes(tmp_path, 1, identity)
+
+
+def saved_endpoint(seed):
+    def rng(value):
+        return torch.tensor([value, 5, 9], dtype=torch.uint8)
+    return {"step": 576, "torch_rng": rng(0), "cuda_rng": [rng(0), rng(seed), rng(seed), rng(seed)],
+            "rank_rng": [{"torch_rng": rng(rank + 1), "cuda_rng": rng(rank)} for rank in range(4)],
+            "student": {"weight": torch.tensor([2.])}, "queue_counter": 32}
+
+
+def test_process_rng_is_not_the_active_rng_on_any_rank():
+    continuous = saved_endpoint(24)
+    ordinary = saved_endpoint(12)
+    warm = copy.deepcopy(ordinary)
+    result = compare.warm_endpoint_differences(continuous, warm, ordinary["cuda_rng"])
+    inactive = ["cuda_rng.1", "cuda_rng.2", "cuda_rng.3"]
+    assert result["metadata_or_schema_different"] == inactive
+    assert not result["exact_payload"] and result["exact_scientific_payload"]
+    assert [entry["path"] for entry in result["process_rng"]] == inactive
+    assert all(entry["matches_ordinary"] and not entry["matches_continuous"] for entry in result["process_rng"])
+
+    warm["cuda_rng"][2] = continuous["cuda_rng"][2].clone()
+    warm["cuda_rng"][0][0] += 1
+    warm["torch_rng"][0] += 1
+    warm["rank_rng"][2]["cuda_rng"][0] += 1
+    warm["queue_counter"] += 1
+    result = compare.warm_endpoint_differences(continuous, warm, ordinary["cuda_rng"])
+    assert not result["exact_scientific_payload"]
+    assert set(result["scientific_metadata_or_schema_different"]) == {
+        "cuda_rng.0", "cuda_rng.2", "torch_rng", "rank_rng.2.cuda_rng", "queue_counter"}
+    assert "cuda_rng.2" not in result["metadata_or_schema_different"]
+
+
+def test_only_specific_unused_rng_values_can_be_excluded():
+    continuous = saved_endpoint(24)
+    ordinary = saved_endpoint(12)
+    warm = copy.deepcopy(ordinary)
+    warm["cuda_rng"][1] = ordinary["cuda_rng"][1] = torch.tensor([5, 9], dtype=torch.uint8)
+    result = compare.warm_endpoint_differences(continuous, warm, ordinary["cuda_rng"])
+    assert not result["exact_scientific_payload"]
+    assert result["scientific_metadata_or_schema_different"] == ["cuda_rng.1"]
+    assert not result["process_rng"][0]["same_shape"]
+    warm["cuda_rng"][1] = warm["cuda_rng"][1].float()
+    with pytest.raises(ValueError, match=r"invalid RNG state at cuda_rng\.1"):
+        compare.warm_endpoint_differences(continuous, warm, ordinary["cuda_rng"])
+    del warm["cuda_rng"][1]
+    with pytest.raises(ValueError, match=r"expected 4 entries at cuda_rng"):
+        compare.warm_endpoint_differences(continuous, warm, ordinary["cuda_rng"])
+
+
+@pytest.mark.parametrize("pid,name,expected", [(253, "anchor_heads.rms.bias", False),
+                                               (257, "anchor_heads.env.bias", False),
+                                               (252, "anchor_heads.rms.weight", True)])
+def test_scalar_cancellation_keeps_the_raw_ratio_and_a_falsifiable_bound(pid, name, expected):
+    def row(delta):
+        return {"id": pid, "name": name, "reduced": compare.compare_vector(torch.tensor([0.]), torch.tensor([delta]))}
+    small = row(1e-7)
+    assert compare.screen_reduced_gradients([small], {253: 1., 257: 1.}) is expected
+    assert small["reduced"]["relative_l2"] == 1.
+    assert small["reduced"]["screen_relative_l2"] == pytest.approx(1. if expected else 1e-7)
+    assert compare.screen_reduced_gradients([row(.01)], {253: 1., 257: 1.})
+    if pid in compare.SCALAR_ADDEND_PARAMETERS:
+        small["name"] = "misidentified"
+        with pytest.raises(ValueError, match="named scalar"):
+            compare.screen_reduced_gradients([small], {253: 1., 257: 1.})

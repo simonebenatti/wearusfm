@@ -165,16 +165,27 @@ def run(check_only):
     # Preserve a short tail for teardown and SLURM. Job walltime starts before Python.
     end_epoch = int(os.environ["SLURM_JOB_END_TIME"])
     deadline = min(start + 875, time.monotonic() + end_epoch - time.time() - 25)
-    try:
-        for command in cells:
-            checked_command(command, deadline)
-        checked_command(compare, deadline)
-        if not (root / "report.json").is_file():
-            raise ValueError("Missing final comparison")
-    except (RuntimeError, OSError, ValueError, TimeoutError) as exc:
-        write_new(root / "execution_failure.json", {"status": "INCONCLUSIVE", "cause": str(exc),
-                                                    "training_approved": False})
-        raise
+    phases = [*zip(plan["legs"], cells, strict=True), ("compare", compare)]
+    completed = []
+    with (root / "phase_timings.jsonl").open("x", buffering=1) as timings:
+        for phase, command in phases:
+            began = time.monotonic()
+            timings.write(json.dumps({"phase": phase, "event": "start", "unix_s": time.time()}) + "\n")
+            try:
+                checked_command(command, deadline)
+                if phase == "compare" and not (root / "report.json").is_file():
+                    raise ValueError("Missing final comparison")
+            except (RuntimeError, OSError, ValueError, subprocess.TimeoutExpired) as exc:
+                elapsed = time.monotonic() - began
+                timings.write(json.dumps({"phase": phase, "event": "failed", "unix_s": time.time(),
+                                          "elapsed_s": elapsed}) + "\n")
+                write_new(root / "execution_failure.json", {"status": "INCONCLUSIVE", "phase": phase,
+                          "completed_phases": completed, "elapsed_s": elapsed, "cause": str(exc),
+                          "training_approved": False})
+                raise
+            timings.write(json.dumps({"phase": phase, "event": "completed", "unix_s": time.time(),
+                                      "elapsed_s": time.monotonic() - began}) + "\n")
+            completed.append(phase)
 
 
 def main():

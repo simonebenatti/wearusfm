@@ -141,7 +141,8 @@ def load_observation(directory, rank, expected_parameters=270):
             or pin["file"] != tensor_path.name or pin["bytes"] != tensor_path.stat().st_size
             or pin["sha256"] != _file_hash(tensor_path)):
         raise ValueError("invalid observation receipt or vector pin")
-    vectors = torch.load(tensor_path, map_location="cpu", mmap=True, weights_only=True)
+    # The 2.2.0a0 cluster build only accepts a string filename for mmap.
+    vectors = torch.load(str(tensor_path), map_location="cpu", mmap=True, weights_only=True)
     rows, buckets = record["parameters"], record["buckets"]
     if (len(rows) != expected_parameters or len({r["name"] for r in rows}) != len(rows)
             or set(vectors) != {"local", "reduced"} or any(len(v) != len(rows) for v in vectors.values())
@@ -157,10 +158,15 @@ def load_observation(directory, rank, expected_parameters=270):
                 raise ValueError("bucket/parameter mapping differs")
             for stage in ("local", "reduced"):
                 tensor = vectors[stage][pid]
+                # Norms in the receipt are descriptive. The bitwise checksum below
+                # authenticates the vector; compare_vector recomputes its scientific
+                # distances in float64, independently of the writer's reduction order.
+                norm = row[stage + "_norm"]
+                if type(norm) not in (float, int) or not math.isfinite(norm) or norm < 0:
+                    raise ValueError("invalid descriptive gradient norm")
                 if (not tensor.is_floating_point() or list(tensor.shape) != row["shape"]
                         or str(tensor.dtype) != row["dtype"] or _tensor_hash(tensor) != row[stage + "_sha256"]
-                        or tensor.storage_offset() != row["bucket_element_offset"]
-                        or not math.isclose(row[stage + "_norm"], _norm(tensor), rel_tol=1e-12)):
+                        or tensor.storage_offset() != row["bucket_element_offset"]):
                     raise ValueError("observed gradient differs from its receipt")
             occupied.append((row["bucket_element_offset"] * tensor.element_size(), tensor.numel() * tensor.element_size()))
         # Model parameters are dense, even if their strides are non-contiguous.

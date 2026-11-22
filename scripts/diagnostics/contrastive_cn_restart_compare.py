@@ -25,6 +25,8 @@ LIMIT = 1e-6
 DENOM_FLOOR = 1e-12
 RANKS = 4
 PARAMETERS = 270
+SCALAR_ADDEND_PARAMETERS = {253: "anchor_heads.rms.bias", 257: "anchor_heads.env.bias"}
+PROCESS_ONLY_CUDA_RNG = ("cuda_rng.1", "cuda_rng.2", "cuda_rng.3")
 
 
 def require(condition, message):
@@ -70,6 +72,68 @@ def checkpoint_differences(reference, measured):
     visit(reference, measured, "")
     return {"floating_tensors_different": changed, "metadata_or_schema_different": invalid,
             "exact_payload": not changed and not invalid}
+
+
+def validate_rng_schema(payload):
+    """Check the actual state format before interpreting a difference as an unused generator."""
+    def check_bytes(value, path):
+        require(isinstance(value, torch.Tensor) and value.dtype == torch.uint8 and value.ndim == 1
+                and value.numel() > 0, f"invalid RNG state at {path}")
+
+    check_bytes(payload.get("torch_rng"), "torch_rng")
+    for key in ("cuda_rng", "rank_rng"):
+        values = payload.get(key)
+        require(isinstance(values, list) and len(values) == RANKS, f"expected {RANKS} entries at {key}")
+    for rank in range(RANKS):
+        check_bytes(payload["cuda_rng"][rank], f"cuda_rng.{rank}")
+        record = payload["rank_rng"][rank]
+        require(isinstance(record, Mapping), f"invalid rank_rng.{rank}")
+        for key in ("torch_rng", "cuda_rng"):
+            check_bytes(record.get(key), f"rank_rng.{rank}.{key}")
+
+
+def warm_endpoint_differences(continuous, warm, ordinary_cuda_rng):
+    """Separate the three unused rank-0 device generators while checking them against the other restart."""
+    validate_rng_schema(continuous)
+    validate_rng_schema(warm)
+    raw = checkpoint_differences(continuous, warm)
+    process_rng = []
+    scientific_invalid = list(raw["metadata_or_schema_different"])
+    for index, path in enumerate(PROCESS_ONLY_CUDA_RNG, start=1):
+        reference = continuous["cuda_rng"][index]
+        measured = warm["cuda_rng"][index]
+        ordinary = ordinary_cuda_rng[index]
+        same_shape = reference.shape == measured.shape == ordinary.shape
+        matches_continuous = identical(reference, measured)
+        matches_ordinary = identical(ordinary, measured)
+        process_rng.append({"path": path, "same_shape": same_shape, "matches_ordinary": matches_ordinary,
+                            "matches_continuous": matches_continuous})
+        # Only valid, same-shape uint8 state reproducing the ordinary restart may differ
+        # from continuous. A malformed state, or a warm-only change, remains disqualifying.
+        if same_shape and matches_ordinary:
+            if path in scientific_invalid:
+                scientific_invalid.remove(path)
+        elif path not in scientific_invalid:
+            scientific_invalid.append(path)
+    return {**raw, "scientific_metadata_or_schema_different": scientific_invalid,
+            "process_rng": process_rng, "exact_scientific_payload": not raw["floating_tensors_different"]
+            and not scientific_invalid}
+
+
+def screen_reduced_gradients(details, scalar_addend_scales):
+    """Freeze the original ratio and the conditioning-aware ratio used to test the two scalar biases."""
+    excessive = False
+    for row in details:
+        reduced = row["reduced"]
+        base = max(reduced["ordinary_l2"], reduced["warm_l2"], DENOM_FLOOR)
+        if row["id"] in SCALAR_ADDEND_PARAMETERS:
+            require(row["name"] == SCALAR_ADDEND_PARAMETERS[row["id"]] and reduced["elements"] == 1,
+                    "scalar rounding policy does not match the named scalar")
+            base = max(base, scalar_addend_scales[row["id"]])
+        reduced["screen_denominator"] = base
+        reduced["screen_relative_l2"] = reduced["difference_l2"] / base
+        excessive |= reduced["screen_relative_l2"] > LIMIT
+    return excessive
 
 
 def compare_vector(a, b):
@@ -228,6 +292,7 @@ def compare(ordinary, warm, historical_ordinary, historical_continuous):
     del model
 
     endpoints, endpoint_hashes, metrics = {}, {}, {}
+    ordinary_cuda_rng = None
     for mode, folder in legs.items():
         actual, ref = folder / "checkpoint.pt", previous[mode] / "checkpoint.pt"
         start, summary = read(folder / "start.json"), read(folder / "summary.json")
@@ -238,17 +303,31 @@ def compare(ordinary, warm, historical_ordinary, historical_continuous):
         state = checkpoint(actual)
         require(state["step"] == END and state["world_size"] == RANKS and state["config"] == cfg,
                 "endpoint step/world size/config mismatch")
-        endpoints[mode] = checkpoint_differences(checkpoint(ref), state)
+        reference = checkpoint(ref)
+        if mode == "ordinary":
+            validate_rng_schema(reference)
+            validate_rng_schema(state)
+            endpoints[mode] = checkpoint_differences(reference, state)
+            # Retain only four small CPU buffers for the warm comparison.
+            ordinary_cuda_rng = [value.clone() for value in state["cuda_rng"]]
+        else:
+            endpoints[mode] = warm_endpoint_differences(reference, state, ordinary_cuda_rng)
+        del reference
         endpoint_hashes[mode] = file_sha(actual)
         del state
         metrics[mode] = metrics_evidence(folder, previous[mode], mode)
 
     require(endpoint_hashes["ordinary"] == ENDPOINT["ordinary"] and endpoints["ordinary"]["exact_payload"]
             and not metrics["ordinary"]["differences"], "instrumented ordinary reload did not reproduce historical ordinary")
-    require(not endpoints["warm"]["metadata_or_schema_different"], "warm endpoint metadata/schema or nonfloat state differs")
+    invalid = endpoints["warm"]["scientific_metadata_or_schema_different"]
+    if invalid:
+        return {"status": "INCONCLUSIVE", "reason": "warm endpoint metadata/schema or nonfloat state differs: "
+                + ", ".join(invalid), "historical": prior, "endpoint": endpoints,
+                "actual_endpoint_sha256": endpoint_hashes, "historical_gradient_metrics": metrics}
     details, first_layout, reduced_by_leg, placements = [], None, {}, []
     after_adam = {}
-    any_local = any_reduced = excessive = False
+    any_local = any_reduced = False
+    scalar_addend_scales = {pid: 0. for pid in SCALAR_ADDEND_PARAMETERS}
     for rank in range(RANKS):
         rec, tensors, boundary = {}, {}, {}
         for mode, folder in legs.items():
@@ -286,7 +365,10 @@ def compare(ordinary, warm, historical_ordinary, historical_continuous):
                       for s in ("local", "reduced")}
             any_local |= bool(stages["local"]["different_elements"])
             any_reduced |= stages["reduced"]["difference_l2"] > 0
-            excessive |= stages["reduced"]["relative_l2"] > LIMIT
+            if pid in scalar_addend_scales:
+                # For a one-element tensor the local L2 is the absolute value. Use double
+                # precision and all four ranks to measure cancellation in the ordinary DDP mean.
+                scalar_addend_scales[pid] += stages["local"]["ordinary_l2"] / RANKS
             details.append({"rank": rank, "id": pid, "name": p_name, **stages,
                             "post_update_fields_different": [k for k in after_adam["ordinary"][pid]
                                                              if after_adam["ordinary"][pid][k] != after_adam["warm"][pid][k]],
@@ -298,10 +380,12 @@ def compare(ordinary, warm, historical_ordinary, historical_continuous):
             and all(p["gpu_uuid"] for p in placements) and len({p["gpu_uuid"] for p in placements}) == RANKS,
             "diagnostic requires a single four-device node")
     first_exact = not any(d["step"] == FORK + 1 for d in metrics["warm"]["differences"])
-    status, reason = classify(any_local, any_reduced, excessive, endpoints["warm"]["exact_payload"], first_exact)
+    excessive = screen_reduced_gradients(details, scalar_addend_scales)
+    status, reason = classify(any_local, any_reduced, excessive, endpoints["warm"]["exact_scientific_payload"], first_exact)
     return {"status": status, "reason": reason, "historical": prior, "endpoint": endpoints,
             "actual_endpoint_sha256": endpoint_hashes, "historical_gradient_metrics": metrics, "placements": placements,
-            "actual_bucket_order": first_layout, "per_parameter_and_rank": details}
+            "actual_bucket_order": first_layout, "scalar_ordinary_mean_abs_local": scalar_addend_scales,
+            "per_parameter_and_rank": details}
 
 
 def main():
@@ -311,7 +395,9 @@ def main():
     args = parser.parse_args()
     report = {"schema": "cn-restart-intervention-v1", "training_approved": False,
               "historical_status": "FAILED_REQUIRES_REVIEW", "prospective_relative_l2_limit": LIMIT,
-              "relative_l2_denominator": "max(ordinary L2, warm L2, 1e-12)", "update_observed": FORK + 1}
+              "relative_l2_denominator": "max(ordinary L2, warm L2, 1e-12)",
+              "scalar_screen_denominator": "max(relative_l2_denominator, mean_rank(abs(ordinary local)))",
+              "scalar_screen_parameters": SCALAR_ADDEND_PARAMETERS, "update_observed": FORK + 1}
     try:
         report.update(compare(args.ordinary, args.warm, args.historical_ordinary, args.historical_continuous))
     except (ValueError, KeyError, OSError, RuntimeError, TypeError, IndexError, EOFError) as exc:

@@ -2,6 +2,7 @@
 from datetime import timedelta
 import json
 from pathlib import Path
+from types import SimpleNamespace
 import sys
 
 import pytest
@@ -83,25 +84,129 @@ def test_true_local_and_reduced_gradients_and_independent_rank_files(observation
         assert all(torch.equal(final_a, v["reduced"][pid]) for v in other_ranks)
 
 
-@pytest.mark.parametrize("field", ["pin", "name_collision", "rank", "shape", "gradient_hash", "slot", "bucket_members"])
-def test_rank_receipt_must_bind_original_vectors_and_bucket_members(observation, tmp_path, field):
-    source = observation / "observation.rank0.json"
-    record = json.loads(source.read_text())
-    (tmp_path / "vectors.rank0.pt").hardlink_to(observation / "vectors.rank0.pt")
-    if field == "pin":
-        record["vectors"]["sha256"] = "0" * 64
-    elif field == "name_collision":
-        record["parameters"][1]["name"] = record["parameters"][0]["name"]
-    elif field == "rank":
-        record["rank"] = 1
-    elif field == "shape":
-        record["parameters"][0]["shape"] = [99]
-    elif field == "gradient_hash":
-        record["parameters"][0]["local_sha256"] = "0" * 64
-    elif field == "slot":
-        record["parameters"][0]["bucket_position"] = 99
-    else:
-        record["buckets"][0]["parameter_ids"] = []
-    (tmp_path / source.name).write_text(json.dumps(record))
-    with pytest.raises(ValueError):
-        load_observation(tmp_path, 0, expected_parameters=3)
+
+@pytest.fixture
+def capture(monkeypatch):
+    """Small CPU bucket whose gradient shares the same storage as in GradBucket."""
+    model = torch.nn.Linear(2, 1)
+    ddp = SimpleNamespace(process_group=None, register_comm_hook=lambda state, hook: None)
+    monkeypatch.setattr(dist, "get_rank", lambda group: 0)
+    monkeypatch.setattr(dist, "get_world_size", lambda group: 4)
+    observer = ReductionObservation(ddp, model, expected_parameters=2)
+    observer.start()
+    flat = torch.tensor([.25, -.5, .75])
+    members = list(model.parameters())
+    views = [flat[:2].view_as(model.weight), flat[2:].view_as(model.bias)]
+    bucket = SimpleNamespace(buffer=lambda: flat, parameters=lambda: members,
+                             gradients=lambda: views, index=lambda: 0)
+    return observer, model, bucket
+
+
+@pytest.fixture
+def observation_files(capture, tmp_path, monkeypatch):
+    observer, model, bucket = capture
+    observer._snapshot(bucket)
+    bucket.buffer().mul_(2)
+    for param, grad in zip(model.parameters(), bucket.gradients(), strict=True):
+        param.grad = grad.clone()
+    observer.finish(tmp_path, 0)
+    native_load = torch.load
+
+    def torch22_load(filename, **kwargs):
+        if kwargs.get("mmap") and not isinstance(filename, str):
+            raise ValueError("mmap requires a string filename in Torch 2.2.0a0")
+        return native_load(filename, **kwargs)
+    monkeypatch.setattr(torch, "load", torch22_load)
+    return tmp_path
+
+
+def test_torch22_mmap_keeps_offsets_and_uses_bytes_for_vector_identity(observation_files):
+    path = observation_files / "observation.rank0.json"
+    receipt = json.loads(path.read_text())
+    # CPU summation order may vary across environments. Scientific distances
+    # are computed from the authenticated vectors, not these summaries.
+    receipt["parameters"][1]["local_norm"] *= 1 + 1e-9
+    path.write_text(json.dumps(receipt))
+    _, values = load_observation(observation_files, 0, expected_parameters=2)
+    assert values["local"][1].storage_offset() == 2
+    assert values["local"][1].item() == .75
+    assert values["reduced"][1].item() == 1.5
+
+
+@pytest.mark.parametrize(("field", "replacement", "reason"), [
+    (("schema",), "other", "invalid observation receipt or vector pin"),
+    (("update",), 544, "invalid observation receipt or vector pin"),
+    (("rank",), 1, "invalid observation receipt or vector pin"),
+    (("world_size",), 0, "invalid observation receipt or vector pin"),
+    (("vectors", "file"), "other.pt", "invalid observation receipt or vector pin"),
+    (("vectors", "bytes"), 0, "invalid observation receipt or vector pin"),
+    (("vectors", "sha256"), "0" * 64, "invalid observation receipt or vector pin"),
+    (("parameters", 1, "name"), "weight", "invalid parameter or bucket inventory"),
+    (("buckets", 0, "index"), 5, "invalid parameter or bucket inventory"),
+    (("buckets", 0, "parameter_ids"), [0, 0], "invalid parameter or bucket inventory"),
+    (("parameters", 0, "bucket_position"), 99, "bucket/parameter mapping differs"),
+    (("parameters", 0, "bucket_index"), 1, "bucket/parameter mapping differs"),
+    (("parameters", 0, "id"), 1, "bucket/parameter mapping differs"),
+    (("buckets", 0, "dtype"), "torch.float64", "bucket/parameter mapping differs"),
+    (("parameters", 0, "shape"), [99], "observed gradient differs from its receipt"),
+    (("parameters", 0, "local_sha256"), "0" * 64, "observed gradient differs from its receipt"),
+    (("parameters", 0, "reduced_sha256"), "0" * 64, "observed gradient differs from its receipt"),
+    (("parameters", 1, "bucket_element_offset"), 1, "observed gradient differs from its receipt"),
+    (("buckets", 0, "nbytes"), 8, "parameter span outside its bucket or overlapped"),
+    (("parameters", 0, "local_norm"), -1.0, "invalid descriptive gradient norm"),
+    (("parameters", 0, "reduced_norm"), None, "invalid descriptive gradient norm"),
+])
+def test_reader_rejects_the_specific_corrupted_field(observation_files, field, replacement, reason):
+    path = observation_files / "observation.rank0.json"
+    record = json.loads(path.read_text())
+    owner = record
+    for key in field[:-1]:
+        owner = owner[key]
+    owner[field[-1]] = replacement
+    path.write_text(json.dumps(record))
+    with pytest.raises(ValueError, match=reason):
+        load_observation(observation_files, 0, expected_parameters=2)
+
+
+def test_wrong_expected_parameter_count_rejected_at_read_and_capture(observation_files, capture):
+    with pytest.raises(ValueError, match="invalid parameter or bucket inventory"):
+        load_observation(observation_files, 0, expected_parameters=3)
+    _, model, _ = capture
+    with pytest.raises(ValueError, match="unexpected number of trainable parameters"):
+        ReductionObservation(SimpleNamespace(process_group=None), model, expected_parameters=3)
+
+
+def test_vector_file_symlink_is_rejected(observation_files):
+    path = observation_files / "vectors.rank0.pt"
+    moved = path.with_suffix(".real")
+    path.rename(moved)
+    path.symlink_to(moved)
+    with pytest.raises(ValueError, match="invalid observation receipt or vector pin"):
+        load_observation(observation_files, 0, expected_parameters=2)
+
+
+def test_snapshot_requires_gradient_views_of_the_communicated_buffer(capture):
+    obs, _, bucket = capture
+    bucket.gradients()[0] = bucket.gradients()[0].clone()
+    with pytest.raises(ValueError, match="DDP bucket gradient view"):
+        obs._snapshot(bucket)
+
+
+@pytest.mark.parametrize(("fault", "reason"), [
+    ("unrecorded", "incomplete step-545 bucket coverage"),
+    ("missing_gradient", "duplicated bucket member or missing reduced gradient"),
+    ("different_preclip", "reduced bucket differs from the actual preclip parameter gradient"),
+    ("wrong_rank", "missing observation or incorrect process-group rank"),
+])
+def test_finish_rejects_incomplete_or_wrong_gradient_evidence(fault, reason, capture, tmp_path):
+    obs, model, bucket = capture
+    if fault != "unrecorded":
+        obs._snapshot(bucket)
+    for p, v in zip(model.parameters(), bucket.gradients(), strict=True):
+        p.grad = v.clone()
+    if fault == "missing_gradient":
+        model.bias.grad = None
+    if fault == "different_preclip":
+        model.bias.grad.add_(1)
+    with pytest.raises(ValueError, match=reason):
+        obs.finish(tmp_path, int(fault == "wrong_rank"))

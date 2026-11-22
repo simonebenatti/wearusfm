@@ -53,5 +53,21 @@
   "logical_ids": [
     "CONTRAST-CHECKOUT-CN-RESTART545-20261121",
     "CONTRAST-CN-RESTART545-20261121"
-  ]
+  ],
+  "review_request_commit": "fc3eef6bf023147284512e89ee8b833b9eb63f08",
+  "readout_amendment": {
+    "warm_process_only_rng": [
+      "cuda_rng.1",
+      "cuda_rng.2",
+      "cuda_rng.3"
+    ],
+    "require_process_only_rng_equal_to_ordinary": true,
+    "all_other_nonfloating_differences": "INCONCLUSIVE",
+    "scalar_addend_parameters": {
+      "253": "anchor_heads.rms.bias",
+      "257": "anchor_heads.env.bias"
+    },
+    "scalar_denominator": "max(abs(ordinary_reduced), abs(warm_reduced), mean_abs_ordinary_local_over_ranks, gradient_norm_floor)",
+    "reader_only_recovery": "Reviewed CPU readout on the same verified raw evidence, with complete legs and unchanged criteria. Preserve the original report and write a new one."
+  }
 }
