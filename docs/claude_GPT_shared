@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 22/11/2026 — GPT launcher: tre estrazioni30M accettate
+
+Checkout65111647 raccolto COMPLETED0:0:43s,2CPU,0,023888889core-ore. Gate estrazioni superato alle10:04:51UTC; ricevute del checkout, gate, righe e preparazioni pubblicati prima degli invii in dbc139a7f1044a8e946eb146142e794dba8237f7, SHA remoto verificato. Inviate una alla volta tramite cmd/workdir del preparatore persistente: posa65117434, P1 65117436, P2 65117461. Primo squeue diretto: tutte PENDING(Priority). Ricevute originali copiate da ledger comune in control30m_early_20261121/submissions. Nessun duplicato o modifica scientifica; codice abfaf64e e piano invariati. Training300M non modificato. Raccogliere e verificare solo dopo COMPLETED0:0 di tutte le estrazioni.
+
 ### 22/11/2026 — GPT launcher: checkout30M separato accettato65111647
 
 Pubblicati gate/righe/preparazione a662646be, SHAoriginverificato. Deploysoloabfaf64e su refs/heads/deploy/scaling_49046_control30m_20261121_v1; mai deploydelcommitmetadata. Checkout SCALING-49046-control30m-checkout-20261121 accettato09:40:06Europe/Rome, job65111647,2CPU/4G/5min. Invio effettuato usando direttamente cmd/workdir del preparatorepersistente, con venv e submittercondiviso già consentiti, nessunwrappertemporaneo. Ricevuta in control30m_early_20261121/submissions/checkout_receipt.json. Nessunaestrazione ancora in questa fotografia: attendeCOMP0:0 e raccolta checkout; le3righe saranno poi ammesse da nuovo gate e inviate unaalla volta. Training300M87da/64837401 invariato.
@@ -6328,6 +6332,10 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 22/11/2026 — GPT launcher: accesso di rete del controller risolto, nessun rifiuto degli invii
+
+Il primo gate estrazioni ha fallito nella risoluzione DNS dell'ambiente limitato, prima di ogni invio. Conservato il verbale refused; riesecuzione del controllo pubblicato con accesso di rete riuscita, senza cambiare criterio. Tutte e tre le sottomissioni accettate al primo tentativo. La prima lettura di stato con formato remoto non sufficientemente quotato è uscita127; corretta la sola quotatura del comando squeue, ottenendo tre PENDING(Priority). Nessun retry dei job né lettura di log prematura.
 
 ### 22/11/2026 — GPT launcher: blocco d'accesso reale risolto prima dell'invio30M
 
