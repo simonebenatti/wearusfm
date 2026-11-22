@@ -1,0 +1,160 @@
+{
+  "checks": [
+    {
+      "check": "initial_weights",
+      "passed": true
+    },
+    {
+      "check": "training_set_identity",
+      "passed": true
+    },
+    {
+      "check": "schedule_length",
+      "passed": true
+    },
+    {
+      "check": "fold0_first_shuffle",
+      "passed": true
+    },
+    {
+      "check": "fold0_first_epoch_train_loss",
+      "loss_sum": [
+        1933.833996772766,
+        1933.833996772766
+      ],
+      "max_relative_difference": 0.0,
+      "numerical": true,
+      "passed": true
+    },
+    {
+      "check": "fold1_first_shuffle",
+      "passed": true
+    },
+    {
+      "check": "fold1_first_epoch_train_loss",
+      "loss_sum": [
+        1936.840214252472,
+        1936.840214252472
+      ],
+      "max_relative_difference": 0.0,
+      "numerical": true,
+      "passed": true
+    }
+  ],
+  "lr": 0.003,
+  "parity_level": "exact",
+  "passed": true,
+  "points": [
+    {
+      "archived_fold_steps": [
+        0,
+        0
+      ],
+      "edyn": [
+        1.0,
+        1.0
+      ],
+      "exposure": 0.0,
+      "fold_steps": [
+        0,
+        0
+      ],
+      "max_relative_difference": 0.0,
+      "mse": [
+        2.892463349558587,
+        2.892463349558587
+      ],
+      "numerical": true,
+      "passed": true
+    },
+    {
+      "archived_fold_steps": [
+        8,
+        8
+      ],
+      "edyn": [
+        0.8222974023158734,
+        0.8222974023158734
+      ],
+      "exposure": 0.25,
+      "fold_steps": [
+        8,
+        8
+      ],
+      "max_relative_difference": 0.0,
+      "mse": [
+        2.1452115131878022,
+        2.1452115131878022
+      ],
+      "numerical": true,
+      "passed": true
+    },
+    {
+      "archived_fold_steps": [
+        15,
+        15
+      ],
+      "edyn": [
+        0.7844989085655731,
+        0.7844989085655731
+      ],
+      "exposure": 0.5,
+      "fold_steps": [
+        15,
+        15
+      ],
+      "max_relative_difference": 0.0,
+      "mse": [
+        2.020721989079718,
+        2.020721989079718
+      ],
+      "numerical": true,
+      "passed": true
+    },
+    {
+      "archived_fold_steps": [
+        22,
+        23
+      ],
+      "edyn": [
+        0.7692090899847309,
+        0.7692090899847309
+      ],
+      "exposure": 0.75,
+      "fold_steps": [
+        22,
+        23
+      ],
+      "max_relative_difference": 0.0,
+      "mse": [
+        1.9583036504913476,
+        1.9583036504913476
+      ],
+      "numerical": true,
+      "passed": true
+    },
+    {
+      "archived_fold_steps": [
+        29,
+        30
+      ],
+      "edyn": [
+        0.7606302236459029,
+        0.7606302236459029
+      ],
+      "exposure": 1.0,
+      "fold_steps": [
+        29,
+        30
+      ],
+      "max_relative_difference": 0.0,
+      "mse": [
+        1.9309589037808752,
+        1.9309589037808752
+      ],
+      "numerical": true,
+      "passed": true
+    }
+  ],
+  "training_target": "observed_y"
+}

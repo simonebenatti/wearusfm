@@ -1,0 +1,106 @@
+TCND-d0-replay-20261122: completed | gates {'gate_arithmetic': True, 'held_oracle_self_check': True, 'state_parity': True} | 101 s | 
+TCND-d1-cleanfit-20261122: completed | gates {'driver_parity': True, 'gate_arithmetic': True, 'held_oracle_self_check': True, 'selected_point_reproduced': True} | 1304 s | 
+TCND-d2-extend-20261122: completed | gates {'held_oracle_self_check': True, 'restored_state_parity': True} | 1239 s | 
+
+== D0: parità exact, cancelli {'gate_arithmetic': True, 'held_oracle_self_check': True, 'state_parity': True}
+recuperi riletti (esclusi) {'fold0': '24.17%', 'fold1': '18.88%', 'pooled': '21.71%'}, archiviati {'fold0': '24.17%', 'fold1': '18.88%', 'pooled': '21.71%'}, limiti {'fold0': '1.2e-12', 'fold1': '1.2e-12', 'pooled': '1.2e-12'}
+recuperi sul fitting allo stato scelto {'fold0': '86.12%', 'fold1': '69.25%', 'pooled': '77.64%'}
+held_minus_fitting_selected:
+   fold0 ΔE_dyn 0.034784 = Δpulito 0.011072 + Δrumore -0.000882 + Δallineamento 0.024594
+   fold1 ΔE_dyn 0.028236 = Δpulito 0.007295 + Δrumore -0.002144 + Δallineamento 0.023085
+   pooled ΔE_dyn 0.030029 = Δpulito 0.009090 + Δrumore -0.002866 + Δallineamento 0.023806
+held_minus_fitting_final:
+   fold0 ΔE_dyn 0.100852 = Δpulito 0.018029 + Δrumore -0.000882 + Δallineamento 0.083706
+   fold1 ΔE_dyn 0.100764 = Δpulito 0.014653 + Δrumore -0.002144 + Δallineamento 0.088254
+   pooled ΔE_dyn 0.099272 = Δpulito 0.016261 + Δrumore -0.002866 + Δallineamento 0.085877
+-- L0 (selected_best): parità exact
+   lr 0.0003 best_states esp. 183: R esclusi -12.28% | R fitting 0.88% | E_dyn pulito esclusi 0.199032, fitting 0.192684
+      fitting fold0: nessun ramo profondo
+      fitting fold1: nessun ramo profondo
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '-13.13%', 'fold1': '-10.71%', 'pooled': '-12.02%'}
+      held fold0 E_dyn 0.718154 = pulito 0.065532 + rumore 0.653451 + allineamento -0.000829; <e,n>/<n,n> 0.0006
+      held fold1 E_dyn 0.756284 = pulito 0.064840 + rumore 0.691103 + allineamento 0.000341; <e,n>/<n,n> -0.0002
+      held pooled E_dyn 0.735580 = pulito 0.065216 + rumore 0.670659 + allineamento -0.000294; <e,n>/<n,n> 0.0002
+      fitting fold0 E_dyn 0.708789 = pulito 0.061928 + rumore 0.654332 + allineamento -0.007472; <e,n>/<n,n> 0.0057
+      fitting fold1 E_dyn 0.748496 = pulito 0.063076 + rumore 0.693246 + allineamento -0.007826; <e,n>/<n,n> 0.0056
+      fitting pooled E_dyn 0.728373 = pulito 0.062494 + rumore 0.673525 + allineamento -0.007646; <e,n>/<n,n> 0.0057
+-- MLP (selected_best): parità exact
+   lr 0.001 best_states esp. 24: R esclusi -11.50% | R fitting 32.58% | E_dyn pulito esclusi 0.196055, fitting 0.173971
+      fitting fold0: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.429); quota del ramo profondo sull'energia centrata 0.079
+      fitting fold1: unità mai attive per strato [0, 0, 1, 1, 0] (ultimo 0/32, attive 0.449); quota del ramo profondo sull'energia centrata 0.064
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '-10.23%', 'fold1': '-10.47%', 'pooled': '-10.34%'}
+      held fold0 E_dyn 0.717406 = pulito 0.063853 + rumore 0.653451 + allineamento 0.000102; <e,n>/<n,n> -0.0001
+      held fold1 E_dyn 0.756187 = pulito 0.064701 + rumore 0.691103 + allineamento 0.000383; <e,n>/<n,n> -0.0003
+      held pooled E_dyn 0.735130 = pulito 0.064240 + rumore 0.670659 + allineamento 0.000231; <e,n>/<n,n> -0.0002
+      fitting fold0 E_dyn 0.688138 = pulito 0.052891 + rumore 0.654332 + allineamento -0.019085; <e,n>/<n,n> 0.0146
+      fitting fold1 E_dyn 0.734149 = pulito 0.060056 + rumore 0.693246 + allineamento -0.019154; <e,n>/<n,n> 0.0138
+      fitting pooled E_dyn 0.710831 = pulito 0.056425 + rumore 0.673525 + allineamento -0.019119; <e,n>/<n,n> 0.0142
+-- TCN_post (all): parità exact
+   lr 0.0001 best_states esp. 181: R esclusi 4.90% | R fitting 50.69% | E_dyn pulito esclusi 0.169451, fitting 0.146729
+      fitting fold0: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.523); quota del ramo profondo sull'energia centrata 0.121
+      fitting fold1: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.495); quota del ramo profondo sull'energia centrata 0.102
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '6.22%', 'fold1': '2.76%', 'pooled': '4.63%'}
+   lr 0.0001 current_states esp. 300: R esclusi 0.57% | R fitting 71.70% | E_dyn pulito esclusi 0.177414, fitting 0.144818
+      fitting fold0: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.501); quota del ramo profondo sull'energia centrata 0.150
+      fitting fold1: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.476); quota del ramo profondo sull'energia centrata 0.132
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '0.74%', 'fold1': '-0.55%', 'pooled': '0.15%'}
+   lr 0.0003 best_states esp. 64: R esclusi 5.36% | R fitting 51.86% | E_dyn pulito esclusi 0.167918, fitting 0.146095
+      fitting fold0: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.546); quota del ramo profondo sull'energia centrata 0.123
+      fitting fold1: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.495); quota del ramo profondo sull'energia centrata 0.096
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '8.46%', 'fold1': '2.00%', 'pooled': '5.49%'}
+   lr 0.0003 current_states esp. 150: R esclusi -5.93% | R fitting 91.62% | E_dyn pulito esclusi 0.188414, fitting 0.149138
+      fitting fold0: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.514); quota del ramo profondo sull'energia centrata 0.169
+      fitting fold1: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.479); quota del ramo profondo sull'energia centrata 0.158
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '-2.36%', 'fold1': '-10.38%', 'pooled': '-6.04%'}
+   lr 0.001 best_states esp. 31: R esclusi 9.49% | R fitting 67.51% | E_dyn pulito esclusi 0.159878, fitting 0.136285
+      fitting fold0: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.460); quota del ramo profondo sull'energia centrata 0.140
+      fitting fold1: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.468); quota del ramo profondo sull'energia centrata 0.106
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '15.18%', 'fold1': '3.95%', 'pooled': '10.02%'}
+   lr 0.001 current_states esp. 150: R esclusi -39.81% | R fitting 150.33% | E_dyn pulito esclusi 0.247297, fitting 0.189554
+      fitting fold0: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.447); quota del ramo profondo sull'energia centrata 0.220
+      fitting fold1: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.448); quota del ramo profondo sull'energia centrata 0.216
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '-32.62%', 'fold1': '-46.90%', 'pooled': '-39.19%'}
+   lr 0.003 best_states esp. 31: R esclusi 21.71% | R fitting 77.64% | E_dyn pulito esclusi 0.139236, fitting 0.112640
+      fitting fold0: unità mai attive per strato [0, 0, 0, 1, 0] (ultimo 0/32, attive 0.320); quota del ramo profondo sull'energia centrata 0.136
+      fitting fold1: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.290); quota del ramo profondo sull'energia centrata 0.119
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '23.84%', 'fold1': '19.04%', 'pooled': '21.63%'}
+      held fold0 E_dyn 0.696657 = pulito 0.044116 + rumore 0.653451 + allineamento -0.000909; <e,n>/<n,n> 0.0007
+      held fold1 E_dyn 0.738818 = pulito 0.047413 + rumore 0.691103 + allineamento 0.000303; <e,n>/<n,n> -0.0002
+      held pooled E_dyn 0.715926 = pulito 0.045623 + rumore 0.670659 + allineamento -0.000355; <e,n>/<n,n> 0.0003
+      fitting fold0 E_dyn 0.661873 = pulito 0.033044 + rumore 0.654332 + allineamento -0.025504; <e,n>/<n,n> 0.0195
+      fitting fold1 E_dyn 0.710583 = pulito 0.040118 + rumore 0.693246 + allineamento -0.022782; <e,n>/<n,n> 0.0164
+      fitting pooled E_dyn 0.685897 = pulito 0.036533 + rumore 0.673525 + allineamento -0.024161; <e,n>/<n,n> 0.0179
+   lr 0.003 current_states esp. 150: R esclusi -22.62% | R fitting 156.46% | E_dyn pulito esclusi 0.217470, fitting 0.169566
+      fitting fold0: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.375); quota del ramo profondo sull'energia centrata 0.215
+      fitting fold1: unità mai attive per strato [0, 0, 0, 0, 0] (ultimo 0/32, attive 0.339); quota del ramo profondo sull'energia centrata 0.232
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '-20.77%', 'fold1': '-24.31%', 'pooled': '-22.40%'}
+   lr 0.01 best_states esp. 93: R esclusi -15.40% | R fitting -2.71% | E_dyn pulito esclusi 0.205269, fitting 0.199490
+      fitting fold0: unità mai attive per strato [0, 26, 18, 43, 32] (ultimo 32/32, attive 0.000); quota del ramo profondo sull'energia centrata 0.000
+      fitting fold1: unità mai attive per strato [0, 16, 11, 33, 32] (ultimo 32/32, attive 0.000); quota del ramo profondo sull'energia centrata 0.000
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '-16.25%', 'fold1': '-14.68%', 'pooled': '-15.53%'}
+   lr 0.01 current_states esp. 150: R esclusi -15.79% | R fitting -2.46% | E_dyn pulito esclusi 0.205922, fitting 0.200206
+      fitting fold0: unità mai attive per strato [0, 27, 19, 44, 32] (ultimo 32/32, attive 0.000); quota del ramo profondo sull'energia centrata 0.000
+      fitting fold1: unità mai attive per strato [0, 25, 20, 40, 32] (ultimo 32/32, attive 0.000); quota del ramo profondo sull'energia centrata 0.000
+      quota dell'errore pulito di cleanLS tolta (esclusi) {'fold0': '-17.39%', 'fold1': '-14.14%', 'pooled': '-15.90%'}
+-- generatore scritto nella testa: R esclusi {'fold0': '100.00%', 'fold1': '100.00%', 'pooled': '100.00%'} | E_dyn pulito esclusi 6.13e-13
+-- cleanLS ricalcolato: autocontrollo True 
+-- generatore fold 0: unità attive per strato sul fitting [0.36, 0.48, 0.518, 0.462, 0.376]
+-- generatore fold 1: unità attive per strato sul fitting [0.409, 0.321, 0.592, 0.477, 0.438]
+
+== D1: lettura {'late': False, 'outcome': 'sensitivity_recovered_when_trained_on_clean_target', 'priority': 1} | parità del driver exact | cancelli {'driver_parity': True, 'gate_arithmetic': True, 'held_oracle_self_check': True, 'selected_point_reproduced': True}
+orizzonte 150 (esteso False), punto scelto {'edyn': 0.673767198114695, 'exposure': 141.0, 'fold_steps': [4089, 4230], 'mse': 1.6993693973406878}, minimi {'edyn': 141.0, 'mse': 141.0}, bordo False
+R esclusi {'fold0': '95.12%', 'fold1': '94.05%', 'pooled': '94.62%'} | R fitting {'fold0': '96.58%', 'fold1': '95.44%', 'pooled': '96.01%'}
+   esp. 1.0: R esclusi -48.53% | R fitting -51.80% | E_dyn pulito esclusi 0.262255
+   esp. 10.0: R esclusi 33.11% | R fitting 38.24% | E_dyn pulito esclusi 0.118443
+   esp. 150.0: R esclusi 94.10% | R fitting 94.87% | E_dyn pulito esclusi 0.010829
+   esp. 31.0: R esclusi 75.45% | R fitting 81.48% | E_dyn pulito esclusi 0.044127
+   esp. 75.0: R esclusi 89.76% | R fitting 92.48% | E_dyn pulito esclusi 0.018359
+   esp. selected: R esclusi 94.62% | R fitting 96.01% | E_dyn pulito esclusi 0.009452
+
+== D2: parità di partenza exact | cancelli {'held_oracle_self_check': True, 'restored_state_parity': True}
+punti nuovi 150; minimo E_dyn pooled nuovo 0.742020 (scelto archiviato 0.715926); qualche epoca sotto: False; soglia in tutti i pannelli: False
+<e,n>/<n,n> pooled sul fitting a 150 e a 300: ['0.0640', '0.0773']
+   esp. 150: R esclusi -22.62% | R fitting 156.46%
+   esp. 200: R esclusi -33.26% | R fitting 165.50%
+   esp. 250: R esclusi -38.93% | R fitting 172.21%
+   esp. 300: R esclusi -44.02% | R fitting 176.16%

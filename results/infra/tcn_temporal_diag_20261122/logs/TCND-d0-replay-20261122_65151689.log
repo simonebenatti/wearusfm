@@ -1,0 +1,29 @@
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_diag_20261122 @ b025c158bf340cd66ab4456c17353d4206b0e7e7
+codice: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_diag_20261122 @ b025c158bf340cd66ab4456c17353d4206b0e7e7
+Loading cineca-ai/4.3.0
+  Loading requirement: cuda/12.1 nccl/2.19.1-1--gcc--12.2.0-cuda-12.1
+    cudnn/8.9.7.29-12--gcc--12.2.0-cuda-12.1 gcc/12.2.0-binut2.41
+    openmpi/4.1.6--gcc--12.2.0 bzip2/1.0.8-gp5wcz5 libmd/1.0.4-wja3f5q
+    libbsd/0.11.7-cgxjopl expat/2.5.0-bptl3xw ncurses/6.4-asx3jea
+    readline/8.2-nyw6mp6 gdbm/1.23-fs6otck libiconv/1.17-d7yvx2s
+    xz/5.4.1-hubmwr5 zlib-ng/2.1.4-6htiapk libxml2/2.10.3-5eeeokp
+    pigz/2.7-bopr5vp zstd/1.5.5-gawytfl tar/1.34-amqus5s gettext/0.22.3-2g7elif
+    libffi/3.4.4-6r7brdq libxcrypt/4.4.35-ss2rzin sqlite/3.43.2
+    util-linux-uuid/2.38.1-jkdi7kv python/3.11.6--gcc--8.5.0 cmake/3.27.7
+    openjdk/11.0.20.1_1
+{"bundle_sha256": "4e147b1f43f3edf64ac93262d8b0805c762d886cc14d96b7b786c9c867fd60ad", "code": {"code_sha": "b025c158bf340cd66ab4456c17353d4206b0e7e7", "reviewed_code_sha": "a1ae9607681c1a181034d7f72770537054af419d"}, "evaluation_identity": "8fcf86092541d5862a3984e8ec6515a9795aefd97b17be43dc63a9247d2f5b35", "event": "setup_complete", "stage": "d0"}
+/leonardo/prod/opt/libraries/cineca-ai/4.3.0/none/cineca-ai-env/lib/python3.11/site-packages/transformers/utils/generic.py:462: UserWarning: torch.utils._pytree._register_pytree_node is deprecated. Please use torch.utils._pytree.register_pytree_node instead.
+  _torch_pytree._register_pytree_node(
+{"event": "replayed_state", "exposure": 181.0, "head": "TCN_post", "kind": "best_states", "lr": 0.0001, "parity": true}
+{"event": "replayed_state", "exposure": 300.0, "head": "TCN_post", "kind": "current_states", "lr": 0.0001, "parity": true}
+{"event": "replayed_state", "exposure": 64.0, "head": "TCN_post", "kind": "best_states", "lr": 0.0003, "parity": true}
+{"event": "replayed_state", "exposure": 150.0, "head": "TCN_post", "kind": "current_states", "lr": 0.0003, "parity": true}
+{"event": "replayed_state", "exposure": 31.0, "head": "TCN_post", "kind": "best_states", "lr": 0.001, "parity": true}
+{"event": "replayed_state", "exposure": 150.0, "head": "TCN_post", "kind": "current_states", "lr": 0.001, "parity": true}
+{"event": "replayed_state", "exposure": 31.0, "head": "TCN_post", "kind": "best_states", "lr": 0.003, "parity": true}
+{"event": "replayed_state", "exposure": 150.0, "head": "TCN_post", "kind": "current_states", "lr": 0.003, "parity": true}
+{"event": "replayed_state", "exposure": 93.0, "head": "TCN_post", "kind": "best_states", "lr": 0.01, "parity": true}
+{"event": "replayed_state", "exposure": 150.0, "head": "TCN_post", "kind": "current_states", "lr": 0.01, "parity": true}
+{"event": "replayed_state", "exposure": 183.0, "head": "L0", "kind": "best_states", "lr": 0.0003, "parity": true}
+{"event": "replayed_state", "exposure": 24.0, "head": "MLP", "kind": "best_states", "lr": 0.001, "parity": true}
+{"bytes": 6848, "event": "receipt", "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_diag_20261122/receipts/TCND-d0-replay-20261122.json", "sha256": "91a42b3d8d86e971d0f05629003f5287e3ffdfd961854bf1f82ca4a9ca33ede5", "status": "completed"}
