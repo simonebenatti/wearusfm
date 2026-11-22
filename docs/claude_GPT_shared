@@ -9007,6 +9007,24 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   tentativo; decisione registrata di Simone con ID, costi e sotto-budget.
 - Seguito: GPT integra le condizioni, poi prepara il pacchetto distinto per 2-TCN head launcher, che avrà la sua review.
 
+### 2026-11-22 | Claude | Diagnosi del controllo temporale TCN: convergenza, le quattro condizioni sono recepite (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: la risposta di GPT alla review `f6669115`, ramo `codex/pose-temponet-temporal-diagnosis-20261121`, commit
+  `8fac3a8239089d64dbefdf3ad70bd365094d49ff`. Testo di GPT incollato da Simone il 22/11. Rilettura della sola differenza da
+  `e7670758`, senza agenti: 9 file, nessun sorgente, test o piano congelato.
+- Nota in `docs/reviews/claude_note_pose_temponet_temporal_diagnosis_convergence_20261122.md`.
+- Esito: **convergenza, nessun blocco, nessun altro giro documentale**. Condizioni 1, 3 e 4 recepite; per la 2 GPT sceglie
+  l'alternativa che la review ammetteva: niente riferimento dai pesi veri, limite dichiarato, un solo tentativo di variante e poi
+  a Simone.
+- Verificato sul codice congelato e sui JSON: regola di D1 esaustiva e senza sovrapposizioni; bordo uguale a
+  `selection.needs_epoch_extension` (confine 146, OR fra MSE ed `E_dyn`); semi nuovi 20261122-24 e 20262122-24 senza collisioni
+  con 20261118-20 e 20262118-20; calendario della parità uguale ai primi cinque punti delle curve archiviate; `y` e `y*` sullo
+  stesso supporto; `analyze.py` rieseguito, `analysis.json` identico byte per byte.
+- Letture remote in sola lettura, 22/11 alle 11:06: i tre `selection_states.pt` del mondo temporale e le due `calibration.pt`
+  esistono su `$WORK` (contenuto non aperto); manutenzione del Booster dal 23/11 alle 08:00 al 25/11 alle 08:00.
+- Seguito: GPT prepara il pacchetto operativo di D0, parità e D1; io lo rivedo. I job partono solo dopo la decisione di Simone
+  registrata sul pacchetto.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13233,3 +13251,20 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   circolarità.
 - Corretti due punti della mia lettura provvisoria: il costo del rumore fra il 65% e il 181% del margine vale a convergenza, non
   al checkpoint scelto; una testa stretta come il generatore, da inizio casuale, non è un buon riferimento.
+
+### 2026-11-22 | Claude | Controllo temporale TCN: ritirate quattro mie inferenze, e che cosa resta non noto con la scelta sulla condizione 2
+
+- Accolte le quattro correzioni di GPT alla review `f6669115`:
+  - la scomposizione fra mondo lineare e mondo temporale è un conto e non una misura, perché le soglie dinamiche sono diverse
+    (fold 0: 0,4597 e 0,5437; fold 1: 0,4298 e 0,5374); ritiro come conclusione «Anche senza prezzo del rumore il 50% non
+    sarebbe raggiunto»;
+  - «I numeri archiviati separano già le due cose» era troppo forte;
+  - 86,1% e 69,3% non sono un tetto del recupero pulito sul fitting, per il termine incrociato di
+    `SSE_y = SSE_y* + SSE_oracolo − 2<e,n>`;
+  - warm start e più epoche non sono esclusi in generale.
+- Senza il riferimento dai pesi veri, se D1 passa e l'unica variante fallisce sul mondo nuovo non si saprà se il 50% è
+  raggiungibile, con questo campione, da una testa allenata sul rumoroso. La decisione tornerà a Simone senza quell'informazione;
+  il riferimento si può ancora chiedere in quel momento.
+- Da guardare per primi nel pacchetto: la parità a 1e-12 richiede predizioni FP32 identiche bit per bit, quindi il percorso di
+  valutazione congelato; D0 oggi è descrittivo, e se deve sostenere una conclusione la sua lettura va scritta prima del job.
+- Calendario: un job di D0 o D1 che non finisce prima del 23/11 alle 08:00 resta in coda fino al 25/11.
