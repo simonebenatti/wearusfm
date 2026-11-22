@@ -9046,6 +9046,21 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   archiviata portata a 300 epoche, solo descrittiva). 2,40 GPU-ore prenotate, sotto-budget 4. A1 resta `recipe_not_admitted`.
 - Commit dei diagnostici da eseguire: `b025c158bf340cd66ab4456c17353d4206b0e7e7`. Seguito: ID Slurm ed esiti in una voce successiva.
 
+### 2026-11-22 | Claude | Diagnostici TCN D0/D1/D2 inviati (commit `b025c158`) | Ramo `claude/tcn-temporal-diag-20261122`
+
+- Deploy `refs/heads/deploy/pose-temponet-diag-20261122` = `b025c158bf340cd66ab4456c17353d4206b0e7e7` su leonardo, verificato
+  alle 20:33. Prima dell'invio: sorgenti del manifest identici ad `a1ae9607`, `source_sha256 9aaf1c8b…`; 23 artefatti della
+  catena A1 presenti con i byte delle ricevute; radice delle uscite e campagna assenti; nessun ID `TCND-*` nel ledger.
+- Checkout `TCND-checkout-20261122` = 65151649, `COMPLETED 0:0` in 20 s su login08, «checkout di campagna pronto … @ b025c158».
+- `TCND-d0-replay-20261122` = 65151689 (20 min, 0,383 GPU-ore prenotate), partito alle 20:36 su lrdn0601;
+  `TCND-d1-cleanfit-20261122` = 65151693 (75 min, 1,30) e `TCND-d2-extend-20261122` = 65151701 (40 min, 0,717), entrambi
+  `afterok` su D0. Totale prenotato 2,40 GPU-ore.
+- Una revisione rapida del codice nuovo prima dell'invio: nessun difetto bloccante. La review mirata completa delle differenze
+  non si è chiusa: tre revisori su quattro si sono fermati per il limite d'uso del modello. Il critico ha chiesto di correggere il
+  limite dei recuperi nella parità numerica: corretto in `b025c158`.
+- Job ancora in coda alla scadenza del certificato ssh (21:34) restano in coda: si autoverificano e si raccolgono dopo il
+  rinnovo. Nessun rilancio cieco.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
