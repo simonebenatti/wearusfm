@@ -9061,6 +9061,20 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Job ancora in coda alla scadenza del certificato ssh (21:34) restano in coda: si autoverificano e si raccolgono dopo il
   rinnovo. Nessun rilancio cieco.
 
+### 2026-11-22 | Claude | Diagnostici TCN D0/D1/D2 conclusi: la testa legge la funzione se le etichette sono pulite | Ramo `claude/tcn-temporal-diag-20261122`
+
+- Tutti `COMPLETED 0:0`: D0 65151689 (1 min 57 s), D1 65151693 (21 min 51 s), D2 65151701 (20 min 52 s). Contesto numerico
+  `gpu8` invariato, parità esatta in tutti e tre gli stadi. Consuntivo 0,745 GPU-ore misurate su 2,40 prenotate.
+- Raccolta e consuntivo: commit `1b79ebba8380ba9cca9a34c00a4ddb28e9c21578`, `results/infra/tcn_temporal_diag_20261122/`
+  (`summary.txt`), voce in `docs/decisioni.md`.
+- D0: scarto pooled esclusi − fitting di `E_dyn` allo stato scelto 0,0300, di cui 0,0238 (79%) allineamento al rumore. La TCN
+  toglie il 21,6% dell'errore pulito di `cleanLS` sugli esclusi e il 33,9% sul fitting. A LR 0,01 il ramo profondo è spento:
+  32 unità su 32 dell'ultimo strato nascosto mai attive.
+- D1, regola fissata prima: priorità 1, sensibilità recuperata allenando sul pulito. `R_held` 0,9512 / 0,9405 / 0,9462
+  all'epoca 141; all'epoca 31, sullo stesso `y`, 0,7545 contro 0,2171 di A1.
+- D2: dalla 151 alla 300 nessun punto migliore di quello scelto; recupero pooled −44,02% a 300.
+- A1 resta `recipe_not_admitted`. Nessuna variante lanciata: la scelta torna a Simone.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13325,3 +13339,15 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   `docs/decisioni.md` del ramo dei diagnostici prima del primo invio.
 - Rischio non scientifico dichiarato prima: A1 non ha mai mostrato la riproducibilità bit per bit fra job su nodi diversi. La
   parità ha quindi due livelli fissati prima dei job: esatta a 1e-12 e numerica a 1e-4, con le identità discrete uguali.
+
+### 2026-11-22 | Claude | Controllo temporale TCN: il limite è il rumore delle etichette, non la testa né la ricetta
+
+- Con etichette pulite la stessa testa, stessa ricetta e stessi 20 utenti per fold arriva al 94,6% pooled: capacità,
+  rappresentazione, ottimizzazione e punteggio non spiegano il fallimento.
+- Con il rumore del controllo (`sigma` 1,3) la TCN impara il rumore del fitting mentre impara la funzione: l'arresto anticipato
+  la ferma all'epoca 31, quando l'errore pulito è tolto per un quinto sugli esclusi e per un terzo sul fitting. Allungare
+  peggiora, fino a −44,02% a 300 epoche.
+- Il bordo alto della griglia dei learning rate (0,01) è un lettore lineare: il ramo profondo si spegne all'inizio.
+- Leve da scegliere prima di provarle, una alla volta e con conferma su un mondo nuovo: una regolarizzazione più forte contro
+  la memorizzazione del rumore (oggi il weight decay contrae i pesi del 2,7% in 899 passi), e la griglia del learning rate
+  tagliata dallo spegnimento del ramo.
