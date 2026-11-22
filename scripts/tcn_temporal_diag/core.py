@@ -726,6 +726,10 @@ def extend_noisy_fit(bundle, selection, states, references, *, device, recipe=T.
             "start_parity": parity, "records": records, "new_points": len(records) - 1,
             "minimum_mse_new_point": best["point"],
             "any_new_pooled_edyn_below_archived_selected": any(r["point"]["edyn"] < selected for r in records[1:]),
+            "minimum_new_pooled_edyn": min(r["point"]["edyn"] for r in records[1:]),
+            # Prediction 2 of the protocol: the fitting noise-fit fraction, pooled, at the start and at the end.
+            "fitting_noise_fit_fraction_start_end": [
+                r["summary"]["fitting"]["noise_alignment"]["pooled"]["noise_fit_fraction"] for r in (records[0], records[-1])],
             "any_new_point_reaches_threshold_in_every_panel": any(
                 all(v[name]["recovery"] is not None and v[name]["recovery"] >= C.TEMPORAL_HEAD_RECOVERY
                     for name in PANELS) for _, v in recovery),

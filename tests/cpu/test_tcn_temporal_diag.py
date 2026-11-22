@@ -386,6 +386,10 @@ def test_noisy_extension_continues_the_archived_trajectory_exactly(world):
     assert extension["snapshot_exposures"] == [float(RECIPE.maximum_epochs)]
     assert extension["minimum_mse_new_point"] == min(points[-extension["new_points"]:],
                                                       key=lambda q: (q["mse"], q["exposure"]))
+    assert extension["minimum_new_pooled_edyn"] == min(q["edyn"] for q in points[-extension["new_points"]:])
+    start, end = extension["fitting_noise_fit_fraction_start_end"]
+    assert start == extension["records"][0]["summary"]["fitting"]["noise_alignment"]["pooled"]["noise_fit_fraction"]
+    assert end == extension["records"][-1]["summary"]["fitting"]["noise_alignment"]["pooled"]["noise_fit_fraction"]
     # A changed archive stops before any new training.
     shifted = copy.deepcopy(selection)
     next(c for c in shifted["curves"] if c["lr"] == lr)["points"][-1]["mse"] *= 1 + 1e-3
@@ -637,6 +641,41 @@ def test_d0_completes_on_the_numerical_parity_tier_and_marks_it(world, tmp_path,
     assert replay["parity_level"] == "numerical" and all(replay["gates"].values())
     assert replay["replays"][core.HEAD]["parity_level"] == "numerical"
     assert not replay["replays"][core.HEAD]["parity_passed"]
+
+
+def test_numerical_parity_bound_on_the_recoveries_follows_the_score_tolerance(world, tmp_path, monkeypatch):
+    selection = world["runs"][core.HEAD]["selection"]
+    records = world["bundle"].reference_gate["temporal_records"]
+    exact = entry.recovery_bounds("exact", selection, world["bundle"])
+    numerical = entry.recovery_bounds("numerical", selection, world["bundle"])
+    for name in core.PANELS:
+        e, margin = selection["selected_outer_values"][name]["E_dyn"], records[name]["clean_ls"] - records[name]["oracle"]
+        # A relative change 1e-4 of E_dyn moves the recovery by 1e-4 E / margin: it must stay inside the bound.
+        assert exact[name] < 1e-11 and numerical[name] > core.NUMERICAL_TOLERANCE * e / margin * 2
+    root = tmp_path.resolve() / "diag"
+    _patch_entry(monkeypatch, world, root)
+    curves = copy.deepcopy(selection["curves"])
+    next(c for c in curves if c["lr"] != selection["selected"]["lr"])["points"][-1]["mse"] *= 1 + 1e-9
+    changed = WF.relock(selection, curves=curves)
+    context = _context(world)
+    context["controls"][core.HEAD]["selection"] = changed
+    context["evaluation_identity"] = core.check_bundle(world["bundle"], changed)
+    monkeypatch.setattr(entry, "setup", lambda: context)
+    monkeypatch.setattr(entry, "_states", lambda c, head: {**world["runs"][head]["states"],
+                        "selection_sha256": c["controls"][head]["selection"]["selection_sha256"]})
+    base = dict(entry.ARCHIVED_RECOVERY)
+    e, margin = selection["selected_outer_values"]["pooled"]["E_dyn"], records["pooled"]["clean_ls"] - records["pooled"]["oracle"]
+    for shift, code in ((2e-4 * e / margin, 0), (3e-4 * e / margin, 3)):
+        for leftover in ("d0",):
+            for path in (root / leftover, root / "receipts" / (entry.JOBS[leftover] + ".json")):
+                if path.is_dir():
+                    import shutil
+                    shutil.rmtree(path)
+                elif path.exists():
+                    path.unlink()
+        monkeypatch.setattr(entry, "ARCHIVED_RECOVERY", {**base, "pooled": base["pooled"] + shift})
+        monkeypatch.setenv("TCND_JOB_ID", entry.JOBS["d0"])
+        assert entry.main(["d0"]) == code
 
 
 def test_d0_gate_compares_the_replayed_recoveries_with_the_archived_ones(world, tmp_path, monkeypatch):

@@ -58,7 +58,7 @@ comincia con «Procederei così:» e con queste due frasi: «Non abbasserei la s
 | `TCND-d2-extend-20261122` | D2: la corsa archiviata sul rumoroso portata da 150 a 300 epoche; parte solo dopo D0 riuscito | come D0 | 40 min | 0,72 |
 
 - GPU-ore prenotate: limite più 180 secondi, come nel piano A1. **Totale 2,40 GPU-ore**, cioè 19,2 core-ore sui nodi GPU e
-  19,2 ore locali (un nodo GPU conta 8 ore locali per ora), più 0,4 core-ore del checkout (2 CPU per 12 minuti).
+  19,2 ore locali (un'ora di 1 GPU con 8 CPU conta 8 ore locali), più 0,4 core-ore del checkout (2 CPU per 12 minuti).
 - Consumo atteso 0,9-1,3 GPU-ore: D0 circa 4 minuti, D1 circa 25 minuti (45 se prolunga a 300 epoche), D2 circa 25 minuti.
   Durate dal benchmark 65016447 e dai sei controlli: 2,33 s per un'epoca dei due fold, 2,72 s per una valutazione degli esclusi.
 - **Addebito e residuo.** Account `IscrB_WearUsFM`, voce nuova «diagnostici del controllo temporale TCN». I tetti di A1 (3,681
@@ -92,8 +92,10 @@ ogni job ha verificato la parità solo al proprio interno. Per questo i livelli 
    pooled contro il punto archiviato della curva, stessi update. Per lo stato scelto di ogni testa anche gli accumulatori per
    fold: esclusi contro `y`, esclusi contro `y*`, fitting contro `y`.
 2. **Aritmetica del cancello.** I recuperi dello stato scelto della TCN, riletto, coincidono con quelli del cancello archiviato
-   (0,24173052888786836 / 0,1887545039561508 / 0,21710109906955868): entro 1e-12 se la parità è esatta, entro 0,001 se è
-   numerica. La funzione congelata `temporal_head_gate` deve ridare lo stato `recipe_not_admitted`.
+   (0,24173052888786836 / 0,1887545039561508 / 0,21710109906955868): entro `1e-12·(1+|R|)` se la parità è esatta; se è
+   numerica, entro `1e-12·(1+|R|) + 2,2·1e-4·E_dyn/(E_cleanLS − E_oracolo)` per pannello, cioè circa 0,0027. È lo spostamento
+   del recupero che corrisponde a una differenza relativa di 1e-4 sui due accumulatori dinamici. La funzione congelata
+   `temporal_head_gate` deve ridare lo stato `recipe_not_admitted`.
 3. **Riferimenti.** L'oracolo sugli esclusi, ricalcolato dagli array, coincide con quello archiviato entro 1e-9 relativo.
 
 **Riferimenti di fitting.** `R_fit` usa `cleanLS` stimato su `y*` e valutato su `y` sul pannello di fitting, preso dalla
@@ -128,8 +130,10 @@ sommano esattamente. Che cosa misura ciascuno:
 1. nel pannello pooled, allo stato scelto, la differenza di allineamento è più di metà dello scarto esclusi meno fitting di
    `E_dyn`. Se è la differenza di errore pulito a superare la metà, la previsione è sbagliata;
 2. nello stato finale del learning rate 0,01 l'ultimo strato nascosto del ramo profondo ha almeno 28 unità su 32 mai attive sul
-   fitting, in entrambi i fold. Se ne ha meno di 16, la previsione è sbagliata e il sospetto del ramo spento cade;
-3. nello stato scelto, a 0,003, quelle unità mai attive sono meno di 16 su 32 in entrambi i fold.
+   fitting, in entrambi i fold; sbagliata altrimenti. Con meno di 16 in entrambi i fold il sospetto del ramo spento cade; fra
+   16 e 27 l'esito è intermedio e si riporta così;
+3. nello stato scelto, a 0,003, quelle unità mai attive sono meno di 16 su 32 in entrambi i fold; sbagliata se sono almeno 16
+   in un fold.
 
 ## 5. D1 — parità del driver e due fit sul bersaglio pulito
 
@@ -210,9 +214,10 @@ sul bersaglio rumoroso `y`, con il calendario e il valutatore congelati. 300 è 
 - A ogni epoca si leggono le stesse grandezze della sezione 4. Si salvano gli stati a 200, 250 e 300 epoche.
 - Non è la ricerca congelata: quella prolunga solo quando il minimo cade nelle ultime cinque epoche, e qui non accadeva.
 
-**Previsione scritta prima dei risultati:** in nessuna epoca fra 151 e 300 l'`E_dyn` pooled sugli esclusi scende sotto quello del
-punto scelto all'epoca 31 (0,715926), e `<e,n>/<n,n>` sul fitting continua a crescere. Se un'epoca scende sotto, la previsione è
-sbagliata e allungare aiuta.
+**Previsioni scritte prima dei risultati:**
+1. in nessuna epoca fra 151 e 300 l'`E_dyn` pooled sugli esclusi scende sotto quello del punto scelto all'epoca 31 (0,715926).
+   Se un'epoca scende sotto, la previsione è sbagliata e allungare aiuta;
+2. `<e,n>/<n,n>` pooled sul fitting all'epoca 300 è maggiore che all'epoca 150; sbagliata altrimenti.
 
 ## 7. Dopo i job
 

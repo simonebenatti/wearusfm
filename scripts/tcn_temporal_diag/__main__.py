@@ -49,7 +49,6 @@ ARCHIVED_RECOVERY = {"fold0": 0.24173052888786836, "fold1": 0.1887545039561508, 
 LEARNING_RATE = 0.003
 READING_EXPOSURES = (1, 10, 31, 75, 150)
 EXTENSION_SNAPSHOTS = (200, 250, 300)
-RECOVERY_NUMERICAL_TOLERANCE = 1e-3
 PROTOCOL = "tcn-temporal-control-diagnostics-20261122-v1"
 ARCHIVED_GATE_STATUS = "recipe_not_admitted"
 DEVICE = "cuda"
@@ -155,6 +154,24 @@ def _recoveries(summary, split):
     return {name: summary[split]["recovery_on_observed"][name]["recovery"] for name in core.PANELS}
 
 
+def recovery_bounds(level, archived, bundle):
+    """How far the replayed recoveries may sit from the archived ones, for each panel.
+
+    Exact parity: the frozen tolerance. Numerical parity: a relative difference
+    of NUMERICAL_TOLERANCE on both dynamic accumulators moves E_dyn by at most
+    about twice that, hence the recovery by 2 eps E_dyn / (E_cleanLS - E_oracle);
+    the factor 2.2 covers the second-order terms.
+    """
+    records, values = bundle.reference_gate["temporal_records"], archived["selected_outer_values"]
+    bounds = {}
+    for name in core.PANELS:
+        bounds[name] = core.TOLERANCE * (1 + abs(ARCHIVED_RECOVERY[name]))
+        if level != "exact":
+            margin = records[name]["clean_ls"] - records[name]["oracle"]
+            bounds[name] += 2.2 * core.NUMERICAL_TOLERANCE * values[name]["E_dyn"] / margin
+    return bounds
+
+
 def run_d0(context, directory, root, artifacts):
     """Replay the archived states: 20 of the TCN reader, the four selected of L0 and MLP."""
     replays = {}
@@ -180,15 +197,14 @@ def run_d0(context, directory, root, artifacts):
                   "held_minus_fitting_final": core.gap_decomposition(final["summary"]),
                   "final_exposure": final["exposure"]}
     level = core.parity_level([p for r in replays.values() for p in r["parity"]])
-    # Exact parity asks the archived recoveries back to the frozen tolerance; the numerical tier to 0.001.
-    recovery_tolerance = core.TOLERANCE if level == "exact" else RECOVERY_NUMERICAL_TOLERANCE
+    comparison["recovery_bounds"] = recovery_bounds(level, archived, context["bundle"])
     gates = {"state_parity": level != "failed",
              "held_oracle_self_check": context["references"]["held_oracle_self_check_passed"],
              # The replayed selected point gives back the archived recoveries and the archived gate status.
              "gate_arithmetic": all(comparison["recovery_held"][name] is not None and
                                     core.close(comparison["recovery_held"][name], gate["recovery"][name]) and
                                     abs(comparison["recovery_held"][name] - ARCHIVED_RECOVERY[name]) <=
-                                    recovery_tolerance * (1 + abs(ARCHIVED_RECOVERY[name]))
+                                    comparison["recovery_bounds"][name]
                                     for name in core.PANELS) and gate["status"] == ARCHIVED_GATE_STATUS}
     # Descriptive extra, never a gate: the known clean function written into the reader and scored as a reader.
     try:
