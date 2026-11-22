@@ -1,0 +1,96 @@
+{
+ "summary": "Mappa operativa scritta in /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/ops_costs/OPS_MAP.md (9 sezioni; note di lavoro in notes.md, tre prove eseguite sul Mac nella stessa cartella). Esito in breve: il launcher congelato esegue un comando Python fisso e non puo' lanciare un modulo nuovo, quindi serve un launcher nuovo; un pacchetto scripts/tcn_diag/ e un scripts/slurm/tcn_diag.sbatch non cambiano il source_sha256 (provato), mentre un nome pose_temponet*.sbatch o un file scripts/*.py al primo livello lo cambiano. Calibrazioni, stati, cache, piano e pin numerico di A1 si riusano in sola lettura con verifica degli hash; checkout, riferimento di deploy, ID logici, radice delle uscite e ricevute devono essere nuovi. Costo stimato dalle misure A100: inferenza sui 24 stati 59,9 s, parita' di un'epoca 15,9 s (167,6 s fino all'esposizione 31), fit pulito di 150 epoche a due fold da 769 a 1.193 s; due job GPU con walltime 00:15:00 e 00:45:00, preventivo massimo 1,00 GPU-ore, consumo atteso 0,35-0,5. Nessun accesso al cluster: i percorsi di Leonardo vengono da ricevute e JSON archiviati. La copia dell'albero e' parziale, quindi due verifiche restano da fare nel repository vero.",
+ "key_points": [
+  "A1, checkout [dimostrato, L/TCNH-checkout-A1-20261121.state.json]: ID TCNH-checkout-A1-20261121 = Slurm 65023067, COMPLETED 0:0 in 30 s su login08; submit_job.py con --agente gpt --campagna pose_temponet_20261121_A1 --gpu-ore 0 --script-stdin scripts/slurm/campaign_checkout.sbatch e argomenti sbatch: --account=IscrB_WearUsFM --partition=lrd_all_serial --nodes=1 --ntasks=1 --cpus-per-task=2 --mem=24G --time=00:12:00 --no-requeue --export=ALL,CAMPAIGN=pose_temponet_20261121_A1,CAMPAIGN_SHA=edebfb6c290cf661989c5cff45916bc6a93e607e. Checkout risultante: /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_20261121_A1 (2.349 file, 95M). Riferimento: deploy/pose-temponet-20261121-A1.",
+  "A1, sei controlli [dimostrato, L/controls_commands.txt, riga completa copiata in OPS_MAP.md 1.3]: venv wearusfm-tok + submit_job.py di wearusfm-gpt-science, --script-stdin scripts/slurm/pose_temponet_dispatch.sbatch, boost_usr_prod, --qos=normal, --gres=gpu:1, 8 CPU, 32G, --no-requeue, --export=ALL,CODE_DIR,EXPECTED_SHA,TCN_PLAN,TCN_PLAN_SHA256,TCN_JOB_ID,TCN_PLAN_COMMIT=6a20054ad2ffdb3d754e6106775a159a0933d99a,TCN_PLAN_REPO_PATH=.../plan_controls.json (sha256 b334ece8...04e3). Walltime 01:32:00 (L0), 01:42:00 (MLP), 05:11:00 (TCN). Slurm 65035622, 65035623, 65035626, 65035628, 65035629, 65035631; nessun --dopo; attesa in coda 64-100 s.",
+  "Launcher [dimostrato, scripts/slurm/pose_temponet.sbatch:19-21, runner.py:210-221]: il comando e' fisso (materialize-plan, poi exec python3 -m pose_temponet run) e run_stage accetta solo i 24 ID del piano, rifiutando cartelle o ricevute esistenti. Non riusabile per un modulo nuovo. lib_code_dir.sh si riusa. Precedente di script esterno su stdin gia' eseguito: L/gpu_inventory_A1_20261121.sbatch (job 65033157).",
+  "Manifest dei sorgenti [dimostrato, provenance.py:236-248 e prova manifest_probe.py]: l'albero e8c98244 ha 247 file e source_sha256 9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea, identico al piano A1. Non lo cambiano: scripts/tcn_diag/*.py, scripts/slurm/tcn_diag.sbatch, docs, results, tests. Lo cambiano: scripts/slurm/pose_temponet<qualsiasi>.sbatch, un nuovo scripts/<nome>.py al primo livello, qualunque src/**/*.py, qualunque .py/.sh/.sbatch in scripts/pose_temponet/.",
+  "Contesto gpu8 = 12cb2a0b3207b66e260d3ca490db93ee0c029bb8f03d766df89a9edba6b7eb3f [dimostrato]: stesso digest su otto nodi (benchmark lrdn0059, inventario lrdn0058, sei controlli). Contiene versioni (python 3.11.6, numpy 1.26.4, scipy 1.12.0, sklearn 1.4.1.post1, torch 2.2.0a0+git6c8c5ad, cuda 12.1), i 5 threadpool censiti a 8 thread, intraop 8, interop 1, variabili a 8, flag deterministici, CUBLAS :4096:8, Xeon 8358 e A100-SXM-64GB. Il driver deve: stessi moduli e venv, 1 GPU e 8 CPU, PYTHONPATH anteposto, import `from pose_temponet import runner, train, provenance as P` prima del censimento, train.configure_numerics() come prima istruzione, poi assert sul digest e su source_identity().",
+  "Parita' bit per bit: strada dei dati identica a runner.py:304-308 (read_verified_inputs stage controls, _calibrations, prepare_control_folds con runner._input_identity(plan) e i fold del preflight), poi assert bundle_sha256 = 4e147b1f43f3edf64ac93262d8b0805c762d886cc14d96b7b786c9c867fd60ad e identita' di valutazione 8fcf86092541d5862a3984e8ec6515a9795aefd97b17be43dc63a9247d2f5b35. Ancore gia' sul Mac in L/selection_temporal_TCN_post.json: initial_sha256 50fb2294...aab5, i 5 punti della prima epoca a LR 0,003, i 10 punti aggregati dei 20 stati (tabella in OPS_MAP.md 3), le somme grezze dello stato scelto su fitting, esclusi e pulito.",
+  "Prove CPU con il codice congelato su latenti sintetici [dimostrato solo su CPU]: parity_probe.py: 8 stati su 8 riprodotti esattamente da un driver esterno; 24 valutazioni aggiuntive non cambiano i 6 punti della curva ne' il payload_sha256 finale; il fit sul bersaglio pulito si costruisce con dataclasses.replace(bundle, targets=bundle.clean_targets) + workflow._training_set + train.Trajectory, mentre workflow._run_selection lo rifiuta. resume_probe.py: stato salvato, ricaricato e proseguito = run continuo.",
+  "Artefatti [da ricevute, non riletti]: radice /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_20261117; wls_calibration/0/calibration.pt 228.630.380 byte sha d08a804e...4bf2; wls_calibration/1/calibration.pt 228.396.140 byte sha 441f6486...4c91; controls/temporal/TCN_post/selection_states.pt 18.386.382 byte sha f9f4d4ad...bbf0; L0 2.197.650 byte sha 7e6cf069...ea45; MLP 14.685.978 byte sha bc45c2aa...7f49. Cache train su WORK: .../consolidation_long_20261105/49046/pose/train/train.npz, 474.412.856 byte, sha 30c0b50d...ec7e. Su SCRATCH con scadenza: riferimento dei target .../pilot_posa/B19618_20261028/B/pose/train_subset.npz (257.675.076 byte, sha c7bc296e...db23) e pose_stats.json (sha 757f2aee...4a7e). Negli stati ci sono solo migliore e finale per LR: 20 stati TCN.",
+  "Costi unitari A100 [dimostrato, benchmark 65016447, mediane]: TCN 2,334 s per epoca appaiata; 2,722 s per checkpoint appaiato sugli esclusi con y e y*; 2,751 s per 1.907 finestre; L0 1,207 s e MLP 1,220 s per 1.907 finestre. Riscontro sul job 65035631: 4.383,3 s per 900 epoche appaiate e 920 checkpoint, residuo 2,481 s per checkpoint. Costo fisso: 28,1-43,7 s prima del cronometro, 13,76 s di verifica ricevute e calibrazioni, 5,02 s di lettura.",
+  "Stime: inferenza su 20 stati TCN + 4 L0/MLP 59,9 s; parita' di un'epoca 15,9 s; parita' fino all'esposizione 31 con confronto del payload_sha256 167,6 s; fit pulito 150 epoche a due fold 769 s (esclusi a ogni checkpoint), 866 s (fitting a 35 checkpoint), 1.193 s (fitting a tutti i 154). Proposta: D0 (inferenza + parita') walltime 00:15:00, 0,25 GPU-ore; D1 (fit pulito) 00:45:00 con qos normal, 0,75 GPU-ore; checkout 00:12:00 su lrd_all_serial, 0,4 core-ore. Totale massimo 1,00 GPU-ore, atteso 0,35-0,5. Fuori dai tetti A1.",
+  "Manutenzione [dimostrato, lettura dell'operatore del 21/11 09:39]: maint_23112026_booster su lrdn[0001-3456] e maint_23112026_vizser su login[08,13], dal 23/11 08:00 al 25/11 08:00. Con walltime 00:45:00 l'ultima partenza utile e' alle 07:15 del 23/11; anche il checkout va fatto prima.",
+  "Identita': riusabili in sola lettura calibrazioni, stati, selection.json, 11 ricevute, cache, riferimenti, plan_controls.json come tabella di pin, pin gpu8, i 247 sorgenti. Nuovi: riferimento di deploy, campagna e checkout (campaign_checkout.sbatch:35 rifiuta una cartella esistente), ID logici (nessun TCND-* nel registro, 919 cartelle), radice delle uscite fuori da pose_temponet_20261117, ricevute con schema proprio (P.make_receipt pretende un job del piano), voce di costo.",
+  "submit_job.py [dimostrato]: sha256 814da4bc...0d82 identico in albero congelato, wearusfm-gpt-science e main. Obbligatori --id, --agente, --campagna, --gpu-ore; ID ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$; --dopo ripetibile = afterok sugli ID Slurm del registro; --script-stdin manda il testo locale; esito sottomesso / rifiutato / ambiguo (uscita 3 se non sottomesso); ambiguo si chiarisce solo con --riconcilia (sacct e squeue per nome, due controlli vuoti a 10 minuti per `assente`). Ledger: quando, id, agente, campagna, stato, job_slurm, gpu_ore_stimate, codice_sha, comando.",
+  "Allungare i training [dimostrato]: tetto rigido a 300 epoche (train.py:56 e 271-272; Recipe(maximum_epochs=600) rifiutata nella prova). Nelle curve del 65035631 il minimo sugli esclusi cade prima della fine per tutti e 5 i LR (MSE a 181/300, 64/150, 31/150, 31/150, 93/150) e E_dyn finale supera il minimo di 0,00257, 0,00653, 0,02927, 0,02573, 0,00055. Per il 50% serve E_dyn aggregato 0,69957; lo stato scelto e' a 0,71593. Portare un LR da 150 a 300 epoche riprendendo current_states costerebbe 758 s.",
+  "Candidato residuale: ogni modifica in scripts/pose_temponet/ cambia source_sha256, quindi piano, review, checkout e ricevute nuovi; l'eccezione A1 copre solo tre ricevute per hash esatto (budget_amendment.py:20-24), non le calibrazioni. Riferimenti misurati: due calibrazioni 1,858 core-ore; due controlli TCN 2,260 GPU-ore (10,467 prenotate); sei controlli 3,567 GPU-ore (17,133 prenotate).",
+  "La stima di GPT per il controllo pulito (0,2-0,4 GPUh) regge come consumo: 0,24-0,38 GPU-ore ricalcolate. Il preventivo a walltime e' 0,75 GPU-ore."
+ ],
+ "pitfalls": [
+  "Nomi: un launcher chiamato scripts/slurm/pose_temponet_*.sbatch o un driver scripts/<nome>.py al primo livello entra nel manifest e fa fallire validate_plan e checkout_identity nel checkout nuovo. Usare un pacchetto in una cartella propria e un launcher con altro prefisso.",
+  "PYTHONPATH va anteposto, mai sostituito: cineca-ai/4.3.0 espone i pacchetti da li'. Due tentativi dell'operatore sul nodo di login sono falliti con «No module named 'numpy'».",
+  "Import in piu' prima del censimento (pandas, matplotlib e simili) possono cambiare l'elenco dei threadpool e quindi il digest: il driver deve censire subito dopo gli stessi import del runner.",
+  "Il venv $WORK/venv_wearusfm e' condiviso e modificabile: l'unica difesa e' l'assert sul digest all'avvio; se differisce ci si ferma.",
+  "D1 in boost_qos_dbg (30 minuti) ha margine 1,3 nel caso piu' pesante: un TIMEOUT non si ritenta alla cieca. Usare qos normal con 00:45:00.",
+  "Non scrivere nulla sotto .../results/pose_temponet_20261117: lo stadio collection inventaria quella radice e il runner rifiuta cartelle esistenti.",
+  "Quota WORK: il 21/11 alle 15:08 il margine oltre i 12 GiB minimi era di 368.816.128 byte; le predizioni FP32 di 20 stati pesano 451.577.600 byte. Salvare solo punteggi e stati piccoli, oppure rileggere la quota prima.",
+  "Nessun rinfresco di SCRATCH durante i job: verify_pin confronta mtime e ctime prima e dopo la lettura dei due input su SCRATCH.",
+  "--script-stdin con percorso relativo dipende dalla cartella di lancio: lanciare dalla radice del worktree al commit di deploy e controllare script_stdin_sha256 nello state.json.",
+  "--dopo: se il predecessore fallisce, il dipendente resta in coda e va cancellato a mano; se il predecessore e' gia' uscito dalla memoria di Slurm la dipendenza puo' essere rifiutata (ipotesi, execution.py:195-196 prevede il caso). Inviare D1 mentre D0 e' ancora in coda o in esecuzione.",
+  "Il fit pulito non passa da workflow._run_selection (rifiuta i bersagli scambiati) ne' da train.run_search (scorre tutti i LR): serve l'API di livello Trajectory / PairedCandidate, con orizzonte 150 o 300 soltanto.",
+  "execution.submit_command scrive --agente gpt, campagna e CODE_DIR di A1 (execution.py:203-217): le righe della catena nuova si scrivono a mano.",
+  "Risposta ambigua di submit_job.py: mai rilancio; --riconcilia e, se vuota, due controlli distanziati di 10 minuti.",
+  "Le prove di parita' e di ripresa sono dimostrate solo su CPU: su A100 le decide il controllo di parita' dentro D0, che deve far uscire il job con codice diverso da 0 se non torna."
+ ],
+ "open_questions": [
+  "Nel repository vero: il commit di partenza (e8c98244 o un suo discendente sul ramo di Claude) discende da 6a20054ad2ffdb3d754e6106775a159a0933d99a e contiene le copie locali delle review e delle ricevute storiche che validate_plan rilegge? La copia fornita e' parziale e non permette di verificarlo.",
+  "Quota di WORK e scritture pendenti oggi: l'ultima lettura archiviata e' del 21/11 alle 15:08 (36.876.038.144 byte liberi, 23.622.320.128 pendenti).",
+  "Stato della coda e delle prenotazioni oggi, e uso di boost_qos_dbg da parte delle altre chat: nel ledger ci sono invii di un'altra linea alle 11:06-11:07 del 22/11.",
+  "Il comando esatto del push del riferimento di deploy usato per A1 non e' nel materiale: va preso dal registro o dal prontuario del 19/11, e quello nuovo va registrato.",
+  "Cadenza delle valutazioni sul fitting nel fit pulito: 35 checkpoint (866 s) o tutti i 154 (1.193 s)? Il walltime proposto di 00:45:00 copre entrambi.",
+  "Si vogliono salvare le predizioni per finestra dei 24 stati (541.893.120 byte in FP32)? In caso affermativo, su SCRATCH o dopo una lettura nuova della quota.",
+  "Parita' in D0: basta un'epoca (15,9 s, cinque punti della curva) o si chiede il confronto del payload_sha256 all'esposizione 31 (167,6 s)?",
+  "La prova a 300 epoche per LR 0,003 (758 s riprendendo current_states) va aggiunta a D1 per rispondere alla richiesta di allungare i training, o bastano le curve gia' archiviate?",
+  "Preparazione del bundle (bersagli sintetici, varianze, hash) mai misurata a parte: la stima del costo fisso di 1,5-3 minuti per job resta un'ipotesi."
+ ],
+ "defects": [
+  {
+   "id": "OPS-1",
+   "severity": "importante",
+   "status": "dimostrato",
+   "title": "Margine di quota WORK inferiore alla dimensione delle predizioni dei diagnostici",
+   "claim": "All'ultima lettura archiviata il margine oltre i 12 GiB minimi era di 368.816.128 byte; le predizioni FP32 dei 20 stati TCN (1.907 x 148 x 20 x 4 byte ciascuno) pesano 451.577.600 byte, 541.893.120 con i 4 stati L0/MLP. Un diagnostico che le salvasse su WORK violerebbe l'aritmetica del cancello di quota usato per A1, salvo lettura nuova.",
+   "evidence": "work_free_bytes 36876038144, pending_write_bytes 23622320128, unchanged_minimum_free_plus_pending_bytes 12884901888, free_after_pending_gib 12.343486785888672, observed_at 2026-11-21T15:08:55+01:00. Stato attuale non letto.",
+   "file_line": "results/infra/pose_temponet_execution_20261121_A1/launcher/pending_writes_reassessment_20261121.json"
+  },
+  {
+   "id": "OPS-2",
+   "severity": "minore",
+   "status": "dimostrato",
+   "title": "Comando del push di deploy di A1 non archiviato nel materiale fornito",
+   "claim": "La sequenza A1 non e' riproducibile alla lettera dai file: del push restano il nome del riferimento e l'esito, non il comando.",
+   "evidence": "Ricerca di `git push leonardo` e `deploy/pose-temponet` in tutto l'albero: solo docs/pose_temponet_execution_A1_20261121.md:34 (nome del riferimento), docs/pose_temponet_execution_20261120.md:110 (controllo ls-remote) e `leonardo_deploy_ref_matches: true`. La copia e' parziale: registro e prontuario del 19/11 non ci sono.",
+   "file_line": "results/infra/pose_temponet_execution_20261121_A1/launcher/deployment_checks.json; docs/pose_temponet_execution_A1_20261121.md:34"
+  },
+  {
+   "id": "OPS-3",
+   "severity": "nota",
+   "status": "dimostrato",
+   "title": "I glob del manifest catturano nomi naturali per un launcher o un driver diagnostico",
+   "claim": "scripts/slurm/pose_temponet*.sbatch e scripts/*.py entrano nel source_sha256: un launcher chiamato pose_temponet_diag.sbatch o un driver al primo livello di scripts/ cambierebbe l'identita' dei sorgenti e farebbe fallire validate_plan e checkout_identity nel checkout nuovo.",
+   "evidence": "manifest_probe.py su radice finta con la funzione vera: `scripts/slurm/pose_temponet_diag.sbatch` cambia_manifest true; `scripts/tcn_diag_driver.py` true; `scripts/tcn_diag/__init__.py + driver.py` false; `scripts/slurm/tcn_diag.sbatch` false. Uscita in /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/ops_costs/manifest_probe.out.json.",
+   "file_line": "scripts/pose_temponet/provenance.py:236-248"
+  },
+  {
+   "id": "OPS-4",
+   "severity": "minore",
+   "status": "sospetto",
+   "title": "Due esecuzioni fallite sul nodo di login per ambiente Python incompleto",
+   "claim": "La verifica in sola lettura del cancello e' fallita due volte con ModuleNotFoundError per numpy prima di riuscire; il comando dei tentativi falliti non e' archiviato. Causa sospetta, non dimostrata: PYTHONPATH sostituito invece che anteposto.",
+   "evidence": "I due log terminano con `ModuleNotFoundError: No module named 'numpy'` importando pose_temponet/data.py dal checkout A1; il comando riuscito (verify_positive_controls_readonly.command.txt) usa `${PYTHONPATH:+:$PYTHONPATH}`.",
+   "file_line": "results/infra/pose_temponet_execution_20261121_A1/launcher/positive_gate_operator_environment_attempt.log; positive_gate_operator_environment_attempt2.log"
+  },
+  {
+   "id": "OPS-5",
+   "severity": "nota",
+   "status": "dimostrato",
+   "title": "I punti d'ingresso congelati non coprono ne' il fit sul bersaglio pulito ne' training oltre 300 epoche",
+   "claim": "workflow._run_selection rifiuta un bundle con i bersagli scambiati; PairedCandidate.advance accetta solo 150 o 300 epoche; la ricetta di produzione ha tetto 300. Il controllo pulito richiede codice nuovo fuori dal pacchetto, e allungare oltre 300 epoche richiede sorgenti nuovi e quindi identita' nuova.",
+   "evidence": "parity_probe.py: `_assert_bundle` risponde «synthetic targets changed after calibration». resume_probe.py: `ValueError: requested training exceeds the frozen horizon` oltre il tetto e `ValueError: nonstandard production recipe` per Recipe(maximum_epochs=600). Uscite in /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/ops_costs/.",
+   "file_line": "scripts/pose_temponet/workflow.py:215-222; scripts/pose_temponet/train.py:49-59, 271-272, 421-431"
+  }
+ ],
+ "notes_path": "/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/ops_costs/OPS_MAP.md"
+}

@@ -9025,6 +9025,27 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Seguito: GPT prepara il pacchetto operativo di D0, parità e D1; io lo rivedo. I job partono solo dopo la decisione di Simone
   registrata sul pacchetto.
 
+### 2026-11-22 | Claude | Seconda diagnosi GPT del controllo temporale TCN (`e8c98244`): tre verdetti; diagnostici D0/D1/D2 preparati su incarico di Simone | Ramo `claude/temponet-db8-20261109`
+
+- Oggetto: la diagnosi della chat GPT «TCN», ramo `codex/pose-temponet-launcher-20261120`, commit
+  `e8c9824461b5e18494ff462f1be8abda71b76d5e`. Richiesta di GPT incollata da Simone il 22/11, con in più le parole di Simone:
+  «GPT ha finito i token, quindi qua, quando hai fatto la tua review e proposto una soluzione puoi lanciare tu direttamente e
+  impostarti un timer per guardare ogni 30 minuti».
+- Review in `docs/reviews/claude_review_pose_temponet_temporal_diagnosis_launcher_20261122.md`, con la cartella `_evidence`.
+- Metodo: sette revisori indipendenti senza accesso al cluster (catena del bersaglio, supporto e pannelli, ciclo di training,
+  numeri e prova di rappresentabilità, candidato residuale, operazioni e costi, mappa del codice) e cinque scettici sui difetti
+  seri dichiarati; simulazioni giocattolo su latenti sintetici.
+- Esito, tre verdetti: **diagnosi confermata, nessun blocco**, nessun difetto nella catena
+  bersaglio–normalizzazione–maschere–loss–selezione; **diagnostici e controllo pulito approvati**, nella forma già concordata
+  con l'altra chat di GPT (`8fac3a82`); **candidato residuale non approvato come passo successivo**.
+- **Operatore di questa sola catena: Claude**, per l'incarico di Simone qui sopra. Il launcher GPT della linea TCN non invia.
+  Codice, protocollo e regole congelate sul ramo `claude/tcn-temporal-diag-20261122` (`scripts/tcn_temporal_diag/`,
+  `docs/tcn_temporal_diag_protocol_20261122.md`, voce in `docs/decisioni.md`), fuori dal manifest dei sorgenti congelati.
+- Job previsti, non ancora inviati al momento di questa voce: `TCND-checkout-20261122`, `TCND-d0-replay-20261122` (rilettura
+  degli stati archiviati), `TCND-d1-cleanfit-20261122` (due fit sul bersaglio pulito), `TCND-d2-extend-20261122` (corsa
+  archiviata portata a 300 epoche, solo descrittiva). 2,40 GPU-ore prenotate, sotto-budget 4. A1 resta `recipe_not_admitted`.
+- Commit dei diagnostici da eseguire: `b025c158bf340cd66ab4456c17353d4206b0e7e7`. Seguito: ID Slurm ed esiti in una voce successiva.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13268,3 +13289,24 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
 - Da guardare per primi nel pacchetto: la parità a 1e-12 richiede predizioni FP32 identiche bit per bit, quindi il percorso di
   valutazione congelato; D0 oggi è descrittivo, e se deve sostenere una conclusione la sua lettura va scritta prima del job.
 - Calendario: un job di D0 o D1 che non finisce prima del 23/11 alle 08:00 resta in coda fino al 25/11.
+
+### 2026-11-22 | Claude | Controllo temporale TCN: ramo profondo che si spegne, candidato residuale non motivato, frase sui training
+
+- Nessun difetto nella catena del controllo. La diagnosi di GPT non dice che `cleanLS` è stimato sul bersaglio pulito: L0 neurale
+  sta a −12,28% pooled, e da lì la TCN chiude il 30,27% contro il 55,47% che il cancello chiede.
+- Sospetto nuovo, solo dal giocattolo: le ReLU del penultimo strato del ramo profondo si spengono quasi tutte nelle prime due
+  epoche. A LR 0,003 il ramo si riaccende; a LR 0,01 resta spento per 150 epoche in 3 corse su 3. La curva vera a LR 0,01 è
+  piatta al livello di L0: il bordo alto della griglia potrebbe essere un L0 travestito. D0 conta le unità attive sugli stati veri.
+- Candidato residuale: lo scambio della base vale fra 2 e 7 punti pooled sui 28,29 mancanti (stima: la base ridge non è
+  archiviata nel mondo temporale); il resto dovrebbe venire dal ramo profondo, che vede lo stesso segnale. Nel giocattolo non
+  alza il livello.
+- Corretti dagli scettici due punti della mia prima stesura: il −17,84% era il lettore in forma chiusa senza regolarizzazione,
+  non la ridge del candidato; «l'errore della base è invisibile alla TCN» vale per la parte lineare di qualunque ricetta.
+- La frase «Non abbasserei la soglia ma allungherei subito i training.» sta nel messaggio di Simone fuori dal blocco incollato:
+  non so dire se sia sua o di GPT. Le curve archiviate dicono che allungare non aiuta (LR 0,003: +21,71% a 31 epoche, −22,62% a
+  150). La tratto come richiesta possibile: D2 la misura fino a 300 epoche, senza toccare selezione e stato di A1.
+- Differenza da ciò che avevo chiesto io: la review `f6669115` voleva una decisione di Simone registrata sul pacchetto prima del
+  primo invio. Simone ha dato il via prima che il pacchetto esistesse; ID, costi e sotto-budget sono registrati in
+  `docs/decisioni.md` del ramo dei diagnostici prima del primo invio.
+- Rischio non scientifico dichiarato prima: A1 non ha mai mostrato la riproducibilità bit per bit fra job su nodi diversi. La
+  parità ha quindi due livelli fissati prima dei job: esatta a 1e-12 e numerica a 1e-4, con le identità discrete uguali.

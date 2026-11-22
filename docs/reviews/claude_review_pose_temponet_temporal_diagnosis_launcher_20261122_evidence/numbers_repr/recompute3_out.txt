@@ -1,0 +1,26 @@
+=== I. fitting: clean_ls (stimato su y* del fitting, valutato su y del fitting), oracolo (derivato da L13), teste
+ fold0: clean_ls_fit 0.708653705 (MSE 1.782976) L13 clean fit 0.693938229 R13 0.270896 -> oracolo_fit 0.654332190 | margine 0.054321515 (7.6655% di clean_ls)
+    L0      : fitting E_dyn 0.708789009 recupero fitting  -0.2491% | esclusi E_dyn 0.718153783 recupero esclusi -13.5531%
+    MLP     : fitting E_dyn 0.688137596 recupero fitting  37.7679% | esclusi E_dyn 0.717405583 recupero esclusi -12.2400%
+    TCN_post: fitting E_dyn 0.661873047 recupero fitting  86.1181% | esclusi E_dyn 0.696657208 recupero esclusi  24.1731%
+ fold1: clean_ls_fit 0.749625831 (MSE 1.794128) L13 clean fit 0.738388895 R13 0.199309 -> oracolo_fit 0.693246405 | margine 0.056379426 (7.5210% di clean_ls)
+    L0      : fitting E_dyn 0.748495962 recupero fitting   2.0040% | esclusi E_dyn 0.756283736 recupero esclusi -10.8188%
+    MLP     : fitting E_dyn 0.734148963 recupero fitting  27.4513% | esclusi E_dyn 0.756186730 recupero esclusi -10.6539%
+    TCN_post: fitting E_dyn 0.710582584 recupero fitting  69.2509% | esclusi E_dyn 0.738818328 recupero esclusi  18.8755%
+ pooled fitting: clean_ls 0.728861505 oracolo 0.673525011 L13(pulito) 0.715861675 -> recupero L13 23.4923%
+    L0      : pooled fitting E_dyn 0.728372815 recupero fitting pooled 0.8831%
+    MLP     : pooled fitting E_dyn 0.710830792 recupero fitting pooled 32.5838%
+    TCN_post: pooled fitting E_dyn 0.685897004 recupero fitting pooled 77.6423%
+
+=== L. bersaglio pulito sugli esclusi: dove stanno clean_ls e oracolo (derivato: sse_oss - sse_oracolo, a meno del termine incrociato)
+ fold0: clean_ls sul pulito ~ 0.165139 (approssimato) | TCN_post pulito 0.127856 (termine incrociato -2915.8, -2.06% della sse pulita) | MLP pulito 0.185055 (termine incrociato +328.4, +0.16% della sse pulita) | L0 pulito 0.189922 (termine incrociato -2656.9, -1.26% della sse pulita)
+ fold1: clean_ls sul pulito ~ 0.191579 (approssimato) | TCN_post pulito 0.154431 (termine incrociato +817.3, +0.64% della sse pulita) | MLP pulito 0.210741 (termine incrociato +1034.4, +0.59% della sse pulita) | L0 pulito 0.211195 (termine incrociato +919.5, +0.53% della sse pulita)
+ pooled: clean_ls sul pulito ~ 0.176461 (approssimato) | TCN_post pulito 0.139236 (termine incrociato -2098.5, -0.78% della sse pulita) | MLP pulito 0.196055 (termine incrociato +1362.8, +0.36% della sse pulita) | L0 pulito 0.199032 (termine incrociato -1737.3, -0.45% della sse pulita)
+
+=== M. differenze E_dyn finale - minimo per curva (TCN temporale) e posizione relativa alla soglia
+ lr 0.0001: exp del minimo MSE 181.0, edyn 0.725644; finale edyn 0.728150; punti sotto la soglia 0,699569: 0
+ lr 0.0003: exp del minimo MSE 64.0, edyn 0.725382; finale edyn 0.731910; punti sotto la soglia 0,699569: 0
+ lr 0.001: exp del minimo MSE 31.0, edyn 0.722991; finale edyn 0.751496; punti sotto la soglia 0,699569: 0
+ lr 0.003: exp del minimo MSE 31.0, edyn 0.715926; finale edyn 0.741556; punti sotto la soglia 0,699569: 0
+ lr 0.01: exp del minimo MSE 93.0, edyn 0.737384; finale edyn 0.737611; punti sotto la soglia 0,699569: 0
+ punti totali sotto soglia su tutte le curve: 0 su 915

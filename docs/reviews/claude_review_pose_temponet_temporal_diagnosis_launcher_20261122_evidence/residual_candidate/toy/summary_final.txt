@@ -1,0 +1,40 @@
+tetto epoche: None
+variante  seme epoche  sel    R@sel  lin@sel prof@sel  MSE@sel     Rmax   (ep) R ultima   s/ep
+base         0     13   12  +0.2962  -0.0844  +0.3806  1.84719  +0.2962     12  +0.2800   28.1
+cur          0     23   21  +0.3146  -0.1254  +0.4399  1.83376  +0.3146     21  +0.2936   26.4
+cur          1     23   22  -0.1077  -0.1077  +0.0000  1.88721  -0.1077     22  -0.1082   21.2
+cur          2     22   20  +0.2914  -0.1276  +0.4190  1.84079  +0.2960     22  +0.2960    8.6
+drop0.3      0     35   28  +0.3189  -0.1122  +0.4311  1.83276  +0.3189     28  +0.3024   14.2
+lnfix        0     13   13  +0.1956  -0.1508  +0.3464  1.88152  +0.1956     13  +0.1956   27.4
+res          0     23   15  +0.3113  -0.0844  +0.3957  1.84278  +0.3178     18  +0.2990   26.2
+res          1     40   20  +0.2899  -0.0844  +0.3743  1.85227  +0.2988     17  +0.0618   16.8
+warm         0     40   21  +0.2913  -0.1106  +0.4019  1.83744  +0.2970     19  +0.1391   16.8
+warm         1     40   21  +0.3006  -0.1119  +0.4124  1.83419  +0.3006     21  +0.1476   10.0
+wd0.3        0     40   28  +0.4245  -0.1473  +0.5718  1.82597  +0.4271     35  +0.3828   13.5
+wd0.3        2     22   22  +0.3713  -0.1429  +0.5142  1.84139  +0.3713     22  +0.3713    8.6
+wd1.0        0     22   22  +0.3461  -0.2112  +0.5573  1.88325  +0.3461     22  +0.3461    8.6
+
+variante  seme     ep5    ep10    ep15    ep19    ep20    ep25    ep30    ep35    ep40
+base         0  +0.154  +0.246       -       -       -       -       -       -       -
+cur          0  -0.207  +0.120  +0.230  +0.291  +0.290       -       -       -       -
+cur          1  -0.344  -0.185  -0.126  -0.114  -0.109       -       -       -       -
+cur          2  -0.127  +0.116  +0.234  +0.292  +0.291       -       -       -       -
+drop0.3      0  -0.231  +0.101  +0.217  +0.272  +0.284  +0.298  +0.289  +0.302       -
+lnfix        0  -0.217  +0.117       -       -       -       -       -       -       -
+res          0  +0.161  +0.252  +0.311  +0.299  +0.303       -       -       -       -
+res          1  +0.163  +0.239  +0.272  +0.288  +0.290  +0.244  +0.187  +0.118  +0.062
+warm         0  +0.114  +0.219  +0.285  +0.297  +0.290  +0.273  +0.242  +0.188  +0.139
+warm         1  +0.120  +0.220  +0.256  +0.293  +0.285  +0.277  +0.234  +0.187  +0.148
+wd0.3        0  -0.209  +0.119  +0.270  +0.343  +0.368  +0.415  +0.419  +0.427  +0.383
+wd0.3        2  -0.127  +0.140  +0.281  +0.344  +0.337       -       -       -       -
+wd1.0        0  -0.375  -0.023  +0.176  +0.286  +0.306       -       -       -       -
+
+seme 0 res      - cur: epoche comuni 23 | R@sel +0.3113 (ep 15) contro +0.3146 (ep 21): differenza -0.0033 | all'epoca comune 23: +0.2990 contro +0.2936: differenza +0.0054 | massimo scarto |diff| per epoca: 0.7073
+seme 0 base     - cur: epoche comuni 13 | R@sel +0.2962 (ep 12) contro +0.1889 (ep 13): differenza +0.1073 | all'epoca comune 13: +0.2800 contro +0.1889: differenza +0.0911 | massimo scarto |diff| per epoca: 0.7085
+seme 0 lnfix    - cur: epoche comuni 13 | R@sel +0.1956 (ep 13) contro +0.1889 (ep 13): differenza +0.0067 | all'epoca comune 13: +0.1956 contro +0.1889: differenza +0.0067 | massimo scarto |diff| per epoca: 0.0574
+seme 0 warm     - cur: epoche comuni 23 | R@sel +0.2913 (ep 21) contro +0.3146 (ep 21): differenza -0.0232 | all'epoca comune 23: +0.2827 contro +0.2936: differenza -0.0109 | massimo scarto |diff| per epoca: 0.6521
+seme 0 wd0.3    - cur: epoche comuni 23 | R@sel +0.4034 (ep 23) contro +0.3146 (ep 21): differenza +0.0889 | all'epoca comune 23: +0.4034 contro +0.2936: differenza +0.1098 | massimo scarto |diff| per epoca: 0.1098
+seme 0 drop0.3  - cur: epoche comuni 23 | R@sel +0.3006 (ep 23) contro +0.3146 (ep 21): differenza -0.0140 | all'epoca comune 23: +0.3006 contro +0.2936: differenza +0.0070 | massimo scarto |diff| per epoca: 0.0236
+seme 1 res      - cur: epoche comuni 23 | R@sel +0.2899 (ep 20) contro -0.1077 (ep 22): differenza +0.3976 | all'epoca comune 23: +0.2862 contro -0.1082: differenza +0.3944 | massimo scarto |diff| per epoca: 0.7506
+seme 1 warm     - cur: epoche comuni 23 | R@sel +0.3006 (ep 21) contro -0.1077 (ep 22): differenza +0.4083 | all'epoca comune 23: +0.2823 contro -0.1082: differenza +0.3905 | massimo scarto |diff| per epoca: 0.6435
+seme 2 wd0.3    - cur: epoche comuni 22 | R@sel +0.3713 (ep 22) contro +0.2914 (ep 20): differenza +0.0800 | all'epoca comune 22: +0.3713 contro +0.2960: differenza +0.0753 | massimo scarto |diff| per epoca: 0.0753

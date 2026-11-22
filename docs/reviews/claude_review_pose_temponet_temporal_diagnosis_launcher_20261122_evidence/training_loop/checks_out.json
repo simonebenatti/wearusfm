@@ -1,0 +1,118 @@
+{
+ "zero_init_params": [
+  "norm.bias",
+  "deep.0.bias",
+  "deep.2.bias",
+  "deep.4.bias",
+  "deep.6.bias",
+  "deep.9.bias",
+  "deep.12.weight",
+  "deep.12.bias",
+  "affine.weight",
+  "affine.bias"
+ ],
+ "initial_output_absmax": 0.0,
+ "decay_group": [
+  "deep.0.weight",
+  "deep.2.weight",
+  "deep.4.weight",
+  "deep.6.weight",
+  "deep.9.weight",
+  "deep.12.weight",
+  "affine.weight"
+ ],
+ "no_decay_group": [
+  "norm.weight",
+  "norm.bias",
+  "deep.0.bias",
+  "deep.2.bias",
+  "deep.4.bias",
+  "deep.6.bias",
+  "deep.9.bias",
+  "deep.12.bias",
+  "affine.bias"
+ ],
+ "params_decay_nodecay": [
+  71808,
+  1096
+ ],
+ "params_by_branch": {
+  "norm": 768,
+  "affine": 7700,
+  "deep": 64436
+ },
+ "step1_max_abs_update_by_param": {
+  "norm.weight": 0.0,
+  "norm.bias": 0.0,
+  "deep.0.weight": 9.745359420776367e-06,
+  "deep.0.bias": 0.0,
+  "deep.2.weight": 1.3321638107299805e-05,
+  "deep.2.bias": 0.0,
+  "deep.4.weight": 1.239776611328125e-05,
+  "deep.4.bias": 0.0,
+  "deep.6.weight": 1.2308359146118164e-05,
+  "deep.6.bias": 0.0,
+  "deep.9.weight": 1.895427703857422e-05,
+  "deep.9.bias": 0.0,
+  "deep.12.weight": 0.002999997464939952,
+  "deep.12.bias": 0.0029999958351254463,
+  "affine.weight": 0.002999997464939952,
+  "affine.bias": 0.0029999958351254463
+ },
+ "grad_norms_first3_steps": [
+  {
+   "norm": 0.0,
+   "deep_hidden": 0.0,
+   "deep_out": 0.07827960080538676,
+   "affine": 0.2177999706419649,
+   "total_preclip": 0.23144006729125977,
+   "total_postclip": 0.23144010696914977
+  },
+  {
+   "norm": 0.0015747312338996594,
+   "deep_hidden": 0.010998667341267847,
+   "deep_out": 0.10661306486320773,
+   "affine": 0.21576632315530897,
+   "total_preclip": 0.24092508852481842,
+   "total_postclip": 0.24092509680236854
+  },
+  {
+   "norm": 0.0033329775385469488,
+   "deep_hidden": 0.013599617262284534,
+   "deep_out": 0.09656653803091168,
+   "affine": 0.5046358970073044,
+   "total_preclip": 0.513982892036438,
+   "total_postclip": 0.5139830183426252
+  }
+ ],
+ "training_flag_after_train": true,
+ "state_aliases_live_tensors": false,
+ "state_unchanged_after_more_training": true,
+ "live_model_changed": true,
+ "optimizer_state_aliases_live": false,
+ "model_training_inside_evaluate": false,
+ "eval_deterministic": true,
+ "dropout_rng_untouched_by_evaluate": true,
+ "training_flag_restored_after_evaluate": true,
+ "train_mode_stochastic": true,
+ "resume_equals_continuous_bitwise": true,
+ "continuous_equals_first_traj_bitwise": true,
+ "batch_alignment_ok": true,
+ "steps_per_epoch_70": 3,
+ "steps_per_epoch_920_934_1854": [
+  29,
+  30,
+  58
+ ],
+ "last_batch_sizes_920_934_1854": [
+  24,
+  6,
+  30
+ ],
+ "per_window_mse_grad_matches_formula": true,
+ "per_window_mse_masked_grad_zero": 0.0,
+ "decay_factor_lr0.003": {
+  "exposure31_fold0_899steps": 0.9733900490067219,
+  "exposure150_4350steps": 0.8776547749035716
+ }
+}

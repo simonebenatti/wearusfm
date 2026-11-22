@@ -1,0 +1,77 @@
+{
+ "summary": "Ho seguito il supporto da data.central_support fino al cancello, nel codice del commit e8c98244 e nei JSON archiviati, e l'ho provato su CPU con le funzioni vere su una cache sintetica con maschere difficili (65 controlli, 0 falliti; alla prima esecuzione 3 falliti per due errori del mio banco di prova, corretti). La loss di training, la metrica di selezione e il cancello usano lo stesso supporto (patch 6..153, stessi giunti, stesse finestre), senza sfasamenti; le finestre senza posa valida sono escluse nei tre luoghi. Nei JSON clean_ls, oracolo e TCN hanno gli stessi window_count (934, 920, 1854) e lo stesso dynamic_target_ss a meno di 1 ulp, con soglie uguali esatte. L'identita' SSE_y = SSE_y* + SSE_oracolo - 2<e,n> vale con residuo 0,0 e 2,9e-11. Il pooled e' il rapporto delle somme degli accumulatori sia nel cancello sia nella selezione. Non ho letto dati veri: restano non verificati i conteggi delle finestre dinamiche e l'uguaglianza bit per bit dei bersagli sul cluster.",
+ "verdict": "nessun difetto dimostrato nel perimetro (supporto, crop, maschere, loss, pannelli, pooled); tre note che non spiegano il cancello negativo",
+ "defects": [
+  {
+   "id": "N1",
+   "severity": "nota",
+   "status": "dimostrato",
+   "title": "Selezione e cancello leggono le stesse finestre escluse (proprieta' del disegno, non un errore)",
+   "claim": "LR ed esposizione sono scelti sul minimo della MSE pooled su bundle.held[fold] e il cancello legge E_dyn sulle stesse finestre allo stesso checkpoint: nel controllo non c'e' un insieme di prova separato. Il verso favorisce la TCN, quindi non puo' spiegare un cancello negativo.",
+   "evidence": "workflow.py:298 (evaluator su bundle.held[fold]) e workflow.py:312 (selected_outer_statistics sulle stesse righe), poi qualify_controls workflow.py:368-376. Dai JSON il termine incrociato implicito 2<e,n> = SSE_y* + SSE_oracolo - SSE_y vale +2915.776128 (fold0), -817.283324 (fold1), +2098.492803 (pooled), cioe' 1,596%, -0,515% e 0,615% del margine SSE clean_ls-oracolo.",
+   "file_line": "scripts/pose_temponet/workflow.py:298,312",
+   "repro_command": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python -I /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/support_panels/gate_json.py /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/tree_e8c98244/results/infra/pose_temponet_execution_20261121_A1/launcher",
+   "would_explain_failed_gate": "no: l'effetto e' a favore della TCN e vale meno dell'1% del margine nel pooled"
+  },
+  {
+   "id": "N2",
+   "severity": "nota",
+   "status": "dimostrato",
+   "title": "I riferimenti chiusi archiviati non portano impronte del pannello ne' il numero di finestre dinamiche",
+   "claim": "calibration_*.json contiene solo i quattro accumulatori e la soglia: nessun hash di supporto o bersaglio, nessun conteggio di finestre dinamiche, celle n>=2, elementi. L'uguaglianza del pannello fra riferimenti chiusi e teste sui dati veri e' provata dai denominatori (1 ulp), dai window_count e dai controlli nel codice, non da un hash comune.",
+   "evidence": "metrics.selection_statistics (metrics.py:161-166) restituisce solo mse_sum, window_count, dynamic_sse, dynamic_target_ss e scarta n_selected_windows, n_windows, n_window_joints, n_valid_elements e support_sha256 che metrics.evaluate calcola (metrics.py:141-158). support_sha256 e target_sha256 compaiono solo nel bundle delle selezioni.",
+   "file_line": "scripts/pose_temponet/metrics.py:161-166",
+   "repro_command": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python -I /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/support_panels/panels_json.py /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/tree_e8c98244/results/infra/pose_temponet_execution_20261121_A1/launcher",
+   "would_explain_failed_gate": "no: e' una lacuna di tracciabilita', i numeri disponibili concordano"
+  },
+  {
+   "id": "N4",
+   "severity": "nota",
+   "status": "dimostrato",
+   "title": "Stesso supporto ma pesi diversi fra loss, selezione e cancello; ultimo batch dell'epoca corto",
+   "claim": "La loss e' la MSE per finestra su tutte le finestre supportate, non centrata; il cancello e' l'errore centrato nel tempo sulle sole finestre dinamiche, pesato per elemento. Con batch 32 l'ultimo batch dell'epoca ha 24 finestre nel fold0 (920 = 28*32+24) e 6 nel fold1 (934 = 29*32+6): quelle finestre pesano 1,33 e 5,33 volte nel passo. E' il disegno congelato, uguale per le tre teste.",
+   "evidence": "metrics.py:24-39 (media sulle finestre di SSE/q), train.py:280-306 (nessun drop_last), metrics.py:91-93 e pose_dynamics.py:134-146 (E_dyn). fold_steps a esposizione 1 = [29, 30] nelle cinque curve. Sullo stesso pannello pooled la TCN recupera 0.2171 del margine su E_dyn e 0.0786 sulla MSE (clean_ls 1.809351, oracolo 1.692258, TCN 1.800145).",
+   "file_line": "scripts/pose_temponet/metrics.py:24-39; scripts/pose_temponet/train.py:280-306",
+   "repro_command": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python -I /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/support_panels/derived.py /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/tree_e8c98244/results/infra/pose_temponet_execution_20261121_A1/launcher",
+   "would_explain_failed_gate": "no come difetto; in parte come contesto: il criterio di training e selezione non e' la metrica del cancello, ma anche il miglior E_dyn di tutte le curve (0.715826) resta al 21,88%"
+  }
+ ],
+ "verified_facts": [
+  "CODICE, supporto unico: central_support = mask[:, 6:-6] & (t+6 < n_patches), t = 6..153 (data.py:43-55, pose_temporal_readout.py:195-199). Lo stesso array entra nel training (workflow.py:147, 225-239; train.py:195-204, 283-287), nella selezione (workflow.py:242-261 -> metrics._cropped, metrics.py:67-75) e nei riferimenti chiusi (controls.py:426-431, 553-580).",
+  "CODICE, crop coerente: predizione model(x)[:, 6:154] in training (train.py:284) e [:, 6:-6] in valutazione (workflow.py:251); bersaglio [:, 6:154] (train.py:200, metrics.py:75); L, T, epsilon generati su 160 patch (controls.py:161-162, 185) e ritagliati con [6:-6] ovunque (controls.py:459, 572, 574).",
+  "CODICE, finestre senza posa: escluse dal training (train.py:169-173), dalla MSE (q>0, metrics.py:114-118), da E_dyn (celle n>=2, pose_dynamics.py:137) e dal WLS (peso zero, linear.py:324-326).",
+  "CODICE, E_dyn: somma degli SSE centrati per cella finestra/giunto divisa per la somma degli SS centrati del bersaglio osservato, sulle finestre con pose_var >= soglia; pose_var e soglia vengono dal bersaglio PULITO sulla finestra intera di 160 patch, soglia = mediana sul fitting (metrics.py:42-64, 91-93; workflow.py:183-188; controls.py:545, 566). workflow.py:184 impone l'uguaglianza esatta con la soglia del riferimento chiuso.",
+  "CPU, funzioni vere (probe_support.py, 16 s): 65 controlli, 0 falliti. La loss riceve predizione, bersaglio e supporto allineati posizione per posizione ai patch 6..153; il training vede tutte e sole le finestre supportate; loss sull'intero fitting = mse_sum/window_count della selezione (2.000020742 contro 2.000020726, differenza FP32); perturbare la predizione fuori dal supporto o nei 12 patch di bordo non cambia nessun accumulatore; bersaglio spostato di una patch da' errore > 0.",
+  "CPU: per clean_ls, oracolo, costante e testa metrics.evaluate riceve lo stesso pannello bit per bit (bersaglio y, maschera, pose_var, soglia, finestre, support_sha256, finestre dinamiche, celle, elementi); il pannello pulito y* ha stesso supporto e stesse finestre dinamiche del pannello y.",
+  "CPU, identita': SSE_y = SSE_y* + SSE_oracolo - 2<e,n> con i tre SSE dalle funzioni vere e <e,n> ricalcolato a parte: residuo assoluto 0.0 (fold0) e 2.9103830456733704e-11 (fold1) su SSE di 109407.45 e 138839.78; vale anche per la MSE (residuo 1.4e-14) e per clean_ls.",
+  "JSON, fold0 esclusi (mondo temporale): window_count 934 per clean_ls, oracolo, costante, L0, MLP, TCN; dynamic_target_ss 3206279.9567595376 identico bit per bit nei sei; E_dyn clean_ls 0.7104311505676322, oracolo 0.6534505840205822, TCN 0.6966572080798834.",
+  "JSON, fold1 esclusi: window_count 920 per tutti; dynamic_target_ss 2698827.390194636 (riferimenti) e 2698827.3901946363 (teste), differenza 1 ulp (4.66e-10) per il diverso ordine di somma (blocchi da 64 contro blocchi da 32 poi somma); E_dyn clean_ls 0.7499203961102027, oracolo 0.6911028974346952, TCN 0.7388183283237657.",
+  "JSON, pooled: 1854 finestre (= 1907 - 53), dynamic_target_ss 5905107.346954174; E_dyn clean_ls 0.7284790286546209, oracolo 0.6706589239838878, TCN 0.7159262203822878. I quattro campi pooled archiviati di TCN, MLP e L0 sono esattamente fold0 + fold1.",
+  "JSON, soglie dinamiche uguali esatte fra calibrazione e bundle delle tre selezioni temporali: 0.5437424309221641 (fold0) e 0.5374366720436082 (fold1). support_sha256 82bc28491af0..., window_ids_sha256, population_sha256, feature_array_sha256 e artifacts_sha256 identici nelle sei selezioni; evaluation_identity 8fcf86092541... nelle tre temporali; target_sha256 e clean_target_sha256 identici fra L0, MLP e TCN.",
+  "JSON, cancello ricalcolato dai soli accumulatori: R = 0.2417305288878684 / 0.1887545039561508 / 0.2171010990695587 (fold0 / fold1 / pooled), uguale al file del cancello. La media dei due R di fold sarebbe 0.2152425164220096: il codice usa il rapporto delle somme (controls.py:415-423, 653-660; selection.py:65-81).",
+  "JSON, pannello di fitting: dynamic_target_ss identico fra riferimenti chiusi e diagnostici di fitting delle teste, 2957984.5843438697 (920 finestre) e 2878704.615363543 (934). Passi per epoca [29, 30] = ceil(920/32), ceil(934/32).",
+  "JSON, coerenza fra percorsi: SS(y) - SS(y*) - SSE_oracolo = 4822.021469 (0,1504% di SS(y)) nel fold0 e 5079.435536 (0,1882%) nel fold1; MSE dell'oracolo su tutti gli esclusi 1.691773 e 1.692751 contro sigma^2 = 1,69.",
+  "RICEVUTA preflight: l'hash di un array booleano (1907,160) tutto vero coincide con key_time_valid_sha256 archiviato (0065b939fb66...): tutte le 1.907 finestre del train hanno 160 patch reali, quindi il supporto centrale vero e' mask[:, 6:154] e il ramo delle finestre corte non e' mai attivo. central_mask_sha256 = quello storico (ec1ee7176e9c...); supported_windows 1854.",
+  "DERIVATO dai JSON, descrittivo: sul pannello di fitting la TCN copre 0.8612 e 0.6925 del margine clean_ls-oracolo (in campione, include rumore appreso; MLP 0.3777 e 0.2745), contro 0.2417 e 0.1888 sugli esclusi. Oracolo sul fitting ricavato da temporal_margin_recovery_fitting di L13: 0.654332 e 0.693246.",
+  "DERIVATO, pooled esclusi sullo stesso pannello: la testa L0 allenata su y rumoroso sta a R = -0.1228, il WLS chiuso su y rumoroso (alpha=0) a -0.1784. La TCN copre 0.3027 della distanza testa L0 -> oracolo; per la soglia del 50% (E_dyn <= 0.699569) da una base lineare di quel livello serve 0.5547.",
+  "Test esistenti del perimetro: test_pose_temponet_{metrics,data,selection,controls,workflow}.py, 51 passati in 14,81 s. Nessun file creato o modificato sotto la copia del commit."
+ ],
+ "cannot_conclude": [
+  "Numero vero di finestre dinamiche per pannello: non e' archiviato. Stima indiretta da SSE_oracolo/(1,69*0,9457): circa 442,9 finestre piene equivalenti su 934 e 394,3 su 920; e' una stima, non un conteggio.",
+  "Uguaglianza bit per bit di bersaglio e supporto fra il job di calibrazione e i job dei controlli sui dati veri: provata solo dai denominatori a 1 ulp, dai window_count e dai controlli nel codice (workflow.py:178-185); i calibration_*.json non portano hash.",
+  "L'identita' SSE_y = SSE_y* + SSE_oracolo - 2<e,n> sui dati veri: il termine incrociato non e' archiviato; dai JSON si ricava solo il suo valore implicito, di grandezza plausibile.",
+  "Errore della TCN contro y* sul pannello di FITTING al checkpoint scelto: non archiviato (in produzione il pannello pulito e' stato letto solo sugli esclusi). Senza questo numero non si separa 'funzione pulita non appresa in campione' da 'appresa ma non generalizza'.",
+  "clean_ls contro y* sugli esclusi: non archiviato; 0.176461 pooled e' una stima con termine incrociato posto a zero.",
+  "Se le 53 finestre senza supporto centrale abbiano anche pose_var non finita (entrano nella mediana della soglia solo se la maschera intera ha almeno 2 campioni validi per qualche giunto): serve la cache vera. Vale comunque allo stesso modo per tutti i lettori.",
+  "Comportamento su A100 e sui latenti veri: le prove sono su CPU con dati sintetici e riguardano il supporto, non l'apprendimento."
+ ],
+ "recommendations": [
+  "Nessuna correzione di supporto, crop, maschere, loss o pooled e' necessaria prima dei diagnostici: su questo punto non serve un altro giro di review.",
+  "Passo 1 (nessun nuovo fit): al checkpoint scelto leggere anche il pannello di FITTING contro y*, con _score_model(..., include_clean=True) che esiste gia' (in produzione usato solo sugli esclusi, workflow.py:312). E' la lettura piu' piccola che separa ottimizzazione da generalizzazione fra utenti.",
+  "Passo 1: scrivere per ogni lettore e pannello finestre dinamiche, celle n>=2, elementi e support_sha256; metrics.evaluate li calcola gia', selection_statistics li scarta. Calcolare con la funzione vera anche clean_ls contro y*.",
+  "Passo 2 (controllo pulito): tenere supporto, selettore dinamico e soglie del controllo rumoroso, che dipendono gia' solo da y* e quindi non cambiano. Cosi' l'errore contro y* e' confrontabile con i numeri archiviati (TCN 0.139236 pooled, denominatore SS(y*) 1934892.9506313517) senza riusare le soglie del cancello rumoroso.",
+  "In ogni nuovo diagnostico il pooled resta il rapporto delle somme degli accumulatori, mai la media dei rapporti di fold (21,71% contro 21,52% in questo caso).",
+  "Per il giudizio sul candidato residuale: una base lineare stimata su y rumoroso parte sotto clean_ls (testa L0 a -12,28%, WLS chiuso a -17,84% del margine pooled) e il ramo temporale dovrebbe coprire 0.5547 della distanza base -> oracolo, contro 0.3027 ottenuto oggi dalla TCN rispetto alla testa L0. Sono numeri verificati sullo stesso pannello; la valutazione resta al revisore principale."
+ ],
+ "notes_path": "/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/support_panels/notes.md"
+}

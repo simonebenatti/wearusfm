@@ -1,0 +1,90 @@
+{
+ "summary": "Ho letto riga per riga train.py e heads.py del commit e8c98244 e ho verificato su CPU, con il ciclo vero (train.Trajectory, Recipe di produzione), stato migliore, dropout, flusso del gradiente, allineamento dei batch, ripresa e gruppi del weight decay: nessun difetto meccanico. Ho ricalcolato dai JSON le curve reali: al LR scelto 0,003 il recupero pooled scende da 21,71% (esposizione 31) a -22,62% (150), quindi allungare i training con la ricetta congelata peggiora; la curva reale a LR 0,01 resta piatta al livello di L0 per 150 epoche. Nel giocattolo (latenti SINTETICI, testa/loss/ciclo veri, un fold, LR 0,003) la ricetta base da' 29,07-33,53% in 4 esecuzioni su 5; clip, weight decay e LayerNorm non spostano il risultato, togliere il dropout lo peggiora, nessuna variante supera il 37,17%. Il clip a norma 1,0 scatta in 5 passi su 1.740. Fatto nuovo, solo giocattolo: nelle prime 1-2 epoche le ReLU dell'ultimo strato nascosto del ramo profondo collassano; a LR 0,003 il ramo muore del tutto in 1 esecuzione su 5 (recupero -9,61%), a LR 0,01 in 3 semi su 3, anche con base lineare congelata. Nessun dato vero (latenti, checkpoint) era disponibile: per i dati reali la morte del ramo profondo resta un sospetto, verificabile senza nuovi fit sugli stati salvati.",
+ "verdict": "sospetti aperti: nessun difetto meccanico dimostrato nel ciclo di training; una fragilita' della ricetta (collasso delle ReLU del ramo profondo) dimostrata solo nel giocattolo e da verificare sui checkpoint reali; non spiega da sola il cancello fallito",
+ "defects": [
+  {
+   "id": "TL-1",
+   "severity": "importante",
+   "status": "sospetto",
+   "title": "Collasso/morte delle ReLU del ramo profondo nelle prime 1-2 epoche (dimostrato nel giocattolo, sospetto sui dati reali)",
+   "claim": "Con testa TCN_post, inizializzazione e AdamW a LR costante senza warmup, l'ultimo strato nascosto (64->32) perde quasi tutta l'attivita' nelle prime 1-2 epoche; a volte la morte e' totale e irreversibile (ReLU morta = gradiente zero) e la testa diventa un L0. Nessun allarme lo rileva.",
+   "evidence": "GIOCATTOLO (latenti sintetici). LR 0,003, frazione attiva dell'ultimo strato nascosto ai passi 0/29/58/290: seme 0 0,517/0,046/0,005 (26 unita' morte su 32)/0,247; seme 1 0,501/0,003/0,000 (32/32 morte)/0,000; seme 2 0,470/0,047/0,073/0,270. Ricetta base: 1 esecuzione su 5 morta (recupero -9,61% contro 29,07-33,53% delle vive). LR 0,01: 32/32 morte al passo 29 in 3 semi su 3; con base lineare congelata 32/32 morte al passo 10 in 3 su 3. LR 0,001: nessuna morte in 2 semi. Avviene anche sul bersaglio pulito (minimo 0,032-0,078, poi ripresa in 3 su 3). REALE (dai JSON): la TCN a LR 0,01 ha recupero pooled -21,5% a epoca 8 e -15,8% a 150, piatto come L0 (L0 a LR 0,003: -20,1% e -14,8%); al LR scelto 0,003 il ramo e' vivo (TCN -22,9% contro L0 -28,5% gia' a epoca 3).",
+   "file_line": "scripts/pose_temponet/heads.py:46-58 e 71-78; scripts/pose_temponet/train.py:233-234; scripts/pose_temponet/selection.py:155-193",
+   "repro_command": "cd /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/training_loop && T=/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/tree_e8c98244 && E=\"OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$T/scripts:$T/src\" && env ${=E} ~/.venvs/wearusfm-tok/bin/python toy_tl.py gen && env ${=E} ~/.venvs/wearusfm-tok/bin/python deadcheck.py 1 0.003   (poi: deadcheck.py 0 0.01 ; deadcheck.py 0 0.01 residual)",
+   "would_explain_failed_gate": "no, non da sola: nel run reale al LR scelto il ramo profondo e' vivo, e nel giocattolo anche le esecuzioni vive restano a 29-34%. Spiegherebbe pero' perche' il LR 0,01 e' inutilizzabile; una morte parziale di unita' al LR 0,003 reale non e' esclusa."
+  },
+  {
+   "id": "TL-2",
+   "severity": "minore",
+   "status": "dimostrato",
+   "title": "L'assenza di optimizer_alarm guarda solo la curva del LR vincitore sulla MSE rumorosa degli esclusi",
+   "claim": "selection.assessment puo' emettere solo quattro allarmi (minimo nelle ultime 5 epoche di 300, bordo basso con guadagno > 0,5%, bordo alto, prima frazione di epoca), tutti sul LR scelto. Non guarda loss di training, norma del gradiente, clip, stato del ramo profondo, ne' gli altri LR. optimization_unresolved e' solo bool(alarms).",
+   "evidence": "Lettura del codice. JSON reale: optimizer_alarms [], minimum_exposures mse 31 / edyn 27, objective_tradeoff flag false (distanza 4, regret 0,014%). Il candidato reale a LR 0,01 con curva piatta al livello di L0 non genera alcun allarme. Il recupero massimo pooled per LR e' 5,01 / 5,36 / 10,81 / 21,88 / -14,85% (1e-4 ... 1e-2): cresce fino a 3e-3 e crolla al passo successivo della griglia (fattore 3,3).",
+   "file_line": "scripts/pose_temponet/selection.py:132-138 e 155-193",
+   "repro_command": "python3 su results/infra/pose_temponet_execution_20261121_A1/launcher/selection_temporal_TCN_post.json (tabella in /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/training_loop/real_curves_recovery.txt)",
+   "would_explain_failed_gate": "no: e' un limite di cio' che il rapporto certifica, non una causa dell'esito."
+  },
+  {
+   "id": "TL-3",
+   "severity": "nota",
+   "status": "dimostrato",
+   "title": "La norma del gradiente prima del clip e' calcolata ma non registrata",
+   "claim": "train.py calcola la norma globale e la usa solo per il controllo di finitezza: nell'archivio reale la frazione di passi clippati non esiste.",
+   "evidence": "train.py:291-294. Nel giocattolo: 5 passi clippati su 1.740 (i primi 5: norme 1,962 / 1,777 / 1,460 / 1,167 / 1,034), poi mediana 0,437 (quantili 5/95: 0,367 / 0,529), dominata dal ramo affine. Senza clip 32,18% contro 33,53% della base (dentro la dispersione di 4,5 punti).",
+   "file_line": "scripts/pose_temponet/train.py:291-294",
+   "repro_command": "toy_tl.py run base_s0 base 0 60 280 ; toy_tl.py run noclip_s0 noclip 0 60 280 (con TOY_NNPACK=0 e l'ambiente obbligatorio)",
+   "would_explain_failed_gate": "no nel giocattolo; sui latenti veri non misurabile dall'archivio."
+  },
+  {
+   "id": "TL-4",
+   "severity": "nota",
+   "status": "dimostrato",
+   "title": "Ultimo batch parziale con lo stesso peso di passo (6 finestre nel fold 1)",
+   "claim": "934 = 29*32 + 6: nel fold 1 un passo su 30 per epoca usa 6 finestre e pesa come un batch pieno; su quel passo il clip scatta piu' spesso.",
+   "evidence": "Aritmetica: ultimo batch 24 / 6 / 30 finestre per 920 / 934 / 1.854. Giocattolo: con 902 finestre (ultimo batch da 6) 21 passi clippati su 1.247 e recupero alla scelta 30,03% (massimo 32,88%); con 896 finestre (nessun batch parziale) 32,81%. Differenza dentro la dispersione fra esecuzioni: effetto non dimostrato.",
+   "file_line": "scripts/pose_temponet/train.py:276-280",
+   "repro_command": "toy_tl.py run tail6_s0 tail6 0 60 290 ; toy_tl.py run notail_s0 notail 0 60 290",
+   "would_explain_failed_gate": "no: effetto non distinguibile dal rumore fra esecuzioni nel giocattolo."
+  }
+ ],
+ "verified_facts": [
+  "CODICE - testa TCN_post: LayerNorm(384) apprendibile e condivisa fra i due rami; ramo profondo 384->64 k1, tre conv 64->64 k3 con dilatazioni 1/2/3, 64->32 k1, 32->20 k1 (campo ricettivo 13); dropout 0,1 dopo le ReLU degli strati dil-3 e 64->32; uscita = affine(h) + deep(h). Parametri: LN 768, affine 7.700, profondo 64.436 (totale 72.904).",
+  "CODICE - partono a zero: norm.bias, tutti i bias, peso e bias dell'ultimo strato profondo (deep.12), peso e bias del ramo affine; uscita iniziale esattamente 0 (verificato: max 0,0).",
+  "CODICE - weight decay 0,01 solo su kernel conv e matrice affine (71.808 parametri); mai su bias e LayerNorm (1.096). Fattore complessivo (1-3e-5)^passi: 0,9734 a 899 passi (esposizione 31), 0,8777 a 4.350 passi: trascurabile.",
+  "CODICE - AdamW a LR costante (betas 0,9/0,999, eps 1e-8), nessuno scheduler ne' warmup; clip sulla norma GLOBALE di tutti i parametri a 1,0; batch 32 con ultimo batch parziale; 29 / 30 / 58 passi per epoca per 920 / 934 / 1.854 finestre.",
+  "VERIFICATO SU CPU (checks.py, ciclo vero): al passo 1 il gradiente degli strati nascosti e' 0,0 esatto (ultimo strato 0,078, affine 0,218), dal passo 2 e' non nullo: il gradiente raggiunge il ramo profondo.",
+  "VERIFICATO SU CPU: lo stato migliore e' una copia profonda (nessuna memoria condivisa con modello e ottimizzatore vivi, invariato dopo altri passi) ed e' catturato subito dopo la valutazione, senza update in mezzo.",
+  "VERIFICATO SU CPU: in evaluate il modello e' in eval, due forward sono identici, l'RNG del dropout non viene consumato e il modo train viene ripristinato; in train il dropout e' attivo.",
+  "VERIFICATO SU CPU: ripresa da stato intermedio identica bit per bit alla corsa continua; feature, bersaglio (crop 6:154) e maschera del batch sono delle stesse righe; gradiente di per_window_mse = 2(p-y)/(conteggio finestra x finestre tenute), zero fuori supporto.",
+  "CODICE - sincronizzazione dei fold: passi = ceil(esposizione x passi per epoca) alle esposizioni 0, 0,25, 0,5, 0,75, 1..orizzonte; RNG di shuffle e dropout distinti per fold e isolati dall'RNG globale; gli stessi utenti esclusi servono a selezione e cancello (valore semmai ottimistico).",
+  "REALE (ricalcolo dai JSON) - riferimenti pooled clean_ls 0,7284790287, oracle 0,6706589240; recupero al checkpoint scelto 21,7101%; lungo la curva del LR 0,003 alle esposizioni 31/45/60/90/120/150: 21,71 / 14,23 / 7,48 / -6,00 / -14,63 / -22,62%.",
+  "REALE - tutti e cinque i LR hanno il minimo interno: recupero al minimo MSE e a fine orizzonte 4,90% e 0,57% (1e-4, 300 epoche); 5,36% e -5,93% (3e-4); 9,49% e -39,81% (1e-3); 21,71% e -22,62% (3e-3); -15,40% e -15,79% (1e-2). Allungare con la ricetta congelata peggiora.",
+  "REALE - al LR 0,003 il plateau 19-22% va da epoca 18 a 35 (19,9% a 18, 21,5% a 24, 20,1% a 35): non e' un picco stretto perso dalla selezione.",
+  "REALE - fitting al checkpoint scelto: MSE 1,688067 / 1,709501 ed E_dyn 0,661873 / 0,710583 (fold 0 / 1); L0 neurale scelto -12,28%, MLP -11,50% sulla stessa scala.",
+  "GIOCATTOLO (indicativo: latenti sintetici, un fold, LR 0,003) - riferimenti identici a quelli del 21/11: a 0,4, varianza del bersaglio 2,8494 = 1,0000 + 0,1600 + 1,6939, E_cleanLS 0,82212, E_oracle 0,76552, margine 6,884%; la mia scala riproduce i riferimenti in forma chiusa (recupero 0,000 e -0,089).",
+  "GIOCATTOLO - ricetta base, 5 esecuzioni: 33,53% (epoca 30), 29,07%, 31,97%, 31,21% e una morta a -9,61%; dispersione fra le vive 4,5 punti, quindi differenze sotto circa 4 punti non sono attribuibili.",
+  "GIOCATTOLO - una ablazione alla volta (seme 0 | seme 1): senza clip 32,18% | -9,63%; senza dropout 21,75% (e -36,04% a epoca 60) | -9,61%; weight decay 0 34,48% | -9,62%; LN congelata 34,26% | 32,24%; uscita non a zero 26,55% | 30,79%. Nel seme 1 le prime tre coincidono con la base morta.",
+  "GIOCATTOLO - varianti aggiunte: base lineare congelata (OLS su y rumoroso) + ramo profondo sul residuo 30,42% / 28,78% / 26,76% (3 semi, nessun ramo morto); stessa cosa con base stimata sul bersaglio pulito (non realizzabile) 37,17%; dropout 0,3 31,00%; LR a coseno su 40 epoche 28,73%.",
+  "GIOCATTOLO - nessuna variante realizzabile supera 34,48%; al checkpoint scelto della base (seme 0) il recupero pulito e' 0,594 sul fitting e 0,334 sugli esclusi.",
+  "GIOCATTOLO - clip: 5 passi su 1.740 sopra norma 1 (i primi 5), poi mai; il passo effettivo coincide con quello nominale. Stima analitica del contributo del rumore al ramo affine con batch 32: 0,47 (osservato 0,41-0,50); con batch da 6 fino a 1,09.",
+  "GIOCATTOLO - un warmup lineare di 58 passi evita la morte totale a LR 0,003 in 3 semi su 3 (minimo dell'attivita' 0,073-0,139) ma non a LR 0,01 (32/32 unita' morte in 2 semi su 2)."
+ ],
+ "cannot_conclude": [
+  "Se nei dati reali il ramo profondo a LR 0,01 sia davvero morto e se al LR 0,003 ci siano unita' morte: ho solo la firma nelle curve; servono gli stati salvati (non sul Mac).",
+  "La frazione reale di passi clippati: non e' registrata e dipende dallo spettro dei latenti veri.",
+  "Se una qualunque delle scelte ablate cambierebbe l'esito reale: il giocattolo usa latenti sintetici, un fold, nessuna ricerca del LR per variante, orizzonte 40-60 epoche, 1-2 semi per ablazione.",
+  "Se il candidato residuale o un'altra ricetta (warmup, schedule, piu' dropout) arrivi al 50%: nel giocattolo nessuna variante provata si avvicina, ma non e' una prova sui dati veri.",
+  "Quanto spesso la morte totale capiti a LR 0,003: 1 esecuzione su 5 nel giocattolo e' un conteggio troppo piccolo per una frequenza.",
+  "Se un allungamento con LR decrescente aiuti su orizzonti lunghi: ho provato un solo coseno su 40 epochi, un seme.",
+  "I percorsi specifici di CUDA (RNG del dropout su GPU, cuDNN deterministico) non sono verificabili sul Mac; i test pytest del repo non sono stati rieseguiti."
+ ],
+ "recommendations": [
+  "Aggiungere ai diagnostici sui checkpoint esistenti (solo forward, nessun fit): per gli stati best e finale dei 5 LR, frazione di attivazioni > 0 e unita' morte per ciascuna delle 5 ReLU e RMS dell'uscita del ramo profondo sul fitting. Atteso se il sospetto e' giusto: stato finale a LR 0,01 con ultimo strato nascosto morto.",
+  "Sugli stessi stati misurare, con solo forward/backward e nessun passo di ottimizzazione, la norma del gradiente per ramo sui batch del fitting, e leggere le epoch_losses gia' salvate negli stati.",
+  "Non allungare i training con la ricetta congelata: le curve reali mostrano che dopo l'esposizione 31 il recupero scende fino a -22,62%. Un allungamento ha senso solo con una ricetta diversa, che e' una ricetta nuova con identita' e ricevute nuove (train._check_recipe rifiuta ogni Recipe non standard).",
+  "Nel controllo sul bersaglio pulito registrare a ogni checkpoint la frazione attiva dell'ultimo strato nascosto: il quasi-collasso avviene anche senza rumore, e un ramo morto verrebbe letto come difficolta' di ottimizzazione della funzione.",
+  "Sul candidato residuale: nel giocattolo toglie la morte del ramo a LR 0,003 (3 semi su 3) ma non alza il livello (26,76-30,42% contro 29,07-33,53%) e a LR 0,01 muore comunque. Presentarlo come misura di robustezza, non come via attesa al 50%.",
+  "Per qualsiasi ricetta futura: allarme meccanico di ramo profondo morto, norma pre-clip registrata, e piu' di un seme di inizializzazione nel controllo (oggi la CV usa solo il seme 0, i refit i semi 0, 1, 2)."
+ ],
+ "notes_path": "/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/training_loop/notes.md"
+}

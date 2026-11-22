@@ -1,0 +1,3 @@
+/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/training_loop/deadcheck.py:24: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+  "w_out_rms": float(m.deep[12].weight.pow(2).mean().sqrt())}

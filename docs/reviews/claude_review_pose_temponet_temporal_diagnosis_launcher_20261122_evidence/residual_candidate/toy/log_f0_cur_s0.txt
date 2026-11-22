@@ -1,0 +1,29 @@
+f0_cur_s0 trainable 72904 ep 0 rec -3.143
+/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/residual_candidate/toy_res.py:191: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+  loss_sum += float(loss)*len(b)
+f0_cur_s0 ep 1 train 2.05735 held mse 2.37230 rec -0.762 clean -0.765 lin -0.762 t 37s
+f0_cur_s0 ep 2 train 1.88082 held mse 2.25074 rec -0.581 clean -0.588 lin -0.581 t 61s
+f0_cur_s0 ep 3 train 1.85938 held mse 2.16369 rec -0.464 clean -0.471 lin -0.464 t 80s
+f0_cur_s0 ep 4 train 1.84308 held mse 2.09774 rec -0.326 clean -0.329 lin -0.406 t 101s
+f0_cur_s0 ep 5 train 1.82770 held mse 2.04064 rec -0.207 clean -0.208 lin -0.343 t 122s
+f0_cur_s0 ep 6 train 1.81149 held mse 1.99531 rec -0.111 clean -0.113 lin -0.295 t 145s
+f0_cur_s0 ep 7 train 1.80106 held mse 1.96113 rec -0.021 clean -0.029 lin -0.252 t 163s
+f0_cur_s0 ep 8 train 1.79197 held mse 1.94112 rec 0.021 clean 0.020 lin -0.235 t 175s
+f0_cur_s0 ep 9 train 1.78164 held mse 1.91610 rec 0.092 clean 0.089 lin -0.197 t 201s
+f0_cur_s0 ep 10 train 1.77435 held mse 1.90419 rec 0.120 clean 0.116 lin -0.179 t 241s
+f0_cur_s0 ep 11 train 1.76764 held mse 1.88754 rec 0.148 clean 0.143 lin -0.169 t 285s
+f0_cur_s0 ep 12 train 1.76160 held mse 1.88013 rec 0.169 clean 0.169 lin -0.162 t 327s
+f0_cur_s0 ep 13 train 1.75869 held mse 1.87149 rec 0.189 clean 0.187 lin -0.153 t 364s
+f0_cur_s0 ep 14 train 1.75392 held mse 1.86283 rec 0.207 clean 0.208 lin -0.149 t 401s
+f0_cur_s0 ep 15 train 1.75226 held mse 1.85482 rec 0.230 clean 0.230 lin -0.140 t 448s
+f0_cur_s0 ep 16 train 1.74660 held mse 1.85187 rec 0.253 clean 0.255 lin -0.137 t 490s
+f0_cur_s0 ep 17 train 1.74592 held mse 1.84962 rec 0.260 clean 0.263 lin -0.133 t 517s
+f0_cur_s0 ep 18 train 1.74398 held mse 1.83859 rec 0.297 clean 0.297 lin -0.127 t 535s
+f0_cur_s0 ep 19 train 1.73894 held mse 1.83771 rec 0.291 clean 0.295 lin -0.128 t 549s
+f0_cur_s0 ep 20 train 1.73651 held mse 1.83776 rec 0.290 clean 0.291 lin -0.136 t 563s
+f0_cur_s0 ep 21 train 1.73728 held mse 1.83376 rec 0.315 clean 0.315 lin -0.125 t 577s
+f0_cur_s0 ep 22 train 1.73482 held mse 1.83405 rec 0.303 clean 0.307 lin -0.119 t 591s
+f0_cur_s0 ep 23 train 1.73096 held mse 1.83520 rec 0.294 clean 0.299 lin -0.133 t 607s
+f0_cur_s0 STOP tempo all'epoca 23
+f0_cur_s0 SUMMARY sel ep 21 rec 0.3146 clean 0.3152 lin -0.1254 | max rec 0.3146 | last ep 23 rec 0.2936

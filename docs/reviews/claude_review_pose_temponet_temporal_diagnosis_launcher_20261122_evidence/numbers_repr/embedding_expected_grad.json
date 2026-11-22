@@ -1,0 +1,60 @@
+[
+ {
+  "fold": 0,
+  "windows": 8,
+  "masks": 64,
+  "single_mask_grad_norm_mean": 0.5593729138191114,
+  "expected_grad_norm": 0.5353161161102024,
+  "noise_floor_if_zero_mean": 0.06992161422738892,
+  "expected_grad_first_layer_active8": 0.15144843045181627,
+  "expected_grad_first_layer_inactive56": 0.0,
+  "expected_grad_output_layer": 0.23395003146430582,
+  "param_names": [
+   "norm.weight",
+   "norm.bias",
+   "deep.0.weight",
+   "deep.0.bias",
+   "deep.2.weight",
+   "deep.2.bias",
+   "deep.4.weight",
+   "deep.4.bias",
+   "deep.6.weight",
+   "deep.6.bias",
+   "deep.9.weight",
+   "deep.9.bias",
+   "deep.12.weight",
+   "deep.12.bias",
+   "affine.weight",
+   "affine.bias"
+  ]
+ },
+ {
+  "fold": 1,
+  "windows": 8,
+  "masks": 64,
+  "single_mask_grad_norm_mean": 0.4848433433575894,
+  "expected_grad_norm": 0.46430720098347134,
+  "noise_floor_if_zero_mean": 0.06060541791969867,
+  "expected_grad_first_layer_active8": 0.13853087953402052,
+  "expected_grad_first_layer_inactive56": 0.0,
+  "expected_grad_output_layer": 0.13859405584805726,
+  "param_names": [
+   "norm.weight",
+   "norm.bias",
+   "deep.0.weight",
+   "deep.0.bias",
+   "deep.2.weight",
+   "deep.2.bias",
+   "deep.4.weight",
+   "deep.4.bias",
+   "deep.6.weight",
+   "deep.6.bias",
+   "deep.9.weight",
+   "deep.9.bias",
+   "deep.12.weight",
+   "deep.12.bias",
+   "affine.weight",
+   "affine.bias"
+  ]
+ }
+]

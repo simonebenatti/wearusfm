@@ -1,0 +1,11 @@
+linear L0 epoche totali (coppia di fold) 1200 LR [(0.0001, 300), (0.0003, 300), (0.001, 150), (0.003, 150), (3e-05, 300)] secondi 1451 s/epoca lordo 1.209
+linear MLP epoche totali (coppia di fold) 900 LR [(0.0001, 150), (0.0003, 150), (0.001, 150), (0.003, 150), (3e-05, 300)] secondi 1287 s/epoca lordo 1.430
+linear TCN_post epoche totali (coppia di fold) 750 LR [(0.0001, 150), (0.0003, 150), (0.001, 150), (0.003, 150), (0.01, 150)] secondi 3710 s/epoca lordo 4.947
+temporal L0 epoche totali (coppia di fold) 900 LR [(0.0001, 300), (0.0003, 300), (0.001, 150), (0.003, 150)] secondi 1105 s/epoca lordo 1.228
+temporal MLP epoche totali (coppia di fold) 600 LR [(0.0001, 150), (0.0003, 150), (0.001, 150), (0.003, 150)] secondi 860 s/epoca lordo 1.433
+temporal TCN_post epoche totali (coppia di fold) 900 LR [(0.0001, 300), (0.0003, 150), (0.001, 150), (0.003, 150), (0.01, 150)] secondi 4427 s/epoca lordo 4.919
+ L0: costo marginale 1.153 s/epoca, parte fissa 67.0 s
+ MLP: costo marginale 1.423 s/epoca, parte fissa 6.0 s
+ TCN_post: costo marginale 4.780 s/epoca, parte fissa 125.0 s
+ controllo pulito TCN, 150 epoche x 2 fold, 1 LR, stessa cadenza di valutazione: 842 s = 0.2339 GPUh (solo proporzione 150/900: 0.2050 GPUh)
+ candidato: ricerca completa TCN (900 epoche) x 2 mondi: 2.260 GPUh; tre teste x due mondi come il 21/11: 3.567 GPUh

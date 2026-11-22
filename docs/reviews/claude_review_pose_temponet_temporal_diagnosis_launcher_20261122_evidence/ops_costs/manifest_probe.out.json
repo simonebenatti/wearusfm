@@ -1,0 +1,60 @@
+{
+ "tree_files": 247,
+ "tree_source_sha256": "9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea",
+ "plan_source_sha256": "9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea",
+ "tree_manifest_equals_plan_manifest": true,
+ "fake_base_files": [
+  "scripts/pose_temponet/x.py",
+  "scripts/slurm/campaign_checkout.sbatch",
+  "scripts/slurm/lib_code_dir.sh",
+  "scripts/slurm/pose_temponet.sbatch",
+  "scripts/top.py",
+  "src/pkg/a.py"
+ ],
+ "casi": {
+  "nuovo pacchetto scripts/tcn_diag/__init__.py + driver.py": {
+   "cambia_manifest": false,
+   "aggiunti": []
+  },
+  "nuovo launcher scripts/slurm/tcn_diag.sbatch": {
+   "cambia_manifest": false,
+   "aggiunti": []
+  },
+  "nuovo launcher scripts/slurm/pose_temponet_diag.sbatch": {
+   "cambia_manifest": true,
+   "aggiunti": [
+    "scripts/slurm/pose_temponet_diag.sbatch"
+   ]
+  },
+  "nuovo file al primo livello scripts/tcn_diag_driver.py": {
+   "cambia_manifest": true,
+   "aggiunti": [
+    "scripts/tcn_diag_driver.py"
+   ]
+  },
+  "nuovo file src/wearusfm_new/mod.py": {
+   "cambia_manifest": true,
+   "aggiunti": [
+    "src/wearusfm_new/mod.py"
+   ]
+  },
+  "nuovo file scripts/pose_temponet/diag.py": {
+   "cambia_manifest": true,
+   "aggiunti": [
+    "scripts/pose_temponet/diag.py"
+   ]
+  },
+  "nuovo file scripts/pose_temponet/notes.txt": {
+   "cambia_manifest": false,
+   "aggiunti": []
+  },
+  "nuovo file scripts/slurm/other.sh": {
+   "cambia_manifest": false,
+   "aggiunti": []
+  },
+  "nuovo file docs/x.md e results/y.json e tests/cpu/test_z.py": {
+   "cambia_manifest": false,
+   "aggiunti": []
+  }
+ }
+}

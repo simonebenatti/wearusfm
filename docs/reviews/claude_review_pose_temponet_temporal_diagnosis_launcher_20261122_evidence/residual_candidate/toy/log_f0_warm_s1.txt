@@ -1,0 +1,46 @@
+warm: rango 384 scarto massimo dalla ridge sugli esclusi (64 finestre) 3.4570693969726562e-06
+f0_warm_s1 trainable 72904 ep 0 rec -0.084
+/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/residual_candidate/toy_res.py:206: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+  loss_sum += float(loss)*len(b)
+f0_warm_s1 ep 1 train 1.81903 held mse 1.89252 rec -0.117 clean -0.118 lin -0.118 t 17s
+f0_warm_s1 ep 2 train 1.80164 held mse 1.88593 rec -0.038 clean -0.035 lin -0.124 t 27s
+f0_warm_s1 ep 3 train 1.79473 held mse 1.87966 rec 0.048 clean 0.045 lin -0.113 t 37s
+f0_warm_s1 ep 4 train 1.78214 held mse 1.87257 rec 0.104 clean 0.099 lin -0.115 t 46s
+f0_warm_s1 ep 5 train 1.77601 held mse 1.87093 rec 0.120 clean 0.122 lin -0.124 t 56s
+f0_warm_s1 ep 6 train 1.76897 held mse 1.86186 rec 0.155 clean 0.151 lin -0.114 t 66s
+f0_warm_s1 ep 7 train 1.76570 held mse 1.85830 rec 0.171 clean 0.172 lin -0.117 t 75s
+f0_warm_s1 ep 8 train 1.76254 held mse 1.85709 rec 0.189 clean 0.189 lin -0.115 t 85s
+f0_warm_s1 ep 9 train 1.75706 held mse 1.85440 rec 0.189 clean 0.189 lin -0.116 t 95s
+f0_warm_s1 ep 10 train 1.75333 held mse 1.85235 rec 0.220 clean 0.223 lin -0.117 t 107s
+f0_warm_s1 ep 11 train 1.75207 held mse 1.84974 rec 0.234 clean 0.234 lin -0.110 t 119s
+f0_warm_s1 ep 12 train 1.74727 held mse 1.84630 rec 0.255 clean 0.255 lin -0.107 t 129s
+f0_warm_s1 ep 13 train 1.74441 held mse 1.84246 rec 0.264 clean 0.263 lin -0.116 t 138s
+f0_warm_s1 ep 14 train 1.74248 held mse 1.84169 rec 0.276 clean 0.273 lin -0.116 t 147s
+f0_warm_s1 ep 15 train 1.74179 held mse 1.84501 rec 0.256 clean 0.255 lin -0.104 t 160s
+f0_warm_s1 ep 16 train 1.73768 held mse 1.84463 rec 0.276 clean 0.271 lin -0.109 t 183s
+f0_warm_s1 ep 17 train 1.73566 held mse 1.83858 rec 0.291 clean 0.289 lin -0.111 t 194s
+f0_warm_s1 ep 18 train 1.73378 held mse 1.84291 rec 0.280 clean 0.279 lin -0.115 t 204s
+f0_warm_s1 ep 19 train 1.72974 held mse 1.83620 rec 0.293 clean 0.292 lin -0.110 t 219s
+f0_warm_s1 ep 20 train 1.72832 held mse 1.83767 rec 0.285 clean 0.283 lin -0.112 t 230s
+f0_warm_s1 ep 21 train 1.72598 held mse 1.83419 rec 0.301 clean 0.297 lin -0.112 t 238s
+f0_warm_s1 ep 22 train 1.72568 held mse 1.84035 rec 0.281 clean 0.274 lin -0.114 t 247s
+f0_warm_s1 ep 23 train 1.72312 held mse 1.84024 rec 0.282 clean 0.281 lin -0.115 t 256s
+f0_warm_s1 ep 24 train 1.72200 held mse 1.84425 rec 0.270 clean 0.264 lin -0.116 t 265s
+f0_warm_s1 ep 25 train 1.71810 held mse 1.84162 rec 0.277 clean 0.271 lin -0.114 t 274s
+f0_warm_s1 ep 26 train 1.71715 held mse 1.83920 rec 0.269 clean 0.265 lin -0.117 t 282s
+f0_warm_s1 ep 27 train 1.71826 held mse 1.85077 rec 0.232 clean 0.227 lin -0.126 t 291s
+f0_warm_s1 ep 28 train 1.71656 held mse 1.84515 rec 0.246 clean 0.241 lin -0.121 t 300s
+f0_warm_s1 ep 29 train 1.71409 held mse 1.84658 rec 0.237 clean 0.230 lin -0.123 t 308s
+f0_warm_s1 ep 30 train 1.71298 held mse 1.85234 rec 0.234 clean 0.227 lin -0.119 t 317s
+f0_warm_s1 ep 31 train 1.70978 held mse 1.85251 rec 0.219 clean 0.209 lin -0.110 t 326s
+f0_warm_s1 ep 32 train 1.70923 held mse 1.85419 rec 0.216 clean 0.206 lin -0.116 t 334s
+f0_warm_s1 ep 33 train 1.70867 held mse 1.84894 rec 0.232 clean 0.219 lin -0.114 t 343s
+f0_warm_s1 ep 34 train 1.70636 held mse 1.86021 rec 0.183 clean 0.175 lin -0.123 t 351s
+f0_warm_s1 ep 35 train 1.70556 held mse 1.86002 rec 0.187 clean 0.179 lin -0.117 t 360s
+f0_warm_s1 ep 36 train 1.70360 held mse 1.85908 rec 0.189 clean 0.183 lin -0.124 t 368s
+f0_warm_s1 ep 37 train 1.70395 held mse 1.86148 rec 0.195 clean 0.183 lin -0.121 t 377s
+f0_warm_s1 ep 38 train 1.70112 held mse 1.85633 rec 0.189 clean 0.180 lin -0.128 t 385s
+f0_warm_s1 ep 39 train 1.70085 held mse 1.86927 rec 0.145 clean 0.136 lin -0.115 t 393s
+f0_warm_s1 ep 40 train 1.69990 held mse 1.86995 rec 0.148 clean 0.137 lin -0.117 t 402s
+f0_warm_s1 SUMMARY sel ep 21 rec 0.3006 clean 0.2971 lin -0.1119 | max rec 0.3006 | last ep 40 rec 0.1476

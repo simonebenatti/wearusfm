@@ -1,0 +1,87 @@
+=== A. calibrazione scelta nei due fold
+ fold 0 temporal a=0.4 sigma=1.3 alpha=1.0 gain=0.078597 | linear a=0.0 sigma=1.35 alpha=1.0 status calibrated E_real 0.747134
+ fold 1 temporal a=0.4 sigma=1.3 alpha=1.0 gain=0.078238 | linear a=0.0 sigma=1.4 alpha=1.0 status calibrated E_real 0.775788
+
+=== B. riferimenti temporali dagli accumulatori grezzi (calibration_*.json outer_reference_statistics.temporal)
+ fold0: clean_ls 0.710431151 oracle 0.653450584 soglia50 0.681940867 TCN 0.696657208 recupero 24.173053% | gain oracolo 0.080206
+    denominatori dynamic_target_ss: clean_ls 3206279.9567595376 oracle 3206279.9567595376 TCN 3206279.9567595376 | finestre 934 934 934
+    gate JSON: recovery 0.24173052888786836  records {'clean_ls': 0.7104311505676322, 'oracle': 0.6534505840205822}
+ fold1: clean_ls 0.749920396 oracle 0.691102897 soglia50 0.720511647 TCN 0.738818328 recupero 18.875450% | gain oracolo 0.078432
+    denominatori dynamic_target_ss: clean_ls 2698827.390194636 oracle 2698827.390194636 TCN 2698827.3901946363 | finestre 920 920 920
+    gate JSON: recovery 0.1887545039561508  records {'clean_ls': 0.7499203961102027, 'oracle': 0.6911028974346952}
+ pooled: clean_ls 0.728479029 oracle 0.670658924 soglia50 0.699568976 TCN 0.715926220 recupero 21.710110% | gain oracolo 0.079371
+    denominatori dynamic_target_ss: clean_ls 5905107.346954173 oracle 5905107.346954173 TCN 5905107.346954174 | finestre 1854 1854 1854
+    gate JSON: recovery 0.21710109906955868  records {'clean_ls': 0.7284790286546209, 'oracle': 0.6706589239838878}
+
+=== C. MLP e L0 temporali (descrittivi) dagli accumulatori
+ MLP: pooled E_dyn 0.735129837 MSE 1.834841571 recupero -11.5026%  selected {'edyn': 0.7351298365743526, 'exposure': 24.0, 'lr': 0.001, 'mse': 1.8348415706928989} alarms [] unresolved False
+     fold0: E_dyn 0.717405583 MSE 1.833086888 recupero -12.2400%  target_ss 3206279.9567595376 n 934
+     fold1: E_dyn 0.756186730 MSE 1.836622955 recupero -10.6539%  target_ss 2698827.3901946363 n 920
+ L0: pooled E_dyn 0.735580420 MSE 1.836148727 recupero -12.2819%  selected {'edyn': 0.7355804202146525, 'exposure': 183.0, 'lr': 0.0003, 'mse': 1.8361487273908483} alarms [] unresolved False
+     fold0: E_dyn 0.718153783 MSE 1.835391543 recupero -13.5531%  target_ss 3206279.9567595376 n 934
+     fold1: E_dyn 0.756283736 MSE 1.836917434 recupero -10.8188%  target_ss 2698827.3901946363 n 920
+ TCN_post: pooled E_dyn 0.715926220 MSE 1.800144821 recupero 21.7101%  selected {'edyn': 0.7159262203822878, 'exposure': 31.0, 'lr': 0.003, 'mse': 1.8001448213440414} alarms [] unresolved False
+     fold0: E_dyn 0.696657208 MSE 1.797751675 recupero 24.1731%  target_ss 3206279.9567595376 n 934
+     fold1: E_dyn 0.738818328 MSE 1.802574386 recupero 18.8755%  target_ss 2698827.3901946363 n 920
+ TCN contro MLP: (MLP-TCN)/MLP = 2.612275%   (MLP-TCN)/TCN = 2.682346%   differenza assoluta 0.019203616
+
+=== D. fitting al checkpoint scelto (selected_fitting_diagnostics) contro esclusi
+ TCN_post: fitting pooled E_dyn 0.685897004 MSE 1.698864766 (n=1854) | esclusi pooled E_dyn 0.715926220 MSE 1.800144821 (n=1854)
+     fold0 fitting: E_dyn 0.661873047 MSE 1.688066799 n 920 target_ss 2957984.5843438697
+     fold1 fitting: E_dyn 0.710582584 MSE 1.709500879 n 934 target_ss 2878704.615363543
+ MLP: fitting pooled E_dyn 0.710830792 MSE 1.736240136 (n=1854) | esclusi pooled E_dyn 0.735129837 MSE 1.834841571 (n=1854)
+     fold0 fitting: E_dyn 0.688137596 MSE 1.726988708 n 920 target_ss 2957984.5843438697
+     fold1 fitting: E_dyn 0.734148963 MSE 1.745352893 n 934 target_ss 2878704.615363543
+ L0: fitting pooled E_dyn 0.728372815 MSE 1.773789488 (n=1854) | esclusi pooled E_dyn 0.735580420 MSE 1.836148727 (n=1854)
+     fold0 fitting: E_dyn 0.708789009 MSE 1.767544377 n 920 target_ss 2957984.5843438697
+     fold1 fitting: E_dyn 0.748495962 MSE 1.779940990 n 934 target_ss 2878704.615363543
+
+=== E. bersaglio pulito sugli esclusi (selected_outer_clean_statistics)
+ TCN_post: pooled clean E_dyn 0.139235991 MSE 0.108063429 | fold0 0.127855663 fold1 0.154430891 | target_ss pooled 1934892.9506313517
+ MLP: pooled clean E_dyn 0.196054702 MSE 0.142208097 | fold0 0.185055496 fold1 0.210740732 | target_ss pooled 1934892.9506313517
+ L0: pooled clean E_dyn 0.199032066 MSE 0.143780727 | fold0 0.189922324 fold1 0.211195301 | target_ss pooled 1934892.9506313517
+
+=== F. curve: orizzonti, completezza, minimi
+  ('linear', 'L0') selected {'edyn': 0.7490760779164948, 'exposure': 299.0, 'lr': 0.0001, 'mse': 1.920843012031834} min_exposures {'edyn': 298.0, 'mse': 299.0} alarms ['minimum_in_last_five_maximum_epochs'] unresolved True
+     lr 0.0001  horizon 300 punti 304 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 300.0 passi finali [8700, 9000] | min MSE 1.920843012 @ 299.0 (edyn 0.749076078) | min E_dyn 0.749049256 @ 298.0 (mse 1.920966220) | finale edyn 0.749065 mse 1.921077
+     lr 0.0003  horizon 300 punti 304 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 300.0 passi finali [8700, 9000] | min MSE 1.920880865 @ 128.0 (edyn 0.748936070) | min E_dyn 0.748834100 @ 186.0 (mse 1.921565565) | finale edyn 0.749228 mse 1.922855
+     lr 0.001   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.924493686 @ 51.0 (edyn 0.749302241) | min E_dyn 0.749215137 @ 65.0 (mse 1.925083902) | finale edyn 0.749980 mse 1.927950
+     lr 0.003   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.929647237 @ 111.0 (edyn 0.750477250) | min E_dyn 0.750392863 @ 114.0 (mse 1.931242663) | finale edyn 0.750800 mse 1.931320
+     lr 3e-05   horizon 300 punti 304 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 300.0 passi finali [8700, 9000] | min MSE 1.931648112 @ 300.0 (edyn 0.752954750) | min E_dyn 0.752954750 @ 300.0 (mse 1.931648112) | finale edyn 0.752955 mse 1.931648
+     -> minimo E_dyn di TUTTE le curve: lr 0.0003 esposizione 186.0 edyn 0.7488341003844877 mse 1.9215655652310513
+  ('linear', 'MLP') selected {'edyn': 0.7541259963809349, 'exposure': 116.0, 'lr': 0.0001, 'mse': 1.9340297608378219} min_exposures {'edyn': 113.0, 'mse': 116.0} alarms [] unresolved False
+     lr 0.0001  horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.934029761 @ 116.0 (edyn 0.754125996) | min E_dyn 0.754076430 @ 113.0 (mse 1.934242221) | finale edyn 0.754533 mse 1.935142
+     lr 0.0003  horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.934863300 @ 38.0 (edyn 0.754049469) | min E_dyn 0.753964346 @ 42.0 (mse 1.935350598) | finale edyn 0.765347 mse 1.967163
+     lr 0.001   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.935959529 @ 15.0 (edyn 0.754062704) | min E_dyn 0.753957610 @ 14.0 (mse 1.937756020) | finale edyn 0.788538 mse 2.019154
+     lr 0.003   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.936484658 @ 15.0 (edyn 0.752089003) | min E_dyn 0.752068292 @ 18.0 (mse 1.937354240) | finale edyn 0.784238 mse 2.000633
+     lr 3e-05   horizon 300 punti 304 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 300.0 passi finali [8700, 9000] | min MSE 1.934690046 @ 299.0 (edyn 0.754375454) | min E_dyn 0.754360012 @ 298.0 (mse 1.934747261) | finale edyn 0.754366 mse 1.934715
+     -> minimo E_dyn di TUTTE le curve: lr 0.003 esposizione 18.0 edyn 0.7520682921642879 mse 1.9373542398136159
+  ('linear', 'TCN_post') selected {'edyn': 0.7524789690858711, 'exposure': 28.0, 'lr': 0.003, 'mse': 1.934064254197489} min_exposures {'edyn': 18.0, 'mse': 28.0} alarms [] unresolved False
+     lr 0.0001  horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.939213579 @ 96.0 (edyn 0.755588679) | min E_dyn 0.755588679 @ 96.0 (mse 1.939213579) | finale edyn 0.757315 mse 1.944515
+     lr 0.0003  horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.939356842 @ 37.0 (edyn 0.755478113) | min E_dyn 0.755434682 @ 40.0 (mse 1.939605864) | finale edyn 0.772525 mse 1.987987
+     lr 0.001   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.937991806 @ 15.0 (edyn 0.754361493) | min E_dyn 0.754051738 @ 14.0 (mse 1.938364140) | finale edyn 0.800128 mse 2.053015
+     lr 0.003   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.934064254 @ 28.0 (edyn 0.752478969) | min E_dyn 0.751609874 @ 18.0 (mse 1.936356625) | finale edyn 0.787723 mse 2.004421
+     lr 0.01    horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.934119556 @ 54.0 (edyn 0.751444096) | min E_dyn 0.750655964 @ 121.0 (mse 1.938595240) | finale edyn 0.751208 mse 1.939260
+     -> minimo E_dyn di TUTTE le curve: lr 0.01 esposizione 121.0 edyn 0.7506559643002055 mse 1.9385952402250624
+  ('temporal', 'L0') selected {'edyn': 0.7355804202146525, 'exposure': 183.0, 'lr': 0.0003, 'mse': 1.8361487273908483} min_exposures {'edyn': 198.0, 'mse': 183.0} alarms [] unresolved False
+     lr 0.0001  horizon 300 punti 304 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 300.0 passi finali [8700, 9000] | min MSE 1.837232093 @ 299.0 (edyn 0.736055854) | min E_dyn 0.736031974 @ 298.0 (mse 1.837269798) | finale edyn 0.736054 mse 1.837524
+     lr 0.0003  horizon 300 punti 304 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 300.0 passi finali [8700, 9000] | min MSE 1.836148727 @ 183.0 (edyn 0.735580420) | min E_dyn 0.735524169 @ 198.0 (mse 1.836558933) | finale edyn 0.735750 mse 1.837168
+     lr 0.001   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.839114112 @ 80.0 (edyn 0.735990373) | min E_dyn 0.735940367 @ 79.0 (mse 1.841433676) | finale edyn 0.736314 mse 1.841651
+     lr 0.003   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.843420223 @ 140.0 (edyn 0.736974138) | min E_dyn 0.736738246 @ 111.0 (mse 1.844792106) | finale edyn 0.737051 mse 1.844412
+     -> minimo E_dyn di TUTTE le curve: lr 0.0003 esposizione 198.0 edyn 0.7355241690740991 mse 1.8365589327783796
+        recupero pooled retrospettivo: -12.184586%
+  ('temporal', 'MLP') selected {'edyn': 0.7351298365743526, 'exposure': 24.0, 'lr': 0.001, 'mse': 1.8348415706928989} min_exposures {'edyn': 18.0, 'mse': 24.0} alarms [] unresolved False
+     lr 0.0001  horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.836376142 @ 142.0 (edyn 0.736121908) | min E_dyn 0.735923962 @ 144.0 (mse 1.836505048) | finale edyn 0.736086 mse 1.836485
+     lr 0.0003  horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.836781232 @ 57.0 (edyn 0.735815448) | min E_dyn 0.735756799 @ 56.0 (mse 1.836795764) | finale edyn 0.743579 mse 1.857496
+     lr 0.001   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.834841571 @ 24.0 (edyn 0.735129837) | min E_dyn 0.734591327 @ 18.0 (mse 1.836297574) | finale edyn 0.763936 mse 1.904900
+     lr 0.003   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.836422893 @ 15.0 (edyn 0.734138412) | min E_dyn 0.733903470 @ 12.0 (mse 1.839770362) | finale edyn 0.766836 mse 1.899289
+     -> minimo E_dyn di TUTTE le curve: lr 0.003 esposizione 12.0 edyn 0.7339034704712903 mse 1.839770361640596
+        recupero pooled retrospettivo: -9.381584%
+  ('temporal', 'TCN_post') selected {'edyn': 0.7159262203822878, 'exposure': 31.0, 'lr': 0.003, 'mse': 1.8001448213440414} min_exposures {'edyn': 27.0, 'mse': 31.0} alarms [] unresolved False
+     lr 0.0001  horizon 300 punti 304 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 300.0 passi finali [8700, 9000] | min MSE 1.818161564 @ 181.0 (edyn 0.725644467) | min E_dyn 0.725580162 @ 201.0 (mse 1.818747841) | finale edyn 0.728150 mse 1.826860
+     lr 0.0003  horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.817430751 @ 64.0 (edyn 0.725382122) | min E_dyn 0.725382122 @ 64.0 (mse 1.817430751) | finale edyn 0.731910 mse 1.837210
+     lr 0.001   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.813964029 @ 31.0 (edyn 0.722990837) | min E_dyn 0.722227946 @ 28.0 (mse 1.815313612) | finale edyn 0.751496 mse 1.886092
+     lr 0.003   horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.800144821 @ 31.0 (edyn 0.715926220) | min E_dyn 0.715826246 @ 27.0 (mse 1.803765322) | finale edyn 0.741556 mse 1.852148
+     lr 0.01    horizon 150 punti 154 (frazionari [0.25, 0.5, 0.75]) completo True ultimo 150.0 passi finali [4350, 4500] | min MSE 1.849272475 @ 93.0 (edyn 0.737384102) | min E_dyn 0.737065618 @ 111.0 (mse 1.851229468) | finale edyn 0.737611 mse 1.852292
+     -> minimo E_dyn di TUTTE le curve: lr 0.003 esposizione 27.0 edyn 0.7158262458538921 mse 1.8037653215852052
+        recupero pooled retrospettivo: 21.883016%

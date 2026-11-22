@@ -1,0 +1,89 @@
+{
+ "summary": "Ho riletto la catena generazione -> bersaglio (controls, workflow, runner, train, metrics, heads, data, linear) e l'ho provata sul Mac con le funzioni vere su latenti sintetici 160x384 FP16 (tre script nella cartella note). Non ho trovato difetti nella coerenza fra i tre luoghi: calibrazione, training delle teste e riferimenti/cancello usano lo stesso y osservato, la stessa E_dyn e le stesse finestre dinamiche. Lo stesso predittore passato per i due percorsi da' lo stesso numero entro 4e-9, e la riga a=0,4 sigma=1,3 della calibrazione coincide col calcolo diretto entro 2e-16. Sui JSON veri archiviati tornano soglie identiche bit per bit, denominatori uguali entro 1,7e-16, varianza del rumore 1,6918 / 1,6928 contro 1,69 e nessuna fuga del rumore degli esclusi (|corr| <= 0,0027). Il margine esterno (8,02% / 7,84%, pooled 7,94%) e' coerente con quello interno (7,86% / 7,82%), e i recuperi ricalcolati sono 24,17% / 18,88% / 21,71%. Restano quattro note, nessuna delle quali spiega da sola il cancello fallito; i dati veri (latenti, checkpoint, calibration.pt) non sono sul Mac e non li ho letti.",
+ "verdict": "nessun difetto dimostrato nella catena bersaglio; due note sul codice, una lacuna documentale minore e un limite di disegno gia' dichiarato dal protocollo",
+ "defects": [
+  {
+   "id": "TC-1",
+   "severity": "nota",
+   "status": "dimostrato",
+   "title": "Il generatore legge le patch di padding grezze, la testa le vede azzerate (effetto confinato fuori dal supporto)",
+   "claim": "generate_components applica la LayerNorm ai latenti grezzi senza azzerare le patch oltre n_patches; le teste ricevono latenti con quelle patch a zero. Il supporto centrale richiede t >= 6 e t+6 < n_patches, quindi il campo ricettivo di 13 patch di ogni posizione supportata resta nel contesto reale: L e T supportati, normalizzazione, loss e SSE non cambiano. Puo' cambiare solo pose_var (calcolata sulla maschera intera), in modo identico per riferimenti e teste.",
+   "file_line": "scripts/pose_temponet/controls.py:166-167; scripts/pose_temponet/workflow.py:228-234; scripts/pose_temponet/data.py:122-136; scripts/pose_temporal_readout.py:195-199; scripts/pose_temponet/metrics.py:42-57",
+   "evidence": "chain_proof.py, 2 finestre finte con n_patches=150 e spazzatura nel padding: allievo con i pesi veri contro y* nelle posizioni supportate max 4,19e-6 (fold0) e 4,88e-6 (fold1); nelle posizioni reali non supportate t=144..149 differenza fino a 1,676 e 0,563.",
+   "repro_command": "cd /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/target_chain && OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/tree_e8c98244/scripts:/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/tree_e8c98244/src /Users/simonebenatti/.venvs/wearusfm-tok/bin/python chain_proof.py",
+   "would_explain_failed_gate": "no: le posizioni supportate sono identiche per generatore e testa, e la selezione dinamica e' la stessa per clean_ls, oracolo e TCN."
+  },
+  {
+   "id": "TC-2",
+   "severity": "minore",
+   "status": "dimostrato",
+   "title": "Le statistiche del generatore sui latenti veri non sono nel JSON archiviato",
+   "claim": "hidden_active_fraction_fitting, normalization (media e scala grezze di L e T) e generator_hashes stanno solo dentro components, che il runner toglie dal riepilogo calibration.json. Il protocollo (riga 96) chiede di misurare la frazione di unita' attive per strato di T prima dei fit neurali; nell'archivio del Mac quel numero non c'e'.",
+   "file_line": "scripts/pose_temponet/controls.py:186-190; scripts/pose_temponet/runner.py:294-296; docs/pose_temponet_frozen_protocol_20261117.md:96",
+   "evidence": "grep -rl hidden_active su results/ e docs/reviews/: nessun file; l'unica occorrenza e' controls.py:189. Le chiavi di calibration_0.json e calibration_1.json non contengono components.",
+   "repro_command": "cd /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/tree_e8c98244 && grep -rln hidden_active results docs/reviews scripts/pose_temponet",
+   "would_explain_failed_gate": "no, ma impedisce di escludere dal Mac un T degenere o a code pesanti sui latenti veri."
+  },
+  {
+   "id": "TC-3",
+   "severity": "nota",
+   "status": "dimostrato",
+   "title": "Il controllo sul bersaglio pulito non e' eseguibile dal percorso congelato",
+   "claim": "_training_set allena sempre su bundle.targets, cioe' y rumoroso; clean_targets serve solo alla valutazione. Un mondo con sigma=0 viene respinto: l'oracolo ha E_dyn 0, il gain vale 1,0 fuori da [0,06; 0,10], lo stato diventa control_non_diagnostic e prepare_control_folds si ferma. Il passo 2 di GPT richiede quindi codice nuovo, con nuova identita' di sorgente, piano e ricevute, non solo un job.",
+   "file_line": "scripts/pose_temponet/workflow.py:173-174,237; scripts/pose_temponet/controls.py:289-299; scripts/pose_temponet/runner.py:307-309",
+   "evidence": "C.temporal_reference_gate con oracle=0,0 nei tre pannelli restituisce status control_non_diagnostic e oracle_gain_fraction 1,0.",
+   "repro_command": "OMP_NUM_THREADS=1 PYTHONPATH=/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/tree_e8c98244/scripts:/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/tree_e8c98244/src /Users/simonebenatti/.venvs/wearusfm-tok/bin/python -c \"from pose_temponet import controls as C; print(C.temporal_reference_gate({k:{'clean_ls':0.165,'oracle':0.0} for k in ('fold0','fold1','pooled')}))\"",
+   "would_explain_failed_gate": "no: riguarda costo e identita' del seguito, non l'esito del 21/11."
+  },
+  {
+   "id": "TC-4",
+   "severity": "nota",
+   "status": "dimostrato",
+   "title": "La calibrazione certifica il margine in forma chiusa, non che sia apprendibile dal bersaglio rumoroso",
+   "claim": "a e sigma sono scelti perche' sugli esclusi interni il margine fra clean_ls (stimato su y* senza rumore) e l'oracolo (y*) stia in [6%, 10%] e E_cal disti al piu' 0,05 da E_real. Nessun riferimento del mondo temporale e' allenato sul rumoroso con capacita' temporale non lineare. E' un limite di disegno dichiarato dal protocollo (riga 88), non un errore del codice. I numeri sotto sono ricalcolati dai JSON; che il 50% sia vicino al tetto statistico resta un'ipotesi.",
+   "file_line": "scripts/pose_temponet/controls.py:201-248,501-513,573-579; docs/pose_temponet_frozen_protocol_20261117.md:88,100",
+   "evidence": "WLS allenata sul rumoroso, sugli esclusi esterni, sulla scala del cancello: L0 -19,10% / -16,38%; L13 -85,56% / -69,46%. Guadagno della TCN scelta su clean_ls in MSE: fitting 0,094909 contro esclusi 0,006915 (7,3%) nel fold0; 0,084627 contro 0,011531 (13,6%) nel fold1. MSE di fitting della TCN 1,688067 / 1,709501 contro sigma^2 1,69.",
+   "repro_command": "cd /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/target_chain && /Users/simonebenatti/.venvs/wearusfm-tok/bin/python json_checks.py /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/tree_e8c98244/results/infra/pose_temponet_execution_20261121_A1/launcher",
+   "would_explain_failed_gate": "in parte: il riferimento stimato sul pulito costa 11-19 punti a una testa allenata sul rumoroso, ma dal livello di L0 neurale la TCN chiude circa il 30% pooled contro il 55% che servirebbe."
+  }
+ ],
+ "verified_facts": [
+  "Codice conforme al protocollo: semi 20261118+1000*fold per L, +1 per T, +2 per il rumore; LN con eps 1e-5; griglia a in {0; 0,2; ...; 3,0} per sigma in {0; 0,05; ...; 6,0}, cioe' 1936 valutazioni per fold (controls.py:18-19,141-159,185).",
+  "Rumore AR(1), funzione vera, 400x160x20 campioni: varianza 0,99758; varianza a t=0 0,9711 e a t=159 0,9756 (errore standard circa 0,016); autocorrelazione lag1 0,77669 (atteso 0,77880), lag4 0,36719 (0,36788), lag8 0,13564 (0,13534); correlazione fra giunti 0,0081 e fra finestre 0,0018; deterministico, dipende da seme, metadati e giunto.",
+  "Normalizzazione di L e T sul solo fitting esterno, pesata per finestra sul supporto del crop [6:154]: media pesata max 7e-14, varianza pesata 1 entro 6e-15. Perturbare i latenti degli esclusi non cambia L e T sul fitting (differenza 0,0), la normalizzazione o gli hash del generatore.",
+  "y - y* - sigma*eps: max 8,9e-16. y* - (L + a*T): 0,0. epsilon e' identico a window_noise(base+2).",
+  "LN del generatore e LN della testa all'inizializzazione, sugli stessi FP32: differenza 0,0 su CPU. La LN della testa parte da gamma=1 e beta=0 e poi e' apprendibile, senza weight decay (heads.py:36,65-66,109-117).",
+  "Allievo TCN_post con i pesi veri, valutato con gli ingressi della testa: errore su y* nelle posizioni supportate max 4,46e-6 / 4,98e-6, RMSE relativo 4,76e-7 / 4,69e-7.",
+  "Coerenza (iii)-(ii): E_dyn dell'oracolo da evaluate_outer_references 0,5964697306 contro allievo-oracolo valutato da workflow._score_model 0,5964697344 (fold0), 0,5813921103 contro 0,5813921095 (fold1). clean_ls di riferimento 0,6625475397 contro testa L0 con gli stessi coefficienti 0,6625475389.",
+  "Bersaglio del training: workflow._training_set -> TensorTrainingSet.batch restituisce esattamente y osservato[fit, 6:154] in FP32, maschera uguale al supporto, ingressi uguali a view_inputs, finestre senza supporto escluse. Nessuna ulteriore normalizzazione; il rumore e' lo stesso array salvato in calibration.pt (runner.py:98-102, workflow.py:181-186,237).",
+  "Coerenza (i): la riga a=0,4 sigma=1,3 di build_positive_control_fold coincide col calcolo diretto (WLS su y* dell'inner-fit, selection_statistics su y osservato) entro 2,2e-16 per E_cleanLS, E_oracle ed E_cal nei due fold.",
+  "Artefatti veri: le soglie dinamiche dei bundle delle tre teste coincidono bit per bit con quelle delle calibrazioni (0,5437424309221641 e 0,5374366720436082); dynamic_target_ss delle teste uguale ai riferimenti entro 1,7e-16 sugli esclusi e identico sul fitting; window_count 934 e 920; stesso target_sha256 per L0, MLP e TCN_post.",
+  "Artefatti veri: MSE dell'oracolo sugli esclusi 1,691773 e 1,692751 contro sigma^2 1,69; nel mondo lineare 1,824412 contro 1,8225 e 1,963190 contro 1,96.",
+  "Artefatti veri: correlazione fra errore pulito delle teste e rumore degli esclusi |corr| <= 0,0027 per L0, MLP e TCN nei due fold: nessuna fuga del rumore degli esclusi nel training.",
+  "Calibrazione: temporali ammissibili solo con a=0,4, 7 coppie nel fold0 (sigma 1,20-1,50) e 6 nel fold1 (sigma 1,20-1,45). Scelti a=0,4 e sigma=1,3 in entrambi; gain interno 7,860% e 7,824%, margini assoluti 0,056442 e 0,058838; E_cal 0,728848 / 0,761515 contro E_real 0,747134 / 0,775788.",
+  "Esclusi esterni: clean_ls 0,710431 / 0,749920, oracolo 0,653451 / 0,691103, gain 8,021% / 7,843%, margini 0,056981 / 0,058817; pooled clean_ls 0,728479, oracolo 0,670659, gain 7,937%, soglia del 50% 0,699569. Coerente con l'interno: scarto +0,16 e +0,02 punti.",
+  "Fitting dei due fold: 961 finestre (920 supportate, inner 500+461) e 946 (934 supportate, inner 455+491). Rango WLS 384 su 385 colonne, un solo gruppo di maschere da 20 giunti.",
+  "Recuperi ricalcolati: TCN 24,1731% / 18,8755% / 21,7101%; L0 neurale -13,5531 / -10,8188 / -12,2819; MLP -12,2400 / -10,6539 / -11,5026.",
+  "Curve della TCN: minimo E_dyn di tutte le curve 0,715826 (LR 0,003, esposizione 27), cioe' 21,88%. A fine orizzonte R vale +0,57% (LR 1e-4, 300 epoche), -5,93% (3e-4), -39,81% (1e-3), -22,62% (3e-3), -15,79% (1e-2).",
+  "T sul fitting: quota non letta da L0 0,7117 / 0,8788, da L13 0,5163 / 0,7057; L13 stimata sul pulito recupera sul fitting 27,09% / 19,93% del margine.",
+  "E_dyn sul bersaglio pulito agli esclusi: TCN 0,127856 / 0,154431 (pooled 0,139236), MLP pooled 0,196055, come scrive GPT.",
+  "tests/cpu/test_pose_temponet_controls.py eseguito dalla cartella note: 12 passed."
+ ],
+ "cannot_conclude": [
+  "Quante finestre vere hanno n_patches < 160 e che cosa contiene la cache nelle patch di padding: serve a sapere se TC-1 sposta la classificazione dinamica di qualche finestra. Non e' nei JSON.",
+  "Statistiche di T sui latenti veri (unita' attive per strato, scala grezza, code, concentrazione della parte non letta in poche finestre o utenti): stanno solo in calibration.pt sul cluster.",
+  "Parita' numerica CPU / A100 di z e T sugli ingressi veri: le prove di rappresentabilita', mia e di GPT, usano latenti sintetici.",
+  "Se il 50% sia raggiungibile con 920/934 finestre a sigma=1,3: manca un riferimento allenato sul rumoroso con l'architettura del generatore. Gli indizi misurati (L13 sul rumoroso a -86% / -69%, trasferimento del guadagno di fitting al 7-14% in MSE) sono compatibili con un limite statistico ma non lo dimostrano.",
+  "Riferimenti esatti sulla scala pulita (clean_ls contro y* su esclusi e fitting, oracolo sul fitting, covarianza fra predizione e rumore sul fitting): non archiviati. Ho solo valori derivati che trascurano i termini incrociati: E_dyn pulito di clean_ls circa 0,1651 / 0,1916, quota chiusa dalla TCN circa 22,6% / 19,4%.",
+  "Effetto della scala del bersaglio sintetico (MSE della costante 2,967 / 2,816) su clip_norm 1,0 e weight decay della ricetta: non esaminato; spetta all'audit del ciclo di training."
+ ],
+ "recommendations": [
+  "Passo 1 di GPT (nessun nuovo fit): estrarre da calibration.pt anche hidden_active_fraction_fitting, normalization, generator_hashes, la distribuzione di n_patches e la norma dei latenti di padding. Per il checkpoint scelto aggiungere E_dyn e MSE contro y* sul fitting, la covarianza fra predizione e rumore sul fitting e i riferimenti esatti clean_ls contro y* su fitting ed esclusi.",
+  "Passo 2 (bersaglio pulito): contarlo come codice nuovo con nuova identita', piano e ricevute (TC-3). Fissare prima la scala, R_pulito = 1 - E_dyn(TCN contro y*) / E_dyn(clean_ls contro y*) sulle stesse finestre dinamiche e soglie da y*, e una regola di lettura a due lati. Punto di partenza gia' archiviato: la TCN allenata sul rumoroso sta a circa 22,6% / 19,4%. Non riusare la soglia del 50% del cancello rumoroso.",
+  "Allungare il training con la stessa ricetta sul bersaglio rumoroso non e' sostenuto dalle curve archiviate: il minimo e' a 27-201 epoche e a fine orizzonte il recupero scende fra +0,6% e -39,8%. Un training piu' lungo ha senso solo dentro una ricetta diversa, quindi con nuova identita'.",
+  "Candidato residuale: nel mondo lineare la ridge stimata sul rumoroso sta sopra clean_ls di 0,007118 / 0,006385 in E_dyn, cioe' circa 12,5% / 10,9% del margine temporale. Con la base congelata il ramo temporale dovrebbe portare da solo circa 61-63 punti, contro i 37,7 / 29,7 che la TCN attuale aggiunge a L0 neurale. Costruirlo solo se il passo 1 mostra interferenza fra i rami.",
+  "Alternativa piu' piccola da valutare (ipotesi): un allievo ben specificato, con l'architettura del generatore a larghezza 8 (3.932 parametri temporali piu' il ramo affine), allenato sul bersaglio rumoroso con la stessa ricetta. Darebbe un tetto empirico del problema rumoroso a questa numerosita': se resta sotto il 50%, il limite e' statistico e non di ottimizzazione della TCN larga.",
+  "Nessuna correzione al codice congelato e' richiesta da questo audit. TC-1 si puo' chiudere in una futura revisione azzerando il padding anche nel generatore; cambierebbe l'identita' degli artefatti, quindi non in corsa."
+ ],
+ "notes_path": "/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/target_chain/notes.md"
+}

@@ -1,0 +1,117 @@
+{
+ "summary": "Ho ricalcolato dai JSON archiviati la scala del cancello e le curve vere, letto il codice di provenienza per le conseguenze di protocollo, e fatto girare un giocattolo CPU (latenti SINTETICI; generatore, riferimenti lineari, testa TCN_post, loss e ricetta veri; un solo fold, LR 0,003, 13 corse fino a 40 epoche, piu' un censimento delle ReLU su 5 semi). Esito sul candidato residuale: nel giocattolo NON alza il livello raggiunto quando il ramo profondo della ricetta attuale e' vivo (0,311 e 0,290 contro 0,315 e 0,291, differenze entro la dispersione fra semi di circa 0,02) e nessuna variante arriva al 50%; sui dati veri dovrebbe dare 1,6-1,9 volte il guadagno netto attuale sopra la base in forma chiusa. Il suo unico vantaggio misurato e' di avvio: con la ricetta attuale il penultimo strato ReLU collassa nei primi due epoch (completamente in 1 seme su 5, quasi nel seme 0), e la base congelata lo evita; lo stesso effetto si ottiene con una modifica piu' piccola (affine inizializzata alla ridge, non congelata). La modifica singola che nel giocattolo alza davvero il livello e' il weight decay attivo (0,01 -> 0,3): +0,08/+0,11 appaiati su 2 semi, fino a 0,4245. Le curve vere archiviate mostrano che allungare il training con la ricetta attuale peggiora (LR 0,003: da +0,217 a 31 epoche a -0,226 a 150). Tutto cio' che viene dal giocattolo e' indicativo, non una misura sui latenti veri.",
+ "verdict": "Candidato residuale non giustificato dai dati disponibili (obiezioni dimostrate su aritmetica, giocattolo e protocollo); aperto un sospetto concreto sulla ricetta attuale (collasso ReLU all'avvio, dimostrato solo nel giocattolo) verificabile senza nuovi fit.",
+ "defects": [
+  {
+   "id": "RC-1",
+   "severity": "importante",
+   "status": "dimostrato",
+   "title": "Aritmetica del cancello: la base congelata parte sotto zero e il ramo temporale dovrebbe quasi raddoppiare il guadagno netto attuale",
+   "claim": "Una base lineare stimata su y rumoroso e poi congelata sta sotto zero sulla scala del cancello; per arrivare al 50% il ramo temporale dovrebbe aggiungere 69,10 / 66,38 punti (pooled 67,84), cioe' 1,597 / 1,883 volte (pooled 1,715) cio' che l'intera TCN ottiene oggi sopra quella stessa linea. Il candidato non aggiunge informazione: richiede che il ramo temporale impari molto di piu' dallo stesso segnale.",
+   "evidence": "Ricalcolo dai JSON: lineare in forma chiusa su y (alpha=0) sugli esclusi esterni -19,10% (fold0), -16,38% (fold1), -17,84% (pooled); L0 neurale -13,55 / -10,82 / -12,28; MLP -12,24 / -10,65 / -11,50; TCN +24,17 / +18,88 / +21,71. TCN meno forma chiusa: 43,27 / 35,26 / 39,55 punti. La scelta di alpha per CV non aiuta: nella calibrazione interna (10 utenti) alpha scelto = 1,0 in entrambi i fold e la ridge sta a -19,00% / -16,10% del margine interno. La ridge alpha=1 a 20 utenti nel mondo temporale non e' archiviata (stima dal mondo lineare: 12,5% / 10,9% del margine, non dimostrata).",
+   "file_line": "results/infra/pose_temponet_execution_20261121_A1/launcher/positive_controls_gate_20261121.json (gate.reference_gate.temporal_records, gate.selected_panels.temporal, gate.linear_diagnostics.fold{0,1}.L0.worlds.temporal.held.statistics); calibration_{0,1}.json (calibration.selected.temporal)",
+   "repro_command": "cd /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/residual_candidate && /Users/simonebenatti/.venvs/wearusfm-tok/bin/python -I recompute_json.py",
+   "would_explain_failed_gate": "no: e' un'obiezione al candidato, non una causa dell'esito del 21/11"
+  },
+  {
+   "id": "RC-2",
+   "severity": "importante",
+   "status": "dimostrato",
+   "title": "Giocattolo: il candidato non alza il livello raggiunto; guadagna solo dove la ricetta attuale non parte",
+   "claim": "Su latenti sintetici, alla scelta per MSE rumorosa sugli esclusi, il candidato (LN fissa + base ridge con alpha da CV interna congelata + TCN sul residuo) raggiunge lo stesso livello della ricetta attuale quando il ramo profondo di questa e' vivo. La differenza grande compare solo nel seme in cui il ramo profondo della ricetta attuale muore. Evidenza indicativa: latenti sintetici, un fold.",
+   "evidence": "R alla scelta: cur seme 0 +0,3146 (epoca 21 su 23), seme 2 +0,2914 (20 su 22), seme 1 -0,1077 (ramo profondo morto, R = parte lineare a ogni epoca); res seme 0 +0,3113 (epoca 15 su 23), seme 1 +0,2899 (epoca 20 su 40; poi scende a +0,062 a 40 epoche). Appaiate: res - cur seme 0 = -0,0033 alla scelta e +0,0054 all'epoca comune 23; seme 1 = +0,3976. Dispersione fra semi vivi: cur 0,0232, res 0,0214. Replica di ieri della ricetta attuale (altra sequenza di dropout): +0,311. Nessuna variante arriva a 0,50 (massimo 0,4271). Base ridge del giocattolo: alpha scelto 0,1, R -8,44% (WLS -8,88%): meta' del costo vero, quindi giocattolo piu' favorevole al candidato del vero.",
+   "file_line": "/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/residual_candidate/toy/summary_final.txt ; toy/run_f0_{cur,res}_s*.json ; toy/refs_f0.json",
+   "repro_command": "cd /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/residual_candidate; T=/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/tree_e8c98244; export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$T/scripts:$T/src:$PWD; PY=/Users/simonebenatti/.venvs/wearusfm-tok/bin/python; $PY toy_res.py gen 0 && $PY toy_res.py run 0 cur 0 40 900 && $PY toy_res.py run 0 res 0 40 900 && $PY -I summ.py",
+   "would_explain_failed_gate": "no"
+  },
+  {
+   "id": "RC-3",
+   "severity": "importante",
+   "status": "dimostrato",
+   "title": "L'errore di stima della base resta congelato e invisibile al ramo temporale",
+   "claim": "Il residuo di fitting y - base(z) non contiene segnale lineare in z (identita' delle equazioni normali per la WLS, quasi esatta per la ridge): la TCN allenata sul residuo non puo' imparare a correggere l'errore della base, che fuori campione e' proprio cio' che costa -19,1 / -16,4% nel vero. Con la ricetta attuale la parte lineare e' invece regolarizzata dall'arresto anticipato (L0 neurale 5,5 punti meglio della forma chiusa).",
+   "evidence": "Giocattolo: quota lineare (R2) del residuo di fitting = 4,793e-17 con base WLS e 3,560e-05 con base ridge (alpha 0,1). Dati veri (JSON): forma chiusa -19,10 / -16,38% contro L0 neurale -13,55 / -10,82%.",
+   "file_line": "/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/residual_candidate/ortho.out ; positive_controls_gate_20261121.json",
+   "repro_command": "(stesso prefisso di RC-2, dopo `toy_res.py gen 0`) $PY ortho.py",
+   "would_explain_failed_gate": "no"
+  },
+  {
+   "id": "RC-4",
+   "severity": "minore",
+   "status": "dimostrato",
+   "title": "La LN fissa e' un secondo fattore senza effetto misurabile nel giocattolo",
+   "claim": "Le due modifiche del candidato separate: la sola LN fissa segue la ricetta attuale, la sola base congelata (con LN apprendibile nel ramo profondo) segue il candidato completo. Tutto l'effetto viene dalla base; il vincolo sulla LN non e' sostenuto da alcuna evidenza e rende il candidato a due fattori senza necessita' (la base puo' avere la propria LN fissa). Misurato solo fino all'epoca 13 (corse fermate per tempo).",
+   "evidence": "Seme 0, epoche 8-13: |lnfix - cur| <= 0,012 (es. epoca 13: 0,1956 contro 0,1889); |base - res| <= 0,010 (epoca 12: 0,2962 contro 0,286). Scarto massimo lnfix - cur su tutte le 13 epoche: 0,0574 (epoca 4).",
+   "file_line": "toy/run_f0_lnfix_s0.json ; toy/run_f0_base_s0.json ; toy/summary_final.txt",
+   "repro_command": "(prefisso RC-2) $PY toy_res.py run 0 lnfix 0 13 900; $PY toy_res.py run 0 base 0 13 900; $PY -I summ.py 13",
+   "would_explain_failed_gate": "no"
+  },
+  {
+   "id": "RC-5",
+   "severity": "importante",
+   "status": "dimostrato",
+   "title": "Conseguenze di protocollo: comparatori che cambiano significato, controllo lineare quasi tautologico, nessuna ricevuta A1 riusabile",
+   "claim": "(a) Qualunque modifica a heads.py/train.py o alle chiavi 'heads'/'new_head_common' cambia source_sha256, recipe_sha256 ed execution_sha256: verified_receipt rifiuta tutte le 11 ricevute A1; l'eccezione A1 non si estende (vieta cambi di ricetta e di sorgenti fuori da 6 file di risorse, copre 3 ricevute esatte). (b) Primario TCN-post contro L0: oggi la TCN con g=0 coincide con L0, col candidato coincide con la ridge chiusa, quindi il contrasto mescola contesto temporale e 'ridge chiusa contro affine allenata'. (c) MLP: senza la stessa ricetta il contrasto TCN/MLP non isola piu' il contesto; va cambiata e riqualificata anche lei; TCN-pre cambia con l'architettura. (d) La base del candidato sui dati reali e' quasi la 'ridge post storica' (comparatore 4). (e) Nel mondo lineare la base E' la ridge di riferimento: linear_head_gate misura il recupero costante->ridge, ~100% per costruzione. (f) Regole nuove da fissare prima dei dati: alpha nei fold reali e nel rifit sui 40, parametri in tabella (nel giocattolo 64.436 allenabili invece di 72.904).",
+   "evidence": "Lettura del codice e del protocollo. Costo del rifacimento completo con identita' nuova: tutto lo speso A1 fino ai controlli e' 3,681 GPUh e 31,975 core-h (controlli 3,567 GPUh / 28,533 core-h; calibrazioni 0,938 + 0,920 core-h; benchmark GPU 0,109 GPUh): il calcolo non e' l'ostacolo, lo sono definizione e review.",
+   "file_line": "scripts/pose_temponet/provenance.py:53 (RECIPE_KEYS), :236-248 (source_manifest), :338-348 (recipe/execution identity), :609-645 (verified_receipt); scripts/pose_temponet/budget_amendment.py:20-31, :57-69, :100-112; scripts/pose_temponet/controls.py:274-286; docs/pose_temponet_frozen_protocol_20261117.md righe 26, 32-38, 84, 90, 99-102, 119-122, 164; results/.../launcher/accounting_through_controls_20261121.json",
+   "would_explain_failed_gate": "no"
+  },
+  {
+   "id": "RC-6",
+   "severity": "importante",
+   "status": "sospetto",
+   "title": "Ricetta attuale: collasso delle ReLU del penultimo strato del ramo profondo nei primi due epoch (dimostrato nel giocattolo, sospetto sui dati veri)",
+   "claim": "Con testa, loss e ricetta vere su latenti sintetici, l'addestramento congiunto spegne le unita' del penultimo strato (64->32) nei primi 58 passi: collasso completo e permanente in 1 seme su 5, quasi completo e poi rientrato nel seme 0. Il candidato residuale e l'inizializzazione dell'affine alla ridge lo evitano. Sui dati veri non e' dimostrato (il run vero, seme 0 e LR 0,003, ha imparato), ma e' coerente con la curva vera a LR 0,01, piatta al livello lineare per 150 epoche. Ipotesi sul meccanismo, non dimostrata: ultimo strato a zero + Adam (passi di ampiezza ~lr anche con gradienti minuscoli) + errore iniziale dominato dalla parte lineare non ancora appresa.",
+   "evidence": "Giocattolo, unita' vive su 32 a fine epoca 2 (passo 58), ricetta attuale, semi 0-4: 10, 1, 19, 31, 21; frazione attiva 0,001; 0,000; 0,071; 0,133; 0,079. Seme 1: 31/32 al passo 0, 17/32 al passo 20, 9/32 al passo 29, 1/32 al passo 58, deviazione standard nel tempo dell'uscita profonda 0,00000; nel run di 23 epoche R = parte lineare a ogni epoca (-0,1077 alla scelta). Seme 0: a fine epoca 8 di nuovo 32/32 vive (attiva 0,181). Candidato, stessa inizializzazione: seme 1 31/32 (attiva 0,208), seme 2 24/32 (0,062). Norma del gradiente prima del clip: ricetta attuale 1,3-2,0 nei primi 5 passi, residuale <= 0,35. Dati veri (JSON): TCN a LR 0,01 R fra -0,25 e -0,15 da esposizione 5 a 150 (L0 a LR 0,003: -0,153 a 31); massimo per LR: 1e-4 +0,049, 3e-4 +0,054, 1e-3 +0,095, 3e-3 +0,217, 1e-2 -0,154.",
+   "file_line": "scripts/pose_temponet/heads.py:46-58 (strati e dropout), :75-78 (ultimo strato e affine a zero); scripts/pose_temponet/train.py:33-34, :233-234, :291 ; note: toy/dead_cur_s{0,1,2,3,4}.txt, toy/dead_res_s{1,2}.txt, toy/run_f0_cur_s1.json, curves_json.out",
+   "repro_command": "(prefisso RC-2, dopo `toy_res.py gen 0`) for s in 0 1 2 3 4; do $PY dead.py cur $s 2; done; $PY dead.py res 1 2; $PY toy_res.py run 0 cur 1 23 900; $PY -I curves_json.py",
+   "would_explain_failed_gate": "in parte e solo se confermato sui checkpoint veri: spiegherebbe la forte dipendenza dal LR e il fallimento totale a LR 0,01, ma al LR scelto il run vero ha imparato (+21,7%), quindi da solo non spiega l'esito"
+  },
+  {
+   "id": "RC-7",
+   "severity": "nota",
+   "status": "dimostrato",
+   "title": "Sui latenti veri il ramo lineare converge presto: il vantaggio precoce visto nel giocattolo non si trasferisce",
+   "claim": "Nel giocattolo la base congelata e' avanti nelle prime 15 epoche perche' il ramo affine congiunto converge lentamente (parte lineare a -0,343 all'epoca 5, -0,162 alla 12, asintoto -0,089). Sui dati veri la curva archiviata di L0 a LR 0,003 e' gia' a regime entro 20-31 epoche: il ritardo lineare non e' il collo di bottiglia. L'inferenza dal solo L0 al ramo affine della TCN resta un'ipotesi (clip condiviso fra i rami).",
+   "evidence": "L0 vero, LR 0,003, R pooled: esposizione 5 -0,235; 10 -0,185; 20 -0,163; 31 -0,153; 150 -0,148. Giocattolo epoca 10: res +0,252 contro cur +0,120; epoca 19: +0,299 contro +0,291.",
+   "file_line": "results/.../launcher/selection_temporal_L0.json (curves) ; note: curves_json.out, toy/log_f0_cur_s0.txt",
+   "repro_command": "cd /Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/residual_candidate && /Users/simonebenatti/.venvs/wearusfm-tok/bin/python -I curves_json.py",
+   "would_explain_failed_gate": "no"
+  }
+ ],
+ "verified_facts": [
+  "JSON veri, scala del cancello (fold0 / fold1 / pooled): clean_ls 0,710431 / 0,749920 / 0,728479; oracolo 0,653451 / 0,691103 / 0,670659; margine 0,056981 / 0,058817 / 0,057820; forma chiusa su y -19,10 / -16,38 / -17,84%; L0 neurale -13,55 / -10,82 / -12,28%; MLP -12,24 / -10,65 / -11,50%; TCN +24,17 / +18,88 / +21,71%.",
+  "JSON veri: quota di T non letta da L0 sul fitting 0,7117 (fold0) e 0,8788 (fold1); alpha della calibrazione interna = 1,0 in entrambi i fold, non al bordo; ridge interna a -19,00 / -16,10% del margine interno.",
+  "JSON veri, curve TCN pooled a LR 0,003: R +0,031 (esp. 10), +0,193 (20), +0,217 (31, scelta), +0,134 (50), -0,012 (75), -0,111 (100), -0,226 (150). Minimo MSE per LR alle esposizioni 181/300 (1e-4), 64/150 (3e-4), 31/150 (1e-3), 31/150 (3e-3), 93/150 (1e-2): nessuna curva ha il minimo a fine orizzonte, quindi allungare il training con la ricetta attuale non aiuta.",
+  "Ricetta vera: weight decay 0,01 a LR 0,003 e 899 passi (esposizione 31, fold0) da' una contrazione cumulata exp(-0,003*0,01*899) = 0,9734: il weight decay attuale e' quasi inerte.",
+  "Giocattolo (latenti SINTETICI, fold 0, 920 finestre di fitting e 920 escluse, a=0,4, sigma=1,3): E_cleanLS 0,822120, E_oracle 0,765524, margine relativo 6,88%; WLS su y -8,88%; ridge con alpha da CV interna (alpha 0,1) -8,44%. I riferimenti coincidono con quelli del giocattolo di ieri (sse_cleanLS 2772090,01).",
+  "Giocattolo, R alla scelta (minimo MSE rumorosa sugli esclusi): cur 0,3146 (seme 0, 23 epoche), -0,1077 (seme 1, ramo profondo morto), 0,2914 (seme 2, 22 epoche); res 0,3113 (seme 0, 23 epoche), 0,2899 (seme 1, 40 epoche).",
+  "Giocattolo, modifiche separate (seme 0, fino all'epoca 13): solo LN fissa entro 0,012 dalla ricetta attuale dalle epoche 8 a 13; sola base ridge congelata entro 0,010 dal candidato completo.",
+  "Giocattolo, alternativa warm (affine inizializzata alla ridge, non congelata, LN apprendibile, 72.904 parametri allenabili): 0,2913 (seme 0) e 0,3006 (seme 1, ramo profondo vivo), 40 epoche ciascuna; scarto dalla ridge all'inizializzazione 3,5e-06.",
+  "Giocattolo, weight decay 0,3 (unica modifica): seme 0 R 0,4245 alla scelta (epoca 28 su 40), massimo 0,4271 (epoca 35), 0,383 a 40; seme 2 0,3713 a 22 epoche (ancora in salita). Appaiato a cur: +0,1098 (seme 0, epoca comune 23) e +0,0753 (seme 2, epoca comune 22). Weight decay 1,0 seme 0: 0,3461 a 22 epochs (ancora in salita). Dropout 0,3 seme 0: 0,3189 (epoca 28 su 35), +0,0070 su cur all'epoca comune 23, entro il rumore.",
+  "Giocattolo, censimento ReLU del penultimo strato a fine epoca 2 con la ricetta attuale, semi 0-4: vive 10, 1, 19, 31, 21 su 32; con il candidato: seme 1 31/32, seme 2 24/32.",
+  "Giocattolo: quota lineare del residuo di fitting 4,793e-17 (base WLS) e 3,560e-05 (base ridge).",
+  "Costi archiviati A1 fino ai controlli: 3,681 GPUh e 31,975 core-h in 16 allocazioni; tetti autorizzati 56,10 GPUh e 564,30 core-h."
+ ],
+ "cannot_conclude": [
+  "Se il candidato residuale arriverebbe al 50% sui latenti veri: non misurato; il giocattolo dice che non alza il livello, ma i latenti sono sintetici e il fold e' uno solo.",
+  "Se sui dati veri il ramo profondo ha unita' morte o quasi (checkpoint scelto, stati a LR 0,01): i checkpoint non sono sul Mac; resta un sospetto.",
+  "Dimensione vera dell'effetto del weight decay: 2 semi appaiati (uno fermo a 22 epoche), una sola dose completa (0,3), nessun fold 1; non provato con il seme 1 (il collasso avviene nei primi 2 epoch, dove wd0.3 e la ricetta attuale coincidono). Non so che cosa farebbe al controllo lineare di L0 e MLP.",
+  "Livello vero della base ridge con alpha da CV a 20 utenti nel mondo temporale: non archiviato (stima fra -11 e -19% della scala del cancello).",
+  "cur e res seme 0 si fermano a 23 epoche (tetto di tempo, macchina carica): la scelta di cur e' all'epoca 21, vicina al bordo; la replica di ieri a 28 epoche da' 0,311 all'epoca 25.",
+  "LN fissa e base congelata separate sono misurate solo fino all'epoca 13 e su un seme.",
+  "Meccanismo del collasso ReLU (ultimo strato a zero + Adam + errore lineare iniziale): ipotesi, non isolata con un esperimento.",
+  "Frequenza del collasso: 1 seme su 5 nel giocattolo; non trasferibile ai latenti veri senza il censimento."
+ ],
+ "recommendations": [
+  "Prima di ogni ricetta nuova, nei diagnostici senza fit: censimento delle unita' ReLU vive/attive per strato (soprattutto il penultimo 64->32) sulle finestre di fitting, per i checkpoint scelti dei due fold e per gli stati salvati di ogni LR (compreso 0,01); in piu' R del solo ramo affine contro R totale. Costa solo inferenza e decide fra le due letture.",
+  "Controllo pulito: tenerlo come proposto da GPT, aggiungendo lo stesso censimento alle esposizioni 1, 10, 31, 75, 150. Regola di lettura: fit pulito scarso gia' sul fitting, oppure penultimo strato morto -> problema di avvio/ottimizzazione; fit ed esclusi buoni con censimento sano -> limite statistico/di regolarizzazione, e il candidato residuale non e' indicato.",
+  "Non adottare il candidato come proposto. Se emerge un problema di avvio, provare UN solo fattore: affine inizializzata alla ridge e non congelata (nel giocattolo 0,291 / 0,301, ramo vivo nel seme che collassa; conserva LN apprendibile, 72.904 parametri e arresto congiunto), oppure la sola base congelata senza vincolo sulla LN. Togliere comunque la LN fissa dal pacchetto.",
+  "Se censimento sano e controllo pulito buono: la modifica singola meglio sostenuta dal giocattolo e' il weight decay attivo (0,01 -> 0,3, train.py:34), eventualmente limitato al ramo profondo per lasciare L0 e il significato dei comparatori invariati; va riqualificato il controllo lineare delle teste toccate.",
+  "Non allungare il training con la ricetta attuale: le curve vere peggiorano dopo il minimo a ogni LR. Ha senso solo insieme a una regolarizzazione attiva (nel giocattolo con wd 0,3 il plateau 0,39-0,43 regge dall'epoca 22 alla 40).",
+  "Per qualunque ricetta nuova: identita', piano e ID nuovi e catena rieseguita da zero (preflight, benchmark, calibrazione, controlli: meno di 4 GPUh e circa 32 core-h in base allo speso A1) invece di una nuova eccezione di riuso; la calibrazione rieseguita deve ridare a=0,4 e sigma=1,3 e fa da controllo di regressione.",
+  "Un solo seme non basta a qualificare l'avvio: rigiocare i soli primi 2 epoch su qualche seme per fold (decine di passi) e contare le unita' vive, come diagnostico e non come selezione.",
+  "Soglie 90% e 50% e selezione MSE invariate in tutte le ipotesi; campagna A1 ferma."
+ ],
+ "notes_path": "/Users/simonebenatti/wearusfm_local/tcn_diag_20261122/review/residual_candidate/notes.md"
+}

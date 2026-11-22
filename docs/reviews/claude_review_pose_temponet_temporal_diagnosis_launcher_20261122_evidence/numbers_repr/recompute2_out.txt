@@ -1,0 +1,48 @@
+=== G. controllo lineare: riferimenti e teste (dagli accumulatori)
+ riferimento fold0 MSE: costante 2.914203217 ridge 1.852045835 oracolo 1.824412155 -> recupero ridge 97.464314% (gate JSON 97.464314%)
+ riferimento fold0 E_dyn: costante 1.000000000 ridge 0.729601724 oracolo 0.722484039 -> recupero ridge 97.435216% (gate JSON 97.435216%)
+ riferimento fold1 MSE: costante 2.937449463 ridge 1.984976431 oracolo 1.963190308 -> recupero ridge 97.763827% (gate JSON 97.763827%)
+ riferimento fold1 E_dyn: costante 1.000000000 ridge 0.770105991 oracolo 0.763720698 -> recupero ridge 97.297566% (gate JSON 97.297566%)
+ riferimento pooled MSE: costante 2.925738571 ridge 1.918009237 oracolo 1.893277258 -> recupero ridge 97.604561% (gate JSON 97.604561%)
+ riferimento pooled E_dyn: costante 1.000000000 ridge 0.748128632 oracolo 0.741345949 -> recupero ridge 97.377700% (gate JSON 97.377700%)
+ L0       fold0  MSE  : testa 1.855100767 recupero 99.712384%  (gate JSON 99.712384%, diff 0.00e+00)  target_ss 3166775.686535171 vs ref 3166775.6865351712
+ L0       fold0  E_dyn: testa 0.730602634 recupero 99.629839%  (gate JSON 99.629839%, diff 0.00e+00)  target_ss 3166775.686535171 vs ref 3166775.6865351712
+ L0       fold1  MSE  : testa 1.987585683 recupero 99.726055%  (gate JSON 99.726055%, diff 0.00e+00)  target_ss 2669591.2124210484 vs ref 2669591.212421049
+ L0       fold1  E_dyn: testa 0.770990015 recupero 99.615464%  (gate JSON 99.615464%, diff 0.00e+00)  target_ss 2669591.2124210484 vs ref 2669591.212421049
+ L0       pooled MSE  : testa 1.920843012 recupero 99.718796%  (gate JSON 99.718796%, diff 0.00e+00)  target_ss 5836366.898956219 vs ref 5836366.898956221
+ L0       pooled E_dyn: testa 0.749076078 recupero 99.623838%  (gate JSON 99.623838%, diff 0.00e+00)  target_ss 5836366.898956219 vs ref 5836366.898956221
+   L0: status gate passed alarms ['minimum_in_last_five_maximum_epochs'] selected {'edyn': 0.7490760779164948, 'exposure': 299.0, 'lr': 0.0001, 'mse': 1.920843012031834}
+ MLP      fold0  MSE  : testa 1.870086365 recupero 98.301520%  (gate JSON 98.301520%, diff 0.00e+00)  target_ss 3166775.686535171 vs ref 3166775.6865351712
+ MLP      fold0  E_dyn: testa 0.735735134 recupero 97.731713%  (gate JSON 97.731713%, diff 0.00e+00)  target_ss 3166775.686535171 vs ref 3166775.6865351712
+ MLP      fold1  MSE  : testa 1.998946209 recupero 98.533315%  (gate JSON 98.533315%, diff 0.00e+00)  target_ss 2669591.2124210484 vs ref 2669591.212421049
+ MLP      fold1  E_dyn: testa 0.775941972 recupero 97.461447%  (gate JSON 97.461447%, diff 0.00e+00)  target_ss 2669591.2124210484 vs ref 2669591.212421049
+ MLP      pooled MSE  : testa 1.934029761 recupero 98.410235%  (gate JSON 98.410235%, diff 0.00e+00)  target_ss 5836366.898956219 vs ref 5836366.898956221
+ MLP      pooled E_dyn: testa 0.754125996 recupero 97.618878%  (gate JSON 97.618878%, diff 0.00e+00)  target_ss 5836366.898956219 vs ref 5836366.898956221
+   MLP: status gate passed alarms [] selected {'edyn': 0.7541259963809349, 'exposure': 116.0, 'lr': 0.0001, 'mse': 1.9340297608378219}
+ TCN_post fold0  MSE  : testa 1.867198079 recupero 98.573446%  (gate JSON 98.573446%, diff 0.00e+00)  target_ss 3166775.686535171 vs ref 3166775.6865351712
+ TCN_post fold0  E_dyn: testa 0.733730561 recupero 98.473054%  (gate JSON 98.473054%, diff 0.00e+00)  target_ss 3166775.686535171 vs ref 3166775.6865351712
+ TCN_post fold1  MSE  : testa 2.001947958 recupero 98.218162%  (gate JSON 98.218162%, diff 0.00e+00)  target_ss 2669591.2124210484 vs ref 2669591.212421049
+ TCN_post fold1  E_dyn: testa 0.774719079 recupero 97.993385%  (gate JSON 97.993385%, diff 0.00e+00)  target_ss 2669591.2124210484 vs ref 2669591.212421049
+ TCN_post pooled MSE  : testa 1.934064254 recupero 98.406813%  (gate JSON 98.406813%, diff 0.00e+00)  target_ss 5836366.898956219 vs ref 5836366.898956221
+ TCN_post pooled E_dyn: testa 0.752478969 recupero 98.272794%  (gate JSON 98.272794%, diff 0.00e+00)  target_ss 5836366.898956219 vs ref 5836366.898956221
+   TCN_post: status gate passed alarms [] selected {'edyn': 0.7524789690858711, 'exposure': 28.0, 'lr': 0.003, 'mse': 1.934064254197489}
+ minimo dei 18 recuperi lineari: (0.9746144705650416, 'MLP', 'fold1', 'E_dyn')  massimo: (0.9972605499134968, 'L0', 'fold1', 'MSE')
+
+=== H. ricevute dei sei controlli
+ TCNH-controls-linear-L0-20261120: sacct 65035622|COMPLETED|0:0 | status completed complete True stage controls | source 9aaf1c8b6a05 numeric 12cb2a0b3207 kind gpu gpu NVIDIA A100-SXM-64GB cap [8, 0] bytes 68099571712 cpu 'Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz' intraop 8 | code_sha edebfb6c290c reviewed a1ae9607681c | elapsed 1422.9s gpus 1 cpus 8 | file sha256 543d7ba1cd0f bytes 7315 | gates {'calibration': True, 'closed_references': True, 'historical_R1': True, 'integrity': True, 'resources': True}
+ TCNH-controls-linear-MLP-20261120: sacct 65035623|COMPLETED|0:0 | status completed complete True stage controls | source 9aaf1c8b6a05 numeric 12cb2a0b3207 kind gpu gpu NVIDIA A100-SXM-64GB cap [8, 0] bytes 68099571712 cpu 'Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz' intraop 8 | code_sha edebfb6c290c reviewed a1ae9607681c | elapsed 1258.1s gpus 1 cpus 8 | file sha256 57cb766e0ebb bytes 7324 | gates {'calibration': True, 'closed_references': True, 'historical_R1': True, 'integrity': True, 'resources': True}
+ TCNH-controls-linear-TCN_post-20261120: sacct 65035626|COMPLETED|0:0 | status completed complete True stage controls | source 9aaf1c8b6a05 numeric 12cb2a0b3207 kind gpu gpu NVIDIA A100-SXM-64GB cap [8, 0] bytes 68099571712 cpu 'Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz' intraop 8 | code_sha edebfb6c290c reviewed a1ae9607681c | elapsed 3681.0s gpus 1 cpus 8 | file sha256 0576c92fd784 bytes 7364 | gates {'calibration': True, 'closed_references': True, 'historical_R1': True, 'integrity': True, 'resources': True}
+ TCNH-controls-temporal-L0-20261120: sacct 65035628|COMPLETED|0:0 | status completed complete True stage controls | source 9aaf1c8b6a05 numeric 12cb2a0b3207 kind gpu gpu NVIDIA A100-SXM-64GB cap [8, 0] bytes 68099571712 cpu 'Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz' intraop 8 | code_sha edebfb6c290c reviewed a1ae9607681c | elapsed 1074.0s gpus 1 cpus 8 | file sha256 d299b001c830 bytes 7331 | gates {'calibration': True, 'closed_references': True, 'historical_R1': True, 'integrity': True, 'resources': True}
+ TCNH-controls-temporal-MLP-20261120: sacct 65035629|COMPLETED|0:0 | status completed complete True stage controls | source 9aaf1c8b6a05 numeric 12cb2a0b3207 kind gpu gpu NVIDIA A100-SXM-64GB cap [8, 0] bytes 68099571712 cpu 'Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz' intraop 8 | code_sha edebfb6c290c reviewed a1ae9607681c | elapsed 831.6s gpus 1 cpus 8 | file sha256 81f6c38eb097 bytes 7339 | gates {'calibration': True, 'closed_references': True, 'historical_R1': True, 'integrity': True, 'resources': True}
+ TCNH-controls-temporal-TCN_post-20261120: sacct 65035631|COMPLETED|0:0 | status completed complete True stage controls | source 9aaf1c8b6a05 numeric 12cb2a0b3207 kind gpu gpu NVIDIA A100-SXM-64GB cap [8, 0] bytes 68099571712 cpu 'Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz' intraop 8 | code_sha edebfb6c290c reviewed a1ae9607681c | elapsed 4383.3s gpus 1 cpus 8 | file sha256 f95c7a5dceb8 bytes 7380 | gates {'calibration': True, 'closed_references': True, 'historical_R1': True, 'integrity': True, 'resources': True}
+ plan_controls numeric_pins: {'cpu8': '21e70b1c1a297b71f430fc4036bf9afdf61a5068a7e59c02c05b8012dc1e24d7', 'gpu8': '12cb2a0b3207b66e260d3ca490db93ee0c029bb8f03d766df89a9edba6b7eb3f'}
+ gate source_sha256: 9aaf1c8b6a050a524dfb60af65df9406313d4fd0e690dab1097bf11df2ec67ea status recipe_not_admitted
+ durate: [('65035622', 1451, 'COMPLETED', '0:0'), ('65035623', 1287, 'COMPLETED', '0:0'), ('65035626', 3710, 'COMPLETED', '0:0'), ('65035628', 1105, 'COMPLETED', '0:0'), ('65035629', 860, 'COMPLETED', '0:0'), ('65035631', 4427, 'COMPLETED', '0:0')]
+ GPUh sei controlli: 3.566666666666667  TCN temporale: 1.2297222222222222  TCN lineare: 1.0305555555555554
+ tsv sacct:
+    65035622 COMPLETED 0:0 1451 s billing=8,cpu=8,gres/gpu=1,mem=32G,node=1
+    65035623 COMPLETED 0:0 1287 s billing=8,cpu=8,gres/gpu=1,mem=32G,node=1
+    65035626 COMPLETED 0:0 3710 s billing=8,cpu=8,gres/gpu=1,mem=32G,node=1
+    65035628 COMPLETED 0:0 1105 s billing=8,cpu=8,gres/gpu=1,mem=32G,node=1
+    65035629 COMPLETED 0:0 860 s billing=8,cpu=8,gres/gpu=1,mem=32G,node=1
+    65035631 COMPLETED 0:0 4427 s billing=8,cpu=8,gres/gpu=1,mem=32G,node=1

@@ -1,0 +1,22 @@
+linear   L0       replay==report False | selected {'lr': 0.0001, 'exposure': 299.0, 'mse': 1.920843012031834, 'edyn': 0.7490760779164948} | alarms ['minimum_in_last_five_maximum_epochs'] | LR attivi [3e-05, 0.0001, 0.0003, 0.001, 0.003] | prossimo LR None | estensione dovuta {0.0001: "gia' a 300", 0.0003: "gia' a 300", 0.001: False, 0.003: False, 3e-05: "gia' a 300"}
+linear   MLP      replay==report False | selected {'lr': 0.0001, 'exposure': 116.0, 'mse': 1.9340297608378219, 'edyn': 0.7541259963809349} | alarms [] | LR attivi [3e-05, 0.0001, 0.0003, 0.001, 0.003] | prossimo LR None | estensione dovuta {0.0001: False, 0.0003: False, 0.001: False, 0.003: False, 3e-05: "gia' a 300"}
+linear   TCN_post replay==report False | selected {'lr': 0.003, 'exposure': 28.0, 'mse': 1.934064254197489, 'edyn': 0.7524789690858711} | alarms [] | LR attivi [0.0001, 0.0003, 0.001, 0.003, 0.01] | prossimo LR None | estensione dovuta {0.0001: False, 0.0003: False, 0.001: False, 0.003: False, 0.01: False}
+temporal L0       replay==report False | selected {'lr': 0.0003, 'exposure': 183.0, 'mse': 1.8361487273908483, 'edyn': 0.7355804202146525} | alarms [] | LR attivi [0.0001, 0.0003, 0.001, 0.003] | prossimo LR None | estensione dovuta {0.0001: "gia' a 300", 0.0003: "gia' a 300", 0.001: False, 0.003: False}
+temporal MLP      replay==report False | selected {'lr': 0.001, 'exposure': 24.0, 'mse': 1.8348415706928989, 'edyn': 0.7351298365743526} | alarms [] | LR attivi [0.0001, 0.0003, 0.001, 0.003] | prossimo LR None | estensione dovuta {0.0001: False, 0.0003: False, 0.001: False, 0.003: False}
+temporal TCN_post replay==report False | selected {'lr': 0.003, 'exposure': 31.0, 'mse': 1.8001448213440414, 'edyn': 0.7159262203822878} | alarms [] | LR attivi [0.0001, 0.0003, 0.001, 0.003, 0.01] | prossimo LR None | estensione dovuta {0.0001: "gia' a 300", 0.0003: False, 0.001: False, 0.003: False, 0.01: False}
+tutti e sei coerenti: False
+LR 0,003, punti alle esposizioni di lettura proposte e vicino al minimo (pooled, esclusi, bersaglio rumoroso):
+   esp     1 passi [29, 30] MSE 1.930959 E_dyn 0.760630 recupero  -55.61%
+   esp    10 passi [290, 300] MSE 1.833768 E_dyn 0.726704 recupero    3.07%
+   esp    27 passi [783, 810] MSE 1.803765 E_dyn 0.715826 recupero   21.88%
+   esp    28 passi [812, 840] MSE 1.803460 E_dyn 0.716367 recupero   20.95%
+   esp    31 passi [899, 930] MSE 1.800145 E_dyn 0.715926 recupero   21.71%
+   esp    50 passi [1450, 1500] MSE 1.809501 E_dyn 0.720715 recupero   13.43%
+   esp    75 passi [2175, 2250] MSE 1.824538 E_dyn 0.729147 recupero   -1.15%
+   esp   100 passi [2900, 3000] MSE 1.839499 E_dyn 0.734876 recupero  -11.06%
+   esp   150 passi [4350, 4500] MSE 1.852148 E_dyn 0.741556 recupero  -22.62%
+   LR 1e-4 esp    31 MSE 1.879346 E_dyn 0.748521 recupero  -34.66%
+   LR 1e-4 esp   150 MSE 1.819380 E_dyn 0.726488 recupero    3.44%
+   LR 1e-4 esp   181 MSE 1.818162 E_dyn 0.725644 recupero    4.90%
+   LR 1e-4 esp   201 MSE 1.818748 E_dyn 0.725580 recupero    5.01%
+   LR 1e-4 esp   300 MSE 1.826860 E_dyn 0.728150 recupero    0.57%

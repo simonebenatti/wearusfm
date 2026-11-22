@@ -1,0 +1,153 @@
+{
+ "lrs": [
+  0.0001,
+  0.0003,
+  0.001,
+  0.003
+ ],
+ "selected": {
+  "edyn": 0.9999900325631028,
+  "exposure": 0.5,
+  "lr": 0.001,
+  "mse": 10.470009691900552
+ },
+ "A_states_checked": 8,
+ "A_all_exact": true,
+ "A_rows": [
+  {
+   "lr": 0.0001,
+   "kind": "best_states",
+   "exposure": 6.0,
+   "mse_equal": true,
+   "edyn_equal": true,
+   "updates": [
+    18,
+    18
+   ]
+  },
+  {
+   "lr": 0.0001,
+   "kind": "current_states",
+   "exposure": 6.0,
+   "mse_equal": true,
+   "edyn_equal": true,
+   "updates": [
+    18,
+    18
+   ]
+  },
+  {
+   "lr": 0.0003,
+   "kind": "best_states",
+   "exposure": 2.0,
+   "mse_equal": true,
+   "edyn_equal": true,
+   "updates": [
+    6,
+    6
+   ]
+  },
+  {
+   "lr": 0.0003,
+   "kind": "current_states",
+   "exposure": 6.0,
+   "mse_equal": true,
+   "edyn_equal": true,
+   "updates": [
+    18,
+    18
+   ]
+  },
+  {
+   "lr": 0.001,
+   "kind": "best_states",
+   "exposure": 0.5,
+   "mse_equal": true,
+   "edyn_equal": true,
+   "updates": [
+    2,
+    2
+   ]
+  },
+  {
+   "lr": 0.001,
+   "kind": "current_states",
+   "exposure": 3.0,
+   "mse_equal": true,
+   "edyn_equal": true,
+   "updates": [
+    9,
+    9
+   ]
+  },
+  {
+   "lr": 0.003,
+   "kind": "best_states",
+   "exposure": 0.25,
+   "mse_equal": true,
+   "edyn_equal": true,
+   "updates": [
+    1,
+    1
+   ]
+  },
+  {
+   "lr": 0.003,
+   "kind": "current_states",
+   "exposure": 3.0,
+   "mse_equal": true,
+   "edyn_equal": true,
+   "updates": [
+    9,
+    9
+   ]
+  }
+ ],
+ "B_initial_sha256_equal": true,
+ "B_points": 6,
+ "B_extra_evaluations": 24,
+ "B_all_exact": true,
+ "B_final_payload_sha256_equal": true,
+ "C_assert_bundle_accepts_swapped_targets": false,
+ "C_assert_bundle_error": "synthetic targets changed after calibration",
+ "C_dataset_identity_differs_from_noisy": [
+  true,
+  true
+ ],
+ "C_same_initialization_as_noisy_run": true,
+ "C_clean_fit_curve_vs_clean_target": [
+  [
+   0.0,
+   0.3045758238112916,
+   1.0
+  ],
+  [
+   0.25,
+   0.30409184781102455,
+   0.9977105114743806
+  ],
+  [
+   0.5,
+   0.3035432052846091,
+   0.9960178530498137
+  ],
+  [
+   1.0,
+   0.3029361653525986,
+   0.9941497833002143
+  ],
+  [
+   2.0,
+   0.3023909648684703,
+   0.9909500649151549
+  ],
+  [
+   3.0,
+   0.3030753350862658,
+   0.990622168903238
+  ]
+ ],
+ "C_production_recipe_trajectory_one_step_ok": true,
+ "C_production_steps_per_epoch_toy": 1,
+ "elapsed_seconds": 7.7
+}
