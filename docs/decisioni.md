@@ -7450,3 +7450,8 @@ Gli invii sono esclusivamente del launcher dopo verifica del nuovo percorso,
 senza altra approvazione di Simone; preparatorelocale mac_launcher_command.py,
 submitter/ledger comuni, gate freschi e stop al primo errore senza retry automatico.
 Piano: `docs/scaling_control30m_early_execution_20261121.md`.
+
+
+## 22/11/2026 — Anticipo30M: checkout separato65111647 inviato
+
+Eseguito rilascio APPROVATO4133cc97 sul codiceabfaf64e. Dopo ripristino autenticazioneSSH, gatepositivo conWORK33,9093GiB, prerequisito64835246COMPLETED, ID/output assenti. Gate e righe pubblicati662646be conSHA remotoverificato prima dell'esecuzione. Deploycodiceabfaf64e, checkout65111647 accettato09:40:06Europe/Rome,2CPU/4G/5min. Comando preparato da mac_launcher_command.py ed eseguito direttamente dai campicmd/workdir. Nessunaestrazione ancora inviata in questa fotografia; seguono dopo raccoltaCOMPLETED0:0, conledgercontrollato e stesse3ID/usciteoriginarie. Nessun cambio al300M, codice/pin/budget/criteri invariati. Unico costoaggiunto il checkout giàapprovato0,266667coreh con margine; no retry o duplicati.

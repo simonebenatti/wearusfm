@@ -178,6 +178,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 22/11/2026 — GPT launcher: checkout30M separato accettato65111647
+
+Pubblicati gate/righe/preparazione a662646be, SHAoriginverificato. Deploysoloabfaf64e su refs/heads/deploy/scaling_49046_control30m_20261121_v1; mai deploydelcommitmetadata. Checkout SCALING-49046-control30m-checkout-20261121 accettato09:40:06Europe/Rome, job65111647,2CPU/4G/5min. Invio effettuato usando direttamente cmd/workdir del preparatorepersistente, con venv e submittercondiviso già consentiti, nessunwrappertemporaneo. Ricevuta in control30m_early_20261121/submissions/checkout_receipt.json. Nessunaestrazione ancora in questa fotografia: attendeCOMP0:0 e raccolta checkout; le3righe saranno poi ammesse da nuovo gate e inviate unaalla volta. Training300M87da/64837401 invariato.
+
+
 ### 22/11/2026 — GPT launcher: anticipo30M, accessoSSH ripristinato e gate checkout passato
 
 Acquisiti codiceabfaf64e e review/consegna4133cc97 nel nuovo worktree ceduto wearusfm-scaling-control30m. Primo gate rifiutato per accessoSSH, non per nuovo consenso scientifico: Permission denied(publickey,gssapi-keyex,gssapi-with-mic). Rinnovo esplicito stepSSH concluso, accesso diretto verificatoexit0. Nuovo gatecheckout passato08:36:23UTC: base87da pulita, predecessore64835246COMPLETED0:0, quotaWORK33,9093GiB sopra30, ID/output assenti e coda seriale libera. Gate e righe pubblicati prima dell'esecuzione; preparatore persistente ha verificato submitter e prodotto cmd/workdir. Nessun nuovo job ancora in questa fotografia, nessuna modifica a sorgenti87da o abfaf64e. Budget348,066667/400coreh,7GPUh30M già previste, nuovo solo checkout2CPU/5min.
