@@ -1,0 +1,4 @@
+{
+  "workdir": "/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-scaling-control30m",
+  "cmd": "/Users/simonebenatti/.venvs/wearusfm-tok/bin/python '/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py' --agente gpt --campagna scaling-300m-20261118 --timeout 120 --id SCALING-49046-control30m-checkout-20261121 --gpu-ore 0 --script-stdin '/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-scaling-control30m/scripts/slurm/campaign_checkout.sbatch' -- --cpus-per-task=2 --mem=4G --time=00:05:00 --export=ALL,CAMPAIGN=scaling_49046_control30m_20261121_v1,CAMPAIGN_SHA=abfaf64e28827793720097254ff2d0271d744a1d,EXPECTED_SHA=abfaf64e28827793720097254ff2d0271d744a1d /dev/stdin"
+}

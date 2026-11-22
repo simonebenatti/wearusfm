@@ -178,6 +178,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 22/11/2026 — GPT launcher: anticipo30M, accessoSSH ripristinato e gate checkout passato
+
+Acquisiti codiceabfaf64e e review/consegna4133cc97 nel nuovo worktree ceduto wearusfm-scaling-control30m. Primo gate rifiutato per accessoSSH, non per nuovo consenso scientifico: Permission denied(publickey,gssapi-keyex,gssapi-with-mic). Rinnovo esplicito stepSSH concluso, accesso diretto verificatoexit0. Nuovo gatecheckout passato08:36:23UTC: base87da pulita, predecessore64835246COMPLETED0:0, quotaWORK33,9093GiB sopra30, ID/output assenti e coda seriale libera. Gate e righe pubblicati prima dell'esecuzione; preparatore persistente ha verificato submitter e prodotto cmd/workdir. Nessun nuovo job ancora in questa fotografia, nessuna modifica a sorgenti87da o abfaf64e. Budget348,066667/400coreh,7GPUh30M già previste, nuovo solo checkout2CPU/5min.
+
+
 ### 21/11/2026 — GPT scientifico: percorso indipendente del controllo30M49k
 
 Rilascio concluso: codice `abfaf64e28827793720097254ff2d0271d744a1d`, review **APPROVATO** in `docs/reviews/gpt_review_control30m_early_20261121.md`.359test passati in240,20s; due review indipendenti favorevoli. Verificate localmente anche attestazione del commit e quattro conversioni del preparatoreMac (checkout+tre estrazioni), nessun invio. Consegna diretta al launcher per procedere, senza un altro consenso.
@@ -6318,6 +6323,11 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 22/11/2026 — GPT launcher: blocco d'accesso reale risolto prima dell'invio30M
+
+Il rifiuto del primo gate dipendeva dall'autenticazioneSSH: prova diretta exit255Permission denied. Avviato rinnovo stepSSH SSO; poi successo dell'agenteSSH e prova direttaexit0. Nessun ID30M era stato prenotato o inviato; non è un retrydi job. Conservato il verbale_refused. Dopo il ripristino gatepositivo, invariati codice/pin/criteri e utilizzo del preparatore persistente prima di ogni invio. Nessuna richiesta di nuovo consenso scientifico.
+
 
 ### 21/11/2026 — GPT scientifico: eliminata la dipendenza organizzativa del30M dal finale300M
 
