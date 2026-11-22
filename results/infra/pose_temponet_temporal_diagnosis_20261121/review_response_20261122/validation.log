@@ -1,0 +1,75 @@
+{
+  "gate_scale": {
+    "fold0": {
+      "recovery": {
+        "TCN_post": 0.24173052888786836,
+        "L0": -0.13553099154339784,
+        "MLP": -0.1224001899989427,
+        "closed_L0": -0.19100537876309603,
+        "closed_L13": -0.8555742681076435
+      },
+      "TCN_fraction_L0_neural_to_oracle": 0.3322335746367412,
+      "required_fraction_L0_neural_to_oracle": 0.5596773635210017
+    },
+    "fold1": {
+      "recovery": {
+        "TCN_post": 0.1887545039561508,
+        "L0": -0.10818787676571828,
+        "MLP": -0.10653859300221973,
+        "closed_L0": -0.1637967086142838,
+        "closed_L13": -0.6946349644361016
+      },
+      "TCN_fraction_L0_neural_to_oracle": 0.2679531033929959,
+      "required_fraction_L0_neural_to_oracle": 0.5488129671123402
+    },
+    "pooled": {
+      "recovery": {
+        "TCN_post": 0.21710109906955868,
+        "L0": -0.12281872543247353,
+        "MLP": -0.11502587132288902,
+        "closed_L0": -0.1783556181828452,
+        "closed_L13": -0.7807509250973856
+      },
+      "TCN_fraction_L0_neural_to_oracle": 0.30273793694623863,
+      "required_fraction_L0_neural_to_oracle": 0.5546921433756681
+    }
+  },
+  "cross_world_heuristic_not_causal": {
+    "fold0": {
+      "linear_sigma": 1.35,
+      "temporal_sigma": 1.3,
+      "linear_dynamic_target_ss": 3166775.6865351712,
+      "temporal_dynamic_target_ss": 3206279.9567595376,
+      "linear_excess_in_units_of_temporal_margin": 0.19737469362575782,
+      "heuristic_sum_with_temporal_recovery": 0.43910522251362616,
+      "linear_dynamic_threshold": 0.4597418919608825,
+      "temporal_dynamic_threshold": 0.5437424309221641,
+      "caveat": "Different targets, dynamic selectors, denominators, noise scales, fitted trajectories and selected exposures. Not an identified decomposition of the temporal learner error."
+    },
+    "fold1": {
+      "linear_sigma": 1.4,
+      "temporal_sigma": 1.3,
+      "linear_dynamic_target_ss": 2669591.212421049,
+      "temporal_dynamic_target_ss": 2698827.390194636,
+      "linear_excess_in_units_of_temporal_margin": 0.1869916441444256,
+      "heuristic_sum_with_temporal_recovery": 0.3757461481005764,
+      "linear_dynamic_threshold": 0.4297722589800256,
+      "temporal_dynamic_threshold": 0.5374366720436082,
+      "caveat": "Different targets, dynamic selectors, denominators, noise scales, fitted trajectories and selected exposures. Not an identified decomposition of the temporal learner error."
+    }
+  },
+  "fit_to_held": {
+    "fold0": {
+      "cleanLS": 0.0017774452871571755,
+      "TCN": 0.03478416079171642,
+      "closed_L0": 0.015551060151203555,
+      "closed_L13": 0.09194360812133429
+    },
+    "fold1": {
+      "cleanLS": 0.0002945651055547005,
+      "TCN": 0.02823574395769668,
+      "closed_L0": 0.013684592646154292,
+      "closed_L13": 0.08219086596558045
+    }
+  }
+}

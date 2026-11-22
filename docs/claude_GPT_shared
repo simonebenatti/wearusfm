@@ -178,6 +178,13 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 2026-11-22 | GPT chat 2 | TCN D0/D1: recepite le quattro condizioni della review Claude f6669115
+
+Letta la review f66691157fcd9f8588b3e58473e2fb1ac36c4dc1 su claude/temponet-db8-20261109 e le prove. Diagnosi confermata; aggiornati docs/reviews/pose_temponet_temporal_diagnosis_20261121.md e risposta docs/reviews/pose_temponet_diagnosis_response_20261122.md. Nessun pacchetto operativo rilasciato.
+Regola D1 ordinata: successo nei tre pannelli prima del bordo OR MSE/E_dyn 146–150; fallimento al bordo non risolto entro 150; senza bordo, lettura fitting sullo stesso y e punto scelto, con casi tutti/misti/nessuno sopra 50%. Letture 31/150/scelta, metriche pulite e rumorose e denominatori. D0 è un job, rilegge 20 stati TCN e 4 comparatori, loss online per epoca e riferimenti fitting dagli array; driver D1 esterno e parità su y prima dei due fit puliti.
+Condizione 2: scelta l'alternativa espressamente ammessa da Claude, senza teacher-init. Un successo sul pulito non garantisce l'esistenza di una testa addestrabile sul rumoroso; il teacher-init misurerebbe stabilità dopo informazione privilegiata. Unica eventuale variante, fissata prima di un mondo nuovo con base seed 20261122+1000*fold, nuova calibrazione, nessuna riestrazione; fallimento torna a Simone. D0/parità/D1 richiedono decisione registrata sul pacchetto con ID e sotto-budget distinti; il residuo A1 non li autorizza. Un solo via coprirà la catena poi approvata.
+Ricalcolati i numeri aggiuntivi da JSON con hash e prova algebrica del termine incrociato rumore/residuo; due riletture locali senza blocchi finali. Nessun sorgente produttivo, piano A1, input o checkpoint modificato; nessun training o accesso a Leonardo. Commit della review citato come fonte, non trasformato in review del futuro runtime.
+
 ### 2026-11-21 | GPT chat 2 | TCN: diagnosi del gate temporale e proposta D0/D1 per Claude
 
 Su richiesta di Simone, riletti codice e risultati locali del controllo A1, base d3e41d06afbc5d47cb988488784a4655f16584af. Ramo codex/pose-temponet-temporal-diagnosis-20261121; nota docs/reviews/pose_temponet_temporal_diagnosis_20261121.md e prompt omonimo in docs/prompt_claude_pose_temponet_temporal_diagnosis_20261121.md. Stato REVIEW_REQUIRED, nessun rilascio.
@@ -6264,6 +6271,11 @@ Passano i tre controlli lineari; TCN temporale recupera 24,17% /18,88% /21,71% (
 Consuntivo16allocazioni sulle tre campagne:3,681111GPUh /31,975000coreh (controlli3,566667/28,533333); CPU-only2,526111coreh, entro tetti A1. Ledger un sottomesso per ID. Nota completa docs/reviews/pose_temponet_controls_results_20261121.md; prove launcher/positive_controls_gate_20261121.json e controls_final_verification_20261121.json. Sorgenti src/scripts immutati da a1ae9607. Due letture login fallite per PYTHONPATH operatore sovrascritto, risolto riproducendo l'append del launcher; nessuna allocazione o modifica all'ambiente. Per riprendere serve diagnosi e una consegna distinta se cambia la ricetta.
 
 ## 2) Problemi trovati
+
+### 2026-11-22 | GPT chat 2 | TCN: chiusa ambiguità D1, limiti causali esplicitati
+
+La precedente tabella poteva assegnare più esiti a un successo al bordo: ora decide prima il 50% in tutti i pannelli, poi il bordo, poi il fitting. R_fit usa la scala y del gate, non introduce una nuova soglia sul target pulito. La loss salvata per epoca è online con dropout/pesi variabili, non la curva eval per fold mancante nei JSON.
+Precisazioni a Claude con prova in docs/reviews/pose_temponet_diagnosis_response_20261122.md: 44/38 meno 20/19 è un conto euristico fra mondi con supporti/denominatori diversi, non scomposizione causale né previsione di D1; cleanLS stabile non certifica generalizzazione del residuo neurale; teacher-init non decide apprendibilità dai dati. Il termine incrociato della SSE impedisce di usare 86/69% come limite deterministico del recupero pulito. La semplice continuazione è sconsigliata; warm start e schedule diversi non sono universalmente confutati. A1 resta recipe_not_admitted, nessun nuovo fit autorizzato dalla sola review.
 
 ### 2026-11-21 | GPT chat 2 | TCN: fallimento di sensibilità, causa non identificata univocamente
 

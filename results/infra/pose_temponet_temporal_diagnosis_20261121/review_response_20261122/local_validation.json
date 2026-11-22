@@ -1,0 +1,44 @@
+{
+  "base_commit": "e7670758de9d0b6e25a9ad880ec3e1f7d573f169",
+  "date_europe_rome": "2026-11-22",
+  "commands": [
+    [
+      "python3",
+      "results/infra/pose_temponet_temporal_diagnosis_20261121/review_response_20261122/analyze.py"
+    ],
+    [
+      "git",
+      "diff",
+      "e7670758",
+      "--",
+      "src",
+      "scripts",
+      "results/infra/pose_temponet_execution_20261121_A1"
+    ],
+    [
+      "git",
+      "diff",
+      "--check"
+    ]
+  ],
+  "exit_codes": [
+    0,
+    0,
+    0
+  ],
+  "arithmetic_output_reproduced_byte_identical": true,
+  "source_and_frozen_plan_diff_empty": true,
+  "review": {
+    "commit": "f66691157fcd9f8588b3e58473e2fb1ac36c4dc1",
+    "path": "docs/reviews/claude_review_pose_temponet_temporal_diagnosis_20261121.md",
+    "sha256": "5e3342e445e80f5848f917aab23faf89124f9575600d1bd313caf33d2c71396f"
+  },
+  "artifacts": {
+    "results/infra/pose_temponet_temporal_diagnosis_20261121/review_response_20261122/analyze.py": "a393243f55f5b81d6d3c77339ec96b0137f9ee798d5267f98159f93c0e2bfe60",
+    "results/infra/pose_temponet_temporal_diagnosis_20261121/review_response_20261122/analysis.json": "ac941faefafc2c41cae1c39145680597aa0e195e0f60527733077675ce920faf",
+    "results/infra/pose_temponet_temporal_diagnosis_20261121/review_response_20261122/validation.log": "c20cdde6ec030ad4d78195aa6d44bacb3c6e211f2aef4f1e2b30340a67b01b40",
+    "docs/reviews/pose_temponet_temporal_diagnosis_20261121.md": "96fae63b11e9d3bd6348f88fa851fd503e5a4b2708435d0ed8ad9487df70874c",
+    "docs/reviews/pose_temponet_diagnosis_response_20261122.md": "4e5c3e65eee00455447cf1663d9b844500fa8a791e2c1c82d1cd09222316d16b"
+  },
+  "scope": "local arithmetic and document review only, no training, cluster operations or release; two independent final read-throughs with no blockers"
+}

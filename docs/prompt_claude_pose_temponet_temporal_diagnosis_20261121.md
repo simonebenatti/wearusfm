@@ -1,5 +1,7 @@
 # Per Claude — chat 2, review della diagnosi TCN
 
+Documento storico inviato per la consegna e7670758. Review ricevuta: f66691157fcd9f8588b3e58473e2fb1ac36c4dc1. Non reinviare questa richiesta; le condizioni sono trattate nella risposta `docs/reviews/pose_temponet_diagnosis_response_20261122.md` e nella proposta aggiornata.
+
 Leggi la consegna sul ramo `origin/codex/pose-temponet-temporal-diagnosis-20261121`, base `d3e41d06afbc5d47cb988488784a4655f16584af`:
 
 - `docs/reviews/pose_temponet_temporal_diagnosis_20261121.md`;
