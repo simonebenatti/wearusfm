@@ -1,0 +1,148 @@
+{
+  "protocol": "scaling-control30m-early-20261121-v1",
+  "stage": "extractions",
+  "commit": "abfaf64e28827793720097254ff2d0271d744a1d",
+  "reviewed": null,
+  "read_at_utc": "2026-11-22T10:04:51Z",
+  "passed": true,
+  "checks": [
+    [
+      "base checkout has frozen HEAD and clean tree",
+      true
+    ],
+    [
+      "control checkout has frozen HEAD and clean tree",
+      true
+    ],
+    [
+      "predecessors COMPLETED 0:0",
+      true
+    ],
+    [
+      "submitted jobs COMPLETED 0:0",
+      true
+    ],
+    [
+      "WORK quota at least30GiB",
+      true
+    ],
+    [
+      "unused outputs absent",
+      true
+    ],
+    [
+      "at least one unused logical ID",
+      true
+    ],
+    [
+      "published plan present and byte-identical",
+      true
+    ],
+    [
+      "input pins inside historical checkout match its commit",
+      true
+    ]
+  ],
+  "facts": {
+    "serial_jobs": 0,
+    "serial_room": 10,
+    "line_jobs": 0,
+    "work_free_gib": 33.88801193237305,
+    "tranche": [
+      "SCALING-49046-extract-30m-pose-20261118",
+      "SCALING-49046-extract-30m-p1-20261118",
+      "SCALING-49046-extract-30m-p2-20261118"
+    ]
+  },
+  "snapshot": {
+    "dependencies": {
+      "SCALING-49046-code-checkout-20261118": "64835246",
+      "SCALING-49046-control30m-checkout-20261121": "65111647"
+    },
+    "submitted": {},
+    "evidence_sha256": {
+      "results/infra/scaling_49046_20261118/evaluation/evidence/checkout-code/code/accounting.json": "dd51c250cc0735e2fefc7ae9ee95fd98005cc2ed579baf829fdb6893b3027c65",
+      "results/infra/scaling_49046_20261118/evaluation/evidence/checkout-code/code/sacct.txt": "7bd371b1f9631e5ebb34aae66bf1adec4a4b25e8d0fdcea414174c9d994c6125",
+      "results/infra/scaling_49046_20261118/evaluation/evidence/checkout-code/code/slurm_log.txt": "2964d1b6f27e3c7360515b458f5c8234a9bb8f1cadeeac62d1154afe8c13b9d9",
+      "results/infra/scaling_49046_20261118/evaluation/evidence/checkout-code/collection.json": "7d497bc664cbf9952b4b5ec072a685061ea24b21fdc4b458d4e2a3371c4d2b93",
+      "results/infra/scaling_49046_20261118/evaluation/evidence/control30m-checkout/collection.json": "fc55e6dfe374d1fa2c6e9525e3becfad146b271d77f15716ff9ee880e5fe1ffb",
+      "results/infra/scaling_49046_20261118/evaluation/evidence/control30m-checkout/control30m/accounting.json": "d3ae3218ac21858bedaf7826f6c70b1a52601ced5b16a221947b52e6d8241ba4",
+      "results/infra/scaling_49046_20261118/evaluation/evidence/control30m-checkout/control30m/sacct.txt": "38d5710ffcdf877793208ca4db8bd838ca8deba7726a04b8b5763514e43d2072",
+      "results/infra/scaling_49046_20261118/evaluation/evidence/control30m-checkout/control30m/slurm_log.txt": "f7b64e39b5ad205ef6f762c88f33a18a857988888a13cbdc27a1f92c3f9428bf"
+    }
+  },
+  "attestation": {
+    "protocol": "scaling-control30m-early-20261121-v1",
+    "commit": "abfaf64e28827793720097254ff2d0271d744a1d",
+    "base_code": "87da975bc0fd4824684e166659bb996e118ff107",
+    "sha256": {
+      "scripts/scaling_control30m_ops.py": "b2016abcb82d56d3022970635ff463940cb798e22d4f6c80a91424b3537f56b8",
+      "scripts/scaling_control30m_bridge.py": "0803c5cbc25431cf4f9be652b2cefa5f84a84d160379b0f167294f8cce9b4e67",
+      "scripts/scaling_control30m_evaluation.py": "070c248a09e5dcc4b204ba66021d9e710e0fb0ded3d5059b10ba4b74a7e2ec4f",
+      "scripts/slurm/scaling_control30m_evaluation.sbatch": "b135c96a8b0f3578a470d1147db8129d5764dfa09573086aaefaada995213b28",
+      "results/infra/scaling_49046_20261118/evaluation/evaluation/control30m_early_20261121/plan.json": "d7b24bfad92025c60ff1c3324f2a693d375a93ccc9d0631b433541c215052f94",
+      "results/infra/scaling_49046_20261118/evaluation/evaluation/control30m_early_20261121/resource_policy.json": "f4e1e984c075a56c0e3b38cffdb2056ff52bb24ee1f97cfed946cfa8525ec8ae"
+    }
+  },
+  "reading": {
+    "files": [
+      {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/results/infra/scaling_49046_20261118/evaluation/evaluation/control30m_early_20261121/plan.json",
+        "sha256": "d7b24bfad92025c60ff1c3324f2a693d375a93ccc9d0631b433541c215052f94",
+        "bytes": 5238,
+        "canonical": true
+      }
+    ],
+    "listings": {},
+    "exists": {
+      "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/pose": false,
+      "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1": false,
+      "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p2": false
+    },
+    "sacct": {
+      "64835246": {
+        "exit": 0,
+        "stdout": "JobIDRaw|State|ExitCode|ElapsedRaw|AllocCPUS|MaxRSS|NodeList|Partition|Start|End|Timelimit|AllocTRES\n64835246|COMPLETED|0:0|18|2||login08|lrd_all_serial|2026-11-19T11:32:19|2026-11-19T11:32:37|00:05:00|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1\n64835246.batch|COMPLETED|0:0|18|2|203.50M|login08||2026-11-19T11:32:19|2026-11-19T11:32:37||cpu=2,gres/tmpfs=10737418240,mem=4G,node=1\n64835246.extern|COMPLETED|0:0|18|2||login08||2026-11-19T11:32:19|2026-11-19T11:32:37||billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1\n",
+        "stderr": ""
+      },
+      "65111647": {
+        "exit": 0,
+        "stdout": "JobIDRaw|State|ExitCode|ElapsedRaw|AllocCPUS|MaxRSS|NodeList|Partition|Start|End|Timelimit|AllocTRES\n65111647|COMPLETED|0:0|43|2||login08|lrd_all_serial|2026-11-22T09:40:48|2026-11-22T09:41:31|00:05:00|billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1\n65111647.batch|COMPLETED|0:0|43|2|260660K|login08||2026-11-22T09:40:48|2026-11-22T09:41:31||cpu=2,gres/tmpfs=10737418240,mem=4G,node=1\n65111647.extern|COMPLETED|0:0|47|2||login08||2026-11-22T09:40:48|2026-11-22T09:41:35||billing=2,cpu=2,gres/tmpfs=10737418240,mem=4G,node=1\n",
+        "stderr": ""
+      }
+    },
+    "commands": {
+      "head:base": {
+        "exit": 0,
+        "stdout": "87da975bc0fd4824684e166659bb996e118ff107\n",
+        "stderr": ""
+      },
+      "head:control": {
+        "exit": 0,
+        "stdout": "abfaf64e28827793720097254ff2d0271d744a1d\n",
+        "stderr": ""
+      },
+      "quota": {
+        "exit": 0,
+        "stdout": "Disk quotas for prj 20147512 (pid 20147512):\n     Filesystem  kbytes   quota   limit   grace   files   quota   limit   grace\n/leonardo_work/IscrB_WearUsFM\n                1038207668  1073741824       0       - 1239448       0       0       -\n",
+        "stderr": ""
+      },
+      "squeue": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "status:base": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "status:control": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    "time_utc": "2026-11-22T10:04:51Z"
+  }
+}
