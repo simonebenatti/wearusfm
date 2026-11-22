@@ -28,12 +28,22 @@ INCLUDE = ("leonardo_stato_", "leonardo_seriale_", "leonardo_squeue_", "leonardo
 EXCLUDE_SUBSTR = ("_coda",)
 # Altro progetto dello stesso utente: le sue righe si tolgono dalle copie.
 # Simone, 05/11/2026: «che c'entrano, sono di un a ltro progetto».
-OTHER = re.compile(r"(?<![a-z])mona(?![a-z])|MONALISA|(?<![a-z0-9])t[12]_", re.IGNORECASE)
+# Dal 22/11/2026 anche i job `evalf_*` e `evalb_*`: gli `evalf_*` sono le valutazioni dell'altro progetto (finora uscivano solo
+# perche' il nome conteneva «mona»); gli `evalb_*` non sono nel ledger comune e compaiono in catena con quei job (ID vicini,
+# stato «Dependency»): tolti per prudenza, lettura di Claude da confermare con Simone. Gli originali restano sul Mac.
+# La regola prende solo un nome di job che COMINCIA con evalf_ o evalb_ (inizio riga, oppure dopo «|» o uno spazio): un nome
+# composto come `pose_evalb_x` resta.
+OTHER = re.compile(r"(?<![a-z])mona(?![a-z])|MONALISA|(?<![a-z0-9])t[12]_|(?:^|[|\s])eval[bf]_", re.IGNORECASE)
 # Riga della tabella di `saldo` (account, inizio, fine, ore): resta solo quella del nostro account.
 SALDO_ROW = re.compile(r"^\s*([A-Za-z][A-Za-z0-9]*_[A-Za-z0-9_]+)\s+20\d{6}\s+20\d{6}\s+\d+")
-# Righe scritte dal client ssh del Mac, non da Leonardo: i tre avvisi e la riga col certificato e l'indirizzo di posta.
+# Righe scritte dal client ssh del Mac, non da Leonardo: i tre avvisi, la riga col certificato e l'indirizzo di posta e, dal
+# 22/11/2026, la riga del collegamento rifiutato a certificato scaduto («utente@host: Permission denied (metodi).»). Quella riga
+# contiene utente e host e fermava la raccolta sul controllo dei segreti; una lettura che contiene solo lei resta sul Mac come
+# lettura senza contenuto (README.md). La forma e' stretta apposta: tutta la riga, niente altro prima o dopo, e solo verso un
+# host di Leonardo (`*.leonardo.cineca.it`): un rifiuto di un altro host (per esempio di git) resta e ferma la raccolta.
 SSH_NOISE = re.compile(r"^\*\* (WARNING: connection is not using a post-quantum|This session may be vulnerable to"
-                       r"|The server may need to be upgraded)|^The key \S+ \S+ .*is already present in the SSH agent")
+                       r"|The server may need to be upgraded)|^The key \S+ \S+ .*is already present in the SSH agent"
+                       r"|^[A-Za-z0-9._-]+@(?:[A-Za-z0-9-]+\.)*leonardo\.cineca\.it: Permission denied \([A-Za-z0-9,_-]+\)\.?\s*$")
 # Se una riga da copiare somiglia a un segreto, a una chiave o a un indirizzo di posta, ci si ferma e si guarda.
 SECRET = re.compile(r"(?i:passw|secret|api[_-]?key|token\s*=)|BEGIN [A-Z ]*PRIVATE KEY|ghp_[A-Za-z0-9]{20,}|hf_[A-Za-z0-9]{20,}"
                     r"|ssh-(?:rsa|ed25519|dss) AAAA|-cert-v01@openssh\.com|AAAA[0-9A-Za-z+/]{60,}"

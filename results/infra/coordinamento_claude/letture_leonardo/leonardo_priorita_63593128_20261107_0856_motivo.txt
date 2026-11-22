@@ -1,0 +1,54 @@
+2026-11-07 08:56:06
+== scontrol LQ
+Priority=144054
+QOS=normal
+JobState=PENDING
+Reason=PartitionConfig
+Dependency=(null)
+Requeue=0
+Restarts=0
+TimeLimit=04:00:00
+SubmitTime=2026-11-05T15:18:42
+EligibleTime=2026-11-05T16:38:00
+AccrueTime=2026-11-05T16:38:00
+StartTime=2026-11-07T09:13:32
+LastSchedEval=2026-11-07T08:56:06
+Partition=boost_usr_prod
+NumNodes=1
+NumCPUs=32
+ReqTRES=cpu=32,mem=480G,node=1,billing=32,gres/gpu=4
+MinMemoryNode=480G
+Features=(null)
+Command=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/logsquare-training-20261105/scripts/slurm/logsquare_train.sbatch
+TresPerNode=gres/gpu:4
+== scontrol scaling
+Priority=140723
+JobState=PENDING
+Reason=Priority
+TimeLimit=14:45:00
+SubmitTime=2026-11-06T20:33:43
+EligibleTime=2026-11-06T20:33:43
+ReqTRES=cpu=32,mem=480G,node=1,billing=32,gres/gpu=4
+MinMemoryNode=480G
+TresPerNode=gres/gpu:4
+== sprio
+== start stimato
+63593128|2026-11-07T09:13:32|PartitionConfig
+63696864|N/A|Priority
+== nodi boost per stato
+allocated 2744;completing 8;mixed- 13;mixed 562;planned 2;
+== in attesa a nodo intero 4 GPU per motivo (conteggi)
+   2410 PartitionConfig
+    995 Dependency
+    451 Priority
+    397 JobHeldUser
+     22 JobArrayTaskLimit
+== nostri job a nodo intero partiti negli ultimi giorni
+63526191|SCALING-300M-preflight-20261104|COMPLETED|2026-11-04T18:35:41|2026-11-04T18:35:59|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1
+63527446|SCALING-300M-memory-20261104|COMPLETED|2026-11-04T19:11:36|2026-11-04T20:42:52|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1
+63532335|LOGSQ-T100-LQ-5000-20261104|FAILED|2026-11-04T21:25:54|2026-11-05T06:35:40|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1
+63532932|SCALING-300M-train5000-20261104|COMPLETED|2026-11-04T21:34:49|2026-11-05T07:16:12|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1
+63591184|LOGSQ-initdiag-run-20261105|COMPLETED|2026-11-05T14:56:20|2026-11-05T14:56:56|billing=32,cpu=32,gres/gpu=4,mem=240G,node=1
+63593091|LOGSQ-T100-LQ-5000-20261105|COMPLETED|2026-11-05T15:18:24|2026-11-05T15:31:30|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1
+63593128|LOGSQ-T100-LQ-19618-20261105|PENDING|2026-11-05T15:18:42|Unknown|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1
+63696864|SCALING-300M-train19618-20261106|PENDING|2026-11-06T20:33:43|Unknown|billing=32,cpu=32,gres/gpu=4,mem=480G,node=1

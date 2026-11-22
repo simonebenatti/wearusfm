@@ -8312,6 +8312,14 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Esito: disegno approvato; gambe, riscaldamento e osservatore verificati con il codice vero; due difetti bloccanti nel solo confronto CPU (B-1, B-2) e nove correzioni da fare nello stesso commit.
 - Su CPU, con il trainer vero su un modello piccolo, la ripresa riscaldata ricostruisce il continuo bit per bit e la classificazione dà `SUPPORTED`: indicazione, non misura.
 
+### 2026-11-22 | Claude | Raccoglitore delle prove: due regole di taglio nuove e letture dei job dal 07/11 al 21/11 raccolte
+- Seguito dell'intoppo registrato il 21/11. Alla mia domanda «Aggiungo al raccoglitore il taglio della riga «Permission denied» e rilancio la raccolta?» Simone ha risposto «Sì, correggilo».
+- `results/infra/coordinamento_claude/raccogli_prove.py`, regola 1 (chiesta): fra le righe del client ssh entra quella del collegamento a Leonardo rifiutato a certificato scaduto, solo come riga intera e solo verso `*.leonardo.cineca.it`. Una lettura fatta solo di quella riga resta sul Mac.
+- Regola 2 (NON chiesta a Simone, aggiunta da me): fra le righe dell'altro progetto entrano i job il cui nome comincia con `evalf_` o `evalb_`. Provando a secco, 10 righe di job `evalb_*` sarebbero finite nelle copie: non sono nel ledger comune (0 righe su 1.878) e stanno in catena con i job `mona_*`. Tolte per prudenza: è una lettura mia che Simone deve confermare. README aggiornato.
+- Raccolta: 17 letture nuove (328 righe nelle copie; tolte 3 righe del client ssh e 38 dell'altro progetto: 22 `mona_*`, 6 `evalf_*`, 10 `evalb_*`); 7 letture senza contenuto rimaste sul Mac (4 rifiuti, 2 con sole righe del client ssh, 1 vuota); ledger a 1.878 righe (sei in più rispetto alla verifica dei revisori: tre invii di GPT delle 11:06-11:07 del 22/11, guardati da me); nessuna copia già nel repository è cambiata; seconda esecuzione senza scritture.
+- Verifica prima del commit: tre revisori indipendenti (segreti e dati personali; altro progetto e completezza; codice), nessun blocco. Dal revisore del codice un rilievo importante e uno minore, corretti prima del commit: la regola 1 prendeva un rifiuto verso qualunque host, la regola 2 anche nomi composti come `pose_evalb_x`. Dopo la correzione la raccolta ridà gli stessi file (0 scritture).
+- Nessun job. Le tavole e il resto del 21/11 sono nella voce precedente.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11325,3 +11333,10 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Da registrare prima della misura: regola per i due parametri scalari (ID 253 e 257) contro la soglia 1e-6, e regola per rieseguire il solo confronto su CPU a criteri invariati.
 - Nello stesso commit: test di `compare()` con il torch 2.2 simulato e payload realistico, `TimeoutExpired` nell'except, `--gpu-ore 1.0`, controllo della norma a 1e-12, costanti del piano, comando di `--validate-only`, tempi per gamba.
 - Poi rileggo solo il diff ed emetto il blocco sul commit nuovo.
+
+### 2026-11-22 | Claude | Raccoglitore: intoppo chiuso, una conferma da chiedere a Simone, limiti noti (per GPT e per Simone)
+- Chiuso l'intoppo del 21/11: un rifiuto del collegamento a Leonardo non ferma più la raccolta.
+- Da confermare con Simone: i job `evalb_*` (`evalb_asis`, `evalb_nodtw`, `evalb_fp32` e i loro `_bis`) sono dell'altro progetto? Se sono di WearUsFM la regola 2 va ristretta agli `evalf_*` e le 10 righe rientrano alla raccolta successiva: gli originali sono sul Mac.
+- Limite già presente e non toccato: il controllo dei segreti riconosce un `utente@host` in mezzo a una riga solo se l'host ha un punto; un `utente@nodo` senza dominio passerebbe. Nessun file di oggi lo contiene.
+- Varianti della riga del rifiuto (spazi in testa, minuscole, altro testo in coda) non vengono tolte: fermano la raccolta, cioè sbagliano nel verso sicuro.
+- Nelle copie compare l'UID numerico di Leonardo nello stato «CANCELLED by» di un nostro job (due letture del 09/11): lo stesso UID è già nel repository in `results/infra/pilot_posa/`.

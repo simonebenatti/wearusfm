@@ -24,8 +24,13 @@ Decisione di Simone, 06/11/2026. Alla domanda di Claude «Metto nei commit anche
 
 - Le righe dei job di un altro progetto dello stesso utente (nomi che contengono `mona`, `t1_` o `t2_` come parola, anche in mezzo al nome; percorsi `MONALISA`) e la riga di
   `saldo` di un account diverso da `IscrB_WearUsFM`. Simone, 05/11/2026: «che c'entrano, sono di un a ltro progetto».
+  Dal 22/11/2026 anche le righe dei job il cui nome comincia con `evalf_` o `evalb_`. Gli `evalf_*` sono le valutazioni dell'altro progetto. Gli
+  `evalb_*` non sono nel ledger comune e compaiono in catena con quei job: sono tolti per prudenza, ed e' una lettura di Claude
+  che Simone deve ancora confermare. Gli originali restano sul Mac.
 - Le righe scritte dal client ssh del Mac: tre righe di avviso e, in alcune letture, una riga con il certificato ssh e
-  l'indirizzo di posta di Simone.
+  l'indirizzo di posta di Simone. Dal 22/11/2026 anche la riga del collegamento a Leonardo rifiutato quando il
+  certificato e' scaduto («utente@host: Permission denied (...).», host `*.leonardo.cineca.it`): contiene utente e host e fermava la raccolta. Una lettura fatta solo di quella
+  riga resta sul Mac, come le altre letture senza contenuto.
 
 `MANIFEST.tsv` dice, file per file, quante righe sono state tolte e riporta lo sha256 dell'originale e della copia.
 
