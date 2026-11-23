@@ -142,9 +142,49 @@ def d2(root):
                   pct(s["fitting"]["recovery_on_observed"]["pooled"]["recovery"])))
 
 
+def d3(root):
+    rows = {}
+    for stage in ("d3t", "d3l", "d3s"):
+        path = root / stage / "variant_summary.json"
+        if path.exists():
+            rows.update(json.loads(path.read_text())["rows"])
+    if not rows:
+        return
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+    from tcn_temporal_diag import core
+    results = {}
+    for row in rows.values():
+        r = results.setdefault(row["weight_decay"], {"linear": {}, "valid": True})
+        r["valid"] = r["valid"] and bool(row["reproduced"])
+        if row["world"] == "temporal":
+            r["temporal"], r["late"] = row["gate"], row["late"]
+            r["selected"] = row["selected"]
+        else:
+            r["linear"][row["head"]] = row["gate"]
+    print("\n== D3: esplorazione della dose di weight decay (LR 0,003, mondo originale)")
+    for dose in sorted(results):
+        r = results[dose]
+        temporal = r.get("temporal")
+        line = "wd %g:" % dose
+        if temporal:
+            line += " R temporale TCN %s, esposizione scelta %s, bordo %s;" % (
+                {k: pct(v) for k, v in temporal["recovery"].items()}, r["selected"]["exposure"], r["late"])
+        for head, gate in sorted(r["linear"].items()):
+            worst = min(v for panel in gate["recovery"].values() for v in panel.values() if v is not None)
+            line += " lineare %s %s (min %s);" % (head, gate["status"], pct(worst))
+        print(line)
+    complete = {d: r for d, r in results.items() if "temporal" in r and set(r["linear"]) == set(core.W.CONTROL_HEADS)}
+    if len(complete) == len(core.VARIANT_DOSES):
+        decision = core.choose_dose(complete)
+        print("regola fissata prima: dose scelta %s, conferma su un mondo nuovo: %s" % (decision["chosen"], decision["confirm"]))
+    else:
+        print("regola non applicabile: dosi complete %s su %d" % (sorted(complete), len(core.VARIANT_DOSES)))
+
+
 if __name__ == "__main__":
     folder = Path(sys.argv[1])
     receipts(folder)
     d0(folder)
     d1(folder)
     d2(folder)
+    d3(folder)

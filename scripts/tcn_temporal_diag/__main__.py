@@ -40,9 +40,21 @@ RECEIPT_SHA256 = {
     "TCNH-wls-calibration-1-20261120": "697d52d894f9c759f64c95488011780a95ebf388db843b2e907476dc799a2dfa",
     "TCNH-preflight-20261120": "0a3314138a98ea3b9e6a8475297c38d5fed575dc112eb52dc4ae4d14d51ee16b",
 }
+# The archived linear-world controls, read by the weight-decay exploration only.
+LINEAR_RECEIPT_SHA256 = {
+    "TCNH-controls-linear-L0-20261120": "543d7ba1cd0feceedc6115b3ff9053b0a307a9aa8d02458e6f6f34131ce780c0",
+    "TCNH-controls-linear-MLP-20261120": "57cb766e0ebb4fcf97ec2aeb3a052bbb1e9c8dca51f40df75cfe852e35228be2",
+    "TCNH-controls-linear-TCN_post-20261120": "0576c92fd784051fc0cf7b03445462200c54f8a66d1bbc313ab382e016047946",
+}
 OUTPUT_ROOT = "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_diag_20261122"
 CAMPAIGN = "pose_temponet_diag_20261122"
-JOBS = {"d0": "TCND-d0-replay-20261122", "d1": "TCND-d1-cleanfit-20261122", "d2": "TCND-d2-extend-20261122"}
+JOBS = {"d0": "TCND-d0-replay-20261122", "d1": "TCND-d1-cleanfit-20261122", "d2": "TCND-d2-extend-20261122",
+        "d3t": "TCND-d3t-wd-20261123", "d3l": "TCND-d3l-wd-20261123", "d3s": "TCND-d3s-wd-20261123"}
+# Weight-decay exploration (D3): which reader and which world each job fits, at every dose of core.VARIANT_DOSES.
+D3_CELLS = {"d3t": (("TCN_post", "temporal"),), "d3l": (("TCN_post", "linear"),),
+            "d3s": (("L0", "linear"), ("MLP", "linear"))}
+PHASE2_PROTOCOL = "tcn-temporal-control-weight-decay-exploration-20261123-v1"
+CAMPAIGN_D3 = "pose_temponet_diag_20261123"
 SELECTED = {"lr": 0.003, "exposure": 31.0}
 # Recoveries of the archived gate (positive_controls_gate_20261121.json, temporal_head_gate.recovery).
 ARCHIVED_RECOVERY = {"fold0": 0.24173052888786836, "fold1": 0.1887545039561508, "pooled": 0.21710109906955868}
@@ -143,7 +155,28 @@ def setup():
               "held references differ from the frozen gate records")
     return {"plan": plan, "plan_pin": plan_pin, "code": code, "numeric": numeric, "pins": pins,
             "bundle": bundle, "calibrated": calibrated, "controls": controls,
-            "evaluation_identity": identity, "references": references}
+            "evaluation_identity": identity, "references": references, "folds": previous["train"]["folds"]}
+
+
+def setup_variant():
+    """The setup of D0-D2, plus the three archived linear-world controls and the rebuilt linear bundle."""
+    context = setup()
+    plan, pins, memo, controls = context["plan"], context["pins"], {}, {}
+    for head in W.CONTROL_HEADS:
+        identifier = E.job_id("controls", head=head, world="linear")
+        row, pins[identifier] = R._receipt(plan, identifier, verification_cache=memo)
+        P.require(pins[identifier]["sha256"] == LINEAR_RECEIPT_SHA256[identifier],
+                  "receipt differs from its archived mirror: " + identifier)
+        selection = R._json_artifact(row, "selection")
+        P.require(selection["world"] == "linear" and selection["head"] == head and row["stage"] == "controls",
+                  "linear control selection label mismatch")
+        controls[head] = {"receipt": row, "selection": selection, "pin": pins[identifier]}
+    linear = W.prepare_control_folds(context["bundle"].cache, context["calibrated"], "linear",
+                                     allowed_train_users=plan["producers"]["train"]["users"],
+                                     source_identity=R._input_identity(plan), expected_folds=context["folds"])
+    for head, control in controls.items():
+        core.check_world_bundle(linear, control["selection"], head)
+    return {**context, "linear_bundle": linear, "linear_controls": controls}
 
 
 def _states(context, head):
@@ -280,6 +313,37 @@ def run_d2(context, directory, root, artifacts):
     return gates
 
 
+def run_d3(context, directory, root, artifacts, cells):
+    """Weight-decay exploration: every dose, one learning rate, frozen calendar and selection; results written as they come."""
+    rows = {}
+    for dose in core.VARIANT_DOSES:
+        recipe = core.variant_recipe(dose, RECIPE)
+        for head, world in cells:
+            temporal = world == core.WORLD
+            bundle = context["bundle"] if temporal else context["linear_bundle"]
+            selection = (context["controls"] if temporal else context["linear_controls"])[head]["selection"]
+            result = core.variant_fit(bundle, selection, context["references"]["references"] if temporal else None,
+                                      device=DEVICE, recipe=recipe, lr=LEARNING_RATE, head=head,
+                                      fitting_exposures=READING_EXPOSURES + EXTENSION_SNAPSHOTS, log=log)
+            states = result.pop("states")
+            key = "%s_%s_wd%s" % (world, head, repr(float(dose)))
+            artifacts[key] = P.atomic_json(directory / (key + ".json"),
+                                           core.plain({"protocol": PHASE2_PROTOCOL, **result}), root=root)
+            if head == core.HEAD:
+                artifacts[key + "_states"] = P.atomic_torch(directory / (key + "_states.pt"), states, root=root)
+            rows[key] = {"head": head, "world": world, "weight_decay": float(dose), "gate": result["gate"],
+                         "selected": result["selected"], "late": result["late"],
+                         "extended": result["extended_by_frozen_rule"], "reproduced": result["selected_reproduced"]}
+            log({"event": "variant_done", **rows[key]})
+    gates = {"held_oracle_self_check": context["references"]["held_oracle_self_check_passed"],
+             "selected_points_reproduced": all(row["reproduced"] for row in rows.values())}
+    artifacts["summary"] = P.atomic_json(directory / "variant_summary.json",
+                                         core.plain({"protocol": PHASE2_PROTOCOL, "lr": LEARNING_RATE,
+                                                     "doses": core.VARIANT_DOSES, "rows": rows, "gates": gates}),
+                                         root=root)
+    return gates
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("stage", choices=sorted(JOBS))
@@ -301,11 +365,14 @@ def main(argv=None):
             P.require(P.read_json_pin(previous)["status"] == "completed",
                       "D0 did not complete: no later stage may run")
             predecessors[JOBS["d0"]] = previous
-        context = setup()
+        context = setup_variant() if stage in D3_CELLS else setup()
         log({"event": "setup_complete", "stage": stage, "code": context["code"],
              "bundle_sha256": context["bundle"].manifest["bundle_sha256"],
              "evaluation_identity": context["evaluation_identity"]})
-        gates = {"d0": run_d0, "d1": run_d1, "d2": run_d2}[stage](context, directory, root, artifacts)
+        if stage in D3_CELLS:
+            gates = run_d3(context, directory, root, artifacts, D3_CELLS[stage])
+        else:
+            gates = {"d0": run_d0, "d1": run_d1, "d2": run_d2}[stage](context, directory, root, artifacts)
         status = "completed" if gates and all(gates.values()) else "gate_failed"
     except GateFailed as error:
         status, failure = "gate_failed", error
@@ -316,7 +383,8 @@ def main(argv=None):
     if failure is not None:
         details.update(error_type=type(failure).__name__, error=str(failure))
     receipt = {"schema": "tcn-temporal-diag-receipt-v1", "protocol": PROTOCOL, "job_id": job_id, "stage": stage,
-               "status": status, "complete": status == "completed", "campaign": CAMPAIGN,
+               "status": status, "complete": status == "completed",
+               "campaign": CAMPAIGN_D3 if stage in D3_CELLS else CAMPAIGN,
                "source_sha256": SOURCE_SHA256, "reviewed_code_sha": REVIEWED_CODE_SHA,
                "plan": {"path": PLAN_REPO_PATH, "sha256": PLAN_SHA256},
                "predecessors": predecessors, "artifacts": artifacts, "gates": gates, "details": details}

@@ -226,3 +226,82 @@ sul bersaglio rumoroso `y`, con il calendario e il valutatore congelati. 300 è 
 - Nessun passo successivo parte da solo. Con i numeri in mano Simone decide se e quale variante provare. Restano valide le
   condizioni già concordate: variante fissata prima, conferma su un mondo nuovo con semi `20261122 + 1000·fold`, un solo
   tentativo.
+
+## 8. Fase 2 — esplorazione della dose di weight decay (D3), 23/11/2026
+
+Stato: **regole congelate prima dei job**. Esiti di D0, D1 e D2 in `docs/decisioni.md`, voce del 22/11 «esiti dei diagnostici».
+
+Incarico. Alla domanda «Che cosa vuoi provare come variante, da fissare prima e confermare su un mondo nuovo?» Simone ha
+risposto, il 23/11: «niente gpt per ora, vai avanti tu». Lettura di Claude: scegliere la variante, fissarne le regole e lanciare
+la parte che rientra nell'autonomia del 28/10 («se devi sottomettere cose che durano meno di 5h-GPU fallo pure in autonomia»).
+La conferma su un mondo nuovo è un passo separato (sezione 8.6).
+
+### 8.1 Perché il weight decay
+
+- Con etichette pulite la stessa testa e la stessa ricetta arrivano al 94,6% (D1): non mancano capacità, rappresentazione o
+  ottimizzazione.
+- Con il rumore la TCN impara il rumore del fitting mentre impara la funzione: allo stato scelto il 79% dello scarto fra fitting
+  ed esclusi è allineamento al rumore, e l'errore pulito è tolto per un quinto sugli esclusi (D0). Allungare peggiora (D2).
+- La regolarizzazione esplicita oggi è quasi assente: AdamW con weight decay 0,01 a LR 0,003 contrae i pesi del 2,7% in 899
+  passi. Resta il solo arresto anticipato.
+- Nella simulazione giocattolo un weight decay di 0,3 portava il recupero da 0,31 a 0,42 e da 0,29 a 0,37: è l'unica modifica
+  singola provata che alzasse il livello.
+- È un solo parametro della ricetta comune: cambia nello stesso modo L0, MLP e TCN e lascia intatto il confronto fra le teste.
+
+### 8.2 Disegno
+
+- Dosi: 0,1, 0,3, 1 e 3. Il valore congelato è 0,01. Unica modifica: il weight decay di AdamW, applicato come nella ricetta
+  congelata ai soli pesi di matrici e kernel.
+- Celle: la TCN nel mondo temporale; TCN, L0 e MLP nel mondo lineare. Mondo originale: calibrazioni, bersagli, utenti e fold di A1.
+- Per ogni dose e cella: learning rate 0,003, seme 0, inizializzazione, ordine dei batch e flusso del dropout di A1; calendario
+  dei checkpoint, estensione a 300 epoche e selezione congelati (minimo della MSE pooled contro `y` sugli esclusi interni, a parità
+  la prima esposizione).
+- Con il weight decay congelato il driver ridà esattamente la curva archiviata di A1 per ogni learning rate (test
+  `test_variant_fit_at_the_frozen_weight_decay_is_the_archived_curve_of_that_learning_rate`). La differenza fra A1 e D3 è quindi la
+  sola dose.
+- La ricetta variante è marcata `test_only`: nessun punto d'ingresso congelato la accetta.
+- È un'esplorazione sul mondo in cui A1 ha già scelto learning rate ed epoca: serve a scegliere, non a confermare.
+- Letture: recupero del cancello temporale congelato (fold 0, fold 1, pooled) per la TCN; cancello lineare congelato (MSE ed
+  `E_dyn` nei tre pannelli) per le tre teste. Descrittivi come in D1: ramo profondo, rumore riprodotto, letture alle esposizioni
+  1, 10, 31, 75, 150 (e 200, 250, 300 se si prosegue).
+
+### 8.3 Regola di scelta, fissata prima
+
+- Una dose è **ammissibile** se il punto scelto di ogni cella si riproduce e le tre teste passano il cancello lineare congelato
+  (recupero almeno 0,90 in MSE ed `E_dyn` nei tre pannelli, `controls.linear_head_gate`).
+- Si **sceglie** la dose ammissibile con il recupero temporale pooled più alto; a parità, la dose più piccola.
+- La **conferma** su un mondo nuovo si propone solo se la dose scelta raggiunge 0,50 nei tre pannelli del mondo temporale
+  originale, la soglia congelata `TEMPORAL_HEAD_RECOVERY`. Altrimenti la linea torna a Simone con la curva dose-risposta.
+- La regola è `core.choose_dose`; la applica `results/infra/tcn_temporal_diag_20261122/summarize.py` dopo la raccolta.
+- Limiti dichiarati: un solo learning rate, un solo seme, il mondo già usato da A1.
+
+### 8.4 Previsioni di Claude, scritte prima
+
+1. Il recupero temporale pooled della TCN cresce con la dose fino a un massimo e poi cala alla dose più alta. Sbagliata se sulle
+   quattro dosi cresce sempre o cala sempre.
+2. Nessuna dose ammissibile raggiunge 0,50 nei tre pannelli: la conferma non si propone. Sbagliata se una dose ammissibile lo
+   raggiunge.
+3. Il massimo pooled fra le quattro dosi sta fra 0,25 e 0,40. Sbagliata fuori da questo intervallo.
+
+### 8.5 Job, risorse e costo
+
+| ID logico | Celle | Limite | GPU-ore prenotate |
+| --- | --- | --- | ---: |
+| `TCND-checkout2-20261123` | checkout di campagna `pose_temponet_diag_20261123` | 12 min, `lrd_all_serial` | 0 |
+| `TCND-d3t-wd-20261123` | TCN, mondo temporale, quattro dosi | 100 min | 1,72 |
+| `TCND-d3l-wd-20261123` | TCN, mondo lineare, quattro dosi | 100 min | 1,72 |
+| `TCND-d3s-wd-20261123` | L0 e MLP, mondo lineare, quattro dosi | 70 min | 1,22 |
+
+- Risorse dei tre job GPU come D0-D2: `boost_usr_prod`, 1 GPU, 8 CPU, 32 GB, QoS `normal`; tutti `afterok` sul checkout.
+  Ognuno richiede anche la ricevuta completata di D0.
+- **Totale prenotato 4,65 GPU-ore** (limite più 180 secondi), cioè 37,2 ore locali, più 0,4 core-ore del checkout: sotto le 5
+  GPU-ore dell'autonomia del 28/10. Consumo atteso circa 2,3 GPU-ore: 12,8 minuti per una TCN a 150 epoche, 4 per L0 e MLP.
+- Nessun rilancio dentro questa fase: con un rilancio si supererebbero le 5 GPU-ore, quindi serve una decisione nuova.
+- Leonardo è in manutenzione dal 23/11 alle 08:00 al 25/11 alle 08:00, e il certificato ssh va rinnovato: l'invio avviene dopo.
+
+### 8.6 Passo successivo, non incluso: conferma su un mondo nuovo
+
+Solo se la regola 8.3 lo propone. Semi `20261122 + 1000·fold` (L = base, T = base + 1, rumore = base + 2); nuova calibrazione
+con la regola congelata, sui soli inner-train; sei controlli (tre teste, due mondi) con la dose scelta e la ricerca congelata
+completa; cancello congelato sul mondo nuovo; un solo tentativo. Un fallimento torna a Simone. Costo stimato: circa 2 core-ore
+CPU per le calibrazioni e 3,6 GPU-ore misurate per i controlli, con una prenotazione maggiore: serve l'approvazione di Simone.

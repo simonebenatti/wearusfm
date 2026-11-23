@@ -738,6 +738,145 @@ def extend_noisy_fit(bundle, selection, states, references, *, device, recipe=T.
                        "final_states": [t.state() for t in trajectories]}}
 
 
+VARIANT_DOSES = (0.1, 0.3, 1.0, 3.0)
+
+
+def variant_recipe(weight_decay, base=T.Recipe()):
+    """The frozen recipe with one change, the AdamW weight decay.
+
+    Marked test-only on purpose: no frozen production entry point accepts it,
+    so a diagnostic variant can never enter the frozen chain by mistake.
+    """
+    recipe = T._TestRecipe(**{**asdict(base), "weight_decay": float(weight_decay), "test_only": True})
+    changed = {k for k, v in asdict(recipe).items() if v != asdict(base)[k]}
+    require(changed <= {"weight_decay", "test_only"}, "variant recipe changes more than the weight decay")
+    T._check_recipe(recipe)
+    return recipe
+
+
+def check_world_bundle(bundle, selection, head):
+    """The rebuilt bundle of either world equals the one that the archived selection of this head used."""
+    W._assert_bundle(bundle)
+    require(selection["head"] == head and selection["world"] == bundle.world, "archived selection of another cell")
+    require(dict(bundle.manifest) == selection["bundle"], "rebuilt bundle differs from the archived selection bundle")
+    depth = W._feature_depth(head)
+    feature_hash = W._array_hash(W._features(bundle.cache, depth))
+    require(feature_hash == selection["feature_array_sha256"], "feature array differs from the archived selection")
+    identity = W._identity({"bundle": bundle.manifest, "depth": depth, "feature_array_sha256": feature_hash})
+    require(identity == selection["evaluation_identity"], "inner evaluation identity differs from the archive")
+    return identity
+
+
+def head_gate(bundle, per_fold_observed):
+    """The frozen head gate of the bundle's world on one selected pair (held users, observed y)."""
+    values = panel_values(per_fold_observed)
+    if bundle.world == WORLD:
+        return C.temporal_head_gate(bundle.reference_gate["temporal_records"],
+                                    {name: values[name]["E_dyn"] for name in PANELS})
+    return C.linear_head_gate(bundle.reference_gate["linear_records"],
+                              {name: {"MSE": values[name]["MSE"], "E_dyn": values[name]["E_dyn"]} for name in PANELS})
+
+
+def variant_fit(bundle, selection, references, *, device, recipe, lr, head, fitting_exposures=(), factory=None,
+                log=None):
+    """D3: one frozen paired training at one learning rate with a variant recipe, on the observed target.
+
+    Calendar, extension rule and selection (minimum pooled MSE against the
+    observed y of the held users, first exposure on ties) are the frozen ones.
+    Initialization, shuffle and dropout streams are those of the archived
+    search, so the run differs from the archived curve of this learning rate
+    by the recipe only. Held users are scored at every checkpoint; fitting
+    users, in the temporal world, at ``fitting_exposures`` and at the selected point.
+    """
+    factory = factory or default_factory(head)
+    depth = W._feature_depth(head)
+    identity = check_world_bundle(bundle, selection, head)
+    temporal = bundle.world == WORLD
+    require(not temporal or references is not None, "temporal readings need the references")
+    fitting = [W._training_set(bundle, ix, depth, fold) for fold, ix in enumerate(bundle.fitting)]
+    held = {}
+    trajectories = [T.Trajectory(factory, data, lr=lr, seed=0, fold=fold, device=device, _recipe=recipe)
+                    for fold, data in enumerate(fitting)]
+    require([t.initial_sha256 for t in trajectories] == list(selection["initial_sha256_per_fold"]),
+            "variant fit does not start from the archived initialization")
+    pair = T.PairedCandidate(trajectories, held_evaluator(bundle, device, held), identity)
+    records, wanted = [], {float(e) for e in fitting_exposures}
+
+    def checkpoint(candidate):
+        point = candidate.points[-1]
+        if temporal and float(point.exposure) in wanted:
+            records.append(checkpoint_record(point, candidate.trajectories, held, bundle, references, device))
+        else:
+            row = {"point": asdict(point), "held": [dict(held[fold]) for fold in (0, 1)]}
+            if temporal:
+                row["held_recovery"] = recovery_panels([held[fold]["observed"] for fold in (0, 1)], references["held"])
+            records.append(row)
+        if log is not None:
+            log({"event": "variant_checkpoint", "head": head, "world": bundle.world, "weight_decay": recipe.weight_decay,
+                 "point": asdict(point)})
+
+    pair.advance(recipe.initial_epochs, checkpoint)
+    extended = S.needs_epoch_extension(pair.curve(), recipe.initial_epochs, recipe.last_epochs)
+    if extended:  # exactly the frozen search: train._run_search
+        pair.advance(recipe.maximum_epochs, checkpoint)
+    curve = pair.curve()
+    best = curve.best("mse")
+    minima = {metric: curve.best(metric).exposure for metric in ("mse", "edyn")}
+    boundary = max(1, recipe.maximum_epochs - recipe.last_epochs + 1)
+    late = curve.horizon == recipe.maximum_epochs and any(e >= boundary for e in minima.values())
+    selected = []
+    for fold in (0, 1):
+        trajectory = T.Trajectory(factory, fitting[fold], lr=lr, seed=0, fold=fold, device=device, _recipe=recipe)
+        trajectory.restore(pair.best_states[fold])
+        require(trajectory.updates == best.fold_steps[fold], "selected pair exposure mismatch")
+        selected.append(score_splits(trajectory.model, bundle, fold, device, depth))
+        del trajectory
+    point = S.pool_scores([s["held"]["observed"] for s in selected], best.exposure, best.fold_steps)
+    reproduced = close(point.mse, best.mse) and close(point.edyn, best.edyn)
+    gate = head_gate(bundle, [s["held"]["observed"] for s in selected])
+    return {"head": head, "world": bundle.world, "lr": lr, "weight_decay": recipe.weight_decay,
+            "recipe": asdict(recipe), "evaluation_identity": identity,
+            "training_set_sha256": [d.identity for d in fitting],
+            "initial_sha256_per_fold": [t.initial_sha256 for t in trajectories],
+            "horizon": curve.horizon, "extended_by_frozen_rule": bool(extended),
+            "curve": asdict(curve), "minimum_exposures": minima, "late": bool(late),
+            "selected": asdict(best), "selected_reproduced": bool(reproduced), "selected_per_fold": selected,
+            "selected_summary": summarize(selected, references) if temporal else None,
+            "gate": gate, "records": records,
+            "states": {"schema": "tcn-temporal-diag-variant-states-v1", "head": head, "world": bundle.world,
+                       "lr": lr, "weight_decay": recipe.weight_decay, "best_exposure": pair.best_exposure,
+                       "best_states": pair.best_states, "final_states": [t.state() for t in trajectories]}}
+
+
+def choose_dose(results):
+    """Pre-registered rule for the weight-decay exploration.
+
+    ``results[dose]`` holds the frozen gates of one dose: ``temporal`` for the
+    TCN reader and ``linear`` for each of L0, MLP and TCN_post. A dose is
+    admissible when every linear gate passes and the run was valid; the chosen
+    dose is the admissible one with the highest pooled temporal recovery, the
+    smaller dose on ties. Confirmation on a new world is warranted only if the
+    chosen dose reaches the frozen temporal threshold in all three panels.
+    """
+    rows = []
+    for dose in sorted(results):
+        r = results[dose]
+        recovery = dict(r["temporal"]["recovery"])
+        linear = {head: r["linear"][head]["status"] for head in W.CONTROL_HEADS}
+        rows.append({"dose": float(dose), "valid": bool(r.get("valid", True)),
+                     "linear_passed": all(status == "passed" for status in linear.values()),
+                     "linear_status": linear, "recovery": recovery, "late": bool(r.get("late", False)),
+                     "pooled": recovery.get("pooled")})
+    admissible = [row for row in rows if row["valid"] and row["linear_passed"] and row["pooled"] is not None and
+                  np.isfinite(row["pooled"])]
+    if not admissible:
+        return {"rows": rows, "chosen": None, "confirm": False}
+    best = max(admissible, key=lambda row: (row["pooled"], -row["dose"]))
+    confirm = all(best["recovery"].get(name) is not None and np.isfinite(best["recovery"][name]) and
+                  best["recovery"][name] >= C.TEMPORAL_HEAD_RECOVERY for name in PANELS)
+    return {"rows": rows, "chosen": best["dose"], "confirm": bool(confirm)}
+
+
 def frozen_gate(selected_summary, bundle):
     """The frozen temporal head gate on the D1 selected point, with the gate's own references."""
     head = {name: selected_summary["held"]["observed"][name]["E_dyn"] for name in PANELS}
