@@ -9098,6 +9098,9 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   esecuzione `D` = `487850361deaa6720eb54e2a7c81c25f6274ff05`.** Test CPU dei diagnostici: 62 passati. Difetti e correzioni nella sezione 2.
 - Costo della fase 3: la domanda a Simone non lo riportava; prima dell'invio Simone conferma 9,30 GPU-ore prenotate
   (74,4 ore locali), consumo atteso 4-5 GPU-ore.
+- Conferma del costo, 23/11: alla domanda «Confermi per la fase B 9,30 GPU-ore prenotate (74,4 ore locali)?» Simone ha
+  risposto «Sì, confermo». Registrata nel commit `d2f74914` (protocollo, sezione 9; `docs/decisioni.md`; sequenza operativa),
+  solo documenti: il commit di esecuzione resta D = `48785036`. La fase 3 parte solo se la regola di D3 la propone.
 
 ## 2) Problemi trovati
 
