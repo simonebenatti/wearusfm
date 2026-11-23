@@ -354,6 +354,9 @@ Simone ha risposto, il 23/11: «Sì, approvo». La fase 3 parte quindi se, e sol
 applica il driver stesso, sulle tre sintesi autenticate di D3: nessuna scelta a mano.
 La domanda non riportava il costo della fase 3, come chiede CLAUDE.md per ogni richiesta di conferma: prima dell'invio Simone
 conferma la prenotazione della sezione 9.3. Senza quella conferma la fase 3 non si invia.
+Conferma del costo, 23/11: alla domanda «Confermi per la fase B 9,30 GPU-ore prenotate (74,4 ore locali)?», accompagnata nel
+messaggio dalle altre cifre (12,1 core-ore CPU, consumo atteso circa 4-5 GPU-ore, residuo dell'account letto il 22/11: 652.656
+ore locali su 2.000.000), Simone ha risposto «Sì, confermo». La fase 3 resta subordinata alla regola 8.3 e a un solo tentativo.
 
 ### 9.1 Il mondo nuovo
 

@@ -53,7 +53,8 @@ Controllo ogni 30 minuti (`squeue -h -j`, poi `sacct -X -j`). Nessun rilancio de
 ## 3. Fase 3 (B), solo se la regola propone la conferma; 9,30 GPU-ore prenotate, un solo tentativo
 
 Condizioni, tutte prima del primo invio: le tre ricevute di D3 `completed`; `summarize.py` dà «conferma su un mondo nuovo: True»;
-Simone ha confermato il costo (la domanda del 23/11 non lo riportava: protocollo, sezione 9). Ogni stadio, cancello compreso,
+Simone ha confermato il costo (fatto il 23/11: «Sì, confermo» a «Confermi per la fase B 9,30 GPU-ore prenotate (74,4 ore
+locali)?»; protocollo, sezione 9). Ogni stadio, cancello compreso,
 rilegge comunque la regola da sé prima di qualunque setup. Ogni job dipendente si invia subito dopo i suoi predecessori, mentre
 sono ancora in coda o in esecuzione: un `afterok` su un job già uscito dalla memoria del controller può essere rifiutato.
 
