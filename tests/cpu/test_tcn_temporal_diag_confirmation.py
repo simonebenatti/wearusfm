@@ -219,7 +219,8 @@ def test_confirmation_stages_stop_before_any_setup_when_the_rule_does_not_propos
     monkeypatch.setattr(entry, "setup", lambda: pytest.fail("no GPU setup without the rule"))
     monkeypatch.setattr(entry, "setup_calibration", lambda: pytest.fail("no calibration setup without the rule"))
     monkeypatch.setattr(entry.W, "_run_selection", lambda *a, **k: pytest.fail("no search without the rule"))
-    for stage in (*entry.B_CALIBRATIONS, next(iter(entry.B_CONTROLS))):
+    monkeypatch.setattr(entry, "reviewed_plan", lambda: pytest.fail("no gate without the rule"))
+    for stage in (*entry.B_CALIBRATIONS, next(iter(entry.B_CONTROLS)), entry.B_GATE):
         monkeypatch.setenv("TCND_JOB_ID", entry.JOBS[stage])
         assert entry.main([stage]) == 3
         receipt = json.loads((root / "receipts" / (entry.JOBS[stage] + ".json")).read_text())
@@ -246,6 +247,23 @@ def test_a_frozen_gate_of_the_new_world_generator_is_a_gate_failure_not_a_crash(
     assert P.read_json_pin(receipt["artifacts"]["failed_gate"]) == {"status": "degenerate"}
 
 
+def test_a_calibration_that_is_not_calibrated_stops_as_the_frozen_stage(world, tmp_path, monkeypatch):
+    root = tmp_path.resolve() / "diag"
+    artifacts = _patch_b(monkeypatch, world, root, {"chosen": 0.3, "confirm": True, "rows": []})
+    failed = copy.deepcopy(artifacts[0])
+    failed["calibration"] = {**failed["calibration"], "status": "control_non_calibrated"}
+    monkeypatch.setattr(core, "calibrate_new_world", lambda cache, fit, held, users, fold, block_windows: failed)
+    monkeypatch.setenv("TCND_JOB_ID", entry.JOBS["d0"])
+    assert entry.main(["d0"]) == 0
+    monkeypatch.setenv("TCND_JOB_ID", entry.JOBS["bc0"])
+    assert entry.main(["bc0"]) == 3
+    receipt = json.loads((root / "receipts" / (entry.JOBS["bc0"] + ".json")).read_text())
+    assert receipt["status"] == "gate_failed" and receipt["details"]["gate_status"] == "control_non_calibrated"
+    assert {"calibration_state", "calibration", "failed_gate"} <= set(receipt["artifacts"])
+    gate = json.loads((root / "bc0" / "failed_gate.json").read_text())
+    assert gate["status"] == "control_non_calibrated" and gate["calibration"]["status"] == "control_non_calibrated"
+
+
 def test_d3_decision_reads_the_authenticated_summaries(world, tmp_path, monkeypatch):
     import test_tcn_temporal_diag_variant as TV
     lin = WF.control_bundle(WF.bundle(), world["artifacts"], "linear")
@@ -265,3 +283,12 @@ def test_d3_decision_reads_the_authenticated_summaries(world, tmp_path, monkeypa
     for stage in entry.D3_CELLS:
         rows.update(json.loads((root / stage / "variant_summary.json").read_text())["rows"])
     assert decision == core.choose_dose(core.d3_results(rows, doses=(0.1, 1.0)))
+    # A confirmation stage with the real rule pins the three D3 receipts among its predecessors, whatever the rule says.
+    monkeypatch.setattr(entry, "allocation_cpu", lambda cpus: {"slurm_job_id": "2", "scontrol": "test"})
+    monkeypatch.setattr(entry, "setup_calibration", lambda: (_ for _ in ()).throw(entry.GateFailed("stop after the rule")))
+    monkeypatch.setenv("TCND_JOB_ID", entry.JOBS["bc0"])
+    assert entry.main(["bc0"]) == 3
+    receipt = json.loads((root / "receipts" / (entry.JOBS["bc0"] + ".json")).read_text())
+    assert set(receipt["predecessors"]) == {entry.JOBS[s] for s in ("d0", *entry.D3_CELLS)}
+    assert receipt["details"]["error"] in ("stop after the rule",
+                                           "the pre-registered dose rule does not propose a confirmation")

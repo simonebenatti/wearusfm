@@ -439,8 +439,11 @@ def run_bc(context, fold, directory, root, artifacts):
     artifacts["calibration"] = P.atomic_json(directory / "calibration.json", R._plain(summary), root=root)
     log({"event": "new_world_calibration", "fold": fold, "status": result["calibration"]["status"],
          "selected": result["calibration"].get("selected")})
-    return {"calibrated": result["calibration"]["status"] == "calibrated",
-            "new_world_seed": result["components"]["seed"] == core.new_world_seed(fold)}
+    status = result["calibration"]["status"]
+    if status != "calibrated":  # as the frozen wls_calibration stage: a measured gate, recorded with failed_gate.json
+        raise core.C.GateNotPassed(status + ": stop before neural controls", status=status,
+                                   gate={"status": status, "calibration": result["calibration"]})
+    return {"calibrated": True, "new_world_seed": result["components"]["seed"] == core.new_world_seed(fold)}
 
 
 def confirmation_decision(root, predecessors):
@@ -514,7 +517,7 @@ def main(argv=None):
                       "D0 did not complete: no later stage may run")
             predecessors[JOBS["d0"]] = previous
         decision = None
-        if stage in (*B_CALIBRATIONS, *B_CONTROLS):  # the D3 rule first: nothing of B is set up unless it proposes B
+        if stage in (*B_CALIBRATIONS, *B_CONTROLS, B_GATE):  # the D3 rule first: nothing of B runs unless it proposes B
             decision = confirmation_decision(root, predecessors)
         if stage in B_CONTROLS:
             for calibration in B_CALIBRATIONS:  # fail before any GPU work if a calibration did not complete

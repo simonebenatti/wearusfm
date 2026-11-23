@@ -6,8 +6,10 @@ Operatore: Claude, dal Mac (incarico di Simone del 22/11 e «niente gpt per ora,
 `claude/tcn-temporal-diag-20261122`. `D` = SHA completo del commit da eseguire, quello che chiude le review delle due fasi.
 
 Submitter: `/Users/simonebenatti/.venvs/wearusfm-tok/bin/python '/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py'`
-(sha256 `814da4bc…`), lanciato dalla radice del worktree al commit `D`. Log: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/<ID>_%j.out`.
-`CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_diag_20261123`.
+(sha256 `814da4bc…`), lanciato dalla radice del worktree, a `D` o a un suo discendente che non tocca `scripts/` (dispatch
+sha256 `c082cd46…`, `git diff --quiet D HEAD -- scripts`). Log: `/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/<ID>_%j.out`.
+`CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_diag_20261123`, `EXPECTED_SHA=D` per tutti i job.
+Ogni invocazione: `--agente claude --campagna pose_temponet_diag_20261123`.
 
 ## 0. Prima dell'invio
 
@@ -17,15 +19,21 @@ Submitter: `/Users/simonebenatti/.venvs/wearusfm-tok/bin/python '/Users/simonebe
   (`P.source_identity()` = `9aaf1c8b…`); albero pulito.
 - `git push origin claude/tcn-temporal-diag-20261122`; `git push leonardo ${D}:refs/heads/deploy/pose-temponet-diag-20261123`;
   `git ls-remote leonardo refs/heads/deploy/pose-temponet-diag-20261123` = `D`.
+- Voce nel registro condiviso (ramo `claude/temponet-db8-20261109`, nelle due sezioni) con lo SHA completo di `D`, gli ID, i
+  costi e le basi dell'autorizzazione; commit e push prima del primo `sbatch`.
+- Quota di `$WORK` (`lfs quota -hp <id del progetto> $WORK`) prima di D3 e di nuovo prima della fase 3, che scrive circa 0,5 GB;
+  residuo dell'account riletto come il 22/11.
+- Nessun job durante il rinfresco di `$SCRATCH` del 03/12: gli input stanno su `$SCRATCH` e un `touch` durante la lettura fa
+  fallire la verifica dei pin.
 
 ## 1. Checkout e fase 2 (D3), 4,98 GPU-ore prenotate
 
 | ID | `--gpu-ore` | Coda e risorse | `--time` | `--dopo` |
 | --- | --- | --- | --- | --- |
 | `TCND-checkout2-20261123` | 0 | `lrd_all_serial`, 2 CPU, 24G, script `scripts/slurm/campaign_checkout.sbatch`, `CAMPAIGN=pose_temponet_diag_20261123,CAMPAIGN_SHA=D` | 00:12:00 | — |
-| `TCND-d3t-wd-20261123` | 1.9166666666666667 | `boost_usr_prod`, `--gres=gpu:1 --qos=normal`, 8 CPU, 32G, `TCND_STAGE=d3t` | 01:52:00 | checkout2 |
+| `TCND-d3t-wd-20261123` | 1.9 | `boost_usr_prod`, `--gres=gpu:1 --qos=normal`, 8 CPU, 32G, `TCND_STAGE=d3t` | 01:51:00 | checkout2 |
 | `TCND-d3l-wd-20261123` | 1.8833333333333333 | come sopra, `TCND_STAGE=d3l` | 01:50:00 | checkout2 |
-| `TCND-d3s-wd-20261123` | 1.1833333333333333 | come sopra, `TCND_STAGE=d3s` | 01:08:00 | checkout2 |
+| `TCND-d3s-wd-20261123` | 1.2 | come sopra, `TCND_STAGE=d3s` | 01:09:00 | checkout2 |
 
 I tre job GPU usano `--script-stdin scripts/slurm/tcn_temporal_diag_dispatch.sbatch` e
 `--export=ALL,CODE_DIR=<CODE_DIR>,EXPECTED_SHA=D,TCND_STAGE=<stadio>,TCND_JOB_ID=<ID>`, con `--account=IscrB_WearUsFM --nodes=1
@@ -44,8 +52,9 @@ Controllo ogni 30 minuti (`squeue -h -j`, poi `sacct -X -j`). Nessun rilancio de
 ## 3. Fase 3 (B), solo se la regola propone la conferma; 9,30 GPU-ore prenotate, un solo tentativo
 
 Condizioni, tutte prima del primo invio: le tre ricevute di D3 `completed`; `summarize.py` dà «conferma su un mondo nuovo: True»;
-Simone ha confermato il costo (la domanda del 23/11 non lo riportava: protocollo, sezione 9). Ogni stadio rilegge comunque la
-regola da sé prima di qualunque setup.
+Simone ha confermato il costo (la domanda del 23/11 non lo riportava: protocollo, sezione 9). Ogni stadio, cancello compreso,
+rilegge comunque la regola da sé prima di qualunque setup. Ogni job dipendente si invia subito dopo i suoi predecessori, mentre
+sono ancora in coda o in esecuzione: un `afterok` su un job già uscito dalla memoria del controller può essere rifiutato.
 
 | ID | `--gpu-ore` | Coda e risorse | `--time` | `--dopo` |
 | --- | --- | --- | --- | --- |
@@ -54,7 +63,7 @@ regola da sé prima di qualunque setup.
 | `TCND-b-controls-{linear,temporal}-TCN_post-20261123` | 2.55 | come sopra | 02:30:00 | le due calibrazioni |
 | `TCND-b-gate-20261123` | 0 | `lrd_all_serial`, 2 CPU, 16G, `TCND_STAGE=bg` | 00:15:00 | le sei ricerche |
 
-Stesso script di dispatch e stesso `CODE_DIR` della fase 2. Ogni stadio verifica da sé le ricevute completate dei predecessori e,
-per le ricerche, la regola di D3. Raccolta come al punto 2, poi esito a Simone: `passed`, `recipe_not_admitted` o
+Stesso script di dispatch e stesso `CODE_DIR` della fase 2. Ogni stadio verifica da sé la regola di D3 e le ricevute completate
+dei predecessori. Raccolta come al punto 2, poi esito a Simone: `passed`, `recipe_not_admitted` o
 `optimization_unresolved`. Anche con `passed` la variante non entra nella catena congelata senza una ricetta congelata nuova,
 review e decisione di Simone.

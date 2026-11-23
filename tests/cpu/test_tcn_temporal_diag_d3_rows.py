@@ -152,7 +152,8 @@ def _write_rows(root, temporal, linear_reproduced=None, missing=(), statuses=Non
 
 def test_summarize_applies_the_registered_rule_to_the_collected_rows(tmp_path, capsys):
     four = {0.1: (.30, .31, .305), 0.3: (.60, .62, .61), 1.0: (.55, .56, .555), 3.0: (.20, .21, .205)}
-    # The best dose loses admissibility through one linear cell that does not reproduce its selected point.
+    # Synthetic, second line of defence of d3_results: a completed receipt with a row that does not reproduce. On
+    # Leonardo such a job closes gate_failed and its whole summary is excluded (case e).
     _write_rows(tmp_path / "a", four, linear_reproduced={(0.3, "MLP"): False})
     _summarize().d3(tmp_path / "a")
     out = capsys.readouterr().out

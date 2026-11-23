@@ -271,8 +271,9 @@ della sezione 9. Operatore unico di D3 e della conferma: Claude.
   passaggio dalla ricetta congelata alla variante al weight decay congelato non cambia nessun numero
   (`test_frozen_weight_decay_variant_trains_bit_for_bit_like_the_frozen_recipe`).
 - Sui dati veri ogni cella confronta il proprio punto a esposizione 0 con quello della curva archiviata allo stesso learning
-  rate, con i due livelli di D0: esatto a 1e-12, oppure numerico a 1e-4 con esposizione e passi uguali. Se fallisce, la dose
-  non è valida.
+  rate, con i due livelli di D0: esatto a 1e-12, oppure numerico a 1e-4 con esposizione e passi uguali. Se fallisce, il job
+  chiude `gate_failed` (8.3). All'inizio la testa dà un'uscita costante: il punto 0 controlla bersagli, utenti e valutatore;
+  l'uguaglianza dell'addestramento con A1 resta mostrata dal solo test su CPU.
 - Per la TCN la differenza fra A1 e D3 è quindi la sola dose. Per L0 e MLP anche il learning rate: nel mondo lineare A1 li ha
   scelti a 1e-4, D3 li allena a 0,003, e la loro ammissibilità è il cancello congelato a quel learning rate. Sulle curve
   archiviate a 0,003, al minimo della MSE e con il weight decay congelato, il recupero pooled del cancello lineare sta fra 0,98 e
@@ -288,6 +289,9 @@ della sezione 9. Operatore unico di D3 e della conferma: Claude.
 - Una dose è **ammissibile** se ha i risultati di tutte e quattro le celle, il punto scelto e il punto a esposizione 0 di ogni
   cella si riproducono (8.2) e le tre teste passano il cancello lineare congelato (recupero almeno 0,90 in MSE ed `E_dyn` nei tre
   pannelli, `controls.linear_head_gate`). Una dose senza tutte le celle, per esempio per un job interrotto, non è ammissibile.
+- Contano solo le sintesi dei job con ricevuta `completed`. Un punto scelto o a esposizione 0 non riprodotto, a una dose
+  qualsiasi, chiude il suo job `gate_failed`: come per un TIMEOUT, le sue celle mancano a tutte le dosi, nessuna dose è
+  ammissibile e la linea torna a Simone. Il controllo riga per riga di `core.d3_results` resta come seconda difesa.
 - Si **sceglie** la dose ammissibile con il recupero temporale pooled più alto; a parità, la dose più piccola.
 - La **conferma** su un mondo nuovo si propone solo se la dose scelta raggiunge 0,50 nei tre pannelli del mondo temporale
   originale, la soglia congelata `TEMPORAL_HEAD_RECOVERY`. Altrimenti la linea torna a Simone con la curva dose-risposta.
@@ -309,22 +313,26 @@ Le previsioni 1 e 2 sono state precisate il 23/11 dopo la review, prima dei job,
 2. La regola non propone la conferma: la dose scelta non raggiunge 0,50 nei tre pannelli. Sbagliata se la regola la propone.
 3. Il massimo pooled fra le quattro dosi (ammissibili o no) sta fra 0,25 e 0,40. Sbagliata fuori da questo intervallo.
 
+Se manca il recupero temporale di una dose (`d3t` non concluso), le previsioni 1 e 3 non sono valutabili. Se `d3t` chiude
+`gate_failed`, i recuperi si leggono dai JSON di cella come descrittivi.
+
 ### 8.5 Job, risorse e costo
 
 | ID logico | Celle | Limite | GPU-ore prenotate |
 | --- | --- | --- | ---: |
 | `TCND-checkout2-20261123` | checkout di campagna `pose_temponet_diag_20261123` | 12 min, `lrd_all_serial` | 0 |
-| `TCND-d3t-wd-20261123` | TCN, mondo temporale, quattro dosi | 112 min | 1,92 |
+| `TCND-d3t-wd-20261123` | TCN, mondo temporale, quattro dosi | 111 min | 1,90 |
 | `TCND-d3l-wd-20261123` | TCN, mondo lineare, quattro dosi | 110 min | 1,88 |
-| `TCND-d3s-wd-20261123` | L0 e MLP, mondo lineare, quattro dosi | 68 min | 1,18 |
+| `TCND-d3s-wd-20261123` | L0 e MLP, mondo lineare, quattro dosi | 69 min | 1,20 |
 
 - Risorse dei tre job GPU come D0-D2: `boost_usr_prod`, 1 GPU, 8 CPU, 32 GB, QoS `normal`; tutti `afterok` sul checkout.
   Ognuno richiede anche la ricevuta completata di D0.
-- **Totale prenotato 4,98 GPU-ore** (limite più 180 secondi), cioè 39,9 ore locali, più 0,4 core-ore del checkout: sotto le 5
+- **Totale prenotato 4,98 GPU-ore** (limite più 180 secondi), cioè 39,9 ore locali, più 0,5 core-ore del checkout: sotto le 5
   GPU-ore dell'autonomia del 28/10. Consumo atteso circa 2,3 GPU-ore: 13,4 minuti per una TCN a 150 epoche, 4 per L0 e MLP.
   Caso peggiore stimato dalle review del 23/11, con tutte e quattro le dosi prolungate a 300 epoche: `d3t` 102-109 minuti,
-  `d3l` 101-108, `d3s` 65-67. I limiti lo coprono, con un margine di pochi minuti. I risultati di ogni dose si scrivono appena
-  finisce.
+  `d3l` 101-108, `d3s` 65-68. I limiti lo coprono, con un margine di pochi minuti; dopo la verifica delle correzioni sono stati
+  ribilanciati (111 / 110 / 69 al posto di 112 / 110 / 68) a parità di totale, per non lasciare `d3s` al margine più stretto.
+  I risultati di ogni dose si scrivono appena finisce.
 - Nessun rilancio dentro questa fase: con un rilancio si supererebbero le 5 GPU-ore, quindi serve una decisione nuova. Un job
   in TIMEOUT non scrive la sintesi: tutte le dosi della sua cella mancano, nessuna dose è ammissibile e la linea torna a Simone.
 - Il checkout nasce dal commit che chiude le review delle fasi 2 e 3; il suo SHA completo è registrato nel registro condiviso e
@@ -391,8 +399,8 @@ conferma la prenotazione della sezione 9.3. Senza quella conferma la fase 3 non 
   ha confermato il costo. Ogni stadio della fase 3, calibrazioni comprese, rilegge la regola dalle sintesi autenticate di D3 prima
   di qualunque setup: se non la propone, si ferma `gate_failed` senza lavoro.
 - Le ricerche partono `afterok` sulle due calibrazioni, il cancello `afterok` sulle sei ricerche. Ogni stadio verifica anche le
-  ricevute completate dei predecessori. Un cancello congelato non superato dentro uno stadio (per esempio un generatore
-  degenere) si registra `gate_failed`, con `failed_gate.json`, come nel runner congelato.
+  ricevute completate dei predecessori. Un cancello congelato non superato dentro uno stadio (un generatore degenere, una
+  calibrazione non `calibrated`) si registra `gate_failed`, con `failed_gate.json`, come nel runner congelato.
 - **Prenotato: 9,30 GPU-ore** (limite più 180 secondi), cioè 74,4 ore locali sui nodi GPU, più 11,5 core-ore delle calibrazioni
   e 0,6 del cancello. Consumo atteso circa 4-5 GPU-ore: le sei ricerche di A1 hanno usato 3,57 GPU-ore, e con un weight decay più
   forte i minimi possono cadere più tardi e allungare le ricerche.
@@ -400,4 +408,8 @@ conferma la prenotazione della sezione 9.3. Senza quella conferma la fase 3 non 
   epoche. Con i costi unitari misurati in A1 sono circa 129 minuti per una TCN, 43 per l'MLP e 39 per L0, setup compreso: i limiti
   di 150 e 60 minuti li coprono. Le calibrazioni di A1 sono durate 6,5 minuti l'una, contro un limite di 40.
 - Addebito: account `IscrB_WearUsFM`, voce «diagnostici del controllo temporale TCN», fuori dai tetti di A1. È sopra le 5 GPU-ore:
-  lo copre l'approvazione di Simone qui sopra. Nessun rilancio senza decisione nuova.
+  lo copre l'approvazione di Simone qui sopra, con la conferma del costo chiesta nella sezione 9. Nessun rilancio senza decisione
+  nuova.
+- Stato della voce: la catena D0-D2 aveva un sotto-budget di 4 GPU-ore e ne ha usate 0,745; D3 ha la sua prenotazione di 4,98 e
+  la fase 3 di 9,30, senza un tetto comune della voce. Residuo dell'account letto il 22/11 alle 11:47: 652.656 ore locali su
+  2.000.000 (nel mese 116.468 su 164.383); si rilegge prima dell'invio.
