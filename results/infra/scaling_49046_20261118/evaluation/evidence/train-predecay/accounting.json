@@ -1,0 +1,26 @@
+{
+  "JobIDRaw": "64837401",
+  "State": "COMPLETED",
+  "ExitCode": "0:0",
+  "ElapsedRaw": 57327,
+  "AllocCPUS": 32,
+  "MaxRSS": "",
+  "NodeList": "lrdn1964",
+  "Partition": "boost_usr_prod",
+  "Start": "2026-11-22T00:48:39",
+  "End": "2026-11-22T16:44:06",
+  "Timelimit": "19:45:00",
+  "AllocTRES": "billing=32,cpu=32,gres/gpu=4,mem=480G,node=1",
+  "MaxRSS_bytes": 126543425536,
+  "MaxRSS_source_rows": [
+    "64837401.batch"
+  ],
+  "core_hours": 509.5733333333333,
+  "cap_core_hours": 632.0,
+  "gpus": 4,
+  "gpu_hours": 63.696666666666665,
+  "raw_sacct": {
+    "path": "sacct.txt",
+    "sha256": "739acd2f4ccccdb9d1b16ce5bf3645b45f1be44a2ebc3c3a93ada3d47538185f"
+  }
+}
