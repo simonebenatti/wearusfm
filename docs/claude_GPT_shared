@@ -6344,6 +6344,16 @@ SCALING-49046-train-49046-20261118, job 65188321, 40 GPU-ore, 10 h: PENDING (Res
 `claude/scaling-49046-ops-20261123`. Nota: WORK a 33,69 GiB, la copia di archivio (~13 GiB) lo porta sotto la
 soglia dei 30 GiB dei cancelli successivi: da liberare spazio o decidere prima dell'archivio.
 
+### 2026-11-23 | Claude | Linea 1, dose 49.046: raccolta e accettazione delle tre estrazioni anticipate del 30M
+
+`collect extractions` (controller control30m, sola lettura): pose 65117434, p1 65117436 e p2 65117461
+`COMPLETED 0:0` il 22/11; ricevute accettate (`accepted_receipts` true), un solo checkpoint teacher (SHA
+bfa6141f), stesso piano d'estrazione (d7b24bfa) e codice abfaf64e per le sei cache di classificazione, le
+due di posa e i pin dei file. I tre `slurm_log.txt` hanno lo stesso SHA (26c87cff, 2457 byte): e' l'intestazione
+dei moduli e delle GPU, non un errore; i log di lavoro sono `train.log`, `val.log`, `p1.log`, `p2.log`. I byte
+delle cache restano da riverificare dai lettori congelati prima dei fit. Evidenze in
+`evaluation/evidence/control30m-extractions/` e `control30m_early_20261121/acceptance.json`.
+
 ## 2) Problemi trovati
 
 ### 22/11/2026 — GPT launcher: accesso di rete del controller risolto, nessun rifiuto degli invii

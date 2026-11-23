@@ -1,0 +1,3753 @@
+{
+  "protocol": "scaling-evaluation-49046-20261106-v1",
+  "arm": "T100-G-30M",
+  "which": "teacher",
+  "checkpoint_step": 49046,
+  "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+  "code_sha": "abfaf64e28827793720097254ff2d0271d744a1d",
+  "plan_sha256": "d7b24bfad92025c60ff1c3324f2a693d375a93ccc9d0631b433541c215052f94",
+  "postload_recipe_passed": true,
+  "model_config": {
+    "dim": 384,
+    "n_heads": 6,
+    "k_latents": 64,
+    "local_layers": 2,
+    "backbone_layers": 8,
+    "decoder_layers": 2,
+    "muscle_dropout": 0.4,
+    "patch_ms": 25.0,
+    "window_ms": 100.0,
+    "n_bands": 5,
+    "rvq_codes": null,
+    "grad_checkpoint": true,
+    "multiscale_anchor": true,
+    "keep_readout": false,
+    "spectral_branches": [],
+    "branch_dim": 128,
+    "branch_hidden": 48,
+    "wavelet_learnable": false,
+    "branch_alpha": 0.5,
+    "branch_objective": "readout",
+    "branch_freeze_output": false,
+    "pose_head": true,
+    "tokenizer_activation": "gelu"
+  },
+  "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "training_source_contract_sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+  "complete": true,
+  "stage": "extract-classification",
+  "checkpoint_unchanged": true,
+  "outputs": {
+    "ninapro_db2": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz",
+      "sha256": "2923e9d49417ec18e1fc32e4d4fb6d83897c6bc5477c84adcec0ab48bf66eb5d",
+      "bytes": 829630254,
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz.provenance.json",
+      "provenance_sha256": "60870198fc555419b7cbdc3ef50963a4462656ecbfe4097d48189a6576b48fbf",
+      "output_identity_audit": {
+        "policy": "scaling-output-identity-20261116-v1",
+        "observations": [
+          {
+            "kind": "descriptor",
+            "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz",
+            "started_utc": "2026-11-22T10:22:46.179467+00:00",
+            "started_monotonic": 937100.1855446,
+            "sha256": "2923e9d49417ec18e1fc32e4d4fb6d83897c6bc5477c84adcec0ab48bf66eb5d",
+            "byte_count": 829630254,
+            "stat_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489673,
+              "size": 829630254,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342523000000000,
+              "mtime_ns": 1795342523000000000,
+              "ctime_ns": 1795342523000000000
+            },
+            "stat_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489673,
+              "size": 829630254,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342966000000000,
+              "mtime_ns": 1795342523000000000,
+              "ctime_ns": 1795342523000000000
+            },
+            "path_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489673,
+              "size": 829630254,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342523000000000,
+              "mtime_ns": 1795342523000000000,
+              "ctime_ns": 1795342523000000000
+            },
+            "path_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489673,
+              "size": 829630254,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342966000000000,
+              "mtime_ns": 1795342523000000000,
+              "ctime_ns": 1795342523000000000
+            },
+            "canonical_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz",
+            "error": null,
+            "finished_monotonic": 937100.944558362,
+            "finished_utc": "2026-11-22T10:22:46.938506+00:00",
+            "duration_seconds": 0.7590137619990855,
+            "changed_fields": [
+              "atime_ns"
+            ]
+          },
+          {
+            "kind": "descriptor",
+            "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz",
+            "started_utc": "2026-11-22T10:22:49.000657+00:00",
+            "started_monotonic": 937103.006731293,
+            "sha256": "2923e9d49417ec18e1fc32e4d4fb6d83897c6bc5477c84adcec0ab48bf66eb5d",
+            "byte_count": 829630254,
+            "stat_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489673,
+              "size": 829630254,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342968000000000,
+              "mtime_ns": 1795342523000000000,
+              "ctime_ns": 1795342523000000000
+            },
+            "stat_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489673,
+              "size": 829630254,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342969000000000,
+              "mtime_ns": 1795342523000000000,
+              "ctime_ns": 1795342523000000000
+            },
+            "path_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489673,
+              "size": 829630254,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342968000000000,
+              "mtime_ns": 1795342523000000000,
+              "ctime_ns": 1795342523000000000
+            },
+            "path_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489673,
+              "size": 829630254,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342969000000000,
+              "mtime_ns": 1795342523000000000,
+              "ctime_ns": 1795342523000000000
+            },
+            "canonical_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz",
+            "error": null,
+            "finished_monotonic": 937103.785613087,
+            "finished_utc": "2026-11-22T10:22:49.779563+00:00",
+            "duration_seconds": 0.778881793958135,
+            "changed_fields": [
+              "atime_ns"
+            ]
+          }
+        ],
+        "extra_reads": 0,
+        "timestamp_transition": false,
+        "validator_started": true,
+        "validator_completed": true,
+        "complete": true
+      }
+    },
+    "ninapro_db3": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db3.npz",
+      "sha256": "85184e9caa234ebe5b9d2f6689a354c34a304c3927a7a40b661e7dd47e6d6c60",
+      "bytes": 211675926,
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db3.npz.provenance.json",
+      "provenance_sha256": "bbc243931652a5bc31b99ccecd95e742175c21b7144dee95adc1461d34b2a1aa",
+      "output_identity_audit": {
+        "policy": "scaling-output-identity-20261116-v1",
+        "observations": [
+          {
+            "kind": "descriptor",
+            "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db3.npz",
+            "started_utc": "2026-11-22T10:22:49.781872+00:00",
+            "started_monotonic": 937103.787937459,
+            "sha256": "85184e9caa234ebe5b9d2f6689a354c34a304c3927a7a40b661e7dd47e6d6c60",
+            "byte_count": 211675926,
+            "stat_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489674,
+              "size": 211675926,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342617000000000,
+              "mtime_ns": 1795342617000000000,
+              "ctime_ns": 1795342617000000000
+            },
+            "stat_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489674,
+              "size": 211675926,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342969000000000,
+              "mtime_ns": 1795342617000000000,
+              "ctime_ns": 1795342617000000000
+            },
+            "path_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489674,
+              "size": 211675926,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342617000000000,
+              "mtime_ns": 1795342617000000000,
+              "ctime_ns": 1795342617000000000
+            },
+            "path_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489674,
+              "size": 211675926,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342969000000000,
+              "mtime_ns": 1795342617000000000,
+              "ctime_ns": 1795342617000000000
+            },
+            "canonical_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db3.npz",
+            "error": null,
+            "finished_monotonic": 937103.98568062,
+            "finished_utc": "2026-11-22T10:22:49.979628+00:00",
+            "duration_seconds": 0.19774316099938005,
+            "changed_fields": [
+              "atime_ns"
+            ]
+          },
+          {
+            "kind": "descriptor",
+            "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db3.npz",
+            "started_utc": "2026-11-22T10:22:50.596226+00:00",
+            "started_monotonic": 937104.60229689,
+            "sha256": "85184e9caa234ebe5b9d2f6689a354c34a304c3927a7a40b661e7dd47e6d6c60",
+            "byte_count": 211675926,
+            "stat_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489674,
+              "size": 211675926,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342970000000000,
+              "mtime_ns": 1795342617000000000,
+              "ctime_ns": 1795342617000000000
+            },
+            "stat_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489674,
+              "size": 211675926,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342970000000000,
+              "mtime_ns": 1795342617000000000,
+              "ctime_ns": 1795342617000000000
+            },
+            "path_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489674,
+              "size": 211675926,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342970000000000,
+              "mtime_ns": 1795342617000000000,
+              "ctime_ns": 1795342617000000000
+            },
+            "path_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489674,
+              "size": 211675926,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342970000000000,
+              "mtime_ns": 1795342617000000000,
+              "ctime_ns": 1795342617000000000
+            },
+            "canonical_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db3.npz",
+            "error": null,
+            "finished_monotonic": 937104.804775244,
+            "finished_utc": "2026-11-22T10:22:50.798727+00:00",
+            "duration_seconds": 0.20247835398185998,
+            "changed_fields": []
+          }
+        ],
+        "extra_reads": 0,
+        "timestamp_transition": false,
+        "validator_started": true,
+        "validator_completed": true,
+        "complete": true
+      }
+    },
+    "ninapro_db6": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db6.npz",
+      "sha256": "08bb1b0f109d3f47e4abade1b30f2ed267a6e47b396335e3866f3af54b43c77b",
+      "bytes": 939642002,
+      "provenance_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db6.npz.provenance.json",
+      "provenance_sha256": "ee15f73ac6ef85c00513d133251c057e4bd9609d1e2420b47a41abbb26be41ce",
+      "output_identity_audit": {
+        "policy": "scaling-output-identity-20261116-v1",
+        "observations": [
+          {
+            "kind": "descriptor",
+            "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db6.npz",
+            "started_utc": "2026-11-22T10:22:50.801271+00:00",
+            "started_monotonic": 937104.807336624,
+            "sha256": "08bb1b0f109d3f47e4abade1b30f2ed267a6e47b396335e3866f3af54b43c77b",
+            "byte_count": 939642002,
+            "stat_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489675,
+              "size": 939642002,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342965000000000,
+              "mtime_ns": 1795342965000000000,
+              "ctime_ns": 1795342965000000000
+            },
+            "stat_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489675,
+              "size": 939642002,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342971000000000,
+              "mtime_ns": 1795342965000000000,
+              "ctime_ns": 1795342965000000000
+            },
+            "path_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489675,
+              "size": 939642002,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342965000000000,
+              "mtime_ns": 1795342965000000000,
+              "ctime_ns": 1795342965000000000
+            },
+            "path_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489675,
+              "size": 939642002,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342971000000000,
+              "mtime_ns": 1795342965000000000,
+              "ctime_ns": 1795342965000000000
+            },
+            "canonical_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db6.npz",
+            "error": null,
+            "finished_monotonic": 937105.657426674,
+            "finished_utc": "2026-11-22T10:22:51.651375+00:00",
+            "duration_seconds": 0.8500900500221178,
+            "changed_fields": [
+              "atime_ns"
+            ]
+          },
+          {
+            "kind": "descriptor",
+            "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db6.npz",
+            "started_utc": "2026-11-22T10:22:53.826665+00:00",
+            "started_monotonic": 937107.832736742,
+            "sha256": "08bb1b0f109d3f47e4abade1b30f2ed267a6e47b396335e3866f3af54b43c77b",
+            "byte_count": 939642002,
+            "stat_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489675,
+              "size": 939642002,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342972000000000,
+              "mtime_ns": 1795342965000000000,
+              "ctime_ns": 1795342965000000000
+            },
+            "stat_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489675,
+              "size": 939642002,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342974000000000,
+              "mtime_ns": 1795342965000000000,
+              "ctime_ns": 1795342965000000000
+            },
+            "path_before": {
+              "dev": 2267999710,
+              "ino": 4161333540979489675,
+              "size": 939642002,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342972000000000,
+              "mtime_ns": 1795342965000000000,
+              "ctime_ns": 1795342965000000000
+            },
+            "path_after": {
+              "dev": 2267999710,
+              "ino": 4161333540979489675,
+              "size": 939642002,
+              "mode": 33188,
+              "uid": 127686,
+              "gid": 25200,
+              "nlink": 1,
+              "atime_ns": 1795342974000000000,
+              "mtime_ns": 1795342965000000000,
+              "ctime_ns": 1795342965000000000
+            },
+            "canonical_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db6.npz",
+            "error": null,
+            "finished_monotonic": 937108.711341443,
+            "finished_utc": "2026-11-22T10:22:54.705291+00:00",
+            "duration_seconds": 0.8786047010216862,
+            "changed_fields": [
+              "atime_ns"
+            ]
+          }
+        ],
+        "extra_reads": 0,
+        "timestamp_transition": false,
+        "validator_started": true,
+        "validator_completed": true,
+        "complete": true
+      }
+    }
+  },
+  "checkpoint_guard": {
+    "states": {
+      "checkpoint": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt",
+        "sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+        "bytes": 454381728,
+        "inode": 270223032981710049,
+        "mtime_ns": 1793882524000000000,
+        "ctime_ns": 1793882525000000000
+      },
+      "receipt": {
+        "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_code_20261118_v1/results/infra/scaling_49046_20261118/launcher/control_line2_evidence/continuation/49046/receipt.json",
+        "sha256": "c0245ccf3a201fb4ab111c8ade106d54063e6123a503379c347c82c22336ccc3",
+        "bytes": 5609,
+        "inode": 216179050736038004,
+        "mtime_ns": 1795084350000000000,
+        "ctime_ns": 1795084355000000000
+      }
+    },
+    "model_config": {
+      "dim": 384,
+      "n_heads": 6,
+      "k_latents": 64,
+      "local_layers": 2,
+      "backbone_layers": 8,
+      "decoder_layers": 2,
+      "muscle_dropout": 0.4,
+      "patch_ms": 25.0,
+      "window_ms": 100.0,
+      "n_bands": 5,
+      "rvq_codes": null,
+      "grad_checkpoint": true,
+      "multiscale_anchor": true,
+      "keep_readout": false,
+      "spectral_branches": [],
+      "branch_dim": 128,
+      "branch_hidden": 48,
+      "wavelet_learnable": false,
+      "branch_alpha": 0.5,
+      "branch_objective": "readout",
+      "branch_freeze_output": false,
+      "pose_head": true,
+      "tokenizer_activation": "gelu"
+    },
+    "fe_gain": 548.6939187567021,
+    "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+    "checkpoint_step": 49046,
+    "training_code_sha": "17dd455f8d40d5430f87c2154c571a2f9e683baa",
+    "postload_recipe_passed": true,
+    "gain_policy": "exact saved buffer; no evaluation-data calibration"
+  },
+  "source_states": {
+    "plan": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/results/infra/scaling_49046_20261118/evaluation/evaluation/control30m_early_20261121/plan.json",
+      "sha256": "d7b24bfad92025c60ff1c3324f2a693d375a93ccc9d0631b433541c215052f94",
+      "bytes": 5238,
+      "inode": 144121976473039625,
+      "mtime_ns": 1795336870000000000,
+      "ctime_ns": 1795336884000000000
+    },
+    "comparison": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/results/infra/tokenizer_review_20261103/comparison_configurations.json",
+      "sha256": "5d43bda19389e8f9829ddc2a21f4a97804082cbf5067a047e74d422e0b14c071",
+      "bytes": 8792,
+      "inode": 144121976473040053,
+      "mtime_ns": 1795336873000000000,
+      "ctime_ns": 1795336882000000000
+    },
+    "manifest": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/derived_v1_1/manifest_v1_1_nested_1.json.gz",
+      "sha256": "6d6d8167b882eb4079fcc566748028dc6de81692859f220a0246291c198574ec",
+      "bytes": 1688959,
+      "inode": 270223356144401172,
+      "mtime_ns": 1792085383000000000,
+      "ctime_ns": 1792085383000000000
+    },
+    "scales": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/loader_59623700/session_scales.json",
+      "sha256": "76486d882b5deeca66f152c3541534e9f35efca35f944f6f8677b6478b877486",
+      "bytes": 2234011,
+      "inode": 270223339937658928,
+      "mtime_ns": 1791379314000000000,
+      "ctime_ns": 1791379314000000000
+    },
+    "windows": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/passo6/window_seconds_59425316.json",
+      "sha256": "e660e324a28a339c038ed07dbaa7d4c358f78f613cd32226eea3f522119a48b0",
+      "bytes": 2156652,
+      "inode": 270223339937655074,
+      "mtime_ns": 1791219393000000000,
+      "ctime_ns": 1791219393000000000
+    },
+    "pose_stats": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/data/processed/emg2pose_pose/pose_stats.json",
+      "sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+      "bytes": 7377,
+      "inode": 162139590872838380,
+      "mtime_ns": 1794494324000000000,
+      "ctime_ns": 1794494324000000000
+    },
+    "csv": {
+      "path": "/leonardo_work/IscrB_WearUsFM/data/raw/emg2pose_mini/emg2pose_metadata.csv",
+      "sha256": "0e7ad04a79a0f162385d22ec8d6f43af9b8360978ca11ef9d601bbf9594b09e6",
+      "bytes": 5674462,
+      "inode": 144121785397329917,
+      "mtime_ns": 1718203862000000000,
+      "ctime_ns": 1790002473000000000
+    },
+    "splits": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/splits/v1/splits_v1.json",
+      "sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+      "bytes": 291942,
+      "inode": 144121976473040639,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336882000000000
+    },
+    "training_source_contract": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_code_20261118_v1/results/infra/scaling_49046_20261118/training_source_contract.json",
+      "sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+      "bytes": 13685,
+      "inode": 252208060137769884,
+      "mtime_ns": 1795084350000000000,
+      "ctime_ns": 1795084355000000000
+    },
+    "scientific_source_scripts/slurm/lib_code_dir.sh": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/scripts/slurm/lib_code_dir.sh",
+      "sha256": "0f961f459516f146ffe935d757f71f054e5b5ee62b4c68e88ff34153d708ee19",
+      "bytes": 3570,
+      "inode": 144121976473040534,
+      "mtime_ns": 1795336876000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_scripts/slurm/tokenizer_train.sbatch": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/scripts/slurm/tokenizer_train.sbatch",
+      "sha256": "d9e7680777d3083a362bf4b2537c13e9c1d6ff716a4a7ce50c3e5576cb6a2381",
+      "bytes": 3945,
+      "inode": 144121976473040604,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_scripts/tokenizer_preflight.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/scripts/tokenizer_preflight.py",
+      "sha256": "3bdd90d0a30c1089953345c0b63415f8c40974939af6dd05da63f11d59affe69",
+      "bytes": 33007,
+      "inode": 144121976473040625,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_scripts/tokenizer_train.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/scripts/tokenizer_train.py",
+      "sha256": "d948fe30ad35543bdf7aa05fb174fd550cc398f0f2b63efc546592a1a3e2dda2",
+      "bytes": 11879,
+      "inode": 144121976473040627,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_scripts/train_jepa.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/scripts/train_jepa.py",
+      "sha256": "b9f7fcfccd68034d4cc566c1ef29008e9ab4d7233529f501f2076cda207f8006",
+      "bytes": 21704,
+      "inode": 144121976473040628,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 144121976473040642,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 144121976473040644,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/collate.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/collate.py",
+      "sha256": "0e4279b057b3fe3878fc14b9cf6532443807b15ae23e85ada7da2cacfd871f93",
+      "bytes": 4170,
+      "inode": 144121976473040645,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/consumer.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/consumer.py",
+      "sha256": "575f0ebcb6f635372674571a19c0c9c8b5bac0bcf59421469a71ad980cb41c09",
+      "bytes": 3519,
+      "inode": 144121976473040646,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/manifest.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/manifest.py",
+      "sha256": "489b99030660ebadd79bea89e1c3be4dd1a9383e50127a855937d43840f64430",
+      "bytes": 6705,
+      "inode": 144121976473040647,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/masking.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/masking.py",
+      "sha256": "4612b363c69dbb501ee646dc525e9c5568e9b51da0f89d5e97ad20eadef1a61d",
+      "bytes": 3943,
+      "inode": 144121976473040648,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/pipeline.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/pipeline.py",
+      "sha256": "d53fcb3464f24211e774e1dc1440e8aa26ec9d980e67cb97c3dcfedaaf109744",
+      "bytes": 6180,
+      "inode": 144121976473040649,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/pose_targets.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/pose_targets.py",
+      "sha256": "8453b16c72124603d95019d988e0c6c8e131f3ededf0b073555c6d90fc0519b9",
+      "bytes": 11038,
+      "inode": 144121976473040650,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/pretraining_loader.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/pretraining_loader.py",
+      "sha256": "851e881a7cb216f3623f1ded585ce2d7517abd7c39966f803f74b8e88abc01b2",
+      "bytes": 44635,
+      "inode": 144121976473040651,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/pretraining_manifest.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/pretraining_manifest.py",
+      "sha256": "73d9dd681d5b66d9a1e8006f7931ccb34e1f47dfb7589e27ab0521f8217262d3",
+      "bytes": 23192,
+      "inode": 144121976473040652,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/processed.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/processed.py",
+      "sha256": "8329dc5ba8bb7d88796640f6dd4757c4e13c9ffad129ea2a320cd9e7dbadb9e9",
+      "bytes": 13858,
+      "inode": 144121976473040653,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/rvq_codes.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/rvq_codes.py",
+      "sha256": "fa4dba6f4e9e85946042fe6b0f0b77a7e80cee9c6e516c041393b67b02a0c67f",
+      "bytes": 8340,
+      "inode": 144121976473040654,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/shards.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/shards.py",
+      "sha256": "b10457010b08c12e3c33c7a68d303cb2459584ba7df3356b3928ac18076fd4e2",
+      "bytes": 2750,
+      "inode": 144121976473040655,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/synthetic.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/synthetic.py",
+      "sha256": "f881e775d0d1a815de36b0e1b8ba91ac9cb82600ed3dcf398082f17bf777f50f",
+      "bytes": 2894,
+      "inode": 144121976473040656,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/transforms.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/transforms.py",
+      "sha256": "a6707882a3f6b6d29846016f266b458f5b538cf01d9d471c4488196bd96691fd",
+      "bytes": 6682,
+      "inode": 144121976473040657,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/data/virtual_montage.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/data/virtual_montage.py",
+      "sha256": "40c352b91c60248e1aad5faf140cf89e56c6c3edba94f2571d58faaa62a4b8d5",
+      "bytes": 8576,
+      "inode": 144121976473040658,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/gate/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/gate/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 144121976473040660,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/gate/consistency.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/gate/consistency.py",
+      "sha256": "2b756bc46c205a3ee593cd37316c15e169cd45e20bc3f55bb01c407111b51e58",
+      "bytes": 7135,
+      "inode": 144121976473040661,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 144121976473040663,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/anchor_candidates.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/anchor_candidates.py",
+      "sha256": "ab44587869a98376e379249e8143cdf112e382e192515da3eaf97c0a9b7eb47a",
+      "bytes": 5253,
+      "inode": 144121976473040664,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/baselines.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/baselines.py",
+      "sha256": "ba3dbe19f596e51c4466f925fec59d886aa287f314af39f5810432a9e8fe589f",
+      "bytes": 2078,
+      "inode": 144121976473040665,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/benchmarks.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/benchmarks.py",
+      "sha256": "8f9baf3c4fc1c81af06bdbea27c8a93db95bff28a91f51b6333899d3c973de9f",
+      "bytes": 8042,
+      "inode": 144121976473040666,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/channel_readout.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/channel_readout.py",
+      "sha256": "e82a0796be2e10338b4c9a4615d92eed87666adc351d7e20a69342c5d35fed98",
+      "bytes": 9935,
+      "inode": 144121976473040667,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/downstream_ab.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/downstream_ab.py",
+      "sha256": "ea3b91423fe6c12743acb9679e4a3e9e214d84e4135769aeb4bbd82ed97b3164",
+      "bytes": 7344,
+      "inode": 144121976473040668,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/feature_sets.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/feature_sets.py",
+      "sha256": "9c16fc817ebc9acb11c25b1d96a0f469a4fb7d7cea68b43afaa75e9e452d7b4b",
+      "bytes": 4032,
+      "inode": 144121976473040669,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/features_hudgins.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/features_hudgins.py",
+      "sha256": "86678ba36d20dced450d673f3869e642be8dc76ed9cccdaab4e5ac1b26bec252",
+      "bytes": 2277,
+      "inode": 144121976473040670,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/fm_features.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/fm_features.py",
+      "sha256": "2561f2de0a6e8d797195041b2fa3695815adb44d202098d4c408c4175e11bcfc",
+      "bytes": 14250,
+      "inode": 144121976473040671,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/normalization.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/normalization.py",
+      "sha256": "d449bd524a2e69b456af3b9655e97b14e7932213235a98404ed3947291847df5",
+      "bytes": 2228,
+      "inode": 144121976473040672,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/p1_cross_subject.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/p1_cross_subject.py",
+      "sha256": "7045b947920d314e7b25e85dc41e42de6bc5dc42aef0812c485b247bda31c4ce",
+      "bytes": 6867,
+      "inode": 144121976473040673,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/pose_eval.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/pose_eval.py",
+      "sha256": "b333d59656f1b5d4fa0863aa967cc0158e8de0ad2cc040c7b8341579f3075f59",
+      "bytes": 27799,
+      "inode": 144121976473040674,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/probe.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/probe.py",
+      "sha256": "98dcc1a1fbd55593c0a1740d458df2f3943becde3eb2060d411e30e02e750998",
+      "bytes": 4764,
+      "inode": 144121976473040675,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/protocol.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/protocol.py",
+      "sha256": "07ac9fa1ada8f43e1aaf82f53145e47ee7dfef33d2c53415ad46f8acf0f2456c",
+      "bytes": 2664,
+      "inode": 144121976473040676,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/psd3_compare.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/psd3_compare.py",
+      "sha256": "068549c829c2d5f75e54615400bb62fd9510cc1876ff17d117c5d3904b2f7703",
+      "bytes": 15562,
+      "inode": 144121976473040677,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/psd3_inputs.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/psd3_inputs.py",
+      "sha256": "c50c94bc9bd5c40fcc2ebe36abd2576c85591476de885e3d182d4f90248e159d",
+      "bytes": 11301,
+      "inode": 144121976473040678,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/psd3_readers.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/psd3_readers.py",
+      "sha256": "73e0214a94e9888c2ff4d022818e2430afae2c4ed91d8fe407f28117fffec56b",
+      "bytes": 20465,
+      "inode": 144121976473040679,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/random_encoder.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/random_encoder.py",
+      "sha256": "6cdb50a5f2bda7974b16e41adcef645c780f33863a1bcabd4cb0adc2195591cc",
+      "bytes": 4551,
+      "inode": 144121976473040680,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/spectral_ab.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/spectral_ab.py",
+      "sha256": "63ec613c59896fde42a333cae7acf37c8958813ff1a3bbaf37896dab8a84e3ea",
+      "bytes": 7339,
+      "inode": 144121976473040681,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/spectral_probe.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/spectral_probe.py",
+      "sha256": "05fb15da39ccbac658bfb4b35d8504b64b4b4e75adb69c3794c7228ef35f2cea",
+      "bytes": 4223,
+      "inode": 144121976473040682,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/splits.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/splits.py",
+      "sha256": "51039fe49c211b8670445e1f037faae4c08b6290a881757e779971f71adc501e",
+      "bytes": 3597,
+      "inode": 144121976473040683,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/training_stability.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/training_stability.py",
+      "sha256": "00f74e4e4c779258e4d2692bd921f196a517695ab6e18d7a16617ca585cceb52",
+      "bytes": 6197,
+      "inode": 144121976473040684,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/harness/traps.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/harness/traps.py",
+      "sha256": "85f14e44a660a1ab744b84907682851df8f58b46a4ec6488a132755e85f0db24",
+      "bytes": 2063,
+      "inode": 144121976473040685,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 144121976473040687,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/camargo.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/camargo.py",
+      "sha256": "5b60789de19e0e37179445ca78fc7b09010b5205ad483c9b6e6efba5442721bb",
+      "bytes": 6014,
+      "inode": 144121976473040688,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/capgmyo.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/capgmyo.py",
+      "sha256": "66325bdbd3e7c95c3364dc5b96f4aa34936b67ee8779ed329c0b85141abcd081",
+      "bytes": 7516,
+      "inode": 144121976473040689,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/common.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/common.py",
+      "sha256": "4ef13d98e7440092b192848fb007acdc78bb8701f5d535126bc48f3ffb5ced04",
+      "bytes": 5142,
+      "inode": 144121976473040690,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/csl_hdemg.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/csl_hdemg.py",
+      "sha256": "e18d22dc592b20a69a60cd985ea2ce02bf2d9028670935487b3e3782e60c53a9",
+      "bytes": 5909,
+      "inode": 144121976473040691,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/emg2pose.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/emg2pose.py",
+      "sha256": "93f50ff29828ded0818db348a04fb981890e3054f8fdc3de1589db1d5d23e5fb",
+      "bytes": 8067,
+      "inode": 144121976473040692,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/emg2pose_pose.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/emg2pose_pose.py",
+      "sha256": "82aaff5c997ab69c1cc09cb0a9cf2dabf85bca90cbabec72fded1c0789d97a85",
+      "bytes": 47485,
+      "inode": 144121976473040693,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/emg2qwerty.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/emg2qwerty.py",
+      "sha256": "a271e9f21aebcb742bf5008ada2e5383dcd912544d05b77498b35a1c900d629f",
+      "bytes": 7718,
+      "inode": 144121976473040694,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/grabmyo.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/grabmyo.py",
+      "sha256": "930ecbccf36b2e23ca85e840eeedb93b0f735723bf7c7eacb247ecc3261ecc0d",
+      "bytes": 7725,
+      "inode": 144121976473040695,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/hyser.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/hyser.py",
+      "sha256": "11ff8c7aa34323dd1d769af8c493efe8da821b523baa0582239324cfe6dab12e",
+      "bytes": 10784,
+      "inode": 144121976473040696,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/kaifosh.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/kaifosh.py",
+      "sha256": "6e2e0380b8962b7eb352a718c5d948a25c08a2f9ccdd4581b2deb8ed2756b52a",
+      "bytes": 8162,
+      "inode": 144121976473040697,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/ninapro_db10.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/ninapro_db10.py",
+      "sha256": "e173696be5a628bc0ebb4fca73b9e6565d73cdf33e98f3d1517a9112c92b22fd",
+      "bytes": 10292,
+      "inode": 144121976473040698,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/ninapro_db5.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/ninapro_db5.py",
+      "sha256": "3c9e7586c31f77c40e0972fc99ccbe33f2299daed88debb17daa759d1007e6cc",
+      "bytes": 10929,
+      "inode": 144121976473040699,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/ninapro_db6.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/ninapro_db6.py",
+      "sha256": "fb3206e0d957a261c00bcd4a47c920c61a291d07f7b65bdc681209402f9ac5a1",
+      "bytes": 9492,
+      "inode": 144121976473040700,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/ninapro_db8.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/ninapro_db8.py",
+      "sha256": "e00c5bb19302197d95dc2b024f99cf147b6a1e68bc1865cd97d5f8d17e17d832",
+      "bytes": 11666,
+      "inode": 144121976473040701,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/ninapro_std.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/ninapro_std.py",
+      "sha256": "d3d8818c7543959301420bb16b6fc6bfd4c30c6eb0d28126dc6d1e650301c40e",
+      "bytes": 14242,
+      "inode": 144121976473040702,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/putemg.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/putemg.py",
+      "sha256": "f06b0b2bbf213cd5dce51eb917c2ad30af5fca7dac75181154e49536836afa4b",
+      "bytes": 7169,
+      "inode": 144121976473040703,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/ingest/zhang2026.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/ingest/zhang2026.py",
+      "sha256": "a019cc20e0a04bfcb8db6475bd8c3c0aceb3561b7a7e93400b33e793a510077c",
+      "bytes": 14821,
+      "inode": 144121976473040704,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/metadata/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/metadata/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 144121976473040706,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/metadata/schema.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/metadata/schema.py",
+      "sha256": "690d022f934e6a82bcf1c32e9ec1df43efdd2655222de01afa9323c9df52afc4",
+      "bytes": 11439,
+      "inode": 144121976473040707,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/metadata/taxonomy.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/metadata/taxonomy.py",
+      "sha256": "64f8ab4472a006d33f99202a0e9d6e3937e02bc971b82df3af8485ea33815af2",
+      "bytes": 15158,
+      "inode": 144121976473040708,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "inode": 144121976473040710,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/anchor_targets.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/anchor_targets.py",
+      "sha256": "d3394896bf7c1aada47687f8d230a02edd526f20e3c2dd55f1c78b5ee7052f58",
+      "bytes": 11326,
+      "inode": 144121976473040711,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/anchors.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/anchors.py",
+      "sha256": "d820d973d2967a0121e96dbbec3bf6d51f50f06aa68adb64a22228d13f771adc",
+      "bytes": 7856,
+      "inode": 144121976473040712,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/backbone.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/backbone.py",
+      "sha256": "fb6317751f6c4fe57327896419f479498d2e5e1ba92e3ca43634d5e7b75b5e89",
+      "bytes": 6745,
+      "inode": 144121976473040713,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/branch_masking.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/branch_masking.py",
+      "sha256": "db4e99584e6e51b0ad1dc6a0138100be356dadbfdc77daff16bca313c49bae16",
+      "bytes": 21302,
+      "inode": 144121976473040714,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/channel_codes.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/channel_codes.py",
+      "sha256": "390480ca460c852a52e8c1885c2725e1e1e0af95bd7f2bb1e3b36b15fdee36fb",
+      "bytes": 19237,
+      "inode": 144121976473040715,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/channel_identity.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/channel_identity.py",
+      "sha256": "8c0d2f9ecf387f7967c7492bf3373c82e924edc959520bbdde9522715608be12",
+      "bytes": 5581,
+      "inode": 144121976473040716,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/fm.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/fm.py",
+      "sha256": "6c91c1795e5506728dc1d163e0546d78c153e7674bdb11296e369337650d77b5",
+      "bytes": 14135,
+      "inode": 144121976473040717,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/frontend.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/frontend.py",
+      "sha256": "42cb6ae3f1084b6c2e1350416f9d356552d6009ed9a889b3c6dc8226d94a8ad0",
+      "bytes": 12983,
+      "inode": 144121976473040718,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/geometry.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/geometry.py",
+      "sha256": "f2a5da0c3d570cbb333b59f7cbb90304611e2f27987d84a0c20c7893079c0d1e",
+      "bytes": 1944,
+      "inode": 144121976473040719,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/local_encoder.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/local_encoder.py",
+      "sha256": "b861eb53e7300248a1999765c078ffb17f9abaf14dd92a0124014bfa5ff4992b",
+      "bytes": 7961,
+      "inode": 144121976473040720,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/patch_tokens.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/patch_tokens.py",
+      "sha256": "6107faf2a15a009c2d43cf59927186c52eeb29bcce2426e820adb694f4d85e43",
+      "bytes": 5180,
+      "inode": 144121976473040721,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/perceiver.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/perceiver.py",
+      "sha256": "1ffb562901c4c8280128c8d4aa37afba92da5db2ffe919709ea26bc129f51481",
+      "bytes": 5112,
+      "inode": 144121976473040722,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/pose_head.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/pose_head.py",
+      "sha256": "01fe3d4d3b1dde0235fbfd53c95e5297a31ee28cdffbd04c5c6b8e8344e56717",
+      "bytes": 2055,
+      "inode": 144121976473040723,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/proxy.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/proxy.py",
+      "sha256": "759279987f2bd3c0b3fd4d50145de4287090b2f57c5ef236f359408f3f422537",
+      "bytes": 8898,
+      "inode": 144121976473040724,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/query_decoder.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/query_decoder.py",
+      "sha256": "a766a9a2528844a8cc1c09db6fb8645e581cecdc3f660d92ff759ed0990af0af",
+      "bytes": 7839,
+      "inode": 144121976473040725,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/spectral_branches.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/spectral_branches.py",
+      "sha256": "5ac9b30c6442a4c93d19bd708ca35cfeb454de83f249ede28332060bbd70599f",
+      "bytes": 30618,
+      "inode": 144121976473040726,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/spectral_step1.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/spectral_step1.py",
+      "sha256": "4a4173f7110287d9dd34635458decf4d84cffe2cdcc0b7e1c5f5249ff45f6b56",
+      "bytes": 8860,
+      "inode": 144121976473040727,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/model/spectral_targets.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/model/spectral_targets.py",
+      "sha256": "292582fb50c2583b8fc3181457cfa568d3480c2781f39b4c48df96fb2e5b205c",
+      "bytes": 1161,
+      "inode": 144121976473040728,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/preprocessing/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/preprocessing/__init__.py",
+      "sha256": "8ee00fefea175bb6eb63a8efdf3a7846c5e2e282eeb7228091520c5cc77116e4",
+      "bytes": 65,
+      "inode": 144121976473040730,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/preprocessing/canonical_view.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/preprocessing/canonical_view.py",
+      "sha256": "d01994231e6588f47d7445554e0f4a9b21baacdd3c8b639684fbd3bb066bd7ca",
+      "bytes": 5668,
+      "inode": 144121976473040731,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/tokenizer_checks/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/tokenizer_checks/__init__.py",
+      "sha256": "fd22070f64cac8f6a0c38e017bfb5f678abb6f860d865d0e26828778bb673629",
+      "bytes": 75,
+      "inode": 144121976473040733,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/tokenizer_checks/branch_probe.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/tokenizer_checks/branch_probe.py",
+      "sha256": "cdee56c465f5eb4c1cc1e20756990771bee34ffb08b9cbb91d2056231397ce1d",
+      "bytes": 7142,
+      "inode": 144121976473040734,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/tokenizer_checks/continuous_features.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/tokenizer_checks/continuous_features.py",
+      "sha256": "d3d4fa7f7d805e67b10ebacd3c6968e3ca37f3d749c9d425d9615d617f602049",
+      "bytes": 8316,
+      "inode": 144121976473040735,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/tokenizer_checks/emg2pose.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/tokenizer_checks/emg2pose.py",
+      "sha256": "0d8f7ed0d719b624e3fe11112a2b76ecbd217a95970e9f5dda731144c53e4d5c",
+      "bytes": 1595,
+      "inode": 144121976473040736,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/tokenizer_checks/metrics.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/tokenizer_checks/metrics.py",
+      "sha256": "8067b9d0d00a36e2a13b0672d832d4b8dbba7c3ae1bc7f8560ab29de9ab5b701",
+      "bytes": 11580,
+      "inode": 144121976473040737,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/tokenizer_checks/neurorvq.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/tokenizer_checks/neurorvq.py",
+      "sha256": "8eda3ae7ae2a48fb1289129758eaa1ff6a8454d9acf3acadecc868523c873492",
+      "bytes": 8094,
+      "inode": 144121976473040738,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/tokenizer_checks/pipeline.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/tokenizer_checks/pipeline.py",
+      "sha256": "dd7e1567cadda3e1b351771c063987566698f631e09359a6c1969ef5003f6bb0",
+      "bytes": 15631,
+      "inode": 144121976473040739,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/tokenizer_checks/run_io.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/tokenizer_checks/run_io.py",
+      "sha256": "9bda5451e2d16730fab0fe444e26b391bcf4aeb35a16d658c13f25372fa91518",
+      "bytes": 1723,
+      "inode": 144121976473040740,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/tokenizer_checks/sessions.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/tokenizer_checks/sessions.py",
+      "sha256": "4e3b25b5f341ced08056554ddfb89e14592100088cdafd30bfcff14f53f15a88",
+      "bytes": 7102,
+      "inode": 144121976473040741,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/training/__init__.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/training/__init__.py",
+      "sha256": "e9477c745cfaa543b2abd30ffdcb0fb64673b5bc1177c552262a5fe5f945eaf1",
+      "bytes": 63,
+      "inode": 144121976473040743,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/training/jepa.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/training/jepa.py",
+      "sha256": "98c715597360ad133d3d5f26b10077f4e9c5ca3a6c80b58fac8bc2e5c8375f29",
+      "bytes": 40920,
+      "inode": 144121976473040744,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/training/masking.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/training/masking.py",
+      "sha256": "6049614839ecf692564b05fc09fcdb5af8ade8c84116a8b4e0893cb489267f79",
+      "bytes": 12628,
+      "inode": 144121976473040745,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/training/pairing.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/training/pairing.py",
+      "sha256": "fba0b9d21f916c14d91b297e9a7705738279a68b98ac689b86a70b6f7e540a4b",
+      "bytes": 1961,
+      "inode": 144121976473040746,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/training/run.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/training/run.py",
+      "sha256": "c7d8ee87ad4ff3ff7951f545b78b41da5ed6cee6f162429ff0fe503b2397acac",
+      "bytes": 116966,
+      "inode": 144121976473040747,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_src/wearusfm/training/spectral_calibration.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/src/wearusfm/training/spectral_calibration.py",
+      "sha256": "51ac24b23c791a7701f357b4090d3e97c81d7bf8cb903b037b635282cc701318",
+      "bytes": 2961,
+      "inode": 144121976473040748,
+      "mtime_ns": 1795336878000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "scientific_source_comparison": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/results/infra/tokenizer_review_20261103/comparison_configurations.json",
+      "sha256": "5d43bda19389e8f9829ddc2a21f4a97804082cbf5067a047e74d422e0b14c071",
+      "bytes": 8792,
+      "inode": 144121976473040053,
+      "mtime_ns": 1795336873000000000,
+      "ctime_ns": 1795336882000000000
+    },
+    "scientific_source_config_30m": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/results/infra/tokenizer_review_20261103/config_T100-G.json",
+      "sha256": "dd68e9008b853b12ee38111c4c37370157f166aa70375cfb308bd22d5b6ab0fd",
+      "bytes": 3593,
+      "inode": 144121976473040054,
+      "mtime_ns": 1795336873000000000,
+      "ctime_ns": 1795336882000000000
+    },
+    "scientific_source_reference_training_receipt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/results/infra/tokenizer_execution_20261103/5000/T100-G/receipt.json",
+      "sha256": "d0a50fe777d1bf66df7670158324b48444875c645c1a9bbcb3d55e40560d96c7",
+      "bytes": 2876,
+      "inode": 144121976473040003,
+      "mtime_ns": 1795336872000000000,
+      "ctime_ns": 1795336884000000000
+    },
+    "scientific_source_contract": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_code_20261118_v1/results/infra/scaling_49046_20261118/training_source_contract.json",
+      "sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+      "bytes": 13685,
+      "inode": 252208060137769884,
+      "mtime_ns": 1795084350000000000,
+      "ctime_ns": 1795084355000000000
+    },
+    "extraction_source_scripts/pose_eval.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/scripts/pose_eval.py",
+      "sha256": "044037f0c351db467775cb03209defb2fd4c4b3bd95c017f247f44933a5d49a9",
+      "bytes": 5348,
+      "inode": 144121976473040415,
+      "mtime_ns": 1795336875000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "extraction_source_scripts/channel_readout.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/scripts/channel_readout.py",
+      "sha256": "746e2ce9d81da27bc089d1ec8b62f270d8b70c9f5c42a2420370f4b7f113c20a",
+      "bytes": 37172,
+      "inode": 144121976473040362,
+      "mtime_ns": 1795336875000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "extraction_source_scripts/calibration_probe.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/scripts/calibration_probe.py",
+      "sha256": "197d19d061aa188a5a6c87305e60087f25b346e1966ad949c1a6ab7f8522aac3",
+      "bytes": 19376,
+      "inode": 144121976473040360,
+      "mtime_ns": 1795336875000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "extraction_source_scripts/tokenizer_evaluation.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/scripts/tokenizer_evaluation.py",
+      "sha256": "00d5f42583bc3203df5041558486647dd05f66f59df8adf3ae7728cf3e6c127b",
+      "bytes": 24642,
+      "inode": 144121976473040623,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "extraction_source_scripts/tokenizer_pose_readout.py": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/scripts/tokenizer_pose_readout.py",
+      "sha256": "18a15436e48045447661d3aaab6a8770819527b4ff97a2837d9be3930bad7fb3",
+      "bytes": 27989,
+      "inode": 144121976473040624,
+      "mtime_ns": 1795336877000000000,
+      "ctime_ns": 1795336881000000000
+    },
+    "expected_config": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/results/infra/tokenizer_review_20261103/config_T100-G.json",
+      "sha256": "dd68e9008b853b12ee38111c4c37370157f166aa70375cfb308bd22d5b6ab0fd",
+      "bytes": 3593,
+      "inode": 144121976473040054,
+      "mtime_ns": 1795336873000000000,
+      "ctime_ns": 1795336882000000000
+    },
+    "checkpoint": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt",
+      "sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+      "bytes": 454381728,
+      "inode": 270223032981710049,
+      "mtime_ns": 1793882524000000000,
+      "ctime_ns": 1793882525000000000
+    },
+    "receipt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_code_20261118_v1/results/infra/scaling_49046_20261118/launcher/control_line2_evidence/continuation/49046/receipt.json",
+      "sha256": "c0245ccf3a201fb4ab111c8ade106d54063e6123a503379c347c82c22336ccc3",
+      "bytes": 5609,
+      "inode": 216179050736038004,
+      "mtime_ns": 1795084350000000000,
+      "ctime_ns": 1795084355000000000
+    },
+    "reference_ninapro_db2": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db2.npz",
+      "sha256": "b17eb149a56ebc31a650c5f5b39fbb92d6867baecb43fc959d1c1069e3e52098",
+      "bytes": 829630314,
+      "inode": 216180490036595834,
+      "mtime_ns": 1794495146000000000,
+      "ctime_ns": 1794495146000000000
+    },
+    "reference_ninapro_db3": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db3.npz",
+      "sha256": "3c846fda2edd31e57b7216831985710de70524f595f45e1fd8c40b2e47b6cd6b",
+      "bytes": 211675986,
+      "inode": 216180490036595835,
+      "mtime_ns": 1794495146000000000,
+      "ctime_ns": 1794495146000000000
+    },
+    "reference_ninapro_db6": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pilot_posa/B19618_20261028/B/p1/ninapro_db6.npz",
+      "sha256": "b8c05d7a88e2b05dad87eeb08bf199faedabf62dd3631630e98e1e6b3caa1cfd",
+      "bytes": 939642062,
+      "inode": 216180490036595837,
+      "mtime_ns": 1794495146000000000,
+      "ctime_ns": 1794495146000000000
+    }
+  },
+  "raw_inputs": {
+    "p1": {
+      "file_states": {
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s01/session1/metadata.json": {
+          "bytes": 13173,
+          "inode": 198169099480675623,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s01/session1/data_int16.npy": {
+          "bytes": 125728760,
+          "inode": 198169099480675621,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s01/session1/labels.npz": {
+          "bytes": 146735,
+          "inode": 198169099480675622,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s02/session1/metadata.json": {
+          "bytes": 13113,
+          "inode": 162139454339932549,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s02/session1/data_int16.npy": {
+          "bytes": 125534816,
+          "inode": 162139454339932545,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s02/session1/labels.npz": {
+          "bytes": 148617,
+          "inode": 162139454339932548,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s03/session1/metadata.json": {
+          "bytes": 13170,
+          "inode": 198169099480676047,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s03/session1/data_int16.npy": {
+          "bytes": 125123936,
+          "inode": 198169099480676045,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s03/session1/labels.npz": {
+          "bytes": 149691,
+          "inode": 198169099480676046,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s04/session1/metadata.json": {
+          "bytes": 13173,
+          "inode": 4161333240616979866,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s04/session1/data_int16.npy": {
+          "bytes": 125189624,
+          "inode": 4161333240616979864,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s04/session1/labels.npz": {
+          "bytes": 152354,
+          "inode": 4161333240616979865,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s05/session1/metadata.json": {
+          "bytes": 13170,
+          "inode": 144124009468926303,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s05/session1/data_int16.npy": {
+          "bytes": 125418320,
+          "inode": 144124009468926299,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s05/session1/labels.npz": {
+          "bytes": 145402,
+          "inode": 144124009468926302,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s06/session1/metadata.json": {
+          "bytes": 13112,
+          "inode": 252209930696762912,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s06/session1/data_int16.npy": {
+          "bytes": 125130512,
+          "inode": 252209930696762908,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s06/session1/labels.npz": {
+          "bytes": 148214,
+          "inode": 252209930696762910,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s07/session1/metadata.json": {
+          "bytes": 13173,
+          "inode": 180152662942143825,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s07/session1/data_int16.npy": {
+          "bytes": 125204216,
+          "inode": 180152662942143819,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s07/session1/labels.npz": {
+          "bytes": 152747,
+          "inode": 180152662942143823,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s08/session1/metadata.json": {
+          "bytes": 13170,
+          "inode": 198169099480676285,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s08/session1/data_int16.npy": {
+          "bytes": 125464064,
+          "inode": 198169099480676283,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s08/session1/labels.npz": {
+          "bytes": 148039,
+          "inode": 198169099480676284,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s10/session1/metadata.json": {
+          "bytes": 13176,
+          "inode": 144124009468927001,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s10/session1/data_int16.npy": {
+          "bytes": 125504144,
+          "inode": 144124009468926995,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s10/session1/labels.npz": {
+          "bytes": 151019,
+          "inode": 144124009468927000,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s11/session1/metadata.json": {
+          "bytes": 13176,
+          "inode": 144124009468927143,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s11/session1/data_int16.npy": {
+          "bytes": 125375384,
+          "inode": 144124009468927139,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s11/session1/labels.npz": {
+          "bytes": 154116,
+          "inode": 144124009468927142,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s14/session1/metadata.json": {
+          "bytes": 13174,
+          "inode": 198169099480684777,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s14/session1/data_int16.npy": {
+          "bytes": 125416688,
+          "inode": 198169099480684775,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s14/session1/labels.npz": {
+          "bytes": 151803,
+          "inode": 198169099480684776,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s17/session1/metadata.json": {
+          "bytes": 13175,
+          "inode": 180152663881554952,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s17/session1/data_int16.npy": {
+          "bytes": 125484680,
+          "inode": 180152663881554950,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s17/session1/labels.npz": {
+          "bytes": 152912,
+          "inode": 180152663881554951,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s18/session1/metadata.json": {
+          "bytes": 13115,
+          "inode": 234195180285196806,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s18/session1/data_int16.npy": {
+          "bytes": 125211152,
+          "inode": 234195180285196458,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s18/session1/labels.npz": {
+          "bytes": 151766,
+          "inode": 234195180285196641,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s19/session1/metadata.json": {
+          "bytes": 13173,
+          "inode": 144124009468952745,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s19/session1/data_int16.npy": {
+          "bytes": 125339336,
+          "inode": 144124009468952737,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s19/session1/labels.npz": {
+          "bytes": 152014,
+          "inode": 144124009468952740,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s20/session1/metadata.json": {
+          "bytes": 13173,
+          "inode": 198169099480685067,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s20/session1/data_int16.npy": {
+          "bytes": 125574032,
+          "inode": 198169099480685065,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s20/session1/labels.npz": {
+          "bytes": 147992,
+          "inode": 198169099480685066,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s22/session1/metadata.json": {
+          "bytes": 13115,
+          "inode": 144124009468953174,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s22/session1/data_int16.npy": {
+          "bytes": 125562440,
+          "inode": 144124009468953172,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s22/session1/labels.npz": {
+          "bytes": 148206,
+          "inode": 144124009468953173,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s23/session1/metadata.json": {
+          "bytes": 13176,
+          "inode": 198169099480685257,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s23/session1/data_int16.npy": {
+          "bytes": 125485016,
+          "inode": 198169099480685255,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s23/session1/labels.npz": {
+          "bytes": 150548,
+          "inode": 198169099480685256,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s24/session1/metadata.json": {
+          "bytes": 13173,
+          "inode": 198169099480685311,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s24/session1/data_int16.npy": {
+          "bytes": 125432408,
+          "inode": 198169099480685306,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s24/session1/labels.npz": {
+          "bytes": 150781,
+          "inode": 198169099480685309,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s25/session1/metadata.json": {
+          "bytes": 13176,
+          "inode": 180152663881555785,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s25/session1/data_int16.npy": {
+          "bytes": 125493248,
+          "inode": 180152663881555781,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s25/session1/labels.npz": {
+          "bytes": 147855,
+          "inode": 180152663881555782,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s26/session1/metadata.json": {
+          "bytes": 13115,
+          "inode": 216180413817767661,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s26/session1/data_int16.npy": {
+          "bytes": 122847248,
+          "inode": 216180413817767659,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s26/session1/labels.npz": {
+          "bytes": 150477,
+          "inode": 216180413817767660,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s27/session1/metadata.json": {
+          "bytes": 13115,
+          "inode": 252209930696781256,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s27/session1/data_int16.npy": {
+          "bytes": 123519080,
+          "inode": 252209930696781252,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s27/session1/labels.npz": {
+          "bytes": 146068,
+          "inode": 252209930696781255,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s28/session1/metadata.json": {
+          "bytes": 13115,
+          "inode": 252209930696781341,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s28/session1/data_int16.npy": {
+          "bytes": 123457832,
+          "inode": 252209930696781339,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s28/session1/labels.npz": {
+          "bytes": 151322,
+          "inode": 252209930696781340,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s29/session1/metadata.json": {
+          "bytes": 13115,
+          "inode": 198169099480685552,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s29/session1/data_int16.npy": {
+          "bytes": 123495224,
+          "inode": 198169099480685548,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s29/session1/labels.npz": {
+          "bytes": 145755,
+          "inode": 198169099480685549,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s30/session1/metadata.json": {
+          "bytes": 13115,
+          "inode": 144124009468954302,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s30/session1/data_int16.npy": {
+          "bytes": 123442640,
+          "inode": 144124009468954298,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s30/session1/labels.npz": {
+          "bytes": 147240,
+          "inode": 144124009468954301,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s31/session1/metadata.json": {
+          "bytes": 13116,
+          "inode": 144124009468954433,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s31/session1/data_int16.npy": {
+          "bytes": 123329504,
+          "inode": 144124009468954430,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s31/session1/labels.npz": {
+          "bytes": 150469,
+          "inode": 144124009468954432,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s32/session1/metadata.json": {
+          "bytes": 13116,
+          "inode": 162139461839226727,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s32/session1/data_int16.npy": {
+          "bytes": 123201224,
+          "inode": 162139461839226725,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s32/session1/labels.npz": {
+          "bytes": 149376,
+          "inode": 162139461839226726,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s34/session1/metadata.json": {
+          "bytes": 13115,
+          "inode": 234195180301909073,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s34/session1/data_int16.npy": {
+          "bytes": 123288992,
+          "inode": 234195180301908758,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s34/session1/labels.npz": {
+          "bytes": 146429,
+          "inode": 234195180301908913,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s35/session1/metadata.json": {
+          "bytes": 13116,
+          "inode": 144124009468954997,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s35/session1/data_int16.npy": {
+          "bytes": 123334976,
+          "inode": 144124009468954994,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s35/session1/labels.npz": {
+          "bytes": 150708,
+          "inode": 144124009468954996,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s36/session1/metadata.json": {
+          "bytes": 13116,
+          "inode": 162139461839226923,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s36/session1/data_int16.npy": {
+          "bytes": 123185144,
+          "inode": 162139461839226919,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s36/session1/labels.npz": {
+          "bytes": 145927,
+          "inode": 162139461839226922,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s37/session1/metadata.json": {
+          "bytes": 13115,
+          "inode": 198169099480685919,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s37/session1/data_int16.npy": {
+          "bytes": 123177992,
+          "inode": 198169099480685917,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s37/session1/labels.npz": {
+          "bytes": 146964,
+          "inode": 198169099480685918,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s38/session1/metadata.json": {
+          "bytes": 13115,
+          "inode": 234195180301925454,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s38/session1/data_int16.npy": {
+          "bytes": 123434480,
+          "inode": 234195180301925052,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s38/session1/labels.npz": {
+          "bytes": 149907,
+          "inode": 234195180301925283,
+          "mtime_ns": 1794493717000000000,
+          "ctime_ns": 1794493717000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s39/session1/metadata.json": {
+          "bytes": 13116,
+          "inode": 144124009468955555,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s39/session1/data_int16.npy": {
+          "bytes": 123494432,
+          "inode": 144124009468955551,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db2/s39/session1/labels.npz": {
+          "bytes": 151546,
+          "inode": 144124009468955554,
+          "mtime_ns": 1794493716000000000,
+          "ctime_ns": 1794493716000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s01/session1/metadata.json": {
+          "bytes": 12985,
+          "inode": 4161333240616979808,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s01/session1/data_int16.npy": {
+          "bytes": 95721728,
+          "inode": 4161333240616979806,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s01/session1/labels.npz": {
+          "bytes": 116036,
+          "inode": 4161333240616979807,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s02/session1/metadata.json": {
+          "bytes": 12986,
+          "inode": 198169099480674516,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s02/session1/data_int16.npy": {
+          "bytes": 123581144,
+          "inode": 198169099480674514,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s02/session1/labels.npz": {
+          "bytes": 148590,
+          "inode": 198169099480674515,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s03/session1/metadata.json": {
+          "bytes": 14379,
+          "inode": 144124009469047675,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s03/session1/data_int16.npy": {
+          "bytes": 123547496,
+          "inode": 144124009468921534,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s03/session1/labels.npz": {
+          "bytes": 143227,
+          "inode": 144124009468921535,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s04/session1/metadata.json": {
+          "bytes": 12986,
+          "inode": 4161333240616979813,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s04/session1/data_int16.npy": {
+          "bytes": 125378840,
+          "inode": 4161333240616979811,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s04/session1/labels.npz": {
+          "bytes": 154859,
+          "inode": 4161333240616979812,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s05/session1/metadata.json": {
+          "bytes": 12985,
+          "inode": 4161333240616979817,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s05/session1/data_int16.npy": {
+          "bytes": 125472848,
+          "inode": 4161333240616979815,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s05/session1/labels.npz": {
+          "bytes": 152417,
+          "inode": 4161333240616979816,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s06/session1/metadata.json": {
+          "bytes": 12987,
+          "inode": 180152662942139883,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s06/session1/data_int16.npy": {
+          "bytes": 125321984,
+          "inode": 180152662942139881,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s06/session1/labels.npz": {
+          "bytes": 154563,
+          "inode": 180152662942139882,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s10/session1/metadata.json": {
+          "bytes": 12989,
+          "inode": 252209930696759638,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s10/session1/data_int16.npy": {
+          "bytes": 106554872,
+          "inode": 252209930696759636,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s10/session1/labels.npz": {
+          "bytes": 130174,
+          "inode": 252209930696759637,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s11/session1/metadata.json": {
+          "bytes": 12989,
+          "inode": 216180413817767469,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s11/session1/data_int16.npy": {
+          "bytes": 123563072,
+          "inode": 216180413817767467,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db3/s11/session1/labels.npz": {
+          "bytes": 147330,
+          "inode": 216180413817767468,
+          "mtime_ns": 1794495088000000000,
+          "ctime_ns": 1794495088000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D1_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 198169099480685290,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D1_T1/data_int16.npy": {
+          "bytes": 45719456,
+          "inode": 198169099480685288,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D1_T1/labels.npz": {
+          "bytes": 73048,
+          "inode": 198169099480685289,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D1_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 180152663881555627,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D1_T2/data_int16.npy": {
+          "bytes": 45900192,
+          "inode": 180152663881555623,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D1_T2/labels.npz": {
+          "bytes": 73273,
+          "inode": 180152663881555626,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D2_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 144124009468953451,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D2_T1/data_int16.npy": {
+          "bytes": 45735840,
+          "inode": 144124009468953443,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D2_T1/labels.npz": {
+          "bytes": 73086,
+          "inode": 144124009468953450,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D2_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 4161333240616979957,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D2_T2/data_int16.npy": {
+          "bytes": 45589504,
+          "inode": 4161333240616979955,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D2_T2/labels.npz": {
+          "bytes": 72943,
+          "inode": 4161333240616979956,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D3_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 198169099480685316,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D3_T1/data_int16.npy": {
+          "bytes": 45695104,
+          "inode": 198169099480685314,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D3_T1/labels.npz": {
+          "bytes": 72737,
+          "inode": 198169099480685315,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D3_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 180152663881555679,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D3_T2/data_int16.npy": {
+          "bytes": 45858560,
+          "inode": 180152663881555676,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D3_T2/labels.npz": {
+          "bytes": 72801,
+          "inode": 180152663881555678,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D4_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 4161333240616979961,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D4_T1/data_int16.npy": {
+          "bytes": 45894368,
+          "inode": 4161333240616979959,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D4_T1/labels.npz": {
+          "bytes": 72816,
+          "inode": 4161333240616979960,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D4_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 144124009468953525,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D4_T2/data_int16.npy": {
+          "bytes": 45565056,
+          "inode": 144124009468953523,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D4_T2/labels.npz": {
+          "bytes": 72783,
+          "inode": 144124009468953524,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D5_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 234195180301869911,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D5_T1/data_int16.npy": {
+          "bytes": 45658528,
+          "inode": 234195180301869555,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D5_T1/labels.npz": {
+          "bytes": 72906,
+          "inode": 234195180301869742,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D5_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 180152663881555741,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D5_T2/data_int16.npy": {
+          "bytes": 45831104,
+          "inode": 180152663881555736,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s01/D5_T2/labels.npz": {
+          "bytes": 73168,
+          "inode": 180152663881555740,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D1_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 216180413817767680,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D1_T1/data_int16.npy": {
+          "bytes": 45767936,
+          "inode": 216180413817767678,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D1_T1/labels.npz": {
+          "bytes": 72500,
+          "inode": 216180413817767679,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D1_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 144124009468956096,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D1_T2/data_int16.npy": {
+          "bytes": 45787168,
+          "inode": 144124009468956093,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D1_T2/labels.npz": {
+          "bytes": 72782,
+          "inode": 144124009468956095,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D2_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 4161333240616979982,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D2_T1/data_int16.npy": {
+          "bytes": 45728896,
+          "inode": 4161333240616979980,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D2_T1/labels.npz": {
+          "bytes": 73302,
+          "inode": 4161333240616979981,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D2_T2/metadata.json": {
+          "bytes": 16459,
+          "inode": 252209930696782731,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D2_T2/data_int16.npy": {
+          "bytes": 6589472,
+          "inode": 252209930696782729,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D2_T2/labels.npz": {
+          "bytes": 12150,
+          "inode": 252209930696782730,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D3_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 252209930696782745,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D3_T1/data_int16.npy": {
+          "bytes": 45897312,
+          "inode": 252209930696782743,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D3_T1/labels.npz": {
+          "bytes": 73376,
+          "inode": 252209930696782744,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D3_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 252209930696782759,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D3_T2/data_int16.npy": {
+          "bytes": 45593024,
+          "inode": 252209930696782756,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D3_T2/labels.npz": {
+          "bytes": 73101,
+          "inode": 252209930696782758,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D4_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 180152663881557559,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D4_T1/data_int16.npy": {
+          "bytes": 45766560,
+          "inode": 180152663881557557,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D4_T1/labels.npz": {
+          "bytes": 72935,
+          "inode": 180152663881557558,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D4_T2/metadata.json": {
+          "bytes": 16459,
+          "inode": 198169099480686229,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D4_T2/data_int16.npy": {
+          "bytes": 45633664,
+          "inode": 198169099480686227,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D4_T2/labels.npz": {
+          "bytes": 72929,
+          "inode": 198169099480686228,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D5_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 234195180301949336,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D5_T1/data_int16.npy": {
+          "bytes": 45698400,
+          "inode": 234195180301948899,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D5_T1/labels.npz": {
+          "bytes": 73177,
+          "inode": 234195180301949162,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D5_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 4161333240616979990,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D5_T2/data_int16.npy": {
+          "bytes": 45778368,
+          "inode": 4161333240616979988,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s02/D5_T2/labels.npz": {
+          "bytes": 72790,
+          "inode": 4161333240616979989,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D1_T1/metadata.json": {
+          "bytes": 16485,
+          "inode": 144124009468956426,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D1_T1/data_int16.npy": {
+          "bytes": 45717920,
+          "inode": 144124009468956423,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D1_T1/labels.npz": {
+          "bytes": 72619,
+          "inode": 144124009468956425,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D1_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 252209930696782959,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D1_T2/data_int16.npy": {
+          "bytes": 45692256,
+          "inode": 252209930696782957,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D1_T2/labels.npz": {
+          "bytes": 72650,
+          "inode": 252209930696782958,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D2_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 216180413817767684,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D2_T1/data_int16.npy": {
+          "bytes": 45839040,
+          "inode": 216180413817767682,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D2_T1/labels.npz": {
+          "bytes": 72538,
+          "inode": 216180413817767683,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D2_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 4161333240616979994,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D2_T2/data_int16.npy": {
+          "bytes": 45578976,
+          "inode": 4161333240616979992,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D2_T2/labels.npz": {
+          "bytes": 72222,
+          "inode": 4161333240616979993,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D3_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 180152663881557796,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D3_T1/data_int16.npy": {
+          "bytes": 45757280,
+          "inode": 180152663881557794,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D3_T1/labels.npz": {
+          "bytes": 72343,
+          "inode": 180152663881557795,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D3_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 216180413817767688,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D3_T2/data_int16.npy": {
+          "bytes": 45712352,
+          "inode": 216180413817767686,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D3_T2/labels.npz": {
+          "bytes": 72260,
+          "inode": 216180413817767687,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D4_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 216180413817767692,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D4_T1/data_int16.npy": {
+          "bytes": 45781280,
+          "inode": 216180413817767690,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D4_T1/labels.npz": {
+          "bytes": 72623,
+          "inode": 216180413817767691,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D4_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 252209930696783030,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D4_T2/data_int16.npy": {
+          "bytes": 45827136,
+          "inode": 252209930696783025,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D4_T2/labels.npz": {
+          "bytes": 72505,
+          "inode": 252209930696783028,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D5_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 162139461839227412,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D5_T1/data_int16.npy": {
+          "bytes": 45723200,
+          "inode": 162139461839227410,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D5_T1/labels.npz": {
+          "bytes": 72296,
+          "inode": 162139461839227411,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D5_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 162139461839227420,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D5_T2/data_int16.npy": {
+          "bytes": 45743680,
+          "inode": 162139461839227418,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s03/D5_T2/labels.npz": {
+          "bytes": 72507,
+          "inode": 162139461839227419,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D1_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 180152663881558520,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D1_T1/data_int16.npy": {
+          "bytes": 45689504,
+          "inode": 180152663881558516,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D1_T1/labels.npz": {
+          "bytes": 72622,
+          "inode": 180152663881558518,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D1_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 198169099480686689,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D1_T2/data_int16.npy": {
+          "bytes": 45541120,
+          "inode": 198169099480686687,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D1_T2/labels.npz": {
+          "bytes": 72722,
+          "inode": 198169099480686688,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D2_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 252209930696783714,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D2_T1/data_int16.npy": {
+          "bytes": 45765440,
+          "inode": 252209930696783712,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D2_T1/labels.npz": {
+          "bytes": 72933,
+          "inode": 252209930696783713,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D2_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 144124009468957558,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D2_T2/data_int16.npy": {
+          "bytes": 45560608,
+          "inode": 144124009468957556,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D2_T2/labels.npz": {
+          "bytes": 72108,
+          "inode": 144124009468957557,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D3_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 162139461839227764,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D3_T1/data_int16.npy": {
+          "bytes": 45544256,
+          "inode": 162139461839227762,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D3_T1/labels.npz": {
+          "bytes": 72898,
+          "inode": 162139461839227763,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D3_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 252209930696783742,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D3_T2/data_int16.npy": {
+          "bytes": 45666272,
+          "inode": 252209930696783740,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D3_T2/labels.npz": {
+          "bytes": 72392,
+          "inode": 252209930696783741,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D4_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 252209930696783756,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D4_T1/data_int16.npy": {
+          "bytes": 45594944,
+          "inode": 252209930696783754,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D4_T1/labels.npz": {
+          "bytes": 72341,
+          "inode": 252209930696783755,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D4_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 180152663881558593,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D4_T2/data_int16.npy": {
+          "bytes": 45588832,
+          "inode": 180152663881558590,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D4_T2/labels.npz": {
+          "bytes": 72728,
+          "inode": 180152663881558592,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D5_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 252209930696783784,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D5_T1/data_int16.npy": {
+          "bytes": 45773600,
+          "inode": 252209930696783780,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D5_T1/labels.npz": {
+          "bytes": 73129,
+          "inode": 252209930696783782,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D5_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 216180413817767710,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D5_T2/data_int16.npy": {
+          "bytes": 45669024,
+          "inode": 216180413817767708,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s06/D5_T2/labels.npz": {
+          "bytes": 72662,
+          "inode": 216180413817767709,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D1_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 144124009468957870,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D1_T1/data_int16.npy": {
+          "bytes": 45822944,
+          "inode": 144124009468957867,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D1_T1/labels.npz": {
+          "bytes": 72870,
+          "inode": 144124009468957869,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D1_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 198169099480686820,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D1_T2/data_int16.npy": {
+          "bytes": 45464320,
+          "inode": 198169099480686818,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D1_T2/labels.npz": {
+          "bytes": 72473,
+          "inode": 198169099480686819,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D2_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 252209930696783966,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D2_T1/data_int16.npy": {
+          "bytes": 45826784,
+          "inode": 252209930696783964,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D2_T1/labels.npz": {
+          "bytes": 73007,
+          "inode": 252209930696783965,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D2_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 162139461839227885,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D2_T2/data_int16.npy": {
+          "bytes": 45756352,
+          "inode": 162139461839227883,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D2_T2/labels.npz": {
+          "bytes": 72756,
+          "inode": 162139461839227884,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D3_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 180152663881558814,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D3_T1/data_int16.npy": {
+          "bytes": 45791584,
+          "inode": 180152663881558812,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D3_T1/labels.npz": {
+          "bytes": 72957,
+          "inode": 180152663881558813,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D3_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 180152663881558828,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D3_T2/data_int16.npy": {
+          "bytes": 45718880,
+          "inode": 180152663881558822,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D3_T2/labels.npz": {
+          "bytes": 72786,
+          "inode": 180152663881558827,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D4_T1/metadata.json": {
+          "bytes": 16458,
+          "inode": 234195180318648459,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D4_T1/data_int16.npy": {
+          "bytes": 45736416,
+          "inode": 234195180318648145,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D4_T1/labels.npz": {
+          "bytes": 72967,
+          "inode": 234195180318648314,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D4_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 252209930696784029,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D4_T2/data_int16.npy": {
+          "bytes": 45826912,
+          "inode": 252209930696784026,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D4_T2/labels.npz": {
+          "bytes": 73206,
+          "inode": 252209930696784028,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D5_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 252209930696784042,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D5_T1/data_int16.npy": {
+          "bytes": 45827232,
+          "inode": 252209930696784040,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D5_T1/labels.npz": {
+          "bytes": 73341,
+          "inode": 252209930696784041,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D5_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 252209930696784058,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D5_T2/data_int16.npy": {
+          "bytes": 45798976,
+          "inode": 252209930696784056,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s07/D5_T2/labels.npz": {
+          "bytes": 73204,
+          "inode": 252209930696784057,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D1_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 234195180318656467,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D1_T1/data_int16.npy": {
+          "bytes": 45776288,
+          "inode": 234195180318656056,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D1_T1/labels.npz": {
+          "bytes": 71030,
+          "inode": 234195180318656289,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D1_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 144124009468958268,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D1_T2/data_int16.npy": {
+          "bytes": 45809152,
+          "inode": 144124009468958264,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D1_T2/labels.npz": {
+          "bytes": 71320,
+          "inode": 144124009468958267,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D2_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 198169099480686950,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D2_T1/data_int16.npy": {
+          "bytes": 45730272,
+          "inode": 198169099480686948,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D2_T1/labels.npz": {
+          "bytes": 71900,
+          "inode": 198169099480686949,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D2_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 4161333240616980026,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D2_T2/data_int16.npy": {
+          "bytes": 45556608,
+          "inode": 4161333240616980024,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D2_T2/labels.npz": {
+          "bytes": 71791,
+          "inode": 4161333240616980025,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D3_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 180152663881559075,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D3_T1/data_int16.npy": {
+          "bytes": 45821184,
+          "inode": 180152663881559073,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D3_T1/labels.npz": {
+          "bytes": 72656,
+          "inode": 180152663881559074,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D3_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 216180413817767722,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D3_T2/data_int16.npy": {
+          "bytes": 45653184,
+          "inode": 216180413817767720,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D3_T2/labels.npz": {
+          "bytes": 72335,
+          "inode": 216180413817767721,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D4_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 198169099480686974,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D4_T1/data_int16.npy": {
+          "bytes": 45827264,
+          "inode": 198169099480686972,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D4_T1/labels.npz": {
+          "bytes": 72326,
+          "inode": 198169099480686973,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D4_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 216180413817767726,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D4_T2/data_int16.npy": {
+          "bytes": 45581600,
+          "inode": 216180413817767724,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D4_T2/labels.npz": {
+          "bytes": 71285,
+          "inode": 216180413817767725,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D5_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 4161333240616980031,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D5_T1/data_int16.npy": {
+          "bytes": 45835424,
+          "inode": 4161333240616980029,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D5_T1/labels.npz": {
+          "bytes": 72173,
+          "inode": 4161333240616980030,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D5_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 252209930696784294,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D5_T2/data_int16.npy": {
+          "bytes": 45665280,
+          "inode": 252209930696784290,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s08/D5_T2/labels.npz": {
+          "bytes": 72372,
+          "inode": 252209930696784293,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D1_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 180152663881559282,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D1_T1/data_int16.npy": {
+          "bytes": 45796576,
+          "inode": 180152663881559280,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D1_T1/labels.npz": {
+          "bytes": 72755,
+          "inode": 180152663881559281,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D1_T2/metadata.json": {
+          "bytes": 16484,
+          "inode": 180152663881559296,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D1_T2/data_int16.npy": {
+          "bytes": 45541376,
+          "inode": 180152663881559293,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D1_T2/labels.npz": {
+          "bytes": 72010,
+          "inode": 180152663881559295,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D2_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 198169099480687076,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D2_T1/data_int16.npy": {
+          "bytes": 45818848,
+          "inode": 198169099480687074,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D2_T1/labels.npz": {
+          "bytes": 71649,
+          "inode": 198169099480687075,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D2_T2/metadata.json": {
+          "bytes": 16459,
+          "inode": 216180413817767730,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D2_T2/data_int16.npy": {
+          "bytes": 45586272,
+          "inode": 216180413817767728,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D2_T2/labels.npz": {
+          "bytes": 72157,
+          "inode": 216180413817767729,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D3_T1/metadata.json": {
+          "bytes": 16485,
+          "inode": 234195180318669150,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D3_T1/data_int16.npy": {
+          "bytes": 45902592,
+          "inode": 234195180318668805,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D3_T1/labels.npz": {
+          "bytes": 72555,
+          "inode": 234195180318668981,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D3_T2/metadata.json": {
+          "bytes": 16459,
+          "inode": 180152663881559355,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D3_T2/data_int16.npy": {
+          "bytes": 45478592,
+          "inode": 180152663881559353,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D3_T2/labels.npz": {
+          "bytes": 71690,
+          "inode": 180152663881559354,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D4_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 162139461839228149,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D4_T1/data_int16.npy": {
+          "bytes": 45895200,
+          "inode": 162139461839228147,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D4_T1/labels.npz": {
+          "bytes": 72724,
+          "inode": 162139461839228148,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D4_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 216180413817767734,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D4_T2/data_int16.npy": {
+          "bytes": 45513984,
+          "inode": 216180413817767732,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D4_T2/labels.npz": {
+          "bytes": 71104,
+          "inode": 216180413817767733,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D5_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 234195180318671641,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D5_T1/data_int16.npy": {
+          "bytes": 45779648,
+          "inode": 234195180318671204,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D5_T1/labels.npz": {
+          "bytes": 71116,
+          "inode": 234195180318671440,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D5_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 216180413817767738,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D5_T2/data_int16.npy": {
+          "bytes": 45878688,
+          "inode": 216180413817767736,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s09/D5_T2/labels.npz": {
+          "bytes": 70868,
+          "inode": 216180413817767737,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D1_T1/metadata.json": {
+          "bytes": 16460,
+          "inode": 216180413817767742,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D1_T1/data_int16.npy": {
+          "bytes": 45841504,
+          "inode": 216180413817767740,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D1_T1/labels.npz": {
+          "bytes": 73026,
+          "inode": 216180413817767741,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D1_T2/metadata.json": {
+          "bytes": 16460,
+          "inode": 198169099480687209,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D1_T2/data_int16.npy": {
+          "bytes": 45657920,
+          "inode": 198169099480687207,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D1_T2/labels.npz": {
+          "bytes": 73142,
+          "inode": 198169099480687208,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D2_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 162139461839228259,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D2_T1/data_int16.npy": {
+          "bytes": 45862176,
+          "inode": 162139461839228255,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D2_T1/labels.npz": {
+          "bytes": 73477,
+          "inode": 162139461839228258,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D2_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 4161333240616980036,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D2_T2/data_int16.npy": {
+          "bytes": 45607488,
+          "inode": 4161333240616980034,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D2_T2/labels.npz": {
+          "bytes": 72663,
+          "inode": 4161333240616980035,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D3_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 252209930696784746,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D3_T1/data_int16.npy": {
+          "bytes": 45730688,
+          "inode": 252209930696784744,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D3_T1/labels.npz": {
+          "bytes": 73082,
+          "inode": 252209930696784745,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D3_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 234195180318681953,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D3_T2/data_int16.npy": {
+          "bytes": 45755136,
+          "inode": 234195180318681434,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D3_T2/labels.npz": {
+          "bytes": 73017,
+          "inode": 234195180318681775,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D4_T1/metadata.json": {
+          "bytes": 16461,
+          "inode": 162139461839228293,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D4_T1/data_int16.npy": {
+          "bytes": 45596032,
+          "inode": 162139461839228291,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D4_T1/labels.npz": {
+          "bytes": 72831,
+          "inode": 162139461839228292,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D4_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 144124009468959136,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D4_T2/data_int16.npy": {
+          "bytes": 45879104,
+          "inode": 144124009468959128,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D4_T2/labels.npz": {
+          "bytes": 73070,
+          "inode": 144124009468959135,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D5_T1/metadata.json": {
+          "bytes": 16462,
+          "inode": 180152663881559678,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D5_T1/data_int16.npy": {
+          "bytes": 45752416,
+          "inode": 180152663881559674,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D5_T1/labels.npz": {
+          "bytes": 73247,
+          "inode": 180152663881559676,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D5_T2/metadata.json": {
+          "bytes": 16461,
+          "inode": 144124009468959171,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D5_T2/data_int16.npy": {
+          "bytes": 45733376,
+          "inode": 144124009468959167,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        },
+        "/leonardo_scratch/large/userexternal/sbenatti/data/processed/ninapro_db6/s10/D5_T2/labels.npz": {
+          "bytes": 73114,
+          "inode": 144124009468959169,
+          "mtime_ns": 1794493714000000000,
+          "ctime_ns": 1794493714000000000
+        }
+      },
+      "unchanged": true
+    }
+  },
+  "commands": {
+    "p1": [
+      "/leonardo_work/IscrB_WearUsFM/venv_wearusfm/bin/python3",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/scripts/channel_readout.py",
+      "--stage",
+      "extract",
+      "--checkpoint",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/consolidation_20261104/continuation/checkpoints/checkpoint_postdecay.pt",
+      "--task",
+      "p1",
+      "--datasets",
+      "ninapro_db2",
+      "ninapro_db3",
+      "ninapro_db6",
+      "--features",
+      "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1",
+      "--batch",
+      "64",
+      "--device",
+      "cuda",
+      "--splits",
+      "/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/scaling_49046_control30m_20261121_v1/splits/v1/splits_v1.json",
+      "--root",
+      "/leonardo_work/IscrB_WearUsFM/data/processed",
+      "--root",
+      "/leonardo_scratch/large/userexternal/sbenatti/data/processed"
+    ]
+  },
+  "runtime": {
+    "python": "3.11.6",
+    "numpy": "1.26.4",
+    "torch": "2.2.0a0+git6c8c5ad",
+    "cuda": "12.1",
+    "device": "cuda",
+    "torch_threads": 1,
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "elapsed_seconds": 839.8194803069346
+}
