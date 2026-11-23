@@ -267,8 +267,9 @@ La conferma su un mondo nuovo è un passo separato (sezione 8.6).
 
 ### 8.3 Regola di scelta, fissata prima
 
-- Una dose è **ammissibile** se il punto scelto di ogni cella si riproduce e le tre teste passano il cancello lineare congelato
-  (recupero almeno 0,90 in MSE ed `E_dyn` nei tre pannelli, `controls.linear_head_gate`).
+- Una dose è **ammissibile** se ha i risultati di tutte e quattro le celle, il punto scelto di ogni cella si riproduce e le tre
+  teste passano il cancello lineare congelato (recupero almeno 0,90 in MSE ed `E_dyn` nei tre pannelli,
+  `controls.linear_head_gate`). Una dose senza tutte le celle, per esempio per un job interrotto, non è ammissibile.
 - Si **sceglie** la dose ammissibile con il recupero temporale pooled più alto; a parità, la dose più piccola.
 - La **conferma** su un mondo nuovo si propone solo se la dose scelta raggiunge 0,50 nei tre pannelli del mondo temporale
   originale, la soglia congelata `TEMPORAL_HEAD_RECOVERY`. Altrimenti la linea torna a Simone con la curva dose-risposta.
@@ -288,14 +289,16 @@ La conferma su un mondo nuovo è un passo separato (sezione 8.6).
 | ID logico | Celle | Limite | GPU-ore prenotate |
 | --- | --- | --- | ---: |
 | `TCND-checkout2-20261123` | checkout di campagna `pose_temponet_diag_20261123` | 12 min, `lrd_all_serial` | 0 |
-| `TCND-d3t-wd-20261123` | TCN, mondo temporale, quattro dosi | 100 min | 1,72 |
-| `TCND-d3l-wd-20261123` | TCN, mondo lineare, quattro dosi | 100 min | 1,72 |
-| `TCND-d3s-wd-20261123` | L0 e MLP, mondo lineare, quattro dosi | 70 min | 1,22 |
+| `TCND-d3t-wd-20261123` | TCN, mondo temporale, quattro dosi | 112 min | 1,92 |
+| `TCND-d3l-wd-20261123` | TCN, mondo lineare, quattro dosi | 110 min | 1,88 |
+| `TCND-d3s-wd-20261123` | L0 e MLP, mondo lineare, quattro dosi | 68 min | 1,18 |
 
 - Risorse dei tre job GPU come D0-D2: `boost_usr_prod`, 1 GPU, 8 CPU, 32 GB, QoS `normal`; tutti `afterok` sul checkout.
   Ognuno richiede anche la ricevuta completata di D0.
-- **Totale prenotato 4,65 GPU-ore** (limite più 180 secondi), cioè 37,2 ore locali, più 0,4 core-ore del checkout: sotto le 5
-  GPU-ore dell'autonomia del 28/10. Consumo atteso circa 2,3 GPU-ore: 12,8 minuti per una TCN a 150 epoche, 4 per L0 e MLP.
+- **Totale prenotato 4,98 GPU-ore** (limite più 180 secondi), cioè 39,9 ore locali, più 0,4 core-ore del checkout: sotto le 5
+  GPU-ore dell'autonomia del 28/10. Consumo atteso circa 2,3 GPU-ore: 13,4 minuti per una TCN a 150 epoche, 4 per L0 e MLP.
+  I limiti coprono il caso peggiore, con tutte e quattro le dosi prolungate a 300 epoche: 107 minuti per `d3t`, 106 per `d3l`,
+  65 per `d3s`. I risultati di ogni dose si scrivono appena finisce.
 - Nessun rilancio dentro questa fase: con un rilancio si supererebbero le 5 GPU-ore, quindi serve una decisione nuova.
 - Leonardo è in manutenzione dal 23/11 alle 08:00 al 25/11 alle 08:00, e il certificato ssh va rinnovato: l'invio avviene dopo.
 
@@ -305,3 +308,54 @@ Solo se la regola 8.3 lo propone. Semi `20261122 + 1000·fold` (L = base, T = ba
 con la regola congelata, sui soli inner-train; sei controlli (tre teste, due mondi) con la dose scelta e la ricerca congelata
 completa; cancello congelato sul mondo nuovo; un solo tentativo. Un fallimento torna a Simone. Costo stimato: circa 2 core-ore
 CPU per le calibrazioni e 3,6 GPU-ore misurate per i controlli, con una prenotazione maggiore: serve l'approvazione di Simone.
+
+## 9. Fase 3 — conferma su un mondo nuovo (B), regole fissate il 23/11/2026 prima di ogni risultato di D3
+
+Approvazione. Alla domanda «Approvi già ora la conferma su un mondo nuovo, se l'esplorazione rispetta la regola fissata?»
+Simone ha risposto, il 23/11: «Sì, approvo». La fase 3 parte quindi da sola se, e solo se, la regola 8.3 la propone. La regola la
+applica il driver stesso, sulle tre sintesi autenticate di D3: nessuna scelta a mano.
+
+### 9.1 Il mondo nuovo
+
+- Semi dichiarati prima di D1 (proposta `8fac3a82`): `base = 20261122 + 1000·fold`; L con `base`, T con `base + 1`, rumore con
+  `base + 2`. Fold 0: 20261122 / 20261123 / 20261124; fold 1: 20262122 / 20262123 / 20262124.
+- Generatore: `controls.generate_components` congelato, con il solo seme come parametro (`core.generate_components_seeded`).
+  Al seme congelato ridà il generatore di A1 bit per bit (test).
+- Calibrazione: `controls.build_positive_control_fold` congelato, sui soli inner-train, con la stessa regola per `a` e `sigma`, sugli
+  stessi utenti, fold e latenti. Contesto numerico `cpu8` uguale a quello delle calibrazioni di A1.
+- Se la calibrazione non è `calibrated`, o i riferimenti in forma chiusa non sono diagnostici, la fase si ferma: non si estrae un
+  altro seme e la linea torna a Simone.
+- Non sono utenti nuovi: è un'altra funzione e un'altra realizzazione del rumore sugli stessi latenti.
+
+### 9.2 I controlli e il cancello
+
+- Sei ricerche: L0, MLP e TCN, nei mondi lineare e temporale del mondo nuovo, con la ricetta congelata e il solo weight decay
+  della dose scelta da 8.3. Ricerca congelata completa: griglia dei learning rate con le estensioni ai bordi, 150 epoche e 300
+  secondo la regola, selezione MSE (`workflow._run_selection`).
+- Cancello: `workflow.qualify_controls` congelato sulle due calibrazioni nuove e sulle sei selezioni. Esiti: `passed` se i tre
+  controlli lineari raggiungono 0,90 e la TCN raggiunge 0,50 nei tre pannelli del mondo temporale, senza allarmi
+  d'ottimizzazione; altrimenti `recipe_not_admitted` oppure `optimization_unresolved`.
+- **Un solo tentativo.** Un esito diverso da `passed`, un errore o un fermo tornano a Simone, senza un'altra dose, un altro seme o
+  un'altra ricetta. Anche con `passed` la variante non entra da sola nella catena congelata: serve una ricetta congelata nuova,
+  con identità e review sue, e la decisione di Simone.
+- Il mondo originale non si rifà con la ricerca completa: per il confronto con A1 restano le letture di D3 a LR 0,003.
+
+### 9.3 Job, risorse e costo
+
+| ID logico | Che cosa fa | Risorse | Limite |
+| --- | --- | --- | --- |
+| `TCND-b-calib-0-20261123`, `TCND-b-calib-1-20261123` | calibrazione del mondo nuovo, un fold ciascuno | `lrd_all_serial`, 8 CPU, 24 GB | 40 min |
+| `TCND-b-controls-{linear,temporal}-{L0,MLP}-20261123` | quattro ricerche di L0 e MLP | `boost_usr_prod`, 1 GPU, 8 CPU, 32 GB | 60 min |
+| `TCND-b-controls-{linear,temporal}-TCN_post-20261123` | due ricerche della TCN | come sopra | 150 min |
+| `TCND-b-gate-20261123` | cancello congelato sul mondo nuovo | `lrd_all_serial`, 2 CPU, 16 GB | 15 min |
+
+- Le ricerche partono `afterok` sulle due calibrazioni, il cancello `afterok` sulle sei ricerche. Ogni stadio verifica anche le
+  ricevute completate dei predecessori.
+- **Prenotato: 9,30 GPU-ore** (limite più 180 secondi), cioè 74,4 ore locali sui nodi GPU, più 11,5 core-ore delle calibrazioni
+  e 0,6 del cancello. Consumo atteso circa 4-5 GPU-ore: le sei ricerche di A1 hanno usato 3,57 GPU-ore, e con un weight decay più
+  forte i minimi possono cadere più tardi e allungare le ricerche.
+- Caso peggiore della ricerca congelata: cinque learning rate (i quattro iniziali e una sola estensione a un bordo), tutti a 300
+  epoche. Con i costi unitari misurati in A1 sono circa 129 minuti per una TCN, 43 per l'MLP e 39 per L0, setup compreso: i limiti
+  di 150 e 60 minuti li coprono. Le calibrazioni di A1 sono durate 6,5 minuti l'una, contro un limite di 40.
+- Addebito: account `IscrB_WearUsFM`, voce «diagnostici del controllo temporale TCN», fuori dai tetti di A1. È sopra le 5 GPU-ore:
+  lo copre l'approvazione di Simone qui sopra. Nessun rilancio senza decisione nuova.

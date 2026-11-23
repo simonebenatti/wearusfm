@@ -21,9 +21,13 @@ import time
 # (python -m pose_temponet run): the numerical context is authenticated below.
 from pose_temponet import execution as E, provenance as P
 from pose_temponet import runner as R
-from pose_temponet import train as T, workflow as W
+from pose_temponet import data as D, train as T, workflow as W
 
 from . import core
+
+# Pure Python and an already loaded NumPy: imported after the frozen package, the numerical census is unchanged.
+from dataclasses import asdict
+import numpy as np
 
 PLAN_REPO_PATH = "results/infra/pose_temponet_execution_20261121_A1/plan_controls.json"
 PLAN_SHA256 = "b334ece870bc85b804708f92e4c240f4999750ef8d089ca7df1bd040d2ee04e3"
@@ -55,6 +59,15 @@ D3_CELLS = {"d3t": (("TCN_post", "temporal"),), "d3l": (("TCN_post", "linear"),)
             "d3s": (("L0", "linear"), ("MLP", "linear"))}
 PHASE2_PROTOCOL = "tcn-temporal-control-weight-decay-exploration-20261123-v1"
 CAMPAIGN_D3 = "pose_temponet_diag_20261123"
+# Confirmation on a new world (B): two CPU calibrations, six control searches with the chosen dose, one CPU gate.
+PHASE3_PROTOCOL = "tcn-temporal-control-new-world-confirmation-20261123-v1"
+B_CALIBRATIONS = {"bc0": 0, "bc1": 1}
+B_CONTROLS = {"b-%s-%s" % (world, head): (world, head) for world in W.WORLDS for head in W.CONTROL_HEADS}
+B_GATE = "bg"
+JOBS.update({"bc0": "TCND-b-calib-0-20261123", "bc1": "TCND-b-calib-1-20261123",
+             **{stage: "TCND-b-controls-%s-%s-20261123" % cell for stage, cell in B_CONTROLS.items()},
+             B_GATE: "TCND-b-gate-20261123"})
+CPU_STAGES = {"bc0": 8, "bc1": 8, B_GATE: 2}
 SELECTED = {"lr": 0.003, "exposure": 31.0}
 # Recoveries of the archived gate (positive_controls_gate_20261121.json, temporal_head_gate.recovery).
 ARCHIVED_RECOVERY = {"fold0": 0.24173052888786836, "fold1": 0.1887545039561508, "pooled": 0.21710109906955868}
@@ -82,6 +95,15 @@ def allocation():
     P.require(int(environment.get("SLURM_CPUS_PER_TASK", 0)) == 8, "the frozen GPU profile uses eight CPUs")
     import torch
     P.require(torch.cuda.is_available() and torch.cuda.device_count() == 1, "one allocated GPU required")
+    raw = subprocess.check_output(["scontrol", "show", "job", "-o", environment["SLURM_JOB_ID"]], text=True)
+    return {"slurm_job_id": environment["SLURM_JOB_ID"], "scontrol": raw.strip()}
+
+
+def allocation_cpu(cpus):
+    environment = os.environ
+    P.require(str(environment.get("SLURM_JOB_ID", "")).isdigit(), "not a SLURM job")
+    P.require(environment.get("SLURM_RESTART_COUNT", "0") == "0", "requeue/restart forbidden")
+    P.require(int(environment.get("SLURM_CPUS_PER_TASK", 0)) == cpus, "unexpected CPU allocation")
     raw = subprocess.check_output(["scontrol", "show", "job", "-o", environment["SLURM_JOB_ID"]], text=True)
     return {"slurm_job_id": environment["SLURM_JOB_ID"], "scontrol": raw.strip()}
 
@@ -156,6 +178,25 @@ def setup():
     return {"plan": plan, "plan_pin": plan_pin, "code": code, "numeric": numeric, "pins": pins,
             "bundle": bundle, "calibrated": calibrated, "controls": controls,
             "evaluation_identity": identity, "references": references, "folds": previous["train"]["folds"]}
+
+
+def setup_calibration():
+    """Authentication for the CPU calibration of the confirmation world, exactly as the archived calibrations."""
+    plan, plan_pin, code = reviewed_plan()
+    T.configure_numerics()
+    numeric = P.numeric_context("cpu")
+    P.verify_numeric(plan, "wls_calibration", numeric)
+    P.require(P.digest(numeric) == plan["numeric_pins"]["cpu8"], "numerical context differs from the calibrations")
+    receipts, pins = R._ancestors(plan, E.find_job(plan, "TCNH-wls-calibration-0-20261120"))
+    P.require(pins["TCNH-preflight-20261120"]["sha256"] == RECEIPT_SHA256["TCNH-preflight-20261120"],
+              "preflight receipt differs from its archived mirror")
+    previous = R._single(receipts, "preflight")["details"]["preflight"]
+    P.require(previous["integrity"] is True and bool(previous["historical_R1"].get("passed", False)),
+              "preflight gates are not passed")
+    cache = P.read_verified_inputs(plan, "train", stage="wls_calibration")
+    cache.pop("pre", None)
+    return {"plan": plan, "plan_pin": plan_pin, "code": code, "numeric": numeric, "pins": pins,
+            "cache": cache, "folds": previous["train"]["folds"], "users": plan["producers"]["train"]["users"]}
 
 
 def setup_variant():
@@ -344,6 +385,102 @@ def run_d3(context, directory, root, artifacts, cells):
     return gates
 
 
+def own_receipt(root, stage):
+    """A completed receipt of an earlier stage of this chain, read through its pin."""
+    pin = P.file_pin(root / "receipts" / (JOBS[stage] + ".json"))
+    receipt = P.read_json_pin(pin)
+    P.require(receipt["status"] == "completed" and receipt["job_id"] == JOBS[stage], stage + " did not complete")
+    return receipt, pin
+
+
+def own_torch(receipt, name):
+    import torch
+    check = P.verify_pin(receipt["artifacts"][name])
+    value = torch.load(receipt["artifacts"][name]["path"], map_location="cpu", weights_only=False)
+    P.unchanged({receipt["artifacts"][name]["path"]: check["state"]})
+    return value
+
+
+def d3_decision(root, predecessors):
+    """The pre-registered dose rule applied to the three authenticated D3 summaries."""
+    rows = {}
+    for stage in D3_CELLS:
+        receipt, pin = own_receipt(root, stage)
+        predecessors[JOBS[stage]] = pin
+        rows.update(P.read_json_pin(receipt["artifacts"]["summary"])["rows"])
+    return core.choose_dose(core.d3_results(rows))
+
+
+def new_world_artifacts(root, predecessors):
+    artifacts = []
+    for stage, fold in sorted(B_CALIBRATIONS.items(), key=lambda item: item[1]):
+        receipt, pin = own_receipt(root, stage)
+        predecessors[JOBS[stage]] = pin
+        artifact = own_torch(receipt, "calibration_state")
+        P.require(artifact["outer_fold"] == fold and artifact["components"]["seed"] == core.new_world_seed(fold),
+                  "calibration of another fold or world")
+        artifacts.append(artifact)
+    return artifacts
+
+
+def run_bc(context, fold, directory, root, artifacts):
+    """Calibration of one outer fold of the confirmation world, as the archived wls_calibration stage."""
+    cache = context["cache"]
+    groups = D.alternating_user_folds(cache, context["folds"])
+    fit_users = set(groups[fold])
+    fit = np.asarray([i for i, m in enumerate(cache["meta"]) if m["user"] in fit_users])
+    held = np.asarray([i for i, m in enumerate(cache["meta"]) if m["user"] not in fit_users])
+    result = core.calibrate_new_world(cache, fit, held, context["users"], fold, block_windows=32)
+    artifacts["calibration_state"] = P.atomic_torch(directory / "calibration.pt", result, root=root)
+    summary = {k: v for k, v in result.items() if k != "components"}
+    artifacts["calibration"] = P.atomic_json(directory / "calibration.json", R._plain(summary), root=root)
+    log({"event": "new_world_calibration", "fold": fold, "status": result["calibration"]["status"],
+         "selected": result["calibration"].get("selected")})
+    return {"calibrated": result["calibration"]["status"] == "calibrated",
+            "new_world_seed": result["components"]["seed"] == core.new_world_seed(fold)}
+
+
+def run_b_control(context, cell, directory, root, artifacts, predecessors):
+    """One frozen control search on the confirmation world with the dose chosen by the pre-registered rule."""
+    world, head = cell
+    decision = d3_decision(root, predecessors)
+    if not decision["confirm"] or decision["chosen"] is None:
+        raise GateFailed("the pre-registered dose rule does not propose a confirmation")
+    calibrated = new_world_artifacts(root, predecessors)
+    closed = W.combined_closed_form_gate(calibrated)
+    if closed["status"] != "diagnostic":
+        raise GateFailed("confirmation world is not diagnostic: " + str(closed["status"]))
+    plan = context["plan"]
+    bundle = W.prepare_control_folds(context["bundle"].cache, calibrated, world,
+                                     allowed_train_users=plan["producers"]["train"]["users"],
+                                     source_identity=R._input_identity(plan), expected_folds=context["folds"])
+    recipe = core.variant_recipe(decision["chosen"], RECIPE)
+    progress = lambda pair: log({"event": "selection_checkpoint", "lr": pair.lr, "point": core.plain(asdict(pair.points[-1]))}) \
+        if pair.points else None
+    result = W._run_selection(bundle, head, recipe=recipe, device=DEVICE, on_checkpoint=progress)
+    R._save_results(root, directory, result, artifacts)
+    artifacts["decision"] = P.atomic_json(directory / "dose_decision.json", core.plain(decision), root=root)
+    log({"event": "b_control_done", "world": world, "head": head, "dose": decision["chosen"],
+         "selected": result["selection"]["selected"], "alarms": result["selection"]["optimizer_alarms"]})
+    return {"d3_confirm": True, "new_world_diagnostic": True}
+
+
+def run_b_gate(directory, root, artifacts, predecessors):
+    """The frozen positive-control gate on the confirmation world, from the six authenticated searches."""
+    calibrated = new_world_artifacts(root, predecessors)
+    selections = {world: {} for world in W.WORLDS}
+    for stage, (world, head) in B_CONTROLS.items():
+        receipt, pin = own_receipt(root, stage)
+        predecessors[JOBS[stage]] = pin
+        selections[world][head] = P.read_json_pin(receipt["artifacts"]["selection"])
+    gate = W.qualify_controls(calibrated, selections)
+    artifacts["gate"] = P.atomic_json(directory / "gate.json", core.plain(gate), root=root)
+    log({"event": "new_world_gate", "status": gate["status"],
+         "temporal": gate.get("temporal_head_gate", {}).get("recovery"),
+         "linear": {h: g.get("status") for h, g in gate.get("linear_head_gates", {}).items()}})
+    return {"gate_computed": True}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("stage", choices=sorted(JOBS))
@@ -359,18 +496,33 @@ def main(argv=None):
     artifacts, gates, details, predecessors = {}, {}, {}, {}
     status, context, failure = "technical_failure", None, None
     try:
-        details["allocation"] = allocation()
+        details["allocation"] = allocation_cpu(CPU_STAGES[stage]) if stage in CPU_STAGES else allocation()
         if stage != "d0":
             previous = P.file_pin(root / "receipts" / (JOBS["d0"] + ".json"))
             P.require(P.read_json_pin(previous)["status"] == "completed",
                       "D0 did not complete: no later stage may run")
             predecessors[JOBS["d0"]] = previous
-        context = setup_variant() if stage in D3_CELLS else setup()
+        if stage in B_CONTROLS:
+            for calibration in B_CALIBRATIONS:  # fail before any GPU work if a calibration did not complete
+                predecessors[JOBS[calibration]] = own_receipt(root, calibration)[1]
+        if stage == B_GATE:
+            plan, plan_pin, code = reviewed_plan()
+            context = {"plan": plan, "plan_pin": plan_pin, "code": code}
+        elif stage in B_CALIBRATIONS:
+            context = setup_calibration()
+        else:
+            context = setup_variant() if stage in D3_CELLS else setup()
         log({"event": "setup_complete", "stage": stage, "code": context["code"],
-             "bundle_sha256": context["bundle"].manifest["bundle_sha256"],
-             "evaluation_identity": context["evaluation_identity"]})
+             "bundle_sha256": context["bundle"].manifest["bundle_sha256"] if "bundle" in context else None,
+             "evaluation_identity": context.get("evaluation_identity")})
         if stage in D3_CELLS:
             gates = run_d3(context, directory, root, artifacts, D3_CELLS[stage])
+        elif stage in B_CALIBRATIONS:
+            gates = run_bc(context, B_CALIBRATIONS[stage], directory, root, artifacts)
+        elif stage in B_CONTROLS:
+            gates = run_b_control(context, B_CONTROLS[stage], directory, root, artifacts, predecessors)
+        elif stage == B_GATE:
+            gates = run_b_gate(directory, root, artifacts, predecessors)
         else:
             gates = {"d0": run_d0, "d1": run_d1, "d2": run_d2}[stage](context, directory, root, artifacts)
         status = "completed" if gates and all(gates.values()) else "gate_failed"
@@ -382,18 +534,23 @@ def main(argv=None):
                    finished_at=datetime.now(timezone.utc).isoformat())
     if failure is not None:
         details.update(error_type=type(failure).__name__, error=str(failure))
-    receipt = {"schema": "tcn-temporal-diag-receipt-v1", "protocol": PROTOCOL, "job_id": job_id, "stage": stage,
+    phase = PHASE3_PROTOCOL if stage in (*B_CALIBRATIONS, *B_CONTROLS, B_GATE) else (
+        PHASE2_PROTOCOL if stage in D3_CELLS else PROTOCOL)
+    receipt = {"schema": "tcn-temporal-diag-receipt-v1", "protocol": phase, "job_id": job_id, "stage": stage,
                "status": status, "complete": status == "completed",
-               "campaign": CAMPAIGN_D3 if stage in D3_CELLS else CAMPAIGN,
+               "campaign": CAMPAIGN if stage in ("d0", "d1", "d2") else CAMPAIGN_D3,
                "source_sha256": SOURCE_SHA256, "reviewed_code_sha": REVIEWED_CODE_SHA,
                "plan": {"path": PLAN_REPO_PATH, "sha256": PLAN_SHA256},
                "predecessors": predecessors, "artifacts": artifacts, "gates": gates, "details": details}
     if context is not None:
-        receipt.update(code=context["code"], numeric_context=context["numeric"],
-                       numeric_sha256=P.digest(context["numeric"]),
-                       bundle_sha256=context["bundle"].manifest["bundle_sha256"],
-                       evaluation_identity=context["evaluation_identity"],
-                       a1_receipts={k: context["pins"][k] for k in sorted(RECEIPT_SHA256)})
+        receipt["code"] = context["code"]
+        if "numeric" in context:
+            receipt.update(numeric_context=context["numeric"], numeric_sha256=P.digest(context["numeric"]))
+        if "bundle" in context:
+            receipt.update(bundle_sha256=context["bundle"].manifest["bundle_sha256"],
+                           evaluation_identity=context["evaluation_identity"])
+        if "pins" in context:
+            receipt["a1_receipts"] = {k: context["pins"][k] for k in sorted(RECEIPT_SHA256) if k in context["pins"]}
     receipt = core.plain(receipt)
     receipt["receipt_sha256"] = P.digest(receipt)
     try:

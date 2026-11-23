@@ -877,6 +877,122 @@ def choose_dose(results):
     return {"rows": rows, "chosen": best["dose"], "confirm": bool(confirm)}
 
 
+NEW_WORLD_BASE_SEED = 20261122
+
+
+def new_world_seed(fold):
+    """Seeds of the confirmation world, declared before D1 (8fac3a82): 20261122 + 1000*fold."""
+    require(fold in (0, 1), "two outer folds")
+    return NEW_WORLD_BASE_SEED + 1000 * fold
+
+
+def generate_components_seeded(features, metadata, support, fit_indices, held_indices,
+                               allowed_train_users, *, outer_fold, base_seed, n_joints=20,
+                               block_windows=16, crop=6):
+    """controls.generate_components with the base seed as a parameter (the frozen one is 20261118 + 1000*outer_fold).
+
+    Every other line is the frozen one; a test checks bit-for-bit equality at the frozen seed.
+    Original docstring: Known affine and width-8 temporal teachers on real train latents.
+
+    Teachers and their forward use pinned Torch CPU FP32, exactly like the
+    nonlinear readers. Linear-reference designs independently recompute LN in
+    float64; that numerical distinction is explicit, not a bitwise claim.
+    No statistics or parameter selection use outer-held windows.
+    """
+    import torch
+    from torch import nn
+    partition = C.validate_outer_partition(metadata, fit_indices, held_indices, allowed_train_users)
+    x = np.asarray(features)
+    C._require(x.ndim == 3 and len(x) == len(metadata), "features/metadata differ")
+    C._require(outer_fold in (0, 1) and block_windows > 0, "invalid generator fold/batch")
+    C._require(type(base_seed) is int and base_seed > 0, "invalid base seed")
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(base_seed)
+        linear = nn.Linear(x.shape[-1], n_joints, bias=True)
+        nn.init.normal_(linear.weight, std=x.shape[-1]**-.5)
+        nn.init.zeros_(linear.bias)
+        torch.manual_seed(base_seed+1)
+        temporal = nn.Sequential(
+            nn.Conv1d(x.shape[-1], 8, 1), nn.ReLU(),
+            nn.Conv1d(8, 8, 3, padding=1), nn.ReLU(),
+            nn.Conv1d(8, 8, 3, dilation=2, padding=2), nn.ReLU(),
+            nn.Conv1d(8, 8, 3, dilation=3, padding=3), nn.ReLU(),
+            nn.Conv1d(8, 8, 1), nn.ReLU(), nn.Conv1d(8, n_joints, 1))
+        convolutions = [m for m in temporal if isinstance(m, nn.Conv1d)]
+        for m in convolutions[:-1]:
+            nn.init.kaiming_normal_(m.weight, mode="fan_in", nonlinearity="relu")
+            nn.init.zeros_(m.bias)
+        nn.init.normal_(convolutions[-1].weight, std=8**-.5)
+        nn.init.zeros_(convolutions[-1].bias)
+    linear.eval(); temporal.eval()
+    arrays = {"L": np.empty((len(x), x.shape[1], n_joints), dtype=np.float64),
+              "T": np.empty((len(x), x.shape[1], n_joints), dtype=np.float64)}
+    active, total = np.zeros(5, dtype=np.int64), np.zeros(5, dtype=np.int64)
+    with torch.no_grad():
+        for start in range(0, len(x), block_windows):
+            tensor = torch.as_tensor(np.array(x[start:start+block_windows], dtype=np.float32))
+            z = torch.nn.functional.layer_norm(tensor, (x.shape[-1],), eps=1e-5)
+            arrays["L"][start:start+block_windows] = linear(z).numpy()
+            h = z.transpose(1, 2)
+            relu = 0
+            for module in temporal:
+                h = module(h)
+                if isinstance(module, nn.ReLU):
+                    # Descriptive activation counts use fitting-outer rows only.
+                    selected = np.flatnonzero(np.isin(np.arange(start, start+len(z)), fit_indices))
+                    if len(selected):
+                        part = h[selected]
+                        active[relu] += int((part > 0).sum())
+                        total[relu] += part.numel()
+                    relu += 1
+            arrays["T"][start:start+block_windows] = h.transpose(1, 2).numpy()
+    normalization = {}
+    for key in ("L", "T"):
+        arrays[key], normalization[key] = C.normalize_component(arrays[key], support, fit_indices, crop=crop)
+    arrays["epsilon"] = C.window_noise(base_seed+2, metadata, x.shape[1], n_joints)
+    return {**arrays, "normalization": normalization, "partition": partition,
+            "generator_states": {"L": linear.state_dict(), "T": temporal.state_dict()},
+            "generator_hashes": {"L": C._state_hash(linear.state_dict()), "T": C._state_hash(temporal.state_dict())},
+            "hidden_active_fraction_fitting": np.divide(active, total, out=np.zeros(5), where=total > 0).tolist(),
+            "seed": base_seed, "dtype": "torch.float32", "layernorm_eps": 1e-5}
+
+
+
+
+def calibrate_new_world(cache, fit_indices, held_indices, allowed_train_users, fold, *, block_windows=32):
+    """The frozen calibration of one outer fold on the confirmation world: only the generator seeds change."""
+    features, real, _, support = C._data_arrays(cache)
+    components = generate_components_seeded(features, cache["meta"], support, fit_indices, held_indices,
+                                            allowed_train_users, outer_fold=fold, base_seed=new_world_seed(fold),
+                                            n_joints=real.shape[-1], block_windows=block_windows)
+    return C.build_positive_control_fold(cache, fit_indices, held_indices, allowed_train_users, outer_fold=fold,
+                                         block_windows=block_windows, components=components)
+
+
+def d3_results(rows, doses=None):
+    """Per-dose gates from the three D3 summaries; a dose without every cell, or with a cell not reproduced, is invalid."""
+    doses = VARIANT_DOSES if doses is None else doses
+    results = {float(dose): {"linear": {}, "valid": True, "temporal": None} for dose in doses}
+    for row in rows.values():
+        dose = float(row["weight_decay"])
+        if dose not in results:
+            continue
+        r = results[dose]
+        r["valid"] = r["valid"] and bool(row["reproduced"])
+        if row["world"] == WORLD:
+            r["temporal"], r["late"], r["selected"] = row["gate"], row["late"], row["selected"]
+        else:
+            r["linear"][row["head"]] = row["gate"]
+    for r in results.values():
+        complete = r["temporal"] is not None and set(r["linear"]) == set(W.CONTROL_HEADS)
+        r["valid"] = r["valid"] and complete
+        if r["temporal"] is None:
+            r["temporal"] = {"recovery": {name: None for name in PANELS}}
+        for head in W.CONTROL_HEADS:
+            r["linear"].setdefault(head, {"status": "missing"})
+    return results
+
+
 def frozen_gate(selected_summary, bundle):
     """The frozen temporal head gate on the D1 selected point, with the gate's own references."""
     head = {name: selected_summary["held"]["observed"][name]["E_dyn"] for name in PANELS}
