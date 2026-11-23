@@ -143,18 +143,33 @@ def d2(root):
 
 
 def d3(root):
-    rows = {}
-    for stage in ("d3t", "d3l", "d3s"):
-        path = root / stage / "variant_summary.json"
-        if path.exists():
-            rows.update(json.loads(path.read_text())["rows"])
-    if not rows:
-        return
     sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
     from tcn_temporal_diag import core
+    import tcn_temporal_diag.__main__ as entry
+    rows, excluded = {}, []
+    for stage in ("d3t", "d3l", "d3s"):
+        path = root / stage / "variant_summary.json"
+        if not path.exists():
+            continue
+        receipt = root / "receipts" / (entry.JOBS[stage] + ".json")
+        status = json.loads(receipt.read_text())["status"] if receipt.exists() else "ricevuta assente"
+        if status != "completed":  # as the driver: only the summaries of completed jobs count
+            excluded.append("%s (%s)" % (stage, status))
+            continue
+        rows.update(json.loads(path.read_text())["rows"])
+    if not rows and not excluded:
+        return
     # The same reduction and rule the driver applies (core.d3_results, core.choose_dose): an incomplete dose is invalid.
     results = core.d3_results(rows)
+    reasons = {}
+    for row in rows.values():
+        bad = [name for name, ok in (("punto scelto", row["reproduced"]), ("punto a esposizione 0", row["start_reproduced"]))
+               if ok is not True]
+        if bad:
+            reasons.setdefault(float(row["weight_decay"]), []).append("%s %s: %s" % (row["world"], row["head"], ", ".join(bad)))
     print("\n== D3: esplorazione della dose di weight decay (LR 0,003, mondo originale)")
+    if excluded:
+        print("sintesi escluse, job non completati: %s" % ", ".join(excluded))
     for dose in sorted(results):
         r = results[dose]
         line = "wd %g (valida %s):" % (dose, r["valid"])
@@ -167,6 +182,8 @@ def d3(root):
             values = [v for panel in gate.get("recovery", {}).values() for v in panel.values() if v is not None]
             line += " lineare %s %s (min %s);" % (head, gate["status"], pct(min(values)) if values else "n.d.")
         print(line)
+        if dose in reasons:
+            print("   non riprodotti: " + "; ".join(reasons[dose]))
     decision = core.choose_dose(results)
     print("regola fissata prima: dose scelta %s, conferma su un mondo nuovo: %s" % (decision["chosen"], decision["confirm"]))
 

@@ -89,11 +89,11 @@ def test_new_world_calibration_is_the_frozen_calibration_with_seeded_components(
     assert _same(captured["components"], expected)
 
 
-def _row(dose, world, head, recovery, status="passed", reproduced=True):
+def _row(dose, world, head, recovery, status="passed", reproduced=True, start=True):
     gate = ({"recovery": dict(zip(core.PANELS, recovery)), "status": "x"} if world == "temporal"
             else {"status": status, "recovery": {}})
     return {"weight_decay": dose, "world": world, "head": head, "gate": gate, "reproduced": reproduced,
-            "late": False, "selected": {"exposure": 31.0}}
+            "start_reproduced": start, "late": False, "selected": {"exposure": 31.0}}
 
 
 def test_d3_results_mark_incomplete_or_unreproduced_doses_invalid():
@@ -111,9 +111,23 @@ def test_d3_results_mark_incomplete_or_unreproduced_doses_invalid():
     broken = copy.deepcopy(rows)
     broken["t1.0"]["reproduced"] = False
     assert core.choose_dose(core.d3_results(broken))["confirm"] is False
+    moved = copy.deepcopy(rows)
+    moved["l1.0L0"]["start_reproduced"] = False  # a linear cell whose step-zero point differs from A1
+    decision = core.choose_dose(core.d3_results(moved))
+    assert decision["confirm"] is False and next(r for r in decision["rows"] if r["dose"] == 1.0)["valid"] is False
+    unmarked = copy.deepcopy(rows)
+    del unmarked["t1.0"]["start_reproduced"]
+    with pytest.raises(KeyError):
+        core.d3_results(unmarked)
     absent = {k: v for k, v in rows.items() if not k.startswith("t3.0")}
     results = core.d3_results(absent)
     assert results[3.0]["valid"] is False and results[3.0]["temporal"]["recovery"]["pooled"] is None
+    with pytest.raises(ValueError, match="registered doses"):
+        core.choose_dose({k: v for k, v in core.d3_results(rows).items() if k != 3.0})
+    without = core.d3_results(rows)
+    del without[0.1]["valid"]
+    with pytest.raises(KeyError):
+        core.choose_dose(without)
 
 
 def _new_world_artifacts(world_fixture):
@@ -178,6 +192,10 @@ def test_confirmation_chain_writes_calibrations_six_searches_and_the_frozen_gate
         assert selection["world"] == world_name and selection["head"] == head
         assert selection["recipe"]["weight_decay"] == 0.3 and selection["recipe"]["test_only"] is True
         assert selection["bundle"]["artifacts_sha256"] == W._identity(sorted(artifacts, key=lambda a: a["outer_fold"]))
+        assert receipt["search"] == {"bundle_sha256": selection["bundle"]["bundle_sha256"],
+                                     "evaluation_identity": selection["evaluation_identity"],
+                                     "world": world_name, "head": head, "weight_decay": 0.3}
+        assert receipt["search"]["bundle_sha256"] != receipt["bundle_sha256"]  # the new world, not A1's setup bundle
     monkeypatch.setenv("TCND_JOB_ID", entry.JOBS[entry.B_GATE])
     assert entry.main([entry.B_GATE]) == 0
     gate = json.loads((root / entry.B_GATE / "gate.json").read_text())
@@ -193,18 +211,39 @@ def test_confirmation_chain_writes_calibrations_six_searches_and_the_frozen_gate
         entry.main([entry.B_GATE])
 
 
-def test_confirmation_searches_stop_when_the_rule_does_not_propose_it(world, tmp_path, monkeypatch):
+def test_confirmation_stages_stop_before_any_setup_when_the_rule_does_not_propose_it(world, tmp_path, monkeypatch):
     root = tmp_path.resolve() / "diag"
     _patch_b(monkeypatch, world, root, {"chosen": 0.3, "confirm": False, "rows": []})
-    for stage in ("d0", *entry.B_CALIBRATIONS):
-        monkeypatch.setenv("TCND_JOB_ID", entry.JOBS[stage])
-        assert entry.main([stage]) == 0
-    stage = next(iter(entry.B_CONTROLS))
+    monkeypatch.setenv("TCND_JOB_ID", entry.JOBS["d0"])
+    assert entry.main(["d0"]) == 0
+    monkeypatch.setattr(entry, "setup", lambda: pytest.fail("no GPU setup without the rule"))
+    monkeypatch.setattr(entry, "setup_calibration", lambda: pytest.fail("no calibration setup without the rule"))
     monkeypatch.setattr(entry.W, "_run_selection", lambda *a, **k: pytest.fail("no search without the rule"))
-    monkeypatch.setenv("TCND_JOB_ID", entry.JOBS[stage])
-    assert entry.main([stage]) == 3
-    receipt = json.loads((root / "receipts" / (entry.JOBS[stage] + ".json")).read_text())
-    assert receipt["status"] == "gate_failed" and "does not propose" in receipt["details"]["error"]
+    for stage in (*entry.B_CALIBRATIONS, next(iter(entry.B_CONTROLS))):
+        monkeypatch.setenv("TCND_JOB_ID", entry.JOBS[stage])
+        assert entry.main([stage]) == 3
+        receipt = json.loads((root / "receipts" / (entry.JOBS[stage] + ".json")).read_text())
+        assert receipt["status"] == "gate_failed" and "does not propose" in receipt["details"]["error"]
+        assert receipt["protocol"] == entry.PHASE3_PROTOCOL and "code" not in receipt and not (root / stage).exists()
+
+
+def test_a_frozen_gate_of_the_new_world_generator_is_a_gate_failure_not_a_crash(world, tmp_path, monkeypatch):
+    root = tmp_path.resolve() / "diag"
+    _patch_b(monkeypatch, world, root, {"chosen": 0.3, "confirm": True, "rows": []})
+    monkeypatch.setenv("TCND_JOB_ID", entry.JOBS["d0"])
+    assert entry.main(["d0"]) == 0
+
+    def degenerate(*args, **kwargs):
+        raise C.GateNotPassed("degenerate component", status="control_non_diagnostic", gate={"status": "degenerate"})
+
+    monkeypatch.setattr(core, "calibrate_new_world", degenerate)
+    monkeypatch.setenv("TCND_JOB_ID", entry.JOBS["bc0"])
+    assert entry.main(["bc0"]) == 3
+    receipt = json.loads((root / "receipts" / (entry.JOBS["bc0"] + ".json")).read_text())
+    assert receipt["status"] == "gate_failed" and receipt["details"]["gate_status"] == "control_non_diagnostic"
+    assert receipt["details"]["error_type"] == "GateNotPassed"
+    assert json.loads((root / "bc0" / "failed_gate.json").read_text()) == {"status": "degenerate"}
+    assert P.read_json_pin(receipt["artifacts"]["failed_gate"]) == {"status": "degenerate"}
 
 
 def test_d3_decision_reads_the_authenticated_summaries(world, tmp_path, monkeypatch):

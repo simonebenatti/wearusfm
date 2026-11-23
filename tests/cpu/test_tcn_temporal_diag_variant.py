@@ -52,6 +52,7 @@ def test_variant_fit_at_the_frozen_weight_decay_is_the_archived_curve_of_that_le
                                lr=lr, head=core.HEAD, fitting_exposures=(1, 3))
         ours = [{**q, "fold_steps": list(q["fold_steps"])} for q in fit["curve"]["points"]]
         assert ours == curve["points"] and fit["horizon"] == curve["horizon"] and fit["selected_reproduced"]
+        assert fit["start_parity_level"] == "exact" and fit["start_parity"]["max_relative_difference"] == 0.0
         pair = states["candidate_states"][lr]
         for fold in (0, 1):
             assert fit["states"]["final_states"][fold]["model"].keys() == pair["current_states"][fold]["model"].keys()
@@ -78,6 +79,7 @@ def test_variant_fit_changes_the_trajectory_only_through_the_weight_decay(world)
     assert strong["initial_sha256_per_fold"] == base["initial_sha256_per_fold"] == selection["initial_sha256_per_fold"]
     assert strong["training_set_sha256"] == base["training_set_sha256"]
     assert strong["curve"]["points"][0] == base["curve"]["points"][0]
+    assert strong["start_parity_level"] == "exact"  # weight decay acts from the first update only
     assert strong["curve"]["points"][1:] != base["curve"]["points"][1:]
     assert strong["recipe"]["weight_decay"] == 3.0 and strong["weight_decay"] == 3.0
     # Fitting users are read at the declared exposures only; every checkpoint has the held users.
@@ -120,12 +122,22 @@ def test_dose_rule_is_the_pre_registered_one():
     results[0.3] = _gates((.52, .49, .51))
     decision = core.choose_dose(results)
     assert decision["chosen"] == 0.3 and decision["confirm"] is False  # one panel below the frozen 0.50
+    pair = (0.3, 1.0)
     tie = {0.3: _gates((.4, .4, .4)), 1.0: _gates((.4, .4, .4))}
-    assert core.choose_dose(tie)["chosen"] == 0.3
+    assert core.choose_dose(tie, doses=pair)["chosen"] == 0.3
     none = {0.3: _gates((.9, .9, .9), linear=("recipe_not_admitted",) * 3), 1.0: _gates((.9, .9, .9), valid=False)}
-    assert core.choose_dose(none) == {"rows": core.choose_dose(none)["rows"], "chosen": None, "confirm": False}
+    assert core.choose_dose(none, doses=pair) == {"rows": core.choose_dose(none, doses=pair)["rows"], "chosen": None,
+                                                  "confirm": False}
     nan = {0.3: _gates((.9, float("nan"), .9)), 1.0: _gates((.6, .6, .6))}
-    assert core.choose_dose(nan)["chosen"] == 0.3 and core.choose_dose(nan)["confirm"] is False
+    assert core.choose_dose(nan, doses=pair)["chosen"] == 0.3 and core.choose_dose(nan, doses=pair)["confirm"] is False
+    # Declared on purpose (8.3): only the chosen dose opens the confirmation, even if another admissible dose passes.
+    other = {0.1: _gates((.60, .49, .55)), 0.3: _gates((.52, .51, .515)), 1.0: _gates((.2, .2, .2)),
+             3.0: _gates((.1, .1, .1))}
+    assert core.choose_dose(other) == {"rows": core.choose_dose(other)["rows"], "chosen": 0.1, "confirm": False}
+    exact = {0.1: _gates((.50, .70, .60)), 0.3: _gates((.4, .4, .4)), 1.0: _gates((.3, .3, .3)), 3.0: _gates((.2, .2, .2))}
+    assert core.choose_dose(exact)["confirm"] is True  # exactly the frozen 0.50 reaches the threshold
+    with pytest.raises(ValueError, match="registered doses"):
+        core.choose_dose(tie)  # two doses where four are registered
     assert C.TEMPORAL_HEAD_RECOVERY == 0.5
 
 
@@ -163,8 +175,10 @@ def test_exploration_stages_write_every_dose_and_need_a_completed_d0(world, line
                 data = json.loads((root / stage / (key + ".json")).read_text())
                 assert data["weight_decay"] == dose and data["head"] == head and data["world"] == world_name
                 assert (root / stage / (key + "_states.pt")).exists() == (head == core.HEAD)
-                results.setdefault(dose, {"linear": {}}).update(
-                    {"temporal": data["gate"]} if world_name == "temporal" else {})
+                assert data["start_parity_level"] == "exact"
+                r = results.setdefault(dose, {"linear": {}, "valid": True})
+                r["valid"] = r["valid"] and data["selected_reproduced"] and data["start_parity_level"] != "failed"
+                r.update({"temporal": data["gate"]} if world_name == "temporal" else {})
                 if world_name == "linear":
                     results[dose]["linear"][head] = data["gate"]
         with pytest.raises(ValueError, match="do not duplicate or retry"):

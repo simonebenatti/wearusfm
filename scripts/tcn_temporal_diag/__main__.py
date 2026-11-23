@@ -374,10 +374,13 @@ def run_d3(context, directory, root, artifacts, cells):
                 artifacts[key + "_states"] = P.atomic_torch(directory / (key + "_states.pt"), states, root=root)
             rows[key] = {"head": head, "world": world, "weight_decay": float(dose), "gate": result["gate"],
                          "selected": result["selected"], "late": result["late"],
-                         "extended": result["extended_by_frozen_rule"], "reproduced": result["selected_reproduced"]}
+                         "extended": result["extended_by_frozen_rule"], "reproduced": result["selected_reproduced"],
+                         "start_parity_level": result["start_parity_level"],
+                         "start_reproduced": result["start_parity_level"] != "failed"}
             log({"event": "variant_done", **rows[key]})
     gates = {"held_oracle_self_check": context["references"]["held_oracle_self_check_passed"],
-             "selected_points_reproduced": all(row["reproduced"] for row in rows.values())}
+             "selected_points_reproduced": all(row["reproduced"] for row in rows.values()),
+             "start_points_reproduced": all(row["start_reproduced"] for row in rows.values())}
     artifacts["summary"] = P.atomic_json(directory / "variant_summary.json",
                                          core.plain({"protocol": PHASE2_PROTOCOL, "lr": LEARNING_RATE,
                                                      "doses": core.VARIANT_DOSES, "rows": rows, "gates": gates}),
@@ -440,12 +443,17 @@ def run_bc(context, fold, directory, root, artifacts):
             "new_world_seed": result["components"]["seed"] == core.new_world_seed(fold)}
 
 
-def run_b_control(context, cell, directory, root, artifacts, predecessors):
-    """One frozen control search on the confirmation world with the dose chosen by the pre-registered rule."""
-    world, head = cell
+def confirmation_decision(root, predecessors):
+    """The pre-registered D3 rule, read before any setup of a confirmation stage; B stops here unless it proposes B."""
     decision = d3_decision(root, predecessors)
     if not decision["confirm"] or decision["chosen"] is None:
         raise GateFailed("the pre-registered dose rule does not propose a confirmation")
+    return decision
+
+
+def run_b_control(context, cell, directory, root, artifacts, predecessors, decision):
+    """One frozen control search on the confirmation world with the dose chosen by the pre-registered rule."""
+    world, head = cell
     calibrated = new_world_artifacts(root, predecessors)
     closed = W.combined_closed_form_gate(calibrated)
     if closed["status"] != "diagnostic":
@@ -458,6 +466,9 @@ def run_b_control(context, cell, directory, root, artifacts, predecessors):
     progress = lambda pair: log({"event": "selection_checkpoint", "lr": pair.lr, "point": core.plain(asdict(pair.points[-1]))}) \
         if pair.points else None
     result = W._run_selection(bundle, head, recipe=recipe, device=DEVICE, on_checkpoint=progress)
+    context["search"] = {"bundle_sha256": result["selection"]["bundle"]["bundle_sha256"],
+                         "evaluation_identity": result["selection"]["evaluation_identity"],
+                         "world": world, "head": head, "weight_decay": float(decision["chosen"])}
     R._save_results(root, directory, result, artifacts)
     artifacts["decision"] = P.atomic_json(directory / "dose_decision.json", core.plain(decision), root=root)
     log({"event": "b_control_done", "world": world, "head": head, "dose": decision["chosen"],
@@ -502,6 +513,9 @@ def main(argv=None):
             P.require(P.read_json_pin(previous)["status"] == "completed",
                       "D0 did not complete: no later stage may run")
             predecessors[JOBS["d0"]] = previous
+        decision = None
+        if stage in (*B_CALIBRATIONS, *B_CONTROLS):  # the D3 rule first: nothing of B is set up unless it proposes B
+            decision = confirmation_decision(root, predecessors)
         if stage in B_CONTROLS:
             for calibration in B_CALIBRATIONS:  # fail before any GPU work if a calibration did not complete
                 predecessors[JOBS[calibration]] = own_receipt(root, calibration)[1]
@@ -520,7 +534,7 @@ def main(argv=None):
         elif stage in B_CALIBRATIONS:
             gates = run_bc(context, B_CALIBRATIONS[stage], directory, root, artifacts)
         elif stage in B_CONTROLS:
-            gates = run_b_control(context, B_CONTROLS[stage], directory, root, artifacts, predecessors)
+            gates = run_b_control(context, B_CONTROLS[stage], directory, root, artifacts, predecessors, decision)
         elif stage == B_GATE:
             gates = run_b_gate(directory, root, artifacts, predecessors)
         else:
@@ -528,6 +542,14 @@ def main(argv=None):
         status = "completed" if gates and all(gates.values()) else "gate_failed"
     except GateFailed as error:
         status, failure = "gate_failed", error
+    except core.C.GateNotPassed as error:  # a measured frozen gate (e.g. a degenerate generator), as the frozen runner
+        status, failure = "gate_failed", error
+        details["gate_status"] = error.status
+        if error.gate is not None:
+            try:
+                artifacts["failed_gate"] = P.atomic_json(directory / "failed_gate.json", core.plain(error.gate), root=root)
+            except Exception as recording_error:
+                details["failed_gate_unrecorded"] = str(recording_error)
     except Exception as error:  # recorded below, then re-raised
         status, failure = "technical_failure", error
     details.update(elapsed_seconds=time.perf_counter() - started,
@@ -549,8 +571,13 @@ def main(argv=None):
         if "bundle" in context:
             receipt.update(bundle_sha256=context["bundle"].manifest["bundle_sha256"],
                            evaluation_identity=context["evaluation_identity"])
+        if "search" in context:  # the bundle that a confirmation search used (bundle_sha256 above is A1's setup)
+            receipt["search"] = context["search"]
+        if "linear_bundle" in context:
+            receipt["linear_bundle_sha256"] = context["linear_bundle"].manifest["bundle_sha256"]
         if "pins" in context:
-            receipt["a1_receipts"] = {k: context["pins"][k] for k in sorted(RECEIPT_SHA256) if k in context["pins"]}
+            pinned = sorted({*RECEIPT_SHA256, *LINEAR_RECEIPT_SHA256})
+            receipt["a1_receipts"] = {k: context["pins"][k] for k in pinned if k in context["pins"]}
     receipt = core.plain(receipt)
     receipt["receipt_sha256"] = P.digest(receipt)
     try:
@@ -560,7 +587,7 @@ def main(argv=None):
              "original_error": None if failure is None else str(failure)})
         if failure is None:
             raise
-    if failure is not None and not isinstance(failure, GateFailed):
+    if failure is not None and not isinstance(failure, (GateFailed, core.C.GateNotPassed)):
         raise failure
     return 0 if status == "completed" else 3
 

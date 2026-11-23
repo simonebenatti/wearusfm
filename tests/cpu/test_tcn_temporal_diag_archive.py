@@ -73,3 +73,38 @@ def test_setup_assumptions_hold_on_the_archived_a1_chain():
         scored = tcn["selected_fitting_diagnostics"][str(fold)]
         assert scored["window_count"] == fitting[fold]["window_count"]
         assert core.close(scored["dynamic_target_ss"], fitting[fold]["dynamic_target_ss"], core.REFERENCE_TOLERANCE)
+
+
+def test_setup_variant_assumptions_hold_on_the_archived_linear_controls():
+    """What setup_variant and variant_fit read from the three archived linear-world controls, on the mirrored receipts."""
+    plan, _, _ = entry.reviewed_plan()
+    memo, manifests = {}, {}
+    assert set(entry.LINEAR_RECEIPT_SHA256) == {E.job_id("controls", head=h, world="linear") for h in W.CONTROL_HEADS}
+    for head in W.CONTROL_HEADS:
+        identifier = E.job_id("controls", head=head, world="linear")
+        pin = plan.get("receipt_pins", {}).get(identifier) or P.file_pin(MIRROR / (identifier + ".json"))
+        assert pin["sha256"] == entry.LINEAR_RECEIPT_SHA256[identifier]
+        row = P.verified_receipt(pin, plan, verify_artifacts=False, receipt_mirror_dir=MIRROR, _memo=memo)
+        assert row["job_id"] == identifier and row["stage"] == "controls" and {"selection", "states"} <= set(row["artifacts"])
+        path = MIRROR / ("selection_linear_%s.json" % head)
+        assert P.file_pin(path)["sha256"] == row["artifacts"]["selection"]["sha256"]
+        selection = json.loads(path.read_text())
+        W._check_selection(selection, production=True)
+        assert selection["world"] == "linear" and selection["head"] == head
+        # Every field that check_world_bundle, variant_fit and start_point_parity read, on the real artifact.
+        identity = W._identity({"bundle": selection["bundle"], "depth": W._feature_depth(head),
+                                "feature_array_sha256": selection["feature_array_sha256"]})
+        assert identity == selection["evaluation_identity"]
+        assert len(selection["initial_sha256_per_fold"]) == 2
+        curves = [c for c in selection["curves"] if float(c["lr"]) == entry.LEARNING_RATE]
+        assert len(curves) == 1 and curves[0]["horizon"] == entry.RECIPE.initial_epochs
+        start = curves[0]["points"][0]
+        assert start["exposure"] == 0 and [int(s) for s in start["fold_steps"]] == [0, 0]
+        assert start["mse"] > 0 and start["edyn"] > 0
+        manifests[head] = selection["bundle"]
+    # One rebuilt linear bundle serves the three cells; it shares the temporal world's calibration and reference gate.
+    assert manifests["L0"] == manifests["MLP"] == manifests["TCN_post"]
+    temporal = json.loads((MIRROR / ("selection_%s_%s.json" % (core.WORLD, core.HEAD))).read_text())["bundle"]
+    assert manifests["L0"]["world"] == "linear" and temporal["world"] == core.WORLD
+    assert manifests["L0"]["reference_gate"] == temporal["reference_gate"]
+    assert manifests["L0"]["artifacts_sha256"] == temporal["artifacts_sha256"]

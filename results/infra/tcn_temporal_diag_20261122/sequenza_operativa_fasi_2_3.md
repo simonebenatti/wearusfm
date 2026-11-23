@@ -43,6 +43,10 @@ Controllo ogni 30 minuti (`squeue -h -j`, poi `sacct -X -j`). Nessun rilancio de
 
 ## 3. Fase 3 (B), solo se la regola propone la conferma; 9,30 GPU-ore prenotate, un solo tentativo
 
+Condizioni, tutte prima del primo invio: le tre ricevute di D3 `completed`; `summarize.py` dà «conferma su un mondo nuovo: True»;
+Simone ha confermato il costo (la domanda del 23/11 non lo riportava: protocollo, sezione 9). Ogni stadio rilegge comunque la
+regola da sé prima di qualunque setup.
+
 | ID | `--gpu-ore` | Coda e risorse | `--time` | `--dopo` |
 | --- | --- | --- | --- | --- |
 | `TCND-b-calib-0-20261123`, `TCND-b-calib-1-20261123` | 0 | `lrd_all_serial`, 8 CPU, 24G, `TCND_STAGE=bc0` / `bc1` | 00:40:00 | — |

@@ -235,6 +235,9 @@ Incarico. Alla domanda «Che cosa vuoi provare come variante, da fissare prima e
 risposto, il 23/11: «niente gpt per ora, vai avanti tu». Lettura di Claude: scegliere la variante, fissarne le regole e lanciare
 la parte che rientra nell'autonomia del 28/10 («se devi sottomettere cose che durano meno di 5h-GPU fallo pure in autonomia»).
 La conferma su un mondo nuovo è un passo separato (sezione 8.6).
+La griglia delle quattro dosi è la selezione interna che la proposta `8fac3a82` rimandava al protocollo operativo; l'unico
+tentativo di variante («un solo tentativo di variante, poi a Simone», condizione 2 della convergenza `4a48b814`) è la conferma
+della sezione 9. Operatore unico di D3 e della conferma: Claude.
 
 ### 8.1 Perché il weight decay
 
@@ -243,9 +246,15 @@ La conferma su un mondo nuovo è un passo separato (sezione 8.6).
 - Con il rumore la TCN impara il rumore del fitting mentre impara la funzione: allo stato scelto il 79% dello scarto fra fitting
   ed esclusi è allineamento al rumore, e l'errore pulito è tolto per un quinto sugli esclusi (D0). Allungare peggiora (D2).
 - La regolarizzazione esplicita oggi è quasi assente: AdamW con weight decay 0,01 a LR 0,003 contrae i pesi del 2,7% in 899
-  passi. Resta il solo arresto anticipato.
-- Nella simulazione giocattolo un weight decay di 0,3 portava il recupero da 0,31 a 0,42 e da 0,29 a 0,37: è l'unica modifica
-  singola provata che alzasse il livello.
+  passi. Restano l'arresto anticipato e il dropout 0,1 su due strati del ramo profondo.
+- Nella simulazione giocattolo del 22/11 un weight decay di 0,3 portava il recupero da 0,31 a 0,42 (seme 0) e da 0,29 a 0,37
+  (seme 2): è l'unica modifica singola provata che alzasse il livello. Evidenza: ramo `claude/temponet-db8-20261109`, commit
+  `c6a530d5`, `docs/reviews/claude_review_pose_temponet_temporal_diagnosis_launcher_20261122_evidence/residual_candidate/notes.md`,
+  §3d. Limiti: latenti sintetici, un solo fold, uno o due semi, al più 40 epoche con tetti di tempo; il weight decay 0,3 al
+  seme 2 e il weight decay 1 erano ancora in salita a 22 epoche; nessuna variante arrivava a 0,50.
+- La scelta è quella scritta prima di D0 e D1 nella review del 22/11 (`c6a530d5`, sezione 6): se D0 trova il ramo sano e D1
+  passa, la leva è la regolarizzazione. D0 ha trovato il ramo profondo vivo a LR 0,003 (al più un'unità mai attiva per strato)
+  e spento soltanto a 0,01; D1 è passato.
 - È un solo parametro della ricetta comune: cambia nello stesso modo L0, MLP e TCN e lascia intatto il confronto fra le teste.
 
 ### 8.2 Disegno
@@ -256,9 +265,18 @@ La conferma su un mondo nuovo è un passo separato (sezione 8.6).
 - Per ogni dose e cella: learning rate 0,003, seme 0, inizializzazione, ordine dei batch e flusso del dropout di A1; calendario
   dei checkpoint, estensione a 300 epoche e selezione congelati (minimo della MSE pooled contro `y` sugli esclusi interni, a parità
   la prima esposizione).
-- Con il weight decay congelato il driver ridà esattamente la curva archiviata di A1 per ogni learning rate (test
-  `test_variant_fit_at_the_frozen_weight_decay_is_the_archived_curve_of_that_learning_rate`). La differenza fra A1 e D3 è quindi la
-  sola dose.
+- Nel test su CPU del mondo sintetico, con la ricetta privata di poche epoche, il driver al weight decay congelato ridà
+  esattamente curve e stati archiviati per ogni learning rate
+  (`test_variant_fit_at_the_frozen_weight_decay_is_the_archived_curve_of_that_learning_rate`). Con dati di forma di produzione il
+  passaggio dalla ricetta congelata alla variante al weight decay congelato non cambia nessun numero
+  (`test_frozen_weight_decay_variant_trains_bit_for_bit_like_the_frozen_recipe`).
+- Sui dati veri ogni cella confronta il proprio punto a esposizione 0 con quello della curva archiviata allo stesso learning
+  rate, con i due livelli di D0: esatto a 1e-12, oppure numerico a 1e-4 con esposizione e passi uguali. Se fallisce, la dose
+  non è valida.
+- Per la TCN la differenza fra A1 e D3 è quindi la sola dose. Per L0 e MLP anche il learning rate: nel mondo lineare A1 li ha
+  scelti a 1e-4, D3 li allena a 0,003, e la loro ammissibilità è il cancello congelato a quel learning rate. Sulle curve
+  archiviate a 0,003, al minimo della MSE e con il weight decay congelato, il recupero pooled del cancello lineare sta fra 0,98 e
+  0,99 per le tre teste (calcolo della review del 23/11; i valori per fold non sono archiviati).
 - La ricetta variante è marcata `test_only`: nessun punto d'ingresso congelato la accetta.
 - È un'esplorazione sul mondo in cui A1 ha già scelto learning rate ed epoca: serve a scegliere, non a confermare.
 - Letture: recupero del cancello temporale congelato (fold 0, fold 1, pooled) per la TCN; cancello lineare congelato (MSE ed
@@ -267,22 +285,29 @@ La conferma su un mondo nuovo è un passo separato (sezione 8.6).
 
 ### 8.3 Regola di scelta, fissata prima
 
-- Una dose è **ammissibile** se ha i risultati di tutte e quattro le celle, il punto scelto di ogni cella si riproduce e le tre
-  teste passano il cancello lineare congelato (recupero almeno 0,90 in MSE ed `E_dyn` nei tre pannelli,
-  `controls.linear_head_gate`). Una dose senza tutte le celle, per esempio per un job interrotto, non è ammissibile.
+- Una dose è **ammissibile** se ha i risultati di tutte e quattro le celle, il punto scelto e il punto a esposizione 0 di ogni
+  cella si riproducono (8.2) e le tre teste passano il cancello lineare congelato (recupero almeno 0,90 in MSE ed `E_dyn` nei tre
+  pannelli, `controls.linear_head_gate`). Una dose senza tutte le celle, per esempio per un job interrotto, non è ammissibile.
 - Si **sceglie** la dose ammissibile con il recupero temporale pooled più alto; a parità, la dose più piccola.
 - La **conferma** su un mondo nuovo si propone solo se la dose scelta raggiunge 0,50 nei tre pannelli del mondo temporale
   originale, la soglia congelata `TEMPORAL_HEAD_RECOVERY`. Altrimenti la linea torna a Simone con la curva dose-risposta.
-- La regola è `core.choose_dose`; la applica `results/infra/tcn_temporal_diag_20261122/summarize.py` dopo la raccolta.
-- Limiti dichiarati: un solo learning rate, un solo seme, il mondo già usato da A1.
+- È voluto che la conferma riguardi la sola dose scelta: se questa manca 0,50 in un pannello, la conferma non si propone anche
+  quando un'altra dose ammissibile passasse i tre pannelli. Si conferma la dose che l'esplorazione stessa mette in cima; una
+  dose prima nel pooled ma sotto soglia in un fold è un risultato instabile.
+- La regola è `core.choose_dose` su `core.d3_results` e richiede le quattro dosi registrate. La applicano
+  `results/infra/tcn_temporal_diag_20261122/summarize.py` dopo la raccolta e il driver all'inizio di ogni ricerca della fase 3.
+- Limiti dichiarati: un solo learning rate, un solo seme, il mondo già usato da A1. Il cancello di ogni cella non riceve gli
+  allarmi d'ottimizzazione: cambia solo l'etichetta dei casi non passati (`recipe_not_admitted` invece di
+  `optimization_unresolved`), non `passed` né i recuperi, che sono ciò che la regola usa.
 
 ### 8.4 Previsioni di Claude, scritte prima
 
-1. Il recupero temporale pooled della TCN cresce con la dose fino a un massimo e poi cala alla dose più alta. Sbagliata se sulle
-   quattro dosi cresce sempre o cala sempre.
-2. Nessuna dose ammissibile raggiunge 0,50 nei tre pannelli: la conferma non si propone. Sbagliata se una dose ammissibile lo
-   raggiunge.
-3. Il massimo pooled fra le quattro dosi sta fra 0,25 e 0,40. Sbagliata fuori da questo intervallo.
+Le previsioni 1 e 2 sono state precisate il 23/11 dopo la review, prima dei job, perché ogni esito le renda giuste o sbagliate.
+
+1. Il recupero temporale pooled della TCN ha il massimo a una dose interna. Giusta se, fra le quattro dosi (ammissibili o no),
+   il massimo cade a 0,3 o a 1; sbagliata se cade a 0,1 o a 3. A parità conta la dose più piccola, come nella regola.
+2. La regola non propone la conferma: la dose scelta non raggiunge 0,50 nei tre pannelli. Sbagliata se la regola la propone.
+3. Il massimo pooled fra le quattro dosi (ammissibili o no) sta fra 0,25 e 0,40. Sbagliata fuori da questo intervallo.
 
 ### 8.5 Job, risorse e costo
 
@@ -297,9 +322,13 @@ La conferma su un mondo nuovo è un passo separato (sezione 8.6).
   Ognuno richiede anche la ricevuta completata di D0.
 - **Totale prenotato 4,98 GPU-ore** (limite più 180 secondi), cioè 39,9 ore locali, più 0,4 core-ore del checkout: sotto le 5
   GPU-ore dell'autonomia del 28/10. Consumo atteso circa 2,3 GPU-ore: 13,4 minuti per una TCN a 150 epoche, 4 per L0 e MLP.
-  I limiti coprono il caso peggiore, con tutte e quattro le dosi prolungate a 300 epoche: 107 minuti per `d3t`, 106 per `d3l`,
-  65 per `d3s`. I risultati di ogni dose si scrivono appena finisce.
-- Nessun rilancio dentro questa fase: con un rilancio si supererebbero le 5 GPU-ore, quindi serve una decisione nuova.
+  Caso peggiore stimato dalle review del 23/11, con tutte e quattro le dosi prolungate a 300 epoche: `d3t` 102-109 minuti,
+  `d3l` 101-108, `d3s` 65-67. I limiti lo coprono, con un margine di pochi minuti. I risultati di ogni dose si scrivono appena
+  finisce.
+- Nessun rilancio dentro questa fase: con un rilancio si supererebbero le 5 GPU-ore, quindi serve una decisione nuova. Un job
+  in TIMEOUT non scrive la sintesi: tutte le dosi della sua cella mancano, nessuna dose è ammissibile e la linea torna a Simone.
+- Il checkout nasce dal commit che chiude le review delle fasi 2 e 3; il suo SHA completo è registrato nel registro condiviso e
+  nella sequenza operativa (`results/infra/tcn_temporal_diag_20261122/sequenza_operativa_fasi_2_3.md`) prima dell'invio.
 - Leonardo è in manutenzione dal 23/11 alle 08:00 al 25/11 alle 08:00, e il certificato ssh va rinnovato: l'invio avviene dopo.
 
 ### 8.6 Passo successivo, non incluso: conferma su un mondo nuovo
@@ -308,12 +337,15 @@ Solo se la regola 8.3 lo propone. Semi `20261122 + 1000·fold` (L = base, T = ba
 con la regola congelata, sui soli inner-train; sei controlli (tre teste, due mondi) con la dose scelta e la ricerca congelata
 completa; cancello congelato sul mondo nuovo; un solo tentativo. Un fallimento torna a Simone. Costo stimato: circa 2 core-ore
 CPU per le calibrazioni e 3,6 GPU-ore misurate per i controlli, con una prenotazione maggiore: serve l'approvazione di Simone.
+Approvata da Simone il 23/11: regole nella sezione 9.
 
 ## 9. Fase 3 — conferma su un mondo nuovo (B), regole fissate il 23/11/2026 prima di ogni risultato di D3
 
 Approvazione. Alla domanda «Approvi già ora la conferma su un mondo nuovo, se l'esplorazione rispetta la regola fissata?»
-Simone ha risposto, il 23/11: «Sì, approvo». La fase 3 parte quindi da sola se, e solo se, la regola 8.3 la propone. La regola la
+Simone ha risposto, il 23/11: «Sì, approvo». La fase 3 parte quindi se, e solo se, la regola 8.3 la propone. La regola la
 applica il driver stesso, sulle tre sintesi autenticate di D3: nessuna scelta a mano.
+La domanda non riportava il costo della fase 3, come chiede CLAUDE.md per ogni richiesta di conferma: prima dell'invio Simone
+conferma la prenotazione della sezione 9.3. Senza quella conferma la fase 3 non si invia.
 
 ### 9.1 Il mondo nuovo
 
@@ -322,7 +354,8 @@ applica il driver stesso, sulle tre sintesi autenticate di D3: nessuna scelta a 
 - Generatore: `controls.generate_components` congelato, con il solo seme come parametro (`core.generate_components_seeded`).
   Al seme congelato ridà il generatore di A1 bit per bit (test).
 - Calibrazione: `controls.build_positive_control_fold` congelato, sui soli inner-train, con la stessa regola per `a` e `sigma`, sugli
-  stessi utenti, fold e latenti. Contesto numerico `cpu8` uguale a quello delle calibrazioni di A1.
+  stessi utenti, fold e latenti. Contesto numerico `cpu8` uguale a quello delle calibrazioni di A1: modello di CPU, versioni delle
+  librerie, thread e flag. Se il nodo non lo riproduce, la calibrazione si ferma prima di ogni lavoro e la linea torna a Simone.
 - Se la calibrazione non è `calibrated`, o i riferimenti in forma chiusa non sono diagnostici, la fase si ferma: non si estrae un
   altro seme e la linea torna a Simone.
 - Non sono utenti nuovi: è un'altra funzione e un'altra realizzazione del rumore sugli stessi latenti.
@@ -332,13 +365,18 @@ applica il driver stesso, sulle tre sintesi autenticate di D3: nessuna scelta a 
 - Sei ricerche: L0, MLP e TCN, nei mondi lineare e temporale del mondo nuovo, con la ricetta congelata e il solo weight decay
   della dose scelta da 8.3. Ricerca congelata completa: griglia dei learning rate con le estensioni ai bordi, 150 epoche e 300
   secondo la regola, selezione MSE (`workflow._run_selection`).
-- Cancello: `workflow.qualify_controls` congelato sulle due calibrazioni nuove e sulle sei selezioni. Esiti: `passed` se i tre
-  controlli lineari raggiungono 0,90 e la TCN raggiunge 0,50 nei tre pannelli del mondo temporale, senza allarmi
-  d'ottimizzazione; altrimenti `recipe_not_admitted` oppure `optimization_unresolved`.
+- Cancello: `workflow.qualify_controls` congelato sulle due calibrazioni nuove e sulle sei selezioni; l'esito è il suo campo
+  `status`. È `passed` se i tre cancelli lineari (recupero almeno 0,90 in MSE ed `E_dyn` nei tre pannelli) e quello temporale della
+  TCN (almeno 0,50 nei tre pannelli) sono `passed`. Gli allarmi d'ottimizzazione si registrano e cambiano solo l'etichetta di un
+  mancato superamento: `optimization_unresolved` invece di `recipe_not_admitted`. Un recupero sopra soglia con un allarme resta
+  `passed`, come nel cancello archiviato di A1, dove L0 lineare passa con l'allarme `minimum_in_last_five_maximum_epochs`.
 - **Un solo tentativo.** Un esito diverso da `passed`, un errore o un fermo tornano a Simone, senza un'altra dose, un altro seme o
   un'altra ricetta. Anche con `passed` la variante non entra da sola nella catena congelata: serve una ricetta congelata nuova,
   con identità e review sue, e la decisione di Simone.
 - Il mondo originale non si rifà con la ricerca completa: per il confronto con A1 restano le letture di D3 a LR 0,003.
+- Limite dichiarato: la ricerca completa può scegliere un learning rate diverso da 0,003, e il weight decay effettivo per passo
+  (prodotto di learning rate e dose) cambia con esso; a 1e-3 è tre volte più debole. La conferma prova quindi la ricetta con la
+  dose scelta e la ricerca congelata, cioè ciò che entrerebbe nella catena, non la coppia di D3 (LR 0,003, dose).
 
 ### 9.3 Job, risorse e costo
 
@@ -349,8 +387,12 @@ applica il driver stesso, sulle tre sintesi autenticate di D3: nessuna scelta a 
 | `TCND-b-controls-{linear,temporal}-TCN_post-20261123` | due ricerche della TCN | come sopra | 150 min |
 | `TCND-b-gate-20261123` | cancello congelato sul mondo nuovo | `lrd_all_serial`, 2 CPU, 16 GB | 15 min |
 
+- La fase 3 si invia solo dopo la raccolta di D3, con le tre ricevute di D3 `completed`, se la regola propone la conferma e Simone
+  ha confermato il costo. Ogni stadio della fase 3, calibrazioni comprese, rilegge la regola dalle sintesi autenticate di D3 prima
+  di qualunque setup: se non la propone, si ferma `gate_failed` senza lavoro.
 - Le ricerche partono `afterok` sulle due calibrazioni, il cancello `afterok` sulle sei ricerche. Ogni stadio verifica anche le
-  ricevute completate dei predecessori.
+  ricevute completate dei predecessori. Un cancello congelato non superato dentro uno stadio (per esempio un generatore
+  degenere) si registra `gate_failed`, con `failed_gate.json`, come nel runner congelato.
 - **Prenotato: 9,30 GPU-ore** (limite più 180 secondi), cioè 74,4 ore locali sui nodi GPU, più 11,5 core-ore delle calibrazioni
   e 0,6 del cancello. Consumo atteso circa 4-5 GPU-ore: le sei ricerche di A1 hanno usato 3,57 GPU-ore, e con un weight decay più
   forte i minimi possono cadere più tardi e allungare le ricerche.

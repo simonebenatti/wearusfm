@@ -777,6 +777,23 @@ def head_gate(bundle, per_fold_observed):
                               {name: {"MSE": values[name]["MSE"], "E_dyn": values[name]["E_dyn"]} for name in PANELS})
 
 
+def start_point_parity(curve, selection, lr):
+    """The step-zero point of a variant run against the archived curve of the same learning rate.
+
+    Initial weights, held users and evaluator are those of A1, so the scores
+    before the first update must agree; weight decay acts only from the first
+    step. Same two tiers as D0 (exact 1e-12, numerical 1e-4 with equal
+    exposure and optimizer steps).
+    """
+    archived = [c for c in selection["curves"] if float(c["lr"]) == float(lr)]
+    require(len(archived) == 1, "no single archived curve at this learning rate")
+    new, old = curve.points[0], archived[0]["points"][0]
+    discrete = float(new.exposure) == float(old["exposure"]) == 0.0 and \
+        [int(s) for s in new.fold_steps] == [int(s) for s in old["fold_steps"]]
+    exact = close(new.mse, old["mse"]) and close(new.edyn, old["edyn"])
+    return tiers(exact, discrete, [relative_difference(new.mse, old["mse"]), relative_difference(new.edyn, old["edyn"])])
+
+
 def variant_fit(bundle, selection, references, *, device, recipe, lr, head, fitting_exposures=(), factory=None,
                 log=None):
     """D3: one frozen paired training at one learning rate with a variant recipe, on the observed target.
@@ -820,6 +837,7 @@ def variant_fit(bundle, selection, references, *, device, recipe, lr, head, fitt
     if extended:  # exactly the frozen search: train._run_search
         pair.advance(recipe.maximum_epochs, checkpoint)
     curve = pair.curve()
+    start = start_point_parity(curve, selection, lr)
     best = curve.best("mse")
     minima = {metric: curve.best(metric).exposure for metric in ("mse", "edyn")}
     boundary = max(1, recipe.maximum_epochs - recipe.last_epochs + 1)
@@ -840,6 +858,7 @@ def variant_fit(bundle, selection, references, *, device, recipe, lr, head, fitt
             "initial_sha256_per_fold": [t.initial_sha256 for t in trajectories],
             "horizon": curve.horizon, "extended_by_frozen_rule": bool(extended),
             "curve": asdict(curve), "minimum_exposures": minima, "late": bool(late),
+            "start_parity": start, "start_parity_level": parity_level([start]),
             "selected": asdict(best), "selected_reproduced": bool(reproduced), "selected_per_fold": selected,
             "selected_summary": summarize(selected, references) if temporal else None,
             "gate": gate, "records": records,
@@ -848,7 +867,7 @@ def variant_fit(bundle, selection, references, *, device, recipe, lr, head, fitt
                        "best_states": pair.best_states, "final_states": [t.state() for t in trajectories]}}
 
 
-def choose_dose(results):
+def choose_dose(results, doses=None):
     """Pre-registered rule for the weight-decay exploration.
 
     ``results[dose]`` holds the frozen gates of one dose: ``temporal`` for the
@@ -856,14 +875,20 @@ def choose_dose(results):
     admissible when every linear gate passes and the run was valid; the chosen
     dose is the admissible one with the highest pooled temporal recovery, the
     smaller dose on ties. Confirmation on a new world is warranted only if the
-    chosen dose reaches the frozen temporal threshold in all three panels.
+    chosen dose reaches the frozen temporal threshold in all three panels; on
+    purpose, another admissible dose that passes them does not open it.
+    Every registered dose must be present and carry an explicit validity.
     """
+    doses = VARIANT_DOSES if doses is None else doses
+    require(sorted(float(d) for d in results) == sorted(float(d) for d in doses),
+            "the dose rule needs exactly the registered doses")
     rows = []
     for dose in sorted(results):
         r = results[dose]
+        require(isinstance(r["valid"], bool), "every dose needs an explicit validity")
         recovery = dict(r["temporal"]["recovery"])
         linear = {head: r["linear"][head]["status"] for head in W.CONTROL_HEADS}
-        rows.append({"dose": float(dose), "valid": bool(r.get("valid", True)),
+        rows.append({"dose": float(dose), "valid": r["valid"],
                      "linear_passed": all(status == "passed" for status in linear.values()),
                      "linear_status": linear, "recovery": recovery, "late": bool(r.get("late", False)),
                      "pooled": recovery.get("pooled")})
@@ -970,7 +995,11 @@ def calibrate_new_world(cache, fit_indices, held_indices, allowed_train_users, f
 
 
 def d3_results(rows, doses=None):
-    """Per-dose gates from the three D3 summaries; a dose without every cell, or with a cell not reproduced, is invalid."""
+    """Per-dose gates from the three D3 summaries.
+
+    A dose without every cell, or with a cell whose selected point or step-zero
+    point does not reproduce, is invalid.
+    """
     doses = VARIANT_DOSES if doses is None else doses
     results = {float(dose): {"linear": {}, "valid": True, "temporal": None} for dose in doses}
     for row in rows.values():
@@ -978,7 +1007,7 @@ def d3_results(rows, doses=None):
         if dose not in results:
             continue
         r = results[dose]
-        r["valid"] = r["valid"] and bool(row["reproduced"])
+        r["valid"] = r["valid"] and row["reproduced"] is True and row["start_reproduced"] is True
         if row["world"] == WORLD:
             r["temporal"], r["late"], r["selected"] = row["gate"], row["late"], row["selected"]
         else:
