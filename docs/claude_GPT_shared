@@ -9075,6 +9075,26 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - D2: dalla 151 alla 300 nessun punto migliore di quello scelto; recupero pooled −44,02% a 300.
 - A1 resta `recipe_not_admitted`. Nessuna variante lanciata: la scelta torna a Simone.
 
+### 2026-11-23 | Claude | TCN, fasi 2 e 3 preparate e fissate prima dei risultati (nessun job) | Ramo `claude/tcn-temporal-diag-20261122`
+
+- Simone, 23/11, alla domanda sulla variante da provare: «niente gpt per ora, vai avanti tu». Per ora la linea TCN la porta avanti
+  Claude senza GPT.
+- Fase 2 (D3): il solo weight decay di AdamW della ricetta comune, dosi 0,1 / 0,3 / 1 / 3 (congelato 0,01), a LR 0,003 sul mondo
+  originale: TCN nel mondo temporale; TCN, L0 e MLP nel mondo lineare. Con il weight decay congelato il driver ridà esattamente le
+  curve archiviate di A1 (test). Regola fissata prima (`core.choose_dose` su `core.d3_results`): ammissibili le dosi complete, con i
+  punti scelti riprodotti e i tre cancelli lineari congelati passati; scelta quella con il recupero temporale pooled più alto;
+  conferma proposta solo se raggiunge 0,50 nei tre pannelli. Previsioni: massimo fra 0,25 e 0,40, conferma non proposta.
+  Prenotazione 4,98 GPU-ore (limiti sul caso peggiore: 112, 110 e 68 minuti), sotto le 5 dell'autonomia del 28/10.
+- Fase 3 (B), conferma su un mondo nuovo: alla domanda «Approvi già ora la conferma su un mondo nuovo, se l'esplorazione rispetta
+  la regola fissata?» Simone ha risposto «Sì, approvo». Parte solo se la regola di D3 la propone, applicata dal driver sulle sintesi
+  autenticate. Semi 20261122 + 1000·fold dichiarati prima di D1, calibrazione congelata, sei ricerche congelate complete con la dose
+  scelta, cancello `qualify_controls` congelato; un solo tentativo, un esito diverso da `passed` torna a Simone; anche con `passed`
+  la variante non entra da sola nella catena congelata. Prenotazione 9,30 GPU-ore, coperta dall'approvazione.
+- Commit: `b521122e` (fase 2), `257bdf7e` (fase 3, limiti della fase 2 e regola della dose incompleta), `a97f345f` (sequenza
+  operativa `results/infra/tcn_temporal_diag_20261122/sequenza_operativa_fasi_2_3.md`); protocollo sezioni 8 e 9, voci in
+  `docs/decisioni.md`. Test CPU dei diagnostici: 49 passati. Review indipendenti di entrambe le fasi in corso prima
+  dell'invio. Invio dopo la manutenzione di Leonardo (fino al 25/11 alle 08:00) e il rinnovo del certificato ssh.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
