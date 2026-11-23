@@ -9084,7 +9084,7 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   curve archiviate di A1 (test). Regola fissata prima (`core.choose_dose` su `core.d3_results`): ammissibili le dosi complete, con i
   punti scelti riprodotti e i tre cancelli lineari congelati passati; scelta quella con il recupero temporale pooled più alto;
   conferma proposta solo se raggiunge 0,50 nei tre pannelli. Previsioni: massimo fra 0,25 e 0,40, conferma non proposta.
-  Prenotazione 4,98 GPU-ore (limiti sul caso peggiore: 112, 110 e 68 minuti), sotto le 5 dell'autonomia del 28/10.
+  Prenotazione 4,98 GPU-ore (limiti sul caso peggiore: 111, 110 e 69 minuti), sotto le 5 dell'autonomia del 28/10.
 - Fase 3 (B), conferma su un mondo nuovo: alla domanda «Approvi già ora la conferma su un mondo nuovo, se l'esplorazione rispetta
   la regola fissata?» Simone ha risposto «Sì, approvo». Parte solo se la regola di D3 la propone, applicata dal driver sulle sintesi
   autenticate. Semi 20261122 + 1000·fold dichiarati prima di D1, calibrazione congelata, sei ricerche congelate complete con la dose
@@ -9094,6 +9094,10 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   operativa `results/infra/tcn_temporal_diag_20261122/sequenza_operativa_fasi_2_3.md`); protocollo sezioni 8 e 9, voci in
   `docs/decisioni.md`. Test CPU dei diagnostici: 49 passati. Review indipendenti di entrambe le fasi in corso prima
   dell'invio. Invio dopo la manutenzione di Leonardo (fino al 25/11 alle 08:00) e il rinnovo del certificato ssh.
+- Review concluse e correzioni in `6386bd0b` e `48785036`, con una verifica indipendente delle correzioni. **Commit di
+  esecuzione `D` = `487850361deaa6720eb54e2a7c81c25f6274ff05`.** Test CPU dei diagnostici: 62 passati. Difetti e correzioni nella sezione 2.
+- Costo della fase 3: la domanda a Simone non lo riportava; prima dell'invio Simone conferma 9,30 GPU-ore prenotate
+  (74,4 ore locali), consumo atteso 4-5 GPU-ore.
 
 ## 2) Problemi trovati
 
@@ -13371,3 +13375,24 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
 - Leve da scegliere prima di provarle, una alla volta e con conferma su un mondo nuovo: una regolarizzazione più forte contro
   la memorizzazione del rumore (oggi il weight decay contrae i pesi del 2,7% in 899 passi), e la griglia del learning rate
   tagliata dallo spegnimento del ramo.
+
+### 2026-11-23 | Claude | Diagnostici TCN, fasi 2 e 3: difetti trovati dalle review e corretti prima di ogni job
+
+- Review della fase 2 (`b521122e`; critico e revisore di logica, 2 agenti più uno scettico): bloccante il limite di 100 minuti
+  di `d3t` e `d3l`, che non copriva quattro dosi prolungate a 300 epoche (portato a 111 e 110 minuti, 4,98 GPU-ore in tutto).
+  Minori: previsioni non decidibili per alcuni esiti, conferma sulla sola dose scelta non dichiarata, test assenti per le righe
+  della sintesi e per `summarize.py`, ricevute senza i pin delle tre selezioni lineari lette, evidenza del giocattolo non citata,
+  dropout dimenticato fra le regolarizzazioni.
+- Review della fase 3 (`257bdf7e`; critico): bloccante la definizione di `passed` nel protocollo («senza allarmi»), diversa dal
+  cancello congelato, dove gli allarmi cambiano solo l'etichetta di un mancato superamento (nel cancello di A1 L0 lineare passa con
+  un allarme). Minori: regola di D3 controllata dopo il setup sul nodo GPU, `summarize.py` che contava sintesi di job non
+  completati, `GateNotPassed` registrato come errore tecnico, bundle della ricerca assente dalla ricevuta, costo non dichiarato
+  nella domanda di approvazione.
+- Correzioni in `6386bd0b`: parità del punto a esposizione 0 con A1 (livelli di D0) nella validità; regola con le quattro dosi
+  obbligatorie; regola di D3 prima di ogni setup della fase 3; `GateNotPassed` = `gate_failed` con `failed_gate.json`; testo del
+  protocollo e voce in `docs/decisioni.md`.
+- Verifica indipendente delle correzioni (4 agenti: correzioni delle due fasi, mutazioni, coerenza del lancio): nessun difetto nel
+  codice e nessun bloccante. Ultimi ritocchi in `48785036`: invalidità per job (un punto non riprodotto chiude il job e la
+  sua cella manca a tutte le dosi) scritta nel protocollo; il cancello della fase 3 rilegge anche lui la regola; calibrazione non
+  calibrata registrata come nel runner congelato; limiti ribilanciati a 111 / 110 / 69 minuti a parità di totale; quattro test
+  contro i mutanti sopravvissuti; voce D3 originale annotata; sequenza operativa con registro, quota e rinfresco di `$SCRATCH`.
