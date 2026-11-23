@@ -3,7 +3,8 @@
 Operatore: Claude, dal Mac (incarico di Simone del 22/11 e «niente gpt per ora, vai avanti tu» del 23/11; fase 3 approvata il
 23/11 con «Sì, approvo»). Regole: protocollo `docs/tcn_temporal_diag_protocol_20261122.md`, sezioni 8 e 9; voci del 23/11 in
 `docs/decisioni.md`. Worktree `/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-tcn-diag`, ramo
-`claude/tcn-temporal-diag-20261122`. `D` = SHA completo del commit da eseguire, quello che chiude le review delle due fasi.
+`claude/tcn-temporal-diag-20261122`. `D` = SHA completo del commit da eseguire, quello che chiude le review delle due fasi:
+**`D` = `487850361deaa6720eb54e2a7c81c25f6274ff05`** (23/11; 62 test dei diagnostici passati).
 
 Submitter: `/Users/simonebenatti/.venvs/wearusfm-tok/bin/python '/Users/simonebenatti/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science/scripts/submit_job.py'`
 (sha256 `814da4bc…`), lanciato dalla radice del worktree, a `D` o a un suo discendente che non tocca `scripts/` (dispatch
