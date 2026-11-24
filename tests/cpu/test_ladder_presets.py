@@ -29,6 +29,7 @@ def test_rung_size_shape_and_rest_of_config(rung):
     assert (cfg.jepa, cfg.loader, cfg.lr, cfg.batch_size, cfg.warmup_steps) == \
            (sanity.jepa, sanity.loader, sanity.lr, sanity.batch_size, sanity.warmup_steps)
     assert cfg.model.grad_checkpoint and cfg.model.muscle_dropout == sanity.model.muscle_dropout
+    assert (cfg.model.window_ms, cfg.model.tokenizer_activation) == (100.0, "gelu")  # tokenizer dei nuovi training, dal 24/11/2026
 
 
 def test_30m_rung_is_the_sanity_architecture_and_sizes_grow():

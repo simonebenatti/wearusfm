@@ -124,7 +124,7 @@ def test_collaudo_writes_its_verdict_in_its_own_folder(tmp_path, monkeypatch):
 def test_raw_check_sees_any_encoder_change():
     torch.manual_seed(0)
     from wearusfm.model.fm import WearUsFM
-    cfg = replace(R.small_config().model, keep_readout=True)
+    cfg = replace(R.with_historical_tokenizer(R.small_config()).model, keep_readout=True)
     src = WearUsFM(cfg).state_dict()
     model = WearUsFM(replace(cfg, spectral_branches=("psd", "wavelet")))
     model.load_state_dict(src, strict=False)

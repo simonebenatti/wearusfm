@@ -30,7 +30,7 @@ def neighbour(value, steps):
 
 
 def small_model(seed=0):
-    cfg = R.small_config()
+    cfg = R.with_historical_tokenizer(R.small_config())  # il log-quadratico vuole la base identity
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(seed)
         return WearUsFM(replace(cfg.model, tokenizer_logsquare=True))

@@ -51,7 +51,8 @@ PHASES = {"C1": {"preset": "sanity", "label": "30M", "epochs": 1.0, "seed": 0},
           "C3": {"preset": "100m", "label": "100M", "epochs": 0.5, "seed": 0},
           "C4": {"preset": "300m", "label": "300M", "epochs": 0.25, "seed": 0}}
 BATCH = 32
-# misure: s/passo DDP 4 GPU batch 32 col prefetch (w1pf, w1gd) e memoria massima per GPU (w1gd, 8 finestre per GPU)
+# misure: s/passo DDP 4 GPU batch 32 col prefetch (w1pf, w1gd) e memoria massima per GPU (w1gd, 8 finestre per GPU). Banco da 25 ms senza
+# attivazione (ottobre 2026): da rimisurare prima di un piano col tokenizer di oggi (100 ms + GELU, default dal 24/11/2026)
 S_PER_STEP = {"sanity": 0.70, "100m": 1.39, "300m": 2.77}
 MEMORY_GIB = {"sanity": 10.0, "100m": 17.4, "300m": 28.7}
 CKPT_GB = {"sanity": 0.45, "100m": 1.7, "300m": 4.7}

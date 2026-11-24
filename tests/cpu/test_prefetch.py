@@ -59,7 +59,7 @@ def test_prefetch_with_rvq_codes_on_resume_with_audit(tmp_path):
         p = RC.code_path(codes_root, row["dataset"], row["subject"], row["session"])
         p.parent.mkdir(parents=True, exist_ok=True)
         np.savez(p, **RC.session_codes(trials, s.qc_valid, fake_encode))
-    cfg = replace(R.with_rvq(_cfg(), codes_root), stream_segment=4, ckpt_every=100)
+    cfg = replace(R.with_rvq(R.with_historical_tokenizer(_cfg()), codes_root), stream_segment=4, ckpt_every=100)  # RVQ solo con raggio 0
     R.train(cfg, mpath, [root], tmp_path / "plain", log=lambda _: None)
     R.train(replace(cfg, max_steps=2), mpath, [root], tmp_path / "pre", log=lambda _: None)
     # prefetch e verifica alla ripresa: variazioni operative ammesse dalla ricetta

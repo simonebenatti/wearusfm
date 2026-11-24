@@ -48,7 +48,8 @@ def probe(rung: str, per_gpu: int, index, scales: dict, window_s: dict, args, de
         teacher = make_teacher(student).to(device)
         opt = torch.optim.AdamW(student.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
         n = sum(p.numel() for p in student.parameters())
-        out.update(parameters=n, ddp_buckets_gib=4 * n / 2**30)
+        out.update(parameters=n, ddp_buckets_gib=4 * n / 2**30, tokenizer_window_ms=cfg.model.window_ms,
+                   tokenizer_activation=cfg.model.tokenizer_activation, masked_query_radius=R.masked_query_radius(cfg.jepa, cfg.model))
         inp, visible, _ = R._to_device(*L.to_model_inputs(batch), device)
         kinds = torch.as_tensor(batch.kind).to(device)
         amp = torch.autocast("cuda", dtype=torch.bfloat16, enabled=cuda and cfg.amp_bf16)

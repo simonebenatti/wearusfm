@@ -447,7 +447,7 @@ def test_continuation_rejects_mutation_of_named_5000_checkpoint(execution):
 
 @pytest.fixture
 def full_checkpoint(tmp_path):
-    cfg = replace(R.small_config(), max_steps=5000)
+    cfg = replace(R.with_historical_tokenizer(R.small_config()), max_steps=5000)  # il log-quadratico vuole la base identity
     cfg = replace(cfg, model=replace(cfg.model, tokenizer_logsquare=True))
     model = T.P.WearUsFM(cfg.model)
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)

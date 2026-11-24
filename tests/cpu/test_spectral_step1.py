@@ -98,7 +98,8 @@ def test_stats_mask_constant_buffers_and_equal_family_weight():
 
 def _setup(tmp_path):
     root, manifest = _tree(tmp_path)
-    cfg = R.small_config(datasets=("ninapro_db2",), max_steps=1)
+    # Step 1 e rami: nati col tokenizer storico da 25 ms (finestra lunga e rami insieme non sono previsti)
+    cfg = R.with_historical_tokenizer(R.small_config(datasets=("ninapro_db2",), max_steps=1))
     cfg = replace(cfg, model=replace(cfg.model, multiscale_anchor=True, keep_readout=True),
                   loader=replace(cfg.loader, multiscale_anchor=True))
     idx = R.load_index(manifest,[root],cfg.datasets)

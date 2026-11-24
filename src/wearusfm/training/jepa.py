@@ -466,8 +466,11 @@ def _jepa_compute(student, teacher, inp, visible, cfg, anchor_targets=None, rvq_
                                                   else (F.mse_loss(h, tgt, reduction="sum"), q_ch.new_tensor(h.numel())))
             terms.weight["jepa"] = cfg.jepa_weight
         err_log = None
-    if radius:  # per il log: quanti dei token nascosti sono interamente nascosti
-        losses["core_hidden_fraction"] = (hidden.sum().float() / all_hidden.sum().clamp(min=1).float()).detach()
+    if radius:  # per il log: quanti dei token nascosti sono interamente nascosti (conteggi in float64, uguali nei due percorsi)
+        kept, total = hidden.sum().detach(), all_hidden.sum().detach()
+        losses["core_hidden_fraction"] = kept.double() / total.clamp(min=1).double()
+        if terms is not None:
+            terms.log_num["core_hidden_fraction"], terms.log_den["core_hidden_fraction"] = kept, total
     if kinds is not None:
         with torch.no_grad():
             err = (h.float() - tgt.float()).pow(2).mean(dim=-1) if err_log is None else err_log.float()  # (Q,)

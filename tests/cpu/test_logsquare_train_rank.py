@@ -41,8 +41,8 @@ def run(tmp_path):
 
     def trainer(out, *extra):
         return ['--preset', 'small', '--manifest', str(manifest), '--root', str(root), '--out-dir', str(tmp_path / out),
-                '--device', 'cpu', '--max-steps', '1', '--datasets', 'all', '--tokenizer-logsquare',
-                '--tokenizer-logsquare-eps', '0.001', *extra]
+                '--device', 'cpu', '--max-steps', '1', '--datasets', 'all', '--window-ms', '25', '--tokenizer-activation', 'identity',
+                '--tokenizer-logsquare', '--tokenizer-logsquare-eps', '0.001', *extra]  # lo stesso modello di small_model()
 
     def entry(out, *extra, sha=None, directory=records, script=K.TRAINER, verify=False):
         return ['--initial-state-guard', str(guard_path), '--initial-state-guard-sha256', sha or R.sha256_file(guard_path),
@@ -245,7 +245,7 @@ def test_install_refuses_a_replaced_constructor_and_judges_every_other_model(run
     try:
         with pytest.raises(ValueError, match='already replaced'):
             K.install(run['guard'], 'f' * 64, run['records'], 2, 4)
-        model_cfg = replace(R.small_config().model, tokenizer_logsquare=True)
+        model_cfg = replace(R.with_historical_tokenizer(R.small_config()).model, tokenizer_logsquare=True)
         torch.manual_seed(0)
         assert isinstance(R.WearUsFM(model_cfg), WearUsFM)  # seeded as the trainer seeds it: the registered state
         assert R.count_parameters(model_cfg) > 0             # counted, not judged, whatever the generator state

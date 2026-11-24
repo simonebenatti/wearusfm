@@ -44,7 +44,8 @@ class FMConfig:
     patch_ms: float = 25.0  # D10, proposta
     # finestra del kernel piu' lunga del passo (R5 del pilot degli obiettivi, Simone 23/10/2026: «150ms con overlap di 125ms»): None = il banco di
     # sempre; con una finestra la griglia resta `patch_ms`, le basi scalano (`frontend.window_kwargs`) e la perdita JEPA conta solo i token
-    # interamente nascosti (`training.jepa.core_hidden`)
+    # interamente nascosti (`training.jepa.core_hidden`). Il default qui resta storico, perche' un config salvato senza il campo lo e': i nuovi
+    # training prendono 100 ms e GELU dai preset (`training.run.NEW_TOKENIZER`, 24/11/2026)
     window_ms: float | None = None
     n_bands: int = 5
     rvq_codes: int | None = None  # None = senza testa RVQ

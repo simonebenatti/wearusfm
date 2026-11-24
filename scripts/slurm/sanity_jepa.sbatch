@@ -13,6 +13,8 @@
 
 # Sanity JEPA (passo 6): preset `sanity` su emg2qwerty, valori firmati il 03/10/2026. 1 GPU, 30 min (0,5 GPU-ora per job). Riprende da
 # checkpoint.pt nella stessa cartella; catena: scripts/slurm/submit_chain.sh (afterok); un file STOP nel RUN_DIR ferma i job successivi.
+# Dal 24/11/2026 il tokenizer e' a 100 ms con GELU: un sanity storico si riprende con EXTRA_ARGS="--rms-window-ms 25 --ms-fast-window-ms 50
+# --window-ms 25 --tokenizer-activation identity".
 # Uso: sbatch scripts/slurm/sanity_jepa.sbatch <manifest.json.gz> <session_scales.json> <run_dir> [passi massimi]
 #   Variabili facoltative (sbatch --export=ALL,...): TIME_LIMIT_S (default 1560, per i 30 min di boost_qos_dbg; il run salva e si ferma prima),
 #   RVQ_CODES (radice dei codici RVQ precalcolati: accende l'ancora RVQ, D5b), EXTRA_ARGS (altre opzioni di train_jepa.py, es. --init-from,

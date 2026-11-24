@@ -159,6 +159,9 @@ def test_pilot_builder_fixed_identity_and_unsafe_final_checkpoint(tmp_path):
         cal = tmp_path/"calibration.npz"; cal.write_bytes(b"builder-only")
         ca = R.config_to_dict(module.build_config("A", 1, cal))
         cb = R.config_to_dict(module.build_config("B", 1, cal))
+        for c in (ca, cb):  # A/B storico: target 25/50 ms e tokenizer da 25 ms senza attivazione, non i default del 18/11 e del 24/11
+            assert (c["model"]["window_ms"], c["model"]["tokenizer_activation"]) == (None, "identity")
+            assert (c["loader"]["rms_window_ms"], c["loader"]["ms_fast_window_ms"]) == (25.0, 50.0)
         assert ca["jepa"].pop("keep_weight") == 0 and cb["jepa"].pop("keep_weight") == .05
         assert ca == cb and ca["max_steps"] == 4000 and ca["warmup_steps"] == 1000
         with pytest.raises(ValueError, match="nonfinite final"):

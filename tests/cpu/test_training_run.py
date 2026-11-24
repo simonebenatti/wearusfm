@@ -108,7 +108,7 @@ def test_rvq_anchor_on_trains_with_precomputed_codes_and_needs_both_halves(tmp_p
         p = RC.code_path(codes_root, row["dataset"], row["subject"], row["session"])
         p.parent.mkdir(parents=True, exist_ok=True)
         np.savez(p, **RC.session_codes(trials, s.qc_valid, fake_encode))
-    cfg = R.with_rvq(R.small_config(datasets=None, max_steps=3), codes_root)
+    cfg = R.with_rvq(R.with_historical_tokenizer(R.small_config(datasets=None, max_steps=3)), codes_root)  # RVQ solo con raggio 0
     s = R.train(cfg, mpath, [root], tmp_path / "run", log=lambda m: None)
     rec = _lines(tmp_path / "run")
     assert s["steps"] == 3 and all("rvq" in r and math.isfinite(r["rvq"]) for r in rec)
@@ -196,7 +196,8 @@ def test_anchor_candidates_extract_and_probe_end_to_end(tmp_path, monkeypatch):
         p = RC.code_path(codes_root, row["dataset"], row["subject"], row["session"])
         p.parent.mkdir(parents=True, exist_ok=True)
         np.savez(p, scale=np.float64(scale), **RC.session_codes(trials, s.qc_valid, fake_encode))
-    R.train(R.with_rvq(R.small_config(datasets=None, max_steps=1), codes_root), mpath, [root], tmp_path / "run", log=lambda m: None)
+    cfg = R.with_rvq(R.with_historical_tokenizer(R.small_config(datasets=None, max_steps=1)), codes_root)  # RVQ solo con raggio 0
+    R.train(cfg, mpath, [root], tmp_path / "run", log=lambda m: None)
     tok = tmp_path / "tok.pt"
     torch.save({"quantize_1.layers.0.embedding.weight": torch.randn(8192, 128)}, tok)
 

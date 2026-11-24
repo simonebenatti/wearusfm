@@ -109,9 +109,10 @@ def test_current_schema_defaults_are_neutral_but_not_a_frozen_receipt():
     argv = m.trainer_args(Path('/leonardo_work/IscrB_WearUsFM'),
                           Path('/leonardo_scratch/large/userexternal/sbenatti'), Path('/new/run'))
     old = json.loads((ROOT/'results/infra/pilot_posa/collaudo_b_20261028/config.json').read_text())
-    # Dal 18/11 i default dei target sono nuovi (RMS 100 ms, spettro rapido 125 ms): il comando congelato rilanciato con la CLI
-    # corrente viene rifiutato dalla guardia della ripresa; con la ricetta storica esplicita torna compatibile.
-    with pytest.raises(ValueError, match='loader'):
+    # Dal 18/11 i default dei target sono nuovi (RMS 100 ms, spettro rapido 125 ms) e dal 24/11 quelli del tokenizer (100 ms, GELU): il
+    # comando congelato rilanciato con la CLI corrente viene rifiutato dalla guardia della ripresa; con la ricetta storica esplicita torna
+    # compatibile.
+    with pytest.raises(ValueError, match="'loader', 'model'"):
         R._check_resume_recipe(cli.build_config(cli.build_parser().parse_args(argv)), {'config': old})
     cfg = cli.build_config(cli.build_parser().parse_args(cli.historical_args(argv)))
     new = R.config_to_dict(cfg)

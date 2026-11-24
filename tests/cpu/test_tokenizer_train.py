@@ -28,7 +28,8 @@ def test_registered_phase_command_changes_only_dose_and_operational_timeout():
             recovered = cmd[3:-2]
             assert recovered[recovered.index("--max-steps") + 1] == str(step)
             recovered[recovered.index("--max-steps") + 1] = "5000"
-            # Campagna nata prima del 18/11: il comando aggiunge solo la ricetta storica esplicita dei target (25/50).
+            # Campagna nata prima del 18/11: il comando aggiunge solo la ricetta storica esplicita (target 25/50 e, dove manca, il tokenizer:
+            # T25-L non scrive --window-ms).
             assert recovered == T.CLI.historical_args(original) != original
     for arm, step, seconds in (("B", 5000, 6000), ("T25-L", 49046, 6000), ("T25-L", 5000, 300)):
         with pytest.raises(ValueError):

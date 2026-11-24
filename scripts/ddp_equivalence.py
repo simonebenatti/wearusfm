@@ -201,8 +201,10 @@ def main(argv=None) -> int:
     init = WearUsFM(cfg.model).state_dict()
     report = run_equivalence(cfg, batches, init, rank=ctx.rank, world=ctx.world_size, device=device)
     if ctx.is_main:
-        report.update(preset=args.preset, batch_sha256=hashes, code={"dir": os.environ.get("WEARUSFM_CODE_DIR"),
-                                                                     "sha": os.environ.get("WEARUSFM_CODE_SHA")})
+        tokenizer = {"window_ms": cfg.model.window_ms, "activation": cfg.model.tokenizer_activation,
+                     "masked_query_radius": R.masked_query_radius(cfg.jepa, cfg.model)}
+        report.update(preset=args.preset, tokenizer=tokenizer, batch_sha256=hashes,
+                      code={"dir": os.environ.get("WEARUSFM_CODE_DIR"), "sha": os.environ.get("WEARUSFM_CODE_SHA")})
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(json.dumps(report, indent=1, allow_nan=False))
         print(json.dumps({"passed": report["passed"]}), flush=True)

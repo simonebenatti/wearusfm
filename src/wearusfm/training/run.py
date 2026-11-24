@@ -6,6 +6,9 @@ nascosta 0,5 (15); soglie d'allarme (16): collasso da query sotto 0,05 o rango e
 valutate ogni 500 passi su un batch fisso; peso delle ancore 0,2 e momento EMA 0,996 (18); dropout del muscolo 0,4 (19); target (b) (20); patch
 25 ms, contesto 1-4 s, maschere D10 a tubi (10-12); salti spezzati (8); filtro nel dataloader (13).
 
+**Tokenizer dei nuovi training dal 24/11/2026** (Simone, «Sì, fallo»; `docs/tokenizer_default_100ms_20261124.md`): in tutti i preset kernel di
+100 ms sul passo di 25 ms e GELU (`NEW_TOKENIZER`), invece del banco storico da 25 ms senza attivazione (`with_historical_tokenizer`).
+
 **Scelte di AG, da confermare (non firmate):** taglia del modello del sanity (~30M parametri, i default di lavoro della finestra 1: K = 64, encoder
 locale a 2 livelli); AdamW con lr 3e-4, warmup lineare di 1.000 passi poi costante (lo schedule vero e' D14), weight decay 0,05, clip del gradiente
 1,0; batch di 32 finestre; batch di validazione per le diagnostiche estratto con un seme fisso dal pretraining (non dal test, che resta intatto);
@@ -174,6 +177,14 @@ _LATER_DEFAULTS = {"accum_steps": 1, "branch_calibration_batches": 16, "freeze_e
 BRANCH_MODEL_FIELDS = {"spectral_branches": [], "branch_dim": 128, "branch_hidden": 48, "wavelet_learnable": False, "branch_alpha": 0.5,
                        "branch_objective": "readout", "branch_freeze_output": False,  # pilot dei rami del 20/10
                        "window_ms": None}  # finestra del kernel: assente = patch storica
+# Tokenizer dei nuovi training (Simone, 24/11/2026, alla domanda «Rendo 100 ms + GELU il default anche del tokenizer?»: «Sì, fallo»): kernel di
+# 100 ms sul passo di 25 ms (overlap 75 ms) e GELU dopo il banco, il tokenizer di T100-G. Sta nei PRESET (`sanity_config`, da cui partono i
+# rung e `small_config`), non nei default di `FMConfig`: un config o un checkpoint senza i due campi resta quello storico (kernel = passo,
+# nessuna attivazione), qualunque strumento lo rilegga. Cambia solo il tokenizer: obiettivo, maschere e `masked_loss_radius` restano quelli
+# del preset (senza override il raggio delle query e' quello nominale del kernel: 2 passi con 100 ms, 0 col banco storico).
+NEW_TOKENIZER = {"window_ms": 100.0, "tokenizer_activation": "gelu"}
+HISTORICAL_TOKENIZER = {"window_ms": None, "tokenizer_activation": "identity"}
+TOKENIZER_FIELDS = ("patch_ms", "window_ms", "tokenizer_activation", "tokenizer_logsquare", "tokenizer_logsquare_eps")
 
 
 def _environment(out_dir: Path) -> dict:
@@ -226,6 +237,13 @@ def with_legacy_target_windows(d: dict) -> dict:
                             **d["loader"]}}
 
 
+def with_historical_tokenizer(cfg: RunConfig) -> RunConfig:
+    """Il tokenizer dei run nati senza opzioni prima del 24/11/2026 (kernel di 25 ms = il passo, nessuna attivazione), per i costruttori delle
+    campagne storiche che non passano dalla riga di comando. Distinto da `with_historical_targets`: T100-G ha i target storici 25/50 ms e il
+    tokenizer a 100 ms con GELU."""
+    return replace(cfg, model=replace(cfg.model, **HISTORICAL_TOKENIZER))
+
+
 def wsd_warmup_steps(steps_at_d: int) -> int:
     """D14: warmup lineare sul 2% dei passi a D, almeno 1.000. Nel pilot e nella continuazione a 2D il warmup resta quello di D per tutti i
     rami: si calcola una volta e si passa esplicito."""
@@ -245,7 +263,7 @@ def with_wsd(cfg: RunConfig, total_steps: int, *, warmup_steps: int, keep_checkp
 def sanity_config(max_steps: int = 20000) -> RunConfig:
     return RunConfig(
         model=FMConfig(dim=384, n_heads=6, k_latents=64, local_layers=2, backbone_layers=8, decoder_layers=2, muscle_dropout=0.4,
-                       grad_checkpoint=True),
+                       grad_checkpoint=True, **NEW_TOKENIZER),
         jepa=JEPAConfig(target="b", anchor_weight=0.2, ema_momentum=0.996),
         loader=L.signed_config((20.0, 450.0)),
         datasets=("emg2qwerty",), batch_size=32, lr=3e-4, warmup_steps=1000, weight_decay=0.05, grad_clip=1.0, max_steps=max_steps,
@@ -259,7 +277,8 @@ def sanity_config(max_steps: int = 20000) -> RunConfig:
 # del sanity. Conteggi (con l'ancora multi-scala): 30M 28,3 M; 100M 104,8 M; 300M 292,0 M. Ripartizione backbone / encoder locale /
 # Perceiver: 67/13/6%, 75/9/5%, 79/10/3% (v10 prescrive 75-85 / 8-15 / 5-10: il Perceiver resta sotto a 300M perche' i suoi blocchi sono
 # fissi). Il resto della configurazione (picco del learning rate, batch) e' quello del sanity finche' la calibrazione della finestra 1 non lo
-# fissa (D14: «il batch dei rung maggiori lo fissa la calibrazione»).
+# fissa (D14: «il batch dei rung maggiori lo fissa la calibrazione»). Il tokenizer dal 24/11/2026 (`NEW_TOKENIZER`) aggiunge 5.184 parametri a
+# ogni rung, tutti nel front-end.
 LADDER = {
     "30m": dict(dim=384, n_heads=6, local_layers=2, backbone_layers=8, decoder_layers=2),
     "100m": dict(dim=640, n_heads=10, local_layers=2, backbone_layers=12, decoder_layers=2),
@@ -276,8 +295,8 @@ def ladder_config(rung: str, max_steps: int = 20000) -> RunConfig:
 def with_window1_rules(cfg: RunConfig) -> RunConfig:
     """Le decisioni del 04/10/2026, dalla finestra 1: quote nel tempo (1), perdita per finestra (2), nessun target delle ancore entro 100 ms dal
     bordo di un tratto (3) («approvo tutto»); ancora multi-scala («ok per l'ancora multi-scala nella finestra 1»); montaggi virtuali dalle griglie
-    HD coi parametri del foglio D6a (firmato il 05/10/2026). Il preset del sanity resta quello collaudato. L'ancora RVQ non c'e' (decisione del
-    04/10): `with_rvq` non va applicato."""
+    HD coi parametri del foglio D6a (firmato il 05/10/2026). Il preset del sanity resta quello collaudato, tranne il tokenizer (`NEW_TOKENIZER`).
+    L'ancora RVQ non c'e' (decisione del 04/10): `with_rvq` non va applicato."""
     return replace(cfg, jepa=replace(cfg.jepa, loss_per_window=True), model=replace(cfg.model, multiscale_anchor=True),
                    loader=replace(cfg.loader, time_weighted=True, anchor_edge_guard_s=0.1, multiscale_anchor=True, virtual=VM.VirtualSpec()))
 
@@ -831,6 +850,17 @@ def _check_resume_recipe(cfg: RunConfig, state: dict) -> None:
                          f"{list(RESUME_OPERATIONAL)}; per il resto un run nuovo o un ramo (branch_from)")
 
 
+def _check_init_tokenizer(cfg: RunConfig, state: dict, source: Path) -> None:
+    """Pesi iniziali da un altro run (`init_from`): il tokenizer del modello nuovo e' quello del checkpoint (campo assente = storico).
+    L'attivazione non sta nei pesi, quindi un checkpoint a 100 ms senza GELU si caricherebbe senza errori in un modello con GELU, il default
+    dal 24/11/2026."""
+    src, mine = _config_with_defaults({"model": {}, **state.get("config", {})})["model"], config_to_dict(cfg)["model"]
+    differ = [f"{k} {src[k]!r} -> {mine[k]!r}" for k in TOKENIZER_FIELDS if k in src and src[k] != mine[k]]
+    if differ:
+        raise ValueError(f"pesi iniziali da {source} con un altro tokenizer ({', '.join(differ)}): scrivere --window-ms e --tokenizer-activation "
+                         "del checkpoint (dal 24/11/2026 senza opzioni sono 100 ms e gelu)")
+
+
 def _check_data_signature(state: dict, signature: dict, say) -> None:
     """Gli ingressi dello stream (manifest, scale, durate, loader, dataset) uguali a quelli del checkpoint; un checkpoint di prima del 15/10
     non li registra e si riprende con un avviso."""
@@ -1353,6 +1383,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("ancora multi-scala a meta': servono insieme le teste (model) e i target (loader); vedi with_window1_rules")
     if bool(cfg.loader.rvq_codes_root) != bool(cfg.model.rvq_codes):
         raise ValueError("ancora RVQ a meta': servono insieme la testa (model.rvq_codes) e i codici (loader.rvq_codes_root); vedi with_rvq")
+    if cfg.model.rvq_codes and masked_query_radius(cfg.jepa, cfg.model) > 0:  # quasi nessuna finestra RVQ resta nascosta per intero
+        raise ValueError(f"ancora RVQ con raggio delle query {masked_query_radius(cfg.jepa, cfg.model)}: le sue finestre da 200 ms quasi non "
+                         "restano nascoste per intero e la perdita sarebbe nulla senza un errore. Banco storico (--window-ms 25 "
+                         "--tokenizer-activation identity), oppure --masked-loss-radius 0 con JEPA spenta")
     torch.manual_seed(cfg.seed)  # stessa inizializzazione su tutti i processi
     index = load_index(manifest, roots, cfg.datasets, cfg.nested)
     if cfg.nested is not None:
@@ -1400,6 +1434,7 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
     else:
         if init_from is not None and not cfg.freeze_encoder:  # pesi di un altro run (studente e teacher), ottimizzatore e passi da zero
             state = torch.load(init_from, map_location="cpu", weights_only=False)
+            _check_init_tokenizer(cfg, state, init_from)
             student.load_state_dict(state["student"])
             teacher.load_state_dict(state["teacher"])
             say(f"pesi iniziali da {init_from} (passo {state['step']} di quel run); ottimizzatore e passi da zero")

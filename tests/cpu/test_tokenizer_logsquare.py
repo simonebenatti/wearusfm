@@ -97,7 +97,7 @@ def test_new_and_legacy_checkpoints_load_strictly_and_recipe_switch_is_rejected(
         assert all(torch.equal(value, restored.state_dict()[key]) for key, value in model.state_dict().items())
     with pytest.raises(RuntimeError):
         branch.load_state_dict(linear.state_dict(), strict=True)
-    cfg = R.sanity_config()
+    cfg = R.with_historical_tokenizer(R.sanity_config())  # il log-quadratico vuole la base identity
     changed = replace(cfg, model=replace(cfg.model, tokenizer_logsquare=True))
     with pytest.raises(ValueError):
         R._check_resume_recipe(changed, {'config': R.config_to_dict(cfg)})

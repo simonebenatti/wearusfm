@@ -8397,3 +8397,22 @@ a Leonardo.
    per non leggere i dati in parallelo. Stessi job, limiti e uscite.
 
 **Consuntivo:** **28,79 GPU-ore sul tetto di 32,5** (230 ore locali con billing 8); checkout 0,011 core-ore.
+
+### 2026-11-24 — Tokenizer dei nuovi training: 100 ms + GELU di default (Simone; Claude)
+
+Simone, alla domanda di Claude «Rendo 100 ms + GELU il default anche del tokenizer?»: «Sì, fallo».
+- Nei nuovi training, senza opzioni: kernel del tokenizer 100 ms (passo 25 ms, overlap 75 ms) e GELU, il tokenizer di T100-G. Il default sta
+  nei preset (`run.NEW_TOKENIZER`), non in `FMConfig`: un config o un checkpoint senza i due campi resta storico (25 ms, `identity`).
+- I preset firmati il 03/10 (sanity) e il 09/10 (rung) cambiano solo nel tokenizer: 5.184 parametri in più per taglia. Non è la ricetta di
+  T100-G: JEPA, posa, maschere e raggio restano quelli del comando.
+- Ricetta storica esplicita: `--window-ms 25 --tokenizer-activation identity`. `train_jepa.historical_args` scrive le quattro opzioni che
+  mancano (due del 18/11, due del 24/11); `run.with_historical_tokenizer` per i costruttori senza riga di comando. L'A/B dello Step 1
+  (`step1_ab`, quindi 2C e pilot dei rami) sarebbe cambiato in silenzio: ora è esplicito.
+- Guardie nuove: `--init-from` vuole il tokenizer del checkpoint; l'ancora RVQ vuole raggio 0. Rami spettrali e log-quadratico dicono quale
+  opzione serve. `core_hidden_fraction` entra anche nel log DDP. `wsd_chain.py` avvisa se un piano non scrive le quattro opzioni.
+- **Da decidere con GPT e Simone prima del primo training lanciato col default nudo** (precedente R5, 24/10: gate D8 riaperto e quote delle
+  maschere firmate): (1) raggio delle query 2 con le quote D10, che lascia come query il 79,6% dei token nascosti (26,0% nelle maschere
+  corte; la loro quota scende dal 14,9% al 4,9%); (2) gate D8 a 100 ms, mai eseguito. La campagna T100-G aveva JEPA spenta e raggio 0.
+- Suite CPU completa: 3.559 passati (3.516 su `main` `dfc38b55` più 43 casi nuovi). Nessun job; piani, checkout, checkpoint e rami delle
+  campagne in corso non toccati.
+Contratto: `docs/tokenizer_default_100ms_20261124.md`.

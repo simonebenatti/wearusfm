@@ -112,7 +112,7 @@ def main(argv=None) -> int:
     ap.add_argument("--stage", choices=("all", "features", "probe"), default="all")
     ap.add_argument("--window-ms", type=float, default=None,
                     help="finestra del kernel piu' lunga del passo di 25 ms (R5 del pilot degli obiettivi): il gate va riaperto per quel banco; "
-                         "default nessuna, il banco firmato")
+                         "default nessuna, il banco firmato da 25 ms (non quello dei nuovi training, che dal 24/11/2026 e' a 100 ms)")
     args = ap.parse_args(argv)
     args.work = args.work or args.out.with_suffix("").with_name(args.out.stem + "_features")
     if args.stage == "all":

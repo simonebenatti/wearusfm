@@ -187,7 +187,7 @@ def test_same_seed_initializes_all_shared_backbone_weights_identically_across_ar
     assert all(torch.equal(rng_states[0], state) for state in rng_states[1:])
 
 
-def test_cli_builds_three_comparable_arms_and_keeps_legacy_defaults():
+def test_cli_builds_three_comparable_arms_and_the_explicit_legacy_recipe():
     spec = importlib.util.spec_from_file_location("train_jepa_comparison", Path(__file__).resolve().parents[2] / "scripts/train_jepa.py")
     cli = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cli)
@@ -196,14 +196,15 @@ def test_cli_builds_three_comparable_arms_and_keeps_legacy_defaults():
     def build(extra):
         return cli.build_config(cli.build_parser().parse_args(base + extra))
 
-    legacy = build([])
+    new = build([])  # dal 24/11/2026 senza opzioni e' il tokenizer di T100-G
+    assert new.model.window_ms == 100. and new.model.tokenizer_activation == "gelu" and new.jepa.masked_loss_radius is None
+    legacy = build(["--window-ms", "25", "--tokenizer-activation", "identity"])
     assert legacy.model.window_ms is None and legacy.model.tokenizer_activation == "identity"
     assert legacy.jepa.masked_loss_radius is None
     for radius in (0, 2):
         for window, activation in ARMS:
             args = ["--masked-loss-radius", str(radius), "--tokenizer-activation", activation, "--jepa-weight", "0"]
-            if window is not None:
-                args += ["--window-ms", str(window)]
+            args += ["--window-ms", "25" if window is None else str(window)]  # 25 = il banco storico
             cfg = build(args)
             assert cfg.model.window_ms == window and cfg.model.tokenizer_activation == activation
             assert cfg.jepa.jepa_weight == 0. and cfg.jepa.masked_loss_radius == masked_query_radius(cfg.jepa, cfg.model) == radius
@@ -226,7 +227,7 @@ def legacy_config(cfg):
 
 
 def test_resume_normalizes_legacy_fields_but_cannot_reinterpret_activation_or_radius():
-    cfg = R.small_config()
+    cfg = R.with_historical_tokenizer(R.small_config())  # un campo assente e' storico
     old = legacy_config(cfg)
     before = copy.deepcopy(old)
     assert R._config_with_defaults(old) == R.config_to_dict(cfg)
@@ -247,7 +248,7 @@ def test_resume_normalizes_legacy_fields_but_cannot_reinterpret_activation_or_ra
 
 
 def test_frozen_encoder_accepts_old_identity_and_rejects_activation_reinterpretation(tmp_path):
-    cfg = R.small_config()
+    cfg = R.with_historical_tokenizer(R.small_config())  # un campo assente e' storico
     torch.manual_seed(22)
     source = WearUsFM(cfg.model)
     checkpoint = tmp_path / "legacy.pt"

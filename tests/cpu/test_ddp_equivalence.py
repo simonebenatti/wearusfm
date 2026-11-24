@@ -26,8 +26,11 @@ TOL = dict(rtol=1e-10, atol=1e-10)
 WINDOW_S = {"emg2pose/u1/sessA": 3.9, "ninapro_db2/s01/session1": 3.0, "capgmyo/s01/s": 1.0}
 
 
-def _config(per_window: bool, multiscale: bool):
+def _config(per_window: bool, multiscale: bool, historical: bool = False):
+    """`historical`: il tokenizer storico da 25 ms (raggio 0); altrimenti quello dei nuovi training (100 ms + GELU, raggio 2, 24/11/2026)."""
     cfg = R.small_config(datasets=None)
+    if historical:
+        cfg = R.with_historical_tokenizer(cfg)
     if multiscale:
         cfg = R.with_window1_rules(cfg)  # anche finestre per finestra, ancore multi-scala, montaggi virtuali
     return replace(cfg, jepa=replace(cfg.jepa, loss_per_window=per_window), model=replace(cfg.model, muscle_dropout=0.0))
@@ -111,13 +114,16 @@ def _same(ref, got, what):
             torch.testing.assert_close(got[part][k], v, **TOL, msg=f"{what}: {part} {k}")
 
 
+@pytest.mark.parametrize("historical", [False, True], ids=["100ms_gelu", "storico"])
 @pytest.mark.parametrize("per_window,multiscale", [(False, False), (True, True)], ids=["sanity", "finestra1"])
-def test_one_process_accumulation_and_ddp_equal_the_global_batch(tmp_path, per_window, multiscale):
-    cfg = _config(per_window, multiscale)
+def test_one_process_accumulation_and_ddp_equal_the_global_batch(tmp_path, per_window, multiscale, historical):
+    cfg = _config(per_window, multiscale, historical)
     batch = _global_batch(tmp_path, cfg)
     torch.manual_seed(0)
     init = WearUsFM(cfg.model).double().state_dict()
     ref = _reference(cfg, init, batch)
+    # quota dei token nascosti che restano query: nel log di ogni percorso col raggio > 0, assente col banco storico
+    assert ("core_hidden_fraction" in ref["metrics"]) == (not historical)
     one = R.DistContext()
     _same(ref, _update(cfg, init, batch, 2, one, lambda s: None), "1 processo x 2 micro-batch")
     _same(ref, _update(cfg, init, batch, 4, one, lambda s: None), "1 processo x 4 micro-batch")
@@ -128,8 +134,9 @@ def test_one_process_accumulation_and_ddp_equal_the_global_batch(tmp_path, per_w
             assert all(torch.equal(res[0][k][part][n], res[1][k][part][n]) for n in res[0][k][part]), (k, part)
 
 
-def test_four_processes_one_window_each(tmp_path):
-    cfg = _config(True, True)
+@pytest.mark.parametrize("historical", [False, True], ids=["100ms_gelu", "storico"])
+def test_four_processes_one_window_each(tmp_path, historical):
+    cfg = _config(True, True, historical)
     batch = _global_batch(tmp_path, cfg)
     torch.manual_seed(0)
     init = WearUsFM(cfg.model).double().state_dict()
@@ -188,9 +195,12 @@ def test_coordinated_stops_on_count_mismatch_and_empty_jepa(tmp_path, monkeypatc
     assert failure == "nessun target JEPA nel batch globale"
 
 
-def test_single_process_accumulation_through_train_and_resume(tmp_path):
+@pytest.mark.parametrize("historical", [False, True], ids=["100ms_gelu", "storico"])
+def test_single_process_accumulation_through_train_and_resume(tmp_path, historical):
     root, mpath = _tree(tmp_path)
     cfg = replace(R.small_config(datasets=None, max_steps=4), batch_size=4, accum_steps=2, ckpt_every=100)
+    if historical:
+        cfg = R.with_historical_tokenizer(cfg)
     s = R.train(cfg, mpath, [root], tmp_path / "a", log=lambda m: None)
     assert s["accum_steps"] == 2 and s["micro_batch"] == 2 and "world_size" not in s
     rec = [json.loads(x) for x in (tmp_path / "a" / "metrics.jsonl").read_text().splitlines()]

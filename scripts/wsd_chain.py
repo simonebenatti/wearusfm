@@ -24,6 +24,8 @@ Piano (JSON):
     {"id", "branch_of": "<id>", "from_step": N, "total_steps"}                                                               ramo
   Un ramo eredita dal tronco preset, seme, batch, accumulo, passi a D e argomenti (il trainer accetta un ramo solo se cambiano schedule e
   max_steps).
+  Un piano nuovo scrive in common_args o args le quattro opzioni della ricetta (`RECIPE_OPTIONS`: finestre dei target e tokenizer): senza, il
+  trainer usa i default di oggi, ma `calibration_select` legge il piano come storico e rifiuta il run dopo il training (qui: un avviso).
 
 Uso: python scripts/wsd_chain.py piano.json [--commands comandi.txt] [--json preventivo.json]
 """
@@ -47,6 +49,8 @@ BRANCH_KEYS = {"id", "branch_of", "from_step", "total_steps"}
 PLANNER_DESTS = ("schedule", "total_steps", "steps_at_d", "warmup_steps", "decay_fraction", "keep_checkpoints", "max_steps", "batch_size",
                  "accum_steps", "seed", "window_seconds", "time_limit_s", "branch_from")
 LAUNCHER_DESTS = ("preset", "manifest", "root", "scales", "out_dir", "num_workers", "distributed")
+RECIPE_OPTIONS = {"rms_window_ms": "--rms-window-ms", "ms_fast_window_ms": "--ms-fast-window-ms", "window_ms": "--window-ms",
+                  "tokenizer_activation": "--tokenizer-activation"}
 PLAN_KEYS = {"campaign", "agent", "code_dir", "expected_sha", "manifest", "scales", "window_seconds", "run_root", "slurm", "margin_min",
              "startup_min", "slack", "spare_jobs", "gpus", "s_per_step", "ckpt_gb", "common_args", "runs"}
 
@@ -95,6 +99,19 @@ def free_arg_dests(text: str, parser) -> set[str]:
             raise ValueError(f"opzione {tok!r}: " + (f"ambigua fra {hits}" if hits else "sconosciuta al trainer"))
         dests.add(options[hits[0]])
     return dests
+
+
+def unstated_recipe(plan: dict) -> dict[str, list[str]]:
+    """Per ogni tronco del piano, le opzioni della ricetta (`RECIPE_OPTIONS`) che il piano non scrive: il trainer le prende dai default di oggi,
+    gli strumenti che rileggono il piano (`train_jepa.historical_args`) le prendono come storiche. Vuoto = piano esplicito."""
+    parser = _trainer_parser()
+    common = free_arg_dests(plan["common_args"], parser)
+    out = {}
+    for r in plan["runs"]:
+        missing = [] if "branch_of" in r else [o for d, o in RECIPE_OPTIONS.items() if d not in common | free_arg_dests(r["args"], parser)]
+        if missing:
+            out[r["id"]] = missing
+    return out
 
 
 def _warmup(steps_at_d: int) -> int:
@@ -249,8 +266,12 @@ def main(argv=None) -> int:
     ap.add_argument("--commands", type=Path, help="file in cui scrivere i comandi di submit_job.py, uno per riga, nell'ordine")
     ap.add_argument("--json", type=Path, help="file in cui scrivere job, dipendenze e preventivo")
     args = ap.parse_args(argv)
-    result = plan_jobs(json.loads(args.plan.read_text()))
+    plan = json.loads(args.plan.read_text())
+    result = plan_jobs(plan)
     print(table(result))
+    for run_id, missing in unstated_recipe(plan).items():
+        print(f"ATTENZIONE {run_id}: il piano non scrive {', '.join(missing)}. Su codice dal 24/11/2026 il trainer usa i default nuovi (target "
+              "100/125 ms, tokenizer 100 ms + GELU), ma calibration_select lo legge come storico e rifiuta il run dopo il training", file=sys.stderr)
     if args.commands:
         args.commands.write_text("\n".join(result["commands"]) + "\n")
     if args.json:

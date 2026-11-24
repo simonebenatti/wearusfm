@@ -207,11 +207,14 @@ def test_trainer_flags_for_target_a_and_window(window_ms, radius):
     sp.loader.exec_module(TJ)
     base = ["--preset", "sanity", "--manifest", "-", "--root", "-", "--out-dir", "-"]
     cfg = TJ.build_config(TJ.build_parser().parse_args(base))
-    assert cfg.jepa.target == "b" and cfg.model.window_ms is None  # i default del preset, invariati
+    # i default del preset; il tokenizer dal 24/11/2026
+    assert cfg.jepa.target == "b" and (cfg.model.window_ms, cfg.model.tokenizer_activation) == (100.0, "gelu")
     cfg = TJ.build_config(TJ.build_parser().parse_args(base + ["--jepa-target", "a", "--window-ms", str(window_ms)]))
     assert cfg.jepa.target == "a" and cfg.model.window_ms == window_ms and cfg.model.core_radius == radius
-    with pytest.raises(ValueError, match="--window-ms"):
-        TJ.build_config(TJ.build_parser().parse_args(base + ["--window-ms", "25"]))
+    assert TJ.build_config(TJ.build_parser().parse_args(base + ["--window-ms", "25"])).model.window_ms is None  # il passo = il banco storico
+    for bad in ("24", "10", "0", "nan", "inf"):
+        with pytest.raises(ValueError, match="--window-ms"):
+            TJ.build_config(TJ.build_parser().parse_args(base + ["--window-ms", bad]))
     # R2 e lo scostamento da D10 di R5: target per regione e quote delle maschere; default intoccati
     assert cfg.jepa.region_target is False and (cfg.loader.mask.share_short, cfg.loader.mask.share_spatial) == (0.15, 0.40)
     cfg = TJ.build_config(TJ.build_parser().parse_args(base + ["--jepa-region-target"]))
