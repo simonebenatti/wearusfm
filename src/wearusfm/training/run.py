@@ -857,8 +857,9 @@ def _check_init_tokenizer(cfg: RunConfig, state: dict, source: Path) -> None:
     src, mine = _config_with_defaults({"model": {}, **state.get("config", {})})["model"], config_to_dict(cfg)["model"]
     differ = [f"{k} {src[k]!r} -> {mine[k]!r}" for k in TOKENIZER_FIELDS if k in src and src[k] != mine[k]]
     if differ:
-        raise ValueError(f"pesi iniziali da {source} con un altro tokenizer ({', '.join(differ)}): scrivere --window-ms e --tokenizer-activation "
-                         "del checkpoint (dal 24/11/2026 senza opzioni sono 100 ms e gelu)")
+        raise ValueError(f"pesi iniziali da {source} con un altro tokenizer ({', '.join(differ)}): scrivere quello del checkpoint (--window-ms, 25 se "
+                         "None; --tokenizer-activation; per il log-quadratico --tokenizer-logsquare e --tokenizer-logsquare-eps). Dal "
+                         "24/11/2026 senza opzioni sono 100 ms e gelu")
 
 
 def _check_data_signature(state: dict, signature: dict, say) -> None:
@@ -1234,7 +1235,7 @@ def _load_frozen_encoder(student: WearUsFM, cfg: RunConfig, init_from: Path | No
     if src.get("spectral_branches"):
         raise ValueError("freeze_encoder: init_from ha gia' dei rami spettrali; si parte da un encoder senza rami")
     mine = config_to_dict(cfg)["model"]
-    skip = set(BRANCH_MODEL_FIELDS) | {"keep_readout", "grad_checkpoint"}
+    skip = (set(BRANCH_MODEL_FIELDS) - {"window_ms"}) | {"keep_readout", "grad_checkpoint"}  # la finestra e' del tokenizer, non dei rami
     differ = sorted(k for k in set(src) | set(mine) if k not in skip and src.get(k) != mine.get(k))
     if differ:
         raise ValueError(f"freeze_encoder: configurazione del modello diversa da init_from in {differ}")
@@ -1383,10 +1384,10 @@ def train(cfg: RunConfig, manifest: Path, roots: list[Path], out_dir: Path, *, s
         raise ValueError("ancora multi-scala a meta': servono insieme le teste (model) e i target (loader); vedi with_window1_rules")
     if bool(cfg.loader.rvq_codes_root) != bool(cfg.model.rvq_codes):
         raise ValueError("ancora RVQ a meta': servono insieme la testa (model.rvq_codes) e i codici (loader.rvq_codes_root); vedi with_rvq")
-    if cfg.model.rvq_codes and masked_query_radius(cfg.jepa, cfg.model) > 0:  # quasi nessuna finestra RVQ resta nascosta per intero
-        raise ValueError(f"ancora RVQ con raggio delle query {masked_query_radius(cfg.jepa, cfg.model)}: le sue finestre da 200 ms quasi non "
-                         "restano nascoste per intero e la perdita sarebbe nulla senza un errore. Banco storico (--window-ms 25 "
-                         "--tokenizer-activation identity), oppure --masked-loss-radius 0 con JEPA spenta")
+    if cfg.model.rvq_codes and masked_query_radius(cfg.jepa, cfg.model) > 0:  # le finestre RVQ da 200 ms vogliono tutti i token fra le query
+        raise ValueError(f"ancora RVQ con raggio delle query {masked_query_radius(cfg.jepa, cfg.model)}: perderebbe senza un errore gran parte "
+                         "delle sue finestre da 200 ms (quasi tutte in 1 s, circa quattro quinti in 2,5-4 s). Serve raggio 0: --window-ms 25 "
+                         "senza --masked-loss-radius, oppure --masked-loss-radius 0 con JEPA spenta")
     torch.manual_seed(cfg.seed)  # stessa inizializzazione su tutti i processi
     index = load_index(manifest, roots, cfg.datasets, cfg.nested)
     if cfg.nested is not None:

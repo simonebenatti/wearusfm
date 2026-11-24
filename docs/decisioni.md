@@ -8410,9 +8410,13 @@ Simone, alla domanda di Claude «Rendo 100 ms + GELU il default anche del tokeni
   (`step1_ab`, quindi 2C e pilot dei rami) sarebbe cambiato in silenzio: ora è esplicito.
 - Guardie nuove: `--init-from` vuole il tokenizer del checkpoint; l'ancora RVQ vuole raggio 0. Rami spettrali e log-quadratico dicono quale
   opzione serve. `core_hidden_fraction` entra anche nel log DDP. `wsd_chain.py` avvisa se un piano non scrive le quattro opzioni.
+- Per i nuovi training supera il default storico conservato il 02/11 («Default software storico conservato; nuova opzione esplicita per ogni
+  intervento»); `FMConfig` resta storica. L'evidenza su T100-G resta quella registrata: un seme, senza il braccio 25 ms + GELU.
 - **Da decidere con GPT e Simone prima del primo training lanciato col default nudo** (precedente R5, 24/10: gate D8 riaperto e quote delle
   maschere firmate): (1) raggio delle query 2 con le quote D10, che lascia come query il 79,6% dei token nascosti (26,0% nelle maschere
   corte; la loro quota scende dal 14,9% al 4,9%); (2) gate D8 a 100 ms, mai eseguito. La campagna T100-G aveva JEPA spenta e raggio 0.
-- Suite CPU completa: 3.559 passati (3.516 su `main` `dfc38b55` più 43 casi nuovi). Nessun job; piani, checkout, checkpoint e rami delle
-  campagne in corso non toccati.
-Contratto: `docs/tokenizer_default_100ms_20261124.md`.
+- Revisione indipendente prima della pubblicazione: 25 rilievi, nessuno bloccante. Ricetta storica identica bit per bit a `main` su training
+  veri di tre passi; default nuovo identico ai comandi espliciti 100 ms + GELU.
+- Suite CPU completa: 3.562 passati (1.164 + 1.300 + 1.098, in tre parti), un avviso già noto. Nessun job; piani, checkout, checkpoint e
+  rami delle campagne in corso non toccati.
+Contratto: `docs/tokenizer_default_100ms_20261124.md`; misura delle query: `results/infra/tokenizer_default_20261124/`.

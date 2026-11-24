@@ -33,11 +33,13 @@ del 18/11 per le finestre dei target (`docs/target_windows_fix_20261118.md`).
   ma con 100 ms il raggio nominale è 2 invece di 0. Sulle maschere vere (D10, sei montaggi, 1.080 finestre da 1, 2,5 e 4 s) resta query
   il 79,6% dei token nascosti: 26,0% nelle maschere corte, 68,3% nelle medie, 92,9% nelle lunghe, 100% nelle spaziali. La quota delle
   corte sulle query scende dal 14,9% al 4,9%. Nessuna finestra resta senza query. Con JEPA accesa il raggio 0 resta rifiutato.
+  Misura: `results/infra/tokenizer_default_20261124/raggio_maschere.py` e `.txt`.
 - **Precedente R5 (150 ms, 24/10):** per un kernel più lungo il gate D8 era stato riaperto prima del lancio e Simone aveva firmato lo
   scostamento delle quote delle maschere (corte a 0). Per 100 ms il gate D8 non è mai stato eseguito: i rapporti registrati sono del
   banco da 25 ms e di quello da 150 ms; esistono i test CPU sulle feature fra frequenze (`test_frontend_window.py`,
   `test_tokenizer_activation.py`). **Da decidere con GPT e Simone prima del primo training lanciato col default nudo:** raggio 2 con le
-  quote D10, e gate D8 a 100 ms (`gate_d8.sbatch --window-ms 100`, solo CPU, tetto 2 core per 2 h) oppure rinuncia registrata.
+  quote D10, e gate D8 a 100 ms (`gate_d8.sbatch --window-ms 100`, solo CPU, tetto 2 core per 2 h) oppure rinuncia registrata. Il gate
+  misura il banco, prima di guadagno e GELU: per la GELU valgono i test CPU.
 - **Tempi e memoria:** le tabelle di `calibration_plan.py` e `finestra1_calendario.py` sono del banco da 25 ms. Novembre, 30M, 5.000
   passi: T25-L 3.794 s e 13,75 GiB, T100-G 3.883 s e 15,47 GiB. Prima di una campagna nuova vanno rimisurate.
 
@@ -48,12 +50,15 @@ del 18/11 per le finestre dei target (`docs/target_windows_fix_20261118.md`).
 - **Nuova, `--init-from`** (`run._check_init_tokenizer`): i pesi iniziali vogliono lo stesso tokenizer del checkpoint (campo assente =
   storico). Senza, un checkpoint a 100 ms lineare (T100-L) si sarebbe caricato senza errori in un modello con GELU, perché chiavi e
   forme sono identiche.
-- **Nuova, ancora RVQ:** con raggio delle query maggiore di 0 le sue finestre da 200 ms quasi non restano nascoste per intero e la
-  perdita sarebbe nulla in silenzio; `run.train` lo rifiuta. L'ancora RVQ è spenta dalla finestra 1 (decisione del 04/10).
+- **Nuova, ancora RVQ:** con raggio delle query maggiore di 0 perde senza un errore gran parte delle sue finestre da 200 ms (col raggio 2
+  ne resta circa l'1% nelle finestre da 1 s e il 15-23% in quelle da 2-4 s); `run.train` lo rifiuta, anche per la diagnostica
+  `--rvq-targets channel`. L'ancora RVQ è spenta dalla finestra 1 (decisione del 04/10).
+- **Encoder congelato:** il confronto comprende ora anche `window_ms` (prima una finestra diversa la fermavano solo le forme dei pesi).
 - `--spectral-branches` richiede il banco da 25 ms e `--tokenizer-logsquare` richiede `identity`: con il default nuovo sono errori che
   dicono quale opzione aggiungere, senza ripieghi automatici.
-- `core_hidden_fraction` (quota dei token nascosti che restano query) entra anche nel log dei run DDP e con accumulo, dove mancava;
-  solo log, calcolata allo stesso modo nei due percorsi. `test_ddp_equivalence` gira ora su entrambi i tokenizer.
+- `core_hidden_fraction` (quota dei token nascosti che restano query) entra anche nel log dei run DDP e con accumulo, dove mancava, e in
+  `fixed_eval.jsonl` di ogni run con raggio maggiore di 0. A processo singolo c'era già e ora è in float64: differisce dal log
+  precedente dall'ottava cifra. Loss, pesi, teacher e RNG non cambiano. `test_ddp_equivalence` gira ora su entrambi i tokenizer.
 - I rapporti di `ddp_equivalence.py` e `probe_memory.py` scrivono quale tokenizer è stato misurato.
 
 ## Strumenti delle campagne storiche
@@ -67,13 +72,15 @@ del 18/11 per le finestre dei target (`docs/target_windows_fix_20261118.md`).
 - Due date: i default dei target cambiano il 18/11, quelli del tokenizer il 24/11. Nessun comando o piano registrato nato fra le due
   date è senza le opzioni del tokenizer (cercati in `results/`, `docs/`, `scripts/` e nei rami delle linee 1, 2 e 3).
 - Un comando con `--window-ms 25` funziona solo con la CLI di oggi: i checkout congelati si usano con il comando registrato, senza
-  modifiche. Un comando storico rilanciato a mano su codice nuovo senza le opzioni diventa 100 ms + GELU: lo proteggono solo la riga
-  iniziale del trainer, `config.json` e questa regola.
+  modifiche. Un comando storico rilanciato a mano su codice nuovo senza le opzioni diventa 100 ms + GELU: lo mostrano la riga iniziale
+  del trainer e il `config.json` del run nuovo (che sovrascrive il precedente se nella cartella manca `checkpoint.pt`), lo evita solo
+  questa regola.
 - **Un piano nuovo scrive in modo esplicito le quattro opzioni** (`--rms-window-ms`, `--ms-fast-window-ms`, `--window-ms`,
   `--tokenizer-activation`) e, con JEPA spenta, `--masked-loss-radius`. Senza, il trainer lanciato dal piano usa i default nuovi,
   mentre `calibration_select` lo legge come storico e rifiuta il run dopo il training: vale anche per un piano che scrive solo le due
   finestre dei target, coerente fino al 23/11. `wsd_chain.py` ora avvisa quando genera i comandi; un rifiuto prima del lancio resta
-  da decidere (era già lasciato a GPT il 18/11 per le due finestre).
+  da decidere (era già lasciato a GPT il 18/11 per le due finestre). `calibration_plan.py` e `arms_plan.py` generano solo i piani storici
+  della finestra 1, che devono rigenerarsi identici: non scrivono le quattro opzioni e non vanno usati per campagne nuove.
 - Piani, configurazioni, checkpoint e risultati registrati non si riscrivono. I checkout congelati e i rami delle campagne in corso
   (linee 1, 2 e 3) restano sul loro codice e non ricevono `main` prima della fine: i loro sigilli coprono `run.py` e `train_jepa.py`,
   e già oggi non coincidono con `main`.
@@ -95,6 +102,13 @@ del 18/11 per le finestre dei target (`docs/target_windows_fix_20261118.md`).
   errori di rami e log-quadratico; la trappola dei piani nuovi (`calibration_select`).
 
 `test_ddp_equivalence.py` gira su entrambi i tokenizer; `test_spectral_ab.py`, `test_ladder_presets.py`, `test_pose_b19618_launcher.py` e
-`test_wsd_chain.py` hanno controlli in più; i test nati sul tokenizer storico lo scrivono in modo esplicito. Test raccolti: 3.516 su
-`main` `dfc38b55`, 3.559 nel ramo. Esito della suite CPU completa nel registro. Nessun job, nessun lancio, nessun checkout, piano o
-checkpoint congelato modificato.
+`test_wsd_chain.py` hanno controlli in più; l'obiettivo dello Step 1 gira su entrambi i tokenizer (`test_spectral_step1.py`); i test nati
+sul tokenizer storico lo scrivono in modo esplicito. Test raccolti: 3.516 su `main` `dfc38b55`, 3.562 nel ramo.
+
+Revisione indipendente del primo commit (`574c1716`): cinque revisori con lenti diverse, ciascuno seguito da uno scettico; 25 rilievi,
+nessuno bloccante, uno importante (una riga di `CLAUDE.md`), corretti nel commit successivo. Identità numerica provata con
+training veri di tre passi (singolo, accumulo, due processi gloo): la ricetta storica è identica bit per bit a `dfc38b55`, e il default
+nuovo è identico ai comandi espliciti `--window-ms 100 --tokenizer-activation gelu`, salvo la chiave di log `core_hidden_fraction`.
+59 mutazioni del codice: 51 viste dai test; delle otto rimaste, tre hanno ora un test e le altre sono campi descrittivi o casi
+irraggiungibili. Esito della suite CPU completa nel registro. Nessun job, nessun lancio, nessun checkout, piano o checkpoint congelato
+modificato.

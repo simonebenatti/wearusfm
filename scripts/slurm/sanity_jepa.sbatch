@@ -13,13 +13,13 @@
 
 # Sanity JEPA (passo 6): preset `sanity` su emg2qwerty, valori firmati il 03/10/2026. 1 GPU, 30 min (0,5 GPU-ora per job). Riprende da
 # checkpoint.pt nella stessa cartella; catena: scripts/slurm/submit_chain.sh (afterok); un file STOP nel RUN_DIR ferma i job successivi.
-# Dal 24/11/2026 il tokenizer e' a 100 ms con GELU: un sanity storico si riprende con EXTRA_ARGS="--rms-window-ms 25 --ms-fast-window-ms 50
-# --window-ms 25 --tokenizer-activation identity".
+# Dal 24/11/2026 il tokenizer e' a 100 ms con GELU: un sanity storico si riprende con le quattro opzioni storiche in EXTRA_ARGS:
+#   --rms-window-ms 25 --ms-fast-window-ms 50 --window-ms 25 --tokenizer-activation identity
 # Uso: sbatch scripts/slurm/sanity_jepa.sbatch <manifest.json.gz> <session_scales.json> <run_dir> [passi massimi]
 #   Variabili facoltative (sbatch --export=ALL,...): TIME_LIMIT_S (default 1560, per i 30 min di boost_qos_dbg; il run salva e si ferma prima),
-#   RVQ_CODES (radice dei codici RVQ precalcolati: accende l'ancora RVQ, D5b), EXTRA_ARGS (altre opzioni di train_jepa.py, es. --init-from,
+#   RVQ_CODES (radice dei codici RVQ precalcolati: accende l'ancora RVQ, D5b; vuole raggio 0: EXTRA_ARGS con --window-ms 25), EXTRA_ARGS (altre opzioni di train_jepa.py, es. --init-from,
 #   --warmup-steps, --rvq-targets per una diagnostica). Run lungo su boost_usr_prod, esempio:
-#   sbatch --qos=normal --time=09:00:00 --export=ALL,TIME_LIMIT_S=31500,RVQ_CODES=<dir> scripts/slurm/sanity_jepa.sbatch <m> <s> <run_dir> 10000
+#   sbatch --qos=normal --time=09:00:00 --export=ALL,TIME_LIMIT_S=31500 scripts/slurm/sanity_jepa.sbatch <m> <s> <run_dir> 10000
 # Uscita fuori dal repo: <run_dir> (metrics.jsonl, checkpoint.pt, summary.json, config.json): $WORK/wearusfm_runs/runs/ o, per il sanity vero
 # con $WORK saturo, $SCRATCH/wearusfm_runs/runs/ (Simone, 04/10/2026: «vai con la 2»).
 # Codice congelato (09/10/2026, CLAUDE.md «Checkout di campagna»): --export=ALL,CODE_DIR=$WORK/wearusfm_campaigns/<nome>,EXPECTED_SHA=<sha>;

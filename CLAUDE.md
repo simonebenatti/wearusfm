@@ -14,14 +14,16 @@ poi Simone: «magari sii un po elastico con le bande, se servono 125 invece di 1
 20-33,6 Hz aveva due bin FFT a 1000/2000 Hz e uno solo a 1926/2048 Hz; a 125 ms ogni banda ha gli stessi bin a ogni frequenza
 del corpus. Nuovo default `loader.ms_fast_window_ms=125`, versione `step1_psd_power_shape_energy_fast125_v3`; 100 ms e
 `step1_psd_power_shape_energy_fast100_v2` sono ritirati prima di qualsiasi training.
-Per una ricetta storica completa: `--rms-window-ms 25 --ms-fast-window-ms 50`; la CLI seleziona la versione precedente.
+Per la ricetta storica dei target: `--rms-window-ms 25 --ms-fast-window-ms 50`; la CLI seleziona la versione precedente. Dal 24/11 quella
+completa vuole anche le due opzioni del tokenizer (sezione seguente).
 Gli strumenti che ricostruiscono run nati prima del 18/11 dai comandi o piani registrati usano `train_jepa.historical_args`
 (o `run.with_historical_targets`) e confrontano le configurazioni salvate dopo `run.with_legacy_target_windows`, che aggiunge
 solo i due campi del 18/11 (`run._config_with_defaults` resta per la ripresa: completa anche altri campi e allenterebbe i confronti).
 Un piano nuovo scrive le due finestre in modo esplicito (dal 24/11 anche le due opzioni del tokenizer): senza, il trainer usa i default
 nuovi ma `calibration_select` lo legge come storico (25/50) e rifiuta il run dopo il training.
 Un braccio nuovo confrontato a un solo fattore con bracci storici usa la ricetta storica esplicita, oppure il piano dichiara i
-due fattori in piu' (RMS e spettro rapido).
+fattori in piu' (RMS, spettro rapido e, dal 24/11, finestra e attivazione del tokenizer col raggio che ne segue). Contro T100-G il
+tokenizer resta 100 ms + GELU.
 **Linea 3, confronto contrastivo C0/CN/CR:** Simone, «sul punto 3 passiamo a 100/100». La linea 3 adotta la ricetta nuova
 (oggi RMS 100 ms e spettro rapido 125 ms) e rifa' audit, calibrazione, benchmark e λ; C0 contro T100-G differisce anche per
 RMS e spettro rapido. Esegue GPT, operatore della linea 3.
@@ -45,7 +47,10 @@ scrive le quattro opzioni che mancano; nei costruttori senza riga di comando `ru
 il training; `wsd_chain.py` avvisa.
 Il default e' il tokenizer di T100-G, **non la sua ricetta**: JEPA, posa, maschere e `--masked-loss-radius` restano quelli del comando.
 Senza `--masked-loss-radius` il raggio e' quello nominale del kernel, 2 con 100 ms (T100-G scriveva 0 con JEPA spenta).
-`--spectral-branches` vuole `--window-ms 25`, `--tokenizer-logsquare` vuole `--tokenizer-activation identity`, `--rvq-codes` vuole raggio 0.
+`--spectral-branches` vuole `--window-ms 25`, `--tokenizer-logsquare` vuole `--tokenizer-activation identity`, `--rvq-codes` vuole raggio 0
+(`--window-ms 25`, oppure `--masked-loss-radius 0` con JEPA spenta).
+**Prima del primo training col default nudo** (JEPA accesa, raggio 2) servono la decisione di GPT e Simone su raggio e quote D10 e il gate
+D8 a 100 ms, o la rinuncia registrata.
 Non modificare checkout, piani congelati o job delle campagne esistenti. Dettagli: `docs/tokenizer_default_100ms_20261124.md`.
 Nessun lancio implicito.
 

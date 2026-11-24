@@ -260,3 +260,7 @@ def test_frozen_encoder_accepts_old_identity_and_rejects_activation_reinterpreta
     nonlinear = replace(cfg, model=replace(cfg.model, tokenizer_activation="gelu"))
     with pytest.raises(ValueError, match="tokenizer_activation"):
         R._load_frozen_encoder(WearUsFM(nonlinear.model), nonlinear, checkpoint)
+    for window in (25.2, 100.):  # 25,2 ms ha le stesse forme del banco da 25 ms: la ferma il confronto, non i tensori
+        wide = replace(cfg, model=replace(cfg.model, window_ms=window))
+        with pytest.raises(ValueError, match="window_ms"):
+            R._load_frozen_encoder(WearUsFM(wide.model), wide, checkpoint)

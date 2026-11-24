@@ -334,13 +334,18 @@ def test_init_from_wants_the_tokenizer_of_the_checkpoint(tmp_path):
             start(new, source, f"b_{source}")
         assert start(old, source, f"c_{source}")["steps"] == 1
     assert start(linear, "t100l", "d")["steps"] == 1
+    logsquare = replace(linear, model=replace(linear.model, tokenizer_logsquare=True))  # l'epsilon non sta nei pesi: solo la guardia lo vede
+    R.train(logsquare, manifest, [root], tmp_path / "lq", log=_quiet)
+    with pytest.raises(ValueError, match="tokenizer_logsquare_eps 0.001 -> 0.01"):
+        start(replace(logsquare, model=replace(logsquare.model, tokenizer_logsquare_eps=0.01)), "lq", "e")
+    assert start(logsquare, "lq", "f")["steps"] == 1
     loaded, source = (torch.load(tmp_path / n / "checkpoint.pt", weights_only=False)["student"] for n in ("d", "t100l"))
     assert all(torch.equal(loaded[k], source[k]) for k in source)
 
 
 def test_the_rvq_anchor_is_refused_when_its_windows_cannot_stay_hidden(tmp_path, monkeypatch):
-    """Col raggio 2 del tokenizer a 100 ms le finestre RVQ da 200 ms quasi non restano nascoste per intero: perdita nulla senza errori. Il trainer
-    lo rifiuta prima di leggere i dati; banco storico, oppure raggio 0 con JEPA spenta, passano la guardia."""
+    """Con un raggio delle query maggiore di 0 l'ancora RVQ perde senza errori gran parte delle sue finestre da 200 ms. Il trainer lo rifiuta prima
+    di leggere i dati; il banco storico, oppure raggio 0 con JEPA spenta, passano la guardia."""
     root, manifest = _tree(tmp_path)
 
     class Past(Exception):
@@ -355,6 +360,8 @@ def test_the_rvq_anchor_is_refused_when_its_windows_cannot_stay_hidden(tmp_path,
     with pytest.raises(ValueError, match="ancora RVQ con raggio delle query 2"):
         R.train(new, manifest, [root], tmp_path / "a", log=_quiet)
     off = replace(new, jepa=replace(new.jepa, jepa_weight=0.0, masked_loss_radius=0))
+    with pytest.raises(ValueError, match="ancora RVQ con raggio delle query 1"):  # la soglia e' 0, non il raggio del kernel
+        R.train(replace(off, jepa=replace(off.jepa, masked_loss_radius=1)), manifest, [root], tmp_path / "b", log=_quiet)
     for k, cfg in enumerate((R.with_historical_tokenizer(new), off, R.small_config(datasets=None, max_steps=1))):
         with pytest.raises(Past):
             R.train(cfg, manifest, [root], tmp_path / f"ok{k}", log=_quiet)
