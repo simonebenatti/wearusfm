@@ -34,6 +34,7 @@ bilanciamento JEPA / ancore.
     LossTerms.den:     dict[str, Tensor]  # componente -> denominatore locale, senza gradiente (float64 o int64)
     LossTerms.weight:  dict[str, float]   # componente -> peso nella perdita totale (jepa_weight, anchor_weight, keep_weight)
     LossTerms.log_num / log_den           # diagnostiche solo per il log (jepa_<maschera>, jepa_topo_<topologia>, rvq_acc...), senza gradiente
+                                          # dal 24/11/2026 anche core_hidden_fraction (query / token nascosti), solo col raggio > 0
 
 con, per ogni componente:
 - **per finestra:** `num` = somma, sulle finestre locali valide, della media per finestra; `den` = numero di finestre locali valide;

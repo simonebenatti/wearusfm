@@ -1,5 +1,9 @@
 # Target RMS e spettro rapido: correzioni del 18/11/2026 sera
 
+**Dal 24/11/2026** la ricetta storica completa ha due opzioni in più, quelle del tokenizer: `--window-ms 25 --tokenizer-activation identity`.
+`historical_args` scrive ora le quattro opzioni che mancano, e un piano nuovo le scrive tutte: `docs/tokenizer_default_100ms_20261124.md`.
+Il resto di questa pagina descrive la consegna del 18/11.
+
 Seguito di `5333c5c` (RMS a 100 ms) e `b4b0963` (spettro rapido a 100 ms), integrati su `main` da GPT. Simone, dopo la verifica
 di Claude: «quei 3 risolvili», poi «gli altri se riesci risolvili tu» e, sulle bande, «magari sii un po elastico con le bande, se
 servono 125 invece di 100 va bene lo stesso». Sul terzo punto: «sul punto 3 passiamo a 100/100».

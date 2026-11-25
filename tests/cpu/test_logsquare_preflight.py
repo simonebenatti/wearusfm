@@ -76,10 +76,12 @@ def test_cli_preserves_defaults_and_rejects_unregistered_combination():
     def config(extra):
         return cli.build_config(cli.build_parser().parse_args(base + extra))
     assert config([]).model.tokenizer_logsquare is False
-    assert config(["--tokenizer-logsquare", "--window-ms", "100"]).model.tokenizer_logsquare
+    assert config(["--tokenizer-logsquare", "--window-ms", "100", "--tokenizer-activation", "identity"]).model.tokenizer_logsquare
+    with pytest.raises(ValueError, match="--tokenizer-activation identity"):  # il default e' gelu dal 24/11/2026
+        config(["--tokenizer-logsquare", "--window-ms", "100"])
     for extra in (["--tokenizer-logsquare-eps", ".001"],
                   ["--tokenizer-logsquare", "--tokenizer-activation", "gelu"],
-                  ["--tokenizer-logsquare", "--tokenizer-logsquare-eps", "nan"]):
+                  ["--tokenizer-activation", "identity", "--tokenizer-logsquare", "--tokenizer-logsquare-eps", "nan"]):
         with pytest.raises(ValueError):
             config(extra)
 

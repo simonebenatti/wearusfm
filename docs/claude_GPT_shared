@@ -9199,6 +9199,42 @@ Simone ha confermato che l’approvazione del piano copre invii, attese di slot,
 
 Nel controllo successivo, il coordinamento ha verificato direttamente la coda e trasmesso alla chat 1 e al launcher lo stato del job 64837401 (in attesa per priorità alle 15:06 CET). Per le prossime letture sono riportati in `CLAUDE.md` i comandi diretti e il momento in cui consultare il log.
 
+### 2026-11-24 | Claude | Tokenizer dei nuovi training: 100 ms + GELU di default, run storici espliciti; nessun job | Ramo `claude/tokenizer-default-100ms-20261124` da `dfc38b55`
+
+- Richiesta: alla domanda «Rendo 100 ms + GELU il default anche del tokenizer?» Simone ha risposto «Sì, fallo». Prima aveva chiesto «siamo
+  proprio sicuri che hai recepito il cambio a 100 125 che abbiamo discusso ? Puoi riguradare bene il codice ?»: nel codice RMS 100 ms e
+  spettro rapido 125 ms c'erano ed erano il default; il tokenizer a 100 ms invece richiedeva un'opzione.
+- Disegno: il default sta nei preset (`run.NEW_TOKENIZER`), `FMConfig` resta storica; `--window-ms 25` = banco storico;
+  `historical_args` scrive le quattro opzioni che mancano; `run.with_historical_tokenizer`. Contratto in
+  `docs/tokenizer_default_100ms_20261124.md`, sezione nuova in `CLAUDE.md`.
+- Metodo: sei lettori indipendenti e un critico sul codice intatto (59 comandi e piani registrati ricostruiti, rami delle linee 1, 2 e 3
+  letti con `merge-tree`), poi la modifica. Con la modifica di prova (default, `historical_args`, `--window-ms 25`) si rompevano 17 file di
+  test (60 fallimenti e 26 errori), tutti perché davano per scontato il tokenizer storico.
+- Verifiche: comandi veri di T25-L, T100-L e T100-G e piano vero del pilot degli obiettivi tornano alla loro ricetta; ripresa, pesi
+  iniziali, ancora RVQ e opzioni incompatibili provate col trainer vero. Primo commit `574c1716`: suite CPU completa 3.559 passati (1.161 +
+  1.300 + 1.098, in tre parti), un avviso già noto (`test_pose_objective.py`). Nessun test perso: 3.516 su `main`.
+- Revisione indipendente di `574c1716`, prima della pubblicazione: cinque revisori (reinterpretazioni silenziose, identità numerica, guardie e
+  CLI, test per mutazione, documenti), ciascuno con uno scettico. 25 rilievi, nessuno bloccante, uno importante (una riga di `CLAUDE.md`).
+  Ricetta storica identica bit per bit a `dfc38b55` e default nuovo identico ai comandi espliciti 100 ms + GELU, su training veri di tre
+  passi (singolo, accumulo, due processi gloo). 59 mutazioni: 51 viste dai test. Corretti nel commit successivo: messaggi delle due
+  guardie nuove, `window_ms` nel confronto dell'encoder congelato, esempio di `sanity_jepa.sbatch`, tre test in più, documenti.
+  Suite CPU completa dopo le correzioni: 3.562 passati (1.164 + 1.300 + 1.098, in tre parti), un avviso già noto. Misura delle query per tipo
+  di maschera ripetibile in `results/infra/tokenizer_default_20261124/`.
+- Su richiesta di Simone («e togli la roba sull'hd se non serve») cancellati 3,9 GB di temporanei di test finiti (pytest del 23 e 24/11, senza
+  processi né file aperti); dati, checkpoint, rami e worktree non toccati.
+- Seguito per GPT: review e merge su `main`; il controllo meccanico dei piani (ora un avviso) e le due decisioni di `decisioni.md` (raggio 2
+  con le quote D10, gate D8 a 100 ms). `main` non va unito nei rami delle campagne in corso prima della loro fine. Nessun lancio.
+
+### 2026-11-25 | Claude | Merge su `main` del ramo del tokenizer di default, su incarico di Simone; nessun job | `claude/tokenizer-default-100ms-20261124`
+
+- Simone, alla domanda «A chi affido il merge su main?»: «Fallo tu». Eccezione per questo ramo: l'integratore resta GPT, a cui resta la review
+  del diff, dopo il merge.
+- Merge esplicito (`--no-ff`) su `dfc38b55`, senza squash né rebase; i due commit `574c1716` e `16d44e67` restano. `main` non era cambiato:
+  l'albero del merge è quello del ramo, e codice e test sono quelli della suite completa del 24/11 (3.562 passati; dopo, solo documenti).
+- Non fatto: `main` su Leonardo non è aggiornato (`git push leonardo main` resta all'integratore) e `main` non è stato unito nei rami delle linee
+  1, 2 e 3. Finché Leonardo non lo riceve, un training lanciato dal suo checkout canonico usa ancora il codice precedente.
+- Restano a GPT e Simone i due punti di `decisioni.md` (raggio 2 con le quote D10, gate D8 a 100 ms) e il controllo meccanico dei piani.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13544,3 +13580,17 @@ I soli file modificati da entrambi i lati erano `docs/claude_GPT_shared` e `docs
 Per CN_B il launcher 3 ha tentato di usare uno script Python in `/private/tmp` privo di una regola persistente. Il verificatore locale riconosce invece il submitter ufficiale. CN_B è stato poi sottomesso con quel submitter, ID Slurm `65033756`. Questo riscontro spiega il caso CN_B. Per la finestra relativa all’archiviazione del censimento GPU manca una corrispondenza certa fra il testo visualizzato e il comando.
 
 Per il 300M, l’invocazione del launcher 1 associata al popup «Posso leggere lo stato operativo della catena300M già autorizzata?» chiedeva esplicitamente l’esecuzione con permessi aggiuntivi di uno script Python remoto che raccoglieva insieme coda, contabilità e cinque file del run. Il job era ancora in attesa. Una normale interrogazione diretta a `squeue` ha restituito la risposta richiesta.
+
+### 2026-11-24 | Claude | Tokenizer di default: che cosa sarebbe cambiato in silenzio, e che cosa resta aperto
+
+- In silenzio, corretto: `step1_ab.build_config` (A/B storico, e con esso 2C e pilot dei rami) sarebbe diventato 100 ms + GELU; il comando
+  registrato di T25-L, che non scrive `--window-ms`, sarebbe diventato T100-L; un `--init-from` da T100-L sarebbe diventato GELU con tutte le
+  chiavi uguali; l'ancora RVQ col raggio 2 avrebbe perso gran parte delle sue finestre. `core_hidden_fraction` mancava dal log dei run DDP.
+- Resta possibile: un comando storico rilanciato a mano su codice nuovo senza le opzioni diventa 100 ms + GELU; lo mostrano la riga
+  iniziale del trainer e `config.json`, non lo ferma una guardia. Un piano nuovo che scrive solo le due finestre dei target, coerente fino
+  al 23/11, ora viene rifiutato da `calibration_select` dopo il training: `wsd_chain.py` lo segnala prima, senza fermarlo.
+- Non toccati perché legati a campagne chiuse: `arms_collaudo.py` e `anchor_candidates.py` non controllano il tokenizer del run che leggono.
+- Le tabelle di tempi e memoria dei pianificatori sono di ottobre, col banco da 25 ms. Per confronto, novembre, 30M, 5.000 passi: T25-L 3.794 s
+  e 13,75 GiB, T100-G 3.883 s e 15,47 GiB.
+- Errore mio di lavoro, senza effetti sul codice: la prima suite in parallelo usava uno script senza `if __name__ == "__main__"`, e i
+  processi `spawn` rilanciavano la suite; fermata e rifatta.

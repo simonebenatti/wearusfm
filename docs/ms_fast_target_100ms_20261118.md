@@ -1,5 +1,8 @@
 # Sei bande del target rapido a100ms — 18/11/2026
 
+**Dal 24/11/2026** la ricetta storica completa vuole anche `--window-ms 25 --tokenizer-activation identity`:
+`docs/tokenizer_default_100ms_20261124.md`.
+
 **Superato il 18/11 sera:** la finestra del target rapido e' **125 ms**, versione `step1_psd_power_shape_energy_fast125_v3`.
 A 100 ms la banda 20-33,6 Hz aveva due bin FFT a 1000 e 2000 Hz ma uno solo a 1926 e 2048 Hz, quindi lo stesso segnale dava un
 target diverso secondo il dataset. La versione `..._fast100_v2` e' ritirata prima di ogni uso. Contratto aggiornato in

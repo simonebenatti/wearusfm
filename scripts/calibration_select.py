@@ -184,7 +184,7 @@ def expected_config(plan: dict, run_id: str) -> dict:
         raise ValueError(f"run {run_id} assente dal piano di training (run del piano: {sorted(runs)})")
     r = runs[run_id]
     argv = ["--preset", r["preset"], "--manifest", "-", "--root", "-", "--out-dir", "-", "--max-steps", str(r["total_steps"])]
-    # piano storico: senza finestre esplicite la ricetta dei target e' quella del run (25/50), non il default nuovo
+    # piano storico: le opzioni non scritte sono quelle del run (target 25/50 ms, tokenizer da 25 ms senza attivazione), non i default nuovi
     args = TJ.build_parser().parse_args(TJ.historical_args(argv + shlex.split(W.extra_args(plan, r))))
     return R.config_to_dict(TJ.build_config(args))
 

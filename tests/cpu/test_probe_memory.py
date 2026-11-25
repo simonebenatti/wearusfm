@@ -27,3 +27,5 @@ def test_probe_runs_one_full_update_on_the_worst_case(tmp_path):
     case, = json.loads(out.read_text())["cases"]
     assert case["rung"] == "30m" and not case["oom"] and case["adam_states"] and case["channels"] == [128]  # griglia intera, nessun virtuale
     assert case["n_patches"] == [40] and abs(case["parameters"] - 28.3e6) < 1e6 and len(case["step_s"]) == 1
+    # il rapporto dice quale tokenizer e' stato misurato (dal 24/11/2026 il default e' 100 ms + GELU)
+    assert (case["tokenizer_window_ms"], case["tokenizer_activation"], case["masked_query_radius"]) == (100.0, "gelu", 2)

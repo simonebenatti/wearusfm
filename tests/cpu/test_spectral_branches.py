@@ -194,7 +194,7 @@ def test_learnable_wavelet_gradients_and_bounds():
 # --- modello, loss sul readout ----------------------------------------------------------------------------------------------------------
 
 def test_config_rules_and_pairing_with_the_model_without_branches():
-    base = R.small_config().model
+    base = R.with_historical_tokenizer(R.small_config()).model  # i rami vogliono il banco da 25 ms
     with pytest.raises(ValueError, match="keep_readout"):
         replace(base, spectral_branches=("psd",))
     for bad in (("gabor",), ("psd", "psd")):
@@ -202,7 +202,10 @@ def test_config_rules_and_pairing_with_the_model_without_branches():
             replace(base, keep_readout=True, spectral_branches=bad)
     with pytest.raises(ValueError, match="wavelet_learnable"):
         replace(base, keep_readout=True, spectral_branches=("psd",), wavelet_learnable=True)
-    assert FMConfig(**{**R.config_to_dict(R.small_config())["model"], "keep_readout": True, "spectral_branches": ["psd"]}).spectral_branches == ("psd",)
+    saved = R.config_to_dict(R.with_historical_tokenizer(R.small_config()))["model"]
+    assert FMConfig(**{**saved, "keep_readout": True, "spectral_branches": ["psd"]}).spectral_branches == ("psd",)
+    with pytest.raises(ValueError, match="finestra del kernel"):  # il tokenizer dei nuovi training (100 ms) e i rami insieme
+        replace(R.small_config().model, keep_readout=True, spectral_branches=("psd",))
     plain = replace(base, keep_readout=True)
     states, rngs = [], []
     for cfg in (plain, replace(plain, spectral_branches=("psd", "wavelet"))):
@@ -220,7 +223,7 @@ def test_branch_init_does_not_reseed_accelerators(monkeypatch):
     calls = []
     for mod, name in ((torch.cuda, "manual_seed_all"), (torch.cuda, "manual_seed"), (torch.mps, "manual_seed")):
         monkeypatch.setattr(mod, name, lambda *a, _n=name, **k: calls.append(_n))
-    WearUsFM(replace(R.small_config().model, keep_readout=True, spectral_branches=("psd", "wavelet")))
+    WearUsFM(replace(R.with_historical_tokenizer(R.small_config()).model, keep_readout=True, spectral_branches=("psd", "wavelet")))
     assert calls == []
 
 
@@ -537,7 +540,7 @@ def test_branches_one_process_accumulation_and_ddp_equal_the_global_batch(tmp_pa
     from test_ddp_equivalence import _config, _ddp, _global_batch, _reference, _same, _update
     from wearusfm.model.spectral_step1 import global_spectral_targets
 
-    cfg = _config(True, True)
+    cfg = _config(True, True, historical=True)
     cfg = replace(cfg, model=replace(cfg.model, keep_readout=True, spectral_branches=("psd", "wavelet")),
                   jepa=replace(cfg.jepa, keep_weight=0.05, branch_weight=0.05))
     batch = _global_batch(tmp_path, cfg)

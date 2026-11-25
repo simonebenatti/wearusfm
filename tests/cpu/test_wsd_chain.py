@@ -165,6 +165,29 @@ def test_cli_writes_commands_and_estimate(tmp_path, capsys):
     assert lines == saved["commands"] and len(lines) == saved["totals"]["jobs"] and "P100-s0-E4" in capsys.readouterr().out
 
 
+def test_a_plan_that_does_not_write_the_recipe_is_flagged_before_the_launch(tmp_path, capsys):
+    """Un piano senza le quattro opzioni (finestre dei target, tokenizer) si allena coi default di oggi ma `calibration_select` lo rilegge come
+    storico e lo rifiuta dopo il training: il pianificatore lo dice prima, senza cambiare i comandi (24/11/2026)."""
+    four = ["--rms-window-ms", "--ms-fast-window-ms", "--window-ms", "--tokenizer-activation"]
+    base = _plan()["common_args"]
+    targets, tokenizer = " --rms-window-ms 100 --ms-fast-window-ms 125", " --window-ms 100 --tokenizer-activation gelu"
+    assert W.unstated_recipe(_plan()) == {"P100-s0": four}  # solo i tronchi: i rami ereditano
+    assert W.unstated_recipe(_plan(common_args=base + targets)) == {"P100-s0": four[2:]}
+    assert W.unstated_recipe(_plan(common_args=base + targets + tokenizer)) == {}
+    assert W.unstated_recipe(_plan(common_args=base + " --rms 100 --ms-fast=125 --window-m 100 --tokenizer-act gelu")) == {}  # abbreviazioni
+    own = _plan()
+    own["runs"][0]["args"] = (targets + tokenizer).strip()  # scritte nel run invece che in common_args
+    assert W.unstated_recipe(own) == {}
+    p, commands = tmp_path / "piano.json", []
+    for plan, expected in ((_plan(), True), (own, False)):
+        p.write_text(json.dumps(plan))
+        assert W.main([str(p), "--commands", str(tmp_path / "c.txt")]) == 0
+        err = capsys.readouterr().err
+        assert ("ATTENZIONE P100-s0" in err and "--tokenizer-activation" in err) == expected
+        commands.append((tmp_path / "c.txt").read_text())
+    assert commands[0].splitlines() == W.plan_jobs(_plan())["commands"]
+
+
 # --- launcher ------------------------------------------------------------------------------------------------------------------------
 
 def _launch(tmp, run_dir, max_steps="100", **env_extra):

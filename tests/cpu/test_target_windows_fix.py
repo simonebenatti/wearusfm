@@ -59,6 +59,9 @@ def test_fast100_is_retired_and_125_is_the_new_registered_recipe():
         target_version_for_fast_window(100.0)
 
 
+TOKENIZER = ["--window-ms", "25", "--tokenizer-activation", "identity"]  # tokenizer storico, dal 24/11/2026 (test_tokenizer_default.py)
+
+
 def _cli():
     spec = importlib.util.spec_from_file_location("train_jepa_target_fix", ROOT / "scripts" / "train_jepa.py")
     cli = importlib.util.module_from_spec(spec)
@@ -69,8 +72,9 @@ def _cli():
 def test_historical_args_make_the_legacy_recipe_explicit_without_overriding():
     cli = _cli()
     base = ["--preset", "small", "--manifest", "unused", "--root", "unused", "--out-dir", "unused"]
-    assert cli.historical_args(base) == base + ["--rms-window-ms", "25", "--ms-fast-window-ms", "50"]
-    assert cli.historical_args(base + ["--rms-window-ms", "100"]) == base + ["--rms-window-ms", "100", "--ms-fast-window-ms", "50"]
+    assert cli.historical_args(base) == base + ["--rms-window-ms", "25", "--ms-fast-window-ms", "50"] + TOKENIZER
+    assert cli.historical_args(base + ["--rms-window-ms", "100"]) == \
+        base + ["--rms-window-ms", "100", "--ms-fast-window-ms", "50"] + TOKENIZER
     assert cli.historical_args(cli.historical_args(base)) == cli.historical_args(base)
     new = cli.build_config(cli.build_parser().parse_args(base))
     old = cli.build_config(cli.build_parser().parse_args(cli.historical_args(base)))
@@ -95,7 +99,7 @@ def test_historical_args_resolves_abbreviations_like_argparse():
         return cfg.loader.rms_window_ms, cfg.loader.ms_fast_window_ms
     for extra in (["--ms-fast", "125"], ["--ms-fast-window", "125"], ["--ms-fast-window-ms=125"]):
         assert recipe(extra) == (25.0, 125.0), extra
-        assert cli.historical_args(base + extra) == base + extra + ["--rms-window-ms", "25"]
+        assert cli.historical_args(base + extra) == base + extra + ["--rms-window-ms", "25"] + TOKENIZER
     for extra in (["--rms", "100"], ["--rms-window", "100"], ["--rms-window-ms=100"]):
         assert recipe(extra) == (100.0, 50.0), extra
     assert recipe([]) == (25.0, 50.0)

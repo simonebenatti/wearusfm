@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Training JEPA con ancore (passo 6): oggi il preset `sanity` (valori firmati da Simone il 03/10/2026, `docs/fogli_firma_d9_d10.md` 15-20; le
-altre scelte sono in `src/wearusfm/training/run.py`). Scrive in `--out-dir`, FUORI dal repo; riprende da `checkpoint.pt` se c'e' (job concatenati).
+altre scelte sono in `src/wearusfm/training/run.py`), con il tokenizer a 100 ms e GELU dal 24/11/2026. Scrive in `--out-dir`, FUORI dal repo;
+riprende da `checkpoint.pt` se c'e' (job concatenati).
 
   python3 scripts/train_jepa.py --preset sanity --manifest manifest_59253155.json.gz --root $WORK/data/processed --root $SCRATCH/data/processed \\
       --scales session_scales.json --out-dir $WORK/wearusfm_runs/runs/sanity_<id> --time-limit-s 1500
@@ -23,12 +24,17 @@ from wearusfm.training import run as R  # noqa: E402
 # Ricetta dei target dei run nati prima del 18/11/2026: RMS su 25 ms e spettro rapido su 50 ms. Il contratto
 # (docs/rms_target_100ms_20261118.md) chiede che riprese e controlli storici la passino esplicitamente.
 HISTORICAL_TARGET_ARGS = ("--rms-window-ms", "25", "--ms-fast-window-ms", "50")
+# Tokenizer dei run nati senza opzioni prima del 24/11/2026: kernel di 25 ms (il passo) e nessuna attivazione. Stesso contratto
+# (docs/tokenizer_default_100ms_20261124.md).
+HISTORICAL_TOKENIZER_ARGS = ("--window-ms", "25", "--tokenizer-activation", "identity")
 
 
 def historical_args(argv) -> list[str]:
-    """Gli argomenti registrati di un run storico con la ricetta dei target resa esplicita: aggiunge `--rms-window-ms 25` e
-    `--ms-fast-window-ms 50` se mancano, senza toccare valori gia' scritti. Serve a ricostruire o riprendere run nati prima del
-    18/11/2026 (review di Claude del 18/11: gli strumenti delle campagne storiche ricalcolavano la ricetta con i default nuovi)."""
+    """Gli argomenti registrati di un run storico con la ricetta resa esplicita: aggiunge `--rms-window-ms 25`, `--ms-fast-window-ms 50`,
+    `--window-ms 25` e `--tokenizer-activation identity`, ciascuna solo se manca, senza toccare valori gia' scritti. Serve a ricostruire o
+    riprendere run nati prima del 18/11/2026 (review di Claude del 18/11: gli strumenti delle campagne storiche ricalcolavano la ricetta con
+    i default nuovi). Due date: i default dei target cambiano il 18/11, quelli del tokenizer il 24/11. Per un run nato fra le due con i target
+    non scritti (nessuno registrato) andrebbero aggiunte solo le due opzioni del tokenizer."""
     out = [str(a) for a in argv]
     options = {o: a.dest for a in build_parser()._actions for o in a.option_strings}
     given = set()
@@ -37,7 +43,8 @@ def historical_args(argv) -> list[str]:
         hits = [name] if name in options else [o for o in options if name.startswith("--") and len(name) > 2 and o.startswith(name)]
         if len(hits) == 1:
             given.add(options[hits[0]])
-    for flag, value in zip(HISTORICAL_TARGET_ARGS[::2], HISTORICAL_TARGET_ARGS[1::2]):
+    recipe = HISTORICAL_TARGET_ARGS + HISTORICAL_TOKENIZER_ARGS
+    for flag, value in zip(recipe[::2], recipe[1::2]):
         if options[flag] not in given:
             out += [flag, value]
     return out
@@ -47,7 +54,8 @@ def build_parser() -> argparse.ArgumentParser:
     """Il parser delle opzioni (usato anche da scripts/wsd_chain.py per controllare gli argomenti liberi dei piani)."""
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--preset", choices=["sanity", "small", "30m", "100m", "300m"], required=True,
-                    help="sanity (firmato), small (prove), o un rung della ladder (training.run.LADDER, firmati il 09/10/2026)")
+                    help="sanity (firmato), small (prove), o un rung della ladder (training.run.LADDER, firmati il 09/10/2026); tokenizer a 100 ms "
+                         "con GELU in tutti dal 24/11/2026")
     ap.add_argument("--manifest", type=Path, required=True)
     ap.add_argument("--root", type=Path, action="append", required=True)
     ap.add_argument("--scales", type=Path, default=None, help="session_scales.json di scripts/measure_loader.py (senza: calcolate al volo)")
@@ -85,22 +93,25 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--jepa-target", choices=["a", "b"], default=None,
                     help="D11: dove si leggono i target del teacher; default quello del preset (b); a = encoder locale (R1 del pilot degli obiettivi)")
     ap.add_argument("--window-ms", type=float, default=None,
-                    help="durata nominale del kernel del tokenizer: 100 significa finestra 100 ms, passo 25 ms e overlap 75 ms; "
+                    help="durata nominale del kernel del tokenizer: default 100 ms dal 24/11/2026, passo 25 ms e overlap 75 ms; "
                          "la griglia e il contesto anti-alias restano invariati. Le query delle loss mascherate sono ristrette "
-                         "al supporto nominale nascosto; senza flag resta il banco storico da 25 ms")
+                         "al supporto nominale nascosto (vedi --masked-loss-radius). 25 (il passo) = il banco storico, per "
+                         "riprese/controlli storici insieme a --tokenizer-activation identity")
     ap.add_argument("--jepa-region-target", action="store_true",
                     help="target JEPA per regione nascosta (media del teacher sulla maschera estratta) invece che per token: R2 del pilot degli "
                          "obiettivi; default per token")
     ap.add_argument("--tokenizer-activation", choices=["identity", "gelu"], default=None,
-                    help="attivazione dopo i filtri temporali apprendibili e il gain, prima della proiezione; default identity storico")
+                    help="attivazione dopo i filtri temporali apprendibili e il gain, prima della proiezione; default gelu dal 24/11/2026, "
+                         "identity per i run storici (insieme a --window-ms 25) e per --tokenizer-logsquare")
     ap.add_argument("--tokenizer-logsquare", action="store_true",
-                    help="affianca log(epsilon+x²) alle risposte lineari, proiezione nuova inizializzata a zero")
+                    help="affianca log(epsilon+x²) alle risposte lineari, proiezione nuova inizializzata a zero; "
+                         "richiede --tokenizer-activation identity")
     ap.add_argument("--tokenizer-logsquare-eps", type=float, default=None,
                     help="pavimento positivo nelle unità delle risposte dopo gain al quadrato; richiede --tokenizer-logsquare")
     ap.add_argument("--masked-loss-radius", type=int, default=None,
                     help="patch nascoste richieste per lato delle query JEPA/ancore/RVQ; per confronti a supporto comune, "
                          "con JEPA attivo non inferiore al raggio nominale; con JEPA spento e' ammesso anche 0 esplicito. "
-                         "Default: raggio nominale storico. Non cambia il supporto posa")
+                         "Default: raggio nominale del kernel (2 con 100 ms, 0 col banco da 25 ms). Non cambia il supporto posa")
     ap.add_argument("--pose-root", default=None,
                     help="R3 (seconda ondata del pilot degli obiettivi, firmata il 26/10/2026): albero della posa di emg2pose scritto da "
                          "scripts/ingest_emg2pose_pose.py (con pose_stats.json); accende la testa di posa e il suo termine; default nessuno")
@@ -115,8 +126,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--keep-calibration", type=Path, default=None, help="TRAIN-only calibration NPZ from scripts/spectral_step1.py")
     ap.add_argument("--keep-weight", type=float, default=0., help="Step 1: 0 for paired arm A; >0 for B (experimental)")
     ap.add_argument("--spectral-branches", default=None,
-                    help="rami spettrali in parallelo al raw (step 2-3): 'psd', 'wavelet' o 'psd,wavelet'; servono --keep-calibration e le regole "
-                         "della finestra 1 (target multiscala)")
+                    help="rami spettrali in parallelo al raw (step 2-3): 'psd', 'wavelet' o 'psd,wavelet'; servono --keep-calibration, le regole "
+                         "della finestra 1 (target multiscala) e il banco da 25 ms (--window-ms 25)")
     ap.add_argument("--branch-weight", type=float, default=0.0,
                     help="peso del termine dei rami sul readout (la keep raw dello Step 1 resta --keep-weight); da fissare prima dai gradienti")
     ap.add_argument("--wavelet-learnable", action="store_true", help="centri e larghezze del banco wavelet apprendibili (entro limiti)")
@@ -195,7 +206,8 @@ def build_config(args, error=None) -> "R.RunConfig":
         cfg = replace(cfg, jepa=replace(cfg.jepa, target=args.jepa_target))
     if getattr(args, "window_ms", None) is not None:
         try:
-            cfg = replace(cfg, model=replace(cfg.model, window_ms=float(args.window_ms)))
+            kernel_ms = float(args.window_ms)  # uguale al passo = il banco storico (`window_ms` None), la ricetta storica scritta esplicita
+            cfg = replace(cfg, model=replace(cfg.model, window_ms=None if kernel_ms == cfg.model.patch_ms else kernel_ms))
         except ValueError as e:
             fail(f"--window-ms: {e}")
     if getattr(args, "rms_window_ms", None) is not None:
@@ -217,6 +229,8 @@ def build_config(args, error=None) -> "R.RunConfig":
     if getattr(args, "tokenizer_logsquare_eps", None) is not None and not getattr(args, "tokenizer_logsquare", False):
         fail("--tokenizer-logsquare-eps richiede --tokenizer-logsquare")
     if getattr(args, "tokenizer_logsquare", False):
+        if cfg.model.tokenizer_activation != "identity":  # il default e' gelu dal 24/11/2026
+            fail("--tokenizer-logsquare richiede --tokenizer-activation identity")
         try:
             eps = getattr(args, "tokenizer_logsquare_eps", None)
             cfg = replace(cfg, model=replace(cfg.model, tokenizer_logsquare=True,
@@ -293,6 +307,8 @@ def build_config(args, error=None) -> "R.RunConfig":
     if args.spectral_branches:
         if args.keep_calibration is None:
             fail("--spectral-branches richiede --keep-calibration (target e teste dello Step 1)")
+        if cfg.model.window_ms is not None:  # il default e' 100 ms dal 24/11/2026
+            fail("--spectral-branches richiede il banco da 25 ms: --window-ms 25 (e --tokenizer-activation identity per i run storici)")
         cfg = R.with_spectral_branches(cfg, tuple(k.strip() for k in args.spectral_branches.split(",") if k.strip()),
                                        weight=args.branch_weight, wavelet_learnable=args.wavelet_learnable, alpha=args.branch_alpha,
                                        freeze_encoder=args.freeze_encoder, calibration_batches=args.branch_calibration_batches)

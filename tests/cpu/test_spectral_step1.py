@@ -96,9 +96,13 @@ def test_stats_mask_constant_buffers_and_equal_family_weight():
     l.backward(); assert torch.equal(empty_prediction.grad,torch.zeros_like(empty_prediction))
 
 
-def _setup(tmp_path):
+def _setup(tmp_path, historical=True):
+    """`historical`: il tokenizer da 25 ms dello Step 1 e dei rami (finestra lunga e rami insieme non sono previsti); altrimenti quello dei nuovi
+    training (100 ms + GELU, 24/11/2026)."""
     root, manifest = _tree(tmp_path)
     cfg = R.small_config(datasets=("ninapro_db2",), max_steps=1)
+    if historical:
+        cfg = R.with_historical_tokenizer(cfg)
     cfg = replace(cfg, model=replace(cfg.model, multiscale_anchor=True, keep_readout=True),
                   loader=replace(cfg.loader, multiscale_anchor=True))
     idx = R.load_index(manifest,[root],cfg.datasets)
@@ -110,9 +114,10 @@ def _setup(tmp_path):
     return root, manifest, cfg, batch, np.concatenate([y,y2]), np.concatenate([m,m2])
 
 
+@pytest.mark.parametrize("historical", [True, False], ids=["storico", "100ms_gelu"])
 @pytest.mark.parametrize("checkpointing", [False, True])
-def test_real_small_encoder_keep_gradient_rng_optimizer_ema(tmp_path, checkpointing):
-    _,_,cfg,batch,y,m = _setup(tmp_path)
+def test_real_small_encoder_keep_gradient_rng_optimizer_ema(tmp_path, checkpointing, historical):
+    _,_,cfg,batch,y,m = _setup(tmp_path, historical)
     cfg = replace(cfg, model=replace(cfg.model, grad_checkpoint=checkpointing))
     torch.manual_seed(0)
     student = WearUsFM(cfg.model)
@@ -144,8 +149,9 @@ def _calibration(path,cfg,manifest,y,m):
     np.savez(path,y=y,valid=m,subject=np.repeat("ninapro_db2/s01",len(y)),split=np.repeat("train",len(y)),metadata_json=np.array(json.dumps(meta)))
 
 
-def test_real_trainer_keep_checkpoint_resume_identity(tmp_path):
-    root,manifest,cfg,batch,y,m = _setup(tmp_path)
+@pytest.mark.parametrize("historical", [True, False], ids=["storico", "100ms_gelu"])
+def test_real_trainer_keep_checkpoint_resume_identity(tmp_path, historical):
+    root,manifest,cfg,batch,y,m = _setup(tmp_path, historical)
     calibration = tmp_path/"calibration.npz"
     _calibration(calibration,cfg,manifest,y,m)
     cfg = R.with_spectral_keep(cfg,calibration,.05)
