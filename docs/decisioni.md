@@ -8419,4 +8419,6 @@ Simone, alla domanda di Claude «Rendo 100 ms + GELU il default anche del tokeni
   veri di tre passi; default nuovo identico ai comandi espliciti 100 ms + GELU.
 - Suite CPU completa: 3.562 passati (1.164 + 1.300 + 1.098, in tre parti), un avviso già noto. Nessun job; piani, checkout, checkpoint e
   rami delle campagne in corso non toccati.
+- Integrazione su `main`: Simone, 25/11, alla domanda di Claude «A chi affido il merge su main?»: «Fallo tu». Merge di Claude per questo ramo;
+  l'integratore resta GPT.
 Contratto: `docs/tokenizer_default_100ms_20261124.md`; misura delle query: `results/infra/tokenizer_default_20261124/`.

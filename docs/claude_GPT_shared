@@ -9225,6 +9225,16 @@ Nel controllo successivo, il coordinamento ha verificato direttamente la coda e 
 - Seguito per GPT: review e merge su `main`; il controllo meccanico dei piani (ora un avviso) e le due decisioni di `decisioni.md` (raggio 2
   con le quote D10, gate D8 a 100 ms). `main` non va unito nei rami delle campagne in corso prima della loro fine. Nessun lancio.
 
+### 2026-11-25 | Claude | Merge su `main` del ramo del tokenizer di default, su incarico di Simone; nessun job | `claude/tokenizer-default-100ms-20261124`
+
+- Simone, alla domanda «A chi affido il merge su main?»: «Fallo tu». Eccezione per questo ramo: l'integratore resta GPT, a cui resta la review
+  del diff, dopo il merge.
+- Merge esplicito (`--no-ff`) su `dfc38b55`, senza squash né rebase; i due commit `574c1716` e `16d44e67` restano. `main` non era cambiato:
+  l'albero del merge è quello del ramo, e codice e test sono quelli della suite completa del 24/11 (3.562 passati; dopo, solo documenti).
+- Non fatto: `main` su Leonardo non è aggiornato (`git push leonardo main` resta all'integratore) e `main` non è stato unito nei rami delle linee
+  1, 2 e 3. Finché Leonardo non lo riceve, un training lanciato dal suo checkout canonico usa ancora il codice precedente.
+- Restano a GPT e Simone i due punti di `decisioni.md` (raggio 2 con le quote D10, gate D8 a 100 ms) e il controllo meccanico dei piani.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
