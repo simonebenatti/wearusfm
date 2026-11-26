@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 26/11/2026 — GPT launcher: recepito operatore unico Claude per49k
+
+Coordinamento e commit15ebee17 confermano istruzione Simone «Tu, Claude» del23/11 11:15: Claude unico operatore della catena49.046. Questo launcher chiude la raccolta30M pubblicata33b6e54b, conserva acceptance e lineage per riuso e non prepara/invia altri job300M. Consegna in docs/scaling_control30m_launcher_handoff_20261126.md. Nessun nuovo invio o modifica ai checkout congelati.
+
 ### 26/11/2026 — GPT launcher: raccolte le tre estrazioni30M49k
 
 Sacct conferma65117434/65117436/65117461 COMPLETED0:0 il22/11. Collect extractions congelato concluso exit0 il26/11 alle09:00:48UTC: ricevute, provenienze, log e sacct raccolti; acceptance accepted_receipts=true, sette cache registrate. Costo1,259444GPUh e10,075556coreh. Verifica integrale dei byte delle cache prevista nei lettori prima dei fit, non attestata da questa raccolta. Primo segmento300M64837401 COMPLETED0:0,15:55:27, fine22/11 16:44:06CET. Secondo segmento trovato nel ledger65188321: sacct CANCELLED23/11 18:05:58, elapsed0, nessuna partenza. Nessun nuovo invio o rilancio; richiesta al coordinamento della consegna aggiornata sulla cancellazione.
@@ -6336,6 +6340,10 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 26/11/2026 — GPT launcher: evitata concorrenza dopo cambio operatore
+
+Il ramo storico di questo launcher non includeva il cambio del23/11; verificato ora sul commit15ebee17 e recepito. Non riusare65188321 né preparare un sostitutivo da questa chat. Il ripristino tecnico compete aClaude; cancellazione da manutenzione resta inferenza, non causa attestata.
 
 ### 26/11/2026 — GPT launcher: secondo segmento cancellato prima della partenza
 
