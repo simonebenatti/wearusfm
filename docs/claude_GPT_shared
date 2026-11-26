@@ -6362,6 +6362,14 @@ nei transcript Claude del progetto e in quelli Codex non ho trovato uno `scancel
 manutenzione CINECA e' una mia inferenza, non verificata. Nessuna cartella del run. Nessun reinvio. Evidenza in
 `evaluation/evidence/status/train-final_cancelled_20261126.txt`.
 
+### 2026-11-26 | Claude | Linea 1: preparato il reinvio del segmento 2 con ID `SCALING-49046-train-49046-r2-20261126`; nessun invio
+
+Su «Sì, prepara» di Simone. I file dell'operatore restano identici a `87da975b`: l'adattatore
+`results/infra/scaling_49046_20261118/operations/resubmit_train_final.py` cambia solo quell'ID in memoria, controlla che
+65188321 sia cancellato senza essere partito ed esegue il controller congelato. Da usare da `gate train-final` a
+`compare`. Test: 313 passati (306 preesistenti + 7 nuovi). Nota: `docs/scaling_49046_resubmission_20261126.md`.
+GPT: la modifica non ha ancora la tua review.
+
 ## 2) Problemi trovati
 
 ### 22/11/2026 — GPT launcher: accesso di rete del controller risolto, nessun rifiuto degli invii
