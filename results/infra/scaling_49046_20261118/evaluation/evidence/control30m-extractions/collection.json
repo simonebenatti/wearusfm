@@ -1,0 +1,168 @@
+{
+  "stage": "control30m-extractions",
+  "remote_time_utc": "2026-11-26T09:00:48Z",
+  "jobs": {
+    "SCALING-49046-extract-30m-pose-20261118": {
+      "job_slurm": "65117434",
+      "local": "T100-G-30M/pose",
+      "elapsed_seconds": 1897,
+      "core_hours": 4.2155555555555555,
+      "gpu_hours": 0.5269444444444444,
+      "folder": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/pose",
+      "listing": [
+        "receipt.json",
+        "train.log",
+        "train_subset.npz",
+        "train_subset.npz.provenance.json",
+        "val.log",
+        "val.npz",
+        "val.npz.provenance.json"
+      ]
+    },
+    "SCALING-49046-extract-30m-p1-20261118": {
+      "job_slurm": "65117436",
+      "local": "T100-G-30M/p1",
+      "elapsed_seconds": 891,
+      "core_hours": 1.98,
+      "gpu_hours": 0.2475,
+      "folder": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1",
+      "listing": [
+        "ninapro_db2.npz",
+        "ninapro_db2.npz.provenance.json",
+        "ninapro_db3.npz",
+        "ninapro_db3.npz.provenance.json",
+        "ninapro_db6.npz",
+        "ninapro_db6.npz.provenance.json",
+        "output_identity_events.jsonl",
+        "p1.log",
+        "receipt.json"
+      ]
+    },
+    "SCALING-49046-extract-30m-p2-20261118": {
+      "job_slurm": "65117461",
+      "local": "T100-G-30M/p2",
+      "elapsed_seconds": 1746,
+      "core_hours": 3.88,
+      "gpu_hours": 0.485,
+      "folder": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p2",
+      "listing": [
+        "epn612.npz",
+        "epn612.npz.provenance.json",
+        "p2.log",
+        "receipt.json",
+        "uci_emg.npz",
+        "uci_emg.npz.provenance.json"
+      ]
+    }
+  },
+  "files": {
+    "T100-G-30M/pose/receipt.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/pose/receipt.json",
+      "sha256": "ac58411fe4a468224caa808570bb3078d380c1772b85a5403a4c978ae061fe7e",
+      "bytes": 3772776,
+      "stored": "gzip"
+    },
+    "T100-G-30M/pose/train_subset.npz.provenance.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/pose/train_subset.npz.provenance.json",
+      "sha256": "d1ff926c7151ca5acbc8293b375e5c31ab441c604b1a09863e6a4dfcfd56e167",
+      "bytes": 2567,
+      "stored": "plain"
+    },
+    "T100-G-30M/pose/val.npz.provenance.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/pose/val.npz.provenance.json",
+      "sha256": "f24ef76f6438622ac54dd3de50c321fb2b8604b75a6ce0eec379a4d9837ab686",
+      "bytes": 2557,
+      "stored": "plain"
+    },
+    "T100-G-30M/pose/train.log": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/pose/train.log",
+      "sha256": "3041e0713b3edbf705315efc70f762d64f6bc7a1cacf07b38b9188b9bbb5b7ca",
+      "bytes": 19717,
+      "stored": "plain"
+    },
+    "T100-G-30M/pose/val.log": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/pose/val.log",
+      "sha256": "1124e16ab46eaacdd4d2bcbefa4a265ec394bd3a7100df7a74203a111f07c171",
+      "bytes": 190930,
+      "stored": "plain"
+    },
+    "T100-G-30M/pose/slurm_log.txt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_evaluation49046_65117434.out",
+      "sha256": "26c87cff3e43218c9e0f362e5be4a5167efa8e51d8e62c824d6d12c75ed568ab",
+      "bytes": 2457,
+      "stored": "plain"
+    },
+    "T100-G-30M/p1/receipt.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/receipt.json",
+      "sha256": "2e4fe38fb594a3322c730d4208665682443d4e171c28bd0301d4031236ae7cd0",
+      "bytes": 173607,
+      "stored": "plain"
+    },
+    "T100-G-30M/p1/ninapro_db2.npz.provenance.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz.provenance.json",
+      "sha256": "60870198fc555419b7cbdc3ef50963a4462656ecbfe4097d48189a6576b48fbf",
+      "bytes": 7415,
+      "stored": "plain"
+    },
+    "T100-G-30M/p1/ninapro_db3.npz.provenance.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db3.npz.provenance.json",
+      "sha256": "bbc243931652a5bc31b99ccecd95e742175c21b7144dee95adc1461d34b2a1aa",
+      "bytes": 7385,
+      "stored": "plain"
+    },
+    "T100-G-30M/p1/ninapro_db6.npz.provenance.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db6.npz.provenance.json",
+      "sha256": "ee15f73ac6ef85c00513d133251c057e4bd9609d1e2420b47a41abbb26be41ce",
+      "bytes": 7417,
+      "stored": "plain"
+    },
+    "T100-G-30M/p1/p1.log": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/p1.log",
+      "sha256": "94d46f47666d16fd30c3b49170d538d80a5267c29e191feb09268ace585cb19f",
+      "bytes": 882,
+      "stored": "plain"
+    },
+    "T100-G-30M/p1/output_identity_events.jsonl": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/output_identity_events.jsonl",
+      "sha256": "e905dd57b8131682823ee79d5aca02d5ed3a6a0845ee6e10196ca564caa2df44",
+      "bytes": 11693,
+      "stored": "plain"
+    },
+    "T100-G-30M/p1/slurm_log.txt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_evaluation49046_65117436.out",
+      "sha256": "26c87cff3e43218c9e0f362e5be4a5167efa8e51d8e62c824d6d12c75ed568ab",
+      "bytes": 2457,
+      "stored": "plain"
+    },
+    "T100-G-30M/p2/receipt.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p2/receipt.json",
+      "sha256": "492b84b6fe4b88f945d3a11501f8d34a90821631b0bfe399e40afd5dd6b29c19",
+      "bytes": 247264,
+      "stored": "plain"
+    },
+    "T100-G-30M/p2/epn612.npz.provenance.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p2/epn612.npz.provenance.json",
+      "sha256": "54a2d889981083cc430f87c8aa34e4a3034df89cd232c6db97777a94265fdc9a",
+      "bytes": 2700,
+      "stored": "plain"
+    },
+    "T100-G-30M/p2/uci_emg.npz.provenance.json": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p2/uci_emg.npz.provenance.json",
+      "sha256": "b9b49571a123a1cff9517112825e9f449e91c98cbdd861d36ce01ff02f23bd45",
+      "bytes": 2695,
+      "stored": "plain"
+    },
+    "T100-G-30M/p2/p2.log": {
+      "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p2/p2.log",
+      "sha256": "30c855d6384a85e695a7128d5ed9c4a20b7a6d86bc51e892f4bdc2514c7bf4b8",
+      "bytes": 740,
+      "stored": "plain"
+    },
+    "T100-G-30M/p2/slurm_log.txt": {
+      "path": "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/scaling_evaluation49046_65117461.out",
+      "sha256": "26c87cff3e43218c9e0f362e5be4a5167efa8e51d8e62c824d6d12c75ed568ab",
+      "bytes": 2457,
+      "stored": "plain"
+    }
+  }
+}

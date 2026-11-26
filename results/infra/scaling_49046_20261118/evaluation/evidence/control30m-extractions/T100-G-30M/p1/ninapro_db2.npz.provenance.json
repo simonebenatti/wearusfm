@@ -1,0 +1,213 @@
+{
+  "protocol": "scaling-evaluation-49046-20261106-v1",
+  "arm": "T100-G-30M",
+  "which": "teacher",
+  "checkpoint_step": 49046,
+  "checkpoint_sha256": "bfa6141fc2ed6505d2f582a46f0c04f36fd35f867e8cff2b11555b241947a490",
+  "code_sha": "abfaf64e28827793720097254ff2d0271d744a1d",
+  "plan_sha256": "d7b24bfad92025c60ff1c3324f2a693d375a93ccc9d0631b433541c215052f94",
+  "postload_recipe_passed": true,
+  "model_config": {
+    "dim": 384,
+    "n_heads": 6,
+    "k_latents": 64,
+    "local_layers": 2,
+    "backbone_layers": 8,
+    "decoder_layers": 2,
+    "muscle_dropout": 0.4,
+    "patch_ms": 25.0,
+    "window_ms": 100.0,
+    "n_bands": 5,
+    "rvq_codes": null,
+    "grad_checkpoint": true,
+    "multiscale_anchor": true,
+    "keep_readout": false,
+    "spectral_branches": [],
+    "branch_dim": 128,
+    "branch_hidden": 48,
+    "wavelet_learnable": false,
+    "branch_alpha": 0.5,
+    "branch_objective": "readout",
+    "branch_freeze_output": false,
+    "pose_head": true,
+    "tokenizer_activation": "gelu"
+  },
+  "stats_sha256": "757f2aeebf688063747d50e55d983dd6b3c4cea268ce43d2bae06f3e99524a7e",
+  "training_source_contract_sha256": "14b044de1df7be3e55c836685342d94ae48f9d072dc6784b33cca197dab47df1",
+  "dataset": "ninapro_db2",
+  "task": "p1",
+  "n_windows": 38544,
+  "n_users": 32,
+  "input_sha256": "b6017ee1633013239c80d9f2928e03a8fc129549a765ad1972f8e380d7dda873",
+  "splits_sha256": "a18e7565157d5dbba8870ffa67c2342ff90de479da480dccb456922b6f6f4ed7",
+  "extraction_recipe": {
+    "base": {
+      "encoder": "teacher",
+      "extractor": "probe_p1.dataset_features",
+      "feature_set": "model",
+      "input_audit": "downstream_ab.fingerprint-v1",
+      "window_s": 1.0
+    },
+    "channel_mean": "media sulle patch valide per canale; canali scartati dal QC o senza patch a 0",
+    "crop_s": 4.0,
+    "dtype": "float16 per canale, float32 pool",
+    "edge_guard_s": 0.1,
+    "encoder": "teacher",
+    "extractor": "harness.channel_readout.extract_channel_readouts",
+    "k_neighbors": 8,
+    "layers": [
+      "pool",
+      "local",
+      "dec"
+    ]
+  },
+  "ordered_rows_sha256": "ab0ef5e9cc410ce5fe2d426ea5c3b91a79e38fba7132020fa260c6b9656c1f72",
+  "fold_roles_sha256": "f0de1645c4e9040552ba45b57579c6f416a3bf093a56fd98612827236115133a",
+  "reference_cache_sha256": "b17eb149a56ebc31a650c5f5b39fbb92d6867baecb43fc959d1c1069e3e52098",
+  "pool_shape": [
+    38544,
+    768
+  ],
+  "pool_dtype": "<f4",
+  "cache": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz",
+  "cache_sha256": "2923e9d49417ec18e1fc32e4d4fb6d83897c6bc5477c84adcec0ab48bf66eb5d",
+  "cache_bytes": 829630254,
+  "output_identity_audit": {
+    "policy": "scaling-output-identity-20261116-v1",
+    "observations": [
+      {
+        "kind": "descriptor",
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz",
+        "started_utc": "2026-11-22T10:22:46.179467+00:00",
+        "started_monotonic": 937100.1855446,
+        "sha256": "2923e9d49417ec18e1fc32e4d4fb6d83897c6bc5477c84adcec0ab48bf66eb5d",
+        "byte_count": 829630254,
+        "stat_before": {
+          "dev": 2267999710,
+          "ino": 4161333540979489673,
+          "size": 829630254,
+          "mode": 33188,
+          "uid": 127686,
+          "gid": 25200,
+          "nlink": 1,
+          "atime_ns": 1795342523000000000,
+          "mtime_ns": 1795342523000000000,
+          "ctime_ns": 1795342523000000000
+        },
+        "stat_after": {
+          "dev": 2267999710,
+          "ino": 4161333540979489673,
+          "size": 829630254,
+          "mode": 33188,
+          "uid": 127686,
+          "gid": 25200,
+          "nlink": 1,
+          "atime_ns": 1795342966000000000,
+          "mtime_ns": 1795342523000000000,
+          "ctime_ns": 1795342523000000000
+        },
+        "path_before": {
+          "dev": 2267999710,
+          "ino": 4161333540979489673,
+          "size": 829630254,
+          "mode": 33188,
+          "uid": 127686,
+          "gid": 25200,
+          "nlink": 1,
+          "atime_ns": 1795342523000000000,
+          "mtime_ns": 1795342523000000000,
+          "ctime_ns": 1795342523000000000
+        },
+        "path_after": {
+          "dev": 2267999710,
+          "ino": 4161333540979489673,
+          "size": 829630254,
+          "mode": 33188,
+          "uid": 127686,
+          "gid": 25200,
+          "nlink": 1,
+          "atime_ns": 1795342966000000000,
+          "mtime_ns": 1795342523000000000,
+          "ctime_ns": 1795342523000000000
+        },
+        "canonical_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz",
+        "error": null,
+        "finished_monotonic": 937100.944558362,
+        "finished_utc": "2026-11-22T10:22:46.938506+00:00",
+        "duration_seconds": 0.7590137619990855,
+        "changed_fields": [
+          "atime_ns"
+        ]
+      },
+      {
+        "kind": "descriptor",
+        "path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz",
+        "started_utc": "2026-11-22T10:22:49.000657+00:00",
+        "started_monotonic": 937103.006731293,
+        "sha256": "2923e9d49417ec18e1fc32e4d4fb6d83897c6bc5477c84adcec0ab48bf66eb5d",
+        "byte_count": 829630254,
+        "stat_before": {
+          "dev": 2267999710,
+          "ino": 4161333540979489673,
+          "size": 829630254,
+          "mode": 33188,
+          "uid": 127686,
+          "gid": 25200,
+          "nlink": 1,
+          "atime_ns": 1795342968000000000,
+          "mtime_ns": 1795342523000000000,
+          "ctime_ns": 1795342523000000000
+        },
+        "stat_after": {
+          "dev": 2267999710,
+          "ino": 4161333540979489673,
+          "size": 829630254,
+          "mode": 33188,
+          "uid": 127686,
+          "gid": 25200,
+          "nlink": 1,
+          "atime_ns": 1795342969000000000,
+          "mtime_ns": 1795342523000000000,
+          "ctime_ns": 1795342523000000000
+        },
+        "path_before": {
+          "dev": 2267999710,
+          "ino": 4161333540979489673,
+          "size": 829630254,
+          "mode": 33188,
+          "uid": 127686,
+          "gid": 25200,
+          "nlink": 1,
+          "atime_ns": 1795342968000000000,
+          "mtime_ns": 1795342523000000000,
+          "ctime_ns": 1795342523000000000
+        },
+        "path_after": {
+          "dev": 2267999710,
+          "ino": 4161333540979489673,
+          "size": 829630254,
+          "mode": 33188,
+          "uid": 127686,
+          "gid": 25200,
+          "nlink": 1,
+          "atime_ns": 1795342969000000000,
+          "mtime_ns": 1795342523000000000,
+          "ctime_ns": 1795342523000000000
+        },
+        "canonical_path": "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/scaling_49046_20261118/evaluation/T100-G-30M/p1/ninapro_db2.npz",
+        "error": null,
+        "finished_monotonic": 937103.785613087,
+        "finished_utc": "2026-11-22T10:22:49.779563+00:00",
+        "duration_seconds": 0.778881793958135,
+        "changed_fields": [
+          "atime_ns"
+        ]
+      }
+    ],
+    "extra_reads": 0,
+    "timestamp_transition": false,
+    "validator_started": true,
+    "validator_completed": true,
+    "complete": true
+  }
+}

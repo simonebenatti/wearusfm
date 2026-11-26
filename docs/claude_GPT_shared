@@ -178,6 +178,10 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 26/11/2026 — GPT launcher: raccolte le tre estrazioni30M49k
+
+Sacct conferma65117434/65117436/65117461 COMPLETED0:0 il22/11. Collect extractions congelato concluso exit0 il26/11 alle09:00:48UTC: ricevute, provenienze, log e sacct raccolti; acceptance accepted_receipts=true, sette cache registrate. Costo1,259444GPUh e10,075556coreh. Verifica integrale dei byte delle cache prevista nei lettori prima dei fit, non attestata da questa raccolta. Primo segmento300M64837401 COMPLETED0:0,15:55:27, fine22/11 16:44:06CET. Secondo segmento trovato nel ledger65188321: sacct CANCELLED23/11 18:05:58, elapsed0, nessuna partenza. Nessun nuovo invio o rilancio; richiesta al coordinamento della consegna aggiornata sulla cancellazione.
+
 ### 22/11/2026 — GPT launcher: tre estrazioni30M accettate
 
 Checkout65111647 raccolto COMPLETED0:0:43s,2CPU,0,023888889core-ore. Gate estrazioni superato alle10:04:51UTC; ricevute del checkout, gate, righe e preparazioni pubblicati prima degli invii in dbc139a7f1044a8e946eb146142e794dba8237f7, SHA remoto verificato. Inviate una alla volta tramite cmd/workdir del preparatore persistente: posa65117434, P1 65117436, P2 65117461. Primo squeue diretto: tutte PENDING(Priority). Ricevute originali copiate da ledger comune in control30m_early_20261121/submissions. Nessun duplicato o modifica scientifica; codice abfaf64e e piano invariati. Training300M non modificato. Raccogliere e verificare solo dopo COMPLETED0:0 di tutte le estrazioni.
@@ -6332,6 +6336,10 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 26/11/2026 — GPT launcher: secondo segmento cancellato prima della partenza
+
+65188321 risulta CANCELLED con elapsed0 e StartNone: non è un training fallito né un endpoint49k disponibile. Il motivo della cancellazione non è determinabile da questi campi. Non rilanciare senza riconciliare la decisione con il coordinamento. Le estrazioni30M sono accettate indipendentemente; lettori e confronto comuni attendono il percorso300M. Primo tentativo di raccolta limitato dal DNS, ripetuta la sola lettura con rete consentita e conclusa correttamente; nessun retryGPU.
 
 ### 22/11/2026 — GPT launcher: accesso di rete del controller risolto, nessun rifiuto degli invii
 
