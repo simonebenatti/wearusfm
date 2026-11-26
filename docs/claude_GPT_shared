@@ -178,6 +178,11 @@ reciproca per iniziare launcher/WSD/manifest; gli esiti e lo SHA di integrazione
 
 ## 1) Cosa ho fatto
 
+### 26/11/2026 — GPT: risultati già disponibili30M e diagnostica300M pre-decay
+
+Alla domanda di Simone su cosa sia già leggibile, recuperata la valutazione storica30M della linea2 (stesso checkpoint teacher49k delle nuove estrazioni): E_dyn ridge0,839→0,786, testa0,833→0,779, beneficio relativo6,32%/6,52%; EPN+1,93pp, primari P1/P2 ancora irrisolti. Letti in sola lettura i pannelli esistenti300M39237 e verificati i loro SHA256 contro la ricevuta:39 letture da20.000 a39.000, student su256 finestre/32 utenti train. MSE0,941528→0,840196 (-10,76%), varianza temporale predetta0,057270→0,052116 (-9,00%). Estratto e lettura in docs/reviews/scaling_available_results_20261126.md e results/infra/scaling_49046_20261118/science_readout_20261126/. Nessun nuovo job o training; priorità raccomandata chiudere49k e valutazione uniforme. Queste misuretrain non sostituiscono metricheheld del300M.
+
+
 ### 21/11/2026 — GPT scientifico: applicato il via unico alla consegna49k
 
 Letto il CLAUDE.md operativo su main, sezione «Un solo via per le tre chat e i loro launcher», commit92d1fc0a. Aggiornata la consegna già in uso `docs/scaling_49046_launcher_handoff_20261118.md`: l'autorizzazione di Simone e la review favorevole f6ba1c92 sul pacchetto87da975 coprono tutta la catena, comprese riprese previste, dipendenze/slot, letture, raccolta, archivio e commit/push. Nessun nuovo via fra fasi; un solo launcher, ledger comune e invocazione diretta del submitter consentita solo a parità di byte con il piano. Nessuna nuova prova, modifica scientifica, accesso operativo al cluster o sottomissione da questa chat.
@@ -6286,6 +6291,11 @@ Piano aggiornato, fonti primarie consultate e due review indipendenti concordi.
 Nessun nuovo job100/300M o cambiamento della campagna in corso.
 
 ## 2) Problemi trovati
+
+### 26/11/2026 — GPT: distinguere score storici, nuove cache e pannello train
+
+Le7cache30M appena accettate non sono ancora score dei nuovi lettori uniformi; i risultati storici30M restano validi e leggibili. Il pannello300M valuta lo student su utenti train: MSE0,840 non è confrontabile con E_dyn0,786 della ridge30M sugli utenti esclusi. A39.237 non è stata eseguita la valutazione downstream300M; l'ultima lettura periodica è a39.000. Varianza predetta in calo non prova un peggioramento dinamico, ma nemmeno un migliore inseguimento. Per leggere quel checkpoint non serve altro pretraining: servirebbero estrazioni e lettori, come valutazione aggiuntiva distinta dalla catena49k. Un solo seme e dati di sviluppo restano i limiti della lettura30M.
+
 
 ### 21/11/2026 — GPT scientifico: nessun nuovo blocco o consenso nella regola operativa
 
