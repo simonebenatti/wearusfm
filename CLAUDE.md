@@ -26,7 +26,7 @@ fattori in piu' (RMS, spettro rapido e, dal 24/11, finestra e attivazione del to
 tokenizer resta 100 ms + GELU.
 **Linea 3, confronto contrastivo C0/CN/CR:** Simone, «sul punto 3 passiamo a 100/100». La linea 3 adotta la ricetta nuova
 (oggi RMS 100 ms e spettro rapido 125 ms) e rifa' audit, calibrazione, benchmark e λ; C0 contro T100-G differisce anche per
-RMS e spettro rapido. Esegue GPT, operatore della linea 3.
+RMS e spettro rapido. Per gli invii vale la disposizione della linea 3 del 27/11 sotto.
 Campo spettrale assente nei vecchi checkpoint =50ms. Versione, firma dati e guardie impediscono il cambio implicito.
 Restano invariati il target spettrale200ms, la scala lenta500ms, l'inviluppo500ms, la posa e i pesi della loss.
 Dettagli: `docs/rms_target_100ms_20261118.md`, `docs/ms_fast_target_100ms_20261118.md` e, per i 125 ms e gli strumenti
@@ -65,9 +65,9 @@ Simone, 05/11/2026 alle 14:57 circa, alla domanda di Claude «Confermi che ora l
 Fonte: `origin/worktree-claude-training-engine`, commit `3099836061809ed478ea06ff7b252a2d2087cc98`,
 voce di Claude in `docs/claude_GPT_shared`; conferma trasmessa anche alla chat GPT di coordinamento.
 
-**Claude esegue codice e operazioni della linea 1; per EPN15 e valutazione lunga della linea 2 esegue le operazioni; GPT resta operatore della linea 3.**
+**Claude esegue codice e operazioni della linea 1; per EPN15 e valutazione lunga della linea 2 esegue le operazioni; per la linea 3 vale ora la disposizione del 27/11.**
 L'operatore di ciascuna linea gestisce deployment, sottomissioni, stato/log e raccolta. GPT coordinamento
-controlla le interferenze e integra su `main`, senza duplicare le operazioni. Nella sola linea 3 Claude resta revisore e non lancia job;
+controlla le interferenze e integra su `main`, senza duplicare le operazioni. Al 05/11 nella linea 3 Claude svolgeva la review e GPT gestiva i lanci;
 eventuali correzioni tecniche affidategli esplicitamente restano soggette alla review di GPT. Per le linee 1 e 2 valgono le disposizioni sotto.
 
 La regola del 28/10 «Sottomissioni affidate a semplicione» e' superata: quella chat non e' piu' operativa e non deve essere
@@ -141,15 +141,19 @@ Le linee 2 e 3 non cambiano. Questa disposizione prevale sulle assegnazioni stor
 |---|---|---|
 | 1 — Scaling 30M/300M | **Claude: codice; GPT: ragionamento scientifico, direzioni e review** | **Claude** |
 | 2 — EPN15 e valutazione lunga | GPT consolidamento | **Claude** |
-| 3 — Log-quadratico e contrastiva | GPT logcontrast | GPT logcontrast |
+| 3 — Log-quadratico e contrastiva | GPT logcontrast | **Claude di norma**, GPT su incarico esplicito di Simone per il singolo invio |
 | Coordinamento | GPT integratore su main | Coordinamento dei responsabili, nessun invio duplicato |
+
+### Linea 3 — indicazione di Simone del 27/11/2026
+
+Per la linea 3 Claude gestisce di norma i lanci su Leonardo e i relativi controlli e raccolte. GPT scientifico prepara il pacchetto per Claude e interpreta i risultati. GPT assume un invio soltanto quando Simone gli assegna esplicitamente quell’invio. Il via già dato vale per la catena concordata. I riferimenti a GPT o a 3-launcher nei pacchetti storici documentano l’assegnazione di allora.
 
 ### Autonomia operativa — istruzioni di Simone del 28/10/2026
 
 **Aggiornamento dei ruoli, successivo alla review E3 B:** Simone: «adesso sarai tu ad implementare le modifiche e a
 lanciare le cose, e clasude fara solo da revisore». GPT assume anche implementazione e sottomissioni del lavoro affidato;
 Claude resta revisore. Questa istruzione supera la precedente proprieta' esclusiva del codice tecnico assegnata a Claude;
-per i ruoli correnti prevalgono le disposizioni del 05/11 sulla linea 2 e del 06/11 sulla linea 1 riportate sopra.
+per i ruoli correnti vale la tabella delle tre linee riportata sopra.
 Restano worktree separati, un writer per checkout, review pertinenti, criteri congelati e registro condiviso.
 
 Queste istruzioni successive prevalgono sui precedenti passaggi che chiedevano un nuovo consenso prima di ogni lancio:
@@ -283,7 +287,7 @@ un solo operatore indica l’operazione bloccata e il motivo. Le altre chat pros
   `CODE_DIR`; log, risultati e checkpoint restano fuori dal codice, come sempre.
 - **Sottomissioni:** un solo meccanismo comune ai due agenti (prenotazione sotto lock prima di `sbatch`, ID logico nel `--comment`,
   stato persistente; se la risposta di `sbatch` e' ambigua si riconcilia con `sacct`, mai rilancio alla cieca): `scripts/submit_job.py`,
-  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Dal 06/11/2026 lo esegue Claude dal Mac per la linea 1 e, come dalla sera del 05/11, per EPN15 e valutazione lunga della linea 2; GPT lo esegue per la linea 3. Stato/log e raccolta spettano allo stesso operatore. Checkout di campagna:
+  stato in `~/wearusfm_local/jobs/` (riepilogo `ledger.tsv`). Dal 06/11/2026 lo esegue Claude dal Mac per la linea 1 e, come dalla sera del 05/11, per EPN15 e valutazione lunga della linea 2; per la linea 3 lo esegue di norma Claude secondo la disposizione del 27/11. Stato/log e raccolta spettano allo stesso operatore. Checkout di campagna:
   `scripts/slurm/campaign_checkout.sbatch` (passato a `sbatch` su stdin); launcher: `scripts/slurm/lib_code_dir.sh`.
 - **Budget «preparazione dell'infrastruttura della finestra 1»: 25 GPU-ora** (Simone, 09/10/2026), separato dal budget della finestra 1.
   Ogni prova si presenta comunque con preventivo e si lancia solo col via di Simone; consuntivo in `docs/decisioni.md`.
@@ -320,7 +324,7 @@ un solo operatore indica l’operazione bloccata e il motivo. Le altre chat pros
 - Compute node: nessun accesso a internet. Niente pip install, niente download di modelli,
   nessuna chiamata API dentro un job SLURM. Gli scaricamenti si fanno prima, dal login node.
 - $HOME ha 50GB di quota ed e' gia' stato riempito una volta. Mai dati, modelli o cache li'.
-- Un solo operatore per linea: **Claude per la linea 1 e per EPN15 e valutazione lunga della linea 2; GPT per la linea 3**. Lo stesso operatore gestisce deployment, invii, stato/log e raccolta. Per la linea 1 GPT rivede il pacchetto operativo una volta prima dei lanci inclusi, non ogni invio, e resta integratore su main. Semplicione non e' piu' operativo; nessun submitter parallelo o duplicato.
+- Un solo operatore per linea: **Claude per la linea 1 e per EPN15 e valutazione lunga della linea 2; di norma Claude anche per la linea 3**. Lo stesso operatore gestisce deployment, invii, stato/log e raccolta. Per la linea 1 GPT rivede il pacchetto operativo una volta prima dei lanci inclusi, non ogni invio, e resta integratore su main. Semplicione non e' piu' operativo; nessun submitter parallelo o duplicato.
 
 ## Test
 - Il codice non gira sul Mac: niente CUDA, architettura diversa.
