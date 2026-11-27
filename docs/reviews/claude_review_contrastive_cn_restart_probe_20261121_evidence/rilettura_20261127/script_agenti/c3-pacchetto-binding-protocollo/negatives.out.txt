@@ -1,0 +1,21 @@
+positive single-line JSON                     bind=ACCEPTED  
+old reviewed_commit 9d34dc69 (full)           bind=REJECTED  ValueError: File changed since Claude review: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpa
+old reviewed_commit short 9d34dc69            bind=REJECTED  ValueError: Full reviewed package commit required
+old package/plan pins b0640ca6/9d5811b6       bind=REJECTED  ValueError: Review does not approve this exact CN restart package
+double block                                  bind=REJECTED  ValueError: Requires precisely one current cn-restart-review block
+multi-line JSON (indent=2)                    bind=ACCEPTED  
+CRLF line endings                             bind=REJECTED  ValueError: Requires precisely one current cn-restart-review block
+sixth field                                   bind=REJECTED  ValueError: Review does not approve this exact CN restart package
+indented fence (2 spaces)                     bind=REJECTED  ValueError: Requires precisely one current cn-restart-review block
+trailing spaces after fences                  bind=ACCEPTED  
+fence ```json-like tag cn-restart-review-v1   bind=REJECTED  ValueError: Requires precisely one current cn-restart-review block
+~~~ fence                                     bind=REJECTED  ValueError: Requires precisely one current cn-restart-review block
+blank line after open fence                   bind=ACCEPTED  
+key order changed                             bind=ACCEPTED  
+uppercase reviewed_commit                     bind=REJECTED  ValueError: Full reviewed package commit required
+other fenced block after (```text)            bind=ACCEPTED  
+prose fence-like line inside example ```cn-restart-review unclosed bind=ACCEPTED  
+review commit not ancestor of REF             bind=REJECTED  subprocess.CalledProcessError: Command '['git', '-C', '/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/
+ancestor, later commit changes the review     bind=ACCEPTED  
+REF missing entirely                          bind=REJECTED  subprocess.CalledProcessError: Command '['git', '-C', '/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/
+abbreviated review commit                     bind=REJECTED  ValueError: Full Claude review commit required

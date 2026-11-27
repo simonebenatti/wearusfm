@@ -1,0 +1,9 @@
+bind rc 0 
+release 0fb6b5d50d031bd9930000dfe5aa1275f3906b93 parent 8c72655c3d894c82fd4918ed523baf0ac9c69e23
+rebind rc 1 FileExistsError: [Errno 17] File exists: '/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/c3-pacchetto-binding-protocollo/copy/results/infra/contrastive_targets_20261118/cn_restart_probe_20261121/release_binding.json'
+status clean: ''
+require_binding OK REVIEW_REQUIRED False
+{'package_sha256': 'e9310d67b8304c064e09d71b0ec55d37b57abf3b4e2090c2d02d4def586f702d', 'plan_sha256': '4f538cf183f6e3daf7bd30a5612eecdbbd07106f64d5f348a2f3e759e877853b'}
+ 
+tampered: ValueError: Invalid review provenance
+protocol altered: ValueError: Review does not approve this exact CN restart package

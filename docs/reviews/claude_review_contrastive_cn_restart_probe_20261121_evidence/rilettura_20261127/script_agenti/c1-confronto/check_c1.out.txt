@@ -1,0 +1,31 @@
+OK  atteso: exact_sci=True sci_invalid=[] raw=['cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] float=[]
+OK  copia inattiva diversa (nuova): exact_sci=False sci_invalid=['cuda_rng.2'] raw=['cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] float=[]
+OK  copia inattiva = continuo: exact_sci=False sci_invalid=['cuda_rng.3'] raw=['cuda_rng.1', 'cuda_rng.2'] float=[]
+OK  cuda_rng.0 diverso: exact_sci=False sci_invalid=['cuda_rng.0'] raw=['cuda_rng.0', 'cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] float=[]
+OK  rank_rng.1.cuda_rng diverso: exact_sci=False sci_invalid=['rank_rng.1.cuda_rng'] raw=['cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3', 'rank_rng.1.cuda_rng'] float=[]
+OK  rank_rng.3.torch_rng diverso: exact_sci=False sci_invalid=['rank_rng.3.torch_rng'] raw=['cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3', 'rank_rng.3.torch_rng'] float=[]
+OK  rank_rng.0.cuda_rng diverso: exact_sci=False sci_invalid=['rank_rng.0.cuda_rng'] raw=['cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3', 'rank_rng.0.cuda_rng'] float=[]
+OK  torch_rng diverso: exact_sci=False sci_invalid=['torch_rng'] raw=['torch_rng', 'cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] float=[]
+OK  lista lunga 5: ValueError(expected 4 entries at cuda_rng)
+OK  lista lunga 3: ValueError(expected 4 entries at cuda_rng)
+OK  tuple invece di list: ValueError(expected 4 entries at cuda_rng)
+OK  rank_rng lunga 3: ValueError(expected 4 entries at rank_rng)
+OK  cuda_rng.1 int8: ValueError(invalid RNG state at cuda_rng.1)
+OK  cuda_rng.1 2-D: ValueError(invalid RNG state at cuda_rng.1)
+OK  cuda_rng.2 corto: exact_sci=False sci_invalid=['cuda_rng.2'] raw=['cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] float=[]
+OK  torch_rng float: ValueError(invalid RNG state at torch_rng)
+OK  chiave rank_rng.2.cuda_rng mancante: ValueError(invalid RNG state at rank_rng.2.cuda_rng)
+OK  chiave torch_rng mancante: ValueError(invalid RNG state at torch_rng)
+OK  chiave in piu' in rank_rng.1: exact_sci=False sci_invalid=['rank_rng.1'] raw=['cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3', 'rank_rng.1'] float=[]
+OK  rank_rng.1 None: ValueError(invalid rank_rng.1)
+OK  step diverso: exact_sci=False sci_invalid=['step'] raw=['step', 'cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] float=[]
+OK  alarm_counts diverso: exact_sci=False sci_invalid=['alarm_counts.x'] raw=['alarm_counts.x', 'cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] float=[]
+OK  config diverso: exact_sci=False sci_invalid=['config.a'] raw=['config.a', 'cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] float=[]
+OK  adam step float diverso: exact_sci=False sci_invalid=['optimizer.state.0.step'] raw=['optimizer.state.0.step', 'cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] float=[]
+OK  float diverso (atteso exact_sci falso, nessun invalid): exact_sci=False sci_invalid=[] raw=['cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] float=['student.w']
+OK  chiave top-level in piu': exact_sci=False sci_invalid=[''] raw=[''] float=[]
+OK  cuda_rng.1 None: ValueError(invalid RNG state at cuda_rng.1)
+OK  continuo malformato rifiutato: expected 4 entries at cuda_rng
+
+--- classify
+SUPPORTED reachable only with local=F, reduced=T, excess=F, endpoint=T, first=T: checked 32 combos

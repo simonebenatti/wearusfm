@@ -1,0 +1,9 @@
+bound per ordering gamma_3*sum|x| ~ 3u; two orderings differ <= 6u = 3.5762786865234375e-07
+N=200000: worst old ratio 2.000e+00, worst new ratio 2.340e-07; old>1e-6: 97208, new>1e-6: 0
+rounding-only anchor_heads.rms.bias: raw 1.000e+00 screen 3.548e-08 excessive=False
+true 1e-3 excess anchor_heads.rms.bias: screen 1.000e-03 excessive=True
+excess 5e-6 anchor_heads.rms.bias: screen 5.000e-06 excessive=True
+rounding-only anchor_heads.env.bias: raw 1.000e+00 screen 3.548e-08 excessive=False
+true 1e-3 excess anchor_heads.env.bias: screen 1.000e-03 excessive=True
+excess 5e-6 anchor_heads.env.bias: screen 5.000e-06 excessive=True
+other tensor: screen == raw: True

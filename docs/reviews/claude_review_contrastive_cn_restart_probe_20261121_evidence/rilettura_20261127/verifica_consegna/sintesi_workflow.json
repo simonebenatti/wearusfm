@@ -1,0 +1,932 @@
+[
+ {
+  "key": "d1-comandi",
+  "review": {
+   "sintesi": "INCIDENTE CAUSATO DA QUESTA VERIFICA, da risolvere prima della consegna. Volevo simulare il passo 5, ma ho estratto per errore il blocco del passo 4 e l'ho eseguito sotto zsh con un ssh finto. Il submitter condiviso ha così scritto nel registro vero (~/wearusfm_local/jobs) una prenotazione in stato 'ambiguo' per CONTRAST-CHECKOUT-CN-RESTART545-20261121, più due righe nel ledger (1891-1892). Nessun job è arrivato a Leonardo: la chiamata l'ha ricevuta il finto ssh. Non ho riparato il registro, perché è fuori dal mio perimetro di scrittura: serve una decisione di Simone. Finché resta così, il passo 1 dà 2 invece di 0 e il passo 4 viene rifiutato. Sui testi non ho trovato errori che brucerebbero un tentativo: le righe sbatch, gli script passati su stdin, i parametri, le stringhe attese e il refspec coincidono con il protocollo, il piano e il codice, salvo le differenze dichiarate. Ci sono due rilievi importanti: grep -c esce con 1 quando l'esito è quello atteso, e i controlli su Leonardo dei passi 3, 4 e 6 non hanno un comando esatto, con $WORK e $CODE_DIR che si espanderebbero vuote sul Mac. Seguono alcune imprecisioni minori. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/d1-comandi.md",
+   "rilievi": [
+    {
+     "id": "B-0",
+     "gravita": "bloccante",
+     "titolo": "Prenotazione 'ambiguo' scritta per errore nel registro vero da questa verifica",
+     "dove": "~/wearusfm_local/jobs/CONTRAST-CHECKOUT-CN-RESTART545-20261121/state.json e ~/wearusfm_local/jobs/ledger.tsv righe 1891-1892 (27/11 15:33:41-42)",
+     "prova": "Ho estratto per errore con awk il blocco del passo 4 e l'ho eseguito con PATH=finto_ssh_bin:$PATH zsh -f. Il submitter ha usato il registro predefinito: state.json riporta stato 'ambiguo', stdout 'finto-stdout', codice b58a66f6. Il file agents2/d1-comandi/ssh_argomenti.txt mostra che la chiamata l'ha ricevuta il finto ssh, non Leonardo. Il lock è stato rilasciato e il worktree di release è pulito. Effetto: al passo 1 grep -c dà 2; al passo 4 submit_job.py rifiuterebbe con «gia' prenotato, stato 'ambiguo'. Non si risottomette: usare --riconcilia» (righe 153-161). La riconciliazione arriverebbe ad 'assente' solo dopo due controlli a 10 minuti, e poi servirebbe --dopo-assenza-verificata, un percorso non previsto dalla sequenza.",
+     "correzione": "Prima di consegnare il brief, Simone decide come ripulire: togliere la cartella dell'ID e le due righe del ledger (con la sua approvazione), oppure registrare l'incidente e seguire la riconciliazione fino ad 'assente'. Io non ho toccato il registro."
+    },
+    {
+     "id": "I-1",
+     "gravita": "importante",
+     "titolo": "grep -c del passo 1 esce con codice 1 proprio quando l'esito è quello atteso (0)",
+     "dove": "sequenza riga 72; brief punto 1",
+     "prova": "Prima dell'incidente: grep -c \"CN-RESTART545\" ~/wearusfm_local/jobs/ledger.tsv stampava 0, poi exit=1. Lo strumento Bash mostra «Exit code 1», e il brief dice di fermarsi a ogni errore inatteso.",
+     "correzione": "Scrivere che l'uscita attesa è «0, codice 1», oppure usare '|| true'. Aggiungere anche il controllo che non esista la cartella ~/wearusfm_local/jobs/<ID>: il submitter rifiuta anche per la sola cartella."
+    },
+    {
+     "id": "I-2",
+     "gravita": "importante",
+     "titolo": "Controlli su Leonardo dei passi 3, 4 e 6 senza comando esatto; $WORK e $CODE_DIR si espandono vuote sul Mac",
+     "dove": "sequenza righe 89-93, 111, 147; brief punto 3",
+     "prova": "Sul Mac WORK e CODE_DIR non sono impostate. Scritto senza apici singoli, 'ssh leonardo git -C \"$CODE_DIR\" rev-parse HEAD' arriva come 'git -C  rev-parse HEAD' e fallisce. 'lfs project -d \"$WORK\"' arriva senza percorso. In una nuova sessione ssh CODE_DIR non esiste nemmeno sul cluster. Il revisore ha usato percorsi letterali (leonardo/stato_pre_lancio.sh).",
+     "correzione": "Dare comandi pronti con apici singoli e percorsi letterali (/leonardo_work/IscrB_WearUsFM/...), per esempio riusando stato_pre_lancio.sh con ssh leonardo 'bash -s', più rev-parse e status del checkout."
+    },
+    {
+     "id": "M-1",
+     "gravita": "minore",
+     "titolo": "Il brief dice che --agente claude è l'unica differenza voluta",
+     "dove": "brief riga 28 contro sequenza righe 108-109 e 115",
+     "prova": "La sequenza dichiara anche l'invocazione diretta del submitter condiviso, lo SHA per esteso e, al passo 5, export RELEASE_SHA e due date. Il diff con il protocollo (righe 63-75) mostra solo queste tre righe in più. mac_launcher_command.py produce proprio venv python + submitter condiviso, quindi la sostituzione è equivalente.",
+     "correzione": "Nel brief: «le differenze volute sono quelle elencate nella sequenza»."
+    },
+    {
+     "id": "M-2",
+     "gravita": "minore",
+     "titolo": "Passo 5: lo stdout non contiene un solo JSON e stderr non è vuoto",
+     "dove": "sequenza righe 140-141; brief punto 5",
+     "prova": "contrastive_cn_restart.py righe 149-152 lancia prima contrastive_run.py --validate-only, che stampa una riga JSON (righe 324-327, con release_valid ed execution_started false). Poi il driver stampa il JSON indentato con new_binding_valid. Ogni ssh scrive su stderr tre righe 'WARNING: connection is not using a post-quantum key exchange' (leonardo/*_20261127.err.txt).",
+     "correzione": "Descrivere lo stdout: data, riga JSON del runner, JSON del driver, data. Dire che le righe WARNING su stderr sono normali."
+    },
+    {
+     "id": "M-3",
+     "gravita": "minore",
+     "titolo": "Log del checkout: percorso non scritto, un solo file senza .err",
+     "dove": "sequenza riga 110 e passo 7 riga 182",
+     "prova": "In campaign_checkout.sbatch (righe 9-10) -o ed -e puntano entrambi a /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/campaign_checkout_%j.out.",
+     "correzione": "Scrivere il percorso completo e precisare che i due log .out e .err del passo 7 sono quelli del job GPU."
+    },
+    {
+     "id": "M-4",
+     "gravita": "minore",
+     "titolo": "--script-stdin relativo; il passo 6 non ripete la cartella da cui lanciare",
+     "dove": "sequenza righe 97 e 149-155",
+     "prova": "submit_job.py riga 219 legge il percorso relativo alla cartella corrente. Dal main canonico, campaign_checkout.sbatch ha gli stessi byte (eaafc432); cn_restart_probe.sbatch invece manca, quindi l'errore arriva prima della prenotazione (riga 222) e non brucia l'ID.",
+     "correzione": "Usare percorsi assoluti in --script-stdin, oppure mettere il cd nel worktree di release nello stesso comando."
+    },
+    {
+     "id": "M-5",
+     "gravita": "minore",
+     "titolo": "Comando di riconciliazione non scritto per intero",
+     "dove": "sequenza riga 159",
+     "prova": "Il submitter accetta '--riconcilia ID' con l'ID logico (riga 314). La sequenza non dà il comando completo con venv e percorso.",
+     "correzione": "Scrivere il comando intero con l'ID logico, non l'ID SLURM."
+    },
+    {
+     "id": "M-6",
+     "gravita": "minore",
+     "titolo": "Al lancio non si ricontrollano i byte del submitter condiviso",
+     "dove": "sequenza passo 1",
+     "prova": "mac_launcher_command.py (righe 29-33) confrontava ogni volta i byte del submitter condiviso con quelli del commit. Con l'invocazione diretta questo controllo salta.",
+     "correzione": "Aggiungere al passo 1 lo shasum -a 256 del submitter condiviso (atteso 814da4bc66db...)."
+    },
+    {
+     "id": "N-1",
+     "gravita": "nota",
+     "titolo": "Le letture del 27/11 non controllano il checkpoint di fork del piano",
+     "dove": "leonardo/stato_pre_lancio.sh",
+     "prova": "Lo script controlla fork/CN/checkpoint.pt (assente), mentre plan.json usa benchmark/CN/checkpoint_step0000544.pt. Lo verifica comunque --validate-only (checked_pin) prima del job GPU.",
+     "correzione": "Facoltativo: aggiungerlo ai controlli del passo 3."
+    },
+    {
+     "id": "N-2",
+     "gravita": "nota",
+     "titolo": "La sequenza non è ancora committata",
+     "dove": "worktree claude-training-engine",
+     "prova": "git status: ?? docs/contrastive_cn_restart_probe_launch_20261127.md",
+     "correzione": "Fare commit e push prima di sostituire @SEQ_SHA@."
+    }
+   ],
+   "verifiche_positive": [
+    "Worktree di release a b58a66f6... e pulito. Il diff da 8c72655c tocca solo release_binding.json. Nelle ref locali, origin/claude/cn-restart545-release-20261127 punta allo stesso SHA e la review 76f5d0e7 è antenata di origin/worktree-claude-training-engine.",
+    "Ho ricalcolato come package() l'impronta del pacchetto: e9310d67...702d. Lo sha256 di plan.json è 4f538cf1...853b. Il submitter del commit e quello condiviso sono identici (cmp), sha256 814da4bc.",
+    "Prova a secco: le righe sbatch delle chiamate 1 e 4 coincidono con il protocollo salvo le differenze dichiarate. Lo stdin coincide byte per byte con i due script del commit. sbatch legge lo script da stdin senza argomenti.",
+    "Parametri coerenti fra plan.json (allocation, logical_ids, output), #SBATCH, argomenti e controlli: CODE_DIR uguale a $WORK/wearusfm_campaigns/cn-restart545-20261121, $#=0, TimeLimit=00:15:00, TORCH_DIST_INIT_BARRIER=1. validate_allocation chiede 32 CPU, 245760 MB, 1 nodo e 4 GPU, e non controlla il nome del job.",
+    "La stringa «checkout di campagna pronto: ... @ SHA» corrisponde al codice. --validate-only non crea la cartella di uscita, quindi non brucia il job GPU. Il confronto esce con 0 anche quando l'esito è INCONCLUSIVE. Timeout e fasi fallite scrivono execution_failure.json e finiscono FAILED.",
+    "Passo 5 simulato in zsh con ssh finto: ssh riceve 'leonardo' e 'bash -s', lo stdin coincide con il corpo dell'heredoc, la tilde nelle ridirezioni si espande, uscita 0. bash -n passa sul corpo e sui tre script. Il diff con il protocollo contiene solo le tre righe dichiarate.",
+    "Refspec SHA:refs/heads/deploy/... provato fra due repository locali, con updateInstead sul destinatario: push accettato, ls-remote restituisce lo stesso SHA. Il remote leonardo è configurato; nessun hook locale né core.hooksPath."
+   ],
+   "punti_aperti": [
+    "Il registro va ripulito o riconciliato dopo l'incidente B-0, con una decisione di Simone, prima della consegna.",
+    "Non verificati: push e ls-remote veri verso Leonardo e GitHub, certificato ssh, coda, quota e prenotazioni al momento del lancio.",
+    "Non verificato se la funzione module esiste dentro il bash -s figlio. Se manca, il passo 5 si ferma prima del job GPU senza bruciare il suo ID.",
+    "Non misurato il tempo reale di --validate-only sul nodo di login (limite di 10 minuti di CPU)."
+   ]
+  },
+  "verified": [
+   {
+    "finding": {
+     "id": "B-0",
+     "gravita": "bloccante",
+     "titolo": "Prenotazione 'ambiguo' scritta per errore nel registro vero da questa verifica",
+     "dove": "~/wearusfm_local/jobs/CONTRAST-CHECKOUT-CN-RESTART545-20261121/state.json e ~/wearusfm_local/jobs/ledger.tsv righe 1891-1892 (27/11 15:33:41-42)",
+     "prova": "Ho estratto per errore con awk il blocco del passo 4 e l'ho eseguito con PATH=finto_ssh_bin:$PATH zsh -f. Il submitter ha usato il registro predefinito: state.json riporta stato 'ambiguo', stdout 'finto-stdout', codice b58a66f6. Il file agents2/d1-comandi/ssh_argomenti.txt mostra che la chiamata l'ha ricevuta il finto ssh, non Leonardo. Il lock è stato rilasciato e il worktree di release è pulito. Effetto: al passo 1 grep -c dà 2; al passo 4 submit_job.py rifiuterebbe con «gia' prenotato, stato 'ambiguo'. Non si risottomette: usare --riconcilia» (righe 153-161). La riconciliazione arriverebbe ad 'assente' solo dopo due controlli a 10 minuti, e poi servirebbe --dopo-assenza-verificata, un percorso non previsto dalla sequenza.",
+     "correzione": "Prima di consegnare il brief, Simone decide come ripulire: togliere la cartella dell'ID e le due righe del ledger (con la sua approvazione), oppure registrare l'incidente e seguire la riconciliazione fino ad 'assente'. Io non ho toccato il registro."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "bloccante",
+      "motivo": "Non sono riuscito a confutare il rilievo: tutti i fatti che riporta li ho trovati identici nelle fonti, controllate in sola lettura.\n\n- **Prenotazione nel registro vero.** Il file ~/wearusfm_local/jobs/CONTRAST-CHECKOUT-CN-RESTART545-20261121/state.json esiste, creato il 27/11 alle 15:33:41. Ha stato 'ambiguo', job_slurm null, stdout 'finto-stdout' e codice b58a66f6. Nella cartella non è rimasto nessun operazione.lock.\n- **Ledger.** In ledger.tsv la riga 1891 ('prenotato') e la riga 1892 ('ambiguo') portano questo ID.\n- **Chiamata mai arrivata a Leonardo.** agents2/d1-comandi/finto_ssh_bin/ssh è lo script finto: stampa finto-stdout ed esce con 0. Il suo ssh_argomenti.txt contiene 'leonardo' e 'bash -s', quindi la chiamata l'ha ricevuta lui.\n- **Worktree di release.** È pulito.\n- **Effetto sulla sequenza.** Il documento usa proprio questo ID alle righe 49 e 101. Alla riga 72 il controllo `grep -c` deve dare 0, oggi darebbe 2: il passo 1 si ferma.\n- **Effetto sul submitter.** In scripts/submit_job.py, righe 149-160, una cartella esistente in stato 'ambiguo' porta al rifiuto con «usare --riconcilia». Secondo le righe 16-18 lo stato 'assente' arriva solo dopo due controlli vuoti a distanza di 10 minuti. Da lì serve --dopo-assenza-verificata, un percorso che la sequenza non prevede (alla riga 159 dice solo di riconciliare, mai di rilanciare).\n\nLa gravità resta bloccante: seguendo i testi alla lettera il lancio si ferma, e serve una decisione di Simone su come pulire il registro o su quale riconciliazione seguire. Il rapporto è in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d1-comandi-B-0-1.md."
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "bloccante",
+      "motivo": "Il rilievo regge e la gravità giusta è bloccante. Il fatto è confermato in sola lettura. Il ledger comune ~/wearusfm_local/jobs/ledger.tsv ha due righe per CONTRAST-CHECKOUT-CN-RESTART545-20261121, codice b58a66f6: la 1891 «prenotato» (15:33:41) e la 1892 «ambiguo» (15:33:42). Il file state.json dello stesso ID riporta stato «ambiguo», job_slurm null, stdout «finto-stdout» e stderr «finto-stderr».\n\nNel worktree di release, scripts/submit_job.py righe 140-160: la funzione reserve() trova la cartella già esistente. Con stato «ambiguo» esce con «gia' prenotato, stato 'ambiguo'. Non si risottomette: usare --riconcilia».\n\nEffetto sulla sequenza:\n- riga 72, passo 1: il controllo `grep -c \"CN-RESTART545\"` deve dare 0, oggi darebbe 2;\n- riga 101, passo 4: usa lo stesso ID e verrebbe rifiutato;\n- riga 159: prevede --riconcilia solo per un'uscita ambigua dell'invio vero.\n\nNon riesco a confutarlo. Il guardiano del submitter impedisce un doppio invio reale, quindi nessun job parte per errore. Però l'operatore, seguendo i testi alla lettera, si fermerebbe al passo 1 o verrebbe rifiutato al passo 4. L'ID del checkout resta inutilizzabile senza una pulizia o una riconciliazione fino ad «assente» seguita da --dopo-assenza-verificata, un percorso che la sequenza non descrive. Il lancio quindi fallirebbe: la decisione di Simone sulla pulizia va presa prima della consegna.\n\nRapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d1-comandi-B-0-2.md"
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "I-1",
+     "gravita": "importante",
+     "titolo": "grep -c del passo 1 esce con codice 1 proprio quando l'esito è quello atteso (0)",
+     "dove": "sequenza riga 72; brief punto 1",
+     "prova": "Prima dell'incidente: grep -c \"CN-RESTART545\" ~/wearusfm_local/jobs/ledger.tsv stampava 0, poi exit=1. Lo strumento Bash mostra «Exit code 1», e il brief dice di fermarsi a ogni errore inatteso.",
+     "correzione": "Scrivere che l'uscita attesa è «0, codice 1», oppure usare '|| true'. Aggiungere anche il controllo che non esista la cartella ~/wearusfm_local/jobs/<ID>: il submitter rifiuta anche per la sola cartella."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "importante",
+      "motivo": "Il fatto è vero. La riga 72 della sequenza riporta `grep -c \"CN-RESTART545\" ~/wearusfm_local/jobs/ledger.tsv  # deve essere 0`, senza `|| true` e senza dire quale codice d'uscita aspettarsi. Il grep è l'ultima riga del blocco del passo 1. L'ho provato su un file senza corrispondenze: stampa 0 ed esce con codice 1. Il brief (riga 26) dice di fermarsi a ogni errore inatteso, quindi un modello piccolo può fermarsi. Anche la seconda parte regge: in scripts/submit_job.py, righe 141-161, `reserve` rifiuta l'invio se la cartella ~/wearusfm_local/jobs/<ID> esiste già, anche senza state.json (stato «sconosciuto», messaggio «Usare un ID nuovo»). Il solo controllo sul ledger non basta. Non è bloccante: provoca un arresto spurio prima di qualsiasi invio, senza bruciare ID né violare regole. Resta però un rischio concreto di errore dell'operatore, quindi «importante». Nota di contesto: oggi il ledger ha già 2 righe CN-RESTART545 ed esiste la cartella del checkout, cioè l'incidente citato. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d1-comandi-I-1-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il fatto è vero. In locale `grep -c` su un file senza corrispondenze stampa 0 ed esce con codice 1, e alla riga 72 della sequenza il grep è l'ultimo comando del blocco del passo 1. Le conseguenze però sono limitate. L'uscita stampata, 0, coincide con il commento «deve essere 0», e il passo viene prima di qualsiasi invio. Nel caso peggiore l'operatore si ferma per prudenza e chiede, ma nessun ID si brucia. Anche la cartella ~/wearusfm_local/jobs/<ID> già presente non brucia un tentativo: il submitter la crea con un mkdir atomico che fa da prenotazione (scripts/submit_job.py, righe 142-146) e rifiuta prima di sbatch. Quindi il rilievo cambia al più i tempi, non l'esito: è minore, non importante. Il rapporto è in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d1-comandi-I-1-2.md."
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "I-2",
+     "gravita": "importante",
+     "titolo": "Controlli su Leonardo dei passi 3, 4 e 6 senza comando esatto; $WORK e $CODE_DIR si espandono vuote sul Mac",
+     "dove": "sequenza righe 89-93, 111, 147; brief punto 3",
+     "prova": "Sul Mac WORK e CODE_DIR non sono impostate. Scritto senza apici singoli, 'ssh leonardo git -C \"$CODE_DIR\" rev-parse HEAD' arriva come 'git -C  rev-parse HEAD' e fallisce. 'lfs project -d \"$WORK\"' arriva senza percorso. In una nuova sessione ssh CODE_DIR non esiste nemmeno sul cluster. Il revisore ha usato percorsi letterali (leonardo/stato_pre_lancio.sh).",
+     "correzione": "Dare comandi pronti con apici singoli e percorsi letterali (/leonardo_work/IscrB_WearUsFM/...), per esempio riusando stato_pre_lancio.sh con ssh leonardo 'bash -s', più rev-parse e status del checkout."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "importante",
+      "motivo": "Il rilievo regge. Ho controllato la sequenza riga per riga. Il passo 3 (righe 87-93) elenca i controlli solo a parole. L'unico frammento di comando, `lfs project -d \"$WORK\"` alla riga 90, non ha né `ssh leonardo` né gli apici singoli. Alla riga 111 compare `git -C \"$CODE_DIR\" rev-parse HEAD`, ma `CODE_DIR` viene definita solo più avanti: dentro l'heredoc del passo 5 (riga 125) e come valore di --export al passo 6 (riga 155). Al passo 4 quindi non esiste, né sul Mac né in una nuova sessione ssh. Anche la riga 147 e il punto 3 del brief non danno comandi. Sul Mac WORK e CODE_DIR non sono impostate (`env | grep -c` dà 0). In zsh le due righe si espandono in `ssh leonardo git -C  rev-parse HEAD` e in `lfs project -d `, cioè con il percorso vuoto. Il rilievo si attenua ma non si confuta. La tabella alle righe 53-54 dà i percorsi letterali, quindi un operatore attento potrebbe ricostruire i comandi da solo. Inoltre il driver rifiuta una cartella di uscita già esistente (riga 59). I controlli sono in sola lettura e un loro errore non consuma un ID, quindi il rilievo non è bloccante. Resta però un rischio concreto: un controllo di assenza con la variabile vuota, per esempio `test -e \"\"`, risponderebbe «assente» anche se la cartella c'è, cioè darebbe un falso via libera. La gravità corretta è quindi «importante». Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d1-comandi-I-2-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "importante",
+      "motivo": "Ho cercato di confutare il rilievo, ma regge. Gravità confermata: importante.\n\n**Che cosa lo attenua.**\n- Nella tabella della sequenza (righe 53-54) ci sono i percorsi letterali di CODE_DIR e della cartella di uscita.\n- Il passo 5 mostra già il modo giusto, `ssh leonardo 'bash -s'`.\n- Il passo 6 usa il percorso letterale.\n- Questi controlli sono solo letture: un loro errore non brucia un ID. Il brief (riga 26) dice di fermarsi.\n\n**Perché il rilievo regge comunque.**\n- Ho verificato che sul Mac WORK e CODE_DIR sono vuote.\n- Le righe 90 e 111 scrivono \"$WORK\" e \"$CODE_DIR\" senza dire dove vanno espanse. CODE_DIR è definita solo dentro l'heredoc del passo 5, cioè dopo il passo 4.\n- I passi 3 e 6 (righe 89, 92-93, 147) non danno nessun comando.\n- La quota è un controllo vero, non di forma. In stato_pre_lancio_20261127.out.txt (righe 42-45) il progetto 20147512 usa 991G su 1T: restano circa 9 GB, contro la soglia di 4 GB.\n- Scritto senza apici, `lfs project -d` arriva sul cluster senza percorso. Legge così l'ID di progetto della home e dà una quota sbagliata proprio nel controllo con poco margine. Se invece il comando fallisce, il lancio si blocca senza motivo.\n\n**Perché non è bloccante.** Seguendo i testi alla lettera nessun ID viene bruciato e nessuna regola viene violata.\n\nRapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d1-comandi-I-2-2.md"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "d2-codice-cluster",
+  "review": {
+   "sintesi": "Il codice dei passi 4-6 è coerente con la sequenza. Tutti i commit che il codice legge con git sul cluster (f23b7cca, 8c72655c, fbfde797) sono antenati di b58a66f6, e i validatori della release passano sul Mac. Però il ledger comune vero è stato scritto alle 15:33:41-42 dalla prova con ssh finto del verificatore d1: l'ID CONTRAST-CHECKOUT-CN-RESTART545-20261121 risulta ora 'ambiguo'. Per questo il passo 1 non dà 0, il passo 4 viene rifiutato dal submitter e le frasi della sequenza e del brief sul ledger non sono più vere: è bloccante. C'è poi un controllo che si potrebbe fare prima e manca: il confronto legge da WORK tracce, profili e metriche storici e li vuole identici all'archivio, ma il validatore non li controlla. Una differenza darebbe INCONCLUSIVE dopo aver speso l'unico tentativo GPU. Rapporto completo: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/d2-codice-cluster.md",
+   "rilievi": [
+    {
+     "id": "B-1",
+     "gravita": "bloccante",
+     "titolo": "Il ledger comune vero contiene ora l'ID del checkout in stato 'ambiguo'",
+     "dove": "Sequenza righe 38 e 42-43 e passi 1 e 4; brief, punto 1",
+     "prova": "grep -c CN-RESTART545 ~/wearusfm_local/jobs/ledger.tsv restituisce 2: una riga 'prenotato' alle 15:33:41 e una 'ambiguo' alle 15:33:42. Il file ~/wearusfm_local/jobs/CONTRAST-CHECKOUT-CN-RESTART545-20261121/state.json ha stato 'ambiguo', stdout 'finto-stdout' e stderr 'finto-stderr'. Lo ssh finto agents2/d1-comandi/finto_ssh_bin/ssh è stato creato alle 15:33:41 e stampa proprio quelle stringhe. Per lo stato 'ambiguo', scripts/submit_job.py (righe 153-161) rifiuta la prenotazione: 'Non si risottomette: usare --riconcilia'. L'ID del job GPU non è stato toccato.",
+     "correzione": "Fermare la consegna e far decidere a Simone come ripulire: due --riconcilia a distanza di almeno 10 minuti fino a 'assente', poi --dopo-assenza-verificata nel passo 4, oppure una pulizia registrata. Poi aggiornare il passo 1, le righe 38 e 42-43 e il punto 1 del brief."
+    },
+    {
+     "id": "I-1",
+     "gravita": "importante",
+     "titolo": "Il validatore non controlla i file storici su WORK che il confronto legge",
+     "dove": "Sequenza, passo 5 e sezione 'Che cosa non si può verificare prima'",
+     "prova": "Il confronto vuole identici byte per byte all'archivio del repository questi file su WORK: trace-{0..3}.jsonl e numeric_profile.rank{0..3}.json di reloads/CN_A e benchmark/CN (contrastive_cn_restart_compare.py, righe 205-223), metrics.jsonl (riga 264) e trace-{0..3}.ddp.jsonl di benchmark/CN (riga 356). commands() (contrastive_cn_restart.py, righe 105-137) controlla solo i tre checkpoint. Le letture del 27/11 e del 21/11 non hanno toccato questi file. Se uno manca o è diverso, il report esce INCONCLUSIVE e il job finisce COMPLETED 0:0 dopo aver usato l'unico tentativo GPU.",
+     "correzione": "Aggiungere al passo 3 o al passo 5 un confronto degli sha256 in sola lettura fra quei file su WORK e le copie in results/infra/contrastive_targets_20261118/{reloads_execution_20261121/CN_A,benchmark_execution_20261121/CN} del commit di release. In alternativa, dichiararlo almeno come verifica possibile e non fatta."
+    },
+    {
+     "id": "M-1",
+     "gravita": "minore",
+     "titolo": "Gli esiti del job sono descritti in modo approssimato",
+     "dove": "Sequenza, righe 161-167",
+     "prova": "run() chiude ogni fase 25 secondi prima della fine dell'allocazione (entro 875 secondi, righe 166-185): una fase troppo lunga dà FAILED con execution_failure.json (causa TimeoutExpired o TimeoutError), non TIMEOUT. Un TIMEOUT con execution_failure.json già scritto resta possibile, perché la chiusura delle fasi può durare fino a 20 secondi (contrastive_split_benchmark.py, righe 35-48). Un errore fra root.mkdir e le fasi (righe 158-164) lascia la cartella di uscita con al massimo allocation.json. Le guardie [[ ]] dello sbatch (righe 16, 17 e 21), sotto set -e, escono con 1 senza messaggi nei log.",
+     "correzione": "Aggiungere una o due frasi: un timeout di fase compare come FAILED con execution_failure.json; un FAILED con i log vuoti, o con la sola riga 'codice:', viene da una guardia dello script SLURM; una cartella con solo allocation.json viene da un errore prima delle fasi."
+    },
+    {
+     "id": "M-2",
+     "gravita": "minore",
+     "titolo": "Il passo 6 non ripete la cartella da cui lanciare",
+     "dove": "Sequenza, passo 6 (righe 149-156)",
+     "prova": "--script-stdin scripts/slurm/cn_restart_probe.sbatch è un percorso relativo, e il file manca sia nel main locale (c47e6557) sia nel worktree claude-training-engine (ls: No such file). Lanciato da un'altra cartella, il submitter esce alla riga 219, prima della prenotazione (riga 222): l'ID non si brucia, ma il passo fallisce.",
+     "correzione": "Ripetere al passo 6 'Dalla radice del worktree di release' oppure mettere un cd esplicito."
+    },
+    {
+     "id": "N-1",
+     "gravita": "nota",
+     "titolo": "La validazione sul login fa più letture di quelle dichiarate",
+     "dove": "Sequenza, righe 140-142",
+     "prova": "Il runner, con validate_target_fork e validate_fork, calcola altre due volte l'impronta del fork, lo apre con mmap e calcola l'impronta dello stato; validate_cuda_prerequisite calcola quella di calibration/checkpoint.pt; si leggono anche audit.json (20 MB) e il manifest. Lo stdout contiene, in ordine: la riga 'codice:', le due date, il JSON del runner (anch'esso con execution_started false) e per ultimo il JSON del driver.",
+     "correzione": "Facoltativa: precisare che il JSON da guardare è l'ultimo, quello con new_binding_valid. Il costo resta molto sotto i 10 minuti di CPU."
+    },
+    {
+     "id": "N-2",
+     "gravita": "nota",
+     "titolo": "Il confronto con WORK usa il percorso risolto da una parte sola",
+     "dove": "scripts/diagnostics/contrastive_cn_restart.py, righe 112-115",
+     "prova": "root.parent, preso dal piano e non risolto, viene confrontato con Path(WORK).resolve(). Se $WORK fosse un link simbolico, il passo 5 fallirebbe, prima del job GPU e senza bruciare l'ID. contrastive_job.py usa la stessa risoluzione con esito positivo nei job storici. Non ho una lettura di realpath $WORK.",
+     "correzione": "Nessuna. Al più, aggiungere readlink -f \"$WORK\" alle letture del passo 3."
+    },
+    {
+     "id": "N-3",
+     "gravita": "nota",
+     "titolo": "La presenza del fork su WORK non è stata letta il 27/11",
+     "dove": "stato_pre_lancio.sh, riga 9; letture del 27/11",
+     "prova": "Lo script ha letto fork/CN/checkpoint.pt, che non esiste ('No such file'), invece di benchmark/CN/checkpoint_step0000544.pt, che è il fork del piano. Il passo 5 lo controlla comunque con checked_pin.",
+     "correzione": "Nessuna. Al passo 3 conviene leggere il percorso giusto."
+    },
+    {
+     "id": "N-4",
+     "gravita": "nota",
+     "titolo": "grep -c esce con 1 quando conta zero righe",
+     "dove": "Sequenza, passo 1, riga 72",
+     "prova": "Con zero corrispondenze grep -c stampa 0 ed esce con 1: un operatore può leggere l'uscita come un errore.",
+     "correzione": "Scrivere che l'uscita 1 con 0 stampato è normale. La riga va comunque rivista per B-1."
+    }
+   ],
+   "verifiche_positive": [
+    "Con git merge-base --is-ancestor nel worktree di release: f23b7cca (evidence_commit), 8c72655c (reviewed_commit) e fbfde797 (commit della review storica, letto da verify_reviewed_sources) sono antenati di b58a66f6, e lo è anche il main del cluster 8dad7e82. 469b312c e 76f5d0e7 non lo sono, ma i passi 5 e 6 non li leggono con git (bind_review e REVIEW_REF non vengono eseguiti).",
+    "Sul Mac, dal worktree di release e con python -I -B, sono passati require_binding(), checked_pin(historical_job, repository=True) e validate_review_binding(job['package_review']) con verify_git=True; git status è rimasto pulito. Il job storico è CN, ripetizione a, con il fork del piano; la release è benchmark/resume_a con time_limit_s 1770.",
+    "Gli sha256 degli script (eaafc432… per il checkout, a8c8b8b4… per il job GPU) coincidono con lo stdin della prova a secco. Il submitter condiviso e quello del commit hanno lo stesso sha256 (814da4bc…). La riga di sbatch non passa argomenti dopo lo script, quindi la guardia '$# == 0' passa.",
+    "validate_allocation (1 nodo, 1 task, 32 CPU, 245.760 MB), la guardia TimeLimit=00:15:00 e TORCH_DIST_INIT_BARRIER=1 corrispondono al comando del passo 6. La barriera tiene i rank fermi finché tutti hanno superato il controllo della cartella fresca, prima che il rank 0 la crei.",
+    "Nessuna scrittura nel checkout in sola lettura: niente bytecode, uscite solo sotto plan['output'], e git tocca solo l'indice in $WORK/wearusfm/.git/worktrees. Le operazioni git dei rank in parallelo sono sicure.",
+    "Il preambolo di cn_restart_probe.sbatch (set -euo, code_dir_setup, scontrol, module, venv) ha lo stesso schema di contrastive_preflight_gpu.sbatch, già usato con successo nella linea 3.",
+    "compare scrive sempre report.json ed esce con 0 sulle eccezioni previste, e ogni suo return contiene 'reason': un INCONCLUSIVE dà COMPLETED 0:0, come dice la sequenza. Una fase fallita scrive execution_failure.json ed esce con 1.",
+    "Tutti i torch.load con mmap passano una stringa, il formato richiesto dal torch 2.2 del cluster secondo la lettura del 27/11."
+   ],
+   "punti_aperti": [
+    "Il ledger vero va ripulito per l'ID del checkout (B-1); la decisione spetta a Simone, che deve anche autorizzare le modifiche ai passi 1 e 4 e al brief.",
+    "Non ho verificato se i file storici su WORK (tracce, profili e metriche di reloads/CN_A e benchmark/CN) sono identici all'archivio del repository.",
+    "La parte GPU (hook NCCL, libcuda, sette gruppi) e i tempi reali, con la validazione ripetuta da quattro rank per ciascuna gamba, si vedono solo in esecuzione.",
+    "Non verificati: realpath di $WORK e presenza di SLURM_JOB_END_TIME sui nodi (lo script la ricava comunque da scontrol).",
+    "Occupazione effettiva su WORK di vettori e checkpoint delle due gambe (stima di circa 3-4 GB; la quota è soft a 1 T, senza hard limit)."
+   ]
+  },
+  "verified": [
+   {
+    "finding": {
+     "id": "B-1",
+     "gravita": "bloccante",
+     "titolo": "Il ledger comune vero contiene ora l'ID del checkout in stato 'ambiguo'",
+     "dove": "Sequenza righe 38 e 42-43 e passi 1 e 4; brief, punto 1",
+     "prova": "grep -c CN-RESTART545 ~/wearusfm_local/jobs/ledger.tsv restituisce 2: una riga 'prenotato' alle 15:33:41 e una 'ambiguo' alle 15:33:42. Il file ~/wearusfm_local/jobs/CONTRAST-CHECKOUT-CN-RESTART545-20261121/state.json ha stato 'ambiguo', stdout 'finto-stdout' e stderr 'finto-stderr'. Lo ssh finto agents2/d1-comandi/finto_ssh_bin/ssh è stato creato alle 15:33:41 e stampa proprio quelle stringhe. Per lo stato 'ambiguo', scripts/submit_job.py (righe 153-161) rifiuta la prenotazione: 'Non si risottomette: usare --riconcilia'. L'ID del job GPU non è stato toccato.",
+     "correzione": "Fermare la consegna e far decidere a Simone come ripulire: due --riconcilia a distanza di almeno 10 minuti fino a 'assente', poi --dopo-assenza-verificata nel passo 4, oppure una pulizia registrata. Poi aggiornare il passo 1, le righe 38 e 42-43 e il punto 1 del brief."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "bloccante",
+      "motivo": "Il rilievo è confermato. Le righe 1891 e 1892 del ledger vero (~/wearusfm_local/jobs/ledger.tsv) riportano CONTRAST-CHECKOUT-CN-RESTART545-20261121, prima 'prenotato' alle 15:33:41 e poi 'ambiguo' alle 15:33:42. Il file state.json ha stato 'ambiguo', job_slurm null, stdout 'finto-stdout' e stderr 'finto-stderr'. Lo ssh finto in agents2/d1-comandi/finto_ssh_bin/ssh stampa proprio queste stringhe. Per l'ID GPU non c'è nessuna riga. In scripts/submit_job.py il registro predefinito è ~/wearusfm_local/jobs (riga 47). Con lo stato 'ambiguo' la prenotazione viene rifiutata (righe 141-161). Per arrivare ad 'assente' servono due controlli vuoti distanziati di almeno 10 minuti (righe 13-17 e 49). Il comando del passo 4 (righe 100-105 della sequenza) non passa --registro, quindi sarebbe rifiutato. La frase delle righe 42-43, «Il ledger vero non è stato toccato», oggi è falsa. Fallisce anche il controllo del punto 1 del brief («nessuna riga con CN-RESTART545»). Seguendo i testi alla lettera il lancio fallisce. Il rifiuto arriva prima di sbatch: nessun job parte, ma l'ID resta bloccato finché non si riconcilia. La gravità resta bloccante. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d2-codice-cluster-B-1-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "bloccante",
+      "motivo": "Ho controllato il fatto. Nel ledger vero ~/wearusfm_local/jobs/ledger.tsv ci sono due righe, la 1891 (prenotato, 15:33:41) e la 1892 (ambiguo, 15:33:42), per CONTRAST-CHECKOUT-CN-RESTART545-20261121. Il suo state.json ha stato 'ambiguo', job_slurm null e stdout/stderr 'finto-stdout'/'finto-stderr'. Sono proprio le stringhe che stampa lo ssh finto agents2/d1-comandi/finto_ssh_bin/ssh, creato alle 15:33: la prova a secco ha scritto sul registro vero. Nessun job Slurm reale è partito e l'ID del job GPU non è toccato.\n\nConseguenze per l'operatore:\n- Al passo 1 (sequenza riga 72, brief punto 1) il controllo del ledger, che deve dare 0, dà 2, quindi l'operatore si ferma.\n- Se forzasse, al passo 4 scripts/submit_job.py (righe 152-160) rifiuta la prenotazione con 'Non si risottomette: usare --riconcilia'.\n- La strada corretta, cioè due --riconcilia a distanza di almeno 10 minuti fino a 'assente' e poi --dopo-assenza-verificata, non è in nessuno dei due testi. Un modello piccolo potrebbe improvvisare (ID nuovo, cancellazione dello stato) fuori dalle regole.\n- La riga 43 della sequenza ('Il ledger vero non è stato toccato') ora è falsa.\n\nC'è un'attenuante: il tentativo non è davvero bruciato e l'ID si può recuperare. Però, seguendo i testi alla lettera, il lancio fallisce, quindi il rilievo resta bloccante.\n\nRapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d2-codice-cluster-B-1-2.md"
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "I-1",
+     "gravita": "importante",
+     "titolo": "Il validatore non controlla i file storici su WORK che il confronto legge",
+     "dove": "Sequenza, passo 5 e sezione 'Che cosa non si può verificare prima'",
+     "prova": "Il confronto vuole identici byte per byte all'archivio del repository questi file su WORK: trace-{0..3}.jsonl e numeric_profile.rank{0..3}.json di reloads/CN_A e benchmark/CN (contrastive_cn_restart_compare.py, righe 205-223), metrics.jsonl (riga 264) e trace-{0..3}.ddp.jsonl di benchmark/CN (riga 356). commands() (contrastive_cn_restart.py, righe 105-137) controlla solo i tre checkpoint. Le letture del 27/11 e del 21/11 non hanno toccato questi file. Se uno manca o è diverso, il report esce INCONCLUSIVE e il job finisce COMPLETED 0:0 dopo aver usato l'unico tentativo GPU.",
+     "correzione": "Aggiungere al passo 3 o al passo 5 un confronto degli sha256 in sola lettura fra quei file su WORK e le copie in results/infra/contrastive_targets_20261118/{reloads_execution_20261121/CN_A,benchmark_execution_20261121/CN} del commit di release. In alternativa, dichiararlo almeno come verifica possibile e non fatta."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "importante",
+      "motivo": "Il rilievo I-1 regge: le fonti confermano i fatti. Gravità corretta: importante.\n\n- **Il confronto vuole i file identici byte per byte.** In contrastive_cn_restart_compare.py, branch_traces (righe 205-223) richiede che trace-{rank}.jsonl e numeric_profile.rank{rank}.json su WORK abbiano lo stesso sha256 delle copie in ARCHIVE (righe 18-19). Lo stesso vale per metrics.jsonl (riga 264) e per trace-{rank}.ddp.jsonl del continuo (riga 356).\n- **Un errore non ferma il job.** Nel main (righe 400-405) ogni ValueError o OSError diventa status INCONCLUSIVE: il report viene scritto e lo script esce con 0. Il confronto gira dopo le due gambe GPU, quindi il job finisce COMPLETED 0:0 a tentativo GPU già consumato.\n- **Il validatore non legge questi file.** commands() in contrastive_cn_restart.py (righe 105-137) controlla solo i pin dei checkpoint e gli input. Il ramo --validate-only (righe 144-152) non chiama il confronto.\n- **Nessun controllo nei testi né nelle letture.** I passi 3 e 5 della sequenza non verificano questi file. La sezione «Che cosa non si può verificare prima» (righe 202-206) parla della gamba nuova che non riproduce CN_A, non dei file storici su WORK. Il brief non li cita. stato_pre_lancio.sh del 27/11 fa solo ls dei checkpoint, e confronto_corretto_veri legge solo i checkpoint.pt.\n\nNon è bloccante: le copie nel repository furono raccolte da quei file il 21/11, quindi è probabile che coincidano. Non ho potuto confermarlo senza accesso al cluster. Il controllo degli sha256 sul nodo di login costa poco, mentre una differenza consumerebbe l'unico tentativo GPU.\n\nRapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d2-codice-cluster-I-1-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il fatto è vero. Il confronto vuole identici byte per byte, fra WORK e archivio, trace, numeric_profile, metrics e trace.ddp (compare.py, righe 205-223, 264 e 356). commands() controlla solo i tre checkpoint (righe 105-137). Un errore diventa INCONCLUSIVE (main, righe 403-404). La sequenza non prevede questo controllo.\n\nLa conseguenza però è remota. Gli sha calcolati su WORK alla raccolta del 21/11 coincidono con le copie dell'archivio di release, verificato con shasum -c:\n- benchmark_execution_20261121/remote_sha256.txt: 13 righe CN su 13 OK;\n- reloads_execution_20261121/CN_A_remote_integrity_and_log.txt: righe CN_A OK.\n\nSono file di run conclusi in wearusfm_runs. Nessun job previsto li riscrive: le gambe scrivono in una cartella nuova, imposta da root.exists(). I checkpoint vicini hanno ancora data 21/11.\n\nAnche nel caso improbabile le gambe GPU restano su WORK, e l'operatore raccoglie e riferisce comunque (passi 6-8). Il suo comportamento non cambia. Il controllo sha in sola lettura resta utile ed economico, ma non è un rischio concreto.\n\nNon verificato: lo stato attuale dei file su WORK (niente ssh, per divieto).\n\nRapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d2-codice-cluster-I-1-2.md"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "d3-operatore",
+  "review": {
+   "sintesi": "Ho letto la sequenza e il brief come li leggerebbe un operatore che esegue alla lettera. Nessun rilievo brucia un tentativo, se l'operatore li esegue così come sono scritti. Il passo 5 (--validate-only) non crea la cartella di uscita. Le risorse GPU e la QoS stanno nello sbatch. Lanciare dalla cartella sbagliata fa fallire il submitter prima della prenotazione. I comandi di invio corrispondono alla prova a secco.\n\nRestano lacune operative che un modello più piccolo può riempire male:\n- il passo 3 è senza comandi, e c'è il rischio che $WORK venga espanso sul Mac;\n- il controllo di git con \"$CODE_DIR\" al passo 4 non è eseguibile sul Mac;\n- mancano le istruzioni per attendere i job, per la coda lunga e per il certificato che scade alle 02:34;\n- la raccolta è senza comandi né elenco completo: mancano il log del checkout, le uscite della validazione e gli state.json;\n- non si sa in quale worktree o chat fare il commit, e il worktree indicato appartiene alla chat revisore;\n- un controllo del protocollo (billing e impegni concorrenti) è omesso.\n\nNessun rilievo è bloccante.",
+   "rilievi": [
+    {
+     "id": "D3-1",
+     "gravita": "importante",
+     "titolo": "Passo 3 senza comandi: rischio che $WORK venga espanso sul Mac e uscita da conservare senza cartella",
+     "dove": "sequenza, passo 3 (righe 87-93); brief, punto 3",
+     "prova": "La sequenza dà solo un elenco e la forma `lfs project -d \"$WORK\"` senza dire che va dentro `ssh leonardo '...'` fra apici singoli. Sul Mac $WORK non è definita. 'Conservare l'uscita' (riga 91) non dice dove: la cartella ~/wearusfm_local/cn_restart545_20261127 viene creata solo al passo 5 (riga 120). Mancano anche i comandi per la coda dell'utente su dbg e per controllare le cartelle assenti. Il revisore li aveva usati (leonardo/stato_pre_lancio_20261127.out.txt) ma non li ha consegnati.",
+     "correzione": "Dare un blocco `ssh leonardo 'bash -s' > ~/wearusfm_local/cn_restart545_20261127/pre_invio.out.txt <<'EOS'` con ls delle due cartelle, lfs project/quota (ID 20147512), squeue -u $USER e scontrol show reservation. Spostare la mkdir della cartella locale al passo 1. Dare i criteri di arresto: meno di 4 GB liberi, cartella presente, manutenzione che si sovrappone."
+    },
+    {
+     "id": "D3-2",
+     "gravita": "importante",
+     "titolo": "Controllo con \"$CODE_DIR\" al passo 4 non eseguibile sul Mac",
+     "dove": "sequenza, passo 4, riga 111",
+     "prova": "«Verificare poi `git -C \"$CODE_DIR\" rev-parse HEAD` e lo stato pulito». CODE_DIR non è definita sul Mac, ed eseguito da lì il comando fallisce: l'operatore si fermerebbe credendo a un errore. Lo stesso controllo lo fa già `code_dir_setup` al passo 5 (lib_code_dir.sh, righe 25-48: HEAD = EXPECTED_SHA, pulizia, sola lettura).",
+     "correzione": "Scrivere il comando per esteso, da eseguire via ssh: `ssh leonardo git -C /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/cn-restart545-20261121 rev-parse HEAD`. In alternativa, dire che la riga «codice: … @ b58a…» del passo 5 sostituisce questa verifica."
+    },
+    {
+     "id": "D3-3",
+     "gravita": "importante",
+     "titolo": "Mancano attesa dei job, criterio per la coda lunga e procedura alla scadenza del certificato",
+     "dove": "sequenza, passi 4 e 6; brief, VINCOLI (certificato fino al 28/11 alle 02:34)",
+     "prova": "Squeue/sacct compaiono solo al passo 6 (riga 158). Per il checkout c'è solo «Atteso COMPLETED 0:0 in meno di un minuto», ma lrd_all_serial può avere un'attesa in coda. Non è indicato ogni quanto rileggere la coda né come attendere (nella sessione lo sleep in primo piano è bloccato). Non c'è un criterio per un job GPU che resta PENDING: alle 15:10 la coda dbg aveva 39 job PENDING (reservation_coda_20261127.out.txt). Il brief riporta la scadenza del certificato ma non dice che cosa fare: chiedere a Simone il rinnovo con `step ssh login`, non inviare se il certificato scade prima della raccolta.",
+     "correzione": "Aggiungere al passo 4 la stessa lettura del passo 6 (squeue -h -j, poi sacct -X -j). Indicare un intervallo di lettura e il mezzo per attendere (Monitor o letture distanziate). Fissare un criterio: non inviare il job GPU se mancano meno di circa 60 minuti alla scadenza del certificato. Se il job è in coda o in esecuzione alla scadenza, chiedere a Simone il rinnovo e non cancellare."
+    },
+    {
+     "id": "D3-4",
+     "gravita": "importante",
+     "titolo": "Raccolta senza comandi e incompleta: mancano log del checkout, uscite operative e state.json",
+     "dove": "sequenza, passo 7 (righe 169-191); brief, punto 7",
+     "prova": "Non è indicato come copiare i file (rsync o scp, esclusione di *.pt) né l'albero remoto. Le gambe stanno in <output>/ordinary e <output>/warm (contrastive_cn_restart.py, righe 129-136). L'elenco cita «i due log di SLURM .out e .err», cioè quelli del job GPU, ma non il log del checkout `wearusfm_runs/logs/campaign_checkout_<jobid>.out`. Non cita le uscite della validazione (~/wearusfm_local/cn_restart545_20261127), la quota del passo 3 né gli state.json del submitter. L'archivio storico che la sequenza prende a modello li conserva (reloads_execution_20261121/*.state.json, checkout.state.json, *_login_check.txt). La formula «tutti i file che non sono .pt» e l'elenco esplicito sono due istruzioni diverse.",
+     "correzione": "Dare un comando unico, per esempio `rsync -a --exclude='*.pt' leonardo:<output>/ <dest>/run/`, più la copia dei tre log e di ~/wearusfm_local/jobs/<ID>/state.json per i due ID. Elencare le uscite dei passi 3 e 5 da copiare nella stessa cartella di raccolta, e prevedere un controllo `du -sh` prima del commit."
+    },
+    {
+     "id": "D3-5",
+     "gravita": "importante",
+     "titolo": "Worktree e ramo del commit non precisi; il worktree indicato appartiene alla chat revisore",
+     "dove": "sequenza, passo 7 (righe 190-191) e passo 8; brief, punto 8",
+     "prova": "«Percorso proposto … sul ramo worktree-claude-training-engine»: «proposto» non dice se il percorso è obbligatorio. Non dice in quale cartella del Mac lavorare. L'unico checkout di quel ramo è /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-training-engine, il worktree della chat revisore. Oggi ha due elementi non tracciati (`git status --porcelain`: la sequenza e docs/reviews/…_evidence/rilettura_20261127/prova_a_secco_invii/). CLAUDE.md: «Restano worktree separati, un writer per checkout». Un `git add -A` della chat 0 prenderebbe file del revisore. La cartella results/infra/contrastive_targets_20261118/ non esiste su quel ramo (76f5d0e7).",
+     "correzione": "Indicare in modo esplicito il worktree e il ramo in cui la chat 0 scrive. Per esempio: il worktree claude-training-engine, con la chat 3 ferma fino al push, aggiungendo solo i percorsi nominati, mai `git add -A`. Oppure un ramo dedicato. Indicare anche la sezione del registro da usare."
+    },
+    {
+     "id": "D3-6",
+     "gravita": "importante",
+     "titolo": "Omessi i controlli di billing e impegni concorrenti chiesti dal protocollo; il brief dichiara un'unica differenza",
+     "dove": "sequenza, passo 3; brief, VINCOLI («È l'unica differenza voluta»)",
+     "prova": "Protocollo (docs/contrastive_cn_restart_probe_20261121.md, «Risorse e passaggio operativo»): «Verificare assenza di prenotazioni o uscite preesistenti, saldo netto degli impegni, billing corrente, quota e scritture concorrenti…». La sequenza non chiede né billing né scritture concorrenti. Il brief dice che --agente claude è «l'unica differenza» rispetto ai comandi del protocollo. La sequenza (righe 108-109) ne dichiara due (--agente e l'invocazione diretta al posto di mac_launcher_command.py), più gli SHA scritti per esteso.",
+     "correzione": "Aggiungere al passo 3 la lettura del saldo del progetto (per esempio `saldo -b`) e dei job dell'account in corso, oppure dichiarare che quei controlli vengono tralasciati e perché. Allineare il brief: due differenze, non una."
+    },
+    {
+     "id": "D3-7",
+     "gravita": "minore",
+     "titolo": "grep -c esce con 1 quando l'esito atteso è 0",
+     "dove": "sequenza, passo 1, riga 72; brief, punto 1",
+     "prova": "`grep -c \"CN-RESTART545\" ~/wearusfm_local/jobs/ledger.tsv` stampa 0 ed esce con 1 (esito verificato oggi: 0). Il brief chiede di fermarsi a «un errore inatteso»: un operatore letterale può fermarsi, oppure, se concatena con &&, saltare il resto.",
+     "correzione": "Scrivere «stampa 0 (il codice d'uscita 1 è normale)», oppure usare `grep -c … || true`. Aggiungere `ls -d ~/wearusfm_local/jobs/CONTRAST-*RESTART545* 2>/dev/null` (deve dare un'uscita vuota)."
+    },
+    {
+     "id": "D3-8",
+     "gravita": "minore",
+     "titolo": "Non si ricontrolla al lancio che il submitter condiviso coincida con il commit",
+     "dove": "sequenza, tabella «Che cosa è già pronto» e passo 1",
+     "prova": "mac_launcher_command.py, che la sequenza sostituisce, verificava a ogni invio che il submitter condiviso fosse identico a quello del commit (righe 28-33). Oggi coincidono: shasum dà 814da4bc… per entrambi. Però il worktree GPT è vivo, e la sequenza non ripete il controllo prima degli invii.",
+     "correzione": "Aggiungere al passo 1 `shasum -a 256` dei due submitter, che devono essere uguali e iniziare con 814da4bc."
+    },
+    {
+     "id": "D3-9",
+     "gravita": "minore",
+     "titolo": "Esiti rifiutato/ambiguo del checkout e stdout misto del passo 5 non descritti",
+     "dove": "sequenza, passi 4 e 5",
+     "prova": "Il submitter stampa `<ID>: sottomesso, job N` (exit 0), oppure `rifiutato`/`ambiguo` (exit 3) (submit_job.py, riga 238). La sequenza tratta l'ambiguo solo al passo 6 e non dice che `--dopo-rifiuto` è vietato. Lo stdout del passo 5 contiene: data, riga «codice: … @ …», un JSON in una riga di contrastive_run.py e il JSON indentato del driver. Lo stderr contiene l'avviso post-quantum di ssh (si vede in leonardo/*.err.txt).",
+     "correzione": "Dire dove leggere il jobid. Estendere la regola dell'ambiguo al passo 4 e vietare --dopo-rifiuto. Descrivere lo stdout atteso e precisare che l'avviso di ssh nello stderr non è un errore."
+    },
+    {
+     "id": "D3-10",
+     "gravita": "minore",
+     "titolo": "Percorso del log del checkout e formula del consuntivo non indicati",
+     "dove": "sequenza, passo 4 (riga 110) e passo 8",
+     "prova": "Compare solo il nome `campaign_checkout_<jobid>.out`; la cartella è /leonardo_work/IscrB_WearUsFM/wearusfm_runs/logs/ (campaign_checkout.sbatch, riga 9). Il consuntivo «GPU-ore e ore locali» non ha una formula. Il protocollo dice che il billing conta le CPU allocate: GPU-ore = 4 × Elapsed, ore locali = CPU allocate × Elapsed per ciascun job.",
+     "correzione": "Scrivere il percorso completo del log e la formula del consuntivo dall'output di sacct."
+    },
+    {
+     "id": "D3-11",
+     "gravita": "nota",
+     "titolo": "Il brief rimanda a una sequenza non ancora committata e a una conferma di Simone facoltativa",
+     "dove": "brief, righe 3 e 12",
+     "prova": "Nel worktree claude-training-engine la sequenza è oggi non tracciata (`?? docs/contrastive_cn_restart_probe_launch_20261127.md`). Il brief cita @SEQ_SHA@ ma dà da leggere il file locale, che può cambiare dopo il commit. La frase «se vuoi una conferma diretta» lascia facoltativa la conferma di Simone. Un operatore prudente la chiederà comunque.",
+     "correzione": "Dopo il commit, far leggere `git show <SEQ_SHA>:docs/…` oppure far verificare che il file locale coincida con quel commit. Valutare di far confermare a Simone, nella chat 0, prima del passo 2."
+    }
+   ],
+   "verifiche_positive": [
+    "Worktree di release a b58a66f695c8744dfa5fe633829cafe13a5a1fc4, pulito. Il ref locale origin/claude/cn-restart545-release-20261127 punta allo stesso SHA. Il diff 8c72655c..b58a66f6 tocca solo release_binding.json (6 righe).",
+    "Il ledger comune non contiene righe CN-RESTART545 (grep -c = 0) e non ci sono cartelle del registro per i due ID.",
+    "Il submitter del commit e quello condiviso hanno lo stesso sha256: 814da4bc66db…",
+    "La prova a secco corrisponde ai comandi della sequenza: righe di sbatch, --job-name/--comment = ID, codice_sha b58a66f6, gpu_ore 0,0 e 1,0, stdin con sha256 eaafc432… (checkout) e a8c8b8b4… (job GPU).",
+    "cn_restart_probe.sbatch contiene account, boost_usr_prod, boost_qos_dbg, gres gpu:4, 1 nodo, 1 task e i log in wearusfm_runs/logs/cn_restart_probe_%j.out/.err. Controlla CODE_DIR, TORCH_DIST_INIT_BARRIER e TimeLimit=00:15:00, che coincidono con il comando del passo 6.",
+    "La validazione del passo 5 non crea la cartella di uscita: in contrastive_cn_restart.py run(check_only) non c'è mkdir, e contrastive_run.py --validate-only esce prima delle mkdir. Il job GPU non viene bruciato dalla validazione.",
+    "validate_allocation('gpu') vuole 32 CPU, 240 GiB, 1 nodo, 1 task e 4 GPU, che coincidono con le opzioni dell'invio.",
+    "Gli SHA che il checkout deve risolvere sono antenati di b58a66f6: evidence_commit f23b7cca, 8c72655c, fbfde797 (reviewed_commit storico) e 8dad7e82 (main del cluster). Il push del riferimento deploy li porta tutti.",
+    "Lanciare dalla cartella sbagliata non brucia l'ID: cn_restart_probe.sbatch manca su main e su worktree-claude-training-engine, e submit_job.py legge lo script prima della prenotazione. campaign_checkout.sbatch è identico ovunque.",
+    "Il remote leonardo punta a leonardo:/leonardo_work/IscrB_WearUsFM/wearusfm e non ci sono hook locali (né pre-push né altri).",
+    "I numeri del preventivo coincidono fra brief, sequenza, protocollo e decisioni.md (21/11 e 22/11): 1,0 / 8,2667, inviluppo 1,4 / 11,8667, residuo 12,26 / 114,0011.",
+    "Le sottocartelle delle gambe (ordinary, warm) e i nomi dei file nuovi (observation/boundary/post_update.rank*.json, vectors.rank*.pt) coincidono con il codice."
+   ],
+   "punti_aperti": [
+    "Non ho potuto verificare lo stato attuale di Leonardo (quota, coda dbg, reservation, assenza delle cartelle, validità del certificato): ssh è vietato.",
+    "Non ho verificato che la validazione resti sotto i 10 minuti di CPU del login: richiede l'esecuzione sul cluster.",
+    "Non so se la chat 3 (revisore) continuerà a scrivere nel worktree claude-training-engine mentre la chat 0 fa la raccolta.",
+    "Non so se esista un comando di saldo e billing di progetto già usato nella linea 3 (per esempio saldo -b): il protocollo lo chiede ma non lo nomina.",
+    "Non ho verificato lo spazio effettivo scritto dalle due gambe (checkpoint copiati e finali, vettori): mi baso sulle stime del protocollo."
+   ]
+  },
+  "verified": [
+   {
+    "finding": {
+     "id": "D3-1",
+     "gravita": "importante",
+     "titolo": "Passo 3 senza comandi: rischio che $WORK venga espanso sul Mac e uscita da conservare senza cartella",
+     "dove": "sequenza, passo 3 (righe 87-93); brief, punto 3",
+     "prova": "La sequenza dà solo un elenco e la forma `lfs project -d \"$WORK\"` senza dire che va dentro `ssh leonardo '...'` fra apici singoli. Sul Mac $WORK non è definita. 'Conservare l'uscita' (riga 91) non dice dove: la cartella ~/wearusfm_local/cn_restart545_20261127 viene creata solo al passo 5 (riga 120). Mancano anche i comandi per la coda dell'utente su dbg e per controllare le cartelle assenti. Il revisore li aveva usati (leonardo/stato_pre_lancio_20261127.out.txt) ma non li ha consegnati.",
+     "correzione": "Dare un blocco `ssh leonardo 'bash -s' > ~/wearusfm_local/cn_restart545_20261127/pre_invio.out.txt <<'EOS'` con ls delle due cartelle, lfs project/quota (ID 20147512), squeue -u $USER e scontrol show reservation. Spostare la mkdir della cartella locale al passo 1. Dare i criteri di arresto: meno di 4 GB liberi, cartella presente, manutenzione che si sovrappone."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "importante",
+      "motivo": "Il rilievo regge: i fatti sono veri. Righe 87-93 della sequenza: il passo 3 è solo un elenco. L'unica forma di comando è `lfs project -d \"$WORK\"` / `lfs quota -hp <ID> \"$WORK\"` (riga 90), senza `ssh leonardo` e senza apici singoli. «Conservare l'uscita» (riga 91) non dice dove, e la sola mkdir della cartella locale è alla riga 120, nel passo 5. Mancano i comandi per la coda, per le prenotazioni e per controllare le cartelle assenti, che il revisore aveva usato (stato_pre_lancio_20261127.out.txt). Il brief al punto 3 ripete l'elenco senza comandi. Ci sono due attenuanti. I percorsi delle due cartelle sono scritti per esteso nella tabella dei parametri (righe 53-54). Sul Mac `lfs` non esiste (`which lfs` restituisce «lfs not found»), quindi un'esecuzione locale fallirebbe in modo visibile. Sono controlli in sola lettura: un errore qui ferma il lancio o lo rallenta, ma non brucia un ID di job. Per questo la gravità resta importante e non bloccante. Margine di quota attuale: 991 G su 1 T. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d3-operatore-D3-1-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il fatto è vero. Il passo 3 della sequenza (righe 87-93) è solo un elenco, senza comandi. «Conservare l'uscita» (riga 91) non dice dove, e la cartella locale viene creata solo alla riga 120. Le conseguenze però sono piccole, perché il passo 3 è tutto in sola lettura. Se un comando è scritto male (per esempio $WORK espanso sul Mac), l'operatore ottiene un errore o un'uscita strana, e il brief (riga 26) gli dice di fermarsi: costa un ritardo, non brucia un ID. Se la cartella del checkout esiste già, campaign_checkout.sbatch (riga 35) esce con codice 2 senza fare nulla. La cartella di uscita la rifiuta il driver, e la sequenza la ricontrolla subito prima del passo 6 (riga 147). Il 27/11 alle 15:08 le due cartelle mancavano (stato_pre_lancio_20261127.out.txt), e possono crearle solo questi due job. Se gli slot dbg sono pieni o c'è una manutenzione, il job resta in attesa e non fallisce. Il passo 5 mostra già lo schema ssh 'bash -s' da imitare. Resta un rischio piccolo: una quota letta male e un'uscita conservata senza un posto fissato. Quindi gravità minore, non importante."
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "D3-2",
+     "gravita": "importante",
+     "titolo": "Controllo con \"$CODE_DIR\" al passo 4 non eseguibile sul Mac",
+     "dove": "sequenza, passo 4, riga 111",
+     "prova": "«Verificare poi `git -C \"$CODE_DIR\" rev-parse HEAD` e lo stato pulito». CODE_DIR non è definita sul Mac, ed eseguito da lì il comando fallisce: l'operatore si fermerebbe credendo a un errore. Lo stesso controllo lo fa già `code_dir_setup` al passo 5 (lib_code_dir.sh, righe 25-48: HEAD = EXPECTED_SHA, pulizia, sola lettura).",
+     "correzione": "Scrivere il comando per esteso, da eseguire via ssh: `ssh leonardo git -C /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/cn-restart545-20261121 rev-parse HEAD`. In alternativa, dire che la riga «codice: … @ b58a…» del passo 5 sostituisce questa verifica."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il difetto regge, ma il fatto portato come prova è falso. Alla riga 111 la sequenza chiede `git -C \"$CODE_DIR\" rev-parse HEAD` senza ssh. CODE_DIR compare solo nella tabella (riga 53) e dentro il blocco remoto del passo 5 (riga 125), e il brief non la nomina. Sul Mac, però, il comando non fallisce. Con CODE_DIR vuota `git -C \"\"` resta nella cartella corrente. L'ho eseguito dal worktree di release con CODE_DIR non impostata: stampa b58a66f695c8744dfa5fe633829cafe13a5a1fc4, esce con 0 e lo stato risulta pulito (0 righe). La verifica quindi passa in silenzio sul repo sbagliato, quello locale, invece di fermare l'operatore. Il danno è limitato: al passo 5, prima del job GPU, `code_dir_setup` (lib_code_dir.sh, righe 25-60) controlla sul cluster HEAD uguale a EXPECTED_SHA, pulizia e sola lettura, sotto `set -eo pipefail`. Nessun tentativo viene bruciato e nessuna regola viene violata, quindi la gravità è minore e non importante. Correzione: scrivere il comando via ssh con il percorso per esteso, oppure togliere la frase e rimandare al passo 5. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d3-operatore-D3-2-1.md"
+     },
+     {
+      "regge": false,
+      "gravita_corretta": "minore",
+      "motivo": "Il rilievo sostiene che il comando fallisce e che l'operatore si fermerebbe, ma è falso. Ho eseguito il comando sul Mac, nel worktree di release, con CODE_DIR non impostata: git -C \"$CODE_DIR\" rev-parse HEAD restituisce b58a66f695c8744dfa5fe633829cafe13a5a1fc4 con rc=0, e status --porcelain non restituisce righe. Con -C vuoto git resta nella directory corrente, che il passo 4 indica come «radice del worktree di release». L'operatore quindi non si ferma: ottiene una conferma positiva ma inutile, perché riguarda il worktree del Mac e non il checkout sul cluster. Il tentativo non si brucia e l'esito non cambia. La verifica vera la fa code_dir_setup al passo 5 (lib_code_dir.sh, righe 20-50): HEAD = EXPECTED_SHA, pulizia e sola lettura. In più il passo 4 fa già leggere nel log la riga «checkout di campagna pronto … @ b58a…». Resta un'imprecisione minore: si può togliere la frase o rimandare al passo 5. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d3-operatore-D3-2-2.md"
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "D3-3",
+     "gravita": "importante",
+     "titolo": "Mancano attesa dei job, criterio per la coda lunga e procedura alla scadenza del certificato",
+     "dove": "sequenza, passi 4 e 6; brief, VINCOLI (certificato fino al 28/11 alle 02:34)",
+     "prova": "Squeue/sacct compaiono solo al passo 6 (riga 158). Per il checkout c'è solo «Atteso COMPLETED 0:0 in meno di un minuto», ma lrd_all_serial può avere un'attesa in coda. Non è indicato ogni quanto rileggere la coda né come attendere (nella sessione lo sleep in primo piano è bloccato). Non c'è un criterio per un job GPU che resta PENDING: alle 15:10 la coda dbg aveva 39 job PENDING (reservation_coda_20261127.out.txt). Il brief riporta la scadenza del certificato ma non dice che cosa fare: chiedere a Simone il rinnovo con `step ssh login`, non inviare se il certificato scade prima della raccolta.",
+     "correzione": "Aggiungere al passo 4 la stessa lettura del passo 6 (squeue -h -j, poi sacct -X -j). Indicare un intervallo di lettura e il mezzo per attendere (Monitor o letture distanziate). Fissare un criterio: non inviare il job GPU se mancano meno di circa 60 minuti alla scadenza del certificato. Se il job è in coda o in esecuzione alla scadenza, chiedere a Simone il rinnovo e non cancellare."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "I fatti del rilievo sono veri, ma la gravità va abbassata a «minore». Ho controllato le fonti. Nella sequenza squeue e sacct compaiono solo alla riga 158, al passo 6, e alla riga 183, per l'accounting. Al passo 4 (righe 108-111) c'è solo «Atteso: COMPLETED 0:0 in meno di un minuto». In nessuno dei due testi è indicato un intervallo di lettura della coda o un modo per attendere. Manca anche un criterio per un job che resta PENDING. Il brief, alla riga 31, riporta la scadenza del certificato senza dire che cosa fare. Il file reservation_coda_20261127.out.txt conferma 39 job PENDING sulla coda dbg alle 15:10:08. Il rilievo non è però «importante». Un job in coda o in esecuzione non consuma il tentativo dell'ID. Un certificato scaduto blocca solo le letture e la raccolta, non il job sul cluster. Il brief dà già una regola prudente che copre questi casi: «fermati e riferisci» (riga 26), con il divieto di rilanci e di cancellazioni (righe 25-29). Il comando di stato del passo 6 si può riusare per il checkout. La finestra fino alle 02:34, circa 11 ore, è ampia rispetto ai 4 + 15 minuti di allocazione. L'omissione può far perdere tempo, ma non porta a un'azione sbagliata. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d3-operatore-D3-3-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "I fatti sono veri. Squeue e sacct compaiono solo al passo 6 (riga 158), il passo 4 non dice come leggere lo stato, manca un criterio per un job in PENDING, e il brief (riga 31) dà la scadenza del certificato senza istruzioni. La coda dbg aveva 39 job PENDING (reservation_coda_20261127.out.txt, riga 14). Le conseguenze però sono piccole. La lettura dello stato sta nel passo 6 e nel CLAUDE.md caricato da ogni chat (squeue -h -j, poi sacct -X -j). Davanti a un PENDING lungo, chi non ha istruzioni aspetta: il brief (riga 26) e la sequenza (riga 20) vietano già di cancellare, rilanciare o improvvisare, quindi nessun ID si brucia. Alla scadenza del certificato i job continuano su SLURM e slitta solo la raccolta. Una risposta ambigua all'invio ha già la sua procedura, il riconcilia (riga 159). La memoria di progetto ha la voce sul rinnovo con step. Il lancio è nel pomeriggio del 27/11 e il certificato scade il 28/11 alle 02:34, ore di margine per job da 4 e 15 minuti. La correzione proposta è una prudenza in più e non cambia l'esito. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d3-operatore-D3-3-2.md"
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "D3-4",
+     "gravita": "importante",
+     "titolo": "Raccolta senza comandi e incompleta: mancano log del checkout, uscite operative e state.json",
+     "dove": "sequenza, passo 7 (righe 169-191); brief, punto 7",
+     "prova": "Non è indicato come copiare i file (rsync o scp, esclusione di *.pt) né l'albero remoto. Le gambe stanno in <output>/ordinary e <output>/warm (contrastive_cn_restart.py, righe 129-136). L'elenco cita «i due log di SLURM .out e .err», cioè quelli del job GPU, ma non il log del checkout `wearusfm_runs/logs/campaign_checkout_<jobid>.out`. Non cita le uscite della validazione (~/wearusfm_local/cn_restart545_20261127), la quota del passo 3 né gli state.json del submitter. L'archivio storico che la sequenza prende a modello li conserva (reloads_execution_20261121/*.state.json, checkout.state.json, *_login_check.txt). La formula «tutti i file che non sono .pt» e l'elenco esplicito sono due istruzioni diverse.",
+     "correzione": "Dare un comando unico, per esempio `rsync -a --exclude='*.pt' leonardo:<output>/ <dest>/run/`, più la copia dei tre log e di ~/wearusfm_local/jobs/<ID>/state.json per i due ID. Elencare le uscite dei passi 3 e 5 da copiare nella stessa cartella di raccolta, e prevedere un controllo `du -sh` prima del commit."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "I fatti reggono. Il passo 7 (righe 169-191) non dà nessun comando di copia: un grep di rsync e scp nella sequenza non trova nulla. Cartella di uscita e log sono comunque nella tabella alle righe 54 e 56. Le gambe stanno in root/ordinary e root/warm (contrastive_cn_restart.py, righe 131-134). Il log del checkout, campaign_checkout_%j.out (campaign_checkout.sbatch, righe 9-10), non è nominato: il passo 7 parla solo dei due log .out e .err del job GPU. Mancano anche le uscite del passo 5 (~/wearusfm_local/cn_restart545_20261127, righe 120-121), la quota del passo 3 e gli state.json del submitter. L'archivio reloads_execution_20261121 contiene invece checkout.state.json, CN_A.state.json e *_login_check.txt. L'ambiguità tra la regola «non .pt» e l'elenco è lieve, perché l'elenco è introdotto da «come nell'archivio storico». La gravità corretta però è minore: la raccolta avviene dopo il job e non brucia alcun ID. I file mancanti restano recuperabili, perché i log sono su WORK, che è persistente, e state.json e le uscite del passo 5 sono sul Mac. Il passo 7 chiede già di controllare dimensioni e git status prima del commit. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d3-operatore-D3-4-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il fatto è vero. Il passo 7 della sequenza (righe 169-191) non dà un comando di copia e non elenca alcuni file: il log campaign_checkout_<jobid>.out, le uscite in ~/wearusfm_local/cn_restart545_20261127 (righe 120-121), la quota e gli state.json. Le conseguenze però sono piccole. La raccolta avviene dopo la fine del job, quindi un errore qui non brucia nessun ID e non cambia l'esito del lancio. Tutto quello che manca resta al sicuro e si può recuperare in seguito senza costi: la cartella di uscita (riga 54) e i log (riga 56) stanno su WORK, che non viene cancellato a 40 giorni; le uscite della validazione e gli state.json stanno sul Mac, in ~/wearusfm_local. Contro gli errori seri il testo protegge già: i .pt restano su WORK, e prima del commit vanno controllati dimensioni e git status (righe 188-189). Copiare file dal cluster è un'operazione normale del progetto. La differenza fra «tutti i file non .pt» e l'elenco esplicito porta al massimo a copiare qualche file in più o in meno. La correzione è utile per avere un archivio completo, ma non serve per il lancio. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d3-operatore-D3-4-2.md"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "d4-regole",
+  "review": {
+   "sintesi": "Il problema più grave non sta nei due testi. Alle 15:33:41-42 del 27/11 qualcuno ha eseguito il submitter con un ssh finto sul ledger VERO. Ora l'ID del checkout CONTRAST-CHECKOUT-CN-RESTART545-20261121 è nello stato 'ambiguo' (stdout \"finto-stdout\", nessun job Slurm). Seguendo la sequenza alla lettera, il passo 1 fallisce e il submitter rifiuta l'invio. Uscirne richiede una riconciliazione o un nuovo ID, e nessuno dei due testi lo prevede. Prima della consegna serve una decisione di Simone. Sul resto. I conti di costo tornano tutti. La raccolta del passo 7 porta nel repository solo identificativi, impronte e metriche, come l'archivio CN_A già committato da GPT. --agente claude è coerente con il ledger. Le citazioni di Simone e di GPT coincidono nei tre testi. Due punti importanti. Il primo è un'attribuzione a Simone (169,6 ore locali e il tetto «per la coorte») più ampia di quanto dica la sua frase: il tetto firmato copriva 17 allocazioni nominate, senza retry. Il secondo: mancano il worktree o ramo in cui la chat 0 deve committare e un controllo esplicito di hook e riferimento prima del push di deploy. Il brief invita a lanciare anche senza conferma diretta di Simone nella chat destinataria. Omette poi alcuni controlli del protocollo (billing, scritture concorrenti) e definisce «unica» la differenza --agente, mentre la sequenza ne elenca altre.",
+   "rilievi": [
+    {
+     "id": "R0",
+     "gravita": "bloccante",
+     "titolo": "Il ledger comune contiene già una prenotazione finta 'ambiguo' per l'ID del checkout",
+     "dove": "~/wearusfm_local/jobs/ledger.tsv e ~/wearusfm_local/jobs/CONTRAST-CHECKOUT-CN-RESTART545-20261121/state.json; ha effetto sul passo 1 (riga 72 della sequenza) e sul passo 4",
+     "prova": "Il comando `grep -c CN-RESTART545 ~/wearusfm_local/jobs/ledger.tsv` alle 15:35 dà 2: alle 15:33:41 la riga 'prenotato' e alle 15:33:42 la riga 'ambiguo', agente claude, sha b58a66f6. Nello state.json: stdout 'finto-stdout\\n', stderr 'finto-stderr\\n', job_slurm null. La prova a secco ufficiale (prova_a_secco_invii/registro) è delle 15:26 su un registro temporaneo: questa è un'altra esecuzione, fatta sul registro vero. Il submitter (scripts/submit_job.py, righe 153-161) rifiuta 'gia' prenotato, stato ambiguo. Usare --riconcilia'. reconcile() (righe 253-280) arriva ad 'assente' solo con due controlli vuoti, il primo almeno 10 minuti dopo il tentativo e l'ultimo almeno 10 minuti dopo il primo. Poi serve --dopo-assenza-verificata.",
+     "correzione": "Fermare la consegna e riferire a Simone. Lui sceglie fra la pulizia documentata della voce finta (il registro non va toccato senza il suo via) e un nuovo ID logico. Il nuovo ID però cambierebbe piano e binding: va scelto con cognizione. Poi aggiornare sequenza e brief, e cercare chi ha eseguito il submitter sul registro vero."
+    },
+    {
+     "id": "R1",
+     "gravita": "importante",
+     "titolo": "Attribuzione a Simone più ampia della sua frase: il tetto «per la coorte» e le 169,6 ore locali",
+     "dove": "Sequenza riga 13; brief riga 6 («il tetto della coorte (18 GPU-ore e 169,6 ore locali) l'ha firmato il 20/11»); brief riga 27 e sequenza righe 16-17 («restano ... sul tetto firmato»)",
+     "prova": "docs/claude_GPT_shared:8274 (origin/worktree-claude-training-engine): la domanda era «Firmi la proposta faa4a8d7 e il tetto di 18 GPU-ore?», risposta «Sì, firmo entrambi». Il riferimento alle 169,6 core-ore viene dalla riga successiva, marcata «Lettura mia». docs/contrastive_targets_execution_20261119.md:76-88: il tetto era '11 celle +6 checkout = 17 allocazioni, nessun retry incluso', per fasi nominate (audit, calibrazione, CUDA, full, reload, lettura). Nel ledger le 17 allocazioni della campagna CONTRASTIVE-targets-v3 sono già state tutte usate. La prova mirata aggiunge le allocazioni 18 e 19. Che le due nuove allocazioni pesino sul residuo lo scrive GPT (decisioni.md, voce del 21/11, «Preventivo incrementale»), non Simone.",
+     "correzione": "Scrivere che Simone ha firmato il tetto di 18 GPU-ore (le 169,6 ore locali sono la lettura del revisore) e che quel tetto copriva 17 allocazioni nominate. Indicare la base reale del via: la scelta «Prova mirata» del 21/11, l'indicazione del 27/11 e la soglia autonoma sotto le 5 GPU-ore del 28/10. Oppure chiedere a Simone di confermare che le due allocazioni pesano sul residuo."
+    },
+    {
+     "id": "R2",
+     "gravita": "importante",
+     "titolo": "Non è detto in quale worktree o ramo la chat 0 committa raccolta e registro: rischio di due writer sullo stesso checkout o di un commit su main",
+     "dove": "Sequenza righe 190-196 (passi 7-8); brief riga 22 (passo 8)",
+     "prova": "La sequenza nomina solo il ramo `worktree-claude-training-engine`. Quel ramo è estratto in /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-training-engine, il worktree della chat revisore, che oggi ha file non tracciati: `git status --porcelain` mostra '?? docs/contrastive_cn_restart_probe_launch_20261127.md' e la cartella prova_a_secco_invii. Il brief non nomina né ramo né worktree. Il canonico /Users/simonebenatti/dev/wearusfm è su main (c47e6557). CLAUDE.md: 'un writer per checkout'; main lo pubblica solo l'integratore GPT.",
+     "correzione": "Indicare in modo esplicito dove committare. Per esempio un ramo nuovo della chat 0 in un worktree suo, oppure il worktree del revisore solo dopo che questi ha committato e smesso di scriverci. Vietare in modo esplicito i commit su main."
+    },
+    {
+     "id": "R3",
+     "gravita": "importante",
+     "titolo": "Nessun controllo di hook, configurazione e riferimento deploy subito prima del push",
+     "dove": "Sequenza passo 2 (righe 75-85), che viene prima del passo 3; brief punto 2",
+     "prova": "CLAUDE.md, «Remote git»: 'Prima del primo push di deploy verificare ref/configurazione/hook'. L'unica lettura è delle 15:08 (leonardo/stato_pre_lancio_20261127.out.txt). Mostra solo gli 8 riferimenti deploy più recenti (head -8), quindi non prova che deploy/cn-restart545-20261121 sia assente. La sequenza (riga 38) dice 'Vanno rilette al momento del lancio', ma il passo 3, che fa le riletture, viene dopo il push e non comprende hook, configurazione e riferimento.",
+     "correzione": "Aggiungere prima del passo 2 una lettura in sola lettura. Deve mostrare: l'assenza di refs/heads/deploy/cn-restart545-20261121 (`git ls-remote leonardo` sul riferimento, risultato vuoto), gli hook non di esempio, receive.denyCurrentBranch e che il canonico è ancora pulito su main."
+    },
+    {
+     "id": "R4",
+     "gravita": "importante",
+     "titolo": "Il brief rende facoltativa la conferma diretta di Simone nella chat che lancia",
+     "dove": "Brief riga 3 («se vuoi una conferma diretta, chiedila a Simone»)",
+     "prova": "La frase di Simone («lei si occupera di fare il lancio») è stata detta alla chat revisore, non alla chat 0. La regola del 21/11 in CLAUDE.md lega il via a Simone. Per un agente, un messaggio di un'altra chat non vale come consenso dell'utente. Il brief dice correttamente che il messaggio non viene da Simone, ma lascia aperto un lancio basato sul solo messaggio inter-chat.",
+     "correzione": "Chiedere che, prima della prima scrittura (il push del passo 2), la chat 0 ottenga da Simone nella propria chat un via esplicito su questa sequenza, citando lo SHA della sequenza. L'eccezione è il caso in cui sia Simone stesso a incollare il brief."
+    },
+    {
+     "id": "R5",
+     "gravita": "importante",
+     "titolo": "Mancano controlli richiesti dal protocollo: billing corrente, saldo degli impegni e scritture concorrenti",
+     "dove": "Sequenza passo 3 (righe 87-93) e passo 6 (riga 147); brief punto 3",
+     "prova": "docs/contrastive_cn_restart_probe_20261121.md, sezione «Risorse e passaggio operativo»: 'Verificare assenza di prenotazioni o uscite preesistenti, saldo netto degli impegni, billing corrente, quota e scritture concorrenti, spazio per osservazioni e checkpoint, slot debug e reservation'. La sequenza (riga 6) dice di non cambiare i criteri, ma omette billing, saldo e scritture concorrenti. Alle 15:08 la quota era a 991G su 1T e nella coda dell'utente c'era il job di scaling SCALING-49046-train-49046-r2-20261126 (65361388, PENDING, 10 h), un possibile scrittore concorrente su WORK.",
+     "correzione": "Aggiungere al passo 3 la lettura del billing e del saldo del progetto. Aggiungere anche il controllo dei job dell'utente che possono scrivere su WORK durante la prova, con la quota da rileggere subito prima del passo 6 tenendo conto di quei job."
+    },
+    {
+     "id": "R6",
+     "gravita": "minore",
+     "titolo": "Il brief dice «unica differenza» rispetto al protocollo, ma la sequenza ne elenca altre",
+     "dove": "Brief riga 28; sequenza righe 108-109",
+     "prova": "La sequenza dichiara due cambi: --agente claude e l'invocazione diretta del submitter condiviso (venv e percorso di wearusfm-gpt-science) al posto di mac_launcher_command.py. In più lo SHA è scritto per esteso invece di ${RELEASE_SHA}. Protocollo, sezione «Comandi che 3-launcher completerà»: 'python3 .../mac_launcher_command.py ... python3 scripts/submit_job.py ... --agente gpt'. Il brief chiede di fermarsi se un controllo non torna. Un operatore che confronta i due testi può trovare differenze non annunciate e fermarsi.",
+     "correzione": "Scrivere «le differenze volute sono: --agente claude, l'invocazione diretta del submitter condiviso (byte identici) e lo SHA per esteso»."
+    },
+    {
+     "id": "R7",
+     "gravita": "minore",
+     "titolo": "Nome della chat revisore diverso fra brief e sequenza",
+     "dove": "Brief riga 3 («3- log quadro e conrtrastive»); sequenza riga 3 («3- log quadro e contrastive»)",
+     "prova": "Lettura diretta dei due file.",
+     "correzione": "Usare in entrambi il titolo esatto della chat."
+    },
+    {
+     "id": "R8",
+     "gravita": "minore",
+     "titolo": "Il residuo «a piena allocazione» non tiene conto dell'inviluppo con i margini",
+     "dove": "Sequenza righe 16-17; brief riga 27",
+     "prova": "Ricalcolo: 18-4,74-1,0 = 12,26 e 169,6-47,3322-8,2667 = 114,0011, giusti sul tetto richiesto. Con l'inviluppo (1,4 e 11,8667) il residuo prudenziale è 11,86 GPU-ore e 110,4011 ore locali. Il protocollo stesso dice che la maggiorazione si riconcilia sul consuntivo.",
+     "correzione": "Facoltativo: aggiungere il residuo con l'inviluppo (11,86 / 110,4011), così il consuntivo non sorprende."
+    },
+    {
+     "id": "R9",
+     "gravita": "nota",
+     "titolo": "Heredoc verso ssh 'bash -s' e regola «niente heredoc» di CLAUDE.md",
+     "dove": "Sequenza passo 5 (righe 119-138); brief punto 5",
+     "prova": "CLAUDE.md: 'Non editare mai file sotto $WORK via ssh: niente sed, niente heredoc, niente vim'. Il blocco non scrive file (lo stdin è uno script per bash, con PYTHONDONTWRITEBYTECODE=1). contrastive_run.py --validate-only ritorna prima di ogni mkdir (righe 318-327), e il driver crea la cartella di uscita solo con --run (contrastive_cn_restart.py, riga 159).",
+     "correzione": "Precisare in una riga che l'heredoc qui alimenta bash remoto e non crea né modifica file su $WORK, così una chat prudente non si blocca sulla regola."
+    }
+   ],
+   "verifiche_positive": [
+    "Conti ricalcolati dal protocollo e da decisioni.md (voce del 21/11). Job GPU: 4×0,25 = 1,0 GPU-ora; 32×0,25 = 8 ore locali. Checkout: 4×4/60 = 0,2667. Totale 8,2667. Inviluppo con 180+180 s: 4×21/60 = 1,4; 32×21/60 + 4×10/60 = 11,8667. Residuo: 18-5,74 = 12,26 e 169,6-55,5989 = 114,0011. Base: 47,048889+0,283333 = 47,332222 (voci del 21/11 di 3-launcher).",
+    "Il submitter condiviso è identico byte per byte a quello del commit di release (cmp; sha256 814da4bc66db...). Le opzioni di --agente sono claude/gpt/simone. Nel ledger la colonna 'agente' vale claude 1028 volte e gpt 861 volte. Gli invii di 3-launcher della linea 3 stanno come gpt. --agente claude per una chat Claude è coerente con la disposizione del 27/11.",
+    "Le righe sbatch della prova a secco (15:26, registro temporaneo) coincidono con i comandi della sequenza. Gli script su stdin hanno sha256 eaafc432... (checkout) e a8c8b8b4... (job GPU), uguali ai file del worktree di release. cn_restart_probe.sbatch contiene già --gres=gpu:4, boost_qos_dbg, 15 minuti e i log in wearusfm_runs/logs.",
+    "Uscite fuori dalla working tree del canonico: cartella di uscita sotto wearusfm_runs/results, log sotto wearusfm_runs/logs, CODE_DIR sotto wearusfm_campaigns. Il checkout scrive solo i metadati in .git/worktrees, come prevede la procedura del 09/10.",
+    "Dati da wearable. I file di CN_A già committati (commit 358ede81, 2,6 MB) contengono solo identificativi e metadati: origin_sessions.json è una lista di 19.034 nomi di sessione di dataset pubblici (emg2pose 17.136, emg2qwerty 1.035, ...); pose_panel_set.json e fixed_eval_set.json contengono semi, ID utente con hash e finestre [sessione, canale, inizio, fine] con impronte; pose_provenance.json è un percorso più sha256; metrics/trace contengono metriche e impronte. Le nuove ricevute (observation, boundary, post_update) contengono solo impronte, norme e layout; i vettori vanno nei .pt esclusi.",
+    "Le citazioni di Simone del 27/11 e di GPT del 27/11 sono identiche nella review (righe 26-30), nel registro (claude_GPT_shared:8331), nella sequenza e nel brief. «Prova mirata» del 21/11 alle 17:32 è verificata nel commit e0ecbd4b. «Sì, firmo entrambi» è verificata in claude_GPT_shared:8274, con la riserva del rilievo R1.",
+    "Il brief dichiara che il messaggio viene da un'altra chat e non da Simone. Limita le scritture su Leonardo a push di deploy e due invii, vieta i rilanci e cita lo SHA della review 76f5d0e7, che è presente in origin/worktree-claude-training-engine (ref locale).",
+    "Il canonico locale (main c47e6557) non contiene scripts/slurm/cn_restart_probe.sbatch. Se il passo 6 partisse dalla cartella sbagliata, il submitter fallirebbe leggendo lo script prima della prenotazione (submit_job.py, righe 216-221) e non brucerebbe l'ID. campaign_checkout.sbatch è uguale su main e sulla release."
+   ],
+   "punti_aperti": [
+    "Chi ha eseguito il submitter con l'ssh finto sul ledger vero alle 15:33:41, e se lo rifarà sull'ID del job GPU: alle 15:35 non c'era ancora nessuna voce per CONTRAST-CN-RESTART545-20261121.",
+    "Consumi effettivi della coorte (4,74 GPU-ore e 47,3322 ore locali): non ricalcolati con sacct, per il divieto. Li ho controllati solo contro le voci di decisioni.md.",
+    "Billing e saldo del progetto, scritture concorrenti su WORK e stato attuale di hook e riferimenti deploy su Leonardo: non letti (niente ssh).",
+    "Se GPT/3-launcher ha ricevuto il messaggio sul cambio di operatore (review, riga 197) e non avvierà in parallelo il push di deploy.",
+    "Se zhang2026 (62 soggetti, in $WORK/data/raw) è un dataset pubblico o un dato raccolto dal progetto: nella raccolta comparirebbero comunque solo nomi di sessione, come in CN_A."
+   ]
+  },
+  "verified": [
+   {
+    "finding": {
+     "id": "R0",
+     "gravita": "bloccante",
+     "titolo": "Il ledger comune contiene già una prenotazione finta 'ambiguo' per l'ID del checkout",
+     "dove": "~/wearusfm_local/jobs/ledger.tsv e ~/wearusfm_local/jobs/CONTRAST-CHECKOUT-CN-RESTART545-20261121/state.json; ha effetto sul passo 1 (riga 72 della sequenza) e sul passo 4",
+     "prova": "Il comando `grep -c CN-RESTART545 ~/wearusfm_local/jobs/ledger.tsv` alle 15:35 dà 2: alle 15:33:41 la riga 'prenotato' e alle 15:33:42 la riga 'ambiguo', agente claude, sha b58a66f6. Nello state.json: stdout 'finto-stdout\\n', stderr 'finto-stderr\\n', job_slurm null. La prova a secco ufficiale (prova_a_secco_invii/registro) è delle 15:26 su un registro temporaneo: questa è un'altra esecuzione, fatta sul registro vero. Il submitter (scripts/submit_job.py, righe 153-161) rifiuta 'gia' prenotato, stato ambiguo. Usare --riconcilia'. reconcile() (righe 253-280) arriva ad 'assente' solo con due controlli vuoti, il primo almeno 10 minuti dopo il tentativo e l'ultimo almeno 10 minuti dopo il primo. Poi serve --dopo-assenza-verificata.",
+     "correzione": "Fermare la consegna e riferire a Simone. Lui sceglie fra la pulizia documentata della voce finta (il registro non va toccato senza il suo via) e un nuovo ID logico. Il nuovo ID però cambierebbe piano e binding: va scelto con cognizione. Poi aggiornare sequenza e brief, e cercare chi ha eseguito il submitter sul registro vero."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "bloccante",
+      "motivo": "Il rilievo è vero e non sono riuscito a confutarlo. Ho letto il ledger alle 15:37:50 del 27/11: le righe 1891 e 1892 sono per CONTRAST-CHECKOUT-CN-RESTART545-20261121, con lo stato 'prenotato' (15:33:41) e poi 'ambiguo' (15:33:42), agente claude, SHA b58a66f6. Nel suo state.json lo stato è 'ambiguo', job_slurm null e stdout/stderr sono 'finto-stdout'/'finto-stderr': è un'esecuzione con l'ssh finto, ma sul registro vero. Il registro predefinito è proprio ~/wearusfm_local/jobs (submit_job.py, righe 47 e 316). Lo stato 'ambiguo' viene rifiutato alle righe 153-160. reconcile() arriva ad 'assente' solo con due controlli vuoti validi a distanza di almeno 10 minuti (righe 287-291). Poi serve --dopo-assenza-verificata. Il grep della riga 72 della sequenza, che deve dare 0, oggi dà 2: il passo 1 si ferma, e se l'operatore lo saltasse l'invio verrebbe rifiutato. Nessun job è partito su Slurm, quindi il tentativo non è bruciato. Ma senza una decisione di Simone sul registro il lancio non procede. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d4-regole-R0-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "bloccante",
+      "motivo": "Ho controllato i fatti alle 15:37. Il ledger vero ha due righe per CONTRAST-CHECKOUT-CN-RESTART545-20261121: 'prenotato' alle 15:33:41 e 'ambiguo' alle 15:33:42, agente claude, sha b58a66f6. Il file state.json ha stato 'ambiguo', job_slurm null e stdout/stderr 'finto-...'. È quindi una prova a secco eseguita sul registro di default (--registro, submit_job.py riga 316), non su quello temporaneo.\n\nNon riesco a confutare il rilievo. L'ID su Slurm non è bruciato, perché l'ssh era finto e nessun sbatch è partito. Però il lancio non può partire in nessuno dei due casi:\n- Al passo 1 (riga 72 della sequenza, riga 15 del brief) il grep -c deve dare 0 e invece dà 2, quindi l'operatore si ferma.\n- Se l'operatore salta il controllo, al passo 4 il submitter esce prima dello sbatch con «gia' prenotato, stato 'ambiguo'... usare --riconcilia» (righe 153-161).\n\nUna via d'uscita esiste: la riconciliazione reale con due controlli vuoti a 10 minuti di distanza, poi --dopo-assenza-verificata. Nessuno dei due testi però la descrive. Inoltre la riga 43 della sequenza («Il ledger vero non è stato toccato») è ora falsa. Seguendo i testi alla lettera il lancio fallisce: il rilievo è bloccante.\n\nRapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d4-regole-R0-2.md"
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "R1",
+     "gravita": "importante",
+     "titolo": "Attribuzione a Simone più ampia della sua frase: il tetto «per la coorte» e le 169,6 ore locali",
+     "dove": "Sequenza riga 13; brief riga 6 («il tetto della coorte (18 GPU-ore e 169,6 ore locali) l'ha firmato il 20/11»); brief riga 27 e sequenza righe 16-17 («restano ... sul tetto firmato»)",
+     "prova": "docs/claude_GPT_shared:8274 (origin/worktree-claude-training-engine): la domanda era «Firmi la proposta faa4a8d7 e il tetto di 18 GPU-ore?», risposta «Sì, firmo entrambi». Il riferimento alle 169,6 core-ore viene dalla riga successiva, marcata «Lettura mia». docs/contrastive_targets_execution_20261119.md:76-88: il tetto era '11 celle +6 checkout = 17 allocazioni, nessun retry incluso', per fasi nominate (audit, calibrazione, CUDA, full, reload, lettura). Nel ledger le 17 allocazioni della campagna CONTRASTIVE-targets-v3 sono già state tutte usate. La prova mirata aggiunge le allocazioni 18 e 19. Che le due nuove allocazioni pesino sul residuo lo scrive GPT (decisioni.md, voce del 21/11, «Preventivo incrementale»), non Simone.",
+     "correzione": "Scrivere che Simone ha firmato il tetto di 18 GPU-ore (le 169,6 ore locali sono la lettura del revisore) e che quel tetto copriva 17 allocazioni nominate. Indicare la base reale del via: la scelta «Prova mirata» del 21/11, l'indicazione del 27/11 e la soglia autonoma sotto le 5 GPU-ore del 28/10. Oppure chiedere a Simone di confermare che le due allocazioni pesano sul residuo."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il rilievo regge in parte. Simone ha scritto solo «Sì, firmo entrambi», alla domanda sulla proposta faa4a8d7 e sul tetto di 18 GPU-ore. Il tetto valeva per «17 allocazioni di preflight» (decisioni.md:8320; contrastive_targets_execution_20261119.md:76-87). Il conto sul residuo lo scrive GPT (decisioni.md:8409).\n\nTre punti però lo confutano in parte:\n1. La registrazione della firma in decisioni.md:8320 riporta esplicitamente «Risorse firmate ... 18 GPU-ore e 169,6 core-ore richieste».\n2. La proposta firmata prevede già di localizzare il primo scarto «per rank, tensore e gruppo DDP, a partire da 545–546» (decisioni.md:8318).\n3. Quando ha scelto «Prova mirata» (e0ecbd4b), Simone aveva davanti «circa 4,74 GPU-ore consumate delle 18 firmate» e il costo della prova.\n\nL'operatore non usa questa frase per decidere l'invio. Il via viene dalle indicazioni del 27/11 e del 21/11, e la prova costa 1 GPU-ora, sotto la soglia autonoma di 5. È quindi un'imprecisione di attribuzione senza effetto sul lancio. Correzione: «tetto di 18 GPU-ore (169,6 ore locali nella registrazione del 20/11) per le 17 allocazioni del preflight».\n\nRapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d4-regole-R1-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il rilievo regge solo in parte e va declassato a minore. In docs/decisioni.md:8315-8320, al commit di release, la voce registrata del 20/11 dice: «La firma copre ... i seguenti limiti del preflight: Risorse firmate per 17 allocazioni di preflight: 18 GPU-ore e 169,6 core-ore richieste». Quindi le 169,6 ore locali sono un limite firmato nella decisione registrata, non solo la «Lettura mia» del registro. La stessa proposta firmata prevede anche di «Localizzare al primo passo, per rank, tensore e gruppo DDP, a partire da 545–546», che è lo scopo di questa prova. Resta vera solo una parte: la firma riguarda 17 allocazioni, e il conteggio delle due nuove sul residuo l'ha fatto GPT (decisioni.md:8409), non Simone. Per questo «sul tetto firmato» e «per la coorte» dicono un po' più del firmato. Questo non cambia ciò che l'operatore fa: il via viene dal messaggio di Simone del 27/11 e dalla scelta «Prova mirata» del 21/11, e il job da 1,0 GPU-ora (1,4 con i margini) sta sotto la soglia autonoma delle 5 GPU-ore. L'operatore non usa il residuo per alcuna decisione. Correzione minima: una frase che dica che GPT conta le due allocazioni sul residuo del tetto firmato per 17 allocazioni. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d4-regole-R1-2.md"
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "R2",
+     "gravita": "importante",
+     "titolo": "Non è detto in quale worktree o ramo la chat 0 committa raccolta e registro: rischio di due writer sullo stesso checkout o di un commit su main",
+     "dove": "Sequenza righe 190-196 (passi 7-8); brief riga 22 (passo 8)",
+     "prova": "La sequenza nomina solo il ramo `worktree-claude-training-engine`. Quel ramo è estratto in /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-training-engine, il worktree della chat revisore, che oggi ha file non tracciati: `git status --porcelain` mostra '?? docs/contrastive_cn_restart_probe_launch_20261127.md' e la cartella prova_a_secco_invii. Il brief non nomina né ramo né worktree. Il canonico /Users/simonebenatti/dev/wearusfm è su main (c47e6557). CLAUDE.md: 'un writer per checkout'; main lo pubblica solo l'integratore GPT.",
+     "correzione": "Indicare in modo esplicito dove committare. Per esempio un ramo nuovo della chat 0 in un worktree suo, oppure il worktree del revisore solo dopo che questi ha committato e smesso di scriverci. Vietare in modo esplicito i commit su main."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "I fatti tornano. La riga 190 della sequenza nomina solo il ramo worktree-claude-training-engine e il passo 8 (righe 195-196) dice solo «commit e push», senza worktree. Il brief alla riga 22 non nomina né ramo né worktree. Quel ramo è estratto nel worktree del revisore, che ha due voci non tracciate: la sequenza e la cartella prova_a_secco_invii. Il canonico è su main a c47e6557. Il rischio però riguarda solo commit e push dopo la fine dei job. Seguendo i testi alla lettera nessun tentativo di job si brucia e il lancio non fallisce. Un commit nel posto sbagliato si può correggere, purché non arrivi un push su main. Per questo la gravità è «minore» e non «importante». Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d4-regole-R2-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il fatto è vero. La sequenza nomina il ramo worktree-claude-training-engine solo come «percorso proposto» (righe 190-191) e, alla riga 196, dice «commit e push» senza indicare il worktree. Il brief, alla riga 22, non indica né il ramo né il worktree. Secondo git worktree list, il ramo è estratto soltanto nel worktree del revisore (76f5d0e7), dove oggi ci sono file non tracciati; il canonico è su main (c47e6557). Le conseguenze però sono limitate. Il passo 8 viene dopo la fine del job GPU, quindi non tocca invii, ID, risorse o esito: nessun tentativo bruciato. La sequenza, che il brief chiede di leggere per intero, indica un ramo di Claude e non main, quindi seguendo i testi alla lettera non si arriva a un commit su main. Due writer concorrenti si avrebbero solo se il revisore scrivesse nello stesso momento, e il revisore dichiara chiusa la sua parte. Un commit nel posto sbagliato si recupera prima del push. Resta un'ambiguità da chiarire con una riga (dove committare, niente main), ma non è «importante». Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d4-regole-R2-2.md"
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "R3",
+     "gravita": "importante",
+     "titolo": "Nessun controllo di hook, configurazione e riferimento deploy subito prima del push",
+     "dove": "Sequenza passo 2 (righe 75-85), che viene prima del passo 3; brief punto 2",
+     "prova": "CLAUDE.md, «Remote git»: 'Prima del primo push di deploy verificare ref/configurazione/hook'. L'unica lettura è delle 15:08 (leonardo/stato_pre_lancio_20261127.out.txt). Mostra solo gli 8 riferimenti deploy più recenti (head -8), quindi non prova che deploy/cn-restart545-20261121 sia assente. La sequenza (riga 38) dice 'Vanno rilette al momento del lancio', ma il passo 3, che fa le riletture, viene dopo il push e non comprende hook, configurazione e riferimento.",
+     "correzione": "Aggiungere prima del passo 2 una lettura in sola lettura. Deve mostrare: l'assenza di refs/heads/deploy/cn-restart545-20261121 (`git ls-remote leonardo` sul riferimento, risultato vuoto), gli hook non di esempio, receive.denyCurrentBranch e che il canonico è ancora pulito su main."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "R3 regge solo in parte. Hook e configurazione sono stati controllati il 27/11 alle 15:08 (stato_pre_lancio_20261127.out.txt, righe 20-23 e 36-38): canonico su main a 8dad7e82, pulito, nessun hook oltre ai file di esempio, receive.denyCurrentBranch=updateInstead. La regola di CLAUDE.md è quindi rispettata per questi due punti. È vero invece che l'assenza di refs/heads/deploy/cn-restart545-20261121 non è dimostrata: la lettura mostra solo 8 riferimenti ordinati per data (head -8), 7 dei quali del 21/11. Un riferimento con quel nome che punti a un antenato del 21/11 potrebbe stare oltre l'ottava riga; non può puntare a 8c72655c né a b58a66f6, perché 8c72655c è assente. Le conseguenze sono piccole. Un riferimento non antenato fa rifiutare il push, e il passo 2 dice di fermarsi prima che un ID venga consumato. Un riferimento antenato avanza senza errori, ma nessun checkout lo usa (il checkout nasce da CAMPAIGN_SHA) e ls-remote lo verifica subito dopo. Nessun tentativo bruciato e nessuna regola violata, quindi la gravità è minore e non importante. Basta aggiungere prima del push un `git ls-remote` sul riferimento con risultato atteso vuoto. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d4-regole-R3-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il fatto è vero. La lettura delle 15:08 usa head -8, quindi non prova che deploy/cn-restart545-20261121 manchi, e il passo 3 viene dopo il push. Le conseguenze però sono nulle.\n\n1. Il push del passo 2 viene prima di qualunque invio. Se viene rifiutato, l'operatore si ferma (sequenza riga 85, brief punto 2) e nessun ID viene consumato.\n2. Se il riferimento esistesse già, ci sono due casi. Se punta a un commit non antenato, git rifiuta il push e l'operatore si ferma. Se punta a un antenato, il push lo avanza senza danni: campaign_checkout.sbatch (righe 30-45) usa solo lo SHA, con `worktree add --detach`. In entrambi i casi il ls-remote della riga 82 verifica lo SHA.\n3. updateInstead riguarda solo il ramo estratto (main). La pulizia del canonico quindi non conta per un riferimento deploy nuovo.\n4. Hook e configurazione sono già stati letti alle 15:08 dello stesso giorno: updateInstead, nessun hook. Questo copre la regola di CLAUDE.md sul «primo push di deploy».\n\nResta una sola imprecisione. La riga 38 dice «vanno rilette al momento del lancio», ma prima del push non c'è un controllo sul riferimento. Basta aggiungere un `git ls-remote` con risultato atteso vuoto.\n\nFuori perimetro, da girare al chiamante: il ledger vero ha già le righe 1891 («prenotato») e 1892 («ambiguo») per CONTRAST-CHECKOUT-CN-RESTART545-20261121, del 27/11 alle 15:33. Il controllo del passo 1 (grep = 0) non passerebbe più.\n\nRapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d4-regole-R3-2.md"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "d5-completezza",
+  "review": {
+   "sintesi": "Ho confrontato la sequenza con le righe 31-87 del protocollo di GPT, con le voci di decisioni.md del 21/11 e del 22/11 e con la review 76f5d0e7. Le richieste principali sono coperte: ID, risorse, variabili, validazione sul login, push del deploy, raccolta per rank e log SLURM. La prova a secco coincide con la sequenza byte per byte (righe sbatch e sha256 degli script). Non ho trovato errori che bruciano un ID se si seguono i testi alla lettera. Mancano però tre controlli che il protocollo chiede prima dell'invio: billing corrente, saldo netto degli impegni e scritture concorrenti sulla quota, che le istantanee storiche della linea 3 leggevano con saldo -b e con la coda del progetto. La raccolta non comprende le ricevute della validazione e del checkout. Le impronte dei checkpoint a 576 non sono conservate se il job fallisce prima del confronto. Il commit finale è indirizzato al worktree del revisore, in conflitto con la regola di un solo writer per checkout. Restano alcune ambiguità per un operatore con poco contesto: $CODE_DIR non definito, cwd relativa, esito «rifiutato» del submitter, stdout con due JSON, fermo del 23-25/11 non dichiarato superato. Errore mio da segnalare: ho eseguito per sbaglio un git ls-remote origin (lettura di rete verso GitHub, interrotta subito dalla pipe). Non era push, fetch o pull e nessun file dei worktree è stato toccato. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/d5-completezza.md",
+   "rilievi": [
+    {
+     "id": "R1",
+     "gravita": "importante",
+     "titolo": "Billing corrente e saldo netto degli impegni non controllati prima degli invii",
+     "dove": "Sequenza, passo 3 (righe 87-93) e passo 6 (riga 147); brief, passo 3",
+     "prova": "Protocollo riga 43: «Verificare assenza di prenotazioni o uscite preesistenti, saldo netto degli impegni, billing corrente, quota e scritture concorrenti...». docs/contrastive_targets_execution_20261119.md riga 95: «Il launcher controlla il billing reale prima dell'invio». decisioni.md riga 8409 distingue il residuo scientifico dal «saldo del progetto e dalla disponibilità della coda che 3-launcher verifica prima dell'invio». Le istantanee storiche (results/.../reloads_execution_20261121/checkout_operational_snapshot.txt) contengono l'uscita di saldo -b per IscrB_WearUsFM; readout_execution_20261121/checkout_initial_status.txt contiene AllocTRES billing=4. Il passo 3 della sequenza non ha nessuna di queste letture.",
+     "correzione": "Aggiungere al passo 3 la lettura di saldo -b (conservata con la quota) e il confronto con gli impegni in coda dell'account. Dopo l'invio, verificare con sacct ReqTRES/AllocTRES che billing sia uguale alle CPU (4 e 32), come nei precedenti."
+    },
+    {
+     "id": "R2",
+     "gravita": "importante",
+     "titolo": "Quota senza «impegni e scritture concorrenti»",
+     "dove": "Sequenza, passo 3 (righe 90-92) e passo 6",
+     "prova": "Protocollo riga 43: «controllare che restino almeno 4 GB per questa prova dopo gli impegni concorrenti». La sequenza dice solo «almeno 4 GB oltre al checkout» e guarda solo la coda dell'utente. Lettura del 27/11 (stato_pre_lancio_20261127.out.txt): 991G usati su 1T (circa 33G liberi, quota condivisa da 11 utenti), più il job dell'utente 65361388 SCALING-49046 PENDING, 10 h su boost_usr_prod. Le istantanee storiche leggevano invece la coda dell'intero progetto.",
+     "correzione": "Al passo 3 leggere anche i job in coda ed esecuzione dell'account IscrB_WearUsFM (non solo dell'utente) e dichiarare il margine dopo i job che possono scrivere su WORK nella finestra. Il criterio va scritto come «4 GB dopo gli impegni concorrenti»."
+    },
+    {
+     "id": "R3",
+     "gravita": "importante",
+     "titolo": "Le ricevute della validazione e del checkout non entrano nella raccolta",
+     "dove": "Sequenza, passo 7 (righe 172-185), confrontato con i passi 3, 4 e 5",
+     "prova": "Protocollo riga 45: «Sul login esegue il controllo --validate-only [...] e trattiene stdout, stderr e ricevute». Il passo 5 salva validate_only.out/err in ~/wearusfm_local/cn_restart545_20261127, fuori dal repo, ma il passo 7 non li elenca. Mancano anche il log campaign_checkout_<jobid>.out, l'uscita della quota («Conservare l'uscita», passo 3, senza un percorso), l'ls-remote del deploy e gli state.json del submitter. Il precedente archivio della linea 3 (results/.../reloads_execution_20261121/) conserva checkout.state.json, CN_A.state.json, *_login_check.txt, *_operational_snapshot.txt e local_files_sha256.json.",
+     "correzione": "Aggiungere al passo 7 una voce «ricevute operative», con un percorso preciso dentro la cartella di raccolta: validate_only.out/err, log del checkout, quota e saldo dei passi 3 e 6, ls-remote, i due state.json e lo sha256 dei file copiati confrontato con quello remoto."
+    },
+    {
+     "id": "R4",
+     "gravita": "importante",
+     "titolo": "Impronte dei checkpoint a 576 conservate solo nel report",
+     "dove": "Sequenza, passo 7, righe 187-188",
+     "prova": "La sequenza afferma: «I file .pt [...] restano su WORK: le loro impronte e dimensioni sono già nelle ricevute e nel report». Nel codice le impronte dei vectors.rank*.pt sono in observation.rank*.json (observe.py righe 122-126), ma quelle di checkpoint.pt a 576 delle due gambe compaiono solo nel report del confronto (compare.py riga 326, actual_endpoint_sha256). Se il job finisce con FAILED o TIMEOUT prima di compare, nessun file registra lo SHA dei checkpoint. Protocollo riga 25: il recupero del solo lettore richiede «i relativi SHA verificati»; riga 45: «Conservare i tensori diagnostici su WORK con impronte e percorsi».",
+     "correzione": "Al passo 7, se report.json manca, calcolare sul login lo sha256 di tutti i .pt della cartella di uscita (circa 2,8 GB) e archiviare elenco, percorsi e impronte. Altrimenti correggere la frase sui .pt."
+    },
+    {
+     "id": "R5",
+     "gravita": "importante",
+     "titolo": "Il commit della raccolta è indirizzato al worktree di un'altra chat",
+     "dove": "Sequenza, righe 190-191 e passo 8; brief, passo 8",
+     "prova": "La sequenza propone la raccolta «sul ramo worktree-claude-training-engine». Quel worktree è usato dalla chat revisore: contiene la sequenza stessa, oggi non tracciata (git status: ?? docs/contrastive_cn_restart_probe_launch_20261127.md). CLAUDE.md: «Restano worktree separati, un writer per checkout». Il brief dice solo «commit e push», senza indicare worktree né ramo.",
+     "correzione": "Indicare in modo esplicito in quale worktree e su quale ramo la chat «0- leggi le tabelline» committa raccolta e voce di registro. In alternativa, la raccolta resta in ~/wearusfm_local e il commit lo fa il revisore. Va escluso che due chat scrivano nello stesso checkout."
+    },
+    {
+     "id": "R6",
+     "gravita": "importante",
+     "titolo": "Non è detto che fare se il submitter risponde «rifiutato»",
+     "dove": "Sequenza, passi 4 e 6 (riga 159); brief, VINCOLI",
+     "prova": "submit_job.py righe 11-12 e 146-157: un ID «rifiutato» si risottomette con --dopo-rifiuto. La sequenza tratta solo il caso «ambiguo» (--riconcilia) e il divieto generico di rilancio. Un operatore con poco contesto potrebbe leggere il messaggio «Si risottomette solo con --dopo-rifiuto» stampato dal submitter come un'istruzione.",
+     "correzione": "Aggiungere: con esito «rifiutato», «gia' prenotato» o uscita diversa da 0 del submitter ci si ferma e si riferisce. --dopo-rifiuto e --dopo-assenza-verificata non si usano senza decisione di Simone."
+    },
+    {
+     "id": "R7",
+     "gravita": "minore",
+     "titolo": "Controlli del checkout ambigui: $CODE_DIR non definito, nessun comando per jobid e stato",
+     "dove": "Sequenza, passo 4, righe 108-111",
+     "prova": "«Verificare poi git -C \"$CODE_DIR\" rev-parse HEAD e lo stato pulito»: in una nuova sessione ssh CODE_DIR non esiste e il percorso completo è solo nella tabella. Non c'è il comando che legge COMPLETED 0:0 (sacct -X -j) né il percorso completo del log ($WORK/wearusfm_runs/logs/campaign_checkout_<jobid>.out, campaign_checkout.sbatch righe 9-10). Il controllo di pulizia comunque lo ripete code_dir_setup al passo 5.",
+     "correzione": "Scrivere i comandi completi: sacct -X -j <jobid> -o JobID,State,ExitCode,Elapsed; cat del log con il percorso completo; git -C /leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/cn-restart545-20261121 rev-parse HEAD e status --porcelain --untracked-files=all."
+    },
+    {
+     "id": "R8",
+     "gravita": "minore",
+     "titolo": "I passi 4 e 6 dipendono dalla cartella corrente fissata al passo 1",
+     "dove": "Sequenza, righe 68 e 97; brief, CHE COSA È GIÀ PRONTO",
+     "prova": "--script-stdin scripts/slurm/... è un percorso relativo. Nelle shell degli agenti la cartella corrente si può azzerare fra una chiamata e l'altra (lo dice anche CLAUDE.md per i subagent). submit_job.py legge lo script prima della prenotazione (righe 213-217, reserve a riga 218): un percorso sbagliato dà un errore senza bruciare l'ID, ma ferma il lancio.",
+     "correzione": "Usare cd /Users/.../cn-restart545-release && nello stesso comando di invio, oppure dare il percorso assoluto dello script."
+    },
+    {
+     "id": "R9",
+     "gravita": "minore",
+     "titolo": "L'uscita della validazione non è «un JSON»",
+     "dove": "Sequenza, passo 5, riga 140",
+     "prova": "Nel percorso di check_only, contrastive_cn_restart.py righe 149-152 lancia contrastive_run.py --validate-only. Quel programma stampa prima un JSON su una riga con recipe_valid (contrastive_run.py righe 324-326). Poi arriva il JSON indentato del driver. Prima ancora c'è la riga «codice: ... @ sha» di code_dir_setup, più gli eventuali messaggi di module.",
+     "correzione": "Descrivere l'uscita attesa: riga «codice: ... @ b58a66f6...», JSON con recipe_valid true e release_valid true, poi JSON con new_binding_valid true ed execution_started false. Aggiungere che i comandi stampati non vanno eseguiti (protocollo: «Nessun invio implicito dal validatore»)."
+    },
+    {
+     "id": "R10",
+     "gravita": "minore",
+     "titolo": "Pianificazione rispetto al fermo del 23-25/11 non dichiarata superata; slot di lrd_all_serial non controllati",
+     "dove": "Sequenza, passo 3, riga 93; tabella dei parametri",
+     "prova": "Protocollo riga 43: «Prima del fermo, pianificare a ritroso [...] limite teorico il 23/11 alle 07:29 CET [...] Se la finestra non basta, attendere la riapertura». La review, minore 8, dice che queste frasi sono superate, ma la sequenza non lo dichiara. Il checkout gira su lrd_all_serial (campaign_checkout.sbatch riga 3; limite 2 in esecuzione e 10 sottomessi per utente), mentre il passo 3 guarda solo boost_qos_dbg.",
+     "correzione": "Scrivere che il fermo del 23-25/11 è passato e che la regola resta solo come «nessuna reservation sulla finestra di 4+15 minuti più 6+6 di margine». Indicare la partizione del checkout e controllarne gli slot."
+    },
+    {
+     "id": "R11",
+     "gravita": "minore",
+     "titolo": "Prenotazioni del ledger: si guarda solo ledger.tsv",
+     "dove": "Sequenza, passo 1, riga 72",
+     "prova": "submit_job.py riga 6: la prenotazione è la cartella ~/wearusfm_local/jobs/<ID>/ creata con mkdir atomico. Il protocollo chiede «assenza di prenotazioni». Oggi le due cartelle non ci sono (ls ~/wearusfm_local/jobs | grep -i restart: vuoto) e grep -c dà 0.",
+     "correzione": "Aggiungere ls -d ~/wearusfm_local/jobs/*CN-RESTART545* (deve dare nessun risultato)."
+    },
+    {
+     "id": "R12",
+     "gravita": "nota",
+     "titolo": "Riserve della review non riportate: recupero del lettore, base contabile, ritorno anticipato",
+     "dove": "Sequenza, passo 8 (righe 198-200) e «Che cosa non si può verificare prima»; brief",
+     "prova": "Sul recupero, la sequenza segue il testo stretto di decisioni.md (riga 8419). Non riporta il caso aggiunto dal protocollo (riga 25, «se il processo del confronto si interrompe per un errore operativo») né la riserva della review, minore 5: «Lettura mia, da confermare con GPT prima di usarla». Non riporta il limite della review sulla base di 4,74 GPU-ore, non ricalcolata da SLURM, né la nota 2: un INCONCLUSIVE con ritorno anticipato esce senza le misure del 545.",
+     "correzione": "Una riga al passo 8: la differenza fra protocollo e decisioni.md sul recupero è aperta con GPT, e ogni caso dubbio va a Simone. Al passo 1: la base di 4,74 GPU-ore viene dal consuntivo di GPT e non è stata ricalcolata."
+    }
+   ],
+   "verifiche_positive": [
+    "Righe sbatch della prova a secco (chiamata_1_argomenti.txt, chiamata_4_argomenti.txt) uguali ai comandi dei passi 4 e 6. Gli sha256 di stdin (eaafc432..., a8c8b8b4...) coincidono con campaign_checkout.sbatch e cn_restart_probe.sbatch al commit di release.",
+    "Il submitter condiviso e scripts/submit_job.py del release hanno lo stesso sha256 814da4bc66db...0d82; --agente accetta claude.",
+    "ID logici, CODE_DIR, cartella di uscita e risorse (900 s, 4 GPU, 32 CPU, 240 GiB, checkout 4 CPU, 240 s, 2 GiB) della sequenza coincidono con plan.json. Il driver rifiuta una cartella di uscita esistente (contrastive_cn_restart.py righe 113-115); cn_restart_probe.sbatch controlla CODE_DIR, TimeLimit=00:15:00 e TORCH_DIST_INIT_BARRIER.",
+    "validate_allocation('gpu') richiede 1 nodo, 1 task, 32 CPU e 240*1024 MB: compatibile con --cpus-per-task=32 --mem=240G e con le direttive dello script.",
+    "--validate-only non crea la cartella di uscita: contrastive_run.py esce prima di ogni mkdir (righe 324-326). Quindi la validazione non brucia il job GPU.",
+    "Il checkout congelato è un worktree del canonico. f23b7cca (evidence_commit), 8c72655c (reviewed_commit), fbfde797 (commit della review storica) e 8dad7e82 (main sul cluster) sono antenati di b58a66f6: dopo il push del deploy ci sono le verifiche git di package() e validate_review_binding.",
+    "Conti del tetto: 18-4,74-1 = 12,26 GPU-ore; 169,6-47,3322-8,2667 = 114,0011; inviluppo 1+0,4 = 1,4 GPU-ore e 8,2667+3,6 = 11,8667 ore locali, come nel protocollo riga 43.",
+    "Nomi delle ricevute per rank (observation, boundary, post_update .rank*.json; vectors.rank*.pt) verificati in observe.py e leg.py. L'archivio storico CN_A senza .pt occupa 2,6M, coerente con «circa 2,7 MB».",
+    "Le avvertenze della review (operatore, commit di release, deploy, validazione come script con bash -s, un solo tentativo) sono tutte nella sequenza. Quella sul deploy è anche nel brief.",
+    "Ledger comune: nessuna riga CN-RESTART545 e nessuna cartella di prenotazione per i due ID, al momento della mia lettura."
+   ],
+   "punti_aperti": [
+    "Non ho verificato su Leonardo il billing, il saldo e la coda di progetto attuali: divieto di ssh.",
+    "Non ho verificato che la validazione sul login (hash di tre checkpoint da 463 MB e degli input della ricetta, import di torch) resti sotto i 10 minuti di CPU. È plausibile ma non misurato.",
+    "Non ho verificato che 4 GB bastino: 1,83 GB di vettori, due checkpoint copiati a 544 e riscritti a 576, salvataggi temporanei. La mia stima è circa 3,7 GB, vicina al limite. Il numero è quello del protocollo.",
+    "La frase di Simone del 27/11 sul cambio di operatore è nella review e nel brief. Non l'ho potuta verificare alla fonte.",
+    "Non ho verificato come la chat operatrice copierà i file da Leonardo (scp o rsync): la sequenza non indica il metodo.",
+    "Errore mio: durante il lavoro ho eseguito per sbaglio git ls-remote origin, una lettura di rete verso GitHub interrotta subito dalla pipe. Non era push, fetch o pull e nessun file dei worktree è stato modificato."
+   ]
+  },
+  "verified": [
+   {
+    "finding": {
+     "id": "R1",
+     "gravita": "importante",
+     "titolo": "Billing corrente e saldo netto degli impegni non controllati prima degli invii",
+     "dove": "Sequenza, passo 3 (righe 87-93) e passo 6 (riga 147); brief, passo 3",
+     "prova": "Protocollo riga 43: «Verificare assenza di prenotazioni o uscite preesistenti, saldo netto degli impegni, billing corrente, quota e scritture concorrenti...». docs/contrastive_targets_execution_20261119.md riga 95: «Il launcher controlla il billing reale prima dell'invio». decisioni.md riga 8409 distingue il residuo scientifico dal «saldo del progetto e dalla disponibilità della coda che 3-launcher verifica prima dell'invio». Le istantanee storiche (results/.../reloads_execution_20261121/checkout_operational_snapshot.txt) contengono l'uscita di saldo -b per IscrB_WearUsFM; readout_execution_20261121/checkout_initial_status.txt contiene AllocTRES billing=4. Il passo 3 della sequenza non ha nessuna di queste letture.",
+     "correzione": "Aggiungere al passo 3 la lettura di saldo -b (conservata con la quota) e il confronto con gli impegni in coda dell'account. Dopo l'invio, verificare con sacct ReqTRES/AllocTRES che billing sia uguale alle CPU (4 e 32), come nei precedenti."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "importante",
+      "motivo": "Ho cercato di confutarlo e non ci sono riuscito: le fonti confermano il rilievo riga per riga.\n\n- **Protocollo:** la riga 43 del protocollo nel worktree di release chiede di verificare «saldo netto degli impegni, billing corrente, quota».\n- **Esecuzione:** la riga 95 di contrastive_targets_execution_20261119.md dice «Il launcher controlla il billing reale prima dell'invio».\n- **Decisioni:** la riga 8409 di decisioni.md distingue il residuo contabile dal saldo del progetto, che il launcher verifica.\n- **Precedenti archiviati:** l'istantanea reloads_execution_20261121/checkout_operational_snapshot.txt contiene l'uscita di saldo (IscrB_WearUsFM al 67,3%) e la coda. La riga 7 di readout_execution_20261121/checkout_initial_status.txt contiene billing=4,cpu=4 in ReqTRES/AllocTRES.\n- **Sequenza:** il passo 3 (righe 87-93) controlla solo cartelle assenti, quota lfs, coda e posti su boost_qos_dbg, e reservation. Il passo 6 (riga 147) rilegge solo quota e cartella di uscita.\n- **Brief e letture del 27/11:** il passo 3 del brief (riga 17) ripete gli stessi controlli. grep di billing e saldo su sequenza, brief e letture del 27/11 non dà nessuna occorrenza.\n\nNon è bloccante: il saldo residuo del progetto, circa 650.000 ore locali all'istantanea del 21/11, rende trascurabili le circa 8,3 ore locali della prova. Il lancio non fallirebbe e non brucerebbe un ID. Resta però omesso un controllo che il protocollo prescrive e che i precedenti hanno archiviato: per questo la gravità corretta è importante."
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il fatto è vero. Il protocollo, al paragrafo «Usare il submitter e il ledger comuni...», chiede «saldo netto degli impegni, billing corrente». Lo chiede anche execution_20261119 alla riga 95. La sequenza invece, ai passi 3 e 6, non contiene nessuna lettura di saldo o billing: cercando \"billing\" e \"saldo\" nella sequenza non esce nessuna riga. Il passo 4 della sequenza dice che rispetto al protocollo cambiano solo --agente e il submitter, quindi questa omissione non è dichiarata. Le conseguenze però sono scarse. La prova chiede 1,0 GPU-ora e 8,27 ore locali, contro un residuo di 12,26 e 114,0 sul tetto firmato: nemmeno un billing pesato diversamente farebbe superare il tetto. Un saldo esaurito lascerebbe il job in attesa con un motivo visibile da squeue, senza bruciare l'ID in silenzio. Inoltre l'accounting raccolto al passo 7 permette di ricavare AllocTRES dopo l'invio. Seguendo i testi il lancio non fallisce e non esce dall'autorizzazione: resta una deviazione non dichiarata dal protocollo. Correzione: aggiungere saldo -b al passo 3 e la lettura di AllocTRES dopo l'invio, oppure dichiarare l'omissione. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d5-completezza-R1-2.md"
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "R2",
+     "gravita": "importante",
+     "titolo": "Quota senza «impegni e scritture concorrenti»",
+     "dove": "Sequenza, passo 3 (righe 90-92) e passo 6",
+     "prova": "Protocollo riga 43: «controllare che restino almeno 4 GB per questa prova dopo gli impegni concorrenti». La sequenza dice solo «almeno 4 GB oltre al checkout» e guarda solo la coda dell'utente. Lettura del 27/11 (stato_pre_lancio_20261127.out.txt): 991G usati su 1T (circa 33G liberi, quota condivisa da 11 utenti), più il job dell'utente 65361388 SCALING-49046 PENDING, 10 h su boost_usr_prod. Le istantanee storiche leggevano invece la coda dell'intero progetto.",
+     "correzione": "Al passo 3 leggere anche i job in coda ed esecuzione dell'account IscrB_WearUsFM (non solo dell'utente) e dichiarare il margine dopo i job che possono scrivere su WORK nella finestra. Il criterio va scritto come «4 GB dopo gli impegni concorrenti»."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "importante",
+      "motivo": "Il fatto e' vero. Il protocollo (docs/contrastive_cn_restart_probe_20261121.md, riga 43) chiede di verificare «quota e scritture concorrenti» e di lasciare «almeno 4 GB per questa prova dopo gli impegni concorrenti». La sequenza dice invece soltanto «almeno 4 GB oltre al checkout» e «Coda dell'utente» (righe 90-92), e al passo 6 (riga 147) chiede solo di «rileggere la quota»; il brief alla riga 17 ripete la stessa omissione. La lettura del 27/11 mostra 991G usati su 1T, cioe' una quota condivisa quasi piena, ed e' fatta sulla sola coda dell'utente. L'istantanea storica checkout_replay_snapshot.meta.json leggeva invece la coda dell'account con -A. Una confutazione riesce solo in parte: l'esempio portato, il job 65361388, scrive le sue uscite su $SCRATCH (ledger, riga 1889), quindi non e' una scrittura concorrente su WORK. Questo indebolisce l'esempio, non il rilievo, perche' gli altri utenti della quota non compaiono comunque nella coda letta. Con circa 33G liberi, seguire la sequenza alla lettera non farebbe fallire il lancio con certezza, quindi il rilievo non e' bloccante. Resta pero' un controllo del protocollo approvato che manca, su una quota condivisa da 11 utenti, quindi «importante». Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d5-completezza-R2-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il fatto è vero. Il protocollo, alla riga 43, chiede di controllare la «quota e scritture concorrenti» e che restino «almeno 4 GB per questa prova dopo gli impegni concorrenti». La sequenza invece dice solo «almeno 4 GB oltre al checkout» (riga 90) e guarda soltanto la «Coda dell'utente» (riga 91). Il brief, alla riga 17, ripete la stessa semplificazione. Le conseguenze però sono piccole. La lettura del 27/11 dà circa 33 GB liberi (991G usati su 1T), circa 8 volte la soglia, mentre i vettori della prova occupano circa 1,83 GB. Anche togliendo i checkpoint del job di scaling 65361388, se partisse proprio nei 15 minuti, l'operatore deciderebbe comunque di inviare. La coda dell'intero account non dice quanto scrivono gli altri utenti, quindi non darebbe un numero utile da sottrarre. Il rischio di bruciare il tentativo c'è solo con un margine stretto. Correzione minima: riportare la formula del protocollo e fissare una soglia pratica per fermarsi e riferire (per esempio sotto circa 10 GB liberi). Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d5-completezza-R2-2.md"
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "R3",
+     "gravita": "importante",
+     "titolo": "Le ricevute della validazione e del checkout non entrano nella raccolta",
+     "dove": "Sequenza, passo 7 (righe 172-185), confrontato con i passi 3, 4 e 5",
+     "prova": "Protocollo riga 45: «Sul login esegue il controllo --validate-only [...] e trattiene stdout, stderr e ricevute». Il passo 5 salva validate_only.out/err in ~/wearusfm_local/cn_restart545_20261127, fuori dal repo, ma il passo 7 non li elenca. Mancano anche il log campaign_checkout_<jobid>.out, l'uscita della quota («Conservare l'uscita», passo 3, senza un percorso), l'ls-remote del deploy e gli state.json del submitter. Il precedente archivio della linea 3 (results/.../reloads_execution_20261121/) conserva checkout.state.json, CN_A.state.json, *_login_check.txt, *_operational_snapshot.txt e local_files_sha256.json.",
+     "correzione": "Aggiungere al passo 7 una voce «ricevute operative», con un percorso preciso dentro la cartella di raccolta: validate_only.out/err, log del checkout, quota e saldo dei passi 3 e 6, ls-remote, i due state.json e lo sha256 dei file copiati confrontato con quello remoto."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "I fatti reggono. Il protocollo (worktree di release, docs/contrastive_cn_restart_probe_20261121.md) dice che il launcher \"trattiene stdout, stderr e ricevute\" della validazione --validate-only e chiede di conservare l'uscita della quota. Il passo 5 della sequenza (righe 120-121) salva validate_only.out.txt ed .err.txt in ~/wearusfm_local/cn_restart545_20261127, fuori dal repository. Il passo 7 (righe 169-191), e con lui il brief (riga 21), non li mette fra i file da raccogliere. Nella raccolta mancano anche il log campaign_checkout_<jobid>.out, l'uscita della quota (il passo 3, riga 90, non le dà un percorso), l'ls-remote del deploy, gli state.json e lo sha256 dei file copiati: il passo 7 lo chiede solo per i due log SLURM. Gli archivi precedenti della linea 3 contengono invece questi file: readout_execution_20261121 ha campaign_checkout_65035600.out, checkout.state.json, deploy_verification.txt e local_files_sha256.json; reloads_execution_20261121 ha CN_A.state.json, CN_A_login_check.txt e CN_A_operational_snapshot.txt. La gravità però è minore, non importante. La raccolta avviene dopo l'esecuzione, quindi l'omissione non fa fallire il lancio, non brucia un tentativo e non porta l'operatore fuori strada sull'esito. I file si possono ancora recuperare e archiviare dopo: le uscite della validazione restano sul Mac, gli state.json in ~/wearusfm_local/jobs e il log del checkout su WORK. Resta una lacuna di completezza rispetto al protocollo e agli archivi precedenti. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d5-completezza-R3-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il fatto è vero. Il passo 7 (righe 172-185) non elenca validate_only.out/err, il log del checkout, la quota e l'ls-remote. Le conseguenze però non toccano il lancio. Il passo 5 (righe 120-121) salva già stdout e stderr in ~/wearusfm_local/cn_restart545_20261127, una cartella durevole: questo soddisfa il «trattiene» del protocollo (riga 45). Il protocollo chiede di archiviare esplicitamente solo i log SLURM del job GPU con sha e accounting, e quelli ci sono. Il sacct del passo 7 copre «i due job», quindi anche il checkout. Gli state.json restano in ~/wearusfm_local/jobs. Nessun ID viene bruciato e nessuna regola viene violata. Resta solo un archivio nel repo meno completo dei precedenti, e un piccolo rischio: per la quota, «Conservare l'uscita» non indica dove. La gravità corretta è quindi minore. La correzione proposta resta utile. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d5-completezza-R3-2.md"
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "R4",
+     "gravita": "importante",
+     "titolo": "Impronte dei checkpoint a 576 conservate solo nel report",
+     "dove": "Sequenza, passo 7, righe 187-188",
+     "prova": "La sequenza afferma: «I file .pt [...] restano su WORK: le loro impronte e dimensioni sono già nelle ricevute e nel report». Nel codice le impronte dei vectors.rank*.pt sono in observation.rank*.json (observe.py righe 122-126), ma quelle di checkpoint.pt a 576 delle due gambe compaiono solo nel report del confronto (compare.py riga 326, actual_endpoint_sha256). Se il job finisce con FAILED o TIMEOUT prima di compare, nessun file registra lo SHA dei checkpoint. Protocollo riga 25: il recupero del solo lettore richiede «i relativi SHA verificati»; riga 45: «Conservare i tensori diagnostici su WORK con impronte e percorsi».",
+     "correzione": "Al passo 7, se report.json manca, calcolare sul login lo sha256 di tutti i .pt della cartella di uscita (circa 2,8 GB) e archiviare elenco, percorsi e impronte. Altrimenti correggere la frase sui .pt."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il fatto regge. Lo sha256 del file vectors.rank*.pt è nelle ricevute (observe.py, righe 122-126). Lo sha256 del file checkpoint.pt a 576 si calcola solo in compare.py alla riga 316 (`endpoint_hashes[mode] = file_sha(actual)`) e compare solo nel report, alle righe 326 e 386. Se compare si interrompe per un'eccezione, il report contiene solo status e reason (righe 401-405). Se il job si ferma prima della fase compare (contrastive_cn_restart.py, righe 167-175), il report non esiste. summary.json contiene solo hash dello stato (final_student_sha256 e final_teacher_sha256, run.py righe 1843-1844), non lo sha256 del file. Nel ramo di errore la frase dei righi 187-188 è quindi falsa. Scendo però a «minore»: i .pt restano su WORK, che non ha cancellazione automatica, e lo SHA si può calcolare più tardi, anche al recupero del lettore. Seguire la frase alla lettera non fa fallire il lancio e non brucia un ID: lascia solo una lacuna di documentazione. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d5-completezza-R4-1.md"
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "importante",
+      "motivo": "Il fatto e' vero. Lo sha256 di checkpoint.pt a 576 lo calcola solo compare.py (riga 316) e lo scrive soltanto in report.json (actual_endpoint_sha256, righe 326 e 386). observation.rank*.json registra solo i vettori al 545 (observe.py righe 122-126). execution_failure.json non ha impronte (contrastive_cn_restart.py righe 182-184), e nessun altro file del trainer o della gamba registra quello SHA.\n\nLo SHA atteso fisso dell'ordinaria (compare.py riga 22, ENDPOINT) non basta: copre una sola gamba ed e' un valore atteso, non misurato. Calcolarlo in seguito su WORK non prova che i byte siano rimasti intatti.\n\nIl caso pesa proprio dove serve. Se compare si interrompe per un errore operativo, report.json manca. E' il caso in cui il protocollo (riga 25) chiede di conservare le impronte degli input e gli SHA verificati per il recupero del solo lettore. Leggendo la frase delle righe 187-188, l'operatore crederebbe di averle gia' e non le calcolerebbe.\n\nIl difetto non brucia un ID e non cambia l'esito del job, quindi la gravita' giusta e' importante e non bloccante. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports2/controprova-d5-completezza-R4-2.md"
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,77 @@
+{
+ "id": "CONTRAST-CHECKOUT-CN-RESTART545-20261121",
+ "creato": "2026-11-27T15:33:41+01:00",
+ "agente": "claude",
+ "campagna": "CONTRASTIVE-targets-v3-20261118",
+ "gpu_ore_stimate": 0.0,
+ "codice_sha": "b58a66f695c8744dfa5fe633829cafe13a5a1fc4",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONTRAST-CHECKOUT-CN-RESTART545-20261121",
+  "--comment=wearusfm:CONTRAST-CHECKOUT-CN-RESTART545-20261121",
+  "--cpus-per-task=4",
+  "--mem=2G",
+  "--time=00:04:00",
+  "--export=ALL,CAMPAIGN=cn-restart545-20261121,CAMPAIGN_SHA=b58a66f695c8744dfa5fe633829cafe13a5a1fc4,EXPECTED_SHA=b58a66f695c8744dfa5fe633829cafe13a5a1fc4"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/campaign_checkout.sbatch",
+ "script_stdin_sha256": "eaafc432b0047125e53fa8143db6a6366a7a160da74d6e8582c103a07e589fcc",
+ "stato": "assente",
+ "storia": [
+  {
+   "quando": "2026-11-27T15:33:41+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-27T15:33:41+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-27T15:33:42+01:00",
+   "stato": "ambiguo",
+   "job_slurm": null,
+   "uscita": 0,
+   "stdout": "finto-stdout\n",
+   "stderr": "finto-stderr\n"
+  },
+  {
+   "quando": "2026-11-27T15:43:19+01:00",
+   "stato": "ambiguo",
+   "controlli_assenza": [
+    "2026-11-27T15:43:19+01:00"
+   ],
+   "riconciliato": true
+  },
+  {
+   "quando": "2026-11-27T15:44:20+01:00",
+   "stato": "ambiguo",
+   "controlli_assenza": [
+    "2026-11-27T15:43:19+01:00",
+    "2026-11-27T15:44:20+01:00"
+   ],
+   "riconciliato": true
+  },
+  {
+   "quando": "2026-11-27T15:54:36+01:00",
+   "stato": "assente",
+   "controlli_assenza": [
+    "2026-11-27T15:43:19+01:00",
+    "2026-11-27T15:44:20+01:00",
+    "2026-11-27T15:54:36+01:00"
+   ],
+   "riconciliato": true
+  }
+ ],
+ "job_slurm": null,
+ "uscita": 0,
+ "stdout": "finto-stdout\n",
+ "stderr": "finto-stderr\n",
+ "controlli_assenza": [
+  "2026-11-27T15:43:19+01:00",
+  "2026-11-27T15:44:20+01:00",
+  "2026-11-27T15:54:36+01:00"
+ ],
+ "riconciliato": true
+}

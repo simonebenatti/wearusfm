@@ -1,0 +1,45 @@
+{
+ "old_path_mmap_under_shim": "ValueError: f must be a string filename in order to use mmap argument",
+ "loads": 8,
+ "load_types": [
+  [
+   "str",
+   true
+  ]
+ ],
+ "norm_types": [
+  "float"
+ ],
+ "zero_norms": 0,
+ "warm_endpoint": {
+  "scientific_metadata_or_schema_different": [],
+  "metadata_or_schema_different": [
+   "cuda_rng.1",
+   "cuda_rng.2",
+   "cuda_rng.3"
+  ],
+  "exact_scientific_payload": true
+ },
+ "as_observed": {
+  "any_local": false,
+  "any_reduced": true,
+  "excessive": false,
+  "max_screen_relative_l2": 1.2231008689536135e-07,
+  "real_scalar_map_on_fixture": "ValueError: scalar rounding policy does not match the named scalar",
+  "status": [
+   "SUPPORTED",
+   "localized post-reduction difference and exact warm continuous endpoint"
+  ]
+ },
+ "perturbed": {
+  "any_local": false,
+  "any_reduced": true,
+  "excessive": false,
+  "max_screen_relative_l2": 1.2231008689536135e-07,
+  "real_scalar_map_on_fixture": "ValueError: scalar rounding policy does not match the named scalar",
+  "status": [
+   "SUPPORTED",
+   "localized post-reduction difference and exact warm continuous endpoint"
+  ]
+ }
+}

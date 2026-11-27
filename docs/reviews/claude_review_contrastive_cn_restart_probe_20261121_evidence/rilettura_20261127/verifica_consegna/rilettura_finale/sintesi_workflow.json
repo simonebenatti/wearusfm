@@ -1,0 +1,488 @@
+[
+ {
+  "key": "f1-comandi-e-codice",
+  "review": {
+   "sintesi": "Ho riletto la sequenza (passi 1-8) e il brief confrontandoli con protocollo, plan.json, driver, runner, submitter, i tre script SLURM, le uscite dei blocchi A e B del 27/11, lo state.json del registro e le prove a secco. Nei due testi non c'è nessun errore che, eseguito alla lettera, faccia fallire un invio o bruci un ID.\n\nI due comandi di invio coincidono argomento per argomento con quelli del protocollo, a parte le differenze dichiarate. Con lo stato attuale del registro il submitter accetterà entrambi: il checkout è in stato `assente` e ha l'opzione giusta; per il job GPU non esiste nemmeno la cartella dell'ID.\n\nC'è un rilievo importante. Se il job GPU si ferma prima di creare la cartella di uscita (il caso più probabile fra gli errori iniziali), al passo 7 il primo rsync fallisce. Seguendo la regola «errore inatteso: fermarsi», l'operatore potrebbe non raccogliere i log. Il resto sono imprecisioni minori e note.",
+   "rilievi": [
+    {
+     "id": "R-1",
+     "gravita": "importante",
+     "titolo": "Il caso «cartella di uscita assente» manca negli esiti del passo 6 e rompe il passo 7",
+     "dove": "Sequenza, passo 6 (righe 292-299) e passo 7 (righe 312-315 e 334)",
+     "prova": "In contrastive_cn_restart.py, run() chiama validate_allocation(\"gpu\") alla riga 155 e controlla TORCH_DIST_INIT_BARRIER alle righe 156-157, prima di root.mkdir alla riga 158. Prima ancora vengono require_binding() e commands() (righe 141-143). Le guardie di cn_restart_probe.sbatch (righe 15-21, con set -euo pipefail), code_dir_setup, module e activate girano tutte prima di python. Un errore in uno di questi punti dà FAILED senza nessuna cartella di uscita. La cartella con il solo allocation.json resta invece un caso raro: allocation.json viene scritto alla riga 161 e phase_timings.jsonl viene aperto subito dopo, alla riga 170. Al passo 7 `ls -lR \"$O\"` stampa un errore, e `rsync -a --exclude='*.pt' leonardo:.../cn_restart_probe_20261121/ \"$D/run/\"` fallisce perché la sorgente non esiste. Le regole alla riga 78 dicono di fermarsi a un errore inatteso, quindi i log SLURM potrebbero non essere copiati.",
+     "correzione": "Al passo 6, aggiungere fra gli esiti: «FAILED senza cartella di uscita: errore prima delle fasi (guardie dello script, ambiente, allocazione o binding); la causa è nei due log». Al passo 7, dire che in quel caso l'errore di `ls` e del primo rsync è atteso e che si prosegue con gli altri comandi della raccolta."
+    },
+    {
+     "id": "R-2",
+     "gravita": "minore",
+     "titolo": "Un TIMEOUT può arrivare anche con execution_failure.json già scritto",
+     "dove": "Sequenza, passo 6, riga 298",
+     "prova": "La scadenza delle fasi è min(start+875, fine dell'allocazione meno 25 s) (driver, riga 167). Quando una fase sfora, viene scritto execution_failure.json (righe 182-184). Dopo, checked_command può impiegare fino a circa 20 s per chiudere il gruppo di processi (contrastive_split_benchmark.py, righe 35-48). La chiusura può quindi sforare il limite: SLURM segna TIMEOUT anche se il file esiste. La sequenza descrive il TIMEOUT solo «senza execution_failure.json».",
+     "correzione": "Scrivere «FAILED o TIMEOUT con execution_failure.json: una fase si è interrotta (anche per tempo scaduto)»."
+    },
+    {
+     "id": "R-3",
+     "gravita": "minore",
+     "titolo": "Il blocco B della sequenza non è esattamente quello eseguito il 27/11",
+     "dove": "Sequenza, righe 47-48 e blocco B (righe 177 e 181)",
+     "prova": "Nell'uscita vera (blocco_B_20261127.out.txt) le intestazioni sono `== job dell'account in esecuzione (solo il numero)` (riga 20) e `== limiti delle code` (riga 22). Nella sequenza sono `== job dell'account (solo il numero)` e `== limiti della coda di debug`. I comandi visibili danno le stesse informazioni, ma la frase «sono stati eseguiti davvero» si riferisce a una versione precedente del blocco.",
+     "correzione": "Dire che il blocco B è stato ritoccato dopo l'esecuzione, solo nelle intestazioni, oppure rieseguirlo nella versione definitiva prima della consegna."
+    },
+    {
+     "id": "R-4",
+     "gravita": "minore",
+     "titolo": "Criterio sulle prenotazioni non controllabile dall'uscita del blocco B",
+     "dove": "Sequenza, passo 3, righe 183-184 e 200-201",
+     "prova": "`awk '{print $1, $2, $3}'` stampa solo nome, inizio e fine. Non mostra account, nodi o flag MAINT. Il 27/11 l'uscita aveva quattro righe (s_int_SNC, s_int_check_boost 18/11-18/12, s_res_pasqal, s_int_check_dcgp), e due di queste coprono l'ora del lancio. Il criterio parla di «quattro prenotazioni di altri account», ma l'operatore non può vedere l'account. Con un modello piccolo il rischio è un arresto falso, oppure un'incertezza su s_int_check_boost.",
+     "correzione": "Elencare i quattro nomi attesi e dire di fermarsi solo se ne compare uno nuovo che copre l'ora successiva, oppure stampare anche i campi Flags, Accounts e Nodes."
+    },
+    {
+     "id": "R-5",
+     "gravita": "minore",
+     "titolo": "La funzione `module` non è provata nella shell `bash -s` prima della validazione",
+     "dove": "Sequenza, passo 5 (righe 246-249); blocco B",
+     "prova": "Il blocco della validazione usa `module purge` e `module load` sotto `set -eo pipefail`, dentro `ssh leonardo 'bash -s'`. I blocchi A e B, gli unici eseguiti, non usano `module`. Per $WORK ci sono indizi: l'uscita storici_su_work_20261127.out.txt stampa «WORK risolto: /leonardo_work/IscrB_WearUsFM», e i checkout storici sono passati con lo stesso meccanismo ssh. Per `module` non c'è prova; il rapporto d1, nota N-2, lo lascia aperto. Se `module` manca, il passo 5 esce con un errore prima del job GPU: l'ID GPU non viene bruciato, ma il lancio si ferma dopo che il checkout è già stato fatto.",
+     "correzione": "Aggiungere al blocco B, che si esegue prima del checkout, le righe `echo \"WORK=${WORK:-NON DEFINITA}\"` e `type -t module || echo \"module NON DEFINITA\"`, con il criterio di arresto corrispondente."
+    },
+    {
+     "id": "R-6",
+     "gravita": "nota",
+     "titolo": "Valore di receive.denyCurrentBranch stampato ma non atteso",
+     "dove": "Sequenza, passo 2, righe 136 e 143-145",
+     "prova": "Il blocco A stampa `receive.denyCurrentBranch: updateInstead` (blocco_A_20261127.out.txt, riga 6), ma la sezione «Atteso» non dice nulla di questo valore. Con updateInstead, un push sul ramo estratto aggiornerebbe il working tree; il push su un riferimento nuovo deploy/... non lo tocca.",
+     "correzione": "Aggiungere ai valori attesi: «receive.denyCurrentBranch updateInstead (normale: il push crea un riferimento diverso da main)»."
+    },
+    {
+     "id": "R-7",
+     "gravita": "nota",
+     "titolo": "Glob sui log del passo 7 e del controllo del checkout",
+     "dove": "Sequenza, riga 224 (campaign_checkout_*.out) e righe 319-320 e 335 (cn_restart_probe_*)",
+     "prova": "Lo script cn_restart_probe.sbatch scrive i log in cn_restart_probe_%j.out ed .err (righe 12-13). Il glob li prende tutti: oggi c'è un solo job con quel nome, quindi l'esito è giusto. Il grep sul checkout scorre invece tutti i log storici di campaign_checkout; il risultato è corretto perché cerca la riga esatta (campaign_checkout.sbatch, riga 60).",
+     "correzione": "Facoltativo: usare il jobid letto ai passi 4 e 6 al posto di `*`."
+    },
+    {
+     "id": "R-8",
+     "gravita": "nota",
+     "titolo": "Dopo l'invio, lo state.json del checkout conserva le tracce dell'incidente",
+     "dove": "Sequenza, passo 7 (riga 338) e passo 8 (registro)",
+     "prova": "La prova a secco con --dopo-assenza-verificata (prova_a_secco_assenza/registro/.../state.json) mostra che dopo l'invio restano \"creato\": \"2026-11-27T15:33:41\", \"riconciliato\": true e i tre controlli_assenza, con la storia prenotato_di_nuovo, in_sottomissione e sottomesso. Il motivo è che submit() parte dallo stato precedente (submit_job.py, righe 225-226).",
+     "correzione": "Nella voce di registro, scrivere che checkout.state.json contiene la storia dell'incidente del 27/11, così chi lo legge non scambia «riconciliato: true» per un problema del vero invio."
+    }
+   ],
+   "verifiche_positive": [
+    "Passo 4 contro il protocollo (righe 52-58). Gli argomenti sono identici tranne le differenze dichiarate: --agente claude, invocazione diretta con il python della venv, SHA a 40 caratteri, --dopo-assenza-verificata. Ci sono anche il `cd` nel worktree di release e il percorso relativo di --script-stdin, che equivalgono al $PWD del protocollo. La riga di sbatch della prova a secco (chiamata_1_argomenti.txt e prova_a_secco_assenza/argomenti.txt) è identica nei due casi.",
+    "Passo 6 contro il protocollo (righe 80-86). Argomenti identici tranne --agente claude, l'invocazione diretta e lo SHA per esteso. La riga di sbatch coincide con chiamata_4_argomenti.txt.",
+    "Accettazione del passo 4. Lo state.json vero ha lo stato `assente` e non c'è operazione.lock. reserve() (submit_job.py, righe 141-156) restituisce lo stato quando trova `assente` e after_absence; TRANSIZIONI permette assente→prenotato_di_nuovo→in_sottomissione (righe 51-59). Su una copia del registro, la prova a secco è arrivata a `sottomesso`.",
+    "Conteggio dei controlli d'assenza. Il tentativo è delle 15:33:41. Il controllo delle 15:43:19 non vale (9 min 38 s); quelli delle 15:44:20 e delle 15:54:36 valgono e distano più di 10 minuti (reconcile, righe 289-293). Corrisponde alla frase della sequenza «due controlli d'assenza validi, alle 15:44:20 e alle 15:54:36».",
+    "Accettazione del passo 6. La cartella ~/wearusfm_local/jobs/CONTRAST-CN-RESTART545-20261121 non esiste: mkdir riesce e la prenotazione è nuova. `--stato` stampa `None` per quell'ID (righe 323-326), come si aspetta il passo 1.",
+    "Parametri contro plan.json. Allocazione di 900 s, 4 GPU, 32 CPU, 240 GiB e 1 nodo; checkout da 4 CPU, 240 s e 2 GiB. Corrispondono anche i logical_ids e la cartella di uscita.",
+    "Guardie degli script SLURM. In cn_restart_probe.sbatch, -o/-e, la guardia CODE_DIR == $WORK/wearusfm_campaigns/cn-restart545-20261121 con $#=0, TORCH_DIST_INIT_BARRIER=1 e TimeLimit=00:15:00 tornano con il comando. validate_allocation (contrastive_job.py, righe 162-170) vuole 1 nodo, 1 task, 32 CPU, 245760 MB e 4 GPU, e il comando li dà. Per campaign_checkout.sbatch, i valori --cpus-per-task=4 e --time=00:04:00 passati da riga di comando prevalgono su quelli #SBATCH. Il log è un solo file campaign_checkout_%j.out e la riga «pronto» (riga 60) corrisponde al grep del passo 4.",
+    "Blocco del passo 5. È il blocco del protocollo (righe 64-74) più tre sole righe: export RELEASE_SHA e due `date`. Lo stdout atteso corrisponde al codice, nell'ordine: `codice: … @ SHA` (lib_code_dir.sh, riga 64), la riga JSON del runner con recipe_valid/release_valid true ed execution_started false (contrastive_run.py, righe 324-327), poi il JSON indentato del driver con new_binding_valid ed execution_started false (driver, righe 149-152). Con --validate-only non viene creata la cartella di uscita.",
+    "Esiti del passo 6. Il confronto scrive sempre report.json ed esce con 0 anche quando l'esito è INCONCLUSIVE (compare, righe 401-406). Le fasi fallite o scadute scrivono execution_failure.json e danno FAILED: RuntimeError per un'uscita diversa da 0, TimeoutError (che è un OSError) e TimeoutExpired sono tutti catturati (driver, righe 178-185).",
+    "Nomi dei file del passo 7 contro il codice: observation.rank*.json (observe, riga 88), boundary.rank*.json (leg, riga 160) e post_update.rank*.json (leg, riga 116). I vettori stanno in vectors.rank*.pt (observe, riga 87), quindi --exclude='*.pt' li tiene fuori. phase_timings.jsonl e allocation.json corrispondono alle righe 161 e 170 del driver.",
+    "Criteri dei blocchi A e B contro le uscite del 27/11. Ramo main, 0 voci non pulite, 0 hook, riferimento assente e commit assente. Cartella di uscita e checkout assenti. Fork da 463142486 byte e gli altri due checkpoint da 463190144 byte. Quota 991G su 1T. Saldo 2000000/1350952 (67,5%). Un solo job dell'utente, con QoS normal. boost_qos_dbg con 4 job sottomessi e 2 in esecuzione per utente.",
+    "Conti: 4 GPU × 0,25 h = 1,0 GPU-ora; 32 × 0,25 + 4 × 4/60 = 8,2667 ore locali. Residuo prudenziale: 18 − 4,74 − 1,4 = 11,86 GPU-ore e 169,6 − 47,3322 − 11,8667 = 110,4011 ore locali. Tutti coerenti con il protocollo, righe 35-43.",
+    "I file storici su WORK confrontati sono 27 (storici_su_work_20261127.out.txt, righe 4-30), come scrive la sequenza."
+   ],
+   "non_verificabile": [
+    "Se la funzione `module` esiste nella shell `ssh leonardo 'bash -s'`; per $WORK ci sono solo indizi indiretti.",
+    "Che lo stdout della validazione non contenga altre righe, per esempio avvisi di Lmod o di import scritti su stdout invece che su stderr.",
+    "Push e ls-remote reali verso Leonardo, e lo sha256 del submitter condiviso sul disco: mi sono basato sulla dichiarazione del revisore e sul rapporto d1.",
+    "Tempi e comportamento della parte GPU: hook NCCL, ramo libcuda, sette gruppi, durata di 450-620 s.",
+    "Che la copia con rsync del passo 7, con glob remoto fra apici, funzioni con l'rsync del Mac: la sequenza dice che è stata provata a secco, ma non ho visto quell'uscita.",
+    "Che i dati letti dalle radici su SCRATCH (contrastive_job.py, DATA_ROOTS) siano ancora presenti al momento del job: --validate-only controlla solo che le cartelle esistano e verifica le impronte del manifest."
+   ]
+  },
+  "verified": [
+   {
+    "finding": {
+     "id": "R-1",
+     "gravita": "importante",
+     "titolo": "Il caso «cartella di uscita assente» manca negli esiti del passo 6 e rompe il passo 7",
+     "dove": "Sequenza, passo 6 (righe 292-299) e passo 7 (righe 312-315 e 334)",
+     "prova": "In contrastive_cn_restart.py, run() chiama validate_allocation(\"gpu\") alla riga 155 e controlla TORCH_DIST_INIT_BARRIER alle righe 156-157, prima di root.mkdir alla riga 158. Prima ancora vengono require_binding() e commands() (righe 141-143). Le guardie di cn_restart_probe.sbatch (righe 15-21, con set -euo pipefail), code_dir_setup, module e activate girano tutte prima di python. Un errore in uno di questi punti dà FAILED senza nessuna cartella di uscita. La cartella con il solo allocation.json resta invece un caso raro: allocation.json viene scritto alla riga 161 e phase_timings.jsonl viene aperto subito dopo, alla riga 170. Al passo 7 `ls -lR \"$O\"` stampa un errore, e `rsync -a --exclude='*.pt' leonardo:.../cn_restart_probe_20261121/ \"$D/run/\"` fallisce perché la sorgente non esiste. Le regole alla riga 78 dicono di fermarsi a un errore inatteso, quindi i log SLURM potrebbero non essere copiati.",
+     "correzione": "Al passo 6, aggiungere fra gli esiti: «FAILED senza cartella di uscita: errore prima delle fasi (guardie dello script, ambiente, allocazione o binding); la causa è nei due log». Al passo 7, dire che in quel caso l'errore di `ls` e del primo rsync è atteso e che si prosegue con gli altri comandi della raccolta."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il rilievo è vero nei fatti, ma la gravità giusta è minore, non importante.\n\n**Che cosa è vero.** Nel driver contrastive_cn_restart.py la cartella di uscita nasce solo alla riga 158 (`root.mkdir(exist_ok=False)`). Prima ci sono:\n- `require_binding()` e `commands()` (righe 141-143);\n- `validate_allocation(\"gpu\")` (riga 155);\n- il controllo di TORCH_DIST_INIT_BARRIER (righe 156-157).\n\nAnche lo sbatch fa diversi controlli prima di python, sotto `set -euo pipefail` (riga 14):\n- le guardie delle righe 15-17;\n- `code_dir_setup` (riga 19);\n- il controllo `TimeLimit=00:15:00` (riga 21);\n- module e activate (righe 28-31).\n\nSe uno di questi fallisce, il job finisce in FAILED senza cartella di uscita.\n\nIl passo 6 della sequenza (righe 298-299) nomina «errore prima delle fasi», «log quasi vuoti» e la cartella con il solo `allocation.json`. Non nomina in modo esplicito la cartella assente.\n\nAl passo 7, `ls -lR \"$O\"` (riga 315) e `find \"$O\"` (riga 317) scrivono un errore nello stderr. Il blocco remoto però non ha `set -e`, quindi prosegue fino a sacct. L'rsync della riga 334 invece fallisce davvero, perché la sorgente non esiste. Con la regola della riga 78 («errore inatteso: fermarsi e riferire»), l'operatore può fermarsi prima delle righe 335-339, che copiano i log SLURM e i file di stato.\n\n**Perché non è importante.**\n- Succede solo in un ramo di fallimento. Per buona parte delle guardie il caso è improbabile, perché il passo 5 esegue sul nodo di login il binding, `commands()` e lo stesso ambiente. Restano invece scoperti dal passo 5: `validate_allocation(\"gpu\")`, la guardia `TimeLimit` dello sbatch e la `code_dir_setup` lanciata sul nodo di calcolo.\n- Fermarsi e riferire a Simone è il comportamento sicuro che i testi prevedono. Non brucia nessun ID di job e non genera rilanci.\n- I log restano su WORK e si possono raccogliere dopo. Nessun dato va perso e nessuna regola viene violata.\n- Il passo 6 dà già la diagnosi giusta: «la causa è nei due log».\n\nL'effetto è quindi una raccolta incompleta e una domanda in più a Simone, non un esito diverso.\n\n**Correzione proposta.** Basta aggiungere una frase al passo 7: se la cartella di uscita non esiste, gli errori di `ls`, `find` e del primo rsync sono attesi, e si eseguono comunque gli altri comandi della raccolta."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "f2-operatore-letterale",
+  "review": {
+   "sintesi": "Ho letto prima soltanto il brief e la sequenza, come farebbe l'operatore, e poi ho confrontato i dubbi con il submitter, i tre script SLURM, il driver, il runner, il piano, lo stato del registro e le prove del 27/11. Non ho eseguito nulla. I comandi di invio, gli ID, le risorse, i valori attesi e la gestione dell'incidente con --dopo-assenza-verificata sono coerenti con il codice. Non ho trovato nulla che, seguito alla lettera, bruci un ID prima dell'invio. Restano quattro rilievi importanti. (1) Il file .gitignore del ramo worktree-claude-training-engine esclude «*.out». Il «git add» della cartella di raccolta salterebbe quindi senza avvisi i log SLURM .out del checkout e del job GPU, che il protocollo chiede di archiviare. (2) Dopo una riconciliazione non si dice che cosa fare. Un esito «assente» potrebbe spingere a rieseguire il comando del passo 4, che contiene già --dopo-assenza-verificata e verrebbe accettato. Sarebbe un secondo tentativo sullo stesso ID. (3) Il via di Simone compare solo nel brief, non nella sequenza. Manca anche cosa fare se Simone non risponde, e manca l'obbligo di rifare i blocchi A e B se il via arriva tardi. (4) La raccolta non prevede il caso in cui la cartella di uscita non esista, cioè un errore prima del mkdir. Seguono alcune imprecisioni minori.",
+   "rilievi": [
+    {
+     "id": "OP-1",
+     "gravita": "importante",
+     "titolo": "I log SLURM .out non entrano nel commit: *.out è in .gitignore",
+     "dove": "Sequenza, passo 7, secondo blocco (rsync dei log in \"$D/logs/\"), e passo 8 («git add della cartella execution_20261127»)",
+     "prova": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-training-engine/.gitignore riga 4: «*.out». I file copiati sono campaign_checkout_<jobid>.out (campaign_checkout.sbatch righe 9-10) e cn_restart_probe_<jobid>.out (cn_restart_probe.sbatch riga 12). Un «git add» della cartella salta i file ignorati senza errore. Il protocollo, riga 45, chiede di «Archiviare anche i due file SLURM ... .out e .err (anche vuoto), con SHA e accounting». I file .out.txt delle uscite operative non sono colpiti: finiscono in .txt.",
+     "correzione": "Al passo 8, aggiungere «git add -f» con i due percorsi esatti dei log .out (cn_restart_probe_<JOBID_GPU>.out e campaign_checkout_<JOBID_CHECKOUT>.out). Prima del commit, controllare con «git status --short --ignored» sulla cartella che non resti nessun file ignorato, a parte i .pt che comunque non devono esserci."
+    },
+    {
+     "id": "OP-2",
+     "gravita": "importante",
+     "titolo": "Dopo «--riconcilia» non c'è il seguito: rischio di un secondo invio del checkout",
+     "dove": "Sequenza, «Regole per chi esegue», punto «Esiti del submitter» (righe 84-87)",
+     "prova": "La sequenza permette la riconciliazione solo per «ambiguo» e vieta --dopo-assenza-verificata «fuori dal passo 4». Se l'invio del passo 4 tornasse ambiguo, l'ID potrebbe passare di nuovo ad «assente» (submit_job.py righe 288-293). A quel punto il comando del passo 4, già scritto con --dopo-assenza-verificata, verrebbe accettato: reserve(), righe 155-156, accetta «assente» con after_absence. Alla lettera sarebbe «al passo 4», ma è un secondo tentativo sullo stesso ID. Inoltre una riconciliazione fatta prima di 10 minuti esce con 3 e stampa «un controllo vuoto non basta... Stato: ambiguo» (righe 291-296). Un operatore lo leggerebbe come errore.",
+     "correzione": "Scrivere: «Dopo --riconcilia: con `sottomesso, job N` si prosegue con N; con qualunque altro esito (ambiguo, assente, duplicato) ci si ferma e si riferisce a Simone. Il comando di invio non si riesegue mai, nemmeno quello del passo 4.» Aggiungere che la riconciliazione richiede due controlli vuoti: il primo almeno 10 minuti dopo l'invio, il secondo almeno 10 minuti dopo il primo."
+    },
+    {
+     "id": "OP-3",
+     "gravita": "importante",
+     "titolo": "Il via di Simone è solo nel brief; manca cosa fare se tarda e l'obbligo di rifare A e B",
+     "dove": "Brief, riga 8. Sequenza, «Autorizzazione e costi» e passi 2-4",
+     "prova": "La sequenza è dichiarata «la fonte dei comandi e dei criteri di arresto» (brief, riga 14), ma non nomina la richiesta di via prima del push. Il brief permette di eseguire subito i blocchi A e B. I loro valori, però, invecchiano: ramo e hook del canonico, coda, quota (991G su 1T alle 15:46, blocco_B_20261127.out.txt riga 12). Il blocco B rieseguito prima del checkout esiste solo nel passo 6 per il job GPU. Non si dice cosa fare se Simone non risponde.",
+     "correzione": "Nella sequenza, fra il blocco A e il push, aggiungere: «Qui serve il via esplicito di Simone. Finché non arriva, non si fa nessuna scrittura su Leonardo. Se dal blocco A o B sono passati più di 30 minuti, si rifanno subito prima del push e del checkout.» Aggiungere che senza risposta si aspetta e basta, senza solleciti automatici né altre azioni."
+    },
+    {
+     "id": "OP-4",
+     "gravita": "importante",
+     "titolo": "La raccolta non prevede la cartella di uscita assente",
+     "dove": "Sequenza, passo 6 («Esiti possibili») e passo 7 (ls -lR, find, primo rsync)",
+     "prova": "Il job può fallire prima di root.mkdir. Lo fanno i controlli dello sbatch alle righe 15-21 (TimeLimit, CODE_DIR, barriera) e code_dir_setup. Lo fa anche validate_allocation, chiamata alla riga 155 di contrastive_cn_restart.py, mentre il mkdir è alla riga 158. In quel caso non esiste neppure allocation.json. La sequenza parla solo di «una cartella di uscita con il solo allocation.json». ls, find e il primo rsync darebbero «No such file or directory». La regola generale «errore inatteso: fermarsi» contraddice «la raccolta si fa con qualunque esito».",
+     "correzione": "Aggiungere fra gli esiti: «FAILED senza cartella di uscita: errore prima delle fasi. Gli errori di ls/find/rsync su quella cartella sono attesi: si raccolgono comunque log, accounting e stati del registro, e si riferisce.»"
+    },
+    {
+     "id": "OP-5",
+     "gravita": "minore",
+     "titolo": "Blocco A: nessun valore atteso per receive.denyCurrentBranch",
+     "dove": "Sequenza, passo 2, riga 136 e criteri alle righe 143-145",
+     "prova": "blocco_A_20261127.out.txt, riga 6: «receive.denyCurrentBranch: updateInstead». La sequenza elenca gli esiti attesi di tutte le righe tranne questa. L'operatore non sa se updateInstead va bene.",
+     "correzione": "Aggiungere: «receive.denyCurrentBranch: updateInstead (atteso; vale solo per il ramo estratto main, il push di un ramo deploy/ nuovo non tocca il working tree).»"
+    },
+    {
+     "id": "OP-6",
+     "gravita": "minore",
+     "titolo": "Il blocco B «eseguito davvero» non è il testo definitivo",
+     "dove": "Sequenza, righe 47-48, e blocco B al passo 3 (righe 177-182)",
+     "prova": "blocco_B_20261127.out.txt riga 20 dice «== job dell'account in esecuzione (solo il numero)» e riga 22 «== limiti delle code». La sequenza ha «== job dell'account (solo il numero)» e «== limiti della coda di debug». Il testo è stato modificato dopo la prova; i valori dei criteri vengono da quella versione.",
+     "correzione": "Rieseguire il blocco B definitivo, che è in sola lettura, oppure scrivere che la prova riguarda una versione precedente con le stesse righe di comando, se è così."
+    },
+    {
+     "id": "OP-7",
+     "gravita": "minore",
+     "titolo": "Dopo il push sul ramo condiviso mancano le istruzioni per un ramo indietro o un push rifiutato",
+     "dove": "Sequenza, passo 8, «Dove si scrive» e «Commit e push»",
+     "prova": "Si chiedono «git fetch origin» e «git status», ma non come allinearsi se origin è avanti. Un push rifiutato perché non fast-forward lascerebbe l'operatore a improvvisare (pull, rebase, force). Il worktree è condiviso fra chat Claude (sequenza, riga 359). Per Leonardo la sequenza dice «senza forzare», per origin no.",
+     "correzione": "Aggiungere: «Se il ramo locale è dietro origin: git merge --ff-only origin/worktree-claude-training-engine. Se non è fast-forward, o se il push viene rifiutato: fermarsi e riferire, mai force né rebase.»"
+    },
+    {
+     "id": "OP-8",
+     "gravita": "minore",
+     "titolo": "Uscite committate con i job di altri progetti dell'utente",
+     "dove": "Sequenza, passo 7, «Prima del commit», terzo punto; uscite del blocco B (squeue -u $USER)",
+     "prova": "squeue -u \"$USER\" elenca tutti i job dell'utente: oggi uno solo, SCALING-49046 (blocco_B_20261127.out.txt riga 19). Secondo le regole del progetto nella memoria, i job MONALISA (mona_*, t1_*, t2_*, evalf_*, ed evalb_* da confermare) vanno tolti da tabelle e prove committate. Il criterio della sequenza («solo job dell'utente») li lascerebbe passare.",
+     "correzione": "Nel controllo prima del commit, aggiungere che nelle copie committate di B_prima_del_*.out.txt non devono esserci righe di job con quei prefissi; se ci sono, quei file restano sul Mac."
+    },
+    {
+     "id": "OP-9",
+     "gravita": "minore",
+     "titolo": "Incoerenza su a chi riferire",
+     "dove": "Sequenza, riga 24 («si riferisce a Simone e a GPT»); brief, righe 30 e 38 (solo Simone)",
+     "prova": "Il brief dice «raccogli e riferisci a Simone». La sequenza aggiunge GPT, che l'operatore non può contattare direttamente. Il resoconto a GPT passa dal testo da incollare (passo 8).",
+     "correzione": "Nella sequenza: «si riferisce a Simone, con il testo pronto per GPT»."
+    },
+    {
+     "id": "OP-10",
+     "gravita": "minore",
+     "titolo": "Calcolo dei giga liberi fragile se la quota supera 1T",
+     "dove": "Sequenza, passo 3, criterio sulla quota (righe 194-196)",
+     "prova": "lfs quota -h scrive 991G (blocco_B_20261127.out.txt riga 12). Oltre 1 TiB scriverebbe un valore in T (per esempio 1.002T) e la regola «1024 meno quelli usati» non si applicherebbe alla lettera.",
+     "correzione": "Aggiungere: «Se lo spazio usato è scritto in T, o ha un asterisco, i giga liberi sono meno di 10: fermarsi.»"
+    },
+    {
+     "id": "OP-11",
+     "gravita": "nota",
+     "titolo": "Il controllo del passo 1 non vede una cartella senza stato o un lock rimasto",
+     "dove": "Sequenza, passo 1, ultime due righe di comando",
+     "prova": "Per un ID con la cartella ma senza state.json, --stato stampa «None» (submit_job.py righe 322-326), ma reserve() rifiuterebbe con stato «sconosciuto» (righe 153-161). Un operazione.lock rimasto blocca l'invio alla riga 138. Oggi ho controllato: ~/wearusfm_local/jobs/CONTRAST-CN-RESTART545-20261121/state.json non esiste e nella cartella del checkout non c'è operazione.lock. In entrambi i casi il submitter si ferma senza bruciare l'ID.",
+     "correzione": "Facoltativo: aggiungere «ls -A ~/wearusfm_local/jobs/CONTRAST-CN-RESTART545-20261121» (atteso: cartella inesistente) e controllare che nella cartella del checkout ci sia solo state.json."
+    },
+    {
+     "id": "OP-12",
+     "gravita": "nota",
+     "titolo": "La validazione dipende da $WORK e da module nel bash -s del login",
+     "dove": "Sequenza, passo 5",
+     "prova": "Il driver legge os.environ[\"WORK\"] (contrastive_cn_restart.py riga 113) e il blocco usa module. storici_su_work_20261127.out.txt riga 2, «WORK risolto: /leonardo_work/IscrB_WearUsFM», suggerisce che $WORK esiste in quella shell. module non è stato provato. Un fallimento qui ferma tutto prima del job GPU, senza bruciare l'ID.",
+     "correzione": "Nessuna richiesta: il criterio «uscita diversa da 0: non inviare» basta."
+    }
+   ],
+   "verifiche_positive": [
+    "Le righe sbatch delle due prove a secco coincidono con i comandi dei passi 4 e 6. Il checkout con --dopo-assenza-verificata ha generato la stessa riga sbatch (prova_a_secco_assenza/argomenti.txt riga 2 = chiamata_1_argomenti.txt riga 2). Nella copia del registro il passaggio è assente -> prenotato_di_nuovo -> sottomesso.",
+    "Stato vero del registro per il checkout: «assente». Il tentativo in_sottomissione è delle 15:33:41. Il controllo delle 15:43:19 non vale (meno di 10 minuti). Quelli delle 15:44:20 e 15:54:36 valgono, come scritto nella sequenza (state.json; submit_job.py righe 288-293). Per l'ID del job GPU non esiste nessun state.json.",
+    "Senza flag, reserve() accetta «assente» solo con --dopo-assenza-verificata (submit_job.py righe 155-161): il flag serve davvero, e solo per il checkout.",
+    "Sull'output di --stato: un ID inesistente stampa «None»; il checkout stampa ID, assente, campo jobid vuoto, claude e campagna (righe 322-326). Corrisponde agli esiti attesi del passo 1.",
+    "Le risorse dello sbatch GPU (1 nodo, 1 task, 4 GPU, 32 CPU, 240G, 15 minuti, boost_qos_dbg, log cn_restart_probe_%j) coincidono con validate_allocation (contrastive_job.py righe 162-170), con plan.json («allocation», «logical_ids», «output») e con la tabella della sequenza.",
+    "Il log del checkout è un solo file campaign_checkout_%j.out (campaign_checkout.sbatch righe 9-10). La riga «checkout di campagna pronto: $DEST @ $SHA» (riga 60) corrisponde al grep del passo 4.",
+    "Il passo 5 non crea la cartella di uscita: contrastive_run.py esce alle righe 324-327 e il mkdir del driver è solo in --run (riga 158). L'ordine dello stdout descritto nella sequenza (riga codice:, JSON del runner, JSON del driver) corrisponde al codice.",
+    "Nel blocco A del 27/11: main, 0 voci non pulite, 0 hook, riferimento deploy assente, commit di release assente. Nel blocco B: cartelle assenti, dimensioni dei tre checkpoint uguali a plan.json, limiti dbg 4 sottomessi e 2 in esecuzione, nessuna manutenzione generale. Dopo l'incidente, squeue e sacct sono vuoti per i due nomi.",
+    "I conti tornano: 18 − 4,74 − 1,0 = 12,26 GPU-ore; 169,6 − 47,3322 − 8,2667 = 114,0011; inviluppo 4×21/60 = 1,4 e 32×21/60 + 4×10/60 = 11,8667; residuo prudenziale 11,86 e 110,4011.",
+    "Il brief e la sequenza concordano su ID, campagna, SHA di release, ramo, worktree, ordine dei passi, tetto, divieto di rilancio e uso esclusivo di --dopo-assenza-verificata nel checkout.",
+    "Su WORK sono elencate 27 impronte di file storici (storici_su_work_20261127.out.txt righe 4-30) e il fork è di 463.142.486 byte, come scritto nella sequenza."
+   ],
+   "non_verificabile": [
+    "Non posso confermare che il submitter condiviso abbia ancora sha256 814da4bc...: ho letto solo la copia del commit di release.",
+    "Non ho verificato che le 27 impronte su WORK coincidano con le copie archiviate: non ho confrontato le impronte dell'archivio.",
+    "Non ho verificato che la funzione module esista nel bash -s del login, né quanto dura la validazione sul login.",
+    "Non ho verificato che i commit evidence_commit f23b7cca e reviewed_commit, interrogati con git show/diff dal validatore, raggiungano il canonico di Leonardo con il push del solo commit di release.",
+    "Non ho verificato come si comporta openrsync di macOS 26 con un glob remoto fra apici nella raccolta reale (risulta provato solo a secco).",
+    "Non ho verificato la presenza del titolo «## 2) Problemi trovati» in docs/claude_GPT_shared: non ho letto il file.",
+    "Non posso prevedere coda, quota e certificato al momento del lancio, né il comportamento in esecuzione (NCCL, tempi, gruppi)."
+   ]
+  },
+  "verified": [
+   {
+    "finding": {
+     "id": "OP-1",
+     "gravita": "importante",
+     "titolo": "I log SLURM .out non entrano nel commit: *.out è in .gitignore",
+     "dove": "Sequenza, passo 7, secondo blocco (rsync dei log in \"$D/logs/\"), e passo 8 («git add della cartella execution_20261127»)",
+     "prova": "/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-training-engine/.gitignore riga 4: «*.out». I file copiati sono campaign_checkout_<jobid>.out (campaign_checkout.sbatch righe 9-10) e cn_restart_probe_<jobid>.out (cn_restart_probe.sbatch riga 12). Un «git add» della cartella salta i file ignorati senza errore. Il protocollo, riga 45, chiede di «Archiviare anche i due file SLURM ... .out e .err (anche vuoto), con SHA e accounting». I file .out.txt delle uscite operative non sono colpiti: finiscono in .txt.",
+     "correzione": "Al passo 8, aggiungere «git add -f» con i due percorsi esatti dei log .out (cn_restart_probe_<JOBID_GPU>.out e campaign_checkout_<JOBID_CHECKOUT>.out). Prima del commit, controllare con «git status --short --ignored» sulla cartella che non resti nessun file ignorato, a parte i .pt che comunque non devono esserci."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "importante",
+      "motivo": "Il rilievo regge: non sono riuscito a confutarlo. Il fatto è vero. In /Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-training-engine/.gitignore la riga 4 è «*.out». Al passo 7 della sequenza (/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-training-engine/docs/contrastive_cn_restart_probe_launch_20261127.md, righe 335-336) l'rsync copia in \"$D/logs/\" i file cn_restart_probe_* e campaign_checkout_<JOBID_CHECKOUT>.out, con nomi che finiscono in .out (righe 73-74 della stessa sequenza). Al passo 8 (righe 360-361) si fa solo «git add della cartella execution_20261127». Quando si aggiunge una cartella, git salta senza errore i file che .gitignore esclude. Così nel commit entrerebbero il .err del job GPU e i .out.txt delle uscite operative, ma non i due log .out. Il protocollo di GPT (/Users/simonebenatti/dev/wearusfm/.claude/worktrees/cn-restart545-release/docs/contrastive_cn_restart_probe_20261121.md, riga 45) chiede invece: «Archiviare anche i due file SLURM `$WORK/wearusfm_runs/logs/cn_restart_probe_<jobid>.out` e `.err` (anche vuoto), con SHA e accounting». Non ho trovato nella sequenza nulla che prevenga il problema: niente «git add -f» e niente controllo dei file ignorati. Non ho cercato un eventuale .gitignore nelle sottocartelle di results/ che riammetta i .out; non è citato da nessuna parte. La gravità giusta è «importante», non «bloccante». Il difetto non fa fallire il lancio e non brucia l'ID di nessun job: interviene dopo la fine del job. I log restano su WORK e nella cartella $D/logs sul Mac, e le loro impronte sono già nel file raccolta_remota.out.txt, che invece viene committato. Resta però un rischio concreto: l'operatore crederebbe di aver archiviato i log richiesti dal protocollo, e il commit pubblicato e il resoconto a GPT sarebbero incompleti, senza alcun avviso. Correzione proposta: al passo 8, aggiungere «git add -f» con i due percorsi esatti dei log .out. Prima del commit, controllare la cartella con «git status --short --ignored»."
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "OP-2",
+     "gravita": "importante",
+     "titolo": "Dopo «--riconcilia» non c'è il seguito: rischio di un secondo invio del checkout",
+     "dove": "Sequenza, «Regole per chi esegue», punto «Esiti del submitter» (righe 84-87)",
+     "prova": "La sequenza permette la riconciliazione solo per «ambiguo» e vieta --dopo-assenza-verificata «fuori dal passo 4». Se l'invio del passo 4 tornasse ambiguo, l'ID potrebbe passare di nuovo ad «assente» (submit_job.py righe 288-293). A quel punto il comando del passo 4, già scritto con --dopo-assenza-verificata, verrebbe accettato: reserve(), righe 155-156, accetta «assente» con after_absence. Alla lettera sarebbe «al passo 4», ma è un secondo tentativo sullo stesso ID. Inoltre una riconciliazione fatta prima di 10 minuti esce con 3 e stampa «un controllo vuoto non basta... Stato: ambiguo» (righe 291-296). Un operatore lo leggerebbe come errore.",
+     "correzione": "Scrivere: «Dopo --riconcilia: con `sottomesso, job N` si prosegue con N; con qualunque altro esito (ambiguo, assente, duplicato) ci si ferma e si riferisce a Simone. Il comando di invio non si riesegue mai, nemmeno quello del passo 4.» Aggiungere che la riconciliazione richiede due controlli vuoti: il primo almeno 10 minuti dopo l'invio, il secondo almeno 10 minuti dopo il primo."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il rilievo regge nei fatti, ma la gravità giusta è minore.\n\nCosa ho verificato:\n- Nella sequenza (docs/contrastive_cn_restart_probe_launch_20261127.md, righe 84-87), dopo `--riconcilia` non è scritto cosa fare. Mancano sia il caso «sottomesso, job N, si prosegue» sia i casi «assente» o «duplicato, ci si ferma».\n- Nel submitter (scripts/submit_job.py) i passaggi descritti sono veri:\n  - riga 155: `reserve` accetta un ID «assente» quando c'è `after_absence`;\n  - righe 288-293: una riconciliazione con risposta vuota può riportare l'ID ad «assente»;\n  - righe 291-296 e 300: prima di 10 minuti, o con un solo controllo, la riconciliazione stampa «un controllo vuoto non basta ... Stato: ambiguo» ed esce con 3.\n- Il comando del passo 4 contiene già `--dopo-assenza-verificata` (riga 207). Quindi, se l'ID tornasse «assente», rieseguirlo «al passo 4» sarebbe accettato dal submitter.\n\nPerché non è importante:\n- Il percorso dannoso richiede due cose: un invio che torna davvero ambiguo (caso raro) e un operatore che riesegue il passo 4.\n- Rieseguire il passo 4 va contro regole scritte in chiaro: riga 23, «Un solo tentativo. Nessun rilancio dopo un errore»; righe 78-79, «fermarsi e riferire a Simone»; righe 84-85, con `ambiguo` «fermarsi e riferire».\n- Un'uscita 3 dalla riconciliazione rientra già in «un'uscita diversa da 0: fermarsi e riferire» (riga 85). Quindi chi legge il messaggio come un errore si ferma, che è l'esito sicuro.\n- Se fosse confermata l'assenza, un secondo invio non brucerebbe un job esistente su Leonardo. Violerebbe però la regola del tentativo unico.\n\nCorrezione utile ma non necessaria: dopo `--riconcilia` si prosegue solo con «sottomesso, job N»; con ogni altro esito ci si ferma, e nessun comando di invio si riesegue."
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "OP-3",
+     "gravita": "importante",
+     "titolo": "Il via di Simone è solo nel brief; manca cosa fare se tarda e l'obbligo di rifare A e B",
+     "dove": "Brief, riga 8. Sequenza, «Autorizzazione e costi» e passi 2-4",
+     "prova": "La sequenza è dichiarata «la fonte dei comandi e dei criteri di arresto» (brief, riga 14), ma non nomina la richiesta di via prima del push. Il brief permette di eseguire subito i blocchi A e B. I loro valori, però, invecchiano: ramo e hook del canonico, coda, quota (991G su 1T alle 15:46, blocco_B_20261127.out.txt riga 12). Il blocco B rieseguito prima del checkout esiste solo nel passo 6 per il job GPU. Non si dice cosa fare se Simone non risponde.",
+     "correzione": "Nella sequenza, fra il blocco A e il push, aggiungere: «Qui serve il via esplicito di Simone. Finché non arriva, non si fa nessuna scrittura su Leonardo. Se dal blocco A o B sono passati più di 30 minuti, si rifanno subito prima del push e del checkout.» Aggiungere che senza risposta si aspetta e basta, senza solleciti automatici né altre azioni."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "I fatti sono veri, ma il rischio è più basso di quanto dichiarato.\n\n1. La sequenza non nomina il via. Ho cercato «via» e «Simone» nella sezione «Autorizzazione e costi» (righe 8-24) e nei passi 2-4 (righe 124-233): non c'è nessuna richiesta di via prima del push. La richiesta sta solo nel brief, riga 8. Il brief però fa parte dei due soli testi che l'operatore riceve, e la richiesta è scritta in modo esplicito e mirato, con l'istante preciso («Prima della prima scrittura su Leonardo (il push del passo 2)»). Un operatore che legge entrambi i testi non la salta per una lacuna di testo. Inoltre questo via è una cautela in più del revisore, non un obbligo del progetto. Per la linea 3, la disposizione del 27/11 in CLAUDE.md dice «Il via già dato vale per la catena concordata», e Simone ha già affidato il lancio a questa chat (brief riga 6). Se l'operatore la saltasse, non violerebbe una regola del progetto.\n\n2. Manca davvero cosa fare se Simone tarda. Ma non agire senza il via è il comportamento ovvio, e la sequenza non contiene azioni automatiche che lo contraddicano.\n\n3. Il blocco A e il blocco B invecchiano, e il blocco B non viene ripetuto subito prima del checkout (righe 186 e 270-278: lo si ripete solo prima del job GPU). Le conseguenze però sono limitate:\n- Il push crea solo un riferimento nuovo e non tocca il working tree (riga 147). Un riferimento già esistente o un rifiuto del push portano all'arresto senza forzare (righe 144-155).\n- Il checkout ha le sue protezioni. campaign_checkout.sbatch esce con 2 se la cartella esiste già (riga 35) o se il commit manca (righe 36-37), senza danni.\n- Al checkout servono pochi MB di quota.\n- La quota e la cartella di uscita, che contano per il job GPU, vengono ricontrollate al passo 6 (righe 270-278).\n\nUn intervallo lungo potrebbe bruciare l'ID del checkout solo se nel frattempo qualcun altro creasse proprio quella cartella: un caso molto improbabile.\n\nConclusione: è un'imprecisione di completezza che quasi certamente non cambia l'esito, quindi la gravità è «minore». La correzione proposta (ripetere la riga del via nella sequenza e rifare A e B se è passata più di mezz'ora) resta utile ma non è necessaria."
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "OP-4",
+     "gravita": "importante",
+     "titolo": "La raccolta non prevede la cartella di uscita assente",
+     "dove": "Sequenza, passo 6 («Esiti possibili») e passo 7 (ls -lR, find, primo rsync)",
+     "prova": "Il job può fallire prima di root.mkdir. Lo fanno i controlli dello sbatch alle righe 15-21 (TimeLimit, CODE_DIR, barriera) e code_dir_setup. Lo fa anche validate_allocation, chiamata alla riga 155 di contrastive_cn_restart.py, mentre il mkdir è alla riga 158. In quel caso non esiste neppure allocation.json. La sequenza parla solo di «una cartella di uscita con il solo allocation.json». ls, find e il primo rsync darebbero «No such file or directory». La regola generale «errore inatteso: fermarsi» contraddice «la raccolta si fa con qualunque esito».",
+     "correzione": "Aggiungere fra gli esiti: «FAILED senza cartella di uscita: errore prima delle fasi. Gli errori di ls/find/rsync su quella cartella sono attesi: si raccolgono comunque log, accounting e stati del registro, e si riferisce.»"
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Il fatto è vero. Nello sbatch (/Users/simonebenatti/dev/wearusfm/.claude/worktrees/cn-restart545-release/scripts/slurm/cn_restart_probe.sbatch) le righe 14-21 contengono controlli che possono far uscire il job prima di Python: set -euo pipefail, le variabili obbligatorie, CODE_DIR, la barriera, code_dir_setup e TimeLimit=00:15:00. Nel driver (/Users/simonebenatti/dev/wearusfm/.claude/worktrees/cn-restart545-release/scripts/diagnostics/contrastive_cn_restart.py) validate_allocation(\"gpu\") è alla riga 155 e il controllo della barriera alla riga 156-157, mentre root.mkdir è alla riga 158. Se uno di questi fallisce, la cartella di uscita non esiste. C'è un caso in più che il rilievo non cita: se nvidia-smi fallisce (riga 159), la cartella esiste ma è vuota, senza allocation.json.\n\nNella sequenza (/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-training-engine/docs/contrastive_cn_restart_probe_launch_20261127.md) il passo 6, righe 298-299, cita solo «Una cartella di uscita con il solo `allocation.json`, o log quasi vuoti». Il passo 7 esegue ls -lR \"$O\" e find \"$O\" (righe 315 e 317) e il primo rsync (riga 334): con la cartella assente danno errore. La regola della riga 79 («un comando dà un errore inatteso: fermarsi») contraddice la riga 304 («La raccolta si fa con qualunque esito»).\n\nL'effetto concreto però è limitato. Il blocco remoto non ha set -e: ls e find scrivono l'errore sullo stderr e il blocco continua, quindi i log e il sacct vengono comunque letti e salvati. Sul Mac i comandi sono righe separate, non legate con &&. Nel caso peggiore l'operatore si ferma a metà raccolta e riferisce a Simone, che è proprio l'azione sicura prevista. Non si brucia nessun tentativo, perché il job è già concluso, e non si viola nessuna regola. Inoltre il caso è poco probabile, perché il passo 5 esegue prima la validazione.\n\nResta una raccolta incompleta e un punto di dubbio per l'operatore: per questo la gravità è minore, non importante. La correzione proposta è utile: aggiungere fra gli esiti «FAILED senza cartella di uscita, o con la cartella vuota: gli errori di ls, find e del primo rsync sono attesi; raccogliere comunque log, accounting e stati del registro»."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "f3-rilievi-chiusi-e-fatti",
+  "review": {
+   "sintesi": "Non ho trovato rilievi bloccanti: seguendo alla lettera la sequenza e il brief, i comandi producono gli invii attesi e i criteri di arresto proteggono i due ID. I rilievi della prima verifica che ho potuto leggere sono chiusi tutti, salvo uno. Questi rilievi sono il blocco del registro (B-1 di d2, R0 di d4, incidente di d1), il grep con uscita 1, i comandi remoti con $WORK espanso sul Mac, il cd prima di --script-stdin, il log unico del checkout, il comando completo di --riconcilia, l'impronta del submitter al passo 1, la descrizione dello stdout di --validate-only, il confronto dei file storici, il percorso giusto del fork, gli esiti del job, la raccolta e la formula del consuntivo. Resta aperto `module` dentro `bash -s` (N-2 di d1), non verificato; se manca, la sequenza si ferma prima del job GPU senza bruciare l'ID. I rilievi R1-R9 di d4, R1-R12 di d5 e quelli di d3 erano solo negli oggetti strutturati e nei file non ci sono: per d5 ho usato la tabella di corrispondenza. I fatti dichiarati tornano con le prove: incidente, orari e stati, nessun job su Leonardo, blocco A, quota, saldo, coda, prenotazioni e tutti i numeri di costo. La frase di Simone è identica nei due testi e nella review. Restano due rilievi importanti, entrambi di regole. Il brief chiede a Simone un via senza far dichiarare costo e residuo, come vuole CLAUDE.md. Il commit nel worktree condiviso fra le chat Claude non protegge da file messi in stage da altre chat. Gli altri rilievi sono minori o note.",
+   "rilievi": [
+    {
+     "id": "A-1",
+     "gravita": "importante",
+     "titolo": "La richiesta di via a Simone non dichiara costo e residuo",
+     "dove": "Brief, sezione CHI LO HA DECISO, terzo punto; la sequenza non ne parla",
+     "prova": "Il brief alla riga 8 chiede un via esplicito «digli in una riga dell'incidente ... e che il checkout parte con l'opzione --dopo-assenza-verificata», senza costi. CLAUDE.md, «Progetto FM sEMG»: «Ogni richiesta di conferma per un job dichiara il costo stimato in ore locali e in GPU-ora, e quanto resta del budget del passo». I numeri sono nel brief (riga 32), ma non dentro l'istruzione per la richiesta.",
+     "correzione": "Aggiungere al terzo punto del brief: «nella stessa richiesta indica il tetto di 1,0 GPU-ora e 8,2667 ore locali (inviluppo 1,4 e 11,8667) e il residuo di 12,26 GPU-ore e 114,0011 ore locali sul tetto di 18 e 169,6»."
+    },
+    {
+     "id": "A-2",
+     "gravita": "importante",
+     "titolo": "Il commit nel worktree condiviso può includere file messi in stage da altre chat",
+     "dove": "Sequenza, passo 8, punti «Dove si scrive» e «Commit e push» (righe 358-368)",
+     "prova": "La sequenza dice di aggiungere solo i percorsi nominati, mai `git add -A`, ma il `git commit` non ha percorsi: un commit senza percorsi prende tutto lo stage. Il worktree claude-training-engine è condiviso fra le chat Claude, comprese quelle che operano le linee 1 e 2 (riga 359). Non è detto cosa fare se `git status` mostra file in stage di altri o se dopo `git fetch` il ramo locale è indietro rispetto a origin (il push verrebbe rifiutato).",
+     "correzione": "Scrivere: se `git diff --cached --name-only` elenca file fuori dalla cartella `execution_20261127` e da `docs/claude_GPT_shared`, oppure se il ramo è indietro rispetto a origin, fermarsi e riferire. Fare il commit con i percorsi espliciti: `git commit -m ... -- <cartella> docs/claude_GPT_shared`."
+    },
+    {
+     "id": "M-1",
+     "gravita": "minore",
+     "titolo": "`module` dentro `ssh leonardo 'bash -s'` resta non verificato (N-2 di d1)",
+     "dove": "Sequenza, passo 5 (righe 240-255)",
+     "prova": "Il blocco usa `module purge` e `module load` sotto `set -eo pipefail` in una bash figlia non interattiva. I blocchi A e B eseguiti il 27/11 (blocco_A_20261127.out.txt e blocco_B_20261127.out.txt) non usano `module`, quindi non lo provano. Se la funzione manca, l'uscita è diversa da 0 e la sequenza si ferma prima del job GPU (riga 266): l'ID non si brucia, ma il lancio si blocca.",
+     "correzione": "Aggiungere al blocco B, in sola lettura, `type module >/dev/null 2>&1 && echo \"module: presente\" || echo \"module: ASSENTE\"`, con criterio «presente»."
+    },
+    {
+     "id": "M-2",
+     "gravita": "minore",
+     "titolo": "La pausa per il via di Simone c'è solo nel brief",
+     "dove": "Sequenza, passo 2 (riga 147: «Poi il push»); brief, riga 8",
+     "prova": "Il brief chiede di fermarsi prima del push e dice che la sequenza è «la fonte dei comandi e dei criteri di arresto». La sequenza passa dal blocco A al push senza alcuna pausa.",
+     "correzione": "Aggiungere al passo 2, prima del push: «Fermarsi e chiedere a Simone il via esplicito, come indicato nel brief; il push solo dopo la risposta»."
+    },
+    {
+     "id": "M-3",
+     "gravita": "minore",
+     "titolo": "Il blocco B eseguito il 27/11 non è identico a quello della sequenza",
+     "dove": "Sequenza, righe 47-48 («I blocchi di controllo A e B di questa sequenza ... sono stati eseguiti davvero») e righe 179-182",
+     "prova": "Nell'uscita blocco_B_20261127.out.txt le intestazioni sono «== job dell'account in esecuzione (solo il numero)» (riga 20) e «== limiti delle code» (riga 22). Nella sequenza sono «== job dell'account (solo il numero)» e «== limiti della coda di debug». Il blocco è stato quindi ritoccato dopo l'esecuzione; dalle uscite non si vede se sono cambiati anche i comandi.",
+     "correzione": "Rieseguire il blocco B definitivo prima della consegna, oppure scrivere «eseguita una versione precedente, che differisce solo nelle intestazioni»."
+    },
+    {
+     "id": "M-4",
+     "gravita": "minore",
+     "titolo": "Le uscite committate possono contenere job di MONALISA",
+     "dove": "Sequenza, passo 7, «Prima del commit», terzo punto (riga 354)",
+     "prova": "Il blocco B stampa `squeue -u \"$USER\"` (riga 178) e tutti i file `.out.txt` vanno nel repository (righe 337 e 352). La regola dell'utente (memoria «MONALISA fuori perimetro» e raccoglitore delle prove del 22/11) chiede di togliere da tabelle e prove i job `mona_*`, `t1_*`, `t2_*`, `evalf_*` ed `evalb_*`. Il controllo della sequenza riguarda solo i job di altri utenti.",
+     "correzione": "Aggiungere: se le uscite contengono job con quei prefissi, togliere quelle righe dalla copia nel repository oppure fermarsi e chiedere."
+    },
+    {
+     "id": "M-5",
+     "gravita": "minore",
+     "titolo": "Manca cosa fare dopo una riconciliazione",
+     "dove": "Sequenza, «Esiti del submitter» (righe 84-87)",
+     "prova": "Si può riconciliare solo un esito `ambiguo`. In `submit_job.py` (righe 288-296) una sola risposta vuota lascia lo stato `ambiguo` con uscita 3 e servono due controlli a 10 minuti di distanza; un esito `assente` al passo 4 renderebbe di nuovo accettabile lo stesso comando con --dopo-assenza-verificata. La sequenza non dice se dopo `sottomesso` si prosegue, né che dopo `assente` non si rilancia.",
+     "correzione": "Aggiungere: «Dopo la riconciliazione: se `sottomesso`, si prosegue con quel jobid; con qualunque altro esito si riferisce a Simone e non si rilancia nulla, nemmeno il comando del passo 4»."
+    },
+    {
+     "id": "M-6",
+     "gravita": "minore",
+     "titolo": "La frase sui blocchi remoti senza scritture non vale per il passo 5",
+     "dove": "Sequenza, «Comandi su Leonardo» (righe 89-90)",
+     "prova": "«Il blocco alimenta la shell remota e non crea né modifica file su WORK.» Al passo 5, `code_dir_setup` (lib_code_dir.sh, riga 41) e `package()` (contrastive_cn_restart.py, righe 54-55) eseguono `git status` e `git diff`, che possono riscrivere l'indice del worktree in `$WORK/wearusfm/.git/worktrees/` (lo nota anche d2). L'esito non cambia.",
+     "correzione": "Precisare: «salvo l'aggiornamento automatico dell'indice git del checkout durante la validazione»."
+    },
+    {
+     "id": "N-1",
+     "gravita": "nota",
+     "titolo": "--stato non distingue una cartella senza state.json",
+     "dove": "Sequenza, passo 1, ultimo esito atteso (riga 120)",
+     "prova": "In `submit_job.py` alla riga 325, `reg.read` restituisce None sia se la cartella dell'ID manca sia se c'è senza state.json. Nel secondo caso `reserve` rifiuta con «Usare un ID nuovo» (righe 153-161), prima di sbatch: nessun job, ma il passo 6 fallirebbe. Il caso è improbabile (d5 segnalava che la prenotazione è la cartella).",
+     "correzione": "Facoltativo: aggiungere al passo 1 `ls -d ~/wearusfm_local/jobs/CONTRAST-CN-RESTART545-20261121`, con atteso «No such file or directory»."
+    },
+    {
+     "id": "N-2",
+     "gravita": "nota",
+     "titolo": "Tre controlli d'assenza, non due",
+     "dove": "Sequenza, righe 57-58",
+     "prova": "state.json registra tre controlli: 15:43:19, 15:44:20 e 15:54:36. Il primo è venuto 9 minuti e 38 secondi dopo il tentativo delle 15:33:41, quindi non conta (submit_job.py, riga 291). La frase «due controlli d'assenza validi, alle 15:44:20 e alle 15:54:36» è corretta: 10 minuti e 39 secondi dopo il tentativo, e 10 minuti e 16 secondi fra i due.",
+     "correzione": "Nessuna. Al più: «tre controlli, di cui due validi»."
+    },
+    {
+     "id": "N-3",
+     "gravita": "nota",
+     "titolo": "«Prenotazioni di altri account»: le uscite mostrano solo i nomi",
+     "dove": "Sequenza, passo 3, criterio sulle prenotazioni (righe 200-201)",
+     "prova": "Nel blocco B (righe 25-28) ci sono solo nome, inizio e fine delle quattro prenotazioni; la review del 27/11 dice «non ne ho letto i flag». `s_int_check_boost` copre il Booster dal 18/11 al 18/12, e un operatore che la vede attiva potrebbe esitare.",
+     "correzione": "Scrivere i quattro nomi attesi e dire che si prosegue se sono gli stessi."
+    },
+    {
+     "id": "N-4",
+     "gravita": "nota",
+     "titolo": "Soglia di 10 GB liberi aggiunta dal revisore",
+     "dove": "Sequenza, passo 3 (riga 196) e passo 6 (riga 277)",
+     "prova": "Il protocollo (riga 43) chiede almeno 4 GB «dopo gli impegni concorrenti», più lo spazio del checkout. La soglia di 10 GB è più prudente e non viene dal pacchetto.",
+     "correzione": "Nessuna. Eventualmente dichiararla come soglia operativa del revisore."
+    },
+    {
+     "id": "N-5",
+     "gravita": "nota",
+     "titolo": "L'incidente va registrato in docs/claude_GPT_shared",
+     "dove": "Sequenza, sezione «Prenotazione spuria nel ledger» e passo 8",
+     "prova": "Per le regole del registro condiviso ogni azione e ogni problema vanno in una voce. La sequenza non dice se il revisore ha già registrato l'incidente e la riconciliazione, né chiede alla chat che lancia di citarli.",
+     "correzione": "Il revisore registra l'incidente prima della consegna, oppure il passo 8 chiede di citarlo nella sezione 2."
+    }
+   ],
+   "verifiche_positive": [
+    "Incidente: state.json del registro vero conferma prenotato e in_sottomissione alle 15:33:41 e ambiguo alle 15:33:42, con stdout «finto-stdout» e job_slurm null. Seguono i controlli d'assenza delle 15:43:19, 15:44:20 e 15:54:36, con stato finale `assente`, riconciliato true e nessuna cancellazione. La regola dei 10 minuti (submit_job.py, righe 288-293) rende validi esattamente i controlli delle 15:44:20 e delle 15:54:36.",
+    "Nessun job su Leonardo: in dopo_incidente_20261127.out.txt (15:42:25) squeue e sacct sono vuoti per i due ID; checkout e cartella di uscita non esistono; il riferimento di deploy dà 0. C'è un solo job dell'utente, SCALING-49046 in PENDING.",
+    "--dopo-assenza-verificata: submit_job.py alle righe 155 e 159 lo conferma come unico modo di riusare un ID `assente`. Nella prova a secco sulla copia del registro si passa da prenotato_di_nuovo a sottomesso, con la riga di sbatch (argomenti.txt) identica byte per byte a quella di chiamata_1_argomenti.txt.",
+    "Le righe di sbatch dei passi 4 e 6 della sequenza coincidono con chiamata_1 e chiamata_4. Rispetto ai comandi del protocollo (righe 51-87) le differenze sono solo quelle dichiarate: --agente claude, invocazione diretta del submitter e SHA per esteso.",
+    "Formati del submitter: `--stato` stampa ID, stato, job, agente e campagna separati da tabulazione, quindi per il checkout «assente», campo vuoto, «claude» e la campagna; per un ID mai prenotato «None» (righe 322-327). L'esito buono è «<ID>: sottomesso, job N» con uscita 0, gli altri danno uscita 3 (righe 238-239).",
+    "Blocco A alle 15:46:26: ramo main, HEAD 8dad7e82, 0 voci non pulite, 0 hook, riferimento assente, commit di release non presente, receive.denyCurrentBranch=updateInstead. Il push crea solo refs/heads/deploy/... e non tocca main.",
+    "Blocco B alle 15:46:27: cartelle assenti; fork di 463.142.486 byte e gli altri due checkpoint di 463.190.144 byte, uguali a plan.json; quota 991G su 1T, cioè circa 33G liberi; saldo 2.000.000 totali e 1.350.952 consumate (67,5%); boost_qos_dbg 00:30:00|4|2, cioè 4 job sottomessi e 2 in esecuzione per utente; quattro prenotazioni.",
+    "Storici su WORK: 27 righe di impronte (righe 4-30) che coprono tracce, profili, metriche, tracce ddp di benchmark/CN e configurazioni; WORK risolto a /leonardo_work/IscrB_WearUsFM, quindi è chiuso anche N-2 di d2.",
+    "Costi ricalcolati: 4×0,25 = 1,0 GPU-ore; 32×0,25 + 4×4/60 = 8,2667 ore locali; inviluppo con 6 minuti di margine 4×21/60 = 1,4 e 32×0,35 + 4×10/60 = 11,8667. Residui: 18 − 4,74 − 1,0 = 12,26; 169,6 − 47,3322 − 8,2667 = 114,0011; 18 − 4,74 − 1,4 = 11,86; 169,6 − 47,3322 − 11,8667 = 110,4011. Coincidono con il protocollo (righe 39 e 43) e con decisioni.md (righe 8409 e 8419).",
+    "Impronte di pacchetto e piano: in release_binding.json il blocco di review contiene package_sha256 e9310d67…702d, plan_sha256 4f538cf1…853b e reviewed_commit 8c72655c, come nella sequenza.",
+    "La frase di Simone del 27/11 è identica, parola per parola, nella sequenza (righe 10-11), nel brief (riga 6) e nella review dentro release_binding.json. «Prova mirata» del 21/11 alle 17:32, commit e0ecbd4b, coincide con decisioni.md riga 8401 e con plan.json. Nessuna frase attribuisce a Simone più di quanto è citato.",
+    "Passo 5: lo stdout descritto (data, «codice: … @ SHA» da lib_code_dir.sh riga 64, JSON del runner su una riga da contrastive_run.py righe 324-326, JSON indentato del driver da contrastive_cn_restart.py righe 151-152, data finale) corrisponde al codice. --validate-only non crea la cartella di uscita: mkdir avviene solo in --run, riga 158.",
+    "I vettori sono salvati come `vectors.rank*.pt` (observe.py riga 87): `rsync --exclude='*.pt'` li lascia su WORK.",
+    "Allocazione: le direttive di cn_restart_probe.sbatch (1 nodo, gpu:4, 32 CPU, 240G, 15 minuti, boost_qos_dbg), il controllo TimeLimit=00:15:00, TORCH_DIST_INIT_BARRIER=1 e il percorso di CODE_DIR coincidono con il comando del passo 6 e con plan.json. I log di campaign_checkout.sbatch finiscono in un solo file .out.",
+    "Regole del progetto rispettate: riferimento deploy/… da SHA completo in un checkout detached nuovo, con controllo preventivo di hook e configurazione; submitter e ledger comuni; un solo tentativo per ID, nessun rilancio e nessun --dopo-rifiuto; uscite in wearusfm_runs e checkout in wearusfm_campaigns, fuori dalla working tree; .pt e .err.txt fuori dal commit, con controllo dei file sopra i 5 MB; carico sul nodo di login piccolo; voce nel registro condiviso; commit sul ramo di lavoro, mai su main."
+   ],
+   "non_verificabile": [
+    "I rilievi R1-R9 di d4, R1-R12 di d5 e i rilievi classificati di d3 erano negli oggetti strutturati restituiti al workflow, non nei file di reports2. Ho controllato d5 solo sulla sua tabella di corrispondenza e d3 sull'elenco dei dubbi.",
+    "L'uguaglianza dei 27 file storici su WORK con le copie archiviate: con la sola lettura non posso calcolare gli sha256 dell'archivio nel commit di release.",
+    "Che il submitter condiviso e la copia al commit di release abbiano entrambi lo sha256 814da4bc…: non posso calcolare impronte.",
+    "La disponibilità di `module` e di $WORK nella `bash -s` lanciata da ssh, e il tempo di CPU reale di --validate-only sul nodo di login.",
+    "Validità del certificato ssh fino al 28/11 alle 02:34, i 39 job in attesa sulla coda di debug alle 15:10 e le durate di 39 e 41 secondi dei due checkout precedenti della linea 3: nessuna prova fra i file forniti (il protocollo indica 19-41 s).",
+    "Che le quattro prenotazioni siano di altri account: l'uscita riporta solo i nomi.",
+    "La frase «18 GPU-ore e 169,6 ore locali per le 17 allocazioni del preflight» e la firma «Sì, firmo entrambi» del 20/11: non ho letto la voce del 20/11 di decisioni.md.",
+    "Il binding verificato da un checkout pulito preso da origin e lo stato attuale dei ref remoti (origin e leonardo).",
+    "Le dimensioni annunciate (circa 3,7 GB di .pt e circa 2,7 MB per gamba senza .pt) e l'assenza di dati da wearable nei file `pose_panel*`, `fixed_eval*` e `origin_sessions.json` che arriveranno sul Mac."
+   ]
+  },
+  "verified": [
+   {
+    "finding": {
+     "id": "A-1",
+     "gravita": "importante",
+     "titolo": "La richiesta di via a Simone non dichiara costo e residuo",
+     "dove": "Brief, sezione CHI LO HA DECISO, terzo punto; la sequenza non ne parla",
+     "prova": "Il brief alla riga 8 chiede un via esplicito «digli in una riga dell'incidente ... e che il checkout parte con l'opzione --dopo-assenza-verificata», senza costi. CLAUDE.md, «Progetto FM sEMG»: «Ogni richiesta di conferma per un job dichiara il costo stimato in ore locali e in GPU-ora, e quanto resta del budget del passo». I numeri sono nel brief (riga 32), ma non dentro l'istruzione per la richiesta.",
+     "correzione": "Aggiungere al terzo punto del brief: «nella stessa richiesta indica il tetto di 1,0 GPU-ora e 8,2667 ore locali (inviluppo 1,4 e 11,8667) e il residuo di 12,26 GPU-ore e 114,0011 ore locali sul tetto di 18 e 169,6»."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "importante",
+      "motivo": "Il rilievo regge: non sono riuscito a confutarlo. La riga 8 del brief chiede a Simone un via esplicito prima del push del passo 2. Come contenuto della richiesta nomina solo l'incidente e l'opzione --dopo-assenza-verificata, senza costi né residuo. Ho letto per intero la sequenza (/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-training-engine/docs/contrastive_cn_restart_probe_launch_20261127.md): non contiene nessuna istruzione su questa richiesta di via. I costi compaiono solo nella sezione «Autorizzazione e costi», righe 17-20, e al passo 8, riga 369, nel resoconto finale «esito, consuntivo e residuo», non nella richiesta. La regola di CLAUDE.md («Ogni richiesta di conferma per un job dichiara il costo stimato in ore locali e in GPU-ora, e quanto resta del budget del passo») si applica: la richiesta è una conferma che precede i due invii. Il fatto quindi è vero.\n\nNon lo classifico «bloccante» per tre motivi. Primo, il testo del brief non vieta di aggiungere altro. Secondo, i numeri sono a portata di mano nel brief (riga 32: 1,0 GPU-ora e 8,2667 ore locali, inviluppo 1,4 e 11,8667, residuo 12,26 e 114,0011) e nella sequenza (righe 17-20). Terzo, la chat che esegue lavora nello stesso progetto e ha CLAUDE.md nel contesto. L'omissione non fa fallire il lancio e non brucia un ID. Il rischio però è concreto: un modello più piccolo che segue l'istruzione «in una riga» alla lettera può chiedere il via senza i costi e violare la regola.\n\nLa correzione proposta è giusta e i numeri coincidono con la sequenza. Conviene aggiungere anche il residuo prudenziale, 11,86 GPU-ore e 110,4011 ore locali (sequenza, riga 20)."
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "A-2",
+     "gravita": "importante",
+     "titolo": "Il commit nel worktree condiviso può includere file messi in stage da altre chat",
+     "dove": "Sequenza, passo 8, punti «Dove si scrive» e «Commit e push» (righe 358-368)",
+     "prova": "La sequenza dice di aggiungere solo i percorsi nominati, mai `git add -A`, ma il `git commit` non ha percorsi: un commit senza percorsi prende tutto lo stage. Il worktree claude-training-engine è condiviso fra le chat Claude, comprese quelle che operano le linee 1 e 2 (riga 359). Non è detto cosa fare se `git status` mostra file in stage di altri o se dopo `git fetch` il ramo locale è indietro rispetto a origin (il push verrebbe rifiutato).",
+     "correzione": "Scrivere: se `git diff --cached --name-only` elenca file fuori dalla cartella `execution_20261127` e da `docs/claude_GPT_shared`, oppure se il ramo è indietro rispetto a origin, fermarsi e riferire. Fare il commit con i percorsi espliciti: `git commit -m ... -- <cartella> docs/claude_GPT_shared`."
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivo": "Ho letto la sequenza (/Users/simonebenatti/dev/wearusfm/.claude/worktrees/claude-training-engine/docs/contrastive_cn_restart_probe_launch_20261127.md, righe 358-368). Il fatto è vero. La riga 359 dice che il worktree è condiviso fra le chat Claude. Le righe 360-361 limitano solo `git add` ai percorsi nominati. La riga 368 dice solo «Commit e push del ramo», senza percorsi, e un `git commit` senza percorsi registra tutto ciò che è in stage. Il testo inoltre non dice cosa fare se `git status` mostra file in stage di altri, né se dopo `git fetch` il ramo è indietro.\n\nIl rischio però è più piccolo di quanto dichiarato:\n- succede al passo 8, dopo la raccolta, quindi non può bruciare l'ID di nessun job;\n- non cambia l'esito del lancio;\n- il testo chiede già `git fetch origin` e `git status` prima del commit (riga 359-360);\n- dice che il revisore consegna il worktree pulito e allineato a origin (righe 361-362);\n- se il ramo fosse indietro, il push verrebbe rifiutato in modo visibile e non andrebbe perso nulla.\n\nIl danno possibile è un commit con file in più messi in stage da un'altra chat, che si può correggere. Per questo il rilievo regge come «minore» e non come «importante».\n\nLa correzione proposta è semplice e utile:\n- fare il commit con i percorsi espliciti (`git commit -m ... -- <cartella execution_20261127> docs/claude_GPT_shared`);\n- fermarsi e riferire se lo stage contiene altri file o se il ramo è indietro rispetto a origin."
+     }
+    ]
+   }
+  ]
+ }
+]
