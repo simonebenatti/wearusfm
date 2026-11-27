@@ -172,6 +172,7 @@ def test_confirmation_chain_writes_calibrations_six_searches_and_the_frozen_gate
         entry.main([first])  # no completed calibration yet: stops before any search
     root = tmp_path.resolve() / "diag2"
     monkeypatch.setattr(entry, "OUTPUT_ROOT", str(root))
+    monkeypatch.setattr(entry, "PHASE1_OUTPUT_ROOT", str(root))
     monkeypatch.setenv("TCND_JOB_ID", entry.JOBS["d0"])
     assert entry.main(["d0"]) == 0
     for stage in entry.B_CALIBRATIONS:

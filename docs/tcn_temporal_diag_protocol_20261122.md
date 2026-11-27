@@ -338,6 +338,14 @@ Se manca il recupero temporale di una dose (`d3t` non concluso), le previsioni 1
 - Il checkout nasce dal commit che chiude le review delle fasi 2 e 3; il suo SHA completo è registrato nel registro condiviso e
   nella sequenza operativa (`results/infra/tcn_temporal_diag_20261122/sequenza_operativa_fasi_2_3.md`) prima dell'invio.
 - Leonardo è in manutenzione dal 23/11 alle 08:00 al 25/11 alle 08:00, e il certificato ssh va rinnovato: l'invio avviene dopo.
+- **Uscite su `$SCRATCH`, 27/11.** Con `$WORK` a 991 GB su 1 TB di quota, Simone: «le prossime cose salvale su scratch». D3 e la
+  fase 3 scrivono sotto `/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pose_temponet_diag_20261123`, i log
+  sotto `/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/logs`. D0-D2 restano sotto `$WORK`; da lì gli stadi nuovi
+  leggono solo la ricevuta di D0. Ogni stadio nuovo scrive per prima cosa un piccolo indicatore nella radice: se il percorso non
+  è scrivibile, il job si ferma in pochi secondi e non dopo il primo fit. Il checkout del codice (circa 119 MB) resta su
+  `$WORK`, dove lo crea la procedura approvata. Su `$SCRATCH` i file non usati per 40 giorni vengono cancellati: JSON, ricevute e
+  log si raccolgono nel repository subito dopo i job; gli stati `.pt` restano lì e sono rigenerabili. Cambia solo dove si
+  scrive: regole, soglie, dosi, limiti e costi sono invariati.
 
 ### 8.6 Passo successivo, non incluso: conferma su un mondo nuovo
 
@@ -398,6 +406,7 @@ ore locali su 2.000.000), Simone ha risposto «Sì, confermo». La fase 3 resta 
 | `TCND-b-controls-{linear,temporal}-TCN_post-20261123` | due ricerche della TCN | come sopra | 150 min |
 | `TCND-b-gate-20261123` | cancello congelato sul mondo nuovo | `lrd_all_serial`, 2 CPU, 16 GB | 15 min |
 
+- Le uscite della fase 3 stanno sotto la stessa radice di D3 su `$SCRATCH` (8.5).
 - La fase 3 si invia solo dopo la raccolta di D3, con le tre ricevute di D3 `completed`, se la regola propone la conferma e Simone
   ha confermato il costo. Ogni stadio della fase 3, calibrazioni comprese, rilegge la regola dalle sintesi autenticate di D3 prima
   di qualunque setup: se non la propone, si ferma `gate_failed` senza lavoro.

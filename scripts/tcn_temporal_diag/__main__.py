@@ -50,7 +50,12 @@ LINEAR_RECEIPT_SHA256 = {
     "TCNH-controls-linear-MLP-20261120": "57cb766e0ebb4fcf97ec2aeb3a052bbb1e9c8dca51f40df75cfe852e35228be2",
     "TCNH-controls-linear-TCN_post-20261120": "0576c92fd784051fc0cf7b03445462200c54f8a66d1bbc313ab382e016047946",
 }
-OUTPUT_ROOT = "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_diag_20261122"
+# D0-D2 ran on 22/11 and wrote under $WORK: they stay there, are never rerun, and later stages only read the D0 receipt.
+PHASE1_OUTPUT_ROOT = "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_diag_20261122"
+PHASE1_STAGES = ("d0", "d1", "d2")
+# Simone, 27/11/2026, with $WORK at 991 GB of its 1 TB quota: «le prossime cose salvale su scratch». Every later stage
+# (D3 and the confirmation) writes under the personal scratch; JSON, receipts and logs are collected to the repository.
+OUTPUT_ROOT = "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pose_temponet_diag_20261123"
 CAMPAIGN = "pose_temponet_diag_20261122"
 JOBS = {"d0": "TCND-d0-replay-20261122", "d1": "TCND-d1-cleanfit-20261122", "d2": "TCND-d2-extend-20261122",
         "d3t": "TCND-d3t-wd-20261123", "d3l": "TCND-d3l-wd-20261123", "d3s": "TCND-d3s-wd-20261123"}
@@ -495,13 +500,18 @@ def run_b_gate(directory, root, artifacts, predecessors):
     return {"gate_computed": True}
 
 
+def stage_root(stage):
+    """Where a stage writes: D0-D2 under the root they used on $WORK, every later stage under the scratch root."""
+    return P.safe_path(PHASE1_OUTPUT_ROOT if stage in PHASE1_STAGES else OUTPUT_ROOT)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("stage", choices=sorted(JOBS))
     stage = parser.parse_args(argv).stage
     job_id = JOBS[stage]
     P.require(os.environ.get("TCND_JOB_ID") == job_id, "logical job ID differs from the launcher")
-    root = P.safe_path(OUTPUT_ROOT)
+    root = stage_root(stage)
     directory = root / stage
     receipt_path = root / "receipts" / (job_id + ".json")
     P.require(not directory.exists() and not receipt_path.exists(),
@@ -511,8 +521,12 @@ def main(argv=None):
     status, context, failure = "technical_failure", None, None
     try:
         details["allocation"] = allocation_cpu(CPU_STAGES[stage]) if stage in CPU_STAGES else allocation()
+        if stage not in PHASE1_STAGES:  # the new root is written first: a path problem stops the job in seconds, before any fit
+            details["started"] = P.atomic_json(root / "started" / (job_id + ".json"),
+                                               {"job_id": job_id, "stage": stage, "output_root": str(root),
+                                                "slurm_job_id": os.environ.get("SLURM_JOB_ID")}, root=root)
         if stage != "d0":
-            previous = P.file_pin(root / "receipts" / (JOBS["d0"] + ".json"))
+            previous = P.file_pin(stage_root("d0") / "receipts" / (JOBS["d0"] + ".json"))
             P.require(P.read_json_pin(previous)["status"] == "completed",
                       "D0 did not complete: no later stage may run")
             predecessors[JOBS["d0"]] = previous
@@ -563,7 +577,7 @@ def main(argv=None):
         PHASE2_PROTOCOL if stage in D3_CELLS else PROTOCOL)
     receipt = {"schema": "tcn-temporal-diag-receipt-v1", "protocol": phase, "job_id": job_id, "stage": stage,
                "status": status, "complete": status == "completed",
-               "campaign": CAMPAIGN if stage in ("d0", "d1", "d2") else CAMPAIGN_D3,
+               "campaign": CAMPAIGN if stage in PHASE1_STAGES else CAMPAIGN_D3, "output_root": str(root),
                "source_sha256": SOURCE_SHA256, "reviewed_code_sha": REVIEWED_CODE_SHA,
                "plan": {"path": PLAN_REPO_PATH, "sha256": PLAN_SHA256},
                "predecessors": predecessors, "artifacts": artifacts, "gates": gates, "details": details}

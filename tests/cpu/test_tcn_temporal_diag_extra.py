@@ -155,6 +155,7 @@ def test_held_oracle_self_check_fails_closed_and_stops_both_stages(world, tmp_pa
 
     root = tmp_path.resolve() / "diag2"
     monkeypatch.setattr(entry, "OUTPUT_ROOT", str(root))
+    monkeypatch.setattr(entry, "PHASE1_OUTPUT_ROOT", str(root))
     monkeypatch.setenv("TCND_JOB_ID", entry.JOBS["d0"])
     assert entry.main(["d0"]) == 3
     receipt = json.loads((root / "receipts" / (entry.JOBS["d0"] + ".json")).read_text())

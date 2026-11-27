@@ -514,7 +514,7 @@ def _patch_entry(monkeypatch, world, root):
                               world["references"]["references"], device="cpu", recipe=RECIPE)["records"]
     status = core.frozen_gate(next(r for r in record if r["selected"])["summary"], world["bundle"])["status"]
     gate = core.frozen_gate(next(r for r in record if r["selected"])["summary"], world["bundle"])
-    for name, value in (("OUTPUT_ROOT", str(root)), ("DEVICE", "cpu"), ("RECIPE", RECIPE),
+    for name, value in (("OUTPUT_ROOT", str(root)), ("PHASE1_OUTPUT_ROOT", str(root)), ("DEVICE", "cpu"), ("RECIPE", RECIPE),
                         ("LEARNING_RATE", selection["selected"]["lr"]), ("READING_EXPOSURES", (1, 2, 3)),
                         ("EXTENSION_SNAPSHOTS", (RECIPE.maximum_epochs,)),
                         ("ARCHIVED_GATE_STATUS", status), ("ARCHIVED_RECOVERY", gate["recovery"])):
@@ -537,6 +537,7 @@ def test_entry_point_writes_receipts_chains_d1_after_d0_and_never_retries(world,
 
     root = tmp_path.resolve() / "diag2"
     monkeypatch.setattr(entry, "OUTPUT_ROOT", str(root))
+    monkeypatch.setattr(entry, "PHASE1_OUTPUT_ROOT", str(root))
     with pytest.raises(ValueError, match="logical job ID"):
         entry.main(["d0"])
     monkeypatch.setenv("TCND_JOB_ID", entry.JOBS["d0"])

@@ -28,7 +28,14 @@ def test_setup_assumptions_hold_on_the_archived_a1_chain():
             stack.extend(E.find_job(plan, identifier)["after"])
     controls = {head: E.job_id("controls", head=head, world=core.WORLD) for head in W.CONTROL_HEADS}
     assert set(entry.RECEIPT_SHA256) <= closure | set(controls.values())      # every pinned receipt is one that setup() reads
-    assert plan["output_root"] != entry.OUTPUT_ROOT and Path(plan["output_root"]) not in Path(entry.OUTPUT_ROOT).parents
+    for own in (entry.OUTPUT_ROOT, entry.PHASE1_OUTPUT_ROOT):  # neither root of the diagnostics is inside the frozen A1 root
+        assert plan["output_root"] != own and Path(plan["output_root"]) not in Path(own).parents
+        assert Path(own) not in Path(plan["output_root"]).parents
+    assert entry.PHASE1_OUTPUT_ROOT == "/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_diag_20261122"
+    assert entry.OUTPUT_ROOT == \
+        "/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pose_temponet_diag_20261123"
+    assert [entry.stage_root(s) == Path(entry.PHASE1_OUTPUT_ROOT) for s in ("d0", "d1", "d2")] == [True] * 3
+    assert all(entry.stage_root(s) == Path(entry.OUTPUT_ROOT) for s in entry.JOBS if s not in ("d0", "d1", "d2"))
     memo, receipts = {}, {}
     for identifier in sorted(closure | set(controls.values())):
         pin = plan.get("receipt_pins", {}).get(identifier) or P.file_pin(MIRROR / (identifier + ".json"))

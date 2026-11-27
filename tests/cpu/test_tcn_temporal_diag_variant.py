@@ -159,6 +159,7 @@ def test_exploration_stages_write_every_dose_and_need_a_completed_d0(world, line
         entry.main(["d3t"])
     root = tmp_path.resolve() / "diag2"
     monkeypatch.setattr(entry, "OUTPUT_ROOT", str(root))
+    monkeypatch.setattr(entry, "PHASE1_OUTPUT_ROOT", str(root))
     monkeypatch.setenv("TCND_JOB_ID", entry.JOBS["d0"])
     assert entry.main(["d0"]) == 0
     results = {}
