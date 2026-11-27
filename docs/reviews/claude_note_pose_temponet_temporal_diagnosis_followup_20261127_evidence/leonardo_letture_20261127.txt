@@ -1,0 +1,34 @@
+Letture di sola lettura su Leonardo, 27/11/2026 alle 14:39-14:41 (ora di Leonardo), fatte da Claude dal Mac.
+Filtrate: solo i job dell'utente del progetto WearUsFM (esclusi mona_*, t1_*, t2_*, evalf_*, evalb_*) e la sola riga dell'account.
+
+== squeue -h -u $USER -o "%i|%j|%T|%M|%l|%R"
+65361388|SCALING-49046-train-49046-r2-20261126|PENDING|0:00|10:00:00|(Priority)
+
+== scontrol show reservation (nomi e date)
+ReservationName=s_int_SNC StartTime=2026-07-22T18:17:48 EndTime=2027-07-22T18:17:48 Duration=365-00:00:00
+ReservationName=s_int_check_boost StartTime=2026-11-18T12:24:21 EndTime=2026-12-18T12:24:21 Duration=30-00:00:00
+ReservationName=s_res_pasqal StartTime=2026-11-23T14:07:57 EndTime=2026-12-01T10:00:00 Duration=7-19:52:03
+ReservationName=s_int_check_dcgp StartTime=2026-11-27T10:40:05 EndTime=2026-12-12T10:40:05 Duration=15-00:00:00
+
+== saldo -b (riga dell'account)
+account                start         end         total        localCluster   totConsumed     totConsumed     monthTotal     monthConsumed
+IscrB_WearUsFM      20260107    20270107       2000000             1350952       1350952            67.5        164383              50140
+
+== lfs quota -hp 20147512 /leonardo_work/IscrB_WearUsFM
+     Filesystem    used   quota   limit   grace   files   quota   limit   grace
+/leonardo_work/IscrB_WearUsFM
+                   991G      1T      0k       - 1242447       0       0       -
+
+== riferimenti di deploy dei diagnostici TCN nel repository di Leonardo
+deploy/pose-temponet-diag-20261122 b025c158
+
+== checkout di campagna dei diagnostici TCN
+/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/pose_temponet_diag_20261122
+
+== /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/pose_temponet_diag_20261122 (du -sh)
+548K  d0
+16M   d1
+9.9M  d2
+28K   receipts
+
+== ledger sul Mac (~/wearusfm_local/jobs/ledger.tsv): nessuna riga TCND-* dopo il 22/11/2026.

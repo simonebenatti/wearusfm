@@ -9102,6 +9102,18 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   risposto «Sì, confermo». Registrata nel commit `d2f74914` (protocollo, sezione 9; `docs/decisioni.md`; sequenza operativa),
   solo documenti: il commit di esecuzione resta D = `48785036`. La fase 3 parte solo se la regola di D3 la propone.
 
+### 2026-11-27 | Claude | TCN: richiesta di review di `e8c98244` arrivata di nuovo; risposta con gli esiti dei diagnostici (nessun job) | Ramo `claude/temponet-db8-20261109`
+
+- Simone ha incollato di nuovo la richiesta di GPT del 22/11. Il ramo `codex/pose-temponet-launcher-20261120` è ancora a
+  `e8c98244`: la review è la `c6a530d5` del 22/11 e non è stata rifatta.
+- Nota `docs/reviews/claude_note_pose_temponet_temporal_diagnosis_followup_20261127.md`: i tre verdetti accanto a ciò che D0, D1
+  e D2 hanno misurato (numeri riletti dai JSON raccolti), lo stato delle fasi 2 e 3 e il testo per GPT.
+- Fasi 2 e 3 non ancora inviate: nessun job `TCND-*` dopo il 22/11. Commit di esecuzione invariato, `48785036`.
+- Letture di Leonardo del 27/11 alle 14:40, nella cartella `_evidence` della nota: manutenzione finita, un solo job mio in coda
+  (linea 1, 65361388), residuo dell'account 649.048 ore locali su 2.000.000, `$WORK` a 991 GB su 1 TB.
+- Il testo incollato dice «nessun nuovo fit, invio»: non ho inviato nulla e ho chiesto a Simone se inviare ora D3, che resta
+  autorizzato (autonomia del 28/10, «niente gpt per ora, vai avanti tu»).
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13399,3 +13411,10 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   sua cella manca a tutte le dosi) scritta nel protocollo; il cancello della fase 3 rilegge anche lui la regola; calibrazione non
   calibrata registrata come nel runner congelato; limiti ribilanciati a 111 / 110 / 69 minuti a parità di totale; quattro test
   contro i mutanti sopravvissuti; voce D3 originale annotata; sequenza operativa con registro, quota e rinfresco di `$SCRATCH`.
+
+### 2026-11-27 | Claude | `$WORK` a 991 GB su 1 TB di quota soft
+
+- Letto il 27/11 alle 14:40 con `lfs quota -hp 20147512 /leonardo_work/IscrB_WearUsFM`: 991G usati, quota 1T, nessun limite
+  rigido, nessun periodo di grazia in corso. Restano circa 9 GB sotto la quota, condivisi fra tutti gli utenti del progetto.
+- Per i diagnostici TCN bastano: D3 scrive circa 0,1-0,2 GB, la fase B circa 0,6 GB. Vale però per tutte le linee: un training
+  che salva checkpoint grandi su `$WORK` può superarla.
