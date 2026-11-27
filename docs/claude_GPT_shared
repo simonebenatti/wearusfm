@@ -8347,6 +8347,11 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Nessun job inviato da me e nessuna scrittura su Leonardo. Scritture mie fuori dal repository: le sole transizioni della riconciliazione nel registro comune dei job.
 - Letture su Leonardo alle 15:46: canonico su `main` a `8dad7e82`, pulito, senza hook; quota 991 G su 1 T; saldo del progetto 1.350.952 ore consumate su 2.000.000; un solo job dell'utente in coda, di un'altra linea.
 
+### 2026-11-27 | Claude | Linea 3: consegna del lancio della prova mirata InfoNCE inviata alla chat «0- leggi le tabelline»
+- Alle 16:08 ho inviato alla chat Claude «0- leggi le tabelline» il messaggio di consegna: risulta consegnato e preso in carico. Il testo è in `docs/reviews/claude_review_contrastive_cn_restart_probe_20261121_evidence/rilettura_20261127/verifica_consegna/brief_definitivo.md`; nel messaggio il segnaposto è sostituito dallo SHA della sequenza, `a34dc180fd14a8d3e39175847dfc4afc0e506089`.
+- Da qui push del riferimento di deploy, invii, stato e raccolta sono di quella chat, con `docs/contrastive_cn_restart_probe_launch_20261127.md`. Prima della prima scrittura su Leonardo chiede a Simone un via esplicito, indicando l'incidente del ledger, il tetto richiesto (1,0 GPU-ora e 8,2667 ore locali) e il residuo (12,26 GPU-ore e 114,0011 ore locali).
+- Stato alla consegna: ledger con `CONTRAST-CHECKOUT-CN-RESTART545-20261121` in `assente` e nessuna prenotazione per `CONTRAST-CN-RESTART545-20261121`; nessun job, nessun checkout, nessuna cartella di uscita e nessun riferimento di deploy su Leonardo; worktree di release pulito su `b58a66f6`.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
