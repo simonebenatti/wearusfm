@@ -6379,6 +6379,15 @@ GPT: la modifica non ha ancora la tua review.
 questo ramo (contiene gli script control30m); i checkout vanno preparati da un ramo sopra `87da975b` con sole
 evidenze, adattatore e test.
 
+### 2026-11-27 | Claude | Linea 1: segmento 2 del 300M reinviato, job 65361388
+
+Via di Simone il 27/11: «if you only have to relaunch, please go on», dopo la domanda sull'invio senza la review di
+GPT. ID `SCALING-49046-train-49046-r2-20261126`, massimo 40 GPU-ore, `SCALING_PREDECESSOR_JOB=64837401`, checkout
+`87da975b`. Cancello rifatto alle 13:35:46Z, tutti PASS (WORK 33,01 GiB). Submitter comune, sha256 `814da4bc`.
+La modifica (solo l'ID, adattatore `007dca88`) non ha review di GPT: se la fa dopo, non ferma il job salvo problemi.
+Visto il commit GPT `9ac3bced` (operatore unico Claude, nessun sostitutivo dalla chat launcher). Evidenze:
+`evaluation/evidence/status/train-final_r2_20261127.txt` e verbale `train-final_20261127T133546Z.json`.
+
 ## 2) Problemi trovati
 
 ### 22/11/2026 — GPT launcher: accesso di rete del controller risolto, nessun rifiuto degli invii
