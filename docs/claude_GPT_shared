@@ -9137,6 +9137,31 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Deploy `deploy/pose-temponet-diag-20261123` = D su leonardo, verificato alle 16:00. **Inviati il 27/11 fra le 16:00:50 e le 16:01:14:**
   checkout 65365585, `d3t` 65365592, `d3l` 65365594, `d3s` 65365595 (ledger comune). Alle 16:01:21 il checkout era in attesa
   di risorse e i tre job D3 in attesa del checkout (`afterok:65365585`). Controllo ogni 30 minuti; raccolta e regola alla fine.
+### 2026-11-27 | Claude | TCN, D3: esiti raccolti, dose scelta 1 al 39,59%, conferma non proposta | Ramo `claude/tcn-temporal-diag-20261122`
+
+- Job tutti `COMPLETED 0:0`: checkout 65365585 (14 s), `d3t` 65365592 (54:50), `d3l` 65365594 (54:49), `d3s` 65365595 (33:40);
+  codice `5cb223ac`, uscite su `$SCRATCH`. Tre ricevute `completed` con tutti i cancelli veri; 16 celle riprodotte; punto a
+  esposizione 0 uguale a quello archiviato di A1 al livello esatto in ogni cella; nessuna estensione a 300 epoche.
+- Recupero temporale della TCN, fold 0 / fold 1 / pooled, contro la soglia congelata 0,50 (A1, weight decay 0,01: 24,17 / 18,88
+  / 21,71%):
+
+  | Dose | Fold 0 | Fold 1 | Pooled | Epoca scelta |
+  | ---: | ---: | ---: | ---: | ---: |
+  | 0,1 | 26,18% | 20,26% | 23,43% | 26 |
+  | 0,3 | 33,44% | 27,74% | 30,79% | 31 |
+  | 1 | 38,93% | 40,35% | 39,59% | 53 |
+  | 3 | 7,39% | −7,59% | 0,43% | 138 |
+
+- Cancello lineare passato dalle tre teste a tutte le dosi; il recupero minimo fra teste, metriche e pannelli va da 98,09%
+  (dosi 0,1 e 0,3) a 96,00% (dose 3), contro 0,90.
+- Regola fissata prima (`core.choose_dose` su `core.d3_results`): quattro dosi ammissibili, **dose scelta 1, conferma su un mondo
+  nuovo non proposta** (sotto 0,50 nei tre pannelli). La fase 3 non è stata inviata; la linea torna a Simone con la curva
+  dose-risposta. A1 resta `recipe_not_admitted`.
+- Previsioni scritte prima, tutte giuste: massimo a una dose interna (a 1); la regola non propone la conferma; massimo pooled
+  fra 0,25 e 0,40 (0,3959).
+- Consuntivo 2,389 GPU-ore misurate su 4,98 prenotate, nessun rilancio. Raccolta e voce in `docs/decisioni.md`: commit
+  `2f3bafb0` (`results/infra/tcn_temporal_diag_20261122/`: `remote/`, `logs/`, `summary.txt`). Stati `.pt` su `$SCRATCH`, 38 MB.
+
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13450,3 +13475,14 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   su Leonardo prima dell'invio, perché i test locali non lo possono dire. Client Lustre del nodo di login: 2.14.0_ddn182.
 - Slurm non crea la cartella dei log: `.../wearusfm_runs/logs` su `$SCRATCH` è stata creata prima del primo `sbatch`.
 - Su `$SCRATCH` i file non usati per 40 giorni vengono cancellati: JSON, ricevute e log vanno raccolti subito dopo i job.
+
+### 2026-11-27 | Claude | TCN: il weight decay quasi raddoppia il recupero ma non arriva alla soglia; Mac in sospensione durante l'attesa
+
+- Alla dose 1 il recupero pooled passa da 21,71% a 39,59% e lo scarto fra fitting ed esclusi si riduce: 68,69% contro 39,59%,
+  mentre in A1 era 77,64% contro 21,71%. A 150 epoche il recupero sugli esclusi è ancora 34,33% (in A1 −22,62%). La
+  regolarizzazione tocca la causa trovata dai diagnostici, il rumore memorizzato, ma da sola non basta: mancano 10,4 punti pooled.
+- Alla dose 3 la testa non impara più la parte temporale: 0,43% pooled, 13,57% sul fitting. Il massimo è fra 0,3 e 3.
+- Limiti: un solo learning rate (0,003), un seme, il mondo già usato da A1. È un'esplorazione, non una conferma.
+- Operativo: il Mac è andato in sospensione fra le 16:10 e le 18:21 circa. I controlli ogni 30 minuti sono saltati, la
+  connessione ssh condivisa era morta al risveglio (una lettura ferma 15 minuti) e la raccolta è partita alle 18:52. I job non
+  ne hanno risentito. `caffeinate -i` e la richiesta di tenere sveglio il Mac non coprono una sessione che resta inattiva.
