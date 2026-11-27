@@ -1,0 +1,35 @@
+..............................                                           [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/cpu/test_cn_restart_observe.py::test_true_local_and_reduced_gradients_and_independent_rank_files
+PASSED tests/cpu/test_cn_restart_observe.py::test_torch22_mmap_keeps_offsets_and_uses_bytes_for_vector_identity
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field0-other-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field1-544-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field2-1-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field3-0-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field4-other.pt-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field5-0-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field6-0000000000000000000000000000000000000000000000000000000000000000-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field7-weight-invalid parameter or bucket inventory]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field8-5-invalid parameter or bucket inventory]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field9-replacement9-invalid parameter or bucket inventory]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field10-99-bucket/parameter mapping differs]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field11-1-bucket/parameter mapping differs]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field12-1-bucket/parameter mapping differs]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field13-torch.float64-bucket/parameter mapping differs]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field14-replacement14-observed gradient differs from its receipt]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field15-0000000000000000000000000000000000000000000000000000000000000000-observed gradient differs from its receipt]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field16-0000000000000000000000000000000000000000000000000000000000000000-observed gradient differs from its receipt]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field17-1-observed gradient differs from its receipt]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field18-8-parameter span outside its bucket or overlapped]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field19--1.0-invalid descriptive gradient norm]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field20-None-invalid descriptive gradient norm]
+PASSED tests/cpu/test_cn_restart_observe.py::test_wrong_expected_parameter_count_rejected_at_read_and_capture
+PASSED tests/cpu/test_cn_restart_observe.py::test_vector_file_symlink_is_rejected
+PASSED tests/cpu/test_cn_restart_observe.py::test_snapshot_requires_gradient_views_of_the_communicated_buffer
+PASSED tests/cpu/test_cn_restart_observe.py::test_finish_rejects_incomplete_or_wrong_gradient_evidence[unrecorded-incomplete step-545 bucket coverage]
+PASSED tests/cpu/test_cn_restart_observe.py::test_finish_rejects_incomplete_or_wrong_gradient_evidence[missing_gradient-duplicated bucket member or missing reduced gradient]
+PASSED tests/cpu/test_cn_restart_observe.py::test_finish_rejects_incomplete_or_wrong_gradient_evidence[different_preclip-reduced bucket differs from the actual preclip parameter gradient]
+PASSED tests/cpu/test_cn_restart_observe.py::test_finish_rejects_incomplete_or_wrong_gradient_evidence[wrong_rank-missing observation or incorrect process-group rank]
+30 passed in 2.41s
+exit=0

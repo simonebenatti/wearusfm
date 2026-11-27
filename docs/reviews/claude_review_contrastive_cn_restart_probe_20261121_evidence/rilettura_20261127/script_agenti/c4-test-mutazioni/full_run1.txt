@@ -1,0 +1,258 @@
+........................................................................ [ 34%]
+........................................................................ [ 68%]
+...................................................................      [100%]
+==================================== PASSES ====================================
+__ test_null_shadow_uses_the_prepared_real_infonce_runtime_and_anchor_inputs ___
+----------------------------- Captured stdout call -----------------------------
+[14:38:15] capgmyo: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[14:38:15] emg2pose: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[14:38:15] ninapro_db2: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+_________________ test_no_measurement_cannot_promote_training __________________
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/c4-test-mutazioni/bt_full/test_no_measurement_cannot_pro0/i/checkpoint.pt'", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[ordinary_rounding-SUPPORTED] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "SUPPORTED", "reason": "localized post-reduction difference and exact warm continuous endpoint", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[different_weight-PARTIAL_SUPPORT] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "PARTIAL_SUPPORT", "reason": "difference localized to reduction; warm trajectory does not recover continuous", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[excess-HYPOTHESIS_UNSUPPORTED] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "HYPOTHESIS_UNSUPPORTED", "reason": "step 545 reduced difference exceeds the prospective rounding screen", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[dormant_not_ordinary-INCONCLUSIVE] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "warm endpoint metadata/schema or nonfloat state differs: cuda_rng.3", "training_approved": false}
+__ test_complete_restart_readout_from_four_folders[wrong_active-INCONCLUSIVE] __
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "warm endpoint metadata/schema or nonfloat state differs: cuda_rng.0", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[wrong_rank_rng-INCONCLUSIVE] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "warm endpoint metadata/schema or nonfloat state differs: rank_rng.3.cuda_rng", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[wrong_torch_rng-INCONCLUSIVE] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "warm endpoint metadata/schema or nonfloat state differs: torch_rng", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[wrong_counter-INCONCLUSIVE] __
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "warm endpoint metadata/schema or nonfloat state differs: contrastive_state.last_step", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[ordinary_dormant-INCONCLUSIVE] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "ValueError: instrumented ordinary reload did not reproduce historical ordinary", "training_approved": false}
+___________ test_live_continuous_saves_once_then_two_fresh_processes ___________
+---------------------------- Captured stdout setup -----------------------------
+[14:38:22] capgmyo: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[14:38:22] emg2pose: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+[14:38:22] ninapro_db2: 1 sessioni, scoperta 0 s, lettura 0 s (totale 0 s)
+=========================== short test summary info ============================
+PASSED tests/cpu/test_cn_restart_leg.py::test_real_gloo_observes_cold_and_rebuilt_reductions_and_neutral_warmup
+PASSED tests/cpu/test_cn_restart_leg.py::test_null_backward_restores_rng_and_gradients_after_failure
+PASSED tests/cpu/test_cn_restart_leg.py::test_diagnostic_leg_rejects_swapped_release_and_output
+PASSED tests/cpu/test_cn_restart_leg.py::test_null_shadow_uses_the_prepared_real_infonce_runtime_and_anchor_inputs
+PASSED tests/cpu/test_cn_restart_observe.py::test_true_local_and_reduced_gradients_and_independent_rank_files
+PASSED tests/cpu/test_cn_restart_observe.py::test_torch22_mmap_keeps_offsets_and_uses_bytes_for_vector_identity
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field0-other-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field1-544-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field2-1-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field3-0-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field4-other.pt-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field5-0-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field6-0000000000000000000000000000000000000000000000000000000000000000-invalid observation receipt or vector pin]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field7-weight-invalid parameter or bucket inventory]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field8-5-invalid parameter or bucket inventory]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field9-replacement9-invalid parameter or bucket inventory]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field10-99-bucket/parameter mapping differs]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field11-1-bucket/parameter mapping differs]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field12-1-bucket/parameter mapping differs]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field13-torch.float64-bucket/parameter mapping differs]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field14-replacement14-observed gradient differs from its receipt]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field15-0000000000000000000000000000000000000000000000000000000000000000-observed gradient differs from its receipt]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field16-0000000000000000000000000000000000000000000000000000000000000000-observed gradient differs from its receipt]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field17-1-observed gradient differs from its receipt]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field18-8-parameter span outside its bucket or overlapped]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field19--1.0-invalid descriptive gradient norm]
+PASSED tests/cpu/test_cn_restart_observe.py::test_reader_rejects_the_specific_corrupted_field[field20-None-invalid descriptive gradient norm]
+PASSED tests/cpu/test_cn_restart_observe.py::test_wrong_expected_parameter_count_rejected_at_read_and_capture
+PASSED tests/cpu/test_cn_restart_observe.py::test_vector_file_symlink_is_rejected
+PASSED tests/cpu/test_cn_restart_observe.py::test_snapshot_requires_gradient_views_of_the_communicated_buffer
+PASSED tests/cpu/test_cn_restart_observe.py::test_finish_rejects_incomplete_or_wrong_gradient_evidence[unrecorded-incomplete step-545 bucket coverage]
+PASSED tests/cpu/test_cn_restart_observe.py::test_finish_rejects_incomplete_or_wrong_gradient_evidence[missing_gradient-duplicated bucket member or missing reduced gradient]
+PASSED tests/cpu/test_cn_restart_observe.py::test_finish_rejects_incomplete_or_wrong_gradient_evidence[different_preclip-reduced bucket differs from the actual preclip parameter gradient]
+PASSED tests/cpu/test_cn_restart_observe.py::test_finish_rejects_incomplete_or_wrong_gradient_evidence[wrong_rank-missing observation or incorrect process-group rank]
+PASSED tests/cpu/test_cn_restart_compare.py::test_criteria_fixed_before_measurement[False-True-False-True-SUPPORTED]
+PASSED tests/cpu/test_cn_restart_compare.py::test_criteria_fixed_before_measurement[False-True-False-False-PARTIAL_SUPPORT]
+PASSED tests/cpu/test_cn_restart_compare.py::test_criteria_fixed_before_measurement[False-False-False-True-HYPOTHESIS_UNSUPPORTED]
+PASSED tests/cpu/test_cn_restart_compare.py::test_criteria_fixed_before_measurement[True-True-False-True-HYPOTHESIS_UNSUPPORTED]
+PASSED tests/cpu/test_cn_restart_compare.py::test_criteria_fixed_before_measurement[False-True-True-True-HYPOTHESIS_UNSUPPORTED]
+PASSED tests/cpu/test_cn_restart_compare.py::test_warm_first_update_mismatch_prevents_full_support
+PASSED tests/cpu/test_cn_restart_compare.py::test_per_tensor_relative_metric_near_zero_and_bitwise_zero
+PASSED tests/cpu/test_cn_restart_compare.py::test_all_checkpoint_leaves_checked_and_classified
+PASSED tests/cpu/test_cn_restart_compare.py::test_layout_historical_cold_dtype_order_and_warm_actual_sequence
+PASSED tests/cpu/test_cn_restart_compare.py::test_no_measurement_cannot_promote_training
+PASSED tests/cpu/test_cn_restart_compare.py::test_trace_joins_and_gradient_fields_on_real_archived_legs
+PASSED tests/cpu/test_cn_restart_compare.py::test_mutated_warmup_state_fails_before_verdict
+PASSED tests/cpu/test_cn_restart_compare.py::test_post_update_trace_includes_each_optimizer_tensor_in_order
+PASSED tests/cpu/test_cn_restart_compare.py::test_process_rng_is_not_the_active_rng_on_any_rank
+PASSED tests/cpu/test_cn_restart_compare.py::test_only_specific_unused_rng_values_can_be_excluded
+PASSED tests/cpu/test_cn_restart_compare.py::test_scalar_cancellation_keeps_the_raw_ratio_and_a_falsifiable_bound[253-anchor_heads.rms.bias-False]
+PASSED tests/cpu/test_cn_restart_compare.py::test_scalar_cancellation_keeps_the_raw_ratio_and_a_falsifiable_bound[257-anchor_heads.env.bias-False]
+PASSED tests/cpu/test_cn_restart_compare.py::test_scalar_cancellation_keeps_the_raw_ratio_and_a_falsifiable_bound[252-anchor_heads.rms.weight-True]
+PASSED tests/cpu/test_cn_restart_package.py::test_history_review_and_unbound_package_rejected
+PASSED tests/cpu/test_cn_restart_package.py::test_changed_review_fields_rejected[plan_sha256]
+PASSED tests/cpu/test_cn_restart_package.py::test_changed_review_fields_rejected[package_sha256]
+PASSED tests/cpu/test_cn_restart_package.py::test_changed_review_fields_rejected[status]
+PASSED tests/cpu/test_cn_restart_package.py::test_changed_review_fields_rejected[reviewed_commit]
+PASSED tests/cpu/test_cn_restart_package.py::test_new_binding_checks_reviewed_git_bytes
+PASSED tests/cpu/test_cn_restart_package.py::test_layout_cost_and_immutable_endpoints
+PASSED tests/cpu/test_cn_restart_package.py::test_plan_matches_worker_and_readout
+PASSED tests/cpu/test_cn_restart_package.py::test_phase_receipts_survive_subprocess_timeout[None]
+PASSED tests/cpu/test_cn_restart_package.py::test_phase_receipts_survive_subprocess_timeout[ordinary]
+PASSED tests/cpu/test_cn_restart_package.py::test_phase_receipts_survive_subprocess_timeout[warm]
+PASSED tests/cpu/test_cn_restart_package.py::test_phase_receipts_survive_subprocess_timeout[compare]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[ordinary_rounding-SUPPORTED]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[different_weight-PARTIAL_SUPPORT]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[excess-HYPOTHESIS_UNSUPPORTED]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[dormant_not_ordinary-INCONCLUSIVE]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[wrong_active-INCONCLUSIVE]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[wrong_rank_rng-INCONCLUSIVE]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[wrong_torch_rng-INCONCLUSIVE]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[wrong_counter-INCONCLUSIVE]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[ordinary_dormant-INCONCLUSIVE]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_profile_selects_only_math_disables_tf32_and_restores_on_exception
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_changed_profile_flag_fails_closed[matmul_tf32-True]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_changed_profile_flag_fails_closed[cudnn_tf32-True]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_changed_profile_flag_fails_closed[math_sdp_enabled-False]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_changed_profile_flag_fails_closed[flash_sdp_enabled-True]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_changed_profile_flag_fails_closed[mem_efficient_sdp_enabled-True]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_changed_profile_flag_fails_closed[cudnn_sdp_enabled-True]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_changed_profile_flag_fails_closed[deterministic_algorithms-True]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_changed_profile_flag_fails_closed[float32_matmul_precision-high]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_actual_autocast_is_required_inside_backward_not_inferred_from_plan
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_missing_cuda_never_qualifies_profile
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_torch22_cuda_autocast_apis_record_actual_state[False]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_torch22_cuda_autocast_apis_record_actual_state[True]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_unavailable_numeric_api_is_inconclusive_not_attribute_error[enabled]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_unavailable_numeric_api_is_inconclusive_not_attribute_error[dtype]
+PASSED tests/cpu/test_contrastive_numeric_profile.py::test_unavailable_numeric_api_is_inconclusive_not_attribute_error[required_flag]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_original_denominator_and_fork_distance_are_distinct
+PASSED tests/cpu/test_contrastive_target_resume.py::test_historical_one_percent_applies_to_both_models[student]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_historical_one_percent_applies_to_both_models[teacher]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_single_small_adam_tensor_cannot_hide_in_aggregate[exp_avg]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_single_small_adam_tensor_cannot_hide_in_aggregate[exp_avg_sq]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_queue_single_tensor_bound_and_exact_metadata
+PASSED tests/cpu/test_contrastive_target_resume.py::test_buffers_counters_and_each_rng_domain_are_exact[buffer]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_buffers_counters_and_each_rng_domain_are_exact[counter]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_buffers_counters_and_each_rng_domain_are_exact[rng_cpu]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_buffers_counters_and_each_rng_domain_are_exact[rng_cuda]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_live_continuous_saves_once_then_two_fresh_processes
+PASSED tests/cpu/test_contrastive_target_resume.py::test_wrong_fork_pin_or_config_or_duplicate_path_stops
+PASSED tests/cpu/test_contrastive_target_resume.py::test_single_rank_single_step_trace_difference_blocks[rng_cpu_before_sha256]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_single_rank_single_step_trace_difference_blocks[rng_cuda_after_sha256]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_single_rank_single_step_trace_difference_blocks[batch_sha256]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_single_rank_single_step_trace_difference_blocks[queue_order_before_sha256]
+PASSED tests/cpu/test_contrastive_target_resume.py::test_missing_support_is_inconclusive_not_success
+PASSED tests/cpu/test_contrastive_target_resume.py::test_missing_or_duplicate_update_is_rejected
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_measured_allocation_never_double_counts_loader_and_rounds_each_phase
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_dense_gradient_ratio_uses_frozen_weight_and_checks_schedule
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_numpy_rank_rng_and_optimizer_step_are_exact_even_with_float_tolerance
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_metric_json_rejects_duplicate_and_nonfinite_numbers[{"x":1,"x":2}]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_metric_json_rejects_duplicate_and_nonfinite_numbers[{"x":1e999}]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_metric_json_rejects_duplicate_and_nonfinite_numbers[{"x":NaN}]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_first_eight_historical_comparison_is_descriptive_without_a_new_gate
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_resume_uses_saved_initial_displacement_and_exact_rng_buffers
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_resume_finite_optimizer_and_queue_excess_returns_complete_json_report
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_resume_report_collection_never_softens_exact_or_nonfinite_checks[optimizer_step-exactly]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_resume_report_collection_never_softens_exact_or_nonfinite_checks[checkpoint_step-576-update]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_resume_report_collection_never_softens_exact_or_nonfinite_checks[rank_rng-exactly]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_resume_report_collection_never_softens_exact_or_nonfinite_checks[optimizer_nan-nonfinite]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_resume_report_collection_never_softens_exact_or_nonfinite_checks[queue_inf-nonfinite]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_resume_report_collection_never_softens_exact_or_nonfinite_checks[queue_shape-schema]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_resume_report_collection_never_softens_exact_or_nonfinite_checks[queue_dtype-schema]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_resume_report_collection_never_softens_exact_or_nonfinite_checks[queue_metadata-metadata]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_receipt_authentication_recomputes_evidence_and_rejects_adjusted_budget
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_run_evidence_rejects_recipe_provenance_metrics_and_checkpoint_mismatch[config]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_run_evidence_rejects_recipe_provenance_metrics_and_checkpoint_mismatch[cohort]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_run_evidence_rejects_recipe_provenance_metrics_and_checkpoint_mismatch[metric_step]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_run_evidence_rejects_recipe_provenance_metrics_and_checkpoint_mismatch[metric_weight]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_run_evidence_rejects_recipe_provenance_metrics_and_checkpoint_mismatch[missing_gradient]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_run_evidence_rejects_recipe_provenance_metrics_and_checkpoint_mismatch[checkpoint_step]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_run_evidence_rejects_recipe_provenance_metrics_and_checkpoint_mismatch[summary_hash]
+PASSED tests/cpu/test_contrastive_benchmark_readout.py::test_cuda_receipt_binds_calibration_config_and_complete_numeric_checks
+PASSED tests/cpu/test_contrastive_job.py::test_stage_commands_use_frozen_absolute_scripts_and_fixed_resources[audit-cpu-7200-contrastive_audit.py]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_commands_use_frozen_absolute_scripts_and_fixed_resources[readout-cpu-3600-contrastive_benchmark_readout.py]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_commands_use_frozen_absolute_scripts_and_fixed_resources[cuda-gpu-1800-contrastive_cuda_check.py]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_commands_use_frozen_absolute_scripts_and_fixed_resources[calibration-gpu-1800-contrastive_run.py]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_commands_use_frozen_absolute_scripts_and_fixed_resources[full-gpu-1800-contrastive_run.py]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_commands_use_frozen_absolute_scripts_and_fixed_resources[resume-gpu-1800-contrastive_run.py]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_allocations_cannot_be_swapped_or_extended[audit-cpu-3600]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_allocations_cannot_be_swapped_or_extended[audit-cpu-7199]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_allocations_cannot_be_swapped_or_extended[audit-cpu-7201]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_allocations_cannot_be_swapped_or_extended[audit-gpu-7200]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_allocations_cannot_be_swapped_or_extended[readout-cpu-1800]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_allocations_cannot_be_swapped_or_extended[readout-cpu-7200]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_allocations_cannot_be_swapped_or_extended[readout-gpu-3600]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_allocations_cannot_be_swapped_or_extended[cuda-gpu-7200]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_allocations_cannot_be_swapped_or_extended[calibration-gpu-3600]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_allocations_cannot_be_swapped_or_extended[full-cpu-1800]
+PASSED tests/cpu/test_contrastive_job.py::test_stage_allocations_cannot_be_swapped_or_extended[resume-gpu-7200]
+PASSED tests/cpu/test_contrastive_job.py::test_jobs_reject_unreviewed_source_status_or_stage[status-REVIEW_REQUIRED]
+PASSED tests/cpu/test_contrastive_job.py::test_jobs_reject_unreviewed_source_status_or_stage[source_sha256-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb]
+PASSED tests/cpu/test_contrastive_job.py::test_jobs_reject_unreviewed_source_status_or_stage[mode-training]
+PASSED tests/cpu/test_contrastive_job.py::test_jobs_reject_wrong_allocation_kind_time_and_input_pin
+PASSED tests/cpu/test_contrastive_job.py::test_jobs_reject_output_escape_existing_output_and_wrong_roots
+PASSED tests/cpu/test_contrastive_job.py::test_job_mode_cannot_run_a_different_release_phase
+PASSED tests/cpu/test_contrastive_job.py::test_calibration_evidence_requires_the_actual_summary_file
+PASSED tests/cpu/test_contrastive_job.py::test_readout_requires_all_full_arms_and_both_resumed_arms
+PASSED tests/cpu/test_contrastive_job.py::test_allocation_guard_checks_gpu_cpu_memory_and_nodes
+PASSED tests/cpu/test_contrastive_job.py::test_cpu_allocation_accepts_30_gib_and_rejects_32_gib
+PASSED tests/cpu/test_contrastive_job.py::test_cuda_command_requires_the_same_invocations_rank_exit_receipt
+PASSED tests/cpu/test_contrastive_job.py::test_failed_rank_probe_prevents_receipt_acceptance
+PASSED tests/cpu/test_contrastive_job.py::test_benchmark_job_requires_its_exact_cuda_prerequisite
+PASSED tests/cpu/test_contrastive_release.py::test_review_binding_checks_actual_git_source_and_two_plan_bytes
+PASSED tests/cpu/test_contrastive_release.py::test_changed_source_plan_or_review_cannot_inherit_binding[source]
+PASSED tests/cpu/test_contrastive_release.py::test_changed_source_plan_or_review_cannot_inherit_binding[science]
+PASSED tests/cpu/test_contrastive_release.py::test_changed_source_plan_or_review_cannot_inherit_binding[preflight]
+PASSED tests/cpu/test_contrastive_release.py::test_changed_source_plan_or_review_cannot_inherit_binding[review]
+PASSED tests/cpu/test_contrastive_release.py::test_historical_review_is_insufficient_even_with_valid_file_pin
+PASSED tests/cpu/test_contrastive_release.py::test_review_cannot_relabel_the_current_code_as_an_older_commit
+PASSED tests/cpu/test_contrastive_release.py::test_bind_requires_review_bytes_from_its_original_commit
+PASSED tests/cpu/test_contrastive_release.py::test_audit_accepts_completed_exact_limit_and_binds_receipt_to_allocation
+PASSED tests/cpu/test_contrastive_release.py::test_audit_has_no_timeout_exception_or_slurm_grace_extension[change0]
+PASSED tests/cpu/test_contrastive_release.py::test_audit_has_no_timeout_exception_or_slurm_grace_extension[change1]
+PASSED tests/cpu/test_contrastive_release.py::test_audit_has_no_timeout_exception_or_slurm_grace_extension[change2]
+PASSED tests/cpu/test_contrastive_release.py::test_audit_has_no_timeout_exception_or_slurm_grace_extension[change3]
+PASSED tests/cpu/test_contrastive_release.py::test_audit_has_no_timeout_exception_or_slurm_grace_extension[change4]
+PASSED tests/cpu/test_contrastive_release.py::test_audit_has_no_timeout_exception_or_slurm_grace_extension[change5]
+PASSED tests/cpu/test_contrastive_release.py::test_audit_cannot_inherit_unrelated_receipt_or_allocation[audit_sha256-0000000000000000000000000000000000000000000000000000000000000000]
+PASSED tests/cpu/test_contrastive_release.py::test_audit_cannot_inherit_unrelated_receipt_or_allocation[source_sha256-0000000000000000000000000000000000000000000000000000000000000000]
+PASSED tests/cpu/test_contrastive_release.py::test_audit_cannot_inherit_unrelated_receipt_or_allocation[logical_id-old-audit]
+PASSED tests/cpu/test_contrastive_release.py::test_audit_cannot_inherit_unrelated_receipt_or_allocation[job_id-124]
+PASSED tests/cpu/test_contrastive_release.py::test_audit_sacct_requires_unique_allocation_and_hash
+PASSED tests/cpu/test_contrastive_release.py::test_job_builder_releases_only_the_fixed_reviewed_cell
+PASSED tests/cpu/test_contrastive_release.py::test_audit_accounting_is_required_before_release
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_scalar_drift_preserves_old_thresholds_but_is_only_descriptive
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_named_fork_checkpoint_is_a_technical_save_not_scientific_dose_change
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_readout_requires_both_reloads_and_only_suffix_545_576
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_missing_or_failed_parity_cannot_be_promoted_by_stored_pass[missing]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_missing_or_failed_parity_cannot_be_promoted_by_stored_pass[missing_point]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_missing_or_failed_parity_cannot_be_promoted_by_stored_pass[missing_support]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_missing_or_failed_parity_cannot_be_promoted_by_stored_pass[gradient]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_parity_receipt_is_bound_to_this_control_not_just_same_protocol[source_sha256]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_parity_receipt_is_bound_to_this_control_not_just_same_protocol[config_sha256]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_parity_receipt_is_bound_to_this_control_not_just_same_protocol[summary_sha256]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_parity_receipt_is_bound_to_this_control_not_just_same_protocol[initial_state_sha256]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_parity_receipt_is_bound_to_this_control_not_just_same_protocol[provenance]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_numeric_profile_uses_semantic_config_identity_across_actual_serializer_formats
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_numeric_receipt_cannot_be_reused_for_another_source_config_rank_or_phase[source_sha256-wrong]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_numeric_receipt_cannot_be_reused_for_another_source_config_rank_or_phase[config_canonical_sha256-wrong]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_numeric_receipt_cannot_be_reused_for_another_source_config_rank_or_phase[phase-resume_a]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_numeric_receipt_cannot_be_reused_for_another_source_config_rank_or_phase[rank-3]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_numeric_receipt_cannot_be_reused_for_another_source_config_rank_or_phase[world_size-1]
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_reload_evidence_requires_32_update_suffix_and_matching_profile_phase
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_missing_rank_numeric_flags_or_full_batch_memory_remains_blocking
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_numerical_context_must_match_across_separate_allocations
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_missing_profile_does_not_produce_a_scientific_negative
+PASSED tests/cpu/test_contrastive_targets_readout.py::test_complete_consistent_profile_is_pinned_for_all_28_rank_receipts
+PASSED tests/cpu/test_contrastive_readout_handoff.py::test_real_reader_accepts_all_seven_paths_without_writing_a_report
+PASSED tests/cpu/test_contrastive_readout_handoff.py::test_real_reader_rejects_swapped_paths_with_unchanged_replica_labels
+PASSED tests/cpu/test_contrastive_readout_handoff.py::test_real_reader_rejects_wrong_audit_receipt
+211 passed in 32.50s
+exit=0

@@ -1,0 +1,41 @@
+.........                                                                [100%]
+==================================== PASSES ====================================
+_ test_complete_restart_readout_from_four_folders[ordinary_rounding-SUPPORTED] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "SUPPORTED", "reason": "localized post-reduction difference and exact warm continuous endpoint", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[different_weight-PARTIAL_SUPPORT] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "PARTIAL_SUPPORT", "reason": "difference localized to reduction; warm trajectory does not recover continuous", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[excess-HYPOTHESIS_UNSUPPORTED] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "HYPOTHESIS_UNSUPPORTED", "reason": "step 545 reduced difference exceeds the prospective rounding screen", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[dormant_not_ordinary-INCONCLUSIVE] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "warm endpoint metadata/schema or nonfloat state differs: cuda_rng.3", "training_approved": false}
+__ test_complete_restart_readout_from_four_folders[wrong_active-INCONCLUSIVE] __
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "warm endpoint metadata/schema or nonfloat state differs: cuda_rng.0", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[wrong_rank_rng-INCONCLUSIVE] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "warm endpoint metadata/schema or nonfloat state differs: rank_rng.3.cuda_rng", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[wrong_torch_rng-INCONCLUSIVE] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "warm endpoint metadata/schema or nonfloat state differs: torch_rng", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[wrong_counter-INCONCLUSIVE] __
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "warm endpoint metadata/schema or nonfloat state differs: contrastive_state.last_step", "training_approved": false}
+_ test_complete_restart_readout_from_four_folders[ordinary_dormant-INCONCLUSIVE] _
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "ValueError: instrumented ordinary reload did not reproduce historical ordinary", "training_approved": false}
+=========================== short test summary info ============================
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[ordinary_rounding-SUPPORTED]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[different_weight-PARTIAL_SUPPORT]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[excess-HYPOTHESIS_UNSUPPORTED]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[dormant_not_ordinary-INCONCLUSIVE]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[wrong_active-INCONCLUSIVE]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[wrong_rank_rng-INCONCLUSIVE]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[wrong_torch_rng-INCONCLUSIVE]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[wrong_counter-INCONCLUSIVE]
+PASSED tests/cpu/test_cn_restart_end_to_end.py::test_complete_restart_readout_from_four_folders[ordinary_dormant-INCONCLUSIVE]
+9 passed in 5.48s
+exit=0

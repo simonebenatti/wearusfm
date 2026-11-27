@@ -1,0 +1,26 @@
+..................                                                       [100%]
+==================================== PASSES ====================================
+_________________ test_no_measurement_cannot_promote_training __________________
+----------------------------- Captured stdout call -----------------------------
+{"status": "INCONCLUSIVE", "reason": "FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/c4-test-mutazioni/bt_t_compare/test_no_measurement_cannot_pro0/i/checkpoint.pt'", "training_approved": false}
+=========================== short test summary info ============================
+PASSED tests/cpu/test_cn_restart_compare.py::test_criteria_fixed_before_measurement[False-True-False-True-SUPPORTED]
+PASSED tests/cpu/test_cn_restart_compare.py::test_criteria_fixed_before_measurement[False-True-False-False-PARTIAL_SUPPORT]
+PASSED tests/cpu/test_cn_restart_compare.py::test_criteria_fixed_before_measurement[False-False-False-True-HYPOTHESIS_UNSUPPORTED]
+PASSED tests/cpu/test_cn_restart_compare.py::test_criteria_fixed_before_measurement[True-True-False-True-HYPOTHESIS_UNSUPPORTED]
+PASSED tests/cpu/test_cn_restart_compare.py::test_criteria_fixed_before_measurement[False-True-True-True-HYPOTHESIS_UNSUPPORTED]
+PASSED tests/cpu/test_cn_restart_compare.py::test_warm_first_update_mismatch_prevents_full_support
+PASSED tests/cpu/test_cn_restart_compare.py::test_per_tensor_relative_metric_near_zero_and_bitwise_zero
+PASSED tests/cpu/test_cn_restart_compare.py::test_all_checkpoint_leaves_checked_and_classified
+PASSED tests/cpu/test_cn_restart_compare.py::test_layout_historical_cold_dtype_order_and_warm_actual_sequence
+PASSED tests/cpu/test_cn_restart_compare.py::test_no_measurement_cannot_promote_training
+PASSED tests/cpu/test_cn_restart_compare.py::test_trace_joins_and_gradient_fields_on_real_archived_legs
+PASSED tests/cpu/test_cn_restart_compare.py::test_mutated_warmup_state_fails_before_verdict
+PASSED tests/cpu/test_cn_restart_compare.py::test_post_update_trace_includes_each_optimizer_tensor_in_order
+PASSED tests/cpu/test_cn_restart_compare.py::test_process_rng_is_not_the_active_rng_on_any_rank
+PASSED tests/cpu/test_cn_restart_compare.py::test_only_specific_unused_rng_values_can_be_excluded
+PASSED tests/cpu/test_cn_restart_compare.py::test_scalar_cancellation_keeps_the_raw_ratio_and_a_falsifiable_bound[253-anchor_heads.rms.bias-False]
+PASSED tests/cpu/test_cn_restart_compare.py::test_scalar_cancellation_keeps_the_raw_ratio_and_a_falsifiable_bound[257-anchor_heads.env.bias-False]
+PASSED tests/cpu/test_cn_restart_compare.py::test_scalar_cancellation_keeps_the_raw_ratio_and_a_falsifiable_bound[252-anchor_heads.rms.weight-True]
+18 passed in 1.31s
+exit=0

@@ -1,0 +1,434 @@
+[
+ {
+  "key": "c1-confronto",
+  "review": {
+   "sintesi": "C1: nel diff 9a2ce7e7..8c72655c il confronto contrastive_cn_restart_compare.py non ha difetti bloccanti né importanti. Il codice applica alla lettera la regola registrata il 22/11 per B-2. Il denominatore allargato per i bias 253 e 257 elimina i falsi superamenti dovuti al solo arrotondamento (in simulazione sono 0, prima erano 97.208 su 200.000) e rileva ancora eccessi veri anche di 5e-6. SUPPORTED si raggiunge solo nella combinazione prevista. Restano due note minori e un'avvertenza: il file della lettura su Leonardo non c'è più nello scratchpad, quindi il formato vero è stato ricostruito da run.py e dalla review fc3eef6b.",
+   "rilievi": [
+    {
+     "id": "C1-N1",
+     "titolo": "Motivo INCONCLUSIVE con percorso vuoto se cambia l'insieme delle chiavi di primo livello",
+     "gravita": "minore",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart_compare.py:58-60, 324-325",
+     "scenario": "Il checkpoint della riscaldata ha una chiave di primo livello in più o in meno rispetto al continuo. checkpoint_differences registra il percorso '' e la reason diventa 'warm endpoint metadata/schema or nonfloat state differs: ' senza nome. L'esito resta correttamente INCONCLUSIVE, ma il motivo non dice quale chiave è cambiata.",
+     "prova": "Eseguito con check_c1.py, caso \"chiave top-level in piu'\": exact_sci=False sci_invalid=[''] raw=['']",
+     "correzione": "In visit(), per path vuoto usare un'etichetta come '<root>' e aggiungere la differenza simmetrica delle chiavi (sorted(a.keys() ^ b.keys())). È solo diagnostica, senza effetto sull'esito.",
+     "eseguito": true
+    },
+    {
+     "id": "C1-N2",
+     "titolo": "Il ritorno anticipato INCONCLUSIVE viene prima della lettura dei gradienti al 545",
+     "gravita": "nota",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart_compare.py:322-326",
+     "scenario": "La riscaldata ha sia una differenza non in virgola mobile a 576 sia gradienti locali diversi al 545. L'esito è INCONCLUSIVE e non HYPOTHESIS_UNSUPPORTED, e il rapporto non contiene per_parameter_and_rank né placements. È coerente con la regola del 22/11 («ogni altra differenza non in virgola mobile ... dà INCONCLUSIVE»). Un recupero del solo lettore non vedrebbe quindi i gradienti senza una rilettura.",
+     "prova": "Lettura del codice: return alle righe 323-326, prima del ciclo sui rank a riga 331.",
+     "correzione": "Nessuna obbligatoria. Facoltativo: calcolare comunque i dettagli al 545 come dato descrittivo senza cambiare lo status. Non va fatto prima della misura senza una nuova registrazione.",
+     "eseguito": false
+    },
+    {
+     "id": "C1-N3",
+     "titolo": "Contatore step di Adam (tensore float) trattato come voce non float",
+     "gravita": "nota",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart_compare.py:55",
+     "scenario": "Se il contatore step di Adam differisse a 576, l'esito sarebbe INCONCLUSIVE e non PARTIAL_SUPPORT. È un comportamento precedente al diff e coerente con un contatore intero. Sui checkpoint storici, continuo e CN_A differivano in 1.990 tensori float ma in nessun contatore (review fc3eef6b, tabella B-2).",
+     "prova": "Eseguito con check_c1.py, caso 'adam step float diverso': sci_invalid=['optimizer.state.0.step']",
+     "correzione": "Nessuna.",
+     "eseguito": true
+    }
+   ],
+   "verifiche_positive": [
+    "Le correzioni rispettano la regola per B-2 (eseguito, check_c1.py, 27 casi in check_c1.out, payload nel formato di run.py:1482 e 1593-1597: torch_rng 1-D uint8 da 5056 B, cuda_rng lista di 4 tensori 1-D uint8 da 16 B, rank_rng lista di 4 dict {torch_rng, cuda_rng}). Nel caso atteso, con cuda_rng.1-3 uguali all'ordinaria e diversi dal continuo, scientific_metadata_or_schema_different=[] ed exact_scientific_payload=True, mentre il raw elenca i tre percorsi. Una copia inattiva diversa dall'ordinaria, nuova o uguale al continuo, dà quel percorso. Anche cuda_rng.0, torch_rng, rank_rng.r.torch_rng e rank_rng.r.cuda_rng (r=0..3), step, alarm_counts, config, una chiave in più in rank_rng e lo step di Adam danno ciascuno il proprio percorso e quindi INCONCLUSIVE. Liste di 3 o 5 elementi, una tuple, dtype int8 o float, un tensore 2-D, una chiave mancante o None sollevano ValueError, che main() riporta come INCONCLUSIVE. Un tensore più corto ma valido viene escluso tramite same_shape. Viene validato anche il payload del continuo.",
+    "validate_rng_schema non rifiuta un payload vero (dedotto): torch.get_rng_state() e torch.cuda.get_rng_state() danno ByteTensor 1-D non vuoti, get_rng_state_all() dà una list e torch.save/load conserva list e dict. Le chiavi di rank_rng corrispondono a run.py:1593-1594. Il loader checkpoint() usa str(path) con mmap e weights_only=False (contrastive_target_resume.py:58).",
+    "Il ritorno anticipato INCONCLUSIVE contiene status, reason, historical, endpoint, actual_endpoint_sha256 e historical_gradient_metrics. main() aggiunge già training_approved=False e historical_status, e legge solo status, reason e training_approved. L'orchestratore (contrastive_cn_restart.py:176) richiede soltanto che report.json esista.",
+    "Ordine delle gambe corretto: ordinary viene prima nel dict legs, lo schema di state viene validato prima di clonare ordinary_cuda_rng (4 x 16 B, memoria trascurabile, picco invariato: due checkpoint in mmap come prima). Se l'ordinaria non è esatta, il require a riga 320 scatta prima del ritorno della riscaldata e il motivo resta 'did not reproduce historical ordinary' (caso e2e ordinary_dormant).",
+    "Il gradiente 'local' è il buffer clonato prima che allreduce_hook divida e sommi (observe.py:66-79), quindi non è scalato. La media dei moduli dei quattro locali ordinari, calcolata in float64 come ordinary_l2/4 su ciascun rank, è esattamente Σ|g_i/4|, la scala degli addendi della media DDP. La somma copre i 4 rank prima di screen_reduced_gradients, chiamata dopo il ciclo.",
+    "Conto: per 4 addendi in fp32 in qualunque ordine |ŝ−s| ≤ γ3·Σ|x_i| ≈ 3u·Σ|x_i| (la divisione per 4 è esatta). Due ordini differiscono al massimo di 6u = 3,58e-7 rispetto alla nuova scala, sotto 1e-6. Simulazione eseguita (scalar_sim.out, 200.000 casi, 48 ordini, metà con quasi annullamento): rapporto originale massimo 2,0 con 97.208 casi sopra 1e-6; nuovo rapporto massimo 2,34e-7 con 0 casi sopra 1e-6.",
+    "Gli eccessi veri sono ancora rilevati: 1e-3 e 5e-6 rispetto alla scala danno excessive=True per anchor_heads.rms.bias e per anchor_heads.env.bias, eseguendo compare_vector e screen_reduced_gradients veri.",
+    "Gli altri 268 tensori non cambiano: per pid fuori da SCALAR_ADDEND_PARAMETERS screen_relative_l2 == relative_l2 (eseguito su anchor_heads.rms.weight con scala 1e9). Il rapporto originale relative_l2 resta in ogni riga del report.",
+    "Il modello costruito dal config archiviato ha 270 parametri. Gli unici tensori di 1 elemento sono 253 anchor_heads.rms.bias (1,) e 257 anchor_heads.env.bias (1,) in float32, quindi il require su nome ed elements==1 non può fallire sul run vero (eseguito).",
+    "classify: sulle 32 combinazioni booleane SUPPORTED esce solo con local=F, reduced=T, excessive=F, endpoint esatto=T e prima metrica esatta=T. Riceve exact_scientific_payload invece di exact_payload, e una differenza solo float a 576 dà PARTIAL_SUPPORT (eseguito).",
+    "training_approved=False e historical_status=FAILED_REQUIRES_REVIEW sono nel report base di main(), quindi presenti in ogni ramo, anche dopo un'eccezione catturata. L'e2e lo verifica nei 9 casi.",
+    "Eccezioni: i nuovi percorsi sollevano solo ValueError tramite require. payload.get e record.get sono protetti da indicizzazioni precedenti e dal controllo Mapping. Nessun AttributeError o ZeroDivisionError possibile (denominatore ≥ 1e-12).",
+    "Test eseguiti: test_cn_restart_compare.py e test_cn_restart_end_to_end.py danno 27 passati in 5,45 s. L'e2e passa per main() con il torch 2.2 simulato (ValueError se mmap=True e f non è str) e copre SUPPORTED, PARTIAL (peso diverso), UNSUPPORTED (eccesso sul bias scalare), INCONCLUSIVE per copia inattiva uguale al continuo, cuda_rng.0, rank_rng.3.cuda_rng, torch_rng, contatore non float e ordinaria con copia inattiva alterata. Il caso 'ordinary_rounding' usa addendi che si annullano (rapporto originale 1,0, nuovo 2^-26/((1+2^-24)/2) sotto 1e-6)."
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports/c1-confronto.md (script e uscite in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/c1-confronto/: check_c1.py, check_c1.out, scalar_sim.py, scalar_sim.out)",
+   "punti_aperti": [
+    "Il file /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe/leonardo/confronto_checkpoint_veri_20261121.out.txt non esiste più: la cartella leonardo è vuota e manca anche torch22_*. Il formato vero è ricostruito da run.py:1482 e 1593-1597 e dalla sezione B-2 della review fc3eef6b, non riletto dal file. Su dati veri non si è provato nulla (Leonardo non è raggiungibile).",
+    "Per una copertura più completa l'e2e potrebbe aggiungere tre casi passando da main(): PARTIAL_SUPPORT per la metrica del primo aggiornamento diversa, HYPOTHESIS_UNSUPPORTED per locali diversi o nessuno scarto ridotto, e un payload malformato (lista di 3), che finisce in INCONCLUSIVE tramite eccezione. Oggi questi rami sono coperti solo dai test unitari di classify e di warm_endpoint_differences. Non è bloccante."
+   ]
+  },
+  "verified": []
+ },
+ {
+  "key": "c2-orchestrazione-lettore",
+  "review": {
+   "sintesi": "C2, sul diff 9a2ce7e7..8c72655c: nessun bloccante. B-1 risulta corretto: sotto lo shim di torch 2.2 (simulazione) le 8 letture di load_observation passano un str, mentre la vecchia chiamata con Path solleva ValueError. Ho simulato run() con il checked_command vero e figli veri in 10 casi: ogni uscita diversa da zero, timeout, scadenza gia' passata e report mancante finisce nell'except e scrive execution_failure.json e phase_timings.jsonl con la fase giusta. Il controllo descrittivo della norma accetta le norme reali, compresi zero e -0.0, e il controllo d'identita' resta l'sha256. La catena CPU (Gloo a 4 processi, instrument_leg vero, 270 parametri, funzioni del confronto corrette, payload RNG nel formato vero) da' SUPPORTED. Leg, sbatch, src/ e la parte di cattura dell'osservatore non sono cambiati fra 9d34dc69 e 8c72655c. Restano due rilievi minori e due note.",
+   "rilievi": [
+    {
+     "id": "m-1",
+     "titolo": "Scritture dei tempi fuori dal try: un errore di disco dopo una fase riuscita non lascia execution_failure.json",
+     "gravita": "minore",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart.py:173,180,186",
+     "scenario": "Una fase riesce, poi la scrittura della riga completed (o start della fase successiva) solleva OSError, per esempio EDQUOT su WORK. L'eccezione risale senza passare dall'except: il job fallisce e non c'e' execution_failure.json. Nel ramo except la riga failed viene scritta prima di write_new: se fallisce quella scrittura, non si scrive nemmeno la ricevuta. L'esito resta comunque nessun risultato, senza attribuzione scientifica sbagliata.",
+     "prova": "Dedotto dal codice: timings.write(...start...) a riga 173 e timings.write(...completed...) a riga 186 sono fuori dal try; nell'except la write della riga failed (180) precede write_new (182). Non l'ho eseguito iniettando un errore di disco.",
+     "correzione": "Mettere le scritture start e completed dentro il try, oppure nell'except chiamare write_new prima di scrivere la riga failed, protetta a sua volta.",
+     "eseguito": false
+    },
+    {
+     "id": "m-2",
+     "titolo": "Il test di run() copre solo TimeoutExpired",
+     "gravita": "minore",
+     "file_riga": "tests/cpu/test_cn_restart_package.py:test_phase_receipts_survive_subprocess_timeout",
+     "scenario": "Il test inietta solo subprocess.TimeoutExpired. Non verifica su run() il RuntimeError per un codice di uscita diverso da zero, il TimeoutError per la scadenza gia' passata (sollevato da checked_command prima di Popen) e il report mancante.",
+     "prova": "La mia simulazione sim_run.py, con il checked_command vero, li verifica tutti; esiti in agents/c2-orchestrazione-lettore/sim_run.out. Esempio: end_time_in_past -> TimeoutError: paired benchmark allocation exhausted before phase, con execution_failure.json phase=ordinary.",
+     "correzione": "Parametrizzare il test anche con RuntimeError, TimeoutError e un compare che non scrive report.json.",
+     "eseguito": true
+    },
+    {
+     "id": "n-1",
+     "titolo": "Crash del confronto fuori dalla sua tupla: causa solo nel log di SLURM",
+     "gravita": "nota",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart_compare.py:403; contrastive_cn_restart.py:175-185",
+     "scenario": "compare() solleva un'eccezione fuori dalla tupla (AttributeError, ZeroDivisionError, TypeError in write): il processo esce con codice 1 senza report.json. run() registra compare con causa 'paired benchmark phase failed (1); no retry' e il dettaglio resta solo in stderr.",
+     "prova": "Simulato: compare_exit3 produce execution_failure.json con phase=compare e completed_phases=[ordinary, warm].",
+     "correzione": "Nessuna necessaria: l'esito e' correttamente un INCONCLUSIVE tecnico. Facoltativo: un except generico in main che scriva il report con il tipo dell'eccezione.",
+     "eseguito": true
+    },
+    {
+     "id": "n-2",
+     "titolo": "La mappa degli scalari esige i nomi veri agli id 253 e 257",
+     "gravita": "nota",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart_compare.py:screen_reduced_gradients",
+     "scenario": "Su un modello che agli id 253 e 257 non ha bias a un elemento con quel nome, la funzione solleva ValueError e il run diventa INCONCLUSIVE. Sul modello vero il test end-to-end verifica names[253] == anchor_heads.rms.bias con WearUsFM; l'elemento singolo lo controlla il comparatore.",
+     "prova": "Catena: con la mappa vera sul fixture si ottiene 'ValueError: scalar rounding policy does not match the named scalar', come previsto. Il test end-to-end passa con 4 righe dello scalare.",
+     "correzione": "Nessuna.",
+     "eseguito": true
+    }
+   ],
+   "verifiche_positive": [
+    "Test: tests/cpu/test_cn_restart_{compare,observe,package,end_to_end}.py -> 69 passed in 8.14s.",
+    "run() simulato con il checked_command VERO e figli Python veri (sim_run.py): tutto riuscito (6 righe di tempi, nessuna ricevuta di errore); uscita 3 in ordinary, warm o compare (RuntimeError); report mancante (ValueError); timeout in ciascuna fase (TimeoutExpired, figlio ucciso); scadenza gia' passata (TimeoutError, sottoclasse di OSError). In ogni caso execution_failure.json ha status INCONCLUSIVE, la fase e completed_phases corretti, training_approved false, e phase_timings.jsonl e' chiuso con start/failed.",
+    "Niente nel nuovo ciclo fa fallire il job prima o dopo le gambe: zip strict su plan['legs'] e cells costruiti dagli stessi legs; open('x') su una root appena creata; json.dumps solo su float, str e list; str(exc) sempre serializzabile.",
+    "B-1 corretto: sotto lo shim di torch 2.2 (simulazione) le 8 letture vere ordinary/warm x 4 rank passano un str con mmap=True; la stessa lettura con Path solleva ValueError.",
+    "La norma descrittiva non rifiuta ricevute vere: finish scrive float da .item() in float64; zero e -0.0 vengono riletti come 0.0 float e accettati; anche un int scritto a mano e' accettato; json non produce tipi numpy; NaN e' escluso da allow_nan=False. L'identita' resta garantita da sha256 del file, sha256 per tensore, forma, dtype e offset.",
+    "Catena CPU con il codice corretto: run_gloo del test della gamba (4 processi Gloo, instrument_leg vero, 270 parametri, bucket fredda contro ricostruita), poi load_observation, compare_vector, screen_reduced_gradients, warm_endpoint_differences su payload nel formato vero e classify -> SUPPORTED (any_reduced True, any_local False, massimo screen_relative_l2 1,22e-7). Nessuna eccezione inattesa; le righe di dettaglio e l'endpoint passano json.dumps(allow_nan=False).",
+    "warm_endpoint_differences sul formato vero: le sole differenze cuda_rng.1-3, uguali all'ordinaria, vengono tolte da scientific_metadata_or_schema_different ed exact_scientific_payload vale True.",
+    "git diff 9d34dc69..8c72655c: contrastive_cn_restart_leg.py, scripts/slurm/cn_restart_probe.sbatch e src/ non sono cambiati; nell'osservatore tutti gli hunk cadono in load_observation, mentre ReductionObservation, _average_observed e finish sono identici. 9d34dc69..9a2ce7e7 tocca solo il prompt in docs."
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports/c2-orchestrazione-lettore.md (script e output in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/c2-orchestrazione-lettore/: sim_run.py, sim_run.out, chain.py, chain.out, zero_norm.py)",
+   "punti_aperti": [
+    "L'harness r2-catena-cpu della review precedente non e' piu' su disco (cartelle vuote dal 26/11). La catena e' stata rifatta con run_gloo di tests/cpu/test_cn_restart_leg.py: un fixture a 270 parametri Linear(4,4), non il WearUsFM/InfoNCE vero, e mappa degli scalari vuota.",
+    "Il comportamento di torch 2.2 e' simulato con uno shim; non c'e' una prova sui dati veri di Leonardo, che oggi non e' raggiungibile.",
+    "Su CPU/Gloo la differenza ridotta nasce dal cambio di bucket; non misura la differenza CUDA/NCCL del run vero."
+   ]
+  },
+  "verified": []
+ },
+ {
+  "key": "c3-pacchetto-binding-protocollo",
+  "review": {
+   "sintesi": "C3: nessun difetto bloccante. Il comando --package restituisce le impronte attese, e9310d67...702d per il pacchetto e 4f538cf1...853b per il piano. Anche source_digest coincide (40d39f56...cde0). Ho simulato su una copia locale tutto il flusso del binding: commit della review sul ref di Claude, --bind-review a 8c72655c, commit figlio, checkout pulito e require_binding. Passa, e tutti i casi negativi richiesti vengono rifiutati, tranne il JSON su più righe, che è accettato. Il piano resta REVIEW_REQUIRED con training_approved false, e le chiavi nuove sono legate alle costanti da un test. Il protocollo contiene, prima della misura, le tre regole, la validazione sul login, la quota con lfs, la raccolta dei log e il ledger a 1,0 GPU-ora. I conti tornano tutti. Due punti sono superati: la pianificazione rispetto al fermo del 23-25/11 e l'operatore 3-launcher/--agente gpt. Fatto vincolante per chi invia: il protocollo è uno dei file del pacchetto. Qualsiasi modifica del protocollo dopo il blocco di Claude rompe il binding. Il cambio di operatore va quindi fatto sui comandi al momento dell'invio, oppure nel protocollo prima che Claude scriva il blocco, con impronte nuove.",
+   "rilievi": [
+    {
+     "id": "M-1",
+     "titolo": "bind_review accetta un commit di review vecchio anche se il ramo di Claude lo ha poi superato",
+     "gravita": "minore",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart.py:82-85",
+     "scenario": "Claude pubblica un commit A con il blocco di approvazione, poi un commit B che ritira o modifica la review nello stesso file. --bind-review A passa lo stesso, perché il codice controlla solo che A sia antenato del ref, non che sia il testo corrente del file sul ref. Non cambia l'esito scientifico: il binding resta legato a impronte e commit esatti. Pesa solo sulla governance di un eventuale ritiro.",
+     "prova": "Eseguito con bind_sim.py, caso 'ancestor, later commit changes the review' -> bind=ACCEPTED (negatives.out).",
+     "correzione": "Facoltativa: in bind_review confrontare anche git show REVIEW_REF:REVIEW_PATH con il corpo del commit indicato. In alternativa, un eventuale ritiro di Claude va comunicato a chi fa il binding e non affidato al solo codice.",
+     "eseguito": true
+    },
+    {
+     "id": "N-1",
+     "titolo": "Forma del blocco accettata dal parser: Claude deve scriverla esattamente così",
+     "gravita": "nota",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart.py:30,62-76",
+     "scenario": "La regex è ^```cn-restart-review[ \\t]*\\n(.*?)\\n```[ \\t]*$ con MULTILINE e DOTALL. Sono accettati: apertura e chiusura a colonna 0, spazi finali sulle righe dei fence, JSON su una riga o su più righe (anche con indent=2 o con una riga vuota dopo l'apertura), chiavi in qualunque ordine. È accettato anche un testo con caratteri non ASCII, la parola cn-restart-review in prosa e altri fence con un tag diverso. Sono rifiutati: fence indentati, ~~~, tag diverso (cn-restart-review-v1), righe CRLF, due blocchi, un sesto campo, SHA abbreviato o maiuscolo. Attenzione a non citare nella review il vecchio blocco del prompt 9a2ce7e7: diventerebbe un secondo blocco. La review fc3eef6b oggi allo stesso percorso non contiene blocchi, solo un ```text alle righe 241-263.",
+     "prova": "Eseguito con bind_sim.py e positive_flow.py, esiti in negatives.out e positive.out. Il flusso positivo è stato provato anche con JSON indent=2 e un ```text successivo: require_binding OK da un worktree pulito del commit figlio 0fb6b5d5.",
+     "correzione": "Nessuna sul codice. Forma consigliata: una sola volta nel file, ```cn-restart-review a colonna 0, JSON su una riga come nei test, ``` a colonna 0, fine riga LF.",
+     "eseguito": true
+    },
+    {
+     "id": "N-2",
+     "titolo": "Il protocollo fa parte del pacchetto: aggiornarlo dopo il blocco invalida il binding",
+     "gravita": "nota",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart.py:29,73-75",
+     "scenario": "FILES include docs/contrastive_cn_restart_probe_20261121.md. Se dopo il blocco di Claude qualcuno corregge nel protocollo il testo sul fermo del 23-25/11, l'operatore 3-launcher o --agente gpt, cambiano package_sha256 e il confronto dei byte con reviewed_commit. require_binding allora rifiuta. Sono fuori dal pacchetto decisioni.md, claude_GPT_shared, il prompt e local_validation.",
+     "prova": "Eseguito: protocollo alterato nel worktree di release -> ValueError 'Review does not approve this exact CN restart package'.",
+     "correzione": "Scegliere prima del blocco: o i comandi si adattano al momento dell'invio senza toccare il protocollo, o il protocollo si emenda prima della review, con impronte ricalcolate.",
+     "eseguito": true
+    },
+    {
+     "id": "N-3",
+     "titolo": "Affermazioni superate al 27/11 nel protocollo e in decisioni.md",
+     "gravita": "nota",
+     "file_riga": "docs/contrastive_cn_restart_probe_20261121.md:43 (paragrafo sulla manutenzione) e :41,45,49 (3-launcher); docs/decisioni.md voce del 21/11 'Preventivo incrementale'",
+     "scenario": "Il protocollo pianifica rispetto al fermo dal 23/11 08:00 al 25/11 08:00, con limite teorico al 23/11 alle 07:29: la finestra è passata. Conto 08:00 meno (4+15+6+6) minuti = 07:29, aritmetica corretta. Il protocollo indica inoltre 3-launcher come unico operatore e i comandi usano --agente gpt. Il CLAUDE.md del canonico (c47e6557, 27/11) affida di norma gli invii della linea 3 a Claude e dichiara storici i riferimenti a GPT e 3-launcher.",
+     "prova": "Letto: testo del protocollo e git show c47e6557 nel canonico.",
+     "correzione": "Nessuna modifica al pacchetto se si segue N-2. Basta che chi invia rifaccia sul centro il controllo di reservation e calendario e registri chi opera.",
+     "eseguito": true
+    },
+    {
+     "id": "N-4",
+     "titolo": "Validazione sul login: blocco con set -e e tempo CPU non misurato",
+     "gravita": "nota",
+     "file_riga": "docs/contrastive_cn_restart_probe_20261121.md:64-75",
+     "scenario": "Il blocco esegue set -eo pipefail e cd in CODE_DIR. Incollato in una shell interattiva, al primo errore chiude la sessione. --validate-only calcola lo SHA dei tre checkpoint da circa 463 MB ciascuno e lancia contrastive_run.py --validate-only. Non ho misurato quanto consuma sul login (limite 10 minuti di CPU); dedotto che sia dell'ordine dei secondi o di qualche decina di secondi.",
+     "prova": "Dedotto dalla lettura di run() (righe 140-153), commands() (righe 105-137) e lib_code_dir.sh; non eseguito, Leonardo non è raggiungibile.",
+     "correzione": "Eseguire il blocco con bash -s o in una sottoshell, salvando stdout e stderr in un file.",
+     "eseguito": false
+    }
+   ],
+   "verifiche_positive": [
+    "Eseguito: --package restituisce package_sha256 e9310d67b8304c064e09d71b0ec55d37b57abf3b4e2090c2d02d4def586f702d e plan_sha256 4f538cf183f6e3daf7bd30a5612eecdbbd07106f64d5f348a2f3e759e877853b; source_digest() = 40d39f568958004415763f9cc683f3be0b379d170b70c4d37588d1ddcec5cde0 = plan.production_source_sha256.",
+    "Eseguito: tests/cpu/test_cn_restart_package.py, 12 passed.",
+    "Eseguito: flusso positivo completo. Review sul ref, --bind-review a 8c72655c, commit figlio 0fb6b5d5 con genitore 8c72655c, worktree pulito, require_binding() OK con il piano ancora REVIEW_REQUIRED e training_approved False. Le impronte ricalcolate nel commit di release sono uguali a quelle attese (il binding è fuori da FILES).",
+    "Eseguito: casi negativi rifiutati. reviewed_commit 9d34dc69 completo ('File changed since Claude review'), abbreviato o maiuscolo; impronte vecchie b0640ca6/9d5811b6; blocco doppio; CRLF; sesto campo; commit di review non antenato del ref; ref assente; commit di review abbreviato; secondo --bind-review (FileExistsError); review_text manomesso nel binding ('Invalid review provenance').",
+    "Eseguito: JSON su più righe accettato; testo non ASCII e parola cn-restart-review in prosa accettati senza effetti sul parser.",
+    "Letto: nel repository di GPT e nel canonico il fetch è +refs/heads/*:refs/remotes/origin/* e refs/remotes/origin/worktree-claude-training-engine esiste (439f9a7c). Dopo il push di Claude e un fetch, --bind-review trova il ref.",
+    "Letto: campaign_checkout.sbatch crea un worktree del canonico con la storia completa, quindi reviewed_commit (genitore della release) è disponibile per git show anche su Leonardo.",
+    "Eseguito (test): plan.json readout_amendment coincide con SCALAR_ADDEND_PARAMETERS e PROCESS_ONLY_CUDA_RNG; relative_gradient_roundoff_limit e gradient_norm_floor coincidono con LIMIT e DENOM_FLOOR (test_plan_matches_worker_and_readout). Il test controlla anche che il protocollo contenga '--gpu-ore 1.0' e il comando --validate-only.",
+    "Letto: la stringa scalar_denominator corrisponde al codice. Righe 330, 368-371 e 383 di compare: media dei moduli dei 4 locali ordinari in float64, accumulata su tutti i rank prima dello screening.",
+    "Letto: protocollo e voce del 22/11 di decisioni.md riportano prima della misura la regola su cuda_rng.1-3 (identità byte per byte con l'ordinaria, controllo integrale di cuda_rng.0, torch_rng e rank_rng, ogni altra differenza INCONCLUSIVE), la regola sui due scalari 253 e 257 e il recupero del solo lettore (entrambe le gambe complete, stessi byte, review, nuovo rapporto). Riportano anche --validate-only sul login, lfs project -d e lfs quota -hp, i log .out/.err, phase_timings.jsonl e il ledger a 1,0 GPU-ora.",
+    "Conti rifatti, esatti: 4x900/3600 = 1,0 GPU-ora; 32x900/3600 + 4x240/3600 = 8,2667 ore locali; inviluppo con 360 s di margine 4x1260/3600 = 1,4 e (32x1260 + 4x600)/3600 = 11,8667; residui 18-4,74-1 = 12,26 e 169,6-47,3322-8,2667 = 114,0011; cumulato 5,74 e 55,5989.",
+    "Letto: nel ledger locale nessuna voce CONTRAST dopo il 21/11 15:24 e nessuna prenotazione RESTART545, quindi la base 4,74/47,3322 non è contraddetta dal ledger (il consumo da sacct oggi non è verificabile).",
+    "Letto: scripts/submit_job.py del clone, del canonico e quello condiviso in ~/Documents/ChatGPT/FM per EMG/wearusfm-gpt-science hanno lo stesso sha256 814da4bc...0d82. Il controllo di mac_launcher_command.py sui byte del submitter congelato è quindi soddisfacibile.",
+    "Letto: gli argomenti dei due comandi (--id, --agente, --campagna, --gpu-ore, --script-stdin, argomenti sbatch dopo --) sono validi per submit_job.py del clone. --agente ammette claude, gpt e simone; --job-name e --comment li impone il submitter (= ID logico) e i comandi non li passano."
+   ],
+   "rapporto": "Rapporto completo: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports/c3-pacchetto-binding-protocollo.md. Script e output: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/c3-pacchetto-binding-protocollo/ (bind_sim.py, positive_flow.py, negatives.out, positive.out). Ho cancellato la copia locale del clone (295 MB); il clone risulta pulito (git status vuoto).\n\nPunto 5, script e comandi. mac_launcher_command.py esiste solo nel repository canonico (/Users/simonebenatti/dev/wearusfm/scripts/mac_launcher_command.py, commit daf9b8b2), non nel clone. Non esegue nulla: controlla che lo SHA abbia 40 caratteri; che il comando sia python3 o la venv seguito da scripts/submit_job.py del worktree o dal submitter condiviso; che ci sia --id. Controlla anche che i byte del submitter del worktree e di quello condiviso siano uguali a git show SHA:scripts/submit_job.py. Poi stampa {workdir, cmd} con la venv e il submitter condiviso. Il workdir è il worktree passato, quindi --script-stdin si risolve rispetto a quel worktree. Ho cercato di produrre i comandi con lo script, senza eseguirli, ma il classificatore dei permessi ha negato quel comando. Il comportamento descritto è dedotto dalla lettura del codice.\n\nChe cosa cambierebbe con un operatore diverso da 3-launcher. Sono fatti, senza giudizi.\n(a) L'etichetta --agente: oggi 'gpt'; per una chat Claude il valore ammesso è 'claude'. È un campo del ledger, non è controllato dal codice del diagnostico.\n(b) Il worktree passato come $PWD: deve essere un worktree dell'operatore estratto a RELEASE_SHA, con scripts/submit_job.py identico a quello condiviso.\n(c) Chi esegue la validazione sul login e raccoglie log, phase_timings.jsonl, ricevute ed eventuali execution_failure.json.\n(d) Il testo del protocollo che nomina 3-launcher. Modificarlo dopo il blocco di Claude cambia package_sha256 e rompe il binding (rilievo N-2).\n\nChe cosa è vincolato dal codice.\n- CODE_DIR deve essere esattamente $WORK/wearusfm_campaigns/cn-restart545-20261121 (controllo nello sbatch). Di conseguenza il checkout deve usare CAMPAIGN=cn-restart545-20261121.\n- EXPECTED_SHA deve essere uguale all'HEAD del checkout (lib_code_dir.sh); il checkout deve essere pulito e in sola lettura.\n- TORCH_DIST_INIT_BARRIER=1 è controllato due volte, nello sbatch e in run().\n- La TimeLimit deve essere esattamente 00:15:00 (scontrol nello sbatch).\n- Risorse: 1 nodo, 1 task, 32 CPU, 240 GiB e 4 GPU (validate_allocation; --gres=gpu:4 nell'intestazione dello sbatch); partizione e QoS boost_usr_prod e boost_qos_dbg.\n- L'output deve stare in una cartella nuova $WORK/wearusfm_runs/results/contrastive_targets_20261118/cn_restart_probe_20261121.\n- Il binding deve essere presente e valido.\n\nChe cosa è vincolato solo da piano e protocollo, non dal codice.\n- Gli ID logici CONTRAST-CHECKOUT-CN-RESTART545-20261121 e CONTRAST-CN-RESTART545-20261121 sono nel plan.json e quindi nell'impronta del piano. Nessun codice confronta però il nome del job SLURM con questi ID; il submitter usa l'--id come job-name e comment.\n- Il nome di campagna del ledger CONTRASTIVE-targets-v3-20261118 (da non confondere con il nome del checkout cn-restart545-20261121).\n- --gpu-ore 1.0 e 0: il test verifica solo la presenza di '--gpu-ore 1.0' nel testo del protocollo.\n- Le risorse del checkout (4 CPU, 2G, 00:04:00): sovrascrivono l'intestazione di campaign_checkout.sbatch (1 CPU, 10 minuti) e nessun codice le controlla.\n\nPrima di qualsiasi invio servono, nell'ordine:\n1. Claude pubblica sul ramo worktree-claude-training-engine la review con il blocco.\n2. Chi fa il binding esegue fetch, --bind-review a 8c72655c, commit figlio e push.\n3. Il commit di release viene pubblicato su leonardo con un ref deploy/<nome>, perché il checkout di campagna si crea dal canonico $WORK/wearusfm. Il protocollo dice solo «push verificato» e non nomina il ref di deploy.\n4. Il checkout di campagna crea il worktree; seguono la validazione --validate-only sul login, il controllo quota e reservation, e infine l'invio GPU.",
+   "punti_aperti": [
+    "Il render dei comandi con mac_launcher_command.py (che non esegue nulla) è stato negato dal classificatore dei permessi e non l'ho eseguito. Le uscite {workdir, cmd} sono dedotte dalla lettura del codice.",
+    "Senza Leonardo: non ho verificato il consumo effettivo da sacct (base 4,74 / 47,3322), il tempo CPU di --validate-only sul login, le reservation correnti e la quota.",
+    "Il protocollo non nomina esplicitamente il push del commit di release su leonardo con un ref deploy/<nome>, necessario perché campaign_checkout crei il worktree da $WORK/wearusfm. Va incluso nella sequenza operativa di chi invia.",
+    "Va deciso prima del blocco di Claude se il cambio di operatore (--agente claude, chat 0 al posto di 3-launcher) resta solo nei comandi al momento dell'invio o entra nel protocollo. Nel secondo caso cambiano package_sha256 e la review deve vincolare le impronte nuove.",
+    "Il prompt di GPT chiede a Claude di «mantenere riconoscibile l'esito storico fc3eef6b» nello stesso file: la nuova review non deve citare il vecchio blocco del prompt 9a2ce7e7 come fence cn-restart-review a colonna 0, altrimenti risultano due blocchi e il binding viene rifiutato."
+   ]
+  },
+  "verified": []
+ },
+ {
+  "key": "c4-test-mutazioni",
+  "review": {
+   "sintesi": "Nessun bloccante. Il codice corretto (8c72655c) classifica bene anche i percorsi che la suite non raggiunge: l'ho verificato eseguendo sul codice non modificato sei casi aggiuntivi end-to-end, tutti passati.\n\nLa ricevuta si riproduce: 211 test passati nei 12 file; i file con Gloo passano 34 su 34 in due ulteriori esecuzioni.\n\nI test però restano deboli. Gli script di mutazione del 21/11 sono stati cancellati e ho ricostruito il catalogo da zero: sopravvivono 78 mutazioni su 164. Sui gruppi analoghi a quelli del 21/11 ne sopravvivono 69 su 119 (58%), contro 54 su 84 (64%); il confronto è indicativo, perché i cataloghi sono diversi. Sulle parti nuove ne sopravvivono 9 su 45.\n\nCinque sopravvissute toccano l'attribuzione dell'esito: C61 (differenze locali mai viste), C64 (primo update controllato sul passo sbagliato), N09 (dormiente diverso sia dal continuo sia dall'ordinaria accettato), C51 (metriche dell'ordinaria ignorate) e N21 (soglia moltiplicata per 10). Il test end-to-end copre SUPPORTED, PARTIAL_SUPPORT solo a 576, HYPOTHESIS_UNSUPPORTED solo per eccesso e sei casi INCONCLUSIVE.",
+   "rilievi": [
+    {
+     "id": "C4-1",
+     "titolo": "Esiti decisivi non esercitati end-to-end: HYPOTHESIS_UNSUPPORTED per gradienti locali e per assenza di scarto, PARTIAL_SUPPORT a 545",
+     "gravita": "importante",
+     "file_riga": "tests/cpu/test_cn_restart_end_to_end.py:162-167; scripts/diagnostics/contrastive_cn_restart_compare.py:366,382",
+     "scenario": "any_local e first_exact sono calcolati da dati veri solo in compare(); classify è provato solo con booleani. Una regressione che azzeri any_local (C61) o che controlli il passo 544 invece del 545 (C64) farebbe dichiarare SUPPORTED una differenza già presente nei gradienti locali, oppure ignorerebbe il primo update della ripresa riscaldata. Nessun test se ne accorgerebbe.",
+     "prova": "Eseguito: le mutazioni C61 e C64 sopravvivono a tutti i 73 test dei cinque file test_cn_restart_* (mutation_log.txt). Il mio test_c4_extra.py, con i casi local_diff, no_discrepancy e first_update, passa 6 su 6 sul codice non modificato e uccide entrambe le mutazioni.",
+     "correzione": "Aggiungere al parametrize di test_cn_restart_end_to_end i casi local_diff, no_discrepancy e first_update; si possono riprendere quelli di test_c4_extra.py.",
+     "eseguito": true
+    },
+    {
+     "id": "C4-2",
+     "titolo": "La regola 'cuda_rng.1-3 uguali all'ordinaria' non è provata quando il dormiente riscaldato differisce sia dal continuo sia dall'ordinaria",
+     "gravita": "importante",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart_compare.py:108,113; tests/cpu/test_cn_restart_compare.py:139-160; test_cn_restart_end_to_end.py:113-114",
+     "scenario": "I test pongono il dormiente riscaldato uguale al continuo. Così la mutazione N09, che sostituisce matches_ordinary con 'diverso dal continuo', esenta ancora correttamente quel caso. Esenterebbe però un cambiamento presente solo nella gamba riscaldata e mai riprodotto dall'ordinaria: esattamente quanto la correzione di B-2 doveva escludere.",
+     "prova": "Eseguito: N09 sopravvive alla suite. Il caso dormant_differs_both di test_c4_extra.py (cuda_rng[2] posto a 99 nella sola gamba riscaldata) dà INCONCLUSIVE sul codice corretto e uccide N09.",
+     "correzione": "Aggiungere un caso in cui il dormiente riscaldato differisce sia dal continuo sia dall'ordinaria e l'esito atteso è INCONCLUSIVE, con il percorso del dormiente nel motivo.",
+     "eseguito": true
+    },
+    {
+     "id": "C4-3",
+     "titolo": "Fedeltà dell'ordinaria: un solo caso, che fa scattare insieme hash e payload; le metriche non sono provate",
+     "gravita": "minore",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart_compare.py:320-321; test_cn_restart_end_to_end.py:125-128",
+     "scenario": "Il caso ordinary_dormant cambia il file, quindi l'hash, e insieme il payload. Le mutazioni C50 e C52, che tolgono l'una o l'altra condizione, sopravvivono perché sono ridondanti fra loro. Sopravvive anche C51: se l'ordinaria riproduce il checkpoint ma non le metriche storiche, la prova proseguirebbe invece di uscire INCONCLUSIVE.",
+     "prova": "Eseguito: C50, C51 e C52 sopravvivono. Il caso ordinary_metrics di test_c4_extra.py (grad_norm moltiplicato per 1+1e-6 in una riga) dà INCONCLUSIVE e uccide C51; non uccide C50 né C52, che si coprono a vicenda.",
+     "correzione": "Aggiungere il caso con le sole metriche dell'ordinaria diverse.",
+     "eseguito": true
+    },
+    {
+     "id": "C4-4",
+     "titolo": "Soglia di 1e-6 non provata vicino al limite",
+     "gravita": "minore",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart_compare.py:135; test_cn_restart_end_to_end.py:59; test_cn_restart_compare.py:182-193",
+     "scenario": "I casi di eccesso usano 1e-3, cioè circa 2000 volte il limite, e il test unitario 0,01. La mutazione N21, che moltiplica la soglia per 10, sopravvive: la soglia congelata è fissata come costante (test_plan_matches_worker_and_readout) ma non nel suo uso.",
+     "prova": "Eseguito: N21 sopravvive. Il caso near_limit_scalar di test_c4_extra.py (scarto pari al doppio del limite) dà HYPOTHESIS_UNSUPPORTED e uccide N21.",
+     "correzione": "Aggiungere un caso fra 1x e 10x il limite, per esempio 2e-6 per la scala.",
+     "eseguito": true
+    },
+    {
+     "id": "C4-5",
+     "titolo": "Molte guardie di validità restano senza test negativo",
+     "gravita": "minore",
+     "file_riga": "contrastive_cn_restart_compare.py:205-245, 337-362, 379-381; contrastive_cn_restart_leg.py:139-171",
+     "scenario": "Rimuovere un controllo fra quelli elencati non fa fallire alcun test: uguaglianza di stream, RNG e supporto con la traccia di produzione (C29), confine contro traccia (C31, C37, C38), completezza dei digest (C36), coerenza fra rank e fra gambe (C53-C57, C60), nodo unico (C63), sovrapposizione degli span (O11), membro duplicato (O24), guardie del worker (L05-L07, L14-L16). Sono guardie che rendono la prova INCONCLUSIVE in caso di anomalie vere; oggi un errore che le spegnesse passerebbe inosservato.",
+     "prova": "Eseguito: le 78 sopravvissute sono elencate in mutation_log.txt. C29 e C38 sopravvivono anche ai miei sei casi aggiuntivi.",
+     "correzione": "Non blocca il lancio. Basta un caso negativo per famiglia, per esempio una riga di traccia alterata, un'impronta del confine diversa fra le gambe e gpu_uuid duplicati.",
+     "eseguito": true
+    },
+    {
+     "id": "C4-6",
+     "titolo": "Il TimeoutError pre-fase non è provato",
+     "gravita": "nota",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart.py:178; scripts/contrastive_split_benchmark.py:27-28",
+     "scenario": "checked_command solleva TimeoutError, sottoclasse di OSError, quando il tempo è già finito prima di avviare una fase. È catturato perché OSError è nella tupla, ma nessun test lo inietta: togliendo OSError (N35) si perderebbe execution_failure.json senza che un test fallisca. Il codice attuale è corretto.",
+     "prova": "Eseguito: N35 sopravvive. Ho verificato dalla gerarchia standard di Python che TimeoutError è una sottoclasse di OSError.",
+     "correzione": "Aggiungere al parametrize di test_phase_receipts_survive_subprocess_timeout un caso che solleva TimeoutError.",
+     "eseguito": true
+    }
+   ],
+   "verifiche_positive": [
+    "Ricevuta riprodotta: 211 passati, con i conteggi per file 18/9/4/30/12/26/30/16/3/22/18/23; leg e observe con Gloo 34 passati in entrambe le esecuzioni ripetute.",
+    "Il test end-to-end passa davvero da compare.main(), con osservazioni scritte da ReductionObservation.finish vero, lo shim mmap del torch 2.2 (verifica che gli 8 vectors.rank*.pt siano letti con str), rank_rng e cuda_rng nel formato di run.py:1482 e 1593-1597, e 4 x 270 righe.",
+    "Sulle parti nuove le mutazioni critiche sono uccise: esenzione senza matches_ordinary o senza same_shape, esenzione sempre attiva o estesa a cuda_rng.0, torch_rng o rank_rng, scala applicata a tutti i tensori o non usata, rapporto grezzo, scala x4, dal ridotto o dal solo ultimo rank, ritorno INCONCLUSIVE rimosso o trasformato in PARTIAL, classify sull'exact_payload grezzo, Path passato a mmap, TimeoutExpired non catturato, schema RNG non validato nella gamba riscaldata.",
+    "I 21 rifiuti di load_observation hanno un match specifico; il test sulle norme mostra che una norma descrittiva diversa di 1e-9 non rifiuta più il vettore.",
+    "Sul codice corretto, sei casi aggiuntivi danno l'esito atteso: locale diverso e nessuno scarto danno HYPOTHESIS_UNSUPPORTED, il primo update diverso dà PARTIAL_SUPPORT, il dormiente diverso da entrambi e le metriche dell'ordinaria diverse danno INCONCLUSIVE, lo scalare al doppio del limite dà HYPOTHESIS_UNSUPPORTED.",
+    "La scala dello schermo scalare regge in simulazione fp32 su CPU (ordini sequenziali e ad albero, 20.000 prove con cancellazione): rapporto massimo 2,3e-7, sotto la soglia di 1e-6.",
+    "Il formato dei generatori nel checkpoint di produzione (cuda_rng lista da get_rng_state_all, rank_rng lista di dict con tensori uint8) è quello che validate_rng_schema richiede."
+   ],
+   "punti_aperti": [
+    "Gli script di mutazione del 21/11 e le letture di Leonardo (confronto_checkpoint_veri, torch22_*) sono stati cancellati: le cartelle sono vuote. Il confronto con 54 su 84 è quindi indicativo, perché il catalogo nuovo è ricostruito da zero.",
+    "Non provabili sul Mac: hook e clone asincrono su NCCL e CUDA, torch.save/load e mmap con weights_only del torch 2.2 vero (lo shim simula solo il tipo del percorso), ramo ctypes di device_identity, ciclo delle fasi con torchrun e SLURM_JOB_END_TIME veri, ordine di somma di NCCL per lo schermo scalare.",
+    "Nel test end-to-end le guardie SHA d'archivio sono tautologiche, perché ARCHIVE, FORK_SHA ed ENDPOINT sono sostituiti: proteggono il run vero ma i test non le provano (C22-C26, C32, C43, C58 sopravvivono)."
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports/c4-test-mutazioni.md (lavoro in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/c4-test-mutazioni: mutations.py, run_mutations.py, mutation_log.txt, mutation_results.json, test_c4_extra.py)"
+  },
+  "verified": [
+   {
+    "finding": {
+     "id": "C4-1",
+     "titolo": "Esiti decisivi non esercitati end-to-end: HYPOTHESIS_UNSUPPORTED per gradienti locali e per assenza di scarto, PARTIAL_SUPPORT a 545",
+     "gravita": "importante",
+     "file_riga": "tests/cpu/test_cn_restart_end_to_end.py:162-167; scripts/diagnostics/contrastive_cn_restart_compare.py:366,382",
+     "scenario": "any_local e first_exact sono calcolati da dati veri solo in compare(); classify è provato solo con booleani. Una regressione che azzeri any_local (C61) o che controlli il passo 544 invece del 545 (C64) farebbe dichiarare SUPPORTED una differenza già presente nei gradienti locali, oppure ignorerebbe il primo update della ripresa riscaldata. Nessun test se ne accorgerebbe.",
+     "prova": "Eseguito: le mutazioni C61 e C64 sopravvivono a tutti i 73 test dei cinque file test_cn_restart_* (mutation_log.txt). Il mio test_c4_extra.py, con i casi local_diff, no_discrepancy e first_update, passa 6 su 6 sul codice non modificato e uccide entrambe le mutazioni.",
+     "correzione": "Aggiungere al parametrize di test_cn_restart_end_to_end i casi local_diff, no_discrepancy e first_update; si possono riprendere quelli di test_c4_extra.py.",
+     "eseguito": true
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivazione": "Il rilievo regge come lacuna dei test. Le mutazioni C61 (compare.py:366) e C64 (compare.py:382) sopravvivono a tutta la suite e trasformano in SUPPORTED due esiti che dovrebbero essere HYPOTHESIS_UNSUPPORTED (locali diversi) e PARTIAL_SUPPORT (primo update diverso dallo storico). Nessun altro controllo le intercetta: classify e' provato solo con booleani (test_cn_restart_compare.py:21-25) e il parametrize e2e (test_cn_restart_end_to_end.py:162-167) non ha questi casi. Il codice al commit 8c72655c e' pero' corretto e conforme al protocollo (righe 16, 18 e 23 del documento: locali e campi storici al passo 545, precedenza ai locali). Il run vero usa un checkout congelato di quello SHA. Manca quindi un controesempio contro il run: la lacuna conta solo per una modifica futura. La gravita' scende da importante a minore e la release non e' bloccata.",
+      "prova": "Eseguito su una copia git archive di 8c72655c in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/verifica-c4-test-mutazioni-C4-1-1/wt. Il clone non e' stato toccato; cmp conferma il ripristino della copia.\n\nBase: 61 test passati sui file compare/observe/end_to_end/leg. Nella copia senza .git falliscono tre test di package, un effetto della copia. test_c4_extra.py passa 6 su 6.\n\nC61 (any_local |= False): 61 passati sulla suite. Il caso extra local_diff fallisce con \"assert 'SUPPORTED' == 'HYPOTHESIS_UNSUPPORTED'\".\n\nC64 (d[\"step\"] == FORK): 61 passati sulla suite. Il caso extra first_update fallisce con \"assert 'SUPPORTED' == 'PARTIAL_SUPPORT'\".\n\nRapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports/verifica-c4-test-mutazioni-C4-1-1.md",
+      "correzione_minima": "Aggiungere al parametrize di test_cn_restart_end_to_end.py i casi local_diff -> HYPOTHESIS_UNSUPPORTED, no_discrepancy -> HYPOTHESIS_UNSUPPORTED e first_update -> PARTIAL_SUPPORT, con l'helper rewrite_rank di agents/c4-test-mutazioni/test_c4_extra.py. Non serve un nuovo giro di review prima del lancio."
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivazione": "Il rilievo regge come lacuna dei test ma non come difetto del codice. Le mutazioni C61 (compare.py:366) e C64 (compare.py:382) sopravvivono alla suite dei cinque file test_cn_restart_*. Le tre letture mancanti (local_diff, no_discrepancy e first_update) le ucciderebbero. Nessun altro controllo le intercetterebbe: con una differenza locale sotto lo screen, excessive e' falso e la lettura sarebbe SUPPORTED. Il codice congelato a 8c72655c e' pero' corretto in tutte e due le righe. La riga 366 confronta i gradienti locali per ogni parametro e per ogni rank. La riga 382 controlla FORK+1=545, con FORK=544 (scripts/contrastive_target_resume.py:31), e rows() (righe 213-219) impone i passi 545..576. Nessun controesempio rende il run vero INCONCLUSIVE, fallito o attribuito male. Il rischio riguarda solo una regressione futura, quindi la gravita' e' minore e non blocca la release.",
+      "prova": "Eseguito. Sul clone originale 73 test passano e git status resta vuoto. Ho lavorato su una copia senza .git in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/verifica-c4-test-mutazioni-C4-1-2/tree. Li' tre test di test_cn_restart_package falliscono con git diff exit 129: e' un artefatto della copia, presente anche sul codice non mutato. Con C61 la suite resta a 70 passati e 3 artefatti, cioe' la mutazione sopravvive; test_c4_extra la uccide perche' local_diff riceve SUPPORTED al posto di HYPOTHESIS_UNSUPPORTED. Con C64 la suite non la rileva; test_c4_extra la uccide perche' first_update riceve SUPPORTED al posto di PARTIAL_SUPPORT. Sul codice non mutato test_c4_extra passa 6 su 6. Il rapporto e' in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports/verifica-c4-test-mutazioni-C4-1-2.md",
+      "correzione_minima": "Aggiungere al parametrize di tests/cpu/test_cn_restart_end_to_end.py:162-167 i casi local_diff e no_discrepancy, entrambi con esito HYPOTHESIS_UNSUPPORTED, e first_update con esito PARTIAL_SUPPORT, ripresi da agents/c4-test-mutazioni/test_c4_extra.py. Si puo' fare nel prossimo commit, senza un nuovo giro di review."
+     }
+    ]
+   },
+   {
+    "finding": {
+     "id": "C4-2",
+     "titolo": "La regola 'cuda_rng.1-3 uguali all'ordinaria' non è provata quando il dormiente riscaldato differisce sia dal continuo sia dall'ordinaria",
+     "gravita": "importante",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart_compare.py:108,113; tests/cpu/test_cn_restart_compare.py:139-160; test_cn_restart_end_to_end.py:113-114",
+     "scenario": "I test pongono il dormiente riscaldato uguale al continuo. Così la mutazione N09, che sostituisce matches_ordinary con 'diverso dal continuo', esenta ancora correttamente quel caso. Esenterebbe però un cambiamento presente solo nella gamba riscaldata e mai riprodotto dall'ordinaria: esattamente quanto la correzione di B-2 doveva escludere.",
+     "prova": "Eseguito: N09 sopravvive alla suite. Il caso dormant_differs_both di test_c4_extra.py (cuda_rng[2] posto a 99 nella sola gamba riscaldata) dà INCONCLUSIVE sul codice corretto e uccide N09.",
+     "correzione": "Aggiungere un caso in cui il dormiente riscaldato differisce sia dal continuo sia dall'ordinaria e l'esito atteso è INCONCLUSIVE, con il percorso del dormiente nel motivo.",
+     "eseguito": true
+    },
+    "votes": [
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivazione": "The finding holds only as a gap in the tests. At commit 8c72655c the code applies the B-2 rule correctly. In scripts/diagnostics/contrastive_cn_restart_compare.py:108 and :113, cuda_rng.1-3 of the warm leg are exempted only when they have the same shape and match the ordinary restart. The tests never separate this rule from the withdrawn one. The unit test (tests/cpu/test_cn_restart_compare.py:141-160) and the end-to-end case dormant_not_ordinary (tests/cpu/test_cn_restart_end_to_end.py:113-114) always set the warm dormant state equal to the continuous run. In that case, \"equal to the ordinary restart\" and \"different from the continuous run\" give the same verdict, so mutant N09 survives. No other check in run() (compare.py:295-324) compares the warm cuda_rng.1-3 with the ordinary restart, so this guard is the only one. Still, the code as published does not make the real run INCONCLUSIVE, does not make it fail, and does not misattribute the result. What is missing is protection against a future regression of the B-2 fix, so the right severity is minor, not important.",
+      "prova": "Executed. I put mutant N09 (matches_ordinary = not identical(reference, measured)) in a simulated root, /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/verifica-c4-test-mutazioni-C4-2-1/mutroot/scripts/diagnostics/, with links to results, docs and src so that ROOT=parents[2] stays valid. Against the files test_cn_restart_compare, end_to_end, package and observe, the output is \"69 passed\": the mutant survives. On my first attempt, without the simulated root, 11 end-to-end tests failed only because of the ROOT path; I discarded that result. My new test, /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/verifica-c4-test-mutazioni-C4-2-1/test_both.py, uses continuous seed 24, ordinary seed 12, and a warm leg equal to the ordinary restart except warm cuda_rng[2]=[99,5,9]. On the real code it passes: scientific_metadata_or_schema_different == ['cuda_rng.2'] and exact_scientific_payload is False. With N09 it fails with \"assert not True\", meaning a change present only in the warm leg is exempted. The output is in n09_run.txt in the same folder. The clone was not modified (git status is clean). Report: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports/verifica-c4-test-mutazioni-C4-2-1.md",
+      "correzione_minima": "Add the test_both.py case to tests/cpu/test_cn_restart_compare.py: the warm cuda_rng[2] differs from both the continuous run and the ordinary restart, and the expected result is not exact_scientific_payload with scientific_metadata_or_schema_different == ['cuda_rng.2']. Optionally, add the matching end-to-end case with status INCONCLUSIVE and 'cuda_rng.2' in the reason."
+     },
+     {
+      "regge": true,
+      "gravita_corretta": "minore",
+      "motivazione": "Il rilievo regge solo come lacuna dei test. Il codice al commit 8c72655c è corretto. In contrastive_cn_restart_compare.py:103-117 il dormiente cuda_rng.1-3 è esente solo se same_shape e matches_ordinary, con matches_ordinary = identical(ordinary, measured) (r.108). Altrimenti il percorso resta in scientific_invalid e run() restituisce INCONCLUSIVE con il percorso nel motivo (r.321-325). Il riferimento ordinario è l'ordinaria storica, perché a r.320 l'endpoint ordinario deve coincidere con lo SHA ENDPOINT e con exact_payload. Nessun controesempio rende il run vero INCONCLUSIVE in modo spurio o fa attribuire male l'esito, quindi il rilievo non è bloccante. Non è nemmeno importante, perché la correzione non introduce alcun difetto. Resta vero che la suite non protegge la regola di B-2. Una modifica futura di r.108 come N09 («diverso dal continuo») passerebbe la suite, perché tutti i casi esistenti pongono il dormiente riscaldato uguale al continuo: test_cn_restart_compare.py:139-160 ed end_to_end r.113-114. Il caso ordinary_dormant (r.125-128) si ferma prima, al require di r.320, e quindi non distingue il mutante. Per questo la gravità giusta è minore.",
+      "prova": "Eseguito su una copia dell'albero con la sola mutazione N09 a r.108 (verificata con diff). test_cn_restart_compare, test_cn_restart_end_to_end e test_cn_restart_observe passano tutti sul mutante. I fallimenti di test_cn_restart_package nella copia sono un artefatto: la copia non ha .git e git diff esce con codice 129. Il revisore C4, eseguendo nel clone, registra N09 non ucciso con 73 passati (agents/c4-test-mutazioni/mutation_log.txt:80). Ho scritto un nuovo test unitario, agents/verifica-c4-test-mutazioni-C4-2-2/test_warm_both.py: warm[\"cuda_rng\"][2]=[99,5,9], diverso da continuo e ordinaria. Il test passa sul codice vero (scientific_metadata_or_schema_different == ['cuda_rng.2']) e fallisce sul mutante (lista vuota). Anche test_c4_extra.py::test_missing_paths[dormant_differs_both-INCONCLUSIVE] passa sul codice vero e fallisce sul mutante. La suite vera con i due file aggiunti dà 76 passati, il mutante 5 falliti. Rapporto: /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports/verifica-c4-test-mutazioni-C4-2-2.md. Il clone è rimasto pulito (git status vuoto) e i file temporanei sono stati cancellati.",
+      "correzione_minima": "Aggiungere a tests/cpu/test_cn_restart_compare.py un caso in cui il dormiente riscaldato differisce sia dal continuo sia dall'ordinaria, per esempio warm cuda_rng[2]=[99,5,9] con ordinary=saved_endpoint(12) e continuous=saved_endpoint(24). Esito atteso: scientific_metadata_or_schema_different == ['cuda_rng.2'] e exact_scientific_payload falso. Facoltativamente, aggiungere il parametro end-to-end corrispondente, con INCONCLUSIVE e cuda_rng.k nel motivo. Il codice di produzione del diagnostico non va modificato."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "c5-critico-regressioni",
+  "review": {
+   "sintesi": "Nessun bloccante. Nel diff correttivo 9a2ce7e7..8c72655c, B-1 e B-2 sono chiusi e completi, e anche i nove punti della review fc3eef6b sono chiusi, compresa la frase su ogni altra differenza non in virgola mobile che dà INCONCLUSIVE. Le impronte di --package coincidono con il prompt. I cinque file di test passano (73). Sei mutazioni mirate alle correzioni vengono tutte rilevate dai test nuovi. Regole registrate e codice dicono la stessa cosa, con due piccole imprecisioni di testo sul recupero del solo lettore, nessuna con effetto sul codice. Il diff non introduce nuovi rischi rilevanti per il tentativo unico. Per il binding, Claude deve scrivere il blocco a margine sinistro, in un'unica copia, senza ripeterlo dentro un recinto del prompt per GPT.",
+   "rilievi": [
+    {
+     "id": "C5-M1",
+     "titolo": "La regola di recupero in decisioni.md non nomina l'interruzione operativa del confronto, che il protocollo invece copre",
+     "gravita": "minore",
+     "file_riga": "docs/decisioni.md (voce 22/11, ultimo paragrafo) contro docs/contrastive_cn_restart_probe_20261121.md:19 e plan.json readout_amendment.reader_only_recovery",
+     "scenario": "Le due gambe finiscono a 576 e il confronto CPU va oltre la scadenza dentro l'allocazione: checked_command solleva TimeoutExpired, run() scrive execution_failure.json con phase=compare e il job fallisce. Il protocollo ammette il recupero («se il processo del confronto si interrompe per un errore operativo»). decisioni.md parla solo di «un errore del lettore CPU», il piano di «Reviewed CPU readout ... complete legs». Chi legge solo la voce registrata potrebbe contestare come post hoc la rilettura dopo un timeout.",
+     "prova": "Dedotto dal confronto dei tre testi. Il codice non è coinvolto: run() alle righe 168-188 registra fase e fasi completate, quindi il caso è documentato.",
+     "correzione": "Nessuna modifica ai file vincolati: PROTOCOL è in FILES e cambierebbe il package_sha256. Claude scrive nella review che il recupero vale come nel protocollo, interruzione operativa del confronto compresa. Se GPT preferisce, aggiunge una riga a decisioni.md, che non è nel pacchetto."
+    },
+    {
+     "id": "C5-M2",
+     "titolo": "«Un problema della fedeltà dell'ordinaria resta inconclusivo» è ambiguo se il falso rifiuto viene dal lettore",
+     "gravita": "minore",
+     "file_riga": "docs/contrastive_cn_restart_probe_20261121.md:19; docs/decisioni.md voce 22/11 («errore reale in un controllo scientifico»)",
+     "scenario": "Un difetto del lettore simile a B-2 fa fallire per errore il controllo di fedeltà dell'ordinaria o del confine: per esempio un confronto di metadati che non regge su un formato del cluster. Alla lettera il protocollo escluderebbe il recupero. decisioni.md lo esclude solo per un errore «reale». Le due letture portano a decisioni opposte sullo stesso caso.",
+     "prova": "Citazioni dei due testi. Dedotto, nessun controesempio nel codice attuale.",
+     "correzione": "Precisare nella review l'interpretazione registrata in decisioni.md: è escluso solo un difetto reale del confine o dell'ordinaria, dimostrato sui byte. Un falso rifiuto del lettore resta recuperabile. Non toccare il protocollo vincolato."
+    },
+    {
+     "id": "C5-M3",
+     "titolo": "Blocco set -eo pipefail da incollare in una shell di login",
+     "gravita": "minore",
+     "file_riga": "docs/contrastive_cn_restart_probe_20261121.md, blocco --validate-only (righe aggiunte 56-68 del diff)",
+     "scenario": "Se 3-launcher incolla il blocco in una shell interattiva su Leonardo, un errore di code_dir_setup o della validazione chiude la sessione per via di set -e. Con la sessione si perde anche la riga d'errore che il protocollo chiede di conservare. Non tocca la misura: blocca solo prima dell'invio.",
+     "prova": "Lettura del blocco: «set -eo pipefail», poi code_dir_setup, che restituisce 2 in caso di errore (scripts/slurm/lib_code_dir.sh).",
+     "correzione": "Indicazione operativa a 3-launcher: eseguire il blocco con bash -c, o con ssh leonardo bash -s, reindirizzando stdout e stderr su file. Il file non va modificato."
+    },
+    {
+     "id": "C5-N1",
+     "titolo": "Il ritorno INCONCLUSIVE anticipato toglie dal rapporto le misure del passo 545",
+     "gravita": "nota",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart_compare.py:322-326",
+     "scenario": "Se le copie dormienti della riscaldata differiscono da quelle dell'ordinaria, o se cambia un'altra voce non in virgola mobile, il rapporto esce INCONCLUSIVE senza per_parameter_and_rank né placements. L'esito è conforme al protocollo («un riscaldamento che tocca lo stato scientifico lascia la prova inconclusiva»), ma si perde l'informazione descrittiva sulla localizzazione.",
+     "prova": "Codice alle righe 322-326. La mutazione M5, che toglie il ritorno, viene rilevata da 5 test: il comportamento è voluto e coperto.",
+     "correzione": "Nessuna per questo run. Se servisse, i vettori grezzi restano su WORK e si possono leggere in modo descrittivo su CPU."
+    },
+    {
+     "id": "C5-N2",
+     "titolo": "Condizioni di formato del blocco di review per il binding",
+     "gravita": "nota",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart.py:30 (BLOCK) e 62-76 (review_fields)",
+     "scenario": "Claude aggiorna lo stesso file conservando il testo di fc3eef6b. Il binding fallisce in tre casi. Primo, il recinto ```cn-restart-review non sta a margine sinistro (per esempio dentro un elenco): zero blocchi trovati. Secondo, il prompt per GPT dentro ```text ripete il blocco con il suo recinto: due blocchi. Terzo, il file ha terminazioni CRLF: zero blocchi. Il testo storico da solo non contiene alcun recinto cn-restart-review: ha solo un ```text alle righe 241-263, quindi è innocuo. Il binding fallisce anche se il commit di release modifica uno dei FILES (protocollo compreso) o plan.json rispetto a 8c72655c.",
+     "prova": "Eseguito binding_regex.py sul file di review reale: storico intatto 0 blocchi; storico più blocco a margine 1 blocco valido; blocco rientrato 0; blocco ripetuto nel prompt 2; CRLF 0.",
+     "correzione": "Un solo blocco a margine sinistro con i cinque campi: reviewed_commit 8c72655c3d894c82fd4918ed523baf0ac9c69e23, package e9310d67…, plan 4f538cf1…. Nel prompt per GPT il blocco va citato senza recinto. Conviene rititolare come storica la vecchia sezione «Blocco di review: Non emesso». A GPT va ricordato di non modificare protocollo, piano o script nel commit del binding."
+    },
+    {
+     "id": "C5-N3",
+     "titolo": "Bias con 5 e 6 elementi fuori dalla regola degli scalari",
+     "gravita": "nota",
+     "file_riga": "scripts/diagnostics/contrastive_cn_restart_compare.py:28 e 123-136",
+     "scenario": "I parametri 255 anchor_heads.bands.bias (5 elementi) e 259 anchor_heads.ms.ms_fast.bias (6) usano il denominatore originale. Un falso HYPOTHESIS_UNSUPPORTED dovuto al solo arrotondamento richiederebbe la cancellazione simultanea su tutti gli elementi.",
+     "prova": "Eseguita sim_small.py: fp32, 4 rank, quattro ordini di somma, 200k estrazioni con media 0 e 0,3. Con k=5 il massimo è 5,8e-7, con k=6 5,1e-7, e nessuna estrazione supera 1e-6. Per gli scalari il rapporto originale supera 1e-6 nell'1,6-1,9% dei casi (massimo 1,3e-2); con il denominatore nuovo il massimo è 2,3e-7.",
+     "correzione": "Nessuna: rischio trascurabile, inferiore a 1/200.000 per tensore nella simulazione."
+    }
+   ],
+   "verifiche_positive": [
+    "B-1 chiuso: observe.py:145 passa str(tensor_path) a torch.load con mmap=True; anche checkpoint() in contrastive_target_resume.py:58 usa str(path). Nel percorso del lettore non restano altre chiamate torch.load (grep). Il test end-to-end usa una simulazione del controllo di torch 2.2 e verifica che gli otto file vectors.rank*.pt siano letti con mmap; con la mutazione M1 (Path) falliscono 19 test.",
+    "B-2 chiuso: compare.py:77-120. validate_rng_schema richiede torch_rng uint8 1-D, cuda_rng lista di 4 tensori uint8 e rank_rng lista di 4 dict con torch_rng e cuda_rng: corrisponde al payload vero letto il 21/11 (13 foglie uint8 = 1 + 4 + 8; cuda_rng e rank_rng sono liste). Le copie 1-3 sono escluse solo se hanno la stessa forma e sono identiche byte per byte a quelle dell'ordinaria. cuda_rng.0, torch_rng, rank_rng.* e ogni altra voce non in virgola mobile restano in scientific_metadata_or_schema_different, che dà INCONCLUSIVE (righe 322-326). Con la mutazione M2 (copia dormiente accettata senza confronto) falliscono 2 test.",
+    "L'ordinaria resta vincolata al file storico intero: righe 320-321, SHA bb39f339, exact_payload, metriche. Così le copie dormienti richieste alla riscaldata coincidono di fatto con quelle di CN_A storico.",
+    "PARTIAL_SUPPORT resta raggiungibile sui dati veri: fra continuo e CN_A, con traiettorie divergenti (1.990 tensori float diversi), nessuna foglia int, float Python o stringa differisce oltre cuda_rng.1-3 (confronto_checkpoint_veri_20261121.out.txt). Nessuno stato non float dipende dalla traiettoria su 32 passi.",
+    "Punto 1 chiuso: SCALAR_ADDEND_PARAMETERS 253/257 a compare.py:28. La scala è la media dei moduli dei quattro locali ordinari in float64 (righe 368-371, ordinary_l2/RANKS su un elemento = |g_r|/4), applicata dopo il ciclo su tutti i rank (riga 383). Restano sia il rapporto originale sia quello di screening. Il nome e la condizione elements==1 sono verificati. Ho controllato che sul modello vero gli ID 253 e 257 abbiano proprio quei nomi e un elemento. Il limite analitico (divisione per 4 esatta, allreduce con div_ prima della somma in default_hooks di torch 2.2) dà al più 6u*mean|g| = 3,6e-7 < 1e-6: con il denominatore nuovo il solo riordino non può superare la soglia, e la regola resta falsificabile. Le mutazioni M3 e M6 sono rilevate.",
+    "Decisioni, protocollo, piano e codice concordano: «media dei moduli dei quattro gradienti locali ordinari» = righe 368-371; «byte per byte con l'ordinaria» = identical() più same_shape (righe 106-113); scalar_denominator in plan.json equivalente alla stringa del report (riga 399); soglia 1e-6 su 270 tensori. Le regole precedono i dati della prova. La regola RNG deriva dal meccanismo del codice (run.py 1383/1446-1450/1463/1482) e da dati storici già pubblicati, non da esiti della prova; la regola degli scalari dipende dalla struttura del modello.",
+    "Punto 2 chiuso nella sostanza: recupero del solo lettore nel protocollo (riga 19), in decisioni.md e in plan.json, con le condizioni di gambe complete a 576, dati grezzi e SHA verificati, criteri invariati, review, rapporto distinto e nessuna nuova GPU (imprecisioni di testo in C5-M1 e C5-M2).",
+    "Punto 3 chiuso: 9 casi end-to-end attraverso la CLI di compare (SUPPORTED, PARTIAL_SUPPORT, HYPOTHESIS_UNSUPPORTED, 6 INCONCLUSIVE con il motivo verificato) e match= in tutti i rifiuti di load_observation (nessun pytest.raises(ValueError) nudo).",
+    "Punto 4 chiuso: run() alla riga 178 cattura subprocess.TimeoutExpired; TimeoutError ('exhausted before phase') resta coperto come sottoclasse di OSError. Il test parametrizzato sulle tre fasi rileva la mutazione M4 (3 falliti).",
+    "Punto 5 chiuso: --gpu-ore 1.0 nel protocollo, legato al test test_plan_matches_worker_and_readout. Punto 6 chiuso: observe.py:161-169 tiene la norma solo come descrittiva, finita e non negativa, mentre l'identità resta sull'impronta sha256 per tensore. Punto 7 chiuso: test che lega fork, passi, 270, 4, 1e-6, 1e-12, readout_amendment e SHA storici alle costanti di leg e compare. Punto 8 chiuso: comando --validate-only completo nel protocollo. Punto 9 chiuso: phase_timings.jsonl con inizio, fine o fallimento ed elapsed per fase, execution_failure.json con phase e completed_phases, raccolta di .out e .err, lfs project/quota con almeno 4 GB.",
+    "Il ciclo delle fasi non aggiunge rischi misurabili: file aperto con 'x' in una root appena creata, poche righe JSON, nessuna modifica alla scadenza (min(start+875, fine job-25)).",
+    "Impronte ricalcolate: package e9310d67b8304c064e09d71b0ec55d37b57abf3b4e2090c2d02d4def586f702d e plan 4f538cf183f6e3daf7bd30a5612eecdbbd07106f64d5f348a2f3e759e877853b, uguali al prompt. I 5 file cn_restart danno 73 passati. Il clone non è stato modificato (git status vuoto)."
+   ],
+   "rapporto": "/private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/reports/c5-critico-regressioni.md\n\nTabella di chiusura:\n- B-1, chiuso e completo. observe.py:145 passa str(tensor_path). Anche contrastive_target_resume.py:58 usa str. L'end-to-end lo verifica con la simulazione del torch 2.2 (M1: 19 falliti).\n- B-2, chiuso e completo. compare.py:77-120 e 306-326. Schema verificato sul formato vero. Le copie 1-3 sono escluse solo se identiche all'ordinaria. Tutto il resto dà INCONCLUSIVE (M2 rilevata).\n- Punto 1, chiuso. compare.py:28, 123-136, 368-371 e 383. Protocollo, decisioni e plan concordano. Limite analitico 3,6e-7.\n- Punto 2, chiuso. Protocollo:19, decisioni e plan. Restano due imprecisioni di testo (M1, M2).\n- Punto 3, chiuso. 9 casi end-to-end; match in tutti i rifiuti.\n- Punto 4, chiuso. contrastive_cn_restart.py:178 (M4 rilevata).\n- Punto 5, chiuso. --gpu-ore 1.0.\n- Punto 6, chiuso. observe.py:161-169.\n- Punto 7, chiuso. test_plan_matches_worker_and_readout.\n- Punto 8, chiuso. Il comando completo è nel protocollo.\n- Punto 9, chiuso. phase_timings.jsonl, .err e lfs quota con 4 GB.\n- Frase sulle altre differenze non float, chiusa. È nel protocollo, in decisioni e in plan.all_other_nonfloating_differences.\n\nRischi residui di INCONCLUSIVE o fallimento non scientifico, in ordine di probabilità per impatto. Nessuno nasce dal diff.\n1. Comm hook su NCCL (torch 2.2) che altera la riduzione: lo ferma il controllo di fedeltà dell'ordinaria, l'esito sarebbe INCONCLUSIVE e il caso non è recuperabile.\n2. Sette gruppi non riprodotti nella riscaldata: layouts() alla riga 171 dà INCONCLUSIVE.\n3. Tempo: stima 450-620 s su circa 830 utili. Un timeout del confronto ora è recuperabile su CPU; un timeout di una gamba no.\n4. Ramo ctypes per l'UUID della GPU (leg.py:35-41), mai eseguito su CUDA: un errore farebbe fallire la gamba al 545.\n5. Formato del blocco di binding (N2).\n\nAttribuzione: non ho trovato scenari in cui le regole nuove producano SUPPORTED, PARTIAL_SUPPORT o HYPOTHESIS_UNSUPPORTED per la ragione sbagliata.\n- Gli scalari non possono più dare un falso positivo da solo arrotondamento.\n- La precedenza dei gradienti locali resta.\n- Sui dati storici PARTIAL_SUPPORT non è mascherato da differenze non float.\n- Resta la nota storica sugli zeri con segno.\n\nEseguito: --package, i 5 file di test, le 6 mutazioni tramite un plugin nella mia cartella, la simulazione dell'arrotondamento, la regex del binding sul file di review reale e l'elenco dei parametri piccoli del modello vero.\nDedotto: le imprecisioni testuali M1 e M2, e i rischi NCCL e ctypes, perché oggi non si possono provare su Leonardo.\n\nFile di lavoro in /private/tmp/claude-501/-Users-simonebenatti-dev-wearusfm/af7c0377-8fec-4211-a7d6-d075a9892443/scratchpad/rev_probe2/agents/c5-critico-regressioni/: sim_small.py, binding_regex.py e plug/mutplug.py.",
+   "punti_aperti": [
+    "Prima di inserire il blocco, Claude decide se scrivere nella review l'interpretazione del recupero del solo lettore (C5-M1 e C5-M2), senza modificare il protocollo vincolato.",
+    "3-launcher, o la chat a cui Simone affida il lancio, deve eseguire --validate-only con bash -c o ssh bash -s e redirezione su file (C5-M3).",
+    "Non verificabili sul Mac: comm hook su NCCL, ramo ctypes per l'UUID, sette gruppi sulla GPU, tempi reali con la strumentazione.",
+    "Il commit di release non deve modificare FILES né plan.json rispetto a 8c72655c, altrimenti review_fields rifiuta il binding."
+   ]
+  },
+  "verified": []
+ }
+]

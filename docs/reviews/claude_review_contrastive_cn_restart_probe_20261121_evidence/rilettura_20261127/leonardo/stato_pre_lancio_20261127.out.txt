@@ -1,0 +1,54 @@
+27/11/2026 15:08:43
+login01.leonardo.local
+--- cartella di uscita della prova (deve mancare)
+ls: cannot access '/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/cn_restart_probe_20261121': No such file or directory
+--- checkout di campagna (deve mancare)
+ls: cannot access '/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/cn-restart545-20261121': No such file or directory
+--- riferimenti storici
+ls: cannot access '/leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/fork/CN/checkpoint.pt': No such file or directory
+-rw-r--r--. 1 sbenatti interactive 463190144 Nov 21 11:00 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/benchmark/CN/checkpoint.pt
+-rw-r--r--. 1 sbenatti interactive 463190144 Nov 21 14:53 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_A/checkpoint.pt
+audit.json
+benchmark
+calibration
+calibration_report.json
+cuda
+cuda.json
+cuda.json.rank_exit_probe
+preflight_readout.json
+reloads
+--- canonico: ramo estratto e HEAD
+main
+8dad7e82713ce4ed2741acc9c9d4fd9ac656d2f7
+(fine status)
+--- commit 8c72655c presente nel canonico?
+fatal: Not a valid object name 8c72655c3d894c82fd4918ed523baf0ac9c69e23^{commit}
+ASSENTE
+--- riferimenti deploy recenti
+2026-11-22 refs/heads/deploy/pose-temponet-diag-20261122 b025c158
+2026-11-21 refs/heads/deploy/scaling_49046_control30m_20261121_v1 abfaf64e
+2026-11-21 refs/heads/deploy/contrastive-targets-readout-20261121 744ecfa1
+2026-11-21 refs/heads/deploy/pose-temponet-20261121-A1-controls 6a20054a
+2026-11-21 refs/heads/deploy/pose-temponet-20261121-A1 edebfb6c
+2026-11-21 refs/heads/deploy/contrastive-targets-reloads-20261121 12e215a9
+2026-11-21 refs/heads/deploy/contrastive-targets-full-20261121 746112dd
+2026-11-21 refs/heads/deploy/contrastive-targets-cuda-20261121 4e880b9f
+--- hook e configurazione di ricezione
+updateInstead
+(fine hook)
+--- quota di progetto
+20147512 P /leonardo_work/IscrB_WearUsFM
+ID=20147512
+Disk quotas for prj 20147512 (pid 20147512):
+     Filesystem    used   quota   limit   grace   files   quota   limit   grace
+/leonardo_work/IscrB_WearUsFM
+                   991G      1T      0k       - 1242459       0       0       -
+--- coda dell'utente
+65361388|SCALING-49046-train-49046-r2-20261126|PENDING|Priority|0:00|10:00:00|boost_usr_prod|normal
+--- reservation
+ReservationName=s_int_SNC StartTime=2026-07-22T18:17:48 EndTime=2027-07-22T18:17:48 Duration=365-00:00:00
+ReservationName=s_int_check_boost StartTime=2026-11-18T12:24:21 EndTime=2026-12-18T12:24:21 Duration=30-00:00:00
+ReservationName=s_res_pasqal StartTime=2026-11-23T14:07:57 EndTime=2026-12-01T10:00:00 Duration=7-19:52:03
+ReservationName=s_int_check_dcgp StartTime=2026-11-27T10:40:05 EndTime=2026-12-12T10:40:05 Duration=15-00:00:00
+--- qos dbg
+boost_qos_dbg|00:30:00|4|2|cpu=256,gres/gpu=32,mem=3952000M,node=8

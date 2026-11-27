@@ -1,0 +1,18 @@
+27/11/2026 15:06:07
+login01.leonardo.local
+-rw-r--r--. 1 sbenatti interactive 463190144 Nov 21 11:00 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/benchmark/CN/checkpoint.pt
+-rw-r--r--. 1 sbenatti interactive 463190144 Nov 21 14:53 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_A/checkpoint.pt
+-rw-r--r--. 1 sbenatti interactive 463190144 Nov 21 15:01 /leonardo_work/IscrB_WearUsFM/wearusfm_runs/results/contrastive_targets_20261118/reloads/CN_B/checkpoint.pt
+torch 2.2.0a0+git6c8c5ad
+schema RNG continuo OK | torch_rng (5056,) | cuda_rng [(16,), (16,), (16,), (16,)] | rank_rng[0] {'torch_rng': (5056,), 'cuda_rng': (16,)}
+schema RNG A OK | torch_rng (5056,) | cuda_rng [(16,), (16,), (16,), (16,)] | rank_rng[0] {'torch_rng': (5056,), 'cuda_rng': (16,)}
+schema RNG B OK | torch_rng (5056,) | cuda_rng [(16,), (16,), (16,), (16,)] | rank_rng[0] {'torch_rng': (5056,), 'cuda_rng': (16,)}
+riscaldata simulata (CN_A) contro continuo:
+  metadata_or_schema_different (grezzo): ['cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3']
+  scientific_metadata_or_schema_different: []
+  process_rng: [{"path": "cuda_rng.1", "same_shape": true, "matches_ordinary": true, "matches_continuous": false}, {"path": "cuda_rng.2", "same_shape": true, "matches_ordinary": true, "matches_continuous": false}, {"path": "cuda_rng.3", "same_shape": true, "matches_ordinary": true, "matches_continuous": false}]
+  tensori float diversi: 1990 | exact_scientific_payload: False | exact_payload: False
+  controllo negativo (ordinaria con cuda_rng.2 alterato): scientific = ['cuda_rng.2']
+  controllo negativo (riscaldata = continuo): scientific = ['cuda_rng.1', 'cuda_rng.2', 'cuda_rng.3'] | float diversi 0
+CN_B contro CN_A (come ordinaria contro storico): exact_payload True
+secondi 23.9
