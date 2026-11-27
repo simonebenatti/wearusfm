@@ -335,8 +335,9 @@ Se manca il recupero temporale di una dose (`d3t` non concluso), le previsioni 1
   I risultati di ogni dose si scrivono appena finisce.
 - Nessun rilancio dentro questa fase: con un rilancio si supererebbero le 5 GPU-ore, quindi serve una decisione nuova. Un job
   in TIMEOUT non scrive la sintesi: tutte le dosi della sua cella mancano, nessuna dose è ammissibile e la linea torna a Simone.
-- Il checkout nasce dal commit che chiude le review delle fasi 2 e 3; il suo SHA completo è registrato nel registro condiviso e
-  nella sequenza operativa (`results/infra/tcn_temporal_diag_20261122/sequenza_operativa_fasi_2_3.md`) prima dell'invio.
+- Il checkout nasce dal commit che chiude le review delle fasi 2 e 3 o, dal 27/11, da un suo discendente che cambia solo dove
+  si scrive (vedi sotto); il suo SHA completo è registrato nel registro condiviso e nella sequenza operativa
+  (`results/infra/tcn_temporal_diag_20261122/sequenza_operativa_fasi_2_3.md`) prima dell'invio.
 - Leonardo è in manutenzione dal 23/11 alle 08:00 al 25/11 alle 08:00, e il certificato ssh va rinnovato: l'invio avviene dopo.
 - **Uscite su `$SCRATCH`, 27/11.** Con `$WORK` a 991 GB su 1 TB di quota, Simone: «le prossime cose salvale su scratch». D3 e la
   fase 3 scrivono sotto `/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pose_temponet_diag_20261123`, i log
