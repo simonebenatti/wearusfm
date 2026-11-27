@@ -1,0 +1,313 @@
+{
+  "doses": [
+    0.1,
+    0.3,
+    1.0,
+    3.0
+  ],
+  "gates": {
+    "held_oracle_self_check": true,
+    "selected_points_reproduced": true,
+    "start_points_reproduced": true
+  },
+  "lr": 0.003,
+  "protocol": "tcn-temporal-control-weight-decay-exploration-20261123-v1",
+  "rows": {
+    "linear_L0_wd0.1": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9911720599456431,
+            "MSE": 0.987595457181472
+          },
+          "fold1": {
+            "E_dyn": 0.9920192365305347,
+            "MSE": 0.9917509296848991
+          },
+          "pooled": {
+            "E_dyn": 0.9915257517334959,
+            "MSE": 0.9895444368041462
+          }
+        },
+        "status": "passed"
+      },
+      "head": "L0",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7502630529925298,
+        "exposure": 120.0,
+        "fold_steps": [
+          3480,
+          3600
+        ],
+        "mse": 1.9285456150452254
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 0.1,
+      "world": "linear"
+    },
+    "linear_L0_wd0.3": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9898118631456945,
+            "MSE": 0.9869166698963808
+          },
+          "fold1": {
+            "E_dyn": 0.9912312401055579,
+            "MSE": 0.9905194316956458
+          },
+          "pooled": {
+            "E_dyn": 0.990404445593705,
+            "MSE": 0.9886064198168352
+          }
+        },
+        "status": "passed"
+      },
+      "head": "L0",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7505454779033529,
+        "exposure": 120.0,
+        "fold_steps": [
+          3480,
+          3600
+        ],
+        "mse": 1.929490882278825
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 0.3,
+      "world": "linear"
+    },
+    "linear_L0_wd1.0": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9840210050031334,
+            "MSE": 0.9810102217945914
+          },
+          "fold1": {
+            "E_dyn": 0.9797684846129788,
+            "MSE": 0.9820576064230462
+          },
+          "pooled": {
+            "E_dyn": 0.9822456000090607,
+            "MSE": 0.9815014610691325
+          }
+        },
+        "status": "passed"
+      },
+      "head": "L0",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7526004574980353,
+        "exposure": 54.0,
+        "fold_steps": [
+          1566,
+          1620
+        ],
+        "mse": 1.9366507576234429
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 1.0,
+      "world": "linear"
+    },
+    "linear_L0_wd3.0": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9674403293873964,
+            "MSE": 0.9685201753656082
+          },
+          "fold1": {
+            "E_dyn": 0.9599996263566779,
+            "MSE": 0.9678771903349993
+          },
+          "pooled": {
+            "E_dyn": 0.9643338748361769,
+            "MSE": 0.9682186056352565
+          }
+        },
+        "status": "passed"
+      },
+      "head": "L0",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7571119082117381,
+        "exposure": 28.0,
+        "fold_steps": [
+          812,
+          840
+        ],
+        "mse": 1.9500362806791374
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 3.0,
+      "world": "linear"
+    },
+    "linear_MLP_wd0.1": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9858206650651475,
+            "MSE": 0.9826279388431751
+          },
+          "fold1": {
+            "E_dyn": 0.9834314449634879,
+            "MSE": 0.9809047915144282
+          },
+          "pooled": {
+            "E_dyn": 0.9848231781841336,
+            "MSE": 0.9818197566141209
+          }
+        },
+        "status": "passed"
+      },
+      "head": "MLP",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7519512393582236,
+        "exposure": 15.0,
+        "fold_steps": [
+          435,
+          450
+        ],
+        "mse": 1.9363300018659797
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 0.1,
+      "world": "linear"
+    },
+    "linear_MLP_wd0.3": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9810833822762656,
+            "MSE": 0.9808669219393865
+          },
+          "fold1": {
+            "E_dyn": 0.985522485047013,
+            "MSE": 0.9825777393244256
+          },
+          "pooled": {
+            "E_dyn": 0.9829366844371742,
+            "MSE": 0.9816693212378557
+          }
+        },
+        "status": "passed"
+      },
+      "head": "MLP",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7524263931180636,
+        "exposure": 22.0,
+        "fold_steps": [
+          638,
+          660
+        ],
+        "mse": 1.9364816000074647
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 0.3,
+      "world": "linear"
+    },
+    "linear_MLP_wd1.0": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.979347540692416,
+            "MSE": 0.9792314698049456
+          },
+          "fold1": {
+            "E_dyn": 0.9730390446681593,
+            "MSE": 0.9768296780853627
+          },
+          "pooled": {
+            "E_dyn": 0.9767137766374613,
+            "MSE": 0.978104993064812
+          }
+        },
+        "status": "passed"
+      },
+      "head": "MLP",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7539937654154469,
+        "exposure": 28.0,
+        "fold_steps": [
+          812,
+          840
+        ],
+        "mse": 1.9400734780622886
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 1.0,
+      "world": "linear"
+    },
+    "linear_MLP_wd3.0": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9672363487424885,
+            "MSE": 0.9683289768249068
+          },
+          "fold1": {
+            "E_dyn": 0.9599830672333918,
+            "MSE": 0.9677638362814266
+          },
+          "pooled": {
+            "E_dyn": 0.9642081416950924,
+            "MSE": 0.9680639173395454
+          }
+        },
+        "status": "passed"
+      },
+      "head": "MLP",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.757143576789924,
+        "exposure": 28.0,
+        "fold_steps": [
+          812,
+          840
+        ],
+        "mse": 1.9501921646123017
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 3.0,
+      "world": "linear"
+    }
+  }
+}

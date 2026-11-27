@@ -1,6 +1,9 @@
 TCND-d0-replay-20261122: completed | gates {'gate_arithmetic': True, 'held_oracle_self_check': True, 'state_parity': True} | 101 s | 
 TCND-d1-cleanfit-20261122: completed | gates {'driver_parity': True, 'gate_arithmetic': True, 'held_oracle_self_check': True, 'selected_point_reproduced': True} | 1304 s | 
 TCND-d2-extend-20261122: completed | gates {'held_oracle_self_check': True, 'restored_state_parity': True} | 1239 s | 
+TCND-d3l-wd-20261123: completed | gates {'held_oracle_self_check': True, 'selected_points_reproduced': True, 'start_points_reproduced': True} | 3270 s | 
+TCND-d3s-wd-20261123: completed | gates {'held_oracle_self_check': True, 'selected_points_reproduced': True, 'start_points_reproduced': True} | 2004 s | 
+TCND-d3t-wd-20261123: completed | gates {'held_oracle_self_check': True, 'selected_points_reproduced': True, 'start_points_reproduced': True} | 3273 s | 
 
 == D0: parità exact, cancelli {'gate_arithmetic': True, 'held_oracle_self_check': True, 'state_parity': True}
 recuperi riletti (esclusi) {'fold0': '24.17%', 'fold1': '18.88%', 'pooled': '21.71%'}, archiviati {'fold0': '24.17%', 'fold1': '18.88%', 'pooled': '21.71%'}, limiti {'fold0': '1.2e-12', 'fold1': '1.2e-12', 'pooled': '1.2e-12'}
@@ -104,3 +107,10 @@ punti nuovi 150; minimo E_dyn pooled nuovo 0.742020 (scelto archiviato 0.715926)
    esp. 200: R esclusi -33.26% | R fitting 165.50%
    esp. 250: R esclusi -38.93% | R fitting 172.21%
    esp. 300: R esclusi -44.02% | R fitting 176.16%
+
+== D3: esplorazione della dose di weight decay (LR 0,003, mondo originale)
+wd 0.1 (valida True): R temporale TCN {'fold0': '26.18%', 'fold1': '20.26%', 'pooled': '23.43%'}, esposizione scelta 26.0, bordo False; lineare L0 passed (min 98.76%); lineare MLP passed (min 98.09%); lineare TCN_post passed (min 98.20%);
+wd 0.3 (valida True): R temporale TCN {'fold0': '33.44%', 'fold1': '27.74%', 'pooled': '30.79%'}, esposizione scelta 31.0, bordo False; lineare L0 passed (min 98.69%); lineare MLP passed (min 98.09%); lineare TCN_post passed (min 98.36%);
+wd 1 (valida True): R temporale TCN {'fold0': '38.93%', 'fold1': '40.35%', 'pooled': '39.59%'}, esposizione scelta 53.0, bordo False; lineare L0 passed (min 97.98%); lineare MLP passed (min 97.30%); lineare TCN_post passed (min 97.97%);
+wd 3 (valida True): R temporale TCN {'fold0': '7.39%', 'fold1': '-7.59%', 'pooled': '0.43%'}, esposizione scelta 138.0, bordo False; lineare L0 passed (min 96.00%); lineare MLP passed (min 96.00%); lineare TCN_post passed (min 96.01%);
+regola fissata prima: dose scelta 1.0, conferma su un mondo nuovo: False

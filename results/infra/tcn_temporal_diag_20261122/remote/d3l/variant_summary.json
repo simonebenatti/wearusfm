@@ -1,0 +1,165 @@
+{
+  "doses": [
+    0.1,
+    0.3,
+    1.0,
+    3.0
+  ],
+  "gates": {
+    "held_oracle_self_check": true,
+    "selected_points_reproduced": true,
+    "start_points_reproduced": true
+  },
+  "lr": 0.003,
+  "protocol": "tcn-temporal-control-weight-decay-exploration-20261123-v1",
+  "rows": {
+    "linear_TCN_post_wd0.1": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9874145745028751,
+            "MSE": 0.9838412823367784
+          },
+          "fold1": {
+            "E_dyn": 0.9857748769640882,
+            "MSE": 0.9820463765151335
+          },
+          "pooled": {
+            "E_dyn": 0.9867300093668978,
+            "MSE": 0.982999444286323
+          }
+        },
+        "status": "passed"
+      },
+      "head": "TCN_post",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7514709631806159,
+        "exposure": 22.0,
+        "fold_steps": [
+          638,
+          660
+        ],
+        "mse": 1.9351411959941256
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 0.1,
+      "world": "linear"
+    },
+    "linear_TCN_post_wd0.3": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9860354298555607,
+            "MSE": 0.9840779066777205
+          },
+          "fold1": {
+            "E_dyn": 0.9873842599504113,
+            "MSE": 0.9836012171922254
+          },
+          "pooled": {
+            "E_dyn": 0.9865985593568551,
+            "MSE": 0.983854332079932
+          }
+        },
+        "status": "passed"
+      },
+      "head": "TCN_post",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7515040716744041,
+        "exposure": 22.0,
+        "fold_steps": [
+          638,
+          660
+        ],
+        "mse": 1.9342797004875043
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 0.3,
+      "world": "linear"
+    },
+    "linear_TCN_post_wd1.0": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9811749946255129,
+            "MSE": 0.9796701852604763
+          },
+          "fold1": {
+            "E_dyn": 0.9832679165404493,
+            "MSE": 0.9822500948957066
+          },
+          "pooled": {
+            "E_dyn": 0.9820487785651698,
+            "MSE": 0.9808802020042421
+          }
+        },
+        "status": "passed"
+      },
+      "head": "TCN_post",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7526500311842628,
+        "exposure": 32.0,
+        "fold_steps": [
+          928,
+          960
+        ],
+        "mse": 1.9372768186069451
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 1.0,
+      "world": "linear"
+    },
+    "linear_TCN_post_wd3.0": {
+      "extended": false,
+      "gate": {
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": {
+            "E_dyn": 0.9674990615196998,
+            "MSE": 0.9685977530499474
+          },
+          "fold1": {
+            "E_dyn": 0.9601121185310582,
+            "MSE": 0.9679157071806025
+          },
+          "pooled": {
+            "E_dyn": 0.964415051504527,
+            "MSE": 0.9682778631938633
+          }
+        },
+        "status": "passed"
+      },
+      "head": "TCN_post",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7570914621332712,
+        "exposure": 28.0,
+        "fold_steps": [
+          812,
+          840
+        ],
+        "mse": 1.9499765650990872
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 3.0,
+      "world": "linear"
+    }
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "doses": [
+    0.1,
+    0.3,
+    1.0,
+    3.0
+  ],
+  "gates": {
+    "held_oracle_self_check": true,
+    "selected_points_reproduced": true,
+    "start_points_reproduced": true
+  },
+  "lr": 0.003,
+  "protocol": "tcn-temporal-control-weight-decay-exploration-20261123-v1",
+  "rows": {
+    "temporal_TCN_post_wd0.1": {
+      "extended": false,
+      "gate": {
+        "mlp_is_descriptive_only": true,
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": 0.2618334439831159,
+          "fold1": 0.20259915908120782,
+          "pooled": 0.2342944456398112
+        },
+        "status": "recipe_not_admitted"
+      },
+      "head": "TCN_post",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7149320992839556,
+        "exposure": 26.0,
+        "fold_steps": [
+          754,
+          780
+        ],
+        "mse": 1.8003751899175635
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 0.1,
+      "world": "temporal"
+    },
+    "temporal_TCN_post_wd0.3": {
+      "extended": false,
+      "gate": {
+        "mlp_is_descriptive_only": true,
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": 0.3344096964131771,
+          "fold1": 0.27737239112581813,
+          "pooled": 0.3078921102143023
+        },
+        "status": "recipe_not_admitted"
+      },
+      "head": "TCN_post",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.710676674614737,
+        "exposure": 31.0,
+        "fold_steps": [
+          899,
+          930
+        ],
+        "mse": 1.7902493648070934
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 0.3,
+      "world": "temporal"
+    },
+    "temporal_TCN_post_wd1.0": {
+      "extended": false,
+      "gate": {
+        "mlp_is_descriptive_only": true,
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": 0.38927470000248887,
+          "fold1": 0.4034772515578396,
+          "pooled": 0.39587770102463743
+        },
+        "status": "recipe_not_admitted"
+      },
+      "head": "TCN_post",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7055893385445672,
+        "exposure": 53.0,
+        "fold_steps": [
+          1537,
+          1590
+        ],
+        "mse": 1.786113592808076
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 1.0,
+      "world": "temporal"
+    },
+    "temporal_TCN_post_wd3.0": {
+      "extended": false,
+      "gate": {
+        "mlp_is_descriptive_only": true,
+        "optimization_alarms": [],
+        "recovery": {
+          "fold0": 0.07391025013842663,
+          "fold1": -0.07586023325186166,
+          "pooled": 0.0042794763257445485
+        },
+        "status": "recipe_not_admitted"
+      },
+      "head": "TCN_post",
+      "late": false,
+      "reproduced": true,
+      "selected": {
+        "edyn": 0.7282315888855304,
+        "exposure": 138.0,
+        "fold_steps": [
+          4002,
+          4140
+        ],
+        "mse": 1.8362548444767919
+      },
+      "start_parity_level": "exact",
+      "start_reproduced": true,
+      "weight_decay": 3.0,
+      "world": "temporal"
+    }
+  }
+}
