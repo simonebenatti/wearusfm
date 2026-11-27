@@ -9134,7 +9134,9 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
   consumo atteso circa 2,3. Residuo dell'account alle 14:40: 649.048 ore locali su 2.000.000.
 - Autorizzazione: autonomia del 28/10 (meno di 5 GPU-ore), «niente gpt per ora, vai avanti tu» del 23/11 e «Sì, invia D3» di
   oggi. La fase 3 parte solo se la regola la propone («Sì, approvo» e «Sì, confermo» del 23/11).
-- Deploy `deploy/pose-temponet-diag-20261123` = D su leonardo, verificato alle 16:00. ID Slurm: aggiunti dopo l'invio.
+- Deploy `deploy/pose-temponet-diag-20261123` = D su leonardo, verificato alle 16:00. **Inviati il 27/11 fra le 16:00:50 e le 16:01:14:**
+  checkout 65365585, `d3t` 65365592, `d3l` 65365594, `d3s` 65365595 (ledger comune). Alle 16:01:21 il checkout era in attesa
+  di risorse e i tre job D3 in attesa del checkout (`afterok:65365585`). Controllo ogni 30 minuti; raccolta e regola alla fine.
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
