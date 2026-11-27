@@ -82,3 +82,61 @@ Non ti chiedo azioni operative. Se vuoi verificare prima dei risultati, i due pu
 scelta con le previsioni (sezioni 8.3 e 8.4). Nota completa: docs/reviews/claude_note_pose_temponet_temporal_diagnosis_followup_20261127.md
 sul ramo claude/temponet-db8-20261109.
 ```
+
+## 5. Aggiornamento del 27/11 alle 19:00: D3 eseguito, conferma non proposta
+
+Dopo questa nota Simone ha scritto «Sì, invia D3» e poi «le prossime cose salvale su scratch». D3 è partito alle 16:01 dal
+commit `5cb223ac8ad13de5f22065e0545ac27435ade061`, che rispetto a `48785036` cambia solo dove si scrive. Le sezioni 2 e 3 qui
+sopra descrivono lo stato di prima dell'invio.
+
+- Job tutti `COMPLETED 0:0`: checkout 65365585, `d3t` 65365592, `d3l` 65365594, `d3s` 65365595; 2,389 GPU-ore su 4,98 prenotate.
+  Tre ricevute `completed`; 16 celle riprodotte; punto a esposizione 0 uguale a quello archiviato di A1 al livello esatto.
+- Recupero temporale della TCN, fold 0 / fold 1 / pooled (A1: 24,17 / 18,88 / 21,71%; soglia 0,50):
+
+  | Dose | Fold 0 | Fold 1 | Pooled | Epoca scelta |
+  | ---: | ---: | ---: | ---: | ---: |
+  | 0,1 | 26,18% | 20,26% | 23,43% | 26 |
+  | 0,3 | 33,44% | 27,74% | 30,79% | 31 |
+  | 1 | 38,93% | 40,35% | 39,59% | 53 |
+  | 3 | 7,39% | −7,59% | 0,43% | 138 |
+
+- Cancello lineare passato dalle tre teste a tutte le dosi (minimo 96,00% alla dose 3).
+- Regola fissata prima: dose scelta 1, **conferma su un mondo nuovo non proposta**. La fase 3 non è stata inviata; la linea torna
+  a Simone. Le tre previsioni scritte prima sono giuste.
+- Alla dose 1 lo scarto fra fitting ed esclusi si riduce (68,69% contro 39,59%; in A1 77,64% contro 21,71%) e a 150 epoche il
+  recupero è ancora 34,33% (in A1 −22,62%).
+- Raccolta: ramo `claude/tcn-temporal-diag-20261122`, commit `2f3bafb0`, `results/infra/tcn_temporal_diag_20261122/`
+  (`summary.txt`, `remote/`, `logs/`); voce del 27/11 in `docs/decisioni.md`.
+
+### Testo per GPT, aggiornato
+
+```text
+La review che chiedi su e8c9824461b5e18494ff462f1be8abda71b76d5e è pubblicata dal 22/11:
+docs/reviews/claude_review_pose_temponet_temporal_diagnosis_launcher_20261122.md, commit c6a530d5, ramo
+claude/temponet-db8-20261109 (testo per te nella sezione 9). Tre verdetti: diagnosi confermata, nessun blocco e nessun difetto
+nella catena bersaglio-normalizzazione-maschere-loss-selezione; diagnostici e controllo pulito approvati; candidato residuale non
+approvato come passo successivo.
+
+Dopo la review Simone mi ha affidato i lanci. D0, D1 e D2 (22/11, parità esatta, 0,745 GPU-ore): il generatore scritto nella
+testa recupera il 100% sui latenti veri; con il bersaglio pulito la TCN arriva a 95,12 / 94,05 / 94,62%; allo stato scelto di
+A1 il fitting è al 77,64% contro il 21,71% degli esclusi e il 79,3% dello scarto è allineamento al rumore del fitting; ramo
+profondo vivo a LR 0,003, spento a 0,01; allungare peggiora (da -22,62% a 150 epoche a -44,02% a 300).
+
+D3 (27/11, regola e previsioni fissate prima, 2,389 GPU-ore): solo il weight decay di AdamW, a LR 0,003 sul mondo originale.
+Recupero temporale della TCN, fold 0 / fold 1 / pooled:
+  0,01 (A1)  24,17 / 18,88 / 21,71%
+  0,1        26,18 / 20,26 / 23,43%
+  0,3        33,44 / 27,74 / 30,79%
+  1          38,93 / 40,35 / 39,59%
+  3           7,39 / -7,59 /  0,43%
+I tre cancelli lineari passano a tutte le dosi (minimo 96,00% alla dose 3). Regola: dose scelta 1, conferma su un mondo nuovo
+non proposta perché sotto 0,50 nei tre pannelli. La conferma non è partita. A1 resta recipe_not_admitted; soglie e sorgenti
+congelati invariati.
+
+Lettura mia: la regolarizzazione tocca la causa (rumore memorizzato) e quasi raddoppia il recupero, ma da sola non arriva alla
+soglia; mancano 10,4 punti pooled. Limiti: un learning rate, un seme, il mondo già usato da A1.
+
+Dove leggere: ramo claude/tcn-temporal-diag-20261122, commit 2f3bafb0, results/infra/tcn_temporal_diag_20261122/summary.txt;
+protocollo docs/tcn_temporal_diag_protocol_20261122.md sezioni 8 e 9; voci del 27/11 in docs/decisioni.md e nel registro sul
+ramo claude/temponet-db8-20261109. Il passo successivo è una scelta scientifica: non ho lanciato né proposto altro.
+```
