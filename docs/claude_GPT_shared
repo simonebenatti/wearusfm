@@ -9114,6 +9114,27 @@ Pubblicazione per fast-forward su origin/main; nessun deploy, invio o mutazione 
 - Il testo incollato dice «nessun nuovo fit, invio»: non ho inviato nulla e ho chiesto a Simone se inviare ora D3, che resta
   autorizzato (autonomia del 28/10, «niente gpt per ora, vai avanti tu»).
 
+### 2026-11-27 | Claude | TCN, D3: via di Simone, uscite su `$SCRATCH`, deploy e invio | Ramo `claude/tcn-temporal-diag-20261122`
+
+- Simone, 27/11: «Sì, invia D3» alla domanda «Invio adesso l'esplorazione D3 (4,98 GPU-ore prenotate)?». Poi, con `$WORK` a
+  991 GB su 1 TB: «le prossime cose salvale su scratch».
+- **Commit di esecuzione nuovo: D = `5cb223ac8ad13de5f22065e0545ac27435ade061`**, discendente di `48785036` (rivisto il 23/11). Cambia solo dove si
+  scrive: D3 e fase 3 sotto `/leonardo_scratch/large/userexternal/sbenatti/wearusfm_runs/results/pose_temponet_diag_20261123`,
+  log sotto `.../wearusfm_runs/logs`; D0-D2 restano su `$WORK` e da lì si legge solo la ricevuta di D0; ogni stadio nuovo scrive
+  per primo un indicatore nella radice. Il checkout del codice (circa 119 MB) resta su `$WORK`, dove lo crea la procedura
+  approvata. Regole, soglie, dosi, limiti e costi invariati. Test dei diagnostici: 65 passati. Verifica indipendente del cambio
+  di radice (2 agenti) prima dell'invio: nessun difetto bloccante o importante; ritocchi di testo nella sequenza (`b7b70dc6`).
+- Prove su Leonardo prima dell'invio, in sola lettura: `mkdir` su ogni componente esistente del percorso risponde «File exists»
+  anche con la chiamata del codice congelato (`mkdirat` con descrittore), quindi la scrittura sotto la radice nuova funziona;
+  gli otto input del piano hanno le dimensioni attese; le nove ricevute di A1 hanno gli hash fissati nel driver; la ricevuta di
+  D0 è identica alla copia raccolta.
+- Job: `TCND-checkout2-20261123` (`lrd_all_serial`, 2 CPU, 24 GB, 12 min, 0 GPU-ore, 0,5 core-ore); `TCND-d3t-wd-20261123`
+  (111 min, 1,90 GPU-ore prenotate), `TCND-d3l-wd-20261123` (110 min, 1,88), `TCND-d3s-wd-20261123` (69 min, 1,20), su
+  `boost_usr_prod` con 1 GPU, 8 CPU e 32 GB, `afterok` sul checkout. Totale 4,98 GPU-ore prenotate, cioè 39,9 ore locali;
+  consumo atteso circa 2,3. Residuo dell'account alle 14:40: 649.048 ore locali su 2.000.000.
+- Autorizzazione: autonomia del 28/10 (meno di 5 GPU-ore), «niente gpt per ora, vai avanti tu» del 23/11 e «Sì, invia D3» di
+  oggi. La fase 3 parte solo se la regola la propone («Sì, approvo» e «Sì, confermo» del 23/11).
+- Deploy `deploy/pose-temponet-diag-20261123` = D su leonardo, verificato alle 16:00. ID Slurm: aggiunti dopo l'invio.
 ## 2) Problemi trovati
 
 ### 2026-10-28 | GPT | Correggere la lettura scientifica e2e525e/6aba4a7 prima della decisione su B
@@ -13418,3 +13439,12 @@ nuovo autorizzato da questo merge. Prove e limiti nel rapporto `integration_main
   rigido, nessun periodo di grazia in corso. Restano circa 9 GB sotto la quota, condivisi fra tutti gli utenti del progetto.
 - Per i diagnostici TCN bastano: D3 scrive circa 0,1-0,2 GB, la fase B circa 0,6 GB. Vale però per tutte le linee: un training
   che salva checkpoint grandi su `$WORK` può superarla.
+
+### 2026-11-27 | Claude | TCN, D3: la radice delle uscite era fissata su `$WORK` nel commit rivisto
+
+- Per seguire «le prossime cose salvale su scratch» è servito un commit nuovo: nel driver la radice era una costante su `$WORK`
+  e gli stadi nuovi leggevano la ricevuta di D0 dalla stessa radice in cui scrivono. Ora le due radici sono distinte.
+- Il codice congelato chiama `mkdir` su ogni componente del percorso, anche su quelle di sistema non scrivibili: l'ho provato
+  su Leonardo prima dell'invio, perché i test locali non lo possono dire. Client Lustre del nodo di login: 2.14.0_ddn182.
+- Slurm non crea la cartella dei log: `.../wearusfm_runs/logs` su `$SCRATCH` è stata creata prima del primo `sbatch`.
+- Su `$SCRATCH` i file non usati per 40 giorni vengono cancellati: JSON, ricevute e log vanno raccolti subito dopo i job.
