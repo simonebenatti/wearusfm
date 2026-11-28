@@ -1,0 +1,4488 @@
+{
+  "schema": "cn-restart-gradients-v1",
+  "update": 545,
+  "rank": 1,
+  "world_size": 4,
+  "buckets": [
+    {
+      "index": 0,
+      "nbytes": 3241700,
+      "dtype": "torch.float32",
+      "parameter_ids": [
+        268,
+        269,
+        266,
+        267,
+        264,
+        265,
+        262,
+        263,
+        260,
+        261,
+        258,
+        259,
+        256,
+        257,
+        254,
+        255,
+        252,
+        253,
+        250,
+        251,
+        248
+      ]
+    },
+    {
+      "index": 1,
+      "nbytes": 26631168,
+      "dtype": "torch.float32",
+      "parameter_ids": [
+        249,
+        246,
+        247,
+        238,
+        239,
+        244,
+        245,
+        242,
+        243,
+        236,
+        237,
+        240,
+        241,
+        234,
+        235,
+        232,
+        233,
+        230,
+        231,
+        222,
+        223,
+        228,
+        229,
+        226,
+        227,
+        220,
+        221,
+        224,
+        225,
+        218,
+        219,
+        216,
+        217,
+        214,
+        215,
+        212,
+        213,
+        202,
+        203,
+        210,
+        211,
+        208,
+        209,
+        200,
+        201,
+        206,
+        207,
+        204,
+        205,
+        198,
+        199,
+        196,
+        197,
+        194,
+        195,
+        184,
+        185,
+        192
+      ]
+    },
+    {
+      "index": 2,
+      "nbytes": 27800064,
+      "dtype": "torch.float32",
+      "parameter_ids": [
+        193,
+        190,
+        191,
+        182,
+        183,
+        188,
+        189,
+        186,
+        187,
+        180,
+        181,
+        178,
+        179,
+        176,
+        177,
+        166,
+        167,
+        174,
+        175,
+        172,
+        173,
+        164,
+        165,
+        170,
+        171,
+        168,
+        169,
+        162,
+        163,
+        160,
+        161,
+        158,
+        159,
+        148,
+        149,
+        156,
+        157,
+        154,
+        155,
+        146,
+        147,
+        152,
+        153,
+        150,
+        151,
+        144,
+        145,
+        142,
+        143,
+        140
+      ]
+    },
+    {
+      "index": 3,
+      "nbytes": 28399104,
+      "dtype": "torch.float32",
+      "parameter_ids": [
+        141,
+        130,
+        131,
+        138,
+        139,
+        136,
+        137,
+        128,
+        129,
+        134,
+        135,
+        132,
+        133,
+        126,
+        127,
+        124,
+        125,
+        122,
+        123,
+        112,
+        113,
+        120,
+        121,
+        118,
+        119,
+        110,
+        111,
+        116,
+        117,
+        114,
+        115,
+        108,
+        109,
+        106,
+        107,
+        104,
+        105,
+        94,
+        95,
+        102,
+        103,
+        100,
+        101,
+        92,
+        93,
+        98,
+        99,
+        96,
+        97,
+        90,
+        91,
+        88,
+        89,
+        86
+      ]
+    },
+    {
+      "index": 4,
+      "nbytes": 27912144,
+      "dtype": "torch.float32",
+      "parameter_ids": [
+        87,
+        76,
+        77,
+        84,
+        85,
+        82,
+        83,
+        74,
+        75,
+        80,
+        81,
+        78,
+        79,
+        72,
+        73,
+        70,
+        71,
+        68,
+        69,
+        60,
+        61,
+        66,
+        67,
+        64,
+        65,
+        58,
+        59,
+        62,
+        63,
+        55,
+        56,
+        57,
+        53,
+        54,
+        51,
+        52,
+        39,
+        40,
+        45,
+        46,
+        49,
+        48,
+        47,
+        50,
+        43,
+        44,
+        41,
+        42,
+        37,
+        38,
+        35,
+        36,
+        33,
+        34,
+        21,
+        22,
+        27,
+        28,
+        31,
+        30,
+        29,
+        32,
+        25,
+        26,
+        23,
+        24,
+        19,
+        20,
+        17
+      ]
+    },
+    {
+      "index": 5,
+      "nbytes": 68480,
+      "dtype": "torch.float64",
+      "parameter_ids": [
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "nbytes": 218112,
+      "dtype": "torch.float32",
+      "parameter_ids": [
+        18,
+        14,
+        16,
+        15,
+        13,
+        12,
+        11,
+        10,
+        8,
+        9
+      ]
+    }
+  ],
+  "parameters": [
+    {
+      "id": 0,
+      "name": "tokenizer.frontend.fourier_coef",
+      "shape": [
+        24,
+        208
+      ],
+      "dtype": "torch.float64",
+      "bucket_index": 5,
+      "bucket_position": 7,
+      "bucket_element_offset": 3568,
+      "local_sha256": "949db6c5ac4400cf8ad2bd1f406712e6435e5ac5fa5fe1ed59d973f6b5d659d8",
+      "local_norm": 0.26523128348548275,
+      "reduced_sha256": "cc174a0f6a0e509b5db4b03740aa20772ef76796af529bd7d2e85d9ed84b7ee1",
+      "reduced_norm": 0.16016189616572143
+    },
+    {
+      "id": 1,
+      "name": "tokenizer.frontend.spline_coef",
+      "shape": [
+        24,
+        80
+      ],
+      "dtype": "torch.float64",
+      "bucket_index": 5,
+      "bucket_position": 6,
+      "bucket_element_offset": 1648,
+      "local_sha256": "fb12e4cc6f89dbbc9f152677b6c5142a54a410b19281ce719420f499d78758b3",
+      "local_norm": 0.042321347215083134,
+      "reduced_sha256": "420b9867793f1a6a7c170b241cea9736fde7a18f71869d0fb34563ae262925b9",
+      "reduced_norm": 0.015843438238181032
+    },
+    {
+      "id": 2,
+      "name": "tokenizer.frontend.mlp.l1.weight",
+      "shape": [
+        32,
+        1
+      ],
+      "dtype": "torch.float64",
+      "bucket_index": 5,
+      "bucket_position": 5,
+      "bucket_element_offset": 1616,
+      "local_sha256": "41d9051e82af16482646fb89c2aa6eef258d92a1de55cea08ae95691ac7f7f25",
+      "local_norm": 0.022577899882968468,
+      "reduced_sha256": "b36ec6839340bb876ac9781d28011a09d1c6083893838c7ffb1b19720e565454",
+      "reduced_norm": 0.00965973275995029
+    },
+    {
+      "id": 3,
+      "name": "tokenizer.frontend.mlp.l1.bias",
+      "shape": [
+        32
+      ],
+      "dtype": "torch.float64",
+      "bucket_index": 5,
+      "bucket_position": 4,
+      "bucket_element_offset": 1584,
+      "local_sha256": "813f069ee46fc5ab1cc37c86b29124d5eaa4f9fa1bb6afa63f169f2969228838",
+      "local_norm": 0.09689272845811582,
+      "reduced_sha256": "29282242fb514870f889aa3de73fabbcc8aa8d734c699657a1ab73b3bfa25150",
+      "reduced_norm": 0.028865563317241046
+    },
+    {
+      "id": 4,
+      "name": "tokenizer.frontend.mlp.l2.weight",
+      "shape": [
+        32,
+        32
+      ],
+      "dtype": "torch.float64",
+      "bucket_index": 5,
+      "bucket_position": 3,
+      "bucket_element_offset": 560,
+      "local_sha256": "8b75d8a944e0db900321a71bca38a69e6ad9799b4177922818122bcf8e0f4822",
+      "local_norm": 0.4406360467148137,
+      "reduced_sha256": "7cf5500d20f738b118238417bd203fee0fe7d5a7b04c3d2b8baf8909ba428fb4",
+      "reduced_norm": 0.11564143949040993
+    },
+    {
+      "id": 5,
+      "name": "tokenizer.frontend.mlp.l2.bias",
+      "shape": [
+        32
+      ],
+      "dtype": "torch.float64",
+      "bucket_index": 5,
+      "bucket_position": 2,
+      "bucket_element_offset": 528,
+      "local_sha256": "e2c1f23be1437ff26fb6f54e7bdd57f21bd8b16488e4e62d53af0c48b096070b",
+      "local_norm": 0.10795079066151614,
+      "reduced_sha256": "ba49914e7744d2d957f3fed0969fe9838650f36dc56759e5fa46e4e58e4bee73",
+      "reduced_norm": 0.020456979016619328
+    },
+    {
+      "id": 6,
+      "name": "tokenizer.frontend.mlp.l3.weight",
+      "shape": [
+        16,
+        32
+      ],
+      "dtype": "torch.float64",
+      "bucket_index": 5,
+      "bucket_position": 1,
+      "bucket_element_offset": 16,
+      "local_sha256": "e18cd8a4c48cea490389be9af02f07343b37ee6021a0a3de78cbc608e0e276c8",
+      "local_norm": 0.44644429192319857,
+      "reduced_sha256": "915f0f77acde67bb224fdb0499670247c39ac658d4b11d74c2d0e11821983112",
+      "reduced_norm": 0.09831749579918216
+    },
+    {
+      "id": 7,
+      "name": "tokenizer.frontend.mlp.l3.bias",
+      "shape": [
+        16
+      ],
+      "dtype": "torch.float64",
+      "bucket_index": 5,
+      "bucket_position": 0,
+      "bucket_element_offset": 0,
+      "local_sha256": "4c50e6e569b6ce87fe231aac6216bfb5e745d3537614ba90fd8ccef99b4e7bff",
+      "local_norm": 0.0031625125389936138,
+      "reduced_sha256": "3116540250a3f1af8d3557e7e362243b6772077950e0c97c004ece9d8a613ef9",
+      "reduced_norm": 0.0013344219424554055
+    },
+    {
+      "id": 8,
+      "name": "tokenizer.proj.weight",
+      "shape": [
+        384,
+        64
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 6,
+      "bucket_position": 8,
+      "bucket_element_offset": 29568,
+      "local_sha256": "8649ac5fbc10335394d3c404b58b61c24a1c1f3e0bf6db943bc527bbe645669b",
+      "local_norm": 0.6453734076293152,
+      "reduced_sha256": "30969f6c378e28a2620626d774fb3214ff92ec1bd0b9379fc3b382942341384d",
+      "reduced_norm": 0.2706296649739137
+    },
+    {
+      "id": 9,
+      "name": "tokenizer.proj.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 6,
+      "bucket_position": 9,
+      "bucket_element_offset": 54144,
+      "local_sha256": "acdac717f45448130455afd3355a1d9bc667ec89761116d5d6b1bf667323bdc6",
+      "local_norm": 0.04704535349039222,
+      "reduced_sha256": "fb24b6458ce9b98fb251c258090b854274f40408e00f9df2fe4539ee041af94d",
+      "reduced_norm": 0.0327794204258383
+    },
+    {
+      "id": 10,
+      "name": "identity.anatomy.region.weight",
+      "shape": [
+        7,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 6,
+      "bucket_position": 7,
+      "bucket_element_offset": 26880,
+      "local_sha256": "6494a0467fb2d0dd88940dcd278ac53a447b874ec06d3051740fafb266f2684a",
+      "local_norm": 0.020207541997209175,
+      "reduced_sha256": "37d8f42ce19247703029ae1e729b655f13b5cd46853d311b020160fe65dfdabb",
+      "reduced_norm": 0.01818695001044658
+    },
+    {
+      "id": 11,
+      "name": "identity.anatomy.compartment.weight",
+      "shape": [
+        19,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 6,
+      "bucket_position": 6,
+      "bucket_element_offset": 19584,
+      "local_sha256": "679c5d8ed2e137003002aee86777c692f20ca756ddca4dd3b57f35a32eafb766",
+      "local_norm": 0.022548583041687414,
+      "reduced_sha256": "853ed9462900e33cdaca536b6f36ef30808affcc34655668cd2367b9f6b36941",
+      "reduced_norm": 0.016276758478149977
+    },
+    {
+      "id": 12,
+      "name": "identity.anatomy.muscle.weight",
+      "shape": [
+        28,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 6,
+      "bucket_position": 5,
+      "bucket_element_offset": 8832,
+      "local_sha256": "ae4b2c6367614ae0798542154abb680aee913b19951d059b8818faf650a753b0",
+      "local_norm": 0.023289155971016526,
+      "reduced_sha256": "d563b2438a1a105f07ca3c67040fe5fb47a6b32f87dfe7b0dea1ee4ca94b3b26",
+      "reduced_norm": 0.014370623123689991
+    },
+    {
+      "id": 13,
+      "name": "identity.anatomy.side.weight",
+      "shape": [
+        3,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 6,
+      "bucket_position": 4,
+      "bucket_element_offset": 7680,
+      "local_sha256": "1686203beacc8ed7c75bb3e60e501ae83360f7ac4a70f82a615dcc306302e8c9",
+      "local_norm": 0.01978928118586272,
+      "reduced_sha256": "90e7d34fa4b26387a6341bb1a2a48c4bf9016d195da56e10dd49d359d81c9360",
+      "reduced_norm": 0.01686365011767966
+    },
+    {
+      "id": 14,
+      "name": "identity.topology.weight",
+      "shape": [
+        3,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 6,
+      "bucket_position": 1,
+      "bucket_element_offset": 384,
+      "local_sha256": "214d0c156f5cea698f9becf4651dca92d110528d4504399953b08acd113169cf",
+      "local_norm": 0.01653617566676012,
+      "reduced_sha256": "38b1a2c03893c8cecb8708799bc4cbb664712d4197b12b59964bce8ccc6a4cea",
+      "reduced_norm": 0.01599129503259049
+    },
+    {
+      "id": 15,
+      "name": "identity.sensor_pos.weight",
+      "shape": [
+        384,
+        8
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 6,
+      "bucket_position": 3,
+      "bucket_element_offset": 4608,
+      "local_sha256": "c20c518d88d72dabf8231f6c6d4ba43c6ecfc26effc0d4182071319e95457c6c",
+      "local_norm": 0.017322423535629655,
+      "reduced_sha256": "941eb8379ccfadb44c7fede5ca121183f20e1addeced0c67032247dca4fa05b6",
+      "reduced_norm": 0.015327222910270333
+    },
+    {
+      "id": 16,
+      "name": "identity.group.weight",
+      "shape": [
+        8,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 6,
+      "bucket_position": 2,
+      "bucket_element_offset": 1536,
+      "local_sha256": "1ed42928b95eaff7bb0379bb984b3516326126db931a0ce0a0a70e541431dbdb",
+      "local_norm": 0.022500326516347324,
+      "reduced_sha256": "16d226227b1fdda48212eef10d0e3b83ecd19118c3726ef3f2ea913c46c5dfd1",
+      "reduced_norm": 0.015426276674335156
+    },
+    {
+      "id": 17,
+      "name": "identity.proj.weight",
+      "shape": [
+        384,
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 68,
+      "bucket_element_offset": 6535668,
+      "local_sha256": "df1f04a91aab151a1577f823f387fdcb18fa76da1293ada9b78742c9a3ecaf45",
+      "local_norm": 2.949766531188898,
+      "reduced_sha256": "558dce49c423973290bcacb80bf8103443e2c106992ee343bd0fcfa51e7e94b7",
+      "reduced_norm": 2.296865023018118
+    },
+    {
+      "id": 18,
+      "name": "identity.proj.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 6,
+      "bucket_position": 0,
+      "bucket_element_offset": 0,
+      "local_sha256": "7f3251654b621369319349682605557ecd3c70fa542a19909a5ae88d66226c00",
+      "local_norm": 0.0642898743295622,
+      "reduced_sha256": "43c7af74d7fe127167d37cc59d4340b0ee8e79b8a2965d77b66ae852212e10c9",
+      "reduced_norm": 0.03844689833981912
+    },
+    {
+      "id": 19,
+      "name": "local.layers.0.norm1.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 66,
+      "bucket_element_offset": 6534900,
+      "local_sha256": "80d2f6aa136ccd46b04a8560ce6a4b7867e1da65841790a904f397af6ece1e6f",
+      "local_norm": 0.010824085681906324,
+      "reduced_sha256": "8e101a3e863030cbeab5215792ae335724a83da0344c86432eeb0aba49fa1ff6",
+      "reduced_norm": 0.010164199331096678
+    },
+    {
+      "id": 20,
+      "name": "local.layers.0.norm1.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 67,
+      "bucket_element_offset": 6535284,
+      "local_sha256": "67b85e51b3812696a5700feea07bf3e154dfc2dd92adc24dcd7ec43e2bb8cc2c",
+      "local_norm": 0.015443931594449647,
+      "reduced_sha256": "4983073a0ab553a042106791386fc3ef6b32c98a6225f17c12b7a7d1f3299dac",
+      "reduced_norm": 0.010414208934604055
+    },
+    {
+      "id": 21,
+      "name": "local.layers.0.norm2.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 54,
+      "bucket_element_offset": 5942586,
+      "local_sha256": "87443fffc6e107cdb3408814e518e1e0aaf240dfd663aa73c3796aa2583dd5a6",
+      "local_norm": 0.005798884117294264,
+      "reduced_sha256": "dbd501e6d7d73863578efe5bbf4cc9203e3807f35c567f0fda902ae08ccb51cd",
+      "reduced_norm": 0.005676818154036295
+    },
+    {
+      "id": 22,
+      "name": "local.layers.0.norm2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 55,
+      "bucket_element_offset": 5942970,
+      "local_sha256": "7f829d5f91e16536a7de57da67ee3f8a256d312a93e5337db37644e1dd011277",
+      "local_norm": 0.008281826654557985,
+      "reduced_sha256": "1dd6b2a9f0f6b8ae95a795a0ead8147a8b370032188f2cf765477773a83baca5",
+      "reduced_norm": 0.005723695559003706
+    },
+    {
+      "id": 23,
+      "name": "local.layers.0.q.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 64,
+      "bucket_element_offset": 6387060,
+      "local_sha256": "bba82aa1f3316afc6ba4f4ee1b2a8082b4f9acc8ffc572c964994ef1e90ffd19",
+      "local_norm": 0.01865860957368242,
+      "reduced_sha256": "193b6656a696915debe79f5eed47066b58a59aba4b9b23fa234a1415d8cc1117",
+      "reduced_norm": 0.010529025261479105
+    },
+    {
+      "id": 24,
+      "name": "local.layers.0.q.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 65,
+      "bucket_element_offset": 6534516,
+      "local_sha256": "9947bb33b54c49f871a212e5782516e7d6bd2967435324141d2ccf24c16d4ab7",
+      "local_norm": 0.0012641806424890823,
+      "reduced_sha256": "5c5ec85b110e665bbf70d5ed93c0411961c9bd2f30afa4ffd0324a2afa750138",
+      "reduced_norm": 0.0007070518280867838
+    },
+    {
+      "id": 25,
+      "name": "local.layers.0.kv.weight",
+      "shape": [
+        768,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 62,
+      "bucket_element_offset": 6091380,
+      "local_sha256": "1d151b9cce17a1087a778a955eee7ad30723b51f3a1c678a2cb445c81d7e258f",
+      "local_norm": 0.3543606245071364,
+      "reduced_sha256": "52929f26185203bcb427236078de0efec1063a81f799db3f256cc761f3961b2c",
+      "reduced_norm": 0.30936894728144215
+    },
+    {
+      "id": 26,
+      "name": "local.layers.0.kv.bias",
+      "shape": [
+        768
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 63,
+      "bucket_element_offset": 6386292,
+      "local_sha256": "578379786d1dd4c892fbdd6f1dc28a2b45306f37c1b3276d9d5aac876b88d3d2",
+      "local_norm": 0.02558848592571599,
+      "reduced_sha256": "50026a70b49e058e0e3f11ee675cb728db709a2131d0e169e6a1313afd742989",
+      "reduced_norm": 0.016858841706925396
+    },
+    {
+      "id": 27,
+      "name": "local.layers.0.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 56,
+      "bucket_element_offset": 5943354,
+      "local_sha256": "c0a8f2384085455a2979cdc24880f50da39ab918722f2ecd354266a22d7de100",
+      "local_norm": 0.3449222863189571,
+      "reduced_sha256": "eda6be68083b1ada4ed22107f9bc2c695744ed65c9638f3cda71b5d699697d6a",
+      "reduced_norm": 0.2996063691465857
+    },
+    {
+      "id": 28,
+      "name": "local.layers.0.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 57,
+      "bucket_element_offset": 6090810,
+      "local_sha256": "2ec7b272e48b8c1d8e3032325ffe257f0fd4ba641112cf3d75f4cd54d6597b38",
+      "local_norm": 0.044444375446411756,
+      "reduced_sha256": "a8c0cddb59b1c5957664b20f255e8490cc58e7fe0f718a78b849323258dc4d03",
+      "reduced_norm": 0.028448638968775586
+    },
+    {
+      "id": 29,
+      "name": "local.layers.0.bias.ring_w",
+      "shape": [
+        9,
+        6
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 60,
+      "bucket_element_offset": 6091302,
+      "local_sha256": "0db8519cb32ae85ec356d3cca378f33d1670b1ba3214d152281a1ab525ca4fe1",
+      "local_norm": 0.0001221383954790221,
+      "reduced_sha256": "bb4a964dc55debd46644356850c3c00d39222290574d526ec2d8794061f1b43e",
+      "reduced_norm": 0.0003846339129363483
+    },
+    {
+      "id": 30,
+      "name": "local.layers.0.bias.row_w",
+      "shape": [
+        9,
+        6
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 59,
+      "bucket_element_offset": 6091248,
+      "local_sha256": "4b5d1519f3654ed38f6cd3f41ed685f92b4c0bce726faf825f68b207c1d8cf63",
+      "local_norm": 0.0001829805832035708,
+      "reduced_sha256": "7b36da563cdc259de4cff8b328d73828fac9a6b8be103853eb3908427df0b2d0",
+      "reduced_norm": 9.110735138236351e-05
+    },
+    {
+      "id": 31,
+      "name": "local.layers.0.bias.col_w",
+      "shape": [
+        9,
+        6
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 58,
+      "bucket_element_offset": 6091194,
+      "local_sha256": "f1bb043e22deee7ee77ea159484dd6227919354170ed6cd2202058502e04f9d9",
+      "local_norm": 0.0003122022713765981,
+      "reduced_sha256": "73a520f249241cfe573e8edf20a90d5479f0c4cb2d69e3f4038643d7750aa299",
+      "reduced_norm": 0.0001272760616355912
+    },
+    {
+      "id": 32,
+      "name": "local.layers.0.bias.type_bias",
+      "shape": [
+        4,
+        6
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 61,
+      "bucket_element_offset": 6091356,
+      "local_sha256": "ecb8d6830ee9a25f775f3635ff77c6e05b0ffefb862f4f3401378a1553a0e62e",
+      "local_norm": 0.0003856042500321549,
+      "reduced_sha256": "42016c89720ce417fe3f324a61190fcf915c308914de1d4311acd0b2820b958c",
+      "reduced_norm": 0.000467731412168369
+    },
+    {
+      "id": 33,
+      "name": "local.layers.0.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 52,
+      "bucket_element_offset": 5351226,
+      "local_sha256": "14ff2fa581a0fe805d2e2798d30452112a3dde1590444d9f015c41324ef59ffd",
+      "local_norm": 0.19470934178671007,
+      "reduced_sha256": "1d770d705171c9c1d6f8d7fff6ba1b256ae807b2dc6c9c30b721677333524851",
+      "reduced_norm": 0.17235279574863444
+    },
+    {
+      "id": 34,
+      "name": "local.layers.0.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 53,
+      "bucket_element_offset": 5941050,
+      "local_sha256": "d08360ad60d299b1681167ea44d41262fd2dd67b251d096a7f4305c9ea40a31a",
+      "local_norm": 0.013624352673744403,
+      "reduced_sha256": "ba53aad73021bbdcb126cd20a529719c05a38463eb36a324b2ce84733921b6fd",
+      "reduced_norm": 0.009137316673337816
+    },
+    {
+      "id": 35,
+      "name": "local.layers.0.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 50,
+      "bucket_element_offset": 4761018,
+      "local_sha256": "d674ea7e02ab2b71992249d6f8efae57c69f950d37ca68bb49c4e1d6930de590",
+      "local_norm": 0.39355874932063517,
+      "reduced_sha256": "a617280d12ad01979b261f5cc5481ea29a17d6d68bd2616fc242e882de7bdaed",
+      "reduced_norm": 0.33477777630171185
+    },
+    {
+      "id": 36,
+      "name": "local.layers.0.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 51,
+      "bucket_element_offset": 5350842,
+      "local_sha256": "fdc0aa8bdec0b9e447f44091c431357f43a607e7b90ac7f3280116cbbf9bbfb3",
+      "local_norm": 0.04267844047621094,
+      "reduced_sha256": "6378181f84ce71a6b865117406d53e957da04dbfc1fbe1c421e8fa60d9798b73",
+      "reduced_norm": 0.026334826954829686
+    },
+    {
+      "id": 37,
+      "name": "local.layers.1.norm1.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 48,
+      "bucket_element_offset": 4760250,
+      "local_sha256": "cd4456585e6bebf3e7e17b2aae4bae7ba8f9b62fe2dd5325c37842c1a8e0d377",
+      "local_norm": 0.00953505504826964,
+      "reduced_sha256": "d2dfe5d87c591c0ed99f7ac8e2a0460f41ea61fa82096a25b5af013d2d07a6f0",
+      "reduced_norm": 0.007461356018582905
+    },
+    {
+      "id": 38,
+      "name": "local.layers.1.norm1.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 49,
+      "bucket_element_offset": 4760634,
+      "local_sha256": "c965c31f807a43a4688f27d7cc792011432fb7d8fb880ea8aeab4f89f8c510a2",
+      "local_norm": 0.01437850037791733,
+      "reduced_sha256": "515c9443254d6aec8156c2a9164072342eca7d25f1abb9f802394b26432aede9",
+      "reduced_norm": 0.008564952771129954
+    },
+    {
+      "id": 39,
+      "name": "local.layers.1.norm2.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 36,
+      "bucket_element_offset": 4167936,
+      "local_sha256": "b910a9264e423f04652b9b0f106d1bcd0eb8e52be2e009b447ec432cae71f245",
+      "local_norm": 0.005599265836514027,
+      "reduced_sha256": "0869d6134869e8d8666d73484137e68da654a9aab0c9155a3ea882a24621a0d7",
+      "reduced_norm": 0.00419859796605208
+    },
+    {
+      "id": 40,
+      "name": "local.layers.1.norm2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 37,
+      "bucket_element_offset": 4168320,
+      "local_sha256": "0def43b20b52a016cdc827752e6878060f707c9935d09aec682754f8caae52e4",
+      "local_norm": 0.0076187440311283805,
+      "reduced_sha256": "ad1d135c5f4fa09765e14295ceefe65539b41459e28181481c88138178493751",
+      "reduced_norm": 0.004770457487898038
+    },
+    {
+      "id": 41,
+      "name": "local.layers.1.q.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 46,
+      "bucket_element_offset": 4612410,
+      "local_sha256": "c62e137dddd1d18cd3cce1bf7257047beccecf1c938274b614aa627acb795307",
+      "local_norm": 0.0147162168685021,
+      "reduced_sha256": "aa7192217660e389f0071cb030c5888c821227af4e2431578f06e25c1f4f4ea9",
+      "reduced_norm": 0.007670059282425123
+    },
+    {
+      "id": 42,
+      "name": "local.layers.1.q.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 47,
+      "bucket_element_offset": 4759866,
+      "local_sha256": "aa6f5980f28b62a266cd4b4f6d6f7c6c054e54de23367fa72c348807dbf83ba4",
+      "local_norm": 0.0011072771113913144,
+      "reduced_sha256": "5dfee1bf0f9c0ae612412ff65ac6b23384001518c1dafb39b24846dba3e2e0b9",
+      "reduced_norm": 0.0005175713387796537
+    },
+    {
+      "id": 43,
+      "name": "local.layers.1.kv.weight",
+      "shape": [
+        768,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 44,
+      "bucket_element_offset": 4316730,
+      "local_sha256": "00ae4ef73cfdbcba858ff728848187708df4d60744c9a4e1f01f933f1df7363c",
+      "local_norm": 0.3222291090799273,
+      "reduced_sha256": "4cee7fb0b2304dee9058537631cb3c37574d22b2f280ed68402ce3b6d65c3ac6",
+      "reduced_norm": 0.2612748720553839
+    },
+    {
+      "id": 44,
+      "name": "local.layers.1.kv.bias",
+      "shape": [
+        768
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 45,
+      "bucket_element_offset": 4611642,
+      "local_sha256": "22ff0b92065ab538862b7c8a6c1283267275f2d93341044a5b81510710291078",
+      "local_norm": 0.024286944677913192,
+      "reduced_sha256": "0348b51feb3f8303c2511ac5de7217d4962a42c842958be4c81ff459b40e1881",
+      "reduced_norm": 0.014346905874732682
+    },
+    {
+      "id": 45,
+      "name": "local.layers.1.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 38,
+      "bucket_element_offset": 4168704,
+      "local_sha256": "9efc0e0d051591816f519e01b89b0e5b9bc5eb8b7197a5b3f6ba07fbecce7b11",
+      "local_norm": 0.30334180793822785,
+      "reduced_sha256": "0404fcedc320724eae1c90589036222e6f85f07698a31f7b87190cdad55fcf1f",
+      "reduced_norm": 0.23814244223354025
+    },
+    {
+      "id": 46,
+      "name": "local.layers.1.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 39,
+      "bucket_element_offset": 4316160,
+      "local_sha256": "263e7a54459217a7fa199fbaabd32ef02bc95dcc20c0ee44052ea65cdee00699",
+      "local_norm": 0.04084352150440359,
+      "reduced_sha256": "d8a02611c52736518ab0751fea0bf38dd68c8614f2d128f7cc4b6f9fe419e887",
+      "reduced_norm": 0.024218090432742805
+    },
+    {
+      "id": 47,
+      "name": "local.layers.1.bias.ring_w",
+      "shape": [
+        9,
+        6
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 42,
+      "bucket_element_offset": 4316652,
+      "local_sha256": "96a024729465055d701352192537e15621811ae079872e6fe7c539ac8533a404",
+      "local_norm": 0.00013046159647357744,
+      "reduced_sha256": "8a13c55664b7aec8a2a9c25d59f357f8dccee865320dd0f7ec66851c96c9c2d6",
+      "reduced_norm": 0.0002644754934699702
+    },
+    {
+      "id": 48,
+      "name": "local.layers.1.bias.row_w",
+      "shape": [
+        9,
+        6
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 41,
+      "bucket_element_offset": 4316598,
+      "local_sha256": "9a44cf658b0fb65e84b05ced3b5276dc9b9a92de0994ddbb97462d4cb851d7b0",
+      "local_norm": 8.70515016023174e-05,
+      "reduced_sha256": "29a6bb7892fcf279e4528b910d198a766487c5ae9877c119844b84184f888d3b",
+      "reduced_norm": 7.340172393786754e-05
+    },
+    {
+      "id": 49,
+      "name": "local.layers.1.bias.col_w",
+      "shape": [
+        9,
+        6
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 40,
+      "bucket_element_offset": 4316544,
+      "local_sha256": "ffa30956bee4df9cefa17e1ba0ce91ddf98e920cfbf6ba006a0d1557ded757af",
+      "local_norm": 0.00017149423158460125,
+      "reduced_sha256": "0046351b91f0869b97ff9de258ecfa76b89e845f6961fae21d7d95ed61be1c85",
+      "reduced_norm": 8.878345256251037e-05
+    },
+    {
+      "id": 50,
+      "name": "local.layers.1.bias.type_bias",
+      "shape": [
+        4,
+        6
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 43,
+      "bucket_element_offset": 4316706,
+      "local_sha256": "4fa09a505af94acc56c16d7cc6040eca774a86c476dd322f7a23bae46a620dea",
+      "local_norm": 0.0003352021367386409,
+      "reduced_sha256": "9c2e8a874cab2ba41e4ca3d27701b9432d7a32fa6d99368a3d7658270fe9be40",
+      "reduced_norm": 0.000387246504558428
+    },
+    {
+      "id": 51,
+      "name": "local.layers.1.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 34,
+      "bucket_element_offset": 3576576,
+      "local_sha256": "496b3b5ddc6434bff940c8e59327125b26122fe011350943a0c1a11f007daccb",
+      "local_norm": 0.1733163186923426,
+      "reduced_sha256": "1b2c73ee6213d4c6301323546b0c2a62c1e505a929bbe1aa56f20d7acfd8a76c",
+      "reduced_norm": 0.1400507534997491
+    },
+    {
+      "id": 52,
+      "name": "local.layers.1.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 35,
+      "bucket_element_offset": 4166400,
+      "local_sha256": "fafdac6eb322ec768d31e031da90e3e5afc61c28fd0e913e53c0e19bf27cbe46",
+      "local_norm": 0.012654959660252747,
+      "reduced_sha256": "405847b026757e049bf7a8e4e45aac9c831795b61db54a71b75311f2d49bdf9d",
+      "reduced_norm": 0.008043330098492467
+    },
+    {
+      "id": 53,
+      "name": "local.layers.1.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 32,
+      "bucket_element_offset": 2986368,
+      "local_sha256": "1fd634c4250577cdecc801869245d804c3893389809ac75ff8b34d4011d0888c",
+      "local_norm": 0.36987946013291173,
+      "reduced_sha256": "b63d74ac4c6d38f24941d5fabc97a94f7df7d84bc9e568dd0c84d0628480179b",
+      "reduced_norm": 0.2766816393330546
+    },
+    {
+      "id": 54,
+      "name": "local.layers.1.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 33,
+      "bucket_element_offset": 3576192,
+      "local_sha256": "752bf46d41268827faf6eff861f3daeeda36677601a13bba4075b5d8ad6a9396",
+      "local_norm": 0.03965970637654107,
+      "reduced_sha256": "92bf2510f70a06feb8c9a214397db91a31d7ba10fff3ab6200deebc99ffe76ab",
+      "reduced_norm": 0.023350160547656394
+    },
+    {
+      "id": 55,
+      "name": "pool.latents",
+      "shape": [
+        64,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 29,
+      "bucket_element_offset": 2961024,
+      "local_sha256": "a62a1e6fb66463361cabdd61cb3e1340dd45809436f1f7a80cf91c9271286c3e",
+      "local_norm": 0.03709448307125387,
+      "reduced_sha256": "70d9c13ef81500dfcdca89d930ca0667e235e373d31b75e0af9cb6c5fe8db672",
+      "reduced_norm": 0.016611721390271783
+    },
+    {
+      "id": 56,
+      "name": "pool.norm_q.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 30,
+      "bucket_element_offset": 2985600,
+      "local_sha256": "8f9f371550fc75ac0d66b116ea88e1875eae8d5e02c9fb5c3748634af0618a01",
+      "local_norm": 0.0006449969128579442,
+      "reduced_sha256": "ff6ac5af06612c7a8a2456c5e38296444ebb71c72df74a258167cc4107f1e535",
+      "reduced_norm": 0.0003186315574053428
+    },
+    {
+      "id": 57,
+      "name": "pool.norm_q.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 31,
+      "bucket_element_offset": 2985984,
+      "local_sha256": "b863a3ea5587669d46037f200d12fad163b6b79cf3e8e3f4162d0b32624c899a",
+      "local_norm": 0.004520219874472408,
+      "reduced_sha256": "a91eac25425f313df3894dfb137c04d677b2c07070e9d21e5a55f4cd5fe92193",
+      "reduced_norm": 0.0021803760030909007
+    },
+    {
+      "id": 58,
+      "name": "pool.norm_kv.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 25,
+      "bucket_element_offset": 2812416,
+      "local_sha256": "9a0d2b3ec304c19cd8a0e00520d0d0a966636629dff66395401a2d052b6da0fe",
+      "local_norm": 0.0453720689205519,
+      "reduced_sha256": "ce1b26bbce6cfdd220c46a98a007e3c84ccf52ad3795160ac5572974c8f2626e",
+      "reduced_norm": 0.0240239110215295
+    },
+    {
+      "id": 59,
+      "name": "pool.norm_kv.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 26,
+      "bucket_element_offset": 2812800,
+      "local_sha256": "9150f8c11b48d0c0f5065e9bc04d0c538b3c48d42429100ae1b5c97ee78d2b73",
+      "local_norm": 0.08272990974610568,
+      "reduced_sha256": "63c5531b10db41882ba8599c46a89322da1761799694af48f20b5a5195e33bf4",
+      "reduced_norm": 0.03558690073884546
+    },
+    {
+      "id": 60,
+      "name": "pool.norm_mlp.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 19,
+      "bucket_element_offset": 2368128,
+      "local_sha256": "c65286cc8e6803a8ea85a48736d64dbd673620f758d7394cdc2edda7ba5aad3e",
+      "local_norm": 0.024989618480738243,
+      "reduced_sha256": "5788f6b6aaf86863d002ae9d539137e75d31642ba16d40379ae9ad1458570381",
+      "reduced_norm": 0.012081299279775392
+    },
+    {
+      "id": 61,
+      "name": "pool.norm_mlp.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 20,
+      "bucket_element_offset": 2368512,
+      "local_sha256": "a7ed1429cd8e97b99a96fddad734c69d3a002a0ed7f8035aaf04087056c2b1f5",
+      "local_norm": 0.03092287116113504,
+      "reduced_sha256": "7099d53f97a8ab38e31933cc28c8a6f538b7faa5d1f45e5d2ef2c4c6679eede5",
+      "reduced_norm": 0.013666864366089222
+    },
+    {
+      "id": 62,
+      "name": "pool.q.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 27,
+      "bucket_element_offset": 2813184,
+      "local_sha256": "7b05a136127c9f57d7ae9524acefdbb4a8910d7d871af9df6a493aae9c772e1f",
+      "local_norm": 0.021874009877145918,
+      "reduced_sha256": "8cf696fa54bde63cb9f2ea7d8c4cf0f44c71be3ca46f12dfc109026ba030e0de",
+      "reduced_norm": 0.009702778209369902
+    },
+    {
+      "id": 63,
+      "name": "pool.q.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 28,
+      "bucket_element_offset": 2960640,
+      "local_sha256": "6facec74550ac77cf1a1c5b71da2127c6cc2660d31e5a70b45a1bf22302a5586",
+      "local_norm": 0.0077398650390065864,
+      "reduced_sha256": "7f8664a76d3346bcc322eca3f0d83b5703ff1ea7bde4ea7bc933bd43e211b49c",
+      "reduced_norm": 0.003414616477419172
+    },
+    {
+      "id": 64,
+      "name": "pool.kv.weight",
+      "shape": [
+        768,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 23,
+      "bucket_element_offset": 2516736,
+      "local_sha256": "4fe85869ced03e5c1096e0072546a581e7a0abe888ce680f6625a6cbeed36c17",
+      "local_norm": 1.4426320484531105,
+      "reduced_sha256": "3868acf28d69be7e00edc4f53ec7ad8fdb5b466af55181e63564d3c7bf4c7d7a",
+      "reduced_norm": 0.7520860766623537
+    },
+    {
+      "id": 65,
+      "name": "pool.kv.bias",
+      "shape": [
+        768
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 24,
+      "bucket_element_offset": 2811648,
+      "local_sha256": "9f629943ea6fa3991a57301fa19662efe1f6be4050cae715cd4494efe1447a4a",
+      "local_norm": 0.1279932416024413,
+      "reduced_sha256": "9b242ec008018b0300522214e26cd156b1b9d9033584f3a5c546cf0276aa0b40",
+      "reduced_norm": 0.05464498492676579
+    },
+    {
+      "id": 66,
+      "name": "pool.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 21,
+      "bucket_element_offset": 2368896,
+      "local_sha256": "8b731ea509786c57ef00c4a723c7f86c6a054d59e49fee327ab2817bbc6581df",
+      "local_norm": 1.2606989860764952,
+      "reduced_sha256": "313e983a9c03529efcadfdb805f1996fd1d91cdb402c68f4df7214d41396131f",
+      "reduced_norm": 0.6651192295678285
+    },
+    {
+      "id": 67,
+      "name": "pool.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 22,
+      "bucket_element_offset": 2516352,
+      "local_sha256": "aad35b9a248839615386fabfdd528c176afeb5d94841b54f43d8a0229b925867",
+      "local_norm": 0.19084710923706416,
+      "reduced_sha256": "70939388cae76f960d62ebba7d2a2387097fe07e2706f7be5556f0cb664c7128",
+      "reduced_norm": 0.08361340808282017
+    },
+    {
+      "id": 68,
+      "name": "pool.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 17,
+      "bucket_element_offset": 1776768,
+      "local_sha256": "b248b8327b4cfc23cca279cb3add757960546e3f1d1fcd23d73449f9719a4bd5",
+      "local_norm": 0.6653760387423626,
+      "reduced_sha256": "6f80ac7d8e9539055a3395cf7b06a884b21a8cf22a51c8f6444aa118e0504083",
+      "reduced_norm": 0.34400982347964987
+    },
+    {
+      "id": 69,
+      "name": "pool.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 18,
+      "bucket_element_offset": 2366592,
+      "local_sha256": "94abd23ccca38e074ce4ab3482135a6ae72dc88ba52bc4e36f39cdbc4c6a8629",
+      "local_norm": 0.044338007295700956,
+      "reduced_sha256": "a8cff7d87895190984a27bea7a536c3405c235f6030c4cd76c1244494f0f21f7",
+      "reduced_norm": 0.020582742756972125
+    },
+    {
+      "id": 70,
+      "name": "pool.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 15,
+      "bucket_element_offset": 1186560,
+      "local_sha256": "48fd758436238359f2e20ff4da8e269ef747c09d72a8925e1eb5c35612eed172",
+      "local_norm": 1.2871005680063279,
+      "reduced_sha256": "fd88b310f663fe19262e1ba1b913881c23ace7cad8c9e87087f4d552c570313e",
+      "reduced_norm": 0.6736577050903629
+    },
+    {
+      "id": 71,
+      "name": "pool.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 16,
+      "bucket_element_offset": 1776384,
+      "local_sha256": "d80dccce2da6532d63671f2567b9228a53e671a3d785f64551d070c5c3287b2e",
+      "local_norm": 0.12543081260062572,
+      "reduced_sha256": "b94e06e0d87ffbdaa6509a18775ee2688a93c3c0eaa9c965144851dd2c425759",
+      "reduced_norm": 0.05943677268468027
+    },
+    {
+      "id": 72,
+      "name": "backbone.blocks.0.norm_t.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 13,
+      "bucket_element_offset": 1185792,
+      "local_sha256": "6a4b635d7c3d2ea24bb3c255c8e80af87ecd94427662b33c969ee4cc80035159",
+      "local_norm": 0.021267173657844557,
+      "reduced_sha256": "4911e36de4ac592d495893fcbd0834233e5132e308eb1b251de74593cbdc290c",
+      "reduced_norm": 0.011693852341340571
+    },
+    {
+      "id": 73,
+      "name": "backbone.blocks.0.norm_t.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 14,
+      "bucket_element_offset": 1186176,
+      "local_sha256": "33050699c42053f33eb5eec401cf7073d78dfc0e2265f017a9966b20cdff9d55",
+      "local_norm": 0.02901160131486675,
+      "reduced_sha256": "9bb2ec9a78b8c008a34974a0201f3d0f0e78570f01e5361dc25824d0753969e8",
+      "reduced_norm": 0.014026259355346883
+    },
+    {
+      "id": 74,
+      "name": "backbone.blocks.0.norm_k.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 7,
+      "bucket_element_offset": 593664,
+      "local_sha256": "c9641715870ab89218db9f6d6bd9e4d1b404c7fff7684f2b18c9c0fcc1144e2d",
+      "local_norm": 0.020345950958420882,
+      "reduced_sha256": "a492140c9113cb68c4bc0f126af1022982ffdb4421f1262772d69c4c00383924",
+      "reduced_norm": 0.010683434458342949
+    },
+    {
+      "id": 75,
+      "name": "backbone.blocks.0.norm_k.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 8,
+      "bucket_element_offset": 594048,
+      "local_sha256": "2b77c365de622b2c5649e2a355bade6a5b1175dfce75fa5ba1f93124c2940935",
+      "local_norm": 0.023255307133695443,
+      "reduced_sha256": "021dddeb29be5031900de9b988baa5cff4929c83edf0866c1659d9f120bb0d58",
+      "reduced_norm": 0.011218721093589526
+    },
+    {
+      "id": 76,
+      "name": "backbone.blocks.0.norm_m.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 1,
+      "bucket_element_offset": 1536,
+      "local_sha256": "aa33ea17afc1608a8ef1f0b6d328820e0bb3edc68e67c5dd1404da2d04147fcf",
+      "local_norm": 0.009911185734190793,
+      "reduced_sha256": "93197b07e47d4a297aac11d311e08dab1808efdef8b1927acd4bf09256246551",
+      "reduced_norm": 0.005443075607166909
+    },
+    {
+      "id": 77,
+      "name": "backbone.blocks.0.norm_m.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 2,
+      "bucket_element_offset": 1920,
+      "local_sha256": "6274d3becfcee51451b6c640d6b6a41a2cb50a7e1142ebeb4f7b16e2d0be4cad",
+      "local_norm": 0.012287390755384616,
+      "reduced_sha256": "3876d1c396bda08e6e07f63d012e8d65d8010588ac9741d78a863aa11b8cada0",
+      "reduced_norm": 0.006300421544234863
+    },
+    {
+      "id": 78,
+      "name": "backbone.blocks.0.time_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 11,
+      "bucket_element_offset": 742272,
+      "local_sha256": "f82a6a1da3e560b58f88b698fa3eeff6b40c385db6dcc2e8151e8233899bc309",
+      "local_norm": 0.6885440615845189,
+      "reduced_sha256": "3e4d340fb52a39f037c9f245065afcee8c66b214009170fdd44fb3381ff14f38",
+      "reduced_norm": 0.39812037730794725
+    },
+    {
+      "id": 79,
+      "name": "backbone.blocks.0.time_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 12,
+      "bucket_element_offset": 1184640,
+      "local_sha256": "199018060fffe8d08dfec79db8197ec333605c73b03677f0b2b2d67d60fd6401",
+      "local_norm": 0.04875264352215695,
+      "reduced_sha256": "61c6ea83b1aaae719df1afccd5293d8e3fc3f1e8b49b563949d5ebae2d2d5ab7",
+      "reduced_norm": 0.023148413930630257
+    },
+    {
+      "id": 80,
+      "name": "backbone.blocks.0.time_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 9,
+      "bucket_element_offset": 594432,
+      "local_sha256": "eae3cf48fb46e8e145fe74ceffc5c84cb211e695e5da3ea5e2649257ee137a8c",
+      "local_norm": 0.6944654839306407,
+      "reduced_sha256": "d3309748cc0b94910f78133a378f283bc8fe8fd4f5df182ba048840197e183aa",
+      "reduced_norm": 0.39855298550776413
+    },
+    {
+      "id": 81,
+      "name": "backbone.blocks.0.time_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 10,
+      "bucket_element_offset": 741888,
+      "local_sha256": "f90d7495dd2cb7d8784e2eadfe2867e84ef50e46504ee6594af29fbacc8de282",
+      "local_norm": 0.0859678037853772,
+      "reduced_sha256": "97dcbb5f24537d7a9850f96b4595e9655631651c8269f73a55818f91ea250aaa",
+      "reduced_norm": 0.04158584202907551
+    },
+    {
+      "id": 82,
+      "name": "backbone.blocks.0.latent_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 5,
+      "bucket_element_offset": 150144,
+      "local_sha256": "ad9ee3792c205a71bae32a1a43fa0c977a829c4aba7b6cbbf2b2a7711d06402f",
+      "local_norm": 0.6271110535928253,
+      "reduced_sha256": "49f4e1927ba48b886ebe15b6b1559e05e556d0870c115b39f1dfbe1d8b4b4da6",
+      "reduced_norm": 0.3360059066590655
+    },
+    {
+      "id": 83,
+      "name": "backbone.blocks.0.latent_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 6,
+      "bucket_element_offset": 592512,
+      "local_sha256": "f11faa9b168dd1f21678938f5c5adbb7e50613f1dc7917b491d63fe70d5664b1",
+      "local_norm": 0.039177229432667014,
+      "reduced_sha256": "458d25c15785a6788e6a247095e685e135d15c81489b5c5998a92c46dd77ef0a",
+      "reduced_norm": 0.019486931269537676
+    },
+    {
+      "id": 84,
+      "name": "backbone.blocks.0.latent_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 3,
+      "bucket_element_offset": 2304,
+      "local_sha256": "79fd1b59f0dc201180d309eb65773bbe7c02392a03676b5317f90afa723bdce0",
+      "local_norm": 0.5445567032540534,
+      "reduced_sha256": "eee9c17862b46c8f25e0ebf8d74eefb40f2b5d58dd43ca7e8b0afec0902f191b",
+      "reduced_norm": 0.29869066064998845
+    },
+    {
+      "id": 85,
+      "name": "backbone.blocks.0.latent_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 4,
+      "bucket_element_offset": 149760,
+      "local_sha256": "779ba3921b72afb3da4b8044d62a5b13ae311b4885300b837ce05360de400ec7",
+      "local_norm": 0.06109510264615098,
+      "reduced_sha256": "9804a84a7067084d018dca7b80caf7ffb06c1e9241c69435c3b8a73a8e41313e",
+      "reduced_norm": 0.030332633783953823
+    },
+    {
+      "id": 86,
+      "name": "backbone.blocks.0.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 53,
+      "bucket_element_offset": 6509952,
+      "local_sha256": "7627c2d63ec1609bd5a314612c46643356eb556193c9cd885f5fc91c6f616647",
+      "local_norm": 0.29696314470904045,
+      "reduced_sha256": "cda371889c434e3e2f441db17b12bc25af88a3a5304182322a59cdf0405d1030",
+      "reduced_norm": 0.16666596136337025
+    },
+    {
+      "id": 87,
+      "name": "backbone.blocks.0.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 4,
+      "bucket_position": 0,
+      "bucket_element_offset": 0,
+      "local_sha256": "a4b99a3eb4d656284199cd623ede38e60dd7c132d4b46b307e613abfa2ff019d",
+      "local_norm": 0.01817132247060981,
+      "reduced_sha256": "c5ad7ad5ace6c1025fc3c35af7f2fe177d6e6c806c550e0d625c20a495ac0444",
+      "reduced_norm": 0.0094453190244989
+    },
+    {
+      "id": 88,
+      "name": "backbone.blocks.0.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 51,
+      "bucket_element_offset": 5919744,
+      "local_sha256": "ced6b2ec115cb5efcc4fee50f5076955b4f6bf639459a221ac505f100d221b7d",
+      "local_norm": 0.5898270917108456,
+      "reduced_sha256": "c208dd0b8063e3b13b8ee38665c7ca76c870d4b02259207dbf176eb4c0ef23cb",
+      "reduced_norm": 0.32635770779829415
+    },
+    {
+      "id": 89,
+      "name": "backbone.blocks.0.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 52,
+      "bucket_element_offset": 6509568,
+      "local_sha256": "ad3260a240242166fd914c7347605acf953e922924a027671f59e0d34870e931",
+      "local_norm": 0.053089891914804295,
+      "reduced_sha256": "e2316591cf7f9ff210ec80c9f22e0a5c681d6ea0ec37d9d27967b23148fcc6c9",
+      "reduced_norm": 0.02711318550831426
+    },
+    {
+      "id": 90,
+      "name": "backbone.blocks.1.norm_t.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 49,
+      "bucket_element_offset": 5918976,
+      "local_sha256": "1c477a45ae5da2a63fe1a3058d507f9d593f08f8e318b1e4c52e01608c3b2500",
+      "local_norm": 0.011386551380592821,
+      "reduced_sha256": "8bee05fa0ce124647f6d60913ac641d6f6c3e28a2e4505e75b50ecf3ae893eb2",
+      "reduced_norm": 0.006684672791910644
+    },
+    {
+      "id": 91,
+      "name": "backbone.blocks.1.norm_t.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 50,
+      "bucket_element_offset": 5919360,
+      "local_sha256": "35373a754028baf6163fd762cd5289cabefd7b7e12c1284802e59dc2d12a76c7",
+      "local_norm": 0.01550987604448586,
+      "reduced_sha256": "7db36109a2a0bc145fdf6284dc6b497e588555b89dc4dbd3090c4257c5155af3",
+      "reduced_norm": 0.007761209526893101
+    },
+    {
+      "id": 92,
+      "name": "backbone.blocks.1.norm_k.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 43,
+      "bucket_element_offset": 5326848,
+      "local_sha256": "3e886acad59bdc7aacee905b25212b2bb97662981c8fc8215551718a4c0fec11",
+      "local_norm": 0.012227396808770379,
+      "reduced_sha256": "afd432c741e51df03ae63c0d6af8d2d1ae0cb0a8ceadaa7f9c5a64f3206a79f6",
+      "reduced_norm": 0.006369262481695063
+    },
+    {
+      "id": 93,
+      "name": "backbone.blocks.1.norm_k.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 44,
+      "bucket_element_offset": 5327232,
+      "local_sha256": "881dc35a52d8c130987c7e226316ebec41b03f214ae68abf05e98303d147bbe2",
+      "local_norm": 0.013937314933576682,
+      "reduced_sha256": "ffb7df2be7eb89ccbb827dd0d26ee3cdc6b36da55e34ec5927ccfbb780281da6",
+      "reduced_norm": 0.006996343087315238
+    },
+    {
+      "id": 94,
+      "name": "backbone.blocks.1.norm_m.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 37,
+      "bucket_element_offset": 4734720,
+      "local_sha256": "9d545bf599d2d30e9af64c7c5971ec1812f037386880cf41d28416ef995e5d0c",
+      "local_norm": 0.007024627179732449,
+      "reduced_sha256": "929e3a20b0b2b48188520d3c696001fef36547f60d2a19ed6313b003baf185bd",
+      "reduced_norm": 0.0036334909699647
+    },
+    {
+      "id": 95,
+      "name": "backbone.blocks.1.norm_m.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 38,
+      "bucket_element_offset": 4735104,
+      "local_sha256": "517e441a184cbb6840a4c119a79ecee96a35f448d122dd796fb3804e2016c0ce",
+      "local_norm": 0.007746873164278334,
+      "reduced_sha256": "bbc62ae4349a41fa6d34121587117fbaa305fc8dcf1d0fb7294bb91f83eddc56",
+      "reduced_norm": 0.004055390949625668
+    },
+    {
+      "id": 96,
+      "name": "backbone.blocks.1.time_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 47,
+      "bucket_element_offset": 5475456,
+      "local_sha256": "5c2a4dd41c6f491833b87c603420844611032250e06062ef7861a9e429197147",
+      "local_norm": 0.41011602805176883,
+      "reduced_sha256": "32e76dafd1b75bd3edb9e5b7d1504b24ac3c09ab992b70a7786f06728dcfb450",
+      "reduced_norm": 0.24123814421997256
+    },
+    {
+      "id": 97,
+      "name": "backbone.blocks.1.time_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 48,
+      "bucket_element_offset": 5917824,
+      "local_sha256": "763f18fa4dda862480732ea10fb86d23f3477501124bb23ae8270bc44d2d4370",
+      "local_norm": 0.0276322998507383,
+      "reduced_sha256": "2794a0daf066ef411add7f028696c1220213ca68daab367ad1a35871c53ddf6b",
+      "reduced_norm": 0.01399339103569794
+    },
+    {
+      "id": 98,
+      "name": "backbone.blocks.1.time_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 45,
+      "bucket_element_offset": 5327616,
+      "local_sha256": "451a839ba3072948d600a2fceb392df00d31c08ade7255fdf6f4f10e494699d5",
+      "local_norm": 0.367463385617176,
+      "reduced_sha256": "4ff323851e0dfb5593571b6b1854552c357cef78935a48994da65bae5d54e49a",
+      "reduced_norm": 0.21795879002452193
+    },
+    {
+      "id": 99,
+      "name": "backbone.blocks.1.time_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 46,
+      "bucket_element_offset": 5475072,
+      "local_sha256": "a05de26669ec7dcb30aa571c3be59910ff4a6425ae14a9b2e2565f667db536b1",
+      "local_norm": 0.046156762450558046,
+      "reduced_sha256": "613a6ed641749a6f1aace9382c1d0496e01283e14aee89a3104c734cc104cc8d",
+      "reduced_norm": 0.02341466395377832
+    },
+    {
+      "id": 100,
+      "name": "backbone.blocks.1.latent_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 41,
+      "bucket_element_offset": 4883328,
+      "local_sha256": "e3a7895de3a85c2ac9ee2d8e0e1f2ad7926978abc1fe21668f90e14ebb331623",
+      "local_norm": 0.3744966261540041,
+      "reduced_sha256": "0f590ec99a2147def92a95ee83fc5177c24cf149478ed3a30f9a362ca8044460",
+      "reduced_norm": 0.21051891173260923
+    },
+    {
+      "id": 101,
+      "name": "backbone.blocks.1.latent_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 42,
+      "bucket_element_offset": 5325696,
+      "local_sha256": "eacc75f57e7b283203658f4fc8252bf18507c7bed7d4dac0a5c4e1d7e29190c7",
+      "local_norm": 0.023238029965614596,
+      "reduced_sha256": "5c509a9ff53c601a240e8e6d88603b8533505559ce1f5c37c6f402a9bbbf35f9",
+      "reduced_norm": 0.011845298775421976
+    },
+    {
+      "id": 102,
+      "name": "backbone.blocks.1.latent_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 39,
+      "bucket_element_offset": 4735488,
+      "local_sha256": "b37fa5e5956206a9486acf8a178cd7cb25cee8eb8acccd09d85f6b31e84713b7",
+      "local_norm": 0.38113890809652134,
+      "reduced_sha256": "05adc66879c677c02dfd65853f3b6db91e7350b1b35ba6bab5a5b0f79ac1b816",
+      "reduced_norm": 0.20440765428603697
+    },
+    {
+      "id": 103,
+      "name": "backbone.blocks.1.latent_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 40,
+      "bucket_element_offset": 4882944,
+      "local_sha256": "6ba02c5e1441c8643384eea8c0434eab7bb904d3dcfa692cfbf1fdea6a720003",
+      "local_norm": 0.03988568629901873,
+      "reduced_sha256": "04fa6000c642e16bbb71168f15ada26208adc01dcf57c01e5bf199e731e2b5d4",
+      "reduced_norm": 0.0200418568431558
+    },
+    {
+      "id": 104,
+      "name": "backbone.blocks.1.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 35,
+      "bucket_element_offset": 4143360,
+      "local_sha256": "644d7a1bf637957a4e8b7cc0f2fa596a910c360bbe35268f0fd3176649c87545",
+      "local_norm": 0.21354279832494807,
+      "reduced_sha256": "30a957b9f6491cbaef9f495d9a1f1a0046b9a95bffb2d52e94ed204fb7d43b94",
+      "reduced_norm": 0.11851677824461887
+    },
+    {
+      "id": 105,
+      "name": "backbone.blocks.1.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 36,
+      "bucket_element_offset": 4733184,
+      "local_sha256": "8549fa15116bc1e2b0501ec87266e78c238c691f3718ee5917ebfde19b67d75c",
+      "local_norm": 0.012617084992032063,
+      "reduced_sha256": "62d15c8f980c8527992921fd1d77f4d9e47652e25c13f70afbeebf7f80815a0a",
+      "reduced_norm": 0.006564191360551673
+    },
+    {
+      "id": 106,
+      "name": "backbone.blocks.1.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 33,
+      "bucket_element_offset": 3553152,
+      "local_sha256": "f8747a2e4c452734635256b2da893a14fbd19037928d33f5ded9489a5486d155",
+      "local_norm": 0.4406601032256188,
+      "reduced_sha256": "7e6672e79ccea1631ba761c21551fab3554508cf8cfa6e9b8cccce83454f58ab",
+      "reduced_norm": 0.2360865082031934
+    },
+    {
+      "id": 107,
+      "name": "backbone.blocks.1.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 34,
+      "bucket_element_offset": 4142976,
+      "local_sha256": "f9e81b11505575ed6ee4957376e02e58ca1e15bd1e94b7c752a9acc32e6d115a",
+      "local_norm": 0.03726682250534834,
+      "reduced_sha256": "153243d065ac9ac824a2aab3f5c0897a7ad7c802dad408a03eb4c47eb870f363",
+      "reduced_norm": 0.018663474754877635
+    },
+    {
+      "id": 108,
+      "name": "backbone.blocks.2.norm_t.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 31,
+      "bucket_element_offset": 3552384,
+      "local_sha256": "4c0fe0da71f6fc8ea588e4337a3d3b3c05da3be9e4d7941c94e89545f99e7a94",
+      "local_norm": 0.009843565047565303,
+      "reduced_sha256": "30a880ce8a434bad1d3943a807d8ffee66ef292ee1fd007a4147b9a8af118e80",
+      "reduced_norm": 0.005845186364809397
+    },
+    {
+      "id": 109,
+      "name": "backbone.blocks.2.norm_t.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 32,
+      "bucket_element_offset": 3552768,
+      "local_sha256": "9037c733874bb12839e6101e7d048b698222b60fa9351df7908592f1894d09ff",
+      "local_norm": 0.01252526870423544,
+      "reduced_sha256": "ee5d9ba73df7d6594a4a26ff8587af2b8d18dba08d2f3c3f58d6115961a511ec",
+      "reduced_norm": 0.00638472026358222
+    },
+    {
+      "id": 110,
+      "name": "backbone.blocks.2.norm_k.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 25,
+      "bucket_element_offset": 2960256,
+      "local_sha256": "ade2d27ce41e7a196ef3f8891f5ca477c8e2f368890f84623245597eebe1409a",
+      "local_norm": 0.008187375521813325,
+      "reduced_sha256": "5cdc8a1bef70735bff0f6e49ac343640f3b7ec5cd3d3dbf064a2cdaceeeea24c",
+      "reduced_norm": 0.004618094338884002
+    },
+    {
+      "id": 111,
+      "name": "backbone.blocks.2.norm_k.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 26,
+      "bucket_element_offset": 2960640,
+      "local_sha256": "9082403b34b1f3715d3982acf7690cba401adcb997fc17b2efe26d47ab636dff",
+      "local_norm": 0.010466298936524334,
+      "reduced_sha256": "5a8c0359d88035c55265eb304656ed6ccf754898d70219de5d2843c1facc39f3",
+      "reduced_norm": 0.005214715351020118
+    },
+    {
+      "id": 112,
+      "name": "backbone.blocks.2.norm_m.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 19,
+      "bucket_element_offset": 2368128,
+      "local_sha256": "6b140bf5677e7c323412162803e41e55315f7e71fb3ea86590fa10f08cd1cca6",
+      "local_norm": 0.005496517346484219,
+      "reduced_sha256": "9aa98b8e3f09128d18b13fc6843bab13851ed0b4d34835b983ab21d4d68ebda8",
+      "reduced_norm": 0.0028194839939169446
+    },
+    {
+      "id": 113,
+      "name": "backbone.blocks.2.norm_m.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 20,
+      "bucket_element_offset": 2368512,
+      "local_sha256": "a092a265102ba171230dd5e411f480fbe404e848fc24a370cb20785c5f96e1c1",
+      "local_norm": 0.005428901744480674,
+      "reduced_sha256": "aba49cc1111a543f9cacdc42b00d20fe8c5b84cb4fd80f58dbffacc5c3ceb6c0",
+      "reduced_norm": 0.0028230398076474275
+    },
+    {
+      "id": 114,
+      "name": "backbone.blocks.2.time_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 29,
+      "bucket_element_offset": 3108864,
+      "local_sha256": "e70c539221e06c584624879e6dcb9c0f1c31c793027c0884aa72df26d4f342ff",
+      "local_norm": 0.3061169833031825,
+      "reduced_sha256": "11a849bed1c0489e886e3e5e478d466302090de58ecf77aa2aab2c55bbcb6427",
+      "reduced_norm": 0.18279121107530433
+    },
+    {
+      "id": 115,
+      "name": "backbone.blocks.2.time_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 30,
+      "bucket_element_offset": 3551232,
+      "local_sha256": "e6092b718d9ee9df1f069652806dd1bda9c89648a97bd38c68abd6d108cea255",
+      "local_norm": 0.01999884329834538,
+      "reduced_sha256": "fb9f80ceb72f5f261cc0c704403a9bb81c5f04e5fe9e7a1ab78e6d6f87260ed9",
+      "reduced_norm": 0.010029854953152168
+    },
+    {
+      "id": 116,
+      "name": "backbone.blocks.2.time_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 27,
+      "bucket_element_offset": 2961024,
+      "local_sha256": "35ca9b72b0d742e5742b5d86994794dbbd991206e7c217c316912287801854b7",
+      "local_norm": 0.286050233372552,
+      "reduced_sha256": "ac75ec936fbcf04dc2334240d564ec725ea8855d64a76476bc8f9fd410e30e24",
+      "reduced_norm": 0.1755208223500527
+    },
+    {
+      "id": 117,
+      "name": "backbone.blocks.2.time_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 28,
+      "bucket_element_offset": 3108480,
+      "local_sha256": "4063c0bc3faf11422a57a67d8509b3fbe0e1c4602f3233aaae2ca5bff6a1cc4b",
+      "local_norm": 0.03368868738997481,
+      "reduced_sha256": "3a630e45431a6e8c27a459171863dc63761398fc05696efc3878dea49b37327b",
+      "reduced_norm": 0.017054196487034438
+    },
+    {
+      "id": 118,
+      "name": "backbone.blocks.2.latent_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 23,
+      "bucket_element_offset": 2516736,
+      "local_sha256": "69fddec724ad4e9a3af293026b845bac532cceb3adf6a2d34ad5344a1c78da6e",
+      "local_norm": 0.2935255696404541,
+      "reduced_sha256": "5eb32b70b2df3561616b2a423dcb3c5330a5873b465da54d81670c1555f2dc3c",
+      "reduced_norm": 0.16417265930112857
+    },
+    {
+      "id": 119,
+      "name": "backbone.blocks.2.latent_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 24,
+      "bucket_element_offset": 2959104,
+      "local_sha256": "84d28fba0fda420333efc21ba9bdfc6ec557b8dec349371e48fce02fabae6f4c",
+      "local_norm": 0.01764149996115908,
+      "reduced_sha256": "32454a4f8fdac67ab18ee8dcf25ee7b1383885cf8ff59bb20d5ce99cb6970a11",
+      "reduced_norm": 0.009047008942140812
+    },
+    {
+      "id": 120,
+      "name": "backbone.blocks.2.latent_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 21,
+      "bucket_element_offset": 2368896,
+      "local_sha256": "fe795ae9746b59f38cb1e9d1cfd95e5fd77ba42ddca98ab026e32c0350be2bc5",
+      "local_norm": 0.2847581543736894,
+      "reduced_sha256": "20f6ea23095fd35ca67fa189f905f740ba075585495f3a6c8b55b60907d710c0",
+      "reduced_norm": 0.159695405687064
+    },
+    {
+      "id": 121,
+      "name": "backbone.blocks.2.latent_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 22,
+      "bucket_element_offset": 2516352,
+      "local_sha256": "72bb1363d205119b6945752b0bed145e2371b3496027b7661aed2ef40fb1e770",
+      "local_norm": 0.030432567885336947,
+      "reduced_sha256": "f5caea8a6e1376663e1b2291f280e8d4a2a89c1b58e5c925d49e16db5dc8c6f7",
+      "reduced_norm": 0.015556165353212432
+    },
+    {
+      "id": 122,
+      "name": "backbone.blocks.2.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 17,
+      "bucket_element_offset": 1776768,
+      "local_sha256": "f033719f20530c1a401dabf34d2d31e4170c21847afe5b469bd05065859a172e",
+      "local_norm": 0.16657918270293104,
+      "reduced_sha256": "35143ab8f84196f41f208df60b6a7a0e8654003c005469b0e53909f6eb8fb467",
+      "reduced_norm": 0.09316618620300395
+    },
+    {
+      "id": 123,
+      "name": "backbone.blocks.2.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 18,
+      "bucket_element_offset": 2366592,
+      "local_sha256": "c0e7c0407753717ecca3c3c2249b4bd810daf331d8942b524d583a1b0ebea330",
+      "local_norm": 0.009790531023769838,
+      "reduced_sha256": "65b9305086ae2447b4afa7c006fd6abdca33c290c5f00b87d87192f923484eb1",
+      "reduced_norm": 0.005046399679845563
+    },
+    {
+      "id": 124,
+      "name": "backbone.blocks.2.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 15,
+      "bucket_element_offset": 1186560,
+      "local_sha256": "dc18bad4280b050b34402cdb6ea8909709eea4cd7fc194b2a98419aa59b3840a",
+      "local_norm": 0.3382255934926835,
+      "reduced_sha256": "2fed91028a457487cda048acf221ea9b5bd26f91392e14a38b799eca96e9cc2d",
+      "reduced_norm": 0.18536247134207917
+    },
+    {
+      "id": 125,
+      "name": "backbone.blocks.2.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 16,
+      "bucket_element_offset": 1776384,
+      "local_sha256": "4c232c6aec78e1684fc1dcba2926fbf68fcfb68770658e8ab3c5f7abbca51ccb",
+      "local_norm": 0.02876768355058963,
+      "reduced_sha256": "c22d285d2396d4af4bcab0c5352974e08cba33733f5f6ca480b609c990b67339",
+      "reduced_norm": 0.014779592285406921
+    },
+    {
+      "id": 126,
+      "name": "backbone.blocks.3.norm_t.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 13,
+      "bucket_element_offset": 1185792,
+      "local_sha256": "6ecd14240d84b809f2f7c7eac96ccfed01c929cdf83ebe468d04b7c03d075ae3",
+      "local_norm": 0.006656664087765355,
+      "reduced_sha256": "e571a2613b2d7e5b067d40982a6035da61b29238b849a6c3f5c2d170e14c6522",
+      "reduced_norm": 0.004002157514900644
+    },
+    {
+      "id": 127,
+      "name": "backbone.blocks.3.norm_t.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 14,
+      "bucket_element_offset": 1186176,
+      "local_sha256": "5817c4f888f1218003728076f72e603344276363d887d164d0350835e5e1f283",
+      "local_norm": 0.00914597172502796,
+      "reduced_sha256": "e0e25a6a846a3dbc9b3c884bd7f58d7e3f4d3305767080e9224cede84f7607cc",
+      "reduced_norm": 0.004604051866832166
+    },
+    {
+      "id": 128,
+      "name": "backbone.blocks.3.norm_k.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 7,
+      "bucket_element_offset": 593664,
+      "local_sha256": "0a44be377e25d035caa2e3d3952d6ab3d64108ca52e01a651b426164e327fc45",
+      "local_norm": 0.00715969770624119,
+      "reduced_sha256": "452d8c124306c07d25418e1213696e9a05f713ec161f878fe377e098f0bba38b",
+      "reduced_norm": 0.0038851542118472715
+    },
+    {
+      "id": 129,
+      "name": "backbone.blocks.3.norm_k.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 8,
+      "bucket_element_offset": 594048,
+      "local_sha256": "85855b86c1ad5f4ddd63f10b39f4c9fa41ad2b4cd11fbc3c9728e5d207f0a233",
+      "local_norm": 0.008011342691093201,
+      "reduced_sha256": "0c554097b16166da416503155277a410a8c10845b2c6e0e23935ba4e76c75617",
+      "reduced_norm": 0.00405434856852432
+    },
+    {
+      "id": 130,
+      "name": "backbone.blocks.3.norm_m.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 1,
+      "bucket_element_offset": 1536,
+      "local_sha256": "4cf09a7d1517159623c5121d3489fffd7c56b3e7bb8369c10d515e0831ab7f2b",
+      "local_norm": 0.0044285659459055975,
+      "reduced_sha256": "917738ff4ec154c0a3e3e1ba52635b696daebdcbabefc4421355d018bda8324f",
+      "reduced_norm": 0.00264196275444529
+    },
+    {
+      "id": 131,
+      "name": "backbone.blocks.3.norm_m.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 2,
+      "bucket_element_offset": 1920,
+      "local_sha256": "3f65ad38bb71b65aa803276914b4c3f8715b22becedc9cb3e18f89b88e6eb712",
+      "local_norm": 0.0049473857641402835,
+      "reduced_sha256": "35247632b2a57e9628fee3f8a1f1025064414e8f77e71e3fd6e10e3371513390",
+      "reduced_norm": 0.002584632705835558
+    },
+    {
+      "id": 132,
+      "name": "backbone.blocks.3.time_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 11,
+      "bucket_element_offset": 742272,
+      "local_sha256": "dc2c3c939378513735dcafd54df5d27b682e588f8ea2eb8ca95e75a990829e18",
+      "local_norm": 0.24238832579303227,
+      "reduced_sha256": "0fe514d49343b65a885c775d37f99302dfaf0defd9b2ee862ead2ddc343455e5",
+      "reduced_norm": 0.14515193384502414
+    },
+    {
+      "id": 133,
+      "name": "backbone.blocks.3.time_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 12,
+      "bucket_element_offset": 1184640,
+      "local_sha256": "fe012904c27c6bc5f8f96842f01ea2aa22e8743c7449d53a585f6deed3f2fb0a",
+      "local_norm": 0.01610304121017599,
+      "reduced_sha256": "459319fb38fc7148201bd2214086c7e0eeda424e77589799d7cb978af9e4f733",
+      "reduced_norm": 0.008012679780374463
+    },
+    {
+      "id": 134,
+      "name": "backbone.blocks.3.time_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 9,
+      "bucket_element_offset": 594432,
+      "local_sha256": "83a2fb6ee43f9c5f108cb730ebe9544ac7e9d06e29bc0776caafdd8426247b08",
+      "local_norm": 0.2317258021733414,
+      "reduced_sha256": "a04b8b3362def31190f396e98d8ebf70564fecf39a57a6c679b2b4d6c53c1ff6",
+      "reduced_norm": 0.14712624740002517
+    },
+    {
+      "id": 135,
+      "name": "backbone.blocks.3.time_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 10,
+      "bucket_element_offset": 741888,
+      "local_sha256": "f2e75ad9cdb2116c98cef3758897c9ac3a76b011d887ef19d43b875d9cd946c3",
+      "local_norm": 0.027506989022824127,
+      "reduced_sha256": "6223b1860e104c001e9a4a996334571aba4483fa6031e8b38150840de3920641",
+      "reduced_norm": 0.014047450521350974
+    },
+    {
+      "id": 136,
+      "name": "backbone.blocks.3.latent_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 5,
+      "bucket_element_offset": 150144,
+      "local_sha256": "f18f6402e836631cc81411b4fbfd45f662b6a019757d7ffcccc3470c8376fd30",
+      "local_norm": 0.2459874535587765,
+      "reduced_sha256": "88a8f48d59ea09fa5af7fcbeb4bfa458fbefa4272945c6ef7167eae752f3b83d",
+      "reduced_norm": 0.13981480933410212
+    },
+    {
+      "id": 137,
+      "name": "backbone.blocks.3.latent_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 6,
+      "bucket_element_offset": 592512,
+      "local_sha256": "7a54e79a4ef584f8cdef57b8e5498d4d3c1f3d6ba8b72b0ef8ab6bf7ef84f8db",
+      "local_norm": 0.014289716096102151,
+      "reduced_sha256": "2f7c1e75c9bd4d00a716fee99be7c8d158457b73005eb76a694044575dfaa2a1",
+      "reduced_norm": 0.007169955358777232
+    },
+    {
+      "id": 138,
+      "name": "backbone.blocks.3.latent_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 3,
+      "bucket_element_offset": 2304,
+      "local_sha256": "ac155e549cab1f687b1c76cbf51555796fbab7dc0707f8916b0b493aeb2b2a33",
+      "local_norm": 0.2598802054654022,
+      "reduced_sha256": "334d60b817e53449ba67d21f8ea9d8a656874b4bb46e0525e7799a215860b85c",
+      "reduced_norm": 0.14918438890010968
+    },
+    {
+      "id": 139,
+      "name": "backbone.blocks.3.latent_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 4,
+      "bucket_element_offset": 149760,
+      "local_sha256": "87d9d18a231e1e0f698e453d363f6362c3b1d7dee0069e65e91de36f29adddbd",
+      "local_norm": 0.025619456910009775,
+      "reduced_sha256": "3887cce2eaf1baca666529ace39e37a79fa9cfdd90366bf65cfca68e1e3cb82c",
+      "reduced_norm": 0.013101883375502024
+    },
+    {
+      "id": 140,
+      "name": "backbone.blocks.3.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 49,
+      "bucket_element_offset": 6360192,
+      "local_sha256": "69f41fae921ad5e90c9c73543e2419088c832325c092cb89608d9eecbfb9f7be",
+      "local_norm": 0.14784174489097596,
+      "reduced_sha256": "f45db6e2d5d8369dae8ca5a9c5afa5a7f540c737133863f5195c927e41f4b8ad",
+      "reduced_norm": 0.08359910673472472
+    },
+    {
+      "id": 141,
+      "name": "backbone.blocks.3.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 3,
+      "bucket_position": 0,
+      "bucket_element_offset": 0,
+      "local_sha256": "7376538855d1b7c25e5feddd3995751952baf30b74eb777b4d7247180014421b",
+      "local_norm": 0.008731456187483411,
+      "reduced_sha256": "d0a4e013f620ac89162f30af0c5011498ee7a330016acebc7d1a1cdacff0e53d",
+      "reduced_norm": 0.004470710691099375
+    },
+    {
+      "id": 142,
+      "name": "backbone.blocks.3.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 47,
+      "bucket_element_offset": 5769984,
+      "local_sha256": "1d3a8580ddd8b8cbd1efba877db1354b1c3b31387f164d0669f8c8e119dc2cae",
+      "local_norm": 0.28803703753063475,
+      "reduced_sha256": "f383997b48a47fbe160b3073720ab2c69012f54edd13131234ff25cd0eb9633e",
+      "reduced_norm": 0.1615357616425306
+    },
+    {
+      "id": 143,
+      "name": "backbone.blocks.3.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 48,
+      "bucket_element_offset": 6359808,
+      "local_sha256": "e1250984624a49e4deafa78476393fc1e8fcd483668d5f7772dd1d28b383e767",
+      "local_norm": 0.02475998461049415,
+      "reduced_sha256": "ca60fc89dc082583ab6f73fea0c54e4316a92eaea58183a69fc2f077eef997fa",
+      "reduced_norm": 0.012685868955872637
+    },
+    {
+      "id": 144,
+      "name": "backbone.blocks.4.norm_t.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 45,
+      "bucket_element_offset": 5769216,
+      "local_sha256": "7d2b958e3d234ae0523fd3a8b5d42684488af87cfdf5bbccc14e0d77294b6060",
+      "local_norm": 0.006781547831203976,
+      "reduced_sha256": "a35d32397ed6b127e02662b6e2fb58424085aeaa814b078d6843b6857948c37b",
+      "reduced_norm": 0.003901173205919572
+    },
+    {
+      "id": 145,
+      "name": "backbone.blocks.4.norm_t.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 46,
+      "bucket_element_offset": 5769600,
+      "local_sha256": "e12087d7fd2fe81dbdab4b47a0a9961311cde6ae670ae778a54ddf66adeb7401",
+      "local_norm": 0.007556900275206487,
+      "reduced_sha256": "1357955c2b924e8e81dcb8e95165e5f254982f2442cb03b8320cb1995e11afa6",
+      "reduced_norm": 0.0038822528569261387
+    },
+    {
+      "id": 146,
+      "name": "backbone.blocks.4.norm_k.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 39,
+      "bucket_element_offset": 5177088,
+      "local_sha256": "1a5c60a909c7066f7ddbf4b004d43bc6fe451c474dff51985601b119f416fb6c",
+      "local_norm": 0.006343834992626713,
+      "reduced_sha256": "aeb062233f47963b0b25c9d0b718833addb0f11edd70b01b7dad10f65ae53033",
+      "reduced_norm": 0.003522682527271272
+    },
+    {
+      "id": 147,
+      "name": "backbone.blocks.4.norm_k.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 40,
+      "bucket_element_offset": 5177472,
+      "local_sha256": "863c16e6c653624ca634566a6e8854c906926a23ed834e22db4b56d428966a6c",
+      "local_norm": 0.007142770626250003,
+      "reduced_sha256": "be3876775c7af9a6c8a52fcf6d73a0e9f49f183d200dda53c53ab28391957948",
+      "reduced_norm": 0.0036434679558850617
+    },
+    {
+      "id": 148,
+      "name": "backbone.blocks.4.norm_m.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 33,
+      "bucket_element_offset": 4584960,
+      "local_sha256": "82259ade20d941cf3c80c8db48b475cd66be7e1b1c3725c9c3f9aee5f6f2a6f2",
+      "local_norm": 0.004145114005180957,
+      "reduced_sha256": "360539c940ffb3210938c18f25fdb2c1a49af6a04ecfc1014c61bc8768732e68",
+      "reduced_norm": 0.0023948399755555827
+    },
+    {
+      "id": 149,
+      "name": "backbone.blocks.4.norm_m.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 34,
+      "bucket_element_offset": 4585344,
+      "local_sha256": "3e3d5eb6a6a9eb1b159e76b2f864d7cbfae2f55ae0576e1e23de12ab68ceb91a",
+      "local_norm": 0.004497693766454707,
+      "reduced_sha256": "be8cdb7b674d3df1c00ee6834952d8056a4b754bc3a76cb88a337f1dc0689753",
+      "reduced_norm": 0.002422121047705862
+    },
+    {
+      "id": 150,
+      "name": "backbone.blocks.4.time_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 43,
+      "bucket_element_offset": 5325696,
+      "local_sha256": "a90c868cc6c59e96016c26848c624cd5346b09ea9ead1fc378e727bd990a7403",
+      "local_norm": 0.2120012287694337,
+      "reduced_sha256": "e38ddc17413e19f93dd429caff1e71d69f34bbefe658f79839bc1795d06bacf3",
+      "reduced_norm": 0.1294379982374978
+    },
+    {
+      "id": 151,
+      "name": "backbone.blocks.4.time_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 44,
+      "bucket_element_offset": 5768064,
+      "local_sha256": "2da9b951070238bf1410d13ac87a4a33e5788d77579be3d71eae64cf4f8f8560",
+      "local_norm": 0.013690394507606745,
+      "reduced_sha256": "d65d50aba8f24b7138efda59c3a7ab0d02e8dd012d6d5ac2bb29039b2549630f",
+      "reduced_norm": 0.0069508206012843755
+    },
+    {
+      "id": 152,
+      "name": "backbone.blocks.4.time_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 41,
+      "bucket_element_offset": 5177856,
+      "local_sha256": "76d95f72b45ff93417ea5cde1fe207862d817f15455423acb4f630b889831819",
+      "local_norm": 0.19741229338960792,
+      "reduced_sha256": "39155d0ef898bfc946d49734854828609e51f67799bc74670826809af03276a7",
+      "reduced_norm": 0.12332058774524991
+    },
+    {
+      "id": 153,
+      "name": "backbone.blocks.4.time_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 42,
+      "bucket_element_offset": 5325312,
+      "local_sha256": "f6f837e05e8feea807248dac461a1cffa93b2d785cfcf4fb9d11c010d39b9a8a",
+      "local_norm": 0.02351600162055616,
+      "reduced_sha256": "8a63557bccfc6496a71019e5d3342c747e2b4d996e1c553085bd09391bda1128",
+      "reduced_norm": 0.012054001852656347
+    },
+    {
+      "id": 154,
+      "name": "backbone.blocks.4.latent_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 37,
+      "bucket_element_offset": 4733568,
+      "local_sha256": "5bb7088c6963deaf12b992c5a6bb395d9dd33d6574c2fc20f2f5324cb25b4c4b",
+      "local_norm": 0.21256637522156008,
+      "reduced_sha256": "6c3a64be1a7c9507bd997ac8c1ebf0b90f0248ddef2ad68c7017d5ddd67994cb",
+      "reduced_norm": 0.12097622912763753
+    },
+    {
+      "id": 155,
+      "name": "backbone.blocks.4.latent_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 38,
+      "bucket_element_offset": 5175936,
+      "local_sha256": "008b4f2fcb02379957a6152b2d04489665cb31ae26d4c5be754f3c7237b9dbb5",
+      "local_norm": 0.012415623411259695,
+      "reduced_sha256": "a65b28c4afd68aa7dde2b8917240a55a47cf9ca793b19495e9c0888dd44fc77c",
+      "reduced_norm": 0.006227607050300911
+    },
+    {
+      "id": 156,
+      "name": "backbone.blocks.4.latent_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 35,
+      "bucket_element_offset": 4585728,
+      "local_sha256": "cb7108837f10c079cafe143f604333cdb502e03fa9eb735b64139e1d6bc5d1b4",
+      "local_norm": 0.22171207285806682,
+      "reduced_sha256": "f1a221477a5cf072603645b061a71ebbff1cb78a2e638be09d31c2a2fbff1829",
+      "reduced_norm": 0.13045493913689968
+    },
+    {
+      "id": 157,
+      "name": "backbone.blocks.4.latent_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 36,
+      "bucket_element_offset": 4733184,
+      "local_sha256": "0b7225d4c0ac91e6c096f0d29922bcebeff7979ea63c4c405f1545ca9adb790b",
+      "local_norm": 0.02237938509165943,
+      "reduced_sha256": "06187a2d68bc50d4c3704e05362df8feafc768e2420184e8a3a799b71cae8068",
+      "reduced_norm": 0.01152102947087103
+    },
+    {
+      "id": 158,
+      "name": "backbone.blocks.4.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 31,
+      "bucket_element_offset": 3993600,
+      "local_sha256": "1825bae6e02d790903f1d5720d0d3a222e414c1745721e38aeb540cb139bb378",
+      "local_norm": 0.12634297144794654,
+      "reduced_sha256": "def005ee0c16736c77c6859d97b82cfdb9abc224e64990702073fdac8f8d1131",
+      "reduced_norm": 0.07407674822258298
+    },
+    {
+      "id": 159,
+      "name": "backbone.blocks.4.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 32,
+      "bucket_element_offset": 4583424,
+      "local_sha256": "acb612d7a1649ff4891787180fd122be554257ca82f0ea6cf508e5ddc01319fe",
+      "local_norm": 0.007296844617710451,
+      "reduced_sha256": "236ce4c5fba3c3bbb76bbf16e22d3b0b15a3a252fa206afc33ba2e8eac50ad71",
+      "reduced_norm": 0.0038723682367342214
+    },
+    {
+      "id": 160,
+      "name": "backbone.blocks.4.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 29,
+      "bucket_element_offset": 3403392,
+      "local_sha256": "6c06cd760c90d45390c217e171b4195673c714f63755669c78b373acb0d0858f",
+      "local_norm": 0.2585219318710373,
+      "reduced_sha256": "a8f3bc0fd51ee274b8c6afe0f9f812214cbda085264bd7aa6b71db43b1078870",
+      "reduced_norm": 0.14458073751652387
+    },
+    {
+      "id": 161,
+      "name": "backbone.blocks.4.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 30,
+      "bucket_element_offset": 3993216,
+      "local_sha256": "524c1bbf991c2e66f2ff61927b0075c043487060e54f73948e3af98ed4e4d3ed",
+      "local_norm": 0.021994050961392377,
+      "reduced_sha256": "fd9a0d6f7e46d61046ee8a0390bb94e7146f23eb6cd4512ac814e0c9b598b205",
+      "reduced_norm": 0.011278160851270877
+    },
+    {
+      "id": 162,
+      "name": "backbone.blocks.5.norm_t.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 27,
+      "bucket_element_offset": 3402624,
+      "local_sha256": "11dbbbf6689592bfbc5c86554a349eaa403a3136e22e21d2a7d8e0f433ddf2bb",
+      "local_norm": 0.005440909812638694,
+      "reduced_sha256": "1852f3b710efa40622bb7be79ea4dff874d6cb63698271f2b324aca03a9e100c",
+      "reduced_norm": 0.0033940180691766613
+    },
+    {
+      "id": 163,
+      "name": "backbone.blocks.5.norm_t.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 28,
+      "bucket_element_offset": 3403008,
+      "local_sha256": "68bc06a0e51f89aa3841ef163222913b49fab97557011bbcc3e50c87c9b0b411",
+      "local_norm": 0.006974193107771544,
+      "reduced_sha256": "924a8a8e890bd453dfa3262b1c90e0b29c8d521953105b90fdb5721ebfdebda7",
+      "reduced_norm": 0.00359761208954793
+    },
+    {
+      "id": 164,
+      "name": "backbone.blocks.5.norm_k.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 21,
+      "bucket_element_offset": 2810496,
+      "local_sha256": "6fe27f32bb19e1d9fa7b4a8bc11c5c5da34c537a786fe20fb8781dbfb8ee58f5",
+      "local_norm": 0.006236692406558645,
+      "reduced_sha256": "1367957d89d4c86e0bc1b377c82d0e47416da325786b95657347909aaee2b3e2",
+      "reduced_norm": 0.003262578371945544
+    },
+    {
+      "id": 165,
+      "name": "backbone.blocks.5.norm_k.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 22,
+      "bucket_element_offset": 2810880,
+      "local_sha256": "4e1607af23278c970424b376f4eb0db098a0d6f996979560d58065ee96c3c2e0",
+      "local_norm": 0.006628318340268641,
+      "reduced_sha256": "97bd7af6ddf735f53f6725cead80e31f819f435b3e7e8136906db3ffa8763b8e",
+      "reduced_norm": 0.0031996585023121396
+    },
+    {
+      "id": 166,
+      "name": "backbone.blocks.5.norm_m.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 15,
+      "bucket_element_offset": 2218368,
+      "local_sha256": "f0465ff1040ca26ed9ed4649ae66e3f5740f919372ea2cf9f25b21178fa65122",
+      "local_norm": 0.0037288761014279623,
+      "reduced_sha256": "ddb76b3e2ad825657ddcddcbe49dd00b24a496ee71305cbaae0458e4f5afdb9a",
+      "reduced_norm": 0.002024344899111693
+    },
+    {
+      "id": 167,
+      "name": "backbone.blocks.5.norm_m.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 16,
+      "bucket_element_offset": 2218752,
+      "local_sha256": "c70ebcd26b655fc71ac6ade8240acf0449a1c97c59d65772a414a20e603c18d7",
+      "local_norm": 0.004219343671937335,
+      "reduced_sha256": "d22d722d028713ae913f93380f68d7deb0c91c2c301994cce98d21c96d391b33",
+      "reduced_norm": 0.0022330598130775934
+    },
+    {
+      "id": 168,
+      "name": "backbone.blocks.5.time_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 25,
+      "bucket_element_offset": 2959104,
+      "local_sha256": "c95dc72b5561f8efcf514f03badb4d147fb8f2b2fdf505e30574ea2227fd0700",
+      "local_norm": 0.18551435454453208,
+      "reduced_sha256": "b17520ff66abd16b3b8de16788e5bf0c10ff61174c8dde916b1dba92da275bce",
+      "reduced_norm": 0.11800544008123322
+    },
+    {
+      "id": 169,
+      "name": "backbone.blocks.5.time_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 26,
+      "bucket_element_offset": 3401472,
+      "local_sha256": "664ab3c2e326c8b85aa42dd4e9a9940e88e1f21786fd7566fc11775da2db247d",
+      "local_norm": 0.011942157937179109,
+      "reduced_sha256": "c19c95a89a53ef0c0ce14508e321df88b06fb8f5f4fe27e968db99a5ff26c23f",
+      "reduced_norm": 0.0062608358496795795
+    },
+    {
+      "id": 170,
+      "name": "backbone.blocks.5.time_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 23,
+      "bucket_element_offset": 2811264,
+      "local_sha256": "54932dbcd2b8951b34e387301387cc1755cf228a3b7cbbacc666b8c4b850a97a",
+      "local_norm": 0.1820403495320975,
+      "reduced_sha256": "53b2a0322d86a5f60efb5ba4eb80ae02d16ea85f5f262ef65fb08e5161e460a5",
+      "reduced_norm": 0.11379637232533538
+    },
+    {
+      "id": 171,
+      "name": "backbone.blocks.5.time_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 24,
+      "bucket_element_offset": 2958720,
+      "local_sha256": "3aeb40af0a2af858c0d4488c8a1fb3a675b5d47ba2845412bc644d70f06b8be2",
+      "local_norm": 0.021200440318355388,
+      "reduced_sha256": "a27c545349149088e0e0fb1b4410bc4c54fafa60b5187f3109a24a2aa9116576",
+      "reduced_norm": 0.010833927265286768
+    },
+    {
+      "id": 172,
+      "name": "backbone.blocks.5.latent_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 19,
+      "bucket_element_offset": 2366976,
+      "local_sha256": "6ee51f3c410b95126b03dc69836a68ad9ad9eec9260f1e66a4a8fb3348aed196",
+      "local_norm": 0.18677927036879874,
+      "reduced_sha256": "16ad1eb031d17aa5ab787b50a8f47764de49a56ad63cd9799497bd2de22faa79",
+      "reduced_norm": 0.10768730157286732
+    },
+    {
+      "id": 173,
+      "name": "backbone.blocks.5.latent_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 20,
+      "bucket_element_offset": 2809344,
+      "local_sha256": "06808473c3253f65a56ad50c84697e040cfb84b516b0db1c4d5d5a5d4855c276",
+      "local_norm": 0.010667855116788028,
+      "reduced_sha256": "11271d6828c88de1f17562af3b6d154dfd8fff69af50b5d3746957e3e14e706b",
+      "reduced_norm": 0.00535881858415281
+    },
+    {
+      "id": 174,
+      "name": "backbone.blocks.5.latent_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 17,
+      "bucket_element_offset": 2219136,
+      "local_sha256": "08d6aa9ebefb18973d04e848b7ec77a0330ba392881df7c418d9e7e3d6e4f3f9",
+      "local_norm": 0.199512351253533,
+      "reduced_sha256": "84b7b397175f3742ed0ca7e1ea5aaf17af0479430cb5826ab3b8a35d4178c8a4",
+      "reduced_norm": 0.11695272840788676
+    },
+    {
+      "id": 175,
+      "name": "backbone.blocks.5.latent_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 18,
+      "bucket_element_offset": 2366592,
+      "local_sha256": "8a7f548b8de4b1bc1fa579d13fc7651baf578cfa0bb5c22d78909dabe965163c",
+      "local_norm": 0.019880802983045988,
+      "reduced_sha256": "19d879df686564b4c31673bbb5a44de2b0bbb13d2550e2896b341314f2b7bb96",
+      "reduced_norm": 0.010263452150683992
+    },
+    {
+      "id": 176,
+      "name": "backbone.blocks.5.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 13,
+      "bucket_element_offset": 1627008,
+      "local_sha256": "24fa7012f217412c8e7eb382ae4443238a594ba4bd629d14bf641a05a9a0a5b7",
+      "local_norm": 0.11749833446026879,
+      "reduced_sha256": "d5b412e20fd76d88782c51d20f0d0677ed9f3e5b25175f4fba1bc1c97a0ac734",
+      "reduced_norm": 0.06922121643165317
+    },
+    {
+      "id": 177,
+      "name": "backbone.blocks.5.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 14,
+      "bucket_element_offset": 2216832,
+      "local_sha256": "59156c048dac8691fc01d35413a9605c04ea61204ae77333289c4f21b15c6460",
+      "local_norm": 0.0067825193992235725,
+      "reduced_sha256": "cabee153f1b48ed7802e00c30678b2b873bfd7dc7278f11eb695bf4d0c9f7121",
+      "reduced_norm": 0.0036447868175146936
+    },
+    {
+      "id": 178,
+      "name": "backbone.blocks.5.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 11,
+      "bucket_element_offset": 1036800,
+      "local_sha256": "31944cbbd4a04d114e2e5f18e0e01e9d6e566733319f773d26d10983e9cf8e81",
+      "local_norm": 0.23950996171946246,
+      "reduced_sha256": "2e2a974617109b7bec303448d468091e124dd1431a255033421dd5909bf3ffb1",
+      "reduced_norm": 0.1373602515806077
+    },
+    {
+      "id": 179,
+      "name": "backbone.blocks.5.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 12,
+      "bucket_element_offset": 1626624,
+      "local_sha256": "8a1537b67444c1a80bdca40cd37da0d9cb4f1a23eda4163e1ddee9608360b08b",
+      "local_norm": 0.019478085162375296,
+      "reduced_sha256": "4d54a5bf29aba6a4fffba8838a8aa202b260d4cf90a7f4bc394e8caa66e81f33",
+      "reduced_norm": 0.010072540020983352
+    },
+    {
+      "id": 180,
+      "name": "backbone.blocks.6.norm_t.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 9,
+      "bucket_element_offset": 1036032,
+      "local_sha256": "64f132fa75f5686ff31cd06db4fc32bb45633829f4261434ac4c3fee54f5093f",
+      "local_norm": 0.005455175371377954,
+      "reduced_sha256": "bb8668d6daa85093c93f016ba19637b56d022484ba461b9366cfd0042aec07f1",
+      "reduced_norm": 0.0035749252672916537
+    },
+    {
+      "id": 181,
+      "name": "backbone.blocks.6.norm_t.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 10,
+      "bucket_element_offset": 1036416,
+      "local_sha256": "1a088b9b49e3bc56b0ad45ad96e8c0090320615213dba3bfd56aaebf97daa8dd",
+      "local_norm": 0.006458766158614526,
+      "reduced_sha256": "12e7a98675152a72f9fafc2991acd614e84aed2703cb231acce9e278499476e8",
+      "reduced_norm": 0.0033664093063551608
+    },
+    {
+      "id": 182,
+      "name": "backbone.blocks.6.norm_k.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 3,
+      "bucket_element_offset": 443904,
+      "local_sha256": "b5970bf6a07037d644c3884223352961c6bff57b18b6ada5274b8b8f9f012ec2",
+      "local_norm": 0.005748765065420937,
+      "reduced_sha256": "083fccbc9672d1c6244dbea370fe676bf59dae0dd4b9b828b18f64fbb8ab662c",
+      "reduced_norm": 0.003287130902760048
+    },
+    {
+      "id": 183,
+      "name": "backbone.blocks.6.norm_k.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 4,
+      "bucket_element_offset": 444288,
+      "local_sha256": "d47720ecb139d04bc35acd0de663c09ef953b7a50255b0ee7248d144c3e950a7",
+      "local_norm": 0.00639001628262508,
+      "reduced_sha256": "0ce9dea7f8106e4d3e7efd2b41afdfe65017e90681c3f7e0b6d3914581c6360f",
+      "reduced_norm": 0.0032448300003868895
+    },
+    {
+      "id": 184,
+      "name": "backbone.blocks.6.norm_m.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 55,
+      "bucket_element_offset": 6509568,
+      "local_sha256": "078b73877dcfad3c675af58b668cb8b930a7369597e97d3e2a371990faacb327",
+      "local_norm": 0.0033247323199701953,
+      "reduced_sha256": "742814e00fbd798adab63f62899746411f97e96756fb9162a6605974a072d34d",
+      "reduced_norm": 0.0020586314727947144
+    },
+    {
+      "id": 185,
+      "name": "backbone.blocks.6.norm_m.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 56,
+      "bucket_element_offset": 6509952,
+      "local_sha256": "b4b8cfb55af30474dd6cccd0215b7b47d8d6c2fe9d428ef24cebe6ebb18b0420",
+      "local_norm": 0.0036683740462134817,
+      "reduced_sha256": "35fe1f1475bb443e2408e86ceb019705d473b1c2f680ca42e4fb539fb6e96ca0",
+      "reduced_norm": 0.002102810149399217
+    },
+    {
+      "id": 186,
+      "name": "backbone.blocks.6.time_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 7,
+      "bucket_element_offset": 592512,
+      "local_sha256": "f5fc55e9bbfbf3dd44fb3fb13e6a5390d0a45f13f50cd79e04bd7075ade5867a",
+      "local_norm": 0.17228212011773977,
+      "reduced_sha256": "5222b1649c587909617434b7707eb962048cb65efa444d4d2023c1cdc170efa0",
+      "reduced_norm": 0.11122669716559933
+    },
+    {
+      "id": 187,
+      "name": "backbone.blocks.6.time_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 8,
+      "bucket_element_offset": 1034880,
+      "local_sha256": "e357fbe925b51d86c1e8b4c978864020e8ca7d3131955981e6ab03b29ffc8e90",
+      "local_norm": 0.010895485331773999,
+      "reduced_sha256": "ecc21bea8210fd4f9fa91385385f9d84ab60bc81a3718e7dd68e6817e053793c",
+      "reduced_norm": 0.005809807050009971
+    },
+    {
+      "id": 188,
+      "name": "backbone.blocks.6.time_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 5,
+      "bucket_element_offset": 444672,
+      "local_sha256": "be60c577fc23d561252a7877449e46bd4b24f9fc3980ff0692a6f42de875d35e",
+      "local_norm": 0.17796701924594416,
+      "reduced_sha256": "8a4526fb6c0a5b4961b81968ce925e57d91ec3c2c0df3f900653a519fa2fdcb8",
+      "reduced_norm": 0.11235006213104562
+    },
+    {
+      "id": 189,
+      "name": "backbone.blocks.6.time_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 6,
+      "bucket_element_offset": 592128,
+      "local_sha256": "829f0a95136c0aebaedc6d78ab80bfaa37bb9092db2181239936c74ce7fba41e",
+      "local_norm": 0.018813508661090664,
+      "reduced_sha256": "00a7e39348e573a398b854b7e1255d2ad41b9a97f844de84fa05558c576a121b",
+      "reduced_norm": 0.009703276594305359
+    },
+    {
+      "id": 190,
+      "name": "backbone.blocks.6.latent_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 1,
+      "bucket_element_offset": 384,
+      "local_sha256": "0a50db518acd0483437b39c212871e407d486c3f6b3005b94f6942c4a521556b",
+      "local_norm": 0.17923539517385104,
+      "reduced_sha256": "dfa89c423eac0fe6b725272f45bb4f19066d845193339b6b6c526b2398b0e4a7",
+      "reduced_norm": 0.10514605105013315
+    },
+    {
+      "id": 191,
+      "name": "backbone.blocks.6.latent_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 2,
+      "bucket_element_offset": 442752,
+      "local_sha256": "9146a968c5b790f1fde8cefe3212ebcc9908c664fb9c9d2c70ec98bd2f9e6762",
+      "local_norm": 0.010207987122042931,
+      "reduced_sha256": "a797700f57c7e8c1c117d61869864f130403a915bf624efc6d0a203f26b36a31",
+      "reduced_norm": 0.005251349281696942
+    },
+    {
+      "id": 192,
+      "name": "backbone.blocks.6.latent_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 57,
+      "bucket_element_offset": 6510336,
+      "local_sha256": "7a2313ead418765408116b5f8cb521f3bc36c9473a548c3d3dd93ffb0eff478e",
+      "local_norm": 0.17423085489292028,
+      "reduced_sha256": "6c81a31513f0750a0690d2eae4e45ff1c4ede280314ef53b536eed24e7b56876",
+      "reduced_norm": 0.10300781568906366
+    },
+    {
+      "id": 193,
+      "name": "backbone.blocks.6.latent_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 2,
+      "bucket_position": 0,
+      "bucket_element_offset": 0,
+      "local_sha256": "7d9e55d5dbc1d256170a3c7407b77b714bc143beb15262db4392bb819866c53e",
+      "local_norm": 0.017867513394964292,
+      "reduced_sha256": "cc38fc4f62cc39a83d441e726df54d4c400b00dd436c17a0867ec5da77542739",
+      "reduced_norm": 0.009265777704783337
+    },
+    {
+      "id": 194,
+      "name": "backbone.blocks.6.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 53,
+      "bucket_element_offset": 5918208,
+      "local_sha256": "76687385f779c20681d9d06e13c6810448c6d7ca0accab74f14e647bee7b43ca",
+      "local_norm": 0.10580047378070619,
+      "reduced_sha256": "9bf6925065c03de863abfd6c8e403a615f8ec83061523f4443729d59030d3578",
+      "reduced_norm": 0.06389548014471011
+    },
+    {
+      "id": 195,
+      "name": "backbone.blocks.6.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 54,
+      "bucket_element_offset": 6508032,
+      "local_sha256": "96dd328afe1ea6b39591ad59b8ae17ec4f5bd5ca02032fa024b27467c8a2353c",
+      "local_norm": 0.006056895721898672,
+      "reduced_sha256": "0b986e7c280bbfc14a7052e9a7a55d1ec23e6889ce747b883d08d01041561935",
+      "reduced_norm": 0.003309796241016287
+    },
+    {
+      "id": 196,
+      "name": "backbone.blocks.6.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 51,
+      "bucket_element_offset": 5328000,
+      "local_sha256": "fa316fe5aef9042d1773defa8e92f931400595caa8d1a156b0dc27a9addf437c",
+      "local_norm": 0.21261667358464467,
+      "reduced_sha256": "c2a1e3f2e7ee6d7ab2d434736336fa72431601735b437bc81b5ce1d10cf7896d",
+      "reduced_norm": 0.12568355167794723
+    },
+    {
+      "id": 197,
+      "name": "backbone.blocks.6.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 52,
+      "bucket_element_offset": 5917824,
+      "local_sha256": "62812f41d42b8f5461bfcf854648a4d6f3f67c7d624165292ce5bc9807bf4f4a",
+      "local_norm": 0.017461564094128412,
+      "reduced_sha256": "2d906298b069b759bb88f0d272ce9fb28b7d0309d3fe0087b194a375dfdf59b7",
+      "reduced_norm": 0.00905036945131216
+    },
+    {
+      "id": 198,
+      "name": "backbone.blocks.7.norm_t.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 49,
+      "bucket_element_offset": 5327232,
+      "local_sha256": "3b64a521b3d2df1edbb5c91cb5a8b9f9a2e081e39cf0f8bd0e4b4cc55cbac129",
+      "local_norm": 0.004679499183720938,
+      "reduced_sha256": "2523a94f785658f9369b803a0a150067b38f6ac4b4ed18c20a715d947e5c4a3c",
+      "reduced_norm": 0.0029590754039259012
+    },
+    {
+      "id": 199,
+      "name": "backbone.blocks.7.norm_t.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 50,
+      "bucket_element_offset": 5327616,
+      "local_sha256": "c0bdfcaa2dcbc7bd65bcc5e8d22a85c59c972a3e14c626f0c6791630bc078d27",
+      "local_norm": 0.00554645180032588,
+      "reduced_sha256": "2616df1cb57569b541512f88ce5b4b9f7568d66219b7dbd817fbca04bbbda28d",
+      "reduced_norm": 0.0029812087804593217
+    },
+    {
+      "id": 200,
+      "name": "backbone.blocks.7.norm_k.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 43,
+      "bucket_element_offset": 4735104,
+      "local_sha256": "41f7e78aaadf9f68d4a6ac0a92c32351463f626d8a5febeaccf09623f5036e72",
+      "local_norm": 0.004983534564460295,
+      "reduced_sha256": "9c82f6d4e2a100457aa0ee1ce85c8bdbf33749fda4b99790d3b80f6affb593b2",
+      "reduced_norm": 0.003149254574901907
+    },
+    {
+      "id": 201,
+      "name": "backbone.blocks.7.norm_k.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 44,
+      "bucket_element_offset": 4735488,
+      "local_sha256": "b91744e935d90f9da28376f76a0fabdfdef01e107374c41619445755026d2fec",
+      "local_norm": 0.0057961043406049365,
+      "reduced_sha256": "252f792e81c2160f09e1676d17a14023f5bc78287bcd6708ed16c3cd8f1578ec",
+      "reduced_norm": 0.0031716777390371417
+    },
+    {
+      "id": 202,
+      "name": "backbone.blocks.7.norm_m.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 37,
+      "bucket_element_offset": 4142976,
+      "local_sha256": "ab72ebb482da82bf00753f64db08919923d7ec2879264a27d5dc0740cd501df5",
+      "local_norm": 0.0030000394682187697,
+      "reduced_sha256": "33fd6c1dd8e07f32ffe9a845ed931877ed0556e0d0d865b9ec2c89007052c026",
+      "reduced_norm": 0.0017408180971163424
+    },
+    {
+      "id": 203,
+      "name": "backbone.blocks.7.norm_m.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 38,
+      "bucket_element_offset": 4143360,
+      "local_sha256": "2809fb26f7946f4a13f80748f42082fcfb5277b2522d1d2266190c5d9067e4d6",
+      "local_norm": 0.0034530186945939284,
+      "reduced_sha256": "98f7a4f08169c08f7e6b6bdd61204f78bffb88d70945e447c1cd15d03f4ee5df",
+      "reduced_norm": 0.0018095717286554383
+    },
+    {
+      "id": 204,
+      "name": "backbone.blocks.7.time_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 47,
+      "bucket_element_offset": 4883712,
+      "local_sha256": "20b5f8951afc2fbca8a281c837a1ff7573152f17979516470b5b3f93fe993634",
+      "local_norm": 0.15883507824335716,
+      "reduced_sha256": "ab6dfe4a5a1315adacf7ddd090c954521e47a2b71d3dc1b255193a9f70612ed8",
+      "reduced_norm": 0.09878528331007749
+    },
+    {
+      "id": 205,
+      "name": "backbone.blocks.7.time_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 48,
+      "bucket_element_offset": 5326080,
+      "local_sha256": "fd1d02e8f0f3f654b1b2d8e531a0ed98d0859ba09401cff13f672f5c0edf4743",
+      "local_norm": 0.009872485886756136,
+      "reduced_sha256": "0ec812625a6f0da81c594c2fb7fd9a80f302555ff070b1f5a0d4a5ed4fc2438f",
+      "reduced_norm": 0.005041356818689261
+    },
+    {
+      "id": 206,
+      "name": "backbone.blocks.7.time_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 45,
+      "bucket_element_offset": 4735872,
+      "local_sha256": "8a140e0ec7b379983fb82f47d9899399d8b59ee3beb54318abe176fa0a0c94cd",
+      "local_norm": 0.15335280877766116,
+      "reduced_sha256": "1c4888d8da422f704c9cbeb63e73540c01f1f1f224491917444bd806ee9d9f3c",
+      "reduced_norm": 0.09541407932579042
+    },
+    {
+      "id": 207,
+      "name": "backbone.blocks.7.time_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 46,
+      "bucket_element_offset": 4883328,
+      "local_sha256": "ce014cd310936f70ed24fb7ba9d4e849a3f7eb2da99dfbc10dc4fcdf753d4e98",
+      "local_norm": 0.01696051013949989,
+      "reduced_sha256": "fa0647b45f9e028557c61b57fc0bc71f0a642101ef3634fbcca357d37999b01b",
+      "reduced_norm": 0.008771671299937845
+    },
+    {
+      "id": 208,
+      "name": "backbone.blocks.7.latent_attn.qkv.weight",
+      "shape": [
+        1152,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 41,
+      "bucket_element_offset": 4291584,
+      "local_sha256": "54cad431cc689025a575f656aa34941386077580705c46a3d5b77ede89510a38",
+      "local_norm": 0.16752815820706865,
+      "reduced_sha256": "28b8de9c7c2d122de1b1b78d3d9aba37e37e5c284825531830e8c417dbd01c65",
+      "reduced_norm": 0.09999249600219717
+    },
+    {
+      "id": 209,
+      "name": "backbone.blocks.7.latent_attn.qkv.bias",
+      "shape": [
+        1152
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 42,
+      "bucket_element_offset": 4733952,
+      "local_sha256": "0f8c5bfe2f9c09692f3bf5e66894ef8446f24ec471f7cb65c246e89cd8e267eb",
+      "local_norm": 0.009300354203980489,
+      "reduced_sha256": "b660cd1789dfd0bdfef125d965a2713b58b7667ec1542aab140e5ce3c43dd756",
+      "reduced_norm": 0.005004887140571896
+    },
+    {
+      "id": 210,
+      "name": "backbone.blocks.7.latent_attn.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 39,
+      "bucket_element_offset": 4143744,
+      "local_sha256": "35b7f4a274d631930c5bb61f90581fd644753ba9541b7175b385f0bfc8ff5733",
+      "local_norm": 0.16201847284372775,
+      "reduced_sha256": "48a5955733d894a5daf68558faef4adfc379ac94673d98a3dfeb6a8c1b935a43",
+      "reduced_norm": 0.09589553820242386
+    },
+    {
+      "id": 211,
+      "name": "backbone.blocks.7.latent_attn.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 40,
+      "bucket_element_offset": 4291200,
+      "local_sha256": "dea67a4dc8ab1bb520e084000041f92cd16c316290a5b7a3bdd9037cb5ac67d7",
+      "local_norm": 0.016224137392174435,
+      "reduced_sha256": "32adb076c42a7ba98c23796cfc5550fb8d4e63f3f85c60c9ebdce92f94db5618",
+      "reduced_norm": 0.008401023478370476
+    },
+    {
+      "id": 212,
+      "name": "backbone.blocks.7.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 35,
+      "bucket_element_offset": 3551616,
+      "local_sha256": "94409769af0050fc64dee62d90116aeb865ab5f90548166aee6314dc20dd81dc",
+      "local_norm": 0.09630242280306679,
+      "reduced_sha256": "fc2c16dad8576f4d5270b4bc04261b4cf44ed4ad289926850983b6ccc343425a",
+      "reduced_norm": 0.05745159217914624
+    },
+    {
+      "id": 213,
+      "name": "backbone.blocks.7.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 36,
+      "bucket_element_offset": 4141440,
+      "local_sha256": "e460eb5bf5310b214f71bdae04bf41614566182d0d1ae7465ec62370cef34e29",
+      "local_norm": 0.00535564163177191,
+      "reduced_sha256": "4dd5aa90917fc6abc7f5d94707d540e346982f110f53979774744c372b94c0df",
+      "reduced_norm": 0.002923245056776022
+    },
+    {
+      "id": 214,
+      "name": "backbone.blocks.7.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 33,
+      "bucket_element_offset": 2961408,
+      "local_sha256": "d37d7c67e9dcdb00490f385898dd14bbffcf244609e5743cd77a2ebb6c7952ce",
+      "local_norm": 0.19838809217253855,
+      "reduced_sha256": "6ab5ad060de571ffe115dc38c0b86fa3ce7473fc306b4ab5bc8cb977b6290914",
+      "reduced_norm": 0.11223118692161159
+    },
+    {
+      "id": 215,
+      "name": "backbone.blocks.7.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 34,
+      "bucket_element_offset": 3551232,
+      "local_sha256": "2450bd9acd2f981be8cf2b88a60ef715281a624836e5af4dd9ca2cdd71e5b95e",
+      "local_norm": 0.01576710975521057,
+      "reduced_sha256": "96c869a45992ca9b1b45426b72a22c754fa9065b4ae683867e1d266edd07f489",
+      "reduced_norm": 0.00821127656823771
+    },
+    {
+      "id": 216,
+      "name": "backbone.norm.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 31,
+      "bucket_element_offset": 2960640,
+      "local_sha256": "72b6261854dd4fd09d35b3a89072c26e68672cc47229a8f63adbaf9cefaa9494",
+      "local_norm": 0.025377054961001625,
+      "reduced_sha256": "bd049259b0be4339234398030ad7e6d4567056d1024c3641780ed44a3bb67002",
+      "reduced_norm": 0.014756665710277589
+    },
+    {
+      "id": 217,
+      "name": "backbone.norm.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 32,
+      "bucket_element_offset": 2961024,
+      "local_sha256": "353f2fd1c8485f0c35729c53bfaeec5163bc6c36a6cc225e47c42ffbe6a9f6f5",
+      "local_norm": 0.02826246376037679,
+      "reduced_sha256": "a16fddaa19199b68df11ac04913110db89d738e8d8cddd4fd97d73308c5b5c69",
+      "reduced_norm": 0.01469613456016755
+    },
+    {
+      "id": 218,
+      "name": "decoder.blocks.0.norm_q.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 29,
+      "bucket_element_offset": 2959872,
+      "local_sha256": "9ac40958de684bccbb4c1db194d331ecd575c53b02e2b8f0d60b4481c46415f6",
+      "local_norm": 0.0036311284779251803,
+      "reduced_sha256": "691a35d6693a0b19f4759b83860aac7b926c25922e21b983b72b44036456fb63",
+      "reduced_norm": 0.0026207964529333947
+    },
+    {
+      "id": 219,
+      "name": "decoder.blocks.0.norm_q.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 30,
+      "bucket_element_offset": 2960256,
+      "local_sha256": "2842b4d4b26faa33172b28e1b12f3290a4e8d8fd30d5cfced96b21f57351b392",
+      "local_norm": 0.002519389163506583,
+      "reduced_sha256": "8183f926798dedc058df730bfc8313fda30131d23c16721d57cd7e701f3d879f",
+      "reduced_norm": 0.002582827141516234
+    },
+    {
+      "id": 220,
+      "name": "decoder.blocks.0.norm_kv.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 25,
+      "bucket_element_offset": 2811264,
+      "local_sha256": "a52f0dc9a3f02c38753d7956cd42797942bcc7eea0aa50c6e08a4db16d3da4c9",
+      "local_norm": 0.022289606660716242,
+      "reduced_sha256": "88b57749aff695649ad8c99eec8130b868c0d7079c933380cd13cc9210204f0a",
+      "reduced_norm": 0.012099035256202506
+    },
+    {
+      "id": 221,
+      "name": "decoder.blocks.0.norm_kv.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 26,
+      "bucket_element_offset": 2811648,
+      "local_sha256": "1277307f40be729fcb76c2e3491586351cb85a427abb26a71cad74ef8c436d26",
+      "local_norm": 0.022451812524074764,
+      "reduced_sha256": "bf592865f2b5009e622d35926956663f343b3601ee5b842523ce56e8b4c533bf",
+      "reduced_norm": 0.010749963946734695
+    },
+    {
+      "id": 222,
+      "name": "decoder.blocks.0.norm_m.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 19,
+      "bucket_element_offset": 2366976,
+      "local_sha256": "9d5cde480cea705bb0ab2646339f5d661ea051d9a4d18ba8d889615c14d14083",
+      "local_norm": 0.013775954504848148,
+      "reduced_sha256": "55d07f5b916b20437a9b0a16721c2a18d08afeb6abe398aae7c82150922fd645",
+      "reduced_norm": 0.007821217643016232
+    },
+    {
+      "id": 223,
+      "name": "decoder.blocks.0.norm_m.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 20,
+      "bucket_element_offset": 2367360,
+      "local_sha256": "91106306607395b1f5c3c60b54cff19dee011fb24122abcbfd2906e4b79a00f5",
+      "local_norm": 0.013726081199195994,
+      "reduced_sha256": "e21efa22a3613807044f95717a38cf2d028f878c8f189022fe5f657eb5c1f2ef",
+      "reduced_norm": 0.007455001879261112
+    },
+    {
+      "id": 224,
+      "name": "decoder.blocks.0.q.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 27,
+      "bucket_element_offset": 2812032,
+      "local_sha256": "f26f68aa1353a2f9b5533c22958329ab33e6cd1e92f148ccd3be2dd36f36a122",
+      "local_norm": 0.09416505577735605,
+      "reduced_sha256": "eb1e915e8487bc8abe57224a78ac53586d103e02dbd8b733d06ba82527113fd7",
+      "reduced_norm": 0.06908370410800815
+    },
+    {
+      "id": 225,
+      "name": "decoder.blocks.0.q.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 28,
+      "bucket_element_offset": 2959488,
+      "local_sha256": "aea7b6572dff823b58ab3dc0f627e416b1d2a3cce0bf0e55009bfeb583720502",
+      "local_norm": 0.0036848119935927477,
+      "reduced_sha256": "4125fa553eedb61374760b8459d4aa9a321aa7e951d4c595e1af4b34103662ff",
+      "reduced_norm": 0.003754722299592783
+    },
+    {
+      "id": 226,
+      "name": "decoder.blocks.0.kv.weight",
+      "shape": [
+        768,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 23,
+      "bucket_element_offset": 2515584,
+      "local_sha256": "d6f6ca11852239234087a1040dd87b55b1c1228fee4d43f73411b4a0a6a2c77c",
+      "local_norm": 0.5696127865702894,
+      "reduced_sha256": "a05e9f275ea4d4e14154a37682bd678b90043eae98ee3971b8448ac8d38528da",
+      "reduced_norm": 0.323708389648949
+    },
+    {
+      "id": 227,
+      "name": "decoder.blocks.0.kv.bias",
+      "shape": [
+        768
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 24,
+      "bucket_element_offset": 2810496,
+      "local_sha256": "ff7ef542a3828ce822ef8cdf4bb175aafa1b9cdb84d5c3efdcf8a2505749eb52",
+      "local_norm": 0.03205294153140811,
+      "reduced_sha256": "86828b0d5fe29c3126956b4d10b08cc71093cda74fe214cb6202f2701a82d0ef",
+      "reduced_norm": 0.015513877171205604
+    },
+    {
+      "id": 228,
+      "name": "decoder.blocks.0.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 21,
+      "bucket_element_offset": 2367744,
+      "local_sha256": "72dc90340f9b67d6bb259b6ebfb1480ef0d146bece33ce514d8dcc928f58ee29",
+      "local_norm": 0.5295023526004391,
+      "reduced_sha256": "a00399458fa8776edd7682a2aa6190beb0f3569f1aab6cc1f9e146d3bd84a3f6",
+      "reduced_norm": 0.29468998814066316
+    },
+    {
+      "id": 229,
+      "name": "decoder.blocks.0.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 22,
+      "bucket_element_offset": 2515200,
+      "local_sha256": "1842639fffba8b545df4b7e3d3ec74153041bad9a2c1bd1bca971980ac4178e1",
+      "local_norm": 0.04624365629867475,
+      "reduced_sha256": "b8c7d1e5aef03c2a1e98c46bc9476af58f6745347ce62ac0d88b0fd5f152165e",
+      "reduced_norm": 0.022381624134851008
+    },
+    {
+      "id": 230,
+      "name": "decoder.blocks.0.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 17,
+      "bucket_element_offset": 1775616,
+      "local_sha256": "ee226aed3d981d453793c4dea1b7a6ae23e371e71208b687ed5b9e2a9bbd990e",
+      "local_norm": 0.323421474974253,
+      "reduced_sha256": "d4a2ec3fa0614870b09d7cc672b08aa50d77aa0faf820b3442526a2c0d16933a",
+      "reduced_norm": 0.19179403844342297
+    },
+    {
+      "id": 231,
+      "name": "decoder.blocks.0.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 18,
+      "bucket_element_offset": 2365440,
+      "local_sha256": "06d876ddb2df82cb715d1f466509e7fae8dcd3033f04b8c75869c8b238afe23d",
+      "local_norm": 0.016062490905592076,
+      "reduced_sha256": "e22ea225ff11b0eca83126cfb559496cb68e77c95ac5240866664f0c8ed583ee",
+      "reduced_norm": 0.008730169954586085
+    },
+    {
+      "id": 232,
+      "name": "decoder.blocks.0.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 15,
+      "bucket_element_offset": 1185408,
+      "local_sha256": "daac9a2a2ff543f305c340bc41a415dd550ae9c034b92a43e3108187a97a3b47",
+      "local_norm": 0.527408501514413,
+      "reduced_sha256": "93fffe027a30ee67c545ed9efc2bf73aa82a8fa933072328f617a9fda0a4e71c",
+      "reduced_norm": 0.3049317110165515
+    },
+    {
+      "id": 233,
+      "name": "decoder.blocks.0.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 16,
+      "bucket_element_offset": 1775232,
+      "local_sha256": "b0d9acf2fcb5065150dbbe8588d8e4875ddb72e7dcb5771fcd5f4d8c130ed289",
+      "local_norm": 0.034796146493600265,
+      "reduced_sha256": "45bd45f5746b7a85f901cb8742d389fff5298e897bc94084b6a54230f311ea1d",
+      "reduced_norm": 0.01770001152680273
+    },
+    {
+      "id": 234,
+      "name": "decoder.blocks.1.norm_q.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 13,
+      "bucket_element_offset": 1184640,
+      "local_sha256": "91a94df96d8d403bf9fcb4a81dda2d3d2dd80648c5967226f8fd636fefe4cde1",
+      "local_norm": 0.002830262113426013,
+      "reduced_sha256": "a3201d63c82db86a5a6a72cad708c15a645a439d21d7b1301578669474d554f9",
+      "reduced_norm": 0.0017752882415488667
+    },
+    {
+      "id": 235,
+      "name": "decoder.blocks.1.norm_q.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 14,
+      "bucket_element_offset": 1185024,
+      "local_sha256": "f60d3861b31f52dcdae96e38c1d5c8c285a4dec2084beba6545a7a799beb4635",
+      "local_norm": 0.002205287276088852,
+      "reduced_sha256": "fdbe221ccd4475682c78b2eb0f6e2b1322e22b944ea24fc975b6a360abd169c6",
+      "reduced_norm": 0.0017614490076265405
+    },
+    {
+      "id": 236,
+      "name": "decoder.blocks.1.norm_kv.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 9,
+      "bucket_element_offset": 1036032,
+      "local_sha256": "c3dea517a54546a677e6a3736a632266aaf08f0630e53c5f8698b1d7d6cc151b",
+      "local_norm": 0.01546638534802842,
+      "reduced_sha256": "ac9d7acb0687ae6950cafce333d17c64b88e2edb16553aaa6f6a02e74dbc8d8e",
+      "reduced_norm": 0.008951972266845859
+    },
+    {
+      "id": 237,
+      "name": "decoder.blocks.1.norm_kv.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 10,
+      "bucket_element_offset": 1036416,
+      "local_sha256": "13770fba209c5ef7dd15e7e48a45878ccfd2f28f26ba846f01ee1850ddb8cb4d",
+      "local_norm": 0.01582985375613711,
+      "reduced_sha256": "cc4bb76420dfbd6d64e6d184141083b14bae37b63da9d700546a07499402a9bc",
+      "reduced_norm": 0.007806905457974245
+    },
+    {
+      "id": 238,
+      "name": "decoder.blocks.1.norm_m.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 3,
+      "bucket_element_offset": 591744,
+      "local_sha256": "5cb9fe0dc1838a8b53f3e0ed00b02f0e270dab41a195bf55e198f6e4189700a8",
+      "local_norm": 0.01113144736445183,
+      "reduced_sha256": "8d1ca71a3a1cd9b69f9f96d7373fcb5e60435188014557cdae7360de5dcc66fc",
+      "reduced_norm": 0.00615892467559237
+    },
+    {
+      "id": 239,
+      "name": "decoder.blocks.1.norm_m.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 4,
+      "bucket_element_offset": 592128,
+      "local_sha256": "a4504d5eed0d6cc740bbe3188c382a2734d730fe7d712a1186f52090a380c9f7",
+      "local_norm": 0.011585057046207523,
+      "reduced_sha256": "b91b9bd02f675540cb5895c27dc8e06afdc6021e151d58fc7b4fcac4a89416c6",
+      "reduced_norm": 0.005836028960342444
+    },
+    {
+      "id": 240,
+      "name": "decoder.blocks.1.q.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 11,
+      "bucket_element_offset": 1036800,
+      "local_sha256": "9b4801df154fc438fee020751868cb062523b04c4fdaa6da3708d3c3d098dbfd",
+      "local_norm": 0.06743251542302824,
+      "reduced_sha256": "f23e8d0205f0f603359d0978bf3d56d350b4e8e917cb83d057b8dd5b6cec5735",
+      "reduced_norm": 0.04600102653184404
+    },
+    {
+      "id": 241,
+      "name": "decoder.blocks.1.q.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 12,
+      "bucket_element_offset": 1184256,
+      "local_sha256": "c548f186db124ac20c99ffa240a6cb434a49d7e0579c7ac8630a048e7119a965",
+      "local_norm": 0.0028963741380643765,
+      "reduced_sha256": "e565fc3f19f0402b13a83857d6a45cf8786366024517f8b15c65cc238cdeee95",
+      "reduced_norm": 0.0024737989477555487
+    },
+    {
+      "id": 242,
+      "name": "decoder.blocks.1.kv.weight",
+      "shape": [
+        768,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 7,
+      "bucket_element_offset": 740352,
+      "local_sha256": "d1627f8281aa59c6e83ae3b99349f7ab92edc977227e2b788bb05fc3c477093c",
+      "local_norm": 0.433575411042203,
+      "reduced_sha256": "7ddffc104365b31ee75111f9c1aadfac6f43f59e6dc9758c62b0c511ad70e626",
+      "reduced_norm": 0.246749905404776
+    },
+    {
+      "id": 243,
+      "name": "decoder.blocks.1.kv.bias",
+      "shape": [
+        768
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 8,
+      "bucket_element_offset": 1035264,
+      "local_sha256": "d4e2e5fb713ae8c1964f956d9fc1045e4d0ba962846244b743b490f22565bb73",
+      "local_norm": 0.023322456471293006,
+      "reduced_sha256": "195b99c12a6c369925cabd475e84992ad00b4de7cd2ad226dc72b2edf4d37e40",
+      "reduced_norm": 0.01138765245319906
+    },
+    {
+      "id": 244,
+      "name": "decoder.blocks.1.out.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 5,
+      "bucket_element_offset": 592512,
+      "local_sha256": "391a063d8d64ac49b88a1b4a98622654f6ad0a1514efd494c2429d163e98b30b",
+      "local_norm": 0.44986467144878567,
+      "reduced_sha256": "a347ed0a0a27e63e94304f88ac0279551a7ecb08637ef0a228b64a28fa8ab420",
+      "reduced_norm": 0.2440868305793704
+    },
+    {
+      "id": 245,
+      "name": "decoder.blocks.1.out.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 6,
+      "bucket_element_offset": 739968,
+      "local_sha256": "8de6e642b9161eb6c5ee5fb5231f7ec0c002e0aa20d7e0ce934c044097f2ee46",
+      "local_norm": 0.0339495461208858,
+      "reduced_sha256": "6cd477a29eb07006ac8507907a77991c24f67dac0471d807f93dbb87b5a10be5",
+      "reduced_norm": 0.017028360389201535
+    },
+    {
+      "id": 246,
+      "name": "decoder.blocks.1.mlp.0.weight",
+      "shape": [
+        1536,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 1,
+      "bucket_element_offset": 384,
+      "local_sha256": "8f5824249b27325fc231adab4789beb5dcedeea587f3c02bf2ddd004ac27e193",
+      "local_norm": 0.26364035725010027,
+      "reduced_sha256": "38d56095d73ed6c148c7e608b8a40df3cd94f16a474e73490b2f6b2ff7821896",
+      "reduced_norm": 0.152640475951813
+    },
+    {
+      "id": 247,
+      "name": "decoder.blocks.1.mlp.0.bias",
+      "shape": [
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 2,
+      "bucket_element_offset": 590208,
+      "local_sha256": "8d8faa5a279890d267dd99227f6e0f77b5a7790bcfa859cc33fe061687a02ae8",
+      "local_norm": 0.012934859704449391,
+      "reduced_sha256": "f7aacc20110c3d7c736d7ffa9e065e2bb04a3299ca873bc7557f81e224203fd7",
+      "reduced_norm": 0.006849545765888375
+    },
+    {
+      "id": 248,
+      "name": "decoder.blocks.1.mlp.2.weight",
+      "shape": [
+        384,
+        1536
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 20,
+      "bucket_element_offset": 220601,
+      "local_sha256": "d57653877edac02d390afeb41ee2f0f23d305a449597ce531efe1d814dbdd9b2",
+      "local_norm": 0.4569514671727292,
+      "reduced_sha256": "e1c950572e11882efad6777132c6801d1a8b26f8ca4a6cf018607aaba0b4b875",
+      "reduced_norm": 0.25842502203334283
+    },
+    {
+      "id": 249,
+      "name": "decoder.blocks.1.mlp.2.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 1,
+      "bucket_position": 0,
+      "bucket_element_offset": 0,
+      "local_sha256": "8285b41f912485ec5fc35f605d39e2c320666a8f9108e6863c23cd07fd1acb34",
+      "local_norm": 0.025963713938775525,
+      "reduced_sha256": "a1502d66bcb851f1516c4bd3fd30a6ef508be37f6369f22a6a2e649a614c2380",
+      "reduced_norm": 0.014015473302905524
+    },
+    {
+      "id": 250,
+      "name": "decoder.norm.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 18,
+      "bucket_element_offset": 219833,
+      "local_sha256": "ac05abc03092bb76349288c57bca3d3f5fa237f8952b75833c7782b8e62e5196",
+      "local_norm": 0.04974233321366593,
+      "reduced_sha256": "8764ea9944dad45e510b6bc4053c133b3adaf4e455007755c329780ee6f4599c",
+      "reduced_norm": 0.030351874511255855
+    },
+    {
+      "id": 251,
+      "name": "decoder.norm.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 19,
+      "bucket_element_offset": 220217,
+      "local_sha256": "6a28e5afb46ee481fbf7451e712af3200454ed58018f01443cf875feef842c06",
+      "local_norm": 0.024215417381466185,
+      "reduced_sha256": "2efac2cb04f5761ae4e54909128dd8f61dfc342765fe24d4b72f51194ec50d7f",
+      "reduced_norm": 0.014869536261111876
+    },
+    {
+      "id": 252,
+      "name": "anchor_heads.rms.weight",
+      "shape": [
+        1,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 16,
+      "bucket_element_offset": 219448,
+      "local_sha256": "f3f031aeba35338071f29d27871ae2bd3bab1cfb60e6f3559ef41510b53ff834",
+      "local_norm": 0.4965120559255988,
+      "reduced_sha256": "d1a9f6933d652c840be1ad18192d9c5a0d28fce014e6c8f1afdb8b755be556d1",
+      "reduced_norm": 0.2875029112901997
+    },
+    {
+      "id": 253,
+      "name": "anchor_heads.rms.bias",
+      "shape": [
+        1
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 17,
+      "bucket_element_offset": 219832,
+      "local_sha256": "9aa9e21663930f1159da4c94469037f202d1785847fc63fa127edc264270dc3e",
+      "local_norm": 0.0079345703125,
+      "reduced_sha256": "607b9e880aacd95d85cd45687389e1259b131e4a457718b82f7fe9790b7b0a0d",
+      "reduced_norm": 0.00571441650390625
+    },
+    {
+      "id": 254,
+      "name": "anchor_heads.bands.weight",
+      "shape": [
+        5,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 14,
+      "bucket_element_offset": 217523,
+      "local_sha256": "c9e6c9791d47c872cf4047aa85b4f38e22997d504a5f683a6989f60fadb13e11",
+      "local_norm": 0.3971063695748349,
+      "reduced_sha256": "a295491ee8198cd0dc6b0bee5508d8e394ce4154d77bd686b8fbc54b67277458",
+      "reduced_norm": 0.24488427117523281
+    },
+    {
+      "id": 255,
+      "name": "anchor_heads.bands.bias",
+      "shape": [
+        5
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 15,
+      "bucket_element_offset": 219443,
+      "local_sha256": "a7005a7f4538470de3b0e6b9a48379883d9789c6e4ad7598298148cf2ccd8044",
+      "local_norm": 0.02249992138795895,
+      "reduced_sha256": "b4eedcbea8092a4e95f9e5b506a8fba7d823ffbe88eeeff400f4d5dd1e7b7efa",
+      "reduced_norm": 0.01451942647181636
+    },
+    {
+      "id": 256,
+      "name": "anchor_heads.env.weight",
+      "shape": [
+        1,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 12,
+      "bucket_element_offset": 217138,
+      "local_sha256": "f05236bc8cf2b0cd2a26712fab7050e32fae63199278bc025f532600f194eda6",
+      "local_norm": 0.6191056276327123,
+      "reduced_sha256": "789a885fa8b756531a75eb27b646c6366ba74577a37d392dc67840ab814d9937",
+      "reduced_norm": 0.3456026529170197
+    },
+    {
+      "id": 257,
+      "name": "anchor_heads.env.bias",
+      "shape": [
+        1
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 13,
+      "bucket_element_offset": 217522,
+      "local_sha256": "c62623cb2d08709e61560bc8c1baf9aa26ab4dac3cc7ff539c1ad5e38d4c0602",
+      "local_norm": 0.007720947265625,
+      "reduced_sha256": "966ac5ac239d3bb3e0295813ef9f5d4d2ec20640565ce4a2d96175c54718c73b",
+      "reduced_norm": 0.0048980712890625
+    },
+    {
+      "id": 258,
+      "name": "anchor_heads.ms.ms_fast.weight",
+      "shape": [
+        6,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 10,
+      "bucket_element_offset": 214828,
+      "local_sha256": "f801567125888f8caf4ce7509b826c945b8eaa5d5f4e29af5dadc18611a46b99",
+      "local_norm": 0.621422254256628,
+      "reduced_sha256": "37aba7417b2447702ae0d23ef6bfe72ec0632a0a2e8db1d16d1356a448ab9310",
+      "reduced_norm": 0.3268419614067656
+    },
+    {
+      "id": 259,
+      "name": "anchor_heads.ms.ms_fast.bias",
+      "shape": [
+        6
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 11,
+      "bucket_element_offset": 217132,
+      "local_sha256": "bbf3141782beae0d2fb523ef8118c1baf8077f3fd35567ca7afe183a54121d0d",
+      "local_norm": 0.025280632827334438,
+      "reduced_sha256": "e28aeddc26ea6f9790ae260eb5541bcff97afafc5c6541119e69a37d397483b1",
+      "reduced_norm": 0.012381815406237874
+    },
+    {
+      "id": 260,
+      "name": "anchor_heads.ms.ms_slow.weight",
+      "shape": [
+        24,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 8,
+      "bucket_element_offset": 205588,
+      "local_sha256": "87ee30c07d3f1a058580007ccf4c433729fe6185153c96367a87fc197bb1a7da",
+      "local_norm": 0.43859924882505763,
+      "reduced_sha256": "504ea151a1d24d253dbfcc86584ce6ec907942a8a17aeb8d32abcb55614e4f0d",
+      "reduced_norm": 0.29813854441918486
+    },
+    {
+      "id": 261,
+      "name": "anchor_heads.ms.ms_slow.bias",
+      "shape": [
+        24
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 9,
+      "bucket_element_offset": 214804,
+      "local_sha256": "2bb0d84f5048e57a6e34e90c71e9aca2c3c1cf4a6b75a07ff254418e0b12928e",
+      "local_norm": 0.015898370560880268,
+      "reduced_sha256": "dd06bc2852878f259c51704f24d423c12f2035eae93c21075c881df142f5edae",
+      "reduced_norm": 0.009967190375499247
+    },
+    {
+      "id": 262,
+      "name": "pose_head.norm.weight",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 6,
+      "bucket_element_offset": 204820,
+      "local_sha256": "80422bc3d307b4a25bdafcc84ac7fb01cb55a09810e8b0f37bb12e0edb5c48ca",
+      "local_norm": 0.0,
+      "reduced_sha256": "b8bc6d5742f7a1df60e326efcc9ecb79cde8adc65c31a76e51a166003250e52f",
+      "reduced_norm": 0.0029431752460055433
+    },
+    {
+      "id": 263,
+      "name": "pose_head.norm.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 7,
+      "bucket_element_offset": 205204,
+      "local_sha256": "80422bc3d307b4a25bdafcc84ac7fb01cb55a09810e8b0f37bb12e0edb5c48ca",
+      "local_norm": 0.0,
+      "reduced_sha256": "1c7d2084d8b8a15ae0f2a00f053a200dd8eb71bc752d5af315c80b6786a715be",
+      "reduced_norm": 0.001700047555762751
+    },
+    {
+      "id": 264,
+      "name": "pose_head.out.weight",
+      "shape": [
+        20,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 4,
+      "bucket_element_offset": 197120,
+      "local_sha256": "4c7eea521d2218c5965fd3666c694a967a939e29a6928d528b6ed1101176b8ac",
+      "local_norm": 0.0,
+      "reduced_sha256": "7ef8bf864dc07565defc2d494a765fc07bbc39c68867e99cf8b1ae6f585e4d04",
+      "reduced_norm": 2.952895481514002
+    },
+    {
+      "id": 265,
+      "name": "pose_head.out.bias",
+      "shape": [
+        20
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 5,
+      "bucket_element_offset": 204800,
+      "local_sha256": "5b6fb58e61fa475939767d68a446f97f1bff02c0e5935a3ea8bb51e6515783d8",
+      "local_norm": 0.0,
+      "reduced_sha256": "25d67577871ced7e49dda7c0920d431cb6eeaa243afb5856a64e88681b8d4a0e",
+      "reduced_norm": 0.15784385866907832
+    },
+    {
+      "id": 266,
+      "name": "contrastive_head.layers.0.weight",
+      "shape": [
+        384,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 2,
+      "bucket_element_offset": 49280,
+      "local_sha256": "8de1afa027620efa5460c2afa0934b4eb4cc5428c31c6edd742429a61f812ce2",
+      "local_norm": 0.18613047241045996,
+      "reduced_sha256": "44af843513739d0fcc897087ecf54e6ecf4b5ed950b413a259468614d6aadf46",
+      "reduced_norm": 0.1133939082684123
+    },
+    {
+      "id": 267,
+      "name": "contrastive_head.layers.0.bias",
+      "shape": [
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 3,
+      "bucket_element_offset": 196736,
+      "local_sha256": "e546b23e4243a0b41318d4ef036029b27a2ff1f730d2ea2c7c1556ae477c911d",
+      "local_norm": 0.008652361648292117,
+      "reduced_sha256": "15f7afaf8f50b46f02d9e6c461ef7972b0540c75a755f035667aa4e5de3cb60a",
+      "reduced_norm": 0.005702162776347224
+    },
+    {
+      "id": 268,
+      "name": "contrastive_head.layers.2.weight",
+      "shape": [
+        128,
+        384
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 0,
+      "bucket_element_offset": 0,
+      "local_sha256": "522c08d4dd4fb0ed0047970d059d8cc04281c85f64107a85090a427f9731e704",
+      "local_norm": 0.13902057707155568,
+      "reduced_sha256": "05e3f416e0a866d4633ae85c00fc34fdbcd98cf58170267bde4fa80ef79b07cc",
+      "reduced_norm": 0.08025927017061499
+    },
+    {
+      "id": 269,
+      "name": "contrastive_head.layers.2.bias",
+      "shape": [
+        128
+      ],
+      "dtype": "torch.float32",
+      "bucket_index": 0,
+      "bucket_position": 1,
+      "bucket_element_offset": 49152,
+      "local_sha256": "d74bf5739eb2a4a0856ad629a409f345e95406944ff9c8ba93295c9bb2450213",
+      "local_norm": 0.019798411161470953,
+      "reduced_sha256": "09eaffd3387be4c299edf61454f40b9491cee39a8ae12ae0e7f69a855ee2fdf5",
+      "reduced_norm": 0.012719190388353221
+    }
+  ],
+  "vectors": {
+    "file": "vectors.rank1.pt",
+    "bytes": 228583020,
+    "sha256": "de9d19e021c4be34144a29406ae4eaadda6675c329e128c2fa1575e16efb3a25"
+  }
+}

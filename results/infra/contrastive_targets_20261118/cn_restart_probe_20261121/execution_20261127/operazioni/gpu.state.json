@@ -1,0 +1,44 @@
+{
+ "id": "CONTRAST-CN-RESTART545-20261121",
+ "creato": "2026-11-27T16:18:00+01:00",
+ "agente": "claude",
+ "campagna": "CONTRASTIVE-targets-v3-20261118",
+ "gpu_ore_stimate": 1.0,
+ "codice_sha": "b58a66f695c8744dfa5fe633829cafe13a5a1fc4",
+ "sbatch": [
+  "sbatch",
+  "--parsable",
+  "--job-name=CONTRAST-CN-RESTART545-20261121",
+  "--comment=wearusfm:CONTRAST-CN-RESTART545-20261121",
+  "--cpus-per-task=32",
+  "--mem=240G",
+  "--time=00:15:00",
+  "--export=ALL,CODE_DIR=/leonardo_work/IscrB_WearUsFM/wearusfm_campaigns/cn-restart545-20261121,EXPECTED_SHA=b58a66f695c8744dfa5fe633829cafe13a5a1fc4,TORCH_DIST_INIT_BARRIER=1"
+ ],
+ "dopo": null,
+ "script_stdin": "scripts/slurm/cn_restart_probe.sbatch",
+ "script_stdin_sha256": "a8c8b8b4cf6e2fbbbc122088f714597a8c65f26a047b0f01d505dfe603642da2",
+ "stato": "sottomesso",
+ "storia": [
+  {
+   "quando": "2026-11-27T16:18:00+01:00",
+   "stato": "prenotato"
+  },
+  {
+   "quando": "2026-11-27T16:18:00+01:00",
+   "stato": "in_sottomissione"
+  },
+  {
+   "quando": "2026-11-27T16:18:03+01:00",
+   "stato": "sottomesso",
+   "job_slurm": 65366639,
+   "uscita": 0,
+   "stdout": "65366639\n",
+   "stderr": ""
+  }
+ ],
+ "job_slurm": 65366639,
+ "uscita": 0,
+ "stdout": "65366639\n",
+ "stderr": ""
+}

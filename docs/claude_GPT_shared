@@ -8352,6 +8352,23 @@ in decisioni.md distingui proposte, scelte approvate e risultati. Nessuna riscri
 - Da qui push del riferimento di deploy, invii, stato e raccolta sono di quella chat, con `docs/contrastive_cn_restart_probe_launch_20261127.md`. Prima della prima scrittura su Leonardo chiede a Simone un via esplicito, indicando l'incidente del ledger, il tetto richiesto (1,0 GPU-ora e 8,2667 ore locali) e il residuo (12,26 GPU-ore e 114,0011 ore locali).
 - Stato alla consegna: ledger con `CONTRAST-CHECKOUT-CN-RESTART545-20261121` in `assente` e nessuna prenotazione per `CONTRAST-CN-RESTART545-20261121`; nessun job, nessun checkout, nessuna cartella di uscita e nessun riferimento di deploy su Leonardo; worktree di release pulito su `b58a66f6`.
 
+### 2026-11-28 | Claude | Linea 3: prova mirata InfoNCE al passo 545 eseguita e raccolta, `status` SUPPORTED
+
+Lancio della chat «0- leggi le tabelline», su consegna del revisore e via di Simone («Sì, lancia», 27/11), secondo
+`docs/contrastive_cn_restart_probe_launch_20261127.md`. Controlli Mac e blocchi A/B superati (16:09 e 16:17); deploy
+`deploy/cn-restart545-20261121` = `b58a66f6`; checkout 65366456 `COMPLETED 0:0` (18 s); validazione uscita 0,
+`new_binding_valid` true; job GPU **65366639** `COMPLETED 0:0`, 6 min 19 s, lrdn3041, 16:18-16:24 del 27/11. Un solo
+tentativo per ID. Fasi: ordinary 191,8 s, warm 147,0 s, compare 18,7 s.
+Report: `status` **SUPPORTED**, `reason` «localized post-reduction difference and exact warm continuous endpoint»;
+`training_approved` false, verdetto storico FAILED_REQUIRES_REVIEW invariato. Lettura scientifica a GPT.
+Consuntivo da `Elapsed`: 0,4211 GPU-ore e 3,3889 ore locali; sul tetto 18 / 169,6, con i 4,74 / 47,3322 di GPT,
+restano 12,84 GPU-ore e 118,88 ore locali.
+Raccolta in `results/infra/contrastive_targets_20261118/cn_restart_probe_20261121/execution_20261127/` (i `.pt`
+restano su WORK, impronte in `operazioni/raccolta_remota.out.txt`; `.err.txt` operativi solo sul Mac).
+`operazioni/checkout.state.json` contiene anche la storia dell'incidente del 27/11 (riconciliazione e controlli
+d'assenza): non riguarda l'invio vero. L'attesa e' rimasta senza ssh per un tratto dalle 16:33; raccolta fatta il
+28/11 alle 02:32, prima della scadenza del certificato.
+
 ## 2) Problemi trovati
 
 ### 29/10/2026 — GPT: vincoli del seguito sonde → PSD-3 (base d4092b8)
@@ -11394,3 +11411,8 @@ dopo il commit 07baed3: `1396 passed in 1265.76s`). Il loop dell'agente ora legg
 - Conseguenza per il lancio: il checkout si invia con `--dopo-assenza-verificata`. Non è un rilancio, perché quel job non è mai esistito. Se Simone preferisce la pulizia manuale della prenotazione, va fatta prima dell'invio e la sequenza va corretta al passo 4.
 - Rimedio per il futuro: i comandi di invio li provo solo io, a secco, con registro temporaneo e ssh finto; i revisori ricevono le uscite e non possono eseguire comandi.
 - Per GPT: il protocollo vincolato nomina 3-launcher e `--agente gpt`; il lancio lo esegue una chat Claude con `--agente claude`. Il testo del recupero del solo lettore (differenza fra `decisioni.md` e protocollo) resta da chiarire prima che serva.
+
+### 2026-11-28 | Claude | Linea 3: spazio WORK dopo la prova InfoNCE
+
+La prova lascia su WORK circa 2,7 GB di `.pt` in `cn_restart_probe_20261121`. Prima del job c'erano circa 32,7 GiB
+liberi: dopo sono stimati circa 30 (non riletto), al limite della soglia di 30 GiB dei cancelli della linea 1.
